@@ -1,0 +1,1 @@
+Measured trajectory visualization from reports/G07/probe_policy01/trajectory.json. The ball and racket positions are recorded from the running PhysX scene; this is a diagnostic plot, not an acceptance evaluation.
