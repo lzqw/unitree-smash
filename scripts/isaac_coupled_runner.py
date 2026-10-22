@@ -5,9 +5,9 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import math
 from pathlib import Path
 import signal
+import shutil
 import sys
 import time
 import traceback
@@ -48,6 +48,7 @@ simulation_app = app_launcher.app
 import torch
 from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper
 from quadsmash.rl.native_ppo import NativeRunner
+from quadsmash.rl.action_diagnostics import reset_initial_std
 from quadsmash.tasks.stand.observation_contract import OBSERVATION_SIZE
 from quadsmash.tasks.stand.coupled_env import CoupledEnv, CoupledEnvCfg
 from quadsmash.tasks.stand.jump_env import JumpEnv, JumpEnvCfg
@@ -121,11 +122,8 @@ def main() -> None:
                     policy = getattr(runner.alg, "policy", None)
                     if policy is None:
                         raise RuntimeError("Locked RSL-RL policy interface is missing")
-                    if policy is not None:
-                        if hasattr(policy, "log_std"):
-                            policy.log_std.data.fill_(math.log(desired_std))
-                        elif hasattr(policy, "std"):
-                            policy.std.data.fill_(desired_std)
+                    noise_reset=reset_initial_std(policy,desired_std)
+                    (args.output/'initial_noise_assertion.json').write_text(json.dumps(noise_reset,indent=2)+'\n')
                 elif args.resume_checkpoint is not None:
                     runner.load(str(args.resume_checkpoint.resolve()), load_optimizer=True)
                 train_started = time.perf_counter()
@@ -153,6 +151,14 @@ def main() -> None:
                     # NativeRunner stores the count of completed iterations.
                     if completed_iterations % int(config['runner'].get('save_interval',10))==0:
                         runner.save_restart(args.output/'checkpoint.pt')
+                        # Retain the already-saved canonical boundary without
+                        # resetting the environment or RNG a second time.
+                        snapshot=args.output/f'checkpoint_{runner.current_learning_iteration:06d}.pt'
+                        if snapshot.exists():
+                            raise FileExistsError(f'refusing to overwrite {snapshot}')
+                        temporary=snapshot.with_suffix('.pt.tmp')
+                        shutil.copy2(args.output/'checkpoint.pt',temporary)
+                        temporary.replace(snapshot)
                 training_elapsed_s = time.perf_counter() - train_started
                 checkpoint = args.output / "checkpoint.pt"
                 runner.save_restart(str(checkpoint))

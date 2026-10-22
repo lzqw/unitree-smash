@@ -1,0 +1,10 @@
+CUDA_VISIBLE_DEVICES='' /home/autodrive/Isaac/env_isaaclab/bin/python -m pytest -q tests/test_g04_reward_review.py tests/test_action_diagnostics.py tests/test_jump_metrics.py tests/test_native_timeout_bootstrap.py --junitxml=reports/G04/review_preparation_20261022/focused_tests.xml
+CUDA_VISIBLE_DEVICES='' /home/autodrive/Isaac/env_isaaclab/bin/python scripts/audit_g04_rewards_cpu.py --output reports/G04/review_preparation_20261022/cpu_probe
+python3 scripts/diagnose_g04_rewards.py (plan-only; no Isaac import)
+python3 scripts/analyze_g04_alignment.py --output reports/G04/review_preparation_20261022/historical_alignment
+CUDA_VISIBLE_DEVICES='' /home/autodrive/Isaac/env_isaaclab/bin/python -m pytest -q --junitxml=reports/G04/review_preparation_20261022/all_tests.xml
+CUDA_VISIBLE_DEVICES='' /home/autodrive/Isaac/env_isaaclab/bin/python -m pytest -q --junitxml=reports/G04/review_preparation_20261022/all_tests_final.xml
+CUDA_VISIBLE_DEVICES='' /home/autodrive/Isaac/env_isaaclab/bin/python -m pytest -q tests/test_g04_diagnostic_preparation.py --junitxml=reports/G04/review_preparation_20261022/diagnostic_final_tests.xml
+python3 tools/verify_goal.py --root . --goal G04 (expected exit 2; original success threshold only)
+python3 -m py_compile (all new/changed Python files; no module execution)
+SHA256 recheck of all 701 baseline-manifest files; all unchanged

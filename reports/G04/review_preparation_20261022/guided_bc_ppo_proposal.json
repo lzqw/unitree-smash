@@ -1,0 +1,90 @@
+{
+  "status": "DRAFT_NOT_AUTHORIZED",
+  "mutually_exclusive_with_other_training_proposal": true,
+  "baseline_commit": "65396a21bd8065400df91437432bd12a0a46bf81",
+  "no_execution_under_current_goal": true,
+  "cumulative_caps": {
+    "gpu": 0,
+    "gpu_hours": 8,
+    "physical_environment_interactions": 200000000
+  },
+  "already_charged": {
+    "gpu_hours": 3.432439632244722,
+    "interactions": 99685408
+  },
+  "acceptance": "Unchanged independent deterministic 2x200 ground episodes; no expert prefix or BC assistance at evaluation.",
+  "id": "G04-guided",
+  "identity": "automatic teacher search + real-history dataset + BC initialization + PPO; never label this pure PPO",
+  "implementation_status": "DESIGN_ONLY: dataset writer/BC/training-prefix executor not yet implemented; do not invent an executable training CLI. Native diagnostic is prepared separately.",
+  "reward_version": "qualified-recovery-draft-v1 (shadow-only implementation; integration requires authorization and equivalence tests)",
+  "data": {
+    "teacher_seed": 411001,
+    "collection_seed": 411002,
+    "teacher_validation_seed": 411003,
+    "BC_validation_seed": 411004,
+    "source": "Only stored bounded 8-parameter capability trajectories and new explicitly budgeted local search around them; current unique success is a seed, not a robust teacher.",
+    "split": "Split whole episodes and parameter families before collection; no adjacent-frame splitting. Never select teachers using dev_jump_v2_a/b or G10.",
+    "fields": [
+      "actual 794D PolicyHistory observation",
+      "bounded applied teacher action and original command",
+      "joint position and velocity",
+      "contact signals",
+      "event states",
+      "per-criterion recovery windows",
+      "episode and parameter-family IDs",
+      "weights/asset/config hashes"
+    ],
+    "selection": "Full successful episodes may supply recovery targets; failed episodes with a qualified flight supply only the prefix before unsafe landing/body contact. Never label post-fall actions as recovery targets. Cap standing/settling-only examples at 10% of BC batches; report class/phase counts.",
+    "BC_targets": "Applied bounded actions, not out-of-bounds Gaussian samples; normalize using training split only, freeze at validation."
+  },
+  "curriculum": {
+    "BC": "Bounded action regression initializes actor/compatible normalization; value/optimizer reset explicitly. Offline error is not success.",
+    "PPO": "If recovery needs a prefix, execute the expert prefix physically from ground. Collect policy-gradient transitions only after policy takeover; do not silently score teacher actions as on-policy samples. Prefix computation and failed prefixes count in budget. Implement and CPU-test the transition boundary/history/timeout handling before any training.",
+    "takeover_schedule_s": [
+      1.4,
+      1.2,
+      0.8,
+      0.0
+    ],
+    "maximum_updates_per_stage": 25,
+    "advance_condition": "At least 128 independent training-validation episodes; qualified-landing fraction >=0.8 and complete recovery conditional on qualified landing >=0.5. These are curriculum gates, not lowered G04 acceptance. Otherwise stop and retain the failed stage.",
+    "last_stage": "Policy controls the entire episode from t=0. Evaluation never uses a teacher prefix or state teleport."
+  },
+  "budget": {
+    "teacher_search": {
+      "hours": 0.3,
+      "interactions": 1024000
+    },
+    "trajectory_collection_and_validation": {
+      "hours": 0.25,
+      "interactions": 409600
+    },
+    "BC": {
+      "hours": 0.15,
+      "interactions": 0,
+      "max_gradient_steps": 2000
+    },
+    "PPO_with_real_prefix_cost_included": {
+      "hours": 1.1,
+      "interactions": 20000000,
+      "maximum_updates": 100
+    },
+    "post_diagnostic": {
+      "hours": 0.1,
+      "interactions": 51200
+    },
+    "formal_eval": {
+      "hours": 0.06666666666666667,
+      "interactions": 160000
+    },
+    "total_hours": 1.966666666666667,
+    "total_interactions": 21644800
+  },
+  "stopping_rules": [
+    "Stop teacher search at its fixed cap if fewer than 16 full-success episodes across at least 4 parameter families and 2 collection batches are found; do not build a recovery teacher from one success.",
+    "Stop before PPO if held-out BC closed-loop validation performs worse than the same teacher parameter families by >20 percentage points in qualified-flight rate, or body contact exceeds 50%.",
+    "Stop a curriculum stage at 25 updates without its gate; do not autonomously design another reward or widen hardware limits.",
+    "Immediate stop for numerical/contract/budget failure. Physical interaction cap overrides target update count, including frequent prefix resets."
+  ],
+  "next_authorized_action": "Approve this distinct research branch and its per-phase caps, then implement/review dataset, BC and prefix rollout boundaries before launching training. No guided GPU training command exists yet."
+}

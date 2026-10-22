@@ -7,6 +7,7 @@ from tensordict import TensorDict
 from rsl_rl.algorithms import PPO
 from rsl_rl.runners import OnPolicyRunner
 import rsl_rl.runners.on_policy_runner as runner_module
+from .action_diagnostics import post_update_diagnostics
 
 
 class FinalObservationPPO(PPO):
@@ -48,17 +49,10 @@ class FinalObservationPPO(PPO):
             obs=self.storage.observations.flatten(0,1)[::stride]
             old_mu=self.storage.mu.flatten(0,1)[::stride]
             old_sigma=self.storage.sigma.flatten(0,1)[::stride]
-            saved_distribution=self.policy.distribution
-            actor_obs=self.policy.actor_obs_normalizer(self.policy.get_actor_obs(obs))
-            self.policy.update_distribution(actor_obs)
-            mu,sigma=self.policy.action_mean,self.policy.action_std
-            kl=(torch.log(sigma/old_sigma)+(old_sigma.square()+(old_mu-mu).square())/(2*sigma.square())-.5).sum(-1)
-            logprob=self.policy.get_actions_log_prob(self.storage.actions.flatten(0,1)[::stride])
-            ratio=torch.exp(logprob-self.storage.actions_log_prob.flatten(0,1)[::stride].squeeze(-1))
-            self.last_update_stats.update(post_update_kl=float(kl.mean()),
-                post_update_clip_fraction=float(((ratio-1.).abs()>self.clip_param).float().mean()),
-                learning_rate=float(self.learning_rate),action_std_mean=float(sigma.mean()))
-            self.policy.distribution=saved_distribution
+            self.last_update_stats.update(post_update_diagnostics(self.policy,obs,old_mu,old_sigma,
+                self.storage.actions.flatten(0,1)[::stride],self.storage.actions_log_prob.flatten(0,1)[::stride],self.clip_param))
+            self.last_update_stats.update(learning_rate=float(self.learning_rate),
+                telemetry_sampling={'method':'fixed_stride','stride':stride,'rollout_rows':total,'sampled_rows':len(old_mu)})
         return losses
 
 

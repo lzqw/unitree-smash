@@ -1,0 +1,63 @@
+{
+  "status": "DRAFT_NOT_AUTHORIZED",
+  "mutually_exclusive_with_other_training_proposal": true,
+  "baseline_commit": "65396a21bd8065400df91437432bd12a0a46bf81",
+  "no_execution_under_current_goal": true,
+  "cumulative_caps": {
+    "gpu": 0,
+    "gpu_hours": 8,
+    "physical_environment_interactions": 200000000
+  },
+  "already_charged": {
+    "gpu_hours": 3.432439632244722,
+    "interactions": 99685408
+  },
+  "acceptance": "Unchanged independent deterministic 2x200 ground episodes; no expert prefix or BC assistance at evaluation.",
+  "id": "G04-pure-ppo-low-noise",
+  "identity": "pure PPO noise-only control, no teacher/BC/reward change",
+  "init_checkpoint": "runs/G04/corrected_v2c_main01/native/checkpoint.pt",
+  "config": "configs/g04_low_noise_50_proposal.json",
+  "changes": {
+    "init_std": 0.15,
+    "entropy_coef": 0.0
+  },
+  "std_is_trainable": true,
+  "maximum_updates": 50,
+  "review_update": 25,
+  "save_every": 25,
+  "budget": {
+    "pre_diagnostic": {
+      "hours": 0.1,
+      "interactions": 51200
+    },
+    "train": {
+      "hours": 0.5,
+      "interactions": 3342336
+    },
+    "post_diagnostic": {
+      "hours": 0.1,
+      "interactions": 51200
+    },
+    "formal_eval": {
+      "hours": 0.06666666666666667,
+      "interactions": 160000
+    },
+    "total_hours": 0.7666666666666666,
+    "total_interactions": 3604736
+  },
+  "stopping_rules": {
+    "immediate": [
+      "nonfinite state/loss/action",
+      "wrong loaded effective std",
+      "budget/deadline reached"
+    ],
+    "at_25_or_50": [
+      "Stop if latest completed training episode batch has zero qualified-flight events and body-contact rate exceeds 50%.",
+      "Stop if zero qualified-flight events and behavior mean-outside-bounds fraction is at least 0.10 above the preregistered pre-diagnostic mean-policy baseline; require at least 128 completed training episodes.",
+      "Always stop at 50 updates. No automatic further revision; report insufficient evidence when the batch is too small."
+    ],
+    "interpretation": "Training stochastic rates are not acceptance. Run the fixed post-diagnostic and 400-episode formal evaluation once on the last safe checkpoint, even if the pilot was stopped for failure; numerical failure requires repair before rollout."
+  },
+  "snapshots": "Retain named checkpoint_000025.pt and checkpoint_000050.pt; these are the existing canonical-reset checkpoints copied without another env reset.",
+  "next_command_after_explicit_authorization": "python3 scripts/train.py --stage jump_recover --seed 0 --num-envs 512 --max-env-steps 3342336 --max-gpu-hours 0.5 --config configs/g04_low_noise_50_proposal.json --init-checkpoint runs/G04/corrected_v2c_main01/native/checkpoint.pt --run-dir runs/G04/pure_ppo_low_noise_50_NEW"
+}

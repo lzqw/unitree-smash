@@ -1,0 +1,1269 @@
+diff --git a/configs/g04_low_noise_50_proposal.json b/configs/g04_low_noise_50_proposal.json
+new file mode 100644
+index 0000000..5accfec
+--- /dev/null
++++ b/configs/g04_low_noise_50_proposal.json
+@@ -0,0 +1,56 @@
++{
++  "task": "Go2PiPERStandard-JumpRecover-18D-fullCOM-v2",
++  "seed": 0,
++  "num_envs": 512,
++  "episode_seconds": 4.0,
++  "runner": {
++    "seed": 7,
++    "num_steps_per_env": 128,
++    "save_interval": 25,
++    "obs_groups": {
++      "policy": [
++        "policy"
++      ],
++      "critic": [
++        "policy"
++      ]
++    },
++    "logger": "tensorboard",
++    "policy": {
++      "class_name": "ActorCritic",
++      "actor_hidden_dims": [
++        512,
++        256,
++        128
++      ],
++      "critic_hidden_dims": [
++        512,
++        256,
++        128
++      ],
++      "activation": "elu",
++      "init_noise_std": 0.15,
++      "noise_std_type": "log",
++      "actor_obs_normalization": true,
++      "critic_obs_normalization": true
++    },
++    "algorithm": {
++      "class_name": "PPO",
++      "num_learning_epochs": 5,
++      "num_mini_batches": 4,
++      "learning_rate": 0.0003,
++      "schedule": "adaptive",
++      "gamma": 0.997,
++      "lam": 0.98,
++      "entropy_coef": 0.0,
++      "desired_kl": 0.01,
++      "max_grad_norm": 1.0,
++      "value_loss_coef": 1.0,
++      "use_clipped_value_loss": true,
++      "clip_param": 0.2
++    },
++    "task_reward_version": "fullCOM-v2c-timed-COM-trajectory-replaces-positive-velocity-variation"
++  },
++  "proposal_status": "DRAFT_NOT_AUTHORIZED_NO_EXECUTION",
++  "proposal_note": "G04-pure-ppo-low-noise: at most 50 updates for this pilot. Existing v2c reward unchanged. Review at 25; no automatic 200-update continuation. std remains learnable; inspect effective values and saturation."
++}
+diff --git a/quadsmash/rl/action_diagnostics.py b/quadsmash/rl/action_diagnostics.py
+new file mode 100644
+index 0000000..42a5eb1
+--- /dev/null
++++ b/quadsmash/rl/action_diagnostics.py
+@@ -0,0 +1,76 @@
++"""CPU-testable, RNG-free diagnostics for the locked diagonal Gaussian policy."""
++import math
++import torch
++
++
++def policy_std(policy):
++    if getattr(policy, 'noise_std_type', None) == 'log':
++        return policy.log_std.exp()
++    if getattr(policy, 'noise_std_type', None) == 'scalar':
++        return policy.std
++    raise ValueError('unsupported policy noise representation')
++
++
++@torch.no_grad()
++def reset_initial_std(policy, desired_std):
++    """Preserve the existing init-only reset, adding an effective-value assertion."""
++    if not math.isfinite(desired_std) or desired_std <= 0:
++        raise ValueError('initial noise std must be finite and positive')
++    before = policy_std(policy).detach().clone()
++    if policy.noise_std_type == 'log':
++        policy.log_std.fill_(math.log(desired_std))
++    else:
++        policy.std.fill_(desired_std)
++    actual = policy_std(policy)
++    if not torch.isfinite(actual).all() or not torch.allclose(actual, torch.full_like(actual, desired_std), rtol=1e-6, atol=1e-7):
++        raise RuntimeError('loaded policy noise reset did not take effect')
++    return {'requested_std': desired_std, 'before_per_joint': before.cpu().tolist(),
++            'effective_std_per_joint': actual.cpu().tolist(),
++            'std_remains_learnable': bool((policy.log_std if policy.noise_std_type == 'log' else policy.std).requires_grad)}
++
++
++@torch.no_grad()
++def action_summary(mean, std, raw_actions=None):
++    """No action sampling; clipping is the real env's [-1,1] command boundary.
++
++    Input rows may be an explicitly documented rollout subset. This does not
++    claim to measure joint target limits or actuator saturation.
++    """
++    std = torch.broadcast_to(std, mean.shape)
++    if mean.ndim != 2 or not torch.isfinite(mean).all() or not torch.isfinite(std).all() or (std <= 0).any():
++        raise ValueError('expected finite [samples,joints] mean and positive std')
++    low, high = (-1. - mean) / std, (1. - mean) / std
++    cdf_low, cdf_high = torch.special.ndtr(low), torch.special.ndtr(high)
++    density = lambda x: torch.exp(-.5 * x.square()) / math.sqrt(2. * math.pi)
++    expected = -cdf_low + mean * (cdf_high - cdf_low) + std * (density(low) - density(high)) + 1. - cdf_high
++    result = {'samples': len(mean), 'mean_outside_bounds_fraction': float((mean.abs() > 1.).float().mean()),
++        'mean_outside_bounds_per_joint': (mean.abs() > 1.).float().mean(0).cpu().tolist(),
++        'mean_abs_per_joint': mean.abs().mean(0).cpu().tolist(),
++        'std_per_joint': std.mean(0).cpu().tolist(),
++        'std_min_per_joint': std.amin(0).cpu().tolist(), 'std_max_per_joint': std.amax(0).cpu().tolist(),
++        'expected_clipping_fraction': float((cdf_low + 1. - cdf_high).mean()),
++        'expected_clipping_per_joint': (cdf_low + 1. - cdf_high).mean(0).cpu().tolist(),
++        'clipped_mean_vs_expected_action_gap_per_joint': (mean.clamp(-1., 1.) - expected).abs().mean(0).cpu().tolist()}
++    if raw_actions is not None:
++        if raw_actions.shape != mean.shape or not torch.isfinite(raw_actions).all():
++            raise ValueError('raw actions must be finite and align with mean rows')
++        result.update(actual_clipped_fraction=float((raw_actions.abs() > 1.).float().mean()),
++            actual_clipped_fraction_per_joint=(raw_actions.abs() > 1.).float().mean(0).cpu().tolist(),
++            raw_to_applied_l1_per_joint=(raw_actions - raw_actions.clamp(-1., 1.)).abs().mean(0).cpu().tolist())
++    return result
++
++
++@torch.no_grad()
++def post_update_diagnostics(policy, obs, old_mean, old_std, actions, old_logprob, clip_param):
++    # Locked RSL-RL act_inference only forwards the MLP/normalizer. It does not
++    # call update_normalization, sample, or replace policy.distribution.
++    mean = policy.act_inference(obs)
++    std = policy_std(policy).expand_as(mean)
++    kl = (torch.log(std / old_std) + (old_std.square() + (old_mean - mean).square()) / (2 * std.square()) - .5).sum(-1)
++    logprob = torch.distributions.Normal(mean, std).log_prob(actions).sum(-1)
++    ratio = torch.exp(logprob - old_logprob.squeeze(-1))
++    return {'post_update_kl': float(kl.mean()),
++            'post_update_clip_fraction': float(((ratio - 1.).abs() > clip_param).float().mean()),
++            'action_std_mean': float(std.mean()),
++            'behavior_actions': action_summary(old_mean, old_std, actions),
++            'post_update_actions': action_summary(mean, std)}
+diff --git a/quadsmash/rl/native_ppo.py b/quadsmash/rl/native_ppo.py
+index 65317ab..ac0a792 100644
+--- a/quadsmash/rl/native_ppo.py
++++ b/quadsmash/rl/native_ppo.py
+@@ -7,6 +7,7 @@ from tensordict import TensorDict
+ from rsl_rl.algorithms import PPO
+ from rsl_rl.runners import OnPolicyRunner
+ import rsl_rl.runners.on_policy_runner as runner_module
++from .action_diagnostics import post_update_diagnostics
+ 
+ 
+ class FinalObservationPPO(PPO):
+@@ -48,17 +49,10 @@ class FinalObservationPPO(PPO):
+             obs=self.storage.observations.flatten(0,1)[::stride]
+             old_mu=self.storage.mu.flatten(0,1)[::stride]
+             old_sigma=self.storage.sigma.flatten(0,1)[::stride]
+-            saved_distribution=self.policy.distribution
+-            actor_obs=self.policy.actor_obs_normalizer(self.policy.get_actor_obs(obs))
+-            self.policy.update_distribution(actor_obs)
+-            mu,sigma=self.policy.action_mean,self.policy.action_std
+-            kl=(torch.log(sigma/old_sigma)+(old_sigma.square()+(old_mu-mu).square())/(2*sigma.square())-.5).sum(-1)
+-            logprob=self.policy.get_actions_log_prob(self.storage.actions.flatten(0,1)[::stride])
+-            ratio=torch.exp(logprob-self.storage.actions_log_prob.flatten(0,1)[::stride].squeeze(-1))
+-            self.last_update_stats.update(post_update_kl=float(kl.mean()),
+-                post_update_clip_fraction=float(((ratio-1.).abs()>self.clip_param).float().mean()),
+-                learning_rate=float(self.learning_rate),action_std_mean=float(sigma.mean()))
+-            self.policy.distribution=saved_distribution
++            self.last_update_stats.update(post_update_diagnostics(self.policy,obs,old_mu,old_sigma,
++                self.storage.actions.flatten(0,1)[::stride],self.storage.actions_log_prob.flatten(0,1)[::stride],self.clip_param))
++            self.last_update_stats.update(learning_rate=float(self.learning_rate),
++                telemetry_sampling={'method':'fixed_stride','stride':stride,'rollout_rows':total,'sampled_rows':len(old_mu)})
+         return losses
+ 
+ 
+diff --git a/quadsmash/tasks/stand/jump_diagnostics.py b/quadsmash/tasks/stand/jump_diagnostics.py
+new file mode 100644
+index 0000000..9aad76e
+--- /dev/null
++++ b/quadsmash/tasks/stand/jump_diagnostics.py
+@@ -0,0 +1,111 @@
++"""Optional external recorder; never supplies rewards/actions to the learner."""
++import csv
++import json
++import torch
++from .jump_reward_audit import RecoveryWindows, v2c_components, recovery_draft
++
++
++class JumpDiagnosticRecorder:
++    def __init__(self, env, output, groups, protocol):
++        self.output, self.groups, self.protocol = output, groups, protocol
++        self.windows = RecoveryWindows(env.num_envs, env.device)
++        self.active = torch.ones(env.num_envs, dtype=torch.bool, device=env.device)
++        self.weak_paid = torch.zeros(env.num_envs, device=env.device)
++        self.mean = torch.zeros((env.num_envs, 18), device=env.device)
++        self.std = torch.zeros_like(self.mean)
++        self.model_std = torch.zeros_like(self.mean)
++        self.episode_rows = []
++        self.reward_sums = {}
++        self.max_reconstruction_error = 0.
++        self.stream = (output / 'reward_trace.csv').open('w')
++        self.writer = None
++
++    def on_physics(self, env, roll_pitch):
++        d = env.robot.data
++        self.windows.observe(env, dt=env.physics_dt, support=env.observed_foot_contact.any(1),
++            roll_pitch=roll_pitch, horizontal_speed=d.root_link_lin_vel_w[:, :2].norm(dim=-1),
++            angular_speed=d.root_ang_vel_w.norm(dim=-1), joint_speed=d.joint_vel.abs().amax(1),
++            com_vertical_velocity=env.com_velocity[:, 2], protocol=self.protocol)
++
++    def on_reward(self, env, features, reward):
++        components = v2c_components(features, env.step_dt)
++        shadow, self.weak_paid = recovery_draft(components, valid_jump_landed=env.valid_jump_landed,
++            body_ground_seen=env.body_ground_seen, recovery_quality=features['recovery_quality'],
++            weak_paid=self.weak_paid, dt=env.step_dt)
++        ids = self.active.nonzero().flatten()
++        error = float((sum(components.values()) - reward).abs().amax())
++        self.max_reconstruction_error = max(self.max_reconstruction_error, error)
++        if error > 2e-6:
++            raise RuntimeError('reward component reconstruction differs from unchanged production reward')
++        for name, values in components.items():
++            self.reward_sums.setdefault(name, torch.zeros_like(reward))
++            self.reward_sums[name] += values * self.active
++        values = dict(time_s=env._phase(), com_height_m=env.com_position[:, 2],
++            reset_com_height_m=env.reset_com_height, target_com_height_m=features['target_com'],
++            com_vertical_velocity_m_s=env.com_velocity[:, 2], takeoff_time_s=env.takeoff_time,
++            landing_time_s=env.landing_time, flight_candidate=env.flight_candidate,
++            qualified_flight=env.flight_qualified, qualified_landing=env.valid_jump_landed,
++            supported_feet=env.observed_foot_contact.sum(1), body_ground_seen=env.body_ground_seen,
++            recovery_run_s=env.recovery_run, production_reward=reward,
++            draft_shadow_reward=sum(shadow.values()), draft_weak_paid=self.weak_paid,
++            actual_action_clip_fraction=(env.action_before_clip.abs()>1.).float().mean(1),
++            mean_outside_bounds_fraction=(self.mean.abs()>1.).float().mean(1),
++            **{'condition_run_' + name + '_s': self.windows.run[:, j] for j, name in enumerate(self.windows.names)},
++            **{'reward_' + k: v for k, v in components.items()},
++            **{'draft_' + k: shadow[k] for k in ('stable_recovery', 'recovery_quality', 'weak_safe_settling')})
++        scalars = torch.stack([v.float()[ids] for v in values.values()], 1).cpu().tolist()
++        vectors = torch.stack((env.action_before_clip[ids], env.last_action[ids],
++                               self.mean[ids], self.model_std[ids], self.std[ids]), 1).cpu().tolist()
++        targets = env.targets[ids][:, env.joint_ids].cpu().tolist()
++        for i, row_values, vector, target in zip(ids.cpu().tolist(), scalars, vectors, targets):
++            row = dict(group=self.groups[i], env_id=i, **dict(zip(values, row_values)),
++                raw_action=json.dumps(vector[0]), applied_action=json.dumps(vector[1]),
++                policy_mean=json.dumps(vector[2]), policy_std=json.dumps(vector[3]),
++                execution_noise_std=json.dumps(vector[4]), joint_targets=json.dumps(target))
++            if self.writer is None:
++                self.writer = csv.DictWriter(self.stream, fieldnames=list(row))
++                self.writer.writeheader()
++            self.writer.writerow(row)
++
++    def on_episodes(self, env, ids):
++        latest = {r['env_id']: r for r in env.episode_records[-len(ids):]}
++        for i in ids.cpu().tolist():
++            if not bool(self.active[i]):
++                continue
++            row = dict(group=self.groups[i], **latest[i],
++                airborne_seen=bool(self.windows.seen[i, 0]),
++                qualified_flight_ever=bool(self.windows.seen[i, 1]),
++                qualified_landing_ever=bool(self.windows.seen[i, 2]),
++                last_takeoff_com_velocity_m_s=float(self.windows.takeoff_velocity[i]),
++                **{'maximum_continuous_' + name + '_s': float(self.windows.maximum[i, j])
++                   for j, name in enumerate(self.windows.names)},
++                **{'return_' + name: float(value[i]) for name, value in self.reward_sums.items()})
++            self.episode_rows.append(row)
++        self.active[ids] = False
++        self.windows.reset(ids)
++        self.weak_paid[ids] = 0.
++
++    def close(self):
++        self.stream.close()
++
++    def finish(self):
++        self.close()
++        if self.active.any():
++            raise RuntimeError('not all initial diagnostic episodes completed')
++        rows = sorted(self.episode_rows, key=lambda r: r['env_id'])
++        with (self.output / 'diagnostic_episodes.csv').open('w') as stream:
++            writer = csv.DictWriter(stream, fieldnames=list(rows[0])); writer.writeheader(); writer.writerows(rows)
++        summary = {}
++        for name in dict.fromkeys(self.groups):
++            group = [r for r in rows if r['group'] == name]
++            landings = sum(r['qualified_landing_ever'] for r in group)
++            success = sum(r['success'] for r in group)
++            summary[name] = dict(episodes=len(group), airborne=sum(r['airborne_seen'] for r in group),
++                qualified_flight=sum(r['qualified_flight_ever'] for r in group),
++                qualified_landing=landings, complete_recovery=success,
++                recovery_given_qualified_landing=success / landings if landings else None,
++                body_contacts=sum(r['body_landing'] for r in group),
++                mean_component_returns={key: sum(r[key] for r in group) / len(group)
++                                        for key in group[0] if key.startswith('return_')})
++        return dict(groups=summary, reward_reconstruction_max_error=self.max_reconstruction_error,
++                    recovery_windows_note='Longest individual condition intervals after any landing; not combined into formal success.')
+diff --git a/quadsmash/tasks/stand/jump_env.py b/quadsmash/tasks/stand/jump_env.py
+index 89fced6..c6b611f 100644
+--- a/quadsmash/tasks/stand/jump_env.py
++++ b/quadsmash/tasks/stand/jump_env.py
+@@ -101,6 +101,9 @@ class JumpEnv(CoupledEnv):
+         torch.maximum(self.max_arm_torque,torque[:,12:].max(1).values,out=self.max_arm_torque)
+         torch.maximum(self.max_joint_speed,data.joint_vel.abs().max(1).values,out=self.max_joint_speed)
+         self.saturated_joint_steps += (torque[:,:12]>=23.5*.99).sum(1)
++        observer=getattr(self,'_diagnostic_observer',None)
++        if observer is not None:
++            observer.on_physics(self,torch.stack((wrap_to_pi(roll),wrap_to_pi(pitch)),1))
+ 
+     @property
+     def jump_success(self):
+@@ -137,9 +140,19 @@ class JumpEnv(CoupledEnv):
+         prepare_quality=(phase<.8)*supported*torch.exp(-4.*tilt)
+         recovery_quality=self.landed_once*supported*torch.exp(-4.*tilt
+             -2.*data.root_link_lin_vel_w[:,:2].square().sum(1)-settle_cost)
+-        return (8.*height_tracking+3.*flight+3.*recovery+.3*prepare_quality+2.*recovery_quality-.03*arm_error
++        reward=(8.*height_tracking+3.*flight+3.*recovery+.3*prepare_quality+2.*recovery_quality-.03*arm_error
+             -.00002*data.applied_torque.square().sum(1)-.005*self.action_delta-settling*settle_cost)*self.step_dt \
+             +2.*first_jump.float()+5.*first_success.float()-4.*first_body.float()-2.*self.reset_terminated.float()
++        # Opt-in external observer: do not add checkpoint buffers or alter the
++        # legacy reward/default training configuration for this preparation.
++        observer=getattr(self,'_diagnostic_observer',None)
++        if observer is not None:
++            observer.on_reward(self,dict(height_tracking=height_tracking,flight=flight,recovery=recovery,
++                prepare_quality=prepare_quality,recovery_quality=recovery_quality,arm_error=arm_error,
++                torque_square_sum=data.applied_torque.square().sum(1),action_delta=self.action_delta,
++                settling=settling,settle_cost=settle_cost,first_jump=first_jump,first_success=first_success,
++                first_body=first_body,terminated=self.reset_terminated,target_com=target_com),reward)
++        return reward
+ 
+     @torch.inference_mode()
+     def _reset_idx(self,env_ids):
+@@ -161,6 +174,9 @@ class JumpEnv(CoupledEnv):
+             for i,numbers,booleans in zip(complete.cpu().tolist(),values,flags):
+                 self.episode_records.append({'env_id':i,**dict(zip(names,numbers)),
+                     **dict(zip(('qualified_jump_landed','qualified_flight_seen','body_landing','stable_recovery','success','terminated'),booleans))})
++            observer=getattr(self,'_diagnostic_observer',None)
++            if observer is not None:
++                observer.on_episodes(self,complete)
+         super()._reset_idx(env_ids)
+         self.reset_com_height[env_ids]=(self.mass_weights[env_ids]*self.robot.data.body_com_pos_w[env_ids,:,2]).sum(1)
+         jump_metrics.reset(self,env_ids)
+diff --git a/quadsmash/tasks/stand/jump_reward_audit.py b/quadsmash/tasks/stand/jump_reward_audit.py
+new file mode 100644
+index 0000000..c29a614
+--- /dev/null
++++ b/quadsmash/tasks/stand/jump_reward_audit.py
+@@ -0,0 +1,92 @@
++"""Pure reward decomposition and an UNEXECUTED qualified-recovery draft.
++
++These functions never change acceptance state or the environment reward.
++Components are signed, weighted rewards per policy step (not rates).
++"""
++import torch
++
++DRAFT_VERSION = 'qualified-recovery-draft-v1'
++
++
++def com_reference(time, reset_height):
++    return reset_height - .06 * torch.exp(-((time - .93) / .12).square()) \
++        + .14 * torch.exp(-((time - 1.25) / .19).square())
++
++
++def v2c_components(features, dt):
++    f = features
++    return {
++        'height_tracking': 8. * f['height_tracking'] * dt,
++        'flight': 3. * f['flight'] * dt,
++        'stable_recovery': 3. * f['recovery'] * dt,
++        'preparation': .3 * f['prepare_quality'] * dt,
++        'recovery_quality': 2. * f['recovery_quality'] * dt,
++        'arm_error': -.03 * f['arm_error'] * dt,
++        'effort': -.00002 * f['torque_square_sum'] * dt,
++        'action_delta': -.005 * f['action_delta'] * dt,
++        'settling': -f['settling'] * f['settle_cost'] * dt,
++        'first_qualified_jump': 2. * f['first_jump'].float(),
++        'first_success': 5. * f['first_success'].float(),
++        'first_body_contact': -4. * f['first_body'].float(),
++        'terminal': -2. * f['terminated'].float(),
++    }
++
++
++def recovery_draft(components, *, valid_jump_landed, body_ground_seen,
++                   recovery_quality, weak_paid, dt, weak_rate=.05, weak_cap=.1):
++    """Shadow-only draft: task recovery requires a qualified current landing.
++
++    Retain <=0.1 reward per episode of weak, safe post-landing settling. The
++    caller owns a separate diagnostic accumulator; inputs are never mutated.
++    Reset weak_paid ONLY on a real new episode, not on takeoff or a new hop.
++    """
++    if dt <= 0 or weak_rate < 0 or weak_cap < 0:
++        raise ValueError('invalid weak recovery reward budget')
++    gate = valid_jump_landed & ~body_ground_seen
++    weak = torch.minimum((weak_cap - weak_paid).clamp(min=0.),
++                         weak_rate * dt * recovery_quality.clamp(0., 1.) * (~body_ground_seen))
++    result = dict(components)
++    result['stable_recovery'] = components['stable_recovery'] * gate
++    result['recovery_quality'] = components['recovery_quality'] * gate
++    result['weak_safe_settling'] = weak
++    return result, weak_paid + weak
++
++
++class RecoveryWindows:
++    """Read-only substep diagnostics, independent of formal success counters."""
++    names = ('post_landing', 'qualified_landing', 'support', 'posture',
++             'horizontal_speed', 'angular_speed', 'joint_speed', 'no_body_contact', 'all')
++
++    def __init__(self, n, device):
++        self.run = torch.zeros((n, len(self.names)), device=device)
++        self.maximum = torch.zeros_like(self.run)
++        self.seen = torch.zeros((n, 4), dtype=torch.bool, device=device)
++        self.takeoff_velocity = torch.zeros(n, device=device)
++        self._candidate = torch.zeros(n, dtype=torch.bool, device=device)
++
++    def observe(self, state, *, dt, support, roll_pitch, horizontal_speed,
++                angular_speed, joint_speed, com_vertical_velocity, protocol):
++        r = protocol['recovery']
++        qualified = state.valid_jump_landed & ~state.flight_candidate
++        landing = state.landed_once & ~state.flight_candidate
++        criteria = [landing, qualified, support,
++                    roll_pitch.abs().amax(1) <= r['maximum_abs_roll_pitch_deg'] * torch.pi / 180,
++                    horizontal_speed <= r['maximum_horizontal_root_speed_m_s'],
++                    angular_speed <= r['maximum_root_angular_speed_rad_s'],
++                    joint_speed <= r['maximum_abs_joint_velocity_rad_s'], ~state.body_ground_seen]
++        all_conditions = torch.stack(criteria[2:], 1).all(1)
++        mask = torch.stack([*criteria, all_conditions], 1) & landing[:, None]
++        self.run.copy_(torch.where(mask, self.run + dt, 0.))
++        torch.maximum(self.maximum, self.run, out=self.maximum)
++        self.seen |= torch.stack((state.airborne_seen, state.flight_qualified,
++                                 state.valid_jump_landed, state.valid_jump_landed & state.recovery_seen), 1)
++        takeoff = state.flight_candidate & ~self._candidate
++        self.takeoff_velocity[takeoff] = com_vertical_velocity[takeoff]
++        self._candidate.copy_(state.flight_candidate)
++
++    def reset(self, ids):
++        self.run[ids] = 0.
++        self.maximum[ids] = 0.
++        self.seen[ids] = False
++        self.takeoff_velocity[ids] = 0.
++        self._candidate[ids] = False
+diff --git a/scripts/analyze_g04_alignment.py b/scripts/analyze_g04_alignment.py
+new file mode 100644
+index 0000000..2ebaec7
+--- /dev/null
++++ b/scripts/analyze_g04_alignment.py
+@@ -0,0 +1,71 @@
++#!/usr/bin/env python3
++"""CPU-only timing audit; optionally plot a future native reward_trace.csv.
++
++Historical summaries cannot reconstruct missing COM velocities/reward terms.
++Those fields are deliberately not invented from episode-level metrics.
++"""
++import argparse
++import csv
++import hashlib
++import json
++from pathlib import Path
++
++ROOT = Path(__file__).resolve().parents[1]
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--output', type=Path, required=True)
++    parser.add_argument('--trace', type=Path)
++    args = parser.parse_args(); args.output.mkdir(parents=True, exist_ok=False)
++    source = ROOT / 'reports/G04/foot_ground_audit_v1/episodes.csv'
++    capability = ROOT / 'reports/G04/capability_all_body_v2/metrics.json'
++    best = json.loads(capability.read_text())['best']
++    rows = list(csv.DictReader(source.open()))
++    expert = [r for r in rows if 32 <= int(r['env_id']) < 64]
++    comparisons = []
++    for r in expert:
++        index = (int(r['env_id']) - 32) % len(best)
++        comparisons.append(dict(env_id=int(r['env_id']), source_parameter_env_id=best[index]['env_id'],
++            formal_success=r['success'] == 'True', takeoff_time_s=float(r['takeoff_time_s']),
++            landing_time_s=float(r['landing_time_s']), recovery_s=float(r['recovery_s']),
++            reference_positive_bump_center_s=1.25,
++            takeoff_minus_reference_center_s=float(r['takeoff_time_s']) - 1.25))
++    report = dict(status='HISTORICAL_TIMING_ONLY', reference_note='1.25 s is the positive Gaussian bump center, not a measured feasible apex.',
++        source_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),
++        capability_sha256=hashlib.sha256(capability.read_bytes()).hexdigest(), trajectories=comparisons,
++        missing=['actual per-trajectory COM and vertical velocity', 'reward components for the engineering replay',
++                 'reset COM required to reconstruct absolute reference'],
++        conclusion='Timing mismatch motivates a controlled trace; it does not establish that the reference timing is physically impossible or rank controller returns.')
++    if args.trace is not None:
++        import matplotlib
++        matplotlib.use('Agg')
++        import matplotlib.pyplot as plt
++        trace = list(csv.DictReader(args.trace.open()))
++        names = list(dict.fromkeys(r['group'] for r in trace))
++        fig, axes = plt.subplots(len(names), 3, figsize=(15, 2.8 * len(names)), squeeze=False)
++        selected_ids = {}
++        for index, name in enumerate(names):
++            selected_ids[name] = min(int(r['env_id']) for r in trace if r['group'] == name)
++            rows = [r for r in trace if r['group'] == name and int(r['env_id']) == selected_ids[name]]
++            t = [float(r['time_s']) for r in rows]
++            for key in ('com_height_m', 'target_com_height_m'):
++                axes[index, 0].plot(t, [float(r[key]) for r in rows], label=key)
++            axes[index, 1].plot(t, [float(r['com_vertical_velocity_m_s']) for r in rows])
++            for key in ('reward_height_tracking', 'reward_flight', 'reward_stable_recovery', 'reward_recovery_quality'):
++                axes[index, 2].plot(t, [float(r[key]) for r in rows], label=key)
++            for event in ('takeoff_time_s', 'landing_time_s'):
++                for value in sorted({float(r[event]) for r in rows if float(r[event]) > 0.}):
++                    axes[index, 0].axvline(value, color='gray', linewidth=.5, linestyle='--')
++            for axis in axes[index]: axis.set_xlabel('episode time / s'); axis.grid(alpha=.2)
++            axes[index, 0].set_ylabel(name + '\nheight / m'); axes[index, 1].set_ylabel('COM vertical speed / m/s')
++            axes[index, 2].set_ylabel('weighted reward / policy step')
++        axes[0, 0].legend(fontsize=7); axes[0, 2].legend(fontsize=7)
++        fig.tight_layout(); fig.savefig(args.output / 'paired_alignment.png', dpi=140); plt.close(fig)
++        report.update(status='MEASURED_TRACE_ANALYSIS', trace_sha256=hashlib.sha256(args.trace.read_bytes()).hexdigest(),
++                      plotted_env_ids=selected_ids, selection='first predetermined scenario per group; no outcome selection')
++    (args.output / 'alignment.json').write_text(json.dumps(report, indent=2) + '\n')
++    print(json.dumps({k: v for k, v in report.items() if k != 'trajectories'}, indent=2))
++
++
++if __name__ == '__main__': main()
+diff --git a/scripts/audit_g04_rewards_cpu.py b/scripts/audit_g04_rewards_cpu.py
+new file mode 100644
+index 0000000..895bdd6
+--- /dev/null
++++ b/scripts/audit_g04_rewards_cpu.py
+@@ -0,0 +1,101 @@
++#!/usr/bin/env python3
++"""Synthetic state-machine/reward audit and CPU-only checkpoint noise check.
++
++No Isaac imports, simulator, optimizer step or GPU use. Synthetic signals are
++counterexamples to reward alignment, not evidence of feasible dynamics.
++"""
++import argparse
++import contextlib
++import hashlib
++import io
++import json
++import os
++import sys
++from pathlib import Path
++from types import SimpleNamespace
++
++os.environ['CUDA_VISIBLE_DEVICES'] = ''
++ROOT = Path(__file__).resolve().parents[1]
++sys.path.insert(0, str(ROOT))
++import torch
++from quadsmash.tasks.stand import jump_metrics
++from quadsmash.tasks.stand.jump_reward_audit import v2c_components, recovery_draft
++from quadsmash.rl.action_diagnostics import reset_initial_std
++
++PROTOCOL = json.loads((ROOT / 'configs/evaluation_protocol_v2.json').read_text())
++
++
++def signal_probe(kind):
++    state = SimpleNamespace(); jump_metrics.initialize(state, 1, 'cpu')
++    weak_paid = torch.zeros(1); time = 0.; trace = []
++    def tick(support=True, height=.4, force=0., horizontal_speed=0.):
++        nonlocal weak_paid, time
++        time += .01
++        _, stable = jump_metrics.advance(state, dt=.01, time=torch.tensor([time]),
++            com_height=torch.tensor([height]), foot_contact=torch.full((1, 4), support),
++            foot_clearance=torch.tensor([.02 if support else .1]), roll_pitch=torch.zeros(1, 2),
++            horizontal_speed=torch.tensor([horizontal_speed]), angular_speed=torch.zeros(1),
++            joint_speed=torch.zeros(1), body_ground_force=torch.tensor([force]), protocol=PROTOCOL)
++        z = torch.zeros(1); b = torch.zeros(1, dtype=torch.bool)
++        quality = (state.landed_once & support & ~state.body_ground_seen).float() * torch.exp(torch.tensor([-2 * horizontal_speed**2]))
++        f = dict(height_tracking=z, flight=z, recovery=stable.float(), prepare_quality=z,
++            recovery_quality=quality, arm_error=z, torque_square_sum=z, action_delta=z,
++            settling=z, settle_cost=z, first_jump=b, first_success=b, first_body=b, terminated=b)
++        old = v2c_components(f, .01)
++        draft, weak_paid = recovery_draft(old, valid_jump_landed=state.valid_jump_landed,
++            body_ground_seen=state.body_ground_seen, recovery_quality=quality, weak_paid=weak_paid, dt=.01)
++        trace.append(dict(time_s=time, supported=support, height_m=height,
++            valid_jump_landed=bool(state.valid_jump_landed), recovery_seen=bool(state.recovery_seen),
++            formal_success=bool(jump_metrics.success(state)),
++            old_primary_recovery=float(old['stable_recovery'] + old['recovery_quality']),
++            draft_primary_recovery=float(draft['stable_recovery'] + draft['recovery_quality']),
++            draft_weak_recovery=float(draft['weak_safe_settling'])))
++    tick()
++    if kind != 'standing':
++        tick(False, .4)
++        short = kind in ('tiny_hop', 'short_high_hop')
++        high = kind in ('qualified', 'body_contact', 'broken_recovery', 'short_high_hop')
++        for _ in range(3 if short else 12): tick(False, .49 if high else .402)
++        for i in range(100):
++            tick(force=2. if kind == 'body_contact' and i == 0 else 0.,
++                 horizontal_speed=.31 if kind == 'broken_recovery' and i % 30 == 29 else 0.)
++    else:
++        for _ in range(100): tick()
++    return dict(kind=kind, domain='synthetic CPU signals, NOT physics or learned performance',
++        valid_jump_landed=bool(state.valid_jump_landed), recovery_seen=bool(state.recovery_seen),
++        formal_success=bool(jump_metrics.success(state)), max_continuous_recovery_s=float(state.recovery_time),
++        old_primary_recovery=sum(r['old_primary_recovery'] for r in trace),
++        draft_primary_recovery=sum(r['draft_primary_recovery'] for r in trace),
++        draft_weak_recovery=sum(r['draft_weak_recovery'] for r in trace), trace=trace)
++
++
++def checkpoint_noise_probe(checkpoint):
++    from tensordict import TensorDict
++    from rsl_rl.modules import ActorCritic
++    cfg = json.loads((ROOT / 'configs/jump_ppo_v2c.json').read_text())
++    options = dict(cfg['runner']['policy']); options.pop('class_name')
++    with contextlib.redirect_stdout(io.StringIO()):
++        policy = ActorCritic(TensorDict({'policy': torch.zeros(1, 794)}, batch_size=[1]),
++                            cfg['runner']['obs_groups'], 18, **options)
++    saved = torch.load(checkpoint, map_location='cpu', weights_only=False)
++    policy.load_state_dict(saved['model_state_dict'])
++    original = {k: v.clone() for k, v in policy.state_dict().items()}
++    noise = reset_initial_std(policy, .15)
++    unchanged = all(torch.equal(v, policy.state_dict()[k]) for k, v in original.items() if k != 'log_std')
++    assert unchanged and not torch.cuda.is_initialized()
++    return dict(checkpoint=str(checkpoint), sha256=hashlib.sha256(checkpoint.read_bytes()).hexdigest(),
++        **noise, all_non_noise_state_unchanged=unchanged, optimizer_steps=0, cuda_initialized=False)
++
++
++def main():
++    p = argparse.ArgumentParser(description=__doc__); p.add_argument('--output', type=Path, required=True)
++    args = p.parse_args(); args.output.mkdir(parents=True, exist_ok=False)
++    cases = [signal_probe(k) for k in ('tiny_hop', 'short_high_hop', 'long_low_hop', 'qualified', 'body_contact', 'broken_recovery', 'standing')]
++    result = dict(baseline_commit='65396a21bd8065400df91437432bd12a0a46bf81', cases=cases,
++        noise=checkpoint_noise_probe(ROOT / 'runs/G04/corrected_v2c_main01/native/checkpoint.pt'),
++        gpu_jobs_started=0, physics_simulations=0, training_runs=0)
++    (args.output / 'results.json').write_text(json.dumps(result, indent=2) + '\n')
++    print(json.dumps({**result, 'cases': [{k: v for k, v in c.items() if k != 'trace'} for c in cases]}, indent=2))
++
++
++if __name__ == '__main__': main()
+diff --git a/scripts/diagnose_g04_rewards.py b/scripts/diagnose_g04_rewards.py
+new file mode 100644
+index 0000000..205adc3
+--- /dev/null
++++ b/scripts/diagnose_g04_rewards.py
+@@ -0,0 +1,135 @@
++#!/usr/bin/env python3
++"""Prepare or run a paired G04 diagnostic. Default prints a plan; no Isaac import.
++
++Native mode is a FUTURE GPU job, to be launched only after explicit approval
++through run_gpu_job.py. It never updates weights or changes acceptance.
++"""
++import argparse
++import hashlib
++import json
++import sys
++import traceback
++from pathlib import Path
++
++ROOT = Path(__file__).resolve().parents[1]
++sys.path.insert(0, str(ROOT))
++GROUPS = ('zero', 'existing_expert', 'reference_mean', 'comparison_mean',
++          'reference_native_noise', 'reference_noise015', 'comparison_native_noise', 'comparison_noise015')
++
++
++def main():
++    p = argparse.ArgumentParser(description=__doc__)
++    p.add_argument('--run-native', action='store_true')
++    p.add_argument('--output', type=Path)
++    p.add_argument('--config', type=Path, default=ROOT / 'configs/jump_ppo_v2c.json')
++    p.add_argument('--reference-checkpoint', type=Path, default=ROOT / 'runs/G04/corrected_v2c_main01/native/checkpoint.pt')
++    p.add_argument('--comparison-checkpoint', type=Path, default=ROOT / 'runs/G04/corrected_v2c_continue_03/native/checkpoint.pt')
++    p.add_argument('--per-group', type=int, default=16)
++    args = p.parse_args()
++    if args.per_group < 2 or args.per_group > 32:
++        p.error('per-group must be between 2 and 32')
++    plan = dict(status='PREPARED_NOT_EXECUTED', groups=GROUPS, seed=311001,
++        environments=8 * args.per_group, maximum_interactions=8 * args.per_group * 400,
++        perturbations=dict(joint_position_rad=.01, joint_velocity_rad_s=.02),
++        scenario_source='paired independent diagnostic set; never the frozen acceptance panels',
++        reference_checkpoint=str(args.reference_checkpoint), comparison_checkpoint=str(args.comparison_checkpoint),
++        reward='unchanged v2c; qualified-recovery draft logged only as a shadow',
++        weights_updated=False, histories='actual runtime PolicyHistory; no reconstruction from summaries')
++    if not args.run_native:
++        print(json.dumps(plan, indent=2)); return
++    if args.output is None:
++        p.error('native mode needs --output supplied by the budget guard')
++    # Verify the actual parent guardian, not just a stale RUNNING file.
++    import os
++    ledger = json.loads((ROOT / 'status/GPU_LEDGER.json').read_text())
++    guarded = any(r['status'] == 'RUNNING' and r['goal'] == 'G04'
++                  and r['pid'] == os.getppid() and Path(r['output']).resolve() == args.output.resolve()
++                  for r in ledger['runs'])
++    if not guarded:
++        p.error('native diagnostic requires the live run_gpu_job.py parent')
++    from isaaclab.app import AppLauncher
++    app = AppLauncher(headless=True, device='cuda:0').app
++    import torch
++    from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper
++    from quadsmash.rl.native_ppo import NativeRunner
++    from quadsmash.rl.action_diagnostics import policy_std
++    from quadsmash.tasks.stand.jump_env import JumpEnv, JumpEnvCfg, PROTOCOL
++    from quadsmash.tasks.stand.jump_diagnostics import JumpDiagnosticRecorder
++    env = recorder = None
++    try:
++        cfg = JumpEnvCfg(); cfg.scene.num_envs = 8 * args.per_group; cfg.seed = 311001; cfg.sim.device = 'cuda:0'
++        env = JumpEnv(cfg); wrapped = RslRlVecEnvWrapper(env, clip_actions=None)
++        config = json.loads(args.config.read_text())
++        policies = []
++        for label, checkpoint in [('reference', args.reference_checkpoint), ('comparison', args.comparison_checkpoint)]:
++            runner = NativeRunner(wrapped, config['runner'], log_dir=str(args.output / ('policy' + label)), device=env.device)
++            runner.load(str(checkpoint), load_optimizer=False)
++            runner.get_inference_policy(device=env.device)  # freezes normalizers via eval mode
++            policies.append(runner.alg.policy)
++        n = args.per_group
++        generator = torch.Generator(device='cpu').manual_seed(311001)
++        noise_generator = torch.Generator(device=env.device).manual_seed(311002)
++        dq = (.02 * torch.rand((n, 18), generator=generator) - .01).repeat(8, 1).to(env.device)
++        qd = (.04 * torch.rand((n, 18), generator=generator) - .02).repeat(8, 1).to(env.device)
++        source = json.loads((ROOT / 'reports/G04/capability_all_body_v2/metrics.json').read_text())
++        params = torch.tensor([json.loads(source['best'][i % len(source['best'])]['parameters']) for i in range(n)], device=env.device)
++        (args.output / 'diagnostic_initial_offsets.json').write_text(json.dumps(dict(
++            seed=311001, joint_offsets=dq.cpu().tolist(), joint_velocities=qd.cpu().tolist(),
++            expert_parameters=params.cpu().tolist()), indent=2))
++        with torch.inference_mode():
++            wrapped.reset()
++            q = env.robot.data.default_joint_pos.clone(); v = torch.zeros_like(q)
++            q[:, env.joint_ids] += dq; v[:, env.joint_ids] = qd
++            env.robot.write_joint_state_to_sim(q, v); env.sim.forward()
++            env.reset_com_height.copy_((env.mass_weights * env.robot.data.body_com_pos_w[:, :, 2]).sum(1))
++            env.policy_history.reset(torch.arange(env.num_envs, device=env.device))
++            obs = wrapped.get_observations()
++            paired_observation_error = [float((obs['policy'][i*n:(i+1)*n] - obs['policy'][:n]).abs().max()) for i in range(8)]
++            (args.output / 'diagnostic_initial_states.json').write_text(json.dumps(dict(
++                root_state=env.robot.data.root_state_w.cpu().tolist(), joint_position=q.cpu().tolist(),
++                joint_velocity=v.cpu().tolist(), paired_observation_max_abs=paired_observation_error)))
++            recorder = JumpDiagnosticRecorder(env, args.output, [name for name in GROUPS for _ in range(n)], PROTOCOL)
++            env._diagnostic_observer = recorder
++            for step in range(400):
++                means = [policy.act_inference(obs) for policy in policies]
++                stds = [policy_std(policy) for policy in policies]
++                action = torch.zeros((env.num_envs, 18), device=env.device)
++                noise = torch.randn((n, 18), device=env.device, generator=noise_generator)
++                recorder.std.zero_(); recorder.mean.zero_(); recorder.model_std.zero_()
++                for group, index, sigma in [(2, 0, None), (3, 1, None), (4, 0, 'native'),
++                                            (5, 0, .15), (6, 1, 'native'), (7, 1, .15)]:
++                    sl = slice(group * n, (group + 1) * n)
++                    mu = means[index][sl]; sd = stds[index] if sigma == 'native' else float(sigma or 0.)
++                    action[sl] = mu + sd * noise
++                    recorder.mean[sl] = mu; recorder.std[sl] = sd
++                    recorder.model_std[sl] = stds[index]
++                t = env._phase()[n:2*n]
++                ct, pt, cth, cca, eth, eca, bias, tt = params.unbind(1)
++                crouch = (t >= .8) & (t < .8 + ct)
++                push = (t >= .8 + ct) & (t < .8 + ct + pt)
++                tuck = (t >= .8 + ct + pt) & (t < .8 + ct + pt + tt)
++                action[n:2*n, 4:8] = torch.where(crouch, cth, torch.where(push, -eth, torch.where(tuck, .3, 0.)))[:, None]
++                action[n:2*n, 8:12] = torch.where(crouch, -cca, torch.where(push, eca, torch.where(tuck, -.6, 0.)))[:, None]
++                action[n:2*n, 4:6] += (push * bias)[:, None]; action[n:2*n, 6:8] -= (push * bias)[:, None]
++                action[n:2*n].clamp_(-1., 1.); recorder.mean[n:2*n] = action[n:2*n]
++                obs, _, _, _ = wrapped.step(action)
++            metrics = recorder.finish()
++        report = dict(plan, status='MEASURED_DIAGNOSTIC_NOT_ACCEPTANCE', **metrics,
++            env_steps=env.num_envs * 400, policy_joint_order=[env.robot.joint_names[i] for i in env.joint_ids],
++            paired_observation_max_abs=paired_observation_error,
++            config_sha256=hashlib.sha256(args.config.read_bytes()).hexdigest(),
++            capability_sha256=hashlib.sha256((ROOT/'reports/G04/capability_all_body_v2/metrics.json').read_bytes()).hexdigest(),
++            checkpoints={str(path): hashlib.sha256(path.read_bytes()).hexdigest() for path in (args.reference_checkpoint, args.comparison_checkpoint)},
++            policies_evaluated_without_weight_updates=True)
++        (args.output / 'metrics.json').write_text(json.dumps(report, indent=2) + '\n')
++        print(json.dumps(report), flush=True)
++    except BaseException:
++        (args.output / 'error.txt').write_text(traceback.format_exc()); raise
++    finally:
++        if recorder is not None: recorder.close()
++        if env is not None: env.close()
++        app.close(skip_cleanup=True)
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/scripts/isaac_coupled_runner.py b/scripts/isaac_coupled_runner.py
+index 2677e2e..f8685a8 100644
+--- a/scripts/isaac_coupled_runner.py
++++ b/scripts/isaac_coupled_runner.py
+@@ -5,9 +5,9 @@ from __future__ import annotations
+ import argparse
+ import hashlib
+ import json
+-import math
+ from pathlib import Path
+ import signal
++import shutil
+ import sys
+ import time
+ import traceback
+@@ -48,6 +48,7 @@ simulation_app = app_launcher.app
+ import torch
+ from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper
+ from quadsmash.rl.native_ppo import NativeRunner
++from quadsmash.rl.action_diagnostics import reset_initial_std
+ from quadsmash.tasks.stand.observation_contract import OBSERVATION_SIZE
+ from quadsmash.tasks.stand.coupled_env import CoupledEnv, CoupledEnvCfg
+ from quadsmash.tasks.stand.jump_env import JumpEnv, JumpEnvCfg
+@@ -121,11 +122,8 @@ def main() -> None:
+                     policy = getattr(runner.alg, "policy", None)
+                     if policy is None:
+                         raise RuntimeError("Locked RSL-RL policy interface is missing")
+-                    if policy is not None:
+-                        if hasattr(policy, "log_std"):
+-                            policy.log_std.data.fill_(math.log(desired_std))
+-                        elif hasattr(policy, "std"):
+-                            policy.std.data.fill_(desired_std)
++                    noise_reset=reset_initial_std(policy,desired_std)
++                    (args.output/'initial_noise_assertion.json').write_text(json.dumps(noise_reset,indent=2)+'\n')
+                 elif args.resume_checkpoint is not None:
+                     runner.load(str(args.resume_checkpoint.resolve()), load_optimizer=True)
+                 train_started = time.perf_counter()
+@@ -153,6 +151,14 @@ def main() -> None:
+                     # NativeRunner stores the count of completed iterations.
+                     if completed_iterations % int(config['runner'].get('save_interval',10))==0:
+                         runner.save_restart(args.output/'checkpoint.pt')
++                        # Retain the already-saved canonical boundary without
++                        # resetting the environment or RNG a second time.
++                        snapshot=args.output/f'checkpoint_{runner.current_learning_iteration:06d}.pt'
++                        if snapshot.exists():
++                            raise FileExistsError(f'refusing to overwrite {snapshot}')
++                        temporary=snapshot.with_suffix('.pt.tmp')
++                        shutil.copy2(args.output/'checkpoint.pt',temporary)
++                        temporary.replace(snapshot)
+                 training_elapsed_s = time.perf_counter() - train_started
+                 checkpoint = args.output / "checkpoint.pt"
+                 runner.save_restart(str(checkpoint))
+diff --git a/tests/fixtures/jump_env_65396a21.py.txt b/tests/fixtures/jump_env_65396a21.py.txt
+new file mode 100644
+index 0000000..89fced6
+--- /dev/null
++++ b/tests/fixtures/jump_env_65396a21.py.txt
+@@ -0,0 +1,171 @@
++"""Full-load jump with substep COM, flight and continuous recovery metrics."""
++from __future__ import annotations
++
++import json
++import torch
++from isaaclab.sensors import ContactSensor, ContactSensorCfg
++from isaaclab.utils import configclass
++from isaaclab.utils.math import euler_xyz_from_quat, wrap_to_pi
++from .coupled_env import CoupledEnv, CoupledEnvCfg, LEG_JOINTS, ROOT
++from . import jump_metrics
++
++PROTOCOL=json.loads((ROOT/'configs/evaluation_protocol_v2.json').read_text())
++
++@configclass
++class JumpEnvCfg(CoupledEnvCfg):
++    episode_length_s=4.0
++    is_finite_horizon=False
++    body_ground_contact=ContactSensorCfg(prim_path='/World/envs/env_.*/Robot/Go2/(base|.*_hip|.*_thigh|.*_calf)',
++        filter_prim_paths_expr=['/World/Ground/geometry/mesh'],force_threshold=1.)
++    arm_ground_contact=ContactSensorCfg(prim_path='/World/envs/env_.*/Robot/Piper/.*',
++        filter_prim_paths_expr=['/World/Ground/geometry/mesh'],force_threshold=1.)
++    tool_ground_contact=ContactSensorCfg(prim_path='/World/envs/env_.*/Robot/(MountPlate|Racket)',
++        filter_prim_paths_expr=['/World/Ground/geometry/mesh'],force_threshold=1.)
++
++class JumpEnv(CoupledEnv):
++    cfg: JumpEnvCfg
++
++    def _setup_scene(self):
++        super()._setup_scene()
++        for name in ('body_ground_contact','arm_ground_contact','tool_ground_contact'):
++            self.scene.sensors[name]=ContactSensor(getattr(self.cfg,name))
++
++    def __init__(self,cfg,**kwargs):
++        cfg.robot.spawn.articulation_props.fix_root_link=False
++        super().__init__(cfg,**kwargs)
++        self.leg_ids,_=self.robot.find_joints(list(LEG_JOINTS),preserve_order=True)
++        self.body_ground_contact=self.scene.sensors['body_ground_contact']
++        self.ground_sensors=[self.scene.sensors[name] for name in ('body_ground_contact','arm_ground_contact','tool_ground_contact')]
++        self.body_masses=self.robot.root_physx_view.get_masses().to(self.device)
++        self.mass_weights=self.body_masses/self.body_masses.sum(1,keepdim=True)
++        jump_metrics.initialize(self,self.num_envs,self.device)
++        for name in ('jump_clock','reset_com_height','max_height','max_leg_torque','max_arm_torque','max_joint_speed',
++                     'action_delta','action_clip_count','target_limit_count','saturated_joint_steps'):
++            setattr(self,name,torch.zeros(self.num_envs,device=self.device))
++        self.com_position=torch.zeros((self.num_envs,3),device=self.device)
++        self.com_velocity=torch.zeros_like(self.com_position)
++        self.clear_flight=torch.zeros(self.num_envs,dtype=torch.bool,device=self.device)
++        self.stable_recovery=torch.zeros_like(self.clear_flight)
++        self._jump_physics_frame=-1
++        self.completed_episodes=self.successful_episodes=self.failed_episodes=0
++        self._metrics_started=False
++        self._episode_has_stepped=torch.zeros_like(self.clear_flight)
++        self.episode_records=[]
++
++    def _phase(self):
++        return self.episode_length_buf.float()*self.step_dt
++
++    def _feet_in_contact(self):
++        return self.observed_foot_contact
++
++    def _pre_physics_step(self,actions):
++        self.action_delta.copy_((actions.clamp(-1.,1.)-self.last_action).square().sum(1))
++        self._record_action(actions)
++        self.action_clip_count += (actions.abs()>1.).sum(1)
++        phase=self._phase().unsqueeze(1)
++        leg_scale=torch.where(phase<.8,.25,.55)
++        scale=torch.cat((leg_scale.expand(-1,12),torch.full((self.num_envs,6),.12,device=self.device)),1)
++        self.targets.copy_(self.robot.data.default_joint_pos)
++        self.targets[:,self.joint_ids] += scale*self.last_action
++        limits=self.robot.data.joint_pos_limits
++        self.target_limit_count += ((self.targets<limits[:,:,0])|(self.targets>limits[:,:,1])).sum(1)
++        self.targets.clamp_(min=limits[:,:,0],max=limits[:,:,1])
++
++    def _apply_action(self):
++        super()._apply_action()
++        self._consume_jump_frame(self._sim_step_counter-1)
++
++    def _consume_jump_frame(self,frame):
++        if frame<=self._jump_physics_frame:return
++        self._jump_physics_frame=frame
++        if frame==0:return
++        self._observe_physics_frame(frame)
++        self.jump_clock += self.physics_dt
++        data=self.robot.data
++        self.com_position.copy_((self.mass_weights[:,:,None]*data.body_com_pos_w).sum(1))
++        self.com_velocity.copy_((self.mass_weights[:,:,None]*data.body_com_lin_vel_w).sum(1))
++        roll,pitch,_=euler_xyz_from_quat(data.root_quat_w)
++        # All robot links except feet; one shared static ground filter per view.
++        body_force=sum(sensor.data.force_matrix_w.norm(dim=-1).sum((1,2)) for sensor in self.ground_sensors)
++        clear,stable=jump_metrics.advance(self,dt=self.physics_dt,time=self.jump_clock,
++            com_height=self.com_position[:,2],foot_contact=self.observed_foot_contact,
++            foot_clearance=data.body_pos_w[:,self.foot_ids,2].min(1).values,
++            roll_pitch=torch.stack((wrap_to_pi(roll),wrap_to_pi(pitch)),1),
++            horizontal_speed=data.root_link_lin_vel_w[:,:2].norm(dim=-1),
++            angular_speed=data.root_ang_vel_w.norm(dim=-1),joint_speed=data.joint_vel.abs().max(1).values,
++            body_ground_force=body_force,protocol=PROTOCOL)
++        self.clear_flight.copy_(clear);self.stable_recovery.copy_(stable)
++        torch.maximum(self.max_height,data.root_pos_w[:,2],out=self.max_height)
++        torque=data.applied_torque[:,self.joint_ids].abs()
++        torch.maximum(self.max_leg_torque,torque[:,:12].max(1).values,out=self.max_leg_torque)
++        torch.maximum(self.max_arm_torque,torque[:,12:].max(1).values,out=self.max_arm_torque)
++        torch.maximum(self.max_joint_speed,data.joint_vel.abs().max(1).values,out=self.max_joint_speed)
++        self.saturated_joint_steps += (torque[:,:12]>=23.5*.99).sum(1)
++
++    @property
++    def jump_success(self):
++        return jump_metrics.success(self) & (self.robot.data.root_pos_w[:,2]>=.12)
++
++    def _get_dones(self):
++        self._consume_jump_frame(self._sim_step_counter)
++        return self.robot.data.root_pos_w[:,2]<.12,self.episode_length_buf>=self.max_episode_length
++
++    def _get_rewards(self):
++        self._episode_has_stepped[:]=True
++        phase=self._phase()
++        # A positive-velocity integral rewards repeated small oscillations.
++        # Track one timed full-COM preparation/apex trajectory instead. This
++        # is dense training shaping only; acceptance still uses true takeoff.
++        target_com=self.reset_com_height-.06*torch.exp(-((phase-.93)/.12).square()) \
++            +.14*torch.exp(-((phase-1.25)/.19).square())
++        height_tracking=torch.exp(-((self.com_position[:,2]-target_com)/.06).square())*((phase>=.65)&(phase<=1.7))
++        flight=self.clear_flight.float()*(self.flight_apex_rise/.08).clamp(0.,1.)
++        recovery=self.stable_recovery.float()
++        # Shaping is time-integrated; each actual jump/success bonus occurs once.
++        first_jump=self.flight_qualified & (~self.rewarded_jump)
++        first_success=self.jump_success & (~self.rewarded_success)
++        first_body=self.body_ground_seen & (~self.rewarded_body_contact)
++        self.rewarded_jump |= first_jump
++        self.rewarded_success |= first_success
++        self.rewarded_body_contact |= first_body
++        data=self.robot.data
++        arm_error=(data.joint_pos[:,self.joint_ids[12:]]-data.default_joint_pos[:,self.joint_ids[12:]]).square().sum(1)
++        settling=(phase>1.8).float()*self.landed_once
++        settle_cost=.1*data.root_ang_vel_w.square().sum(1)+.03*data.joint_vel.square().sum(1)
++        tilt=data.projected_gravity_b[:,:2].square().sum(1)
++        supported=self.observed_foot_contact.any(1)&(~self.body_ground_seen)
++        prepare_quality=(phase<.8)*supported*torch.exp(-4.*tilt)
++        recovery_quality=self.landed_once*supported*torch.exp(-4.*tilt
++            -2.*data.root_link_lin_vel_w[:,:2].square().sum(1)-settle_cost)
++        return (8.*height_tracking+3.*flight+3.*recovery+.3*prepare_quality+2.*recovery_quality-.03*arm_error
++            -.00002*data.applied_torque.square().sum(1)-.005*self.action_delta-settling*settle_cost)*self.step_dt \
++            +2.*first_jump.float()+5.*first_success.float()-4.*first_body.float()-2.*self.reset_terminated.float()
++
++    @torch.inference_mode()
++    def _reset_idx(self,env_ids):
++        complete=env_ids[self._episode_has_stepped[env_ids]] if self._metrics_started and env_ids.numel() else env_ids[:0]
++        if complete.numel():
++            success=self.jump_success
++            self.completed_episodes+=int(complete.numel())
++            self.successful_episodes+=int(success[complete].sum())
++            self.failed_episodes+=int((~success[complete]).sum())
++            names={'max_height_m':'max_height','total_com_rise_m':'max_com_rise','airborne_s':'airborne_time',
++                'recovery_s':'recovery_time','takeoff_time_s':'takeoff_time','landing_time_s':'landing_time',
++                'maximum_body_ground_force_n':'maximum_body_ground_force','max_leg_torque_nm':'max_leg_torque',
++                'max_arm_torque_nm':'max_arm_torque','max_joint_speed_rad_s':'max_joint_speed',
++                'clipped_action_values':'action_clip_count','limited_joint_targets':'target_limit_count',
++                'saturated_leg_joint_substeps':'saturated_joint_steps'}
++            values=torch.stack([getattr(self,v)[complete] for v in names.values()],1).cpu().tolist()
++            flags=torch.stack((self.valid_jump_landed[complete],self.rewarded_jump[complete],self.body_ground_seen[complete],
++                self.recovery_seen[complete],success[complete],self.reset_terminated[complete]),1).cpu().tolist()
++            for i,numbers,booleans in zip(complete.cpu().tolist(),values,flags):
++                self.episode_records.append({'env_id':i,**dict(zip(names,numbers)),
++                    **dict(zip(('qualified_jump_landed','qualified_flight_seen','body_landing','stable_recovery','success','terminated'),booleans))})
++        super()._reset_idx(env_ids)
++        self.reset_com_height[env_ids]=(self.mass_weights[env_ids]*self.robot.data.body_com_pos_w[env_ids,:,2]).sum(1)
++        jump_metrics.reset(self,env_ids)
++        for name in ('jump_clock','max_height','max_leg_torque','max_arm_torque','max_joint_speed',
++                     'action_delta','action_clip_count','target_limit_count','saturated_joint_steps',
++                     'com_position','com_velocity','clear_flight','stable_recovery','_episode_has_stepped'):
++            getattr(self,name)[env_ids]=0
++        self._metrics_started=True
+diff --git a/tests/test_action_diagnostics.py b/tests/test_action_diagnostics.py
+new file mode 100644
+index 0000000..74fe381
+--- /dev/null
++++ b/tests/test_action_diagnostics.py
+@@ -0,0 +1,88 @@
++import copy
++import math
++import random
++import numpy as np
++import pytest
++import torch
++from tensordict import TensorDict
++from rsl_rl.modules import ActorCritic
++from quadsmash.rl.action_diagnostics import action_summary, policy_std, reset_initial_std, post_update_diagnostics
++
++
++def make_policy(representation='log'):
++    obs = TensorDict({'policy': torch.arange(28, dtype=torch.float32).reshape(4, 7) / 30.}, batch_size=[4])
++    policy = ActorCritic(obs, {'policy': ['policy'], 'critic': ['policy']}, 3,
++        actor_hidden_dims=[8], critic_hidden_dims=[8], actor_obs_normalization=True,
++        critic_obs_normalization=True, noise_std_type=representation, init_noise_std=.6)
++    return policy, obs
++
++
++@pytest.mark.parametrize('representation', ['log', 'scalar'])
++def test_loaded_std_reset_changes_only_noise_and_remains_trainable(representation):
++    policy, obs = make_policy(representation)
++    saved = copy.deepcopy(policy.state_dict()); key = 'log_std' if representation == 'log' else 'std'
++    saved[key][:] = math.log(1.49) if representation == 'log' else 1.49
++    policy.load_state_dict(saved)
++    audit = reset_initial_std(policy, .15)
++    assert audit['std_remains_learnable']
++    assert torch.allclose(policy_std(policy), torch.full((3,), .15), atol=1e-7)
++    for k, v in saved.items():
++        if k != key: assert torch.equal(v, policy.state_dict()[k])
++    policy.update_distribution(policy.actor_obs_normalizer(policy.get_actor_obs(obs)))
++    assert torch.allclose(policy.action_std, torch.full((4, 3), .15), atol=1e-7)
++    for bad in (0., -1., float('nan')):
++        with pytest.raises(ValueError): reset_initial_std(policy, bad)
++
++
++def test_action_statistics_match_known_boundaries_and_analytic_gaussian():
++    mean = torch.zeros(2, 3); std = torch.ones(3)
++    actions = torch.tensor([[-2., -1., 0.], [1., 2., 3.]])
++    result = action_summary(mean, std, actions)
++    assert result['actual_clipped_fraction'] == .5
++    assert result['actual_clipped_fraction_per_joint'] == [.5, .5, .5]
++    assert result['mean_outside_bounds_fraction'] == 0.
++    assert result['expected_clipping_fraction'] == pytest.approx(math.erfc(1 / math.sqrt(2)), abs=1e-6)
++    assert max(result['clipped_mean_vs_expected_action_gap_per_joint']) < 1e-6
++    saturated = action_summary(torch.tensor([[2., -2.]]), torch.tensor([.15, .15]))
++    assert saturated['mean_outside_bounds_fraction'] == 1.
++    assert saturated['expected_clipping_fraction'] > .999
++
++
++def test_telemetry_does_not_change_rng_distribution_normalizers_parameters_or_gradients():
++    policy, obs = make_policy(); policy.train(); policy.update_normalization(obs)
++    actions = policy.act(obs).detach(); mu = policy.action_mean.detach(); std = policy.action_std.detach()
++    logprob = policy.get_actions_log_prob(actions).detach()
++    rng = torch.get_rng_state().clone(); python_rng = random.getstate(); numpy_rng = np.random.get_state()
++    state = copy.deepcopy(policy.state_dict()); distribution = policy.distribution
++    flags = [module.training for module in policy.modules()]
++    result = post_update_diagnostics(policy, obs, mu, std, actions, logprob, .2)
++    assert result['post_update_kl'] == pytest.approx(0., abs=1e-6)
++    assert result['post_update_clip_fraction'] == 0.
++    assert torch.equal(rng, torch.get_rng_state()) and random.getstate() == python_rng
++    assert all(np.array_equal(a, b) for a, b in zip(numpy_rng, np.random.get_state()))
++    assert distribution is policy.distribution and flags == [module.training for module in policy.modules()]
++    assert all(torch.equal(value, policy.state_dict()[key]) for key, value in state.items())
++    assert all(parameter.grad is None for parameter in policy.parameters())
++
++
++def test_cpu_ppo_unit_update_is_identical_with_readonly_telemetry():
++    # Synthetic storage fixture only: no environment, simulator or task training.
++    from rsl_rl.algorithms import PPO
++    from quadsmash.rl.native_ppo import FinalObservationPPO
++    policy, obs = make_policy()
++    alg = FinalObservationPPO(policy, device='cpu', num_learning_epochs=1, num_mini_batches=1)
++    alg.init_storage('rl', 4, 2, obs, [3])
++    with torch.inference_mode():
++        for _ in range(2):
++            alg.act(obs)
++            alg.process_env_step(obs, torch.ones(4), torch.zeros(4, dtype=torch.long), {})
++        alg.compute_returns(obs)
++    plain = copy.deepcopy(alg)
++    before = torch.get_rng_state().clone()
++    losses = alg.update(); after = torch.get_rng_state().clone()
++    torch.set_rng_state(before); reference = PPO.update(plain)
++    assert torch.equal(after, torch.get_rng_state())
++    assert losses == reference
++    assert all(torch.equal(value, plain.policy.state_dict()[key]) for key, value in alg.policy.state_dict().items())
++    assert alg.last_update_stats['behavior_actions']['samples'] == 8
++    assert len(alg.last_update_stats['post_update_actions']['std_per_joint']) == 3
+diff --git a/tests/test_g04_diagnostic_preparation.py b/tests/test_g04_diagnostic_preparation.py
+new file mode 100644
+index 0000000..3c954e1
+--- /dev/null
++++ b/tests/test_g04_diagnostic_preparation.py
+@@ -0,0 +1,54 @@
++import csv
++import json
++import subprocess
++import sys
++from types import SimpleNamespace
++import torch
++from quadsmash.tasks.stand.jump_diagnostics import JumpDiagnosticRecorder
++from quadsmash.tasks.stand.jump_reward_audit import v2c_components
++from scripts.audit_g04_rewards_cpu import PROTOCOL
++
++
++def test_native_diagnostic_default_and_guard_do_not_import_isaac(tmp_path):
++    command = [sys.executable, 'scripts/diagnose_g04_rewards.py']
++    result = subprocess.run(command, capture_output=True, text=True, check=True)
++    plan = json.loads(result.stdout)
++    assert plan['maximum_interactions'] == 51200 and not plan['weights_updated']
++    custom = subprocess.run([*command, '--comparison-checkpoint', str(tmp_path/'pilot50.pt')],
++                            capture_output=True, text=True, check=True)
++    assert json.loads(custom.stdout)['comparison_checkpoint'] == str(tmp_path/'pilot50.pt')
++    result = subprocess.run([*command, '--run-native', '--output', str(tmp_path)], capture_output=True, text=True)
++    assert result.returncode == 2 and 'live run_gpu_job.py parent' in result.stderr
++    assert 'ModuleNotFoundError' not in result.stderr
++
++
++def test_recorder_captures_pre_reset_actions_rewards_and_only_first_episodes(tmp_path):
++    n = 2; zeros = torch.zeros(n); flags = torch.zeros(n, dtype=torch.bool)
++    env = SimpleNamespace(num_envs=n, device='cpu', step_dt=.01, _phase=lambda: torch.ones(n),
++        com_position=torch.ones(n, 3) * .4, com_velocity=torch.zeros(n, 3), reset_com_height=torch.ones(n) * .4,
++        takeoff_time=zeros.clone(), landing_time=zeros.clone(), flight_candidate=flags.clone(),
++        flight_qualified=flags.clone(), valid_jump_landed=flags.clone(), body_ground_seen=flags.clone(),
++        observed_foot_contact=torch.ones(n, 4, dtype=torch.bool), recovery_run=zeros.clone(),
++        action_before_clip=torch.ones(n, 18) * 1.2, last_action=torch.ones(n, 18),
++        targets=torch.ones(n, 18) * .6, joint_ids=list(range(18)), episode_records=[])
++    f = {name: zeros.clone() for name in ('height_tracking', 'flight', 'recovery', 'prepare_quality',
++        'recovery_quality', 'arm_error', 'torque_square_sum', 'action_delta', 'settling', 'settle_cost')}
++    f.update({name: flags.clone() for name in ('first_jump', 'first_success', 'first_body', 'terminated')})
++    f['height_tracking'][:] = .5; f['target_com'] = torch.ones(n) * .45
++    recorder = JumpDiagnosticRecorder(env, tmp_path, ['zero', 'policy'], PROTOCOL)
++    recorder.mean[:] = 1.5; recorder.model_std[:] = .7; recorder.std[:] = .15
++    reward = sum(v2c_components(f, .01).values())
++    before = env.action_before_clip.clone(); recorder.on_reward(env, f, reward)
++    assert torch.equal(before, env.action_before_clip)
++    env.episode_records = [dict(env_id=i, success=False, body_landing=False) for i in range(n)]
++    recorder.on_episodes(env, torch.arange(n))
++    env.com_position.zero_(); env.action_before_clip.zero_(); recorder.on_reward(env, f, reward)
++    result = recorder.finish()
++    rows = list(csv.DictReader((tmp_path/'reward_trace.csv').open()))
++    assert len(rows) == 2 and float(rows[0]['com_height_m']) > .39
++    assert float(rows[0]['actual_action_clip_fraction']) == 1.
++    assert json.loads(rows[1]['policy_std'])[0] > .69
++    assert json.loads(rows[1]['execution_noise_std'])[0] < .16
++    assert json.loads(rows[0]['applied_action']) == [1.] * 18
++    assert result['groups']['policy']['recovery_given_qualified_landing'] is None
++    assert result['reward_reconstruction_max_error'] == 0.
+diff --git a/tests/test_g04_reward_review.py b/tests/test_g04_reward_review.py
+new file mode 100644
+index 0000000..7057c86
+--- /dev/null
++++ b/tests/test_g04_reward_review.py
+@@ -0,0 +1,117 @@
++import ast
++import copy
++from pathlib import Path
++from types import SimpleNamespace
++
++import pytest
++import torch
++from scripts.audit_g04_rewards_cpu import signal_probe, PROTOCOL
++from quadsmash.tasks.stand.jump_reward_audit import v2c_components, recovery_draft, RecoveryWindows
++from quadsmash.tasks.stand import jump_metrics
++
++
++@pytest.mark.parametrize('kind', ['tiny_hop', 'short_high_hop', 'long_low_hop'])
++def test_unqualified_hops_earn_old_main_recovery_but_not_draft(kind):
++    result = signal_probe(kind)
++    assert result['recovery_seen'] and not result['valid_jump_landed'] and not result['formal_success']
++    assert result['old_primary_recovery'] == pytest.approx(5., abs=1e-5)
++    assert result['draft_primary_recovery'] == 0.
++    assert 0 < result['draft_weak_recovery'] <= .1
++
++
++def test_qualified_jump_keeps_task_credit_and_formal_success():
++    result = signal_probe('qualified')
++    assert result['valid_jump_landed'] and result['formal_success']
++    assert result['draft_primary_recovery'] == pytest.approx(result['old_primary_recovery'])
++
++
++@pytest.mark.parametrize('kind', ['body_contact', 'standing'])
++def test_standing_and_unsafe_landings_cannot_earn_recovery(kind):
++    result = signal_probe(kind)
++    assert not result['formal_success']
++    assert result['draft_primary_recovery'] == result['draft_weak_recovery'] == 0.
++
++
++def test_broken_recovery_keeps_shaping_but_never_passes_acceptance():
++    result = signal_probe('broken_recovery')
++    assert result['valid_jump_landed'] and not result['formal_success']
++    assert result['max_continuous_recovery_s'] < .31
++    assert result['draft_primary_recovery'] > 0.
++
++
++def test_weak_budget_is_per_episode_and_cannot_be_replenished_by_hops():
++    paid = torch.zeros(2); mask = torch.zeros(2, dtype=torch.bool)
++    components = {'stable_recovery': torch.ones(2), 'recovery_quality': torch.ones(2), 'other': torch.tensor([2., 3.])}
++    initial = {k: v.clone() for k, v in components.items()}
++    accumulated = torch.zeros(2)
++    for i in range(1000):
++        quality = torch.ones(2) if i % 100 < 90 else torch.zeros(2)
++        draft, paid = recovery_draft(components, valid_jump_landed=mask, body_ground_seen=mask,
++            recovery_quality=quality, weak_paid=paid, dt=.01)
++        accumulated += draft['weak_safe_settling']
++        assert torch.equal(draft['other'], components['other'])
++    assert torch.allclose(accumulated, torch.full((2,), .1), atol=1e-6)
++    assert all(torch.equal(components[k], v) for k, v in initial.items())
++    paid[0] = 0.  # a real partial episode reset, not a new hop
++    draft, _ = recovery_draft(components, valid_jump_landed=mask, body_ground_seen=mask,
++        recovery_quality=torch.ones(2), weak_paid=paid, dt=.01)
++    assert draft['weak_safe_settling'][0] > 0 and draft['weak_safe_settling'][1] == 0
++
++
++def _method(path):
++    module = ast.parse(Path(path).read_text())
++    cls = next(node for node in module.body if isinstance(node, ast.ClassDef) and node.name == 'JumpEnv')
++    method = next(node for node in cls.body if isinstance(node, ast.FunctionDef) and node.name == '_get_rewards')
++    ns = {'torch': torch}; exec(compile(ast.Module(body=[method], type_ignores=[]), str(path), 'exec'), ns)
++    return ns['_get_rewards']
++
++
++def _fake_env():
++    n = 24; g = torch.Generator().manual_seed(311003)
++    rand = lambda *shape: torch.rand(*shape, generator=g)
++    boolean = lambda: rand(n) > .5
++    data = SimpleNamespace(joint_pos=rand(n, 18), default_joint_pos=rand(n, 18),
++        root_ang_vel_w=rand(n, 3), joint_vel=rand(n, 18), projected_gravity_b=rand(n, 3),
++        root_link_lin_vel_w=rand(n, 3), applied_torque=rand(n, 18))
++    e = SimpleNamespace(robot=SimpleNamespace(data=data), _episode_has_stepped=boolean(),
++        _phase=lambda: torch.linspace(0, 4., n), reset_com_height=rand(n), com_position=rand(n, 3),
++        clear_flight=boolean(), flight_apex_rise=rand(n), stable_recovery=boolean(),
++        flight_qualified=boolean(), rewarded_jump=boolean(), jump_success=boolean(), rewarded_success=boolean(),
++        body_ground_seen=boolean(), rewarded_body_contact=boolean(), joint_ids=list(range(18)),
++        landed_once=boolean(), observed_foot_contact=rand(n, 4)>.5, action_delta=rand(n),
++        step_dt=.01, reset_terminated=boolean())
++    return e
++
++
++def test_default_reward_is_bitwise_identical_to_reviewed_commit_with_or_without_observer():
++    old = _method('tests/fixtures/jump_env_65396a21.py.txt')
++    current = _method('quadsmash/tasks/stand/jump_env.py')
++    baseline = _fake_env(); off = copy.deepcopy(baseline); on = copy.deepcopy(baseline)
++    recorded = []
++    on._diagnostic_observer = SimpleNamespace(on_reward=lambda env, f, reward: recorded.append((v2c_components(f, env.step_dt), reward.clone())))
++    expected = old(baseline)
++    assert torch.equal(expected, current(off))
++    assert torch.equal(expected, current(on))
++    assert torch.allclose(sum(recorded[0][0].values()), expected, atol=2e-6, rtol=0.)
++    for name in ('rewarded_jump', 'rewarded_success', 'rewarded_body_contact', '_episode_has_stepped'):
++        assert torch.equal(getattr(baseline, name), getattr(on, name))
++
++
++def test_recovery_condition_windows_break_individually_and_partial_reset_isolated():
++    state = SimpleNamespace(); jump_metrics.initialize(state, 2, 'cpu')
++    state.landed_once[:] = True; state.valid_jump_landed[:] = True
++    monitor = RecoveryWindows(2, 'cpu')
++    saved = {k: v.clone() for k, v in vars(state).items()}
++    def tick(speed):
++        monitor.observe(state, dt=.01, support=torch.ones(2, dtype=torch.bool), roll_pitch=torch.zeros(2, 2),
++            horizontal_speed=torch.zeros(2), angular_speed=torch.zeros(2), joint_speed=torch.tensor(speed),
++            com_vertical_velocity=torch.zeros(2), protocol=PROTOCOL)
++    for _ in range(10): tick([0., 0.])
++    tick([2., 0.])
++    j = monitor.names.index('joint_speed'); a = monitor.names.index('all')
++    assert monitor.run[0, j] == monitor.run[0, a] == 0.
++    assert monitor.maximum[0, j] == pytest.approx(.1)
++    assert monitor.run[1, j] == pytest.approx(.11)
++    assert all(torch.equal(v, getattr(state, k)) for k, v in saved.items())
++    other = monitor.run[1].clone(); monitor.reset(torch.tensor([0]))
++    assert monitor.run[0].sum() == 0 and torch.equal(other, monitor.run[1])

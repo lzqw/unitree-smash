@@ -1,0 +1,79 @@
+{
+  "scope": "CPU audit, read-only diagnostic preparation, shadow reward draft and two mutually exclusive proposals only",
+  "baseline_commit": "65396a21bd8065400df91437432bd12a0a46bf81",
+  "branch": "g04-diagnostics-preparation-20261022",
+  "prepared_at": "2026-10-22T07:56:25.881063+00:00",
+  "requirements": [
+    {
+      "id": 1,
+      "status": "COMPLETE",
+      "evidence": [
+        "cpu_probe/results.json",
+        "all_tests_final.xml"
+      ],
+      "claim": "Synthetic counterexamples and positive/negative tests; not physics results"
+    },
+    {
+      "id": 2,
+      "status": "COMPLETE_PREPARATION",
+      "evidence": [
+        "all_tests_final.xml",
+        "diagnostic_final_tests.xml"
+      ],
+      "claim": "Read-only reward/action/recovery telemetry implemented and CPU-tested; native execution unvalidated"
+    },
+    {
+      "id": 3,
+      "status": "COMPLETE_PREPARATION",
+      "evidence": [
+        "native_diagnostic_plan.json",
+        "historical_alignment/alignment.json"
+      ],
+      "claim": "Native trace and CPU plotting scripts prepared; only historical timing analysis executed"
+    },
+    {
+      "id": 4,
+      "status": "COMPLETE_DRAFT",
+      "evidence": [
+        "cpu_probe/results.json",
+        "all_tests_final.xml"
+      ],
+      "claim": "Qualified landing gates main recovery; per-episode capped weak shaping; not activated in production reward"
+    },
+    {
+      "id": 5,
+      "status": "COMPLETE",
+      "evidence": [
+        "cpu_probe/results.json",
+        "all_tests_final.xml"
+      ],
+      "claim": "Actual checkpoint loaded on CPU; init std reset effective, remaining parameters unchanged, noise still trainable"
+    },
+    {
+      "id": 6,
+      "status": "COMPLETE_PROPOSALS",
+      "evidence": [
+        "EXPERIMENT_PROPOSALS.md",
+        "pure_ppo_low_noise_proposal.json",
+        "guided_bc_ppo_proposal.json"
+      ],
+      "claim": "Identities, provenance, budgets, stopping gates and available pending commands documented; guided executor deliberately not claimed implemented"
+    }
+  ],
+  "historical_files_verified_unchanged": 701,
+  "cpu_tests_passed": 121,
+  "additional_final_targeted_tests_passed": 2,
+  "gpu_jobs_started": 0,
+  "task_training_runs": 0,
+  "native_simulations": 0,
+  "g04_formal_state": "FAILED",
+  "g04_formal_successes": 0,
+  "g04_formal_episodes": 400,
+  "g04_budget_ledger_unchanged": true,
+  "limitations": [
+    "No new raw physics trace or measured reward ranking",
+    "No GPU validation of new observer or retained snapshot file path",
+    "No claim that draft rewards or either proposal improve learning",
+    "No guided dataset/BC/prefix executor implemented under this proposal-only scope"
+  ]
+}

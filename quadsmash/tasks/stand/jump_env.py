@@ -101,6 +101,9 @@ class JumpEnv(CoupledEnv):
         torch.maximum(self.max_arm_torque,torque[:,12:].max(1).values,out=self.max_arm_torque)
         torch.maximum(self.max_joint_speed,data.joint_vel.abs().max(1).values,out=self.max_joint_speed)
         self.saturated_joint_steps += (torque[:,:12]>=23.5*.99).sum(1)
+        observer=getattr(self,'_diagnostic_observer',None)
+        if observer is not None:
+            observer.on_physics(self,torch.stack((wrap_to_pi(roll),wrap_to_pi(pitch)),1))
 
     @property
     def jump_success(self):
@@ -137,9 +140,19 @@ class JumpEnv(CoupledEnv):
         prepare_quality=(phase<.8)*supported*torch.exp(-4.*tilt)
         recovery_quality=self.landed_once*supported*torch.exp(-4.*tilt
             -2.*data.root_link_lin_vel_w[:,:2].square().sum(1)-settle_cost)
-        return (8.*height_tracking+3.*flight+3.*recovery+.3*prepare_quality+2.*recovery_quality-.03*arm_error
+        reward=(8.*height_tracking+3.*flight+3.*recovery+.3*prepare_quality+2.*recovery_quality-.03*arm_error
             -.00002*data.applied_torque.square().sum(1)-.005*self.action_delta-settling*settle_cost)*self.step_dt \
             +2.*first_jump.float()+5.*first_success.float()-4.*first_body.float()-2.*self.reset_terminated.float()
+        # Opt-in external observer: do not add checkpoint buffers or alter the
+        # legacy reward/default training configuration for this preparation.
+        observer=getattr(self,'_diagnostic_observer',None)
+        if observer is not None:
+            observer.on_reward(self,dict(height_tracking=height_tracking,flight=flight,recovery=recovery,
+                prepare_quality=prepare_quality,recovery_quality=recovery_quality,arm_error=arm_error,
+                torque_square_sum=data.applied_torque.square().sum(1),action_delta=self.action_delta,
+                settling=settling,settle_cost=settle_cost,first_jump=first_jump,first_success=first_success,
+                first_body=first_body,terminated=self.reset_terminated,target_com=target_com),reward)
+        return reward
 
     @torch.inference_mode()
     def _reset_idx(self,env_ids):
@@ -161,6 +174,9 @@ class JumpEnv(CoupledEnv):
             for i,numbers,booleans in zip(complete.cpu().tolist(),values,flags):
                 self.episode_records.append({'env_id':i,**dict(zip(names,numbers)),
                     **dict(zip(('qualified_jump_landed','qualified_flight_seen','body_landing','stable_recovery','success','terminated'),booleans))})
+            observer=getattr(self,'_diagnostic_observer',None)
+            if observer is not None:
+                observer.on_episodes(self,complete)
         super()._reset_idx(env_ids)
         self.reset_com_height[env_ids]=(self.mass_weights[env_ids]*self.robot.data.body_com_pos_w[env_ids,:,2]).sum(1)
         jump_metrics.reset(self,env_ids)
