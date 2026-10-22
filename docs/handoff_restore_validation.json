@@ -1,0 +1,36 @@
+{
+  "source_commit": "cf2ce74a55dec720df5265748e04a2ed71835a76",
+  "test": "fresh local clone + all three release archives + verify_goal G04",
+  "result": "dependency/artifact/hash checks passed; expected G04 performance failure only",
+  "gpu_simulation_run": false,
+  "verification": {
+    "goal_id": "G04",
+    "status": "FAILED",
+    "contract_sha256": "66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807",
+    "checks": {
+      "G00": {
+        "passed": true,
+        "errors": []
+      },
+      "G01": {
+        "passed": true,
+        "errors": []
+      },
+      "G02": {
+        "passed": true,
+        "errors": []
+      },
+      "G03": {
+        "passed": true,
+        "errors": []
+      },
+      "G04": {
+        "passed": false,
+        "errors": [
+          "Metric jump_recovery_success_rate=0.0 does not meet {'op': 'ge', 'value': 0.9}"
+        ]
+      }
+    },
+    "scope": "Structure, hashes, dependencies and thresholds only; not simulation authenticity or GPU budget enforcement."
+  }
+}

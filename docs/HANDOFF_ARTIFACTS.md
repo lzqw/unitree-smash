@@ -36,6 +36,8 @@ tar -xzf .handoff_export/download/runtime-assets.tar.gz
 python3 tools/verify_goal.py --root . --goal G04
 ```
 
+已实际完成一次全新本地 clone + 三个附件解压 + 证据校验，结果见 [恢复校验记录](handoff_restore_validation.json)。该检查没有启动 GPU 仿真。
+
 最后一步预期 **exit 2 / G04 FAILED**：必须如实保留 0 < 0.90 的性能失败；G00–G03 依赖、文件及摘要应通过。只 clone 代码、未解压附件时，会因缺少二进制证据而额外失败。
 
 ## 原生运行环境与已知移机限制
