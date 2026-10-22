@@ -47,6 +47,7 @@ class JumpEnv(CoupledEnv):
         self.clear_flight=torch.zeros(self.num_envs,dtype=torch.bool,device=self.device)
         self.stable_recovery=torch.zeros_like(self.clear_flight)
         self._jump_physics_frame=-1
+        self._jump_metric_previous_frame=-1
         self.completed_episodes=self.successful_episodes=self.failed_episodes=0
         self._metrics_started=False
         self._episode_has_stepped=torch.zeros_like(self.clear_flight)
@@ -78,16 +79,26 @@ class JumpEnv(CoupledEnv):
     def _consume_jump_frame(self,frame):
         if frame<=self._jump_physics_frame:return
         self._jump_physics_frame=frame
-        if frame==0:return
+        if frame==0:
+            self._jump_metric_previous_frame=0
+            return
         self._observe_physics_frame(frame)
-        self.jump_clock += self.physics_dt
+        # Metrics may be sampled less often than the native physics loop in
+        # the shuttle task.  Advance by the elapsed physical interval so a
+        # 1 ms diagnostic sample has the same clock as sixteen 62.5 us
+        # samples.  The rigid-body integration itself is still performed at
+        # every native PhysX step.
+        previous = getattr(self, "_jump_metric_previous_frame", frame - 1)
+        metric_dt = (frame - previous) * self.physics_dt
+        self._jump_metric_previous_frame = frame
+        self.jump_clock += metric_dt
         data=self.robot.data
         self.com_position.copy_((self.mass_weights[:,:,None]*data.body_com_pos_w).sum(1))
         self.com_velocity.copy_((self.mass_weights[:,:,None]*data.body_com_lin_vel_w).sum(1))
         roll,pitch,_=euler_xyz_from_quat(data.root_quat_w)
         # All robot links except feet; one shared static ground filter per view.
         body_force=sum(sensor.data.force_matrix_w.norm(dim=-1).sum((1,2)) for sensor in self.ground_sensors)
-        clear,stable=jump_metrics.advance(self,dt=self.physics_dt,time=self.jump_clock,
+        clear,stable=jump_metrics.advance(self,dt=metric_dt,time=self.jump_clock,
             com_height=self.com_position[:,2],foot_contact=self.observed_foot_contact,
             foot_clearance=data.body_pos_w[:,self.foot_ids,2].min(1).values,
             roll_pitch=torch.stack((wrap_to_pi(roll),wrap_to_pi(pitch)),1),

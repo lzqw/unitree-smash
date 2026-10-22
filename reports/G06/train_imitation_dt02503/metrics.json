@@ -1,0 +1,90 @@
+{
+  "method": "real-physx shuttle teacher-guided BC + DAgger",
+  "physics_dt_s": 0.00025,
+  "teacher": {
+    "episodes": 64,
+    "contacts": 64,
+    "airborne_contacts": 64,
+    "recoveries": 48,
+    "contact_recovery": 48,
+    "contact_rate": 1.0,
+    "airborne_contact_rate": 1.0,
+    "contact_recovery_rate": 0.75,
+    "mean_ball_min_distance_m": 0.05304505908861756
+  },
+  "learner_checks": [
+    {
+      "round": 0,
+      "episodes": 64,
+      "contacts": 64,
+      "airborne_contacts": 64,
+      "recoveries": 31,
+      "contact_recovery": 31,
+      "contact_rate": 1.0,
+      "airborne_contact_rate": 1.0,
+      "contact_recovery_rate": 0.484375,
+      "mean_ball_min_distance_m": 0.05220117565477267,
+      "validation_mse": 8.971737406682223e-05,
+      "training_mse_samples": [
+        0.0044682384468615055,
+        7.095272303558886e-05,
+        2.85210207948694e-05,
+        3.1294406653614715e-05,
+        3.5634056985145435e-05,
+        6.184457015478984e-05,
+        2.0779123587999493e-05
+      ]
+    },
+    {
+      "round": 1,
+      "episodes": 64,
+      "contacts": 64,
+      "airborne_contacts": 64,
+      "recoveries": 49,
+      "contact_recovery": 49,
+      "contact_rate": 1.0,
+      "airborne_contact_rate": 1.0,
+      "contact_recovery_rate": 0.765625,
+      "mean_ball_min_distance_m": 0.05968071677489206,
+      "validation_mse": 4.827971133636311e-05,
+      "training_mse_samples": [
+        0.0002086684835376218,
+        7.791589450789616e-05,
+        4.26578480983153e-05,
+        3.091408507316373e-05,
+        4.404133869684301e-05,
+        3.0144836273393594e-05,
+        2.8454620405682363e-05
+      ]
+    },
+    {
+      "round": 2,
+      "episodes": 64,
+      "contacts": 64,
+      "airborne_contacts": 64,
+      "recoveries": 43,
+      "contact_recovery": 43,
+      "contact_rate": 1.0,
+      "airborne_contact_rate": 1.0,
+      "contact_recovery_rate": 0.671875,
+      "mean_ball_min_distance_m": 0.053717556584160775,
+      "validation_mse": 4.358782825875096e-05,
+      "training_mse_samples": [
+        5.531569695449434e-05,
+        3.099935929640196e-05,
+        3.2494070183020085e-05,
+        3.393485530978069e-05,
+        3.5099532396998256e-05,
+        3.127920354017988e-05,
+        1.8989338059327565e-05
+      ]
+    }
+  ],
+  "env_steps": 102400,
+  "config_sha256": "a775f58f071b5629238a170cf2aca07886a88489d7c5443586d32820634882af",
+  "init_checkpoint_sha256": "31059049749298fba12da457cfd5e9b1e49c5855989e0482596d72c2b88dec8d",
+  "best_round": 1,
+  "best_contact_recovery": 49,
+  "best_contact_recovery_rate": 0.765625,
+  "checkpoint": "reports/G06/train_imitation_dt02503/checkpoint.pt"
+}

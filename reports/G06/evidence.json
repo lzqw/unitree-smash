@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "goal_id": "G06",
+  "task_id": "airborne_contact_recover_ground_v1",
+  "evidence_kind": "observed",
+  "contract_sha256": "66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807",
+  "metrics": {
+    "sample_count": 400,
+    "ground_init_fraction": 1.0,
+    "airborne_contact_recovery_success_rate": 0.765,
+    "numerical_failures": 0,
+    "backend": "Isaac Lab / PhysX",
+    "stage": "real_contact",
+    "task": "airborne_contact_recover_ground_v1",
+    "seed": 1907,
+    "num_envs": 64,
+    "physics_dt_s": 0.00025,
+    "env_steps": 2800,
+    "elapsed_s": 551.9754364709952,
+    "checkpoint_sha256": "ef9143475a15b5132da8b7f0079eef88d37ae6e39e5785d7857c77a73df86647",
+    "contact_rate": 1.0,
+    "airborne_contact_rate": 1.0,
+    "body_contact_rate": 0.5775,
+    "sweep_misses": 0,
+    "sweep_unresolved": 0,
+    "recovery_success_count": 306
+  },
+  "run": {
+    "command": "/home/autodrive/Isaac/env_isaaclab/bin/python scripts/isaac_stage_evaluate.py --stage real_contact --checkpoint reports/G06/train_imitation_dt02503/checkpoint.pt --config configs/g05_imitation.json --output reports/G06/eval_formal01 --episodes 400 --num-envs 64 --physics-dt 0.00025 --suite dev_real_contact_dt025 --headless",
+    "git_commit": "aab06900ce85d709f2837aade02cd032d08407d9",
+    "started_at": "2026-10-22T17:36:32.610977+00:00",
+    "finished_at": "2026-10-22T17:45:50.531789+00:00",
+    "gpu_hours": 0.1549774406316606,
+    "env_steps": 2000000
+  },
+  "artifacts": [
+    {
+      "path": "reports/G06/REPORT.md",
+      "sha256": "d31f1c5496040831d8b12315e173145b47b036ddd669cf63fc66d5d9ca265eee"
+    },
+    {
+      "path": "reports/G06/commands.log",
+      "sha256": "8e8250966dcd782fa8fe4dddacdd64f57f62caabf4afeff8115bcbd62aba3bca"
+    },
+    {
+      "path": "reports/G06/episodes.csv",
+      "sha256": "87a350cbffa48b8b5713d8f8712324a7c12ea22cb6d48425e6379a1e85486136"
+    },
+    {
+      "path": "reports/G06/eval_manifest.json",
+      "sha256": "e9e270809a74e9d0b3d3193aad6e3a2b78d1d0460df029629c41966986b5ee28"
+    },
+    {
+      "path": "reports/G06/metrics.json",
+      "sha256": "ad320986b71bda3ecee02993e4d004acfa25fb64d78bca6484a407afb9440359"
+    },
+    {
+      "path": "artifacts/G06/policy.pt",
+      "sha256": "ef9143475a15b5132da8b7f0079eef88d37ae6e39e5785d7857c77a73df86647"
+    },
+    {
+      "path": "configs/g05_imitation.json",
+      "sha256": "a775f58f071b5629238a170cf2aca07886a88489d7c5443586d32820634882af"
+    },
+    {
+      "path": "reports/G06/eval_formal01/job.json",
+      "sha256": "0af687ae9f8c5238b6103c71724c133173071c20274862c010c36c8bd8246199"
+    },
+    {
+      "path": "reports/G06/eval_formal01/source_hashes.json",
+      "sha256": "6007cafe298f656bd4dd04a343fbb7d912e47ca01bf21426e50abb1dbabd03bc"
+    },
+    {
+      "path": "reports/G06/train_imitation_dt02503/metrics.json",
+      "sha256": "06f18f9058eff553cba9409d284eeabb3903608ec38869affea4855c4ffef160"
+    },
+    {
+      "path": "reports/G06/search_teacher01/metrics.json",
+      "sha256": "72ff160702d8c3c72efe452de0b5e754e27f5a53ec5cf8889afbb60eb3ac4465"
+    }
+  ]
+}

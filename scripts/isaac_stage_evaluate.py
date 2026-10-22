@@ -27,6 +27,8 @@ parser.add_argument("--num-envs", type=int, default=32)
 parser.add_argument("--seed", type=int, default=1907)
 parser.add_argument("--suite", default=None)
 parser.add_argument("--reset-mode", choices=("ground",), default="ground")
+parser.add_argument("--physics-dt", type=float, default=None,
+                    help="Optional validated shuttle fixture step (for example 0.00025 s).")
 AppLauncher.add_app_launcher_args(parser)
 args = parser.parse_args()
 if args.episodes < 1 or args.num_envs < 1:
@@ -69,6 +71,14 @@ def main() -> None:
     cfg.sim.device = args.device or "cuda:0"
     cfg.seed = args.seed
     cfg.episode_length_s = config.get("episode_seconds", 4.0)
+    if args.physics_dt is not None:
+        if args.stage not in ("real_contact", "jump_smash"):
+            raise ValueError("--physics-dt is only supported for shuttle stages")
+        if args.physics_dt <= 0 or (0.01 / args.physics_dt) != round(0.01 / args.physics_dt):
+            raise ValueError("--physics-dt must divide the 10 ms policy period")
+        cfg.sim.dt = args.physics_dt
+        cfg.decimation = round(0.01 / args.physics_dt)
+        cfg.sim.render_interval = cfg.decimation
     if args.stage == "jump_smash":
         cfg.include_net = True
     env = env_type(cfg)
@@ -151,7 +161,7 @@ def main() -> None:
                 "numerical_failures": numerical_failures,
             }
         elapsed = time.perf_counter() - started
-        metrics.update({"backend": "Isaac Lab / PhysX", "stage": args.stage, "task": task_name, "seed": args.seed, "num_envs": args.num_envs, "env_steps": int(env.common_step_counter), "elapsed_s": elapsed, "checkpoint_sha256": digest(args.checkpoint)})
+        metrics.update({"backend": "Isaac Lab / PhysX", "stage": args.stage, "task": task_name, "seed": args.seed, "num_envs": args.num_envs, "physics_dt_s": cfg.sim.dt, "env_steps": int(env.common_step_counter), "elapsed_s": elapsed, "checkpoint_sha256": digest(args.checkpoint)})
         fields = sorted({key for row in rows for key in row})
         with (args.output / "episodes.csv").open("w", newline="", encoding="utf-8") as stream:
             writer = csv.DictWriter(stream, fieldnames=fields)
@@ -165,6 +175,7 @@ def main() -> None:
             "seed": args.seed,
             "episodes": args.episodes,
             "num_envs": args.num_envs,
+            "physics_dt_s": cfg.sim.dt,
             "reset_mode": args.reset_mode,
             "checkpoint": str(args.checkpoint.resolve()),
             "checkpoint_sha256": metrics["checkpoint_sha256"],

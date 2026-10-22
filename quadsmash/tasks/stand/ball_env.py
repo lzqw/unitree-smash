@@ -10,6 +10,7 @@ from isaacsim.core.utils.stage import get_current_stage
 from quadsmash.physics.native import (physics_contract, drag_force, configure_ccd,
     sphere_box_gap, swept_sphere_box, segment_plane_crossing, ContactEpisodes)
 from .jump_env import JumpEnv, JumpEnvCfg
+from .coupled_env import CoupledEnv
 
 PHYSICS = physics_contract()
 
@@ -17,6 +18,14 @@ PHYSICS = physics_contract()
 @configclass
 class BallEnvCfg(JumpEnvCfg):
     event_goal_enabled = True
+    # G06 development contact panel: this is the validated airborne G05
+    # racket event, exposed through the same native command fields.  The
+    # shuttle is launched once at reset and then integrated by PhysX; it is
+    # never corrected near the racket.
+    event_goal_time_s = 1.48
+    event_goal_position = (0.243, 0.001, 0.553)
+    event_goal_normal = (-0.525, 0.0, -0.851)
+    event_goal_velocity = (0.0, 0.0, 0.0)
     episode_length_s = 4.0
     sim = sim_utils.SimulationCfg(dt=PHYSICS["native_physics_dt_s"], render_interval=160)
     decimation = round(PHYSICS["policy_dt_s"]/PHYSICS["native_physics_dt_s"])
@@ -24,8 +33,10 @@ class BallEnvCfg(JumpEnvCfg):
     shuttle_mass_kg = PHYSICS["mass_kg"]
     drag_k_per_m = PHYSICS["quadratic_drag_k_per_m"]
     wind_m_s = tuple(PHYSICS["wind_m_s"])
-    shuttle_start = (0.95, 0.0, 1.15)
-    shuttle_velocity = (-2.0, 0.0, 0.0)
+    shuttle_start = (7.4, 0.0, 1.15)
+    # A physical high launch produces a natural crossing of the fixed G05
+    # contact panel near 1.48 s under the locked drag/gravity model.
+    shuttle_velocity = (-6.0, 0.0, 6.235)
     include_net = False
     net_height_m = 1.524
     net_x_m = 1.5
@@ -47,7 +58,7 @@ class BallEnvCfg(JumpEnvCfg):
                 restitution=PHYSICS["restitution"], static_friction=PHYSICS["friction"],
                 dynamic_friction=PHYSICS["friction"], restitution_combine_mode="max"),
             activate_contact_sensors=True),
-        init_state=RigidObjectCfg.InitialStateCfg(pos=(0.95, 0, 1.15), lin_vel=(-2, 0, 0)))
+        init_state=RigidObjectCfg.InitialStateCfg(pos=(7.4, 0, 1.15), lin_vel=(-6.0, 0, 6.235)))
     shuttle_contact = ContactSensorCfg(
         prim_path="/World/envs/env_.*/Shuttle", update_period=0.0,
         track_contact_points=True, max_contact_data_count_per_prim=16,
@@ -73,6 +84,9 @@ class BallEnv(JumpEnv):
             setattr(self, name, torch.zeros(n, device=device))
         self.contact_time = torch.full((n,), float("nan"), device=device)
         self.ball_min_distance = torch.full((n,), float("inf"), device=device)
+        self.ball_min_distance_time = torch.zeros(n, device=device)
+        self.ball_min_distance_ball = torch.zeros((n, 3), device=device)
+        self.ball_min_distance_tool = torch.zeros((n, 3), device=device)
         self.previous_ball_velocity = torch.zeros((n, 3), device=device)
         self.previous_ball_position = torch.zeros((n, 3), device=device)
         self.previous_drag = torch.zeros((n, 3), device=device)
@@ -85,6 +99,12 @@ class BallEnv(JumpEnv):
         self.sweep_unresolved = torch.zeros_like(self.sweep_misses)
         self.pending_sweep_age = torch.full_like(self.sweep_misses, -1)
         self._last_physics_frame = -1
+        # Keep the 62.5 us PhysX integration and force-confirmed shuttle
+        # contact, but sample robot jump/recovery metrics every 1 ms.  These
+        # metrics are hysteretic over tens of milliseconds; recomputing them
+        # at every native step was pure Python/tensor overhead and did not
+        # change collision response or event accounting.
+        self._jump_metric_stride = 16
         self.ball_episode_records = []
 
     def _setup_scene(self):
@@ -133,6 +153,10 @@ class BallEnv(JumpEnv):
                     "body_contact": bool(self.body_contact_seen[i]), "contact_count": int(self.contact_events.count[i]),
                     "sweep_misses": int(self.sweep_misses[i]), "sweep_unresolved": int(self.sweep_unresolved[i]),
                     "contact_time_s": float(self.contact_time[i]), "contact_impulse_ns": float(self.contact_impulse[i]),
+                    "ball_min_distance_m": float(self.ball_min_distance[i]),
+                    "ball_min_distance_time_s": float(self.ball_min_distance_time[i]),
+                    "ball_min_distance_ball_xyz": self.ball_min_distance_ball[i].detach().cpu().tolist(),
+                    "ball_min_distance_tool_xyz": self.ball_min_distance_tool[i].detach().cpu().tolist(),
                     "outgoing_speed_mps": float(self.outgoing_speed[i]), "outgoing_vz_mps": float(self.outgoing_vz[i]),
                     "crossed_net": bool(self.crossed_net[i]), "landed_target": bool(self.landed_target[i]),
                     "recovery_success": bool(getattr(self, "jump_success", torch.zeros_like(self.contact_seen))[i])})
@@ -146,6 +170,9 @@ class BallEnv(JumpEnv):
                 getattr(self, name)[ids] = 0.0
             self.contact_time[ids] = float("nan")
             self.ball_min_distance[ids] = float("inf")
+            self.ball_min_distance_time[ids] = 0.0
+            self.ball_min_distance_ball[ids] = 0.0
+            self.ball_min_distance_tool[ids] = 0.0
             self._latest_racket_force[ids] = 0.0
             self.sweep_ready[ids] = False
             self.sweep_misses[ids] = 0
@@ -159,8 +186,13 @@ class BallEnv(JumpEnv):
     def _apply_action(self):
         # Read the previous completed substep; DirectRLEnv updates scene data
         # after sim.step. The final substep is consumed in _get_dones below.
-        self._consume_physics_frame(self._sim_step_counter - 1)
-        super()._apply_action()
+        frame = self._sim_step_counter - 1
+        self._consume_physics_frame(frame)
+        # Bypass JumpEnv's per-substep metric call while retaining the
+        # CoupledEnv target write and foot-contact observation.
+        CoupledEnv._apply_action(self)
+        if frame == 0 or frame % self._jump_metric_stride == 0:
+            self._consume_jump_frame(frame)
         force = drag_force(self.shuttle.data.root_lin_vel_w, self.cfg.shuttle_mass_kg,
                            self.cfg.drag_k_per_m, self.cfg.wind_m_s)
         self.previous_drag.copy_(force)
@@ -188,9 +220,18 @@ class BallEnv(JumpEnv):
         # never produces a force becomes a recorded hard numerical failure.
         tool_position = data.body_pos_w[:, self.racket_body_id]
         tool_quaternion = data.body_quat_w[:, self.racket_body_id]
-        swept, _, unresolved = swept_sphere_box(self.previous_ball_position, position,
-            self.previous_tool_position, tool_position, self.previous_tool_quaternion,
-            tool_quaternion, PHYSICS["racket_half_extents_m"], self.cfg.shuttle_radius_m)
+        near_tool = (position - tool_position).square().sum(dim=-1) <= 0.45 ** 2
+        swept = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
+        unresolved = torch.zeros_like(swept)
+        if bool(near_tool.any()):
+            # Avoid invoking the 256-iteration conservative advancement query
+            # for the overwhelmingly common far-away shuttle frames.  The
+            # query itself remains unchanged for every near-tool frame.
+            hit, _, unresolved_near = swept_sphere_box(self.previous_ball_position[near_tool], position[near_tool],
+                self.previous_tool_position[near_tool], tool_position[near_tool], self.previous_tool_quaternion[near_tool],
+                tool_quaternion[near_tool], PHYSICS["racket_half_extents_m"], self.cfg.shuttle_radius_m)
+            swept[near_tool] = hit
+            unresolved[near_tool] = unresolved_near
         previous_gap = sphere_box_gap(self.previous_ball_position, self.previous_tool_position,
             self.previous_tool_quaternion, PHYSICS["racket_half_extents_m"], self.cfg.shuttle_radius_m)
         candidate = swept & self.sweep_ready & (previous_gap > 1e-5) & (~touching)
@@ -229,7 +270,12 @@ class BallEnv(JumpEnv):
         just_landed = (landing | ground_touch) & (~self.landed)
         self.landed_target |= just_landed & self.contact_seen & self.crossed_net & (point[:, 0] >= self.cfg.target_x_min_m) & (point[:, 0] <= self.cfg.target_x_max_m) & (point[:, 1].abs() <= self.cfg.target_y_half_width_m)
         self.landed |= just_landed
-        torch.minimum(self.ball_min_distance, (position-data.body_pos_w[:, self.racket_body_id]).norm(dim=-1), out=self.ball_min_distance)
+        distance = (position - data.body_pos_w[:, self.racket_body_id]).norm(dim=-1)
+        closer = distance < self.ball_min_distance
+        self.ball_min_distance.copy_(torch.minimum(self.ball_min_distance, distance))
+        self.ball_min_distance_time[closer] = self.ball_clock[closer]
+        self.ball_min_distance_ball[closer] = position[closer] - self.scene.env_origins[closer]
+        self.ball_min_distance_tool[closer] = data.body_pos_w[closer, self.racket_body_id] - self.scene.env_origins[closer]
         self.previous_ball_position.copy_(position)
         self.previous_ball_velocity.copy_(velocity)
 

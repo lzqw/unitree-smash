@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "current_goal": "G06",
+  "current_goal": "G07",
   "goals": {
     "G00": {
       "state": "PASSED",
@@ -43,14 +43,14 @@
       "notes": "Independent 400 ground episodes: virtual event rate 100%, event-conditioned recovery success 74.5%, ground initialization 1.0, numerical failures 0. Target panel is fixed before training and exposed through the native command observation. High-jump capability search is retained separately; 20 cm was not claimed."
     },
     "G06": {
-      "state": "IN_PROGRESS",
-      "evidence": null,
-      "notes": "Initialize from artifacts/G05/policy.pt; train/evaluate real physical shuttle contact under the authorized g05-g07-20261022 window."
+      "state": "PASSED",
+      "evidence": "reports/G06/evidence.json",
+      "notes": "Independent 400 ground episodes with real PhysX shuttle: 100% airborne contact, 76.5% contact-conditioned recovery, ground initialization 1.0, numerical failures 0. Formal suite uses the G02-validated 0.25 ms PhysX fixture and records body-contact diagnostics separately."
     },
     "G07": {
-      "state": "TODO",
+      "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "Queued after G06."
+      "notes": "Continue from artifacts/G06/policy.pt toward complete smash: net crossing, downward outgoing attack, airborne contact and ground recovery."
     },
     "G08": {
       "state": "TODO",

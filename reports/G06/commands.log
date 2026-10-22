@@ -1,0 +1,8 @@
+# G06 real-PhysX teacher search
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/run_gpu_job.py --goal G06 --budget-window g05-g07-20261022 --max-seconds 600 --env-steps-cap 2000000 --output reports/G06/search_teacher01 --require-artifact metrics.json -- /home/autodrive/Isaac/env_isaaclab/bin/python scripts/search_g06_teacher.py --output reports/G06/search_teacher01 --num-envs 64 --physics-dt 0.00025 --headless
+
+# G06 teacher-guided BC + DAgger, initialized from G05
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/run_gpu_job.py --goal G06 --budget-window g05-g07-20261022 --max-seconds 1200 --env-steps-cap 2000000 --output reports/G06/train_imitation_dt02503 --require-artifact checkpoint.pt -- /home/autodrive/Isaac/env_isaaclab/bin/python scripts/train_g06_imitation.py --output reports/G06/train_imitation_dt02503 --init-checkpoint artifacts/G05/policy.pt --num-envs 64 --updates 1600 --rounds 3 --physics-dt 0.00025 --seed 611031 --headless
+
+# G06 independent formal evaluation: 400 ground episodes
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/run_gpu_job.py --goal G06 --budget-window g05-g07-20261022 --max-seconds 1200 --env-steps-cap 2000000 --output reports/G06/eval_formal01 --require-artifact metrics.json -- /home/autodrive/Isaac/env_isaaclab/bin/python scripts/isaac_stage_evaluate.py --stage real_contact --checkpoint reports/G06/train_imitation_dt02503/checkpoint.pt --config configs/g05_imitation.json --output reports/G06/eval_formal01 --episodes 400 --num-envs 64 --physics-dt 0.00025 --suite dev_real_contact_dt025 --headless
