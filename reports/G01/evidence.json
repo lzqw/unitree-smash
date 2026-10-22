@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "goal_id": "G01",
+  "task_id": "asset_audit",
+  "evidence_kind": "observed",
+  "contract_sha256": "66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807",
+  "metrics": {
+    "backend": "Isaac Lab / PhysX",
+    "joint_mapping_ok": true,
+    "coupled_dynamics_ok": true,
+    "asset_manifest_ok": true,
+    "sample_count": 100,
+    "stand_episode_seconds": 10.0,
+    "stand_success_rate": 1.0,
+    "numerical_failures": 0,
+    "self_collisions_enabled": true,
+    "contact_calibration_ok": true,
+    "total_mass_kg": 20.646991295041516,
+    "free_flight_com_error_m": 0.0049140565097332,
+    "free_flight_angular_momentum_drift_kg_m2_s": 0.0031789992935955524,
+    "base_reaction_rad_s": 0.5514458417892456
+  },
+  "run": {
+    "command": "scripts/finalize_g01_reaudit.py; native commands in reports/G01/commands.log",
+    "git_commit": "uncommitted-worktree-source-snapshots-attached",
+    "started_at": "2026-10-22T03:06:02.078279+00:00",
+    "finished_at": "2026-10-22T03:07:08.646768+00:00",
+    "gpu_hours": 0.018476795646921448,
+    "env_steps": 154832
+  },
+  "artifacts": [
+    {
+      "path": "reports/G01/REPORT.md",
+      "sha256": "4a2fd11ddf88d318cba5e617d352095f8905a92aad309f899cf6972807199d79",
+      "bytes": 1663
+    },
+    {
+      "path": "reports/G01/commands.log",
+      "sha256": "ffb0d3be28302505e7c36f98a4a1b519a2e958014ee4a8d8496ec975fb12c152",
+      "bytes": 591
+    },
+    {
+      "path": "reports/G01/assets_manifest.json",
+      "sha256": "acd605a014e2975e28d6488325c721180aaa37c6e73f77b519c64e54a5e3e1e4",
+      "bytes": 40298
+    },
+    {
+      "path": "reports/G01/asset_tests.json",
+      "sha256": "8bd5c8bc6d7f4a2e60951f072977380b239a47c6bde065b9ef6e3c4f3b1afa2e",
+      "bytes": 510
+    },
+    {
+      "path": "assets/quadsmash_standard_v2.usd",
+      "sha256": "bfb831e4afc8a1a705bb0fb6f001c25eeaa401822978267a0ee5e151007511f3",
+      "bytes": 2107
+    },
+    {
+      "path": "configs/assembly_v2.json",
+      "sha256": "648c75fd0018eb8de3f76995fcc728177ff377b896ff473ec75042e4316043dd",
+      "bytes": 1253
+    },
+    {
+      "path": "configs/contact_calibration_v2.json",
+      "sha256": "f7ef3bce12a5b90fa9e753dded22f818db7ba9c840bbf42ecea78f24e3913139",
+      "bytes": 327
+    },
+    {
+      "path": "assets/assumptions.md",
+      "sha256": "b78c443cb89de38d73f8b730fc7fba7e72b28c4e8f2dd2ffca4db70835a26b4a",
+      "bytes": 2346
+    },
+    {
+      "path": "reports/G01/native_20261022T030602_028800/stand/job.json",
+      "sha256": "31806a0d69d8909172084064f6718ead067d2164276f01253c3c464ffc6bbfbb",
+      "bytes": 857
+    },
+    {
+      "path": "reports/G01/native_20261022T030602_028800/stand/stdout.log",
+      "sha256": "07558db43fa73c8305c6263e6560a4e042ff87b0d6e88c05de4955c8f89f14e1",
+      "bytes": 5472
+    },
+    {
+      "path": "reports/G01/native_20261022T030602_028800/stand/source_snapshot.zip",
+      "sha256": "c9aa54ebdbf92285c8d5a6aa5b8ed2b5e6288515a96bcdacb41747e08eb7b4f1",
+      "bytes": 110358
+    },
+    {
+      "path": "reports/G01/native_20261022T030602_028800/calibration/job.json",
+      "sha256": "84d3fb860bcb4f97a77aa344c8d8e771821e2678d05e6ddcae793745337a4468",
+      "bytes": 817
+    },
+    {
+      "path": "reports/G01/native_20261022T030602_028800/calibration/stdout.log",
+      "sha256": "399fb89c734d60c46af5b550468d48e2d97263fb1494f4e2e8c79e51d8702492",
+      "bytes": 13005
+    },
+    {
+      "path": "reports/G01/native_20261022T030602_028800/calibration/source_snapshot.zip",
+      "sha256": "c9aa54ebdbf92285c8d5a6aa5b8ed2b5e6288515a96bcdacb41747e08eb7b4f1",
+      "bytes": 110358
+    },
+    {
+      "path": "reports/G01/native_20261022T030602_028800/stand/episodes.csv",
+      "sha256": "0d32499840ad22397abd90ea432d49f56ac7f8f75fd43b3f9505bf75bcad7fcb",
+      "bytes": 9547
+    },
+    {
+      "path": "reports/G01/native_20261022T030602_028800/stand/metrics.json",
+      "sha256": "bbf59f9719c9e222bb9de741447d61835a7930589921a1f8fcc3b7c81828c94d",
+      "bytes": 1670
+    },
+    {
+      "path": "reports/G01/native_20261022T030602_028800/calibration/calibration.json",
+      "sha256": "7116eac2f01dcab2d66b25ea069f109a5c12d418cf7aedf346ff4cfdc1ded220",
+      "bytes": 34635
+    },
+    {
+      "path": "assets/vendor/piper_isaac_sim/piper_description/urdf/piper_no_gripper_description.urdf",
+      "sha256": "40e96ce6fe5f88dcabd54fb5b92b63af852ae3068acf1e5b078dbcbf002880dc",
+      "bytes": 8922
+    }
+  ]
+}

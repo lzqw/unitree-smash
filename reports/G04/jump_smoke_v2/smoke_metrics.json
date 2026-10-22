@@ -1,0 +1,30 @@
+{
+  "mode": "smoke",
+  "task": "jump_recover_ground_v1",
+  "stage": "jump",
+  "backend": "Isaac Lab / PhysX",
+  "env_contract_ok": true,
+  "partial_reset_isolation_ok": true,
+  "timeout_bootstrap_ok": false,
+  "checkpoint_resume_ok": false,
+  "evaluation_protocol_frozen": true,
+  "num_envs": 4,
+  "steps": 32,
+  "env_steps": 128,
+  "completed_episodes": 0,
+  "mean_reward_per_step": 0.003107351112703327,
+  "minimum_base_height_m": 0.4000000059604645,
+  "numerical_failures": 0,
+  "observation_shape": [
+    4,
+    48
+  ],
+  "action_shape": [
+    4,
+    18
+  ],
+  "checkpoint": null,
+  "checkpoint_sha256": null,
+  "elapsed_s": 1.5651050310116261,
+  "env_steps_per_second": 81.78364867772837
+}

@@ -1,0 +1,157 @@
+{
+  "backend": "Isaac Lab / PhysX",
+  "fixed_base": false,
+  "mass_kg": 20.646991729736328,
+  "body_names": [
+    "base",
+    "FL_hip",
+    "FR_hip",
+    "Head_upper",
+    "RL_hip",
+    "RR_hip",
+    "MountPlate",
+    "FL_thigh",
+    "FR_thigh",
+    "Head_lower",
+    "RL_thigh",
+    "RR_thigh",
+    "base_link",
+    "FL_calf",
+    "FR_calf",
+    "RL_calf",
+    "RR_calf",
+    "link1",
+    "FL_foot",
+    "FR_foot",
+    "RL_foot",
+    "RR_foot",
+    "link2",
+    "link3",
+    "link4",
+    "link5",
+    "link6",
+    "Racket"
+  ],
+  "asset": "/home/autodrive/LZQW/unitree_smash/reports/G04/standard_assembly/robot.usd",
+  "root_height": 0.323,
+  "body_masses_kg": [
+    7.277000904083252,
+    0.7669999599456787,
+    0.7669999599456787,
+    0.0010000000474974513,
+    0.7669999599456787,
+    0.7669999599456787,
+    0.30000001192092896,
+    1.2409999370574951,
+    1.2409999370574951,
+    0.0010000000474974513,
+    1.2409999370574951,
+    1.2409999370574951,
+    1.0199999809265137,
+    0.15399999916553497,
+    0.15399999916553497,
+    0.15399999916553497,
+    0.15399999916553497,
+    0.7099999785423279,
+    0.03999999910593033,
+    0.03999999910593033,
+    0.03999999910593033,
+    0.03999999910593033,
+    1.1699999570846558,
+    0.5,
+    0.3799999952316284,
+    0.382999986410141,
+    0.006990896072238684,
+    0.09000000357627869
+  ],
+  "feet": [
+    "FL_foot",
+    "FR_foot",
+    "RL_foot",
+    "RR_foot"
+  ],
+  "initial_root_state_max_error": 0.0,
+  "reset_root_state_max_error": 0.0,
+  "reset_joint_position_max_error": 0.0,
+  "reset_joint_velocity_max_error": 0.0,
+  "other_root_state_max_change": 0.0,
+  "other_joint_position_max_change": 0.0,
+  "num_envs": 8,
+  "steps": 450,
+  "elapsed_s": 10.242095947265625,
+  "command": [
+    "scripts/isaac_reset_audit.py",
+    "--asset",
+    "reports/G04/standard_assembly/robot.usd",
+    "--root-height",
+    "0.323",
+    "--output",
+    "reports/G04/standard_asset_reset_audit",
+    "--headless"
+  ],
+  "episodes": [
+    {
+      "env_id": 0,
+      "max_height_m": 0.3224322199821472,
+      "airborne_s": 0.0,
+      "recovery_s": 0.0,
+      "success": false
+    },
+    {
+      "env_id": 1,
+      "max_height_m": 0.3224322199821472,
+      "airborne_s": 0.0,
+      "recovery_s": 0.0,
+      "success": false
+    },
+    {
+      "env_id": 2,
+      "max_height_m": 0.3224322199821472,
+      "airborne_s": 0.0,
+      "recovery_s": 0.0,
+      "success": false
+    },
+    {
+      "env_id": 3,
+      "max_height_m": 0.32243219017982483,
+      "airborne_s": 0.0,
+      "recovery_s": 0.0,
+      "success": false
+    },
+    {
+      "env_id": 4,
+      "max_height_m": 0.32243216037750244,
+      "airborne_s": 0.0,
+      "recovery_s": 0.0,
+      "success": false
+    },
+    {
+      "env_id": 5,
+      "max_height_m": 0.32243216037750244,
+      "airborne_s": 0.0,
+      "recovery_s": 0.0,
+      "success": false
+    },
+    {
+      "env_id": 6,
+      "max_height_m": 0.32243216037750244,
+      "airborne_s": 0.0,
+      "recovery_s": 0.0,
+      "success": false
+    },
+    {
+      "env_id": 7,
+      "max_height_m": 0.32243210077285767,
+      "airborne_s": 0.0,
+      "recovery_s": 0.0,
+      "success": false
+    },
+    {
+      "env_id": 0,
+      "max_height_m": 0.3224322199821472,
+      "airborne_s": 0.0,
+      "recovery_s": 0.0,
+      "success": false
+    }
+  ]
+}

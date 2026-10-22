@@ -1,0 +1,49 @@
+{
+  "project": "QuadSmash-Sim",
+  "phase": "P2.5",
+  "seed": 7,
+  "physics": {
+    "dt": 0.002,
+    "gravity": [0.0, 0.0, -9.81],
+    "drag_coefficient": 0.12,
+    "air_density": 1.225,
+    "reference_area": 0.0018,
+    "shuttle_mass": 0.0052,
+    "restitution": 0.72,
+    "friction": 0.08,
+    "gravity_validation_tolerance_m": 0.0002
+  },
+  "environment": {
+    "num_envs": 32,
+    "episode_seconds": 4.0,
+    "observation_mode": "privileged_state",
+    "curriculum_stage": "real_contact",
+    "action_dim": 18,
+    "goal": {
+      "time_s": 0.85,
+      "position_m": [0.70, 0.0, 1.0],
+      "normal": [1.0, 0.0, 0.0],
+      "velocity_mps": [4.0, 0.0, 0.0]
+    },
+    "recovery_steps": 10,
+    "target": [2.5, 0.0, 0.1]
+  },
+  "robot": {
+    "model": "unitree_go2",
+    "arm_asset": "placeholder_6dof",
+    "arm_parameters_confirmed": false,
+    "racket_asset": "standard_racket_v1"
+  },
+  "whole_body_ppo": {
+    "actor_hidden_dims": [512, 256, 128],
+    "learning_rate": 0.0003,
+    "clip_param": 0.2,
+    "gamma": 0.997,
+    "lam": 0.97,
+    "num_learning_epochs": 4,
+    "num_steps_per_env": 128,
+    "leg_action_scale": 0.35,
+    "arm_action_scale": 0.28
+  }
+}
+

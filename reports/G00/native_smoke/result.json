@@ -1,0 +1,138 @@
+{
+  "mode": "smoke",
+  "task": "Go2Diagnostic-v0",
+  "backend": "Isaac Lab / PhysX",
+  "scope": "12-DOF bare Go2 runtime diagnostic; no loaded jump or smash claim",
+  "num_envs": 8,
+  "steps": 64,
+  "elapsed_s": 1.9738927789730951,
+  "env_steps_per_second": 259.3859228090214,
+  "completed_episodes": 0,
+  "failure_count": 0,
+  "mean_reward_per_step": 0.006875509077872266,
+  "minimum_base_height_m": 0.2293640673160553,
+  "maximum_joint_speed_rad_s": 8.13869857788086,
+  "maximum_effort_nm": 18.51143455505371,
+  "all_tensors_finite": true,
+  "observation_shape": [
+    8,
+    45
+  ],
+  "action_shape": [
+    8,
+    12
+  ],
+  "joint_order": [
+    "FL_hip_joint",
+    "FL_thigh_joint",
+    "FL_calf_joint",
+    "FR_hip_joint",
+    "FR_thigh_joint",
+    "FR_calf_joint",
+    "RL_hip_joint",
+    "RL_thigh_joint",
+    "RL_calf_joint",
+    "RR_hip_joint",
+    "RR_thigh_joint",
+    "RR_calf_joint"
+  ],
+  "body_names": [
+    "base",
+    "FL_hip",
+    "FR_hip",
+    "Head_upper",
+    "RL_hip",
+    "RR_hip",
+    "FL_thigh",
+    "FR_thigh",
+    "Head_lower",
+    "RL_thigh",
+    "RR_thigh",
+    "FL_calf",
+    "FR_calf",
+    "RL_calf",
+    "RR_calf",
+    "FL_foot",
+    "FR_foot",
+    "RL_foot",
+    "RR_foot"
+  ],
+  "mass_per_body_kg": [
+    7.277000904083252,
+    0.7669999599456787,
+    0.7669999599456787,
+    0.0010000000474974513,
+    0.7669999599456787,
+    0.7669999599456787,
+    1.2409999370574951,
+    1.2409999370574951,
+    0.0010000000474974513,
+    1.2409999370574951,
+    1.2409999370574951,
+    0.15399999916553497,
+    0.15399999916553497,
+    0.15399999916553497,
+    0.15399999916553497,
+    0.03999999910593033,
+    0.03999999910593033,
+    0.03999999910593033,
+    0.03999999910593033
+  ],
+  "checkpoint": null,
+  "checkpoint_sha256": null,
+  "config": {
+    "task": "Go2Diagnostic-v0",
+    "seed": 7,
+    "num_envs": 8,
+    "dt": 0.002,
+    "decimation": 5,
+    "episode_seconds": 4.0,
+    "action_scale": 0.1,
+    "go2_usd": "/home/autodrive/Isaac/unitree_model/Go2/usd/go2.usd",
+    "runner": {
+      "seed": 7,
+      "num_steps_per_env": 128,
+      "save_interval": 1,
+      "obs_groups": {
+        "policy": [
+          "policy"
+        ],
+        "critic": [
+          "policy"
+        ]
+      },
+      "logger": "tensorboard",
+      "policy": {
+        "class_name": "ActorCritic",
+        "actor_hidden_dims": [
+          128,
+          128
+        ],
+        "critic_hidden_dims": [
+          128,
+          128
+        ],
+        "activation": "elu",
+        "init_noise_std": 0.3,
+        "noise_std_type": "log",
+        "actor_obs_normalization": true,
+        "critic_obs_normalization": true
+      },
+      "algorithm": {
+        "class_name": "PPO",
+        "num_learning_epochs": 4,
+        "num_mini_batches": 4,
+        "learning_rate": 0.0003,
+        "schedule": "fixed",
+        "gamma": 0.997,
+        "lam": 0.97,
+        "entropy_coef": 0.01,
+        "desired_kl": 0.01,
+        "max_grad_norm": 1.0,
+        "value_loss_coef": 1.0,
+        "use_clipped_value_loss": true,
+        "clip_param": 0.2
+      }
+    }
+  }
+}

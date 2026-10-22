@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "current_goal": "G04",
+  "goals": {
+    "G00": {
+      "state": "PASSED",
+      "evidence": "reports/G00/evidence.json",
+      "notes": "Isaac Lab/Isaac Sim/PyTorch/RSL-RL 锁定；RTX 5080 GPU smoke、native PPO checkpoint 保存与独立加载均已通过。"
+    },
+    "G01": {
+      "state": "PASSED",
+      "evidence": "reports/G01/evidence.json",
+      "notes": "已用标准PiPER官方无夹爪URDF重建并复验：公开validate_assets命令完成100/100个10秒自由站立/低速摆臂回合，自碰撞开启，18关节响应正确；接触标定、源质量/质心/惯量逐项匹配、离地机身反作用和动量诊断通过。tools/verify_goal.py G01已通过；旧固定基座证据保留于invalidated目录。",
+      "invalidated_evidence": "reports/G01/invalidated_20261022/evidence.json"
+    },
+    "G02": {
+      "state": "PASSED",
+      "evidence": "reports/G02/evidence.json",
+      "notes": "公开 validate_physics 命令完成 69 项 CPU 测试、7 个步长各 51 个原生案例及完整20.646991 kg机器人反作用验证。GPU不支持扫掠CCD，真实球任务细化到62.5微秒，并逐子步独立扫掠审计；2/1ms漏碰证据保留。两个200/120m/s擦边出球方向不稳定案例单独报告；非边界5%/5度/2ms标准通过。verify_goal G02已通过。",
+      "invalidated_evidence": "reports/G02/invalidated_20261022/evidence.json"
+    },
+    "G03": {
+      "state": "PASSED",
+      "evidence": "reports/G03/evidence.json",
+      "notes": "公开native smoke完成32环境x2000步，Jump/Virtual/Ball统一794维观测及partial reset/timeout测试、10次PPO更新、独立进程恢复及SIGTERM后恢复均通过。checkpoint.pt在PPO更新边界显式终止未完成回合并保存地面起始状态；完整模型/优化器/normalizers/RNG/实验计数保持，不承诺不可访问PhysX接触缓存的任意中途复现。verify_goal G03通过。",
+      "invalidated_evidence": "reports/G03/invalidated_20261022/evidence.json"
+    },
+    "G04": {
+      "state": "FAILED",
+      "evidence": "reports/G04/evidence.json",
+      "notes": "最终PPO独立双面板仍为0/400成功，G04未通过。足端补充诊断完成：256000个环境物理子步中全部接触力与独立地面过滤力及离地标签一致；精选已有工程动作重放1/32完整恢复，不计入PPO验收。累计GPU0记账3.432439632/8小时、99685408/200000000交互，无运行中作业。额外一轮低噪声修订尚未收到明确批准。",
+      "pending_additional_revision": "reports/G04/additional_revision_proposal.json",
+      "active_gpu_jobs": [],
+      "foot_ground_audit": "reports/G04/foot_ground_audit_v1/REPORT.md",
+      "next_action_state": "BLOCKED_PERMISSION",
+      "next_action_reason": "额外一轮低噪声修订需要超过原三轮上限；连续三次目标轮次仍未收到明确授权。PPO验收结果保持FAILED，累计资源预算不变。"
+    },
+    "G05": {
+      "state": "TODO",
+      "evidence": null,
+      "notes": "尚未实施/训练；不得将任务包CPU测试当作此Goal通过。"
+    },
+    "G06": {
+      "state": "TODO",
+      "evidence": null,
+      "notes": "尚未实施/训练；不得将任务包CPU测试当作此Goal通过。"
+    },
+    "G07": {
+      "state": "TODO",
+      "evidence": null,
+      "notes": "尚未实施/训练；不得将任务包CPU测试当作此Goal通过。"
+    },
+    "G08": {
+      "state": "TODO",
+      "evidence": null,
+      "notes": "尚未实施/训练；不得将任务包CPU测试当作此Goal通过。"
+    },
+    "G09": {
+      "state": "TODO",
+      "evidence": null,
+      "notes": "尚未实施/训练；不得将任务包CPU测试当作此Goal通过。"
+    },
+    "G10": {
+      "state": "TODO",
+      "evidence": null,
+      "notes": "尚未实施/训练；不得将任务包CPU测试当作此Goal通过。"
+    }
+  }
+}

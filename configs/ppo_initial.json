@@ -1,0 +1,32 @@
+{
+  "status": "proposed_starting_point_not_tuned",
+  "action_dim_expected": 18,
+  "actor_hidden_dims": [
+    512,
+    256,
+    128
+  ],
+  "critic_hidden_dims": [
+    512,
+    256,
+    128
+  ],
+  "learning_rate": 0.0003,
+  "clip_param": 0.2,
+  "num_learning_epochs": 5,
+  "num_mini_batches": 4,
+  "gamma": 0.997,
+  "lam": 0.98,
+  "entropy_coef": 0.005,
+  "max_grad_norm": 1.0,
+  "rollout_length": 128,
+  "policy_dt_s": 0.01,
+  "physics_dt_s": 0.002,
+  "num_envs_smoke": 32,
+  "num_envs_initial_train": 512,
+  "num_envs_target_if_fits": 1024,
+  "history_seconds": 0.1,
+  "asymmetric_critic": true,
+  "privileged_actor_leakage_allowed": false,
+  "note": "映射到实际锁定RSL-RL版本的字段名；不能假设直接传入以上JSON即被框架识别。"
+}

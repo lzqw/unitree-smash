@@ -1,0 +1,454 @@
+{
+  "schema_version": 1,
+  "goal_id": "G02",
+  "task_id": "physics_validation",
+  "evidence_kind": "observed",
+  "contract_sha256": "66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807",
+  "metrics": {
+    "analytic_flight_ok": true,
+    "swept_contact_ok": true,
+    "no_double_impulse": true,
+    "reaction_impulse_ok": true,
+    "timestep_convergence_ok": true,
+    "native_case_count": 51,
+    "cpu_test_count": 69,
+    "production_dt_s": 6.25e-05,
+    "policy_dt_s": 0.01,
+    "reference_dt_s": 3.125e-05,
+    "coupled_linear_momentum_error_kg_m_s": 8.32399309729226e-05,
+    "coupled_angular_momentum_error_kg_m2_s": 0.00029375002486631274,
+    "paired_robot_reaction_kg_m_s": [
+      0.08899474665653903,
+      1.0600991561650261
+    ],
+    "flight": [
+      {
+        "lane": 0,
+        "kind": "gravity",
+        "speed": 4.0,
+        "position_error_m": 0.00044365685527585736,
+        "velocity_error_m_s": 2.824020385761017e-05
+      },
+      {
+        "lane": 1,
+        "kind": "gravity",
+        "speed": 20.0,
+        "position_error_m": 0.00044667989374255784,
+        "velocity_error_m_s": 2.824020385761017e-05
+      },
+      {
+        "lane": 2,
+        "kind": "gravity",
+        "speed": 80.0,
+        "position_error_m": 6.993612295842621e-05,
+        "velocity_error_m_s": 2.824020385761017e-05
+      },
+      {
+        "lane": 3,
+        "kind": "drag",
+        "speed": 4.0,
+        "position_error_m": 0.0002366266774468384,
+        "velocity_error_m_s": 1.5241961757173073e-05
+      },
+      {
+        "lane": 4,
+        "kind": "drag",
+        "speed": 20.0,
+        "position_error_m": 6.131848745472013e-05,
+        "velocity_error_m_s": 4.902563805586624e-05
+      },
+      {
+        "lane": 5,
+        "kind": "drag",
+        "speed": 80.0,
+        "position_error_m": 0.0009570984476354738,
+        "velocity_error_m_s": 0.0017610212501608657
+      },
+      {
+        "lane": 6,
+        "kind": "wind",
+        "speed": 4.0,
+        "position_error_m": 8.380720650791318e-07,
+        "velocity_error_m_s": 2.7906894644047497e-06
+      },
+      {
+        "lane": 7,
+        "kind": "wind",
+        "speed": 20.0,
+        "position_error_m": 8.301058331339206e-05,
+        "velocity_error_m_s": 7.757398732621823e-05
+      },
+      {
+        "lane": 8,
+        "kind": "wind",
+        "speed": 80.0,
+        "position_error_m": 0.001029430015950794,
+        "velocity_error_m_s": 0.0019431063613097876
+      }
+    ],
+    "restitution": [
+      {
+        "lane": 9,
+        "kind": "impact",
+        "measured_restitution": 0.7200000584125519,
+        "contact_point_speed": 0.0
+      },
+      {
+        "lane": 13,
+        "kind": "impact",
+        "measured_restitution": 0.7199999094009399,
+        "contact_point_speed": 0.0
+      },
+      {
+        "lane": 17,
+        "kind": "impact",
+        "measured_restitution": 0.7196271816889445,
+        "contact_point_speed": 0.0
+      },
+      {
+        "lane": 21,
+        "kind": "impact",
+        "measured_restitution": 0.7192984422047933,
+        "contact_point_speed": 0.0
+      },
+      {
+        "lane": 25,
+        "kind": "impact",
+        "measured_restitution": 0.7196306149164836,
+        "contact_point_speed": 0.0
+      },
+      {
+        "lane": 29,
+        "kind": "impact",
+        "measured_restitution": 0.7195641899108887,
+        "contact_point_speed": 0.0
+      },
+      {
+        "lane": 33,
+        "kind": "moving",
+        "measured_restitution": 0.7193366219015682,
+        "contact_point_speed": 3.0
+      },
+      {
+        "lane": 34,
+        "kind": "moving",
+        "measured_restitution": 0.7200001791903847,
+        "contact_point_speed": 1.0
+      },
+      {
+        "lane": 35,
+        "kind": "moving",
+        "measured_restitution": 0.7199998497962952,
+        "contact_point_speed": 0.0
+      },
+      {
+        "lane": 36,
+        "kind": "moving",
+        "measured_restitution": 0.7193214070229303,
+        "contact_point_speed": 1.0
+      },
+      {
+        "lane": 37,
+        "kind": "moving",
+        "measured_restitution": 0.719417040762694,
+        "contact_point_speed": 3.0
+      },
+      {
+        "lane": 38,
+        "kind": "rotating",
+        "measured_restitution": 0.7284372404063386,
+        "contact_point_speed": 2.234653131456596
+      },
+      {
+        "lane": 39,
+        "kind": "rotating",
+        "measured_restitution": 0.7200050497385233,
+        "contact_point_speed": 3.4947868342296506
+      },
+      {
+        "lane": 40,
+        "kind": "rotating",
+        "measured_restitution": 0.7210139766354107,
+        "contact_point_speed": 1.0474222139169678
+      },
+      {
+        "lane": 41,
+        "kind": "rotating",
+        "measured_restitution": 0.7196428482049751,
+        "contact_point_speed": 1.4550107487363608
+      },
+      {
+        "lane": 42,
+        "kind": "rotating",
+        "measured_restitution": 0.7201216812903093,
+        "contact_point_speed": 0.28971923537283406
+      },
+      {
+        "lane": 43,
+        "kind": "rotating",
+        "measured_restitution": 0.7199647284235319,
+        "contact_point_speed": 0.31632456263352865
+      },
+      {
+        "lane": 44,
+        "kind": "rotating",
+        "measured_restitution": 0.7199638393440503,
+        "contact_point_speed": 0.3163198897657956
+      },
+      {
+        "lane": 45,
+        "kind": "rotating",
+        "measured_restitution": 0.7201207076504766,
+        "contact_point_speed": 0.2897151918396184
+      },
+      {
+        "lane": 46,
+        "kind": "rotating",
+        "measured_restitution": 0.7194982041857539,
+        "contact_point_speed": 1.4558177231875302
+      },
+      {
+        "lane": 47,
+        "kind": "rotating",
+        "measured_restitution": 0.7210388805479677,
+        "contact_point_speed": 1.046730648375915
+      },
+      {
+        "lane": 48,
+        "kind": "rotating",
+        "measured_restitution": 0.7209682463880934,
+        "contact_point_speed": 3.4968901136414114
+      },
+      {
+        "lane": 49,
+        "kind": "rotating",
+        "measured_restitution": 0.728394746399922,
+        "contact_point_speed": 2.239307729569008
+      }
+    ],
+    "unresolved_boundary_response_cases": [
+      27,
+      31
+    ]
+  },
+  "run": {
+    "command": "scripts/finalize_g02_reaudit.py; native commands in reports/G02/commands.log",
+    "git_commit": "uncommitted-worktree-source-snapshots-attached",
+    "started_at": "2026-10-22T03:43:41.950467+00:00",
+    "finished_at": "2026-10-22T03:44:55.215930+00:00",
+    "gpu_hours": 0.020245440123625384,
+    "env_steps": 7800
+  },
+  "artifacts": [
+    {
+      "path": "reports/G02/REPORT.md",
+      "sha256": "02e0a7998df5e681947d93cf2f81870792044ae82fe21ae1cb0683c3b9ef9af8",
+      "bytes": 2862
+    },
+    {
+      "path": "reports/G02/commands.log",
+      "sha256": "3ac50a3103f1fb026c9b8c6068e3328f9abfdcc9867b0052ad30d5014c86f13c",
+      "bytes": 1558
+    },
+    {
+      "path": "reports/G02/physics_tests.json",
+      "sha256": "9ccf0e765f58f688c3414ddb278ff11f82af84ff3afaa16ad869d6c30e20da99",
+      "bytes": 5547
+    },
+    {
+      "path": "reports/G02/contact_cases.csv",
+      "sha256": "120fa65abd41205b07bfc42129f1d2fb36c6ca37db2ab1bcc460313963c3127c",
+      "bytes": 7379
+    },
+    {
+      "path": "configs/g02_validation_v2.json",
+      "sha256": "d9fbda5c1d16c94736b68b7ac076dab2f71d3fc20f2f6144c289142b239e431d",
+      "bytes": 1117
+    },
+    {
+      "path": "configs/shuttle_physics_v2.json",
+      "sha256": "dba0e8d45edd661185c7f0b8a379f63993d1a87269740e672688b4577e359229",
+      "bytes": 1109
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/cpu_tests.xml",
+      "sha256": "15e8a490f935b70faa20679638bbc004b2295daf0005e87be0fbc9b2de88e81d",
+      "bytes": 8979
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/fixture_dt2/benchmark.json",
+      "sha256": "c7f0fa0954ba1ee7333751c63ad2e961afa5ae47c522c58889460da98c609404",
+      "bytes": 419203
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/fixture_dt2/job.json",
+      "sha256": "931e8adde30e547c05b15ad167712941fd51320e2694e9af26e83c82daf99912",
+      "bytes": 725
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/fixture_dt2/stdout.log",
+      "sha256": "72c894c3a5d619ef2824df557e73654c1e2d2c04defc68506df007848410ad56",
+      "bytes": 3722
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/fixture_dt2/source_snapshot.zip",
+      "sha256": "f850aec8f22ee11b3c8b18891bd12d84e6556813ee7d06d97c25786b68caf851",
+      "bytes": 126704
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/fixture_dt1/benchmark.json",
+      "sha256": "96aed29fdc807e65e98eeb34a36e953b21fd290646d66c73fdbc48630e36aa66",
+      "bytes": 442204
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/fixture_dt1/job.json",
+      "sha256": "00c779d12d0853389e464eb361b3680939364d497a7ee6ed13dc74d7c91c1d0e",
+      "bytes": 725
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/fixture_dt1/stdout.log",
+      "sha256": "2e22f38706a4e632fee59ef7eaf824cf55c9daf30b51965198bfeeda9881a1f3",
+      "bytes": 3722
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/fixture_dt1/source_snapshot.zip",
+      "sha256": "f850aec8f22ee11b3c8b18891bd12d84e6556813ee7d06d97c25786b68caf851",
+      "bytes": 126704
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/fixture_dt05/benchmark.json",
+      "sha256": "3ee046bf523c8571b54ebe0dee2265402e5553eb7a68bb0ce5c18271b8baea2b",
+      "bytes": 451865
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/fixture_dt05/job.json",
+      "sha256": "74556bbe7f961beca63300dc53e670e62f0a2610e51f69a678788a393a4eedab",
+      "bytes": 728
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/fixture_dt05/stdout.log",
+      "sha256": "05cc99485f0ebf8b9192ad43edeeb9507d6a6d3a1040ea7d7d34f56d2897382b",
+      "bytes": 3723
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/fixture_dt05/source_snapshot.zip",
+      "sha256": "f850aec8f22ee11b3c8b18891bd12d84e6556813ee7d06d97c25786b68caf851",
+      "bytes": 126704
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/fixture_dt025/benchmark.json",
+      "sha256": "81a070a872a5b13976d20e54bf1348039667dfab175f8a470feca085bddbe3e1",
+      "bytes": 454014
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/fixture_dt025/job.json",
+      "sha256": "a7f88107e8cc596e463c349fa3246ed6e039a6605e3c10a6246affe581355c33",
+      "bytes": 731
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/fixture_dt025/stdout.log",
+      "sha256": "90a3594b6363145c3b82f480c1574f349c4f1162253f8e6fb5c8f96c01322cc1",
+      "bytes": 3725
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/fixture_dt025/source_snapshot.zip",
+      "sha256": "f850aec8f22ee11b3c8b18891bd12d84e6556813ee7d06d97c25786b68caf851",
+      "bytes": 126704
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/fixture_dt0125/benchmark.json",
+      "sha256": "5d4c99c67e7280931756f2ab3b4bed3c6efa2bd5ea3d2a292eaa0a05299aa862",
+      "bytes": 453620
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/fixture_dt0125/job.json",
+      "sha256": "d633131b95d4fc0b8c7bde88a844ab86bb9e36bd27a458dff3b88dd6311381fb",
+      "bytes": 734
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/fixture_dt0125/stdout.log",
+      "sha256": "488427bc1a5e9dd04e7973bd806d3d9c18ddd1cb0b54c6973bcdb1d5f04b6726",
+      "bytes": 3725
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/fixture_dt0125/source_snapshot.zip",
+      "sha256": "f850aec8f22ee11b3c8b18891bd12d84e6556813ee7d06d97c25786b68caf851",
+      "bytes": 126704
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/fixture_dt00625/benchmark.json",
+      "sha256": "cc8385beffe5d341b3c246f21c3cb49f16dca31671ffed08a16aba5bffb8692c",
+      "bytes": 455311
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/fixture_dt00625/job.json",
+      "sha256": "05f67c28fc7dd97ab15120a00dea84870dc46c0ea66dffbbc20c5c22fef7d720",
+      "bytes": 738
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/fixture_dt00625/stdout.log",
+      "sha256": "05e3d4d3fa63776f0c307429db22b13262cfc7bda996cb64f5c6fb66dc4c6cc7",
+      "bytes": 3725
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/fixture_dt00625/source_snapshot.zip",
+      "sha256": "f850aec8f22ee11b3c8b18891bd12d84e6556813ee7d06d97c25786b68caf851",
+      "bytes": 126704
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/fixture_dt003125/benchmark.json",
+      "sha256": "296cd2118d18b6378f10608c2e3e59909cc61f0969a1a5b1c092d8566a0fee76",
+      "bytes": 455466
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/fixture_dt003125/job.json",
+      "sha256": "47962ee5ec122765d04e922128b314f6a7ea0bb957cd91bc92af2f694dc27947",
+      "bytes": 739
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/fixture_dt003125/stdout.log",
+      "sha256": "14a85587bc2d07928590621729b9210babc9e04c80265cdf78079a264edac5a9",
+      "bytes": 3726
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/fixture_dt003125/source_snapshot.zip",
+      "sha256": "f850aec8f22ee11b3c8b18891bd12d84e6556813ee7d06d97c25786b68caf851",
+      "bytes": 126704
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/coupled/coupling.json",
+      "sha256": "a959ae5f260a693217a15c624b805b0beb6ec47c044b4c11469f53287eda2b53",
+      "bytes": 1252430
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/coupled/job.json",
+      "sha256": "a695ee0b73ceb50b38b96e4ce57a8a681dba0e680c45cec53d5587f6072d1b03",
+      "bytes": 696
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/coupled/stdout.log",
+      "sha256": "fb5a8b045d2a0cc27a5946054bfafb59ec88d6b6897dcd62fcc81aeb5cfe9a97",
+      "bytes": 4465
+    },
+    {
+      "path": "reports/G02/native_20261022T034340_742972/coupled/source_snapshot.zip",
+      "sha256": "f850aec8f22ee11b3c8b18891bd12d84e6556813ee7d06d97c25786b68caf851",
+      "bytes": 126704
+    },
+    {
+      "path": "tests/test_native_physics_contract.py",
+      "sha256": "b1b6b39db83d02c00c4e0d15a1eea3912808bf2acf124eee9368b5a53947ecf3",
+      "bytes": 4790
+    },
+    {
+      "path": "tests/test_shuttlecock_physics.py",
+      "sha256": "db35ca2d6f33d47429112ca42f424e4221f4bea6f89b9abcf0ab53bd7363d496",
+      "bytes": 1334
+    },
+    {
+      "path": "tests/test_racket_collision.py",
+      "sha256": "11467e18c2d3d248481f9f7c17589e2c04f4f821a65303b751046fa34bec06f5",
+      "bytes": 889
+    }
+  ]
+}

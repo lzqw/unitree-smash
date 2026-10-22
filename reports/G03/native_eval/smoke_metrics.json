@@ -1,0 +1,30 @@
+{
+  "mode": "evaluate",
+  "task": "Go2PiPERCoupled-18D-v0",
+  "stage": "stand",
+  "backend": "Isaac Lab / PhysX",
+  "env_contract_ok": true,
+  "partial_reset_isolation_ok": true,
+  "timeout_bootstrap_ok": true,
+  "checkpoint_resume_ok": true,
+  "evaluation_protocol_frozen": true,
+  "num_envs": 8,
+  "steps": 256,
+  "env_steps": 2048,
+  "completed_episodes": 8,
+  "mean_reward_per_step": -0.004008242040981713,
+  "minimum_base_height_m": 0.4000000059604645,
+  "numerical_failures": 0,
+  "observation_shape": [
+    8,
+    48
+  ],
+  "action_shape": [
+    8,
+    18
+  ],
+  "checkpoint": "/home/autodrive/LZQW/unitree_smash/reports/G03/native_train_final/checkpoint.pt",
+  "checkpoint_sha256": "9f0193f6bb5d17fc0b841c7f11e8fd5b1cab0330440e4d57a2d6a0b0405c9796",
+  "elapsed_s": 12.422354200010886,
+  "env_steps_per_second": 164.8640802721762
+}

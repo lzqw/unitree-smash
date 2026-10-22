@@ -1,0 +1,23 @@
+{
+  "status": "AWAITING_EXPLICIT_ADDITIONAL_REVISION_AUTHORIZATION",
+  "asked_via": "request_user_input_async during current goal turn",
+  "source": "AGENTS.md:28 and original task: at most three hypothesis-driven revisions per stage",
+  "proposal": "reports/G04/additional_revision_proposal.json",
+  "configuration": "configs/jump_ppo_v2d_proposal.json",
+  "requested_additional_revisions": 1,
+  "cumulative_caps_unchanged": {
+    "gpu": 0,
+    "gpu_hours": 8,
+    "environment_interactions": 200000000
+  },
+  "user_answer_received": false,
+  "blocked_goal_turns_including_current_ending_turn": 3,
+  "note": "Do not count compactions as new turns. Do not mark goal blocked before same condition repeats for three consecutive actual goal turns. Clear this audit if the user approves; do not ask again after approval.",
+  "updated_at": "2026-10-22T06:02:55.600056+00:00",
+  "last_continuation_work": "Completed authorized independent foot-ground sensor diagnostic; no new training revision. Positive curated-controller recovery observed; PPO acceptance remains failed.",
+  "last_diagnostic": "reports/G04/foot_ground_audit_v1/REPORT.md",
+  "previous_goal_turn_classification": "progress: completed native foot-ground sensor comparison and retained new measured evidence",
+  "current_goal_turn_classification": "no progress: revalidated the same unresolved extra-revision permission blocker",
+  "blocked_audit_passed": true,
+  "blocked_reason": "The prepared next training revision exceeds the explicit three-revision cap. No affirmative answer has arrived; diagnostic work is complete, all GPU job handles are terminal or absent, and G05+ is unauthorized. No meaningful authorized next action remains."
+}

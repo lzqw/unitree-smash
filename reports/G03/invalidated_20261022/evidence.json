@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "goal_id": "G03",
+  "task_id": "environment_ppo_smoke",
+  "contract_sha256": "66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807",
+  "evidence_kind": "observed",
+  "run": {
+    "command": "Native Isaac Lab 18D RSL-RL train and separate checkpoint evaluation",
+    "git_commit": "HEAD",
+    "started_at": "2026-10-21T17:15:22.936079+00:00",
+    "finished_at": "2026-10-21T17:15:29.236079+00:00",
+    "gpu_hours": 0.0052,
+    "env_steps": 3072
+  },
+  "metrics": {
+    "mode": "evaluate",
+    "task": "Go2PiPERCoupled-18D-v0",
+    "backend": "Isaac Lab / PhysX",
+    "env_contract_ok": true,
+    "partial_reset_isolation_ok": true,
+    "timeout_bootstrap_ok": true,
+    "checkpoint_resume_ok": true,
+    "evaluation_protocol_frozen": true,
+    "num_envs": 8,
+    "steps": 256,
+    "env_steps": 2048,
+    "completed_episodes": 8,
+    "mean_reward_per_step": -0.004008242040981713,
+    "minimum_base_height_m": 0.4000000059604645,
+    "numerical_failures": 0,
+    "observation_shape": [
+      8,
+      48
+    ],
+    "action_shape": [
+      8,
+      18
+    ],
+    "checkpoint": "/home/autodrive/LZQW/unitree_smash/reports/G03/native_train_final/checkpoint.pt",
+    "checkpoint_sha256": "9f0193f6bb5d17fc0b841c7f11e8fd5b1cab0330440e4d57a2d6a0b0405c9796",
+    "elapsed_s": 12.422354200010886,
+    "env_steps_per_second": 164.8640802721762
+  },
+  "artifacts": [
+    {
+      "path": "reports/G03/REPORT.md",
+      "sha256": "f1b48e62211895d4ff510d22e4a79e5ef7bece1ac455bf9be687d03b65bcedd1",
+      "bytes": 771
+    },
+    {
+      "path": "reports/G03/commands.log",
+      "sha256": "975e5f788d06a69e509b73fd4380053f8aa114963b16d446396828ab4db2f564",
+      "bytes": 1159
+    },
+    {
+      "path": "reports/G03/interface_contract.json",
+      "sha256": "8708280273af17aa089a51648dd72c1147bdef96f90997a20f97148fdb64df8d",
+      "bytes": 514
+    },
+    {
+      "path": "reports/G03/evaluation_manifest.json",
+      "sha256": "2287f1b5b176da9efa5203f30dd7aa070b86ef494e1d4b942298c90c458acc87",
+      "bytes": 277
+    },
+    {
+      "path": "reports/G03/native_train/checkpoint.pt",
+      "sha256": "9f0193f6bb5d17fc0b841c7f11e8fd5b1cab0330440e4d57a2d6a0b0405c9796",
+      "bytes": 596277
+    },
+    {
+      "path": "reports/G03/native_eval/smoke_metrics.json",
+      "sha256": "cc068201a2288ad0749d64163b26b9b6a685f798aeb966db92acc7532622186a",
+      "bytes": 839
+    }
+  ]
+}

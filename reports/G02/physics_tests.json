@@ -1,0 +1,227 @@
+{
+  "analytic_flight_ok": true,
+  "swept_contact_ok": true,
+  "no_double_impulse": true,
+  "reaction_impulse_ok": true,
+  "timestep_convergence_ok": true,
+  "native_case_count": 51,
+  "cpu_test_count": 69,
+  "production_dt_s": 6.25e-05,
+  "policy_dt_s": 0.01,
+  "reference_dt_s": 3.125e-05,
+  "coupled_linear_momentum_error_kg_m_s": 8.32399309729226e-05,
+  "coupled_angular_momentum_error_kg_m2_s": 0.00029375002486631274,
+  "paired_robot_reaction_kg_m_s": [
+    0.08899474665653903,
+    1.0600991561650261
+  ],
+  "flight": [
+    {
+      "lane": 0,
+      "kind": "gravity",
+      "speed": 4.0,
+      "position_error_m": 0.00044365685527585736,
+      "velocity_error_m_s": 2.824020385761017e-05
+    },
+    {
+      "lane": 1,
+      "kind": "gravity",
+      "speed": 20.0,
+      "position_error_m": 0.00044667989374255784,
+      "velocity_error_m_s": 2.824020385761017e-05
+    },
+    {
+      "lane": 2,
+      "kind": "gravity",
+      "speed": 80.0,
+      "position_error_m": 6.993612295842621e-05,
+      "velocity_error_m_s": 2.824020385761017e-05
+    },
+    {
+      "lane": 3,
+      "kind": "drag",
+      "speed": 4.0,
+      "position_error_m": 0.0002366266774468384,
+      "velocity_error_m_s": 1.5241961757173073e-05
+    },
+    {
+      "lane": 4,
+      "kind": "drag",
+      "speed": 20.0,
+      "position_error_m": 6.131848745472013e-05,
+      "velocity_error_m_s": 4.902563805586624e-05
+    },
+    {
+      "lane": 5,
+      "kind": "drag",
+      "speed": 80.0,
+      "position_error_m": 0.0009570984476354738,
+      "velocity_error_m_s": 0.0017610212501608657
+    },
+    {
+      "lane": 6,
+      "kind": "wind",
+      "speed": 4.0,
+      "position_error_m": 8.380720650791318e-07,
+      "velocity_error_m_s": 2.7906894644047497e-06
+    },
+    {
+      "lane": 7,
+      "kind": "wind",
+      "speed": 20.0,
+      "position_error_m": 8.301058331339206e-05,
+      "velocity_error_m_s": 7.757398732621823e-05
+    },
+    {
+      "lane": 8,
+      "kind": "wind",
+      "speed": 80.0,
+      "position_error_m": 0.001029430015950794,
+      "velocity_error_m_s": 0.0019431063613097876
+    }
+  ],
+  "restitution": [
+    {
+      "lane": 9,
+      "kind": "impact",
+      "measured_restitution": 0.7200000584125519,
+      "contact_point_speed": 0.0
+    },
+    {
+      "lane": 13,
+      "kind": "impact",
+      "measured_restitution": 0.7199999094009399,
+      "contact_point_speed": 0.0
+    },
+    {
+      "lane": 17,
+      "kind": "impact",
+      "measured_restitution": 0.7196271816889445,
+      "contact_point_speed": 0.0
+    },
+    {
+      "lane": 21,
+      "kind": "impact",
+      "measured_restitution": 0.7192984422047933,
+      "contact_point_speed": 0.0
+    },
+    {
+      "lane": 25,
+      "kind": "impact",
+      "measured_restitution": 0.7196306149164836,
+      "contact_point_speed": 0.0
+    },
+    {
+      "lane": 29,
+      "kind": "impact",
+      "measured_restitution": 0.7195641899108887,
+      "contact_point_speed": 0.0
+    },
+    {
+      "lane": 33,
+      "kind": "moving",
+      "measured_restitution": 0.7193366219015682,
+      "contact_point_speed": 3.0
+    },
+    {
+      "lane": 34,
+      "kind": "moving",
+      "measured_restitution": 0.7200001791903847,
+      "contact_point_speed": 1.0
+    },
+    {
+      "lane": 35,
+      "kind": "moving",
+      "measured_restitution": 0.7199998497962952,
+      "contact_point_speed": 0.0
+    },
+    {
+      "lane": 36,
+      "kind": "moving",
+      "measured_restitution": 0.7193214070229303,
+      "contact_point_speed": 1.0
+    },
+    {
+      "lane": 37,
+      "kind": "moving",
+      "measured_restitution": 0.719417040762694,
+      "contact_point_speed": 3.0
+    },
+    {
+      "lane": 38,
+      "kind": "rotating",
+      "measured_restitution": 0.7284372404063386,
+      "contact_point_speed": 2.234653131456596
+    },
+    {
+      "lane": 39,
+      "kind": "rotating",
+      "measured_restitution": 0.7200050497385233,
+      "contact_point_speed": 3.4947868342296506
+    },
+    {
+      "lane": 40,
+      "kind": "rotating",
+      "measured_restitution": 0.7210139766354107,
+      "contact_point_speed": 1.0474222139169678
+    },
+    {
+      "lane": 41,
+      "kind": "rotating",
+      "measured_restitution": 0.7196428482049751,
+      "contact_point_speed": 1.4550107487363608
+    },
+    {
+      "lane": 42,
+      "kind": "rotating",
+      "measured_restitution": 0.7201216812903093,
+      "contact_point_speed": 0.28971923537283406
+    },
+    {
+      "lane": 43,
+      "kind": "rotating",
+      "measured_restitution": 0.7199647284235319,
+      "contact_point_speed": 0.31632456263352865
+    },
+    {
+      "lane": 44,
+      "kind": "rotating",
+      "measured_restitution": 0.7199638393440503,
+      "contact_point_speed": 0.3163198897657956
+    },
+    {
+      "lane": 45,
+      "kind": "rotating",
+      "measured_restitution": 0.7201207076504766,
+      "contact_point_speed": 0.2897151918396184
+    },
+    {
+      "lane": 46,
+      "kind": "rotating",
+      "measured_restitution": 0.7194982041857539,
+      "contact_point_speed": 1.4558177231875302
+    },
+    {
+      "lane": 47,
+      "kind": "rotating",
+      "measured_restitution": 0.7210388805479677,
+      "contact_point_speed": 1.046730648375915
+    },
+    {
+      "lane": 48,
+      "kind": "rotating",
+      "measured_restitution": 0.7209682463880934,
+      "contact_point_speed": 3.4968901136414114
+    },
+    {
+      "lane": 49,
+      "kind": "rotating",
+      "measured_restitution": 0.728394746399922,
+      "contact_point_speed": 2.239307729569008
+    }
+  ],
+  "unresolved_boundary_response_cases": [
+    27,
+    31
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "world_axes": {
+    "x": "toward_opponent",
+    "y": "lateral",
+    "z": "up"
+  },
+  "robot": "Unitree Go2",
+  "arm": "AgileX standard PiPER",
+  "joint_mapping": "must_derive_from_audited_asset",
+  "clamp_gripper": true,
+  "use_full_payload_from_G01": true,
+  "expected_action_dim": 18,
+  "physics_dt_s": 0.002,
+  "policy_dt_s": 0.01,
+  "jump": {
+    "min_com_apex_above_takeoff_m": 0.08,
+    "min_all_feet_airborne_s": 0.1
+  },
+  "virtual_hit": {
+    "position_tolerance_m": 0.04,
+    "normal_tolerance_deg": 10.0,
+    "time_tolerance_s": 0.02,
+    "velocity_tolerance_abs_m_s": 0.5,
+    "velocity_tolerance_relative": 0.2
+  },
+  "attack": {
+    "outgoing_speed_min_m_s": 8.0,
+    "outgoing_vz_max_m_s": -1.0,
+    "must_cross_net": true,
+    "must_land_in_target": true
+  },
+  "net": {
+    "center_height_m": 1.524,
+    "side_height_m": 1.55,
+    "debug_low_net_cannot_pass_G07": true
+  },
+  "recovery": {
+    "stable_window_s": 0.8,
+    "max_roll_pitch_deg": 15.0,
+    "max_horizontal_speed_m_s": 0.3,
+    "max_base_angspeed_rad_s": 1.0
+  },
+  "airborne_contact_thresholds": "calibrate_and_freeze_in_G01_G03",
+  "geometry_and_actuator_parameters": "store_in_assets_manifest_and_assumptions_before_training",
+  "final_eval_initialization": "ground_only",
+  "reset_bank_max_training_fraction": 0.5,
+  "thresholds_are": "engineering_targets_not_measurements_or_hardware_guarantees"
+}

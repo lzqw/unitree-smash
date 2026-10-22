@@ -1,0 +1,20 @@
+{
+  "version": "native-standard-blade-g02-v2",
+  "production_dt_s": 0.0000625,
+  "reference_dt_s": 0.00003125,
+  "coarse_diagnostic_dt_s": [0.002, 0.001, 0.0005, 0.00025, 0.000125],
+  "policy_dt_s": 0.01,
+  "nonboundary_speed_relative_tolerance": 0.05,
+  "nonboundary_direction_tolerance_deg": 5.0,
+  "contact_time_tolerance_s": 0.002,
+  "boundary_rule": "Independent free-flight sweep predicts the ball center within one ball radius of a blade edge at first contact. Record such cases separately, including unstable response; do not omit hit/miss checks.",
+  "native_flight_position_tolerance_m": 0.002,
+  "native_flight_velocity_tolerance_m_s": 0.005,
+  "native_flight_tolerance_basis": "Finite-difference PhysX integration plus world-coordinate float32 accumulation; independent float64 RK4 analytic CPU tests use 1e-8.",
+  "fixture_linear_momentum_tolerance_kg_m_s": 0.00001,
+  "coupled_linear_momentum_tolerance_kg_m_s": 0.001,
+  "coupled_angular_momentum_tolerance_kg_m2_s": 0.005,
+  "restitution_absolute_tolerance": 0.02,
+  "minimum_paired_robot_reaction_kg_m_s": 0.01,
+  "contact_force_threshold_n": 0.001
+}

@@ -1,0 +1,65 @@
+{
+  "algorithm": "whole_body_ppo",
+  "num_envs": 32,
+  "steps": 8,
+  "checkpoint": "checkpoints/smoke.npz",
+  "curriculum_stage": "real_contact",
+  "logs": [
+    {
+      "step": 0,
+      "mean_reward": 0.05538728798273951,
+      "mean_advantage": 3.469446951953614e-18,
+      "critic_loss": 0.034021267664262306,
+      "clip_fraction": 0.4375
+    },
+    {
+      "step": 1,
+      "mean_reward": 0.056150006828829646,
+      "mean_advantage": 6.938893903907228e-17,
+      "critic_loss": 0.05488878612468763,
+      "clip_fraction": 0.40625
+    },
+    {
+      "step": 2,
+      "mean_reward": 0.05486913851927966,
+      "mean_advantage": 1.3877787807814457e-17,
+      "critic_loss": 0.07396098385380202,
+      "clip_fraction": 0.46875
+    },
+    {
+      "step": 3,
+      "mean_reward": 0.05509176023770124,
+      "mean_advantage": -2.7755575615628914e-17,
+      "critic_loss": 0.055962340573665115,
+      "clip_fraction": 0.625
+    },
+    {
+      "step": 4,
+      "mean_reward": 0.05534278089180589,
+      "mean_advantage": 0.0,
+      "critic_loss": 0.0498110147092575,
+      "clip_fraction": 0.4375
+    },
+    {
+      "step": 5,
+      "mean_reward": 0.054953701328486204,
+      "mean_advantage": 6.938893903907228e-18,
+      "critic_loss": 0.0423287370021633,
+      "clip_fraction": 0.5625
+    },
+    {
+      "step": 6,
+      "mean_reward": 0.054960794863291085,
+      "mean_advantage": -2.0816681711721685e-17,
+      "critic_loss": 0.042516274425427825,
+      "clip_fraction": 0.65625
+    },
+    {
+      "step": 7,
+      "mean_reward": 0.054706735303625464,
+      "mean_advantage": -4.163336342344337e-17,
+      "critic_loss": 0.07836659108319372,
+      "clip_fraction": 0.3125
+    }
+  ]
+}

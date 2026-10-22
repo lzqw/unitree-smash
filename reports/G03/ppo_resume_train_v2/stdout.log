@@ -1,0 +1,217 @@
+[INFO][AppLauncher]: Using device: cuda:0
+[INFO][AppLauncher]: Loading experience file: /home/autodrive/Isaac/IsaacLab/apps/isaaclab.python.headless.kit
+Loading user config located at: '/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/isaacsim/kit/data/Kit/Isaac-Sim/5.1/user.config.json'
+[Info] [carb] Logging to file: /home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/isaacsim/kit/logs/Kit/Isaac-Sim/5.1/kit_20261022_115507.log
+2026-10-22T03:55:08Z [55ms] [Warning] [omni.usd_config.extension] Enable omni.materialx.libs extension to use MaterialX
+2026-10-22T03:55:08Z [363ms] [Warning] [carb] Acquiring non optional plugin interface which is not listed as dependency: [omni::physx::IPhysxBenchmarks v1.0] (plugin: <default plugin>), by client: omni.physics.physx.plugin. Add it to CARB_PLUGIN_IMPL_DEPS() macro of a client.
+2026-10-22T03:55:08Z [476ms] [Warning] [omni.isaac.dynamic_control] omni.isaac.dynamic_control is deprecated as of Isaac Sim 4.5. No action is needed from end-users.
+2026-10-22T03:55:11Z [3,891ms] [Warning] [carb.cudainterop.plugin] CUDA_VISIBLE_DEVICES environment variable is set.
+2026-10-22T03:55:11Z [3,891ms] [Warning] [carb.cudainterop.plugin] Note CUDA device enumeration and Omniverse device enumeration are different.
+2026-10-22T03:55:11Z [3,891ms] [Warning] [carb.cudainterop.plugin] Setting CUDA_VISIBLE_DEVICES can lead to undesired behavior or crashes.
+
+|---------------------------------------------------------------------------------------------|
+| Driver Version: 595.91.07     | Graphics API: Vulkan
+|=============================================================================================|
+| GPU | Name                             | Active | LDA | GPU Memory | Vendor-ID | LUID       |
+|     |                                  |        |     |            | Device-ID | UUID       |
+|     |                                  |        |     |            | Bus-ID    |            |
+|---------------------------------------------------------------------------------------------|
+| 0   | NVIDIA GeForce RTX 5080          | Yes: 0 |     | 16303   MB | 10de      | 0          |
+|     |                                  |        |     |            | 2c02      | ac315b09.. |
+|     |                                  |        |     |            | 1         |            |
+|=============================================================================================|
+| OS: 24.04.4 LTS (Noble Numbat) ubuntu, Version: 24.04.4, Kernel: 7.0.0-38-generic
+| XServer Vendor: The X.Org Foundation, XServer Version: 12101011 (1.21.1.11)
+| Processor: Intel(R) Core(TM) i9-14900KF
+| Bare Metal Cores: 24 | Bare Metal Logical Cores: 48
+| Available Cores:  32 
+|---------------------------------------------------------------------------------------------|
+| Total Memory (MB): 64065 | Free Memory: 55151
+| Total Page/Swap (MB): 8191 | Free Page/Swap: 6588
+|---------------------------------------------------------------------------------------------|
+2026-10-22T03:55:12Z [4,192ms] [Warning] [gpu.foundation.plugin] CPU performance profile is set to powersave. This profile sets the CPU to the lowest frequency reducing performance.
+2026-10-22T03:55:12Z [4,201ms] [Warning] [gpu.foundation.plugin] IOMMU is enabled.
+Setting seed: 2017
+[INFO]: Base environment:
+	Environment device    : cuda:0
+	Environment seed      : 2017
+	Physics step-size     : 0.002
+	Rendering step-size   : 0.01
+	Environment step-size : 0.01
+[INFO]: Time taken for scene creation : 0.234267 seconds
+[INFO]: Scene manager:  <class InteractiveScene>
+	Number of environments: 32
+	Environment spacing   : 3.0
+	Source prim name      : /World/envs/env_0
+	Global prim paths     : ['/World/Ground']
+	Replicate physics     : True
+[INFO]: Starting the simulation. This may take a few seconds. Please wait...
+[INFO]: Time taken for simulation start : 0.369816 seconds
+[INFO]: Completed setting up the environment...
+--------------------------------------------------------------------------------
+Resolved observation sets: 
+	 policy :  ['policy']
+	 critic :  ['policy']
+--------------------------------------------------------------------------------
+Actor MLP: MLP(
+  (0): Linear(in_features=794, out_features=128, bias=True)
+  (1): ELU(alpha=1.0)
+  (2): Linear(in_features=128, out_features=128, bias=True)
+  (3): ELU(alpha=1.0)
+  (4): Linear(in_features=128, out_features=18, bias=True)
+)
+Critic MLP: MLP(
+  (0): Linear(in_features=794, out_features=128, bias=True)
+  (1): ELU(alpha=1.0)
+  (2): Linear(in_features=128, out_features=128, bias=True)
+  (3): ELU(alpha=1.0)
+  (4): Linear(in_features=128, out_features=1, bias=True)
+)
+################################################################################
+                        [1m Learning iteration 0/1 [0m                        
+
+                       Computation: 1538 steps/s (collection: 1.228s, learning 0.102s)
+             Mean action noise std: 0.30
+                    value_function: 0.0090
+                         surrogate: 0.0951
+                           entropy: 3.8880
+--------------------------------------------------------------------------------
+                   Total timesteps: 2048
+                    Iteration time: 1.33s
+                      Time elapsed: 00:00:01
+                               ETA: 00:00:01
+
+Storing git diff for 'rsl_rl' in: reports/G03/ppo_resume_train_v2/ppo/git/rsl_rl.diff
+################################################################################
+                        [1m Learning iteration 1/2 [0m                        
+
+                       Computation: 1856 steps/s (collection: 1.074s, learning 0.029s)
+             Mean action noise std: 0.30
+                    value_function: 0.0032
+                         surrogate: -0.0139
+                           entropy: 3.9211
+--------------------------------------------------------------------------------
+                   Total timesteps: 4096
+                    Iteration time: 1.10s
+                      Time elapsed: 00:00:02
+                               ETA: 00:00:02
+
+################################################################################
+                        [1m Learning iteration 2/3 [0m                        
+
+                       Computation: 1777 steps/s (collection: 1.115s, learning 0.037s)
+             Mean action noise std: 0.30
+                    value_function: 0.0023
+                         surrogate: -0.0317
+                           entropy: 3.9504
+--------------------------------------------------------------------------------
+                   Total timesteps: 6144
+                    Iteration time: 1.15s
+                      Time elapsed: 00:00:03
+                               ETA: 00:00:03
+
+################################################################################
+                        [1m Learning iteration 3/4 [0m                        
+
+                       Computation: 1870 steps/s (collection: 1.063s, learning 0.032s)
+             Mean action noise std: 0.30
+          Mean value_function loss: 0.0016
+               Mean surrogate loss: -0.0216
+                 Mean entropy loss: 3.9764
+                       Mean reward: 0.05
+               Mean episode length: 8.00
+--------------------------------------------------------------------------------
+                   Total timesteps: 8192
+                    Iteration time: 1.10s
+                      Time elapsed: 00:00:04
+                               ETA: 00:00:04
+
+################################################################################
+                        [1m Learning iteration 4/5 [0m                        
+
+                       Computation: 1906 steps/s (collection: 1.044s, learning 0.030s)
+             Mean action noise std: 0.30
+                    value_function: 0.0006
+                         surrogate: -0.0649
+                           entropy: 4.0039
+--------------------------------------------------------------------------------
+                   Total timesteps: 10240
+                    Iteration time: 1.07s
+                      Time elapsed: 00:00:05
+                               ETA: 00:00:05
+
+################################################################################
+                        [1m Learning iteration 5/6 [0m                        
+
+                       Computation: 1793 steps/s (collection: 1.111s, learning 0.031s)
+             Mean action noise std: 0.30
+                    value_function: 0.0012
+                         surrogate: -0.0546
+                           entropy: 4.0320
+--------------------------------------------------------------------------------
+                   Total timesteps: 12288
+                    Iteration time: 1.14s
+                      Time elapsed: 00:00:06
+                               ETA: 00:00:06
+
+################################################################################
+                        [1m Learning iteration 6/7 [0m                        
+
+                       Computation: 1821 steps/s (collection: 1.094s, learning 0.030s)
+             Mean action noise std: 0.30
+          Mean value_function loss: 0.0011
+               Mean surrogate loss: -0.0149
+                 Mean entropy loss: 4.0480
+                       Mean reward: 0.09
+               Mean episode length: 16.00
+--------------------------------------------------------------------------------
+                   Total timesteps: 14336
+                    Iteration time: 1.12s
+                      Time elapsed: 00:00:08
+                               ETA: 00:00:08
+
+################################################################################
+                        [1m Learning iteration 7/8 [0m                        
+
+                       Computation: 1873 steps/s (collection: 1.062s, learning 0.031s)
+             Mean action noise std: 0.30
+                    value_function: 0.0004
+                         surrogate: -0.0568
+                           entropy: 4.0655
+--------------------------------------------------------------------------------
+                   Total timesteps: 16384
+                    Iteration time: 1.09s
+                      Time elapsed: 00:00:09
+                               ETA: 00:00:09
+
+################################################################################
+                        [1m Learning iteration 8/9 [0m                        
+
+                       Computation: 1789 steps/s (collection: 1.114s, learning 0.030s)
+             Mean action noise std: 0.30
+                    value_function: 0.0006
+                         surrogate: -0.0580
+                           entropy: 4.0812
+--------------------------------------------------------------------------------
+                   Total timesteps: 18432
+                    Iteration time: 1.14s
+                      Time elapsed: 00:00:10
+                               ETA: 00:00:10
+
+################################################################################
+                       [1m Learning iteration 9/10 [0m                        
+
+                       Computation: 1778 steps/s (collection: 1.121s, learning 0.030s)
+             Mean action noise std: 0.30
+          Mean value_function loss: 0.0008
+               Mean surrogate loss: -0.0510
+                 Mean entropy loss: 4.0992
+                       Mean reward: 0.12
+               Mean episode length: 24.00
+--------------------------------------------------------------------------------
+                   Total timesteps: 20480
+                    Iteration time: 1.15s
+                      Time elapsed: 00:00:11
+                               ETA: 00:00:11
+
+RESUME {"backend": "Isaac Lab / GPU PhysX", "updates": 10, "initial_iteration": 0, "completed_iteration": 10, "stop_requested": false, "finite_gradients": true, "resume_metrics": {}, "checkpoint": "reports/G03/ppo_resume_train_v2/checkpoint.pt"}

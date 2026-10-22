@@ -1,0 +1,69 @@
+{
+  "protocol": {
+    "version": "standard-loaded-native-dev-v2",
+    "frozen_before_corrected_G04_training": true,
+    "asset": "assets/quadsmash_standard_v2.usd",
+    "reset_mode": "ground_only",
+    "policy_dt_s": 0.01,
+    "panels": [
+      {
+        "id": "dev_jump_v2_a",
+        "seed": 100100,
+        "episodes": 200,
+        "joint_offset_uniform_rad": 0.01,
+        "joint_velocity_uniform_rad_s": 0.02,
+        "yaw_uniform_rad": 0.03,
+        "xy_uniform_m": 0.02
+      },
+      {
+        "id": "dev_jump_v2_b",
+        "seed": 200200,
+        "episodes": 200,
+        "joint_offset_uniform_rad": 0.025,
+        "joint_velocity_uniform_rad_s": 0.04,
+        "yaw_uniform_rad": 0.08,
+        "xy_uniform_m": 0.04
+      }
+    ],
+    "aggregation": "minimum success fraction across the two 200-episode panels",
+    "jump": {
+      "minimum_total_com_rise_from_takeoff_m": 0.08,
+      "minimum_continuous_all_feet_airborne_s": 0.1
+    },
+    "recovery": {
+      "continuous_stable_window_s": 0.8,
+      "maximum_abs_roll_pitch_deg": 15.0,
+      "maximum_horizontal_root_speed_m_s": 0.3,
+      "maximum_root_angular_speed_rad_s": 1.0,
+      "maximum_abs_joint_velocity_rad_s": 1.0,
+      "maximum_body_ground_force_n": 1.0,
+      "require_foot_support": true
+    },
+    "contacts": "configs/contact_calibration_v2.json",
+    "dynamics": "nominal audited masses, inertias, actuator limits and friction; no geometry changes",
+    "holdout": {
+      "stage": "G10 only",
+      "generation_rule": "1000 scenarios per training seed; NumPy PCG64 SeedSequence([901001, training_seed]); joint offsets uniform +/-0.03 rad, joint velocity +/-0.05 rad/s, yaw +/-0.10 rad, xy +/-0.05 m; five training seeds minimum",
+      "results_accessed": false
+    },
+    "checkpoint_restore_tolerances": {
+      "initial_observation_max_abs": 1e-05,
+      "initial_action_max_abs": 1e-05,
+      "root_position_after_5_steps_m": 0.005,
+      "joint_position_after_5_steps_rad": 0.01,
+      "root_velocity_after_5_steps_m_s": 0.05,
+      "rng_streams": "exact Python, NumPy, Torch CPU and CUDA"
+    },
+    "checkpoint_resume_boundary": "After a completed PPO update, explicitly abort unfinished episodes and reset to canonical ground state before checkpoint.pt. Preserve model, normalizers, optimizer, schedule, global counters and RNG. Diagnostic model_i snapshots are not full-resume checkpoints."
+  },
+  "suite_requested": "dev_jump_v2",
+  "suite_executed": "dev_jump_v2_a+dev_jump_v2_b",
+  "checkpoint": "/home/autodrive/LZQW/unitree_smash/runs/G04/corrected_v2c_main01/native/checkpoint.pt",
+  "checkpoint_sha256": "ebda7c124da703fc0b5be99306e2c33feb15db1fac4f455c354277f91c02ad51",
+  "config": "/home/autodrive/LZQW/unitree_smash/configs/jump_ppo_v2c.json",
+  "config_sha256": "4d37d4cffc2c78061549307befb4a787bba3a107374165d85949909c56ce6040",
+  "metrics_source": "episodes.csv",
+  "initial_states_source": "initial_states.csv",
+  "num_envs": 200,
+  "evaluation_policy": "deterministic PPO inference; no assisting controller"
+}

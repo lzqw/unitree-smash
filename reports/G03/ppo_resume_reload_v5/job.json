@@ -1,0 +1,30 @@
+{
+  "goal": "G04",
+  "command": [
+    "/home/autodrive/Isaac/env_isaaclab/bin/python",
+    "-u",
+    "scripts/isaac_resume_probe.py",
+    "--output",
+    "reports/G03/ppo_resume_reload_v5",
+    "--iterations",
+    "2",
+    "--resume",
+    "reports/G03/ppo_resume_train_v2/checkpoint.pt",
+    "--reference",
+    "reports/G03/ppo_resume_train_v2/continuation_reference.pt",
+    "--headless"
+  ],
+  "output": "/home/autodrive/LZQW/unitree_smash/reports/G03/ppo_resume_reload_v5",
+  "gpu": 0,
+  "status": "FAILED",
+  "charged_gpu_hours": 0.00170109212694418,
+  "charged_env_steps": 4500,
+  "started_at": "2026-10-22T03:59:19.316085+00:00",
+  "pid": 851326,
+  "child_pid": 851333,
+  "exit_code": 0,
+  "timed_out": false,
+  "receipt_present": false,
+  "elapsed_s": 6.123931656999048,
+  "finished_at": "2026-10-22T03:59:25.440458+00:00"
+}

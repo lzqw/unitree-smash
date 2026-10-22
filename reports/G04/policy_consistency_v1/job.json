@@ -1,0 +1,28 @@
+{
+  "goal": "G04",
+  "command": [
+    "/home/autodrive/Isaac/env_isaaclab/bin/python",
+    "-u",
+    "scripts/isaac_policy_consistency_probe.py",
+    "--checkpoint",
+    "runs/G04/corrected_v2b_main01/native/checkpoint.pt",
+    "--config",
+    "configs/jump_ppo_v2b.json",
+    "--output",
+    "reports/G04/policy_consistency_v1",
+    "--headless"
+  ],
+  "output": "/home/autodrive/LZQW/unitree_smash/reports/G04/policy_consistency_v1",
+  "gpu": 0,
+  "status": "SUCCEEDED",
+  "charged_gpu_hours": 0.0044696020177798345,
+  "charged_env_steps": 51200,
+  "started_at": "2026-10-22T04:49:22.422935+00:00",
+  "pid": 866511,
+  "child_pid": 866518,
+  "exit_code": 0,
+  "timed_out": false,
+  "receipt_present": true,
+  "elapsed_s": 16.090567264007404,
+  "finished_at": "2026-10-22T04:49:38.514131+00:00"
+}

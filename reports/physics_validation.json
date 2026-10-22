@@ -1,0 +1,35 @@
+{
+  "model": "gravity_plus_quadratic_drag",
+  "dt_s": 0.002,
+  "gravity_error_m": 6.221212756561689e-15,
+  "gravity_tolerance_m": 0.0002,
+  "gravity_pass": true,
+  "drag_reduces_forward_speed": true,
+  "repeatability_pass": true,
+  "collision_response": {
+    "time": 0.25,
+    "contact_position": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "pre_velocity": [
+      -4.0,
+      1.0,
+      0.0
+    ],
+    "post_velocity": [
+      2.88,
+      0.92,
+      0.0
+    ],
+    "normal_impulse": 6.88
+  },
+  "post_velocity": [
+    2.88,
+    0.92,
+    0.0
+  ],
+  "swept_contact_detected": true,
+  "boundary_checks": "invalid dt and invalid geometry raise ValueError"
+}

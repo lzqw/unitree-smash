@@ -1,0 +1,25 @@
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+*.egg-info/
+.env
+.env.*
+*.pem
+*.key
+runs/
+checkpoints/
+logs/
+assets/vendor/
+.handoff_export/
+status/gpu_job.lock
+*.pt
+*.onnx
+*.usd
+*.usda
+*.usdc
+*.mp4
+artifacts/*
+!artifacts/.gitkeep
+# Keep reports, episode CSVs, source snapshots and measured failures reviewable.
+# Model/runtime binaries are attached to the GitHub handoff release instead.

@@ -1,0 +1,61 @@
+{
+  "backend": "Isaac Lab 2.3.0 / Isaac Sim 5.1.0 / PhysX",
+  "combined_usd": {
+    "path": "assets/quadsmash_go2_piper.usd",
+    "sha256": "d96e6ae851c188596a4af2649180f4015bb89e9d197c52360b94594e3ddc71be"
+  },
+  "go2_usd": {
+    "path": "/home/autodrive/Isaac/unitree_model/Go2/usd/go2.usd",
+    "sha256": "fd3c8c23c97cea3208fae1ab5eeacba4ffa616fe5f1397be6c7edf4feb93f180"
+  },
+  "piper_usd": {
+    "path": "assets/vendor/piper_isaac_sim/USD/piper_v1.usd",
+    "sha256": "a7d36d89d485cee08105363b9be82128b37008636eb25fe86a9d1eb25e05ed2a"
+  },
+  "piper_source_commit": "8e1f88fdb7afca49c40e9a0c1c01cc588e86f0d2",
+  "active_joints": [
+    "FL_hip_joint",
+    "FR_hip_joint",
+    "RL_hip_joint",
+    "RR_hip_joint",
+    "FL_thigh_joint",
+    "FR_thigh_joint",
+    "RL_thigh_joint",
+    "RR_thigh_joint",
+    "FL_calf_joint",
+    "FR_calf_joint",
+    "RL_calf_joint",
+    "RR_calf_joint",
+    "joint1",
+    "joint2",
+    "joint3",
+    "joint4",
+    "joint5",
+    "joint6"
+  ],
+  "mount_joint": {
+    "path": "/World/envs/env_0/Robot/MountJoint",
+    "body0": [
+      "/World/envs/env_0/Robot/Go2/base"
+    ],
+    "body1": [
+      "/World/envs/env_0/Robot/Piper/piper_camera/arm_base"
+    ]
+  },
+  "racket": {
+    "manifest": "assets/rackets/standard_racket_v1.json",
+    "mount_path": "/World/envs/env_0/Robot/RacketMount",
+    "body0": [
+      "/World/envs/env_0/Robot/Piper/piper_camera/link6"
+    ],
+    "body1": [
+      "/World/envs/env_0/Robot/Racket"
+    ],
+    "blade_path": "/World/envs/env_0/Robot/Racket/Blade"
+  },
+  "note": "The two PiPER gripper prismatic joints are excluded from the 18-DOF task asset; standard_racket_v1 is a coupled rigid payload with parameterized mass.",
+  "assumptions": {
+    "path": "assets/assumptions.md",
+    "sha256": "788c324170c85f28c04f1fea01a72a32057695a2bc815b4c9828a1b52c904f2c"
+  }
+}

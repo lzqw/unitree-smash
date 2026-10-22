@@ -1,0 +1,51 @@
+{
+  "usd_path": "/home/autodrive/LZQW/unitree_smash/reports/G04/standard_assembly/robot.usd",
+  "static_colliders": [],
+  "assembly": {
+    "version": "standard-piper-source-correction-v2",
+    "status": "candidate_pending_G01_revalidation",
+    "piper": {
+      "source": "assets/vendor/piper_isaac_sim/piper_description/urdf/piper_no_gripper_description.urdf",
+      "source_commit": "8e1f88fdb7afca49c40e9a0c1c01cc588e86f0d2",
+      "variant": "standard PiPER, gripper removed as explicitly allowed by task",
+      "mass_and_inertia": "verbatim official URDF; no scaling"
+    },
+    "mount": {
+      "status": "explicit uncalibrated mechanical assumption, requires G01 validation",
+      "plate_size_m": [
+        0.22,
+        0.16,
+        0.012
+      ],
+      "plate_mass_kg": 0.3,
+      "plate_center_relative_to_go2_base_m": [
+        0.05,
+        0.0,
+        0.064
+      ],
+      "arm_base_relative_to_plate_m": [
+        0.0,
+        0.0,
+        0.006
+      ]
+    },
+    "racket": {
+      "status": "same 0.09 kg parameterized payload; blade geometry now matches declared 0.11 m half width",
+      "mass_kg": 0.09,
+      "blade_size_m": [
+        0.015,
+        0.22,
+        0.22
+      ],
+      "blade_center_relative_to_link6_m": [
+        0.18,
+        0.0,
+        0.0
+      ]
+    },
+    "reason": "Previous standalone camera demo USD imported a ground plane, different link inertials and a massless mount with a 0.45 m gap. This is a source/assembly correction before retraining, not a performance revision. Historical checkpoints and acceptance claims are invalidated."
+  },
+  "articulation_roots": [
+    "/World/Go2/base"
+  ]
+}

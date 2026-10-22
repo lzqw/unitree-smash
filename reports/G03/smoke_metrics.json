@@ -1,0 +1,41 @@
+{
+  "env_contract_ok": true,
+  "partial_reset_isolation_ok": true,
+  "timeout_bootstrap_ok": true,
+  "checkpoint_resume_ok": true,
+  "evaluation_protocol_frozen": true,
+  "backend": "Isaac Lab / GPU PhysX",
+  "observation_dim": 794,
+  "policy_steps": 2000,
+  "num_envs": 32,
+  "fresh_ppo_updates": 10,
+  "resumed_updates": 4,
+  "reload_metrics": {
+    "observation_error": 0.0,
+    "deterministic_action_error": 0.0,
+    "observation_difference_indices": [],
+    "rng_exact": true,
+    "root_position_error_m": 0.0,
+    "joint_position_error_rad": 0.0,
+    "root_velocity_error_m_s": 0.0,
+    "restored_iteration": 10,
+    "restored_optimizer_states": 13,
+    "restored_learning_rate": 0.0003,
+    "continuation_mode": "identical recorded actions",
+    "policy_sensitivity_during_replay_max_abs": 0.0
+  },
+  "interrupt_reload_metrics": {
+    "observation_error": 0.0,
+    "deterministic_action_error": 0.0,
+    "observation_difference_indices": [],
+    "rng_exact": true,
+    "root_position_error_m": 0.0,
+    "joint_position_error_rad": 0.0,
+    "root_velocity_error_m_s": 0.0,
+    "restored_iteration": 3,
+    "restored_optimizer_states": 13,
+    "restored_learning_rate": 0.0003,
+    "continuation_mode": "identical recorded actions",
+    "policy_sensitivity_during_replay_max_abs": 0.0
+  }
+}

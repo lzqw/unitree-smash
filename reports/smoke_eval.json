@@ -1,0 +1,167 @@
+{
+  "episodes": 4,
+  "checkpoint": "checkpoints/smoke.npz",
+  "algorithm": "whole_body_ppo",
+  "episode_metrics": [
+    {
+      "steps": 25,
+      "contact_count": 1,
+      "energy": 0.4205490198147768,
+      "target_error": 1.7208882431980035,
+      "max_tilt": 0.49350574965253574,
+      "takeoff_count": 0,
+      "airborne_contact_count": 0,
+      "valid_return_count": 0,
+      "recovery_success_count": 0,
+      "attack_quality": 0.0,
+      "end_reason": "out_of_bounds",
+      "events": {
+        "contact": true,
+        "takeoff": false,
+        "airborne": false,
+        "landing": false,
+        "out_of_bounds": true,
+        "unstable": false,
+        "airborne_contact": false,
+        "event_target_reached": false,
+        "valid_return": false,
+        "attack_requirement": false,
+        "stable_recovery": false,
+        "success": false,
+        "phase": "post_contact",
+        "contact_time": 0.26,
+        "contact_position": [
+          0.6834497574353429,
+          0.021480003833744613,
+          0.9763267844519382
+        ],
+        "post_contact_velocity": [
+          0.43366076814665055,
+          -0.02669769975378252,
+          -3.0728805451062824
+        ],
+        "landing_time": null,
+        "recovery_steps": 0,
+        "end_reason": "out_of_bounds"
+      }
+    },
+    {
+      "steps": 24,
+      "contact_count": 1,
+      "energy": 0.4123652301566037,
+      "target_error": 1.7834920459324357,
+      "max_tilt": 0.4932248629059108,
+      "takeoff_count": 0,
+      "airborne_contact_count": 0,
+      "valid_return_count": 0,
+      "recovery_success_count": 0,
+      "attack_quality": 0.0,
+      "end_reason": "out_of_bounds",
+      "events": {
+        "contact": true,
+        "takeoff": false,
+        "airborne": false,
+        "landing": false,
+        "out_of_bounds": true,
+        "unstable": false,
+        "airborne_contact": false,
+        "event_target_reached": false,
+        "valid_return": false,
+        "attack_requirement": false,
+        "stable_recovery": false,
+        "success": false,
+        "phase": "post_contact",
+        "contact_time": 0.28,
+        "contact_position": [
+          0.6592524068357835,
+          0.0037462596335146067,
+          0.8108011207797761
+        ],
+        "post_contact_velocity": [
+          0.33199130055509374,
+          -0.0540740677108263,
+          -3.383643005459668
+        ],
+        "landing_time": null,
+        "recovery_steps": 0,
+        "end_reason": "out_of_bounds"
+      }
+    },
+    {
+      "steps": 24,
+      "contact_count": 1,
+      "energy": 0.41872658065393953,
+      "target_error": 1.7873257169498113,
+      "max_tilt": 0.49308856047908595,
+      "takeoff_count": 0,
+      "airborne_contact_count": 0,
+      "valid_return_count": 0,
+      "recovery_success_count": 0,
+      "attack_quality": 0.0,
+      "end_reason": "out_of_bounds",
+      "events": {
+        "contact": true,
+        "takeoff": false,
+        "airborne": false,
+        "landing": false,
+        "out_of_bounds": true,
+        "unstable": false,
+        "airborne_contact": false,
+        "event_target_reached": false,
+        "valid_return": false,
+        "attack_requirement": false,
+        "stable_recovery": false,
+        "success": false,
+        "phase": "post_contact",
+        "contact_time": 0.3,
+        "contact_position": [
+          0.6656378530463818,
+          -0.012214820382653622,
+          0.8022275979020541
+        ],
+        "post_contact_velocity": [
+          0.28192711040395463,
+          0.014216997090790426,
+          -3.5530592179223834
+        ],
+        "landing_time": null,
+        "recovery_steps": 0,
+        "end_reason": "out_of_bounds"
+      }
+    },
+    {
+      "steps": 24,
+      "contact_count": 0,
+      "energy": 0.458679766731559,
+      "target_error": 2.0298047057855233,
+      "max_tilt": 0.49275498449434635,
+      "takeoff_count": 0,
+      "airborne_contact_count": 0,
+      "valid_return_count": 0,
+      "recovery_success_count": 0,
+      "attack_quality": 0.0,
+      "end_reason": "out_of_bounds",
+      "events": {
+        "contact": false,
+        "takeoff": false,
+        "airborne": false,
+        "landing": false,
+        "out_of_bounds": true,
+        "unstable": false,
+        "airborne_contact": false,
+        "event_target_reached": false,
+        "valid_return": false,
+        "attack_requirement": false,
+        "stable_recovery": false,
+        "success": false,
+        "phase": "prepare",
+        "contact_time": null,
+        "contact_position": null,
+        "post_contact_velocity": null,
+        "landing_time": null,
+        "recovery_steps": 0,
+        "end_reason": "out_of_bounds"
+      }
+    }
+  ]
+}

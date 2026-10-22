@@ -1,0 +1,30 @@
+{
+  "goal": "G04",
+  "command": [
+    "/home/autodrive/Isaac/env_isaaclab/bin/python",
+    "-u",
+    "scripts/isaac_foot_ground_audit.py",
+    "--checkpoint",
+    "runs/G04/corrected_v2c_continue_03/native/checkpoint.pt",
+    "--config",
+    "configs/jump_ppo_v2c.json",
+    "--capability",
+    "reports/G04/capability_all_body_v2/metrics.json",
+    "--output",
+    "reports/G04/foot_ground_audit_v1",
+    "--headless"
+  ],
+  "output": "/home/autodrive/LZQW/unitree_smash/reports/G04/foot_ground_audit_v1",
+  "gpu": 0,
+  "status": "SUCCEEDED",
+  "charged_gpu_hours": 0.004969384690824275,
+  "charged_env_steps": 51200,
+  "started_at": "2026-10-22T05:58:04.769489+00:00",
+  "pid": 880438,
+  "child_pid": 880446,
+  "exit_code": 0,
+  "timed_out": false,
+  "receipt_present": true,
+  "elapsed_s": 17.88978488696739,
+  "finished_at": "2026-10-22T05:58:22.660035+00:00"
+}

@@ -1,0 +1,33 @@
+{
+  "authorization_note": "用户已明确授权 G04 使用 GPU0，最多 8 GPU-hours；G05 及后续目标仍未授权。数值是上限，不保证训练收敛。",
+  "authorized_goals": [
+    "G00",
+    "G01",
+    "G02",
+    "G03",
+    "G04"
+  ],
+  "allowed_gpu_ids": [0],
+  "gpu_id_policy": "只使用调度器已分配或用户明确指定的GPU；空列表不是全部GPU。",
+  "max_concurrent_gpu_processes": 1,
+  "authorized_total_gpu_hours": 10.0,
+  "max_training_revisions_per_goal": 3,
+  "cloud_spend_authorized": false,
+  "suggested_incremental_budgets_gpu_hours": {
+    "G04": 8,
+    "G05": 12,
+    "G06": 16,
+    "G07": 24,
+    "G08": 12,
+    "G09": 16,
+    "G10": 80
+  },
+  "count_evaluation_and_failed_runs": true,
+  "stop_on_first_of": [
+    "global_gpu_hour_limit",
+    "goal_gpu_hour_limit",
+    "global_env_step_limit",
+    "job_walltime_limit"
+  ],
+  "first_training_batch_note": "G04-G07共60 GPU-hours为建议累计上限；授权后总预算含G00-G03为62。不自动授权。"
+}

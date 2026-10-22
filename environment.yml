@@ -1,0 +1,11 @@
+name: quadsmash
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - -e .[test]
+      # Install Isaac Sim and Isaac Lab from NVIDIA's pinned distribution.
+      # The exact versions must match the host Isaac Lab checkout; see docs/INSTALL.md.
+

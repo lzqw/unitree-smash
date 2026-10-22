@@ -1,0 +1,23 @@
+{
+  "version": "native-shuttle-v2",
+  "mass_kg": 0.0052,
+  "collision_radius_m": 0.025,
+  "quadratic_drag_k_per_m": 0.025442307692307694,
+  "drag_source": "Uncalibrated assumption consistent with existing ShuttlecockParams: 0.5 * 1.225 * 0.12 * 0.0018 / 0.0052",
+  "wind_m_s": [0.0, 0.0, 0.0],
+  "restitution": 0.72,
+  "friction": 0.08,
+  "racket_half_extents_m": [0.0075, 0.11, 0.11],
+  "contact_offset_m": 0.0001,
+  "rest_offset_m": 0.0,
+  "contact_force_threshold_n": 0.001,
+  "separation_hysteresis_m": 0.002,
+  "max_speed_m_s": 200.0,
+  "sweep_ccd": false,
+  "speculative_ccd": false,
+  "native_physics_dt_s": 0.0000625,
+  "policy_dt_s": 0.01,
+  "ccd_limitation": "Isaac Sim 5.1 GPU dynamics disables sweep CCD; neither CCD flag is relied on. Use fine native substeps plus an independent moving/rotating sweep audit. Coarser 2/1 ms settings demonstrably tunnel and are invalid for ball tasks.",
+  "collision_response": "PhysX only, no custom collision impulse or ball pose correction",
+  "note": "Parameters are simulation assumptions. The actual blade geometry and mass remain the G01-audited asset."
+}

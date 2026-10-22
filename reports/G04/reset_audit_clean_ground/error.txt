@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/home/autodrive/LZQW/unitree_smash/scripts/isaac_reset_audit.py", line 72, in <module>
+    env._reset_idx(torch.tensor([0], device=env.device))
+  File "/home/autodrive/LZQW/unitree_smash/quadsmash/tasks/stand/jump_env.py", line 161, in _reset_idx
+    super()._reset_idx(env_ids)
+  File "/home/autodrive/LZQW/unitree_smash/quadsmash/tasks/stand/coupled_env.py", line 152, in _reset_idx
+    self.robot.write_root_pose_to_sim(root_state[:, :7], env_ids=env_ids)
+  File "/home/autodrive/Isaac/IsaacLab/source/isaaclab/isaaclab/assets/articulation/articulation.py", line 364, in write_root_pose_to_sim
+    self.write_root_link_pose_to_sim(root_pose, env_ids=env_ids)
+  File "/home/autodrive/Isaac/IsaacLab/source/isaaclab/isaaclab/assets/articulation/articulation.py", line 383, in write_root_link_pose_to_sim
+    self._data.root_link_pose_w[env_ids] = root_pose.clone()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+RuntimeError: Inplace update to inference tensor outside InferenceMode is not allowed.You can make a clone to get a normal tensor before doing inplace update.See https://github.com/pytorch/rfcs/pull/17 for more details.

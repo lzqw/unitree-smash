@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "goal_id": "G01",
+  "task_id": "asset_audit",
+  "contract_sha256": "66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807",
+  "evidence_kind": "observed",
+  "run": {
+    "command": "Isaac Lab coupled Go2+PiPER asset smoke and 100x10s stand evaluation",
+    "git_commit": "HEAD",
+    "started_at": "2026-10-21T16:49:06.738331+00:00",
+    "finished_at": "2026-10-21T16:52:30.573031+00:00",
+    "gpu_hours": 0.0566,
+    "env_steps": 127872
+  },
+  "metrics": {
+    "joint_mapping_ok": true,
+    "coupled_dynamics_ok": true,
+    "asset_manifest_ok": true,
+    "stand_success_rate": 1.0,
+    "sample_count": 128,
+    "stand_episode_seconds": 10.0,
+    "numerical_failures": 0,
+    "backend": "Isaac Lab / PhysX",
+    "num_envs": 32,
+    "env_steps": 127872,
+    "elapsed_s": 202.1001833450282,
+    "env_steps_per_second": 632.7159029920085,
+    "active_joint_count": 18
+  },
+  "artifacts": [
+    {
+      "path": "reports/G01/REPORT.md",
+      "sha256": "55b9db554ef6fcbe89a84f54bbae05a3d490ec180dd1046de36229d0fd9e749f",
+      "bytes": 1107
+    },
+    {
+      "path": "reports/G01/commands.log",
+      "sha256": "445236d20ce5394a182766fbf3b7c21cbaacc2eb0084f25247fc1da37ed40710",
+      "bytes": 1392
+    },
+    {
+      "path": "reports/G01/assets_manifest.json",
+      "sha256": "b6a8d479c21f354a3f001abfaea6d7dfeb89f4a7bb5e1a3614466690fd0efb9e",
+      "bytes": 1831
+    },
+    {
+      "path": "reports/G01/asset_tests.json",
+      "sha256": "98644fff76ed119685dbfccbb86787a23f6f9db23c9666d87247c2f3e11f3461",
+      "bytes": 413
+    },
+    {
+      "path": "assets/quadsmash_go2_piper.usd",
+      "sha256": "d96e6ae851c188596a4af2649180f4015bb89e9d197c52360b94594e3ddc71be",
+      "bytes": 2110
+    }
+  ]
+}

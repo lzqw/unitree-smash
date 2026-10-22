@@ -1,0 +1,39 @@
+{
+  "backend": "Isaac Lab / GPU PhysX",
+  "updates": 2,
+  "initial_iteration": 10,
+  "completed_iteration": 12,
+  "stop_requested": false,
+  "finite_gradients": true,
+  "losses": [
+    {
+      "iteration": 11,
+      "value_function": 0.0002793946832753136,
+      "surrogate": -0.03811159549513832,
+      "entropy": 4.112570405006409,
+      "gradient_norm_after_clip": 0.9999996423721313
+    },
+    {
+      "iteration": 12,
+      "value_function": 0.00044253799387661275,
+      "surrogate": -0.06473597988951951,
+      "entropy": 4.121413081884384,
+      "gradient_norm_after_clip": 0.999999463558197
+    }
+  ],
+  "resume_metrics": {
+    "observation_error": 0.0,
+    "deterministic_action_error": 0.0,
+    "observation_difference_indices": [],
+    "rng_exact": true,
+    "root_position_error_m": 0.0,
+    "joint_position_error_rad": 0.0,
+    "root_velocity_error_m_s": 0.0,
+    "restored_iteration": 10,
+    "restored_optimizer_states": 13,
+    "restored_learning_rate": 0.0003,
+    "continuation_mode": "identical recorded actions",
+    "policy_sensitivity_during_replay_max_abs": 0.0
+  },
+  "checkpoint": "reports/G03/native_20261022T041355_436993/reload/checkpoint.pt"
+}

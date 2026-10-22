@@ -1,0 +1,30 @@
+{
+  "mode": "smoke",
+  "task": "virtual_hit_recover_ground_v1",
+  "stage": "virtual_hit",
+  "backend": "Isaac Lab / PhysX",
+  "env_contract_ok": true,
+  "partial_reset_isolation_ok": true,
+  "timeout_bootstrap_ok": false,
+  "checkpoint_resume_ok": false,
+  "evaluation_protocol_frozen": true,
+  "num_envs": 2,
+  "steps": 16,
+  "env_steps": 32,
+  "completed_episodes": 0,
+  "mean_reward_per_step": 0.0007753401641821256,
+  "minimum_base_height_m": 0.44325217604637146,
+  "numerical_failures": 0,
+  "observation_shape": [
+    2,
+    48
+  ],
+  "action_shape": [
+    2,
+    18
+  ],
+  "checkpoint": null,
+  "checkpoint_sha256": null,
+  "elapsed_s": 0.805344824999338,
+  "env_steps_per_second": 39.73453234771367
+}

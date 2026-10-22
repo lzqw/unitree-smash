@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "goal_id": "G00",
+  "task_id": "environment_audit",
+  "contract_sha256": "66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807",
+  "evidence_kind": "observed",
+  "run": {
+    "command": "Isaac Lab GPU smoke + native RSL-RL checkpoint train/reload",
+    "git_commit": "HEAD",
+    "started_at": "2026-10-21T15:55:47.469051+00:00",
+    "finished_at": "2026-10-21T15:55:47.470593+00:00",
+    "gpu_hours": 0.12,
+    "env_steps": 3072
+  },
+  "metrics": {
+    "gpu_smoke_ok": true,
+    "dependency_lock_ok": true,
+    "checkpoint_reload_ok": true
+  },
+  "artifacts": [
+    {
+      "path": "reports/G00/REPORT.md",
+      "sha256": "6ae45fdad07fe1ae3eec52779506e9785dfb061081b845153f8ec5d8c0a3e3c6",
+      "bytes": 863
+    },
+    {
+      "path": "reports/G00/commands.log",
+      "sha256": "6a072bfdcb1898020b085dcf9b1776f3c3a13e6c1171bb4caedd23488ca84992",
+      "bytes": 990
+    },
+    {
+      "path": "reports/G00/environment.lock.json",
+      "sha256": "acf7454dc4af35e5d4b851ed336b77c258420549dd297cb3fb41e5b1b1805456",
+      "bytes": 2534
+    },
+    {
+      "path": "reports/G00/native_smoke/result.json",
+      "sha256": "f10cf4bdc7c7286b499c7dbecd2f4ba4eea675d2693aa233ac98b7daab3ffff5",
+      "bytes": 3061
+    },
+    {
+      "path": "reports/G00/native_train/checkpoint.pt",
+      "sha256": "8b0dd6ce8c653cba3311b2c61b26b237151f4baa068d966c7f6e61a9199ccace",
+      "bytes": 577077
+    },
+    {
+      "path": "reports/G00/native_eval/result.json",
+      "sha256": "7607c1bc7eec6f1104412a11d0bd36b7e3f116301b7bc13ccd72fb514531db7c",
+      "bytes": 3165
+    }
+  ]
+}

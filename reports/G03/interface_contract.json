@@ -1,0 +1,45 @@
+{
+  "version": "native-policy-v2",
+  "observation_size": 794,
+  "frame_size": 69,
+  "history_frames": 11,
+  "history_span_s": 0.1,
+  "frame_fields": {
+    "root_linear_velocity_b": 3,
+    "root_angular_velocity_b": 3,
+    "gravity_b": 3,
+    "joint_position_offset": 18,
+    "joint_velocity": 18,
+    "tool_position_b": 3,
+    "tool_normal_b": 3,
+    "tool_relative_linear_velocity_b": 3,
+    "tool_relative_angular_velocity_b": 3,
+    "foot_contact": 4,
+    "ball_position_b": 3,
+    "ball_relative_velocity_b": 3,
+    "ball_present": 1,
+    "history_valid": 1
+  },
+  "tail_fields": {
+    "goal_time_position_normal_velocity_mask": 11,
+    "observed_phase_one_hot": 5,
+    "elapsed_time": 1,
+    "previous_action": 18
+  },
+  "frame": "body frame at root link; relative point velocity subtracts reference translation and omega cross offset",
+  "quaternion": "wxyz",
+  "action_dim": 18,
+  "action_order": "12 audited Go2 joints then PiPER joint1..joint6",
+  "stage_shapes": "identical Jump/Virtual/Ball, absent ball and command fields masked and zeroed",
+  "timeouts": "capture final observation before automatic reset; bootstrap gamma*V(final), never true terminals",
+  "resume": "full model/normalizers/optimizer/learning-rate schedule/counters/RNG; public checkpoint.pt starts explicitly reset ground episodes after a completed PPO update; interrupted unfinished episodes are counted as aborted, not successes. Diagnostic model_i files are not resumable.",
+  "resume_tolerances": {
+    "initial_observation_max_abs": 1e-05,
+    "initial_action_max_abs": 1e-05,
+    "root_position_after_5_steps_m": 0.005,
+    "joint_position_after_5_steps_rad": 0.01,
+    "root_velocity_after_5_steps_m_s": 0.05,
+    "rng_streams": "exact Python, NumPy, Torch CPU and CUDA"
+  },
+  "asset_sha256": "bfb831e4afc8a1a705bb0fb6f001c25eeaa401822978267a0ee5e151007511f3"
+}

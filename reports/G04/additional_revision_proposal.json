@@ -1,0 +1,55 @@
+{
+  "status": "AWAITING_EXPLICIT_ADDITIONAL_REVISION_AUTHORIZATION",
+  "constraint_source": "Original pasted task: 每阶段最多进行3轮有明确假设和记录的训练修订; AGENTS.md budget section.",
+  "history": "Historical three invalid-physics revisions retained; corrected v2/v2b/v2c work and all costs also retained. This asks for one explicit additional revision, not a fresh budget.",
+  "evidence": [
+    "reports/G04/policy_consistency_v1/metrics.json",
+    "reports/G04/corrected_v2c_main01_eval/metrics.json",
+    "reports/G04/corrected_v2c_continue_01_eval/metrics.json"
+  ],
+  "changes": {
+    "initial_gaussian_std": [
+      0.6,
+      0.15
+    ],
+    "entropy_coefficient": [
+      0.005,
+      0.0
+    ]
+  },
+  "unchanged": "v2c timed COM reward, hardware, asset, action scales, observation, PPO architecture/optimizer hyperparameters other than entropy, frozen 2x200 deterministic evaluation and thresholds",
+  "initial_checkpoint": "runs/G04/corrected_v2c_main01/native/checkpoint.pt",
+  "initial_checkpoint_reason": "The evaluated deterministic policy had 0/400 non-foot contacts; still 0 jump successes. Start from this measured standing policy, reset optimizer/noise explicitly as a new initialization.",
+  "limit": {
+    "new_revisions": 1,
+    "training_updates": 200,
+    "training_envs": 512,
+    "training_reserved_interactions": 13172736,
+    "evaluation_interactions": 160000,
+    "training_job_max_gpu_hours": 0.5,
+    "evaluation_job_max_seconds": 240,
+    "cumulative_gpu_hours_cap": 8,
+    "cumulative_env_steps_cap": 200000000,
+    "gpu": 0
+  },
+  "hypothesis": "Without an entropy incentive to grow variance, and with initial std .15, training samples stay closer to deterministic actions; the existing COM trajectory shaping can optimize coordinated mean motion instead of noisy standing.",
+  "falsification": "Independent deterministic panel performance/actual COM flight does not improve. Preserve failures; do not automatically begin another revision.",
+  "proposed_command": "python3 scripts/train.py --stage jump_recover --seed 0 --num-envs 512 --max-env-steps 13172736 --max-gpu-hours .5 --config configs/jump_ppo_v2d_proposal.json --init-checkpoint runs/G04/corrected_v2c_main01/native/checkpoint.pt --run-dir runs/G04/corrected_v2d_main01",
+  "analytic_clipping_example": {
+    "label": "Analytic Gaussian calculation on a recorded initial policy mean, NOT a simulated improvement or acceptance result",
+    "source": "reports/G04/corrected_v2c_main01_eval/fixed_scenario_trace.csv",
+    "source_sha256": "633632c3ad5ece3c0a2dbc5e77e3ce58454be436ef250a8a0db53fea0447e270",
+    "results": {
+      "0.6": {
+        "mean_clipping_probability": 0.5212808125531583,
+        "maximum_gap_between_clipped_mean_and_mean_clipped_action": 0.22765673310025503,
+        "mean_gap": 0.10480525617436072
+      },
+      "0.15": {
+        "mean_clipping_probability": 0.4945213977932885,
+        "maximum_gap_between_clipped_mean_and_mean_clipped_action": 0.04876634331895702,
+        "mean_gap": 0.012467284820113795
+      }
+    }
+  }
+}

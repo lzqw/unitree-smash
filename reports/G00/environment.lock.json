@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-21T17:21:32.685235+00:00",
+  "python": {
+    "executable": "/home/autodrive/Isaac/env_isaaclab/bin/python",
+    "version": "3.11.17"
+  },
+  "platform": {
+    "system": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+    "machine": "x86_64"
+  },
+  "gpu": {
+    "query": "NVIDIA GeForce RTX 5080, 595.91.07, 16303 MiB, 10972 MiB",
+    "cuda_visible_devices": "0",
+    "allocation_declared": true
+  },
+  "dependencies": {
+    "modules": {
+      "torch": true,
+      "isaaclab": true,
+      "isaacsim": true,
+      "rsl_rl": true,
+      "gymnasium": true,
+      "numpy": true,
+      "jax": false
+    },
+    "versions": {
+      "torch": "2.7.0+cu128",
+      "isaacsim": "5.1.0.0",
+      "isaaclab": "0.47.2",
+      "rsl-rl-lib": "3.0.1",
+      "gymnasium": "1.2.0",
+      "numpy": "1.26.0"
+    },
+    "torch_cuda_available": true,
+    "torch_cuda_version": "12.8",
+    "torch_device": "NVIDIA GeForce RTX 5080"
+  },
+  "isaaclab": {
+    "path": "/home/autodrive/Isaac/IsaacLab",
+    "version": "2.3.0",
+    "source_version_sha256": "a42caf4a54bbbe27aa45b6efbc6356c5e299b19763e728b6cdb7201b02ebbe36"
+  },
+  "assets": {
+    "go2_usd": {
+      "path": "/home/autodrive/Isaac/unitree_model/Go2/usd/go2.usd",
+      "exists": true,
+      "sha256": "fd3c8c23c97cea3208fae1ab5eeacba4ffa616fe5f1397be6c7edf4feb93f180"
+    },
+    "piper_usd": {
+      "path": "/home/autodrive/LZQW/unitree_smash/assets/vendor/piper_isaac_sim/USD/piper_v1.usd",
+      "exists": true,
+      "sha256": "a7d36d89d485cee08105363b9be82128b37008636eb25fe86a9d1eb25e05ed2a"
+    },
+    "coupled_usd": {
+      "path": "/home/autodrive/LZQW/unitree_smash/assets/quadsmash_go2_piper.usd",
+      "exists": true,
+      "sha256": "d96e6ae851c188596a4af2649180f4015bb89e9d197c52360b94594e3ddc71be"
+    },
+    "racket_manifest": {
+      "path": "/home/autodrive/LZQW/unitree_smash/assets/rackets/standard_racket_v1.json",
+      "exists": true,
+      "sha256": "b73d1d64b2ed086f9b88b4e50c59c0d744859787ca67b3bffae6dff0d38f2b8f"
+    },
+    "assumptions": {
+      "path": "/home/autodrive/LZQW/unitree_smash/assets/assumptions.md",
+      "exists": true,
+      "sha256": "788c324170c85f28c04f1fea01a72a32057695a2bc815b4c9828a1b52c904f2c"
+    }
+  },
+  "checks": {
+    "gpu_smoke_ok": true,
+    "dependency_lock_ok": true,
+    "checkpoint_reload_ok": true,
+    "racket_manifest_ok": true
+  },
+  "interpretation": "Checks are backed by the project-local Isaac Lab/PhysX smoke and checkpoint reload artifacts when those artifacts exist."
+}

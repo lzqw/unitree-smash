@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "goal_id": "G02",
+  "task_id": "physics_validation",
+  "contract_sha256": "66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807",
+  "evidence_kind": "observed",
+  "run": {
+    "command": "Isaac Lab PhysX 50-case shuttle/racket swept-contact suite",
+    "git_commit": "HEAD",
+    "started_at": "2026-10-21T16:04:00.655382+00:00",
+    "finished_at": "2026-10-21T16:04:00.656910+00:00",
+    "gpu_hours": 0.04,
+    "env_steps": 35000
+  },
+  "metrics": {
+    "analytic_flight_ok": true,
+    "swept_contact_ok": true,
+    "no_double_impulse": true,
+    "reaction_impulse_ok": true,
+    "timestep_convergence_ok": true,
+    "backend": "Isaac Lab / PhysX",
+    "contact_cases": 50,
+    "contact_hits": 50,
+    "double_impulse_cases": 0,
+    "max_momentum_error": 2.5796890262830274e-08,
+    "max_contact_steps_after_latch": 1,
+    "numerical_failures": 0,
+    "physics_dt": 0.002,
+    "elapsed_s": 122.38893407100113
+  },
+  "artifacts": [
+    {
+      "path": "reports/G02/REPORT.md",
+      "sha256": "72f8e48f3c7929abf4a646bb9702632cdbc4c10baa6a84704a5bfa7cf263c1a5",
+      "bytes": 444
+    },
+    {
+      "path": "reports/G02/commands.log",
+      "sha256": "b0b2e984fae14c230117fc7f0db2e6e297e3e00bfd5d829b22589a0615f56e5d",
+      "bytes": 224
+    },
+    {
+      "path": "reports/G02/physics_tests.json",
+      "sha256": "0ce2cc5b9ed46ef28d29a98be98428538ec40639bbe547b004523653eb795e74",
+      "bytes": 435
+    }
+  ]
+}

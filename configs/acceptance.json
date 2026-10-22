@@ -1,0 +1,414 @@
+{
+  "schema_version": 1,
+  "note": "本文件冻结后不得由代理降低阈值；学习指标为两开发面板较差值。",
+  "goals": {
+    "G00": {
+      "title": "审计环境并锁定兼容软件栈",
+      "document": "goals/G00_environment.md",
+      "depends_on": [],
+      "task_id": "environment_audit",
+      "checks": {
+        "gpu_smoke_ok": {
+          "op": "eq",
+          "value": true
+        },
+        "dependency_lock_ok": {
+          "op": "eq",
+          "value": true
+        },
+        "checkpoint_reload_ok": {
+          "op": "eq",
+          "value": true
+        }
+      },
+      "required_artifacts": [
+        "reports/G00/REPORT.md",
+        "reports/G00/commands.log",
+        "reports/G00/environment.lock.json"
+      ],
+      "suggested_gpu_hour_cap": 0.5,
+      "max_env_steps_all_attempts": 0
+    },
+    "G01": {
+      "title": "组装真实耦合资产并审计执行器",
+      "document": "goals/G01_assets.md",
+      "depends_on": [
+        "G00"
+      ],
+      "task_id": "asset_audit",
+      "checks": {
+        "joint_mapping_ok": {
+          "op": "eq",
+          "value": true
+        },
+        "coupled_dynamics_ok": {
+          "op": "eq",
+          "value": true
+        },
+        "asset_manifest_ok": {
+          "op": "eq",
+          "value": true
+        },
+        "stand_success_rate": {
+          "op": "ge",
+          "value": 0.95
+        },
+        "sample_count": {
+          "op": "ge",
+          "value": 100
+        },
+        "stand_episode_seconds": {
+          "op": "ge",
+          "value": 10.0
+        }
+      },
+      "required_artifacts": [
+        "reports/G01/REPORT.md",
+        "reports/G01/commands.log",
+        "reports/G01/assets_manifest.json",
+        "reports/G01/asset_tests.json"
+      ],
+      "suggested_gpu_hour_cap": 0.5,
+      "max_env_steps_all_attempts": 0
+    },
+    "G02": {
+      "title": "验证羽毛球飞行、扫掠碰撞与事件",
+      "document": "goals/G02_physics.md",
+      "depends_on": [
+        "G01"
+      ],
+      "task_id": "physics_validation",
+      "checks": {
+        "analytic_flight_ok": {
+          "op": "eq",
+          "value": true
+        },
+        "swept_contact_ok": {
+          "op": "eq",
+          "value": true
+        },
+        "no_double_impulse": {
+          "op": "eq",
+          "value": true
+        },
+        "reaction_impulse_ok": {
+          "op": "eq",
+          "value": true
+        },
+        "timestep_convergence_ok": {
+          "op": "eq",
+          "value": true
+        }
+      },
+      "required_artifacts": [
+        "reports/G02/REPORT.md",
+        "reports/G02/commands.log",
+        "reports/G02/physics_tests.json"
+      ],
+      "suggested_gpu_hour_cap": 0.5,
+      "max_env_steps_all_attempts": 0
+    },
+    "G03": {
+      "title": "实现统一任务、训练评测入口与证据链",
+      "document": "goals/G03_env_ppo.md",
+      "depends_on": [
+        "G02"
+      ],
+      "task_id": "environment_ppo_smoke",
+      "checks": {
+        "env_contract_ok": {
+          "op": "eq",
+          "value": true
+        },
+        "partial_reset_isolation_ok": {
+          "op": "eq",
+          "value": true
+        },
+        "timeout_bootstrap_ok": {
+          "op": "eq",
+          "value": true
+        },
+        "checkpoint_resume_ok": {
+          "op": "eq",
+          "value": true
+        },
+        "evaluation_protocol_frozen": {
+          "op": "eq",
+          "value": true
+        }
+      },
+      "required_artifacts": [
+        "reports/G03/REPORT.md",
+        "reports/G03/commands.log",
+        "reports/G03/interface_contract.json",
+        "reports/G03/evaluation_manifest.json"
+      ],
+      "suggested_gpu_hour_cap": 0.5,
+      "max_env_steps_all_attempts": 2000000
+    },
+    "G04": {
+      "title": "训练完整负载下跳跃和落地恢复",
+      "document": "goals/G04_jump.md",
+      "depends_on": [
+        "G03"
+      ],
+      "task_id": "jump_recover_ground_v1",
+      "checks": {
+        "sample_count": {
+          "op": "ge",
+          "value": 400
+        },
+        "ground_init_fraction": {
+          "op": "eq",
+          "value": 1.0
+        },
+        "jump_recovery_success_rate": {
+          "op": "ge",
+          "value": 0.9
+        },
+        "numerical_failures": {
+          "op": "eq",
+          "value": 0
+        }
+      },
+      "required_artifacts": [
+        "reports/G04/REPORT.md",
+        "reports/G04/commands.log",
+        "reports/G04/episodes.csv",
+        "reports/G04/eval_manifest.json",
+        "artifacts/G04/policy.pt"
+      ],
+      "suggested_gpu_hour_cap": 8,
+      "max_env_steps_all_attempts": 200000000
+    },
+    "G05": {
+      "title": "训练按时完成空中虚拟击球事件",
+      "document": "goals/G05_virtual_hit.md",
+      "depends_on": [
+        "G04"
+      ],
+      "task_id": "virtual_hit_recover_ground_v1",
+      "checks": {
+        "sample_count": {
+          "op": "ge",
+          "value": 400
+        },
+        "ground_init_fraction": {
+          "op": "eq",
+          "value": 1.0
+        },
+        "virtual_hit_recovery_success_rate": {
+          "op": "ge",
+          "value": 0.7
+        },
+        "numerical_failures": {
+          "op": "eq",
+          "value": 0
+        }
+      },
+      "required_artifacts": [
+        "reports/G05/REPORT.md",
+        "reports/G05/commands.log",
+        "reports/G05/episodes.csv",
+        "reports/G05/eval_manifest.json",
+        "artifacts/G05/policy.pt"
+      ],
+      "suggested_gpu_hour_cap": 12,
+      "max_env_steps_all_attempts": 300000000
+    },
+    "G06": {
+      "title": "训练真实来球空中接触并恢复",
+      "document": "goals/G06_real_contact.md",
+      "depends_on": [
+        "G05"
+      ],
+      "task_id": "airborne_contact_recover_ground_v1",
+      "checks": {
+        "sample_count": {
+          "op": "ge",
+          "value": 400
+        },
+        "ground_init_fraction": {
+          "op": "eq",
+          "value": 1.0
+        },
+        "airborne_contact_recovery_success_rate": {
+          "op": "ge",
+          "value": 0.6
+        },
+        "numerical_failures": {
+          "op": "eq",
+          "value": 0
+        }
+      },
+      "required_artifacts": [
+        "reports/G06/REPORT.md",
+        "reports/G06/commands.log",
+        "reports/G06/episodes.csv",
+        "reports/G06/eval_manifest.json",
+        "artifacts/G06/policy.pt"
+      ],
+      "suggested_gpu_hour_cap": 16,
+      "max_env_steps_all_attempts": 300000000
+    },
+    "G07": {
+      "title": "训练完整扣杀、越网落点和恢复",
+      "document": "goals/G07_smash.md",
+      "depends_on": [
+        "G06"
+      ],
+      "task_id": "airborne_smash_recover_net1524_v1",
+      "checks": {
+        "sample_count": {
+          "op": "ge",
+          "value": 400
+        },
+        "ground_init_fraction": {
+          "op": "eq",
+          "value": 1.0
+        },
+        "complete_smash_success_rate": {
+          "op": "ge",
+          "value": 0.5
+        },
+        "airborne_contact_rate": {
+          "op": "ge",
+          "value": 0.7
+        },
+        "recovery_given_airborne_contact": {
+          "op": "ge",
+          "value": 0.85
+        },
+        "numerical_failures": {
+          "op": "eq",
+          "value": 0
+        }
+      },
+      "required_artifacts": [
+        "reports/G07/REPORT.md",
+        "reports/G07/commands.log",
+        "reports/G07/episodes.csv",
+        "reports/G07/eval_manifest.json",
+        "artifacts/G07/policy.pt"
+      ],
+      "suggested_gpu_hour_cap": 24,
+      "max_env_steps_all_attempts": 500000000
+    },
+    "G08": {
+      "title": "研究分支：物理一致中间状态初始化",
+      "document": "goals/G08_reset_bank.md",
+      "depends_on": [
+        "G07"
+      ],
+      "task_id": "reset_bank_ablation_v1",
+      "checks": {
+        "restore_consistency_ok": {
+          "op": "eq",
+          "value": true
+        },
+        "ground_only_eval_ok": {
+          "op": "eq",
+          "value": true
+        },
+        "on_policy_update_ok": {
+          "op": "eq",
+          "value": true
+        },
+        "ablation_report_complete": {
+          "op": "eq",
+          "value": true
+        }
+      },
+      "required_artifacts": [
+        "reports/G08/REPORT.md",
+        "reports/G08/commands.log",
+        "reports/G08/reset_bank_manifest.json",
+        "reports/G08/ablation.json"
+      ],
+      "suggested_gpu_hour_cap": 12,
+      "max_env_steps_all_attempts": 200000000
+    },
+    "G09": {
+      "title": "研究分支：击球与恢复联合事件选择",
+      "document": "goals/G09_event_selector.md",
+      "depends_on": [
+        "G08"
+      ],
+      "task_id": "recovery_aware_event_selection_v1",
+      "checks": {
+        "grouped_split_ok": {
+          "op": "eq",
+          "value": true
+        },
+        "probability_calibration_reported": {
+          "op": "eq",
+          "value": true
+        },
+        "abstention_coverage_reported": {
+          "op": "eq",
+          "value": true
+        },
+        "policy_version_matched": {
+          "op": "eq",
+          "value": true
+        },
+        "selector_ablation_complete": {
+          "op": "eq",
+          "value": true
+        }
+      },
+      "required_artifacts": [
+        "reports/G09/REPORT.md",
+        "reports/G09/commands.log",
+        "reports/G09/dataset_manifest.json",
+        "reports/G09/calibration.json",
+        "reports/G09/selector_ablation.json"
+      ],
+      "suggested_gpu_hour_cap": 16,
+      "max_env_steps_all_attempts": 200000000
+    },
+    "G10": {
+      "title": "冻结评测、多GPU实验与最终报告",
+      "document": "goals/G10_final_study.md",
+      "depends_on": [
+        "G09"
+      ],
+      "task_id": "frozen_holdout_study_v1",
+      "checks": {
+        "training_seeds_per_method": {
+          "op": "ge",
+          "value": 5
+        },
+        "test_episodes_per_seed": {
+          "op": "ge",
+          "value": 1000
+        },
+        "matched_compute_accounting_ok": {
+          "op": "eq",
+          "value": true
+        },
+        "holdout_not_used_for_tuning": {
+          "op": "eq",
+          "value": true
+        },
+        "numerical_robustness_reported": {
+          "op": "eq",
+          "value": true
+        },
+        "all_registered_runs_completed": {
+          "op": "eq",
+          "value": true
+        }
+      },
+      "required_artifacts": [
+        "reports/G10/REPORT.md",
+        "reports/G10/commands.log",
+        "reports/G10/results.csv",
+        "reports/G10/protocol.json",
+        "reports/G10/research_conclusion.json"
+      ],
+      "suggested_gpu_hour_cap": 80,
+      "max_env_steps_all_attempts": 5000000000
+    }
+  }
+}

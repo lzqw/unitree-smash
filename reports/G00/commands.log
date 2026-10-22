@@ -1,0 +1,8 @@
+export PYTHONPATH=/home/autodrive/LZQW/unitree_smash
+export CUDA_VISIBLE_DEVICES=0
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/audit.py --output reports/G00/environment.lock.json
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/isaac_runner.py smoke --config configs/p0.json --output reports/G00/native_smoke --num-envs 8 --steps 64 --headless --device cuda:0
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/isaac_runner.py train --config configs/p0.json --output reports/G00/native_train --num-envs 8 --iterations 2 --steps 64 --headless --device cuda:0
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/isaac_runner.py evaluate --config configs/p0.json --output reports/G00/native_eval --checkpoint reports/G00/native_train/checkpoint.pt --num-envs 8 --steps 64 --headless --device cuda:0
+# refreshed after correcting the composed PiPER root-joint override
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/audit.py --output reports/G00/environment.lock.json

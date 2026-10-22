@@ -1,0 +1,16 @@
+{
+  "algorithm": "whole_body_ppo",
+  "obs_dim": 119,
+  "action_dim": 18,
+  "critic_obs_dim": 119,
+  "config": {
+    "learning_rate": 0.0003,
+    "clip_ratio": 0.2,
+    "entropy_coef": 0.01,
+    "gamma": 0.997,
+    "gae_lambda": 0.97,
+    "update_epochs": 4,
+    "rollout_length": 128,
+    "seed": 11
+  }
+}

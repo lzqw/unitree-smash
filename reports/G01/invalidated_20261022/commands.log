@@ -1,0 +1,13 @@
+# source asset
+ git clone --depth 1 https://github.com/agilexrobotics/piper_isaac_sim.git assets/vendor/piper_isaac_sim
+# combined USD generation: remove joint7/joint8 and add /World/MountJoint
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/build_coupled_usd.py --output assets/quadsmash_go2_piper.usd
+export PYTHONPATH=/home/autodrive/LZQW/unitree_smash
+export CUDA_VISIBLE_DEVICES=0
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/isaac_coupled_smoke.py --headless --num-envs 32 --episodes 100 --episode-seconds 10 --output reports/G01 --device cuda:0
+# corrected composed USD: explicit root-layer overrides deactivate PiPER root_joint and gripper joints
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/build_coupled_usd.py --output assets/quadsmash_go2_piper.usd --headless --device cuda:0
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/isaac_coupled_smoke.py --headless --num-envs 32 --episodes 100 --episode-seconds 10 --output reports/G01 --device cuda:0
+# final coupled asset rebuild includes standard_racket_v1 rigid payload and RacketMount
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/build_coupled_usd.py --output assets/quadsmash_go2_piper.usd --headless --device cuda:0
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/isaac_coupled_smoke.py --headless --num-envs 32 --episodes 100 --episode-seconds 10 --output reports/G01 --device cuda:0
