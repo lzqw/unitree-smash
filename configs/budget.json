@@ -7,11 +7,13 @@
     "G03",
     "G04"
   ],
-  "allowed_gpu_ids": [0],
+  "allowed_gpu_ids": [
+    0
+  ],
   "gpu_id_policy": "只使用调度器已分配或用户明确指定的GPU；空列表不是全部GPU。",
   "max_concurrent_gpu_processes": 1,
   "authorized_total_gpu_hours": 10.0,
-  "max_training_revisions_per_goal": 3,
+  "max_training_revisions_per_goal": null,
   "cloud_spend_authorized": false,
   "suggested_incremental_budgets_gpu_hours": {
     "G04": 8,
@@ -29,5 +31,6 @@
     "global_env_step_limit",
     "job_walltime_limit"
   ],
-  "first_training_batch_note": "G04-G07共60 GPU-hours为建议累计上限；授权后总预算含G00-G03为62。不自动授权。"
+  "first_training_batch_note": "G04-G07共60 GPU-hours为建议累计上限；授权后总预算含G00-G03为62。不自动授权。",
+  "revision_authorization_note": "2026-10-22 new user goal explicitly removes three-revision, A/B-exclusive and 50-update limits for G04; existing GPU0 8-hour and 200-million-interaction cumulative caps remain unchanged."
 }

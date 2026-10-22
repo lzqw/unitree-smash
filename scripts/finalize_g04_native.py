@@ -12,6 +12,8 @@ def main():
     p.add_argument('--eval-dir',type=Path,required=True)
     p.add_argument('--training-dir',type=Path,required=True)
     p.add_argument('--foot-audit-dir',type=Path)
+    p.add_argument('--method',default='native PPO')
+    p.add_argument('--summary',type=Path)
     p.add_argument('--state',choices=['IN_PROGRESS','FAILED','BUDGET_EXHAUSTED','PASSED'],required=True)
     args=p.parse_args();run=args.eval_dir.resolve();out=ROOT/'reports/G04'
     measured=json.loads((run/'metrics.json').read_text());manifest=json.loads((run/'eval_manifest.json').read_text())
@@ -39,7 +41,15 @@ def main():
     records=[r for r in ledger['runs'] if r['goal']=='G04']
     if any(r['status']=='RUNNING' for r in records):raise ValueError('wait for active GPU jobs before finalizing cumulative cost')
     hours=sum(r['charged_gpu_hours'] for r in records);steps=sum(r['charged_env_steps'] for r in records)
+    # Preserve the previous published result and policy before replacing it.
+    archive=out/('published_before_'+datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S'))
+    archive.mkdir()
+    for name in ('REPORT.md','commands.log','episodes.csv','initial_states.csv','eval_manifest.json','metrics.json','evidence.json'):
+        if (out/name).is_file():shutil.copy2(out/name,archive/name)
     artifact=ROOT/'artifacts/G04/policy.pt';artifact.parent.mkdir(parents=True,exist_ok=True)
+    if artifact.is_file():
+        old=artifact.parent/('policy_'+digest(artifact)[:16]+'.pt')
+        if not old.exists():shutil.copy2(artifact,old)
     if checkpoint.resolve()!=artifact.resolve():shutil.copy2(checkpoint,artifact)
     for name in ('episodes.csv','initial_states.csv','eval_manifest.json','metrics.json'):
         shutil.copy2(run/name,out/name)
@@ -69,8 +79,17 @@ Evaluation configuration: {config_path}. Subsequent shaping changes and their hy
 Reproduce: python3 scripts/evaluate.py --stage jump_recover --checkpoint artifacts/G04/policy.pt --config {config_path} --suite dev_jump_v2 --episodes 400 --num-envs 200 --reset-mode ground --output reports/G04/NEW_EVALUATION_DIRECTORY
 Verification: python3 tools/verify_goal.py --root . --goal G04 (expected to fail when measured performance is below threshold).
 ''')
+    if args.summary is not None:
+        # A method-specific report supersedes the historical PPO-only template.
+        (out/'REPORT.md').write_text(args.summary.read_text()+f'\n\n## Published evaluation\n\n'
+            f'Method: {args.method}. State: {args.state}. Panels: {json.dumps(rates)}. '
+            f'Numerical failures: {metrics["numerical_failures"]}. '
+            f'Checkpoint SHA256: `{digest(artifact)}`. '
+            f'GPU0 cumulative charge: {hours:.9f}/8 h; interactions: {steps:,}/200,000,000.\n\n'
+            f'Independent source: `{run.relative_to(ROOT)}`. Previous publication: `{archive.relative_to(ROOT)}`. '
+            f'All prior failed training and evaluation directories remain available.\n')
     comparison=out/'trial_comparison.json'
-    if comparison.is_file():
+    if comparison.is_file() and args.summary is None:
         trials=json.loads(comparison.read_text())
         table=['\n## Independent development evaluations\n',
             '| Training run | Minimum panel success | Non-foot contact | Learned noise std |',
@@ -111,6 +130,11 @@ Verification: python3 tools/verify_goal.py --root . --goal G04 (expected to fail
     files += [artifact,ROOT/'configs/evaluation_protocol_v2.json',run/'job.json',run/'source_hashes.json',run/'source_snapshot.zip']
     files += [f for f in (out/'trial_comparison.csv',comparison,out/'training_curve_live.png',out/'engineering_tests.xml') if f.is_file()]
     files += audit_files
+    if args.summary is not None:
+        files += [args.summary.resolve(),ROOT/'docs/G04_POLICY_INTERFACE.md']
+        files += [f for f in (ROOT/'artifacts/G04/autonomous_actor/actor.pt',
+            ROOT/'artifacts/G04/autonomous_actor/interface.json',
+            args.summary.parent/'cpu_tests.xml',args.summary.parent/'frozen_contract_check.json') if f.is_file()]
     revision=subprocess.run(['git','rev-parse','HEAD'],cwd=ROOT,text=True,capture_output=True)
     commit=revision.stdout.strip() if revision.returncode==0 else 'unborn; exact sources preserved in source_snapshot.zip'
     evidence={'schema_version':1,'goal_id':'G04','task_id':'jump_recover_ground_v1','evidence_kind':'observed',

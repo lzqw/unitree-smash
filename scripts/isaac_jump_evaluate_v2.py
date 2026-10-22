@@ -111,7 +111,7 @@ try:
     manifest={'protocol':PROTOCOL,'suite_requested':args.suite,'suite_executed':'dev_jump_v2_a+dev_jump_v2_b',
         'checkpoint':str(args.checkpoint.resolve()),'checkpoint_sha256':digest(args.checkpoint),
         'config':str(args.config.resolve()),'config_sha256':digest(args.config),'metrics_source':'episodes.csv','initial_states_source':'initial_states.csv',
-        'num_envs':env.num_envs,'evaluation_policy':'deterministic PPO inference; no assisting controller'}
+        'num_envs':env.num_envs,'evaluation_policy':'deterministic learned actor inference; no assisting controller'}
     (args.output/'eval_manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
     (args.output/'metrics.json').write_text(json.dumps(metrics,indent=2)+'\n')
     print(json.dumps(metrics),flush=True)
