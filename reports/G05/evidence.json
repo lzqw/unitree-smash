@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "goal_id": "G05",
+  "task_id": "virtual_hit_recover_ground_v1",
+  "evidence_kind": "observed",
+  "contract_sha256": "66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807",
+  "metrics": {
+    "sample_count": 400,
+    "ground_init_fraction": 1.0,
+    "virtual_hit_recovery_success_rate": 0.745,
+    "numerical_failures": 0,
+    "backend": "Isaac Lab / PhysX",
+    "stage": "virtual_hit",
+    "task": "virtual_hit_recover_ground_v1",
+    "seed": 1907,
+    "num_envs": 64,
+    "env_steps": 2800,
+    "elapsed_s": 66.93376144801732,
+    "checkpoint_sha256": "31059049749298fba12da457cfd5e9b1e49c5855989e0482596d72c2b88dec8d"
+  },
+  "run": {
+    "command": "/home/autodrive/Isaac/env_isaaclab/bin/python scripts/isaac_stage_evaluate.py --stage virtual_hit --checkpoint reports/G05/train_formal02/checkpoint.pt --config configs/g05_imitation.json --output reports/G05/eval_formal02 --episodes 400 --num-envs 64 --suite dev_virtual_panel --headless",
+    "git_commit": "06e1211a244e6db143501b0229ce408d28d276bb",
+    "started_at": "2026-10-22T15:07:00.368858+00:00",
+    "finished_at": "2026-10-22T15:08:13.347617+00:00",
+    "gpu_hours": 0.020271441953890544,
+    "env_steps": 20480000
+  },
+  "artifacts": [
+    {
+      "path": "reports/G05/REPORT.md",
+      "sha256": "0d6a796cc254a1b610d571b2dce998003429f32e56b47a2b9a63f53728c01b85"
+    },
+    {
+      "path": "reports/G05/commands.log",
+      "sha256": "6abec62e740ebc31d476e2e2470d562a7ccca9c9e0e255deff29b14dc15b49f6"
+    },
+    {
+      "path": "reports/G05/episodes.csv",
+      "sha256": "b107ca22edfcc8ca8545de4561577c4452293450d90141cf0c71fffb115988d1"
+    },
+    {
+      "path": "reports/G05/eval_manifest.json",
+      "sha256": "0a1b4978e9d3d2cfdc789e5690d50bd6dee3cd9ad8676b341e782f7e1beb6d38"
+    },
+    {
+      "path": "reports/G05/metrics.json",
+      "sha256": "a4b01518a3fc40da5a8d33ba915fd471b55ee808b33595541327c8dc090c3909"
+    },
+    {
+      "path": "artifacts/G05/policy.pt",
+      "sha256": "31059049749298fba12da457cfd5e9b1e49c5855989e0482596d72c2b88dec8d"
+    },
+    {
+      "path": "configs/g05_imitation.json",
+      "sha256": "a775f58f071b5629238a170cf2aca07886a88489d7c5443586d32820634882af"
+    },
+    {
+      "path": "reports/G05/eval_formal02/job.json",
+      "sha256": "9d71a4d45a78dfdb9bd26b49043f6a4f6e9857148d0e4b94aea243d2472e2c82"
+    },
+    {
+      "path": "reports/G05/eval_formal02/source_hashes.json",
+      "sha256": "eb2b48d6642bd2fb16a8ec9db555123daf6fb369d71ab6b579046293c88aefb7"
+    },
+    {
+      "path": "reports/G05/high_jump_search01/metrics.json",
+      "sha256": "b531d53492e8308940f293665cba7e49f2c69e3ccd1152f3a0d44db12fa2473b"
+    }
+  ]
+}

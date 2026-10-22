@@ -1,0 +1,9 @@
+# G05 target-conditioned panel and capability search
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/search_high_jump.py --output reports/G05/high_jump_search01 --population 256 --replicas 4 --generations 20 --seed 511001 --headless
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/evaluate_teacher_virtual.py --output reports/G05/teacher_virtual_eval --headless
+
+# G05 formal teacher-guided BC + DAgger
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/train_g05_imitation.py --output reports/G05/train_formal02 --num-envs 128 --updates 2200 --rounds 4 --seed 511017 --headless
+
+# Independent ground evaluation (400 episodes)
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/isaac_stage_evaluate.py --stage virtual_hit --checkpoint reports/G05/train_formal02/checkpoint.pt --config configs/g05_imitation.json --output reports/G05/eval_formal02 --episodes 400 --num-envs 64 --suite dev_virtual_panel --headless

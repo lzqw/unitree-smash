@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "current_goal": "G04",
+  "current_goal": "G06",
   "goals": {
     "G00": {
       "state": "PASSED",
@@ -28,29 +28,29 @@
     "G04": {
       "state": "PASSED",
       "evidence": "reports/G04/evidence.json",
-      "notes": "真实双面板评测400回合，较差面板成功率95.5%；累计GPU0记账3.5905/8小时。参见原始CSV和报告，不把训练执行视为策略达标。",
+      "notes": "PASSED and preserved. User explicitly authorized the new G05-G07 window; G04 checkpoint remains the initialization artifact.",
       "active_gpu_jobs": [],
       "foot_ground_audit": "reports/G04/foot_ground_audit_v1/REPORT.md",
-      "next_action_state": "COMPLETE",
+      "next_action_state": "CONTINUE_G05_G07",
       "next_action_reason": "Original fixed G04 panels passed by autonomous teacher-guided BC/DAgger actor; training stopped. G05 remains unauthorized.",
       "method": "teacher search + BC + DAgger",
       "policy_sha256": "cd9119ad85d4ac45a76d9c0014058e4edfbcc4ded47317893e55419781c8d980",
       "report": "reports/G04/autonomous_learning_20261022/REPORT.md"
     },
     "G05": {
-      "state": "TODO",
-      "evidence": null,
-      "notes": "尚未实施/训练；不得将任务包CPU测试当作此Goal通过。"
+      "state": "PASSED",
+      "evidence": "reports/G05/evidence.json",
+      "notes": "Independent 400 ground episodes: virtual event rate 100%, event-conditioned recovery success 74.5%, ground initialization 1.0, numerical failures 0. Target panel is fixed before training and exposed through the native command observation. High-jump capability search is retained separately; 20 cm was not claimed."
     },
     "G06": {
-      "state": "TODO",
+      "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "尚未实施/训练；不得将任务包CPU测试当作此Goal通过。"
+      "notes": "Initialize from artifacts/G05/policy.pt; train/evaluate real physical shuttle contact under the authorized g05-g07-20261022 window."
     },
     "G07": {
       "state": "TODO",
       "evidence": null,
-      "notes": "尚未实施/训练；不得将任务包CPU测试当作此Goal通过。"
+      "notes": "Queued after G06."
     },
     "G08": {
       "state": "TODO",

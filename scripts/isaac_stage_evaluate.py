@@ -80,7 +80,11 @@ def main() -> None:
     try:
         obs, _ = wrapped.reset()
         initial_height = env.robot.data.root_pos_w[:, 2].detach().clone()
-        ground_init = bool(torch.isfinite(initial_height).all() and ((initial_height > 0.35) & (initial_height < 0.50)).all())
+        # The audited coupled asset's canonical base root is 0.323 m; the
+        # lower feet remain on the z=0 ground plane.  Use the same physical
+        # ground-state band for every stage rather than the old diagnostic
+        # band that excluded this valid base height.
+        ground_init = bool(torch.isfinite(initial_height).all() and ((initial_height > 0.25) & (initial_height < 0.50)).all())
         numerical_failures = int(not bool(torch.isfinite(obs["policy"]).all().item()))
         with torch.inference_mode():
             while len(getattr(env, "episode_records", [])) < args.episodes:
