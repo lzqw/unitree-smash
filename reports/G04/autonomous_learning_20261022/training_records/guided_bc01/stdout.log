@@ -1,0 +1,77 @@
+[INFO][AppLauncher]: Using device: cuda:0
+[INFO][AppLauncher]: Loading experience file: /home/autodrive/Isaac/IsaacLab/apps/isaaclab.python.headless.kit
+Setting seed: 421001
+[INFO]: Base environment:
+	Environment device    : cuda:0
+	Environment seed      : 421001
+	Physics step-size     : 0.002
+	Rendering step-size   : 0.01
+	Environment step-size : 0.01
+[INFO]: Time taken for scene creation : 0.425842 seconds
+[INFO]: Scene manager:  <class InteractiveScene>
+	Number of environments: 256
+	Environment spacing   : 3.0
+	Source prim name      : /World/envs/env_0
+	Global prim paths     : ['/World/Ground']
+	Replicate physics     : True
+[INFO]: Starting the simulation. This may take a few seconds. Please wait...
+[INFO]: Time taken for simulation start : 0.525608 seconds
+[INFO]: Completed setting up the environment...
+--------------------------------------------------------------------------------
+Resolved observation sets: 
+	 policy :  ['policy']
+	 critic :  ['policy']
+--------------------------------------------------------------------------------
+Actor MLP: MLP(
+  (0): Linear(in_features=794, out_features=512, bias=True)
+  (1): ELU(alpha=1.0)
+  (2): Linear(in_features=512, out_features=256, bias=True)
+  (3): ELU(alpha=1.0)
+  (4): Linear(in_features=256, out_features=128, bias=True)
+  (5): ELU(alpha=1.0)
+  (6): Linear(in_features=128, out_features=18, bias=True)
+)
+Critic MLP: MLP(
+  (0): Linear(in_features=794, out_features=512, bias=True)
+  (1): ELU(alpha=1.0)
+  (2): Linear(in_features=512, out_features=256, bias=True)
+  (3): ELU(alpha=1.0)
+  (4): Linear(in_features=256, out_features=128, bias=True)
+  (5): ELU(alpha=1.0)
+  (6): Linear(in_features=128, out_features=1, bias=True)
+)
+TEACHER_COLLECTION={"episodes": 256, "successes": 236, "qualified": 249, "body_contacts": 14, "max_com_rise": 0.0916358232498169, "mean_recovery": 1.8026094515807927}
+BC_PROGRESS={"round": 0, "episodes": 256, "successes": 0, "qualified": 4, "body_contacts": 190, "max_com_rise": 0.0962795615196228, "mean_recovery": 0.006218749569598003, "validation_mse": 0.00011028770677512512, "training_mse_samples": [0.11539917439222336, 0.004556104075163603, 0.0021261759102344513, 0.0013089845888316631, 0.0010351926321163774, 0.0009575106669217348, 0.0007254023221321404, 0.0007516120676882565, 0.0003462528402451426, 0.00037819918361492455, 0.00017526952433399856, 0.00023172034707386047]}
+BC_PROGRESS={"round": 1, "episodes": 256, "successes": 131, "qualified": 177, "body_contacts": 44, "max_com_rise": 0.09323713183403015, "mean_recovery": 1.399567325686803, "validation_mse": 0.00023823996889404953, "training_mse_samples": [0.03958724066615105, 0.004478105343878269, 0.004008670803159475, 0.004490704741328955, 0.004949699155986309, 0.002624961780384183, 0.003469431772828102, 0.0033526744227856398, 0.0022905038204044104, 0.0017301473999395967, 0.0017621176084503531, 0.0019497384782880545]}
+BC_PROGRESS={"round": 2, "episodes": 256, "successes": 149, "qualified": 213, "body_contacts": 67, "max_com_rise": 0.09531217813491821, "mean_recovery": 1.4748391975008417, "validation_mse": 0.00024039772688411176, "training_mse_samples": [0.006795714609324932, 0.002539645414799452, 0.002012228360399604, 0.0022580616641789675, 0.002206329256296158, 0.0016610908787697554, 0.0026935599744319916, 0.0018229406559839845, 0.0023780951742082834, 0.000998028670437634, 0.0024134384002536535, 0.0012685594847425818]}
+Loading user config located at: '/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/isaacsim/kit/data/Kit/Isaac-Sim/5.1/user.config.json'
+[Info] [carb] Logging to file: /home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/isaacsim/kit/logs/Kit/Isaac-Sim/5.1/kit_20261022_165747.log
+2026-10-22T08:57:47Z [63ms] [Warning] [omni.usd_config.extension] Enable omni.materialx.libs extension to use MaterialX
+2026-10-22T08:57:47Z [364ms] [Warning] [carb] Acquiring non optional plugin interface which is not listed as dependency: [omni::physx::IPhysxBenchmarks v1.0] (plugin: <default plugin>), by client: omni.physics.physx.plugin. Add it to CARB_PLUGIN_IMPL_DEPS() macro of a client.
+2026-10-22T08:57:47Z [477ms] [Warning] [omni.isaac.dynamic_control] omni.isaac.dynamic_control is deprecated as of Isaac Sim 4.5. No action is needed from end-users.
+2026-10-22T08:57:51Z [3,720ms] [Warning] [carb.cudainterop.plugin] CUDA_VISIBLE_DEVICES environment variable is set.
+2026-10-22T08:57:51Z [3,720ms] [Warning] [carb.cudainterop.plugin] Note CUDA device enumeration and Omniverse device enumeration are different.
+2026-10-22T08:57:51Z [3,720ms] [Warning] [carb.cudainterop.plugin] Setting CUDA_VISIBLE_DEVICES can lead to undesired behavior or crashes.
+
+|---------------------------------------------------------------------------------------------|
+| Driver Version: 595.91.07     | Graphics API: Vulkan
+|=============================================================================================|
+| GPU | Name                             | Active | LDA | GPU Memory | Vendor-ID | LUID       |
+|     |                                  |        |     |            | Device-ID | UUID       |
+|     |                                  |        |     |            | Bus-ID    |            |
+|---------------------------------------------------------------------------------------------|
+| 0   | NVIDIA GeForce RTX 5080          | Yes: 0 |     | 16303   MB | 10de      | 0          |
+|     |                                  |        |     |            | 2c02      | ac315b09.. |
+|     |                                  |        |     |            | 1         |            |
+|=============================================================================================|
+| OS: 24.04.4 LTS (Noble Numbat) ubuntu, Version: 24.04.4, Kernel: 7.0.0-38-generic
+| XServer Vendor: The X.Org Foundation, XServer Version: 12101011 (1.21.1.11)
+| Processor: Intel(R) Core(TM) i9-14900KF
+| Bare Metal Cores: 24 | Bare Metal Logical Cores: 48
+| Available Cores:  32 
+|---------------------------------------------------------------------------------------------|
+| Total Memory (MB): 64065 | Free Memory: 55191
+| Total Page/Swap (MB): 8191 | Free Page/Swap: 6491
+|---------------------------------------------------------------------------------------------|
+2026-10-22T08:57:51Z [4,016ms] [Warning] [gpu.foundation.plugin] CPU performance profile is set to powersave. This profile sets the CPU to the lowest frequency reducing performance.
+2026-10-22T08:57:51Z [4,024ms] [Warning] [gpu.foundation.plugin] IOMMU is enabled.

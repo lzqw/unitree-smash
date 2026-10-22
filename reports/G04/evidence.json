@@ -7,42 +7,42 @@
   "metrics": {
     "sample_count": 400,
     "ground_init_fraction": 1.0,
-    "jump_recovery_success_rate": 0.0,
+    "jump_recovery_success_rate": 0.955,
     "panel_success_rates": {
-      "dev_jump_v2_a": 0.0,
-      "dev_jump_v2_b": 0.0
+      "dev_jump_v2_a": 0.995,
+      "dev_jump_v2_b": 0.955
     },
     "numerical_failures": 0,
     "env_steps": 160000,
     "backend": "Isaac Lab / PhysX",
     "task": "jump_recover_ground_v1",
-    "checkpoint_sha256": "0c94cecf197b9dd5ab658fe391e42122fbbefdc8e10227d90c4f05f8ab26818f",
+    "checkpoint_sha256": "cd9119ad85d4ac45a76d9c0014058e4edfbcc4ded47317893e55419781c8d980",
     "protocol_sha256": "421497aa51eecac023c70b200e8a75ecafff01527dcf215665d5d96c1e8266a8",
-    "qualified_jump_landed_rate": 0.0,
-    "qualified_flight_seen_rate": 0.0,
-    "body_landing_rate": 0.3925,
-    "maximum_com_rise_m": 0.00958387553691864
+    "qualified_jump_landed_rate": 1.0,
+    "qualified_flight_seen_rate": 1.0,
+    "body_landing_rate": 0.025,
+    "maximum_com_rise_m": 0.12381389737129211
   },
   "run": {
-    "command": "/home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/scripts/isaac_jump_evaluate_v2.py --stage jump --checkpoint /home/autodrive/LZQW/unitree_smash/runs/G04/corrected_v2c_continue_03/native/checkpoint.pt --config /home/autodrive/LZQW/unitree_smash/configs/jump_ppo_v2c.json --output /home/autodrive/LZQW/unitree_smash/reports/G04/corrected_v2c_continue_03_eval --episodes 400 --num-envs 200 --seed 1907 --suite dev_jump_v2 --reset-mode ground --device cuda:0 --headless",
-    "git_commit": "unborn; exact sources preserved in source_snapshot.zip",
-    "started_at": "2026-10-22T05:47:08.343066+00:00",
-    "finished_at": "2026-10-22T05:47:35.096007+00:00",
-    "gpu_hours": 3.432439632244722,
-    "env_steps": 99685408
+    "command": "/home/autodrive/Isaac/env_isaaclab/bin/python scripts/isaac_jump_evaluate_v2.py --checkpoint runs/G04/guided_bc02/checkpoint.pt --config configs/g04_imitation.json --output reports/G04/guided_bc02_eval --num-envs 200 --episodes 400 --headless",
+    "git_commit": "a39a86f55c6d380866d7de70c6b65e565718bb8c",
+    "started_at": "2026-10-22T09:06:31.361141+00:00",
+    "finished_at": "2026-10-22T09:06:57.669450+00:00",
+    "gpu_hours": 3.590540662664118,
+    "env_steps": 108146208
   },
   "artifacts": [
     {
       "path": "reports/G04/REPORT.md",
-      "sha256": "8bee663d1d1079bcce246387a9675f7edef449f283abd282a3802bd7002ed226"
+      "sha256": "c418f1c2d58277d0e8d41f5eac99fa8a276900f723b49df7843502fb4678bd36"
     },
     {
       "path": "reports/G04/commands.log",
-      "sha256": "633b3613094cc280e9cbc725614abfdafe89c9a762f5ed0b9f08cd77cb355039"
+      "sha256": "cd5eb3328a00bf8d921446488f603cddfea52a772163f2caa4aee377d91d9df6"
     },
     {
       "path": "reports/G04/episodes.csv",
-      "sha256": "3cf9882469fcc561a14231a8768225ed31126040098225c2d222402eb281ec9b"
+      "sha256": "2881a9d0bfd956b666a625439b5a34fc35e5752c78a9ebc63e355d4c71f4084e"
     },
     {
       "path": "reports/G04/initial_states.csv",
@@ -50,31 +50,31 @@
     },
     {
       "path": "reports/G04/eval_manifest.json",
-      "sha256": "331b8fc6157cbf550edfd4747d1b42e3a56054237dcac0b9975b6d7590b991af"
+      "sha256": "f1b6909c0221d816bd448e717a53d7b2e06c313632710385f6768704fb37f876"
     },
     {
       "path": "reports/G04/metrics.json",
-      "sha256": "e1884eb4227d94e97ad6fe5ed4e066c038878912d4775f5f06a239effadcba65"
+      "sha256": "3e1f217cd42d46b0ead3fa877c9bb2d37cbdae37c368a25a2649e33ad734e0be"
     },
     {
       "path": "artifacts/G04/policy.pt",
-      "sha256": "0c94cecf197b9dd5ab658fe391e42122fbbefdc8e10227d90c4f05f8ab26818f"
+      "sha256": "cd9119ad85d4ac45a76d9c0014058e4edfbcc4ded47317893e55419781c8d980"
     },
     {
       "path": "configs/evaluation_protocol_v2.json",
       "sha256": "421497aa51eecac023c70b200e8a75ecafff01527dcf215665d5d96c1e8266a8"
     },
     {
-      "path": "reports/G04/corrected_v2c_continue_03_eval/job.json",
-      "sha256": "10d7fe6ec296181e60a48bf7070082f63458bfda93f9e9856661c79ccc66c0df"
+      "path": "reports/G04/guided_bc02_eval/job.json",
+      "sha256": "c1d3124fbf9cd9beb21683bcd42a6ad6448285424bd3c6e96ae45633ee612b6a"
     },
     {
-      "path": "reports/G04/corrected_v2c_continue_03_eval/source_hashes.json",
-      "sha256": "651fbcdadf7ac81b0e236313d97d293317eb13ad451116a270556518397b2e1d"
+      "path": "reports/G04/guided_bc02_eval/source_hashes.json",
+      "sha256": "5cc6d3609fb4e8a3c30163f687edd4c337c87d4dbabae45f8c969c0fe45be288"
     },
     {
-      "path": "reports/G04/corrected_v2c_continue_03_eval/source_snapshot.zip",
-      "sha256": "cf10ac352b996fe1bc8e72114a28d85722c2046018a23b0a558fc0bcc677422d"
+      "path": "reports/G04/guided_bc02_eval/source_snapshot.zip",
+      "sha256": "03a507ce61d0c8e5a49129a64033d51017be8b7cee89de062667c078475cd669"
     },
     {
       "path": "reports/G04/trial_comparison.csv",
@@ -93,32 +93,28 @@
       "sha256": "ef38e22ac39b76fd1a0b7c50547dd3a11c5ec300da4110754027b49f3349ef90"
     },
     {
-      "path": "reports/G04/foot_ground_audit_v1/metrics.json",
-      "sha256": "abc9e401e5ff6208550f1050819159b38095b034068fe5b1340303b5366c82c7"
+      "path": "reports/G04/autonomous_learning_20261022/REPORT.md",
+      "sha256": "47a893792f2b979edd33b2102d8183e4de42318485952887267cc7951563d378"
     },
     {
-      "path": "reports/G04/foot_ground_audit_v1/per_environment.csv",
-      "sha256": "c8a6c208a72aa964adcbeb76aa0ed1d4b64e14dcb44f65761a326a51eca19c22"
+      "path": "docs/G04_POLICY_INTERFACE.md",
+      "sha256": "ce0982131149e0e07546f35c20ca5abc0cfac91f1989c3325a57eee38b6946ce"
     },
     {
-      "path": "reports/G04/foot_ground_audit_v1/episodes.csv",
-      "sha256": "deb6ee72e2fb6834cdfcdaebac9988e5b4de7bf3ad84ac75b1dd4d9bb2eda564"
+      "path": "artifacts/G04/autonomous_actor/actor.pt",
+      "sha256": "40b610b4843a610a1e991e92ba6c5bd6fb5b16fb6db1bcf8ec600183d45d05b7"
     },
     {
-      "path": "reports/G04/foot_ground_audit_v1/job.json",
-      "sha256": "08ab5d548a6c605eb1c3670458e10c8fc4876232c6dc7546f5e695ea97e0d5c6"
+      "path": "artifacts/G04/autonomous_actor/interface.json",
+      "sha256": "b5f8ed78d014f22f6837772230fdcad70eeb5f242a54e70f8d9b95e99d815114"
     },
     {
-      "path": "reports/G04/foot_ground_audit_v1/source_hashes.json",
-      "sha256": "50f40845d1fe80fe3926fa82d3e85e64864bcefe07f794263e2e6103146f17ac"
+      "path": "reports/G04/autonomous_learning_20261022/cpu_tests.xml",
+      "sha256": "9247ae4fa7312d5cff97ce1f042174530785dd0071be6c6ab3ad4960021885b9"
     },
     {
-      "path": "reports/G04/foot_ground_audit_v1/source_snapshot.zip",
-      "sha256": "58a805aeb66b2df2faf3d65387fe9bce97338a4c9c5abdd9dbf59a71a48ff03c"
-    },
-    {
-      "path": "reports/G04/foot_ground_audit_v1/REPORT.md",
-      "sha256": "61b46de39593e18646d20991da08e1c6a87689c84c8cc1549da0878115c804ad"
+      "path": "reports/G04/autonomous_learning_20261022/frozen_contract_check.json",
+      "sha256": "382429624b58636da99f92dce0c2424c75026ebf95f80929833232e8d1ee7726"
     }
   ]
 }

@@ -1,0 +1,82 @@
+{
+  "checkpoint": "runs/G04/guided_bc02/checkpoint.pt",
+  "checkpoint_sha256": "cd9119ad85d4ac45a76d9c0014058e4edfbcc4ded47317893e55419781c8d980",
+  "export_sha256": "40b610b4843a610a1e991e92ba6c5bd6fb5b16fb6db1bcf8ec600183d45d05b7",
+  "interface": {
+    "schema": "quadsmash-native-training-v2",
+    "observation_size": 794,
+    "frame_fields": {
+      "root_linear_velocity_b": 3,
+      "root_angular_velocity_b": 3,
+      "gravity_b": 3,
+      "joint_position_offset": 18,
+      "joint_velocity": 18,
+      "tool_position_b": 3,
+      "tool_normal_b": 3,
+      "tool_relative_linear_velocity_b": 3,
+      "tool_relative_angular_velocity_b": 3,
+      "foot_contact": 4,
+      "ball_position_b": 3,
+      "ball_relative_velocity_b": 3,
+      "ball_present": 1,
+      "history_valid": 1
+    },
+    "history_length": 11,
+    "policy_dt": 0.01,
+    "joints": [
+      "FL_hip_joint",
+      "FR_hip_joint",
+      "RL_hip_joint",
+      "RR_hip_joint",
+      "FL_thigh_joint",
+      "FR_thigh_joint",
+      "RL_thigh_joint",
+      "RR_thigh_joint",
+      "FL_calf_joint",
+      "FR_calf_joint",
+      "RL_calf_joint",
+      "RR_calf_joint",
+      "joint1",
+      "joint2",
+      "joint3",
+      "joint4",
+      "joint5",
+      "joint6"
+    ],
+    "asset_sha256": "bfb831e4afc8a1a705bb0fb6f001c25eeaa401822978267a0ee5e151007511f3",
+    "action_family": "jump-event-v1",
+    "metrics_version": "full-com-contiguous-v2"
+  },
+  "frame_fields": {
+    "root_linear_velocity_b": 3,
+    "root_angular_velocity_b": 3,
+    "gravity_b": 3,
+    "joint_position_offset": 18,
+    "joint_velocity": 18,
+    "tool_position_b": 3,
+    "tool_normal_b": 3,
+    "tool_relative_linear_velocity_b": 3,
+    "tool_relative_angular_velocity_b": 3,
+    "foot_contact": 4,
+    "ball_position_b": 3,
+    "ball_relative_velocity_b": 3,
+    "ball_present": 1,
+    "history_valid": 1
+  },
+  "observation_shape": [
+    "batch",
+    794
+  ],
+  "action_shape": [
+    "batch",
+    18
+  ],
+  "execution": "deterministic learned neural actor; no teacher or expert prefix",
+  "action_postprocessing": "Apply the original JumpEnv time-dependent action scale, [-1,1] command clipping, joint limits and fixed actuator model.",
+  "export_parity": {
+    "source": "runs/G04/guided_bc02/teacher_dataset.pt",
+    "samples": 4096,
+    "maximum_absolute_error": 0.0
+  },
+  "scope": "G04 jump recovery only; future striking requires further authorized training and validation"
+}

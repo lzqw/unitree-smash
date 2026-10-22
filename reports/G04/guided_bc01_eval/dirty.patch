@@ -1,0 +1,156 @@
+diff --git a/configs/budget.json b/configs/budget.json
+index 94dd800..b06c82c 100644
+--- a/configs/budget.json
++++ b/configs/budget.json
+@@ -7,11 +7,13 @@
+     "G03",
+     "G04"
+   ],
+-  "allowed_gpu_ids": [0],
++  "allowed_gpu_ids": [
++    0
++  ],
+   "gpu_id_policy": "只使用调度器已分配或用户明确指定的GPU；空列表不是全部GPU。",
+   "max_concurrent_gpu_processes": 1,
+   "authorized_total_gpu_hours": 10.0,
+-  "max_training_revisions_per_goal": 3,
++  "max_training_revisions_per_goal": null,
+   "cloud_spend_authorized": false,
+   "suggested_incremental_budgets_gpu_hours": {
+     "G04": 8,
+@@ -29,5 +31,6 @@
+     "global_env_step_limit",
+     "job_walltime_limit"
+   ],
+-  "first_training_batch_note": "G04-G07共60 GPU-hours为建议累计上限；授权后总预算含G00-G03为62。不自动授权。"
++  "first_training_batch_note": "G04-G07共60 GPU-hours为建议累计上限；授权后总预算含G00-G03为62。不自动授权。",
++  "revision_authorization_note": "2026-10-22 new user goal explicitly removes three-revision, A/B-exclusive and 50-update limits for G04; existing GPU0 8-hour and 200-million-interaction cumulative caps remain unchanged."
+ }
+diff --git a/status/GPU_LEDGER.json b/status/GPU_LEDGER.json
+index a3dc6b5..cbc176d 100644
+--- a/status/GPU_LEDGER.json
++++ b/status/GPU_LEDGER.json
+@@ -2264,6 +2264,89 @@
+       "receipt_present": true,
+       "elapsed_s": 17.88978488696739,
+       "finished_at": "2026-10-22T05:58:22.660035+00:00"
++    },
++    {
++      "goal": "G04",
++      "command": [
++        "/home/autodrive/Isaac/env_isaaclab/bin/python",
++        "scripts/diagnose_g04_rewards.py",
++        "--run-native",
++        "--output",
++        "reports/G04/guided_initial_diagnostic"
++      ],
++      "output": "/home/autodrive/LZQW/unitree_smash/reports/G04/guided_initial_diagnostic",
++      "gpu": 0,
++      "status": "SUCCEEDED",
++      "charged_gpu_hours": 0.005581807163883544,
++      "charged_env_steps": 51200,
++      "started_at": "2026-10-22T08:51:23.161028+00:00",
++      "pid": 906830,
++      "child_pid": 906853,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": true,
++      "elapsed_s": 20.094505789980758,
++      "finished_at": "2026-10-22T08:51:43.256259+00:00"
++    },
++    {
++      "goal": "G04",
++      "command": [
++        "/home/autodrive/Isaac/env_isaaclab/bin/python",
++        "scripts/search_g04_teacher.py",
++        "--output",
++        "reports/G04/guided_teacher_search01",
++        "--population",
++        "96",
++        "--replicas",
++        "4",
++        "--generations",
++        "12",
++        "--headless"
++      ],
++      "output": "/home/autodrive/LZQW/unitree_smash/reports/G04/guided_teacher_search01",
++      "gpu": 0,
++      "status": "SUCCEEDED",
++      "charged_gpu_hours": 0.03651607921665547,
++      "charged_env_steps": 1843200,
++      "started_at": "2026-10-22T08:54:27.347379+00:00",
++      "pid": 907532,
++      "child_pid": 907572,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": true,
++      "elapsed_s": 131.4578851799597,
++      "finished_at": "2026-10-22T08:56:38.806039+00:00"
++    },
++    {
++      "goal": "G04",
++      "command": [
++        "/home/autodrive/Isaac/env_isaaclab/bin/python",
++        "scripts/train_g04_imitation.py",
++        "--output",
++        "runs/G04/guided_bc01",
++        "--teacher",
++        "reports/G04/guided_teacher_search01/metrics.json",
++        "--num-envs",
++        "256",
++        "--updates",
++        "3000",
++        "--rounds",
++        "3",
++        "--headless"
++      ],
++      "output": "/home/autodrive/LZQW/unitree_smash/runs/G04/guided_bc01",
++      "gpu": 0,
++      "status": "SUCCEEDED",
++      "charged_gpu_hours": 0.015236831437214278,
++      "charged_env_steps": 409600,
++      "started_at": "2026-10-22T08:57:47.324418+00:00",
++      "pid": 908145,
++      "child_pid": 908152,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": true,
++      "elapsed_s": 54.8525931739714,
++      "finished_at": "2026-10-22T08:58:42.177755+00:00"
+     }
+   ]
+ }
+diff --git a/status/RUNS.jsonl b/status/RUNS.jsonl
+index 55281b6..6250ea5 100644
+--- a/status/RUNS.jsonl
++++ b/status/RUNS.jsonl
+@@ -75,3 +75,6 @@
+ {"goal": "G04", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "/home/autodrive/LZQW/unitree_smash/scripts/isaac_coupled_runner.py", "train", "--stage", "jump", "--config", "/home/autodrive/LZQW/unitree_smash/configs/jump_ppo_v2c.json", "--output", "/home/autodrive/LZQW/unitree_smash/runs/G04/corrected_v2c_continue_03/native", "--num-envs", "512", "--iterations", "200", "--seed", "0", "--max-gpu-hours", "0.5", "--device", "cuda:0", "--headless", "--resume-checkpoint", "/home/autodrive/LZQW/unitree_smash/runs/G04/corrected_v2c_continue_02/native/checkpoint.pt"], "output": "/home/autodrive/LZQW/unitree_smash/runs/G04/corrected_v2c_continue_03/native", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.21692016770194944, "charged_env_steps": 13172736, "started_at": "2026-10-22T05:34:07.322603+00:00", "pid": 876974, "child_pid": 876978, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 780.912603727018, "finished_at": "2026-10-22T05:47:08.235912+00:00"}
+ {"goal": "G04", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "/home/autodrive/LZQW/unitree_smash/scripts/isaac_jump_evaluate_v2.py", "--stage", "jump", "--checkpoint", "/home/autodrive/LZQW/unitree_smash/runs/G04/corrected_v2c_continue_03/native/checkpoint.pt", "--config", "/home/autodrive/LZQW/unitree_smash/configs/jump_ppo_v2c.json", "--output", "/home/autodrive/LZQW/unitree_smash/reports/G04/corrected_v2c_continue_03_eval", "--episodes", "400", "--num-envs", "200", "--seed", "1907", "--suite", "dev_jump_v2", "--reset-mode", "ground", "--device", "cuda:0", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G04/corrected_v2c_continue_03_eval", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.007431167059726755, "charged_env_steps": 160000, "started_at": "2026-10-22T05:47:08.343066+00:00", "pid": 879067, "child_pid": 879071, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 26.752201415016316, "finished_at": "2026-10-22T05:47:35.096007+00:00"}
+ {"goal": "G04", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "-u", "scripts/isaac_foot_ground_audit.py", "--checkpoint", "runs/G04/corrected_v2c_continue_03/native/checkpoint.pt", "--config", "configs/jump_ppo_v2c.json", "--capability", "reports/G04/capability_all_body_v2/metrics.json", "--output", "reports/G04/foot_ground_audit_v1", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G04/foot_ground_audit_v1", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.004969384690824275, "charged_env_steps": 51200, "started_at": "2026-10-22T05:58:04.769489+00:00", "pid": 880438, "child_pid": 880446, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 17.88978488696739, "finished_at": "2026-10-22T05:58:22.660035+00:00"}
++{"goal": "G04", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/diagnose_g04_rewards.py", "--run-native", "--output", "reports/G04/guided_initial_diagnostic"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G04/guided_initial_diagnostic", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.005581807163883544, "charged_env_steps": 51200, "started_at": "2026-10-22T08:51:23.161028+00:00", "pid": 906830, "child_pid": 906853, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 20.094505789980758, "finished_at": "2026-10-22T08:51:43.256259+00:00"}
++{"goal": "G04", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/search_g04_teacher.py", "--output", "reports/G04/guided_teacher_search01", "--population", "96", "--replicas", "4", "--generations", "12", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G04/guided_teacher_search01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.03651607921665547, "charged_env_steps": 1843200, "started_at": "2026-10-22T08:54:27.347379+00:00", "pid": 907532, "child_pid": 907572, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 131.4578851799597, "finished_at": "2026-10-22T08:56:38.806039+00:00"}
++{"goal": "G04", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/train_g04_imitation.py", "--output", "runs/G04/guided_bc01", "--teacher", "reports/G04/guided_teacher_search01/metrics.json", "--num-envs", "256", "--updates", "3000", "--rounds", "3", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/runs/G04/guided_bc01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.015236831437214278, "charged_env_steps": 409600, "started_at": "2026-10-22T08:57:47.324418+00:00", "pid": 908145, "child_pid": 908152, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 54.8525931739714, "finished_at": "2026-10-22T08:58:42.177755+00:00"}
+diff --git a/status/STATUS.json b/status/STATUS.json
+index e82ba3c..8d25008 100644
+--- a/status/STATUS.json
++++ b/status/STATUS.json
+@@ -26,14 +26,14 @@
+       "invalidated_evidence": "reports/G03/invalidated_20261022/evidence.json"
+     },
+     "G04": {
+-      "state": "FAILED",
++      "state": "IN_PROGRESS",
+       "evidence": "reports/G04/evidence.json",
+-      "notes": "最终PPO独立双面板仍为0/400成功，G04未通过。足端补充诊断完成：256000个环境物理子步中全部接触力与独立地面过滤力及离地标签一致；精选已有工程动作重放1/32完整恢复，不计入PPO验收。累计GPU0记账3.432439632/8小时、99685408/200000000交互，无运行中作业。额外一轮低噪声修订尚未收到明确批准。",
++      "notes": "新目标已授权预算内自主训练迭代；既有独立评测0/400仍未通过，保留历史失败证据。",
+       "pending_additional_revision": "reports/G04/additional_revision_proposal.json",
+       "active_gpu_jobs": [],
+       "foot_ground_audit": "reports/G04/foot_ground_audit_v1/REPORT.md",
+-      "next_action_state": "BLOCKED_PERMISSION",
+-      "next_action_reason": "额外一轮低噪声修订需要超过原三轮上限；连续三次目标轮次仍未收到明确授权。PPO验收结果保持FAILED，累计资源预算不变。"
++      "next_action_state": "AUTHORIZED",
++      "next_action_reason": "New user goal authorizes autonomous method changes and training within existing remaining GPU0 and interaction budgets; previous revision and A/B caps superseded."
+     },
+     "G05": {
+       "state": "TODO",

@@ -53,3 +53,8 @@ The user asked to upload current code and findings to lzqw for discussion with G
 ## Subsequent user goal: CPU-only review preparation completed
 
 The user cleared the old goal and supplied the review-based task on commit65396a21. Branch g04-diagnostics-preparation-20261022 contains the six requested preparation deliverables; see reports/G04/review_preparation_20261022/REPORT.md and completion_audit.json. 121 CPU tests passed, plus2 final CLI/recorder checks. No task training, GPU simulation or GPU job was launched, and the cumulative ledger/old evidence/STATUS.json remain unchanged. G04 performance remains FAILED. Default reward remains v2c; new qualified-recovery reward is shadow-only. The prior blocked-goal turn count is historical and must not be used to block this completed preparation goal. Stop after delivery. Any later GPU diagnostic or training requires a fresh explicit decision under the current request; proposals A/B are mutually exclusive, not authorization.
+
+
+## 2026-10-22：G04 已通过并停止
+
+最新结果优先于以上历史待授权记录。教师搜索 + BC + DAgger 的自主网络通过原固定双面板（99.5% / 95.5%）；无 GPU 作业运行。累计 3.590540663/8 GPU h、108,146,208/200,000,000 交互。下一步可复评或在另行授权后进入 G05；不得自动启动 G05。报告：reports/G04/autonomous_learning_20261022/REPORT.md；接口：docs/G04_POLICY_INTERFACE.md。

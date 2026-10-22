@@ -1,0 +1,31 @@
+{
+  "goal": "G04",
+  "command": [
+    "/home/autodrive/Isaac/env_isaaclab/bin/python",
+    "scripts/train_g04_imitation.py",
+    "--output",
+    "runs/G04/guided_bc01",
+    "--teacher",
+    "reports/G04/guided_teacher_search01/metrics.json",
+    "--num-envs",
+    "256",
+    "--updates",
+    "3000",
+    "--rounds",
+    "3",
+    "--headless"
+  ],
+  "output": "/home/autodrive/LZQW/unitree_smash/runs/G04/guided_bc01",
+  "gpu": 0,
+  "status": "SUCCEEDED",
+  "charged_gpu_hours": 0.015236831437214278,
+  "charged_env_steps": 409600,
+  "started_at": "2026-10-22T08:57:47.324418+00:00",
+  "pid": 908145,
+  "child_pid": 908152,
+  "exit_code": 0,
+  "timed_out": false,
+  "receipt_present": true,
+  "elapsed_s": 54.8525931739714,
+  "finished_at": "2026-10-22T08:58:42.177755+00:00"
+}

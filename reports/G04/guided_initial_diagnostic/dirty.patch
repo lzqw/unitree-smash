@@ -1,0 +1,23 @@
+diff --git a/status/STATUS.json b/status/STATUS.json
+index e82ba3c..8d25008 100644
+--- a/status/STATUS.json
++++ b/status/STATUS.json
+@@ -26,14 +26,14 @@
+       "invalidated_evidence": "reports/G03/invalidated_20261022/evidence.json"
+     },
+     "G04": {
+-      "state": "FAILED",
++      "state": "IN_PROGRESS",
+       "evidence": "reports/G04/evidence.json",
+-      "notes": "最终PPO独立双面板仍为0/400成功，G04未通过。足端补充诊断完成：256000个环境物理子步中全部接触力与独立地面过滤力及离地标签一致；精选已有工程动作重放1/32完整恢复，不计入PPO验收。累计GPU0记账3.432439632/8小时、99685408/200000000交互，无运行中作业。额外一轮低噪声修订尚未收到明确批准。",
++      "notes": "新目标已授权预算内自主训练迭代；既有独立评测0/400仍未通过，保留历史失败证据。",
+       "pending_additional_revision": "reports/G04/additional_revision_proposal.json",
+       "active_gpu_jobs": [],
+       "foot_ground_audit": "reports/G04/foot_ground_audit_v1/REPORT.md",
+-      "next_action_state": "BLOCKED_PERMISSION",
+-      "next_action_reason": "额外一轮低噪声修订需要超过原三轮上限；连续三次目标轮次仍未收到明确授权。PPO验收结果保持FAILED，累计资源预算不变。"
++      "next_action_state": "AUTHORIZED",
++      "next_action_reason": "New user goal authorizes autonomous method changes and training within existing remaining GPU0 and interaction budgets; previous revision and A/B caps superseded."
+     },
+     "G05": {
+       "state": "TODO",

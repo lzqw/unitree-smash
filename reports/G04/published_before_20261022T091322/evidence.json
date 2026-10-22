@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "goal_id": "G04",
+  "task_id": "jump_recover_ground_v1",
+  "evidence_kind": "observed",
+  "contract_sha256": "66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807",
+  "metrics": {
+    "sample_count": 400,
+    "ground_init_fraction": 1.0,
+    "jump_recovery_success_rate": 0.0,
+    "panel_success_rates": {
+      "dev_jump_v2_a": 0.0,
+      "dev_jump_v2_b": 0.0
+    },
+    "numerical_failures": 0,
+    "env_steps": 160000,
+    "backend": "Isaac Lab / PhysX",
+    "task": "jump_recover_ground_v1",
+    "checkpoint_sha256": "0c94cecf197b9dd5ab658fe391e42122fbbefdc8e10227d90c4f05f8ab26818f",
+    "protocol_sha256": "421497aa51eecac023c70b200e8a75ecafff01527dcf215665d5d96c1e8266a8",
+    "qualified_jump_landed_rate": 0.0,
+    "qualified_flight_seen_rate": 0.0,
+    "body_landing_rate": 0.3925,
+    "maximum_com_rise_m": 0.00958387553691864
+  },
+  "run": {
+    "command": "/home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/scripts/isaac_jump_evaluate_v2.py --stage jump --checkpoint /home/autodrive/LZQW/unitree_smash/runs/G04/corrected_v2c_continue_03/native/checkpoint.pt --config /home/autodrive/LZQW/unitree_smash/configs/jump_ppo_v2c.json --output /home/autodrive/LZQW/unitree_smash/reports/G04/corrected_v2c_continue_03_eval --episodes 400 --num-envs 200 --seed 1907 --suite dev_jump_v2 --reset-mode ground --device cuda:0 --headless",
+    "git_commit": "unborn; exact sources preserved in source_snapshot.zip",
+    "started_at": "2026-10-22T05:47:08.343066+00:00",
+    "finished_at": "2026-10-22T05:47:35.096007+00:00",
+    "gpu_hours": 3.432439632244722,
+    "env_steps": 99685408
+  },
+  "artifacts": [
+    {
+      "path": "reports/G04/REPORT.md",
+      "sha256": "8bee663d1d1079bcce246387a9675f7edef449f283abd282a3802bd7002ed226"
+    },
+    {
+      "path": "reports/G04/commands.log",
+      "sha256": "633b3613094cc280e9cbc725614abfdafe89c9a762f5ed0b9f08cd77cb355039"
+    },
+    {
+      "path": "reports/G04/episodes.csv",
+      "sha256": "3cf9882469fcc561a14231a8768225ed31126040098225c2d222402eb281ec9b"
+    },
+    {
+      "path": "reports/G04/initial_states.csv",
+      "sha256": "e8d078e0b59535db3840ebce8c9f46f30201b6d42e629fdf3b80ae18f6b82b23"
+    },
+    {
+      "path": "reports/G04/eval_manifest.json",
+      "sha256": "331b8fc6157cbf550edfd4747d1b42e3a56054237dcac0b9975b6d7590b991af"
+    },
+    {
+      "path": "reports/G04/metrics.json",
+      "sha256": "e1884eb4227d94e97ad6fe5ed4e066c038878912d4775f5f06a239effadcba65"
+    },
+    {
+      "path": "artifacts/G04/policy.pt",
+      "sha256": "0c94cecf197b9dd5ab658fe391e42122fbbefdc8e10227d90c4f05f8ab26818f"
+    },
+    {
+      "path": "configs/evaluation_protocol_v2.json",
+      "sha256": "421497aa51eecac023c70b200e8a75ecafff01527dcf215665d5d96c1e8266a8"
+    },
+    {
+      "path": "reports/G04/corrected_v2c_continue_03_eval/job.json",
+      "sha256": "10d7fe6ec296181e60a48bf7070082f63458bfda93f9e9856661c79ccc66c0df"
+    },
+    {
+      "path": "reports/G04/corrected_v2c_continue_03_eval/source_hashes.json",
+      "sha256": "651fbcdadf7ac81b0e236313d97d293317eb13ad451116a270556518397b2e1d"
+    },
+    {
+      "path": "reports/G04/corrected_v2c_continue_03_eval/source_snapshot.zip",
+      "sha256": "cf10ac352b996fe1bc8e72114a28d85722c2046018a23b0a558fc0bcc677422d"
+    },
+    {
+      "path": "reports/G04/trial_comparison.csv",
+      "sha256": "8a9e8330c5ce52d4649b59bad3abc56690e46274410035854db4360de624177f"
+    },
+    {
+      "path": "reports/G04/trial_comparison.json",
+      "sha256": "359ffa32187f3d7c0a1a38bf2cf03e968c68d219d23230319d7e4d08a1cfcb65"
+    },
+    {
+      "path": "reports/G04/training_curve_live.png",
+      "sha256": "f6ba69f4a1ef6490ee3fcac90c323640abc7ef43e18a5a3d8f9d7da6c85f0c5d"
+    },
+    {
+      "path": "reports/G04/engineering_tests.xml",
+      "sha256": "ef38e22ac39b76fd1a0b7c50547dd3a11c5ec300da4110754027b49f3349ef90"
+    },
+    {
+      "path": "reports/G04/foot_ground_audit_v1/metrics.json",
+      "sha256": "abc9e401e5ff6208550f1050819159b38095b034068fe5b1340303b5366c82c7"
+    },
+    {
+      "path": "reports/G04/foot_ground_audit_v1/per_environment.csv",
+      "sha256": "c8a6c208a72aa964adcbeb76aa0ed1d4b64e14dcb44f65761a326a51eca19c22"
+    },
+    {
+      "path": "reports/G04/foot_ground_audit_v1/episodes.csv",
+      "sha256": "deb6ee72e2fb6834cdfcdaebac9988e5b4de7bf3ad84ac75b1dd4d9bb2eda564"
+    },
+    {
+      "path": "reports/G04/foot_ground_audit_v1/job.json",
+      "sha256": "08ab5d548a6c605eb1c3670458e10c8fc4876232c6dc7546f5e695ea97e0d5c6"
+    },
+    {
+      "path": "reports/G04/foot_ground_audit_v1/source_hashes.json",
+      "sha256": "50f40845d1fe80fe3926fa82d3e85e64864bcefe07f794263e2e6103146f17ac"
+    },
+    {
+      "path": "reports/G04/foot_ground_audit_v1/source_snapshot.zip",
+      "sha256": "58a805aeb66b2df2faf3d65387fe9bce97338a4c9c5abdd9dbf59a71a48ff03c"
+    },
+    {
+      "path": "reports/G04/foot_ground_audit_v1/REPORT.md",
+      "sha256": "61b46de39593e18646d20991da08e1c6a87689c84c8cc1549da0878115c804ad"
+    }
+  ]
+}

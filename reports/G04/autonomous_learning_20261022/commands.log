@@ -1,0 +1,7 @@
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/diagnose_g04_rewards.py --run-native --output reports/G04/guided_initial_diagnostic
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/search_g04_teacher.py --output reports/G04/guided_teacher_search01 --population 96 --replicas 4 --generations 12 --headless
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/train_g04_imitation.py --output runs/G04/guided_bc01 --teacher reports/G04/guided_teacher_search01/metrics.json --num-envs 256 --updates 3000 --rounds 3 --headless
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/isaac_jump_evaluate_v2.py --checkpoint runs/G04/guided_bc01/checkpoint.pt --config configs/g04_imitation.json --output reports/G04/guided_bc01_eval --num-envs 200 --episodes 400 --headless
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/search_g04_teacher.py --output reports/G04/guided_teacher_search02 --population 96 --replicas 8 --generations 16 --initial reports/G04/guided_teacher_search01/metrics.json --seed 411002 --headless
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/train_g04_imitation.py --output runs/G04/guided_bc02 --teacher reports/G04/guided_teacher_search02/metrics.json --init-checkpoint runs/G04/guided_bc01/checkpoint.pt --num-envs 256 --updates 5000 --rounds 8 --seed 421002 --headless
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/isaac_jump_evaluate_v2.py --checkpoint runs/G04/guided_bc02/checkpoint.pt --config configs/g04_imitation.json --output reports/G04/guided_bc02_eval --num-envs 200 --episodes 400 --headless

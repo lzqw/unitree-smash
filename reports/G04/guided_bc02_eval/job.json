@@ -1,0 +1,31 @@
+{
+  "goal": "G04",
+  "command": [
+    "/home/autodrive/Isaac/env_isaaclab/bin/python",
+    "scripts/isaac_jump_evaluate_v2.py",
+    "--checkpoint",
+    "runs/G04/guided_bc02/checkpoint.pt",
+    "--config",
+    "configs/g04_imitation.json",
+    "--output",
+    "reports/G04/guided_bc02_eval",
+    "--num-envs",
+    "200",
+    "--episodes",
+    "400",
+    "--headless"
+  ],
+  "output": "/home/autodrive/LZQW/unitree_smash/reports/G04/guided_bc02_eval",
+  "gpu": 0,
+  "status": "SUCCEEDED",
+  "charged_gpu_hours": 0.0073076382177694335,
+  "charged_env_steps": 160000,
+  "started_at": "2026-10-22T09:06:31.361141+00:00",
+  "pid": 910132,
+  "child_pid": 910139,
+  "exit_code": 0,
+  "timed_out": false,
+  "receipt_present": true,
+  "elapsed_s": 26.307497583969962,
+  "finished_at": "2026-10-22T09:06:57.669450+00:00"
+}

@@ -1,0 +1,30 @@
+{
+  "kind": "G04 passed autonomous actor and diagnostic trace",
+  "files": {
+    "artifacts/G04/policy.pt": {
+      "sha256": "cd9119ad85d4ac45a76d9c0014058e4edfbcc4ded47317893e55419781c8d980",
+      "bytes": 6464210
+    },
+    "artifacts/G04/autonomous_actor/actor.pt": {
+      "sha256": "40b610b4843a610a1e991e92ba6c5bd6fb5b16fb6db1bcf8ec600183d45d05b7",
+      "bytes": 2319522
+    },
+    "artifacts/G04/autonomous_actor/interface.json": {
+      "sha256": "b5f8ed78d014f22f6837772230fdcad70eeb5f242a54e70f8d9b95e99d815114",
+      "bytes": 2425
+    },
+    "runs/G04/guided_bc01/checkpoint.pt": {
+      "sha256": "b000305f8e52d35d677eecc1a77423637eaf2ee46a3711f299ae4ac98a0dc832",
+      "bytes": 6464338
+    },
+    "runs/G04/guided_bc02/checkpoint.pt": {
+      "sha256": "cd9119ad85d4ac45a76d9c0014058e4edfbcc4ded47317893e55419781c8d980",
+      "bytes": 6464210
+    },
+    "reports/G04/guided_initial_diagnostic/reward_trace.csv": {
+      "sha256": "c0e2517990b016512597dc45b232dc3b1fb42ce4c841ed1a82a7e5e301b2ae54",
+      "bytes": 107539407
+    }
+  },
+  "restore": "Extract at repository root. Runtime assets and pinned environment are in the previous handoff-20261022 release. Full BC datasets remain local and can be regenerated with the recorded teacher parameters, seeds and source snapshots; they are not included in this bundle."
+}

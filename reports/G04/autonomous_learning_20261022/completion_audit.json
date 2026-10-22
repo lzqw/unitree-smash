@@ -1,0 +1,32 @@
+{
+  "objective_source": "REQUEST.txt",
+  "checks": {
+    "original_panels_200_each": true,
+    "original_90_percent_each": true,
+    "ground_only": true,
+    "zero_numerical_failures": true,
+    "accepted_success_rows_meet_original_thresholds": true,
+    "published_policy_is_evaluated_policy": true,
+    "original_physics_and_contract": true,
+    "gpu0_only_this_goal": true,
+    "within_existing_gpu_and_interaction_budget": true,
+    "no_running_job": true,
+    "policy_export_actual_observation_parity": true,
+    "original_goal_verifier_passed": true,
+    "original_failed_checkpoint_preserved": true,
+    "reproducible_sources_preserved": true,
+    "summary_recovery_interface_and_request_present": true
+  },
+  "method": "teacher search + BC + DAgger, not PPO",
+  "remaining_G04_work": [],
+  "not_claimed": [
+    "G10 holdout performance",
+    "striking skill",
+    "hardware deployment",
+    "exact BC Adam-state resume"
+  ],
+  "panel_success_rates": {
+    "dev_jump_v2_a": 0.995,
+    "dev_jump_v2_b": 0.955
+  }
+}

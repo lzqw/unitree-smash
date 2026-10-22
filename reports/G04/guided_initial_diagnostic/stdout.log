@@ -1,0 +1,97 @@
+[INFO][AppLauncher]: Using device: cuda:0
+[INFO][AppLauncher]: Loading experience file: /home/autodrive/Isaac/IsaacLab/apps/isaaclab.python.headless.kit
+Setting seed: 311001
+[INFO]: Base environment:
+	Environment device    : cuda:0
+	Environment seed      : 311001
+	Physics step-size     : 0.002
+	Rendering step-size   : 0.01
+	Environment step-size : 0.01
+[INFO]: Time taken for scene creation : 0.302545 seconds
+[INFO]: Scene manager:  <class InteractiveScene>
+	Number of environments: 128
+	Environment spacing   : 3.0
+	Source prim name      : /World/envs/env_0
+	Global prim paths     : ['/World/Ground']
+	Replicate physics     : True
+[INFO]: Starting the simulation. This may take a few seconds. Please wait...
+[INFO]: Time taken for simulation start : 0.463352 seconds
+[INFO]: Completed setting up the environment...
+--------------------------------------------------------------------------------
+Resolved observation sets: 
+	 policy :  ['policy']
+	 critic :  ['policy']
+--------------------------------------------------------------------------------
+Actor MLP: MLP(
+  (0): Linear(in_features=794, out_features=512, bias=True)
+  (1): ELU(alpha=1.0)
+  (2): Linear(in_features=512, out_features=256, bias=True)
+  (3): ELU(alpha=1.0)
+  (4): Linear(in_features=256, out_features=128, bias=True)
+  (5): ELU(alpha=1.0)
+  (6): Linear(in_features=128, out_features=18, bias=True)
+)
+Critic MLP: MLP(
+  (0): Linear(in_features=794, out_features=512, bias=True)
+  (1): ELU(alpha=1.0)
+  (2): Linear(in_features=512, out_features=256, bias=True)
+  (3): ELU(alpha=1.0)
+  (4): Linear(in_features=256, out_features=128, bias=True)
+  (5): ELU(alpha=1.0)
+  (6): Linear(in_features=128, out_features=1, bias=True)
+)
+--------------------------------------------------------------------------------
+Resolved observation sets: 
+	 policy :  ['policy']
+	 critic :  ['policy']
+--------------------------------------------------------------------------------
+Actor MLP: MLP(
+  (0): Linear(in_features=794, out_features=512, bias=True)
+  (1): ELU(alpha=1.0)
+  (2): Linear(in_features=512, out_features=256, bias=True)
+  (3): ELU(alpha=1.0)
+  (4): Linear(in_features=256, out_features=128, bias=True)
+  (5): ELU(alpha=1.0)
+  (6): Linear(in_features=128, out_features=18, bias=True)
+)
+Critic MLP: MLP(
+  (0): Linear(in_features=794, out_features=512, bias=True)
+  (1): ELU(alpha=1.0)
+  (2): Linear(in_features=512, out_features=256, bias=True)
+  (3): ELU(alpha=1.0)
+  (4): Linear(in_features=256, out_features=128, bias=True)
+  (5): ELU(alpha=1.0)
+  (6): Linear(in_features=128, out_features=1, bias=True)
+)
+{"status": "MEASURED_DIAGNOSTIC_NOT_ACCEPTANCE", "groups": {"zero": {"episodes": 16, "airborne": 0, "qualified_flight": 0, "qualified_landing": 0, "complete_recovery": 0, "recovery_given_qualified_landing": null, "body_contacts": 0, "mean_component_returns": {"return_height_tracking": 1.9186829552054405, "return_flight": 0.0, "return_stable_recovery": 0.0, "return_preparation": 0.23376721143722534, "return_recovery_quality": 0.0, "return_arm_error": -0.00023225158201967133, "return_effort": -0.033432595897465944, "return_action_delta": 0.0, "return_settling": 0.0, "return_first_qualified_jump": 0.0, "return_first_success": 0.0, "return_first_body_contact": 0.0, "return_terminal": 0.0}}, "existing_expert": {"episodes": 16, "airborne": 16, "qualified_flight": 16, "qualified_landing": 16, "complete_recovery": 1, "recovery_given_qualified_landing": 0.0625, "body_contacts": 12, "mean_component_returns": {"return_height_tracking": 2.7602116093039513, "return_flight": 0.6996952872723341, "return_stable_recovery": 0.32437498215585947, "return_preparation": 0.23376683052629232, "return_recovery_quality": 0.9691741559654474, "return_arm_error": -0.0005553142091230256, "return_effort": -0.03429417044389993, "return_action_delta": -0.0019268528558313847, "return_settling": -0.4141953594516963, "return_first_qualified_jump": 2.0, "return_first_success": 0.3125, "return_first_body_contact": -3.0, "return_terminal": 0.0}}, "reference_mean": {"episodes": 16, "airborne": 0, "qualified_flight": 0, "qualified_landing": 0, "complete_recovery": 0, "recovery_given_qualified_landing": null, "body_contacts": 0, "mean_component_returns": {"return_height_tracking": 5.486560046672821, "return_flight": 0.0, "return_stable_recovery": 0.0, "return_preparation": 0.22287986055016518, "return_recovery_quality": 0.0, "return_arm_error": -0.0037628422142006457, "return_effort": -0.04341633548028767, "return_action_delta": -0.001636805354792159, "return_settling": 0.0, "return_first_qualified_jump": 0.0, "return_first_success": 0.0, "return_first_body_contact": 0.0, "return_terminal": 0.0}}, "comparison_mean": {"episodes": 16, "airborne": 6, "qualified_flight": 0, "qualified_landing": 0, "complete_recovery": 0, "recovery_given_qualified_landing": null, "body_contacts": 6, "mean_component_returns": {"return_height_tracking": 5.1861163675785065, "return_flight": 0.0, "return_stable_recovery": 0.0, "return_preparation": 0.223838503472507, "return_recovery_quality": 0.0, "return_arm_error": -0.007873738824855536, "return_effort": -0.05146785220131278, "return_action_delta": -0.008494803827488795, "return_settling": -0.2459033988416195, "return_first_qualified_jump": 0.0, "return_first_success": 0.0, "return_first_body_contact": -1.5, "return_terminal": 0.0}}, "reference_native_noise": {"episodes": 16, "airborne": 0, "qualified_flight": 0, "qualified_landing": 0, "complete_recovery": 0, "recovery_given_qualified_landing": null, "body_contacts": 0, "mean_component_returns": {"return_height_tracking": 5.4493948221206665, "return_flight": 0.0, "return_stable_recovery": 0.0, "return_preparation": 0.22381657734513283, "return_recovery_quality": 0.0, "return_arm_error": -0.00197180515533546, "return_effort": -0.08470856724306941, "return_action_delta": -0.2662990838289261, "return_settling": 0.0, "return_first_qualified_jump": 0.0, "return_first_success": 0.0, "return_first_body_contact": 0.0, "return_terminal": 0.0}}, "reference_noise015": {"episodes": 16, "airborne": 8, "qualified_flight": 0, "qualified_landing": 0, "complete_recovery": 0, "recovery_given_qualified_landing": null, "body_contacts": 12, "mean_component_returns": {"return_height_tracking": 5.572079390287399, "return_flight": 0.001164924935437739, "return_stable_recovery": 0.0, "return_preparation": 0.22208769619464874, "return_recovery_quality": 0.0, "return_arm_error": -0.003981110785389319, "return_effort": -0.04921697941608727, "return_action_delta": -0.01682147418614477, "return_settling": -0.2687162682414055, "return_first_qualified_jump": 0.0, "return_first_success": 0.0, "return_first_body_contact": -3.0, "return_terminal": 0.0}}, "comparison_native_noise": {"episodes": 16, "airborne": 0, "qualified_flight": 0, "qualified_landing": 0, "complete_recovery": 0, "recovery_given_qualified_landing": null, "body_contacts": 0, "mean_component_returns": {"return_height_tracking": 6.0338796973228455, "return_flight": 9.738653898239136e-05, "return_stable_recovery": 0.0, "return_preparation": 0.222419872879982, "return_recovery_quality": 0.0, "return_arm_error": -0.003299124335171655, "return_effort": -0.09521751198917627, "return_action_delta": -0.3482604157179594, "return_settling": 0.0, "return_first_qualified_jump": 0.0, "return_first_success": 0.0, "return_first_body_contact": 0.0, "return_terminal": 0.0}}, "comparison_noise015": {"episodes": 16, "airborne": 1, "qualified_flight": 0, "qualified_landing": 0, "complete_recovery": 0, "recovery_given_qualified_landing": null, "body_contacts": 0, "mean_component_returns": {"return_height_tracking": 5.058518648147583, "return_flight": 0.0, "return_stable_recovery": 0.0, "return_preparation": 0.22303436417132616, "return_recovery_quality": 4.549933237285586e-06, "return_arm_error": -0.007601993536809459, "return_effort": -0.04919553850777447, "return_action_delta": -0.016631911334116012, "return_settling": -0.26614123582839966, "return_first_qualified_jump": 0.0, "return_first_success": 0.0, "return_first_body_contact": 0.0, "return_terminal": 0.0}}}, "seed": 311001, "environments": 128, "maximum_interactions": 51200, "perturbations": {"joint_position_rad": 0.01, "joint_velocity_rad_s": 0.02}, "scenario_source": "paired independent diagnostic set; never the frozen acceptance panels", "reference_checkpoint": "/home/autodrive/LZQW/unitree_smash/runs/G04/corrected_v2c_main01/native/checkpoint.pt", "comparison_checkpoint": "/home/autodrive/LZQW/unitree_smash/runs/G04/corrected_v2c_continue_03/native/checkpoint.pt", "reward": "unchanged v2c; qualified-recovery draft logged only as a shadow", "weights_updated": false, "histories": "actual runtime PolicyHistory; no reconstruction from summaries", "reward_reconstruction_max_error": 5.960464477539063e-08, "recovery_windows_note": "Longest individual condition intervals after any landing; not combined into formal success.", "env_steps": 51200, "policy_joint_order": ["FL_hip_joint", "FR_hip_joint", "RL_hip_joint", "RR_hip_joint", "FL_thigh_joint", "FR_thigh_joint", "RL_thigh_joint", "RR_thigh_joint", "FL_calf_joint", "FR_calf_joint", "RL_calf_joint", "RR_calf_joint", "joint1", "joint2", "joint3", "joint4", "joint5", "joint6"], "paired_observation_max_abs": [0.0, 2.86102294921875e-06, 3.337860107421875e-06, 3.337860107421875e-06, 2.86102294921875e-06, 3.337860107421875e-06, 2.86102294921875e-06, 3.814697265625e-06], "config_sha256": "4d37d4cffc2c78061549307befb4a787bba3a107374165d85949909c56ce6040", "capability_sha256": "d2936d0a280bd3b8bce62b422261b18ab0ca25ad943fe45e2d2e3aa1f58fb95b", "checkpoints": {"/home/autodrive/LZQW/unitree_smash/runs/G04/corrected_v2c_main01/native/checkpoint.pt": "ebda7c124da703fc0b5be99306e2c33feb15db1fac4f455c354277f91c02ad51", "/home/autodrive/LZQW/unitree_smash/runs/G04/corrected_v2c_continue_03/native/checkpoint.pt": "0c94cecf197b9dd5ab658fe391e42122fbbefdc8e10227d90c4f05f8ab26818f"}, "policies_evaluated_without_weight_updates": true}
+Loading user config located at: '/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/isaacsim/kit/data/Kit/Isaac-Sim/5.1/user.config.json'
+[Info] [carb] Logging to file: /home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/isaacsim/kit/logs/Kit/Isaac-Sim/5.1/kit_20261022_165123.log
+2026-10-22T08:51:23Z [61ms] [Warning] [omni.usd_config.extension] Enable omni.materialx.libs extension to use MaterialX
+2026-10-22T08:51:23Z [365ms] [Warning] [carb] Acquiring non optional plugin interface which is not listed as dependency: [omni::physx::IPhysxBenchmarks v1.0] (plugin: <default plugin>), by client: omni.physics.physx.plugin. Add it to CARB_PLUGIN_IMPL_DEPS() macro of a client.
+2026-10-22T08:51:23Z [478ms] [Warning] [omni.isaac.dynamic_control] omni.isaac.dynamic_control is deprecated as of Isaac Sim 4.5. No action is needed from end-users.
+2026-10-22T08:51:26Z [3,701ms] [Warning] [carb.cudainterop.plugin] CUDA_VISIBLE_DEVICES environment variable is set.
+2026-10-22T08:51:26Z [3,701ms] [Warning] [carb.cudainterop.plugin] Note CUDA device enumeration and Omniverse device enumeration are different.
+2026-10-22T08:51:26Z [3,701ms] [Warning] [carb.cudainterop.plugin] Setting CUDA_VISIBLE_DEVICES can lead to undesired behavior or crashes.
+
+|---------------------------------------------------------------------------------------------|
+| Driver Version: 595.91.07     | Graphics API: Vulkan
+|=============================================================================================|
+| GPU | Name                             | Active | LDA | GPU Memory | Vendor-ID | LUID       |
+|     |                                  |        |     |            | Device-ID | UUID       |
+|     |                                  |        |     |            | Bus-ID    |            |
+|---------------------------------------------------------------------------------------------|
+| 0   | NVIDIA GeForce RTX 5080          | Yes: 0 |     | 16303   MB | 10de      | 0          |
+|     |                                  |        |     |            | 2c02      | ac315b09.. |
+|     |                                  |        |     |            | 1         |            |
+|=============================================================================================|
+| OS: 24.04.4 LTS (Noble Numbat) ubuntu, Version: 24.04.4, Kernel: 7.0.0-38-generic
+| XServer Vendor: The X.Org Foundation, XServer Version: 12101011 (1.21.1.11)
+| Processor: Intel(R) Core(TM) i9-14900KF
+| Bare Metal Cores: 24 | Bare Metal Logical Cores: 48
+| Available Cores:  32 
+|---------------------------------------------------------------------------------------------|
+| Total Memory (MB): 64065 | Free Memory: 55235
+| Total Page/Swap (MB): 8191 | Free Page/Swap: 6490
+|---------------------------------------------------------------------------------------------|
+2026-10-22T08:51:27Z [4,030ms] [Warning] [gpu.foundation.plugin] CPU performance profile is set to powersave. This profile sets the CPU to the lowest frequency reducing performance.
+2026-10-22T08:51:27Z [4,039ms] [Warning] [gpu.foundation.plugin] IOMMU is enabled.
