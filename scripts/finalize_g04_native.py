@@ -141,7 +141,7 @@ Verification: python3 tools/verify_goal.py --root . --goal G04 (expected to fail
         'contract_sha256':digest(ROOT/'configs/acceptance.json'),'metrics':metrics,
         'run':{'command':shlex.join(job['command']),'git_commit':commit,
             'started_at':job['started_at'],'finished_at':job['finished_at'],'gpu_hours':hours,'env_steps':steps},
-        'artifacts':[{'path':str(f.relative_to(ROOT)),'sha256':digest(f)} for f in files]}
+        'artifacts':[{'path':str(f.resolve().relative_to(ROOT)),'sha256':digest(f)} for f in files]}
     atomic_json(out/'evidence.json',evidence)
     if args.state=='PASSED':
         subprocess.run(['python3','tools/verify_goal.py','--root','.','--goal','G04'],cwd=ROOT,check=True)
