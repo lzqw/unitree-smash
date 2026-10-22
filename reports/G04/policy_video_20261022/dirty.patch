@@ -1,0 +1,40 @@
+diff --git a/scripts/run_gpu_job.py b/scripts/run_gpu_job.py
+index 19ce817..290d51c 100644
+--- a/scripts/run_gpu_job.py
++++ b/scripts/run_gpu_job.py
+@@ -29,6 +29,8 @@ def main():
+     parser.add_argument("--env-steps-cap", type=int, required=True)
+     parser.add_argument("--output", type=Path, required=True)
+     parser.add_argument("--require-artifact", required=True)
++    parser.add_argument("--paused-external-pid", type=int, action="append", default=[],
++                        help="Explicitly authorized temporarily suspended jobs; must be owned by this UID and in stopped state")
+     parser.add_argument("command", nargs=argparse.REMAINDER)
+     args = parser.parse_args()
+     command = args.command[1:] if args.command[:1] == ["--"] else args.command
+@@ -52,7 +54,17 @@ def main():
+         if args.goal == "G04" and steps + args.env_steps_cap > 200_000_000:
+             parser.error("cumulative G04 environment step budget would exceed 200000000")
+         apps = subprocess.check_output(["nvidia-smi", "--id=0", "--query-compute-apps=pid,process_name", "--format=csv,noheader"], text=True)
+-        competing = [line for line in apps.splitlines() if not any(s in line for s in ("nvidia-cuda-mps-server", "/usr/local/awesun/bin/awesun_desktop"))]
++        paused=[]
++        for pid in args.paused_external_pid:
++            proc_path=Path(f'/proc/{pid}')
++            if proc_path.stat().st_uid!=os.getuid():
++                parser.error('paused job must belong to the current user')
++            state=(proc_path/'stat').read_text().split(') ',1)[1].split()[0]
++            if state not in ('T','t'):
++                parser.error(f'explicitly paused PID {pid} is not stopped')
++            paused.append(dict(pid=pid,state=state,command=(proc_path/'cmdline').read_bytes().replace(b'\0',b' ').decode()))
++        competing = [line for line in apps.splitlines() if not any(s in line for s in ("nvidia-cuda-mps-server", "/usr/local/awesun/bin/awesun_desktop"))
++                     and int(line.split(',',1)[0]) not in args.paused_external_pid]
+         if competing:
+             parser.error("GPU0 has competing compute processes: " + repr(competing))
+         output = args.output.resolve()
+@@ -70,6 +82,7 @@ def main():
+                   "status": "RUNNING", "charged_gpu_hours": args.max_seconds / 3600,
+                   "charged_env_steps": args.env_steps_cap,
+                   "started_at": datetime.now(timezone.utc).isoformat(), "pid": os.getpid()}
++        if paused:record['explicitly_paused_external_jobs']=paused
+         ledger["runs"].append(record)
+         atomic_json(ledger_path, ledger)
+         started = time.monotonic()

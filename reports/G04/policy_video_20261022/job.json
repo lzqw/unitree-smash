@@ -1,0 +1,61 @@
+{
+  "goal": "G04",
+  "command": [
+    "/home/autodrive/Isaac/env_isaaclab/bin/python",
+    "scripts/record_g04_policy.py",
+    "--output",
+    "reports/G04/policy_video_20261022",
+    "--headless",
+    "--enable_cameras"
+  ],
+  "output": "/home/autodrive/LZQW/unitree_smash/reports/G04/policy_video_20261022",
+  "gpu": 0,
+  "status": "FAILED",
+  "charged_gpu_hours": 0.0029392848494495007,
+  "charged_env_steps": 400,
+  "started_at": "2026-10-22T13:13:32.053273+00:00",
+  "pid": 946353,
+  "explicitly_paused_external_jobs": [
+    {
+      "pid": 927961,
+      "state": "T",
+      "command": "/home/autodrive/LZQW/SAFEFLOW2027/env/bin/python /home/autodrive/LZQW/SAFEFLOW2027/operations/mps_training_bootstrap_20261020.py scripts/star/train_star.py --config /home/autodrive/LZQW/SAFEFLOW2027/runs/shapo_p47_four_env/runs/point-goal-2027/resolved_formal_config.yaml --seed 2027 --steps 10000000 --device cuda:0 --vector-envs 1 --batch-size 256 --replay-size 400000 --steps-per-epoch 5000 --log-dir /home/autodrive/LZQW/SAFEFLOW2027/runs/shapo_p47_four_env/runs/point-goal-2027/training --result /home/autodrive/LZQW/SAFEFLOW2027/runs/shapo_p47_four_env/runs/point-goal-2027/receipt.json --no-tensorboard --resume /home/autodrive/LZQW/SAFEFLOW2027/runs/shapo_p47_four_env/runs/point-goal-2027/training/STAR-{SafetyPointGoal1-v0}/seed-2027-2026-10-20-19-08-51/checkpoints/latest_full.pt "
+    },
+    {
+      "pid": 927962,
+      "state": "T",
+      "command": "/home/autodrive/LZQW/SAFEFLOW2027/env/bin/python /home/autodrive/LZQW/SAFEFLOW2027/operations/mps_training_bootstrap_20261020.py scripts/star/train_star.py --config /home/autodrive/LZQW/SAFEFLOW2027/runs/shapo_p47_four_env/runs/point-goal-2028/resolved_formal_config.yaml --seed 2028 --steps 10000000 --device cuda:0 --vector-envs 1 --batch-size 256 --replay-size 400000 --steps-per-epoch 5000 --log-dir /home/autodrive/LZQW/SAFEFLOW2027/runs/shapo_p47_four_env/runs/point-goal-2028/training --result /home/autodrive/LZQW/SAFEFLOW2027/runs/shapo_p47_four_env/runs/point-goal-2028/receipt.json --no-tensorboard --resume /home/autodrive/LZQW/SAFEFLOW2027/runs/shapo_p47_four_env/runs/point-goal-2028/training/STAR-{SafetyPointGoal1-v0}/seed-2028-2026-10-20-12-38-16/checkpoints/latest_full.pt "
+    },
+    {
+      "pid": 927963,
+      "state": "T",
+      "command": "/home/autodrive/LZQW/SAFEFLOW2027/env/bin/python /home/autodrive/LZQW/SAFEFLOW2027/operations/mps_training_bootstrap_20261020.py scripts/star/train_star.py --config /home/autodrive/LZQW/SAFEFLOW2027/runs/shapo_p47_four_env/runs/point-goal-2029/resolved_formal_config.yaml --seed 2029 --steps 10000000 --device cuda:0 --vector-envs 1 --batch-size 256 --replay-size 400000 --steps-per-epoch 5000 --log-dir /home/autodrive/LZQW/SAFEFLOW2027/runs/shapo_p47_four_env/runs/point-goal-2029/training --result /home/autodrive/LZQW/SAFEFLOW2027/runs/shapo_p47_four_env/runs/point-goal-2029/receipt.json --no-tensorboard --resume /home/autodrive/LZQW/SAFEFLOW2027/runs/shapo_p47_four_env/runs/point-goal-2029/training/STAR-{SafetyPointGoal1-v0}/seed-2029-2026-10-20-12-01-25/checkpoints/latest_full.pt "
+    },
+    {
+      "pid": 927964,
+      "state": "T",
+      "command": "/home/autodrive/LZQW/SAFEFLOW2027/env/bin/python /home/autodrive/LZQW/SAFEFLOW2027/operations/mps_training_bootstrap_20261020.py scripts/star/train_star.py --config /home/autodrive/LZQW/SAFEFLOW2027/runs/shapo_p47_four_env/runs/point-goal-2030/resolved_formal_config.yaml --seed 2030 --steps 10000000 --device cuda:0 --vector-envs 1 --batch-size 256 --replay-size 400000 --steps-per-epoch 5000 --log-dir /home/autodrive/LZQW/SAFEFLOW2027/runs/shapo_p47_four_env/runs/point-goal-2030/training --result /home/autodrive/LZQW/SAFEFLOW2027/runs/shapo_p47_four_env/runs/point-goal-2030/receipt.json --no-tensorboard --resume /home/autodrive/LZQW/SAFEFLOW2027/runs/shapo_p47_four_env/runs/point-goal-2030/training/STAR-{SafetyPointGoal1-v0}/seed-2030-2026-10-20-13-26-20/checkpoints/latest_full.pt "
+    },
+    {
+      "pid": 927965,
+      "state": "T",
+      "command": "/home/autodrive/LZQW/SAFEFLOW2027/env/bin/python /home/autodrive/LZQW/SAFEFLOW2027/operations/mps_training_bootstrap_20261020.py scripts/star/train_star.py --config /home/autodrive/LZQW/SAFEFLOW2027/runs/shapo_p47_four_env/runs/point-goal-2031/resolved_formal_config.yaml --seed 2031 --steps 10000000 --device cuda:0 --vector-envs 1 --batch-size 256 --replay-size 400000 --steps-per-epoch 5000 --log-dir /home/autodrive/LZQW/SAFEFLOW2027/runs/shapo_p47_four_env/runs/point-goal-2031/training --result /home/autodrive/LZQW/SAFEFLOW2027/runs/shapo_p47_four_env/runs/point-goal-2031/receipt.json --no-tensorboard --resume /home/autodrive/LZQW/SAFEFLOW2027/runs/shapo_p47_four_env/runs/point-goal-2031/training/STAR-{SafetyPointGoal1-v0}/seed-2031-2026-10-20-14-33-54/checkpoints/latest_full.pt "
+    },
+    {
+      "pid": 927966,
+      "state": "T",
+      "command": "/home/autodrive/LZQW/SAFEFLOW2027/env/bin/python /home/autodrive/LZQW/SAFEFLOW2027/operations/mps_training_bootstrap_20261020.py scripts/star/train_star.py --config /home/autodrive/LZQW/SAFEFLOW2027/runs/shapo_p47_four_env/runs/point-button-2027/resolved_formal_config.yaml --seed 2027 --steps 10000000 --device cuda:0 --vector-envs 1 --batch-size 256 --replay-size 400000 --steps-per-epoch 5000 --log-dir /home/autodrive/LZQW/SAFEFLOW2027/runs/shapo_p47_four_env/runs/point-button-2027/training --result /home/autodrive/LZQW/SAFEFLOW2027/runs/shapo_p47_four_env/runs/point-button-2027/receipt.json --no-tensorboard --resume /home/autodrive/LZQW/SAFEFLOW2027/runs/shapo_p47_four_env/runs/point-button-2027/training/STAR-{SafetyPointButton1-v0}/seed-2027-2026-10-20-21-58-04/checkpoints/latest_full.pt "
+    },
+    {
+      "pid": 927967,
+      "state": "T",
+      "command": "/home/autodrive/LZQW/SAFEFLOW2027/env/bin/python /home/autodrive/LZQW/SAFEFLOW2027/operations/mps_training_bootstrap_20261020.py scripts/star/train_star.py --config /home/autodrive/LZQW/SAFEFLOW2027/runs/shapo_p47_four_env/runs/point-button-2031/resolved_formal_config.yaml --seed 2031 --steps 10000000 --device cuda:0 --vector-envs 1 --batch-size 256 --replay-size 400000 --steps-per-epoch 5000 --log-dir /home/autodrive/LZQW/SAFEFLOW2027/runs/shapo_p47_four_env/runs/point-button-2031/training --result /home/autodrive/LZQW/SAFEFLOW2027/runs/shapo_p47_four_env/runs/point-button-2031/receipt.json --no-tensorboard --resume /home/autodrive/LZQW/SAFEFLOW2027/runs/shapo_p47_four_env/runs/point-button-2031/training/STAR-{SafetyPointButton1-v0}/seed-2031-2026-10-20-14-24-38/checkpoints/latest_full.pt "
+    }
+  ],
+  "child_pid": 946357,
+  "exit_code": -11,
+  "timed_out": false,
+  "receipt_present": false,
+  "elapsed_s": 10.581425458018202,
+  "finished_at": "2026-10-22T13:13:42.635542+00:00"
+}
