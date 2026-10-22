@@ -1,0 +1,32 @@
+{
+  "goal": "G07",
+  "budget_window": "g05-g07-20261022",
+  "command": [
+    "/home/autodrive/Isaac/env_isaaclab/bin/python",
+    "scripts/search_g07_random.py",
+    "--checkpoint",
+    "artifacts/G06/policy.pt",
+    "--output",
+    "reports/G07/random_search02",
+    "--num-envs",
+    "64",
+    "--physics-dt",
+    ".00025",
+    "--seed",
+    "611060",
+    "--headless"
+  ],
+  "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/random_search02",
+  "gpu": 0,
+  "status": "SUCCEEDED",
+  "charged_gpu_hours": 0.01206204340972666,
+  "charged_env_steps": 2000000,
+  "started_at": "2026-10-22T18:09:04.482951+00:00",
+  "pid": 1009271,
+  "child_pid": 1009282,
+  "exit_code": 0,
+  "timed_out": false,
+  "receipt_present": true,
+  "elapsed_s": 43.423356275015976,
+  "finished_at": "2026-10-22T18:09:47.908340+00:00"
+}

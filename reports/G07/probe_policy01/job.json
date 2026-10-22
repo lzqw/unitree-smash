@@ -1,0 +1,28 @@
+{
+  "goal": "G07",
+  "budget_window": "g05-g07-20261022",
+  "command": [
+    "/home/autodrive/Isaac/env_isaaclab/bin/python",
+    "scripts/probe_g07_policy.py",
+    "--checkpoint",
+    "artifacts/G06/policy.pt",
+    "--output",
+    "reports/G07/probe_policy01",
+    "--physics-dt",
+    ".00025",
+    "--headless"
+  ],
+  "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/probe_policy01",
+  "gpu": 0,
+  "status": "SUCCEEDED",
+  "charged_gpu_hours": 0.021005720295830137,
+  "charged_env_steps": 1000000,
+  "started_at": "2026-10-22T17:51:54.013413+00:00",
+  "pid": 1003456,
+  "child_pid": 1003466,
+  "exit_code": 0,
+  "timed_out": false,
+  "receipt_present": true,
+  "elapsed_s": 75.6205930649885,
+  "finished_at": "2026-10-22T17:53:09.636024+00:00"
+}

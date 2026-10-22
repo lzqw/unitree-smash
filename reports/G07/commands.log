@@ -1,0 +1,8 @@
+# G07 policy trajectory diagnostic
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/run_gpu_job.py --goal G07 --budget-window g05-g07-20261022 --max-seconds 300 --env-steps-cap 1000000 --output reports/G07/probe_policy01 --require-artifact trajectory.json -- /home/autodrive/Isaac/env_isaaclab/bin/python scripts/probe_g07_policy.py --checkpoint artifacts/G06/policy.pt --output reports/G07/probe_policy01 --physics-dt 0.00025 --headless
+
+# G07 bounded arm-target search (real PhysX, diagnostic only)
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/run_gpu_job.py --goal G07 --budget-window g05-g07-20261022 --max-seconds 400 --env-steps-cap 2000000 --output reports/G07/random_search02 --require-artifact metrics.json -- /home/autodrive/Isaac/env_isaaclab/bin/python scripts/search_g07_random.py --checkpoint artifacts/G06/policy.pt --output reports/G07/random_search02 --num-envs 64 --physics-dt 0.00025 --seed 611060 --headless
+
+# G07 independent formal baseline diagnostic (400 ground episodes)
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/run_gpu_job.py --goal G07 --budget-window g05-g07-20261022 --max-seconds 1200 --env-steps-cap 2000000 --output reports/G07/eval_formal01 --require-artifact metrics.json -- /home/autodrive/Isaac/env_isaaclab/bin/python scripts/isaac_stage_evaluate.py --stage jump_smash --checkpoint artifacts/G06/policy.pt --config configs/g05_imitation.json --output reports/G07/eval_formal01 --episodes 400 --num-envs 64 --physics-dt 0.00025 --suite dev_smash_net1524 --headless

@@ -128,7 +128,13 @@ class BallEnv(JumpEnv):
                 collision_props=sim_utils.CollisionPropertiesCfg(),
                 physics_material=sim_utils.RigidBodyMaterialCfg(restitution=0.1))
             for i, origin in enumerate(self.scene.env_origins.cpu().tolist()):
-                net.func(f"/World/envs/env_{i}/Net", net,
+                path = f"/World/envs/env_{i}/Net"
+                # InteractiveScene replication may already have copied the
+                # source net into cloned environments.  Preserve one native
+                # collider per environment instead of spawning duplicates.
+                if stage.GetPrimAtPath(path).IsValid():
+                    continue
+                net.func(path, net,
                     translation=(origin[0]+self.cfg.net_x_m, origin[1], self.cfg.net_height_m/2))
 
     @torch.inference_mode()
