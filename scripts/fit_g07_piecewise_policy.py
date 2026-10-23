@@ -23,6 +23,7 @@ parser.add_argument('--max-leaves',type=int,default=32)
 args=parser.parse_args()
 args.output.mkdir(parents=True,exist_ok=True)
 data=torch.load(args.dataset,map_location='cpu',weights_only=False)
+if not data.get('homogeneous_controller',True):raise ValueError('Freeze and replay one selected teacher before fitting a clock policy')
 o=data['observations'].numpy()
 y=data['actions'].numpy()
 hold=np.arange(o.shape[1])%5==0

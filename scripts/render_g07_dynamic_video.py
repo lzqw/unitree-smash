@@ -9,7 +9,7 @@ import numpy as np
 import moderngl
 import imageio.v2 as imageio
 from PIL import Image,ImageDraw,ImageFont
-p=argparse.ArgumentParser();p.add_argument('--input',type=Path,required=True);a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--input',type=Path,required=True);p.add_argument('--output',type=Path);a=p.parse_args()
 meta=json.load(open(a.input/'geometry.json'));data=np.load(a.input/'geometry.npz');poses=np.load(a.input/'link_poses.npy');trace=json.load(open(a.input/'trajectory.json'));metrics=json.load(open(a.input/'metrics.json'))
 learned=metrics.get('controller','').startswith('learned')
 net_corrected=metrics.get('net_geometry_version')=='environment-local-net-v2'
@@ -80,21 +80,26 @@ def draw(index,slow=False):
  d.text((24,50),'实测关节连杆与球轨迹 · 原负载与执行器 · 1.524 m 标准球网',font=small,fill=(166,193,214))
  d.text((1040,20),'0.5 倍慢放' if slow else '正常速度',font=small,fill=(115,218,206))
  t=r['time_s'];e=metrics['best'];v=np.asarray(r['ball_v'])
- phase='地面准备' if t<1.1 else ('腾空拦截' if t<e['contact_time_s'] else ('击球后飞行' if t<e['first_landing_time_s'] else '落地恢复'))
+ contact_time=e.get('contact_time_s') or float('inf');landing_time=e.get('first_landing_time_s') or float('inf')
+ phase='地面准备/移动' if not r.get('airborne') and not r.get('contact') else ('腾空拦截' if t<contact_time else ('击球后飞行' if t<landing_time else '落地恢复'))
  d.rectangle((20,104,390,143),fill=(22,39,55));d.text((30,109),f"{t:.2f} s · {phase} · 球速 {np.linalg.norm(v):.2f}",font=small,fill='white')
  d.rectangle((0,623,width,height),fill=(18,28,43))
- out=np.asarray(e['outgoing_velocity_mps']);landing=e['first_landing_position_m']
- d.text((24,632),f"本回合出球 [{out[0]:.2f}, {out[1]:.2f}, {out[2]:.2f}] m/s｜球心越网净空 {e['net_margin_m']*100:.1f} cm｜首次落点 [{landing[0]:.2f}, {landing[1]:.2f}] m",font=small,fill='white')
+ out=e.get('outgoing_velocity_mps');landing=e.get('first_landing_position_m');margin=e.get('net_margin_m')
+ out_text='未形成稳定出球' if out is None else f'出球 [{out[0]:.2f}, {out[1]:.2f}, {out[2]:.2f}] m/s'
+ margin_text='未记录越网' if margin is None else f'球心越网净空 {margin*100:.1f} cm'
+ landing_text='未记录首次落点' if landing is None else f'首次落点 [{landing[0]:.2f}, {landing[1]:.2f}] m'
+ d.text((24,632),f"本回合{out_text}｜{margin_text}｜{landing_text}",font=small,fill='white')
  face='是' if e.get('effective_face_contact') else '否'
- d.text((24,669),f"完整 {metrics['complete']}/{metrics['episodes']}，恢复 {metrics['recovery']}/{metrics['episodes']}｜有效拍面：{face}｜案例 {metrics['selected_video_lane']}｜近网课程，尚非正式 G07 通过",font=small,fill=(166,193,214))
+ d.text((24,669),f"完整 {metrics['complete']}/{metrics['episodes']}，恢复 {metrics['recovery']}/{metrics['episodes']}｜有效拍面：{face}｜案例 {metrics['selected_video_lane']}｜可行性探测，尚非正式 G07 通过",font=small,fill=(166,193,214))
  return np.asarray(img)
-out=a.input/('G07_near_net_learned_replay.mp4' if learned else 'G07_near_net_teacher_replay.mp4')
+out=a.output or a.input/('G07_near_net_learned_replay.mp4' if learned else 'G07_near_net_teacher_replay.mp4')
+contact_index=min(range(len(trace)),key=lambda i:abs(trace[i]['time_s']-(metrics['best'].get('contact_time_s') or 1.48)))
 with imageio.get_writer(str(out),fps=50,codec='libx264',quality=8,macro_block_size=8,output_params=['-movflags','+faststart']) as writer:
  for slow in (False,True):
   for i in range(len(poses)):
    frame=draw(i,slow);writer.append_data(frame)
    if slow:writer.append_data(frame)
-   if not slow and i in (0,74,78,92):imageio.imwrite(a.input/f'preview_{i:03d}.jpg',frame)
-imageio.imwrite(a.input/'poster.jpg',draw(74))
+   if not slow and i in (0,contact_index,max(0,contact_index-5),min(len(poses)-1,contact_index+10)):imageio.imwrite(a.input/f'preview_{i:03d}.jpg',frame)
+imageio.imwrite(a.input/'poster.jpg',draw(contact_index))
 (a.input/'video.json').write_text(json.dumps(dict(path=str(out),frames=len(poses)*3,fps=50,duration_s=len(poses)*.06,resolution=[width,height],renderer=ctx.info['GL_RENDERER'],motion='Measured 50 Hz link poses and ball positions, no invented motion',curriculum=True,formal_acceptance=False,selected_lane=metrics['selected_video_lane'],segments=['normal speed','half speed replay']),indent=2)+'\n')
 print(out,flush=True)

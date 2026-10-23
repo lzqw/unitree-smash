@@ -1,0 +1,224 @@
+diff --git a/quadsmash/control/composed_reach_teacher.py b/quadsmash/control/composed_reach_teacher.py
+index b48b3eb..b8f6e68 100644
+--- a/quadsmash/control/composed_reach_teacher.py
++++ b/quadsmash/control/composed_reach_teacher.py
+@@ -1,20 +1,25 @@
+ """Observable all-body strike controller with delayed arm preparation.
+ 
+ Schema: original 38 reach/swing/landing parameters, then arm raise start and
+-duration. It holds the selected walking arm posture until the raise begins.
++duration. Optional v3 parameter 40 compensates measured body pitch at the
++shoulder. It holds the selected walking arm posture until the raise begins.
+ """
+ import torch
+ from .dynamic_reach_teacher import dynamic_reach_action
+ 
+ 
+ def composed_reach_action(obs,parameters,default,limits,arm,initial_arm):
+-    if parameters.shape[1]!=40:
+-        raise ValueError('composed-reach-v2 expects 40 parameters')
++    if parameters.shape[1] not in (40,41):
++        raise ValueError('composed reach expects v2/40 or v3/41 parameters')
+     action=dynamic_reach_action(obs,parameters[:,:38],default,limits,arm)
+     t=obs['policy'][:,775]
+     returning=((2.05-t)/.35).clamp(0,1)
+     blend=((t-parameters[:,38])/parameters[:,39]).clamp(0,1)*returning
+     q=torch.lerp(initial_arm[None,:],arm[None,:]+parameters[:,21:27],blend[:,None])
++    if parameters.shape[1]==41:
++        gravity=obs['policy'][:,6:9]
++        pitch=torch.atan2(gravity[:,0],-gravity[:,2])
++        q[:,1]-=parameters[:,40]*pitch*blend
+     swing=((t-parameters[:,33])/.06).clamp(0,1)*returning
+     q+=parameters[:,27:33]*swing[:,None]
+     action[:,12:]=(2*(q-limits[12:,0])/(limits[12:,1]-limits[12:,0])-1).clamp(-1,1)
+diff --git a/scripts/probe_g07_composed_contact.py b/scripts/probe_g07_composed_contact.py
+index 373c03c..f2f5ddd 100644
+--- a/scripts/probe_g07_composed_contact.py
++++ b/scripts/probe_g07_composed_contact.py
+@@ -18,7 +18,7 @@ from quadsmash.tasks.stand.net_contact_monitor import NetContactMonitor,add_net_
+ 
+ def main():
+  a.output.mkdir(parents=True,exist_ok=True);candidate=torch.load(a.candidate,map_location='cpu',weights_only=False)
+- if candidate['parameter_schema']!='composed-reach-v2-40':raise ValueError('Wrong composed controller schema')
++ if candidate['parameter_schema'] not in ('composed-reach-v2-40','composed-reach-v3-41'):raise ValueError('Wrong composed controller schema')
+  record=candidate['result'];point=record['virtual_ball_center_m'];event_time=record['event_time_s'];n=a.num_envs
+  if a.launches:
+   panel=json.loads(a.launches.read_text());selected=panel[a.launch_index];launches=[dict(selected,env_id=i) for i in range(n)]
+diff --git a/scripts/probe_g07_walk_transfer.py b/scripts/probe_g07_walk_transfer.py
+index fa5a7f1..a122cb6 100644
+--- a/scripts/probe_g07_walk_transfer.py
++++ b/scripts/probe_g07_walk_transfer.py
+@@ -25,6 +25,8 @@ from quadsmash.tasks.stand.jump_env import JumpEnv,JumpEnvCfg
+ from quadsmash.control.go2_walk_transfer import Go2WalkTransfer
+ from quadsmash.tasks.stand.ball_env import BallEnvCfg
+ from quadsmash.tasks.stand.smash_env_v3 import FullJointSmashEnv
++from quadsmash.tasks.stand.loaded_walk_env import LoadedWalkEnv
++from quadsmash.tasks.stand.net_contact_monitor import NetContactMonitor,add_net_contact_sensors
+ 
+ def main():
+     a.output.mkdir(parents=True,exist_ok=True)
+@@ -40,23 +42,14 @@ def main():
+     cfg.episode_length_s=4.
+     cfg.event_goal_enabled=True
+     cfg.event_goal_position=(1.,0.,.3)
+-    class WalkEnv(JumpEnv):
++    candidate=torch.load(a.candidate,map_location='cpu',weights_only=False) if a.candidate else None
++    target_x=candidate['result'].get('target_root_x_m',1.) if candidate else 1.
++    cfg.event_goal_position=(target_x,0.,.3)
++    class FineWalkEnv(NetContactMonitor,FullJointSmashEnv):
+         def _setup_scene(self):
+             super()._setup_scene()
+-            stage=omni.usd.get_context().get_stage()
+-            net=sim_utils.CuboidCfg(size=(.02,2.,1.524),
+-                collision_props=sim_utils.CollisionPropertiesCfg(),
+-                physics_material=sim_utils.RigidBodyMaterialCfg(restitution=.1))
+-            for i in range(self.num_envs):
+-                path=f'/World/envs/env_{i}/Net'
+-                if not stage.GetPrimAtPath(path).IsValid():
+-                    net.func(path,net,translation=(1.5,0.,.762))
+-        def _pre_physics_step(self,actions):
+-            self._record_action(actions)
+-            limits=self.robot.data.joint_pos_limits[:,self.joint_ids]
+-            self.targets.copy_(self.robot.data.default_joint_pos)
+-            self.targets[:,self.joint_ids]=limits[:,:,0]+.5*(self.last_action+1)*(limits[:,:,1]-limits[:,:,0])
+-    env=FullJointSmashEnv(cfg) if a.fine else WalkEnv(cfg)
++            add_net_contact_sensors(self)
++    env=FineWalkEnv(cfg) if a.fine else LoadedWalkEnv(cfg)
+     wrapped=RslRlVecEnvWrapper(env,clip_actions=None)
+     policy=Go2WalkTransfer(a.manifest,a.num_envs,env.device)
+     default=env.robot.data.default_joint_pos[0,env.joint_ids]
+@@ -64,7 +57,6 @@ def main():
+     parameters=torch.tensor([[v,k,d] for v in [.35,.5,.7,1.]
+         for k in [1.,2.,3.,4.] for d in [.2,.5,.8,1.2]],device=env.device)[:a.num_envs]
+     if a.candidate:
+-        candidate=torch.load(a.candidate,map_location='cpu',weights_only=False)
+         parameters=candidate['parameters'].to(env.device).repeat(a.num_envs,1)
+     if len(parameters)!=a.num_envs:raise ValueError('Use no more than 64 lanes')
+     obs,_=wrapped.reset()
+@@ -90,19 +82,22 @@ def main():
+                 finished|=done.bool()
+         first={}
+         for row in env.episode_records:first.setdefault(row['env_id'],row)
++        net={}
++        for row in env.net_episode_records:net.setdefault(row['env_id'],row)
++        if len(net)!=a.num_envs:raise RuntimeError('Incomplete net force telemetry')
+         rows=[]
+         for i in range(a.num_envs):
+             r=first[i]
+-            valid=(not r['body_landing'] and .90<=float(final[i,0])<=1.05
++            valid=(not r['body_landing'] and not net[i]['robot_net_contact'] and abs(float(final[i,0])-target_x)<.06
+                    and abs(float(final[i,1]))<.06 and float(final[i,2])>.2
+                    and float(tilt[i])<.26 and float(velocity[i,:2].norm())<.15)
+             rows.append(dict(env_id=i,parameters=parameters[i].cpu().tolist(),
+                 root_final_m=final[i].cpu().tolist(),velocity_mps=velocity[i].cpu().tolist(),
+-                tilt_gravity_xy=float(tilt[i]),movement_success=valid,jump_metrics=r))
++                tilt_gravity_xy=float(tilt[i]),movement_success=valid,jump_metrics=r,net_contact_telemetry=net[i]))
+         best=max(rows,key=lambda r:(r['movement_success'],not r['jump_metrics']['body_landing'],
+-                 -abs(r['root_final_m'][0]-1.)-abs(r['root_final_m'][1])))
++                 -abs(r['root_final_m'][0]-target_x)-abs(r['root_final_m'][1])))
+         metrics=dict(kind='transferred learned walking probe, original full payload and net, no ball',
+-            fine_physics_fixture=a.fine,candidate=str(a.candidate),physics_dt_s=cfg.sim.dt,formal_g07_acceptance=False,episodes=len(rows),movement_success=sum(r['movement_success'] for r in rows),
++            target_root_x_m=target_x,net_contact_sensor_version='one-source-per-environment-v2',robot_net_contact=sum(r['robot_net_contact'] for r in net.values()),fine_physics_fixture=a.fine,candidate=str(a.candidate),physics_dt_s=cfg.sim.dt,formal_g07_acceptance=False,episodes=len(rows),movement_success=sum(r['movement_success'] for r in rows),
+             source_manifest=json.loads(a.manifest.read_text()),best=best)
+         (a.output/'episodes.json').write_text(json.dumps(rows,indent=2)+'\n')
+         (a.output/'metrics.json').write_text(json.dumps(metrics,indent=2)+'\n')
+diff --git a/scripts/search_g07_composed_reach_v2.py b/scripts/search_g07_composed_reach_v2.py
+index 16ce154..149b391 100644
+--- a/scripts/search_g07_composed_reach_v2.py
++++ b/scripts/search_g07_composed_reach_v2.py
+@@ -8,7 +8,7 @@ import argparse,json,signal,sys,traceback
+ from pathlib import Path
+ ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
+ from isaaclab.app import AppLauncher
+-p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--num-envs',type=int,default=128);p.add_argument('--generations',type=int,default=12);p.add_argument('--seed',type=int,default=714101);p.add_argument('--root-x',type=float,default=0.);p.add_argument('--initial',type=Path);p.add_argument('--deep-crouch',action='store_true');p.add_argument('--vertical-seed',action='store_true');p.add_argument('--flight-objective',action='store_true');p.add_argument('--seed-bank',type=Path);p.add_argument('--resume-population',type=Path);p.add_argument('--walk-candidate',type=Path,required=True);p.add_argument('--pose-seed',type=Path,required=True);p.add_argument('--walk-seconds',type=float,default=3.4);p.add_argument('--waypoint-x',type=float,default=1.03);p.add_argument('--settle-default',action='store_true');p.add_argument('--landing-feedback',action='store_true');p.add_argument('--reposition',action='store_true');p.add_argument('--fold-arm',action='store_true');p.add_argument('--forward-seed',action='store_true');p.add_argument('--global-fraction',type=float,default=0.);AppLauncher.add_app_launcher_args(p);a=p.parse_args();app=AppLauncher(a).app
++p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--num-envs',type=int,default=128);p.add_argument('--generations',type=int,default=12);p.add_argument('--seed',type=int,default=714101);p.add_argument('--root-x',type=float,default=0.);p.add_argument('--initial',type=Path);p.add_argument('--deep-crouch',action='store_true');p.add_argument('--vertical-seed',action='store_true');p.add_argument('--flight-objective',action='store_true');p.add_argument('--arm-pitch-feedback',action='store_true');p.add_argument('--seed-bank',type=Path);p.add_argument('--resume-population',type=Path);p.add_argument('--walk-candidate',type=Path,required=True);p.add_argument('--pose-seed',type=Path,required=True);p.add_argument('--walk-seconds',type=float,default=3.4);p.add_argument('--waypoint-x',type=float,default=1.03);p.add_argument('--settle-default',action='store_true');p.add_argument('--landing-feedback',action='store_true');p.add_argument('--reposition',action='store_true');p.add_argument('--fold-arm',action='store_true');p.add_argument('--forward-seed',action='store_true');p.add_argument('--global-fraction',type=float,default=0.);AppLauncher.add_app_launcher_args(p);a=p.parse_args();app=AppLauncher(a).app
+ import torch
+ from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper
+ from quadsmash.tasks.stand.jump_env import JumpEnvCfg
+@@ -37,12 +37,16 @@ def main():
+   low=torch.cat((low,torch.tensor([2.05],device=device)));high=torch.cat((high,torch.tensor([2.65],device=device)))
+  if not a.landing_feedback or a.settle_default:raise ValueError('v2 requires landing-feedback and no settle-default')
+  low=torch.cat((low,torch.tensor([.65,.20],device=device)));high=torch.cat((high,torch.tensor([1.25,.65],device=device)))
+- mean=torch.tensor(INITIAL+[0.]*6+[1.42,.25,0.,.1,.15,.95,.50],device=device).clamp(low,high);sigma=(high-low)*.18;g=torch.Generator(device=device).manual_seed(a.seed)
++ mean=torch.tensor(INITIAL+[0.]*6+[1.42,.25,0.,.1,.15,.95,.50],device=device)
++ if a.arm_pitch_feedback:
++  low=torch.cat((low,torch.tensor([.5],device=device)));high=torch.cat((high,torch.tensor([1.5],device=device)));mean=torch.cat((mean,torch.tensor([1.],device=device)))
++ schema='composed-reach-v3-41' if a.arm_pitch_feedback else 'composed-reach-v2-40'
++ mean=mean.clamp(low,high);sigma=(high-low)*.18;g=torch.Generator(device=device).manual_seed(a.seed)
+  if a.initial:
+   prior=torch.load(a.initial,map_location=device,weights_only=False);seed_params=prior['parameters'].to(device);mean[:min(len(seed_params),len(mean))]=seed_params[:len(mean)];mean=mean.clamp(low,high);sigma=(high-low)*.10
+  if a.vertical_seed:
+   mean[5]=.42;mean[6]=.42;mean[8]=0.;mean[17:21]=0.;sigma=(high-low)*.15
+-  if a.deep_crouch:mean[3]=.85;mean[4]=-1.0
++  if a.deep_crouch:mean[3]=.70;mean[4]=-.90
+  if a.forward_seed:
+   mean[5]=1.10;mean[6]=1.10;mean[8]=0.;sigma=(high-low)*.18
+  limits=env.robot.data.joint_pos_limits[0,env.joint_ids];default=env.robot.data.default_joint_pos[0,env.joint_ids];geometry=json.loads((ROOT/'reports/G07/feasibility_v3_20261023/geometry.json').read_text());arm=torch.tensor(geometry['poses']['effective_face_normal_x_ge_0.9']['arm_q_rad'],device=device)
+@@ -65,7 +69,7 @@ def main():
+    if global_count:parameters[-global_count:]=low[None,:]+(high-low)[None,:]*torch.rand((global_count,len(low)),generator=g,device=device)
+    if generation==0 and seed_bank is not None:
+     count=min(len(seed_bank),a.num_envs-1);parameters[1:count+1,:21]=seed_bank[:count,:21]
+-   env._episode_has_stepped.zero_();env._metrics_started=False;env.episode_records.clear();env.net_episode_records.clear();env.goal_position_w.copy_(env.scene.env_origins+torch.tensor([a.waypoint_x,0.,.3],device=device));walk.reset();obs,_=w.reset();finished=torch.zeros(a.num_envs,dtype=torch.bool,device=device);best=torch.full((a.num_envs,),-100.,device=device);position=torch.zeros((a.num_envs,3),device=device);normal=position.clone();root=position.clone();time=torch.zeros(a.num_envs,device=device);apex=torch.zeros(a.num_envs,device=device);air=torch.zeros(a.num_envs,dtype=torch.bool,device=device);predicted_velocity=torch.zeros((a.num_envs,3),device=device);predicted_margin=torch.zeros(a.num_envs,device=device);predicted_landing=torch.zeros((a.num_envs,2),device=device);prefix_net=torch.zeros_like(air);face_uv=torch.zeros((a.num_envs,2),device=device);final_root=torch.zeros((a.num_envs,3),device=device);final_velocity=final_root.clone();final_tilt=torch.zeros(a.num_envs,device=device)
++   env._episode_has_stepped.zero_();env._metrics_started=False;env.episode_records.clear();env.net_episode_records.clear();env.goal_position_w.copy_(env.scene.env_origins+torch.tensor([a.waypoint_x,0.,.3],device=device));walk.reset();obs,_=w.reset();finished=torch.zeros(a.num_envs,dtype=torch.bool,device=device);best=torch.full((a.num_envs,),-100.,device=device);position=torch.zeros((a.num_envs,3),device=device);normal=position.clone();root=position.clone();time=torch.zeros(a.num_envs,device=device);apex=torch.zeros(a.num_envs,device=device);air=torch.zeros(a.num_envs,dtype=torch.bool,device=device);root_quaternion=torch.zeros((a.num_envs,4),device=device);event_arm=torch.zeros((a.num_envs,6),device=device);predicted_velocity=torch.zeros((a.num_envs,3),device=device);predicted_margin=torch.zeros(a.num_envs,device=device);predicted_landing=torch.zeros((a.num_envs,2),device=device);prefix_net=torch.zeros_like(air);face_uv=torch.zeros((a.num_envs,2),device=device);final_root=torch.zeros((a.num_envs,3),device=device);final_velocity=final_root.clone();final_tilt=torch.zeros(a.num_envs,device=device)
+    with torch.inference_mode():
+     for tick in range(ticks):
+      t=obs['policy'][:,775]-a.walk_seconds;d=env.robot.data;active=~finished;final_root[active]=(d.root_pos_w-env.scene.env_origins)[active];final_velocity[active]=d.root_link_lin_vel_w[active];final_tilt[active]=d.projected_gravity_b[active,:2].norm(dim=-1);tool=d.body_pos_w[:,env.racket_body_id]-env.scene.env_origins;quat=d.body_quat_w[:,env.racket_body_id];n=quat_rotate(quat,torch.tensor([1.,0.,0.],device=device).expand(a.num_envs,-1));up_y=quat_rotate(quat,torch.tensor([0.,1.,0.],device=device).expand(a.num_envs,-1));up_z=quat_rotate(quat,torch.tensor([0.,0.,1.],device=device).expand(a.num_envs,-1));delta=target[None,:]-tool-.0325*n;u=(delta*up_y).sum(1).clamp(-.095,.095);v=(delta*up_z).sum(1).clamp(-.095,.095);point=tool+.0325*n+u[:,None]*up_y+v[:,None]*up_z
+@@ -83,7 +87,7 @@ def main():
+       score=-5*(point[:,:2]-target[:2]).norm(dim=1)-2*violation+.5*env.observed_airborne.float()-10*env.body_ground_seen.float()-10*env.net_robot_seen.float()
+      improved=candidate&(score>best);prefix_net[improved]=env.net_robot_seen[improved]
+      if a.flight_objective:predicted_velocity[improved]=outgoing[improved];predicted_margin[improved]=margin[improved];predicted_landing[improved]=landing[improved]
+-     best[improved]=score[improved];position[improved]=point[improved];normal[improved]=n[improved];root[improved]=(d.root_pos_w-env.scene.env_origins)[improved];time[improved]=t[improved];face_uv[improved]=torch.stack((u,v),1)[improved];air[improved]=env.observed_airborne[improved];apex=torch.where(~finished,torch.maximum(apex,d.root_pos_w[:,2]),apex)
++     best[improved]=score[improved];position[improved]=point[improved];normal[improved]=n[improved];root[improved]=(d.root_pos_w-env.scene.env_origins)[improved];root_quaternion[improved]=d.root_quat_w[improved];event_arm[improved]=d.joint_pos[:,env.joint_ids[12:]][improved];time[improved]=t[improved];face_uv[improved]=torch.stack((u,v),1)[improved];air[improved]=env.observed_airborne[improved];apex=torch.where(~finished,torch.maximum(apex,d.root_pos_w[:,2]),apex)
+      if tick<walk_ticks:
+       act=walk.action(obs,walk_params,default,limits)
+      else:
+@@ -102,9 +106,9 @@ def main():
+     movement_recovery=torch.tensor([first[i]['stable_recovery'] for i in range(a.num_envs)],device=device)&safe&(final_root[:,2]>.2)&(final_tilt<.26)&(final_velocity[:,:2].norm(dim=-1)<.3)
+     scores=20*movement_recovery.float()+3*quiet.clamp(max=1.)-4*(final_root[:,0]-1.).abs()-3*final_root[:,1].abs()-final_tilt-.5*final_velocity.norm(dim=-1)-4*(~safe).float()
+    elite=scores.topk(max(8,a.num_envs//8)).indices;mean=.25*mean+.75*parameters[elite].mean(0);sigma=(.25*sigma+.75*parameters[elite].std(0)).clamp(min=(high-low)*.025);top=int(scores.argmax())
+-   result=dict(search_prediction_kind='ideal restitution and ballistic no-drag shaping only; must verify real flight' if a.flight_objective else None,predicted_outgoing_velocity_mps=predicted_velocity[top].cpu().tolist() if a.flight_objective else None,predicted_net_margin_m=float(predicted_margin[top]) if a.flight_objective else None,predicted_landing_xy_m=predicted_landing[top].cpu().tolist() if a.flight_objective else None,prefix_robot_net_contact=bool(prefix_net[top]),parameter_schema='composed-reach-v2-40',net_geometry_version=env.net_geometry_version,robot_net_contact=bool(net_bad[top]),maximum_robot_net_force_n=first_net[top]['maximum_robot_net_force_n'],first_robot_net_contact_time_s=first_net[top]['first_robot_net_contact_time_s'],first_robot_net_contact_body=first_net[top]['first_robot_net_contact_body'],net_contact_lanes=int(net_bad.sum()),effective_face_uv_m=face_uv[top].cpu().tolist(),movement_recovery=bool(movement_recovery[top]) if a.reposition else None,objective='ground reposition' if a.reposition else 'dynamic effective face reach',settle_default=a.settle_default,landing_feedback=a.landing_feedback,folded_arm=a.fold_arm,root_final_m=final_root[top].cpu().tolist(),root_final_velocity_mps=final_velocity[top].cpu().tolist(),generation=generation,score=float(scores[top]),parameters=parameters[top].cpu().tolist(),virtual_ball_center_m=position[top].cpu().tolist(),face_normal_world=normal[top].cpu().tolist(),root_at_event_m=root[top].cpu().tolist(),event_time_s=float(time[top])+a.walk_seconds,local_event_time_s=float(time[top]),feet_airborne=bool(air[top]),recovery=bool(recovery[top]),root_apex_m=float(apex[top]),maximum_root_apex_m=float(apex.max()),root_start_x_m=a.root_x,walk_seconds=a.walk_seconds,kind='canonical learned walking plus no-ball strike reach; not a real smash or final policy result')
+-   history.append(result);torch.save(dict(parameters=parameters.cpu(),scores=scores.cpu(),best_virtual_positions=position.cpu(),root_at_event=root.cpu(),root_apex=apex.cpu(),event_time=time.cpu(),feet_airborne=air.cpu(),recovery=recovery.cpu(),root_final=final_root.cpu(),root_final_velocity=final_velocity.cpu(),mean=mean.cpu(),sigma=sigma.cpu(),rng=g.get_state().cpu(),jump_episodes=first,net_episodes=first_net,face_normals=normal.cpu(),face_uv=face_uv.cpu()),a.output/f'population_{generation:03d}.pt')
+-   if float(scores[top])>best_score:best_score=float(scores[top]);torch.save(dict(parameters=parameters[top].cpu(),arm_pose=arm.cpu(),walk_parameters=walk_seed['parameters'].cpu(),walk_seconds=a.walk_seconds,walk_waypoint_x=a.waypoint_x,arm_initial_pose=initial_arm.cpu(),parameter_schema='composed-reach-v2-40',result=result),a.output/'best_candidate.pt')
++   result=dict(root_quaternion_wxyz_at_event=root_quaternion[top].cpu().tolist(),arm_positions_at_event_rad=event_arm[top].cpu().tolist(),search_prediction_kind='ideal restitution and ballistic no-drag shaping only; must verify real flight' if a.flight_objective else None,predicted_outgoing_velocity_mps=predicted_velocity[top].cpu().tolist() if a.flight_objective else None,predicted_net_margin_m=float(predicted_margin[top]) if a.flight_objective else None,predicted_landing_xy_m=predicted_landing[top].cpu().tolist() if a.flight_objective else None,prefix_robot_net_contact=bool(prefix_net[top]),parameter_schema=schema,net_geometry_version=env.net_geometry_version,robot_net_contact=bool(net_bad[top]),maximum_robot_net_force_n=first_net[top]['maximum_robot_net_force_n'],first_robot_net_contact_time_s=first_net[top]['first_robot_net_contact_time_s'],first_robot_net_contact_body=first_net[top]['first_robot_net_contact_body'],net_contact_lanes=int(net_bad.sum()),effective_face_uv_m=face_uv[top].cpu().tolist(),movement_recovery=bool(movement_recovery[top]) if a.reposition else None,objective='ground reposition' if a.reposition else 'dynamic effective face reach',settle_default=a.settle_default,landing_feedback=a.landing_feedback,folded_arm=a.fold_arm,root_final_m=final_root[top].cpu().tolist(),root_final_velocity_mps=final_velocity[top].cpu().tolist(),generation=generation,score=float(scores[top]),parameters=parameters[top].cpu().tolist(),virtual_ball_center_m=position[top].cpu().tolist(),face_normal_world=normal[top].cpu().tolist(),root_at_event_m=root[top].cpu().tolist(),event_time_s=float(time[top])+a.walk_seconds,local_event_time_s=float(time[top]),feet_airborne=bool(air[top]),recovery=bool(recovery[top]),root_apex_m=float(apex[top]),maximum_root_apex_m=float(apex.max()),root_start_x_m=a.root_x,walk_seconds=a.walk_seconds,kind='canonical learned walking plus no-ball strike reach; not a real smash or final policy result')
++   history.append(result);torch.save(dict(parameters=parameters.cpu(),scores=scores.cpu(),best_virtual_positions=position.cpu(),root_at_event=root.cpu(),root_apex=apex.cpu(),event_time=time.cpu(),feet_airborne=air.cpu(),recovery=recovery.cpu(),root_final=final_root.cpu(),root_final_velocity=final_velocity.cpu(),mean=mean.cpu(),sigma=sigma.cpu(),rng=g.get_state().cpu(),jump_episodes=first,net_episodes=first_net,face_normals=normal.cpu(),face_uv=face_uv.cpu(),prefix_robot_net=prefix_net.cpu(),root_quaternion_at_event=root_quaternion.cpu(),arm_positions_at_event=event_arm.cpu(),predicted_outgoing_velocity=predicted_velocity.cpu(),predicted_net_margin=predicted_margin.cpu(),predicted_landing_xy=predicted_landing.cpu()),a.output/f'population_{generation:03d}.pt')
++   if float(scores[top])>best_score:best_score=float(scores[top]);torch.save(dict(parameters=parameters[top].cpu(),arm_pose=arm.cpu(),walk_parameters=walk_seed['parameters'].cpu(),walk_seconds=a.walk_seconds,walk_waypoint_x=a.waypoint_x,arm_initial_pose=initial_arm.cpu(),parameter_schema=schema,result=result),a.output/'best_candidate.pt')
+    (a.output/'metrics.json').write_text(json.dumps(dict(history=history,best=max(history,key=lambda r:r['score']),env_steps=(generation+1)*a.num_envs*ticks),indent=2)+'\n');print(json.dumps(result),flush=True)
+    if stopping:break
+   if len(history)==a.generations:(a.output/'completed.json').write_text(json.dumps(dict(completed_generations=len(history),requested_generations=a.generations))+'\n')
+diff --git a/status/GPU_LEDGER.json b/status/GPU_LEDGER.json
+index cfe3f0a..74159c2 100644
+--- a/status/GPU_LEDGER.json
++++ b/status/GPU_LEDGER.json
+@@ -8108,15 +8108,20 @@
+       ],
+       "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/walk_close_high01",
+       "gpu": 0,
+-      "status": "RUNNING",
+-      "charged_gpu_hours": 0.2,
++      "status": "SUCCEEDED",
++      "charged_gpu_hours": 0.1456923970944384,
+       "charged_env_steps": 1536000,
+       "started_at": "2026-10-23T11:07:13.247193+00:00",
+       "pid": 1170927,
+       "original_authorization": "g07-net-feasibility-20261023",
+       "authorization_started_at": "2026-10-23T08:04:13.742590+00:00",
+       "authorization_deadline": "2026-10-23T18:04:13.742590+00:00",
+-      "child_pid": 1170936
++      "child_pid": 1170936,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": true,
++      "elapsed_s": 524.4926295399782,
++      "finished_at": "2026-10-23T11:15:57.742739+00:00"
+     }
+   ],
+   "budget_windows": {
+diff --git a/status/RUNS.jsonl b/status/RUNS.jsonl
+index 3e0f0d5..2bd4bc9 100644
+--- a/status/RUNS.jsonl
++++ b/status/RUNS.jsonl
+@@ -227,3 +227,4 @@
+ {"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/search_g07_walk_transfer.py", "--output", "reports/G07/walk_high_ready01", "--num-envs", "128", "--generations", "30", "--initial", "reports/G07/search_walk_netlocal02/best_candidate.pt", "--high-arm", "--arm-seed", "reports/G07/walk_strike_ik_cpu01/pose_seed.pt", "--target-x", ".85", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/walk_high_ready01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.14227240725056617, "charged_env_steps": 1536000, "started_at": "2026-10-23T10:34:22.143483+00:00", "pid": 1166370, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1166380, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 512.1806661020382, "finished_at": "2026-10-23T10:42:54.327122+00:00"}
+ {"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/probe_g07_composed_motion.py", "--output", "reports/G07/composed_motion_net_timing01", "--candidate", "reports/G07/composed_reach_netlocal02/best_candidate.pt", "--num-envs", "4", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/composed_motion_net_timing01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.009280391069720888, "charged_env_steps": 2960, "started_at": "2026-10-23T10:44:30.522941+00:00", "pid": 1168196, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1168205, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 33.409407850995194, "finished_at": "2026-10-23T10:45:03.935326+00:00"}
+ {"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/search_g07_composed_reach_v2.py", "--output", "reports/G07/composed_high_ready01", "--num-envs", "128", "--generations", "20", "--root-x", "0", "--walk-candidate", "reports/G07/walk_high_ready01/best_candidate.pt", "--pose-seed", "reports/G07/walk_strike_ik_cpu01/pose_seed.pt", "--initial", "reports/G07/composed_reach_netlocal03/best_candidate.pt", "--landing-feedback", "--walk-seconds", "3.4", "--waypoint-x", ".85", "--seed-bank", "reports/G07/free_jump_seed_bank01/seed_bank.pt", "--global-fraction", ".15", "--seed", "716101", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/composed_high_ready01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.17056146069444367, "charged_env_steps": 1894400, "started_at": "2026-10-23T10:47:20.210741+00:00", "pid": 1168725, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1168735, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 614.0212584999972, "finished_at": "2026-10-23T10:57:34.235012+00:00"}
++{"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/search_g07_walk_transfer.py", "--output", "reports/G07/walk_close_high01", "--num-envs", "128", "--generations", "30", "--initial", "reports/G07/search_walk_netlocal02/best_candidate.pt", "--high-arm", "--arm-seed", "reports/G07/close_base_ik_cpu01/pose_seed.pt", "--target-x", "1.1", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/walk_close_high01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.1456923970944384, "charged_env_steps": 1536000, "started_at": "2026-10-23T11:07:13.247193+00:00", "pid": 1170927, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1170936, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 524.4926295399782, "finished_at": "2026-10-23T11:15:57.742739+00:00"}

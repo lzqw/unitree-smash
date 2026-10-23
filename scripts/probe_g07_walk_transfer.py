@@ -25,6 +25,8 @@ from quadsmash.tasks.stand.jump_env import JumpEnv,JumpEnvCfg
 from quadsmash.control.go2_walk_transfer import Go2WalkTransfer
 from quadsmash.tasks.stand.ball_env import BallEnvCfg
 from quadsmash.tasks.stand.smash_env_v3 import FullJointSmashEnv
+from quadsmash.tasks.stand.loaded_walk_env import LoadedWalkEnv
+from quadsmash.tasks.stand.net_contact_monitor import NetContactMonitor,add_net_contact_sensors
 
 def main():
     a.output.mkdir(parents=True,exist_ok=True)
@@ -40,23 +42,14 @@ def main():
     cfg.episode_length_s=4.
     cfg.event_goal_enabled=True
     cfg.event_goal_position=(1.,0.,.3)
-    class WalkEnv(JumpEnv):
+    candidate=torch.load(a.candidate,map_location='cpu',weights_only=False) if a.candidate else None
+    target_x=candidate['result'].get('target_root_x_m',1.) if candidate else 1.
+    cfg.event_goal_position=(target_x,0.,.3)
+    class FineWalkEnv(NetContactMonitor,FullJointSmashEnv):
         def _setup_scene(self):
             super()._setup_scene()
-            stage=omni.usd.get_context().get_stage()
-            net=sim_utils.CuboidCfg(size=(.02,2.,1.524),
-                collision_props=sim_utils.CollisionPropertiesCfg(),
-                physics_material=sim_utils.RigidBodyMaterialCfg(restitution=.1))
-            for i in range(self.num_envs):
-                path=f'/World/envs/env_{i}/Net'
-                if not stage.GetPrimAtPath(path).IsValid():
-                    net.func(path,net,translation=(1.5,0.,.762))
-        def _pre_physics_step(self,actions):
-            self._record_action(actions)
-            limits=self.robot.data.joint_pos_limits[:,self.joint_ids]
-            self.targets.copy_(self.robot.data.default_joint_pos)
-            self.targets[:,self.joint_ids]=limits[:,:,0]+.5*(self.last_action+1)*(limits[:,:,1]-limits[:,:,0])
-    env=FullJointSmashEnv(cfg) if a.fine else WalkEnv(cfg)
+            add_net_contact_sensors(self)
+    env=FineWalkEnv(cfg) if a.fine else LoadedWalkEnv(cfg)
     wrapped=RslRlVecEnvWrapper(env,clip_actions=None)
     policy=Go2WalkTransfer(a.manifest,a.num_envs,env.device)
     default=env.robot.data.default_joint_pos[0,env.joint_ids]
@@ -64,7 +57,6 @@ def main():
     parameters=torch.tensor([[v,k,d] for v in [.35,.5,.7,1.]
         for k in [1.,2.,3.,4.] for d in [.2,.5,.8,1.2]],device=env.device)[:a.num_envs]
     if a.candidate:
-        candidate=torch.load(a.candidate,map_location='cpu',weights_only=False)
         parameters=candidate['parameters'].to(env.device).repeat(a.num_envs,1)
     if len(parameters)!=a.num_envs:raise ValueError('Use no more than 64 lanes')
     obs,_=wrapped.reset()
@@ -90,19 +82,22 @@ def main():
                 finished|=done.bool()
         first={}
         for row in env.episode_records:first.setdefault(row['env_id'],row)
+        net={}
+        for row in env.net_episode_records:net.setdefault(row['env_id'],row)
+        if len(net)!=a.num_envs:raise RuntimeError('Incomplete net force telemetry')
         rows=[]
         for i in range(a.num_envs):
             r=first[i]
-            valid=(not r['body_landing'] and .90<=float(final[i,0])<=1.05
+            valid=(not r['body_landing'] and not net[i]['robot_net_contact'] and abs(float(final[i,0])-target_x)<.06
                    and abs(float(final[i,1]))<.06 and float(final[i,2])>.2
                    and float(tilt[i])<.26 and float(velocity[i,:2].norm())<.15)
             rows.append(dict(env_id=i,parameters=parameters[i].cpu().tolist(),
                 root_final_m=final[i].cpu().tolist(),velocity_mps=velocity[i].cpu().tolist(),
-                tilt_gravity_xy=float(tilt[i]),movement_success=valid,jump_metrics=r))
+                tilt_gravity_xy=float(tilt[i]),movement_success=valid,jump_metrics=r,net_contact_telemetry=net[i]))
         best=max(rows,key=lambda r:(r['movement_success'],not r['jump_metrics']['body_landing'],
-                 -abs(r['root_final_m'][0]-1.)-abs(r['root_final_m'][1])))
+                 -abs(r['root_final_m'][0]-target_x)-abs(r['root_final_m'][1])))
         metrics=dict(kind='transferred learned walking probe, original full payload and net, no ball',
-            fine_physics_fixture=a.fine,candidate=str(a.candidate),physics_dt_s=cfg.sim.dt,formal_g07_acceptance=False,episodes=len(rows),movement_success=sum(r['movement_success'] for r in rows),
+            target_root_x_m=target_x,net_contact_sensor_version='one-source-per-environment-v2',robot_net_contact=sum(r['robot_net_contact'] for r in net.values()),fine_physics_fixture=a.fine,candidate=str(a.candidate),physics_dt_s=cfg.sim.dt,formal_g07_acceptance=False,episodes=len(rows),movement_success=sum(r['movement_success'] for r in rows),
             source_manifest=json.loads(a.manifest.read_text()),best=best)
         (a.output/'episodes.json').write_text(json.dumps(rows,indent=2)+'\n')
         (a.output/'metrics.json').write_text(json.dumps(metrics,indent=2)+'\n')

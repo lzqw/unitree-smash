@@ -1,0 +1,684 @@
+diff --git a/quadsmash/control/go2_walk_transfer.py b/quadsmash/control/go2_walk_transfer.py
+index 6ac9019..e95e09d 100644
+--- a/quadsmash/control/go2_walk_transfer.py
++++ b/quadsmash/control/go2_walk_transfer.py
+@@ -32,7 +32,8 @@ class Go2WalkTransfer:
+         speed,kp,kd=parameters[:,:3].unbind(1)
+         error=obs[:,760]
+         self.reached|=(error.abs()<.04)&(obs[:,:2].norm(dim=1)<.12)
+-        delay=parameters[:,10] if parameters.shape[1]>=11 else .15
++        delay=(parameters[:,14] if parameters.shape[1]==15 else
++               parameters[:,10] if parameters.shape[1]>=11 else .15)
+         ramp=((t-delay)/.35).clamp(0,1)
+         commands=torch.zeros((len(t),3),device=t.device)
+         commands[:,0]=(speed*torch.tanh(kp*error-kd*obs[:,0])).clamp(-.4,1.)*ramp
+@@ -52,10 +53,13 @@ class Go2WalkTransfer:
+             q[:,8:12]+=parameters[:,5:6]
+             q[:,:4]+=parameters[:,6:7]*obs[:,7:8]
+             blend=((t-.1)/.45).clamp(0,1)
+-            q[:,13]=torch.lerp(default[13].expand_as(t),parameters[:,8],blend)
+-            q[:,14]=torch.lerp(default[14].expand_as(t),parameters[:,9],blend)
+-            if parameters.shape[1]>=12:
+-                q[:,16]=torch.lerp(default[16].expand_as(t),parameters[:,11],blend)
++            if parameters.shape[1]==15:
++                q[:,12:]=torch.lerp(default[12:][None,:],parameters[:,8:14],blend[:,None])
++            else:
++                q[:,13]=torch.lerp(default[13].expand_as(t),parameters[:,8],blend)
++                q[:,14]=torch.lerp(default[14].expand_as(t),parameters[:,9],blend)
++                if parameters.shape[1]>=12:
++                    q[:,16]=torch.lerp(default[16].expand_as(t),parameters[:,11],blend)
+         rest=q.clone()
+         rest[:,:12]=default[:12]
+         q=torch.where((self.reached|(t>=3.4))[:,None],rest,q)
+diff --git a/quadsmash/tasks/stand/net_contact_monitor.py b/quadsmash/tasks/stand/net_contact_monitor.py
+index 32bbf86..7c4348d 100644
+--- a/quadsmash/tasks/stand/net_contact_monitor.py
++++ b/quadsmash/tasks/stand/net_contact_monitor.py
+@@ -1,18 +1,29 @@
+ """Separate robot/net force telemetry; original jump/ground metrics stay intact."""
+ import torch
+ from isaaclab.sensors import ContactSensor,ContactSensorCfg
++import omni.usd
++from pxr import Usd,UsdPhysics
+ 
+ 
+ def add_net_contact_sensors(env):
+-    patterns={
+-        'net_go2':'/World/envs/env_.*/Robot/Go2/.*',
+-        'net_arm':'/World/envs/env_.*/Robot/Piper/.*',
+-        'net_tool':'/World/envs/env_.*/Robot/(MountPlate|Racket)',
+-    }
+-    for name,path in patterns.items():
++    # A filtered ContactSensor must have ONE source body per environment.
++    # Grouping all Go2/PiPER/tool bodies makes PhysX expect N*B net targets,
++    # while the actual net pattern has N entries, silently producing zeros.
++    stage=omni.usd.get_context().get_stage()
++    robot=stage.GetPrimAtPath('/World/envs/env_0/Robot')
++    env._net_sensor_names=[]
++    env._net_sensor_body_paths=[]
++    for prim in Usd.PrimRange(robot,Usd.TraverseInstanceProxies()):
++        if not prim.HasAPI(UsdPhysics.RigidBodyAPI):continue
++        name=f'net_body_{len(env._net_sensor_names):02d}'
++        path=str(prim.GetPath()).replace('/env_0/','/env_.*/')
+         cfg=ContactSensorCfg(prim_path=path,
+             filter_prim_paths_expr=['/World/envs/env_.*/Net/geometry/mesh'],force_threshold=.1)
+         env.scene.sensors[name]=ContactSensor(cfg)
++        env._net_sensor_names.append(name)
++        env._net_sensor_body_paths.append(path)
++        if prim.GetName()=='Racket':env._net_racket_sensor_name=name
++    if not env._net_sensor_names:raise RuntimeError('No robot bodies for net contact monitoring')
+ 
+ 
+ class NetContactMonitor:
+@@ -22,14 +33,20 @@ class NetContactMonitor:
+         super().__init__(*args,**kwargs)
+         self.net_robot_seen=torch.zeros(self.num_envs,dtype=torch.bool,device=self.device)
+         self.net_robot_max_force=torch.zeros(self.num_envs,device=self.device)
++        self.net_first_contact_time=torch.full((self.num_envs,),float('nan'),device=self.device)
++        self.net_first_contact_body=torch.full((self.num_envs,),-1,dtype=torch.long,device=self.device)
+         self._net_force_ready=True
+ 
+     def _consume_jump_frame(self,frame):
+         previous=getattr(self,'_jump_physics_frame',-1)
+         super()._consume_jump_frame(frame)
+         if self._net_force_ready and frame>previous:
+-            force=sum(self.scene.sensors[name].data.force_matrix_w.norm(dim=-1).sum((1,2))
+-                      for name in ('net_go2','net_arm','net_tool'))
++            per_body=torch.stack([self.scene.sensors[name].data.force_matrix_w.norm(dim=-1).sum((1,2))
++                                  for name in self._net_sensor_names])
++            force=per_body.sum(0)
++            first=(force>.1)&(~self.net_robot_seen)
++            self.net_first_contact_time[first]=self.jump_clock[first]
++            self.net_first_contact_body[first]=per_body[:,first].argmax(0)
+             self.net_robot_seen|=force>.1
+             self.net_robot_max_force.copy_(torch.maximum(self.net_robot_max_force,force))
+ 
+@@ -38,8 +55,15 @@ class NetContactMonitor:
+             complete=ids[self._episode_has_stepped[ids]]
+             for i in complete.cpu().tolist():
+                 self.net_episode_records.append(dict(env_id=i,
++                    net_contact_sensor_version='one-source-per-environment-v2',
++                    first_robot_net_contact_time_s=(float(self.net_first_contact_time[i])
++                        if bool(self.net_robot_seen[i]) else None),
++                    first_robot_net_contact_body=(self._net_sensor_body_paths[int(self.net_first_contact_body[i])]
++                        if int(self.net_first_contact_body[i])>=0 else None),
+                     robot_net_contact=bool(self.net_robot_seen[i]),
+                     maximum_robot_net_force_n=float(self.net_robot_max_force[i])))
+             self.net_robot_seen[ids]=False
+             self.net_robot_max_force[ids]=0.
++            self.net_first_contact_time[ids]=float('nan')
++            self.net_first_contact_body[ids]=-1
+         super()._reset_idx(ids)
+diff --git a/reports/G07/REPORT.md b/reports/G07/REPORT.md
+index c996ba1..141378b 100644
+--- a/reports/G07/REPORT.md
++++ b/reports/G07/REPORT.md
+@@ -90,3 +90,15 @@ G07 状态保持 `IN_PROGRESS`；没有创建 `artifacts/G07/policy.pt`，也没
+ 保存位姿的几何重建发现，旧学习击球轨迹有39个50Hz帧的球拍与正确网体交叠（首次0.40s），旧冻结行走轨迹有69帧交叠（首次2.62s）。因此下一步同时修正行走末端球拍姿态、将伸展引拍推迟到起跳阶段，并在正确网中联合优化。该交叠检查是旧数据的几何重建，不冒充新物理回合。
+ 
+ 原G04–G06未启用此球网，原证据不受该坐标修复影响。G07从未标为PASSED；没有发布正式通过策略。
++
++## 正确球网后的完整探测与接触监测校准
++
++`composed_contact_netlocal01` 从root0开始，学习Go2行走器接全身教师、全程7.4秒、初始自由发射后不修正球，共32种来球。实际空中有效拍面接触和顺序越网均32/32，首次目标落点7/32，原事件/恢复条件共同成立3/32。但当时机器人/网过滤传感器分组配置错误，PhysX日志指出源数量N×B和目标网数量N不匹配，不能把零接触力当作无碰网证据。
++
++已改成每个刚体一个传感器；`net_robot_contact_positive02` 对已知撞网轨迹4/4检出，峰值合计约68N。冻结原候选和单一来球（原case22）后，用校准传感器独立复现32回合：有效空中接触和顺序越网32/32，目标首次落点2/32、恢复2/32，机器人碰网32/32，无借力完整成功0/32，数值故障1。原raw complete_smash字段仍保留，不将其当无干涉全身成功。见 `composed_replay_netlocal02`。
++
++该延长准备场景单独版本化：先行走3.4秒，球从全回合起点自由发射；例如case22初始x约64.867m、速度[-45,0,48.702]m/s，属于当前空气阻力模型下的可行性探测，不等同于旧发球面板，也不代表真实赛场发球验证。后续必须扩大来球/目标覆盖、明确场景版本，不能只选该单一案例重复400次冒充泛化验收。
++
++过滤修正后继续正确网中的无球搜索 `composed_reach_netlocal03`：12代×128环境。最好匹配目标的无碰网腾空拍面点约[1.313,0.015,1.551]m，仍不足有效飞行区域。这是该搜索的候选，既不是系统最大高度也不是硬件上界。下一方向为先带较高臂姿移动至x0.85，再起跳；`walk_high_ready01` 30代搜索已找到稳定、无机身触地和无网接触的准备动作，仍为无球课程。
++
++[正确网下当前学习策略失败视频](https://github.com/lzqw/unitree-smash/releases/download/g07-progress-20261023/G07_netlocal_v2_policy_failure.mp4) 已上传，画面明确标注0/64完整、36/64恢复，避免沿用历史错误网位置的视频来表示当前成绩。
+diff --git a/scripts/render_g07_dynamic_video.py b/scripts/render_g07_dynamic_video.py
+index 1044c85..b4d7cbd 100644
+--- a/scripts/render_g07_dynamic_video.py
++++ b/scripts/render_g07_dynamic_video.py
+@@ -12,6 +12,7 @@ from PIL import Image,ImageDraw,ImageFont
+ p=argparse.ArgumentParser();p.add_argument('--input',type=Path,required=True);a=p.parse_args()
+ meta=json.load(open(a.input/'geometry.json'));data=np.load(a.input/'geometry.npz');poses=np.load(a.input/'link_poses.npy');trace=json.load(open(a.input/'trajectory.json'));metrics=json.load(open(a.input/'metrics.json'))
+ learned=metrics.get('controller','').startswith('learned')
++net_corrected=metrics.get('net_geometry_version')=='environment-local-net-v2'
+ ctx=moderngl.create_standalone_context(backend='egl',device_index=1)
+ assert 'llvmpipe' in ctx.info['GL_RENDERER'],ctx.info['GL_RENDERER']
+ width,height=1280,720
+@@ -75,7 +76,7 @@ def draw(index,slow=False):
+  bp=np.eye(4,dtype='f4');bp[:3,3]=r['ball_xyz'];program['model'].write(bp.T.tobytes());program['color'].value=(1.,.35,.04);ball_mesh.render()
+  frame=np.frombuffer(fbo.read(components=3,alignment=1),np.uint8).reshape(height,width,3)[::-1].copy()
+  img=Image.fromarray(frame);d=ImageDraw.Draw(img);d.rectangle((0,0,width,88),fill=(18,28,43))
+- d.text((24,8),'Go2 + PiPER｜'+('学习分段反馈策略' if learned else '近网课程教师')+' · 独立物理复现',font=title,fill='white')
++ d.text((24,8),'Go2 + PiPER｜'+('正确球网下重验' if net_corrected else '历史网坐标未修正')+' · '+('学习策略' if learned else '教师'),font=title,fill='white')
+  d.text((24,50),'实测关节连杆与球轨迹 · 原负载与执行器 · 1.524 m 标准球网',font=small,fill=(166,193,214))
+  d.text((1040,20),'0.5 倍慢放' if slow else '正常速度',font=small,fill=(115,218,206))
+  t=r['time_s'];e=metrics['best'];v=np.asarray(r['ball_v'])
+@@ -84,7 +85,8 @@ def draw(index,slow=False):
+  d.rectangle((0,623,width,height),fill=(18,28,43))
+  out=np.asarray(e['outgoing_velocity_mps']);landing=e['first_landing_position_m']
+  d.text((24,632),f"本回合出球 [{out[0]:.2f}, {out[1]:.2f}, {out[2]:.2f}] m/s｜球心越网净空 {e['net_margin_m']*100:.1f} cm｜首次落点 [{landing[0]:.2f}, {landing[1]:.2f}] m",font=small,fill='white')
+- d.text((24,669),f"独立重复：完整 {metrics['complete']}/{metrics['episodes']}，恢复 {metrics['recovery']}/{metrics['episodes']}｜选取案例 {metrics['selected_video_lane']}｜近网起点 1.0 m，尚非正式 G07 策略",font=small,fill=(166,193,214))
++ face='是' if e.get('effective_face_contact') else '否'
++ d.text((24,669),f"完整 {metrics['complete']}/{metrics['episodes']}，恢复 {metrics['recovery']}/{metrics['episodes']}｜有效拍面：{face}｜案例 {metrics['selected_video_lane']}｜近网课程，尚非正式 G07 通过",font=small,fill=(166,193,214))
+  return np.asarray(img)
+ out=a.input/('G07_near_net_learned_replay.mp4' if learned else 'G07_near_net_teacher_replay.mp4')
+ with imageio.get_writer(str(out),fps=50,codec='libx264',quality=8,macro_block_size=8,output_params=['-movflags','+faststart']) as writer:
+diff --git a/scripts/search_g07_composed_reach_v2.py b/scripts/search_g07_composed_reach_v2.py
+index 6e64621..c7bf9e5 100644
+--- a/scripts/search_g07_composed_reach_v2.py
++++ b/scripts/search_g07_composed_reach_v2.py
+@@ -8,7 +8,7 @@ import argparse,json,signal,sys,traceback
+ from pathlib import Path
+ ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
+ from isaaclab.app import AppLauncher
+-p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--num-envs',type=int,default=128);p.add_argument('--generations',type=int,default=12);p.add_argument('--seed',type=int,default=714101);p.add_argument('--root-x',type=float,default=0.);p.add_argument('--initial',type=Path);p.add_argument('--resume-population',type=Path);p.add_argument('--walk-candidate',type=Path,required=True);p.add_argument('--pose-seed',type=Path,required=True);p.add_argument('--walk-seconds',type=float,default=3.4);p.add_argument('--waypoint-x',type=float,default=1.03);p.add_argument('--settle-default',action='store_true');p.add_argument('--landing-feedback',action='store_true');p.add_argument('--reposition',action='store_true');p.add_argument('--fold-arm',action='store_true');p.add_argument('--forward-seed',action='store_true');p.add_argument('--global-fraction',type=float,default=0.);AppLauncher.add_app_launcher_args(p);a=p.parse_args();app=AppLauncher(a).app
++p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--num-envs',type=int,default=128);p.add_argument('--generations',type=int,default=12);p.add_argument('--seed',type=int,default=714101);p.add_argument('--root-x',type=float,default=0.);p.add_argument('--initial',type=Path);p.add_argument('--deep-crouch',action='store_true');p.add_argument('--vertical-seed',action='store_true');p.add_argument('--flight-objective',action='store_true');p.add_argument('--seed-bank',type=Path);p.add_argument('--resume-population',type=Path);p.add_argument('--walk-candidate',type=Path,required=True);p.add_argument('--pose-seed',type=Path,required=True);p.add_argument('--walk-seconds',type=float,default=3.4);p.add_argument('--waypoint-x',type=float,default=1.03);p.add_argument('--settle-default',action='store_true');p.add_argument('--landing-feedback',action='store_true');p.add_argument('--reposition',action='store_true');p.add_argument('--fold-arm',action='store_true');p.add_argument('--forward-seed',action='store_true');p.add_argument('--global-fraction',type=float,default=0.);AppLauncher.add_app_launcher_args(p);a=p.parse_args();app=AppLauncher(a).app
+ import torch
+ from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper
+ from quadsmash.tasks.stand.jump_env import JumpEnvCfg
+@@ -29,6 +29,7 @@ def main():
+   def _pre_physics_step(self,actions):
+    self._record_action(actions);self.targets.copy_(self.robot.data.default_joint_pos);lim=self.robot.data.joint_pos_limits[:,self.joint_ids];self.targets[:,self.joint_ids]=lim[:,:,0]+.5*(self.last_action+1)*(lim[:,:,1]-lim[:,:,0])
+  env=ReachEnv(cfg);w=RslRlVecEnvWrapper(env,clip_actions=None);device=env.device;low=torch.tensor(LOW,device=device);high=torch.tensor(HIGH,device=device)
++ if a.deep_crouch:low[4]=-1.20;high[3]=1.15
+  if a.landing_feedback:
+   low=torch.cat((low,torch.tensor([-.5]*6+[1.1,0.,-.8,-.8,0.],device=device)));high=torch.cat((high,torch.tensor([.5]*6+[1.7,.8,.8,.8,.8],device=device)))
+  if a.settle_default:
+@@ -39,29 +40,50 @@ def main():
+  mean=torch.tensor(INITIAL+[0.]*6+[1.42,.25,0.,.1,.15,.95,.50],device=device).clamp(low,high);sigma=(high-low)*.18;g=torch.Generator(device=device).manual_seed(a.seed)
+  if a.initial:
+   prior=torch.load(a.initial,map_location=device,weights_only=False);seed_params=prior['parameters'].to(device);mean[:min(len(seed_params),len(mean))]=seed_params[:len(mean)];mean=mean.clamp(low,high);sigma=(high-low)*.10
++ if a.vertical_seed:
++  mean[5]=.8;mean[6]=.8;mean[8]=0.;mean[17:21]=0.;sigma=(high-low)*.15
++  if a.deep_crouch:mean[3]=.85;mean[4]=-1.0
+  if a.forward_seed:
+   mean[5]=1.10;mean[6]=1.10;mean[8]=0.;sigma=(high-low)*.18
+  limits=env.robot.data.joint_pos_limits[0,env.joint_ids];default=env.robot.data.default_joint_pos[0,env.joint_ids];geometry=json.loads((ROOT/'reports/G07/feasibility_v3_20261023/geometry.json').read_text());arm=torch.tensor(geometry['poses']['effective_face_normal_x_ge_0.9']['arm_q_rad'],device=device)
+  arm=torch.load(a.pose_seed,map_location=device,weights_only=False)['arm_pose'].to(device);mean[21:27]=0.
+  if len(mean)>=34:mean[27:33]=0.;mean[33]=1.42
+  walk=Go2WalkTransfer(ROOT/'configs/g07_go2_walk_transfer.json',a.num_envs,device);walk_seed=torch.load(a.walk_candidate,map_location=device,weights_only=False);walk_params=walk_seed['parameters'].to(device).repeat(a.num_envs,1);walk_ticks=round(a.walk_seconds/.01);ticks=round(cfg.episode_length_s/.01)
+- initial_arm=default[12:].clone();initial_arm[1]=walk_seed['parameters'][8];initial_arm[2]=walk_seed['parameters'][9];initial_arm[4]=walk_seed['parameters'][11]
++ initial_arm=default[12:].clone()
++ if len(walk_seed['parameters'])==15:initial_arm=walk_seed['parameters'][8:14].clone()
++ else:initial_arm[1]=walk_seed['parameters'][8];initial_arm[2]=walk_seed['parameters'][9];initial_arm[4]=walk_seed['parameters'][11]
+  target=torch.tensor([1.40,0.,1.65],device=device);target_normal=torch.tensor([.866025404,0.,.5],device=device)
+  if a.resume_population:
+   resume=torch.load(a.resume_population,map_location=device,weights_only=False);mean=resume['mean'].to(device);sigma=resume['sigma'].to(device);g.set_state(resume['rng'].cpu())
+  from quadsmash.control.dynamic_reach_teacher import dynamic_reach_action
+  def actions(obs,parameters):return composed_reach_action(obs,parameters,default,limits,arm,initial_arm)
+- history=[];best_score=-float('inf')
++ history=[];best_score=-float('inf');seed_bank=torch.load(a.seed_bank,map_location=device,weights_only=False)['parameters'] if a.seed_bank else None
+  try:
+   for generation in range(a.generations):
+    parameters=(mean[None,:]+sigma[None,:]*torch.randn((a.num_envs,len(low)),generator=g,device=device)).clamp(low,high);parameters[0]=mean
+    global_count=min(a.num_envs-1,round(a.num_envs*a.global_fraction))
+    if global_count:parameters[-global_count:]=low[None,:]+(high-low)[None,:]*torch.rand((global_count,len(low)),generator=g,device=device)
+-   env._episode_has_stepped.zero_();env._metrics_started=False;env.episode_records.clear();env.net_episode_records.clear();env.goal_position_w.copy_(env.scene.env_origins+torch.tensor([a.waypoint_x,0.,.3],device=device));walk.reset();obs,_=w.reset();finished=torch.zeros(a.num_envs,dtype=torch.bool,device=device);best=torch.full((a.num_envs,),-100.,device=device);position=torch.zeros((a.num_envs,3),device=device);normal=position.clone();root=position.clone();time=torch.zeros(a.num_envs,device=device);apex=torch.zeros(a.num_envs,device=device);air=torch.zeros(a.num_envs,dtype=torch.bool,device=device);face_uv=torch.zeros((a.num_envs,2),device=device);final_root=torch.zeros((a.num_envs,3),device=device);final_velocity=final_root.clone();final_tilt=torch.zeros(a.num_envs,device=device)
++   if generation==0 and seed_bank is not None:
++    count=min(len(seed_bank),a.num_envs-1);parameters[1:count+1,:21]=seed_bank[:count,:21]
++   env._episode_has_stepped.zero_();env._metrics_started=False;env.episode_records.clear();env.net_episode_records.clear();env.goal_position_w.copy_(env.scene.env_origins+torch.tensor([a.waypoint_x,0.,.3],device=device));walk.reset();obs,_=w.reset();finished=torch.zeros(a.num_envs,dtype=torch.bool,device=device);best=torch.full((a.num_envs,),-100.,device=device);position=torch.zeros((a.num_envs,3),device=device);normal=position.clone();root=position.clone();time=torch.zeros(a.num_envs,device=device);apex=torch.zeros(a.num_envs,device=device);air=torch.zeros(a.num_envs,dtype=torch.bool,device=device);predicted_velocity=torch.zeros((a.num_envs,3),device=device);predicted_margin=torch.zeros(a.num_envs,device=device);predicted_landing=torch.zeros((a.num_envs,2),device=device);prefix_net=torch.zeros_like(air);face_uv=torch.zeros((a.num_envs,2),device=device);final_root=torch.zeros((a.num_envs,3),device=device);final_velocity=final_root.clone();final_tilt=torch.zeros(a.num_envs,device=device)
+    with torch.inference_mode():
+     for tick in range(ticks):
+      t=obs['policy'][:,775]-a.walk_seconds;d=env.robot.data;active=~finished;final_root[active]=(d.root_pos_w-env.scene.env_origins)[active];final_velocity[active]=d.root_link_lin_vel_w[active];final_tilt[active]=d.projected_gravity_b[active,:2].norm(dim=-1);tool=d.body_pos_w[:,env.racket_body_id]-env.scene.env_origins;quat=d.body_quat_w[:,env.racket_body_id];n=quat_rotate(quat,torch.tensor([1.,0.,0.],device=device).expand(a.num_envs,-1));up_y=quat_rotate(quat,torch.tensor([0.,1.,0.],device=device).expand(a.num_envs,-1));up_z=quat_rotate(quat,torch.tensor([0.,0.,1.],device=device).expand(a.num_envs,-1));delta=target[None,:]-tool-.0325*n;u=(delta*up_y).sum(1).clamp(-.095,.095);v=(delta*up_z).sum(1).clamp(-.095,.095);point=tool+.0325*n+u[:,None]*up_y+v[:,None]*up_z
+-     candidate=(~finished)&(t>=1.)&(t<=1.85);score=-5*(point-target).norm(dim=-1)-(n-target_normal).norm(dim=-1)+.5*env.observed_airborne.float()-.4*env.body_ground_seen.float();improved=candidate&(score>best);best[improved]=score[improved];position[improved]=point[improved];normal[improved]=n[improved];root[improved]=(d.root_pos_w-env.scene.env_origins)[improved];time[improved]=t[improved];face_uv[improved]=torch.stack((u,v),1)[improved];air[improved]=env.observed_airborne[improved];apex=torch.where(~finished,torch.maximum(apex,d.root_pos_w[:,2]),apex)
++     candidate=(~finished)&(t>=1.)&(t<=1.85);score=-5*(point-target).norm(dim=-1)-(n-target_normal).norm(dim=-1)+.5*env.observed_airborne.float()-10*env.body_ground_seen.float()-10*env.net_robot_seen.float()
++     if a.flight_objective:
++      tool_velocity=d.body_link_lin_vel_w[:,env.racket_body_id]+torch.linalg.cross(d.body_link_ang_vel_w[:,env.racket_body_id],point-tool)
++      incoming=torch.tensor([-3.1,0.,-17.1],device=device)[None,:]
++      outgoing=incoming-1.72*((incoming-tool_velocity)*n).sum(1,keepdim=True)*n
++      landing_time=(outgoing[:,2]+torch.sqrt(outgoing[:,2].square()+19.62*(point[:,2]-.025).clamp_min(0)))/9.81
++      landing=point[:,:2]+landing_time[:,None]*outgoing[:,:2]
++      net_time=(1.535-point[:,0])/outgoing[:,0].clamp_min(.1)
++      margin=point[:,2]+outgoing[:,2]*net_time-4.905*net_time.square()-.025-1.524
++      violation=(8-outgoing.norm(dim=1)).clamp_min(0)/8+(outgoing[:,2]+1).clamp_min(0)/4+(-outgoing[:,0]).clamp_min(0)/8
++      violation+=(.02-margin).clamp_min(0)*5+(2-landing[:,0]).clamp_min(0)+(landing[:,0]-3.8).clamp_min(0)+(landing[:,1].abs()-.8).clamp_min(0)
++      score=-5*(point[:,:2]-target[:2]).norm(dim=1)-2*violation+.5*env.observed_airborne.float()-10*env.body_ground_seen.float()-10*env.net_robot_seen.float()
++     improved=candidate&(score>best);prefix_net[improved]=env.net_robot_seen[improved]
++     if a.flight_objective:predicted_velocity[improved]=outgoing[improved];predicted_margin[improved]=margin[improved];predicted_landing[improved]=landing[improved]
++     best[improved]=score[improved];position[improved]=point[improved];normal[improved]=n[improved];root[improved]=(d.root_pos_w-env.scene.env_origins)[improved];time[improved]=t[improved];face_uv[improved]=torch.stack((u,v),1)[improved];air[improved]=env.observed_airborne[improved];apex=torch.where(~finished,torch.maximum(apex,d.root_pos_w[:,2]),apex)
+      if tick<walk_ticks:
+       act=walk.action(obs,walk_params,default,limits)
+      else:
+@@ -74,14 +96,14 @@ def main():
+    first_net={}
+    for row in env.net_episode_records:first_net.setdefault(row['env_id'],row)
+    if len(first_net)!=a.num_envs:raise RuntimeError('Incomplete robot/net force telemetry')
+-   net_bad=torch.tensor([first_net[i]['robot_net_contact'] for i in range(a.num_envs)],device=device);scores=best+.05*recovery.float()-10*net_bad.float()
++   net_bad=torch.tensor([first_net[i]['robot_net_contact'] for i in range(a.num_envs)],device=device);scores=best+.05*recovery.float()-.5*net_bad.float()
+    if a.reposition:
+     safe=torch.tensor([not first[i]['body_landing'] for i in range(a.num_envs)],device=device);quiet=torch.tensor([first[i]['recovery_s'] for i in range(a.num_envs)],device=device)
+     movement_recovery=torch.tensor([first[i]['stable_recovery'] for i in range(a.num_envs)],device=device)&safe&(final_root[:,2]>.2)&(final_tilt<.26)&(final_velocity[:,:2].norm(dim=-1)<.3)
+     scores=20*movement_recovery.float()+3*quiet.clamp(max=1.)-4*(final_root[:,0]-1.).abs()-3*final_root[:,1].abs()-final_tilt-.5*final_velocity.norm(dim=-1)-4*(~safe).float()
+    elite=scores.topk(max(8,a.num_envs//8)).indices;mean=.25*mean+.75*parameters[elite].mean(0);sigma=(.25*sigma+.75*parameters[elite].std(0)).clamp(min=(high-low)*.025);top=int(scores.argmax())
+-   result=dict(parameter_schema='composed-reach-v2-40',net_geometry_version=env.net_geometry_version,robot_net_contact=bool(net_bad[top]),maximum_robot_net_force_n=first_net[top]['maximum_robot_net_force_n'],net_contact_lanes=int(net_bad.sum()),effective_face_uv_m=face_uv[top].cpu().tolist(),movement_recovery=bool(movement_recovery[top]) if a.reposition else None,objective='ground reposition' if a.reposition else 'dynamic effective face reach',settle_default=a.settle_default,landing_feedback=a.landing_feedback,folded_arm=a.fold_arm,root_final_m=final_root[top].cpu().tolist(),root_final_velocity_mps=final_velocity[top].cpu().tolist(),generation=generation,score=float(scores[top]),parameters=parameters[top].cpu().tolist(),virtual_ball_center_m=position[top].cpu().tolist(),face_normal_world=normal[top].cpu().tolist(),root_at_event_m=root[top].cpu().tolist(),event_time_s=float(time[top])+a.walk_seconds,local_event_time_s=float(time[top]),feet_airborne=bool(air[top]),recovery=bool(recovery[top]),root_apex_m=float(apex[top]),maximum_root_apex_m=float(apex.max()),root_start_x_m=a.root_x,walk_seconds=a.walk_seconds,kind='canonical learned walking plus no-ball strike reach; not a real smash or final policy result')
+-   history.append(result);torch.save(dict(parameters=parameters.cpu(),scores=scores.cpu(),best_virtual_positions=position.cpu(),root_at_event=root.cpu(),root_apex=apex.cpu(),event_time=time.cpu(),feet_airborne=air.cpu(),recovery=recovery.cpu(),root_final=final_root.cpu(),root_final_velocity=final_velocity.cpu(),mean=mean.cpu(),sigma=sigma.cpu(),rng=g.get_state().cpu(),jump_episodes=first),a.output/f'population_{generation:03d}.pt')
++   result=dict(search_prediction_kind='ideal restitution and ballistic no-drag shaping only; must verify real flight' if a.flight_objective else None,predicted_outgoing_velocity_mps=predicted_velocity[top].cpu().tolist() if a.flight_objective else None,predicted_net_margin_m=float(predicted_margin[top]) if a.flight_objective else None,predicted_landing_xy_m=predicted_landing[top].cpu().tolist() if a.flight_objective else None,prefix_robot_net_contact=bool(prefix_net[top]),parameter_schema='composed-reach-v2-40',net_geometry_version=env.net_geometry_version,robot_net_contact=bool(net_bad[top]),maximum_robot_net_force_n=first_net[top]['maximum_robot_net_force_n'],first_robot_net_contact_time_s=first_net[top]['first_robot_net_contact_time_s'],first_robot_net_contact_body=first_net[top]['first_robot_net_contact_body'],net_contact_lanes=int(net_bad.sum()),effective_face_uv_m=face_uv[top].cpu().tolist(),movement_recovery=bool(movement_recovery[top]) if a.reposition else None,objective='ground reposition' if a.reposition else 'dynamic effective face reach',settle_default=a.settle_default,landing_feedback=a.landing_feedback,folded_arm=a.fold_arm,root_final_m=final_root[top].cpu().tolist(),root_final_velocity_mps=final_velocity[top].cpu().tolist(),generation=generation,score=float(scores[top]),parameters=parameters[top].cpu().tolist(),virtual_ball_center_m=position[top].cpu().tolist(),face_normal_world=normal[top].cpu().tolist(),root_at_event_m=root[top].cpu().tolist(),event_time_s=float(time[top])+a.walk_seconds,local_event_time_s=float(time[top]),feet_airborne=bool(air[top]),recovery=bool(recovery[top]),root_apex_m=float(apex[top]),maximum_root_apex_m=float(apex.max()),root_start_x_m=a.root_x,walk_seconds=a.walk_seconds,kind='canonical learned walking plus no-ball strike reach; not a real smash or final policy result')
++   history.append(result);torch.save(dict(parameters=parameters.cpu(),scores=scores.cpu(),best_virtual_positions=position.cpu(),root_at_event=root.cpu(),root_apex=apex.cpu(),event_time=time.cpu(),feet_airborne=air.cpu(),recovery=recovery.cpu(),root_final=final_root.cpu(),root_final_velocity=final_velocity.cpu(),mean=mean.cpu(),sigma=sigma.cpu(),rng=g.get_state().cpu(),jump_episodes=first,net_episodes=first_net,face_normals=normal.cpu(),face_uv=face_uv.cpu()),a.output/f'population_{generation:03d}.pt')
+    if float(scores[top])>best_score:best_score=float(scores[top]);torch.save(dict(parameters=parameters[top].cpu(),arm_pose=arm.cpu(),walk_parameters=walk_seed['parameters'].cpu(),walk_seconds=a.walk_seconds,walk_waypoint_x=a.waypoint_x,arm_initial_pose=initial_arm.cpu(),parameter_schema='composed-reach-v2-40',result=result),a.output/'best_candidate.pt')
+    (a.output/'metrics.json').write_text(json.dumps(dict(history=history,best=max(history,key=lambda r:r['score']),env_steps=(generation+1)*a.num_envs*ticks),indent=2)+'\n');print(json.dumps(result),flush=True)
+    if stopping:break
+diff --git a/scripts/search_g07_walk_transfer.py b/scripts/search_g07_walk_transfer.py
+index 3f9347e..95255a4 100644
+--- a/scripts/search_g07_walk_transfer.py
++++ b/scripts/search_g07_walk_transfer.py
+@@ -15,6 +15,9 @@ p.add_argument('--num-envs',type=int,default=128)
+ p.add_argument('--generations',type=int,default=30)
+ p.add_argument('--initial',type=Path)
+ p.add_argument('--wrist',action='store_true')
++p.add_argument('--high-arm',action='store_true')
++p.add_argument('--arm-seed',type=Path)
++p.add_argument('--target-x',type=float,default=1.)
+ p.add_argument('--manifest',type=Path,default=ROOT/'configs/g07_go2_walk_transfer.json')
+ AppLauncher.add_app_launcher_args(p)
+ a=p.parse_args()
+@@ -41,7 +44,7 @@ def main():
+     cfg.sim.dt,cfg.decimation,cfg.sim.render_interval=.002,5,5
+     cfg.episode_length_s=4.
+     cfg.event_goal_enabled=True
+-    cfg.event_goal_position=(1.,0.,.3)
++    cfg.event_goal_position=(a.target_x,0.,.3)
+     env=LoadedWalkEnv(cfg)
+     wrapped=RslRlVecEnvWrapper(env,clip_actions=None)
+     policy=Go2WalkTransfer(a.manifest,a.num_envs,env.device)
+@@ -58,9 +61,19 @@ def main():
+         sigma=(high-low)*.15
+     if a.initial:
+         prior=torch.load(a.initial,map_location=env.device,weights_only=False)
+-        mean[:len(prior['parameters'])]=prior['parameters']
++        seed_count=min(len(prior['parameters']),len(mean))
++        mean[:seed_count]=prior['parameters'][:seed_count]
+         sigma=(high-low)*.05
+         if a.wrist:sigma[-1]=.25
++    if a.high_arm:
++        if not a.arm_seed:raise ValueError('high-arm requires an arm pose seed')
++        arm=torch.load(a.arm_seed,map_location=env.device,weights_only=False)['arm_pose']
++        delay=(prior['parameters'][14].clone() if a.initial and len(prior['parameters'])==15 else mean[10].clone())
++        low=torch.cat((low[:8],torch.maximum(limits[12:,0],arm-.35),torch.tensor([.15],device=env.device)))
++        high=torch.cat((high[:8],torch.minimum(limits[12:,1],arm+.35),torch.tensor([.8],device=env.device)))
++        mean=torch.cat((mean[:8],arm,delay[None])).clamp(low,high)
++        if a.initial and len(prior['parameters'])==15:mean=prior['parameters'].clamp(low,high)
++        sigma=(high-low)*.10
+     generator=torch.Generator(device=env.device).manual_seed(cfg.seed)
+     history=[]
+     best=-float('inf')
+@@ -73,6 +86,7 @@ def main():
+             env._episode_has_stepped.zero_()
+             env._metrics_started=False
+             env.episode_records.clear()
++            env.net_episode_records.clear()
+             policy.reset()
+             obs,_=wrapped.reset()
+             finished=torch.zeros(a.num_envs,dtype=torch.bool,device=env.device)
+@@ -95,10 +109,14 @@ def main():
+                     finished|=done.bool()
+             first={}
+             for row in env.episode_records:first.setdefault(row['env_id'],row)
++            first_net={}
++            for row in env.net_episode_records:first_net.setdefault(row['env_id'],row)
++            if len(first_net)!=a.num_envs:raise RuntimeError('Incomplete net force telemetry')
++            net_bad=torch.tensor([first_net[i]['robot_net_contact'] for i in range(a.num_envs)],device=env.device)
+             safe=torch.tensor([not first[i]['body_landing'] for i in range(a.num_envs)],device=env.device)
+-            upright=safe&(~interference)&(final[:,2]>.2)&(tilt<.26)
+-            success=upright&((final[:,0]-1.).abs()<.06)&(final[:,1].abs()<.06)&(velocity[:,:2].norm(dim=1)<.15)
+-            scores=50*upright.float()+10*success.float()-8*(final[:,0]-1.).abs()-4*final[:,1].abs()-2*tilt-velocity.norm(dim=1)
++            upright=safe&(~interference)&(~net_bad)&(final[:,2]>.2)&(tilt<.26)
++            success=upright&((final[:,0]-a.target_x).abs()<.06)&(final[:,1].abs()<.06)&(velocity[:,:2].norm(dim=1)<.15)
++            scores=50*upright.float()+10*success.float()-8*(final[:,0]-a.target_x).abs()-4*final[:,1].abs()-2*tilt-velocity.norm(dim=1)
+             elite=scores.topk(max(8,a.num_envs//8)).indices
+             mean=.25*mean+.75*params[elite].mean(0)
+             sigma=(.25*sigma+.75*params[elite].std(0)).clamp(min=(high-low)*.02)
+@@ -108,6 +126,8 @@ def main():
+                 upright=bool(upright[i]),movement_success=bool(success[i]),successes=int(success.sum()),
+                 upright_lanes=int(upright.sum()),jump_metrics=first[i],
+                 potential_net_interference=bool(interference[i]),net_geometry_version=env.net_geometry_version,
++                robot_net_contact=bool(net_bad[i]),net_contact_telemetry=first_net[i],
++                target_root_x_m=a.target_x,parameter_schema='walk-high-arm-15' if a.high_arm else 'walk-offsets-12',
+                 kind='frozen walk actor plus searched arm posture/feedback; original payload/net; no ball')
+             if float(scores[i])>best:
+                 best=float(scores[i])
+diff --git a/status/GPU_LEDGER.json b/status/GPU_LEDGER.json
+index 42bad7d..408d74b 100644
+--- a/status/GPU_LEDGER.json
++++ b/status/GPU_LEDGER.json
+@@ -7779,15 +7779,311 @@
+       ],
+       "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/composed_reach_netlocal02",
+       "gpu": 0,
+-      "status": "RUNNING",
+-      "charged_gpu_hours": 0.2,
++      "status": "SUCCEEDED",
++      "charged_gpu_hours": 0.09048775821583048,
+       "charged_env_steps": 1515520,
+       "started_at": "2026-10-23T10:00:28.249327+00:00",
+       "pid": 1160458,
+       "original_authorization": "g07-net-feasibility-20261023",
+       "authorization_started_at": "2026-10-23T08:04:13.742590+00:00",
+       "authorization_deadline": "2026-10-23T18:04:13.742590+00:00",
+-      "child_pid": 1160469
++      "child_pid": 1160469,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": true,
++      "elapsed_s": 325.75592957698973,
++      "finished_at": "2026-10-23T10:05:54.008118+00:00"
++    },
++    {
++      "goal": "G07",
++      "budget_window": "g07-net-feasibility-20261023",
++      "command": [
++        "/home/autodrive/Isaac/env_isaaclab/bin/python",
++        "scripts/probe_g07_net_robot_contact.py",
++        "--output",
++        "reports/G07/net_robot_contact_positive01",
++        "--headless"
++      ],
++      "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/net_robot_contact_positive01",
++      "gpu": 0,
++      "status": "SUCCEEDED",
++      "charged_gpu_hours": 0.002160624984163506,
++      "charged_env_steps": 320,
++      "started_at": "2026-10-23T10:10:13.061640+00:00",
++      "pid": 1161616,
++      "original_authorization": "g07-net-feasibility-20261023",
++      "authorization_started_at": "2026-10-23T08:04:13.742590+00:00",
++      "authorization_deadline": "2026-10-23T18:04:13.742590+00:00",
++      "child_pid": 1161625,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": true,
++      "elapsed_s": 7.778249942988623,
++      "finished_at": "2026-10-23T10:10:20.842774+00:00"
++    },
++    {
++      "goal": "G07",
++      "budget_window": "g07-net-feasibility-20261023",
++      "command": [
++        "/home/autodrive/Isaac/env_isaaclab/bin/python",
++        "scripts/probe_g07_composed_contact.py",
++        "--output",
++        "reports/G07/composed_contact_netlocal01",
++        "--candidate",
++        "reports/G07/composed_reach_netlocal02/best_candidate.pt",
++        "--num-envs",
++        "32",
++        "--headless"
++      ],
++      "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/composed_contact_netlocal01",
++      "gpu": 0,
++      "status": "SUCCEEDED",
++      "charged_gpu_hours": 0.05233813264305354,
++      "charged_env_steps": 23680,
++      "started_at": "2026-10-23T10:12:06.895988+00:00",
++      "pid": 1162604,
++      "original_authorization": "g07-net-feasibility-20261023",
++      "authorization_started_at": "2026-10-23T08:04:13.742590+00:00",
++      "authorization_deadline": "2026-10-23T18:04:13.742590+00:00",
++      "child_pid": 1162614,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": true,
++      "elapsed_s": 188.41727751499275,
++      "finished_at": "2026-10-23T10:15:15.316153+00:00"
++    },
++    {
++      "goal": "G07",
++      "budget_window": "g07-net-feasibility-20261023",
++      "command": [
++        "/home/autodrive/Isaac/env_isaaclab/bin/python",
++        "scripts/probe_g07_net_robot_contact.py",
++        "--output",
++        "reports/G07/net_robot_contact_positive02",
++        "--headless"
++      ],
++      "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/net_robot_contact_positive02",
++      "gpu": 0,
++      "status": "SUCCEEDED",
++      "charged_gpu_hours": 0.0025220176488801372,
++      "charged_env_steps": 320,
++      "started_at": "2026-10-23T10:17:10.418161+00:00",
++      "pid": 1163416,
++      "original_authorization": "g07-net-feasibility-20261023",
++      "authorization_started_at": "2026-10-23T08:04:13.742590+00:00",
++      "authorization_deadline": "2026-10-23T18:04:13.742590+00:00",
++      "child_pid": 1163425,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": true,
++      "elapsed_s": 9.079263535968494,
++      "finished_at": "2026-10-23T10:17:19.500353+00:00"
++    },
++    {
++      "goal": "G07",
++      "budget_window": "g07-net-feasibility-20261023",
++      "command": [
++        "/home/autodrive/Isaac/env_isaaclab/bin/python",
++        "scripts/probe_g07_composed_contact.py",
++        "--output",
++        "reports/G07/composed_replay_netlocal02",
++        "--candidate",
++        "reports/G07/composed_reach_netlocal02/best_candidate.pt",
++        "--num-envs",
++        "32",
++        "--launches",
++        "reports/G07/composed_contact_netlocal01/launches.json",
++        "--launch-index",
++        "22",
++        "--seed",
++        "715901",
++        "--headless"
++      ],
++      "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/composed_replay_netlocal02",
++      "gpu": 0,
++      "status": "SUCCEEDED",
++      "charged_gpu_hours": 0.0587526146516676,
++      "charged_env_steps": 23680,
++      "started_at": "2026-10-23T10:19:27.488439+00:00",
++      "pid": 1164211,
++      "original_authorization": "g07-net-feasibility-20261023",
++      "authorization_started_at": "2026-10-23T08:04:13.742590+00:00",
++      "authorization_deadline": "2026-10-23T18:04:13.742590+00:00",
++      "child_pid": 1164222,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": true,
++      "elapsed_s": 211.50941274600336,
++      "finished_at": "2026-10-23T10:22:59.000811+00:00"
++    },
++    {
++      "goal": "G07",
++      "budget_window": "g07-net-feasibility-20261023",
++      "command": [
++        "/home/autodrive/Isaac/env_isaaclab/bin/python",
++        "scripts/search_g07_composed_reach_v2.py",
++        "--output",
++        "reports/G07/composed_reach_netlocal03",
++        "--num-envs",
++        "128",
++        "--generations",
++        "12",
++        "--root-x",
++        "0",
++        "--walk-candidate",
++        "reports/G07/search_walk_netlocal02/best_candidate.pt",
++        "--pose-seed",
++        "reports/G07/walk_strike_ik_cpu01/pose_seed.pt",
++        "--initial",
++        "reports/G07/composed_reach_netlocal02/best_candidate.pt",
++        "--resume-population",
++        "reports/G07/composed_reach_netlocal02/population_015.pt",
++        "--landing-feedback",
++        "--walk-seconds",
++        "3.4",
++        "--waypoint-x",
++        "1.0",
++        "--global-fraction",
++        ".15",
++        "--seed",
++        "715902",
++        "--headless"
++      ],
++      "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/composed_reach_netlocal03",
++      "gpu": 0,
++      "status": "SUCCEEDED",
++      "charged_gpu_hours": 0.10561014877722806,
++      "charged_env_steps": 1136640,
++      "started_at": "2026-10-23T10:26:33.184434+00:00",
++      "pid": 1165169,
++      "original_authorization": "g07-net-feasibility-20261023",
++      "authorization_started_at": "2026-10-23T08:04:13.742590+00:00",
++      "authorization_deadline": "2026-10-23T18:04:13.742590+00:00",
++      "child_pid": 1165179,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": true,
++      "elapsed_s": 380.196535598021,
++      "finished_at": "2026-10-23T10:32:53.383956+00:00"
++    },
++    {
++      "goal": "G07",
++      "budget_window": "g07-net-feasibility-20261023",
++      "command": [
++        "/home/autodrive/Isaac/env_isaaclab/bin/python",
++        "scripts/search_g07_walk_transfer.py",
++        "--output",
++        "reports/G07/walk_high_ready01",
++        "--num-envs",
++        "128",
++        "--generations",
++        "30",
++        "--initial",
++        "reports/G07/search_walk_netlocal02/best_candidate.pt",
++        "--high-arm",
++        "--arm-seed",
++        "reports/G07/walk_strike_ik_cpu01/pose_seed.pt",
++        "--target-x",
++        ".85",
++        "--headless"
++      ],
++      "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/walk_high_ready01",
++      "gpu": 0,
++      "status": "SUCCEEDED",
++      "charged_gpu_hours": 0.14227240725056617,
++      "charged_env_steps": 1536000,
++      "started_at": "2026-10-23T10:34:22.143483+00:00",
++      "pid": 1166370,
++      "original_authorization": "g07-net-feasibility-20261023",
++      "authorization_started_at": "2026-10-23T08:04:13.742590+00:00",
++      "authorization_deadline": "2026-10-23T18:04:13.742590+00:00",
++      "child_pid": 1166380,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": true,
++      "elapsed_s": 512.1806661020382,
++      "finished_at": "2026-10-23T10:42:54.327122+00:00"
++    },
++    {
++      "goal": "G07",
++      "budget_window": "g07-net-feasibility-20261023",
++      "command": [
++        "/home/autodrive/Isaac/env_isaaclab/bin/python",
++        "scripts/probe_g07_composed_motion.py",
++        "--output",
++        "reports/G07/composed_motion_net_timing01",
++        "--candidate",
++        "reports/G07/composed_reach_netlocal02/best_candidate.pt",
++        "--num-envs",
++        "4",
++        "--headless"
++      ],
++      "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/composed_motion_net_timing01",
++      "gpu": 0,
++      "status": "SUCCEEDED",
++      "charged_gpu_hours": 0.009280391069720888,
++      "charged_env_steps": 2960,
++      "started_at": "2026-10-23T10:44:30.522941+00:00",
++      "pid": 1168196,
++      "original_authorization": "g07-net-feasibility-20261023",
++      "authorization_started_at": "2026-10-23T08:04:13.742590+00:00",
++      "authorization_deadline": "2026-10-23T18:04:13.742590+00:00",
++      "child_pid": 1168205,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": true,
++      "elapsed_s": 33.409407850995194,
++      "finished_at": "2026-10-23T10:45:03.935326+00:00"
++    },
++    {
++      "goal": "G07",
++      "budget_window": "g07-net-feasibility-20261023",
++      "command": [
++        "/home/autodrive/Isaac/env_isaaclab/bin/python",
++        "scripts/search_g07_composed_reach_v2.py",
++        "--output",
++        "reports/G07/composed_high_ready01",
++        "--num-envs",
++        "128",
++        "--generations",
++        "20",
++        "--root-x",
++        "0",
++        "--walk-candidate",
++        "reports/G07/walk_high_ready01/best_candidate.pt",
++        "--pose-seed",
++        "reports/G07/walk_strike_ik_cpu01/pose_seed.pt",
++        "--initial",
++        "reports/G07/composed_reach_netlocal03/best_candidate.pt",
++        "--landing-feedback",
++        "--walk-seconds",
++        "3.4",
++        "--waypoint-x",
++        ".85",
++        "--seed-bank",
++        "reports/G07/free_jump_seed_bank01/seed_bank.pt",
++        "--global-fraction",
++        ".15",
++        "--seed",
++        "716101",
++        "--headless"
++      ],
++      "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/composed_high_ready01",
++      "gpu": 0,
++      "status": "SUCCEEDED",
++      "charged_gpu_hours": 0.17056146069444367,
++      "charged_env_steps": 1894400,
++      "started_at": "2026-10-23T10:47:20.210741+00:00",
++      "pid": 1168725,
++      "original_authorization": "g07-net-feasibility-20261023",
++      "authorization_started_at": "2026-10-23T08:04:13.742590+00:00",
++      "authorization_deadline": "2026-10-23T18:04:13.742590+00:00",
++      "child_pid": 1168735,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": true,
++      "elapsed_s": 614.0212584999972,
++      "finished_at": "2026-10-23T10:57:34.235012+00:00"
+     }
+   ],
+   "budget_windows": {
+diff --git a/status/RUNS.jsonl b/status/RUNS.jsonl
+index 8508431..3e0f0d5 100644
+--- a/status/RUNS.jsonl
++++ b/status/RUNS.jsonl
+@@ -218,3 +218,12 @@
+ {"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/probe_g07_net_blocking.py", "--output", "reports/G07/net_blocking_probe03", "--num-envs", "32", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/net_blocking_probe03", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.005192610296944622, "charged_env_steps": 1600, "started_at": "2026-10-23T09:40:52.876272+00:00", "pid": 1157281, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1157290, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 18.69339706900064, "finished_at": "2026-10-23T09:41:11.572536+00:00"}
+ {"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/replay_g07_dynamic_strike.py", "--output", "reports/G07/eval_piecewise_netlocal02", "--candidate", "reports/G07/dynamic_strike_refine01/best_candidate.pt", "--policy", "reports/G07/fit_piecewise_curriculum03/policy.pt", "--num-envs", "64", "--seed", "715501", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/eval_piecewise_netlocal02", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.030061928451662726, "charged_env_steps": 25600, "started_at": "2026-10-23T09:42:07.735448+00:00", "pid": 1157673, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1157682, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 108.22294242598582, "finished_at": "2026-10-23T09:43:55.961327+00:00"}
+ {"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/search_g07_walk_transfer.py", "--output", "reports/G07/search_walk_netlocal02", "--num-envs", "128", "--generations", "16", "--initial", "reports/G07/search_walk_transfer01/best_candidate.pt", "--wrist", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/search_walk_netlocal02", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.04837772293472275, "charged_env_steps": 819200, "started_at": "2026-10-23T09:53:39.311385+00:00", "pid": 1159506, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1159516, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 174.15980256500188, "finished_at": "2026-10-23T09:56:33.474017+00:00"}
++{"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/search_g07_composed_reach_v2.py", "--output", "reports/G07/composed_reach_netlocal02", "--num-envs", "128", "--generations", "16", "--root-x", "0", "--walk-candidate", "reports/G07/search_walk_netlocal02/best_candidate.pt", "--pose-seed", "reports/G07/walk_strike_ik_cpu01/pose_seed.pt", "--initial", "reports/G07/dynamic_strike_refine01/best_candidate.pt", "--landing-feedback", "--walk-seconds", "3.4", "--waypoint-x", "1.0", "--global-fraction", ".15", "--seed", "715601", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/composed_reach_netlocal02", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.09048775821583048, "charged_env_steps": 1515520, "started_at": "2026-10-23T10:00:28.249327+00:00", "pid": 1160458, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1160469, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 325.75592957698973, "finished_at": "2026-10-23T10:05:54.008118+00:00"}
++{"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/probe_g07_net_robot_contact.py", "--output", "reports/G07/net_robot_contact_positive01", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/net_robot_contact_positive01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.002160624984163506, "charged_env_steps": 320, "started_at": "2026-10-23T10:10:13.061640+00:00", "pid": 1161616, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1161625, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 7.778249942988623, "finished_at": "2026-10-23T10:10:20.842774+00:00"}
++{"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/probe_g07_composed_contact.py", "--output", "reports/G07/composed_contact_netlocal01", "--candidate", "reports/G07/composed_reach_netlocal02/best_candidate.pt", "--num-envs", "32", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/composed_contact_netlocal01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.05233813264305354, "charged_env_steps": 23680, "started_at": "2026-10-23T10:12:06.895988+00:00", "pid": 1162604, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1162614, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 188.41727751499275, "finished_at": "2026-10-23T10:15:15.316153+00:00"}
++{"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/probe_g07_net_robot_contact.py", "--output", "reports/G07/net_robot_contact_positive02", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/net_robot_contact_positive02", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.0025220176488801372, "charged_env_steps": 320, "started_at": "2026-10-23T10:17:10.418161+00:00", "pid": 1163416, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1163425, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 9.079263535968494, "finished_at": "2026-10-23T10:17:19.500353+00:00"}
++{"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/probe_g07_composed_contact.py", "--output", "reports/G07/composed_replay_netlocal02", "--candidate", "reports/G07/composed_reach_netlocal02/best_candidate.pt", "--num-envs", "32", "--launches", "reports/G07/composed_contact_netlocal01/launches.json", "--launch-index", "22", "--seed", "715901", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/composed_replay_netlocal02", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.0587526146516676, "charged_env_steps": 23680, "started_at": "2026-10-23T10:19:27.488439+00:00", "pid": 1164211, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1164222, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 211.50941274600336, "finished_at": "2026-10-23T10:22:59.000811+00:00"}
++{"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/search_g07_composed_reach_v2.py", "--output", "reports/G07/composed_reach_netlocal03", "--num-envs", "128", "--generations", "12", "--root-x", "0", "--walk-candidate", "reports/G07/search_walk_netlocal02/best_candidate.pt", "--pose-seed", "reports/G07/walk_strike_ik_cpu01/pose_seed.pt", "--initial", "reports/G07/composed_reach_netlocal02/best_candidate.pt", "--resume-population", "reports/G07/composed_reach_netlocal02/population_015.pt", "--landing-feedback", "--walk-seconds", "3.4", "--waypoint-x", "1.0", "--global-fraction", ".15", "--seed", "715902", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/composed_reach_netlocal03", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.10561014877722806, "charged_env_steps": 1136640, "started_at": "2026-10-23T10:26:33.184434+00:00", "pid": 1165169, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1165179, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 380.196535598021, "finished_at": "2026-10-23T10:32:53.383956+00:00"}
++{"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/search_g07_walk_transfer.py", "--output", "reports/G07/walk_high_ready01", "--num-envs", "128", "--generations", "30", "--initial", "reports/G07/search_walk_netlocal02/best_candidate.pt", "--high-arm", "--arm-seed", "reports/G07/walk_strike_ik_cpu01/pose_seed.pt", "--target-x", ".85", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/walk_high_ready01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.14227240725056617, "charged_env_steps": 1536000, "started_at": "2026-10-23T10:34:22.143483+00:00", "pid": 1166370, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1166380, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 512.1806661020382, "finished_at": "2026-10-23T10:42:54.327122+00:00"}
++{"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/probe_g07_composed_motion.py", "--output", "reports/G07/composed_motion_net_timing01", "--candidate", "reports/G07/composed_reach_netlocal02/best_candidate.pt", "--num-envs", "4", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/composed_motion_net_timing01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.009280391069720888, "charged_env_steps": 2960, "started_at": "2026-10-23T10:44:30.522941+00:00", "pid": 1168196, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1168205, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 33.409407850995194, "finished_at": "2026-10-23T10:45:03.935326+00:00"}
++{"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/search_g07_composed_reach_v2.py", "--output", "reports/G07/composed_high_ready01", "--num-envs", "128", "--generations", "20", "--root-x", "0", "--walk-candidate", "reports/G07/walk_high_ready01/best_candidate.pt", "--pose-seed", "reports/G07/walk_strike_ik_cpu01/pose_seed.pt", "--initial", "reports/G07/composed_reach_netlocal03/best_candidate.pt", "--landing-feedback", "--walk-seconds", "3.4", "--waypoint-x", ".85", "--seed-bank", "reports/G07/free_jump_seed_bank01/seed_bank.pt", "--global-fraction", ".15", "--seed", "716101", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/composed_high_ready01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.17056146069444367, "charged_env_steps": 1894400, "started_at": "2026-10-23T10:47:20.210741+00:00", "pid": 1168725, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1168735, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 614.0212584999972, "finished_at": "2026-10-23T10:57:34.235012+00:00"}
+diff --git a/status/STATUS.json b/status/STATUS.json
+index c97c82e..8d4397d 100644
+--- a/status/STATUS.json
++++ b/status/STATUS.json
+@@ -50,7 +50,7 @@
+     "G07": {
+       "state": "IN_PROGRESS",
+       "evidence": null,
+-      "notes": "Net local/world coordinate error confirmed and fixed without changing net height/size. Native below-top test now blocks 32/32 (saved trace verification). Previous near-net positive results invalidated for intended physical net. Frozen PWA reevaluation on corrected net: 64/64 airborne contact, 0 valid ordered net/landing/complete, recovery 36/64, numerical 0. Need new interference-free prep/walk/strike trajectory; all prior data preserved. Authorization remains active until 2026-10-24 02:04:13 Asia/Taipei.",
++      "notes": "IN_PROGRESS. Correct net geometry verified 32/32. Per-body net-force filtering validated by 4/4 positive controls. Canonical 7.4s teacher probe has 32/32 true airborne valid-face/net events but frozen replay touches net 32/32, so no free complete success. Unassisted no-ball candidate near [1.313,.015,1.551] insufficient. High-arm walking preparation at x=.85 found, next full trajectory search. All prior positive wrong-net claims withdrawn; G04-G06 preserved.",
+       "active_authorization_window": "g07-net-feasibility-20261023",
+       "curriculum_evidence": "reports/G07/eval_piecewise_netlocal02/metrics.json",
+       "curriculum_policy": "reports/G07/fit_piecewise_curriculum03/policy.pt",
