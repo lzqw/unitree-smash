@@ -1,0 +1,175 @@
+{
+  "protocol": "g07-causal-long-prepare-development-v1",
+  "panel": "causal_profiled_dev_ground128_v1",
+  "formal_policy_acceptance": false,
+  "episodes": 1536,
+  "ground_initialization_only": true,
+  "formal_evaluation_eligible": false,
+  "protocol_sha256": null,
+  "policy_lock_sha256": null,
+  "checkpoint_sha256": "984270cfefd4938ec7003d6c56ae078f814661bdd27ad92405b0da9dd95e6015",
+  "launch_panel_sha256": "a45aa38c3948442d945b38834f5af42819ad35f1e5f0f12253a14c65d6dc0c8c",
+  "calibration_sha256": "60745396d0b980c268fb2406b42de7f95563b3585c4f8f31eef58b38d5e9933e",
+  "source_git_sha": "1046bfa10307098e91080565722eb1cb0513534d",
+  "asset_sha256": "bfb831e4afc8a1a705bb0fb6f001c25eeaa401822978267a0ee5e151007511f3",
+  "physics_dt_s": 6.25e-05,
+  "control_dt_s": 0.01,
+  "episode_seconds": 8.5,
+  "net_geometry_version": "environment-local-profiled-net-v3",
+  "sweep_audit": {
+    "maximum_iterations": 4096,
+    "tolerance_m": 1e-06
+  },
+  "controller": "frozen learned walking + learned PWA strike + frozen learned standing + model prediction; replan schedule recorded separately",
+  "teacher_prefix_steps": 0,
+  "teacher_action_function_calls": 0,
+  "causal_phase": true,
+  "fixed_phase_ablation": false,
+  "causal_replan_at_s": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "causal_parameter_selection_at_s": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "candidate_checkpoints": [
+    {
+      "path": "reports/G07/vertical_preparation_candidates_v1/back2_reference.pt",
+      "sha256": "984270cfefd4938ec7003d6c56ae078f814661bdd27ad92405b0da9dd95e6015"
+    },
+    {
+      "path": "reports/G07/vertical_preparation_candidates_v1/vertical_back2_vx0.pt",
+      "sha256": "cc341b8fccf44c57d0710b6e95fc90fe92b3cf1625f3f1b86558b83095f67387"
+    },
+    {
+      "path": "reports/G07/vertical_preparation_candidates_v1/vertical_back2_vx05.pt",
+      "sha256": "71b6953b54fbd021b335e33d710414feed12bfa7ad9939536805f4258c00c8e3"
+    },
+    {
+      "path": "reports/G07/vertical_preparation_candidates_v1/vertical_back2_vx10.pt",
+      "sha256": "717bfab30c1c6d063b083aa0054810c1fb38fe34db5e57d189d5c13a71d4a5e6"
+    },
+    {
+      "path": "reports/G07/vertical_preparation_candidates_v1/vertical_back2_vx15.pt",
+      "sha256": "8597928609e7b3fa96b349a2dd922c22fd7a20c069837b42cfa8482625a8fcc8"
+    },
+    {
+      "path": "reports/G07/vertical_preparation_candidates_v1/half_vertical_back2.pt",
+      "sha256": "3e5089084988f2e1413848f154f068a3e198a93bda0e8caf06f4a0a004d83ef4"
+    },
+    {
+      "path": "reports/G07/vertical_preparation_candidates_v1/extra_vertical_back2.pt",
+      "sha256": "b6342b375e2a4d9ad935ec09ea6fff512922d858edbdeef6815a67f6cf79233e"
+    },
+    {
+      "path": "reports/G07/vertical_preparation_candidates_v1/vertical_back3_vx05.pt",
+      "sha256": "2713de67d1136fa31eeadba90bf94cb04acb87b25da12dd72aa0351b2a1e1d87"
+    },
+    {
+      "path": "reports/G07/vertical_preparation_candidates_v1/vertical_back3_vx10.pt",
+      "sha256": "d24460e97fc16ea378606caf6d17682db72886b0550115a5fb9f2c144747dba6"
+    },
+    {
+      "path": "reports/G07/vertical_preparation_candidates_v1/vertical_back2_heading.pt",
+      "sha256": "3363cbdf647fcf0cbf1a9b9dfe847b5282d1eee98159c9a9e4694fb1734710b9"
+    },
+    {
+      "path": "reports/G07/vertical_preparation_candidates_v1/vertical_back2_pitch0.pt",
+      "sha256": "c98d6e92951a5b8c6f563ebcd978b31e631e973996a2b3099adec8ad486a1288"
+    },
+    {
+      "path": "reports/G07/vertical_preparation_candidates_v1/vertical_back2_pitch30.pt",
+      "sha256": "da754711e93e278c8c92c6ed829f17abb7dba6e3166c7d0ae1ad30f7c54ca20a"
+    }
+  ],
+  "source_cases_per_candidate": 128,
+  "recorded_env_ids": [
+    597,
+    500,
+    69,
+    256,
+    1181,
+    1253,
+    748,
+    378,
+    1092,
+    808,
+    373,
+    1426,
+    442,
+    1127,
+    1136,
+    1342,
+    242,
+    1145,
+    1063,
+    127,
+    533,
+    288,
+    945,
+    726
+  ],
+  "command": [
+    "scripts/evaluate_g07_causal_hybrid.py",
+    "--output",
+    "reports/G07/vertical_preparation_matrix_fine1536_01",
+    "--checkpoint",
+    "reports/G07/vertical_preparation_candidates_v1/back2_reference.pt",
+    "--candidate-checkpoint",
+    "reports/G07/vertical_preparation_candidates_v1/vertical_back2_vx0.pt",
+    "--candidate-checkpoint",
+    "reports/G07/vertical_preparation_candidates_v1/vertical_back2_vx05.pt",
+    "--candidate-checkpoint",
+    "reports/G07/vertical_preparation_candidates_v1/vertical_back2_vx10.pt",
+    "--candidate-checkpoint",
+    "reports/G07/vertical_preparation_candidates_v1/vertical_back2_vx15.pt",
+    "--candidate-checkpoint",
+    "reports/G07/vertical_preparation_candidates_v1/half_vertical_back2.pt",
+    "--candidate-checkpoint",
+    "reports/G07/vertical_preparation_candidates_v1/extra_vertical_back2.pt",
+    "--candidate-checkpoint",
+    "reports/G07/vertical_preparation_candidates_v1/vertical_back3_vx05.pt",
+    "--candidate-checkpoint",
+    "reports/G07/vertical_preparation_candidates_v1/vertical_back3_vx10.pt",
+    "--candidate-checkpoint",
+    "reports/G07/vertical_preparation_candidates_v1/vertical_back2_heading.pt",
+    "--candidate-checkpoint",
+    "reports/G07/vertical_preparation_candidates_v1/vertical_back2_pitch0.pt",
+    "--candidate-checkpoint",
+    "reports/G07/vertical_preparation_candidates_v1/vertical_back2_pitch30.pt",
+    "--launch-panel",
+    "reports/G07/causal_profiled_dev_ground128_v1/panel.json",
+    "--calibration",
+    "reports/G07/causal_dev_panel64_v1/calibration.json",
+    "--physics-dt",
+    ".0000625",
+    "--episode-seconds",
+    "8.5",
+    "--sweep-audit-iterations",
+    "4096",
+    "--seed",
+    "719051",
+    "--headless"
+  ]
+}

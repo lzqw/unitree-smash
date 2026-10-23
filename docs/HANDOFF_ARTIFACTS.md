@@ -2,6 +2,10 @@
 
 2026-10-23更新：G00–G06现已各自通过；下文是10月22日首次交接的历史状态。当前G07仍在开发，正式400回合未执行。请先读 [G07实测报告](../reports/G07/REPORT.md) 和 [当前继续入口](../status/NEXT.md)，避免把历史G04失败状态当成当前状态。
 
+最新源码使用 [g04-guided-learning-20261022分支](https://github.com/lzqw/unitree-smash/tree/g04-guided-learning-20261022)，当前提交e92e0e0；发布页自动生成的tag源码包只代表最初tag时刻，恢复当前实现请用分支或手工增量包。
+
+`G07_arm_audit_update_e92e0e0.zip/json` 已上传：32,240,141字节、SHA256 `b90c4795da2f97fe6b3d08313e80046099625b14673f6a2dfc0cae8f90c8be5e`。包含前向反馈及拍面比较两批完整原始状态/逐回合/位姿、新候选权重、源码与审计诊断；不含当时活跃的vertical组合实际结果。原基础runtime资产仍另下载。备用收拍/推离逻辑仅CPU验证，未作策略成绩。
+
 最新增量附件位于 [G07发布页](https://github.com/lzqw/unitree-smash/releases/tag/g07-progress-20261023)：
 
 - `G07_body_forward_development_0051129.zip/json`：提交0051129源码/报告，两批已完成的机身反馈及原行走对照的完整逐回合、公开初始观测、测量位姿、冻结开发候选及Go2 actor。ZIP为94,208,112字节，SHA256 `66745a5e8bd557c733399d4f54a4b872c8d1b58c86724864a5e8b5682379eb98`。不含启动时仍在运行的前向反馈比较结果，仍依赖下述基础runtime资产。
