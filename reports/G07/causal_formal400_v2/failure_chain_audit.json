@@ -1,0 +1,42 @@
+{
+  "kind": "CPU audit of immutable failed formal400 outcomes; diagnosis only, no policy fitting",
+  "formal_acceptance": false,
+  "groups": {
+    "A": {
+      "count": 200,
+      "exclusive_failure_categories_in_priority_order": {
+        "numerical_failure": 0,
+        "robot_net_contact": 10,
+        "no_airborne_contact": 0,
+        "invalid_face_or_attack": 31,
+        "no_ordered_net": 15,
+        "no_target_first_landing": 44,
+        "target_without_recovery": 0,
+        "full": 100
+      },
+      "chain_inconsistent_scenarios": [],
+      "source_sha256": "6a8bd5ad0fc6f83032e8ee708e455d048c8feb95feccd7746c99cb88a2f01658",
+      "unassisted_airborne_recovery": 178,
+      "airborne_denominator": 200,
+      "recovery_definition": "Original whole-episode stability criterion, counted independently of target; robot-net contacts rejected"
+    },
+    "B": {
+      "count": 200,
+      "exclusive_failure_categories_in_priority_order": {
+        "numerical_failure": 0,
+        "robot_net_contact": 22,
+        "no_airborne_contact": 2,
+        "invalid_face_or_attack": 43,
+        "no_ordered_net": 23,
+        "no_target_first_landing": 37,
+        "target_without_recovery": 2,
+        "full": 71
+      },
+      "chain_inconsistent_scenarios": [],
+      "source_sha256": "7fb75b5dd6f3087e82b84fd7c4d4e165399d44f243391325fb7d9b5c92015e56",
+      "unassisted_airborne_recovery": 146,
+      "airborne_denominator": 196,
+      "recovery_definition": "Original whole-episode stability criterion, counted independently of target; robot-net contacts rejected"
+    }
+  }
+}

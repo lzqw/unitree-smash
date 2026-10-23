@@ -62,6 +62,8 @@ class LearnedHybridPolicy:
         self.contact_recovery_settings = checkpoint.get('contact_recovery')
         self.observed_contact_time = torch.full((count,), float('inf'), device=device)
         self.contact_recovery_log = []
+        self.recovery_wait_for_landing = checkpoint.get('recovery_wait_for_landing', False)
+        self.landing_observed = torch.zeros(count, dtype=torch.bool, device=device)
         if self.contact_recovery_settings is not None:
             settings = self.contact_recovery_settings
             if settings.get('arm_blend_s', .08)<=0 or settings.get('arm_delay_s', 0.)<0 or settings.get('leg_delay_s', 0.)<0:
@@ -79,6 +81,7 @@ class LearnedHybridPolicy:
         self.selection_log = []
         self.observed_contact_time.fill_(float('inf'))
         self.contact_recovery_log = []
+        self.landing_observed.zero_()
         self.replanned.zero_()
         self.replan_log = []
         if self.has_preparation_adaptation:
@@ -234,6 +237,9 @@ class LearnedHybridPolicy:
             strike_action[:, 12] = (strike_action[:, 12]+2*delta/(self.limits[12, 1]-self.limits[12, 0])).clamp(-1, 1)
         action = torch.where((clock >= self.phase_start)[:, None], strike_action, walk_action)
         recovering = local[:, 775] >= self.standing_start
+        if self.recovery_wait_for_landing:
+            self.landing_observed |= (observation['policy'][:, 774]>.5)&(local[:, 775]>=1.25)
+            recovering &= self.landing_observed
         if self.contact_recovery_settings is not None and 'leg_delay_s' in self.contact_recovery_settings:
             recovering |= clock>=self.observed_contact_time+self.contact_recovery_settings['leg_delay_s']
         standing_action = self.stand.action(observation, self.standing_parameters, self.default,

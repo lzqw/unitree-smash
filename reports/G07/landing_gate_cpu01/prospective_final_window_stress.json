@@ -1,0 +1,33 @@
+{
+  "kind": "Prospective optional final-window stress collection; not formal acceptance",
+  "fixed_before_current_training_results": true,
+  "panels": [
+    "reports/G07/fresh_b32_stress_v1/panel.json",
+    "reports/G07/fresh_b16_stress_v1/panel.json"
+  ],
+  "priority": "Use32 if remaining measured runtime permits full8.5s; otherwise16; never select by outcomes",
+  "physics_dt_s": 6.25e-05,
+  "episode_seconds": 8.5,
+  "control_dt_s": 0.01,
+  "sweep_iterations": 4096,
+  "tolerance": 1e-06,
+  "seed": 719301,
+  "record_public_dataset": true,
+  "selection": "Freeze best new controller by training metrics, explicitly distinguish qualification and limited sample stress score",
+  "original_formal_panels_unchanged": true,
+  "selection_rule": {
+    "exclude_candidate_ids": [
+      0
+    ],
+    "reject_nonzero_numerical_failures": true,
+    "primary": "maximize min(min_group_full/.50, min_group_air/.70, min_group_recovery/.85)",
+    "tie_breaks": [
+      "higher minimum group complete rate",
+      "higher minimum group recovery rate",
+      "fewer robot-net contacts",
+      "lower candidate_id"
+    ],
+    "frozen_before_training_outcomes": true,
+    "formal_scores_not_used": true
+  }
+}

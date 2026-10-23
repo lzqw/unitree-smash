@@ -1,0 +1,139 @@
+{
+  "kind": "Training-only velocity regulation and public-landing gate; physical results pending",
+  "created_at": "2026-10-23T17:28:32.079909+00:00",
+  "panel": "reports/G07/causal_profiled_noisy_both128_v2/panel.json",
+  "candidates": [
+    {
+      "name": "reference",
+      "path": "reports/G07/landing_velocity_candidates_v1/reference.pt",
+      "sha256": "4a3efe230d65b5b2dce75d6c76fb909476be53b22ec740cc3e67c60a147db3b0",
+      "vx_bias_mps": 0.15,
+      "vx_gain": -0.1,
+      "waypoint_offset_x_m": -0.03,
+      "pitch_bias_rad": -0.015,
+      "wait_for_public_landing": false,
+      "recovery_start_s": 1.7206441164
+    },
+    {
+      "name": "wait_landing",
+      "path": "reports/G07/landing_velocity_candidates_v1/wait_landing.pt",
+      "sha256": "748e3cdf7888f46186f21d919c78691f834bd0c5f22dceda756a26c94355c71d",
+      "vx_bias_mps": 0.15,
+      "vx_gain": -0.1,
+      "waypoint_offset_x_m": -0.03,
+      "pitch_bias_rad": -0.015,
+      "wait_for_public_landing": true,
+      "recovery_start_s": 1.7206441164
+    },
+    {
+      "name": "later_stand",
+      "path": "reports/G07/landing_velocity_candidates_v1/later_stand.pt",
+      "sha256": "199feceec956cf55244cd8e8e7b435085b2cee602b1357b5d428cf30fbe5603a",
+      "vx_bias_mps": 0.15,
+      "vx_gain": -0.1,
+      "waypoint_offset_x_m": -0.03,
+      "pitch_bias_rad": -0.015,
+      "wait_for_public_landing": false,
+      "recovery_start_s": 1.85
+    },
+    {
+      "name": "vx_bias_zero",
+      "path": "reports/G07/landing_velocity_candidates_v1/vx_bias_zero.pt",
+      "sha256": "8b2b7dbb8b6c6fbd215a236fa72f66bb4feabcadd8fda593abce6c9546511902",
+      "vx_bias_mps": 0.0,
+      "vx_gain": -0.1,
+      "waypoint_offset_x_m": -0.03,
+      "pitch_bias_rad": -0.015,
+      "wait_for_public_landing": false,
+      "recovery_start_s": 1.7206441164
+    },
+    {
+      "name": "vx_bias_back",
+      "path": "reports/G07/landing_velocity_candidates_v1/vx_bias_back.pt",
+      "sha256": "aef1acd5def9cbe39b15865d2453ae8fedfef7db670bc03246a1474978e2b3df",
+      "vx_bias_mps": -0.1,
+      "vx_gain": -0.1,
+      "waypoint_offset_x_m": -0.03,
+      "pitch_bias_rad": -0.015,
+      "wait_for_public_landing": false,
+      "recovery_start_s": 1.7206441164
+    },
+    {
+      "name": "vx_back_wait",
+      "path": "reports/G07/landing_velocity_candidates_v1/vx_back_wait.pt",
+      "sha256": "f9edc86280ca11daa52d902fbb85599e8df4006719a6732c723e2186c975173b",
+      "vx_bias_mps": -0.1,
+      "vx_gain": -0.1,
+      "waypoint_offset_x_m": -0.03,
+      "pitch_bias_rad": -0.015,
+      "wait_for_public_landing": true,
+      "recovery_start_s": 1.7206441164
+    },
+    {
+      "name": "strong_vx_zero",
+      "path": "reports/G07/landing_velocity_candidates_v1/strong_vx_zero.pt",
+      "sha256": "8f4533cd3c5df93c2828b6020ede3b09df70ff38ff051159309435397e5c7f56",
+      "vx_bias_mps": 0.0,
+      "vx_gain": -0.25,
+      "waypoint_offset_x_m": -0.03,
+      "pitch_bias_rad": -0.015,
+      "wait_for_public_landing": false,
+      "recovery_start_s": 1.7206441164
+    },
+    {
+      "name": "strong_vx_back",
+      "path": "reports/G07/landing_velocity_candidates_v1/strong_vx_back.pt",
+      "sha256": "48a61ee20da3cce905f9e9f5d0d24d05975865763f97ffbae07084894241f4dc",
+      "vx_bias_mps": -0.1,
+      "vx_gain": -0.25,
+      "waypoint_offset_x_m": -0.03,
+      "pitch_bias_rad": -0.015,
+      "wait_for_public_landing": false,
+      "recovery_start_s": 1.7206441164
+    },
+    {
+      "name": "back4_wait",
+      "path": "reports/G07/landing_velocity_candidates_v1/back4_wait.pt",
+      "sha256": "6cf292865a82a2818795a313656517c77b91bcaf226062cab3c3b8ffe9ef0d6d",
+      "vx_bias_mps": 0.0,
+      "vx_gain": -0.1,
+      "waypoint_offset_x_m": -0.04,
+      "pitch_bias_rad": -0.015,
+      "wait_for_public_landing": true,
+      "recovery_start_s": 1.7206441164
+    },
+    {
+      "name": "back4_pitch_wait",
+      "path": "reports/G07/landing_velocity_candidates_v1/back4_pitch_wait.pt",
+      "sha256": "824800eeeb11fd23b7a5ab8f39e801990e9a8d02d42056a478d5399aee800f9d",
+      "vx_bias_mps": -0.1,
+      "vx_gain": -0.1,
+      "waypoint_offset_x_m": -0.04,
+      "pitch_bias_rad": -0.025,
+      "wait_for_public_landing": true,
+      "recovery_start_s": 1.7206441164
+    },
+    {
+      "name": "pitch_wait",
+      "path": "reports/G07/landing_velocity_candidates_v1/pitch_wait.pt",
+      "sha256": "ef7e4b9cc58eaa255772b7ea3eb0718565855bbae56b911c4e17124213b86df5",
+      "vx_bias_mps": 0.0,
+      "vx_gain": -0.1,
+      "waypoint_offset_x_m": -0.03,
+      "pitch_bias_rad": -0.025,
+      "wait_for_public_landing": true,
+      "recovery_start_s": 1.7206441164
+    },
+    {
+      "name": "no_vx_wait",
+      "path": "reports/G07/landing_velocity_candidates_v1/no_vx_wait.pt",
+      "sha256": "118f802dcd5afce9a57ea1170f774e827ec3742ed4c1f68e8acf1723df4e4b9c",
+      "vx_bias_mps": 0.0,
+      "vx_gain": 0.0,
+      "waypoint_offset_x_m": -0.03,
+      "pitch_bias_rad": -0.015,
+      "wait_for_public_landing": true,
+      "recovery_start_s": 1.7206441164
+    }
+  ]
+}

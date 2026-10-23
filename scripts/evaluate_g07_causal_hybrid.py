@@ -26,6 +26,8 @@ parser.add_argument('--fixed-phase-ablation', action='store_true')
 parser.add_argument('--physics-dt', type=float, default=.0000625)
 parser.add_argument('--episode-seconds', type=float, default=8.5)
 parser.add_argument('--sweep-audit-iterations', type=int)
+parser.add_argument('--record-public-dataset', action='store_true',
+                    help='Development-only public observations/actions, with periodic partial saves')
 parser.add_argument('--seed', type=int, default=717101)
 AppLauncher.add_app_launcher_args(parser)
 args = parser.parse_args()
@@ -51,6 +53,8 @@ def main():
     checkpoint = checkpoints[0]
     if args.candidate_checkpoint and (args.protocol or args.policy_lock):
         raise ValueError('Formal evaluation allows exactly one frozen policy')
+    if args.record_public_dataset and args.protocol:
+        raise ValueError('Extra trajectory collection is a development-only run')
     for candidate in checkpoints[1:]:
         if (candidate['walk_waypoint_x'] != checkpoint['walk_waypoint_x']
                 or candidate['result']['face_normal_world'] != checkpoint['result']['face_normal_world']):
@@ -221,6 +225,20 @@ def main():
         measured_link_poses = [[] for _ in traces]
         preparation_snapshots = []
         first_episode_finished = torch.zeros(count, dtype=torch.bool, device=env.device)
+        public_frames, public_actions, public_active = [], [], []
+
+        def save_public_dataset(filename, completed=False):
+            path = args.output/filename
+            temporary = path.with_name(path.name+'.tmp')
+            torch.save(dict(kind='Actual public-input policy rollout; not teacher actions or future actor inputs',
+                            completed=completed, observations=torch.stack(public_frames),
+                            actions=torch.stack(public_actions), active_first_episode=torch.stack(public_active),
+                            control_dt_s=.01, source_cases=source_cases.tolist(), candidate_ids=candidate_ids.tolist(),
+                            checkpoint_sha256=manifest['checkpoint_sha256'],
+                            panel_sha256=manifest['launch_panel_sha256'],
+                            episode_outcomes_path=str(args.output/'episodes.json') if completed else None), temporary)
+            temporary.replace(path)
+
         with torch.inference_mode():
             for tick in range(ticks):
                 if tick in {250, 280, 300, 320, 340, 380}:
@@ -236,6 +254,12 @@ def main():
                     env.goal_time_s.copy_(policy.arrival)
                 if not torch.isfinite(action).all():
                     raise RuntimeError('Nonfinite policy action')
+                if args.record_public_dataset:
+                    public_frames.append(obs['policy'].detach().cpu())
+                    public_actions.append(action.detach().clamp(-1,1).cpu())
+                    public_active.append((~first_episode_finished).cpu())
+                    if (tick+1)%100==0:
+                        save_public_dataset('public_dataset.partial.pt')
                 if tick % 2 == 0:
                     for slot, index in enumerate(recorded_env_ids):
                         trace = traces[slot]
@@ -323,6 +347,8 @@ def main():
             json.dump(policy.selection_log, stream, indent=2)
         with (args.output/'causal_contact_recovery.json').open('w') as stream:
             json.dump(policy.contact_recovery_log, stream, indent=2)
+        if args.record_public_dataset:
+            save_public_dataset('public_dataset.pt', completed=True)
         (args.output/'completed.json').write_text(json.dumps(dict(episodes=count, env_steps=count*ticks))+'\n')
         print(json.dumps(metrics), flush=True)
     finally:

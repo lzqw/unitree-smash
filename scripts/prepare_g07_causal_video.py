@@ -49,6 +49,8 @@ def main():
                    net_geometry_version=manifest['net_geometry_version'], episodes=len(rows),
                    complete=sum(r['complete_smash'] and free(r) for r in rows),
                    recovery=sum(r['recovery_success'] and free(r) for r in rows),
+                   formal_panel_recording=manifest.get('formal_evaluation_eligible', False),
+                   source_panel=manifest.get('panel'),
                    selected_video_lane=a.scenario, best=selected[0], formal_acceptance=False)
     scope = dict(kind='Derived presentation only; source evaluation untouched', input=str(a.input),
                  checkpoint_sha256=checkpoint_sha, scenario=a.scenario, candidate_id=candidate,
