@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/home/autodrive/LZQW/unitree_smash/scripts/evaluate_g07_causal_hybrid.py", line 193, in <module>
+    main()
+  File "/home/autodrive/LZQW/unitree_smash/scripts/evaluate_g07_causal_hybrid.py", line 106, in main
+    env.robot.write_root_state_to_sim(root, env_ids=ids)
+  File "/home/autodrive/Isaac/IsaacLab/source/isaaclab/isaaclab/assets/articulation/articulation.py", line 327, in write_root_state_to_sim
+    self.write_root_com_velocity_to_sim(root_state[:, 7:], env_ids=env_ids)
+  File "/home/autodrive/Isaac/IsaacLab/source/isaaclab/isaaclab/assets/articulation/articulation.py", line 471, in write_root_com_velocity_to_sim
+    self._data.root_com_vel_w[env_ids] = root_velocity.clone()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+RuntimeError: Inplace update to inference tensor outside InferenceMode is not allowed.You can make a clone to get a normal tensor before doing inplace update.See https://github.com/pytorch/rfcs/pull/17 for more details.

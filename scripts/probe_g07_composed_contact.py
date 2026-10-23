@@ -4,7 +4,7 @@ import argparse,hashlib,json,sys,traceback
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
 from isaaclab.app import AppLauncher
-p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--candidate',type=Path,required=True);p.add_argument('--strike-policy',type=Path);p.add_argument('--recovery-scan',action='store_true');p.add_argument('--num-envs',type=int,default=32);p.add_argument('--population',type=Path);p.add_argument('--strong-serve-grid',action='store_true');p.add_argument('--population-candidates',type=int,default=8);p.add_argument('--launches',type=Path);p.add_argument('--launch-index',type=int,default=0);p.add_argument('--seed',type=int,default=715801);AppLauncher.add_app_launcher_args(p);a=p.parse_args();app=AppLauncher(a).app
+p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--candidate',type=Path,required=True);p.add_argument('--strike-policy',type=Path);p.add_argument('--recovery-scan',action='store_true');p.add_argument('--recovery-candidates',type=Path);p.add_argument('--num-envs',type=int,default=32);p.add_argument('--physics-dt',type=float,default=.00025);p.add_argument('--population',type=Path);p.add_argument('--strong-serve-grid',action='store_true');p.add_argument('--population-candidates',type=int,default=8);p.add_argument('--launches',type=Path);p.add_argument('--launch-index',type=int,default=0);p.add_argument('--seed',type=int,default=715801);AppLauncher.add_app_launcher_args(p);a=p.parse_args();app=AppLauncher(a).app
 import numpy as np
 import torch
 from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper
@@ -19,7 +19,7 @@ from quadsmash.tasks.stand.net_contact_monitor import NetContactMonitor,add_net_
 def main():
  a.output.mkdir(parents=True,exist_ok=True);candidate=torch.load(a.candidate,map_location='cpu',weights_only=False)
  if candidate['parameter_schema'] not in ('composed-reach-v2-40','composed-reach-v3-41','composed-reach-v4-44'):raise ValueError('Wrong composed controller schema')
- inputs=[a.candidate]+([a.strike_policy] if a.strike_policy else [])+([a.population] if a.population else [])+([a.launches] if a.launches else [])
+ inputs=[a.candidate]+([a.recovery_candidates] if a.recovery_candidates else [])+([a.strike_policy] if a.strike_policy else [])+([a.population] if a.population else [])+([a.launches] if a.launches else [])
  (a.output/'input_artifacts.json').write_text(json.dumps({str(path):hashlib.sha256(path.read_bytes()).hexdigest() for path in inputs},indent=2)+'\n')
  record=candidate['result'];point=record['virtual_ball_center_m'];event_time=record['event_time_s'];n=a.num_envs
  population=None;population_lanes=None;parameter_rows=candidate['parameters'].repeat(n,1)
@@ -50,7 +50,9 @@ def main():
    launches=solve_initial_launches(points,times,[vx[i%8] for i in range(n)])
  (a.output/'launches.json').write_text(json.dumps(launches,indent=2)+'\n')
  starts=[r['shuttle_start'] for r in launches];velocities=[r['shuttle_velocity'] for r in launches]
- cfg=BallEnvCfg();cfg.scene.num_envs=n;cfg.seed=a.seed;cfg.sim.device='cuda:0';cfg.sim.dt=.00025;cfg.decimation=40;cfg.sim.render_interval=40;cfg.episode_length_s=candidate['walk_seconds']+4.;cfg.include_net=True;cfg.robot.init_state.pos=(0.,0.,.323);cfg.event_goal_position=(candidate['walk_waypoint_x'],0.,.3);cfg.event_goal_normal=tuple(float(v) for v in record['face_normal_world']);cfg.event_goal_time_s=event_time
+ cfg=BallEnvCfg();cfg.scene.num_envs=n;cfg.seed=a.seed;cfg.sim.device='cuda:0';cfg.sim.dt=a.physics_dt;cfg.decimation=round(.01/a.physics_dt);cfg.sim.render_interval=cfg.decimation;
+ if abs(cfg.sim.dt*cfg.decimation-.01)>1e-9:raise ValueError('Physics dt must divide 10ms control period')
+ cfg.episode_length_s=candidate['walk_seconds']+4.;cfg.include_net=True;cfg.robot.init_state.pos=(0.,0.,.323);cfg.event_goal_position=(candidate['walk_waypoint_x'],0.,.3);cfg.event_goal_normal=tuple(float(v) for v in record['face_normal_world']);cfg.event_goal_time_s=event_time
  class ProbeEnv(NetContactMonitor,FullJointSmashEnv):
   def _setup_scene(self):
    super()._setup_scene();add_net_contact_sensors(self)
@@ -71,6 +73,13 @@ def main():
   standing_params=candidate['recovery_parameters'].to(device).repeat(n,1)
   standing_arm=candidate['recovery_arm_target'].to(device)
   standing_start=torch.full((n,),candidate['recovery_start_s'],device=device)
+  recovery_ids=None
+  if a.recovery_candidates:
+   if a.recovery_scan:raise ValueError('Frozen candidate comparison and random scan are separate modes')
+   choices=json.loads(a.recovery_candidates.read_text())
+   recovery_ids=[i%len(choices) for i in range(n)]
+   standing_params=torch.tensor([choices[i]['parameters'] for i in recovery_ids],device=device)
+   standing_start=torch.tensor([choices[i]['start_s'] for i in recovery_ids],device=device)
   if a.recovery_scan:
    generator=torch.Generator(device=device).manual_seed(a.seed+9)
    noise=torch.randn((n,5),device=device,generator=generator)*torch.tensor([.03,.03,.04,.08,0.],device=device)
@@ -103,8 +112,8 @@ def main():
   for row in env.smash_episode_records:first.setdefault(row['env_id'],row)
   for row in env.net_episode_records:net.setdefault(row['env_id'],row)
   if len(first)!=n or len(net)!=n:raise RuntimeError('Incomplete canonical physical probe')
-  rows=[dict(first[i],**{k:v for k,v in net[i].items() if k!='env_id'},launch=launches[i],recovery_parameters=standing_params[i].cpu().tolist() if standing is not None else None,recovery_start_s=float(standing_start[i]) if standing is not None else None,parameter_population_lane=population_lanes[i] if population_lanes else None) for i in range(n)];add_flight_search_diagnostics(rows);best=max(rows,key=lambda r:(not r['robot_net_contact'],*search_candidate_key(r)));index=best['env_id']
-  metrics=dict(kind='canonical native walking plus searched strike teacher and physical initial serve',frozen_launch_panel=str(a.launches),launch_case=a.launch_index if a.launches else None,net_contact_sensor_version='one-source-per-environment-v2',selected_video_lane=index,controller=('learned PWA strike' if learned_strike is not None else 'searched strike')+(' plus frozen learned standing' if standing is not None else ''),strike_policy=strike_policy_source,teacher_prefix_steps=0,recovery_parameter_scan=a.recovery_scan,population_source=str(a.population),formal_policy_acceptance=False,root_start_x_m=0.,net_geometry_version=cfg.net_geometry_version,episodes=n,airborne_contact=sum(r['airborne_contact'] for r in rows),effective_face_contact=sum(r['effective_face_contact'] for r in rows),ordered_net=sum(r['ordered_crossed_net'] for r in rows),ordered_landing=sum(r['ordered_landed_target'] for r in rows),complete=sum(r['complete_smash'] and not r['robot_net_contact'] for r in rows),recovery=sum(r['recovery_success'] for r in rows),robot_net_contact=sum(r['robot_net_contact'] for r in rows),numerical_failures=sum(r['numerical_failures'] for r in rows),best=best,env_steps=n*ticks)
+  rows=[dict(first[i],**{k:v for k,v in net[i].items() if k!='env_id'},launch=launches[i],recovery_parameters=standing_params[i].cpu().tolist() if standing is not None else None,recovery_start_s=float(standing_start[i]) if standing is not None else None,recovery_candidate_id=recovery_ids[i] if standing is not None and recovery_ids is not None else None,parameter_population_lane=population_lanes[i] if population_lanes else None) for i in range(n)];add_flight_search_diagnostics(rows);best=max(rows,key=lambda r:(not r['robot_net_contact'],*search_candidate_key(r)));index=best['env_id']
+  metrics=dict(kind='canonical native learned hybrid and physical initial serve' if learned_strike is not None else 'canonical native searched teacher and physical initial serve',frozen_launch_panel=str(a.launches),launch_case=a.launch_index if a.launches else None,net_contact_sensor_version='one-source-per-environment-v2',selected_video_lane=index,controller=('learned PWA strike' if learned_strike is not None else 'searched strike')+(' plus frozen learned standing' if standing is not None else ''),strike_policy=strike_policy_source,teacher_prefix_steps=0,recovery_parameter_scan=a.recovery_scan,recovery_candidate_panel=str(a.recovery_candidates),population_source=str(a.population),formal_policy_acceptance=False,root_start_x_m=0.,net_geometry_version=cfg.net_geometry_version,episodes=n,physics_dt_s=cfg.sim.dt,control_dt_s=.01,airborne_contact=sum(r['airborne_contact'] for r in rows),effective_face_contact=sum(r['effective_face_contact'] for r in rows),ordered_net=sum(r['ordered_crossed_net'] for r in rows),ordered_landing=sum(r['ordered_landed_target'] for r in rows),complete=sum(r['complete_smash'] and not r['robot_net_contact'] for r in rows),recovery=sum(r['recovery_success'] for r in rows),robot_net_contact=sum(r['robot_net_contact'] for r in rows),numerical_failures=sum(r['numerical_failures'] for r in rows),best=best,env_steps=n*ticks)
   np.save(a.output/'link_poses.npy',np.stack(poses)[:,index]);(a.output/'body_names.json').write_text(json.dumps(env.robot.body_names)+'\n')
   selected=dict(candidate);selected['parameters']=parameter_rows[index].cpu();selected['result']=dict(record)
   selected['result'].update(virtual_ball_center_m=points[index].tolist(),event_time_s=float(event_times[index]))
@@ -125,7 +134,7 @@ def main():
   selected['selection_physical_episode']=best
   torch.save(selected,a.output/'selected_teacher.pt')
   if strike_checkpoint is not None:torch.save(selected,a.output/'selected_policy.pt')
-  (a.output/'episodes.json').write_text(json.dumps(rows,indent=2)+'\n');(a.output/'jump_episodes.json').write_text(json.dumps(env.episode_records,indent=2)+'\n');(a.output/'metrics.json').write_text(json.dumps(metrics,indent=2)+'\n');(a.output/'trajectories.json').write_text(json.dumps(trajectories)+'\n');(a.output/'trajectory.json').write_text(json.dumps(trajectories[index])+'\n');torch.save(dict(observations=torch.stack(observations),actions=torch.stack(actions),episodes=rows,controller=candidate,homogeneous_controller=population is None and not a.recovery_scan,controller_parameters_per_episode=parameter_rows.cpu()),a.output/'teacher_dataset.pt');(a.output/'completed.json').write_text(json.dumps(dict(episodes=n,env_steps=n*ticks))+'\n');print(json.dumps(metrics),flush=True)
+  (a.output/'episodes.json').write_text(json.dumps(rows,indent=2)+'\n');(a.output/'jump_episodes.json').write_text(json.dumps(env.episode_records,indent=2)+'\n');(a.output/'metrics.json').write_text(json.dumps(metrics,indent=2)+'\n');(a.output/'trajectories.json').write_text(json.dumps(trajectories)+'\n');(a.output/'trajectory.json').write_text(json.dumps(trajectories[index])+'\n');torch.save(dict(observations=torch.stack(observations),actions=torch.stack(actions),episodes=rows,controller=candidate,homogeneous_controller=population is None and not a.recovery_scan and a.recovery_candidates is None,controller_parameters_per_episode=parameter_rows.cpu()),a.output/('policy_dataset.pt' if learned_strike is not None else 'teacher_dataset.pt'));(a.output/'completed.json').write_text(json.dumps(dict(episodes=n,env_steps=n*ticks))+'\n');print(json.dumps(metrics),flush=True)
  finally:env.close()
 
 try:main()

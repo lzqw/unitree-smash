@@ -1,0 +1,50 @@
+{
+  "version": "g07-causal-long-prepare-frozen-evaluation-v1",
+  "status": "frozen-before-formal-evaluation-and-any-variable-serve-policy-training; not passing evidence",
+  "frozen_at": "2026-10-23T12:26:01.459567+00:00",
+  "panels": [
+    {
+      "id": "g07_causal_a_v1",
+      "path": "reports/G07/causal_eval_panel_a_v1/panel.json",
+      "sha256": "0ddc79f91207f0f3741f30fdb21847e90df9a7194e6db6a19500ba976df49645",
+      "episodes": 200,
+      "original_initialization_panel": "dev_jump_v2_a"
+    },
+    {
+      "id": "g07_causal_b_v1",
+      "path": "reports/G07/causal_eval_panel_b_v1/panel.json",
+      "sha256": "bd415ac1b70ded7d67ae420c7efee55c88a76f8cf677abde98fed51fdee1a0c2",
+      "episodes": 200,
+      "original_initialization_panel": "dev_jump_v2_b"
+    }
+  ],
+  "aggregation": "minimum per-panel fractions; sum numerical failures",
+  "physics_dt_s": 6.25e-05,
+  "control_dt_s": 0.01,
+  "episode_seconds": 8.5,
+  "net_geometry_version": "environment-local-net-v2",
+  "target_region": {
+    "x_m": [
+      2.0,
+      4.0
+    ],
+    "y_m": [
+      -1.0,
+      1.0
+    ]
+  },
+  "acceptance_thresholds_unchanged": {
+    "sample_count": 400,
+    "complete_smash_success_rate": 0.5,
+    "airborne_contact_rate": 0.7,
+    "recovery_given_airborne_contact": 0.85,
+    "numerical_failures": 0
+  },
+  "acceptance_contract_sha256": "66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807",
+  "initialization_contract_sha256": "421497aa51eecac023c70b200e8a75ecafff01527dcf215665d5d96c1e8266a8",
+  "asset_sha256": "bfb831e4afc8a1a705bb0fb6f001c25eeaa401822978267a0ee5e151007511f3",
+  "calibration_canonical_sha256": "3ff8813f972d17bcd710fbbb9ff763839835968b8e51ec53f795ff53bc20d36e",
+  "scope": "Versioned longer-preparation scene, physical initial serve only; multiple intercept positions/times/speeds and original two ground-reset perturbation panels. Fixed opponent landing rectangle. Not real-court or hardware certification.",
+  "controller_inputs": "Public observation only. Per-scenario planned arrival/target labels unavailable to controller. All failures retained.",
+  "development_eval_already_running": "reports/G07/causal_hybrid_dev64_02; independent 64-scenario development panel, outcomes not yet available at freeze"
+}

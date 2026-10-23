@@ -141,7 +141,7 @@ def main():
         if window:
             windows_state = ledger.setdefault("budget_windows", {})
             windows_state.setdefault(args.budget_window, {"started_at": datetime.now(timezone.utc).isoformat(), "goals": window["goals"]})
-        record = {"goal": args.goal, "budget_window": args.budget_window, "command": command, "output": str(output), "gpu": 0,
+        record = {"goal": args.goal, "budget_window": args.budget_window, "git_sha": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(), "command": command, "output": str(output), "gpu": 0,
                   "status": "RUNNING", "charged_gpu_hours": args.max_seconds / 3600,
                   "charged_env_steps": args.env_steps_cap,
                   "started_at": datetime.now(timezone.utc).isoformat(), "pid": os.getpid()}

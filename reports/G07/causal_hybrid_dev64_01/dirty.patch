@@ -1,0 +1,240 @@
+diff --git a/scripts/probe_g07_composed_contact.py b/scripts/probe_g07_composed_contact.py
+index cbe9423..45da640 100644
+--- a/scripts/probe_g07_composed_contact.py
++++ b/scripts/probe_g07_composed_contact.py
+@@ -4,7 +4,7 @@ import argparse,hashlib,json,sys,traceback
+ from pathlib import Path
+ ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
+ from isaaclab.app import AppLauncher
+-p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--candidate',type=Path,required=True);p.add_argument('--strike-policy',type=Path);p.add_argument('--recovery-scan',action='store_true');p.add_argument('--num-envs',type=int,default=32);p.add_argument('--population',type=Path);p.add_argument('--strong-serve-grid',action='store_true');p.add_argument('--population-candidates',type=int,default=8);p.add_argument('--launches',type=Path);p.add_argument('--launch-index',type=int,default=0);p.add_argument('--seed',type=int,default=715801);AppLauncher.add_app_launcher_args(p);a=p.parse_args();app=AppLauncher(a).app
++p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--candidate',type=Path,required=True);p.add_argument('--strike-policy',type=Path);p.add_argument('--recovery-scan',action='store_true');p.add_argument('--recovery-candidates',type=Path);p.add_argument('--num-envs',type=int,default=32);p.add_argument('--physics-dt',type=float,default=.00025);p.add_argument('--population',type=Path);p.add_argument('--strong-serve-grid',action='store_true');p.add_argument('--population-candidates',type=int,default=8);p.add_argument('--launches',type=Path);p.add_argument('--launch-index',type=int,default=0);p.add_argument('--seed',type=int,default=715801);AppLauncher.add_app_launcher_args(p);a=p.parse_args();app=AppLauncher(a).app
+ import numpy as np
+ import torch
+ from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper
+@@ -19,7 +19,7 @@ from quadsmash.tasks.stand.net_contact_monitor import NetContactMonitor,add_net_
+ def main():
+  a.output.mkdir(parents=True,exist_ok=True);candidate=torch.load(a.candidate,map_location='cpu',weights_only=False)
+  if candidate['parameter_schema'] not in ('composed-reach-v2-40','composed-reach-v3-41','composed-reach-v4-44'):raise ValueError('Wrong composed controller schema')
+- inputs=[a.candidate]+([a.strike_policy] if a.strike_policy else [])+([a.population] if a.population else [])+([a.launches] if a.launches else [])
++ inputs=[a.candidate]+([a.recovery_candidates] if a.recovery_candidates else [])+([a.strike_policy] if a.strike_policy else [])+([a.population] if a.population else [])+([a.launches] if a.launches else [])
+  (a.output/'input_artifacts.json').write_text(json.dumps({str(path):hashlib.sha256(path.read_bytes()).hexdigest() for path in inputs},indent=2)+'\n')
+  record=candidate['result'];point=record['virtual_ball_center_m'];event_time=record['event_time_s'];n=a.num_envs
+  population=None;population_lanes=None;parameter_rows=candidate['parameters'].repeat(n,1)
+@@ -50,7 +50,9 @@ def main():
+    launches=solve_initial_launches(points,times,[vx[i%8] for i in range(n)])
+  (a.output/'launches.json').write_text(json.dumps(launches,indent=2)+'\n')
+  starts=[r['shuttle_start'] for r in launches];velocities=[r['shuttle_velocity'] for r in launches]
+- cfg=BallEnvCfg();cfg.scene.num_envs=n;cfg.seed=a.seed;cfg.sim.device='cuda:0';cfg.sim.dt=.00025;cfg.decimation=40;cfg.sim.render_interval=40;cfg.episode_length_s=candidate['walk_seconds']+4.;cfg.include_net=True;cfg.robot.init_state.pos=(0.,0.,.323);cfg.event_goal_position=(candidate['walk_waypoint_x'],0.,.3);cfg.event_goal_normal=tuple(float(v) for v in record['face_normal_world']);cfg.event_goal_time_s=event_time
++ cfg=BallEnvCfg();cfg.scene.num_envs=n;cfg.seed=a.seed;cfg.sim.device='cuda:0';cfg.sim.dt=a.physics_dt;cfg.decimation=round(.01/a.physics_dt);cfg.sim.render_interval=cfg.decimation;
++ if abs(cfg.sim.dt*cfg.decimation-.01)>1e-9:raise ValueError('Physics dt must divide 10ms control period')
++ cfg.episode_length_s=candidate['walk_seconds']+4.;cfg.include_net=True;cfg.robot.init_state.pos=(0.,0.,.323);cfg.event_goal_position=(candidate['walk_waypoint_x'],0.,.3);cfg.event_goal_normal=tuple(float(v) for v in record['face_normal_world']);cfg.event_goal_time_s=event_time
+  class ProbeEnv(NetContactMonitor,FullJointSmashEnv):
+   def _setup_scene(self):
+    super()._setup_scene();add_net_contact_sensors(self)
+@@ -71,6 +73,13 @@ def main():
+   standing_params=candidate['recovery_parameters'].to(device).repeat(n,1)
+   standing_arm=candidate['recovery_arm_target'].to(device)
+   standing_start=torch.full((n,),candidate['recovery_start_s'],device=device)
++  recovery_ids=None
++  if a.recovery_candidates:
++   if a.recovery_scan:raise ValueError('Frozen candidate comparison and random scan are separate modes')
++   choices=json.loads(a.recovery_candidates.read_text())
++   recovery_ids=[i%len(choices) for i in range(n)]
++   standing_params=torch.tensor([choices[i]['parameters'] for i in recovery_ids],device=device)
++   standing_start=torch.tensor([choices[i]['start_s'] for i in recovery_ids],device=device)
+   if a.recovery_scan:
+    generator=torch.Generator(device=device).manual_seed(a.seed+9)
+    noise=torch.randn((n,5),device=device,generator=generator)*torch.tensor([.03,.03,.04,.08,0.],device=device)
+@@ -103,8 +112,8 @@ def main():
+   for row in env.smash_episode_records:first.setdefault(row['env_id'],row)
+   for row in env.net_episode_records:net.setdefault(row['env_id'],row)
+   if len(first)!=n or len(net)!=n:raise RuntimeError('Incomplete canonical physical probe')
+-  rows=[dict(first[i],**{k:v for k,v in net[i].items() if k!='env_id'},launch=launches[i],recovery_parameters=standing_params[i].cpu().tolist() if standing is not None else None,recovery_start_s=float(standing_start[i]) if standing is not None else None,parameter_population_lane=population_lanes[i] if population_lanes else None) for i in range(n)];add_flight_search_diagnostics(rows);best=max(rows,key=lambda r:(not r['robot_net_contact'],*search_candidate_key(r)));index=best['env_id']
+-  metrics=dict(kind='canonical native walking plus searched strike teacher and physical initial serve',frozen_launch_panel=str(a.launches),launch_case=a.launch_index if a.launches else None,net_contact_sensor_version='one-source-per-environment-v2',selected_video_lane=index,controller=('learned PWA strike' if learned_strike is not None else 'searched strike')+(' plus frozen learned standing' if standing is not None else ''),strike_policy=strike_policy_source,teacher_prefix_steps=0,recovery_parameter_scan=a.recovery_scan,population_source=str(a.population),formal_policy_acceptance=False,root_start_x_m=0.,net_geometry_version=cfg.net_geometry_version,episodes=n,airborne_contact=sum(r['airborne_contact'] for r in rows),effective_face_contact=sum(r['effective_face_contact'] for r in rows),ordered_net=sum(r['ordered_crossed_net'] for r in rows),ordered_landing=sum(r['ordered_landed_target'] for r in rows),complete=sum(r['complete_smash'] and not r['robot_net_contact'] for r in rows),recovery=sum(r['recovery_success'] for r in rows),robot_net_contact=sum(r['robot_net_contact'] for r in rows),numerical_failures=sum(r['numerical_failures'] for r in rows),best=best,env_steps=n*ticks)
++  rows=[dict(first[i],**{k:v for k,v in net[i].items() if k!='env_id'},launch=launches[i],recovery_parameters=standing_params[i].cpu().tolist() if standing is not None else None,recovery_start_s=float(standing_start[i]) if standing is not None else None,recovery_candidate_id=recovery_ids[i] if standing is not None and recovery_ids is not None else None,parameter_population_lane=population_lanes[i] if population_lanes else None) for i in range(n)];add_flight_search_diagnostics(rows);best=max(rows,key=lambda r:(not r['robot_net_contact'],*search_candidate_key(r)));index=best['env_id']
++  metrics=dict(kind='canonical native learned hybrid and physical initial serve' if learned_strike is not None else 'canonical native searched teacher and physical initial serve',frozen_launch_panel=str(a.launches),launch_case=a.launch_index if a.launches else None,net_contact_sensor_version='one-source-per-environment-v2',selected_video_lane=index,controller=('learned PWA strike' if learned_strike is not None else 'searched strike')+(' plus frozen learned standing' if standing is not None else ''),strike_policy=strike_policy_source,teacher_prefix_steps=0,recovery_parameter_scan=a.recovery_scan,recovery_candidate_panel=str(a.recovery_candidates),population_source=str(a.population),formal_policy_acceptance=False,root_start_x_m=0.,net_geometry_version=cfg.net_geometry_version,episodes=n,physics_dt_s=cfg.sim.dt,control_dt_s=.01,airborne_contact=sum(r['airborne_contact'] for r in rows),effective_face_contact=sum(r['effective_face_contact'] for r in rows),ordered_net=sum(r['ordered_crossed_net'] for r in rows),ordered_landing=sum(r['ordered_landed_target'] for r in rows),complete=sum(r['complete_smash'] and not r['robot_net_contact'] for r in rows),recovery=sum(r['recovery_success'] for r in rows),robot_net_contact=sum(r['robot_net_contact'] for r in rows),numerical_failures=sum(r['numerical_failures'] for r in rows),best=best,env_steps=n*ticks)
+   np.save(a.output/'link_poses.npy',np.stack(poses)[:,index]);(a.output/'body_names.json').write_text(json.dumps(env.robot.body_names)+'\n')
+   selected=dict(candidate);selected['parameters']=parameter_rows[index].cpu();selected['result']=dict(record)
+   selected['result'].update(virtual_ball_center_m=points[index].tolist(),event_time_s=float(event_times[index]))
+@@ -125,7 +134,7 @@ def main():
+   selected['selection_physical_episode']=best
+   torch.save(selected,a.output/'selected_teacher.pt')
+   if strike_checkpoint is not None:torch.save(selected,a.output/'selected_policy.pt')
+-  (a.output/'episodes.json').write_text(json.dumps(rows,indent=2)+'\n');(a.output/'jump_episodes.json').write_text(json.dumps(env.episode_records,indent=2)+'\n');(a.output/'metrics.json').write_text(json.dumps(metrics,indent=2)+'\n');(a.output/'trajectories.json').write_text(json.dumps(trajectories)+'\n');(a.output/'trajectory.json').write_text(json.dumps(trajectories[index])+'\n');torch.save(dict(observations=torch.stack(observations),actions=torch.stack(actions),episodes=rows,controller=candidate,homogeneous_controller=population is None and not a.recovery_scan,controller_parameters_per_episode=parameter_rows.cpu()),a.output/'teacher_dataset.pt');(a.output/'completed.json').write_text(json.dumps(dict(episodes=n,env_steps=n*ticks))+'\n');print(json.dumps(metrics),flush=True)
++  (a.output/'episodes.json').write_text(json.dumps(rows,indent=2)+'\n');(a.output/'jump_episodes.json').write_text(json.dumps(env.episode_records,indent=2)+'\n');(a.output/'metrics.json').write_text(json.dumps(metrics,indent=2)+'\n');(a.output/'trajectories.json').write_text(json.dumps(trajectories)+'\n');(a.output/'trajectory.json').write_text(json.dumps(trajectories[index])+'\n');torch.save(dict(observations=torch.stack(observations),actions=torch.stack(actions),episodes=rows,controller=candidate,homogeneous_controller=population is None and not a.recovery_scan and a.recovery_candidates is None,controller_parameters_per_episode=parameter_rows.cpu()),a.output/('policy_dataset.pt' if learned_strike is not None else 'teacher_dataset.pt'));(a.output/'completed.json').write_text(json.dumps(dict(episodes=n,env_steps=n*ticks))+'\n');print(json.dumps(metrics),flush=True)
+  finally:env.close()
+ 
+ try:main()
+diff --git a/scripts/run_gpu_job.py b/scripts/run_gpu_job.py
+index 5e43947..ee14633 100644
+--- a/scripts/run_gpu_job.py
++++ b/scripts/run_gpu_job.py
+@@ -141,7 +141,7 @@ def main():
+         if window:
+             windows_state = ledger.setdefault("budget_windows", {})
+             windows_state.setdefault(args.budget_window, {"started_at": datetime.now(timezone.utc).isoformat(), "goals": window["goals"]})
+-        record = {"goal": args.goal, "budget_window": args.budget_window, "command": command, "output": str(output), "gpu": 0,
++        record = {"goal": args.goal, "budget_window": args.budget_window, "git_sha": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(), "command": command, "output": str(output), "gpu": 0,
+                   "status": "RUNNING", "charged_gpu_hours": args.max_seconds / 3600,
+                   "charged_env_steps": args.env_steps_cap,
+                   "started_at": datetime.now(timezone.utc).isoformat(), "pid": os.getpid()}
+diff --git a/status/GPU_LEDGER.json b/status/GPU_LEDGER.json
+index f2bc464..8fc8912 100644
+--- a/status/GPU_LEDGER.json
++++ b/status/GPU_LEDGER.json
+@@ -8417,15 +8417,140 @@
+       ],
+       "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/standing_recovery_search01",
+       "gpu": 0,
+-      "status": "RUNNING",
+-      "charged_gpu_hours": 0.25,
++      "status": "SUCCEEDED",
++      "charged_gpu_hours": 0.1352949249183358,
+       "charged_env_steps": 1515520,
+       "started_at": "2026-10-23T11:45:09.835997+00:00",
+       "pid": 1178968,
+       "original_authorization": "g07-net-feasibility-20261023",
+       "authorization_started_at": "2026-10-23T08:04:13.742590+00:00",
+       "authorization_deadline": "2026-10-23T18:04:13.742590+00:00",
+-      "child_pid": 1178977
++      "child_pid": 1178977,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": true,
++      "elapsed_s": 487.0617297060089,
++      "finished_at": "2026-10-23T11:53:16.900783+00:00"
++    },
++    {
++      "goal": "G07",
++      "budget_window": "g07-net-feasibility-20261023",
++      "command": [
++        "/home/autodrive/Isaac/env_isaaclab/bin/python",
++        "scripts/probe_g07_composed_contact.py",
++        "--output",
++        "reports/G07/learned_hybrid_recovery_scan01",
++        "--candidate",
++        "reports/G07/standing_recovery_search01/best_candidate.pt",
++        "--strike-policy",
++        "reports/G07/fit_composed_strike214_01/policy.pt",
++        "--recovery-scan",
++        "--launches",
++        "reports/G07/compact_native_contact01/launches.json",
++        "--launch-index",
++        "37",
++        "--num-envs",
++        "64",
++        "--seed",
++        "716801",
++        "--headless"
++      ],
++      "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/learned_hybrid_recovery_scan01",
++      "gpu": 0,
++      "status": "SUCCEEDED",
++      "charged_gpu_hours": 0.058418377906378334,
++      "charged_env_steps": 47360,
++      "started_at": "2026-10-23T11:53:39.092398+00:00",
++      "pid": 1180994,
++      "original_authorization": "g07-net-feasibility-20261023",
++      "authorization_started_at": "2026-10-23T08:04:13.742590+00:00",
++      "authorization_deadline": "2026-10-23T18:04:13.742590+00:00",
++      "child_pid": 1181004,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": true,
++      "elapsed_s": 210.306160462962,
++      "finished_at": "2026-10-23T11:57:09.401686+00:00"
++    },
++    {
++      "goal": "G07",
++      "budget_window": "g07-net-feasibility-20261023",
++      "command": [
++        "/home/autodrive/Isaac/env_isaaclab/bin/python",
++        "scripts/probe_g07_composed_contact.py",
++        "--output",
++        "reports/G07/hybrid_frozen_compare01",
++        "--candidate",
++        "reports/G07/learned_hybrid_recovery_scan01/selected_policy.pt",
++        "--recovery-candidates",
++        "reports/G07/learned_hybrid_recovery_scan01/frozen_recovery_candidates.json",
++        "--launches",
++        "reports/G07/compact_native_contact01/launches.json",
++        "--launch-index",
++        "37",
++        "--num-envs",
++        "128",
++        "--seed",
++        "716901",
++        "--headless"
++      ],
++      "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/hybrid_frozen_compare01",
++      "gpu": 0,
++      "status": "SUCCEEDED",
++      "charged_gpu_hours": 0.05958764841500346,
++      "charged_env_steps": 94720,
++      "started_at": "2026-10-23T11:59:16.484372+00:00",
++      "pid": 1181853,
++      "original_authorization": "g07-net-feasibility-20261023",
++      "authorization_started_at": "2026-10-23T08:04:13.742590+00:00",
++      "authorization_deadline": "2026-10-23T18:04:13.742590+00:00",
++      "child_pid": 1181863,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": true,
++      "elapsed_s": 214.51553429401247,
++      "finished_at": "2026-10-23T12:02:51.003020+00:00"
++    },
++    {
++      "goal": "G07",
++      "budget_window": "g07-net-feasibility-20261023",
++      "command": [
++        "/home/autodrive/Isaac/env_isaaclab/bin/python",
++        "scripts/probe_g07_composed_contact.py",
++        "--output",
++        "reports/G07/hybrid_fine625_compare01",
++        "--candidate",
++        "reports/G07/hybrid_frozen_compare01/selected_policy.pt",
++        "--recovery-candidates",
++        "reports/G07/learned_hybrid_recovery_scan01/frozen_recovery_candidates_two.json",
++        "--launches",
++        "reports/G07/compact_native_contact01/launches.json",
++        "--launch-index",
++        "37",
++        "--physics-dt",
++        ".0000625",
++        "--num-envs",
++        "64",
++        "--seed",
++        "717001",
++        "--headless"
++      ],
++      "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/hybrid_fine625_compare01",
++      "gpu": 0,
++      "status": "SUCCEEDED",
++      "charged_gpu_hours": 0.22662900833582778,
++      "charged_env_steps": 47360,
++      "started_at": "2026-10-23T12:04:51.431282+00:00",
++      "pid": 1182671,
++      "original_authorization": "g07-net-feasibility-20261023",
++      "authorization_started_at": "2026-10-23T08:04:13.742590+00:00",
++      "authorization_deadline": "2026-10-23T18:04:13.742590+00:00",
++      "child_pid": 1182681,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": true,
++      "elapsed_s": 815.86443000898,
++      "finished_at": "2026-10-23T12:18:27.298855+00:00"
+     }
+   ],
+   "budget_windows": {
+diff --git a/status/RUNS.jsonl b/status/RUNS.jsonl
+index 849ea24..d0bb13d 100644
+--- a/status/RUNS.jsonl
++++ b/status/RUNS.jsonl
+@@ -234,3 +234,7 @@
+ {"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/search_g07_composed_reach_v2.py", "--output", "reports/G07/composed_compact_flight01", "--num-envs", "256", "--generations", "20", "--root-x", "0", "--walk-candidate", "reports/G07/walk_close_high01/best_candidate.pt", "--pose-seed", "reports/G07/close_base_ik_cpu01/pose_seed.pt", "--initial", "reports/G07/composed_close_feedback01/best_candidate.pt", "--landing-feedback", "--walk-seconds", "3.4", "--waypoint-x", "1.1", "--strike-x", "1.45", "--strike-z", "1.65", "--deep-crouch", "--flight-objective", "--arm-pitch-feedback", "--compact-recovery", "--tucked-flight-seed", "--incoming-bank", "reports/G07/incoming_velocity_bank_cpu01/metrics.json", "--global-fraction", ".15", "--seed", "716401", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/composed_compact_flight01", "gpu": 0, "status": "FAILED", "charged_gpu_hours": 0.04608302019555898, "charged_env_steps": 3788800, "started_at": "2026-10-23T11:30:58.949987+00:00", "pid": 1176160, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1176169, "exit_code": 0, "timed_out": false, "receipt_present": false, "elapsed_s": 165.89887270401232, "finished_at": "2026-10-23T11:33:44.851892+00:00"}
+ {"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/probe_g07_composed_contact.py", "--output", "reports/G07/compact_native_contact01", "--candidate", "reports/G07/composed_compact_flight01/best_candidate.pt", "--population", "reports/G07/composed_compact_flight01/population_002.pt", "--population-candidates", "8", "--strong-serve-grid", "--num-envs", "64", "--seed", "716501", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/compact_native_contact01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.05969539071499538, "charged_env_steps": 47360, "started_at": "2026-10-23T11:34:04.414969+00:00", "pid": 1176815, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1176824, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 214.90340657398337, "finished_at": "2026-10-23T11:37:39.321457+00:00"}
+ {"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/probe_g07_composed_contact.py", "--output", "reports/G07/net_free_teacher214_replay01", "--candidate", "reports/G07/compact_native_contact01/net_free_teacher214.pt", "--launches", "reports/G07/compact_native_contact01/launches.json", "--launch-index", "37", "--num-envs", "16", "--seed", "716601", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/net_free_teacher214_replay01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.05616463451804723, "charged_env_steps": 11840, "started_at": "2026-10-23T11:40:40.602165+00:00", "pid": 1178200, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1178209, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 202.19268426497, "finished_at": "2026-10-23T11:44:02.798072+00:00"}
++{"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/search_g07_standing_recovery.py", "--output", "reports/G07/standing_recovery_search01", "--candidate", "reports/G07/compact_native_contact01/net_free_teacher214_v2.pt", "--num-envs", "128", "--generations", "16", "--seed", "716701", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/standing_recovery_search01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.1352949249183358, "charged_env_steps": 1515520, "started_at": "2026-10-23T11:45:09.835997+00:00", "pid": 1178968, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1178977, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 487.0617297060089, "finished_at": "2026-10-23T11:53:16.900783+00:00"}
++{"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/probe_g07_composed_contact.py", "--output", "reports/G07/learned_hybrid_recovery_scan01", "--candidate", "reports/G07/standing_recovery_search01/best_candidate.pt", "--strike-policy", "reports/G07/fit_composed_strike214_01/policy.pt", "--recovery-scan", "--launches", "reports/G07/compact_native_contact01/launches.json", "--launch-index", "37", "--num-envs", "64", "--seed", "716801", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/learned_hybrid_recovery_scan01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.058418377906378334, "charged_env_steps": 47360, "started_at": "2026-10-23T11:53:39.092398+00:00", "pid": 1180994, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1181004, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 210.306160462962, "finished_at": "2026-10-23T11:57:09.401686+00:00"}
++{"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/probe_g07_composed_contact.py", "--output", "reports/G07/hybrid_frozen_compare01", "--candidate", "reports/G07/learned_hybrid_recovery_scan01/selected_policy.pt", "--recovery-candidates", "reports/G07/learned_hybrid_recovery_scan01/frozen_recovery_candidates.json", "--launches", "reports/G07/compact_native_contact01/launches.json", "--launch-index", "37", "--num-envs", "128", "--seed", "716901", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/hybrid_frozen_compare01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.05958764841500346, "charged_env_steps": 94720, "started_at": "2026-10-23T11:59:16.484372+00:00", "pid": 1181853, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1181863, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 214.51553429401247, "finished_at": "2026-10-23T12:02:51.003020+00:00"}
++{"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/probe_g07_composed_contact.py", "--output", "reports/G07/hybrid_fine625_compare01", "--candidate", "reports/G07/hybrid_frozen_compare01/selected_policy.pt", "--recovery-candidates", "reports/G07/learned_hybrid_recovery_scan01/frozen_recovery_candidates_two.json", "--launches", "reports/G07/compact_native_contact01/launches.json", "--launch-index", "37", "--physics-dt", ".0000625", "--num-envs", "64", "--seed", "717001", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/hybrid_fine625_compare01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.22662900833582778, "charged_env_steps": 47360, "started_at": "2026-10-23T12:04:51.431282+00:00", "pid": 1182671, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1182681, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 815.86443000898, "finished_at": "2026-10-23T12:18:27.298855+00:00"}

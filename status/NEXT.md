@@ -1,48 +1,41 @@
-# 当前继续入口：正确球网下靠近网前准备与起跳（2026-10-23）
+# 最新继续入口：学习混合控制器已完成名义课程，正在测因果覆盖（2026-10-23）
 
-G07为IN_PROGRESS；正确物理网下无借力完整成功仍为0。G04–G06与所有旧权重保留。
+G07 IN_PROGRESS；正式400回合还未执行。G04–G06、旧权重/证据保持不变。
 
-## 固定授权与当前作业
+## 固定资源窗口
 
-GPU0；独立新增最多10 GPU-hours，窗口 `g07-net-feasibility-20261023`：Asia/Taipei 2026-10-23 16:04:13 至 2026-10-24 02:04:13（UTC08:04:13至18:04:13）。重启或切换方法不重置。成本以GPU_LEDGER.json为准。
+GPU0；独立新增最多10 GPU-hours；窗口g07-net-feasibility-20261023：UTC2026-10-23 08:04:13.742590至18:04:13.742590，Asia/Taipei10月23日16:04至10月24日02:04。重启、场景/方法切换不重置。历史用量保留并排除本轮上限，实耗看GPU_LEDGER。
 
-`walk_close_high01`已完成30代×128；冻结在0.25ms夹具 `walk_close_fine_replay01` 独立32/32走到x1.10附近并站稳、0碰网。`composed_compact_flight01`主动保存完成5/20代：最佳点[1.426609,.002736,1.637931]，预测净空.020573m，腾空且全程无网接触，恢复尚未通过。为做真实球校准而提前结束，运行器FAILED与method_switch.json保留；后续可从population_004.pt恢复mean/sigma/RNG。
+## 正在运行，不能重复启动
 
-`compact_native_contact01`已完成64回合：净无碰网18，其中有序越网14、首次目标落点8，恢复/完整0，数值0。教师214族8/8无碰网、6/8目标；冻结case37独立16回合 `net_free_teacher214_replay01`：16/16空中有效拍面/越网/首次目标、0网接触/故障，恢复0。最新纯净metadata的相同控制器是 `compact_native_contact01/net_free_teacher214_v2.pt`（v1原件保留，v2删除从另一lane继承的无用诊断字段，执行参数相同）。
+统一exec会话37762，`reports/G07/causal_hybrid_dev64_02`。命令在GPU_LEDGER当前RUNNING项：evaluate_g07_causal_hybrid.py，64种已固定来球，62.5微秒、8.5秒回合、学习控制器+初始公开观测预测。stdout每50控制步报告进度，error.txt如存在须先检查。01因初始化在inference_mode外写Isaac缓存张量，6秒退出、未开始物理回合，失败和成本保留；02已修复并运行。
 
-当前统一exec会话66329：`standing_recovery_search01`，128环境×16代无球落地搜索，冻结有效击球，接入原学习Go2 actor的零速度站立/落地控制；已有通过原无机身触地、无碰网、0.8s稳定恢复的回合。先轮询该进程，不重复启动。运行中PID在GPU_LEDGER；job.json结算后才生成。
+该作业输入：hybrid_fine625_compare01/frozen_candidate1_policy.pt（SHA0620b79d4b85fa746334d50122b1cef0cee933c8af179aa51b514395bbb41dc1）、causal_dev_panel64_v1/panel.json（SHA05fbd73a6c7c6f0a37867576a132706394397bf5bbf127381ac90048a472af59）与对应calibration.json。规划只读公开观测，不读每场景计划时刻/目标标签。控制器实现LearnedHybridPolicy不导入教师动作函数。源NN和资产哈希均锁定。
 
-`fit_composed_strike214_01/policy.pt`已CPU训练12段反馈，留出动作最大误差4.17e-6。接下来用 `probe_g07_composed_contact.py --candidate standing_recovery_search01/best_candidate.pt --strike-policy fit_composed_strike214_01/policy.pt --recovery-scan --launches compact_native_contact01/launches.json --launch-index 37 --num-envs 64`，均以reports/G07路径为前缀且使用GPU预算guard。该扫描变动恢复接入时间/腿部偏移/actor位置输出幅度，主击球为学习PWA，不调用教师函数。混合扫描数据不能拟合单一时钟策略；选中后冻结独立复验。
+## 可信进展与失败
 
-## 可信与无效证据
+- 原球网世界/局部重复平移已修复；net_blocking_probe03/verification.json 32/32真正挡球。旧教师53/64、学习54/64物理网成功声明撤回，不可混入新成绩。
+- 原分组Net过滤传感器零值无效；现逐刚体传感器通过4/4阳性对照。NetContactMonitor版本one-source-per-environment-v2。
+- 无借力有效击球教师214冻结单球重放16/16有效面/越网/首次目标，但恢复0。
+- 从实测数据学得12段PWA，CPU留出最大动作误差4.17e-6；没有把此误差当仿真成绩。学习Go2 actor用于行走和站立，5个位置适配参数+接入时间搜索，原硬件限幅不变。
+- learned_hybrid_recovery_scan01：64不同恢复参数，完整17，非固定策略成功率。
+- hybrid_frozen_compare01：4固定策略各32，完整32/14/10/32，Net0，组2扫掠未决1。原数据未删，阈值未放宽。
+- hybrid_fine625_compare01：两固定策略各32，较高精度完整11/32与32/32；前者Net9，后者Net0；全64数值0。最佳后者与旧组3同参数，跨两分辨率均32/32完整。
+- clean frozen_candidate1_policy.pt已删除未用的44参数教师；仅PWA、冻结NN适配参数和模型常量。新评估脚本可直接加载。旧probe脚本需要旧schema，不用于加载该clean文件。
 
-- 物理网修复为环境局部[1.5,0,.762]。`net_blocking_probe03/verification.json`：32/32位置正确并实际挡球；诊断原metrics末速度判定错误，须读verification。
-- 旧53/64教师、54/64学习策略的网实际偏移，已撤回。正确网冻结PWA复验0/64完整（恢复36/64）。发布页有更正和当前失败视频。
-- 首版分组ContactSensor源/目标数量不匹配，零值无效；当前每刚体一个过滤传感器，`net_robot_contact_positive02`已4/4检出真实网接触。不要再用旧分组零值证明不碰网。
-- `composed_replay_netlocal02`：从root0走到击球32/32空中有效拍面接触与越网，首次目标落点2/32、恢复2/32，但32/32碰网，数值1，无借力完整0。冻结无球复验 `composed_motion_net_timing01` 显示Racket在4.670s先碰网，早于约4.895s击球，不能用作可行教师。
-- `composed_high_ready01`20代×128：无碰网、腾空、恢复的最佳目标匹配点[1.313577,.005240,1.579334]m，仍不足，不是硬件上界。
+## 下一步
 
-## 当前方法与下一步
+先查当前64覆盖：名义scenario0应与已有路线对应；若失败先区分新入口/时序、横向准备、击球、落地。phase_start已由公开球状态预测为3.23–3.87秒，y目标约±.1，尚非成绩。只用独立开发64做方法调整，不修改已冻结200+200面板。
 
-`close_base_ik_cpu01/pose_seed.pt` 是条件IK：机身x1.10、高.75、水平，拍面中心附近可达[1.4,0,1.65]、法向[.866,0,.5]且拍面与网SAT分离约5.5cm。只证明给定机身状态下几何可行，未证明动态到达、自碰撞或全臂安全。
+预先固定协议configs/g07_causal_long_prepare_eval_v1.json，输入causal_eval_panel_a_v1与_b_v1各200，原A/B初始化seed100100/200200与原扰动宽度，新增发球seed717301/717401，时刻4.60–5.25、vx六种、拦截y±.1/z±.03。固定落点矩形x[2,4],y[-1,1]。源角色是版本化长准备场景，不是旧7.4s课程或真实赛场认证。
 
-先检查close高臂行走是否稳定无碰网，再用该walker、该arm seed运行 `search_g07_composed_reach_v2.py`，可用 `--deep-crouch --vertical-seed --flight-objective --landing-feedback --arm-pitch-feedback`。41参数schema为composed-reach-v3-41，索引40为倾角肩关节补偿增益；最新44参数为composed-reach-v4-44，41/42/43为收拍开始、时长和肩关节后收量，40/41参数兼容。深蹲仅扩展搜索范围，实际原关节/扭矩/速度限制不变。飞行评分是理想恢复系数/无阻力弹道预测，只作塑形，必须实际BallEnv验证。
+开发通过后冻结同一策略/实现/协议哈希到policy-lock，使用新evaluate脚本--protocol/--policy-lock对两200面板运行；指标取最差比例，累计数值故障，阈值仍400/.50/.70/.85/0。不能两面板间换策略。尚未创建正式lock、尚未运行正式400、未写artifacts/G07/policy.pt。
 
-所有GPU命令包在scripts/run_gpu_job.py，固定上述budget-window；保存checkpoint和完成回执。不把条件IK、无球拍面点、教师或单发重复当正式策略成绩。真实可行后继续学习、扩大来球/目标、全程自主独立双固定面板至少400回合。
+全部GPU作业通过run_gpu_job.py，指定上述budget-window、max-seconds、env-steps-cap和completed.json回执。运行中job.json未必存在，当前PID看GPU_LEDGER。主控制器/观测缓冲要持久copy_，不要在inference_mode内替换后又在外部reset；Isaac状态写入与forward需在torch.inference_mode内。
 
-## 复现资料
+## GitHub与视频
 
-Go2源行走actor、来源和sha：configs/g07_go2_walk_transfer.json。TorchScript在assets/vendor/go2_flat_baryn20251217（忽略目录），可按原URL/sha下载。原硬件标准PiPER+Go2+球拍20.646991kg，资产sha bfb831e4afc8a1a705bb0fb6f001c25eeaa401822978267a0ee5e151007511f3。行走为冻结学习actor+搜索反馈/臂姿，击球目前为搜索教师，不冒称新神经策略。
-
-延长准备7.4s场景的球在reset时自由发射一次，部分初始位置达数十米，是单独模型探测版本，不能混入原面板。GitHub进展页：https://github.com/lzqw/unitree-smash/releases/tag/g07-progress-20261023 。
-
-
-## 最新分支与明确失败
-
-`composed_close_feedback01`主动完成5/24代后保存切换：腾空、击球前无碰网点[1.411354,-.048992,1.619491]，4.730s；首次网接触为Racket4.814s。代表理想飞行净空-.01952m，尚未实际击球。`02`主动完成16/24代，直立推蹬分支停滞在约1.486m、预测净空缺口.145m。两个作业FAILED是主动未满足请求代数回执，非崩溃；原数据和方法切换json保留。
-
-当前256环境分支把实际腾空作为候选硬条件，保持初值中同一arm seed的已优化姿态/挥拍参数，目标投影x1.45，仍需全臂/拍面动态避网。CPU重建较高候选的拍面/法向误差约2e-7m/7e-7，沿x直接前移2cm会与网交叠，不能靠整体平移解决。
-
-CPU incoming_velocity_bank_cpu01给出锁定阻力下4.8s来球：初始vx=-8..-150，最终仅约-1.71..-5.34，作为多入球速度塑形，不是实测。新`probe_g07_composed_contact.py --population ... --population-candidates 8 --strong-serve-grid`可在真实BallEnv批量比较不同教师（配合相应best_candidate.pt共享metadata），保存selected_teacher.pt；该混合教师数据不许直接拿来拟合单一时钟策略。选定后必须冻结重放再学习。程序现在也保存选中回合50Hz实测连杆位姿供视频。
-
-程序/报告最新已推送646d3a5。修正网下的二进制快照已上传发布页资产 G07_correct_net_snapshot_646d3a5_1134UTC.zip（SHA256 954eef639ad082716afa70b94784ad027f1a57aa64e9f1eb31c4db3d0677eb3c）；其中真实球探测状态是pending，不代表完成。
+https://github.com/lzqw/unitree-smash （分支g04-guided-learning-20261022），最新已推送884e154；此后新覆盖入口/协议与结果待本次推送。
+发布页https://github.com/lzqw/unitree-smash/releases/tag/g07-progress-20261023 。
+完整学习名义课程视频G07_learned_hybrid_complete_nominal_20261023.mp4已上传，是0.25ms组3的32/32片段，不是400验收。
+当前无恢复教师视频G07_netlocal_unassisted_contact_20261023.mp4与先前错误网/旧PWA失败视频均留存、分开标注。二进制快照及教师数据/PWA见同页不可变zip；源Go2 NN来自固定公开作者归档，manifest给URL/sha，禁止替换成私有rough策略。
