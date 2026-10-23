@@ -13,10 +13,12 @@ from .jump_env import JumpEnv, JumpEnvCfg
 from .coupled_env import CoupledEnv
 
 PHYSICS = physics_contract()
+NET_GEOMETRY_VERSION = 'environment-local-net-v2'
 
 
 @configclass
 class BallEnvCfg(JumpEnvCfg):
+    net_geometry_version = NET_GEOMETRY_VERSION
     event_goal_enabled = True
     # G06 development contact panel: this is the validated airborne G05
     # racket event, exposed through the same native command fields.  The
@@ -127,15 +129,17 @@ class BallEnv(JumpEnv):
             net = sim_utils.CuboidCfg(size=(0.02, 2.0, self.cfg.net_height_m),
                 collision_props=sim_utils.CollisionPropertiesCfg(),
                 physics_material=sim_utils.RigidBodyMaterialCfg(restitution=0.1))
-            for i, origin in enumerate(self.scene.env_origins.cpu().tolist()):
+            for i in range(self.num_envs):
                 path = f"/World/envs/env_{i}/Net"
                 # InteractiveScene replication may already have copied the
                 # source net into cloned environments.  Preserve one native
                 # collider per environment instead of spawning duplicates.
                 if stage.GetPrimAtPath(path).IsValid():
                     continue
+                # Net is a child of the translated environment. The spawner's
+                # translation is LOCAL; adding env_origins displaces it twice.
                 net.func(path, net,
-                    translation=(origin[0]+self.cfg.net_x_m, origin[1], self.cfg.net_height_m/2))
+                    translation=(self.cfg.net_x_m, 0., self.cfg.net_height_m/2))
 
     @torch.inference_mode()
     def _write_shuttle_reset(self, ids):

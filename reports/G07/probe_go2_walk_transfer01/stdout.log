@@ -1,0 +1,52 @@
+[INFO][AppLauncher]: Using device: cuda:0
+[INFO][AppLauncher]: Loading experience file: /home/autodrive/Isaac/IsaacLab/apps/isaaclab.python.headless.kit
+Setting seed: 715001
+[INFO]: Base environment:
+	Environment device    : cuda:0
+	Environment seed      : 715001
+	Physics step-size     : 0.002
+	Rendering step-size   : 0.01
+	Environment step-size : 0.01
+[INFO]: Time taken for scene creation : 0.275691 seconds
+[INFO]: Scene manager:  <class InteractiveScene>
+	Number of environments: 64
+	Environment spacing   : 3.0
+	Source prim name      : /World/envs/env_0
+	Global prim paths     : ['/World/Ground']
+	Replicate physics     : True
+[INFO]: Starting the simulation. This may take a few seconds. Please wait...
+[INFO]: Time taken for simulation start : 0.400632 seconds
+[INFO]: Completed setting up the environment...
+{"kind": "transferred learned walking probe, original full payload and net, no ball", "formal_g07_acceptance": false, "episodes": 64, "movement_success": 0, "source_manifest": {"source_discussion": "https://github.com/isaac-sim/IsaacLab/discussions/4105", "source_archive": "https://github.com/user-attachments/files/24214265/go2_policy.zip", "archive_sha256": "82e74b74525daef9f87fd3d96f4892b66959e3b6b68f431d1862f26c3e7e5a7b", "policy_path": "assets/vendor/go2_flat_baryn20251217/policy.pt", "policy_sha256": "b051375e83bd19d23a3e9cd5fe3be1dfb47b87dfe64b2755510134d70205aeb4", "source_control_dt_s": 0.02, "action_scale_rad": 0.25, "observation_order": ["body_linear_velocity_3", "body_angular_velocity_3", "projected_gravity_3", "velocity_command_3", "leg_joint_position_offset_12", "leg_joint_velocity_12", "previous_source_action_12"], "observation_scales": 1.0, "source_robot": "Go2 flat-ground locomotion without PiPER; transfer under full payload must be physically tested", "hardware_change": false, "source_code_review": "TorchScript modules reviewed: Linear/ELU/Identity only; 48 inputs and 12 outputs", "source_author": "baryn", "source_actuator": {"leg_torque_nm": 23.5, "leg_velocity_rad_s": 30.0, "stiffness": 25.0, "damping": 0.5}}, "best": {"env_id": 3, "parameters": [0.3499999940395355, 1.0, 1.2000000476837158], "root_final_m": [0.4798622131347656, -0.05475342273712158, 0.21528297662734985], "velocity_mps": [0.018321819603443146, -0.08856727182865143, -0.016495907679200172], "tilt_gravity_xy": 0.48906975984573364, "movement_success": false, "jump_metrics": {"env_id": 3, "max_height_m": 0.32297876477241516, "total_com_rise_m": 0.0, "airborne_s": 0.0, "recovery_s": 0.0, "takeoff_time_s": 0.0, "landing_time_s": 0.0, "maximum_body_ground_force_n": 0.0, "max_leg_torque_nm": 23.5, "max_arm_torque_nm": 6.838688373565674, "max_joint_speed_rad_s": 26.255041122436523, "clipped_action_values": 0.0, "limited_joint_targets": 0.0, "saturated_leg_joint_substeps": 116.0, "qualified_jump_landed": false, "qualified_flight_seen": false, "body_landing": false, "stable_recovery": false, "success": false, "terminated": false}}}
+Loading user config located at: '/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/isaacsim/kit/data/Kit/Isaac-Sim/5.1/user.config.json'
+[Info] [carb] Logging to file: /home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/isaacsim/kit/logs/Kit/Isaac-Sim/5.1/kit_20261023_171651.log
+2026-10-23T09:16:51Z [0ms] [Warning] [carb.crashreporter-breakpad.plugin] [previous crash] preventing upload of minidump due to user opt-out: '/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/isaacsim/kit/data/Kit/Isaac-Sim/5.1/69f25773-9578-4b83-cb0a628d-f3361cda.dmp'
+2026-10-23T09:16:51Z [58ms] [Warning] [omni.usd_config.extension] Enable omni.materialx.libs extension to use MaterialX
+2026-10-23T09:16:52Z [364ms] [Warning] [carb] Acquiring non optional plugin interface which is not listed as dependency: [omni::physx::IPhysxBenchmarks v1.0] (plugin: <default plugin>), by client: omni.physics.physx.plugin. Add it to CARB_PLUGIN_IMPL_DEPS() macro of a client.
+2026-10-23T09:16:52Z [480ms] [Warning] [omni.isaac.dynamic_control] omni.isaac.dynamic_control is deprecated as of Isaac Sim 4.5. No action is needed from end-users.
+2026-10-23T09:16:55Z [3,846ms] [Warning] [carb.cudainterop.plugin] CUDA_VISIBLE_DEVICES environment variable is set.
+2026-10-23T09:16:55Z [3,846ms] [Warning] [carb.cudainterop.plugin] Note CUDA device enumeration and Omniverse device enumeration are different.
+2026-10-23T09:16:55Z [3,846ms] [Warning] [carb.cudainterop.plugin] Setting CUDA_VISIBLE_DEVICES can lead to undesired behavior or crashes.
+
+|---------------------------------------------------------------------------------------------|
+| Driver Version: 595.91.07     | Graphics API: Vulkan
+|=============================================================================================|
+| GPU | Name                             | Active | LDA | GPU Memory | Vendor-ID | LUID       |
+|     |                                  |        |     |            | Device-ID | UUID       |
+|     |                                  |        |     |            | Bus-ID    |            |
+|---------------------------------------------------------------------------------------------|
+| 0   | NVIDIA GeForce RTX 5080          | Yes: 0 |     | 16303   MB | 10de      | 0          |
+|     |                                  |        |     |            | 2c02      | ac315b09.. |
+|     |                                  |        |     |            | 1         |            |
+|=============================================================================================|
+| OS: 24.04.4 LTS (Noble Numbat) ubuntu, Version: 24.04.4, Kernel: 7.0.0-38-generic
+| XServer Vendor: The X.Org Foundation, XServer Version: 12101011 (1.21.1.11)
+| Processor: Intel(R) Core(TM) i9-14900KF
+| Bare Metal Cores: 24 | Bare Metal Logical Cores: 48
+| Available Cores:  32 
+|---------------------------------------------------------------------------------------------|
+| Total Memory (MB): 64065 | Free Memory: 55009
+| Total Page/Swap (MB): 8191 | Free Page/Swap: 5352
+|---------------------------------------------------------------------------------------------|
+2026-10-23T09:16:55Z [4,142ms] [Warning] [gpu.foundation.plugin] CPU performance profile is set to powersave. This profile sets the CPU to the lowest frequency reducing performance.
+2026-10-23T09:16:55Z [4,150ms] [Warning] [gpu.foundation.plugin] IOMMU is enabled.

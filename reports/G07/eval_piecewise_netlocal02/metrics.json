@@ -1,0 +1,95 @@
+{
+  "kind": "independent frozen near-net curriculum replay",
+  "net_geometry_version": "environment-local-net-v2",
+  "controller": "learned piecewise affine feedback",
+  "policy": "reports/G07/fit_piecewise_curriculum03/policy.pt",
+  "policy_sha256": "32b6feacbf7e06cc85e045b86b73e3ff37bd5a71403749ecdfb067855098cc74",
+  "teacher_prefix_steps": 0,
+  "formal_policy_acceptance": false,
+  "root_start_x_m": 1.0,
+  "candidate": "reports/G07/dynamic_strike_refine01/best_candidate.pt",
+  "candidate_sha256": "c598d7961e0482cf44c1442a7c795424d9517ce617386f5d7bb04078b46491db",
+  "seed": 715501,
+  "episodes": 64,
+  "selected_video_lane": 5,
+  "selection": "highest ordered result; selected example, not a random success-rate estimate",
+  "airborne_contact": 64,
+  "ordered_net": 0,
+  "ordered_landing": 0,
+  "recovery": 36,
+  "complete": 0,
+  "numerical_failures": 0,
+  "best": {
+    "protocol": "ordered-smash-v3",
+    "env_id": 5,
+    "net_geometry_version": "environment-local-net-v2",
+    "airborne_contact": true,
+    "effective_face_contact": false,
+    "contact_count": 1,
+    "contact_position_m": [
+      1.373091697692871,
+      0.02005767822265625,
+      1.5859882831573486
+    ],
+    "contact_point_tool_velocity_mps": [
+      0.5889431834220886,
+      -0.3600865602493286,
+      -0.2912784814834595
+    ],
+    "contact_face_normal_world": [
+      0.9789699912071228,
+      0.18238075077533722,
+      0.09140579402446747
+    ],
+    "contact_root_position_m": [
+      0.8410243988037109,
+      0.016475677490234375,
+      0.7033737897872925
+    ],
+    "contact_time_s": 1.4876878261566162,
+    "outgoing_velocity_mps": [
+      7.31879997253418,
+      -3.2346303462982178,
+      -1.1374261379241943
+    ],
+    "outgoing_position_m": [
+      1.373091697692871,
+      0.02005767822265625,
+      1.5859882831573486
+    ],
+    "outgoing_measurement_time_s": 1.4876878261566162,
+    "interception_min_distance_m": 0.15573064982891083,
+    "release_time_s": 1.4884377717971802,
+    "ordered_crossed_net": false,
+    "geometric_crossed_net": false,
+    "geometric_landed_target": false,
+    "net_margin_m": 0.015765070915222168,
+    "net_crossing_position_m": [
+      1.5,
+      -0.03603125363588333,
+      1.5647650957107544
+    ],
+    "net_crossing_time_s": 1.5050581693649292,
+    "first_landing_position_m": [
+      4.653580665588379,
+      -1.4297842979431152,
+      0.025241350755095482
+    ],
+    "first_landing_time_s": 1.9584037065505981,
+    "ordered_landed_target": false,
+    "recovery_success": false,
+    "complete_smash": false,
+    "body_contact": false,
+    "numerical_failures": 0,
+    "sweep_misses": 0,
+    "sweep_unresolved": 0,
+    "coupled_flight_violation": 10.542740639872141,
+    "predicted_legal_attack": false,
+    "predicted_net_margin_m": 0.009416532630426744,
+    "predicted_first_landing_position_m": [
+      4.653423562192242,
+      -1.4297238480737477,
+      0.025
+    ]
+  }
+}

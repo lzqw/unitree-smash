@@ -25,4 +25,7 @@ def dynamic_reach_action(obs, parameters, default, limits, arm):
                          +parameters[:,35]*obs['policy'][:,6]))[:,None]
    q[:,:4]+=(recover*(parameters[:,36]*obs['policy'][:,7]
                        +parameters[:,37]*obs['policy'][:,1]))[:,None]
+  if parameters.shape[1]>=39:
+   # Settle by commanding the original stance; this never writes robot state.
+   q=torch.where((t>=parameters[:,38])[:,None],default[None,:],q)
   return (2*(q-limits[:,0])/(limits[:,1]-limits[:,0])-1).clamp(-1,1)

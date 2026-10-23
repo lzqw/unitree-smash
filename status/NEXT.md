@@ -1,43 +1,37 @@
-# 实时继续入口（2026-10-23 近网策略学习）
+# 当前继续入口：正确物理球网下重新搜索（2026-10-23）
 
-- `eval_piecewise_curriculum01` 正在独立原生进程评测 `fit_piecewise_curriculum03/policy.pt`：从数据学习的14段仿射反馈策略，全程自主输出动作，尚无本次实测结果。场景root x=1.0近网课程，来球固定，不能当正式G07。
-- `train_dynamic_curriculum01` 已在第4批回合后主动保存停止：前三轮无越网；第4轮62/64空中触球、越网/落点0、恢复23/64。最佳可用权重为bc_03.pt/checkpoint.pt。账本FAILED因请求6轮但主动只做4轮；不是程序崩溃，详见stop_reason.json。
-- `fit_piecewise_curriculum01/02` 为不准确CPU试拟合；修正饱和动作的删失回归后03的独立回合验证最大动作误差约9.27e-6。这是CPU拟合结果，不是仿真成绩。
-- 第二轮步态20代完成，稳定前进仅约0.10m；换为全身前跳路线。PWA评测结束后运行 `search_g07_dynamic_reach.py --root-x 0 --initial reports/G07/dynamic_reach_near_net02/selected_contact_seed.pt --forward-seed --global-fraction .25 --num-envs 128 --generations 32`，必须通过现有GPU0预算守卫。
-- GitHub代码报告提交591a5d2；近网教师、数据、资产和视频发布于 https://github.com/lzqw/unitree-smash/releases/tag/g07-progress-20261023 。本段之后的新学习代码尚待下一次提交。
-- 独立授权窗口、预算和旧成果均保持。继续至完整目标达标或2026-10-24 02:04:13 Asia/Taipei/新增10GPUh先到；不要在课程阶段停止。
+G07仍为IN_PROGRESS，没有满足正确物理网的有效完整策略。G04–G06和旧G07权重全部保留。
 
----
+## 固定授权
 
-# 当前继续入口（2026-10-23 有效越网课程已独立复现）
+`g07-net-feasibility-20261023`，GPU0，独立新增最多10 GPU-hours；Asia/Taipei 2026-10-23 16:04:13 至 2026-10-24 02:04:13（UTC08:04:13至18:04:13）。重启/阶段切换不重置。此前用量不清零、不占用本轮10h。当前已完成作业实收约1.214976 GPUh，运行作业另有预留，账本为准。
 
-- 窗口 `g07-net-feasibility-20261023`：Asia/Taipei 2026-10-23 16:04:13 至 2026-10-24 02:04:13，独立新增10 GPU-hours，GPU0；历史账本保留。
-- 已完成 `dynamic_strike_refine01` 8代搜索，冻结教师 `best_candidate.pt`。独立 `dynamic_strike_replay01`：64/64腾空有效拍面接触、向下高速出球并实际越网、首次目标落点；53/64恢复/完整，数值0。root x=1.0近网课程，单一来球，尚非自主神经策略/正式成绩。
-- 视频和实测连杆/球轨迹在 `reports/G07/dynamic_strike_replay01`。
-- 正在运行 `reports/G07/loaded_walk_bridge02`：原始root x=0、完整负载、无球步态课程；20代×128环境×6秒，必须轮询现有作业，不能重复启动。
-- 下一步：验证并改进真实移动衔接、恢复，随后学习全程观测闭环策略并扩展来球/目标。不能以近网教师53/64替代原G07双固定面板至少400回合的验收。
-- 所有GPU命令必须经 `scripts/run_gpu_job.py --budget-window g07-net-feasibility-20261023`，检查实时账本与固定截止时间。不得重新授权计时。
+## 必须知道的更正
 
----
+旧BallEnv/步态环境在子节点Net使用世界坐标作局部平移，导致物理网远离标称位置。修复为环境局部[1.5,0,0.762]，尺寸[.02,2,1.524]和机器人资产/执行器均不变。
 
-# G07 resumed with new independent GPU0 authorization
+- `net_blocking_probe02/verification.json`：32/32旧网偏移，0挡球。
+- `net_blocking_probe03/verification.json`：32/32正确位置且在网前反射、不穿网。原诊断metrics的末速度判定受后续反弹影响，须读verification.json，原数据保留。
+- 正确网冻结PWA复验 `eval_piecewise_netlocal02`：64/64空中触球，有效越网/目标首次落点/完整均0，恢复36/64，数值0。此前53/64教师、54/64学习策略结论撤回，仅保留历史/几何数据。对应目录新增scene_invalidation.json。
+- 旧击球和旧行走的球拍与正确网有几何交叠，检查在 `net_blocking_probe03/old_motion_net_intersection.json`。需要修正行走腕部姿态，并推迟起跳前的引拍。
 
-Current authoritative authorization: g07-net-feasibility-20261023; T0 2026-10-23T16:04:13.742590+08:00; deadline 2026-10-24T02:04:13.742590+08:00 (Asia/Taipei); 10 additional GPU-hours. Historical resource-block notes below are resolved. Do not reset this clock.
+## 正在运行（轮询现有进程，不能重复启动）
 
-# G07 blocked: new GPU0 authorization required
+[{"output": "/home/autodrive/LZQW/unitree_smash/reports/G07/composed_reach_netlocal02", "child_pid": 1160469, "guard_pid": 1160458}]
 
-Read the new objective at `/home/autodrive/.codex/attachments/1e7d228f-313f-4cad-b9b1-a68c87655170/pasted-text-1.txt` and `reports/G07/feasibility_v3_20261023/REPORT.md`.
+统一exec会话80971，对应 `composed_reach_netlocal02`：正确Net下，从root0开始调用已学习Go2行走actor，接40参数全身击球教师。16代×128环境×7.4秒，无球课程，不是实际击球成绩。新增独立机器人/网接触力监测，初期回合已实际运行，无程序错误。
 
-G04–G06 stay PASSED. The latest G07 native actor remains `reports/G07/train_high_attack_all01/checkpoint.pt`: 400/400 actual airborne contacts, recovery 357/400, complete success 0. No new native rollout ran in this goal turn. New CPU analysis and code are preparation, not G07 completion.
+## 最新可用控制器与来源
 
-Withdraw the old 1.535 m hardware-bound claim. Finite random FK/jump maxima and local 0.11 m blade half-height do not establish impossibility. The new pose projection and physical free-flight targets are in `reports/G07/feasibility_v3_20261023`. The current USD racket and 0.18 m link6 mounting offset match the assembly script but are unmeasured assumptions, not a confirmed real racket design.
+- `search_walk_netlocal02/best_candidate.pt`：正确网下搜索出的12参数行走适配器（速度/反馈、臂姿与腕部角度）；搜索多条成功、典型终点约x1.0，无保守球拍干涉。尚待冻结独立复验，不要把搜索内不同参数数目当重复成功率。
+- 行走actor为作者baryn公开平地Go2 TorchScript，48维输入、50Hz、动作.25rad，腿部25/.5增益、23.5Nm、30rad/s。来源和sha在configs/g07_go2_walk_transfer.json，二进制在assets/vendor/go2_flat_baryn20251217（忽略目录）；URL可按sha重新下载。已审查TorchScript仅Linear/ELU/Identity，无修改全局环境。
+- 原学习PWA `fit_piecewise_curriculum03/policy.pt` 保留作初始化，不是正确网达标策略。
+- `composed_reach_teacher.py` 保留步行臂姿直至起跳阶段再展开，参数schema为composed-reach-v2-40；其中后两维为引拍开始/时长，前38为原全身/挥拍/恢复反馈。绝不把它标为新的学习策略。
 
-The next native entrypoint is `scripts/search_g07_whole_body_v3.py`, using `configs/g07_feasible_search_launch_v3.json` and the opt-in `OrderedSmashEnv`. All 18 joint trajectories and timing are searchable. Actual ordered net/first landing dominates the ranking; bounces, side bypass, rim contacts, recontact and numerical collision failures cannot produce full success. This path is syntax-checked and covered by CPU event/geometry regressions, but has NOT run in Isaac yet. First run a small native batch once a valid new authorization exists; then use the result to improve search, capture repeatable legal demonstrations, train a target/observation-conditioned policy and do the original minimum-panel 400-episode evaluation. Do not stop at a single demonstration or substitute the development seed for formal target/launch coverage.
+## 后续
 
-The original 10-hour GPU0 window started at 2026-10-22T14:08:14.991569+00:00 and expired at 2026-10-23T00:08:14.991569+00:00. Family charges are about 3.182811 GPU-hours. Continuation keys cannot reset this clock or the original 10 GPU-hour family cap. `scripts/run_gpu_job.py` now enforces that, and an actual expired-window preflight was rejected before launching/creating a run. GPU ledger is unchanged in this turn and no project GPU job is live.
+先看当前搜索能否产生足够高、无机器人网接触的有效拍面事件，再做从初始自由来球发射开始的真实碰撞搜索。CPU长准备时间飞行候选在delayed_launch_cpu02（已匹配每个目标高度，01其他高度为近似旧记录）；条件IK在walk_strike_ik_cpu01。均不是动态成功证据。
 
-An asynchronous question requested a fresh GPU0 wall-clock window and GPU-hour limit. Read `status/PENDING_G07_RESOURCE_AUTHORIZATION.json` and any newer user reply before launching. Do not create a new window merely because the old one has unused GPU-hours. New goal explicitly forbids extending expired windows. The initial two turns made CPU progress. The third turn revalidated the same resource blocker, no authorization reply, no RUNNING ledger entry and no live project process; the thread goal is now BLOCKED, not complete. Resume only after a new explicit GPU0 work window and GPU-hours cap.
+当前无球目标约[1.4,0,1.65]、法向[.866,0,.5]，在实际矩形拍面内选择最接近目标的点，避免只奖励最高角。保持完整硬件、标准网和原验收。发现真实可行路线后继续学习、扩展来球/目标，并进行原始起点全程自主双固定面板至少400回合；不能在课程阶段停止。
 
-CPU tests: 85 passed, `reports/G07/feasibility_v3_20261023/cpu_tests.xml`. Historical NEXT content is preserved in `status/history/NEXT_before_G07_v3_20261023.md`.
-
-Latest CPU follow-up: `reports/G07/search_objective_regression_v3/REPORT.md`. Coupled search loss now includes full flight and first-landing violations; higher upward net margin cannot outrank a legal downward flight. Final recontact invalidity is respected by ranking. Outgoing position/velocity/time share the same force frame, and release requires geometric separation. Actual ordered-net candidates retain complete replay parameters even before recovery succeeds. 89 CPU checks passed; native path remains unrun, authorization pending. Second actual goal turn made real code progress. Third actual turn confirmed the same unresolved authorization condition; mark blocked per the audit threshold.
+GitHub旧发布页已明确撤回物理网成功结论： https://github.com/lzqw/unitree-smash/releases/tag/g07-progress-20261023 。旧资料不可混入修复后评估。更早继续入口已归档至status/history/NEXT_before_net_coordinate_fix_20261023.md。

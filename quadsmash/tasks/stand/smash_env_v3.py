@@ -89,6 +89,7 @@ class OrderedSmashEnv(BallEnv):
             for i in complete.cpu().tolist():
                 self.smash_episode_records.append(dict(
                     protocol='ordered-smash-v3', env_id=i,
+                    net_geometry_version=self.cfg.net_geometry_version,
                     airborne_contact=bool(events.airborne_contact[i]),
                     effective_face_contact=bool(events.effective_face[i]),
                     contact_count=int(events.contact_count[i]),

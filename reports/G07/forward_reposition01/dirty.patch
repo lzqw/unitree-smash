@@ -1,0 +1,89 @@
+diff --git a/quadsmash/control/dynamic_reach_teacher.py b/quadsmash/control/dynamic_reach_teacher.py
+index 73b8f58..23fec34 100644
+--- a/quadsmash/control/dynamic_reach_teacher.py
++++ b/quadsmash/control/dynamic_reach_teacher.py
+@@ -25,4 +25,7 @@ def dynamic_reach_action(obs, parameters, default, limits, arm):
+                          +parameters[:,35]*obs['policy'][:,6]))[:,None]
+    q[:,:4]+=(recover*(parameters[:,36]*obs['policy'][:,7]
+                        +parameters[:,37]*obs['policy'][:,1]))[:,None]
++  if parameters.shape[1]>=39:
++   # Settle by commanding the original stance; this never writes robot state.
++   q=torch.where((t>=parameters[:,38])[:,None],default[None,:],q)
+   return (2*(q-limits[:,0])/(limits[:,1]-limits[:,0])-1).clamp(-1,1)
+diff --git a/scripts/search_g07_dynamic_reach.py b/scripts/search_g07_dynamic_reach.py
+index 2f839d7..f16bf1f 100644
+--- a/scripts/search_g07_dynamic_reach.py
++++ b/scripts/search_g07_dynamic_reach.py
+@@ -8,7 +8,7 @@ import argparse,json,signal,sys,traceback
+ from pathlib import Path
+ ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
+ from isaaclab.app import AppLauncher
+-p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--num-envs',type=int,default=128);p.add_argument('--generations',type=int,default=12);p.add_argument('--seed',type=int,default=714101);p.add_argument('--root-x',type=float,default=0.);p.add_argument('--initial',type=Path);p.add_argument('--landing-feedback',action='store_true');p.add_argument('--reposition',action='store_true');p.add_argument('--fold-arm',action='store_true');p.add_argument('--forward-seed',action='store_true');p.add_argument('--global-fraction',type=float,default=0.);AppLauncher.add_app_launcher_args(p);a=p.parse_args();app=AppLauncher(a).app
++p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--num-envs',type=int,default=128);p.add_argument('--generations',type=int,default=12);p.add_argument('--seed',type=int,default=714101);p.add_argument('--root-x',type=float,default=0.);p.add_argument('--initial',type=Path);p.add_argument('--settle-default',action='store_true');p.add_argument('--landing-feedback',action='store_true');p.add_argument('--reposition',action='store_true');p.add_argument('--fold-arm',action='store_true');p.add_argument('--forward-seed',action='store_true');p.add_argument('--global-fraction',type=float,default=0.);AppLauncher.add_app_launcher_args(p);a=p.parse_args();app=AppLauncher(a).app
+ import torch
+ from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper
+ from quadsmash.tasks.stand.jump_env import JumpEnv,JumpEnvCfg
+@@ -28,7 +28,10 @@ def main():
+  env=ReachEnv(cfg);w=RslRlVecEnvWrapper(env,clip_actions=None);device=env.device;low=torch.tensor(LOW,device=device);high=torch.tensor(HIGH,device=device)
+  if a.landing_feedback:
+   low=torch.cat((low,torch.tensor([-.5]*6+[1.1,0.,-.8,-.8,0.],device=device)));high=torch.cat((high,torch.tensor([.5]*6+[1.7,.8,.8,.8,.8],device=device)))
+- mean=torch.tensor(INITIAL+([0.]*6+[1.42,.25,0.,.1,.15] if a.landing_feedback else []),device=device).clamp(low,high);sigma=(high-low)*.18;g=torch.Generator(device=device).manual_seed(a.seed)
++ if a.settle_default:
++  if not a.landing_feedback:raise ValueError('settle-default requires landing-feedback')
++  low=torch.cat((low,torch.tensor([2.05],device=device)));high=torch.cat((high,torch.tensor([2.65],device=device)))
++ mean=torch.tensor(INITIAL+([0.]*6+[1.42,.25,0.,.1,.15] if a.landing_feedback else [])+([2.3] if a.settle_default else []),device=device).clamp(low,high);sigma=(high-low)*.18;g=torch.Generator(device=device).manual_seed(a.seed)
+  if a.initial:
+   prior=torch.load(a.initial,map_location=device,weights_only=False);seed_params=prior['parameters'].to(device);mean[:len(seed_params)]=seed_params;mean=mean.clamp(low,high);sigma=(high-low)*.10
+  if a.forward_seed:
+@@ -55,10 +58,11 @@ def main():
+    recovery=torch.tensor([bool(first[i]['success']) for i in range(a.num_envs)],device=device);scores=best+.15*recovery.float()
+    if a.reposition:
+     safe=torch.tensor([not first[i]['body_landing'] for i in range(a.num_envs)],device=device);quiet=torch.tensor([first[i]['recovery_s'] for i in range(a.num_envs)],device=device)
+-    scores=20*recovery.float()+3*quiet.clamp(max=1.)-4*(final_root[:,0]-1.).abs()-3*final_root[:,1].abs()-final_tilt-.5*final_velocity.norm(dim=-1)-4*(~safe).float()
++    movement_recovery=torch.tensor([first[i]['stable_recovery'] for i in range(a.num_envs)],device=device)&safe&(final_root[:,2]>.2)&(final_tilt<.26)&(final_velocity[:,:2].norm(dim=-1)<.3)
++    scores=20*movement_recovery.float()+3*quiet.clamp(max=1.)-4*(final_root[:,0]-1.).abs()-3*final_root[:,1].abs()-final_tilt-.5*final_velocity.norm(dim=-1)-4*(~safe).float()
+    elite=scores.topk(max(8,a.num_envs//8)).indices;mean=.25*mean+.75*parameters[elite].mean(0);sigma=(.25*sigma+.75*parameters[elite].std(0)).clamp(min=(high-low)*.025);top=int(scores.argmax())
+-   result=dict(objective='ground reposition' if a.reposition else 'dynamic effective face reach',landing_feedback=a.landing_feedback,folded_arm=a.fold_arm,root_final_m=final_root[top].cpu().tolist(),root_final_velocity_mps=final_velocity[top].cpu().tolist(),generation=generation,score=float(scores[top]),parameters=parameters[top].cpu().tolist(),virtual_ball_center_m=position[top].cpu().tolist(),face_normal_world=normal[top].cpu().tolist(),root_at_event_m=root[top].cpu().tolist(),event_time_s=float(time[top]),feet_airborne=bool(air[top]),recovery=bool(recovery[top]),root_apex_m=float(apex[top]),maximum_root_apex_m=float(apex.max()),root_start_x_m=a.root_x,kind='no-ball dynamic reach curriculum; not a smash demonstration or policy result')
+-   history.append(result);torch.save(dict(parameters=parameters.cpu(),scores=scores.cpu(),best_virtual_positions=position.cpu(),root_at_event=root.cpu(),root_apex=apex.cpu(),event_time=time.cpu(),feet_airborne=air.cpu(),recovery=recovery.cpu()),a.output/f'population_{generation:03d}.pt')
++   result=dict(movement_recovery=bool(movement_recovery[top]) if a.reposition else None,objective='ground reposition' if a.reposition else 'dynamic effective face reach',settle_default=a.settle_default,landing_feedback=a.landing_feedback,folded_arm=a.fold_arm,root_final_m=final_root[top].cpu().tolist(),root_final_velocity_mps=final_velocity[top].cpu().tolist(),generation=generation,score=float(scores[top]),parameters=parameters[top].cpu().tolist(),virtual_ball_center_m=position[top].cpu().tolist(),face_normal_world=normal[top].cpu().tolist(),root_at_event_m=root[top].cpu().tolist(),event_time_s=float(time[top]),feet_airborne=bool(air[top]),recovery=bool(recovery[top]),root_apex_m=float(apex[top]),maximum_root_apex_m=float(apex.max()),root_start_x_m=a.root_x,kind='no-ball dynamic reach curriculum; not a smash demonstration or policy result')
++   history.append(result);torch.save(dict(parameters=parameters.cpu(),scores=scores.cpu(),best_virtual_positions=position.cpu(),root_at_event=root.cpu(),root_apex=apex.cpu(),event_time=time.cpu(),feet_airborne=air.cpu(),recovery=recovery.cpu(),root_final=final_root.cpu(),root_final_velocity=final_velocity.cpu(),mean=mean.cpu(),sigma=sigma.cpu(),rng=g.get_state().cpu(),jump_episodes=first),a.output/f'population_{generation:03d}.pt')
+    if float(scores[top])>best_score:best_score=float(scores[top]);torch.save(dict(parameters=parameters[top].cpu(),arm_pose=arm.cpu(),result=result),a.output/'best_candidate.pt')
+    (a.output/'metrics.json').write_text(json.dumps(dict(history=history,best=max(history,key=lambda r:r['score']),env_steps=(generation+1)*a.num_envs*400),indent=2)+'\n');print(json.dumps(result),flush=True)
+    if stopping:break
+diff --git a/status/GPU_LEDGER.json b/status/GPU_LEDGER.json
+index fc544ca..e4bbe5a 100644
+--- a/status/GPU_LEDGER.json
++++ b/status/GPU_LEDGER.json
+@@ -7391,15 +7391,20 @@
+       ],
+       "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/dynamic_reach_forward01",
+       "gpu": 0,
+-      "status": "RUNNING",
+-      "charged_gpu_hours": 0.16666666666666666,
++      "status": "SUCCEEDED",
++      "charged_gpu_hours": 0.09357812197583068,
+       "charged_env_steps": 1638400,
+       "started_at": "2026-10-23T09:01:18.230737+00:00",
+       "pid": 1149573,
+       "original_authorization": "g07-net-feasibility-20261023",
+       "authorization_started_at": "2026-10-23T08:04:13.742590+00:00",
+       "authorization_deadline": "2026-10-23T18:04:13.742590+00:00",
+-      "child_pid": 1149583
++      "child_pid": 1149583,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": true,
++      "elapsed_s": 336.88123911299044,
++      "finished_at": "2026-10-23T09:06:55.114721+00:00"
+     }
+   ],
+   "budget_windows": {
+diff --git a/status/RUNS.jsonl b/status/RUNS.jsonl
+index 5d66892..09a90ab 100644
+--- a/status/RUNS.jsonl
++++ b/status/RUNS.jsonl
+@@ -207,3 +207,4 @@
+ {"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/search_g07_loaded_walk.py", "--output", "reports/G07/loaded_walk_bridge02", "--num-envs", "128", "--generations", "20", "--seconds", "6", "--balanced", "--initial", "reports/G07/loaded_walk_bridge01/best_candidate.pt", "--seed", "714402", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/loaded_walk_bridge02", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.08209100779139489, "charged_env_steps": 1536000, "started_at": "2026-10-23T08:44:09.826387+00:00", "pid": 1146157, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1146201, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 295.5276280490216, "finished_at": "2026-10-23T08:49:05.358302+00:00"}
+ {"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/train_g07_dynamic_curriculum.py", "--output", "reports/G07/train_dynamic_curriculum01", "--candidate", "reports/G07/dynamic_strike_refine01/best_candidate.pt", "--dataset", "reports/G07/dynamic_strike_replay01/teacher_dataset.pt", "--num-envs", "64", "--updates", "2000", "--rounds", "6", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/train_dynamic_curriculum01", "gpu": 0, "status": "FAILED", "charged_gpu_hours": 0.11698240615805844, "charged_env_steps": 153600, "started_at": "2026-10-23T08:51:40.465811+00:00", "pid": 1147932, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1147942, "exit_code": 0, "timed_out": false, "receipt_present": false, "elapsed_s": 421.1366621690104, "finished_at": "2026-10-23T08:58:41.605237+00:00"}
+ {"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/replay_g07_dynamic_strike.py", "--output", "reports/G07/eval_piecewise_curriculum01", "--candidate", "reports/G07/dynamic_strike_refine01/best_candidate.pt", "--policy", "reports/G07/fit_piecewise_curriculum03/policy.pt", "--num-envs", "64", "--seed", "714701", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/eval_piecewise_curriculum01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.029849033109445977, "charged_env_steps": 25600, "started_at": "2026-10-23T08:59:11.049343+00:00", "pid": 1149073, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1149082, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 107.45651919400552, "finished_at": "2026-10-23T09:00:58.508614+00:00"}
++{"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/search_g07_dynamic_reach.py", "--output", "reports/G07/dynamic_reach_forward01", "--num-envs", "128", "--generations", "32", "--root-x", "0", "--initial", "reports/G07/dynamic_reach_near_net02/selected_contact_seed.pt", "--forward-seed", "--global-fraction", ".25", "--seed", "714801", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/dynamic_reach_forward01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.09357812197583068, "charged_env_steps": 1638400, "started_at": "2026-10-23T09:01:18.230737+00:00", "pid": 1149573, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1149583, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 336.88123911299044, "finished_at": "2026-10-23T09:06:55.114721+00:00"}

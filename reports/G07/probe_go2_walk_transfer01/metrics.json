@@ -1,0 +1,77 @@
+{
+  "kind": "transferred learned walking probe, original full payload and net, no ball",
+  "formal_g07_acceptance": false,
+  "episodes": 64,
+  "movement_success": 0,
+  "source_manifest": {
+    "source_discussion": "https://github.com/isaac-sim/IsaacLab/discussions/4105",
+    "source_archive": "https://github.com/user-attachments/files/24214265/go2_policy.zip",
+    "archive_sha256": "82e74b74525daef9f87fd3d96f4892b66959e3b6b68f431d1862f26c3e7e5a7b",
+    "policy_path": "assets/vendor/go2_flat_baryn20251217/policy.pt",
+    "policy_sha256": "b051375e83bd19d23a3e9cd5fe3be1dfb47b87dfe64b2755510134d70205aeb4",
+    "source_control_dt_s": 0.02,
+    "action_scale_rad": 0.25,
+    "observation_order": [
+      "body_linear_velocity_3",
+      "body_angular_velocity_3",
+      "projected_gravity_3",
+      "velocity_command_3",
+      "leg_joint_position_offset_12",
+      "leg_joint_velocity_12",
+      "previous_source_action_12"
+    ],
+    "observation_scales": 1.0,
+    "source_robot": "Go2 flat-ground locomotion without PiPER; transfer under full payload must be physically tested",
+    "hardware_change": false,
+    "source_code_review": "TorchScript modules reviewed: Linear/ELU/Identity only; 48 inputs and 12 outputs",
+    "source_author": "baryn",
+    "source_actuator": {
+      "leg_torque_nm": 23.5,
+      "leg_velocity_rad_s": 30.0,
+      "stiffness": 25.0,
+      "damping": 0.5
+    }
+  },
+  "best": {
+    "env_id": 3,
+    "parameters": [
+      0.3499999940395355,
+      1.0,
+      1.2000000476837158
+    ],
+    "root_final_m": [
+      0.4798622131347656,
+      -0.05475342273712158,
+      0.21528297662734985
+    ],
+    "velocity_mps": [
+      0.018321819603443146,
+      -0.08856727182865143,
+      -0.016495907679200172
+    ],
+    "tilt_gravity_xy": 0.48906975984573364,
+    "movement_success": false,
+    "jump_metrics": {
+      "env_id": 3,
+      "max_height_m": 0.32297876477241516,
+      "total_com_rise_m": 0.0,
+      "airborne_s": 0.0,
+      "recovery_s": 0.0,
+      "takeoff_time_s": 0.0,
+      "landing_time_s": 0.0,
+      "maximum_body_ground_force_n": 0.0,
+      "max_leg_torque_nm": 23.5,
+      "max_arm_torque_nm": 6.838688373565674,
+      "max_joint_speed_rad_s": 26.255041122436523,
+      "clipped_action_values": 0.0,
+      "limited_joint_targets": 0.0,
+      "saturated_leg_joint_substeps": 116.0,
+      "qualified_jump_landed": false,
+      "qualified_flight_seen": false,
+      "body_landing": false,
+      "stable_recovery": false,
+      "success": false,
+      "terminated": false
+    }
+  }
+}

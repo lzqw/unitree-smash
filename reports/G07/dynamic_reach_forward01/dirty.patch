@@ -1,0 +1,265 @@
+diff --git a/quadsmash/rl/native_checkpoint.py b/quadsmash/rl/native_checkpoint.py
+index e220a8e..42f566d 100644
+--- a/quadsmash/rl/native_checkpoint.py
++++ b/quadsmash/rl/native_checkpoint.py
+@@ -13,7 +13,8 @@ def interface(env):
+     return dict(schema=SCHEMA,observation_size=OBSERVATION_SIZE,frame_fields=FRAME_FIELDS,
+         history_length=HISTORY_LENGTH,policy_dt=env.step_dt,joints=[env.robot.joint_names[j] for j in env.joint_ids],
+         asset_sha256=hashlib.sha256(Path(env.cfg.robot.spawn.usd_path).read_bytes()).hexdigest(),
+-        action_family='stand-diagnostic' if env.__class__.__name__=='CoupledEnv' else 'jump-event-v1',
++        action_family=getattr(env, 'action_family',
++            'stand-diagnostic' if env.__class__.__name__=='CoupledEnv' else 'jump-event-v1'),
+         metrics_version='full-com-contiguous-v2' if hasattr(env,'jump_clock') else 'stand-v2')
+ 
+ def rng_state():
+diff --git a/quadsmash/tasks/stand/smash_env_v3.py b/quadsmash/tasks/stand/smash_env_v3.py
+index 6f36cdc..130aacf 100644
+--- a/quadsmash/tasks/stand/smash_env_v3.py
++++ b/quadsmash/tasks/stand/smash_env_v3.py
+@@ -128,6 +128,8 @@ class OrderedSmashEnv(BallEnv):
+ 
+ class FullJointSmashEnv(OrderedSmashEnv):
+     """Opt-in absolute joint-position interface with unchanged native actuators."""
++    action_family = 'absolute-joint-limits-v1'
++
+     def _pre_physics_step(self, actions):
+         self.action_delta.copy_((actions.clamp(-1, 1) - self.last_action).square().sum(1))
+         self._record_action(actions)
+diff --git a/reports/G07/REPORT.md b/reports/G07/REPORT.md
+index 5f17b89..ea17926 100644
+--- a/reports/G07/REPORT.md
++++ b/reports/G07/REPORT.md
+@@ -46,7 +46,7 @@ G07 状态保持 `IN_PROGRESS`；没有创建 `artifacts/G07/policy.pt`，也没
+ 
+ 代表回合（按完整结果选取lane 25）：接触位置 `[1.3972747325897217, 0.02074432373046875, 1.6087727546691895]` m，出球向量 `[7.363097667694092, 0.9775670170783997, -3.0984952449798584]` m/s，总速 `8.04808` m/s；球心在网中心平面的表面净空 `1.557` cm；首次落点 `[3.827606201171875, 0.34340858459472656, 0.025090768933296204]` m，随后稳定恢复。中心平面余量不等同于整个网厚度的保证；实际仿真已包含0.02m厚网体。该回合没有额外身体/球网接触标记或扫掠数值故障。
+ 
+-视频 [`dynamic_strike_replay01/G07_near_net_teacher_replay.mp4`](dynamic_strike_replay01/G07_near_net_teacher_replay.mp4) 使用50Hz实测连杆位姿与球位置、原USD视觉几何离线渲染，包括正常速度与慢放。所展示回合按完整结果选取，不代替统计；网格和目标区颜色为展示用绘制。
++视频 [`G07_near_net_teacher_replay.mp4`](https://github.com/lzqw/unitree-smash/releases/download/g07-progress-20261023/G07_near_net_teacher_replay.mp4) 使用50Hz实测连杆位姿与球位置、原USD视觉几何离线渲染，包括正常速度与慢放。所展示回合按完整结果选取，不代替统计；网格和目标区颜色为展示用绘制。
+ 
+ 目前瓶颈已经从“没有可重复的有效越网”转为 **原始地面起点到近网击球状态的运动衔接、稳定恢复和策略学习/泛化**。第一轮带负载步态搜索只前进约0.26m，尚不够到达所需位置。第二轮保留前后腿负载支撑偏移并加入停止站稳阶段，正在实际运行。有限搜索结果不构成硬件上界。
+ 
+@@ -62,3 +62,5 @@ G07 状态保持 `IN_PROGRESS`；没有创建 `artifacts/G07/policy.pt`，也没
+ 恢复入口和运行成本以 `status/NEXT.md`、`status/GPU_LEDGER.json` 为准。G07继续为IN_PROGRESS；原G04–G06与旧G07最佳权重保留，没有发布新的正式通过权重。
+ 
+ 截至2026-10-23T08:47:24.726046+00:00，本轮已完成作业实收 `0.494641` GPU-hours；正在运行的作业另有账本预留，最终按实耗结算。
++
++代码与报告已推送至提交 `591a5d2`，视频和教师/数据/资产归档见 [G07进展发布页](https://github.com/lzqw/unitree-smash/releases/tag/g07-progress-20261023)。`train_dynamic_curriculum01` 正在从头训练全程自主输出动作的BC/DAgger actor；这是课程开发，不是正式评估。第二轮步态搜索20代结束，稳定前进仍仅约0.10m，下一方向改为验证全身向前起跳的直接衔接。
+diff --git a/scripts/replay_g07_dynamic_strike.py b/scripts/replay_g07_dynamic_strike.py
+index c731c9b..1f92f9f 100644
+--- a/scripts/replay_g07_dynamic_strike.py
++++ b/scripts/replay_g07_dynamic_strike.py
+@@ -20,6 +20,8 @@ parser.add_argument('--output', type=Path, required=True)
+ parser.add_argument('--candidate', type=Path, required=True)
+ parser.add_argument('--num-envs', type=int, default=64)
+ parser.add_argument('--seed', type=int, default=714501)
++parser.add_argument('--policy', type=Path,
++                    help='Frozen learned PWA policy; candidate supplies scene configuration only')
+ AppLauncher.add_app_launcher_args(parser)
+ args = parser.parse_args()
+ app = AppLauncher(args).app
+@@ -67,8 +69,12 @@ def main():
+ 
+     env = ReplayEnv(cfg)
+     wrapped = RslRlVecEnvWrapper(env, clip_actions=None)
+-    params = candidate['parameters'].to(env.device).repeat(args.num_envs, 1)
+-    arm = candidate['arm_pose'].to(env.device)
++    if args.policy:
++        from quadsmash.control.piecewise_affine import PiecewiseAffinePolicy
++        learned=PiecewiseAffinePolicy(torch.load(args.policy,map_location='cpu',weights_only=False)).to(env.device)
++    else:
++        params = candidate['parameters'].to(env.device).repeat(args.num_envs, 1)
++        arm = candidate['arm_pose'].to(env.device)
+     default = env.robot.data.default_joint_pos[0, env.joint_ids]
+     limits = env.robot.data.joint_pos_limits[0, env.joint_ids]
+     obs, _ = wrapped.reset()
+@@ -76,7 +82,8 @@ def main():
+     try:
+         with torch.inference_mode():
+             for tick in range(400):
+-                action = dynamic_reach_action(obs, params, default, limits, arm)
++                action = (learned(obs['policy']) if args.policy else
++                          dynamic_reach_action(obs, params, default, limits, arm))
+                 observations.append(obs['policy'].cpu())
+                 actions.append(action.cpu())
+                 if tick % 2 == 0:
+@@ -104,6 +111,10 @@ def main():
+             root_xyz=s['root'][selected].tolist(), airborne=bool(s['airborne'][selected]),
+             contact=bool(s['contact'][selected])) for s in states]
+         summary = dict(kind='independent frozen near-net curriculum replay',
++            controller='learned piecewise affine feedback' if args.policy else 'searched teacher',
++            policy=str(args.policy) if args.policy else None,
++            policy_sha256=hashlib.sha256(args.policy.read_bytes()).hexdigest() if args.policy else None,
++            teacher_prefix_steps=0,
+             formal_policy_acceptance=False, root_start_x_m=base['root_start_x_m'],
+             candidate=str(args.candidate), candidate_sha256=hashlib.sha256(args.candidate.read_bytes()).hexdigest(),
+             seed=args.seed, episodes=len(rows), selected_video_lane=selected,
+@@ -123,7 +134,7 @@ def main():
+         (args.output/'net_trace.json').write_text(json.dumps(net)+'\n')
+         torch.save(dict(observations=torch.stack(observations), actions=torch.stack(actions),
+                         episodes=rows, seed=args.seed, candidate=summary['candidate_sha256']),
+-                   args.output/'teacher_dataset.pt')
++                   args.output/('policy_dataset.pt' if args.policy else 'teacher_dataset.pt'))
+         (args.output/'metrics.json').write_text(json.dumps(summary, indent=2)+'\n')
+         (args.output/'completed.json').write_text(json.dumps(dict(episodes=len(rows), env_steps=400*args.num_envs))+'\n')
+         print(json.dumps(summary), flush=True)
+diff --git a/scripts/search_g07_dynamic_reach.py b/scripts/search_g07_dynamic_reach.py
+index 1bc9657..ff696b2 100644
+--- a/scripts/search_g07_dynamic_reach.py
++++ b/scripts/search_g07_dynamic_reach.py
+@@ -8,7 +8,7 @@ import argparse,json,signal,sys,traceback
+ from pathlib import Path
+ ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
+ from isaaclab.app import AppLauncher
+-p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--num-envs',type=int,default=128);p.add_argument('--generations',type=int,default=12);p.add_argument('--seed',type=int,default=714101);p.add_argument('--root-x',type=float,default=0.);p.add_argument('--initial',type=Path);AppLauncher.add_app_launcher_args(p);a=p.parse_args();app=AppLauncher(a).app
++p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--num-envs',type=int,default=128);p.add_argument('--generations',type=int,default=12);p.add_argument('--seed',type=int,default=714101);p.add_argument('--root-x',type=float,default=0.);p.add_argument('--initial',type=Path);p.add_argument('--forward-seed',action='store_true');p.add_argument('--global-fraction',type=float,default=0.);AppLauncher.add_app_launcher_args(p);a=p.parse_args();app=AppLauncher(a).app
+ import torch
+ from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper
+ from quadsmash.tasks.stand.jump_env import JumpEnv,JumpEnvCfg
+@@ -28,6 +28,8 @@ def main():
+  env=ReachEnv(cfg);w=RslRlVecEnvWrapper(env,clip_actions=None);device=env.device;low=torch.tensor(LOW,device=device);high=torch.tensor(HIGH,device=device);mean=torch.tensor(INITIAL,device=device).clamp(low,high);sigma=(high-low)*.18;g=torch.Generator(device=device).manual_seed(a.seed)
+  if a.initial:
+   prior=torch.load(a.initial,map_location=device,weights_only=False);mean=prior['parameters'].to(device).clamp(low,high);sigma=(high-low)*.10
++ if a.forward_seed:
++  mean[5]=1.10;mean[6]=1.10;mean[8]=0.;sigma=(high-low)*.18
+  limits=env.robot.data.joint_pos_limits[0,env.joint_ids];default=env.robot.data.default_joint_pos[0,env.joint_ids];geometry=json.loads((ROOT/'reports/G07/feasibility_v3_20261023/geometry.json').read_text());arm=torch.tensor(geometry['poses']['effective_face_normal_x_ge_0.9']['arm_q_rad'],device=device)
+  target=torch.tensor([1.4,0.,1.65],device=device);target_normal=torch.tensor([.96936,0.,.24565],device=device)
+  from quadsmash.control.dynamic_reach_teacher import dynamic_reach_action
+@@ -36,6 +38,8 @@ def main():
+  try:
+   for generation in range(a.generations):
+    parameters=(mean[None,:]+sigma[None,:]*torch.randn((a.num_envs,len(low)),generator=g,device=device)).clamp(low,high);parameters[0]=mean
++   global_count=min(a.num_envs-1,round(a.num_envs*a.global_fraction))
++   if global_count:parameters[-global_count:]=low[None,:]+(high-low)[None,:]*torch.rand((global_count,len(low)),generator=g,device=device)
+    env._episode_has_stepped.zero_();env._metrics_started=False;env.episode_records.clear();obs,_=w.reset();finished=torch.zeros(a.num_envs,dtype=torch.bool,device=device);best=torch.full((a.num_envs,),-100.,device=device);position=torch.zeros((a.num_envs,3),device=device);normal=position.clone();root=position.clone();time=torch.zeros(a.num_envs,device=device);apex=torch.zeros(a.num_envs,device=device);air=torch.zeros(a.num_envs,dtype=torch.bool,device=device)
+    with torch.inference_mode():
+     for _ in range(400):
+diff --git a/status/GPU_LEDGER.json b/status/GPU_LEDGER.json
+index 58e424c..7ea04a3 100644
+--- a/status/GPU_LEDGER.json
++++ b/status/GPU_LEDGER.json
+@@ -7279,15 +7279,92 @@
+       ],
+       "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/loaded_walk_bridge02",
+       "gpu": 0,
+-      "status": "RUNNING",
+-      "charged_gpu_hours": 0.2,
++      "status": "SUCCEEDED",
++      "charged_gpu_hours": 0.08209100779139489,
+       "charged_env_steps": 1536000,
+       "started_at": "2026-10-23T08:44:09.826387+00:00",
+       "pid": 1146157,
+       "original_authorization": "g07-net-feasibility-20261023",
+       "authorization_started_at": "2026-10-23T08:04:13.742590+00:00",
+       "authorization_deadline": "2026-10-23T18:04:13.742590+00:00",
+-      "child_pid": 1146201
++      "child_pid": 1146201,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": true,
++      "elapsed_s": 295.5276280490216,
++      "finished_at": "2026-10-23T08:49:05.358302+00:00"
++    },
++    {
++      "goal": "G07",
++      "budget_window": "g07-net-feasibility-20261023",
++      "command": [
++        "/home/autodrive/Isaac/env_isaaclab/bin/python",
++        "scripts/train_g07_dynamic_curriculum.py",
++        "--output",
++        "reports/G07/train_dynamic_curriculum01",
++        "--candidate",
++        "reports/G07/dynamic_strike_refine01/best_candidate.pt",
++        "--dataset",
++        "reports/G07/dynamic_strike_replay01/teacher_dataset.pt",
++        "--num-envs",
++        "64",
++        "--updates",
++        "2000",
++        "--rounds",
++        "6",
++        "--headless"
++      ],
++      "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/train_dynamic_curriculum01",
++      "gpu": 0,
++      "status": "FAILED",
++      "charged_gpu_hours": 0.11698240615805844,
++      "charged_env_steps": 153600,
++      "started_at": "2026-10-23T08:51:40.465811+00:00",
++      "pid": 1147932,
++      "original_authorization": "g07-net-feasibility-20261023",
++      "authorization_started_at": "2026-10-23T08:04:13.742590+00:00",
++      "authorization_deadline": "2026-10-23T18:04:13.742590+00:00",
++      "child_pid": 1147942,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": false,
++      "elapsed_s": 421.1366621690104,
++      "finished_at": "2026-10-23T08:58:41.605237+00:00"
++    },
++    {
++      "goal": "G07",
++      "budget_window": "g07-net-feasibility-20261023",
++      "command": [
++        "/home/autodrive/Isaac/env_isaaclab/bin/python",
++        "scripts/replay_g07_dynamic_strike.py",
++        "--output",
++        "reports/G07/eval_piecewise_curriculum01",
++        "--candidate",
++        "reports/G07/dynamic_strike_refine01/best_candidate.pt",
++        "--policy",
++        "reports/G07/fit_piecewise_curriculum03/policy.pt",
++        "--num-envs",
++        "64",
++        "--seed",
++        "714701",
++        "--headless"
++      ],
++      "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/eval_piecewise_curriculum01",
++      "gpu": 0,
++      "status": "SUCCEEDED",
++      "charged_gpu_hours": 0.029849033109445977,
++      "charged_env_steps": 25600,
++      "started_at": "2026-10-23T08:59:11.049343+00:00",
++      "pid": 1149073,
++      "original_authorization": "g07-net-feasibility-20261023",
++      "authorization_started_at": "2026-10-23T08:04:13.742590+00:00",
++      "authorization_deadline": "2026-10-23T18:04:13.742590+00:00",
++      "child_pid": 1149082,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": true,
++      "elapsed_s": 107.45651919400552,
++      "finished_at": "2026-10-23T09:00:58.508614+00:00"
+     }
+   ],
+   "budget_windows": {
+diff --git a/status/NEXT.md b/status/NEXT.md
+index 41c0c45..fd50c30 100644
+--- a/status/NEXT.md
++++ b/status/NEXT.md
+@@ -1,3 +1,14 @@
++# 实时继续入口（2026-10-23 近网策略学习）
++
++- `eval_piecewise_curriculum01` 正在独立原生进程评测 `fit_piecewise_curriculum03/policy.pt`：从数据学习的14段仿射反馈策略，全程自主输出动作，尚无本次实测结果。场景root x=1.0近网课程，来球固定，不能当正式G07。
++- `train_dynamic_curriculum01` 已在第4批回合后主动保存停止：前三轮无越网；第4轮62/64空中触球、越网/落点0、恢复23/64。最佳可用权重为bc_03.pt/checkpoint.pt。账本FAILED因请求6轮但主动只做4轮；不是程序崩溃，详见stop_reason.json。
++- `fit_piecewise_curriculum01/02` 为不准确CPU试拟合；修正饱和动作的删失回归后03的独立回合验证最大动作误差约9.27e-6。这是CPU拟合结果，不是仿真成绩。
++- 第二轮步态20代完成，稳定前进仅约0.10m；换为全身前跳路线。PWA评测结束后运行 `search_g07_dynamic_reach.py --root-x 0 --initial reports/G07/dynamic_reach_near_net02/selected_contact_seed.pt --forward-seed --global-fraction .25 --num-envs 128 --generations 32`，必须通过现有GPU0预算守卫。
++- GitHub代码报告提交591a5d2；近网教师、数据、资产和视频发布于 https://github.com/lzqw/unitree-smash/releases/tag/g07-progress-20261023 。本段之后的新学习代码尚待下一次提交。
++- 独立授权窗口、预算和旧成果均保持。继续至完整目标达标或2026-10-24 02:04:13 Asia/Taipei/新增10GPUh先到；不要在课程阶段停止。
++
++---
++
+ # 当前继续入口（2026-10-23 有效越网课程已独立复现）
+ 
+ - 窗口 `g07-net-feasibility-20261023`：Asia/Taipei 2026-10-23 16:04:13 至 2026-10-24 02:04:13，独立新增10 GPU-hours，GPU0；历史账本保留。
+diff --git a/status/RUNS.jsonl b/status/RUNS.jsonl
+index ae2eb51..5d66892 100644
+--- a/status/RUNS.jsonl
++++ b/status/RUNS.jsonl
+@@ -204,3 +204,6 @@
+ {"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/refine_g07_dynamic_strike.py", "--output", "reports/G07/dynamic_strike_refine01", "--candidate", "reports/G07/dynamic_reach_near_net02/selected_contact_seed.pt", "--probe", "reports/G07/dynamic_contact_probe02", "--num-envs", "64", "--generations", "8", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/dynamic_strike_refine01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.22771174233583022, "charged_env_steps": 300000, "started_at": "2026-10-23T08:25:03.887010+00:00", "pid": 1142246, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1142255, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 819.7622724089888, "finished_at": "2026-10-23T08:38:43.652234+00:00"}
+ {"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/search_g07_loaded_walk.py", "--output", "reports/G07/loaded_walk_bridge01", "--num-envs", "128", "--generations", "16", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/loaded_walk_bridge01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.04516322254083611, "charged_env_steps": 820000, "started_at": "2026-10-23T08:38:54.707366+00:00", "pid": 1144966, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1144975, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 162.58760114701, "finished_at": "2026-10-23T08:41:37.297682+00:00"}
+ {"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/replay_g07_dynamic_strike.py", "--output", "reports/G07/dynamic_strike_replay01", "--candidate", "reports/G07/dynamic_strike_refine01/best_candidate.pt", "--num-envs", "64", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/dynamic_strike_replay01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.02997460645528109, "charged_env_steps": 25600, "started_at": "2026-10-23T08:41:45.496038+00:00", "pid": 1145574, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1145583, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 107.90858323901193, "finished_at": "2026-10-23T08:43:33.407637+00:00"}
++{"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/search_g07_loaded_walk.py", "--output", "reports/G07/loaded_walk_bridge02", "--num-envs", "128", "--generations", "20", "--seconds", "6", "--balanced", "--initial", "reports/G07/loaded_walk_bridge01/best_candidate.pt", "--seed", "714402", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/loaded_walk_bridge02", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.08209100779139489, "charged_env_steps": 1536000, "started_at": "2026-10-23T08:44:09.826387+00:00", "pid": 1146157, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1146201, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 295.5276280490216, "finished_at": "2026-10-23T08:49:05.358302+00:00"}
++{"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/train_g07_dynamic_curriculum.py", "--output", "reports/G07/train_dynamic_curriculum01", "--candidate", "reports/G07/dynamic_strike_refine01/best_candidate.pt", "--dataset", "reports/G07/dynamic_strike_replay01/teacher_dataset.pt", "--num-envs", "64", "--updates", "2000", "--rounds", "6", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/train_dynamic_curriculum01", "gpu": 0, "status": "FAILED", "charged_gpu_hours": 0.11698240615805844, "charged_env_steps": 153600, "started_at": "2026-10-23T08:51:40.465811+00:00", "pid": 1147932, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1147942, "exit_code": 0, "timed_out": false, "receipt_present": false, "elapsed_s": 421.1366621690104, "finished_at": "2026-10-23T08:58:41.605237+00:00"}
++{"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/replay_g07_dynamic_strike.py", "--output", "reports/G07/eval_piecewise_curriculum01", "--candidate", "reports/G07/dynamic_strike_refine01/best_candidate.pt", "--policy", "reports/G07/fit_piecewise_curriculum03/policy.pt", "--num-envs", "64", "--seed", "714701", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/eval_piecewise_curriculum01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.029849033109445977, "charged_env_steps": 25600, "started_at": "2026-10-23T08:59:11.049343+00:00", "pid": 1149073, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1149082, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 107.45651919400552, "finished_at": "2026-10-23T09:00:58.508614+00:00"}

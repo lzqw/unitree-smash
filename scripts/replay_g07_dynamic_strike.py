@@ -111,6 +111,7 @@ def main():
             root_xyz=s['root'][selected].tolist(), airborne=bool(s['airborne'][selected]),
             contact=bool(s['contact'][selected])) for s in states]
         summary = dict(kind='independent frozen near-net curriculum replay',
+            net_geometry_version=cfg.net_geometry_version,
             controller='learned piecewise affine feedback' if args.policy else 'searched teacher',
             policy=str(args.policy) if args.policy else None,
             policy_sha256=hashlib.sha256(args.policy.read_bytes()).hexdigest() if args.policy else None,
