@@ -25,6 +25,9 @@ def main():
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
     protocol, lock = read(args.protocol), read(args.policy_lock)
+    from quadsmash.physics.net_geometry import PROFILE_VERSION
+    if protocol.get('net_geometry_version') != PROFILE_VERSION:
+        raise ValueError('Flat-net curriculum cannot satisfy the original side-height contract')
     if lock['protocol_sha256'] != digest(args.protocol):
         raise ValueError('Protocol does not match immutable policy lock')
     if len(args.panel_output) != len(protocol['panels']):

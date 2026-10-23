@@ -1,0 +1,59 @@
+{
+  "version": "g07-causal-profiled-net-frozen-evaluation-v2",
+  "status": "frozen before any formal evaluation; original heights restored, formal outcomes unseen",
+  "frozen_at": "2026-10-23T13:20:09.174003+00:00",
+  "panels": [
+    {
+      "id": "g07_causal_profiled_a_v2",
+      "path": "reports/G07/causal_profiled_eval_panel_a_v2/panel.json",
+      "sha256": "95079c1f416f0a596486db5592dbd6e2d850f3db54f2aaa88635bca9860ab32b",
+      "episodes": 200,
+      "original_initialization_panel": "dev_jump_v2_a"
+    },
+    {
+      "id": "g07_causal_profiled_b_v2",
+      "path": "reports/G07/causal_profiled_eval_panel_b_v2/panel.json",
+      "sha256": "256b2bdbd6bc645b23bde5ac036b71ddae60ed8d64a3ec1afbd369156a1e05a0",
+      "episodes": 200,
+      "original_initialization_panel": "dev_jump_v2_b"
+    }
+  ],
+  "aggregation": "minimum per-panel fractions; sum numerical failures",
+  "physics_dt_s": 6.25e-05,
+  "control_dt_s": 0.01,
+  "episode_seconds": 8.5,
+  "net_geometry_version": "environment-local-profiled-net-v3",
+  "target_region": {
+    "x_m": [
+      2.0,
+      4.0
+    ],
+    "y_m": [
+      -1.0,
+      1.0
+    ]
+  },
+  "acceptance_thresholds_unchanged": {
+    "sample_count": 400,
+    "complete_smash_success_rate": 0.5,
+    "airborne_contact_rate": 0.7,
+    "recovery_given_airborne_contact": 0.85,
+    "numerical_failures": 0
+  },
+  "acceptance_contract_sha256": "66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807",
+  "initialization_contract_sha256": "421497aa51eecac023c70b200e8a75ecafff01527dcf215665d5d96c1e8266a8",
+  "asset_sha256": "bfb831e4afc8a1a705bb0fb6f001c25eeaa401822978267a0ee5e151007511f3",
+  "calibration_canonical_sha256": "3ff8813f972d17bcd710fbbb9ff763839835968b8e51ec53f795ff53bc20d36e",
+  "scope": "Versioned longer-preparation scene, physical initial serve only; multiple intercept positions/times/speeds and original two ground-reset perturbation panels. Fixed opponent landing rectangle. Not real-court or hardware certification.",
+  "controller_inputs": "Public observation only. Per-scenario planned arrival/target labels unavailable to controller. All failures retained.",
+  "development_eval_already_running": "reports/G07/causal_hybrid_dev64_02; independent 64-scenario development panel, outcomes not yet available at freeze",
+  "predecessor_protocol_sha256": "47c88471beb0b7a881b37cf13f46529c12bdcfd9a6300f5b5d15b6ca43f9ac82",
+  "net_profile": {
+    "center_height_m": 1.524,
+    "side_height_m": 1.55,
+    "width_m": 2.0,
+    "thickness_m": 0.02,
+    "segments": 32
+  },
+  "transition": "Previous flat-height v1 never formally run. Only scene metadata/net profile changed; both original scenario arrays preserved exactly."
+}

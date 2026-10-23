@@ -18,6 +18,7 @@ class OrderedSmashEnv(BallEnv):
         self.ordered_smash = OrderedSmashEvents(
             self.num_envs, self.device, radius=cfg.shuttle_radius_m,
             net_x=cfg.net_x_m, net_height=cfg.net_height_m,
+            net_side_height=cfg.net_side_height_m, net_profile_segments=cfg.net_profile_segments,
             target_x=(cfg.target_x_min_m, cfg.target_x_max_m),
             target_y=cfg.target_y_half_width_m)
         self.contact_tool_velocity = torch.full((self.num_envs, 3), float('nan'), device=self.device)

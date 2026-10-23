@@ -77,6 +77,10 @@ def main():
     cfg.sim.render_interval = cfg.decimation
     cfg.episode_length_s = 8.5
     cfg.include_net = True
+    from quadsmash.physics.net_geometry import PROFILE_VERSION
+    cfg.net_geometry_version = source.get('net_geometry_version', cfg.net_geometry_version)
+    if cfg.net_geometry_version == PROFILE_VERSION:
+        cfg.net_side_height_m = 1.55
     cfg.event_goal_enabled = True
     cfg.event_goal_position = (checkpoint['walk_waypoint_x'], 0., .3)
     cfg.event_goal_normal = tuple(checkpoint['result']['face_normal_world'])
@@ -123,6 +127,8 @@ def main():
         kind='real-ball optimization of public-input arm residual' if arm_mode else 'real-ball optimization of public-input causal planner; formal panels unused',
         source_panel_sha256=hashlib.sha256(a.panel.read_bytes()).hexdigest(), source_scenario_indices=indices,
         groups=a.groups, cases_per_group=cases, physics_dt_s=a.physics_dt, target_complete=a.target_complete,
+        net_geometry_version=cfg.net_geometry_version, net_center_height_m=cfg.net_height_m,
+        net_side_height_m=cfg.net_side_height_m,
         checkpoint_sha256=hashlib.sha256(a.checkpoint.read_bytes()).hexdigest()), indent=2)+'\n')
     try:
         for generation in range(a.generations):

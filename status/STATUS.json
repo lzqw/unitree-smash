@@ -50,11 +50,14 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "IN_PROGRESS. Learned hybrid nominal32/32 full at0.25ms and62.5us, no net/faults in chosen frozen groups. Causal varied64 at62.5us: airborne1.0, conditional recovery.890625, complete.40625, net1, faults0. Full threshold not met; formal200+200 panels frozen but not run. Real-ball adaptive planner CEM now training on16 developer cases with16 parameter proposals. Hardware/thresholds unchanged, G04-G06 preserved.",
+      "notes": "IN_PROGRESS. Flat-net nominal curriculum 32/32 full at both .25ms and62.5us; varied64 at62.5us complete.40625/recovery.890625. Six-generation causal planner search best10/16 training full. Original side-height geometry restored as profiled-net-v3; native16/16 ball and4/4 robot sensor positive controls passed. New128-case high-precision development evaluation running, formal400 not run. Flat-net results are not profiled-net acceptance.",
       "active_authorization_window": "g07-net-feasibility-20261023",
       "curriculum_evidence": "reports/G07/eval_piecewise_netlocal02/metrics.json",
       "curriculum_policy": "reports/G07/fit_piecewise_curriculum03/policy.pt",
-      "net_diagnostic": "reports/G07/net_blocking_probe03/verification.json"
+      "net_diagnostic": "reports/G07/net_blocking_probe03/verification.json",
+      "active_gpu_jobs": [
+        "reports/G07/adaptive_planner_profiled_fine128_01"
+      ]
     },
     "G08": {
       "state": "TODO",

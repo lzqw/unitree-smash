@@ -12,7 +12,8 @@ from PIL import Image,ImageDraw,ImageFont
 p=argparse.ArgumentParser();p.add_argument('--input',type=Path,required=True);p.add_argument('--output',type=Path);a=p.parse_args()
 meta=json.load(open(a.input/'geometry.json'));data=np.load(a.input/'geometry.npz');poses=np.load(a.input/'link_poses.npy');trace=json.load(open(a.input/'trajectory.json'));metrics=json.load(open(a.input/'metrics.json'))
 learned=metrics.get('controller','').startswith('learned')
-net_corrected=metrics.get('net_geometry_version')=='environment-local-net-v2'
+net_corrected=metrics.get('net_geometry_version') in {'environment-local-net-v2','environment-local-profiled-net-v3'}
+profiled_net=metrics.get('net_geometry_version')=='environment-local-profiled-net-v3'
 ctx=moderngl.create_standalone_context(backend='egl',device_index=1)
 assert 'llvmpipe' in ctx.info['GL_RENDERER'],ctx.info['GL_RENDERER']
 width,height=1280,720
@@ -58,9 +59,13 @@ net_parts=[]
 def box(center,extent):
  shape=trimesh.creation.box(extents=extent);shape.apply_translation(center)
  return geometry(np.asarray(shape.vertices),np.asarray(shape.faces))
-for y in np.linspace(-1,1,17):net_parts.append(box([1.5,y,.762],[.0025,.0025,1.524]))
+for y in np.linspace(-1,1,17):
+ h=1.524+(.026*y*y if profiled_net else 0.)
+ net_parts.append(box([1.5,y,h/2],[.0025,.0025,h]))
 for z in np.linspace(0,1.524,18):net_parts.append(box([1.5,0,z],[.0025,2,.0025]))
-net_parts.append(box([1.5,0,1.524],[.02,2,.008]))
+if profiled_net:
+ for y in np.linspace(-1,1,33):net_parts.append(box([1.5,y,1.524+.026*y*y],[.02,.065,.004]))
+else:net_parts.append(box([1.5,0,1.524],[.02,2,.008]))
 target=box([3,0,.0001],[2,2,.001])
 font='/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc'
 title=ImageFont.truetype(font,27);small=ImageFont.truetype(font,20)

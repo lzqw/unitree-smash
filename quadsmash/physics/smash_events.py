@@ -13,9 +13,11 @@ from .native import segment_plane_crossing
 class OrderedSmashEvents:
     def __init__(self, count, device, *, radius=.025, net_x=1.5,
                  net_height=1.524, net_half_width=1., target_x=(2., 4.),
-                 target_y=1., dtype=torch.float32):
+                 target_y=1., dtype=torch.float32, net_side_height=None, net_profile_segments=32):
         self.radius, self.net_x = radius, net_x
         self.net_height, self.net_half_width = net_height, net_half_width
+        self.net_side_height = net_height if net_side_height is None else net_side_height
+        self.net_profile_segments = net_profile_segments
         self.target_x, self.target_y = target_x, target_y
         self.count = count
         for name in ("contact", "airborne_contact", "effective_face", "released",
@@ -75,7 +77,12 @@ class OrderedSmashEvents:
         first_crossing = crossing & self.released & before_ground & torch.isnan(self.crossing_time)
         self.crossing_time[first_crossing] = time[first_crossing] - dt + fraction[first_crossing] * dt
         self.net_position[first_crossing] = point[first_crossing]
-        margin = point[:, 2] - self.radius - self.net_height
+        height = self.net_height
+        if self.net_side_height > self.net_height:
+            from .net_geometry import net_top_height
+            height = net_top_height(point[:, 1], self.net_height, self.net_side_height,
+                                    self.net_half_width, self.net_profile_segments)
+        margin = point[:, 2] - self.radius - height
         self.net_margin[first_crossing] = margin[first_crossing]
         legal = first_crossing & attack & (margin > 0) & (point[:, 1].abs() + self.radius <= self.net_half_width)
         self.crossed |= legal

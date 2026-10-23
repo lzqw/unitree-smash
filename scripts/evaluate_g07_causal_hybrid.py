@@ -58,6 +58,12 @@ def main():
         if not args.policy_lock or args.fixed_phase_ablation:
             raise ValueError('Frozen evaluation needs a policy lock and the complete controller')
         protocol = json.loads(args.protocol.read_text())
+        from quadsmash.physics.net_geometry import PROFILE_VERSION
+        required_profile = dict(center_height_m=1.524, side_height_m=1.55,
+                                width_m=2., thickness_m=.02, segments=32)
+        if (protocol.get('net_geometry_version') != PROFILE_VERSION
+                or protocol.get('net_profile') != required_profile):
+            raise ValueError('Formal evaluation requires the original center/side net heights; flat-net v1 is superseded')
         lock = json.loads(args.policy_lock.read_text())
         references = [p for p in protocol['panels'] if (ROOT/p['path']).resolve() == args.launch_panel.resolve()]
         if len(references) != 1 or references[0]['sha256'] != digest(args.launch_panel) or references[0]['episodes'] != count:
@@ -88,6 +94,10 @@ def main():
         raise ValueError('Physics dt must divide the original 10ms control period')
     cfg.episode_length_s = args.episode_seconds
     cfg.include_net = True
+    from quadsmash.physics.net_geometry import PROFILE_VERSION
+    cfg.net_geometry_version = (protocol or panel).get('net_geometry_version', cfg.net_geometry_version)
+    if cfg.net_geometry_version == PROFILE_VERSION:
+        cfg.net_side_height_m = 1.55
     cfg.robot.init_state.pos = (0., 0., .323)
     cfg.event_goal_enabled = True
     cfg.event_goal_position = (checkpoint['walk_waypoint_x'], 0., .3)
@@ -167,6 +177,7 @@ def main():
         (args.output/'eval_manifest.json').write_text(json.dumps(manifest, indent=2)+'\n')
         ticks = round(cfg.episode_length_s/.01)
         traces = [[] for _ in range(min(2, count))]
+        measured_link_poses = [[] for _ in traces]
         first_episode_finished = torch.zeros(count, dtype=torch.bool, device=env.device)
         with torch.inference_mode():
             for tick in range(ticks):
@@ -180,9 +191,13 @@ def main():
                             continue
                         trace.append(dict(time_s=tick*.01,
                             ball_xyz=(env.shuttle.data.root_pos_w[index]-env.scene.env_origins[index]).cpu().tolist(),
+                            ball_v=env.shuttle.data.root_lin_vel_w[index].cpu().tolist(),
                             tool_xyz=(env.robot.data.body_pos_w[index, env.racket_body_id]-env.scene.env_origins[index]).cpu().tolist(),
                             root_xyz=(env.robot.data.root_pos_w[index]-env.scene.env_origins[index]).cpu().tolist(),
                             airborne=bool(env.observed_airborne[index]), contact=bool(env.contact_seen[index])))
+                        measured_link_poses[index].append(torch.cat((
+                            env.robot.data.body_link_pos_w[index]-env.scene.env_origins[index],
+                            env.robot.data.body_link_quat_w[index]), dim=-1).cpu().numpy())
                 obs, _, dones, _ = wrapped.step(action)
                 first_episode_finished |= dones.bool()
                 if (tick+1)%50==0:print(json.dumps(dict(control_steps=tick+1,total_steps=ticks,simulation_time_s=(tick+1)*.01)),flush=True)
@@ -216,6 +231,9 @@ def main():
             writer.writerows(rows)
         (args.output/'initial_states.json').write_text(json.dumps(initial_rows, indent=2)+'\n')
         (args.output/'traces_fixed_scenarios_0_1.json').write_text(json.dumps(traces)+'\n')
+        (args.output/'body_names.json').write_text(json.dumps(env.robot.body_names)+'\n')
+        for index, poses in enumerate(measured_link_poses):
+            np.save(args.output/f'link_poses_fixed_scenario_{index}.npy', np.array(poses))
         (args.output/'jump_episodes.json').write_text(json.dumps(env.episode_records, indent=2)+'\n')
         (args.output/'metrics.json').write_text(json.dumps(metrics, indent=2)+'\n')
         saved = dict(checkpoint)

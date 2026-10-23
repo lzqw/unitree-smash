@@ -41,6 +41,8 @@ class BallEnvCfg(JumpEnvCfg):
     shuttle_velocity = (-6.0, 0.0, 6.235)
     include_net = False
     net_height_m = 1.524
+    net_side_height_m = 1.524
+    net_profile_segments = 32
     net_x_m = 1.5
     target_x_min_m = 2.0
     target_x_max_m = 4.0
@@ -138,8 +140,19 @@ class BallEnv(JumpEnv):
                     continue
                 # Net is a child of the translated environment. The spawner's
                 # translation is LOCAL; adding env_origins displaces it twice.
-                net.func(path, net,
-                    translation=(self.cfg.net_x_m, 0., self.cfg.net_height_m/2))
+                if self.cfg.net_side_height_m > self.cfg.net_height_m:
+                    from quadsmash.physics.net_geometry import spawn_profiled_net, PROFILE_VERSION
+                    from isaaclab.sim.utils import bind_physics_material
+                    if self.cfg.net_geometry_version != PROFILE_VERSION:
+                        raise ValueError('Profiled geometry must have its own declared version')
+                    spawn_profiled_net(stage, path, self.cfg.net_x_m, self.cfg.net_height_m,
+                                       self.cfg.net_side_height_m, self.cfg.net_profile_segments)
+                    material_path = path+'/geometry/material'
+                    net.physics_material.func(material_path, net.physics_material)
+                    bind_physics_material(path+'/geometry/mesh', material_path)
+                else:
+                    net.func(path, net,
+                        translation=(self.cfg.net_x_m, 0., self.cfg.net_height_m/2))
 
     @torch.inference_mode()
     def _write_shuttle_reset(self, ids):

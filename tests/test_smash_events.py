@@ -71,6 +71,32 @@ def test_crossing_around_net_side_is_rejected():
     assert not events.crossed.item()
 
 
+def test_profiled_net_rejects_side_clearance_that_clears_the_center():
+    for y, expected in [(0., True), (.9, False)]:
+        events = OrderedSmashEvents(1, 'cpu', net_side_height=1.55)
+        launch(events)
+        tick(events, [1.4, y, 1.56], [1.6, y, 1.56], 1.03)
+        assert events.crossed.item() == expected
+
+
+def test_profiled_net_mesh_is_closed_and_has_the_contract_heights():
+    from collections import Counter
+    from quadsmash.physics.net_geometry import net_mesh
+    points, faces = net_mesh()
+    edges = Counter(tuple(sorted((face[i], face[(i+1) % len(face)])))
+                    for face in faces for i in range(len(face)))
+    assert set(edges.values()) == {2}
+    volume = 0.
+    for face in faces:
+        for i in range(1, len(face)-1):
+            a, b, c = np.array([points[j] for j in (face[0], face[i], face[i+1])])
+            volume += np.dot(a, np.cross(b, c))/6
+    assert .060 < volume < .063  # closed outward-facing 2 m x .02 m solid
+    for y, expected in [(0., 1.524), (-1., 1.55), (1., 1.55)]:
+        actual = max(z+.762 for x, py, z in points if py == y)
+        assert actual == pytest.approx(expected)
+
+
 def test_free_flight_prediction_matches_no_drag_analytic_and_rejects_low_smash():
     result = predict_flights([[1.35, 0, 1.8], [.4, 0, 1.1]],
                              [[7., 0, -4.], [.45, -1.7, -8.2]], drag=0., dt=.001)
