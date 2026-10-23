@@ -1,3 +1,14 @@
+# 实时继续入口（2026-10-23 近网策略学习）
+
+- `eval_piecewise_curriculum01` 正在独立原生进程评测 `fit_piecewise_curriculum03/policy.pt`：从数据学习的14段仿射反馈策略，全程自主输出动作，尚无本次实测结果。场景root x=1.0近网课程，来球固定，不能当正式G07。
+- `train_dynamic_curriculum01` 已在第4批回合后主动保存停止：前三轮无越网；第4轮62/64空中触球、越网/落点0、恢复23/64。最佳可用权重为bc_03.pt/checkpoint.pt。账本FAILED因请求6轮但主动只做4轮；不是程序崩溃，详见stop_reason.json。
+- `fit_piecewise_curriculum01/02` 为不准确CPU试拟合；修正饱和动作的删失回归后03的独立回合验证最大动作误差约9.27e-6。这是CPU拟合结果，不是仿真成绩。
+- 第二轮步态20代完成，稳定前进仅约0.10m；换为全身前跳路线。PWA评测结束后运行 `search_g07_dynamic_reach.py --root-x 0 --initial reports/G07/dynamic_reach_near_net02/selected_contact_seed.pt --forward-seed --global-fraction .25 --num-envs 128 --generations 32`，必须通过现有GPU0预算守卫。
+- GitHub代码报告提交591a5d2；近网教师、数据、资产和视频发布于 https://github.com/lzqw/unitree-smash/releases/tag/g07-progress-20261023 。本段之后的新学习代码尚待下一次提交。
+- 独立授权窗口、预算和旧成果均保持。继续至完整目标达标或2026-10-24 02:04:13 Asia/Taipei/新增10GPUh先到；不要在课程阶段停止。
+
+---
+
 # 当前继续入口（2026-10-23 有效越网课程已独立复现）
 
 - 窗口 `g07-net-feasibility-20261023`：Asia/Taipei 2026-10-23 16:04:13 至 2026-10-24 02:04:13，独立新增10 GPU-hours，GPU0；历史账本保留。

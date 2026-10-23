@@ -128,6 +128,8 @@ class OrderedSmashEnv(BallEnv):
 
 class FullJointSmashEnv(OrderedSmashEnv):
     """Opt-in absolute joint-position interface with unchanged native actuators."""
+    action_family = 'absolute-joint-limits-v1'
+
     def _pre_physics_step(self, actions):
         self.action_delta.copy_((actions.clamp(-1, 1) - self.last_action).square().sum(1))
         self._record_action(actions)

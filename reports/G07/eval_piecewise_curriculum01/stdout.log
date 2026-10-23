@@ -1,0 +1,53 @@
+[INFO][AppLauncher]: Using device: cuda:0
+[INFO][AppLauncher]: Loading experience file: /home/autodrive/Isaac/IsaacLab/apps/isaaclab.python.headless.kit
+Setting seed: 714701
+[INFO]: Base environment:
+	Environment device    : cuda:0
+	Environment seed      : 714701
+	Physics step-size     : 0.00025
+	Rendering step-size   : 0.01
+	Environment step-size : 0.01
+[INFO]: Time taken for scene creation : 0.292386 seconds
+[INFO]: Scene manager:  <class InteractiveScene>
+	Number of environments: 64
+	Environment spacing   : 3.0
+	Source prim name      : /World/envs/env_0
+	Global prim paths     : ['/World/Ground']
+	Replicate physics     : True
+[INFO]: Starting the simulation. This may take a few seconds. Please wait...
+[INFO]: Time taken for simulation start : 0.452982 seconds
+[INFO]: Completed setting up the environment...
+{"kind": "independent frozen near-net curriculum replay", "controller": "learned piecewise affine feedback", "policy": "reports/G07/fit_piecewise_curriculum03/policy.pt", "policy_sha256": "32b6feacbf7e06cc85e045b86b73e3ff37bd5a71403749ecdfb067855098cc74", "teacher_prefix_steps": 0, "formal_policy_acceptance": false, "root_start_x_m": 1.0, "candidate": "reports/G07/dynamic_strike_refine01/best_candidate.pt", "candidate_sha256": "c598d7961e0482cf44c1442a7c795424d9517ce617386f5d7bb04078b46491db", "seed": 714701, "episodes": 64, "selected_video_lane": 31, "selection": "highest ordered result; selected example, not a random success-rate estimate", "airborne_contact": 64, "ordered_net": 64, "ordered_landing": 64, "recovery": 54, "complete": 54, "numerical_failures": 0, "best": {"protocol": "ordered-smash-v3", "env_id": 31, "airborne_contact": true, "effective_face_contact": true, "contact_count": 1, "contact_position_m": [1.3972322940826416, 0.02074432373046875, 1.6087616682052612], "contact_point_tool_velocity_mps": [0.4907379746437073, -0.6721256971359253, -0.04773671552538872], "contact_face_normal_world": [0.9828680753707886, 0.08838339895009995, 0.16173671185970306], "contact_root_position_m": [0.9286913871765137, 0.00011920928955078125, 0.6958439350128174], "contact_time_s": 1.4841880798339844, "outgoing_velocity_mps": [7.359888553619385, 0.9921068549156189, -3.0959959030151367], "outgoing_position_m": [1.3972322940826416, 0.02074432373046875, 1.6087616682052612], "outgoing_measurement_time_s": 1.4841880798339844, "interception_min_distance_m": 0.13297009468078613, "release_time_s": 1.4849380254745483, "ordered_crossed_net": true, "geometric_crossed_net": true, "geometric_landed_target": true, "net_margin_m": 0.0155562162399292, "net_crossing_position_m": [1.5, 0.03460121527314186, 1.5645562410354614], "net_crossing_time_s": 1.4981707334518433, "first_landing_position_m": [3.8279290199279785, 0.3484058380126953, 0.025642696768045425], "first_landing_time_s": 1.8266632556915283, "ordered_landed_target": true, "recovery_success": true, "complete_smash": true, "body_contact": false, "numerical_failures": 0, "sweep_misses": 0, "sweep_unresolved": 0, "coupled_flight_violation": 0.019838203918798297, "predicted_legal_attack": true, "predicted_net_margin_m": 8.089804060085193e-05, "predicted_first_landing_position_m": [3.828023331161336, 0.34841293354484726, 0.025]}}
+Loading user config located at: '/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/isaacsim/kit/data/Kit/Isaac-Sim/5.1/user.config.json'
+[Info] [carb] Logging to file: /home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/isaacsim/kit/logs/Kit/Isaac-Sim/5.1/kit_20261023_165911.log
+2026-10-23T08:59:11Z [0ms] [Warning] [carb.crashreporter-breakpad.plugin] [previous crash] preventing upload of minidump due to user opt-out: '/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/isaacsim/kit/data/Kit/Isaac-Sim/5.1/69f25773-9578-4b83-cb0a628d-f3361cda.dmp'
+2026-10-23T08:59:11Z [58ms] [Warning] [omni.usd_config.extension] Enable omni.materialx.libs extension to use MaterialX
+2026-10-23T08:59:11Z [351ms] [Warning] [carb] Acquiring non optional plugin interface which is not listed as dependency: [omni::physx::IPhysxBenchmarks v1.0] (plugin: <default plugin>), by client: omni.physics.physx.plugin. Add it to CARB_PLUGIN_IMPL_DEPS() macro of a client.
+2026-10-23T08:59:11Z [464ms] [Warning] [omni.isaac.dynamic_control] omni.isaac.dynamic_control is deprecated as of Isaac Sim 4.5. No action is needed from end-users.
+2026-10-23T08:59:14Z [3,795ms] [Warning] [carb.cudainterop.plugin] CUDA_VISIBLE_DEVICES environment variable is set.
+2026-10-23T08:59:14Z [3,795ms] [Warning] [carb.cudainterop.plugin] Note CUDA device enumeration and Omniverse device enumeration are different.
+2026-10-23T08:59:14Z [3,795ms] [Warning] [carb.cudainterop.plugin] Setting CUDA_VISIBLE_DEVICES can lead to undesired behavior or crashes.
+
+|---------------------------------------------------------------------------------------------|
+| Driver Version: 595.91.07     | Graphics API: Vulkan
+|=============================================================================================|
+| GPU | Name                             | Active | LDA | GPU Memory | Vendor-ID | LUID       |
+|     |                                  |        |     |            | Device-ID | UUID       |
+|     |                                  |        |     |            | Bus-ID    |            |
+|---------------------------------------------------------------------------------------------|
+| 0   | NVIDIA GeForce RTX 5080          | Yes: 0 |     | 16303   MB | 10de      | 0          |
+|     |                                  |        |     |            | 2c02      | ac315b09.. |
+|     |                                  |        |     |            | 1         |            |
+|=============================================================================================|
+| OS: 24.04.4 LTS (Noble Numbat) ubuntu, Version: 24.04.4, Kernel: 7.0.0-38-generic
+| XServer Vendor: The X.Org Foundation, XServer Version: 12101011 (1.21.1.11)
+| Processor: Intel(R) Core(TM) i9-14900KF
+| Bare Metal Cores: 24 | Bare Metal Logical Cores: 48
+| Available Cores:  32 
+|---------------------------------------------------------------------------------------------|
+| Total Memory (MB): 64065 | Free Memory: 54877
+| Total Page/Swap (MB): 8191 | Free Page/Swap: 5501
+|---------------------------------------------------------------------------------------------|
+2026-10-23T08:59:15Z [4,124ms] [Warning] [gpu.foundation.plugin] CPU performance profile is set to powersave. This profile sets the CPU to the lowest frequency reducing performance.
+2026-10-23T08:59:15Z [4,133ms] [Warning] [gpu.foundation.plugin] IOMMU is enabled.
+2026-10-23T08:59:16Z [5,486ms] [Warning] [isaaclab.assets.rigid_object.rigid_object] The external wrench frame has been changed from False to True. This may lead to unexpected behavior.

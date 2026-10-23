@@ -1,0 +1,64 @@
+diff --git a/quadsmash/rl/native_checkpoint.py b/quadsmash/rl/native_checkpoint.py
+index e220a8e..42f566d 100644
+--- a/quadsmash/rl/native_checkpoint.py
++++ b/quadsmash/rl/native_checkpoint.py
+@@ -13,7 +13,8 @@ def interface(env):
+     return dict(schema=SCHEMA,observation_size=OBSERVATION_SIZE,frame_fields=FRAME_FIELDS,
+         history_length=HISTORY_LENGTH,policy_dt=env.step_dt,joints=[env.robot.joint_names[j] for j in env.joint_ids],
+         asset_sha256=hashlib.sha256(Path(env.cfg.robot.spawn.usd_path).read_bytes()).hexdigest(),
+-        action_family='stand-diagnostic' if env.__class__.__name__=='CoupledEnv' else 'jump-event-v1',
++        action_family=getattr(env, 'action_family',
++            'stand-diagnostic' if env.__class__.__name__=='CoupledEnv' else 'jump-event-v1'),
+         metrics_version='full-com-contiguous-v2' if hasattr(env,'jump_clock') else 'stand-v2')
+ 
+ def rng_state():
+diff --git a/quadsmash/tasks/stand/smash_env_v3.py b/quadsmash/tasks/stand/smash_env_v3.py
+index 6f36cdc..130aacf 100644
+--- a/quadsmash/tasks/stand/smash_env_v3.py
++++ b/quadsmash/tasks/stand/smash_env_v3.py
+@@ -128,6 +128,8 @@ class OrderedSmashEnv(BallEnv):
+ 
+ class FullJointSmashEnv(OrderedSmashEnv):
+     """Opt-in absolute joint-position interface with unchanged native actuators."""
++    action_family = 'absolute-joint-limits-v1'
++
+     def _pre_physics_step(self, actions):
+         self.action_delta.copy_((actions.clamp(-1, 1) - self.last_action).square().sum(1))
+         self._record_action(actions)
+diff --git a/status/GPU_LEDGER.json b/status/GPU_LEDGER.json
+index 58e424c..6f715a4 100644
+--- a/status/GPU_LEDGER.json
++++ b/status/GPU_LEDGER.json
+@@ -7279,15 +7279,20 @@
+       ],
+       "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/loaded_walk_bridge02",
+       "gpu": 0,
+-      "status": "RUNNING",
+-      "charged_gpu_hours": 0.2,
++      "status": "SUCCEEDED",
++      "charged_gpu_hours": 0.08209100779139489,
+       "charged_env_steps": 1536000,
+       "started_at": "2026-10-23T08:44:09.826387+00:00",
+       "pid": 1146157,
+       "original_authorization": "g07-net-feasibility-20261023",
+       "authorization_started_at": "2026-10-23T08:04:13.742590+00:00",
+       "authorization_deadline": "2026-10-23T18:04:13.742590+00:00",
+-      "child_pid": 1146201
++      "child_pid": 1146201,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": true,
++      "elapsed_s": 295.5276280490216,
++      "finished_at": "2026-10-23T08:49:05.358302+00:00"
+     }
+   ],
+   "budget_windows": {
+diff --git a/status/RUNS.jsonl b/status/RUNS.jsonl
+index ae2eb51..3289b19 100644
+--- a/status/RUNS.jsonl
++++ b/status/RUNS.jsonl
+@@ -204,3 +204,4 @@
+ {"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/refine_g07_dynamic_strike.py", "--output", "reports/G07/dynamic_strike_refine01", "--candidate", "reports/G07/dynamic_reach_near_net02/selected_contact_seed.pt", "--probe", "reports/G07/dynamic_contact_probe02", "--num-envs", "64", "--generations", "8", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/dynamic_strike_refine01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.22771174233583022, "charged_env_steps": 300000, "started_at": "2026-10-23T08:25:03.887010+00:00", "pid": 1142246, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1142255, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 819.7622724089888, "finished_at": "2026-10-23T08:38:43.652234+00:00"}
+ {"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/search_g07_loaded_walk.py", "--output", "reports/G07/loaded_walk_bridge01", "--num-envs", "128", "--generations", "16", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/loaded_walk_bridge01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.04516322254083611, "charged_env_steps": 820000, "started_at": "2026-10-23T08:38:54.707366+00:00", "pid": 1144966, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1144975, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 162.58760114701, "finished_at": "2026-10-23T08:41:37.297682+00:00"}
+ {"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/replay_g07_dynamic_strike.py", "--output", "reports/G07/dynamic_strike_replay01", "--candidate", "reports/G07/dynamic_strike_refine01/best_candidate.pt", "--num-envs", "64", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/dynamic_strike_replay01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.02997460645528109, "charged_env_steps": 25600, "started_at": "2026-10-23T08:41:45.496038+00:00", "pid": 1145574, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1145583, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 107.90858323901193, "finished_at": "2026-10-23T08:43:33.407637+00:00"}
++{"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/search_g07_loaded_walk.py", "--output", "reports/G07/loaded_walk_bridge02", "--num-envs", "128", "--generations", "20", "--seconds", "6", "--balanced", "--initial", "reports/G07/loaded_walk_bridge01/best_candidate.pt", "--seed", "714402", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/loaded_walk_bridge02", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.08209100779139489, "charged_env_steps": 1536000, "started_at": "2026-10-23T08:44:09.826387+00:00", "pid": 1146157, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1146201, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 295.5276280490216, "finished_at": "2026-10-23T08:49:05.358302+00:00"}

@@ -1,0 +1,112 @@
+{
+  "kind": "learned actor BC/DAgger development curriculum",
+  "formal_policy_acceptance": false,
+  "root_start_x_m": 1.0,
+  "teacher": {
+    "episodes": 64,
+    "airborne_contact": 64,
+    "ordered_net": 64,
+    "ordered_landing": 64,
+    "recovery": 53,
+    "conditional_recovery_rate": 0.828125,
+    "complete": 53,
+    "numerical_failures": 0
+  },
+  "teacher_sha256": "c598d7961e0482cf44c1442a7c795424d9517ce617386f5d7bb04078b46491db",
+  "initial_weights": "random; changed absolute-joint action contract",
+  "teacher_prefix_steps": 0,
+  "learner_checks": [
+    {
+      "round": 0,
+      "validation_mse": 0.00030920334393158555,
+      "training_losses": [
+        0.1666456013917923,
+        0.001284671714529395,
+        0.0005526810418814421,
+        0.0004673353396356106,
+        0.00033790862653404474,
+        0.0003275828203186393,
+        0.00031608561403118074,
+        0.00020223048340994865
+      ],
+      "episodes": 64,
+      "airborne_contact": 0,
+      "ordered_net": 0,
+      "ordered_landing": 0,
+      "recovery": 0,
+      "conditional_recovery_rate": 0.0,
+      "complete": 0,
+      "numerical_failures": 0
+    },
+    {
+      "round": 1,
+      "validation_mse": 0.0003220684011466801,
+      "training_losses": [
+        0.09142370522022247,
+        0.003065652446821332,
+        0.001988155534490943,
+        0.001567939412780106,
+        0.001169856870546937,
+        0.0008801866788417101,
+        0.0007808331865817308,
+        0.0006512338295578957
+      ],
+      "episodes": 64,
+      "airborne_contact": 0,
+      "ordered_net": 0,
+      "ordered_landing": 0,
+      "recovery": 0,
+      "conditional_recovery_rate": 0.0,
+      "complete": 0,
+      "numerical_failures": 0
+    },
+    {
+      "round": 2,
+      "validation_mse": 0.0002508765319362283,
+      "training_losses": [
+        0.0010319267166778445,
+        0.0004798325535375625,
+        0.0004776255809701979,
+        0.000377974531147629,
+        0.00035754896816797554,
+        0.00032418695627711713,
+        0.0003033240500371903,
+        0.00026965877623297274
+      ],
+      "episodes": 64,
+      "airborne_contact": 2,
+      "ordered_net": 0,
+      "ordered_landing": 0,
+      "recovery": 4,
+      "conditional_recovery_rate": 0.0,
+      "complete": 0,
+      "numerical_failures": 0
+    },
+    {
+      "round": 3,
+      "validation_mse": 0.00016238899843301624,
+      "training_losses": [
+        0.003581044264137745,
+        0.0004179944808129221,
+        0.00028272284544073045,
+        0.0002486171724740416,
+        0.00023886281996965408,
+        0.00022453954443335533,
+        0.00022658395755570382,
+        0.00021771673345938325
+      ],
+      "episodes": 64,
+      "airborne_contact": 62,
+      "ordered_net": 0,
+      "ordered_landing": 0,
+      "recovery": 23,
+      "conditional_recovery_rate": 0.3709677419354839,
+      "complete": 0,
+      "numerical_failures": 0
+    }
+  ],
+  "env_steps": 102400,
+  "best_round": 3,
+  "best_selection": "rank measured full/landing/net, then airborne/recovery when full components tie",
+  "stopped_early_for_method_switch": true
+}

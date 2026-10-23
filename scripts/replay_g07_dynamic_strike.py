@@ -20,6 +20,8 @@ parser.add_argument('--output', type=Path, required=True)
 parser.add_argument('--candidate', type=Path, required=True)
 parser.add_argument('--num-envs', type=int, default=64)
 parser.add_argument('--seed', type=int, default=714501)
+parser.add_argument('--policy', type=Path,
+                    help='Frozen learned PWA policy; candidate supplies scene configuration only')
 AppLauncher.add_app_launcher_args(parser)
 args = parser.parse_args()
 app = AppLauncher(args).app
@@ -67,8 +69,12 @@ def main():
 
     env = ReplayEnv(cfg)
     wrapped = RslRlVecEnvWrapper(env, clip_actions=None)
-    params = candidate['parameters'].to(env.device).repeat(args.num_envs, 1)
-    arm = candidate['arm_pose'].to(env.device)
+    if args.policy:
+        from quadsmash.control.piecewise_affine import PiecewiseAffinePolicy
+        learned=PiecewiseAffinePolicy(torch.load(args.policy,map_location='cpu',weights_only=False)).to(env.device)
+    else:
+        params = candidate['parameters'].to(env.device).repeat(args.num_envs, 1)
+        arm = candidate['arm_pose'].to(env.device)
     default = env.robot.data.default_joint_pos[0, env.joint_ids]
     limits = env.robot.data.joint_pos_limits[0, env.joint_ids]
     obs, _ = wrapped.reset()
@@ -76,7 +82,8 @@ def main():
     try:
         with torch.inference_mode():
             for tick in range(400):
-                action = dynamic_reach_action(obs, params, default, limits, arm)
+                action = (learned(obs['policy']) if args.policy else
+                          dynamic_reach_action(obs, params, default, limits, arm))
                 observations.append(obs['policy'].cpu())
                 actions.append(action.cpu())
                 if tick % 2 == 0:
@@ -104,6 +111,10 @@ def main():
             root_xyz=s['root'][selected].tolist(), airborne=bool(s['airborne'][selected]),
             contact=bool(s['contact'][selected])) for s in states]
         summary = dict(kind='independent frozen near-net curriculum replay',
+            controller='learned piecewise affine feedback' if args.policy else 'searched teacher',
+            policy=str(args.policy) if args.policy else None,
+            policy_sha256=hashlib.sha256(args.policy.read_bytes()).hexdigest() if args.policy else None,
+            teacher_prefix_steps=0,
             formal_policy_acceptance=False, root_start_x_m=base['root_start_x_m'],
             candidate=str(args.candidate), candidate_sha256=hashlib.sha256(args.candidate.read_bytes()).hexdigest(),
             seed=args.seed, episodes=len(rows), selected_video_lane=selected,
@@ -115,6 +126,7 @@ def main():
             complete=sum(r['complete_smash'] for r in rows),
             numerical_failures=sum(r['numerical_failures'] for r in rows), best=rows[selected])
         (args.output/'episodes.json').write_text(json.dumps(rows, indent=2)+'\n')
+        (args.output/'jump_episodes.json').write_text(json.dumps(env.episode_records, indent=2)+'\n')
         (args.output/'trajectory.json').write_text(json.dumps(trajectory)+'\n')
         np.save(args.output/'link_poses.npy', np.stack(poses)[:,selected])
         (args.output/'body_names.json').write_text(json.dumps(env.robot.body_names)+'\n')
@@ -123,7 +135,7 @@ def main():
         (args.output/'net_trace.json').write_text(json.dumps(net)+'\n')
         torch.save(dict(observations=torch.stack(observations), actions=torch.stack(actions),
                         episodes=rows, seed=args.seed, candidate=summary['candidate_sha256']),
-                   args.output/'teacher_dataset.pt')
+                   args.output/('policy_dataset.pt' if args.policy else 'teacher_dataset.pt'))
         (args.output/'metrics.json').write_text(json.dumps(summary, indent=2)+'\n')
         (args.output/'completed.json').write_text(json.dumps(dict(episodes=len(rows), env_steps=400*args.num_envs))+'\n')
         print(json.dumps(summary), flush=True)

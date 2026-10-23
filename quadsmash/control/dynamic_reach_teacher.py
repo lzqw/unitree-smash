@@ -18,4 +18,11 @@ def dynamic_reach_action(obs, parameters, default, limits, arm):
   if parameters.shape[1]>=34:
    swing=((t-parameters[:,33])/.06).clamp(0,1)*((2.05-t)/.35).clamp(0,1)
    q[:,12:]+=parameters[:,27:33]*swing[:,None]
+  if parameters.shape[1]>=38:
+   # Optional landing feedback for forward motion. Only measured body velocity,
+   # gravity and the existing recovery phase enter these bounded joint targets.
+   q[:,4:8]+=(recover*(-parameters[:,34]*obs['policy'][:,0]
+                         +parameters[:,35]*obs['policy'][:,6]))[:,None]
+   q[:,:4]+=(recover*(parameters[:,36]*obs['policy'][:,7]
+                       +parameters[:,37]*obs['policy'][:,1]))[:,None]
   return (2*(q-limits[:,0])/(limits[:,1]-limits[:,0])-1).clamp(-1,1)

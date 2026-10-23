@@ -13,7 +13,8 @@ def interface(env):
     return dict(schema=SCHEMA,observation_size=OBSERVATION_SIZE,frame_fields=FRAME_FIELDS,
         history_length=HISTORY_LENGTH,policy_dt=env.step_dt,joints=[env.robot.joint_names[j] for j in env.joint_ids],
         asset_sha256=hashlib.sha256(Path(env.cfg.robot.spawn.usd_path).read_bytes()).hexdigest(),
-        action_family='stand-diagnostic' if env.__class__.__name__=='CoupledEnv' else 'jump-event-v1',
+        action_family=getattr(env, 'action_family',
+            'stand-diagnostic' if env.__class__.__name__=='CoupledEnv' else 'jump-event-v1'),
         metrics_version='full-com-contiguous-v2' if hasattr(env,'jump_clock') else 'stand-v2')
 
 def rng_state():
