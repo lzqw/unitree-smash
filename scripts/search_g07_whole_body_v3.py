@@ -37,7 +37,7 @@ import numpy as np
 import torch
 from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper
 from quadsmash.physics.smash_events import rank_candidate
-from quadsmash.physics.smash_feasibility import predict_flights
+from quadsmash.control.smash_search import add_flight_search_diagnostics, search_candidate_key
 from quadsmash.tasks.stand.ball_env import BallEnvCfg
 from quadsmash.tasks.stand.smash_env_v3 import OrderedSmashEnv
 
@@ -135,23 +135,8 @@ def main():
             if len(first) != args.num_envs:
                 raise RuntimeError('Incomplete physical candidate batch')
             rows = [first[i] for i in range(args.num_envs)]
-            for row in rows:
-                # Predicted free flight is only a continuous search aid; real
-                # ordered crossing and first landing always dominate ranking.
-                p, v = np.asarray(row['contact_position_m']), np.asarray(row['outgoing_velocity_mps'])
-                if np.isfinite(p).all() and np.isfinite(v).all() and v[0] > 0:
-                    prediction = predict_flights(p, v)
-                    margin = float(prediction['net_margin'][0])
-                    row['predicted_net_margin_m'] = margin if np.isfinite(margin) else -3.
-                else:
-                    row['predicted_net_margin_m'] = -3.
-            def rank(row):
-                basic = rank_candidate(row)
-                # In no-contact trials, actual racket/shuttle proximity is
-                # useful exploration evidence, never a contact-success label.
-                raw = next(r for r in env.ball_episode_records if r['env_id'] == row['env_id'])
-                return (*basic[:4], row['predicted_net_margin_m'], -raw['ball_min_distance_m'], basic[-1])
-            order = sorted(range(args.num_envs), key=lambda i: rank(rows[i]), reverse=True)
+            add_flight_search_diagnostics(rows)
+            order = sorted(range(args.num_envs), key=lambda i: search_candidate_key(rows[i]), reverse=True)
             elite = torch.tensor(order[:max(4, args.num_envs//8)], device=env.device)
             mean = .25*mean + .75*knots[elite].mean(0)
             sigma = (.25*sigma + .75*knots[elite].std(0)).clamp(.025, .4)
@@ -164,13 +149,25 @@ def main():
                          ordered_net=sum(r['ordered_crossed_net'] for r in rows),
                          airborne_contacts=sum(r['airborne_contact'] for r in rows), best=best)
             history.append(entry)
-            if all_best is None or rank(best) > all_best[0]:
-                all_best = (rank(best), best)
+            if all_best is None or search_candidate_key(best) > all_best[0]:
+                all_best = (search_candidate_key(best), best)
                 torch.save(dict(knots=knots[order[0]].cpu(), knot_times=times.cpu(),
                                 time_scale=float(warp[order[0]]), launch=launch,
                                 action_interface='absolute-joint-limits-18D-v3',
                                 kind='open-loop demonstration candidate, not learned policy', result=best),
                            args.output/'best_candidate.pt')
+            # Retain real useful shots even when recovery still fails, so
+            # later recovery work can replay the exact joint/time candidate.
+            promising = [i for i in order if rank_candidate(rows[i])[2]]
+            if promising:
+                bank = args.output/'feasible_shots'
+                bank.mkdir(exist_ok=True)
+                for i in promising:
+                    torch.save(dict(knots=knots[i].cpu(), knot_times=times.cpu(),
+                                    time_scale=float(warp[i]), launch=launch, result=rows[i],
+                                    generation=generation, env_id=i, seed=args.seed,
+                                    kind='measured ordered-net demonstration; not policy acceptance'),
+                               bank/f'generation_{generation:03d}_lane_{i:03d}.pt')
             (args.output/f'episodes_{generation:03d}.json').write_text(json.dumps(rows, indent=2)+'\n')
             (args.output/'metrics.json').write_text(json.dumps(dict(history=history,
                 env_steps=(generation+1)*args.num_envs*400, best=all_best[1],

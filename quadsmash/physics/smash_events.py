@@ -23,24 +23,28 @@ class OrderedSmashEvents:
             setattr(self, name, torch.zeros(count, dtype=torch.bool, device=device))
         self.quiet_frames = torch.zeros(count, dtype=torch.long, device=device)
         self.contact_count = torch.zeros_like(self.quiet_frames)
-        for name in ("contact_time", "release_time", "crossing_time", "landing_time", "net_margin"):
+        for name in ("contact_time", "outgoing_time", "release_time", "crossing_time", "landing_time", "net_margin"):
             setattr(self, name, torch.full((count,), float("nan"), device=device, dtype=dtype))
-        for name in ("contact_position", "outgoing_velocity", "net_position", "landing_position"):
+        for name in ("contact_position", "outgoing_position", "outgoing_velocity", "net_position", "landing_position"):
             setattr(self, name, torch.full((count, 3), float("nan"), device=device, dtype=dtype))
         self._last_touch_velocity = torch.zeros((count, 3), device=device, dtype=dtype)
+        self._last_touch_position = torch.zeros_like(self._last_touch_velocity)
+        self._last_touch_time = torch.zeros(count, device=device, dtype=dtype)
 
     def reset(self, ids):
         for name in ("contact", "airborne_contact", "effective_face", "released", "crossed",
                      "ground_seen", "landed_target", "invalid_multiple_contact"):
             getattr(self, name)[ids] = False
         self.quiet_frames[ids] = self.contact_count[ids] = 0
-        for name in ("contact_time", "release_time", "crossing_time", "landing_time", "net_margin",
-                     "contact_position", "outgoing_velocity", "net_position", "landing_position"):
+        for name in ("contact_time", "outgoing_time", "release_time", "crossing_time", "landing_time", "net_margin",
+                     "contact_position", "outgoing_position", "outgoing_velocity", "net_position", "landing_position"):
             getattr(self, name)[ids] = float("nan")
         self._last_touch_velocity[ids] = 0
+        self._last_touch_position[ids] = 0
+        self._last_touch_time[ids] = 0
 
     def advance(self, *, previous_position, position, velocity, contact_event,
-                touching, airborne, effective_face, ground_touch, time, dt):
+                touching, airborne, effective_face, ground_touch, time, dt, separated=None):
         before_ground = ~self.ground_seen
         first = contact_event & (~self.contact)
         self.contact_count += contact_event.long()
@@ -51,11 +55,16 @@ class OrderedSmashEvents:
         self.effective_face[first] = effective_face[first]
         self.contact |= contact_event
         self._last_touch_velocity[touching] = velocity[touching]
-        quiet = self.contact & (~touching)
+        self._last_touch_position[touching] = position[touching]
+        self._last_touch_time[touching] = time[touching]
+        separated = (~touching) if separated is None else separated & (~touching)
+        quiet = self.contact & separated
         self.quiet_frames = torch.where(quiet, self.quiet_frames + 1,
                                        torch.zeros_like(self.quiet_frames))
         release = quiet & (self.quiet_frames >= 2) & (~self.released)
         self.outgoing_velocity[release] = self._last_touch_velocity[release]
+        self.outgoing_position[release] = self._last_touch_position[release]
+        self.outgoing_time[release] = self._last_touch_time[release]
         self.release_time[release] = time[release]
         self.released |= release
         attack = self.attack()
@@ -98,14 +107,21 @@ def rank_candidate(record):
     """Actual ordered net/first-landing results dominate all local components."""
     numerical = (record.get('numerical_failures', 0) or record.get('sweep_misses', 0)
                  or record.get('sweep_unresolved', 0))
-    legal_landing = bool(record.get("ordered_landed_target", False)) and not numerical
-    legal_crossing = bool(record.get("ordered_crossed_net", False)) and not numerical
-    complete = legal_landing and bool(record.get("recovery_success", False))
+    original_velocity = record.get("outgoing_velocity_mps", (0., 0., 0.))
+    finite_velocity = len(original_velocity) == 3 and all(math.isfinite(float(x)) for x in original_velocity)
+    valid_attack = (finite_velocity and sum(float(x)**2 for x in original_velocity) >= 64.
+                    and original_velocity[0] > 0 and original_velocity[2] <= -1.
+                    and record.get('contact_count', 1) == 1
+                    and record.get('airborne_contact', True)
+                    and record.get('effective_face_contact', True) and not numerical)
+    legal_landing = bool(record.get("ordered_landed_target", False)) and valid_attack
+    legal_crossing = bool(record.get("ordered_crossed_net", False)) and valid_attack
+    complete = (legal_landing and bool(record.get("recovery_success", False))
+                and record.get('complete_smash', True))
     margin = record.get("net_margin_m")
     margin = float(margin) if margin is not None else -2.
     margin = min(.5, max(-2., margin)) if math.isfinite(margin) else -2.
-    velocity = record.get("outgoing_velocity_mps", (0., 0., 0.))
-    velocity = tuple(float(x) if math.isfinite(float(x)) else 0. for x in velocity)
+    velocity = tuple(float(x) if math.isfinite(float(x)) else 0. for x in original_velocity)
     forward = velocity[0] > 0
     return (int(complete), int(legal_landing), int(legal_crossing),
             int(forward), margin, -abs(velocity[1]))

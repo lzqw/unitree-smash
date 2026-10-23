@@ -23,6 +23,7 @@ class OrderedSmashEnv(BallEnv):
         self.contact_tool_velocity = torch.full((self.num_envs, 3), float('nan'), device=self.device)
         self.contact_face_normal = self.contact_tool_velocity.clone()
         self.contact_root_position = self.contact_tool_velocity.clone()
+        self.interception_min_distance = torch.full((self.num_envs,), float('inf'), device=self.device)
 
     def _consume_physics_frame(self, frame):
         if self.contact_events is None or frame <= self._last_physics_frame:
@@ -47,6 +48,14 @@ class OrderedSmashEnv(BallEnv):
         force = self.shuttle_contact.data.force_matrix_w[:, 0]
         touching = force[:, 0].norm(dim=-1) > PHYSICS['contact_force_threshold_n']
         ground_touch = force[:, 1].norm(dim=-1) > PHYSICS['contact_force_threshold_n']
+        delta = local.abs() - torch.tensor(extents, device=self.device)
+        gap = (delta.clamp_min(0).norm(dim=-1) + delta.max(dim=-1).values.clamp_max(0)
+               - self.cfg.shuttle_radius_m)
+        separated = (~touching) & (gap > PHYSICS['separation_hysteresis_m'])
+        incoming_window = ((self.ball_clock - self.goal_time_s).abs() <= .2) & (~events.ground_seen)
+        self.interception_min_distance = torch.where(
+            incoming_window, torch.minimum(self.interception_min_distance, local.norm(dim=-1)),
+            self.interception_min_distance)
         first = (self.contact_events.count > counts) & (~events.contact)
         if bool(first.any()):
             normal = quat_rotate(tool_quaternion, torch.tensor([1., 0., 0.], device=self.device).expand(self.num_envs, -1))
@@ -65,7 +74,7 @@ class OrderedSmashEnv(BallEnv):
                        contact_event=self.contact_events.count > counts,
                        touching=touching, airborne=self.observed_airborne,
                        effective_face=effective_face, ground_touch=ground_touch,
-                       time=self.ball_clock, dt=self.physics_dt)
+                       time=self.ball_clock, dt=self.physics_dt, separated=separated)
 
     def _reset_idx(self, ids):
         events = self.ordered_smash
@@ -85,6 +94,9 @@ class OrderedSmashEnv(BallEnv):
                     contact_root_position_m=self.contact_root_position[i].cpu().tolist(),
                     contact_time_s=float(events.contact_time[i]),
                     outgoing_velocity_mps=events.outgoing_velocity[i].cpu().tolist(),
+                    outgoing_position_m=events.outgoing_position[i].cpu().tolist(),
+                    outgoing_measurement_time_s=float(events.outgoing_time[i]),
+                    interception_min_distance_m=float(self.interception_min_distance[i]),
                     release_time_s=float(events.release_time[i]),
                     ordered_crossed_net=bool(events.crossed[i]),
                     net_margin_m=float(events.net_margin[i]),
@@ -105,3 +117,4 @@ class OrderedSmashEnv(BallEnv):
             self.contact_tool_velocity[ids] = float('nan')
             self.contact_face_normal[ids] = float('nan')
             self.contact_root_position[ids] = float('nan')
+            self.interception_min_distance[ids] = float('inf')
