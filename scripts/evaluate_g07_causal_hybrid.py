@@ -16,6 +16,8 @@ from isaaclab.app import AppLauncher
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--output', type=Path, required=True)
 parser.add_argument('--checkpoint', type=Path, required=True)
+parser.add_argument('--candidate-checkpoint', type=Path, action='append', default=[],
+                    help='Additional frozen development candidates; forbidden with formal protocol/lock')
 parser.add_argument('--launch-panel', type=Path, required=True)
 parser.add_argument('--calibration', type=Path)
 parser.add_argument('--protocol', type=Path)
@@ -43,12 +45,29 @@ def digest(path):
 
 def main():
     args.output.mkdir(parents=True, exist_ok=True)
-    checkpoint = torch.load(args.checkpoint, map_location='cpu', weights_only=False)
+    checkpoint_paths = [args.checkpoint, *args.candidate_checkpoint]
+    checkpoints = [torch.load(path, map_location='cpu', weights_only=False) for path in checkpoint_paths]
+    checkpoint = checkpoints[0]
+    if args.candidate_checkpoint and (args.protocol or args.policy_lock):
+        raise ValueError('Formal evaluation allows exactly one frozen policy')
+    for candidate in checkpoints[1:]:
+        if (candidate['walk_waypoint_x'] != checkpoint['walk_waypoint_x']
+                or candidate['result']['face_normal_world'] != checkpoint['result']['face_normal_world']):
+            raise ValueError('Candidates must share the public initial command reference')
     panel = json.loads(args.launch_panel.read_text())
     scenarios = panel['scenarios']
     count = len(scenarios)
     if count < 1:
         raise ValueError('Empty evaluation panel')
+    cases = count
+    assignment = np.arange(cases*len(checkpoints))
+    if len(checkpoints)>1:
+        np.random.Generator(np.random.PCG64(args.seed)).shuffle(assignment)
+    candidate_ids, source_cases = assignment//cases, assignment % cases
+    scenarios = [scenarios[i] for i in source_cases]
+    count = len(scenarios)
+    recorded_env_ids = [int(np.flatnonzero((candidate_ids==candidate)&(source_cases==case))[0])
+                        for candidate in range(len(checkpoints)) for case in range(min(2, cases))]
     calibration = json.loads(args.calibration.read_text()) if args.calibration else checkpoint.get('phase_calibration')
     if args.fixed_phase_ablation:
         calibration = None
@@ -126,8 +145,13 @@ def main():
     wrapped = RslRlVecEnvWrapper(env, clip_actions=None)
     default = env.robot.data.default_joint_pos[0, env.joint_ids]
     limits = env.robot.data.joint_pos_limits[0, env.joint_ids]
-    policy = LearnedHybridPolicy(checkpoint, ROOT/'configs/g07_go2_walk_transfer.json',
-                                  count, env.device, default, limits, physics, calibration)
+    if len(checkpoints)>1:
+        from quadsmash.control.candidate_batch import CandidateBatch
+        policy = CandidateBatch(checkpoints, torch.tensor(candidate_ids, device=env.device),
+            ROOT/'configs/g07_go2_walk_transfer.json', default, limits, physics, calibration)
+    else:
+        policy = LearnedHybridPolicy(checkpoint, ROOT/'configs/g07_go2_walk_transfer.json',
+                                      count, env.device, default, limits, physics, calibration)
     try:
         obs, _ = wrapped.reset()
         ids = torch.arange(count, device=env.device)
@@ -151,8 +175,10 @@ def main():
             obs = wrapped.get_observations()
         for index in range(count):
             initial_rows.append(dict(scenario=index, root_state=root[index].cpu().tolist(),
+                                     origin=env.scene.env_origins[index].cpu().tolist(),
                                      joint_position=q[index].cpu().tolist(), joint_velocity=qd[index].cpu().tolist(),
                                      ground_init=bool(abs(float(root[index, 2])-.323) < 1e-5)))
+        np.save(args.output/'initial_public_observation.npy', obs['policy'].detach().cpu().numpy())
         policy.initialize(obs)
         with torch.inference_mode():
             env.goal_position_w.copy_(env.scene.env_origins+policy.waypoints)
@@ -171,13 +197,16 @@ def main():
                         asset_sha256=digest(ROOT/'assets/quadsmash_standard_v2.usd'),
                         physics_dt_s=cfg.sim.dt, control_dt_s=.01, episode_seconds=cfg.episode_length_s,
                         net_geometry_version=cfg.net_geometry_version,
-                        controller='frozen learned walking + learned PWA strike + frozen learned standing + initial-state predictor',
+                        controller='frozen learned walking + learned PWA strike + frozen learned standing + model prediction; replan schedule recorded separately',
                         teacher_prefix_steps=0, teacher_action_function_calls=0,
                         causal_phase=calibration is not None, fixed_phase_ablation=args.fixed_phase_ablation,
+                        causal_replan_at_s=policy.replan_at_s,
+                        candidate_checkpoints=[dict(path=str(path), sha256=digest(path)) for path in checkpoint_paths],
+                        source_cases_per_candidate=cases, recorded_env_ids=recorded_env_ids,
                         command=sys.argv)
         (args.output/'eval_manifest.json').write_text(json.dumps(manifest, indent=2)+'\n')
         ticks = round(cfg.episode_length_s/.01)
-        traces = [[] for _ in range(min(2, count))]
+        traces = [[] for _ in recorded_env_ids]
         measured_link_poses = [[] for _ in traces]
         preparation_snapshots = []
         first_episode_finished = torch.zeros(count, dtype=torch.bool, device=env.device)
@@ -192,10 +221,13 @@ def main():
                         public_command_and_clock=obs['policy'][:, 759:776].cpu().tolist()))
                 env.goal_position_w.copy_(env.scene.env_origins+policy.command_positions(obs))
                 action = policy.action(obs)
+                if calibration is not None:
+                    env.goal_time_s.copy_(policy.arrival)
                 if not torch.isfinite(action).all():
                     raise RuntimeError('Nonfinite policy action')
                 if tick % 2 == 0:
-                    for index, trace in enumerate(traces):
+                    for slot, index in enumerate(recorded_env_ids):
+                        trace = traces[slot]
                         if first_episode_finished[index]:
                             continue
                         trace.append(dict(time_s=tick*.01,
@@ -204,7 +236,7 @@ def main():
                             tool_xyz=(env.robot.data.body_pos_w[index, env.racket_body_id]-env.scene.env_origins[index]).cpu().tolist(),
                             root_xyz=(env.robot.data.root_pos_w[index]-env.scene.env_origins[index]).cpu().tolist(),
                             airborne=bool(env.observed_airborne[index]), contact=bool(env.contact_seen[index])))
-                        measured_link_poses[index].append(torch.cat((
+                        measured_link_poses[slot].append(torch.cat((
                             env.robot.data.body_link_pos_w[index]-env.scene.env_origins[index],
                             env.robot.data.body_link_quat_w[index]), dim=-1).cpu().numpy())
                 obs, _, dones, _ = wrapped.step(action)
@@ -218,6 +250,8 @@ def main():
         if len(first) != count or len(nets) != count:
             raise RuntimeError('Missing first-episode outcomes')
         rows = [dict(first[i], **{k: v for k, v in nets[i].items() if k != 'env_id'},
+                     candidate_id=int(candidate_ids[i]), source_scenario=int(source_cases[i]),
+                     development_group=scenarios[i].get('development_group', 'all'),
                      scenario=i, panel=panel.get('panel_id'), ground_init=initial_rows[i]['ground_init']) for i in range(count)]
         air = sum(r['airborne_contact'] for r in rows)
         recovered = sum(r['airborne_contact'] and r['recovery_success'] and not r['robot_net_contact'] for r in rows)
@@ -242,7 +276,7 @@ def main():
         (args.output/'preparation_snapshots.json').write_text(json.dumps(preparation_snapshots)+'\n')
         (args.output/'traces_fixed_scenarios_0_1.json').write_text(json.dumps(traces)+'\n')
         (args.output/'body_names.json').write_text(json.dumps(env.robot.body_names)+'\n')
-        for index, poses in enumerate(measured_link_poses):
+        for index, poses in zip(recorded_env_ids, measured_link_poses):
             np.save(args.output/f'link_poses_fixed_scenario_{index}.npy', np.array(poses))
         (args.output/'jump_episodes.json').write_text(json.dumps(env.episode_records, indent=2)+'\n')
         (args.output/'unresolved_sweep_inputs.json').write_text(json.dumps(env.sweep_failure_records, indent=2)+'\n')
@@ -252,6 +286,28 @@ def main():
             saved['phase_calibration'] = calibration
             saved['policy_schema'] = 'hybrid-learned-causal-smash-v2'
         torch.save(saved, args.output/'evaluated_policy.pt')
+        if len(checkpoints)>1:
+            import shutil
+            for index, path in enumerate(checkpoint_paths):
+                shutil.copyfile(path, args.output/f'evaluated_candidate_{index}.pt')
+        def summarize(batch):
+            size = len(batch)
+            airborne = sum(r['airborne_contact'] for r in batch)
+            return dict(sample_count=size, airborne_contact_rate=airborne/size,
+                recovery_given_airborne_contact=sum(r['airborne_contact'] and r['recovery_success'] and not r['robot_net_contact'] for r in batch)/airborne if airborne else 0.,
+                complete_smash_success_rate=sum(r['complete_smash'] and not r['robot_net_contact'] and r['ground_init'] for r in batch)/size,
+                robot_net_contact=sum(r['robot_net_contact'] for r in batch),
+                numerical_failures=sum(r['numerical_failures'] for r in batch))
+        comparisons = []
+        for candidate, path in enumerate(checkpoint_paths):
+            batch = [r for r in rows if r['candidate_id']==candidate]
+            groups = sorted(set(r['development_group'] for r in batch))
+            comparisons.append(dict(candidate_id=candidate, checkpoint_sha256=digest(path),
+                metrics=summarize(batch), groups={group: summarize([r for r in batch if r['development_group']==group]) for group in groups}))
+        with (args.output/'candidate_metrics.json').open('w') as stream:
+            json.dump(comparisons, stream, indent=2)
+        with (args.output/'causal_replans.json').open('w') as stream:
+            json.dump(policy.replan_log, stream, indent=2)
         (args.output/'completed.json').write_text(json.dumps(dict(episodes=count, env_steps=count*ticks))+'\n')
         print(json.dumps(metrics), flush=True)
     finally:

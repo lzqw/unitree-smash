@@ -27,6 +27,7 @@ p.add_argument('--target-complete', type=float, default=.875)
 p.add_argument('--resume-population', type=Path)
 p.add_argument('--arm-pitch-basis', type=Path)
 p.add_argument('--preparation-and-arm', action='store_true')
+p.add_argument('--local-adaptation', action='store_true')
 AppLauncher.add_app_launcher_args(p)
 a = p.parse_args()
 app = AppLauncher(a).app
@@ -58,6 +59,10 @@ def main():
     arm_mode = a.arm_pitch_basis is not None
     if a.preparation_and_arm and not arm_mode:
         raise ValueError('Joint preparation adaptation requires --arm-pitch-basis')
+    if a.local_adaptation:
+        if not a.preparation_and_arm:
+            raise ValueError('Local adaptation requires joint preparation/arm mode')
+        checkpoint = dict(checkpoint, preparation_readiness_extension=False)
     if arm_mode:
         basis = json.loads(a.arm_pitch_basis.read_text())['arm_pitch_basis']
         checkpoint = dict(checkpoint, arm_pitch_basis=torch.tensor(basis, dtype=torch.float32))
@@ -132,6 +137,11 @@ def main():
         low, high = torch.cat((preparation_low, low)), torch.cat((preparation_high, high))
         policy.has_preparation_adaptation = True
     sigma = (high-low)*.15
+    if a.local_adaptation:
+        mean = torch.cat((original_preparation, torch.zeros(4, device=device)))
+        span = torch.tensor([.05, .10, .8, .035, .015, .015, .015, .25], device=device)
+        low, high = torch.maximum(low, mean-span), torch.minimum(high, mean+span)
+        sigma = torch.tensor([.015, .035, .2, .01, .003, .004, .004, .08], device=device)
     generator = torch.Generator(device=device).manual_seed(a.seed)
     if a.resume_population:
         resume=torch.load(a.resume_population,map_location='cpu',weights_only=False)
@@ -150,6 +160,12 @@ def main():
             params = (mean+sigma*torch.randn((a.groups, len(low)), device=device, generator=generator)).clamp(low, high)
             params[0] = mean
             params[1] = baseline
+            if generation==0 and a.local_adaptation and a.groups>=6:
+                params[2:6] = baseline
+                params[2, 4] = -.005
+                params[3, 4] = .005
+                params[4, 2] = .4
+                params[5, 1] -= .05
             if generation==0 and a.groups>=3 and not arm_mode:
                 params[2]=baseline
                 params[2,1]=.03;params[2,2]=.01;params[2,5]=.02;params[2,9]=.015
@@ -200,7 +216,9 @@ def main():
                 obs = wrapped.get_observations()
                 for tick in range(850):
                     env.goal_position_w.copy_(env.scene.env_origins+policy.command_positions(obs))
-                    obs, _, _, _ = wrapped.step(policy.action(obs))
+                    action = policy.action(obs)
+                    env.goal_time_s.copy_(policy.arrival)
+                    obs, _, _, _ = wrapped.step(action)
                     if (tick+1)%100==0:print(json.dumps(dict(generation=generation,control_steps=tick+1)),flush=True)
             first, nets = {}, {}
             for row in env.smash_episode_records:
@@ -247,6 +265,8 @@ def main():
             sigma.copy_((.25*sigma+.75*params[elite].std(0)).clamp(min=(high-low)*.025))
             torch.save(dict(parameters=params.cpu(), mean=mean.cpu(), sigma=sigma.cpu(), rng=generator.get_state().cpu(),
                             group_scores=summaries), a.output/f'population_{generation:03d}.pt')
+            with (a.output/f'causal_replans_{generation:03d}.json').open('w') as stream:
+                json.dump(policy.replan_log, stream, indent=2)
             (a.output/f'episodes_{generation:03d}.json').write_text(json.dumps(rows, indent=2)+'\n')
             (a.output/f'unresolved_sweep_inputs_{generation:03d}.json').write_text(json.dumps(env.sweep_failure_records, indent=2)+'\n')
             (a.output/'metrics.json').write_text(json.dumps(dict(history=history, best=max(history, key=lambda r: r['score']),

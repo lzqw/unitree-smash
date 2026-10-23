@@ -1,0 +1,65 @@
+{
+  "protocol": "g07-causal-long-prepare-development-v1",
+  "panel": "candidate_matrix_smoke_panel2_v1",
+  "formal_policy_acceptance": false,
+  "episodes": 4,
+  "ground_initialization_only": true,
+  "formal_evaluation_eligible": false,
+  "protocol_sha256": null,
+  "policy_lock_sha256": null,
+  "checkpoint_sha256": "f61550e3351c18c038e51257dd3a174c6e68f78f45144c9af2002b217e0cc858",
+  "launch_panel_sha256": "d59407dcd2d9bf5fb06804c32c089d98e2fc2c76b8d535593404ddf2192a9b5f",
+  "calibration_sha256": "60745396d0b980c268fb2406b42de7f95563b3585c4f8f31eef58b38d5e9933e",
+  "source_git_sha": "720f45d8d921d323447da64e86e398c8dc0535fb",
+  "asset_sha256": "bfb831e4afc8a1a705bb0fb6f001c25eeaa401822978267a0ee5e151007511f3",
+  "physics_dt_s": 0.00025,
+  "control_dt_s": 0.01,
+  "episode_seconds": 0.2,
+  "net_geometry_version": "environment-local-profiled-net-v3",
+  "controller": "frozen learned walking + learned PWA strike + frozen learned standing + model prediction; replan schedule recorded separately",
+  "teacher_prefix_steps": 0,
+  "teacher_action_function_calls": 0,
+  "causal_phase": true,
+  "fixed_phase_ablation": false,
+  "causal_replan_at_s": [
+    null,
+    null
+  ],
+  "candidate_checkpoints": [
+    {
+      "path": "reports/G07/adaptive_planner_cem01/best_candidate.pt",
+      "sha256": "f61550e3351c18c038e51257dd3a174c6e68f78f45144c9af2002b217e0cc858"
+    },
+    {
+      "path": "reports/G07/preparation_arm_cem01/best_candidate.pt",
+      "sha256": "1c4ba9406e2b73083ac40033f88f27e30682a134598cece0e0fdb5bd6669c082"
+    }
+  ],
+  "source_cases_per_candidate": 2,
+  "recorded_env_ids": [
+    3,
+    0,
+    2,
+    1
+  ],
+  "command": [
+    "scripts/evaluate_g07_causal_hybrid.py",
+    "--output",
+    "reports/G07/candidate_matrix_native_smoke01",
+    "--checkpoint",
+    "reports/G07/adaptive_planner_cem01/best_candidate.pt",
+    "--candidate-checkpoint",
+    "reports/G07/preparation_arm_cem01/best_candidate.pt",
+    "--launch-panel",
+    "reports/G07/candidate_matrix_smoke_panel2_v1/panel.json",
+    "--calibration",
+    "reports/G07/causal_dev_panel64_v1/calibration.json",
+    "--physics-dt",
+    ".00025",
+    "--episode-seconds",
+    ".2",
+    "--seed",
+    "718101",
+    "--headless"
+  ]
+}

@@ -27,13 +27,13 @@ class Go2WalkTransfer:
         self.tick=0
 
     def action(self, observation, parameters, default, limits, *, heading_error=None,
-               heading_kp=None, maximum_time=3.4):
+               heading_kp=None, maximum_time=3.4, heading_readiness=True):
         obs=observation['policy']
         t=obs[:,775]
         speed,kp,kd=parameters[:,:3].unbind(1)
         error=obs[:,760]
         ready=(error.abs()<.04)&(obs[:,:2].norm(dim=1)<.12)
-        if heading_error is not None:
+        if heading_error is not None and heading_readiness:
             ready &= (heading_kp<=0)|((heading_error.abs()<.03)&(obs[:,761].abs()<.04))
         self.reached|=ready
         delay=(parameters[:,14] if parameters.shape[1]==15 else

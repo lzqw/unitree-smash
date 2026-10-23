@@ -39,11 +39,16 @@ class LearnedHybridPolicy:
                                             torch.tensor(0.), checkpoint['walk_parameters'][7]))
         self.preparation_parameters = checkpoint.get('preparation_parameters', original_preparation).to(device).repeat(count, 1)
         self.has_preparation_adaptation = 'preparation_parameters' in checkpoint
+        self.replan_at_s = checkpoint.get('replan_at_s')
+        self.replanned = torch.zeros(count, dtype=torch.bool, device=device)
+        self.replan_log = []
 
     def initialize(self, observation):
         self.walk.reset()
         self.stand.reset()
         self.arm_pitch_amplitude.zero_()
+        self.replanned.zero_()
+        self.replan_log = []
         if self.has_preparation_adaptation:
             self.walk_parameters[:, 0].copy_(self.preparation_parameters[:, 0])
             self.walk_parameters[:, 14].copy_(self.preparation_parameters[:, 1])
@@ -119,15 +124,18 @@ class LearnedHybridPolicy:
         return torch.where(started[:, None], self.intercepts, self.waypoints)
 
     def action(self, observation):
+        self._maybe_replan(observation)
         clock = observation['policy'][:, 775]
         local = observation['policy'].clone()
         local[:, 775] -= self.phase_start
         if self.has_preparation_adaptation:
             heading = observed_world_heading(observation['policy'], self.checkpoint['result']['face_normal_world'])
             heading_kp = self.preparation_parameters[:, 2]
-            maximum_time = torch.where(heading_kp>0, 4.5, 3.4)
+            extended = self.checkpoint.get('preparation_readiness_extension', True)
+            maximum_time = torch.where(heading_kp>0, 4.5, 3.4) if extended else 3.4
             walk_action = self.walk.action(observation, self.walk_parameters, self.default, self.limits,
-                heading_error=-heading, heading_kp=heading_kp, maximum_time=maximum_time)
+                heading_error=-heading, heading_kp=heading_kp, maximum_time=maximum_time,
+                heading_readiness=extended)
         else:
             walk_action = self.walk.action(observation, self.walk_parameters, self.default, self.limits)
         strike_action = self.strike(local)
@@ -140,3 +148,42 @@ class LearnedHybridPolicy:
         standing_action = self.stand.action(observation, self.standing_parameters, self.default,
                                             self.limits, self.standing_arm, recovering)
         return torch.where(recovering[:, None], standing_action, action)
+
+    def _maybe_replan(self, observation):
+        if self.replan_at_s is None or self.calibration is None:
+            return
+        clock = observation['policy'][:, 775]
+        ids = torch.where((clock>=self.replan_at_s)&(~self.replanned)&(clock<self.phase_start))[0]
+        if not len(ids):
+            return
+        started = time.perf_counter()
+        public = observation['policy'][ids].detach().cpu().numpy()
+        plan = predict_initial_intercept(public, self.waypoints[ids].cpu().numpy(),
+            self.checkpoint['result']['face_normal_world'], self.intercepts[ids, 0].cpu().numpy(),
+            self.physics, max_seconds=3.)
+        plan['arrival_time_s'] += public[:, 775]
+        reference = self.checkpoint.get('planner_feature_reference', {})
+        vx = reference.get('incoming_vx_mps', -3.2652405806200373)
+        vz = reference.get('incoming_vz_mps', -16.89315645360073)
+        z = self.checkpoint['result']['virtual_ball_center_m'][2]
+        feature = np.c_[np.ones(len(public)), plan['arrival_time_s']-self.checkpoint['walk_seconds']-
+            self.calibration['reference_local_arrival_s'], plan['incoming_velocity_mps'][:, 0]-vx,
+            plan['position_m'][:, 2]-z]
+        weights = self.planner_parameters[ids].cpu().numpy()
+        raw = plan['arrival_time_s']-self.calibration['reference_local_arrival_s']+np.nansum(weights[:, :4]*feature, axis=1)
+        phase = np.clip(np.round(raw/.01)*.01, self.calibration['minimum_prepare_s'], self.calibration['maximum_prepare_s'])
+        before = self.phase_start[ids].cpu().numpy()
+        phase = np.where(plan['valid'], np.maximum(phase, public[:, 775]+.01), before)
+        pitch_feature = np.c_[np.ones(len(public)), np.maximum(plan['incoming_velocity_mps'][:, 0]-vx, 0.),
+            np.minimum(plan['incoming_velocity_mps'][:, 2]-vz, 0.), np.minimum(plan['position_m'][:, 2]-z, 0.)]
+        pitch = np.clip(np.nansum(self.arm_pitch_parameters[ids].cpu().numpy()*pitch_feature, axis=1), -.05, .04)
+        pitch = np.where(plan['valid'], pitch, self.arm_pitch_amplitude[ids].cpu().numpy())
+        arrival = np.where(plan['valid'], plan['arrival_time_s'], self.arrival[ids].cpu().numpy())
+        self.phase_start[ids] = torch.as_tensor(phase, dtype=clock.dtype, device=clock.device)
+        self.arrival[ids] = torch.as_tensor(arrival, dtype=clock.dtype, device=clock.device)
+        self.arm_pitch_amplitude[ids] = torch.as_tensor(pitch, dtype=clock.dtype, device=clock.device)
+        self.replanned[ids] = True
+        self.replan_log.append(dict(input='current public observation only; before strike, positions unchanged',
+            env_ids=ids.cpu().tolist(), observation_clock_s=public[:, 775].tolist(),
+            phase_before_s=before.tolist(), phase_after_s=phase.tolist(), computation_wall_s=time.perf_counter()-started,
+            **{key: value.tolist() for key, value in plan.items()}))
