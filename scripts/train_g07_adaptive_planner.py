@@ -101,6 +101,7 @@ def main():
                 self.previous_drag[ids] = 0.
 
     env = TrainingEnv(cfg)
+    env.capture_sweep_failures, env.sweep_failure_records = True, []
     wrapped = RslRlVecEnvWrapper(env, clip_actions=None)
     device = env.device
     policy = LearnedHybridPolicy(checkpoint, ROOT/'configs/g07_go2_walk_transfer.json', n, device,
@@ -152,6 +153,7 @@ def main():
             env.smash_episode_records.clear()
             env.net_episode_records.clear()
             env.episode_records.clear()
+            env.sweep_failure_records.clear()
             with torch.inference_mode():
                 env.goal_position_w.copy_(env.scene.env_origins+torch.tensor(cfg.event_goal_position, device=device))
             obs, _ = wrapped.reset()
@@ -208,6 +210,7 @@ def main():
             torch.save(dict(parameters=params.cpu(), mean=mean.cpu(), sigma=sigma.cpu(), rng=generator.get_state().cpu(),
                             group_scores=summaries), a.output/f'population_{generation:03d}.pt')
             (a.output/f'episodes_{generation:03d}.json').write_text(json.dumps(rows, indent=2)+'\n')
+            (a.output/f'unresolved_sweep_inputs_{generation:03d}.json').write_text(json.dumps(env.sweep_failure_records, indent=2)+'\n')
             (a.output/'metrics.json').write_text(json.dumps(dict(history=history, best=max(history, key=lambda r: r['score']),
                 env_steps=(generation+1)*n*850, formal_acceptance=False), indent=2)+'\n')
             print(json.dumps(result), flush=True)

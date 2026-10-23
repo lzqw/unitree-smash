@@ -34,7 +34,7 @@ G07 IN_PROGRESS；正式400未执行，不可标PASSED。
 
 ## 入口与上传
 
-仓库https://github.com/lzqw/unitree-smash，分支g04-guided-learning-20261022，最新已推送1476f01；新网体/原生阳性/128结果待后续提交。
+仓库https://github.com/lzqw/unitree-smash，分支g04-guided-learning-20261022，最新已推送60654ba（包含新网体/原生阳性/冻结面板）；128结果待后续提交。
 发布https://github.com/lzqw/unitree-smash/releases/tag/g07-progress-20261023。完整视频G07_learned_hybrid_complete_nominal_20261023.mp4与清洁名义权重SHA0620b79d4b85fa746334d50122b1cef0cee933c8af179aa51b514395bbb41dc1为矩形网课程，不能代表新侧高网验收。原始旧视频/zip保留并分开标注。
 
 Isaac解释器/home/autodrive/Isaac/env_isaaclab/bin/python；系统python3没有numpy/torch。CPU视频依赖PYTHONPATH=/tmp/unitree_video_deps、llvmpipe。所有inference缓存原生状态写入/forward/history reset须放torch.inference_mode；策略缓冲分配在其外，持久copy_。不要清理MPS/AWESun/其他作业，只管理本项目PID。

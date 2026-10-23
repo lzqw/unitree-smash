@@ -122,6 +122,7 @@ def main():
                 self.previous_drag[ids] = 0.
 
     env = PanelEnv(cfg)
+    env.capture_sweep_failures, env.sweep_failure_records = True, []
     wrapped = RslRlVecEnvWrapper(env, clip_actions=None)
     default = env.robot.data.default_joint_pos[0, env.joint_ids]
     limits = env.robot.data.joint_pos_limits[0, env.joint_ids]
@@ -235,6 +236,7 @@ def main():
         for index, poses in enumerate(measured_link_poses):
             np.save(args.output/f'link_poses_fixed_scenario_{index}.npy', np.array(poses))
         (args.output/'jump_episodes.json').write_text(json.dumps(env.episode_records, indent=2)+'\n')
+        (args.output/'unresolved_sweep_inputs.json').write_text(json.dumps(env.sweep_failure_records, indent=2)+'\n')
         (args.output/'metrics.json').write_text(json.dumps(metrics, indent=2)+'\n')
         saved = dict(checkpoint)
         if calibration is not None:

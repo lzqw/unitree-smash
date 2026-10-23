@@ -82,7 +82,8 @@ def draw(index,slow=False):
  frame=np.frombuffer(fbo.read(components=3,alignment=1),np.uint8).reshape(height,width,3)[::-1].copy()
  img=Image.fromarray(frame);d=ImageDraw.Draw(img);d.rectangle((0,0,width,88),fill=(18,28,43))
  d.text((24,8),'Go2 + PiPER｜'+('正确球网下重验' if net_corrected else '历史网坐标未修正')+' · '+('学习策略' if learned else '教师'),font=title,fill='white')
- d.text((24,50),'实测关节连杆与球轨迹 · 原负载与执行器 · 1.524 m 标准球网',font=small,fill=(166,193,214))
+ net_label='中心1.524 / 侧边1.55 m 网体v3' if profiled_net else '恒高1.524 m矩形网课程' if net_corrected else '历史网位置错误'
+ d.text((24,50),'实测关节连杆与球轨迹 · 原负载与执行器 · '+net_label,font=small,fill=(166,193,214))
  d.text((1040,20),'0.5 倍慢放' if slow else '正常速度',font=small,fill=(115,218,206))
  t=r['time_s'];e=metrics['best'];v=np.asarray(r['ball_v'])
  contact_time=e.get('contact_time_s') or float('inf');landing_time=e.get('first_landing_time_s') or float('inf')
@@ -95,7 +96,7 @@ def draw(index,slow=False):
  landing_text='未记录首次落点' if landing is None else f'首次落点 [{landing[0]:.2f}, {landing[1]:.2f}] m'
  d.text((24,632),f"本回合{out_text}｜{margin_text}｜{landing_text}",font=small,fill='white')
  face='是' if e.get('effective_face_contact') else '否'
- d.text((24,669),f"完整 {metrics['complete']}/{metrics['episodes']}，恢复 {metrics['recovery']}/{metrics['episodes']}｜有效拍面：{face}｜案例 {metrics['selected_video_lane']}｜可行性探测，尚非正式 G07 通过",font=small,fill=(166,193,214))
+ d.text((24,669),f"完整 {metrics['complete']}/{metrics['episodes']}，恢复 {metrics['recovery']}/{metrics['episodes']}｜有效拍面：{face}｜案例 {metrics['selected_video_lane']}｜验收以双面板报告为准",font=small,fill=(166,193,214))
  return np.asarray(img)
 out=a.output or a.input/('G07_near_net_learned_replay.mp4' if learned else 'G07_near_net_teacher_replay.mp4')
 contact_index=min(range(len(trace)),key=lambda i:abs(trace[i]['time_s']-(metrics['best'].get('contact_time_s') or 1.48)))

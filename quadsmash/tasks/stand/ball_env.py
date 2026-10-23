@@ -255,6 +255,18 @@ class BallEnv(JumpEnv):
                 tool_quaternion[near_tool], PHYSICS["racket_half_extents_m"], self.cfg.shuttle_radius_m)
             swept[near_tool] = hit
             unresolved[near_tool] = unresolved_near
+            if getattr(self, 'capture_sweep_failures', False):
+                failed_ids = torch.where(near_tool)[0][unresolved_near & self.sweep_ready[near_tool]]
+                for i in failed_ids.cpu().tolist():
+                    self.sweep_failure_records.append(dict(
+                        kind='unresolved conservative sweep; counted as numerical failure', env_id=i,
+                        ball_clock_s=float(self.ball_clock[i]), physics_frame=int(frame),
+                        origin=self.scene.env_origins[i].cpu().tolist(),
+                        start=self.previous_ball_position[i].cpu().tolist(), end=position[i].cpu().tolist(),
+                        center_start=self.previous_tool_position[i].cpu().tolist(), center_end=tool_position[i].cpu().tolist(),
+                        quat_start=self.previous_tool_quaternion[i].cpu().tolist(), quat_end=tool_quaternion[i].cpu().tolist(),
+                        half_extents=PHYSICS['racket_half_extents_m'], radius=self.cfg.shuttle_radius_m,
+                        iterations=256, tolerance=1e-6, dtype=str(position.dtype)))
         previous_gap = sphere_box_gap(self.previous_ball_position, self.previous_tool_position,
             self.previous_tool_quaternion, PHYSICS["racket_half_extents_m"], self.cfg.shuttle_radius_m)
         candidate = swept & self.sweep_ready & (previous_gap > 1e-5) & (~touching)
