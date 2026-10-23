@@ -1,0 +1,63 @@
+{
+  "protocol": "g07-fresh-b16-development-stress-v1",
+  "panel": "fresh_b16_stress_v1",
+  "formal_policy_acceptance": false,
+  "episodes": 16,
+  "ground_initialization_only": true,
+  "formal_evaluation_eligible": false,
+  "protocol_sha256": null,
+  "policy_lock_sha256": null,
+  "checkpoint_sha256": "8b2b7dbb8b6c6fbd215a236fa72f66bb4feabcadd8fda593abce6c9546511902",
+  "launch_panel_sha256": "bacabcc9ef422d9c4b1ffb9c97d815036993179e418de0117b265077c65f06d1",
+  "calibration_sha256": "60745396d0b980c268fb2406b42de7f95563b3585c4f8f31eef58b38d5e9933e",
+  "source_git_sha": "1f2c581f6a31af6ffb892648dd87f2eb143d8c16",
+  "asset_sha256": "bfb831e4afc8a1a705bb0fb6f001c25eeaa401822978267a0ee5e151007511f3",
+  "physics_dt_s": 6.25e-05,
+  "control_dt_s": 0.01,
+  "episode_seconds": 8.5,
+  "net_geometry_version": "environment-local-profiled-net-v3",
+  "sweep_audit": {
+    "maximum_iterations": 4096,
+    "tolerance_m": 1e-06
+  },
+  "controller": "frozen learned walking + learned PWA strike + frozen learned standing + model prediction; replan schedule recorded separately",
+  "teacher_prefix_steps": 0,
+  "teacher_action_function_calls": 0,
+  "causal_phase": true,
+  "fixed_phase_ablation": false,
+  "causal_replan_at_s": null,
+  "causal_parameter_selection_at_s": null,
+  "causal_contact_recovery": null,
+  "candidate_checkpoints": [
+    {
+      "path": "reports/G07/lastwindow_training_candidate_v1/policy.pt",
+      "sha256": "8b2b7dbb8b6c6fbd215a236fa72f66bb4feabcadd8fda593abce6c9546511902"
+    }
+  ],
+  "source_cases_per_candidate": 16,
+  "recorded_env_ids": [
+    0,
+    1
+  ],
+  "command": [
+    "scripts/evaluate_g07_causal_hybrid.py",
+    "--output",
+    "reports/G07/lastwindow_fresh_b16_stress01",
+    "--checkpoint",
+    "reports/G07/lastwindow_training_candidate_v1/policy.pt",
+    "--launch-panel",
+    "reports/G07/fresh_b16_stress_v1/panel.json",
+    "--calibration",
+    "reports/G07/causal_dev_panel64_v1/calibration.json",
+    "--physics-dt",
+    ".0000625",
+    "--episode-seconds",
+    "8.5",
+    "--sweep-audit-iterations",
+    "4096",
+    "--record-public-dataset",
+    "--seed",
+    "719301",
+    "--headless"
+  ]
+}

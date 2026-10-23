@@ -40,14 +40,18 @@ def main():
     dt = data['control_dt_s']
     lanes = []
     for lane in range(observation.shape[1]):
-        def first(index):
-            found = torch.nonzero(active[:, lane] & (observation[:, lane, index]>.5)).flatten()
-            return int(found[0]) if len(found) else None
-        contact, landing = first(773), first(774)
+        def first(index, start=0):
+            found = torch.nonzero(active[start:, lane] &
+                                  (observation[start:, lane, index]>.5)).flatten()
+            return start+int(found[0]) if len(found) else None
+        contact = first(773)
+        # Preparation walking can briefly lose foot support. Only diagnose a
+        # landing after this lane actually reports airborne post-contact.
+        landing = None if contact is None else first(774, contact)
         summary = dict(lane=lane, source_case=data['source_cases'][lane],
                        active_frames=int(active[:, lane].sum()),
                        first_public_post_contact_time_s=None if contact is None else contact*dt,
-                       first_public_landing_time_s=None if landing is None else landing*dt)
+                       first_public_post_contact_landing_time_s=None if landing is None else landing*dt)
         if landing is not None:
             states = []
             for lookback in (5, 3, 1, 0):
