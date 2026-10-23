@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Grouped cross-validation of initial-public-state controller selection.
+"""Grouped cross-validation of public-state controller selection.
 
 This is a retrospective development diagnostic, never a physical rollout or
 formal acceptance score. Each outcome is paired with that controller's own
@@ -11,12 +11,16 @@ from pathlib import Path
 import numpy as np
 
 
-def features(public, current=False):
+def features(public, current=False, feature_set='full-state-v1'):
     # No environment ID, reset seed, case label, or post-initial observation.
     # Log compression handles the explicitly long-distance model launches.
     ball = public[:, 61:67].astype(np.float64)
     ball = np.sign(ball)*np.log1p(np.abs(ball))
     if current:
+        if feature_set=='body-ball-v1':
+            return np.c_[ball, public[:, :9], public[:, 760:766]]
+        if feature_set=='body-ball-arm-v1':
+            return np.c_[ball, public[:, :9], public[:, 21:27], public[:, 39:45], public[:, 760:766]]
         return np.c_[ball, public[:, :45], public[:, 760:766]]
     return np.c_[ball, public[:, 6:9], public[:, 9:27], public[:, 763:766]]
 
@@ -39,6 +43,7 @@ def main():
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--context-time', type=float)
     parser.add_argument('--candidate-ids', type=int, nargs='+')
+    parser.add_argument('--features', choices=['full-state-v1','body-ball-v1','body-ball-arm-v1'], default='full-state-v1')
     args = parser.parse_args()
     manifest = json.loads((args.run/'eval_manifest.json').read_text())
     if manifest.get('formal_evaluation_eligible'):
@@ -60,7 +65,7 @@ def main():
     by = {(r['candidate_id'], r['source_scenario']): r for r in rows}
     if len(by) != len(candidates)*len(cases):
         raise ValueError('Requires one outcome for every candidate and case')
-    raw = {c: features(public[[by[c, s]['scenario'] for s in cases]], args.context_time is not None) for c in candidates}
+    raw = {c: features(public[[by[c, s]['scenario'] for s in cases]], args.context_time is not None, args.features) for c in candidates}
     # Pair canonical and perturbed copies of one launch in the same fold.
     groups = [cases.index(s) % (len(cases)//2) for s in cases]
     reports = []
@@ -89,9 +94,10 @@ def main():
                                                               for g in sorted({r['development_group'] for r in selected})},
                                 selected_candidates={str(c): sum(r['candidate_id']==c for r in selected) for c in candidates}))
     result = dict(kind='retrospective grouped CV diagnostic only; not native success or independent validation',
-                  context='each option uses its own initial public observation; independent native validation required',
+                  context='each option uses its own recorded public observation at the declared time; independent native validation required',
                   feature_indices='log-compressed public61:67, public6:9, public9:27, public763:766',
                   context_time_s=args.context_time, candidate_subset=args.candidate_ids,
+                  feature_set=args.features,
                   current_features='log-compressed public61:67, public0:45, public760:766' if args.context_time is not None else None,
                   fold='launch pair kept together; source index used only to split training, never a model input',
                   source=str(args.run), reports=reports)

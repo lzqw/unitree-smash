@@ -1,0 +1,242 @@
+{
+  "kind": "Same-query CPU/CUDA diagnostic only; not a physical rollout or policy acceptance",
+  "device": "cuda:0",
+  "tolerance_m": 1e-06,
+  "original_iterations": 256,
+  "extended_iterations": 4096,
+  "all_original_failures_retained": true,
+  "collision_response_changed": false,
+  "cases": [
+    {
+      "name": "analytic_face_hit",
+      "source": null,
+      "source_sha256": null,
+      "results": {
+        "device_f32_256": {
+          "hit": true,
+          "unresolved": false,
+          "fraction": 0.4187495708465576
+        },
+        "device_f32_4096": {
+          "hit": true,
+          "unresolved": false,
+          "fraction": 0.4187495708465576
+        },
+        "cpu_f64_4096": {
+          "hit": true,
+          "unresolved": false,
+          "fraction": 0.41874958125
+        }
+      },
+      "passed": true
+    },
+    {
+      "name": "analytic_clear_miss",
+      "source": null,
+      "source_sha256": null,
+      "results": {
+        "device_f32_256": {
+          "hit": false,
+          "unresolved": false,
+          "fraction": 0.878868818283081
+        },
+        "device_f32_4096": {
+          "hit": false,
+          "unresolved": false,
+          "fraction": 0.878868818283081
+        },
+        "cpu_f64_4096": {
+          "hit": false,
+          "unresolved": false,
+          "fraction": 0.8788687860075398
+        }
+      },
+      "passed": true
+    },
+    {
+      "name": "analytic_tangent_hit",
+      "source": null,
+      "source_sha256": null,
+      "results": {
+        "device_f32_256": {
+          "hit": true,
+          "unresolved": false,
+          "fraction": 0.480692982673645
+        },
+        "device_f32_4096": {
+          "hit": true,
+          "unresolved": false,
+          "fraction": 0.480692982673645
+        },
+        "cpu_f64_4096": {
+          "hit": true,
+          "unresolved": false,
+          "fraction": 0.480692146260447
+        }
+      },
+      "passed": true
+    },
+    {
+      "name": "analytic_translating_hit",
+      "source": null,
+      "source_sha256": null,
+      "results": {
+        "device_f32_256": {
+          "hit": true,
+          "unresolved": false,
+          "fraction": 0.4187495708465576
+        },
+        "device_f32_4096": {
+          "hit": true,
+          "unresolved": false,
+          "fraction": 0.4187495708465576
+        },
+        "cpu_f64_4096": {
+          "hit": true,
+          "unresolved": false,
+          "fraction": 0.41874958125
+        }
+      },
+      "passed": true
+    },
+    {
+      "name": "analytic_rotating_hit",
+      "source": null,
+      "source_sha256": null,
+      "results": {
+        "device_f32_256": {
+          "hit": true,
+          "unresolved": false,
+          "fraction": 0.3145067095756531
+        },
+        "device_f32_4096": {
+          "hit": true,
+          "unresolved": false,
+          "fraction": 0.3145067095756531
+        },
+        "cpu_f64_4096": {
+          "hit": true,
+          "unresolved": false,
+          "fraction": 0.31450675450313487
+        }
+      },
+      "passed": true
+    },
+    {
+      "name": "analytic_double_cover_hit",
+      "source": null,
+      "source_sha256": null,
+      "results": {
+        "device_f32_256": {
+          "hit": true,
+          "unresolved": false,
+          "fraction": 0.4187495708465576
+        },
+        "device_f32_4096": {
+          "hit": true,
+          "unresolved": false,
+          "fraction": 0.4187495708465576
+        },
+        "cpu_f64_4096": {
+          "hit": true,
+          "unresolved": false,
+          "fraction": 0.41874958125
+        }
+      },
+      "passed": true
+    },
+    {
+      "name": "frozen_candidate_matrix_fine768_01:0",
+      "source": "reports/G07/frozen_candidate_matrix_fine768_01/unresolved_sweep_inputs.json",
+      "source_sha256": "5e97a56ec5b8b0cade3510605e5abc3b5a155bba6c936396a79cc1cd75d25671",
+      "results": {
+        "device_f32_256": {
+          "hit": false,
+          "unresolved": true,
+          "fraction": 0.7028180956840515
+        },
+        "device_f32_4096": {
+          "hit": false,
+          "unresolved": false,
+          "fraction": 0.9985795021057129
+        },
+        "cpu_f64_4096": {
+          "hit": false,
+          "unresolved": false,
+          "fraction": 0.9982528986738756
+        }
+      },
+      "passed": true
+    },
+    {
+      "name": "body_feedback_matrix_fine1280_01:0",
+      "source": "reports/G07/body_feedback_matrix_fine1280_01/unresolved_sweep_inputs.json",
+      "source_sha256": "407fdcb2f0e8c5ae03f7a9e166b84ac258b9b3df206b2f31379a1008cccf5c4b",
+      "results": {
+        "device_f32_256": {
+          "hit": false,
+          "unresolved": true,
+          "fraction": 0.47769638895988464
+        },
+        "device_f32_4096": {
+          "hit": false,
+          "unresolved": false,
+          "fraction": 0.9999628663063049
+        },
+        "cpu_f64_4096": {
+          "hit": false,
+          "unresolved": false,
+          "fraction": 0.9988546820508347
+        }
+      },
+      "passed": true
+    },
+    {
+      "name": "body_feedback_matrix_fine1280_01:1",
+      "source": "reports/G07/body_feedback_matrix_fine1280_01/unresolved_sweep_inputs.json",
+      "source_sha256": "407fdcb2f0e8c5ae03f7a9e166b84ac258b9b3df206b2f31379a1008cccf5c4b",
+      "results": {
+        "device_f32_256": {
+          "hit": false,
+          "unresolved": true,
+          "fraction": 0.7984463572502136
+        },
+        "device_f32_4096": {
+          "hit": false,
+          "unresolved": false,
+          "fraction": 0.9989269375801086
+        },
+        "cpu_f64_4096": {
+          "hit": false,
+          "unresolved": false,
+          "fraction": 0.9995130983172646
+        }
+      },
+      "passed": true
+    },
+    {
+      "name": "forward_body_matrix_fine1280_01:0",
+      "source": "reports/G07/forward_body_matrix_fine1280_01/unresolved_sweep_inputs.json",
+      "source_sha256": "a40f4686b613cc410df16e1cc205e4e2ea08cb37cdd7b37093a6ae2d8725d8ec",
+      "results": {
+        "device_f32_256": {
+          "hit": false,
+          "unresolved": true,
+          "fraction": 0.7726037502288818
+        },
+        "device_f32_4096": {
+          "hit": false,
+          "unresolved": false,
+          "fraction": 0.9997552037239075
+        },
+        "cpu_f64_4096": {
+          "hit": false,
+          "unresolved": false,
+          "fraction": 0.9996504588931783
+        }
+      },
+      "passed": true
+    }
+  ],
+  "passed": true
+}

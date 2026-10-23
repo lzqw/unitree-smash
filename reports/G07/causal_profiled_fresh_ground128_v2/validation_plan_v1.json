@@ -1,0 +1,20 @@
+{
+  "kind": "Prospective independent development validation settings, not results",
+  "panel": "reports/G07/causal_profiled_fresh_ground128_v2/panel.json",
+  "panel_sha256": "439965807bbd0d13101fa2b9fca5ccdf3a08d7aaebea45562c2a4354fdabdde2",
+  "calibration": "reports/G07/causal_dev_panel64_v1/calibration.json",
+  "physics_dt_s": 6.25e-05,
+  "control_dt_s": 0.01,
+  "episode_seconds": 8.5,
+  "sweep_audit_iterations": 4096,
+  "sweep_tolerance_m": 1e-06,
+  "seed": 719001,
+  "selection_rule": "Use development-qualified frozen candidate(s), and a fitted selector only if grouped developer CV meets original per-group thresholds; no case-based outcome switching at rollout",
+  "required_each_group": {
+    "complete_smash_success_rate": 0.5,
+    "airborne_contact_rate": 0.7,
+    "recovery_given_airborne_contact": 0.85,
+    "numerical_failures": 0
+  },
+  "formal_panels": "Remain unused until a frozen candidate is selected; same policy/source both200-case panels"
+}

@@ -6,10 +6,16 @@ case identifiers, simulator state, or future observations.
 import torch
 
 
-def selection_features(public):
+def selection_features(public, feature_set='full-state-v1'):
     ball = public[:, 61:67]
     ball = ball.sign()*torch.log1p(ball.abs())
-    return torch.cat((ball, public[:, :45], public[:, 760:766]), 1)
+    if feature_set=='full-state-v1':
+        return torch.cat((ball, public[:, :45], public[:, 760:766]), 1)
+    if feature_set=='body-ball-v1':
+        return torch.cat((ball, public[:, :9], public[:, 760:766]), 1)
+    if feature_set=='body-ball-arm-v1':
+        return torch.cat((ball, public[:, :9], public[:, 21:27], public[:, 39:45], public[:, 760:766]), 1)
+    raise ValueError('Unknown public selection feature set')
 
 
 class CausalParameterSelector:
@@ -23,10 +29,11 @@ class CausalParameterSelector:
         self.intercept = checkpoint['intercept'].to(device)
         self.width = checkpoint['kernel_width']
         self.time_s = checkpoint['time_s']
+        self.feature_set = checkpoint.get('feature_set', 'full-state-v1')
         self.tables = {k: v.to(device) for k, v in checkpoint['parameter_tables'].items()}
 
     def choose(self, public):
-        query = (selection_features(public)-self.mean)/self.scale
+        query = (selection_features(public, self.feature_set)-self.mean)/self.scale
         distance = (query.square().sum(1)[:, None, None]
                     + self.support.square().sum(2)[None]
                     - 2*torch.einsum('nd,ctd->nct', query, self.support)).clamp(min=0)

@@ -25,6 +25,7 @@ parser.add_argument('--policy-lock', type=Path)
 parser.add_argument('--fixed-phase-ablation', action='store_true')
 parser.add_argument('--physics-dt', type=float, default=.0000625)
 parser.add_argument('--episode-seconds', type=float, default=8.5)
+parser.add_argument('--sweep-audit-iterations', type=int)
 parser.add_argument('--seed', type=int, default=717101)
 AppLauncher.add_app_launcher_args(parser)
 args = parser.parse_args()
@@ -100,9 +101,16 @@ def main():
         calibration_digest = hashlib.sha256(json.dumps(calibration, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
         if calibration_digest != protocol['calibration_canonical_sha256']:
             raise ValueError('Causal calibration differs from frozen protocol')
+        audit = protocol.get('sweep_audit', dict(maximum_iterations=256, tolerance_m=1e-6))
+        if audit['tolerance_m']!=1e-6 or (args.sweep_audit_iterations is not None and args.sweep_audit_iterations!=audit['maximum_iterations']):
+            raise ValueError('Audit compute budget or fixed tolerance differs from frozen protocol')
         formal_eligible = True
     physics = json.loads((ROOT/'configs/shuttle_physics_v2.json').read_text())
     cfg = BallEnvCfg()
+    cfg.sweep_audit_iterations = (protocol.get('sweep_audit', {}).get('maximum_iterations', 256) if protocol
+                                  else args.sweep_audit_iterations if args.sweep_audit_iterations is not None else 256)
+    if cfg.sweep_audit_iterations<256:
+        raise ValueError('The audit compute budget may not be reduced below the original256')
     cfg.scene.num_envs = count
     cfg.seed = args.seed
     cfg.sim.device = 'cuda:0'
@@ -197,11 +205,13 @@ def main():
                         asset_sha256=digest(ROOT/'assets/quadsmash_standard_v2.usd'),
                         physics_dt_s=cfg.sim.dt, control_dt_s=.01, episode_seconds=cfg.episode_length_s,
                         net_geometry_version=cfg.net_geometry_version,
+                        sweep_audit=dict(maximum_iterations=cfg.sweep_audit_iterations, tolerance_m=1e-6),
                         controller='frozen learned walking + learned PWA strike + frozen learned standing + model prediction; replan schedule recorded separately',
                         teacher_prefix_steps=0, teacher_action_function_calls=0,
                         causal_phase=calibration is not None, fixed_phase_ablation=args.fixed_phase_ablation,
                         causal_replan_at_s=policy.replan_at_s,
                         causal_parameter_selection_at_s=policy.selection_at_s,
+                        causal_contact_recovery=policy.contact_recovery_settings,
                         candidate_checkpoints=[dict(path=str(path), sha256=digest(path)) for path in checkpoint_paths],
                         source_cases_per_candidate=cases, recorded_env_ids=recorded_env_ids,
                         command=sys.argv)
@@ -311,6 +321,8 @@ def main():
             json.dump(policy.replan_log, stream, indent=2)
         with (args.output/'causal_parameter_selection.json').open('w') as stream:
             json.dump(policy.selection_log, stream, indent=2)
+        with (args.output/'causal_contact_recovery.json').open('w') as stream:
+            json.dump(policy.contact_recovery_log, stream, indent=2)
         (args.output/'completed.json').write_text(json.dumps(dict(episodes=count, env_steps=count*ticks))+'\n')
         print(json.dumps(metrics), flush=True)
     finally:

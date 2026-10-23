@@ -65,3 +65,16 @@ class CandidateBatch:
             result.extend(dict(row, candidate=i, env_ids=[mapping[j] for j in row['env_ids']])
                           for row in policy.selection_log)
         return result
+
+    @property
+    def contact_recovery_settings(self):
+        return [policy.contact_recovery_settings for policy in self.policies]
+
+    @property
+    def contact_recovery_log(self):
+        result = []
+        for i, (policy, ids) in enumerate(zip(self.policies, self.indices)):
+            mapping = ids.cpu().tolist()
+            result.extend(dict(row, candidate=i, env_ids=[mapping[j] for j in row['env_ids']])
+                          for row in policy.contact_recovery_log)
+        return result

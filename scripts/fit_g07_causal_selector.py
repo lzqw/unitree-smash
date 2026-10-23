@@ -40,6 +40,7 @@ def main():
     parser.add_argument('--time', type=float, default=3.)
     parser.add_argument('--ridge', type=float, required=True)
     parser.add_argument('--kernel-width', type=float, required=True)
+    parser.add_argument('--features', choices=['full-state-v1','body-ball-v1','body-ball-arm-v1'], default='full-state-v1')
     parser.add_argument('--calibration', type=Path, default=ROOT/'reports/G07/causal_dev_panel64_v1/calibration.json')
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
@@ -81,7 +82,7 @@ def main():
     by = {(r['candidate_id'], r['source_scenario']): r for r in rows}
     if len(by)!=len(cases)*len(candidates):
         raise ValueError('Missing or repeated option/case outcome')
-    raw = [features(public[[by[c, s]['scenario'] for s in cases]], current=True) for c in candidates]
+    raw = [features(public[[by[c, s]['scenario'] for s in cases]], current=True, feature_set=args.features) for c in candidates]
     population = np.concatenate(raw)
     mean, scale = population.mean(0), np.maximum(population.std(0), .01)
     support, alpha, intercept = [], [], []
@@ -98,7 +99,7 @@ def main():
                   arm_pitch_bias=tensor([cp.get('arm_pitch_output_bias_rad', 0.) for cp in checkpoints]),
                   arm_heading_gains=torch.stack([cp.get('arm_heading_gains', torch.zeros(2)) for cp in checkpoints]),
                   arm_joint_residual=torch.stack([cp.get('arm_joint_position_residual_rad', torch.zeros(6)) for cp in checkpoints]))
-    selector = dict(schema='g07-public-rbf-parameter-selector-v1', time_s=args.time, mean=tensor(mean), scale=tensor(scale),
+    selector = dict(schema='g07-public-rbf-parameter-selector-v1', time_s=args.time, feature_set=args.features, mean=tensor(mean), scale=tensor(scale),
                     support=tensor(support), alpha=tensor(alpha), intercept=tensor(intercept),
                     kernel_width=args.kernel_width, parameter_tables=tables)
     cp = copy.deepcopy(checkpoints[0])
@@ -112,7 +113,7 @@ def main():
     model = CausalParameterSelector(selector, 'cpu')
     query_public = public[[by[candidates[0], s]['scenario'] for s in cases]]
     choice, scores = model.choose(torch.tensor(query_public))
-    query = (features(query_public, current=True)-mean)/scale
+    query = (features(query_public, current=True, feature_set=args.features)-mean)/scale
     expected = np.stack([b+kernel(query, x, args.kernel_width)@w for x, w, b in zip(support, alpha, intercept)], 1)
     error = float(np.abs(scores.numpy()-expected).max())
     if error>1e-3:
@@ -123,6 +124,7 @@ def main():
                   source_run=str(args.run), candidate_ids=candidates, common_prefix_verified=True,
                   source_checkpoints=[manifest['candidate_checkpoints'][c] for c in candidates],
                   selection_time_s=args.time, ridge=args.ridge, kernel_width=args.kernel_width,
+                  feature_set=args.features,
                   runtime_public_features='log-compressed61:67,0:45,760:766; no case identifiers or future labels',
                   source_outcomes_sha256=hashlib.sha256((args.run/'episodes.json').read_bytes()).hexdigest(),
                   source_public_snapshots_sha256=hashlib.sha256((args.run/'preparation_snapshots.json').read_bytes()).hexdigest(),

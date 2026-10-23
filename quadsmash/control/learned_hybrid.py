@@ -59,6 +59,13 @@ class LearnedHybridPolicy:
         self.selection_at_s = self.selector.time_s if self.selector else None
         self.selected_parameters = torch.zeros(count, dtype=torch.bool, device=device)
         self.selection_log = []
+        self.contact_recovery_settings = checkpoint.get('contact_recovery')
+        self.observed_contact_time = torch.full((count,), float('inf'), device=device)
+        self.contact_recovery_log = []
+        if self.contact_recovery_settings is not None:
+            settings = self.contact_recovery_settings
+            if settings.get('arm_blend_s', .08)<=0 or settings.get('arm_delay_s', 0.)<0 or settings.get('leg_delay_s', 0.)<0:
+                raise ValueError('Contact recovery must use positive blend and nonnegative causal delays')
 
     def initialize(self, observation):
         self.walk.reset()
@@ -70,6 +77,8 @@ class LearnedHybridPolicy:
         self.arm_joint_residual.copy_(self.checkpoint.get('arm_joint_position_residual_rad', torch.zeros(6)).to(self.arm_joint_residual).expand_as(self.arm_joint_residual))
         self.selected_parameters.zero_()
         self.selection_log = []
+        self.observed_contact_time.fill_(float('inf'))
+        self.contact_recovery_log = []
         self.replanned.zero_()
         self.replan_log = []
         if self.has_preparation_adaptation:
@@ -152,6 +161,13 @@ class LearnedHybridPolicy:
         self._maybe_select_parameters(observation)
         self._maybe_replan(observation)
         clock = observation['policy'][:, 775]
+        if self.contact_recovery_settings is not None:
+            first = (observation['policy'][:, 773]>.5)&torch.isinf(self.observed_contact_time)
+            if bool(first.any()):
+                self.observed_contact_time[first] = clock[first]
+                self.contact_recovery_log.append(dict(input='current public flight-post-contact phase only',
+                                                      env_ids=torch.where(first)[0].cpu().tolist(),
+                                                      first_observed_clock_s=clock[first].cpu().tolist()))
         local = observation['policy'].clone()
         local[:, 775] -= self.phase_start
         if self.has_preparation_adaptation:
@@ -186,6 +202,16 @@ class LearnedHybridPolicy:
             strike_action[:, 4:6] += 2*front[:, None]/(self.limits[4:6, 1]-self.limits[4:6, 0])
             strike_action[:, 6:8] += 2*rear[:, None]/(self.limits[6:8, 1]-self.limits[6:8, 0])
             strike_action.clamp_(-1, 1)
+        push_delta = self.checkpoint.get('vertical_push_calf_delta_rad', 0.)
+        if push_delta:
+            a, b, c, d = self.checkpoint.get('vertical_push_window_s', [.98, 1.04, 1.16, 1.24])
+            if not a<b<=c<d:
+                raise ValueError('Invalid bounded vertical-push timing window')
+            envelope = ((local[:, 775]-a)/(b-a)).clamp(0, 1)*((d-local[:, 775])/(d-c)).clamp(0, 1)
+            delta = push_delta*envelope[:, None]
+            strike_action[:, 4:8] -= delta/(self.limits[4:8, 1]-self.limits[4:8, 0])
+            strike_action[:, 8:12] += 2*delta/(self.limits[8:12, 1]-self.limits[8:12, 0])
+            strike_action.clamp_(-1, 1)
         if self.has_arm_residual:
             envelope = ((local[:, 775]-.8)/.35).clamp(0, 1)*((1.6-local[:, 775])/.18).clamp(0, 1)
             delta = (self.arm_pitch_amplitude*envelope)[:, None]*self.arm_pitch_basis[None, :]
@@ -208,9 +234,17 @@ class LearnedHybridPolicy:
             strike_action[:, 12] = (strike_action[:, 12]+2*delta/(self.limits[12, 1]-self.limits[12, 0])).clamp(-1, 1)
         action = torch.where((clock >= self.phase_start)[:, None], strike_action, walk_action)
         recovering = local[:, 775] >= self.standing_start
+        if self.contact_recovery_settings is not None and 'leg_delay_s' in self.contact_recovery_settings:
+            recovering |= clock>=self.observed_contact_time+self.contact_recovery_settings['leg_delay_s']
         standing_action = self.stand.action(observation, self.standing_parameters, self.default,
                                             self.limits, self.standing_arm, recovering)
-        return torch.where(recovering[:, None], standing_action, action)
+        result = torch.where(recovering[:, None], standing_action, action)
+        if self.contact_recovery_settings is not None:
+            settings = self.contact_recovery_settings
+            blend = ((clock-self.observed_contact_time-settings.get('arm_delay_s', 0.)) /
+                     settings.get('arm_blend_s', .08)).clamp(0, 1)
+            result[:, 12:] = torch.lerp(result[:, 12:], standing_action[:, 12:], blend[:, None])
+        return result
 
     def _maybe_select_parameters(self, observation):
         if self.selector is None:

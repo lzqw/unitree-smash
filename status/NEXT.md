@@ -1,14 +1,22 @@
-# 当前继续入口：拍面净空/朝向反馈开发比较（2026-10-23 15:49 UTC）
+# 当前继续入口：准备位置与高位挥拍组合（2026-10-23 16:19 UTC）
 
 G07 IN_PROGRESS；正式400未运行，不能标PASSED。固定授权仅GPU0：UTC2026-10-23 08:04:13.742590至18:04:13.742590（北京时间10月23日16:04至10月24日02:04），新增最多10 GPU-hours。历史保留，恢复不重置窗口。实际费用见GPU_LEDGER.json。
 
 ## 活跃作业：恢复先查，禁止重复启动
 
-统一exec会话59925，reports/G07/arm_clearance_matrix_fine1536_01。guard PID1219217 / child1219225，启动15:46:30 UTC；max2700s/env-step-cap1305600。12冻结候选×128开发场景，physics62.5us/control.01s/episode8.5s，seed718951。输入arm_clearance_candidates_v1/manifest.json、原causal_profiled_dev_ground128_v1/panel.json与causal_dev_panel64_v1/calibration.json。源snapshot保留dirty。
+统一exec会话75206，reports/G07/vertical_preparation_matrix_fine1536_01，启动16:10:05 UTC。12候选×128，max2400s/envcap1305600，62.5us/.01s/8.5s，seed719051。候选vertical_preparation_candidates_v1/manifest.json，开发panel和calibration仍原文件；本批显式--sweep-audit-iterations4096，容差1e-6不变，原查询/碰撞响应不变，源快照保留dirty。恢复先查ledger/PID，勿重复启动。
 
-候选0/1为上一批forward9/back2参考；2/3/4分别forward9加arm pitch输出bias-.01/-.025/-.04rad；5为back2加-.025；6/7为forward9当前公开heading/omega_z反馈gains[.6,.02]/[1.2,.04]；8/9为forward9/back2的heading[.8,.03]+pitch-.025；10为forward9加CPU vertical IK种子+pitch-.015；11为forward9降低共同vx gain到-.08加pitch-.015。详细实际weights/hash看manifest。
+候选0为原back2参考；1..4为back2+vertical seed1倍+pitch-.015、共同vx gain0/-.05/-.10/-.15；5/6为vertical种子.5/1.5倍、vx-.10；7/8为back3、vertical1、vx-.05/-.10；9为back2+vertical1+vx-.10+heading[.6,.02]；10/11同back2+vertical1+vx-.10，pitch bias0/-.03。实际参数和SHA见manifest。0仍旧差分body模式，其余v2共同vx模式，参数选择器目前不混此类模式。
 
-LearnedHybridPolicy新增arm_heading_reference/gains和arm_pitch_output_bias_rad、arm_joint_position_residual_rad；默认0保留旧行为。heading参考来自已有teacher214实测公开观测均值，不调用教师函数；当前heading只用公开gravity/command normal估计，joint1反馈最大.10rad，原执行器限制不变。vertical seed仅CPU受限IK，在名义姿态使拍心升约1.48cm，绝非动态保证。实际结果待本批。
+## 刚完成：拍面/heading比较
+
+arm_clearance_matrix_fine1536_01 SUCCEEDED，12×128；没有固定候选两组同时合格。candidate10（forward9+verticalIK种子+pitch-.015）B完整32/64=.5、AIR61/64、恢复48/61=.786885、Net13；标准41/64、恢复51/64、Net12。candidate1 back2参考标准46/64、rec63/64、Net0；B完整29/64、AIR62/64、rec52/62=.83871、Net4。candidate9 back2+heading+pitch-.025：标准38/64、rec59/64、Net3；B完整24/64、rec55/62=.8871、Net3。全1536数值3（candidate0标准1、candidate5B2），各失败保留。
+
+参数选择器CV未过：forward共同前缀0,2,3,4,6,7,8,10,11，full-state ridge1/width8标准54/64、B31/64且Brec51/61=.8361；back2前缀1/5/9 ridge1/width128标准51/64、B31/64且Brec54/62=.87097。精简body-ball与body-ball-arm特征也未达标，所以尚未把selector送GPU。CPU实现存在，但不是策略成绩。
+
+碰网时序必须按每回合contact_time对齐，不以绝对5秒就称击球后。contact_recovery_cpu01/net_contact_order_diagnostic.json：c10有25Net，其中16在球触球前、8之后、1无有限接触时刻；c0有7前/9后。许多相差几十毫秒。public_clearance_braking_cpu01发现大多数新候选Net已非walking阶段，不能只修准备制动。
+
+LearnedHybridPolicy新增可选contact_recovery：只读取当时public773（真实飞行后触球phase）锁存观测时刻，按arm_blend_s/arm_delay_s收臂至既有recovery_arm_target；可选leg_delay_s提前既有standingactor。不读取未来真实接触时刻。默认关闭，对当前活跃作业无影响。CPU异步flag/从未触球lane/复位/legs保持一致均通过（contact_recovery_cpu01/metrics.json）；物理尚未运行，且仅能解决击球后Net。拟备用结合更高起跳等方法，不能宣称已改善。
 
 ## 刚完成的前向反馈比较
 
@@ -28,9 +36,9 @@ frozen_candidate_matrix_fine768_01六候选也均未合格，最好preparation�
 
 ## 后续执行
 
-1. 等当前1536结果，按候选分别看canonical/B。两组均full≥.5、AIR≥.7、条件恢复≥.85、所选候选数值0才进入正式。不能用混合候选平均或事后oracle冒充策略。
+1. 等当前vertical1536结果，按候选分别看canonical/B。两组均full≥.5、AIR≥.7、条件恢复≥.85、所选候选数值0才进入正式。不能用混合候选平均或事后oracle冒充策略。
 2. 如不足，分析失败时间和实际接触/恢复数据，再在剩余固定窗口内做有假设的改进；为最终400至少预留约40分钟。独立fresh开发面板causal_profiled_fresh_ground128_v2已在调参前冻结（launch718701/reset718702），条件选择器若学习旧面板必须真正在fresh面板复验。
-3. 正式协议configs/g07_causal_profiled_net_eval_v2.json SHA6d11397ef63354217d63088d779fe449fe717ebeff10d3dbaf582b4b13c651a7，冻结A/B各200，原scenarios未改。lock01已弃用且从未跑；冻结一个新checkpoint和代码后用lock_g07_hybrid_evaluation.py生成lock02；同一策略依次A/B，不能中途换权重/源码。aggregate工具只重算，不自动发布PASSED。
+3. 正式协议configs/g07_causal_profiled_net_eval_v3.json SHA6ce5c9929aa163504b39c24c5e85f1f2e939d43dde0d10beb48b55dc77a5319c，冻结A/B各200，原scenarios未改。lock01已弃用且从未跑；冻结一个新checkpoint和代码后用lock_g07_hybrid_evaluation.py生成lock02；同一策略依次A/B，不能中途换权重/源码。aggregate工具只重算，不自动发布PASSED。
 4. 若当前模型数值阻塞：runtime sweep仍原256迭代/tol1e-6。CPU sweep_iteration_diagnostic_cpu01显示3条原unknown在1024/4096同float32/tol下收敛miss；这不是原数值0、未改运行审计。如实现更大迭代只用于unknown，需要版本记录、针对性正例/原失败验证，原故障永不回写。
 5. UTC18:04:13前保存、停止本项目进程、准确记录费用与BUDGET_EXHAUSTED（若仍未通过）。不能因预算到期把goal标complete。
 
@@ -63,3 +71,13 @@ LearnedHybridPolicy在声明3.0秒只用当时public61:67(log)、0:45、760:766�
 CPU报告在causal_parameter_selector_cpu01：关闭selector时12当前候选与GPU启动时源码动作差0；以旧body8/9拟合只作plumbing check，128混合选择105/23与独立实例动作差0，reset清除状态，score float32/float64最大误差5.91e-5。当前GPU任务是在这一扩展前启动，实际执行startup snapshot；扩展默认关闭的兼容性已核对。
 
 若当前arm1536有一个固定候选两组均达标，直接冻结单一checkpoint做fresh128或正式400，不必引入selector。若固定未过但同前缀CV明显达标，可先按diagnose_g07_initial_selection.py --context-time 3 --candidate-ids 0 2 3 4 6 7 8 10 11分组CV选ridge/width；再fit脚本生成新checkpoint、在fresh128实际测试，合格后再正式400。不能用CV或oracle当物理验收。原forward2/3/4存在body mode/vx bias差异，fitter会拒绝，不能直接混成当前固定mode参数表。
+
+## 同查询数值计算预算改进
+
+sweep_compute_cpu02和sweep_compute_gpu01均通过10条固定查询：6个解析正负/切向/平移/转动/四元数双覆盖，4条既有未收敛查询。保持原函数、几何、1e-6容差，256有4 unknown、4096全收敛，CUDAfloat32与CPUfloat64结果一致；没有新PhysX回合或力响应。GPU查询费用.0005059478h已记账。BallEnvCfg默认256保留旧行为，G07评测可显式4096，manifest记录；unknown仍为硬数值失败，历史256失败不改。
+
+正式新协议v3与v2的两个panel文件/哈希、400门槛、资产/初始态契约、物理步、目标和网体完全相同，仅审计最大计算迭代4096；新SHA6ce5c992...。原v2保留未正式运行。新协议仍须新lock02同策略/源码两组200，不能面板间更改。
+
+fresh_ground128_v2/validation_plan_v1.json已在读arm1536结果前固定seed719001、4096审计/原容差/62.5us/8.5s。只有开发固定候选或分组CV两组均达原门槛才值得此独立物理复验，fresh与正式400当前仍未用。
+
+可选vertical_push_calf_delta_rad/window已实现在LearnedHybridPolicy，默认0无效果；窗[.98,1.04,1.16,1.24]，小腿目标+delta、大腿目标-.5delta，原关节范围/执行器不变。CPU关闭时与当前启动source动作差0，原生高度收益未知。当前活跃vertical1536不含此字段。若该批仍失败，可考虑下一批将best组合与小幅推离补偿及实际触球后收拍联合测试；先看本批结果，不把CPU种子当动力学成绩。

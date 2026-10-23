@@ -32,6 +32,8 @@ class BallEnvCfg(JumpEnvCfg):
     sim = sim_utils.SimulationCfg(dt=PHYSICS["native_physics_dt_s"], render_interval=160)
     decimation = round(PHYSICS["policy_dt_s"]/PHYSICS["native_physics_dt_s"])
     shuttle_radius_m = PHYSICS["collision_radius_m"]
+    # Compute budget only. The audit geometry and 1e-6 tolerance are unchanged.
+    sweep_audit_iterations = 256
     shuttle_mass_kg = PHYSICS["mass_kg"]
     drag_k_per_m = PHYSICS["quadratic_drag_k_per_m"]
     wind_m_s = tuple(PHYSICS["wind_m_s"])
@@ -247,12 +249,13 @@ class BallEnv(JumpEnv):
         swept = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
         unresolved = torch.zeros_like(swept)
         if bool(near_tool.any()):
-            # Avoid invoking the 256-iteration conservative advancement query
-            # for the overwhelmingly common far-away shuttle frames.  The
+            # Avoid invoking conservative advancement for
+            # the overwhelmingly common far-away shuttle frames.  The
             # query itself remains unchanged for every near-tool frame.
             hit, _, unresolved_near = swept_sphere_box(self.previous_ball_position[near_tool], position[near_tool],
                 self.previous_tool_position[near_tool], tool_position[near_tool], self.previous_tool_quaternion[near_tool],
-                tool_quaternion[near_tool], PHYSICS["racket_half_extents_m"], self.cfg.shuttle_radius_m)
+                tool_quaternion[near_tool], PHYSICS["racket_half_extents_m"], self.cfg.shuttle_radius_m,
+                iterations=self.cfg.sweep_audit_iterations)
             swept[near_tool] = hit
             unresolved[near_tool] = unresolved_near
             if getattr(self, 'capture_sweep_failures', False):
@@ -266,7 +269,7 @@ class BallEnv(JumpEnv):
                         center_start=self.previous_tool_position[i].cpu().tolist(), center_end=tool_position[i].cpu().tolist(),
                         quat_start=self.previous_tool_quaternion[i].cpu().tolist(), quat_end=tool_quaternion[i].cpu().tolist(),
                         half_extents=PHYSICS['racket_half_extents_m'], radius=self.cfg.shuttle_radius_m,
-                        iterations=256, tolerance=1e-6, dtype=str(position.dtype)))
+                        iterations=self.cfg.sweep_audit_iterations, tolerance=1e-6, dtype=str(position.dtype)))
         previous_gap = sphere_box_gap(self.previous_ball_position, self.previous_tool_position,
             self.previous_tool_quaternion, PHYSICS["racket_half_extents_m"], self.cfg.shuttle_radius_m)
         candidate = swept & self.sweep_ready & (previous_gap > 1e-5) & (~touching)
