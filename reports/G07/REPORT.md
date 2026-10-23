@@ -56,6 +56,8 @@
 
 [失败400完整包](https://github.com/lzqw/unitree-smash/releases/download/g07-progress-20261023/G07_formal400_failed_lock02_20261024.zip)（5,691,849bytes，SHA256 `e6bc7892efea822792aacc07c61c2a73a0b98561e0835fac00dd95982e6aaf2b`）保留策略、源码、锁与全部结果。最新增量包的状态、文件名和SHA以发布页及对应JSON为准；Python/Isaac环境与基础runtime资产仍按既有[恢复说明](../../docs/HANDOFF_ARTIFACTS.md)准备，不能把增量包当作完整环境。
 
+最新[完整开发与公开轨迹增量包](https://github.com/lzqw/unitree-smash/releases/download/g07-progress-20261023/G07_lastwindow_development_20261024.zip)已上传：73,321,942bytes、431文件，源码快照ae58e413ebedb7902b3262aa812ff4b320c443c0，SHA256 `a61d01eeedae61d5c28ad145f446c843468f065d64a29277dbca9c2dae711d22`。包含最近两批全部原始回合/源码快照/候选权重、完整B16公开张量、最终账本与恢复入口；ZIP CRC及数据/权重哈希通过，GitHub端摘要与本地一致。[发布核对记录](lastwindow_release.json)。
+
 ## 资源、瓶颈与继续入口
 
 原固定窗口北京时间10月23日16:04:13至10月24日02:04:13，仅GPU0、本轮新增最多10 GPUh、历史保留。实际结算**7.645612263 GPUh**，共64个作业，状态分布{'SUCCEEDED': 54, 'FAILED': 10}；全部搜索、失败、诊断、训练和评测计入。计费按GPU作业墙钟而非利用率积分。此次先耗尽固定工作窗，GPUh上限尚余2.354387737，不代表可以越过原时间限制继续。[最终账本摘要](lastwindow_handoff.json)、[完整账本](../../status/GPU_LEDGER.json)。

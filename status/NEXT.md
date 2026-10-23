@@ -27,6 +27,6 @@ CPU可运行：
 
 ## GitHub/交付
 
-工作分支g04-guided-learning-20261022；main与release tag自动源码包可能落后。release g07-progress-20261023已有失败400包、正式B固定case0/1视频（51秒）以及历史开发包。最新增量ZIP/JSON包括实际权重与公开数据；以最终发布页和核对过的SHA为准。
+工作分支g04-guided-learning-20261022；main与release tag自动源码包可能落后。release g07-progress-20261023已有失败400包、正式B固定case0/1视频（51秒）以及历史开发包。最新G07_lastwindow_development_20261024.zip/json已上传（73,321,942bytes，SHAa61d01eeedae61d5c28ad145f446c843468f065d64a29277dbca9c2dae711d22）；431文件，含实际权重与完整公开数据。GitHub digest已核对，详见reports/G07/lastwindow_release.json。
 
 原NEXT和REPORT逐字节保存在reports/G07/history_before_window_end_20261024。资产说明assets/assumptions.md必须保持G01签名SHA b78c443cb89de38d73f8b730fc7fba7e72b28c4e8f2dd2ffca4db70835a26b4a；G07假设另列ASSET_ASSUMPTIONS.md。USD SHA bfb831e4afc8a1a705bb0fb6f001c25eeaa401822978267a0ee5e151007511f3。只管理本项目进程，不动MPS/AWESun/其他作业。
