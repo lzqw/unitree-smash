@@ -179,9 +179,17 @@ def main():
         ticks = round(cfg.episode_length_s/.01)
         traces = [[] for _ in range(min(2, count))]
         measured_link_poses = [[] for _ in traces]
+        preparation_snapshots = []
         first_episode_finished = torch.zeros(count, dtype=torch.bool, device=env.device)
         with torch.inference_mode():
             for tick in range(ticks):
+                if tick in {250, 280, 300, 320, 340, 380}:
+                    preparation_snapshots.append(dict(time_s=tick*.01,
+                        active_first_episode=(~first_episode_finished).cpu().tolist(),
+                        root_position_m=(env.robot.data.root_link_pos_w-env.scene.env_origins).cpu().tolist(),
+                        root_quaternion_wxyz=env.robot.data.root_link_quat_w.cpu().tolist(),
+                        public_frame=obs['policy'][:, :69].cpu().tolist(),
+                        public_command_and_clock=obs['policy'][:, 759:776].cpu().tolist()))
                 env.goal_position_w.copy_(env.scene.env_origins+policy.command_positions(obs))
                 action = policy.action(obs)
                 if not torch.isfinite(action).all():
@@ -231,6 +239,7 @@ def main():
             writer.writeheader()
             writer.writerows(rows)
         (args.output/'initial_states.json').write_text(json.dumps(initial_rows, indent=2)+'\n')
+        (args.output/'preparation_snapshots.json').write_text(json.dumps(preparation_snapshots)+'\n')
         (args.output/'traces_fixed_scenarios_0_1.json').write_text(json.dumps(traces)+'\n')
         (args.output/'body_names.json').write_text(json.dumps(env.robot.body_names)+'\n')
         for index, poses in enumerate(measured_link_poses):

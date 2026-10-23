@@ -26,6 +26,7 @@ p.add_argument('--seed', type=int, default=717501)
 p.add_argument('--target-complete', type=float, default=.875)
 p.add_argument('--resume-population', type=Path)
 p.add_argument('--arm-pitch-basis', type=Path)
+p.add_argument('--preparation-and-arm', action='store_true')
 AppLauncher.add_app_launcher_args(p)
 a = p.parse_args()
 app = AppLauncher(a).app
@@ -55,14 +56,14 @@ def main():
     a.output.mkdir(parents=True, exist_ok=True)
     checkpoint = torch.load(a.checkpoint, map_location='cpu', weights_only=False)
     arm_mode = a.arm_pitch_basis is not None
+    if a.preparation_and_arm and not arm_mode:
+        raise ValueError('Joint preparation adaptation requires --arm-pitch-basis')
     if arm_mode:
         basis = json.loads(a.arm_pitch_basis.read_text())['arm_pitch_basis']
         checkpoint = dict(checkpoint, arm_pitch_basis=torch.tensor(basis, dtype=torch.float32))
     source = json.loads(a.panel.read_text())
     indices = list(range(0, len(source['scenarios']), a.case_stride))
     scenarios = [source['scenarios'][i] for i in indices]
-    if any('robot_reset' in scenario for scenario in scenarios):
-        raise ValueError('This training entry uses nominal robot initialization; reset perturbations must not be silently ignored')
     cases, n = len(scenarios), len(scenarios)*a.groups
     calibration = json.loads(a.calibration.read_text())
     physics = json.loads((ROOT/'configs/shuttle_physics_v2.json').read_text())
@@ -77,6 +78,7 @@ def main():
     cfg.sim.render_interval = cfg.decimation
     cfg.episode_length_s = 8.5
     cfg.include_net = True
+    cfg.robot.init_state.pos = (0., 0., .323)
     from quadsmash.physics.net_geometry import PROFILE_VERSION
     cfg.net_geometry_version = source.get('net_geometry_version', cfg.net_geometry_version)
     if cfg.net_geometry_version == PROFILE_VERSION:
@@ -118,6 +120,17 @@ def main():
         mean = checkpoint.get('arm_pitch_parameters', torch.tensor([0., -.03, .02, .3])).to(device).clone().clamp(low, high)
         policy.arm_pitch_basis.copy_(checkpoint['arm_pitch_basis'].to(device))
         policy.has_arm_residual = True
+    if a.preparation_and_arm:
+        preparation_low = torch.tensor([.35, .05, 0., .75], device=device)
+        preparation_high = torch.tensor([.75, .45, 4., 1.1], device=device)
+        original_preparation = torch.tensor([float(checkpoint['walk_parameters'][0]),
+            float(checkpoint['walk_parameters'][14]), 0., float(checkpoint['walk_parameters'][7])], device=device)
+        preparation_mean = checkpoint.get('preparation_parameters',
+            torch.tensor([.6, .16, 1.5, float(checkpoint['walk_parameters'][7])])).to(device)
+        baseline = torch.cat((original_preparation, baseline))
+        mean = torch.cat((preparation_mean, mean))
+        low, high = torch.cat((preparation_low, low)), torch.cat((preparation_high, high))
+        policy.has_preparation_adaptation = True
     sigma = (high-low)*.15
     generator = torch.Generator(device=device).manual_seed(a.seed)
     if a.resume_population:
@@ -125,7 +138,8 @@ def main():
         mean.copy_(resume['mean'].to(device));sigma.copy_(resume['sigma'].to(device));generator.set_state(resume['rng'].cpu())
     history, best_score, converged = [], -float('inf'), False
     (a.output/'training_manifest.json').write_text(json.dumps(dict(
-        kind='real-ball optimization of public-input arm residual' if arm_mode else 'real-ball optimization of public-input causal planner; formal panels unused',
+        kind='real-ball preparation/heading and arm residual adaptation' if a.preparation_and_arm else
+             'real-ball optimization of public-input arm residual' if arm_mode else 'real-ball optimization of public-input causal planner; formal panels unused',
         source_panel_sha256=hashlib.sha256(a.panel.read_bytes()).hexdigest(), source_scenario_indices=indices,
         groups=a.groups, cases_per_group=cases, physics_dt_s=a.physics_dt, target_complete=a.target_complete,
         net_geometry_version=cfg.net_geometry_version, net_center_height_m=cfg.net_height_m,
@@ -144,7 +158,10 @@ def main():
             order = torch.randperm(n, device=device, generator=generator)
             group_ids = order//cases
             case_ids.copy_(order % cases)
-            if arm_mode:
+            if a.preparation_and_arm:
+                policy.preparation_parameters.copy_(params[group_ids, :4])
+                policy.arm_pitch_parameters.copy_(params[group_ids, 4:])
+            elif arm_mode:
                 policy.arm_pitch_parameters.copy_(params[group_ids])
             else:
                 policy.planner_parameters.copy_(params[group_ids])
@@ -157,6 +174,25 @@ def main():
             with torch.inference_mode():
                 env.goal_position_w.copy_(env.scene.env_origins+torch.tensor(cfg.event_goal_position, device=device))
             obs, _ = wrapped.reset()
+            if any('robot_reset' in scenario for scenario in scenarios):
+                with torch.inference_mode():
+                    root = env.robot.data.root_state_w.clone()
+                    q = env.robot.data.default_joint_pos.clone()
+                    qd = torch.zeros_like(q)
+                    for index, case in enumerate(case_ids.cpu().tolist()):
+                        reset = scenarios[case].get('robot_reset', {})
+                        root[index, :2] += torch.tensor(reset.get('xy_m', [0., 0.]), device=device)
+                        yaw = float(reset.get('yaw_rad', 0.))
+                        root[index, 3:7] = torch.tensor([np.cos(yaw/2), 0., 0., np.sin(yaw/2)], device=device)
+                        root[index, 7:] = 0.
+                        q[index, env.joint_ids] += torch.tensor(reset.get('joint_offset_rad', [0.]*18), device=device)
+                        qd[index, env.joint_ids] = torch.tensor(reset.get('joint_velocity_rad_s', [0.]*18), device=device)
+                    ids = torch.arange(n, device=device)
+                    env.robot.write_root_state_to_sim(root, env_ids=ids)
+                    env.robot.write_joint_state_to_sim(q, qd, env_ids=ids)
+                    env.sim.forward()
+                    env.policy_history.reset(ids)
+                    obs = wrapped.get_observations()
             policy.initialize(obs)
             with torch.inference_mode():
                 env.goal_position_w.copy_(env.scene.env_origins+policy.waypoints)
@@ -196,13 +232,15 @@ def main():
                                       net_rate=net, recovery_rate=rec, robot_net_rate=collisions, numerical_failures=faults))
             scores = torch.tensor([r['score'] for r in summaries], device=device)
             index = int(scores.argmax())
-            parameter_name = 'arm_pitch_parameters' if arm_mode else 'planner_parameters'
+            parameter_name = 'preparation_and_arm_parameters' if a.preparation_and_arm else 'arm_pitch_parameters' if arm_mode else 'planner_parameters'
             result = dict(generation=generation, **{parameter_name: params[index].cpu().tolist()}, **summaries[index])
             history.append(result)
             if result['score'] > best_score:
                 best_score = result['score']
                 saved = dict(checkpoint, **{parameter_name: params[index].cpu()}, planner_training_result=result,
                              planner_training_manifest='training_manifest.json')
+                if a.preparation_and_arm:
+                    saved.update(preparation_parameters=params[index, :4].cpu(), arm_pitch_parameters=params[index, 4:].cpu())
                 torch.save(saved, a.output/'best_candidate.pt')
             elite = scores.topk(max(2, a.groups//4)).indices
             mean.copy_(.25*mean+.75*params[elite].mean(0))

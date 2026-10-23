@@ -8,7 +8,7 @@ import torch
 from .go2_walk_transfer import Go2WalkTransfer
 from .go2_standing_transfer import Go2StandingTransfer
 from .piecewise_affine import PiecewiseAffinePolicy
-from .initial_intercept import predict_initial_intercept
+from .initial_intercept import predict_initial_intercept, observed_world_heading
 
 
 class LearnedHybridPolicy:
@@ -35,11 +35,19 @@ class LearnedHybridPolicy:
         self.arm_pitch_basis = checkpoint.get('arm_pitch_basis', torch.zeros(6)).to(device)
         self.arm_pitch_amplitude = torch.zeros(count, device=device)
         self.has_arm_residual = bool(self.arm_pitch_basis.abs().sum() > 0)
+        original_preparation = torch.stack((checkpoint['walk_parameters'][0], checkpoint['walk_parameters'][14],
+                                            torch.tensor(0.), checkpoint['walk_parameters'][7]))
+        self.preparation_parameters = checkpoint.get('preparation_parameters', original_preparation).to(device).repeat(count, 1)
+        self.has_preparation_adaptation = 'preparation_parameters' in checkpoint
 
     def initialize(self, observation):
         self.walk.reset()
         self.stand.reset()
         self.arm_pitch_amplitude.zero_()
+        if self.has_preparation_adaptation:
+            self.walk_parameters[:, 0].copy_(self.preparation_parameters[:, 0])
+            self.walk_parameters[:, 14].copy_(self.preparation_parameters[:, 1])
+            self.walk_parameters[:, 7].copy_(self.preparation_parameters[:, 3])
         self.phase_start.fill_(self.checkpoint['walk_seconds'])
         self.waypoints.copy_(torch.tensor([self.checkpoint['walk_waypoint_x'], 0., .3],
                                          device=self.phase_start.device))
@@ -114,7 +122,14 @@ class LearnedHybridPolicy:
         clock = observation['policy'][:, 775]
         local = observation['policy'].clone()
         local[:, 775] -= self.phase_start
-        walk_action = self.walk.action(observation, self.walk_parameters, self.default, self.limits)
+        if self.has_preparation_adaptation:
+            heading = observed_world_heading(observation['policy'], self.checkpoint['result']['face_normal_world'])
+            heading_kp = self.preparation_parameters[:, 2]
+            maximum_time = torch.where(heading_kp>0, 4.5, 3.4)
+            walk_action = self.walk.action(observation, self.walk_parameters, self.default, self.limits,
+                heading_error=-heading, heading_kp=heading_kp, maximum_time=maximum_time)
+        else:
+            walk_action = self.walk.action(observation, self.walk_parameters, self.default, self.limits)
         strike_action = self.strike(local)
         if self.has_arm_residual:
             envelope = ((local[:, 775]-.8)/.35).clamp(0, 1)*((1.6-local[:, 775])/.18).clamp(0, 1)

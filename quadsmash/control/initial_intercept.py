@@ -6,6 +6,21 @@ state, future labels, recorded trajectory or collision outcome is an input.
 import numpy as np
 
 
+def observed_world_heading(observation, command_normal):
+    """Recover heading from current public gravity/known command direction."""
+    import torch
+    gravity = torch.nn.functional.normalize(observation[:, 6:9], dim=-1)
+    normal = observation[:, 763:766]
+    tangent = torch.nn.functional.normalize(normal-(normal*gravity).sum(1, keepdim=True)*gravity, dim=-1)
+    body_basis = torch.stack((gravity, tangent, torch.linalg.cross(gravity, tangent)), -1)
+    g = torch.tensor([0., 0., -1.], device=observation.device, dtype=observation.dtype)
+    n = torch.as_tensor(command_normal, device=observation.device, dtype=observation.dtype)
+    t = torch.nn.functional.normalize(n-(n*g).sum()*g, dim=-1)
+    world_basis = torch.stack((g, t, torch.linalg.cross(g, t)), -1)
+    rotation = world_basis@body_basis.transpose(1, 2)
+    return torch.atan2(rotation[:, 1, 0], rotation[:, 0, 0])
+
+
 def _unit(vector):
     norm = np.linalg.norm(vector, axis=-1, keepdims=True)
     if np.any(norm < 1e-8):

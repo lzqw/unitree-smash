@@ -26,18 +26,24 @@ class Go2WalkTransfer:
         self.reached.zero_()
         self.tick=0
 
-    def action(self, observation, parameters, default, limits):
+    def action(self, observation, parameters, default, limits, *, heading_error=None,
+               heading_kp=None, maximum_time=3.4):
         obs=observation['policy']
         t=obs[:,775]
         speed,kp,kd=parameters[:,:3].unbind(1)
         error=obs[:,760]
-        self.reached|=(error.abs()<.04)&(obs[:,:2].norm(dim=1)<.12)
+        ready=(error.abs()<.04)&(obs[:,:2].norm(dim=1)<.12)
+        if heading_error is not None:
+            ready &= (heading_kp<=0)|((heading_error.abs()<.03)&(obs[:,761].abs()<.04))
+        self.reached|=ready
         delay=(parameters[:,14] if parameters.shape[1]==15 else
                parameters[:,10] if parameters.shape[1]>=11 else .15)
         ramp=((t-delay)/.35).clamp(0,1)
         commands=torch.zeros((len(t),3),device=t.device)
         commands[:,0]=(speed*torch.tanh(kp*error-kd*obs[:,0])).clamp(-.4,1.)*ramp
         commands[:,1]=(1.5*obs[:,761]-.3*obs[:,1]).clamp(-.3,.3)*ramp
+        if heading_error is not None:
+            commands[:,2]=(heading_kp*heading_error).clamp(-.6,.6)*ramp
         commands[self.reached]=0
         if self.tick%2==0:
             source=torch.cat((obs[:,:9],commands,obs[:,9:21],obs[:,27:39],self.last_raw),1)
@@ -62,5 +68,5 @@ class Go2WalkTransfer:
                     q[:,16]=torch.lerp(default[16].expand_as(t),parameters[:,11],blend)
         rest=q.clone()
         rest[:,:12]=default[:12]
-        q=torch.where((self.reached|(t>=3.4))[:,None],rest,q)
+        q=torch.where((self.reached|(t>=maximum_time))[:,None],rest,q)
         return (2*(q-limits[:,0])/(limits[:,1]-limits[:,0])-1).clamp(-1,1)

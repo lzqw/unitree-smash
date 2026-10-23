@@ -1,14 +1,22 @@
-# 当前继续入口：新侧高网体下128回合高精度复验（2026-10-23 13:21 UTC）
+# 当前继续入口：准备/拍面残差真实球搜索（2026-10-23 13:42 UTC）
 
 G07 IN_PROGRESS；正式400未执行，不可标PASSED。
 
-## 当前活跃作业（先查，不能重复启动）
+## 活跃作业（先查，不能重复启动）
 
-统一exec会话81037，reports/G07/adaptive_planner_profiled_fine128_01。GPU0预算guard，最多2100秒/108800环境控制步；62.5us物理、.01s控制、8.5s回合。冻结CEM最佳checkpoint为reports/G07/adaptive_planner_cem01/best_candidate.pt，SHAf61550e3351c18c038e51257dd3a174c6e68f78f45144c9af2002b217e0cc858。
+统一exec会话48903，reports/G07/preparation_arm_cem01，GPU0 guard max2700s/env_steps_cap2611200，16组候选×32开发场景×最多6代，.25ms物理/.01s控制/8.5s回合。脚本train_g07_adaptive_planner.py --preparation-and-arm --arm-pitch-basis reports/G07/arm_pitch_residual_basis_cpu01/metrics.json，输入checkpoint为adaptive_planner_cem01/best_candidate.pt（SHAf61550e3351c18c038e51257dd3a174c6e68f78f45144c9af2002b217e0cc858）；panel为causal_profiled_adaptation_panel32_v1/panel.json（原128选0,4,..60及64,68,..124，16球各标准/B起点）。calibration仍原causal_dev_panel64_v1/calibration.json。
 
-128场景在reports/G07/causal_profiled_dev_ground128_v1/panel.json，SHAa45aa38c3948442d945b38834f5af42819ad35f1e5f0f12253a14c65d6dc0c8c。前64为原开发发球/标准地面起点，后64同来球/独立PCG64 seed717601的B宽度地面扰动。按前后64分别重算完整/恢复等，不能只看合计。新网体中心1.524、侧边1.55，version environment-local-profiled-net-v3。看stdout/error/metrics/completed及ledger；不要只凭app退出码0判成功。
+8维搜索：行走speed、起步delay、heading_kp、腿位置适配gain；以及4维公开预测入球驱动的机械臂pitch residual。has_preparation_adaptation启用当前公开重力/已知指令方向恢复world yaw→学习Go2 actor的yaw速度指令，零kp保留旧分支。启用kp时准备ready需要heading/y误差小，并允许walk至4.5秒（外部仍按预测phase切换）；原硬件限幅不变。Arm residual沿CPU种子6关节basis，幅度[-.05,.04]rad，非外力/非瞬移。
+
+训练真正应用panel.robot_reset，inference_mode写root/joints→forward→historyreset→getobs。每代先clear旧记录，保留所有原始结果、best_candidate.pt、population_XXX.pt均值/方差/RNG，未决扫掠精确输入另存。早停为训练完整≥.8125、恢复≥.875、数值0，否则6代。读取metrics/error/stdout和ledger；完成后必须独立62.5us128复验，不以训练最好组替代泛化。
 
 固定授权GPU0独立新增10 GPU-hours；T0 UTC08:04:13.742590，截止18:04:13.742590（北京时间10月23日16:04至10月24日02:04）。重启不重置，历史用量保留并排除新上限。所有GPU作业经scripts/run_gpu_job.py --budget-window g07-net-feasibility-20261023，带max-seconds、env-steps-cap、新目录和completed.json回执。
+
+## 最新失败（已完成，不能重复运行）
+
+旧exec81037 adaptive_planner_profiled_fine128_01 SUCCEEDED，用冻结f615...在net-v3真实高精度128：标准64 AIR1、full.375、rec.921875、Net0、fault0；B扰动64 AIR.9375、full.15625、rec43/60=.7166667、Net1、fault0。合计full34/128、rec102/124、fault0。development_group_metrics.json已重算。正式门槛未满足，不启动400。
+
+新原生网体诊断profiled_net_native_control01 16/16球挡/通行正确、4/4故意机器人碰网阳性；原恒高net-v2课程不替代新侧高网验收。
 
 ## 网体补齐与正式协议
 
@@ -18,7 +26,7 @@ G07 IN_PROGRESS；正式400未执行，不可标PASSED。
 
 ## 下一步
 
-1. 先等128开发结果；分标准/扰动两组。若均满足完整≥.5、air≥.7、rec≥.85、数值0，可准备同一新锁和正式400；尚未运行，不能先称通过。
+1. 先等当前准备/残差CEM，再用其冻结best到新目录独立62.5us128复验；分标准/扰动两组。若均满足完整≥.5、air≥.7、rec≥.85、数值0，可准备同一新锁和正式400；尚未运行，不能先称通过。
 2. 若失败，备用机械臂姿态残差已实现但未实际运行：scripts/train_g07_adaptive_planner.py --arm-pitch-basis reports/G07/arm_pitch_residual_basis_cpu01/metrics.json，使用新profiled开发面板的标准64子集（需单独冻结，不要忽略robot_reset；trainer遇reset会拒绝）。4维残差依赖公开预测速度/高度，原关节限幅，不调用教师动作。CPU基向量只是种子，真实球CEM后还要细步长复验。
 3. 当前策略仅初始公开球状态做模型预测；若需要在线重规划，应单独版本化实现与测试，不能读取未来标签。固定calibration JSON未改；学习系数存在checkpoint。
 
