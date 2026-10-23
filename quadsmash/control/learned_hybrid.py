@@ -9,6 +9,7 @@ from .go2_walk_transfer import Go2WalkTransfer
 from .go2_standing_transfer import Go2StandingTransfer
 from .piecewise_affine import PiecewiseAffinePolicy
 from .initial_intercept import predict_initial_intercept, observed_world_heading
+from .causal_parameter_selector import CausalParameterSelector
 
 
 class LearnedHybridPolicy:
@@ -45,14 +46,30 @@ class LearnedHybridPolicy:
         reference = checkpoint.get('body_reference')
         self.body_reference_times = reference['times_s'].to(device) if reference else None
         self.body_reference_values = reference['pitch_omega_y_vx'].to(device) if reference else None
-        self.body_feedback_parameters = checkpoint.get('body_feedback_parameters', torch.zeros(3)).to(device)
+        self.body_feedback_parameters = checkpoint.get('body_feedback_parameters', torch.zeros(3)).to(device).repeat(count, 1)
         self.body_feedback_mode = checkpoint.get('body_feedback_mode', 'differential-v1')
         self.body_velocity_bias = checkpoint.get('body_velocity_reference_bias_mps', 0.)
+        heading_reference = checkpoint.get('arm_heading_reference')
+        self.arm_heading_times = heading_reference['times_s'].to(device) if heading_reference else None
+        self.arm_heading_values = heading_reference['heading_omega_z'].to(device) if heading_reference else None
+        self.arm_heading_gains = checkpoint.get('arm_heading_gains', torch.zeros(2)).to(device).repeat(count, 1)
+        self.arm_joint_residual = checkpoint.get('arm_joint_position_residual_rad', torch.zeros(6)).to(device).repeat(count, 1)
+        self.arm_pitch_bias = torch.full((count,), checkpoint.get('arm_pitch_output_bias_rad', 0.), device=device)
+        self.selector = CausalParameterSelector(checkpoint['causal_parameter_selector'], device) if 'causal_parameter_selector' in checkpoint else None
+        self.selection_at_s = self.selector.time_s if self.selector else None
+        self.selected_parameters = torch.zeros(count, dtype=torch.bool, device=device)
+        self.selection_log = []
 
     def initialize(self, observation):
         self.walk.reset()
         self.stand.reset()
-        self.arm_pitch_amplitude.zero_()
+        self.arm_pitch_amplitude.fill_(self.checkpoint.get('arm_pitch_output_bias_rad', 0.))
+        self.arm_pitch_bias.fill_(self.checkpoint.get('arm_pitch_output_bias_rad', 0.))
+        self.body_feedback_parameters.copy_(self.checkpoint.get('body_feedback_parameters', torch.zeros(3)).to(self.body_feedback_parameters).expand_as(self.body_feedback_parameters))
+        self.arm_heading_gains.copy_(self.checkpoint.get('arm_heading_gains', torch.zeros(2)).to(self.arm_heading_gains).expand_as(self.arm_heading_gains))
+        self.arm_joint_residual.copy_(self.checkpoint.get('arm_joint_position_residual_rad', torch.zeros(6)).to(self.arm_joint_residual).expand_as(self.arm_joint_residual))
+        self.selected_parameters.zero_()
+        self.selection_log = []
         self.replanned.zero_()
         self.replan_log = []
         if self.has_preparation_adaptation:
@@ -100,6 +117,7 @@ class LearnedHybridPolicy:
         pitch_weights = self.arm_pitch_parameters.detach().cpu().numpy()
         pitch = np.clip(np.nansum(pitch_weights*pitch_features, axis=1), -.05, .04)
         pitch = np.where(plan['valid'], pitch, 0.)
+        pitch += self.checkpoint.get('arm_pitch_output_bias_rad', 0.)
         self.arm_pitch_amplitude.copy_(torch.as_tensor(pitch, device=self.phase_start.device, dtype=torch.float32))
         phase_correction = np.nansum(weights[:, :4]*phase_features, axis=1)
         raw_phase = plan['arrival_time_s']-self.calibration['reference_local_arrival_s']
@@ -131,6 +149,7 @@ class LearnedHybridPolicy:
         return torch.where(started[:, None], self.intercepts, self.waypoints)
 
     def action(self, observation):
+        self._maybe_select_parameters(observation)
         self._maybe_replan(observation)
         clock = observation['policy'][:, 775]
         local = observation['policy'].clone()
@@ -155,9 +174,9 @@ class LearnedHybridPolicy:
             measured = torch.stack((torch.atan2(local[:, 6], -local[:, 8]), local[:, 4], local[:, 0]), 1)
             envelope = ((time_local-.75)/.1).clamp(0, 1)*((1.30-time_local)/.1).clamp(0, 1)
             if self.body_feedback_mode == 'differential-pitch-common-vx-v2':
-                pitch = ((measured[:, :2]-reference[:, :2])*self.body_feedback_parameters[:2]).sum(1).clamp(-.12, .12)*envelope
+                pitch = ((measured[:, :2]-reference[:, :2])*self.body_feedback_parameters[:, :2]).sum(1).clamp(-.12, .12)*envelope
                 vx_envelope = ((time_local-1.)/.04).clamp(0, 1)*((1.25-time_local)/.07).clamp(0, 1)
-                common = (self.body_feedback_parameters[2]*(measured[:, 2]-reference[:, 2]-self.body_velocity_bias)).clamp(-.12, .12)*vx_envelope
+                common = (self.body_feedback_parameters[:, 2]*(measured[:, 2]-reference[:, 2]-self.body_velocity_bias)).clamp(-.12, .12)*vx_envelope
                 front, rear = (pitch+common).clamp(-.12, .12), (-pitch+common).clamp(-.12, .12)
             elif self.body_feedback_mode == 'differential-v1':
                 delta = ((measured-reference)*self.body_feedback_parameters).sum(1).clamp(-.12, .12)
@@ -171,11 +190,47 @@ class LearnedHybridPolicy:
             envelope = ((local[:, 775]-.8)/.35).clamp(0, 1)*((1.6-local[:, 775])/.18).clamp(0, 1)
             delta = (self.arm_pitch_amplitude*envelope)[:, None]*self.arm_pitch_basis[None, :]
             strike_action[:, 12:] = (strike_action[:, 12:]+2*delta/(self.limits[12:, 1]-self.limits[12:, 0])).clamp(-1, 1)
+        if 'arm_joint_position_residual_rad' in self.checkpoint or self.selector is not None:
+            envelope = ((local[:, 775]-.8)/.35).clamp(0, 1)*((1.6-local[:, 775])/.18).clamp(0, 1)
+            strike_action[:, 12:] = (strike_action[:, 12:]+2*envelope[:, None]*self.arm_joint_residual /
+                                     (self.limits[12:, 1]-self.limits[12:, 0])).clamp(-1, 1)
+        if self.arm_heading_times is not None:
+            time_local = local[:, 775].contiguous()
+            index = torch.searchsorted(self.arm_heading_times, time_local).clamp(1, len(self.arm_heading_times)-1)
+            fraction = ((time_local-self.arm_heading_times[index-1]) /
+                        (self.arm_heading_times[index]-self.arm_heading_times[index-1])).clamp(0, 1)
+            reference = torch.lerp(self.arm_heading_values[index-1], self.arm_heading_values[index], fraction[:, None])
+            heading = observed_world_heading(observation['policy'], self.checkpoint['result']['face_normal_world'])
+            error = torch.atan2(torch.sin(heading-reference[:, 0]), torch.cos(heading-reference[:, 0]))
+            delta = -(self.arm_heading_gains[:, 0]*error+self.arm_heading_gains[:, 1]*(local[:, 5]-reference[:, 1]))
+            envelope = ((time_local-.8)/.25).clamp(0, 1)*((1.6-time_local)/.18).clamp(0, 1)
+            delta = delta.clamp(-.10, .10)*envelope
+            strike_action[:, 12] = (strike_action[:, 12]+2*delta/(self.limits[12, 1]-self.limits[12, 0])).clamp(-1, 1)
         action = torch.where((clock >= self.phase_start)[:, None], strike_action, walk_action)
         recovering = local[:, 775] >= self.standing_start
         standing_action = self.stand.action(observation, self.standing_parameters, self.default,
                                             self.limits, self.standing_arm, recovering)
         return torch.where(recovering[:, None], standing_action, action)
+
+    def _maybe_select_parameters(self, observation):
+        if self.selector is None:
+            return
+        clock = observation['policy'][:, 775]
+        ids = torch.where((clock>=self.selection_at_s)&(~self.selected_parameters)&(clock<self.phase_start+.7))[0]
+        if not len(ids):
+            return
+        choice, scores = self.selector.choose(observation['policy'][ids])
+        tables = self.selector.tables
+        new_bias = tables['arm_pitch_bias'][choice]
+        self.arm_pitch_amplitude[ids] += new_bias-self.arm_pitch_bias[ids]
+        self.arm_pitch_bias[ids] = new_bias
+        self.body_feedback_parameters[ids] = tables['body_feedback'][choice]
+        self.arm_heading_gains[ids] = tables['arm_heading_gains'][choice]
+        self.arm_joint_residual[ids] = tables['arm_joint_residual'][choice]
+        self.selected_parameters[ids] = True
+        self.selection_log.append(dict(input='current public observation only', env_ids=ids.cpu().tolist(),
+                                       clock_s=clock[ids].cpu().tolist(), option=choice.cpu().tolist(),
+                                       scores=scores.cpu().tolist()))
 
     def _maybe_replan(self, observation):
         if self.replan_at_s is None or self.calibration is None:
@@ -205,6 +260,7 @@ class LearnedHybridPolicy:
         pitch_feature = np.c_[np.ones(len(public)), np.maximum(plan['incoming_velocity_mps'][:, 0]-vx, 0.),
             np.minimum(plan['incoming_velocity_mps'][:, 2]-vz, 0.), np.minimum(plan['position_m'][:, 2]-z, 0.)]
         pitch = np.clip(np.nansum(self.arm_pitch_parameters[ids].cpu().numpy()*pitch_feature, axis=1), -.05, .04)
+        pitch += self.arm_pitch_bias[ids].cpu().numpy()
         pitch = np.where(plan['valid'], pitch, self.arm_pitch_amplitude[ids].cpu().numpy())
         arrival = np.where(plan['valid'], plan['arrival_time_s'], self.arrival[ids].cpu().numpy())
         self.phase_start[ids] = torch.as_tensor(phase, dtype=clock.dtype, device=clock.device)

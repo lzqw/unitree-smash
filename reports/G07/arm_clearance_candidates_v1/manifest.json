@@ -1,0 +1,128 @@
+{
+  "kind": "Frozen development pose/heading comparison; no dynamics success implied",
+  "created_at": "2026-10-23T15:46:20.594234+00:00",
+  "source_run": "reports/G07/forward_body_matrix_fine1280_01",
+  "nominal_heading_reference_source": "reports/G07/arm_heading_reference_cpu01/metrics.json",
+  "vertical_seed_source": "reports/G07/arm_vertical_residual_cpu01/metrics.json",
+  "candidates": [
+    {
+      "name": "forward_reference",
+      "path": "reports/G07/arm_clearance_candidates_v1/forward_reference.pt",
+      "sha256": "81fa9b21a605071d9d0313bdbe70cfee433c1fc0e67899f6368c82c276bce50f",
+      "changes": {}
+    },
+    {
+      "name": "back2_reference",
+      "path": "reports/G07/arm_clearance_candidates_v1/back2_reference.pt",
+      "sha256": "984270cfefd4938ec7003d6c56ae078f814661bdd27ad92405b0da9dd95e6015",
+      "changes": {}
+    },
+    {
+      "name": "pitch10",
+      "path": "reports/G07/arm_clearance_candidates_v1/pitch10.pt",
+      "sha256": "efeff7473ee0e176a6dd72c740c84757a661140d845bb2ff4c8eb7b15dab0348",
+      "changes": {
+        "arm_pitch_output_bias_rad": -0.01
+      }
+    },
+    {
+      "name": "pitch25",
+      "path": "reports/G07/arm_clearance_candidates_v1/pitch25.pt",
+      "sha256": "66413cb8a5a7ad3d90a2e9cd4a49e992e689e89fa9c64070f6597e6818e05277",
+      "changes": {
+        "arm_pitch_output_bias_rad": -0.025
+      }
+    },
+    {
+      "name": "pitch40",
+      "path": "reports/G07/arm_clearance_candidates_v1/pitch40.pt",
+      "sha256": "289d286881e6f045ed6958023411c38659315d8b501a1dc03329863915f3f12f",
+      "changes": {
+        "arm_pitch_output_bias_rad": -0.04
+      }
+    },
+    {
+      "name": "back2_pitch25",
+      "path": "reports/G07/arm_clearance_candidates_v1/back2_pitch25.pt",
+      "sha256": "1b9e8ac0b8afff75173d1ac85e7d62c34c1ae5c1b1a1f03934e2c7fc952e8d01",
+      "changes": {
+        "arm_pitch_output_bias_rad": -0.025
+      }
+    },
+    {
+      "name": "heading06",
+      "path": "reports/G07/arm_clearance_candidates_v1/heading06.pt",
+      "sha256": "d870bcf95f2912f7e405b4187ec140a626ba45a872bc6e86dec6ef0e76a5af26",
+      "changes": {
+        "arm_heading_gains": [
+          0.6000000238418579,
+          0.019999999552965164
+        ]
+      }
+    },
+    {
+      "name": "heading12",
+      "path": "reports/G07/arm_clearance_candidates_v1/heading12.pt",
+      "sha256": "56553394ed55150d97a96a62fb8e7ee15376ce959750f7b9ad398d1d53515907",
+      "changes": {
+        "arm_heading_gains": [
+          1.2000000476837158,
+          0.03999999910593033
+        ]
+      }
+    },
+    {
+      "name": "heading08_pitch25",
+      "path": "reports/G07/arm_clearance_candidates_v1/heading08_pitch25.pt",
+      "sha256": "d4dd057d4516da9ed64c7900c14d4007bb551fa9ea0b84166ca32fa658aa8a60",
+      "changes": {
+        "arm_heading_gains": [
+          0.800000011920929,
+          0.029999999329447746
+        ],
+        "arm_pitch_output_bias_rad": -0.025
+      }
+    },
+    {
+      "name": "back2_heading08_pitch25",
+      "path": "reports/G07/arm_clearance_candidates_v1/back2_heading08_pitch25.pt",
+      "sha256": "aa56be71bbe966e55f814b347e16e82b01c36fb70b1073f6dcadf8833cd8f9e6",
+      "changes": {
+        "arm_heading_gains": [
+          0.800000011920929,
+          0.029999999329447746
+        ],
+        "arm_pitch_output_bias_rad": -0.025
+      }
+    },
+    {
+      "name": "vertical_pitch15",
+      "path": "reports/G07/arm_clearance_candidates_v1/vertical_pitch15.pt",
+      "sha256": "97edb0b9b73d2443c4432f2496cb47e525ff732e806e8b68248cc820d6aa0779",
+      "changes": {
+        "arm_joint_position_residual_rad": [
+          0.0,
+          0.15488627552986145,
+          -0.3499999940395355,
+          0.0,
+          0.19235630333423615,
+          0.0
+        ],
+        "arm_pitch_output_bias_rad": -0.015
+      }
+    },
+    {
+      "name": "vx08_pitch15",
+      "path": "reports/G07/arm_clearance_candidates_v1/vx08_pitch15.pt",
+      "sha256": "7252462a07250672fea2e8f176b7a0a778a7b27efafa3504b6b74de6657e50c1",
+      "changes": {
+        "body_feedback_parameters": [
+          0.3499999940395355,
+          -0.05999999865889549,
+          -0.07999999821186066
+        ],
+        "arm_pitch_output_bias_rad": -0.015
+      }
+    }
+  ]
+}

@@ -52,3 +52,16 @@ class CandidateBatch:
             result.extend(dict(row, candidate=i, env_ids=[mapping[j] for j in row['env_ids']])
                           for row in policy.replan_log)
         return result
+
+    @property
+    def selection_at_s(self):
+        return [policy.selection_at_s for policy in self.policies]
+
+    @property
+    def selection_log(self):
+        result = []
+        for i, (policy, ids) in enumerate(zip(self.policies, self.indices)):
+            mapping = ids.cpu().tolist()
+            result.extend(dict(row, candidate=i, env_ids=[mapping[j] for j in row['env_ids']])
+                          for row in policy.selection_log)
+        return result

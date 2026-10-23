@@ -1,5 +1,15 @@
 # GitHub 交接附件与恢复说明
 
+2026-10-23更新：G00–G06现已各自通过；下文是10月22日首次交接的历史状态。当前G07仍在开发，正式400回合未执行。请先读 [G07实测报告](../reports/G07/REPORT.md) 和 [当前继续入口](../status/NEXT.md)，避免把历史G04失败状态当成当前状态。
+
+最新增量附件位于 [G07发布页](https://github.com/lzqw/unitree-smash/releases/tag/g07-progress-20261023)：
+
+- `G07_body_forward_development_0051129.zip/json`：提交0051129源码/报告，两批已完成的机身反馈及原行走对照的完整逐回合、公开初始观测、测量位姿、冻结开发候选及Go2 actor。ZIP为94,208,112字节，SHA256 `66745a5e8bd557c733399d4f54a4b872c8d1b58c86724864a5e8b5682379eb98`。不含启动时仍在运行的前向反馈比较结果，仍依赖下述基础runtime资产。
+- `G07_body_feedback_development_20261023.pt/json`：开发candidate8，标准/B完整44/64和29/64，条件恢复54/64和47/63，未达标。最新代码支持载入，不能宣称正式通过。
+- [成功与失败对照视频](https://github.com/lzqw/unitree-smash/releases/download/g07-progress-20261023/G07_body_feedback_success_and_failure_20261023.mp4)：同一开发candidate8预先固定录制的案例0/1，约42秒，正常及慢放，画面标出碰网与恢复；不是400回合统计替代物。
+
+当前签名资产说明已恢复原始G01字节，G07新增说明单列在 `reports/G07/ASSET_ASSUMPTIONS.md`。若使用旧5d19f95增量包，请叠加发布页的b48bd1c文档修复包；新0051129包已包含修复。历次错误网坐标、矩形网课程和侧高网v3结果分别保留，具体撤回与边界见报告。
+
 仓库：`lzqw/unitree-smash`（私有）。交接标签：`handoff-20261022`。
 [下载此次附件](https://github.com/lzqw/unitree-smash/releases/tag/handoff-20261022)。
 

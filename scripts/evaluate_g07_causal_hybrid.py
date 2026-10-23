@@ -201,6 +201,7 @@ def main():
                         teacher_prefix_steps=0, teacher_action_function_calls=0,
                         causal_phase=calibration is not None, fixed_phase_ablation=args.fixed_phase_ablation,
                         causal_replan_at_s=policy.replan_at_s,
+                        causal_parameter_selection_at_s=policy.selection_at_s,
                         candidate_checkpoints=[dict(path=str(path), sha256=digest(path)) for path in checkpoint_paths],
                         source_cases_per_candidate=cases, recorded_env_ids=recorded_env_ids,
                         command=sys.argv)
@@ -308,6 +309,8 @@ def main():
             json.dump(comparisons, stream, indent=2)
         with (args.output/'causal_replans.json').open('w') as stream:
             json.dump(policy.replan_log, stream, indent=2)
+        with (args.output/'causal_parameter_selection.json').open('w') as stream:
+            json.dump(policy.selection_log, stream, indent=2)
         (args.output/'completed.json').write_text(json.dumps(dict(episodes=count, env_steps=count*ticks))+'\n')
         print(json.dumps(metrics), flush=True)
     finally:

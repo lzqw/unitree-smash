@@ -11,11 +11,13 @@ from pathlib import Path
 import numpy as np
 
 
-def features(public):
+def features(public, current=False):
     # No environment ID, reset seed, case label, or post-initial observation.
     # Log compression handles the explicitly long-distance model launches.
     ball = public[:, 61:67].astype(np.float64)
     ball = np.sign(ball)*np.log1p(np.abs(ball))
+    if current:
+        return np.c_[ball, public[:, :45], public[:, 760:766]]
     return np.c_[ball, public[:, 6:9], public[:, 9:27], public[:, 763:766]]
 
 
@@ -35,18 +37,30 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--run', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--context-time', type=float)
+    parser.add_argument('--candidate-ids', type=int, nargs='+')
     args = parser.parse_args()
     manifest = json.loads((args.run/'eval_manifest.json').read_text())
     if manifest.get('formal_evaluation_eligible'):
         raise ValueError('Only development outcomes may be used')
     rows = json.loads((args.run/'episodes.json').read_text())
     public = np.load(args.run/'initial_public_observation.npy')
+    if args.context_time is not None:
+        snapshots = json.loads((args.run/'preparation_snapshots.json').read_text())
+        matches = [s for s in snapshots if abs(s['time_s']-args.context_time)<1e-6]
+        if len(matches) != 1 or not all(matches[0]['active_first_episode']):
+            raise ValueError('Requires one snapshot with every original episode active')
+        public = np.zeros_like(public)
+        public[:, :69] = matches[0]['public_frame']
+        public[:, 759:776] = matches[0]['public_command_and_clock']
+    if args.candidate_ids is not None:
+        rows = [r for r in rows if r['candidate_id'] in args.candidate_ids]
     candidates = sorted({r['candidate_id'] for r in rows})
     cases = sorted({r['source_scenario'] for r in rows})
     by = {(r['candidate_id'], r['source_scenario']): r for r in rows}
     if len(by) != len(candidates)*len(cases):
         raise ValueError('Requires one outcome for every candidate and case')
-    raw = {c: features(public[[by[c, s]['scenario'] for s in cases]]) for c in candidates}
+    raw = {c: features(public[[by[c, s]['scenario'] for s in cases]], args.context_time is not None) for c in candidates}
     # Pair canonical and perturbed copies of one launch in the same fold.
     groups = [cases.index(s) % (len(cases)//2) for s in cases]
     reports = []
@@ -77,6 +91,8 @@ def main():
     result = dict(kind='retrospective grouped CV diagnostic only; not native success or independent validation',
                   context='each option uses its own initial public observation; independent native validation required',
                   feature_indices='log-compressed public61:67, public6:9, public9:27, public763:766',
+                  context_time_s=args.context_time, candidate_subset=args.candidate_ids,
+                  current_features='log-compressed public61:67, public0:45, public760:766' if args.context_time is not None else None,
                   fold='launch pair kept together; source index used only to split training, never a model input',
                   source=str(args.run), reports=reports)
     args.output.parent.mkdir(parents=True, exist_ok=True)

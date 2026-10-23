@@ -1,0 +1,137 @@
+{
+  "protocol": "g07-causal-long-prepare-development-v1",
+  "panel": "causal_profiled_dev_ground128_v1",
+  "formal_policy_acceptance": false,
+  "episodes": 1280,
+  "ground_initialization_only": true,
+  "formal_evaluation_eligible": false,
+  "protocol_sha256": null,
+  "policy_lock_sha256": null,
+  "checkpoint_sha256": "3f1157f39612a3062fb99c465273f25c9d866f8ec1efb909f4322e359ff25b7c",
+  "launch_panel_sha256": "a45aa38c3948442d945b38834f5af42819ad35f1e5f0f12253a14c65d6dc0c8c",
+  "calibration_sha256": "60745396d0b980c268fb2406b42de7f95563b3585c4f8f31eef58b38d5e9933e",
+  "source_git_sha": "b48bd1ce5ea94e4231a92d6ebc19ef9d6e7aa12c",
+  "asset_sha256": "bfb831e4afc8a1a705bb0fb6f001c25eeaa401822978267a0ee5e151007511f3",
+  "physics_dt_s": 6.25e-05,
+  "control_dt_s": 0.01,
+  "episode_seconds": 8.5,
+  "net_geometry_version": "environment-local-profiled-net-v3",
+  "controller": "frozen learned walking + learned PWA strike + frozen learned standing + model prediction; replan schedule recorded separately",
+  "teacher_prefix_steps": 0,
+  "teacher_action_function_calls": 0,
+  "causal_phase": true,
+  "fixed_phase_ablation": false,
+  "causal_replan_at_s": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "candidate_checkpoints": [
+    {
+      "path": "reports/G07/forward_body_candidates_v1/reference.pt",
+      "sha256": "3f1157f39612a3062fb99c465273f25c9d866f8ec1efb909f4322e359ff25b7c"
+    },
+    {
+      "path": "reports/G07/forward_body_candidates_v1/stop_original.pt",
+      "sha256": "306de03dc72e2d37e8090bc1304bbefcbfa77b3111996ba4d303927bd3e1eaae"
+    },
+    {
+      "path": "reports/G07/forward_body_candidates_v1/stop_back2cm.pt",
+      "sha256": "7eacbc4a94923572df2c97d10e59702d5c443d060a03aae49969fb09b9c22b35"
+    },
+    {
+      "path": "reports/G07/forward_body_candidates_v1/forward10.pt",
+      "sha256": "93a6ca3db0bb6053678ccb956a76bc7620ff38d586aad3cc38d183445f8ff45c"
+    },
+    {
+      "path": "reports/G07/forward_body_candidates_v1/forward20.pt",
+      "sha256": "e60ccda04f1efac42e68058893f335587620795dd8a548b85fdba2631d3e51a3"
+    },
+    {
+      "path": "reports/G07/forward_body_candidates_v1/forward20_back3.pt",
+      "sha256": "79df184bcde0ec606062b756607daa5f6347863fa705c22e462f83de0eb369ad"
+    },
+    {
+      "path": "reports/G07/forward_body_candidates_v1/extended_back3_forward.pt",
+      "sha256": "311919e19eeedaf27ae5a6507e434243787747345d9018dc4ea6622ff8ecda48"
+    },
+    {
+      "path": "reports/G07/forward_body_candidates_v1/original_walk_forward15.pt",
+      "sha256": "555fa27ddc882c16802f204751ec3cedf24c589aaf89021eaa48ebfd08096b91"
+    },
+    {
+      "path": "reports/G07/forward_body_candidates_v1/original_walk_forward25.pt",
+      "sha256": "b458dce2c4751f9836840ac91a646a06a77b52108fe2feebf2dad65ef51b9832"
+    },
+    {
+      "path": "reports/G07/forward_body_candidates_v1/forward15_back1.pt",
+      "sha256": "3522573dc8e740d37a4a125c00d17da09e12d24ec3b6438907c250fc9969b9a1"
+    }
+  ],
+  "source_cases_per_candidate": 128,
+  "recorded_env_ids": [
+    721,
+    420,
+    1220,
+    889,
+    481,
+    588,
+    1150,
+    689,
+    113,
+    539,
+    452,
+    418,
+    298,
+    1141,
+    502,
+    1167,
+    211,
+    115,
+    948,
+    1148
+  ],
+  "command": [
+    "scripts/evaluate_g07_causal_hybrid.py",
+    "--output",
+    "reports/G07/forward_body_matrix_fine1280_01",
+    "--checkpoint",
+    "reports/G07/forward_body_candidates_v1/reference.pt",
+    "--candidate-checkpoint",
+    "reports/G07/forward_body_candidates_v1/stop_original.pt",
+    "--candidate-checkpoint",
+    "reports/G07/forward_body_candidates_v1/stop_back2cm.pt",
+    "--candidate-checkpoint",
+    "reports/G07/forward_body_candidates_v1/forward10.pt",
+    "--candidate-checkpoint",
+    "reports/G07/forward_body_candidates_v1/forward20.pt",
+    "--candidate-checkpoint",
+    "reports/G07/forward_body_candidates_v1/forward20_back3.pt",
+    "--candidate-checkpoint",
+    "reports/G07/forward_body_candidates_v1/extended_back3_forward.pt",
+    "--candidate-checkpoint",
+    "reports/G07/forward_body_candidates_v1/original_walk_forward15.pt",
+    "--candidate-checkpoint",
+    "reports/G07/forward_body_candidates_v1/original_walk_forward25.pt",
+    "--candidate-checkpoint",
+    "reports/G07/forward_body_candidates_v1/forward15_back1.pt",
+    "--launch-panel",
+    "reports/G07/causal_profiled_dev_ground128_v1/panel.json",
+    "--calibration",
+    "reports/G07/causal_dev_panel64_v1/calibration.json",
+    "--physics-dt",
+    ".0000625",
+    "--episode-seconds",
+    "8.5",
+    "--seed",
+    "718901",
+    "--headless"
+  ]
+}

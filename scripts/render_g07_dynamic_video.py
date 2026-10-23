@@ -96,7 +96,10 @@ def draw(index,slow=False):
  landing_text='未记录首次落点' if landing is None else f'首次落点 [{landing[0]:.2f}, {landing[1]:.2f}] m'
  d.text((24,632),f"本回合{out_text}｜{margin_text}｜{landing_text}",font=small,fill='white')
  face='是' if e.get('effective_face_contact') else '否'
- d.text((24,669),f"完整 {metrics['complete']}/{metrics['episodes']}，恢复 {metrics['recovery']}/{metrics['episodes']}｜有效拍面：{face}｜案例 {metrics['selected_video_lane']}｜验收以双面板报告为准",font=small,fill=(166,193,214))
+ yes=lambda value:'是' if value else '否'
+ valid=bool(e.get('complete_smash') and not e.get('robot_net_contact') and not e.get('numerical_failures'))
+ d.text((24,658),f"本回合完整：{yes(valid)}｜机器人碰网：{yes(e.get('robot_net_contact'))}｜稳定恢复：{yes(e.get('recovery_success'))}｜有效拍面：{face}",font=small,fill=(220,225,235))
+ d.text((24,687),f"开发整组 {metrics['episodes']} 回合：完整 {metrics['complete']}，恢复 {metrics['recovery']}｜案例 {metrics['selected_video_lane']}｜非正式400回合验收",font=small,fill=(166,193,214))
  return np.asarray(img)
 out=a.output or a.input/('G07_near_net_learned_replay.mp4' if learned else 'G07_near_net_teacher_replay.mp4')
 contact_index=min(range(len(trace)),key=lambda i:abs(trace[i]['time_s']-(metrics['best'].get('contact_time_s') or 1.48)))
