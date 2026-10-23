@@ -1,5 +1,5 @@
 {
-  "status": "AWAITING_NEW_GPU0_WINDOW",
+  "status": "BLOCKED_PERMISSION",
   "requested_at": "2026-10-23T07:30:58.198019+00:00",
   "original_authorization_started_at": "2026-10-22T14:08:14.991569+00:00",
   "original_authorization_deadline": "2026-10-23T00:08:14.991569+00:00",
@@ -8,9 +8,18 @@
   "reason": "New goal explicitly forbids extending expired authorization windows. CPU preparation completed; no new native rollout or training was run.",
   "next_entrypoint": "scripts/search_g07_whole_body_v3.py",
   "report": "reports/G07/feasibility_v3_20261023/REPORT.md",
-  "blocking_audit_consecutive_turns": 2,
-  "latest_turn_classification": "progress",
-  "last_checked_at": "2026-10-23T07:39:56.262695+00:00",
+  "blocking_audit_consecutive_turns": 3,
+  "latest_turn_classification": "no_progress_verified_resource_block",
+  "last_checked_at": "2026-10-23T07:40:58.612871+00:00",
   "additional_progress": "Coupled search objective regression, authoritative final-event ranking, same-frame outgoing state and geometric separation, replayable promising shot retention; 89 CPU tests passed. No GPU run.",
-  "additional_report": "reports/G07/search_objective_regression_v3/REPORT.md"
+  "additional_report": "reports/G07/search_objective_regression_v3/REPORT.md",
+  "blocking_evidence": {
+    "new_gpu_authorization_reply_received": false,
+    "original_deadline": "2026-10-23T00:08:14.991569+00:00",
+    "running_ledger_entries": 0,
+    "live_project_gpu_processes": 0,
+    "remaining_required_work": "native whole-body search, closed-loop learning, independent G07 evaluation and execution video",
+    "latest_native_complete_smash_rate": 0.0,
+    "current_source_commit": "2ca6538"
+  }
 }
