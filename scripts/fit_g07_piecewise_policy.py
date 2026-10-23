@@ -14,20 +14,31 @@ import torch
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
-from quadsmash.control.piecewise_affine import FEATURES,PiecewiseAffinePolicy
+from quadsmash.control.piecewise_affine import FEATURES,COMPOSED_FEATURES,PiecewiseAffinePolicy,policy_features
 
 parser=argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--dataset',type=Path,required=True)
 parser.add_argument('--output',type=Path,required=True)
 parser.add_argument('--max-leaves',type=int,default=32)
+parser.add_argument('--composed',action='store_true')
+parser.add_argument('--start-time',type=float,default=0.)
+parser.add_argument('--end-time',type=float,default=float('inf'))
 args=parser.parse_args()
 args.output.mkdir(parents=True,exist_ok=True)
 data=torch.load(args.dataset,map_location='cpu',weights_only=False)
 if not data.get('homogeneous_controller',True):raise ValueError('Freeze and replay one selected teacher before fitting a clock policy')
-o=data['observations'].numpy()
-y=data['actions'].numpy()
+mask=(data['observations'][:,0,775]>=args.start_time)&(data['observations'][:,0,775]<=args.end_time)
+observations=data['observations'][mask].clone()
+observations[:,:,775]-=args.start_time
+actions=data['actions'][mask]
+if len(observations)<2:raise ValueError('Too few selected control steps')
+features=COMPOSED_FEATURES if args.composed else FEATURES
+transform='body-pitch-clock-v1' if args.composed else 'none'
+extracted=policy_features(observations.reshape(-1,794),torch.tensor(features),transform)
+o=extracted.reshape(*observations.shape[:2],-1).numpy()
+y=actions.numpy()
 hold=np.arange(o.shape[1])%5==0
-raw=o[:,~hold][:,:,FEATURES].reshape(-1,len(FEATURES)).astype(np.float64)
+raw=o[:,~hold].reshape(-1,o.shape[2]).astype(np.float64)
 target=y[:,~hold].reshape(-1,18).astype(np.float64)
 mean=raw.mean(0)
 scale=raw.std(0).clip(.01)
@@ -38,9 +49,11 @@ n=len(times)
 # Diagonal joint damping plus body-pitch feedback. Arm outputs use time.
 # Samples exactly at action clipping limits are censored observations of the
 # underlying affine command and are excluded from its least-squares fit.
-selectors=[[0,1,2,3+j] if j<12 else [0,1] for j in range(18)]
-xx=np.zeros((n,18,4,4))
-xy=np.zeros((n,18,4))
+selectors=([[0,1,2,3,4,5,6+j] if j<12 else [0,1,*range(len(features)+1,len(features)+5)] for j in range(18)]
+           if args.composed else [[0,1,2,3+j] if j<12 else [0,1] for j in range(18)])
+width=max(map(len,selectors))
+xx=np.zeros((n,18,width,width))
+xy=np.zeros((n,18,width))
 yy=np.zeros((n,18))
 all_y=np.zeros((n,18))
 all_yy=np.zeros((n,18))
@@ -52,7 +65,7 @@ for tick in range(n):
     all_count[tick]=int(rows.sum())
     for joint,columns in enumerate(selectors):
         eligible=rows & (np.abs(target[:,joint])<.99999)
-        a=np.zeros((int(eligible.sum()),4))
+        a=np.zeros((int(eligible.sum()),width))
         a[:,:len(columns)]=x[eligible][:,columns]
         b=target[eligible,joint]
         xx[tick,joint]=a.T@a
@@ -105,20 +118,21 @@ while len(leaves)<args.max_leaves:
     if error<1e-12:break
 thresholds=[float((times[end-1]+times[end])/2) for _,end in leaves[:-1]]
 checkpoint=dict(schema='learned-pwa-actions-v1',action_family='absolute-joint-limits-v1',
-    features=FEATURES,thresholds=torch.tensor(thresholds),mean=torch.tensor(mean),
+    features=features,feature_transform=transform,thresholds=torch.tensor(thresholds),mean=torch.tensor(mean),
     scale=torch.tensor(scale),weights=torch.tensor(np.stack([fit(s,e)[1] for s,e in leaves])),
     dataset_sha256=hashlib.sha256(args.dataset.read_bytes()).hexdigest(),
     training='greedy time partitions and least squares; disjoint episode validation',
     curriculum=True,formal_acceptance=False)
 policy=PiecewiseAffinePolicy(checkpoint)
 with torch.inference_mode():
-    pred=policy(data['observations'].reshape(-1,794)).reshape_as(data['actions'])
-    errors=(pred-data['actions']).square()
+    pred=policy(observations.reshape(-1,794)).reshape_as(actions)
+    errors=(pred-actions).square()
     metrics=dict(kind='CPU supervised fit, not a simulation result',leaves=len(leaves),
         thresholds_s=thresholds,training_mse=float(errors[:,~hold].mean()),
         validation_mse=float(errors[:,hold].mean()),
-        validation_max_abs_error=float((pred[:,hold]-data['actions'][:,hold]).abs().max()),
-        features=FEATURES,teacher_prefix_steps=0)
+        validation_max_abs_error=float((pred[:,hold]-actions[:,hold]).abs().max()),
+        features=features,feature_transform=transform,global_training_window_s=[args.start_time,args.end_time],
+        teacher_prefix_steps=0)
 torch.save(checkpoint,args.output/'policy.pt')
 (args.output/'metrics.json').write_text(json.dumps(metrics,indent=2)+'\n')
 print(json.dumps(metrics),flush=True)

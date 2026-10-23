@@ -1,0 +1,79 @@
+diff --git a/scripts/probe_g07_composed_contact.py b/scripts/probe_g07_composed_contact.py
+index 7f86f36..e5824bc 100644
+--- a/scripts/probe_g07_composed_contact.py
++++ b/scripts/probe_g07_composed_contact.py
+@@ -41,7 +41,8 @@ def main():
+   if population is not None:
+    grid=[-20.,-45.,-90.,-150.] if a.strong_serve_grid else [-12.,-20.,-30.,-45.]
+    velocities=[grid[(i//count)%4] for i in range(n)]
+-   launches=solve_initial_launches(points,event_times,velocities)
++   launch_times=event_times+np.array([[-.005,.005][(i//(4*count))%2] if n>=8*count else 0. for i in range(n)])
++   launches=solve_initial_launches(points,launch_times,velocities)
+   else:
+    times=np.array([event_time+offset[(i//8)%4] for i in range(n)])
+    launches=solve_initial_launches(points,times,[vx[i%8] for i in range(n)])
+@@ -79,7 +80,13 @@ def main():
+   selected=dict(candidate);selected['parameters']=parameter_rows[index].cpu();selected['result']=dict(record)
+   selected['result'].update(virtual_ball_center_m=points[index].tolist(),event_time_s=float(event_times[index]))
+   if population is not None:
+-   selected['result']['face_normal_world']=population['face_normals'][population_lanes[index]].tolist()
++   lane=population_lanes[index]
++   selected['result'].update(face_normal_world=population['face_normals'][lane].tolist(),
++    root_at_event_m=population['root_at_event'][lane].tolist(),local_event_time_s=float(population['event_time'][lane]),
++    effective_face_uv_m=population['face_uv'][lane].tolist(),source_population_lane=lane,source_population=str(a.population),
++    predicted_outgoing_velocity_mps=population['predicted_outgoing_velocity'][lane].tolist(),
++    predicted_net_margin_m=float(population['predicted_net_margin'][lane]),
++    predicted_landing_xy_m=population['predicted_landing_xy'][lane].tolist())
+   selected['selection_physical_episode']=best
+   torch.save(selected,a.output/'selected_teacher.pt')
+   (a.output/'episodes.json').write_text(json.dumps(rows,indent=2)+'\n');(a.output/'jump_episodes.json').write_text(json.dumps(env.episode_records,indent=2)+'\n');(a.output/'metrics.json').write_text(json.dumps(metrics,indent=2)+'\n');(a.output/'trajectories.json').write_text(json.dumps(trajectories)+'\n');(a.output/'trajectory.json').write_text(json.dumps(trajectories[index])+'\n');torch.save(dict(observations=torch.stack(observations),actions=torch.stack(actions),episodes=rows,controller=candidate,homogeneous_controller=population is None,controller_parameters_per_episode=parameter_rows.cpu()),a.output/'teacher_dataset.pt');(a.output/'completed.json').write_text(json.dumps(dict(episodes=n,env_steps=n*ticks))+'\n');print(json.dumps(metrics),flush=True)
+diff --git a/status/GPU_LEDGER.json b/status/GPU_LEDGER.json
+index a0a11c3..23665cf 100644
+--- a/status/GPU_LEDGER.json
++++ b/status/GPU_LEDGER.json
+@@ -8307,15 +8307,20 @@
+       ],
+       "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/composed_compact_flight01",
+       "gpu": 0,
+-      "status": "RUNNING",
+-      "charged_gpu_hours": 0.3333333333333333,
++      "status": "FAILED",
++      "charged_gpu_hours": 0.04608302019555898,
+       "charged_env_steps": 3788800,
+       "started_at": "2026-10-23T11:30:58.949987+00:00",
+       "pid": 1176160,
+       "original_authorization": "g07-net-feasibility-20261023",
+       "authorization_started_at": "2026-10-23T08:04:13.742590+00:00",
+       "authorization_deadline": "2026-10-23T18:04:13.742590+00:00",
+-      "child_pid": 1176169
++      "child_pid": 1176169,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": false,
++      "elapsed_s": 165.89887270401232,
++      "finished_at": "2026-10-23T11:33:44.851892+00:00"
+     }
+   ],
+   "budget_windows": {
+diff --git a/status/NEXT.md b/status/NEXT.md
+index 1c77f56..edbc259 100644
+--- a/status/NEXT.md
++++ b/status/NEXT.md
+@@ -33,7 +33,7 @@ Go2源行走actor、来源和sha：configs/g07_go2_walk_transfer.json。TorchScr
+ 
+ ## 最新分支与明确失败
+ 
+-`composed_close_feedback01`主动完成5/24代后保存切换：腾空、击球前无碰网点[1.411354,-.048992,1.619491]，4.730s；首次网接触为Racket4.814s。代表理想飞行净空-.01952m，尚未实际击球。`02`主动完成15/24代，直立推蹬分支停滞在约1.486m、预测净空缺口.145m。两个作业FAILED是主动未满足请求代数回执，非崩溃；原数据和方法切换json保留。
++`composed_close_feedback01`主动完成5/24代后保存切换：腾空、击球前无碰网点[1.411354,-.048992,1.619491]，4.730s；首次网接触为Racket4.814s。代表理想飞行净空-.01952m，尚未实际击球。`02`主动完成16/24代，直立推蹬分支停滞在约1.486m、预测净空缺口.145m。两个作业FAILED是主动未满足请求代数回执，非崩溃；原数据和方法切换json保留。
+ 
+ 当前256环境分支把实际腾空作为候选硬条件，保持初值中同一arm seed的已优化姿态/挥拍参数，目标投影x1.45，仍需全臂/拍面动态避网。CPU重建较高候选的拍面/法向误差约2e-7m/7e-7，沿x直接前移2cm会与网交叠，不能靠整体平移解决。
+ 
+diff --git a/status/RUNS.jsonl b/status/RUNS.jsonl
+index c57a0e8..8d0f885 100644
+--- a/status/RUNS.jsonl
++++ b/status/RUNS.jsonl
+@@ -231,3 +231,4 @@
+ {"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/probe_g07_walk_transfer.py", "--output", "reports/G07/walk_close_fine_replay01", "--candidate", "reports/G07/walk_close_high01/best_candidate.pt", "--num-envs", "32", "--fine", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/walk_close_fine_replay01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.032759856280560294, "charged_env_steps": 12800, "started_at": "2026-10-23T11:16:02.532158+00:00", "pid": 1172717, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1172726, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 117.93548261001706, "finished_at": "2026-10-23T11:18:00.470667+00:00"}
+ {"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/search_g07_composed_reach_v2.py", "--output", "reports/G07/composed_close_feedback01", "--num-envs", "128", "--generations", "24", "--root-x", "0", "--walk-candidate", "reports/G07/walk_close_high01/best_candidate.pt", "--pose-seed", "reports/G07/close_base_ik_cpu01/pose_seed.pt", "--initial", "reports/G07/composed_high_ready01/best_candidate.pt", "--landing-feedback", "--walk-seconds", "3.4", "--waypoint-x", "1.1", "--deep-crouch", "--vertical-seed", "--flight-objective", "--arm-pitch-feedback", "--seed-bank", "reports/G07/free_jump_seed_bank02/seed_bank.pt", "--global-fraction", ".2", "--seed", "716301", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/composed_close_feedback01", "gpu": 0, "status": "FAILED", "charged_gpu_hours": 0.04482909153028029, "charged_env_steps": 2273280, "started_at": "2026-10-23T11:19:16.652457+00:00", "pid": 1174146, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1174155, "exit_code": 0, "timed_out": false, "receipt_present": false, "elapsed_s": 161.38472950900905, "finished_at": "2026-10-23T11:21:58.040183+00:00"}
+ {"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/search_g07_composed_reach_v2.py", "--output", "reports/G07/composed_close_feedback02", "--num-envs", "128", "--generations", "24", "--root-x", "0", "--walk-candidate", "reports/G07/walk_close_high01/best_candidate.pt", "--pose-seed", "reports/G07/close_base_ik_cpu01/pose_seed.pt", "--initial", "reports/G07/composed_high_ready01/best_candidate.pt", "--landing-feedback", "--walk-seconds", "3.4", "--waypoint-x", "1.1", "--deep-crouch", "--vertical-seed", "--flight-objective", "--arm-pitch-feedback", "--seed-bank", "reports/G07/free_jump_seed_bank02/seed_bank.pt", "--global-fraction", ".2", "--seed", "716302", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/composed_close_feedback02", "gpu": 0, "status": "FAILED", "charged_gpu_hours": 0.14027496651526436, "charged_env_steps": 2273280, "started_at": "2026-10-23T11:22:07.577958+00:00", "pid": 1174765, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1174776, "exit_code": 0, "timed_out": false, "receipt_present": false, "elapsed_s": 504.98987945495173, "finished_at": "2026-10-23T11:30:32.570915+00:00"}
++{"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/search_g07_composed_reach_v2.py", "--output", "reports/G07/composed_compact_flight01", "--num-envs", "256", "--generations", "20", "--root-x", "0", "--walk-candidate", "reports/G07/walk_close_high01/best_candidate.pt", "--pose-seed", "reports/G07/close_base_ik_cpu01/pose_seed.pt", "--initial", "reports/G07/composed_close_feedback01/best_candidate.pt", "--landing-feedback", "--walk-seconds", "3.4", "--waypoint-x", "1.1", "--strike-x", "1.45", "--strike-z", "1.65", "--deep-crouch", "--flight-objective", "--arm-pitch-feedback", "--compact-recovery", "--tucked-flight-seed", "--incoming-bank", "reports/G07/incoming_velocity_bank_cpu01/metrics.json", "--global-fraction", ".15", "--seed", "716401", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/composed_compact_flight01", "gpu": 0, "status": "FAILED", "charged_gpu_hours": 0.04608302019555898, "charged_env_steps": 3788800, "started_at": "2026-10-23T11:30:58.949987+00:00", "pid": 1176160, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1176169, "exit_code": 0, "timed_out": false, "receipt_present": false, "elapsed_s": 165.89887270401232, "finished_at": "2026-10-23T11:33:44.851892+00:00"}

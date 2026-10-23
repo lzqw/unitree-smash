@@ -6,7 +6,13 @@ G07为IN_PROGRESS；正确物理网下无借力完整成功仍为0。G04–G06�
 
 GPU0；独立新增最多10 GPU-hours，窗口 `g07-net-feasibility-20261023`：Asia/Taipei 2026-10-23 16:04:13 至 2026-10-24 02:04:13（UTC08:04:13至18:04:13）。重启或切换方法不重置。成本以GPU_LEDGER.json为准。
 
-`walk_close_high01`已完成30代×128；冻结在0.25ms夹具 `walk_close_fine_replay01` 独立32/32走到x1.10附近并站稳、0碰网。当前统一exec会话47833：`composed_compact_flight01`，256环境×20代无球搜索，新44参数（倾角反馈+收拍时序/幅度），初值来自较高的 `composed_close_feedback01`，另保留原收腿参考候选。先轮询现有进程、查GPU_LEDGER/metrics，不能重复启动。运行中job.json仅在结算后出现；活跃PID在GPU_LEDGER.json。
+`walk_close_high01`已完成30代×128；冻结在0.25ms夹具 `walk_close_fine_replay01` 独立32/32走到x1.10附近并站稳、0碰网。`composed_compact_flight01`主动保存完成5/20代：最佳点[1.426609,.002736,1.637931]，预测净空.020573m，腾空且全程无网接触，恢复尚未通过。为做真实球校准而提前结束，运行器FAILED与method_switch.json保留；后续可从population_004.pt恢复mean/sigma/RNG。
+
+`compact_native_contact01`已完成64回合：净无碰网18，其中有序越网14、首次目标落点8，恢复/完整0，数值0。教师214族8/8无碰网、6/8目标；冻结case37独立16回合 `net_free_teacher214_replay01`：16/16空中有效拍面/越网/首次目标、0网接触/故障，恢复0。最新纯净metadata的相同控制器是 `compact_native_contact01/net_free_teacher214_v2.pt`（v1原件保留，v2删除从另一lane继承的无用诊断字段，执行参数相同）。
+
+当前统一exec会话66329：`standing_recovery_search01`，128环境×16代无球落地搜索，冻结有效击球，接入原学习Go2 actor的零速度站立/落地控制；已有通过原无机身触地、无碰网、0.8s稳定恢复的回合。先轮询该进程，不重复启动。运行中PID在GPU_LEDGER；job.json结算后才生成。
+
+`fit_composed_strike214_01/policy.pt`已CPU训练12段反馈，留出动作最大误差4.17e-6。接下来用 `probe_g07_composed_contact.py --candidate standing_recovery_search01/best_candidate.pt --strike-policy fit_composed_strike214_01/policy.pt --recovery-scan --launches compact_native_contact01/launches.json --launch-index 37 --num-envs 64`，均以reports/G07路径为前缀且使用GPU预算guard。该扫描变动恢复接入时间/腿部偏移/actor位置输出幅度，主击球为学习PWA，不调用教师函数。混合扫描数据不能拟合单一时钟策略；选中后冻结独立复验。
 
 ## 可信与无效证据
 
@@ -33,8 +39,10 @@ Go2源行走actor、来源和sha：configs/g07_go2_walk_transfer.json。TorchScr
 
 ## 最新分支与明确失败
 
-`composed_close_feedback01`主动完成5/24代后保存切换：腾空、击球前无碰网点[1.411354,-.048992,1.619491]，4.730s；首次网接触为Racket4.814s。代表理想飞行净空-.01952m，尚未实际击球。`02`主动完成15/24代，直立推蹬分支停滞在约1.486m、预测净空缺口.145m。两个作业FAILED是主动未满足请求代数回执，非崩溃；原数据和方法切换json保留。
+`composed_close_feedback01`主动完成5/24代后保存切换：腾空、击球前无碰网点[1.411354,-.048992,1.619491]，4.730s；首次网接触为Racket4.814s。代表理想飞行净空-.01952m，尚未实际击球。`02`主动完成16/24代，直立推蹬分支停滞在约1.486m、预测净空缺口.145m。两个作业FAILED是主动未满足请求代数回执，非崩溃；原数据和方法切换json保留。
 
 当前256环境分支把实际腾空作为候选硬条件，保持初值中同一arm seed的已优化姿态/挥拍参数，目标投影x1.45，仍需全臂/拍面动态避网。CPU重建较高候选的拍面/法向误差约2e-7m/7e-7，沿x直接前移2cm会与网交叠，不能靠整体平移解决。
 
 CPU incoming_velocity_bank_cpu01给出锁定阻力下4.8s来球：初始vx=-8..-150，最终仅约-1.71..-5.34，作为多入球速度塑形，不是实测。新`probe_g07_composed_contact.py --population ... --population-candidates 8 --strong-serve-grid`可在真实BallEnv批量比较不同教师（配合相应best_candidate.pt共享metadata），保存selected_teacher.pt；该混合教师数据不许直接拿来拟合单一时钟策略。选定后必须冻结重放再学习。程序现在也保存选中回合50Hz实测连杆位姿供视频。
+
+程序/报告最新已推送646d3a5。修正网下的二进制快照已上传发布页资产 G07_correct_net_snapshot_646d3a5_1134UTC.zip（SHA256 954eef639ad082716afa70b94784ad027f1a57aa64e9f1eb31c4db3d0677eb3c）；其中真实球探测状态是pending，不代表完成。
