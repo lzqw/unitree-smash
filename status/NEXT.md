@@ -1,3 +1,33 @@
+# 当前独立B16压力测试（2026-10-23 17:48 UTC）
+
+活跃exec40287，reports/G07/lastwindow_fresh_b16_stress01，guard PID1238576/child1238588，启动17:48:08 UTC；GPU0、16×850、max959s/envcap13600，原62.5us/.01s/8.5s，4096/1e-6、seed719301，额外公开数据采集。先查ledger/ps，不能重复启动。
+
+landing_velocity_noisy_matrix_fine1536_01已SUCCEEDED，1536数值0、无候选达标。结果见该目录SUMMARY.md。原参考0A/B完整44/64、27/64，恢复61/64、48/63；最佳新候选3A/B完整40/64、24/64、恢复54/64、45/64，仍低于参考且未达标。等落地/延迟站立普遍严重退化。不能把新候选冻结说成进步或替换最佳。
+
+按事先固定规则排除参考0，冻结候选3到lastwindow_training_candidate_v1/policy.pt，SHA8b2b7dbb8b6c6fbd215a236fa72f66bb4feabcadd8fda593abce6c9546511902，FROZEN.json保留全部排名。只用于事先固定的B16压力测试与实际公开轨迹数据采集，不是正式验收。B16来自未使用fresh128的固定前16个B样本，不能再把这16个称未使用。不能在读该子集结果后换样本/候选。
+
+当前evaluator --record-public-dataset记录真实obs794/action18/第一回合mask，每100tick原子保存public_dataset.partial.pt，若850步与完整结果验证完成则保存completed=True的public_dataset.pt。部分数据/失败不能当作完成回合或训练成功。若guard到时中断，保存partial与FAILED记录，禁止将其丢弃重开来清零成本。
+
+旧窗口固定截止UTC18:04:13.742590，GPU0新增累计10GPUh；不因重启重置。用户是否取消旧时间截止的异步澄清仍未答，不把等待当授权。当前job按原截止设硬超时。到期保存并停止本项目GPU，STATUS=BUDGET_EXHAUSTED；若目标尚未达标不得goal complete。G00–G06保持通过。
+
+GPU结束后CPU整理：检查completed/job/候选指标/公开数据，更新报告和真实费用；运行verify_goal（仍应缺G07 evidence）；显式stage本批原始逐回合/元数据，推工作分支；/tmp/build_g07_lastwindow_archive.py会在ZIP关闭后计算SHA并包含权重/源码/实际新数据，先审阅目录清单再打包上传新附件，不覆盖历史附件。现有正式B视频和失败400包已上传。新小样本不是替代正式400。
+
+# 当前新训练比较（2026-10-23 17:32 UTC）
+
+活跃exec37919，reports/G07/landing_velocity_noisy_matrix_fine1536_01，启动17:28:54 UTC；12×128，max1800s/envcap1305600，62.5us/.01s/8.5s，4096/1e-6，seed719251。先看ledger/ps，不能重复启动。
+
+输入新训练panel causal_profiled_noisy_both128_v2/panel.json：原64开发发球分别配原A/B噪声宽度，重置PCG64种子719201/719202；不使用正式回合/标签，正式A/B文件不改，旧fresh128仍未使用。新panel原样冻结，creation_manifest.json说明实际新reset seeds；顶层继承reset_seed仅历史源元数据，程序实际读每case明确robot_reset数组。此批分组training_a/training_b均有扰动，不与旧canonical/B比率直接混。
+
+新recovery_wait_for_landing字段：当local>=1.25并当前public774真实落地phase时锁存，然后仅在原standing_start已到且见到落地后才接管standingactor，默认False保留旧行为。不是使用未来落地时刻。landing_gate_cpu01/metrics.json通过：关闭时与上批启动源码动作差0、落地前不启动、每lane独立、bounce保持锁存、reset清除。原开发时序诊断显示正常无Net落地约local1.752，未恢复B样本约1.79，说明固定交接敏感，但新方式实际效果待本批。
+
+12冻结候选landing_velocity_candidates_v1：0原失败formal策略reference；1等实际落地；2standing_start1.85；3/4 vx目标bias0/-.1；5bias-.1+等落地；6/7强vx gain-.25、bias0/-.1；8准备后移4cm+bias0+等落地；9后移4cm+bias-.1+pitch-.025+等落地；10原后移3cm+bias0+pitch-.025+等落地；11关闭共同vx+等落地。原joint/PD/力矩/速度不变，实际性能尚未完成。
+
+前批contingency_push_yaw_matrix_fine1536_01已SUCCEEDED，没有新的固定候选两组同时合格。最强提前standing那组rec仅约.29，推离多数增加Net，因此不机械重复。完整候选指标/已知formal失败仍保留。
+
+原固定截止UTC18:04:13.742590（北京时间02:04），GPU0且当前窗口累计10GPUh不重置。异步问题已发，用户“随时GPU”是否取消旧时间截止仍待明确答复；不能把等待当授权。若收到明确取消，只能取消wallclock而不重置GPU10h/T0/历史，需更新实际budget/授权记录及guard支持；guard当前job持有内存ledger，勿在作业运行时并发修改ledger以免其退出覆盖。可先更改budget+独立授权文件，作业结束后或下个guard统一写ledger。
+
+本批完成后如无正式合格，不得伪造通过。旧窗口不足新完整400时，保存最佳、原始失败与下一条入口；时间到按要求停止GPU，G07为BUDGET_EXHAUSTED而非PASSED。G00–G06保持不变。
+
 # 原开发改进试验运行中（2026-10-23 17:07 UTC）
 
 统一exec91880，reports/G07/contingency_push_yaw_matrix_fine1536_01，启动17:05:12 UTC，12×原128开发，max1500s/envcap1305600、62.5us/.01s/8.5s、4096/1e-6、seed719101。先查ledger/ps，禁止重启。候选contingency_push_yaw_candidates_v1已在17:00前、任何正式结果出来前冻结：frozen8基线及yaw+.04/.08/.12、推离+.05/.1、组合yaw.06/触球收拍，以及旧back2/forward9组合，详见manifest；都不是已通过策略。

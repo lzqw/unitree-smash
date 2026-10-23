@@ -1,0 +1,189 @@
+{
+  "protocol": "g07-developer-noisy-both-ground-v2",
+  "panel": "causal_profiled_noisy_both128_v2",
+  "formal_policy_acceptance": false,
+  "episodes": 1536,
+  "ground_initialization_only": true,
+  "formal_evaluation_eligible": false,
+  "protocol_sha256": null,
+  "policy_lock_sha256": null,
+  "checkpoint_sha256": "4a3efe230d65b5b2dce75d6c76fb909476be53b22ec740cc3e67c60a147db3b0",
+  "launch_panel_sha256": "053257fd2d3eb8bcd3528819eef60ce86cc7f0c77e6c2ef6b4df4b08044b4872",
+  "calibration_sha256": "60745396d0b980c268fb2406b42de7f95563b3585c4f8f31eef58b38d5e9933e",
+  "source_git_sha": "fffe5546cab714ac0cbf62a1e6eb5f7750740707",
+  "asset_sha256": "bfb831e4afc8a1a705bb0fb6f001c25eeaa401822978267a0ee5e151007511f3",
+  "physics_dt_s": 6.25e-05,
+  "control_dt_s": 0.01,
+  "episode_seconds": 8.5,
+  "net_geometry_version": "environment-local-profiled-net-v3",
+  "sweep_audit": {
+    "maximum_iterations": 4096,
+    "tolerance_m": 1e-06
+  },
+  "controller": "frozen learned walking + learned PWA strike + frozen learned standing + model prediction; replan schedule recorded separately",
+  "teacher_prefix_steps": 0,
+  "teacher_action_function_calls": 0,
+  "causal_phase": true,
+  "fixed_phase_ablation": false,
+  "causal_replan_at_s": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "causal_parameter_selection_at_s": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "causal_contact_recovery": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "candidate_checkpoints": [
+    {
+      "path": "reports/G07/landing_velocity_candidates_v1/reference.pt",
+      "sha256": "4a3efe230d65b5b2dce75d6c76fb909476be53b22ec740cc3e67c60a147db3b0"
+    },
+    {
+      "path": "reports/G07/landing_velocity_candidates_v1/wait_landing.pt",
+      "sha256": "748e3cdf7888f46186f21d919c78691f834bd0c5f22dceda756a26c94355c71d"
+    },
+    {
+      "path": "reports/G07/landing_velocity_candidates_v1/later_stand.pt",
+      "sha256": "199feceec956cf55244cd8e8e7b435085b2cee602b1357b5d428cf30fbe5603a"
+    },
+    {
+      "path": "reports/G07/landing_velocity_candidates_v1/vx_bias_zero.pt",
+      "sha256": "8b2b7dbb8b6c6fbd215a236fa72f66bb4feabcadd8fda593abce6c9546511902"
+    },
+    {
+      "path": "reports/G07/landing_velocity_candidates_v1/vx_bias_back.pt",
+      "sha256": "aef1acd5def9cbe39b15865d2453ae8fedfef7db670bc03246a1474978e2b3df"
+    },
+    {
+      "path": "reports/G07/landing_velocity_candidates_v1/vx_back_wait.pt",
+      "sha256": "f9edc86280ca11daa52d902fbb85599e8df4006719a6732c723e2186c975173b"
+    },
+    {
+      "path": "reports/G07/landing_velocity_candidates_v1/strong_vx_zero.pt",
+      "sha256": "8f4533cd3c5df93c2828b6020ede3b09df70ff38ff051159309435397e5c7f56"
+    },
+    {
+      "path": "reports/G07/landing_velocity_candidates_v1/strong_vx_back.pt",
+      "sha256": "48a61ee20da3cce905f9e9f5d0d24d05975865763f97ffbae07084894241f4dc"
+    },
+    {
+      "path": "reports/G07/landing_velocity_candidates_v1/back4_wait.pt",
+      "sha256": "6cf292865a82a2818795a313656517c77b91bcaf226062cab3c3b8ffe9ef0d6d"
+    },
+    {
+      "path": "reports/G07/landing_velocity_candidates_v1/back4_pitch_wait.pt",
+      "sha256": "824800eeeb11fd23b7a5ab8f39e801990e9a8d02d42056a478d5399aee800f9d"
+    },
+    {
+      "path": "reports/G07/landing_velocity_candidates_v1/pitch_wait.pt",
+      "sha256": "ef7e4b9cc58eaa255772b7ea3eb0718565855bbae56b911c4e17124213b86df5"
+    },
+    {
+      "path": "reports/G07/landing_velocity_candidates_v1/no_vx_wait.pt",
+      "sha256": "118f802dcd5afce9a57ea1170f774e827ec3742ed4c1f68e8acf1723df4e4b9c"
+    }
+  ],
+  "source_cases_per_candidate": 128,
+  "recorded_env_ids": [
+    1181,
+    790,
+    279,
+    165,
+    845,
+    1261,
+    1439,
+    1270,
+    601,
+    512,
+    1088,
+    907,
+    1006,
+    1285,
+    197,
+    181,
+    1510,
+    1396,
+    389,
+    111,
+    351,
+    999,
+    756,
+    723
+  ],
+  "command": [
+    "scripts/evaluate_g07_causal_hybrid.py",
+    "--output",
+    "reports/G07/landing_velocity_noisy_matrix_fine1536_01",
+    "--checkpoint",
+    "reports/G07/landing_velocity_candidates_v1/reference.pt",
+    "--candidate-checkpoint",
+    "reports/G07/landing_velocity_candidates_v1/wait_landing.pt",
+    "--candidate-checkpoint",
+    "reports/G07/landing_velocity_candidates_v1/later_stand.pt",
+    "--candidate-checkpoint",
+    "reports/G07/landing_velocity_candidates_v1/vx_bias_zero.pt",
+    "--candidate-checkpoint",
+    "reports/G07/landing_velocity_candidates_v1/vx_bias_back.pt",
+    "--candidate-checkpoint",
+    "reports/G07/landing_velocity_candidates_v1/vx_back_wait.pt",
+    "--candidate-checkpoint",
+    "reports/G07/landing_velocity_candidates_v1/strong_vx_zero.pt",
+    "--candidate-checkpoint",
+    "reports/G07/landing_velocity_candidates_v1/strong_vx_back.pt",
+    "--candidate-checkpoint",
+    "reports/G07/landing_velocity_candidates_v1/back4_wait.pt",
+    "--candidate-checkpoint",
+    "reports/G07/landing_velocity_candidates_v1/back4_pitch_wait.pt",
+    "--candidate-checkpoint",
+    "reports/G07/landing_velocity_candidates_v1/pitch_wait.pt",
+    "--candidate-checkpoint",
+    "reports/G07/landing_velocity_candidates_v1/no_vx_wait.pt",
+    "--launch-panel",
+    "reports/G07/causal_profiled_noisy_both128_v2/panel.json",
+    "--calibration",
+    "reports/G07/causal_dev_panel64_v1/calibration.json",
+    "--physics-dt",
+    ".0000625",
+    "--episode-seconds",
+    "8.5",
+    "--sweep-audit-iterations",
+    "4096",
+    "--seed",
+    "719251",
+    "--headless"
+  ]
+}
