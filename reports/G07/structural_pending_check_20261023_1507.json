@@ -1,0 +1,55 @@
+{
+  "goal_id": "G07",
+  "status": "FAILED",
+  "contract_sha256": "66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807",
+  "checks": {
+    "G00": {
+      "passed": true,
+      "errors": []
+    },
+    "G01": {
+      "passed": false,
+      "errors": [
+        "Artifact hash mismatch: assets/assumptions.md"
+      ]
+    },
+    "G02": {
+      "passed": false,
+      "errors": [
+        "Dependency did not pass: G01"
+      ]
+    },
+    "G03": {
+      "passed": false,
+      "errors": [
+        "Dependency did not pass: G02"
+      ]
+    },
+    "G04": {
+      "passed": false,
+      "errors": [
+        "Dependency did not pass: G03"
+      ]
+    },
+    "G05": {
+      "passed": false,
+      "errors": [
+        "Dependency did not pass: G04"
+      ]
+    },
+    "G06": {
+      "passed": false,
+      "errors": [
+        "Dependency did not pass: G05"
+      ]
+    },
+    "G07": {
+      "passed": false,
+      "errors": [
+        "Dependency did not pass: G06",
+        "Missing or invalid evidence: [Errno 2] No such file or directory: '/home/autodrive/LZQW/unitree_smash/reports/G07/evidence.json'"
+      ]
+    }
+  },
+  "scope": "Structure, hashes, dependencies and thresholds only; not simulation authenticity or GPU budget enforcement."
+}
