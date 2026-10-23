@@ -1,0 +1,25 @@
+{
+  "kind": "CPU publication refusal test only; no evaluation result or policy acceptance",
+  "input": "Real development batch supplied deliberately to formal publisher",
+  "exit_code": 1,
+  "unlocked_development_refused": true,
+  "root_report_unchanged": true,
+  "no_evidence_created": true,
+  "no_formal_policy_created": true,
+  "command": [
+    "/home/autodrive/Isaac/env_isaaclab/bin/python",
+    "scripts/publish_g07_causal_result.py",
+    "--protocol",
+    "configs/g07_causal_profiled_net_eval_v3.json",
+    "--policy-lock",
+    "status/g07_causal_formal_lock02.json",
+    "--checkpoint",
+    "reports/G07/formal_candidate_v1/policy.pt",
+    "--panel-output",
+    "reports/G07/vertical_preparation_matrix_fine1536_01",
+    "--panel-output",
+    "reports/G07/vertical_preparation_matrix_fine1536_01",
+    "--aggregate-output",
+    "reports/G07/publication_gate_negative_cpu02/rejected_aggregate"
+  ]
+}

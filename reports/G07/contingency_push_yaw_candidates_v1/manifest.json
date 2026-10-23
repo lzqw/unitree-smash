@@ -1,0 +1,144 @@
+{
+  "kind": "Prospective fallback only, NOT RUN. Prepared before formal A/B outcomes; do not change the active frozen policy.",
+  "created_at": "2026-10-23T16:43:39.218675+00:00",
+  "development_reason": "Source developer recordings show negative lateral landing bias and mixed pre/post-hit racket/net contact. Small arm yaw, bounded push and current-contact fold are hypotheses only.",
+  "formal_outcomes_available_at_preparation": false,
+  "sources": {
+    "frozen": {
+      "path": "reports/G07/formal_candidate_v1/policy.pt",
+      "sha256": "d24460e97fc16ea378606caf6d17682db72886b0550115a5fb9f2c144747dba6"
+    },
+    "back2": {
+      "path": "reports/G07/arm_clearance_matrix_fine1536_01/evaluated_candidate_1.pt",
+      "sha256": "984270cfefd4938ec7003d6c56ae078f814661bdd27ad92405b0da9dd95e6015"
+    },
+    "forward": {
+      "path": "reports/G07/forward_body_matrix_fine1280_01/evaluated_candidate_9.pt",
+      "sha256": "3522573dc8e740d37a4a125c00d17da09e12d24ec3b6438907c250fc9969b9a1"
+    }
+  },
+  "use_condition": "Only if current complete frozen400 does not pass and authorized resources remain; evaluate on original developer128, never train on formal case labels.",
+  "candidates": [
+    {
+      "name": "frozen_reference",
+      "path": "reports/G07/contingency_push_yaw_candidates_v1/frozen_reference.pt",
+      "sha256": "653b3aa1a765fc85d147810990fc30f7c492687cad8114281eac5fba6ccee2f1",
+      "parent": "frozen",
+      "arm_joint1_yaw_bias_rad": 0.0,
+      "push_calf_delta_rad": 0.0,
+      "contact_recovery": null
+    },
+    {
+      "name": "yaw04",
+      "path": "reports/G07/contingency_push_yaw_candidates_v1/yaw04.pt",
+      "sha256": "09fa0c8359dbe83fc91ce7f5382f501e35627d95419b096d9d6c50f1233ea013",
+      "parent": "frozen",
+      "arm_joint1_yaw_bias_rad": 0.04,
+      "push_calf_delta_rad": 0.0,
+      "contact_recovery": null
+    },
+    {
+      "name": "yaw08",
+      "path": "reports/G07/contingency_push_yaw_candidates_v1/yaw08.pt",
+      "sha256": "3d9d9bbfc8611636a591696e150b9741eff302ccec75035fdd00bcdb53fe1b4d",
+      "parent": "frozen",
+      "arm_joint1_yaw_bias_rad": 0.08,
+      "push_calf_delta_rad": 0.0,
+      "contact_recovery": null
+    },
+    {
+      "name": "yaw12",
+      "path": "reports/G07/contingency_push_yaw_candidates_v1/yaw12.pt",
+      "sha256": "8d9f3886bdd520e3917dc06fadd202608cfd28511c5ffef96e580f1c423976ed",
+      "parent": "frozen",
+      "arm_joint1_yaw_bias_rad": 0.12,
+      "push_calf_delta_rad": 0.0,
+      "contact_recovery": null
+    },
+    {
+      "name": "push05",
+      "path": "reports/G07/contingency_push_yaw_candidates_v1/push05.pt",
+      "sha256": "f35cb993ebed94563770e6cae716778f759c5fd118bcc9794a84b8d892489798",
+      "parent": "frozen",
+      "arm_joint1_yaw_bias_rad": 0.0,
+      "push_calf_delta_rad": 0.05,
+      "contact_recovery": null
+    },
+    {
+      "name": "push10",
+      "path": "reports/G07/contingency_push_yaw_candidates_v1/push10.pt",
+      "sha256": "b41ef0e3b379d188e5136cd69e38f4f01b7c0d0803eb822797f251786a51d367",
+      "parent": "frozen",
+      "arm_joint1_yaw_bias_rad": 0.0,
+      "push_calf_delta_rad": 0.1,
+      "contact_recovery": null
+    },
+    {
+      "name": "push10_yaw06",
+      "path": "reports/G07/contingency_push_yaw_candidates_v1/push10_yaw06.pt",
+      "sha256": "45e7639cc61fadcd47ea7c211a8b0d557596c130d609522621c52f431ccf763b",
+      "parent": "frozen",
+      "arm_joint1_yaw_bias_rad": 0.06,
+      "push_calf_delta_rad": 0.1,
+      "contact_recovery": null
+    },
+    {
+      "name": "push10_yaw06_fold02",
+      "path": "reports/G07/contingency_push_yaw_candidates_v1/push10_yaw06_fold02.pt",
+      "sha256": "1dfef58b39afa2e52a65c661d1597175b13d585509f1def9bb51fc5fa644ceb5",
+      "parent": "frozen",
+      "arm_joint1_yaw_bias_rad": 0.06,
+      "push_calf_delta_rad": 0.1,
+      "contact_recovery": {
+        "arm_blend_s": 0.02,
+        "arm_delay_s": 0.0
+      }
+    },
+    {
+      "name": "back2_push10_yaw06",
+      "path": "reports/G07/contingency_push_yaw_candidates_v1/back2_push10_yaw06.pt",
+      "sha256": "3ad3f4b1b7f1abcdbabd8f5844214c7fe32ac9551837953a708eeda9f2068564",
+      "parent": "back2",
+      "arm_joint1_yaw_bias_rad": 0.06,
+      "push_calf_delta_rad": 0.1,
+      "contact_recovery": null
+    },
+    {
+      "name": "back2_push15_yaw06_fold05",
+      "path": "reports/G07/contingency_push_yaw_candidates_v1/back2_push15_yaw06_fold05.pt",
+      "sha256": "6c5ac529235a442df6f1d760f7b3a7d9d5eef12f243a479aca999f7a58dc54cf",
+      "parent": "back2",
+      "arm_joint1_yaw_bias_rad": 0.06,
+      "push_calf_delta_rad": 0.15,
+      "contact_recovery": {
+        "arm_blend_s": 0.05,
+        "arm_delay_s": 0.0
+      }
+    },
+    {
+      "name": "forward_push10_yaw06_fold02",
+      "path": "reports/G07/contingency_push_yaw_candidates_v1/forward_push10_yaw06_fold02.pt",
+      "sha256": "4e95f29fc48d0187ed89476b5902e49846d78908502fd9d62bf880958715a83a",
+      "parent": "forward",
+      "arm_joint1_yaw_bias_rad": 0.06,
+      "push_calf_delta_rad": 0.1,
+      "contact_recovery": {
+        "arm_blend_s": 0.02,
+        "arm_delay_s": 0.0
+      }
+    },
+    {
+      "name": "yaw08_fold02_legs10",
+      "path": "reports/G07/contingency_push_yaw_candidates_v1/yaw08_fold02_legs10.pt",
+      "sha256": "094e16856115b32597b134fcd2977d08edfdcf9f5de48f4f7025c5448d4f3dfe",
+      "parent": "frozen",
+      "arm_joint1_yaw_bias_rad": 0.08,
+      "push_calf_delta_rad": 0.0,
+      "contact_recovery": {
+        "arm_blend_s": 0.02,
+        "arm_delay_s": 0.0,
+        "leg_delay_s": 0.1
+      }
+    }
+  ]
+}

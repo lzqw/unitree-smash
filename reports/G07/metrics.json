@@ -1,17 +1,32 @@
 {
   "sample_count": 400,
-  "ground_init_fraction": 1.0,
-  "complete_smash_success_rate": 0.0,
-  "airborne_contact_rate": 1.0,
-  "recovery_given_airborne_contact": 0.8925,
   "numerical_failures": 0,
-  "backend": "Isaac Lab / PhysX",
-  "stage": "jump_smash",
-  "task": "airborne_smash_recover_net1524_v1",
-  "seed": 1907,
-  "num_envs": 64,
-  "physics_dt_s": 0.00025,
-  "env_steps": 2800,
-  "elapsed_s": 544.2183255580021,
-  "checkpoint_sha256": "7e3f7cb6dc5d0c70962d4ec6f72f587955a425ecb9ff8db02bbf5077d0db6510"
+  "checkpoint_sha256": "d24460e97fc16ea378606caf6d17682db72886b0550115a5fb9f2c144747dba6",
+  "protocol": "g07-causal-profiled-net-frozen-evaluation-v3",
+  "panel_metrics": [
+    {
+      "panel": "g07_causal_profiled_a_v2",
+      "sample_count": 200,
+      "ground_init_fraction": 1.0,
+      "airborne_contact_rate": 1.0,
+      "recovery_given_airborne_contact": 0.89,
+      "complete_smash_success_rate": 0.5,
+      "numerical_failures": 0
+    },
+    {
+      "panel": "g07_causal_profiled_b_v2",
+      "sample_count": 200,
+      "ground_init_fraction": 1.0,
+      "airborne_contact_rate": 0.98,
+      "recovery_given_airborne_contact": 0.7448979591836735,
+      "complete_smash_success_rate": 0.355,
+      "numerical_failures": 0
+    }
+  ],
+  "aggregation": "minimum panel fraction; sum failures",
+  "ground_init_fraction": 1.0,
+  "airborne_contact_rate": 0.98,
+  "recovery_given_airborne_contact": 0.7448979591836735,
+  "complete_smash_success_rate": 0.355,
+  "thresholds_met": false
 }

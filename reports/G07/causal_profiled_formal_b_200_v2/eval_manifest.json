@@ -1,0 +1,64 @@
+{
+  "protocol": "g07-causal-profiled-net-frozen-evaluation-v3",
+  "panel": "causal_profiled_eval_panel_b_v2",
+  "formal_policy_acceptance": false,
+  "episodes": 200,
+  "ground_initialization_only": true,
+  "formal_evaluation_eligible": true,
+  "protocol_sha256": "6ce5c9929aa163504b39c24c5e85f1f2e939d43dde0d10beb48b55dc77a5319c",
+  "policy_lock_sha256": "c95060db0810097d5a8123e73596158143f2a0cd90cc1bba2e9409048fbe29d9",
+  "checkpoint_sha256": "d24460e97fc16ea378606caf6d17682db72886b0550115a5fb9f2c144747dba6",
+  "launch_panel_sha256": "256b2bdbd6bc645b23bde5ac036b71ddae60ed8d64a3ec1afbd369156a1e05a0",
+  "calibration_sha256": "60745396d0b980c268fb2406b42de7f95563b3585c4f8f31eef58b38d5e9933e",
+  "source_git_sha": "b10eeffd049064861c6245a3fd792ed8e5753f99",
+  "asset_sha256": "bfb831e4afc8a1a705bb0fb6f001c25eeaa401822978267a0ee5e151007511f3",
+  "physics_dt_s": 6.25e-05,
+  "control_dt_s": 0.01,
+  "episode_seconds": 8.5,
+  "net_geometry_version": "environment-local-profiled-net-v3",
+  "sweep_audit": {
+    "maximum_iterations": 4096,
+    "tolerance_m": 1e-06
+  },
+  "controller": "frozen learned walking + learned PWA strike + frozen learned standing + model prediction; replan schedule recorded separately",
+  "teacher_prefix_steps": 0,
+  "teacher_action_function_calls": 0,
+  "causal_phase": true,
+  "fixed_phase_ablation": false,
+  "causal_replan_at_s": null,
+  "causal_parameter_selection_at_s": null,
+  "causal_contact_recovery": null,
+  "candidate_checkpoints": [
+    {
+      "path": "reports/G07/formal_candidate_v1/policy.pt",
+      "sha256": "d24460e97fc16ea378606caf6d17682db72886b0550115a5fb9f2c144747dba6"
+    }
+  ],
+  "source_cases_per_candidate": 200,
+  "recorded_env_ids": [
+    0,
+    1
+  ],
+  "command": [
+    "scripts/evaluate_g07_causal_hybrid.py",
+    "--output",
+    "reports/G07/causal_profiled_formal_b_200_v2",
+    "--checkpoint",
+    "reports/G07/formal_candidate_v1/policy.pt",
+    "--launch-panel",
+    "reports/G07/causal_profiled_eval_panel_b_v2/panel.json",
+    "--calibration",
+    "reports/G07/causal_dev_panel64_v1/calibration.json",
+    "--protocol",
+    "configs/g07_causal_profiled_net_eval_v3.json",
+    "--policy-lock",
+    "status/g07_causal_formal_lock02.json",
+    "--physics-dt",
+    ".0000625",
+    "--episode-seconds",
+    "8.5",
+    "--seed",
+    "717401",
+    "--headless"
+  ]
+}

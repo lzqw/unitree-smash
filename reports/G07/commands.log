@@ -1,115 +1,125 @@
-# G07 policy trajectory diagnostic
-/home/autodrive/Isaac/env_isaaclab/bin/python scripts/run_gpu_job.py --goal G07 --budget-window g05-g07-20261022 --max-seconds 300 --env-steps-cap 1000000 --output reports/G07/probe_policy01 --require-artifact trajectory.json -- /home/autodrive/Isaac/env_isaaclab/bin/python scripts/probe_g07_policy.py --checkpoint artifacts/G06/policy.pt --output reports/G07/probe_policy01 --physics-dt 0.00025 --headless
-
-# G07 bounded arm-target search (real PhysX, diagnostic only)
-/home/autodrive/Isaac/env_isaaclab/bin/python scripts/run_gpu_job.py --goal G07 --budget-window g05-g07-20261022 --max-seconds 400 --env-steps-cap 2000000 --output reports/G07/random_search02 --require-artifact metrics.json -- /home/autodrive/Isaac/env_isaaclab/bin/python scripts/search_g07_random.py --checkpoint artifacts/G06/policy.pt --output reports/G07/random_search02 --num-envs 64 --physics-dt 0.00025 --seed 611060 --headless
-
-# G07 independent formal baseline diagnostic (400 ground episodes)
-/home/autodrive/Isaac/env_isaaclab/bin/python scripts/run_gpu_job.py --goal G07 --budget-window g05-g07-20261022 --max-seconds 1200 --env-steps-cap 2000000 --output reports/G07/eval_formal01 --require-artifact metrics.json -- /home/autodrive/Isaac/env_isaaclab/bin/python scripts/isaac_stage_evaluate.py --stage jump_smash --checkpoint artifacts/G06/policy.pt --config configs/g05_imitation.json --output reports/G07/eval_formal01 --episodes 400 --num-envs 64 --physics-dt 0.00025 --suite dev_smash_net1524 --headless
-
-# 2026-10-23 high-arm continuation
-/home/autodrive/Isaac/env_isaaclab/bin/python scripts/search_g07_attack_cfg.py --output reports/G07/search_attack_cfg05 --num-envs 64 --physics-dt .00025 --shuttle-vx -6.6 --shuttle-vz 6.82 --shuttle-start-x 8.18 --switch 1.16 --headless
-/home/autodrive/Isaac/env_isaaclab/bin/python scripts/train_g07_high_attack.py --output reports/G07/train_high_attack01 --config configs/g07_high_attack.json --init-checkpoint artifacts/G06/policy.pt --num-envs 64 --updates 500 --rounds 3 --seed 613061 --physics-dt .00025 --headless
-/home/autodrive/Isaac/env_isaaclab/bin/python scripts/isaac_stage_evaluate.py --stage jump_smash --checkpoint reports/G07/train_high_attack01/checkpoint.pt --config configs/g07_high_attack.json --output reports/G07/eval_high_attack01 --episodes 400 --num-envs 64 --physics-dt .00025 --suite g07_high_attack_independent --headless
-/home/autodrive/Isaac/env_isaaclab/bin/python scripts/render_g07_measured_video.py --input reports/G07/high_arm_traj05 --output reports/G07/video/G07_high_arm_measured.mp4
-
-# Independent 2026-10-23 window child commands (audit, not direct launch authorization)
-# Every line below was launched inside run_gpu_job.py on GPU0; re-execution requires the same budget/deadline guard and a new output directory.
-# 2026-10-23T08:04:23.876753+00:00 SUCCEEDED
+# Actual child commands; all GPU work launched through run_gpu_job.py, statuses as recorded now.
+# 2026-10-23T08:04:23.876753+00:00 SUCCEEDED 0.030214830 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/search_g07_whole_body_v3.py --output reports/G07/ordered_wholebody_smoke01 --launch-config configs/g07_feasible_search_launch_v3.json --num-envs 8 --generations 1 --physics-dt .00025 --headless
-# 2026-10-23T08:10:21.171288+00:00 SUCCEEDED
+# 2026-10-23T08:10:21.171288+00:00 SUCCEEDED 0.030559908 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/search_g07_whole_body_v3.py --output reports/G07/ordered_residual_search01 --launch-config configs/g07_feasible_search_launch_v3.json --num-envs 32 --generations 4 --init-mode residual --physics-dt .00025 --headless
-# 2026-10-23T08:13:41.794665+00:00 SUCCEEDED
+# 2026-10-23T08:13:41.794665+00:00 SUCCEEDED 0.035707330 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/search_g07_dynamic_reach.py --output reports/G07/dynamic_reach_near_net01 --num-envs 128 --generations 12 --root-x 1.0 --headless
-# 2026-10-23T08:16:32.779322+00:00 SUCCEEDED
+# 2026-10-23T08:16:32.779322+00:00 SUCCEEDED 0.057277735 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/search_g07_dynamic_reach.py --output reports/G07/dynamic_reach_near_net02 --num-envs 128 --generations 20 --root-x 1.0 --initial reports/G07/dynamic_reach_near_net01/best_candidate.pt --seed 714102 --headless
-# 2026-10-23T08:20:59.424222+00:00 FAILED
+# 2026-10-23T08:20:59.424222+00:00 FAILED 0.005191813 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/probe_g07_dynamic_contact.py --output reports/G07/dynamic_contact_probe01 --candidate reports/G07/dynamic_reach_near_net02/selected_contact_seed.pt --num-envs 32 --physics-dt .00025 --headless
-# 2026-10-23T08:22:20.062585+00:00 SUCCEEDED
+# 2026-10-23T08:22:20.062585+00:00 SUCCEEDED 0.032839941 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/probe_g07_dynamic_contact.py --output reports/G07/dynamic_contact_probe02 --candidate reports/G07/dynamic_reach_near_net02/selected_contact_seed.pt --num-envs 32 --physics-dt .00025 --headless
-# 2026-10-23T08:25:03.887010+00:00 SUCCEEDED
+# 2026-10-23T08:25:03.887010+00:00 SUCCEEDED 0.227711742 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/refine_g07_dynamic_strike.py --output reports/G07/dynamic_strike_refine01 --candidate reports/G07/dynamic_reach_near_net02/selected_contact_seed.pt --probe reports/G07/dynamic_contact_probe02 --num-envs 64 --generations 8 --headless
-# 2026-10-23T08:38:54.707366+00:00 SUCCEEDED
+# 2026-10-23T08:38:54.707366+00:00 SUCCEEDED 0.045163223 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/search_g07_loaded_walk.py --output reports/G07/loaded_walk_bridge01 --num-envs 128 --generations 16 --headless
-# 2026-10-23T08:41:45.496038+00:00 SUCCEEDED
+# 2026-10-23T08:41:45.496038+00:00 SUCCEEDED 0.029974606 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/replay_g07_dynamic_strike.py --output reports/G07/dynamic_strike_replay01 --candidate reports/G07/dynamic_strike_refine01/best_candidate.pt --num-envs 64 --headless
-# 2026-10-23T08:44:09.826387+00:00 SUCCEEDED
+# 2026-10-23T08:44:09.826387+00:00 SUCCEEDED 0.082091008 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/search_g07_loaded_walk.py --output reports/G07/loaded_walk_bridge02 --num-envs 128 --generations 20 --seconds 6 --balanced --initial reports/G07/loaded_walk_bridge01/best_candidate.pt --seed 714402 --headless
-# 2026-10-23T08:51:40.465811+00:00 FAILED
+# 2026-10-23T08:51:40.465811+00:00 FAILED 0.116982406 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/train_g07_dynamic_curriculum.py --output reports/G07/train_dynamic_curriculum01 --candidate reports/G07/dynamic_strike_refine01/best_candidate.pt --dataset reports/G07/dynamic_strike_replay01/teacher_dataset.pt --num-envs 64 --updates 2000 --rounds 6 --headless
-# 2026-10-23T08:59:11.049343+00:00 SUCCEEDED
+# 2026-10-23T08:59:11.049343+00:00 SUCCEEDED 0.029849033 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/replay_g07_dynamic_strike.py --output reports/G07/eval_piecewise_curriculum01 --candidate reports/G07/dynamic_strike_refine01/best_candidate.pt --policy reports/G07/fit_piecewise_curriculum03/policy.pt --num-envs 64 --seed 714701 --headless
-# 2026-10-23T09:01:18.230737+00:00 SUCCEEDED
+# 2026-10-23T09:01:18.230737+00:00 SUCCEEDED 0.093578122 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/search_g07_dynamic_reach.py --output reports/G07/dynamic_reach_forward01 --num-envs 128 --generations 32 --root-x 0 --initial reports/G07/dynamic_reach_near_net02/selected_contact_seed.pt --forward-seed --global-fraction .25 --seed 714801 --headless
-# 2026-10-23T09:08:21.525189+00:00 SUCCEEDED
+# 2026-10-23T09:08:21.525189+00:00 SUCCEEDED 0.123165134 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/search_g07_dynamic_reach.py --output reports/G07/forward_reposition01 --num-envs 256 --generations 40 --root-x 0 --initial reports/G07/dynamic_reach_forward01/best_candidate.pt --forward-seed --global-fraction .25 --landing-feedback --settle-default --reposition --fold-arm --seed 714901 --headless
-# 2026-10-23T09:16:51.714149+00:00 SUCCEEDED
+# 2026-10-23T09:16:51.714149+00:00 SUCCEEDED 0.004442155 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/probe_g07_walk_transfer.py --output reports/G07/probe_go2_walk_transfer01 --num-envs 64 --headless
-# 2026-10-23T09:20:59.385877+00:00 SUCCEEDED
+# 2026-10-23T09:20:59.385877+00:00 SUCCEEDED 0.087845425 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/search_g07_walk_transfer.py --output reports/G07/search_walk_transfer01 --num-envs 128 --generations 30 --headless
-# 2026-10-23T09:26:52.696592+00:00 SUCCEEDED
+# 2026-10-23T09:26:52.696592+00:00 SUCCEEDED 0.030560135 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/probe_g07_walk_transfer.py --output reports/G07/replay_go2_walk_fine01 --num-envs 64 --fine --candidate reports/G07/search_walk_transfer01/best_candidate.pt --headless
-# 2026-10-23T09:34:34.113038+00:00 FAILED
+# 2026-10-23T09:34:34.113038+00:00 FAILED 0.057943707 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/search_g07_composed_reach.py --output reports/G07/composed_reach01 --num-envs 128 --generations 20 --root-x 0 --walk-candidate reports/G07/search_walk_transfer01/best_candidate.pt --pose-seed reports/G07/walk_strike_ik_cpu01/pose_seed.pt --initial reports/G07/dynamic_strike_refine01/best_candidate.pt --landing-feedback --walk-seconds 3.4 --waypoint-x 1.03 --global-fraction .1 --seed 715301 --headless
-# 2026-10-23T09:38:30.497458+00:00 FAILED
+# 2026-10-23T09:38:30.497458+00:00 FAILED 0.005136529 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/probe_g07_net_blocking.py --output reports/G07/net_blocking_probe01 --num-envs 32 --headless
-# 2026-10-23T09:39:55.848695+00:00 SUCCEEDED
+# 2026-10-23T09:39:55.848695+00:00 SUCCEEDED 0.005109170 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/probe_g07_net_blocking.py --output reports/G07/net_blocking_probe02 --num-envs 32 --headless
-# 2026-10-23T09:40:52.876272+00:00 SUCCEEDED
+# 2026-10-23T09:40:52.876272+00:00 SUCCEEDED 0.005192610 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/probe_g07_net_blocking.py --output reports/G07/net_blocking_probe03 --num-envs 32 --headless
-# 2026-10-23T09:42:07.735448+00:00 SUCCEEDED
+# 2026-10-23T09:42:07.735448+00:00 SUCCEEDED 0.030061928 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/replay_g07_dynamic_strike.py --output reports/G07/eval_piecewise_netlocal02 --candidate reports/G07/dynamic_strike_refine01/best_candidate.pt --policy reports/G07/fit_piecewise_curriculum03/policy.pt --num-envs 64 --seed 715501 --headless
-# 2026-10-23T09:53:39.311385+00:00 SUCCEEDED
+# 2026-10-23T09:53:39.311385+00:00 SUCCEEDED 0.048377723 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/search_g07_walk_transfer.py --output reports/G07/search_walk_netlocal02 --num-envs 128 --generations 16 --initial reports/G07/search_walk_transfer01/best_candidate.pt --wrist --headless
-# 2026-10-23T10:00:28.249327+00:00 SUCCEEDED
+# 2026-10-23T10:00:28.249327+00:00 SUCCEEDED 0.090487758 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/search_g07_composed_reach_v2.py --output reports/G07/composed_reach_netlocal02 --num-envs 128 --generations 16 --root-x 0 --walk-candidate reports/G07/search_walk_netlocal02/best_candidate.pt --pose-seed reports/G07/walk_strike_ik_cpu01/pose_seed.pt --initial reports/G07/dynamic_strike_refine01/best_candidate.pt --landing-feedback --walk-seconds 3.4 --waypoint-x 1.0 --global-fraction .15 --seed 715601 --headless
-# 2026-10-23T10:10:13.061640+00:00 SUCCEEDED
+# 2026-10-23T10:10:13.061640+00:00 SUCCEEDED 0.002160625 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/probe_g07_net_robot_contact.py --output reports/G07/net_robot_contact_positive01 --headless
-# 2026-10-23T10:12:06.895988+00:00 SUCCEEDED
+# 2026-10-23T10:12:06.895988+00:00 SUCCEEDED 0.052338133 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/probe_g07_composed_contact.py --output reports/G07/composed_contact_netlocal01 --candidate reports/G07/composed_reach_netlocal02/best_candidate.pt --num-envs 32 --headless
-# 2026-10-23T10:17:10.418161+00:00 SUCCEEDED
+# 2026-10-23T10:17:10.418161+00:00 SUCCEEDED 0.002522018 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/probe_g07_net_robot_contact.py --output reports/G07/net_robot_contact_positive02 --headless
-# 2026-10-23T10:19:27.488439+00:00 SUCCEEDED
+# 2026-10-23T10:19:27.488439+00:00 SUCCEEDED 0.058752615 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/probe_g07_composed_contact.py --output reports/G07/composed_replay_netlocal02 --candidate reports/G07/composed_reach_netlocal02/best_candidate.pt --num-envs 32 --launches reports/G07/composed_contact_netlocal01/launches.json --launch-index 22 --seed 715901 --headless
-# 2026-10-23T10:26:33.184434+00:00 SUCCEEDED
+# 2026-10-23T10:26:33.184434+00:00 SUCCEEDED 0.105610149 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/search_g07_composed_reach_v2.py --output reports/G07/composed_reach_netlocal03 --num-envs 128 --generations 12 --root-x 0 --walk-candidate reports/G07/search_walk_netlocal02/best_candidate.pt --pose-seed reports/G07/walk_strike_ik_cpu01/pose_seed.pt --initial reports/G07/composed_reach_netlocal02/best_candidate.pt --resume-population reports/G07/composed_reach_netlocal02/population_015.pt --landing-feedback --walk-seconds 3.4 --waypoint-x 1.0 --global-fraction .15 --seed 715902 --headless
-# 2026-10-23T10:34:22.143483+00:00 SUCCEEDED
+# 2026-10-23T10:34:22.143483+00:00 SUCCEEDED 0.142272407 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/search_g07_walk_transfer.py --output reports/G07/walk_high_ready01 --num-envs 128 --generations 30 --initial reports/G07/search_walk_netlocal02/best_candidate.pt --high-arm --arm-seed reports/G07/walk_strike_ik_cpu01/pose_seed.pt --target-x .85 --headless
-# 2026-10-23T10:44:30.522941+00:00 SUCCEEDED
+# 2026-10-23T10:44:30.522941+00:00 SUCCEEDED 0.009280391 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/probe_g07_composed_motion.py --output reports/G07/composed_motion_net_timing01 --candidate reports/G07/composed_reach_netlocal02/best_candidate.pt --num-envs 4 --headless
-# 2026-10-23T10:47:20.210741+00:00 SUCCEEDED
+# 2026-10-23T10:47:20.210741+00:00 SUCCEEDED 0.170561461 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/search_g07_composed_reach_v2.py --output reports/G07/composed_high_ready01 --num-envs 128 --generations 20 --root-x 0 --walk-candidate reports/G07/walk_high_ready01/best_candidate.pt --pose-seed reports/G07/walk_strike_ik_cpu01/pose_seed.pt --initial reports/G07/composed_reach_netlocal03/best_candidate.pt --landing-feedback --walk-seconds 3.4 --waypoint-x .85 --seed-bank reports/G07/free_jump_seed_bank01/seed_bank.pt --global-fraction .15 --seed 716101 --headless
-# 2026-10-23T11:07:13.247193+00:00 SUCCEEDED
+# 2026-10-23T11:07:13.247193+00:00 SUCCEEDED 0.145692397 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/search_g07_walk_transfer.py --output reports/G07/walk_close_high01 --num-envs 128 --generations 30 --initial reports/G07/search_walk_netlocal02/best_candidate.pt --high-arm --arm-seed reports/G07/close_base_ik_cpu01/pose_seed.pt --target-x 1.1 --headless
-# 2026-10-23T11:16:02.532158+00:00 SUCCEEDED
+# 2026-10-23T11:16:02.532158+00:00 SUCCEEDED 0.032759856 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/probe_g07_walk_transfer.py --output reports/G07/walk_close_fine_replay01 --candidate reports/G07/walk_close_high01/best_candidate.pt --num-envs 32 --fine --headless
-# 2026-10-23T11:19:16.652457+00:00 FAILED
+# 2026-10-23T11:19:16.652457+00:00 FAILED 0.044829092 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/search_g07_composed_reach_v2.py --output reports/G07/composed_close_feedback01 --num-envs 128 --generations 24 --root-x 0 --walk-candidate reports/G07/walk_close_high01/best_candidate.pt --pose-seed reports/G07/close_base_ik_cpu01/pose_seed.pt --initial reports/G07/composed_high_ready01/best_candidate.pt --landing-feedback --walk-seconds 3.4 --waypoint-x 1.1 --deep-crouch --vertical-seed --flight-objective --arm-pitch-feedback --seed-bank reports/G07/free_jump_seed_bank02/seed_bank.pt --global-fraction .2 --seed 716301 --headless
-# 2026-10-23T11:22:07.577958+00:00 FAILED
+# 2026-10-23T11:22:07.577958+00:00 FAILED 0.140274967 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/search_g07_composed_reach_v2.py --output reports/G07/composed_close_feedback02 --num-envs 128 --generations 24 --root-x 0 --walk-candidate reports/G07/walk_close_high01/best_candidate.pt --pose-seed reports/G07/close_base_ik_cpu01/pose_seed.pt --initial reports/G07/composed_high_ready01/best_candidate.pt --landing-feedback --walk-seconds 3.4 --waypoint-x 1.1 --deep-crouch --vertical-seed --flight-objective --arm-pitch-feedback --seed-bank reports/G07/free_jump_seed_bank02/seed_bank.pt --global-fraction .2 --seed 716302 --headless
-# 2026-10-23T11:30:58.949987+00:00 FAILED
+# 2026-10-23T11:30:58.949987+00:00 FAILED 0.046083020 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/search_g07_composed_reach_v2.py --output reports/G07/composed_compact_flight01 --num-envs 256 --generations 20 --root-x 0 --walk-candidate reports/G07/walk_close_high01/best_candidate.pt --pose-seed reports/G07/close_base_ik_cpu01/pose_seed.pt --initial reports/G07/composed_close_feedback01/best_candidate.pt --landing-feedback --walk-seconds 3.4 --waypoint-x 1.1 --strike-x 1.45 --strike-z 1.65 --deep-crouch --flight-objective --arm-pitch-feedback --compact-recovery --tucked-flight-seed --incoming-bank reports/G07/incoming_velocity_bank_cpu01/metrics.json --global-fraction .15 --seed 716401 --headless
-# 2026-10-23T11:34:04.414969+00:00 SUCCEEDED
+# 2026-10-23T11:34:04.414969+00:00 SUCCEEDED 0.059695391 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/probe_g07_composed_contact.py --output reports/G07/compact_native_contact01 --candidate reports/G07/composed_compact_flight01/best_candidate.pt --population reports/G07/composed_compact_flight01/population_002.pt --population-candidates 8 --strong-serve-grid --num-envs 64 --seed 716501 --headless
-# 2026-10-23T11:40:40.602165+00:00 SUCCEEDED
+# 2026-10-23T11:40:40.602165+00:00 SUCCEEDED 0.056164635 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/probe_g07_composed_contact.py --output reports/G07/net_free_teacher214_replay01 --candidate reports/G07/compact_native_contact01/net_free_teacher214.pt --launches reports/G07/compact_native_contact01/launches.json --launch-index 37 --num-envs 16 --seed 716601 --headless
-# 2026-10-23T11:45:09.835997+00:00 SUCCEEDED
+# 2026-10-23T11:45:09.835997+00:00 SUCCEEDED 0.135294925 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/search_g07_standing_recovery.py --output reports/G07/standing_recovery_search01 --candidate reports/G07/compact_native_contact01/net_free_teacher214_v2.pt --num-envs 128 --generations 16 --seed 716701 --headless
-# 2026-10-23T11:53:39.092398+00:00 SUCCEEDED
+# 2026-10-23T11:53:39.092398+00:00 SUCCEEDED 0.058418378 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/probe_g07_composed_contact.py --output reports/G07/learned_hybrid_recovery_scan01 --candidate reports/G07/standing_recovery_search01/best_candidate.pt --strike-policy reports/G07/fit_composed_strike214_01/policy.pt --recovery-scan --launches reports/G07/compact_native_contact01/launches.json --launch-index 37 --num-envs 64 --seed 716801 --headless
-# 2026-10-23T11:59:16.484372+00:00 SUCCEEDED
+# 2026-10-23T11:59:16.484372+00:00 SUCCEEDED 0.059587648 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/probe_g07_composed_contact.py --output reports/G07/hybrid_frozen_compare01 --candidate reports/G07/learned_hybrid_recovery_scan01/selected_policy.pt --recovery-candidates reports/G07/learned_hybrid_recovery_scan01/frozen_recovery_candidates.json --launches reports/G07/compact_native_contact01/launches.json --launch-index 37 --num-envs 128 --seed 716901 --headless
-# 2026-10-23T12:04:51.431282+00:00 SUCCEEDED
+# 2026-10-23T12:04:51.431282+00:00 SUCCEEDED 0.226629008 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/probe_g07_composed_contact.py --output reports/G07/hybrid_fine625_compare01 --candidate reports/G07/hybrid_frozen_compare01/selected_policy.pt --recovery-candidates reports/G07/learned_hybrid_recovery_scan01/frozen_recovery_candidates_two.json --launches reports/G07/compact_native_contact01/launches.json --launch-index 37 --physics-dt .0000625 --num-envs 64 --seed 717001 --headless
-# 2026-10-23T12:20:54.318972+00:00 FAILED
+# 2026-10-23T12:20:54.318972+00:00 FAILED 0.001772825 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/evaluate_g07_causal_hybrid.py --output reports/G07/causal_hybrid_dev64_01 --checkpoint reports/G07/hybrid_fine625_compare01/frozen_candidate1_policy.pt --launch-panel reports/G07/causal_dev_panel64_v1/panel.json --calibration reports/G07/causal_dev_panel64_v1/calibration.json --physics-dt .0000625 --episode-seconds 8.5 --seed 717101 --headless
-# 2026-10-23T12:23:55.828994+00:00 SUCCEEDED
+# 2026-10-23T12:23:55.828994+00:00 SUCCEEDED 0.260261802 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/evaluate_g07_causal_hybrid.py --output reports/G07/causal_hybrid_dev64_02 --checkpoint reports/G07/hybrid_fine625_compare01/frozen_candidate1_policy.pt --launch-panel reports/G07/causal_dev_panel64_v1/panel.json --calibration reports/G07/causal_dev_panel64_v1/calibration.json --physics-dt .0000625 --episode-seconds 8.5 --seed 717101 --headless
-# 2026-10-23T12:47:59.963707+00:00 SUCCEEDED
+# 2026-10-23T12:47:59.963707+00:00 SUCCEEDED 0.067442374 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/evaluate_g07_causal_hybrid.py --output reports/G07/adaptive_planner_fast_dev64_01 --checkpoint reports/G07/adaptive_planner_regression01/policy.pt --launch-panel reports/G07/causal_dev_panel64_v1/panel.json --calibration reports/G07/causal_dev_panel64_v1/calibration.json --physics-dt .00025 --episode-seconds 8.5 --seed 717101 --headless
-# 2026-10-23T12:54:23.024960+00:00 SUCCEEDED
+# 2026-10-23T12:54:23.024960+00:00 SUCCEEDED 0.411820600 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/train_g07_adaptive_planner.py --output reports/G07/adaptive_planner_cem01 --checkpoint reports/G07/adaptive_planner_regression01/policy.pt --panel reports/G07/causal_dev_panel64_v1/panel.json --calibration reports/G07/causal_dev_panel64_v1/calibration.json --groups 16 --case-stride 4 --generations 6 --physics-dt .00025 --seed 717501 --target-complete .875 --headless
-# 2026-10-23T13:19:27.016958+00:00 SUCCEEDED
+# 2026-10-23T13:19:27.016958+00:00 SUCCEEDED 0.003524393 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/probe_g07_profiled_net.py --output reports/G07/profiled_net_native_control01 --headless
-# 2026-10-23T13:20:09.302441+00:00 RUNNING
+# 2026-10-23T13:20:09.302441+00:00 SUCCEEDED 0.270761848 GPUh
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/evaluate_g07_causal_hybrid.py --output reports/G07/adaptive_planner_profiled_fine128_01 --checkpoint reports/G07/adaptive_planner_cem01/best_candidate.pt --launch-panel reports/G07/causal_profiled_dev_ground128_v1/panel.json --calibration reports/G07/causal_dev_panel64_v1/calibration.json --physics-dt .0000625 --episode-seconds 8.5 --seed 717801 --headless
+# 2026-10-23T13:41:09.981476+00:00 FAILED 0.156903986 GPUh
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/train_g07_adaptive_planner.py --output reports/G07/preparation_arm_cem01 --checkpoint reports/G07/adaptive_planner_cem01/best_candidate.pt --panel reports/G07/causal_profiled_adaptation_panel32_v1/panel.json --calibration reports/G07/causal_dev_panel64_v1/calibration.json --arm-pitch-basis reports/G07/arm_pitch_residual_basis_cpu01/metrics.json --preparation-and-arm --groups 16 --case-stride 1 --generations 6 --physics-dt .00025 --seed 717901 --target-complete .8125 --headless
+# 2026-10-23T13:50:52.679679+00:00 FAILED 0.305714166 GPUh
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/train_g07_adaptive_planner.py --output reports/G07/local_preparation_arm_cem01 --checkpoint reports/G07/adaptive_planner_cem01/best_candidate.pt --panel reports/G07/causal_profiled_adaptation_panel32_v1/panel.json --calibration reports/G07/causal_dev_panel64_v1/calibration.json --arm-pitch-basis reports/G07/arm_pitch_residual_basis_cpu01/metrics.json --preparation-and-arm --local-adaptation --groups 12 --case-stride 1 --generations 4 --physics-dt .000125 --seed 718001 --target-complete .75 --headless
+# 2026-10-23T14:09:25.437119+00:00 SUCCEEDED 0.003329449 GPUh
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/evaluate_g07_causal_hybrid.py --output reports/G07/candidate_matrix_native_smoke01 --checkpoint reports/G07/adaptive_planner_cem01/best_candidate.pt --candidate-checkpoint reports/G07/preparation_arm_cem01/best_candidate.pt --launch-panel reports/G07/candidate_matrix_smoke_panel2_v1/panel.json --calibration reports/G07/causal_dev_panel64_v1/calibration.json --physics-dt .00025 --episode-seconds .2 --seed 718101 --headless
+# 2026-10-23T14:10:12.235132+00:00 SUCCEEDED 0.295961109 GPUh
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/evaluate_g07_causal_hybrid.py --output reports/G07/frozen_candidate_matrix_fine768_01 --checkpoint reports/G07/frozen_development_candidates_v1/baseline.pt --candidate-checkpoint reports/G07/frozen_development_candidates_v1/baseline_replan.pt --candidate-checkpoint reports/G07/frozen_development_candidates_v1/preparation.pt --candidate-checkpoint reports/G07/frozen_development_candidates_v1/preparation_replan.pt --candidate-checkpoint reports/G07/frozen_development_candidates_v1/local.pt --candidate-checkpoint reports/G07/frozen_development_candidates_v1/local_replan.pt --launch-panel reports/G07/causal_profiled_dev_ground128_v1/panel.json --calibration reports/G07/causal_dev_panel64_v1/calibration.json --physics-dt .0000625 --episode-seconds 8.5 --seed 718201 --headless
+# 2026-10-23T14:36:55.242563+00:00 SUCCEEDED 0.310864537 GPUh
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/evaluate_g07_causal_hybrid.py --output reports/G07/body_feedback_matrix_fine1280_01 --checkpoint reports/G07/body_feedback_candidates_v1/baseline_reference.pt --candidate-checkpoint reports/G07/body_feedback_candidates_v1/baseline_pitch-0.35_rate-0.06.pt --candidate-checkpoint reports/G07/body_feedback_candidates_v1/baseline_pitch-0.35_rate+0.06.pt --candidate-checkpoint reports/G07/body_feedback_candidates_v1/baseline_pitch+0.35_rate-0.06.pt --candidate-checkpoint reports/G07/body_feedback_candidates_v1/baseline_pitch+0.35_rate+0.06.pt --candidate-checkpoint reports/G07/body_feedback_candidates_v1/preparation_reference.pt --candidate-checkpoint reports/G07/body_feedback_candidates_v1/preparation_pitch-0.35_rate-0.06.pt --candidate-checkpoint reports/G07/body_feedback_candidates_v1/preparation_pitch-0.35_rate+0.06.pt --candidate-checkpoint reports/G07/body_feedback_candidates_v1/preparation_pitch+0.35_rate-0.06.pt --candidate-checkpoint reports/G07/body_feedback_candidates_v1/preparation_pitch+0.35_rate+0.06.pt --launch-panel reports/G07/causal_profiled_dev_ground128_v1/panel.json --calibration reports/G07/causal_dev_panel64_v1/calibration.json --physics-dt .0000625 --episode-seconds 8.5 --seed 718401 --headless
+# 2026-10-23T14:56:37.622574+00:00 SUCCEEDED 0.318692680 GPUh
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/evaluate_g07_causal_hybrid.py --output reports/G07/original_walk_arm_body_matrix_fine1536_01 --checkpoint reports/G07/original_walk_arm_feedback_candidates_v1/baseline_reference.pt --candidate-checkpoint reports/G07/frozen_development_candidates_v1/baseline_replan.pt --candidate-checkpoint reports/G07/original_walk_arm_feedback_candidates_v1/original_walk_arm_body_none_replan0.pt --candidate-checkpoint reports/G07/original_walk_arm_feedback_candidates_v1/original_walk_arm_body_-0.35_-0.06_replan0.pt --candidate-checkpoint reports/G07/original_walk_arm_feedback_candidates_v1/original_walk_arm_body_-0.35_0.06_replan0.pt --candidate-checkpoint reports/G07/original_walk_arm_feedback_candidates_v1/original_walk_arm_body_0.35_-0.06_replan0.pt --candidate-checkpoint reports/G07/original_walk_arm_feedback_candidates_v1/original_walk_arm_body_0.35_0.06_replan0.pt --candidate-checkpoint reports/G07/original_walk_arm_feedback_candidates_v1/original_walk_arm_body_none_replan1.pt --candidate-checkpoint reports/G07/original_walk_arm_feedback_candidates_v1/original_walk_arm_body_-0.35_-0.06_replan1.pt --candidate-checkpoint reports/G07/original_walk_arm_feedback_candidates_v1/original_walk_arm_body_-0.35_0.06_replan1.pt --candidate-checkpoint reports/G07/original_walk_arm_feedback_candidates_v1/original_walk_arm_body_0.35_-0.06_replan1.pt --candidate-checkpoint reports/G07/original_walk_arm_feedback_candidates_v1/original_walk_arm_body_0.35_0.06_replan1.pt --launch-panel reports/G07/causal_profiled_dev_ground128_v1/panel.json --calibration reports/G07/causal_dev_panel64_v1/calibration.json --physics-dt .0000625 --episode-seconds 8.5 --seed 718601 --headless
+# 2026-10-23T15:25:55.526037+00:00 SUCCEEDED 0.315549132 GPUh
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/evaluate_g07_causal_hybrid.py --output reports/G07/forward_body_matrix_fine1280_01 --checkpoint reports/G07/forward_body_candidates_v1/reference.pt --candidate-checkpoint reports/G07/forward_body_candidates_v1/stop_original.pt --candidate-checkpoint reports/G07/forward_body_candidates_v1/stop_back2cm.pt --candidate-checkpoint reports/G07/forward_body_candidates_v1/forward10.pt --candidate-checkpoint reports/G07/forward_body_candidates_v1/forward20.pt --candidate-checkpoint reports/G07/forward_body_candidates_v1/forward20_back3.pt --candidate-checkpoint reports/G07/forward_body_candidates_v1/extended_back3_forward.pt --candidate-checkpoint reports/G07/forward_body_candidates_v1/original_walk_forward15.pt --candidate-checkpoint reports/G07/forward_body_candidates_v1/original_walk_forward25.pt --candidate-checkpoint reports/G07/forward_body_candidates_v1/forward15_back1.pt --launch-panel reports/G07/causal_profiled_dev_ground128_v1/panel.json --calibration reports/G07/causal_dev_panel64_v1/calibration.json --physics-dt .0000625 --episode-seconds 8.5 --seed 718901 --headless
+# 2026-10-23T15:46:30.745056+00:00 SUCCEEDED 0.317132210 GPUh
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/evaluate_g07_causal_hybrid.py --output reports/G07/arm_clearance_matrix_fine1536_01 --checkpoint reports/G07/arm_clearance_candidates_v1/forward_reference.pt --candidate-checkpoint reports/G07/arm_clearance_candidates_v1/back2_reference.pt --candidate-checkpoint reports/G07/arm_clearance_candidates_v1/pitch10.pt --candidate-checkpoint reports/G07/arm_clearance_candidates_v1/pitch25.pt --candidate-checkpoint reports/G07/arm_clearance_candidates_v1/pitch40.pt --candidate-checkpoint reports/G07/arm_clearance_candidates_v1/back2_pitch25.pt --candidate-checkpoint reports/G07/arm_clearance_candidates_v1/heading06.pt --candidate-checkpoint reports/G07/arm_clearance_candidates_v1/heading12.pt --candidate-checkpoint reports/G07/arm_clearance_candidates_v1/heading08_pitch25.pt --candidate-checkpoint reports/G07/arm_clearance_candidates_v1/back2_heading08_pitch25.pt --candidate-checkpoint reports/G07/arm_clearance_candidates_v1/vertical_pitch15.pt --candidate-checkpoint reports/G07/arm_clearance_candidates_v1/vx08_pitch15.pt --launch-panel reports/G07/causal_profiled_dev_ground128_v1/panel.json --calibration reports/G07/causal_dev_panel64_v1/calibration.json --physics-dt .0000625 --episode-seconds 8.5 --seed 718951 --headless
+# 2026-10-23T16:07:42.346503+00:00 SUCCEEDED 0.000505948 GPUh
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/diagnose_g07_sweep_compute.py --output reports/G07/sweep_compute_gpu01 --device cuda:0
+# 2026-10-23T16:10:05.796597+00:00 SUCCEEDED 0.318727103 GPUh
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/evaluate_g07_causal_hybrid.py --output reports/G07/vertical_preparation_matrix_fine1536_01 --checkpoint reports/G07/vertical_preparation_candidates_v1/back2_reference.pt --candidate-checkpoint reports/G07/vertical_preparation_candidates_v1/vertical_back2_vx0.pt --candidate-checkpoint reports/G07/vertical_preparation_candidates_v1/vertical_back2_vx05.pt --candidate-checkpoint reports/G07/vertical_preparation_candidates_v1/vertical_back2_vx10.pt --candidate-checkpoint reports/G07/vertical_preparation_candidates_v1/vertical_back2_vx15.pt --candidate-checkpoint reports/G07/vertical_preparation_candidates_v1/half_vertical_back2.pt --candidate-checkpoint reports/G07/vertical_preparation_candidates_v1/extra_vertical_back2.pt --candidate-checkpoint reports/G07/vertical_preparation_candidates_v1/vertical_back3_vx05.pt --candidate-checkpoint reports/G07/vertical_preparation_candidates_v1/vertical_back3_vx10.pt --candidate-checkpoint reports/G07/vertical_preparation_candidates_v1/vertical_back2_heading.pt --candidate-checkpoint reports/G07/vertical_preparation_candidates_v1/vertical_back2_pitch0.pt --candidate-checkpoint reports/G07/vertical_preparation_candidates_v1/vertical_back2_pitch30.pt --launch-panel reports/G07/causal_profiled_dev_ground128_v1/panel.json --calibration reports/G07/causal_dev_panel64_v1/calibration.json --physics-dt .0000625 --episode-seconds 8.5 --sweep-audit-iterations 4096 --seed 719051 --headless
+# 2026-10-23T16:30:45.492167+00:00 SUCCEEDED 0.273267095 GPUh
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/evaluate_g07_causal_hybrid.py --output reports/G07/causal_profiled_formal_a_200_v2 --checkpoint reports/G07/formal_candidate_v1/policy.pt --launch-panel reports/G07/causal_profiled_eval_panel_a_v2/panel.json --calibration reports/G07/causal_dev_panel64_v1/calibration.json --protocol configs/g07_causal_profiled_net_eval_v3.json --policy-lock status/g07_causal_formal_lock02.json --physics-dt .0000625 --episode-seconds 8.5 --seed 717301 --headless
+# 2026-10-23T16:47:28.234501+00:00 SUCCEEDED 0.279285045 GPUh
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/evaluate_g07_causal_hybrid.py --output reports/G07/causal_profiled_formal_b_200_v2 --checkpoint reports/G07/formal_candidate_v1/policy.pt --launch-panel reports/G07/causal_profiled_eval_panel_b_v2/panel.json --calibration reports/G07/causal_dev_panel64_v1/calibration.json --protocol configs/g07_causal_profiled_net_eval_v3.json --policy-lock status/g07_causal_formal_lock02.json --physics-dt .0000625 --episode-seconds 8.5 --seed 717401 --headless
+# 2026-10-23T17:05:12.025462+00:00 RUNNING 0.416666667 GPUh
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/evaluate_g07_causal_hybrid.py --output reports/G07/contingency_push_yaw_matrix_fine1536_01 --checkpoint reports/G07/contingency_push_yaw_candidates_v1/frozen_reference.pt --candidate-checkpoint reports/G07/contingency_push_yaw_candidates_v1/yaw04.pt --candidate-checkpoint reports/G07/contingency_push_yaw_candidates_v1/yaw08.pt --candidate-checkpoint reports/G07/contingency_push_yaw_candidates_v1/yaw12.pt --candidate-checkpoint reports/G07/contingency_push_yaw_candidates_v1/push05.pt --candidate-checkpoint reports/G07/contingency_push_yaw_candidates_v1/push10.pt --candidate-checkpoint reports/G07/contingency_push_yaw_candidates_v1/push10_yaw06.pt --candidate-checkpoint reports/G07/contingency_push_yaw_candidates_v1/push10_yaw06_fold02.pt --candidate-checkpoint reports/G07/contingency_push_yaw_candidates_v1/back2_push10_yaw06.pt --candidate-checkpoint reports/G07/contingency_push_yaw_candidates_v1/back2_push15_yaw06_fold05.pt --candidate-checkpoint reports/G07/contingency_push_yaw_candidates_v1/forward_push10_yaw06_fold02.pt --candidate-checkpoint reports/G07/contingency_push_yaw_candidates_v1/yaw08_fold02_legs10.pt --launch-panel reports/G07/causal_profiled_dev_ground128_v1/panel.json --calibration reports/G07/causal_dev_panel64_v1/calibration.json --physics-dt .0000625 --episode-seconds 8.5 --sweep-audit-iterations 4096 --seed 719101 --headless

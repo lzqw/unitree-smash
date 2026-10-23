@@ -1,0 +1,32 @@
+{
+  "sample_count": 400,
+  "numerical_failures": 0,
+  "checkpoint_sha256": "d24460e97fc16ea378606caf6d17682db72886b0550115a5fb9f2c144747dba6",
+  "protocol": "g07-causal-profiled-net-frozen-evaluation-v3",
+  "panel_metrics": [
+    {
+      "panel": "g07_causal_profiled_a_v2",
+      "sample_count": 200,
+      "ground_init_fraction": 1.0,
+      "airborne_contact_rate": 1.0,
+      "recovery_given_airborne_contact": 0.89,
+      "complete_smash_success_rate": 0.5,
+      "numerical_failures": 0
+    },
+    {
+      "panel": "g07_causal_profiled_b_v2",
+      "sample_count": 200,
+      "ground_init_fraction": 1.0,
+      "airborne_contact_rate": 0.98,
+      "recovery_given_airborne_contact": 0.7448979591836735,
+      "complete_smash_success_rate": 0.355,
+      "numerical_failures": 0
+    }
+  ],
+  "aggregation": "minimum panel fraction; sum failures",
+  "ground_init_fraction": 1.0,
+  "airborne_contact_rate": 0.98,
+  "recovery_given_airborne_contact": 0.7448979591836735,
+  "complete_smash_success_rate": 0.355,
+  "thresholds_met": false
+}

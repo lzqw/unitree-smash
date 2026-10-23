@@ -1,6 +1,6 @@
 # G07：高位高速下扣搜索与独立评估（IN_PROGRESS）
 
-> 最新进展（16:30 UTC）：vertical准备/挥拍12候选×128开发比较已完成，candidate8首次同时达到两组开发门槛。标准完整47/64（73.4375%）、AIR64/64、条件恢复57/64（89.0625%）；B完整33/64（51.5625%）、AIR62/64、条件恢复56/62（90.3226%），该候选数值0，全1536数值0。已逐字节冻结到formal_candidate_v1/policy.pt，准备同一锁定权重/源码正式A/B各200；正式尚未通过，G07继续IN_PROGRESS。
+> 最新进展（17:06 UTC）：冻结lock02正式400回合已全部完成，未通过。A完整100/200（50%）、AIR200/200、条件恢复178/200（89%）；B完整71/200（35.5%）、AIR196/200、条件恢复146/196（74.4898%）；两组均地面起始、数值故障合计0。原策略/源码/场景/标准完全相同，失败不删。没有创建G07通过证据或正式policy产物。已继续在原开发128面板比较事先冻结的12个yaw/推离/触球后收拍候选。
 
 备用的公开状态参数选择入口已实现，但尚无GPU成绩：只有严格共享行走/规划/主动作/恢复的候选，才允许在3.0秒用当前公开状态选择后段body增益、arm pitch/heading和小幅joint残差；原caseID、seed与完成后标签不作为运行输入。CPU核对旧12候选（关闭选择器）动作差0；对128个已记录状态混合选择两套body增益（105/23）时，选择前/后与各冻结实例动作差0；模型分数与CPU拟合最大差约5.91e-5，重新初始化会清除上一回合选择。这些只证明实现一致性，旧数据CV没有达标，不把备用入口当成独立物理结果。
 
@@ -272,3 +272,16 @@ G07网体补充假设已独立保存于[ASSET_ASSUMPTIONS.md](ASSET_ASSUMPTIONS.
 BallEnvCfg默认256保留旧行为，评测可显式4096并写入manifest。新协议 `configs/g07_causal_profiled_net_eval_v3.json` SHA256 `6ce5c9929aa163504b39c24c5e85f1f2e939d43dde0d10beb48b55dc77a5319c` 仅声明更多同查询计算；两个冻结panel文件/哈希、场景、硬件、初始化契约、物理步、400门槛、容差和净空定义均与v2相同。旧v2保留且未正式运行。
 
 `vertical_preparation_matrix_fine1536_01` 是第一批显式4096的完整物理比较，12冻结候选见 `vertical_preparation_candidates_v1/manifest.json`，仍同原128开发案例、62.5us/.01s/8.5s，seed719051。它不包含尚未验证的收拍或推离补偿。`causal_profiled_fresh_ground128_v2/validation_plan_v1.json` 已固定后续独立复验seed719001和原全部门槛；尚未使用。
+
+## 冻结400回合失败（lock02）
+
+| 面板 | 完整 | 空中触球 | 条件恢复 | 机器人碰网 | 数值 |
+|---|---:|---:|---:|---:|---:|
+| 原A200 | 100/200 | 200/200 | 178/200 | 10 | 0 |
+| 原B200 | 71/200 | 196/200 | 146/196 | 22 | 0 |
+
+按原规则取较差比例，完整.355、条件恢复.744898，均低于.5/.85；不能用总171/400或开发合格替代。原始两组路径causal_profiled_formal_a_200_v2、causal_profiled_formal_b_200_v2，聚合causal_formal400_v2，权重SHA d24460e97fc16ea378606caf6d17682db72886b0550115a5fb9f2c144747dba6；lock02文件保持原字节，结果单列status/g07_causal_formal_lock02.outcome.json。
+
+根metrics/episodes/eval_manifest现更新为这次完整失败400，旧根文件原样保存在history_before_formal400_lock02，历史具体运行也保留。发布入口正确拒绝生成evidence.json/artifacts/G07/policy.pt。G00–G06证据未改，G07仍IN_PROGRESS。
+
+备用12个候选在读任何正式结果前已冻结，见contingency_push_yaw_candidates_v1/manifest.json，原开发数据观察到负向横向落点偏置和击球前后混合碰网，因此设计小幅正joint1 yaw、原限幅内calf推离和当前公开触球phase触发收拍。并非按正式case标签训练。17:05 UTC已启动真实原开发128比较contingency_push_yaw_matrix_fine1536_01，seed719101、62.5us/.01s/8.5s/4096次原容差审计；物理成绩尚待完成。

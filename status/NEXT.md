@@ -1,10 +1,33 @@
+# 原开发改进试验运行中（2026-10-23 17:07 UTC）
+
+统一exec91880，reports/G07/contingency_push_yaw_matrix_fine1536_01，启动17:05:12 UTC，12×原128开发，max1500s/envcap1305600、62.5us/.01s/8.5s、4096/1e-6、seed719101。先查ledger/ps，禁止重启。候选contingency_push_yaw_candidates_v1已在17:00前、任何正式结果出来前冻结：frozen8基线及yaw+.04/.08/.12、推离+.05/.1、组合yaw.06/触球收拍，以及旧back2/forward9组合，详见manifest；都不是已通过策略。
+
+lock02正式400已全部完成且失败：A完整100/200=.5、AIR200/200、rec178/200=.89、Net10、NF0；B完整71/200=.355、AIR196/200、rec146/196=.744898、Net22、NF0。较差full/rec未达原门槛。根metrics/episodes/eval_manifest已指向causal_formal400_v2，旧根原样归档history_before_formal400_lock02。没有G07 evidence或artifacts/G07/policy.pt。锁02不改，独立outcome记录失败。源码b10eeff评测两组相同；现在两组已完，可以提交后处理修复/报告和下一批。
+
+当前GPU只读原开发128文件，不训练或输入正式回合标签。若此12个固定候选合格，合理预留剩余窗口做新冻结400，并记录这是第二次G07开发验收，不能声称未见G10holdout。候选/源锁新建版本v2/lock03，旧400失败永不覆盖。fresh128仍未使用，可在额外时间获准后优先作独立复验以识别旧开发集调参乐观偏差。
+
+用户最新“继续跑你可以随时调用gpu”；已异步澄清是否取消原北京时间02:04截止、仍保持GPU0与新增10GPUh总上限不重置。问题待答，不能把等待时间当授权。现有试验继续按原固定UTC18:04:13.742590截止运行。授权原文附件020eb582...明确到期保存停止，原账本保留。
+
+# 正式B组运行中（2026-10-23 16:49 UTC）
+
+A组causal_profiled_formal_a_200_v2已SUCCEEDED，完整100/200=.5、AIR200/200、条件恢复178/200=.89、Net10、数值0。当前统一exec17902，reports/G07/causal_profiled_formal_b_200_v2（先查ledger/ps，禁止重复）。seed717401、同一冻结policy SHA d24460e97fc16ea378606caf6d17682db72886b0550115a5fb9f2c144747dba6、同protocolv3 SHA6ce5c992.../源码锁02。B结束前不得更改锁定策略/源码/配置。A/B eval_manifest均应source_git_sha b10eeff，当前保持Git HEAD不变。
+
+B完成后运行：
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/publish_g07_causal_result.py --protocol configs/g07_causal_profiled_net_eval_v3.json --policy-lock status/g07_causal_formal_lock02.json --checkpoint reports/G07/formal_candidate_v1/policy.pt --panel-output reports/G07/causal_profiled_formal_a_200_v2 --panel-output reports/G07/causal_profiled_formal_b_200_v2 --aggregate-output reports/G07/causal_formal400_v2
+
+该CPU发布入口会先调用aggregate按原始400回合重算；任何门槛未满足都返回失败且不动根evidence/policy。成功才原样归档旧根文件、拷贝冻结policy到artifacts/G07、写含实际job起止时间/成本/源码/产物哈希的evidence并verify_goal，通过后更新PASSED。源码后处理aggregate增加ROOT导入路径修复，不改变评测逻辑；未编辑锁定runtime文件。publication_gate_negative_cpu02验证把真实开发批次传入时被拒绝、根报告/证据/策略不变。原导入失败记录cpu01保留。两者仅CPU软件测试，不是策略成绩。
+
+如果400不达标，完整聚合和两个原始面板必须保留，不改标准也不训练正式case标签。在读任何正式结果前，已根据原开发数据预先冻结contingency_push_yaw_candidates_v1/manifest.json共12个备用权重（小幅joint1正yaw/有界calf推离/可选当前触球后收拍），尚未GPU运行；只能在剩余授权内用原开发128真测。当前已锁定400必须用原权重完成，不能途中过渡备用。备用原型不当成绩。
+
+资源固定UTC08:04:13.742590至18:04:13.742590，仅GPU0，新增最多10GPUh，历史保留。最新用户继续允许调用GPU，未明确重置原窗口/增加上限，按已登记配置执行。窗口剩余约1小时以上，预留发布和最终评测。
+
 # 正式验证入口（2026-10-23 16:30 UTC）
 
 固定资源窗口UTC08:04:13.742590至18:04:13.742590（北京时间10月23日16:04至10月24日02:04），仅GPU0、新增最多10 GPU-hours。历史不清零、重启不续期。
 
 vertical_preparation_matrix_fine1536_01已SUCCEEDED，不能重启。candidate8=vertical_back3_vx10，标准full47/64、AIR64/64、rec57/64；Bfull33/64、AIR62/64、rec56/62；该候选及全1536数值0。Net标准6/B5仍保留在分母。唯一已开发合格的固定候选已复制到reports/G07/formal_candidate_v1/policy.pt，FROZEN.json保留源SHA、开发数据与未正式通过声明。原前向/arm比较未过的数据均保留。
 
-下一步：生成不可变status/g07_causal_formal_lock02.json（旧lock01弃用，从未正式运行），协议configs/g07_causal_profiled_net_eval_v3.json，SHA6ce5c9929aa163504b39c24c5e85f1f2e939d43dde0d10beb48b55dc77a5319c。按冻结A/B各200，使用完全相同checkpoint与所有锁定源码；面板间不能修改quadsmash、eval入口或锁定配置。阈值400/full.5/AIR.7/rec.85/NF0不变。Formal seeds按原冻结panel.seed717301/717401，不挑种子。A/B原文件scenarios未改，原侧高网v3、62.5us/.01s/8.5s。sweep最大4096/原1e-6容差，旧256故障保留；CPU/CUDA10查询复核已通过。Formal为真实独立验证，不能把开发结果先标PASSED。
+旧exec46369 / formal A已完成。源码Git HEAD b10eeff，请保持到两组都完成；不要编辑锁定源码。不可变status/g07_causal_formal_lock02.json已生成（policySHA d24460e97fc16ea378606caf6d17682db72886b0550115a5fb9f2c144747dba6）。下一步A完成后直接同权重/源码运行B200。协议（旧lock01弃用，从未正式运行），协议configs/g07_causal_profiled_net_eval_v3.json，SHA6ce5c9929aa163504b39c24c5e85f1f2e939d43dde0d10beb48b55dc77a5319c。按冻结A/B各200，使用完全相同checkpoint与所有锁定源码；面板间不能修改quadsmash、eval入口或锁定配置。阈值400/full.5/AIR.7/rec.85/NF0不变。Formal seeds按原冻结panel.seed717301/717401，不挑种子。A/B原文件scenarios未改，原侧高网v3、62.5us/.01s/8.5s。sweep最大4096/原1e-6容差，旧256故障保留；CPU/CUDA10查询复核已通过。Formal为真实独立验证，不能把开发结果先标PASSED。
 
 若正式两组都完成且aggregate重算均达门槛，再发布artifacts/G07/policy.pt（与冻结文件原字节相同）、G07 evidence/报告，并verify_goal。若任何失败，原始逐回合照保留，不训练或挑选正式case，不改门槛；回到原开发面板改进。预算到期保存停止，不把未完成称complete。
 
