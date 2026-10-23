@@ -22,6 +22,47 @@ def atomic_json(path, data):
     temp.replace(path)
 
 
+def authorization_family(windows, name):
+    """Continuations inherit the original clock and cumulative resource cap."""
+    seen = set()
+    while windows[name].get("continuation_of"):
+        if name in seen:
+            raise ValueError("cyclic authorization continuation")
+        seen.add(name)
+        name = windows[name]["continuation_of"]
+        if name not in windows:
+            raise ValueError("unknown original authorization")
+    return name
+
+
+def check_window_budget(budget, ledger, name, seconds, step_cap, now):
+    windows = budget["authorization_windows"]
+    original = authorization_family(windows, name)
+    family = {key for key in windows if authorization_family(windows, key) == original}
+    all_records = [r for r in ledger["runs"] if r.get("budget_window") in family]
+    # Both the local continuation allocation and the original family cap apply.
+    for key in dict.fromkeys((name, original)):
+        records = all_records if key == original else [
+            r for r in all_records if r.get("budget_window") == key]
+        config = windows[key]
+        hours = sum(r["charged_gpu_hours"] for r in records)
+        if hours + seconds / 3600 > config["max_gpu_hours"]:
+            raise ValueError(f"cumulative GPU budget exceeds {config['max_gpu_hours']} h in {key}; charged {hours:.4f} h")
+        if config.get("max_env_steps") is not None:
+            steps = sum(r["charged_env_steps"] for r in records)
+            if steps + step_cap > config["max_env_steps"]:
+                raise ValueError("cumulative environment step budget exceeds original authorization")
+    starts = [datetime.fromisoformat(r["started_at"]) for r in all_records if r.get("started_at")]
+    state = ledger.get("budget_windows", {}).get(original)
+    if state:
+        starts.append(datetime.fromisoformat(state["started_at"]))
+    started = min(starts) if starts else now
+    deadline = started.timestamp() + windows[original]["max_wallclock_hours"] * 3600
+    if now.timestamp() + seconds > deadline:
+        raise ValueError(f"original authorization {original} wall-clock deadline is {datetime.fromtimestamp(deadline, timezone.utc).isoformat()}; requested job would exceed it")
+    return original, started, datetime.fromtimestamp(deadline, timezone.utc)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--goal", default="G04")
@@ -43,7 +84,9 @@ def main():
         parser.error("unknown authorization window")
     if args.budget_window != "legacy-G04" and args.goal not in windows[args.budget_window]["goals"]:
         parser.error("goal is not authorized by this budget window")
-    if args.budget_window == "legacy-G04" and (args.goal not in budget["authorized_goals"] or 0 not in budget["allowed_gpu_ids"]):
+    if 0 not in budget["allowed_gpu_ids"]:
+        parser.error("GPU0 is not authorized")
+    if args.budget_window == "legacy-G04" and args.goal not in budget["authorized_goals"]:
         parser.error("goal or GPU0 is not authorized")
     ledger_path = ROOT / "status/GPU_LEDGER.json"
     with (ROOT / "status/gpu_job.lock").open("a") as lock:
@@ -64,13 +107,12 @@ def main():
         if args.budget_window == "legacy-G04" and args.goal == "G04" and steps + args.env_steps_cap > 200_000_000:
             parser.error("cumulative G04 environment step budget would exceed 200000000")
         if window:
-            windows_state = ledger.setdefault("budget_windows", {})
-            state = windows_state.get(args.budget_window)
-            if state is not None:
-                from datetime import datetime, timezone
-                elapsed = (datetime.now(timezone.utc) - datetime.fromisoformat(state["started_at"])).total_seconds()
-                if elapsed > window["max_wallclock_hours"] * 3600:
-                    parser.error("authorization window wall-clock limit has expired")
+            try:
+                original_window, original_start, original_deadline = check_window_budget(
+                    budget, ledger, args.budget_window, args.max_seconds,
+                    args.env_steps_cap, datetime.now(timezone.utc))
+            except ValueError as exc:
+                parser.error(str(exc))
         apps = subprocess.check_output(["nvidia-smi", "--id=0", "--query-compute-apps=pid,process_name", "--format=csv,noheader"], text=True)
         paused=[]
         for pid in args.paused_external_pid:
@@ -97,13 +139,16 @@ def main():
                 snapshot.write(p, str(p.relative_to(ROOT)))
         subprocess.run(["git", "diff", "--binary"], cwd=ROOT, stdout=(output / "dirty.patch").open("w"), check=True)
         if window:
-            from datetime import datetime, timezone
             windows_state = ledger.setdefault("budget_windows", {})
             windows_state.setdefault(args.budget_window, {"started_at": datetime.now(timezone.utc).isoformat(), "goals": window["goals"]})
         record = {"goal": args.goal, "budget_window": args.budget_window, "command": command, "output": str(output), "gpu": 0,
                   "status": "RUNNING", "charged_gpu_hours": args.max_seconds / 3600,
                   "charged_env_steps": args.env_steps_cap,
                   "started_at": datetime.now(timezone.utc).isoformat(), "pid": os.getpid()}
+        if window:
+            record.update(original_authorization=original_window,
+                          authorization_started_at=original_start.isoformat(),
+                          authorization_deadline=original_deadline.isoformat())
         if paused:record['explicitly_paused_external_jobs']=paused
         ledger["runs"].append(record)
         atomic_json(ledger_path, ledger)

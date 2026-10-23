@@ -1,0 +1,36 @@
+{
+  "goal_completed": false,
+  "requirements": [
+    {
+      "requirement": "Correct height estimate and pose projection",
+      "status": "completed_for_declared_model",
+      "evidence": "geometry.json"
+    },
+    {
+      "requirement": "Verify tool and mount against existing USD and source",
+      "status": "completed_as_assumption_audit_physical_design_unconfirmed",
+      "evidence": "asset_inspection.json"
+    },
+    {
+      "requirement": "Compute coupled net/first-landing flight targets",
+      "status": "completed_as_CPU_prediction_only",
+      "evidence": "flight_regions.json"
+    },
+    {
+      "requirement": "Find actual ground-start airborne legal net/landing whole-body trajectory",
+      "status": "not_completed_no_new_GPU_authorization"
+    },
+    {
+      "requirement": "Learn closed-loop strategy and broaden target/launch coverage",
+      "status": "not_completed"
+    },
+    {
+      "requirement": "Independent minimum-panel 400-episode full G07 success/recovery validation",
+      "status": "not_completed_historical_full_success_zero"
+    },
+    {
+      "requirement": "New actual execution trajectory/video, best successful policy and failure analysis",
+      "status": "not_completed_CPU_predictions_and_legacy_artifacts_only"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+# Executed CPU-only commands; no new native training/evaluation
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/g07_plan_feasible_strikes.py --output reports/G07/feasibility_v3_20261023
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/inspect_g07_asset_cpu.py --output reports/G07/feasibility_v3_20261023/asset_inspection.json
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/plot_g07_flight_regions.py --input reports/G07/feasibility_v3_20261023/flight_regions.json --output reports/G07/feasibility_v3_20261023/flight_regions.png
+/home/autodrive/Isaac/env_isaaclab/bin/python -m pytest -q tests/test_native_physics_contract.py tests/test_piper_geometry.py tests/test_smash_events.py tests/test_gpu_job_guard.py --junitxml=reports/G07/feasibility_v3_20261023/cpu_tests.xml
+/home/autodrive/Isaac/env_isaaclab/bin/python -m py_compile scripts/search_g07_whole_body_v3.py quadsmash/tasks/stand/smash_env_v3.py
+# This preflight exited 2 before launching /usr/bin/true or creating output:
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/run_gpu_job.py --goal G07 --budget-window g07-high-arm-20261023 --max-seconds 120 --env-steps-cap 100000 --output reports/G07/expired_guard_probe_never_created --require-artifact metrics.json -- /usr/bin/true

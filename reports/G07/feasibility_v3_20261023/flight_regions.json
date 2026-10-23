@@ -1,0 +1,829 @@
+{
+  "method": "batched RK4, locked quadratic drag and gravity, no bounce",
+  "timestep_s": 0.002,
+  "height_grid_m": 0.02,
+  "net_plane_x_m": 1.5,
+  "net_top_m": 1.524,
+  "sphere_radius_m": 0.025,
+  "first_landing_target_x_m": [
+    2,
+    4
+  ],
+  "table": [
+    {
+      "hit_x_m": 0.3,
+      "distance_to_net_m": 1.2,
+      "min_grid_height_at_speed_le_8.5": 1.9900000000000007,
+      "min_grid_height_at_speed_le_10": 1.9900000000000007,
+      "min_grid_height_at_speed_le_12": 1.9900000000000007,
+      "min_grid_height_at_speed_le_14": 1.9900000000000007
+    },
+    {
+      "hit_x_m": 0.75,
+      "distance_to_net_m": 0.75,
+      "min_grid_height_at_speed_le_8.5": 1.8500000000000005,
+      "min_grid_height_at_speed_le_10": 1.8500000000000005,
+      "min_grid_height_at_speed_le_12": 1.8500000000000005,
+      "min_grid_height_at_speed_le_14": 1.8500000000000005
+    },
+    {
+      "hit_x_m": 1.0,
+      "distance_to_net_m": 0.5,
+      "min_grid_height_at_speed_le_8.5": 1.7900000000000005,
+      "min_grid_height_at_speed_le_10": 1.7900000000000005,
+      "min_grid_height_at_speed_le_12": 1.7900000000000005,
+      "min_grid_height_at_speed_le_14": 1.7900000000000005
+    },
+    {
+      "hit_x_m": 1.2,
+      "distance_to_net_m": 0.30000000000000004,
+      "min_grid_height_at_speed_le_8.5": 1.7100000000000004,
+      "min_grid_height_at_speed_le_10": 1.6900000000000004,
+      "min_grid_height_at_speed_le_12": 1.6900000000000004,
+      "min_grid_height_at_speed_le_14": 1.6900000000000004
+    },
+    {
+      "hit_x_m": 1.3,
+      "distance_to_net_m": 0.19999999999999996,
+      "min_grid_height_at_speed_le_8.5": 1.6500000000000004,
+      "min_grid_height_at_speed_le_10": 1.6500000000000004,
+      "min_grid_height_at_speed_le_12": 1.6500000000000004,
+      "min_grid_height_at_speed_le_14": 1.6500000000000004
+    },
+    {
+      "hit_x_m": 1.4,
+      "distance_to_net_m": 0.10000000000000009,
+      "min_grid_height_at_speed_le_8.5": 1.6100000000000003,
+      "min_grid_height_at_speed_le_10": 1.6100000000000003,
+      "min_grid_height_at_speed_le_12": 1.6100000000000003,
+      "min_grid_height_at_speed_le_14": 1.6100000000000003
+    },
+    {
+      "hit_x_m": 1.45,
+      "distance_to_net_m": 0.050000000000000044,
+      "min_grid_height_at_speed_le_8.5": 1.5900000000000003,
+      "min_grid_height_at_speed_le_10": 1.5900000000000003,
+      "min_grid_height_at_speed_le_12": 1.5900000000000003,
+      "min_grid_height_at_speed_le_14": 1.5900000000000003
+    }
+  ],
+  "seeds": [
+    {
+      "speed_cap_mps": 8.5,
+      "contact_position_m": [
+        0.3,
+        0.0,
+        1.9900000000000007
+      ],
+      "outgoing_velocity_mps": [
+        8.0,
+        0.0,
+        -2.0
+      ],
+      "net_margin_m": 0.028251863162299884,
+      "conservative_net_exit_margin_m": 0.0127516609191336,
+      "net_crossing_xyz_m": [
+        1.5,
+        0.0,
+        1.5772518631622998
+      ],
+      "first_landing_xyz_m": [
+        3.903251765323814,
+        0.0,
+        0.025
+      ],
+      "first_landing_time_after_hit_s": 0.47394406923003796,
+      "kind": "predicted free-flight target, not a PhysX contact result"
+    },
+    {
+      "speed_cap_mps": 10.0,
+      "contact_position_m": [
+        0.3,
+        0.0,
+        1.9900000000000007
+      ],
+      "outgoing_velocity_mps": [
+        8.0,
+        0.0,
+        -2.0
+      ],
+      "net_margin_m": 0.028251863162299884,
+      "conservative_net_exit_margin_m": 0.0127516609191336,
+      "net_crossing_xyz_m": [
+        1.5,
+        0.0,
+        1.5772518631622998
+      ],
+      "first_landing_xyz_m": [
+        3.903251765323814,
+        0.0,
+        0.025
+      ],
+      "first_landing_time_after_hit_s": 0.47394406923003796,
+      "kind": "predicted free-flight target, not a PhysX contact result"
+    },
+    {
+      "speed_cap_mps": 12.0,
+      "contact_position_m": [
+        0.3,
+        0.0,
+        1.9900000000000007
+      ],
+      "outgoing_velocity_mps": [
+        8.0,
+        0.0,
+        -2.0
+      ],
+      "net_margin_m": 0.028251863162299884,
+      "conservative_net_exit_margin_m": 0.0127516609191336,
+      "net_crossing_xyz_m": [
+        1.5,
+        0.0,
+        1.5772518631622998
+      ],
+      "first_landing_xyz_m": [
+        3.903251765323814,
+        0.0,
+        0.025
+      ],
+      "first_landing_time_after_hit_s": 0.47394406923003796,
+      "kind": "predicted free-flight target, not a PhysX contact result"
+    },
+    {
+      "speed_cap_mps": 14.0,
+      "contact_position_m": [
+        0.3,
+        0.0,
+        1.9900000000000007
+      ],
+      "outgoing_velocity_mps": [
+        8.0,
+        0.0,
+        -2.0
+      ],
+      "net_margin_m": 0.028251863162299884,
+      "conservative_net_exit_margin_m": 0.0127516609191336,
+      "net_crossing_xyz_m": [
+        1.5,
+        0.0,
+        1.5772518631622998
+      ],
+      "first_landing_xyz_m": [
+        3.903251765323814,
+        0.0,
+        0.025
+      ],
+      "first_landing_time_after_hit_s": 0.47394406923003796,
+      "kind": "predicted free-flight target, not a PhysX contact result"
+    },
+    {
+      "speed_cap_mps": 8.5,
+      "contact_position_m": [
+        0.75,
+        0.0,
+        1.8500000000000005
+      ],
+      "outgoing_velocity_mps": [
+        8.0,
+        0.0,
+        -2.5
+      ],
+      "net_margin_m": 0.022924633597396937,
+      "conservative_net_exit_margin_m": 0.007782856099310731,
+      "net_crossing_xyz_m": [
+        1.5,
+        0.0,
+        1.5719246335973969
+      ],
+      "first_landing_xyz_m": [
+        3.939755360211228,
+        0.0,
+        0.025
+      ],
+      "first_landing_time_after_hit_s": 0.41734235873704223,
+      "kind": "predicted free-flight target, not a PhysX contact result"
+    },
+    {
+      "speed_cap_mps": 10.0,
+      "contact_position_m": [
+        0.75,
+        0.0,
+        1.8500000000000005
+      ],
+      "outgoing_velocity_mps": [
+        8.0,
+        0.0,
+        -2.5
+      ],
+      "net_margin_m": 0.022924633597396937,
+      "conservative_net_exit_margin_m": 0.007782856099310731,
+      "net_crossing_xyz_m": [
+        1.5,
+        0.0,
+        1.5719246335973969
+      ],
+      "first_landing_xyz_m": [
+        3.939755360211228,
+        0.0,
+        0.025
+      ],
+      "first_landing_time_after_hit_s": 0.41734235873704223,
+      "kind": "predicted free-flight target, not a PhysX contact result"
+    },
+    {
+      "speed_cap_mps": 12.0,
+      "contact_position_m": [
+        0.75,
+        0.0,
+        1.8500000000000005
+      ],
+      "outgoing_velocity_mps": [
+        8.0,
+        0.0,
+        -2.5
+      ],
+      "net_margin_m": 0.022924633597396937,
+      "conservative_net_exit_margin_m": 0.007782856099310731,
+      "net_crossing_xyz_m": [
+        1.5,
+        0.0,
+        1.5719246335973969
+      ],
+      "first_landing_xyz_m": [
+        3.939755360211228,
+        0.0,
+        0.025
+      ],
+      "first_landing_time_after_hit_s": 0.41734235873704223,
+      "kind": "predicted free-flight target, not a PhysX contact result"
+    },
+    {
+      "speed_cap_mps": 14.0,
+      "contact_position_m": [
+        0.75,
+        0.0,
+        1.8500000000000005
+      ],
+      "outgoing_velocity_mps": [
+        8.0,
+        0.0,
+        -2.5
+      ],
+      "net_margin_m": 0.022924633597396937,
+      "conservative_net_exit_margin_m": 0.007782856099310731,
+      "net_crossing_xyz_m": [
+        1.5,
+        0.0,
+        1.5719246335973969
+      ],
+      "first_landing_xyz_m": [
+        3.939755360211228,
+        0.0,
+        0.025
+      ],
+      "first_landing_time_after_hit_s": 0.41734235873704223,
+      "kind": "predicted free-flight target, not a PhysX contact result"
+    },
+    {
+      "speed_cap_mps": 8.5,
+      "contact_position_m": [
+        1.0,
+        0.0,
+        1.7900000000000005
+      ],
+      "outgoing_velocity_mps": [
+        7.5,
+        0.0,
+        -3.0
+      ],
+      "net_margin_m": 0.01899309660462345,
+      "conservative_net_exit_margin_m": 0.0017921214435099309,
+      "net_crossing_xyz_m": [
+        1.5,
+        0.0,
+        1.5679930966046234
+      ],
+      "first_landing_xyz_m": [
+        3.716486933582714,
+        0.0,
+        0.025
+      ],
+      "first_landing_time_after_hit_s": 0.37702504342840315,
+      "kind": "predicted free-flight target, not a PhysX contact result"
+    },
+    {
+      "speed_cap_mps": 10.0,
+      "contact_position_m": [
+        1.0,
+        0.0,
+        1.7900000000000005
+      ],
+      "outgoing_velocity_mps": [
+        7.5,
+        0.0,
+        -3.0
+      ],
+      "net_margin_m": 0.01899309660462345,
+      "conservative_net_exit_margin_m": 0.0017921214435099309,
+      "net_crossing_xyz_m": [
+        1.5,
+        0.0,
+        1.5679930966046234
+      ],
+      "first_landing_xyz_m": [
+        3.716486933582714,
+        0.0,
+        0.025
+      ],
+      "first_landing_time_after_hit_s": 0.37702504342840315,
+      "kind": "predicted free-flight target, not a PhysX contact result"
+    },
+    {
+      "speed_cap_mps": 12.0,
+      "contact_position_m": [
+        1.0,
+        0.0,
+        1.7900000000000005
+      ],
+      "outgoing_velocity_mps": [
+        7.5,
+        0.0,
+        -3.0
+      ],
+      "net_margin_m": 0.01899309660462345,
+      "conservative_net_exit_margin_m": 0.0017921214435099309,
+      "net_crossing_xyz_m": [
+        1.5,
+        0.0,
+        1.5679930966046234
+      ],
+      "first_landing_xyz_m": [
+        3.716486933582714,
+        0.0,
+        0.025
+      ],
+      "first_landing_time_after_hit_s": 0.37702504342840315,
+      "kind": "predicted free-flight target, not a PhysX contact result"
+    },
+    {
+      "speed_cap_mps": 14.0,
+      "contact_position_m": [
+        1.0,
+        0.0,
+        1.7900000000000005
+      ],
+      "outgoing_velocity_mps": [
+        7.5,
+        0.0,
+        -3.0
+      ],
+      "net_margin_m": 0.01899309660462345,
+      "conservative_net_exit_margin_m": 0.0017921214435099309,
+      "net_crossing_xyz_m": [
+        1.5,
+        0.0,
+        1.5679930966046234
+      ],
+      "first_landing_xyz_m": [
+        3.716486933582714,
+        0.0,
+        0.025
+      ],
+      "first_landing_time_after_hit_s": 0.37702504342840315,
+      "kind": "predicted free-flight target, not a PhysX contact result"
+    },
+    {
+      "speed_cap_mps": 8.5,
+      "contact_position_m": [
+        1.2,
+        0.0,
+        1.7100000000000004
+      ],
+      "outgoing_velocity_mps": [
+        7.5,
+        0.0,
+        -3.0
+      ],
+      "net_margin_m": 0.03310711864193472,
+      "conservative_net_exit_margin_m": 0.017148674716633172,
+      "net_crossing_xyz_m": [
+        1.5,
+        0.0,
+        1.5821071186419347
+      ],
+      "first_landing_xyz_m": [
+        3.828047863447318,
+        0.0,
+        0.025
+      ],
+      "first_landing_time_after_hit_s": 0.36423374386747087,
+      "kind": "predicted free-flight target, not a PhysX contact result"
+    },
+    {
+      "speed_cap_mps": 10.0,
+      "contact_position_m": [
+        1.2,
+        0.0,
+        1.6900000000000004
+      ],
+      "outgoing_velocity_mps": [
+        8.0,
+        0.0,
+        -3.0
+      ],
+      "net_margin_m": 0.021561752137028156,
+      "conservative_net_exit_margin_m": 0.0067207054821720735,
+      "net_crossing_xyz_m": [
+        1.5,
+        0.0,
+        1.570561752137028
+      ],
+      "first_landing_xyz_m": [
+        3.9773491379934245,
+        0.0,
+        0.025
+      ],
+      "first_landing_time_after_hit_s": 0.3614404990929837,
+      "kind": "predicted free-flight target, not a PhysX contact result"
+    },
+    {
+      "speed_cap_mps": 12.0,
+      "contact_position_m": [
+        1.2,
+        0.0,
+        1.6900000000000004
+      ],
+      "outgoing_velocity_mps": [
+        8.0,
+        0.0,
+        -3.0
+      ],
+      "net_margin_m": 0.021561752137028156,
+      "conservative_net_exit_margin_m": 0.0067207054821720735,
+      "net_crossing_xyz_m": [
+        1.5,
+        0.0,
+        1.570561752137028
+      ],
+      "first_landing_xyz_m": [
+        3.9773491379934245,
+        0.0,
+        0.025
+      ],
+      "first_landing_time_after_hit_s": 0.3614404990929837,
+      "kind": "predicted free-flight target, not a PhysX contact result"
+    },
+    {
+      "speed_cap_mps": 14.0,
+      "contact_position_m": [
+        1.2,
+        0.0,
+        1.6900000000000004
+      ],
+      "outgoing_velocity_mps": [
+        8.0,
+        0.0,
+        -3.0
+      ],
+      "net_margin_m": 0.021561752137028156,
+      "conservative_net_exit_margin_m": 0.0067207054821720735,
+      "net_crossing_xyz_m": [
+        1.5,
+        0.0,
+        1.570561752137028
+      ],
+      "first_landing_xyz_m": [
+        3.9773491379934245,
+        0.0,
+        0.025
+      ],
+      "first_landing_time_after_hit_s": 0.3614404990929837,
+      "kind": "predicted free-flight target, not a PhysX contact result"
+    },
+    {
+      "speed_cap_mps": 8.5,
+      "contact_position_m": [
+        1.3,
+        0.0,
+        1.6500000000000004
+      ],
+      "outgoing_velocity_mps": [
+        7.5,
+        0.0,
+        -3.0
+      ],
+      "net_margin_m": 0.017494607966781484,
+      "conservative_net_exit_margin_m": 0.0021595876000339853,
+      "net_crossing_xyz_m": [
+        1.5,
+        0.0,
+        1.5664946079667814
+      ],
+      "first_landing_xyz_m": [
+        3.860522789031546,
+        0.0,
+        0.025
+      ],
+      "first_landing_time_after_hit_s": 0.35449340816849756,
+      "kind": "predicted free-flight target, not a PhysX contact result"
+    },
+    {
+      "speed_cap_mps": 10.0,
+      "contact_position_m": [
+        1.3,
+        0.0,
+        1.6500000000000004
+      ],
+      "outgoing_velocity_mps": [
+        7.5,
+        0.0,
+        -3.0
+      ],
+      "net_margin_m": 0.017494607966781484,
+      "conservative_net_exit_margin_m": 0.0021595876000339853,
+      "net_crossing_xyz_m": [
+        1.5,
+        0.0,
+        1.5664946079667814
+      ],
+      "first_landing_xyz_m": [
+        3.860522789031546,
+        0.0,
+        0.025
+      ],
+      "first_landing_time_after_hit_s": 0.35449340816849756,
+      "kind": "predicted free-flight target, not a PhysX contact result"
+    },
+    {
+      "speed_cap_mps": 12.0,
+      "contact_position_m": [
+        1.3,
+        0.0,
+        1.6500000000000004
+      ],
+      "outgoing_velocity_mps": [
+        7.5,
+        0.0,
+        -3.0
+      ],
+      "net_margin_m": 0.017494607966781484,
+      "conservative_net_exit_margin_m": 0.0021595876000339853,
+      "net_crossing_xyz_m": [
+        1.5,
+        0.0,
+        1.5664946079667814
+      ],
+      "first_landing_xyz_m": [
+        3.860522789031546,
+        0.0,
+        0.025
+      ],
+      "first_landing_time_after_hit_s": 0.35449340816849756,
+      "kind": "predicted free-flight target, not a PhysX contact result"
+    },
+    {
+      "speed_cap_mps": 14.0,
+      "contact_position_m": [
+        1.3,
+        0.0,
+        1.6500000000000004
+      ],
+      "outgoing_velocity_mps": [
+        7.5,
+        0.0,
+        -3.0
+      ],
+      "net_margin_m": 0.017494607966781484,
+      "conservative_net_exit_margin_m": 0.0021595876000339853,
+      "net_crossing_xyz_m": [
+        1.5,
+        0.0,
+        1.5664946079667814
+      ],
+      "first_landing_xyz_m": [
+        3.860522789031546,
+        0.0,
+        0.025
+      ],
+      "first_landing_time_after_hit_s": 0.35449340816849756,
+      "kind": "predicted free-flight target, not a PhysX contact result"
+    },
+    {
+      "speed_cap_mps": 8.5,
+      "contact_position_m": [
+        1.4,
+        0.0,
+        1.6100000000000003
+      ],
+      "outgoing_velocity_mps": [
+        7.5,
+        0.0,
+        -3.0
+      ],
+      "net_margin_m": 0.020122104073232228,
+      "conservative_net_exit_margin_m": 0.005406522870533781,
+      "net_crossing_xyz_m": [
+        1.5,
+        0.0,
+        1.5691221040732322
+      ],
+      "first_landing_xyz_m": [
+        3.914919123038597,
+        0.0,
+        0.025
+      ],
+      "first_landing_time_after_hit_s": 0.34792770689415503,
+      "kind": "predicted free-flight target, not a PhysX contact result"
+    },
+    {
+      "speed_cap_mps": 10.0,
+      "contact_position_m": [
+        1.4,
+        0.0,
+        1.6100000000000003
+      ],
+      "outgoing_velocity_mps": [
+        7.5,
+        0.0,
+        -3.0
+      ],
+      "net_margin_m": 0.020122104073232228,
+      "conservative_net_exit_margin_m": 0.005406522870533781,
+      "net_crossing_xyz_m": [
+        1.5,
+        0.0,
+        1.5691221040732322
+      ],
+      "first_landing_xyz_m": [
+        3.914919123038597,
+        0.0,
+        0.025
+      ],
+      "first_landing_time_after_hit_s": 0.34792770689415503,
+      "kind": "predicted free-flight target, not a PhysX contact result"
+    },
+    {
+      "speed_cap_mps": 12.0,
+      "contact_position_m": [
+        1.4,
+        0.0,
+        1.6100000000000003
+      ],
+      "outgoing_velocity_mps": [
+        7.5,
+        0.0,
+        -3.0
+      ],
+      "net_margin_m": 0.020122104073232228,
+      "conservative_net_exit_margin_m": 0.005406522870533781,
+      "net_crossing_xyz_m": [
+        1.5,
+        0.0,
+        1.5691221040732322
+      ],
+      "first_landing_xyz_m": [
+        3.914919123038597,
+        0.0,
+        0.025
+      ],
+      "first_landing_time_after_hit_s": 0.34792770689415503,
+      "kind": "predicted free-flight target, not a PhysX contact result"
+    },
+    {
+      "speed_cap_mps": 14.0,
+      "contact_position_m": [
+        1.4,
+        0.0,
+        1.6100000000000003
+      ],
+      "outgoing_velocity_mps": [
+        7.5,
+        0.0,
+        -3.0
+      ],
+      "net_margin_m": 0.020122104073232228,
+      "conservative_net_exit_margin_m": 0.005406522870533781,
+      "net_crossing_xyz_m": [
+        1.5,
+        0.0,
+        1.5691221040732322
+      ],
+      "first_landing_xyz_m": [
+        3.914919123038597,
+        0.0,
+        0.025
+      ],
+      "first_landing_time_after_hit_s": 0.34792770689415503,
+      "kind": "predicted free-flight target, not a PhysX contact result"
+    },
+    {
+      "speed_cap_mps": 8.5,
+      "contact_position_m": [
+        1.45,
+        0.0,
+        1.5900000000000003
+      ],
+      "outgoing_velocity_mps": [
+        7.5,
+        0.0,
+        -3.0
+      ],
+      "net_margin_m": 0.020777425638127456,
+      "conservative_net_exit_margin_m": 0.006364683536295157,
+      "net_crossing_xyz_m": [
+        1.5,
+        0.0,
+        1.5697774256381274
+      ],
+      "first_landing_xyz_m": [
+        3.9419289711645065,
+        0.0,
+        0.025
+      ],
+      "first_landing_time_after_hit_s": 0.34462169714579177,
+      "kind": "predicted free-flight target, not a PhysX contact result"
+    },
+    {
+      "speed_cap_mps": 10.0,
+      "contact_position_m": [
+        1.45,
+        0.0,
+        1.5900000000000003
+      ],
+      "outgoing_velocity_mps": [
+        7.5,
+        0.0,
+        -3.0
+      ],
+      "net_margin_m": 0.020777425638127456,
+      "conservative_net_exit_margin_m": 0.006364683536295157,
+      "net_crossing_xyz_m": [
+        1.5,
+        0.0,
+        1.5697774256381274
+      ],
+      "first_landing_xyz_m": [
+        3.9419289711645065,
+        0.0,
+        0.025
+      ],
+      "first_landing_time_after_hit_s": 0.34462169714579177,
+      "kind": "predicted free-flight target, not a PhysX contact result"
+    },
+    {
+      "speed_cap_mps": 12.0,
+      "contact_position_m": [
+        1.45,
+        0.0,
+        1.5900000000000003
+      ],
+      "outgoing_velocity_mps": [
+        7.5,
+        0.0,
+        -3.0
+      ],
+      "net_margin_m": 0.020777425638127456,
+      "conservative_net_exit_margin_m": 0.006364683536295157,
+      "net_crossing_xyz_m": [
+        1.5,
+        0.0,
+        1.5697774256381274
+      ],
+      "first_landing_xyz_m": [
+        3.9419289711645065,
+        0.0,
+        0.025
+      ],
+      "first_landing_time_after_hit_s": 0.34462169714579177,
+      "kind": "predicted free-flight target, not a PhysX contact result"
+    },
+    {
+      "speed_cap_mps": 14.0,
+      "contact_position_m": [
+        1.45,
+        0.0,
+        1.5900000000000003
+      ],
+      "outgoing_velocity_mps": [
+        7.5,
+        0.0,
+        -3.0
+      ],
+      "net_margin_m": 0.020777425638127456,
+      "conservative_net_exit_margin_m": 0.006364683536295157,
+      "net_crossing_xyz_m": [
+        1.5,
+        0.0,
+        1.5697774256381274
+      ],
+      "first_landing_xyz_m": [
+        3.9419289711645065,
+        0.0,
+        0.025
+      ],
+      "first_landing_time_after_hit_s": 0.34462169714579177,
+      "kind": "predicted free-flight target, not a PhysX contact result"
+    }
+  ],
+  "limitation": "Necessary outgoing free-flight conditions only. Whole-body collision must produce these velocities."
+}

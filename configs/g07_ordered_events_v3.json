@@ -1,0 +1,34 @@
+{
+  "version": "ordered-smash-v3-development",
+  "status": "development_protocol_not_a_passing_evidence_record",
+  "production_asset": "assets/quadsmash_standard_v2.usd",
+  "hardware_changed": false,
+  "collision_response": "PhysX_only",
+  "ground_reset": "canonical_ground_state_no_expert_prefix",
+  "action_interfaces": {
+    "legacy_policy": "existing_18D_position_offsets",
+    "search_only": "18_absolute_joint_targets_bounded_by_audited_joint_limits"
+  },
+  "event_order": [
+    "force_confirmed_effective_face_contact_while_airborne",
+    "racket_separation_and_measured_outgoing_velocity",
+    "forward_net_plane_crossing_above_1.524m_with_radius_clearance_before_any_ground_contact",
+    "first_ground_contact_in_declared_opponent_target",
+    "stable_robot_recovery_in_same_episode"
+  ],
+  "reject": ["ground_bounce_before_net", "racket_rim_only_contact", "multiple_racket_contact", "net_side_bypass"],
+  "recovery_timing": "recovery and ball outcome may overlap in time; both must be verified after contact",
+  "acceptance_thresholds_unchanged": {
+    "minimum_episodes": 400,
+    "minimum_complete_success": 0.5,
+    "minimum_airborne_contact": 0.7,
+    "minimum_recovery_given_airborne_contact": 0.85,
+    "numerical_failures": 0,
+    "minimum_outgoing_speed_mps": 8.0,
+    "maximum_outgoing_vz_mps": -1.0,
+    "outgoing_vx_mps": "strictly_positive"
+  },
+  "development_launch": "configs/g07_feasible_search_launch_v3.json",
+  "formal_distribution": "not_yet_frozen_must_cover_multiple_targets_and_launches_before_formal_training",
+  "verification_status": "CPU_temporal_tests_only_native_rollout_pending_valid_resource_authorization"
+}

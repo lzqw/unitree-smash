@@ -1,0 +1,265 @@
+{
+  "method": "pinned URDF forward kinematics and numerical pose optimization",
+  "coordinate_system": "world x toward opponents, z up; local racket face normal +X",
+  "canonical_root_xyz": [
+    0,
+    0,
+    0.323
+  ],
+  "box_half_extents_m": [
+    0.0075,
+    0.11,
+    0.11
+  ],
+  "orientation_independent_box_half_diagonal_m": 0.1557441812717252,
+  "exact_world_vertical_support": "sum_i abs(R[2,i]) * half_extents[i]",
+  "previous_4096_sample_max_center_z_m": 1.2530726194381714,
+  "old_sample_urdf_fk_position_error_max_m": 0.01738094260227579,
+  "nominal_native_reset_error_m": 2.8570050930023556e-07,
+  "root_relative_triangle_distance_bound_m": 1.1975093333483435,
+  "rigorous_bound_scope": "distance from Go2 root only; does not bound dynamic root height",
+  "previous_1_535m_claim": "withdrawn: finite sampling, finite jump search, and incorrect orientation-independent box extension",
+  "poses": {
+    "optimized_center_at_canonical_root": {
+      "arm_q_rad": [
+        -0.42254693311675096,
+        1.4348893654429518,
+        -2.8309858086151505,
+        0.06296502197352886,
+        -1.190246419236708,
+        0.0062734906463522535
+      ],
+      "root": {},
+      "center_xyz_m": [
+        0.05001334339662811,
+        1.8301496700578318e-05,
+        1.254515939700904
+      ],
+      "contact_ball_center_xyz_m": [
+        0.06374720960348922,
+        -0.005100943616842022,
+        1.2835232534076144
+      ],
+      "normal_world": [
+        0.4225804986726494,
+        -0.15751523426284925,
+        0.8925327294372422
+      ],
+      "contact_uv_m": [
+        0,
+        0
+      ],
+      "box_top_world_m": 1.3108293200024657,
+      "root_height_m": 0.323,
+      "contact_jacobian_m_per_rad": [
+        [
+          0.005100943618885356,
+          0.700015445151414,
+          0.44005536357222264,
+          -0.003191008804415141,
+          0.21602623188898828,
+          0.07426059713683264
+        ],
+        [
+          0.013747209608953176,
+          -0.314754390800219,
+          -0.19786616713493577,
+          -0.004708049540502746,
+          -0.08118468996414288,
+          0.1991020171601167
+        ],
+        [
+          0.0,
+          -0.014629919498077015,
+          -0.01463190391071123,
+          8.59315951728945e-05,
+          -0.014652783764113053,
+          -2.1824764218081327e-05
+        ]
+      ],
+      "limitation": "kinematic pose only; joint tracking, collision and whole-body recovery unverified"
+    },
+    "effective_face_normal_x_ge_0.0": {
+      "arm_q_rad": [
+        -0.17832073027020892,
+        1.43490193360249,
+        -2.831053445399862,
+        0.6205180955544606,
+        -0.9669767838245489,
+        -0.3553694340491387
+      ],
+      "root": {},
+      "center_xyz_m": [
+        0.11192666008307907,
+        -0.050550939796944916,
+        1.2379990489574983
+      ],
+      "contact_ball_center_xyz_m": [
+        0.05000089760685125,
+        -2.838473134758601e-06,
+        1.3507657966905762
+      ],
+      "normal_world": [
+        0.6939411671829293,
+        -0.09820451865724755,
+        0.7133032517829223
+      ],
+      "contact_uv_m": [
+        0.09499999999999995,
+        0.095
+      ],
+      "box_top_world_m": 1.347078119403919,
+      "root_height_m": 0.323,
+      "contact_jacobian_m_per_rad": [
+        [
+          2.8384551653548584e-06,
+          0.8215278548169558,
+          0.5410179378037561,
+          -0.004611844895557882,
+          0.26924180989221225,
+          -0.10769578325658946
+        ],
+        [
+          8.976153154094391e-07,
+          -0.1480740317860718,
+          -0.09751429224172381,
+          -0.025612607892216976,
+          0.12687900275212827,
+          0.2063561684723103
+        ],
+        [
+          0.0,
+          -1.3868906023617456e-06,
+          2.1116441928370477e-07,
+          -4.005684672847565e-07,
+          1.1428635815491361e-06,
+          -4.966027589148325e-07
+        ]
+      ],
+      "limitation": "kinematic pose only; joint tracking, collision and whole-body recovery unverified"
+    },
+    "effective_face_normal_x_ge_0.7": {
+      "arm_q_rad": [
+        0.16131946522402835,
+        1.4348903791443677,
+        -2.8310447833883448,
+        0.4055847662658887,
+        -0.9767001740485122,
+        -0.3762923576038383
+      ],
+      "root": {},
+      "center_xyz_m": [
+        0.11718671134076149,
+        -0.04330796302094682,
+        1.2379988050170774
+      ],
+      "contact_ball_center_xyz_m": [
+        0.04999814901197942,
+        -5.021776240191067e-07,
+        1.350765869922995
+      ],
+      "normal_world": [
+        0.7005757933154249,
+        -0.019992563370670013,
+        0.7132978727224221
+      ],
+      "contact_uv_m": [
+        0.09499999999999995,
+        0.095
+      ],
+      "box_top_world_m": 1.3470784047958457,
+      "root_height_m": 0.323,
+      "contact_jacobian_m_per_rad": [
+        [
+          5.021677518257661e-07,
+          0.8239283627656246,
+          0.5425988191948283,
+          0.004181745949516369,
+          0.2514767172279164,
+          -0.1300940493526026
+        ],
+        [
+          -1.8509846433367727e-06,
+          0.13407501846945946,
+          0.08829523293063524,
+          -0.025684737246789435,
+          0.15960079716506592,
+          0.19302017592245924
+        ],
+        [
+          0.0,
+          1.907585200910944e-06,
+          2.1227464230832993e-07,
+          -1.8784973576657649e-07,
+          -1.5329959524024162e-06,
+          -4.0667469392019484e-07
+        ]
+      ],
+      "limitation": "kinematic pose only; joint tracking, collision and whole-body recovery unverified"
+    },
+    "effective_face_normal_x_ge_0.9": {
+      "arm_q_rad": [
+        -1.3242133278156272,
+        1.4348961506407298,
+        -2.8310467180517347,
+        0.41388844093738775,
+        -0.720425895372498,
+        0.8130421592223274
+      ],
+      "root": {},
+      "center_xyz_m": [
+        0.17672320357916615,
+        0.0413583812313677,
+        1.2041822765667958
+      ],
+      "contact_ball_center_xyz_m": [
+        0.15025517912745193,
+        -5.171908862150465e-07,
+        1.3333919325640204
+      ],
+      "normal_world": [
+        0.899999999998697,
+        -9.358115511948206e-07,
+        0.4358898943557528
+      ],
+      "contact_uv_m": [
+        -0.095,
+        0.095
+      ],
+      "box_top_world_m": 1.3406594064310207,
+      "root_height_m": 0.323,
+      "contact_jacobian_m_per_rad": [
+        [
+          5.171973960216292e-07,
+          0.19951319568667358,
+          0.12994161825707895,
+          -0.0237652435230995,
+          0.1717562032599318,
+          0.12765353497867782
+        ],
+        [
+          0.10025517913070381,
+          -0.7926693096904636,
+          -0.5162603799527266,
+          0.0938883548337599,
+          -0.21821595625262646,
+          0.18921964449816753
+        ],
+        [
+          1.1102230246251565e-10,
+          -0.024471297543904313,
+          -0.024471347725985026,
+          0.008490358194279679,
+          -0.06135689945008238,
+          -0.04562621125359101
+        ]
+      ],
+      "limitation": "kinematic pose only; joint tracking, collision and whole-body recovery unverified"
+    }
+  },
+  "limitations": [
+    "Numerical pose maxima are found values, not certified global maxima.",
+    "URDF FK is cross-checked against old native poses; no new PhysX rollout executed.",
+    "No self-collision, torque, velocity, or landing-recovery feasibility certificate."
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "asset": "assets/quadsmash_standard_v2.usd",
+  "sha256": "bfb831e4afc8a1a705bb0fb6f001c25eeaa401822978267a0ee5e151007511f3",
+  "inspection": "USD composition only; no simulator or GPU initialized",
+  "blade_size_m": [
+    0.014999999664723873,
+    0.2199999988079071,
+    0.2199999988079071
+  ],
+  "mass_kg": 0.09000000357627869,
+  "diagonal_inertia_kg_m2": [
+    0.0007259999983943999,
+    0.0003646874974947423,
+    0.0003646874974947423
+  ],
+  "mount_body0": [
+    "/World/Piper/link6"
+  ],
+  "mount_body1": [
+    "/World/Racket"
+  ],
+  "mount_translation_m": [
+    0.18000000715255737,
+    0.0,
+    0.0
+  ],
+  "mount_rotation_wxyz": [
+    1.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "provenance": {
+    "standard_arm": "pinned vendor URDF and standard_piper_manifest.json",
+    "racket": "parameterized placeholder, not measured manufacturer data",
+    "tool_mount": "assembly_v2.json assumption, not a confirmed physical grasp"
+  },
+  "metadata_discrepancy": "standard_racket_v1.json describes an old plane model/zero mount; current USD uses a centered box 0.18 m from link6",
+  "physical_design_verified": false,
+  "physical_dimensions_changed": false,
+  "limit": "No local measured racket/handle/CAD specification establishes that this placeholder equals the intended physical racket."
+}

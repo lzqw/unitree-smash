@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from datetime import datetime, timezone
 from unittest.mock import Mock, patch
 
 SPEC = importlib.util.spec_from_file_location("gpu_job", Path(__file__).resolve().parents[1] / "scripts/run_gpu_job.py")
@@ -61,6 +62,42 @@ class GpuJobGuardTest(unittest.TestCase):
         self.assertEqual(result["status"], "FAILED")
         self.assertAlmostEqual(result["charged_gpu_hours"], 2 / 3600)
         self.assertEqual(result["charged_env_steps"], 100)
+
+
+class ContinuationBudgetTest(unittest.TestCase):
+    def setUp(self):
+        self.budget = {"authorization_windows": {
+            "original": {"max_gpu_hours": 10., "max_wallclock_hours": 10.},
+            "continued": {"max_gpu_hours": 8.5, "max_wallclock_hours": 10.,
+                          "continuation_of": "original"}}}
+        self.ledger = {"runs": [
+            {"budget_window": "original", "charged_gpu_hours": 2.,
+             "charged_env_steps": 100, "started_at": "2026-10-22T14:00:00+00:00"},
+            {"budget_window": "continued", "charged_gpu_hours": 1.,
+             "charged_env_steps": 100, "started_at": "2026-10-23T00:00:00+00:00"}]}
+
+    def test_continuation_cannot_renew_expired_original_clock(self):
+        with self.assertRaisesRegex(ValueError, "original authorization.*deadline"):
+            job.check_window_budget(self.budget, self.ledger, "continued", 60, 100,
+                datetime(2026, 10, 23, 1, tzinfo=timezone.utc))
+
+    def test_job_must_fit_before_original_deadline(self):
+        with self.assertRaisesRegex(ValueError, "deadline"):
+            job.check_window_budget(self.budget, self.ledger, "continued", 120, 100,
+                datetime(2026, 10, 22, 23, 59, tzinfo=timezone.utc))
+
+    def test_family_charges_include_failed_previous_windows(self):
+        self.ledger["runs"][0]["charged_gpu_hours"] = 9.
+        with self.assertRaisesRegex(ValueError, "cumulative GPU budget"):
+            job.check_window_budget(self.budget, self.ledger, "continued", 60, 100,
+                datetime(2026, 10, 22, 20, tzinfo=timezone.utc))
+
+    def test_in_budget_job_inherits_original_start(self):
+        name, start, deadline = job.check_window_budget(
+            self.budget, self.ledger, "continued", 60, 100,
+            datetime(2026, 10, 22, 20, tzinfo=timezone.utc))
+        self.assertEqual(name, "original")
+        self.assertEqual((deadline - start).total_seconds(), 36000)
 
 
 if __name__ == "__main__":
