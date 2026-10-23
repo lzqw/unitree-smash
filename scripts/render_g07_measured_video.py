@@ -7,6 +7,11 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.animation import FFMpegWriter
+try:
+    import imageio_ffmpeg
+    matplotlib.rcParams['animation.ffmpeg_path'] = imageio_ffmpeg.get_ffmpeg_exe()
+except Exception:
+    pass
 
 p=argparse.ArgumentParser();p.add_argument('--input',type=Path,required=True);p.add_argument('--output',type=Path,required=True);a=p.parse_args()
 rows=json.loads((a.input/'trajectory.json').read_text());a.output.parent.mkdir(parents=True,exist_ok=True)

@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "High-arm continuation: full arm-range probe max racket z 1.253 m (old 0.725 m was action-band artifact); PhysX teacher search achieved 64/64 airborne attacks at max 8.202 m/s and vz -7.948 m/s, but contact z is ~1.07 m below the fixed 1.524 m net. Three-round learner checkpoint independent 400-episode eval: ground init 1.0, airborne contact 0.2625, complete smash 0.0, recovery given contact 0.0, numerical failures 0. G07 remains IN_PROGRESS; no artifacts/G07/policy.pt or passing evidence claimed."
+      "notes": "High-arm continuation: full arm-range probe max racket center z 1.253 m; old 0.725 m was action-band artifact. All-state BC/DAgger checkpoint reports/G07/train_high_attack_all01/checkpoint.pt reached 64/64 teacher attacks in the best training round. Independent frozen 400-episode PhysX eval reports/G07/eval_high_attack_all01: ground init 1.0, airborne contact 1.0, recovery given contact 0.8925, complete smash 0.0, numerical failures 0. Directional searches found high-speed candidates (up to 9.58 m/s, positive vx and near-zero vy in local pose search), but fixed 1.524 m net crossing/landing remains zero for downward attacks. Root/racket geometry and fixed-candidate trajectories document the current reach/height bottleneck; G07 remains IN_PROGRESS and no artifacts/G07/policy.pt or passing evidence is claimed."
     },
     "G08": {
       "state": "TODO",
