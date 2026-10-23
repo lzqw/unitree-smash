@@ -15,6 +15,15 @@ PROTOCOL=json.loads((ROOT/'configs/evaluation_protocol_v2.json').read_text())
 class JumpEnvCfg(CoupledEnvCfg):
     episode_length_s=4.0
     is_finite_horizon=False
+    # Position-command range for the six arm joints.  The legacy G04-G06
+    # policy uses 0.12 rad; G07 high-arm curricula may opt into a larger
+    # bounded command range without changing actuator limits.
+    arm_action_scale=0.12
+    # Legacy G04-G06 leg command bands remain the defaults.  High-smash
+    # curricula may widen these bounded position commands while preserving
+    # the same actuator and joint limits.
+    leg_action_scale_crouch=0.25
+    leg_action_scale_push=0.55
     body_ground_contact=ContactSensorCfg(prim_path='/World/envs/env_.*/Robot/Go2/(base|.*_hip|.*_thigh|.*_calf)',
         filter_prim_paths_expr=['/World/Ground/geometry/mesh'],force_threshold=1.)
     arm_ground_contact=ContactSensorCfg(prim_path='/World/envs/env_.*/Robot/Piper/.*',
@@ -64,8 +73,8 @@ class JumpEnv(CoupledEnv):
         self._record_action(actions)
         self.action_clip_count += (actions.abs()>1.).sum(1)
         phase=self._phase().unsqueeze(1)
-        leg_scale=torch.where(phase<.8,.25,.55)
-        scale=torch.cat((leg_scale.expand(-1,12),torch.full((self.num_envs,6),.12,device=self.device)),1)
+        leg_scale=torch.where(phase<.8,self.cfg.leg_action_scale_crouch,self.cfg.leg_action_scale_push)
+        scale=torch.cat((leg_scale.expand(-1,12),torch.full((self.num_envs,6),self.cfg.arm_action_scale,device=self.device)),1)
         self.targets.copy_(self.robot.data.default_joint_pos)
         self.targets[:,self.joint_ids] += scale*self.last_action
         limits=self.robot.data.joint_pos_limits

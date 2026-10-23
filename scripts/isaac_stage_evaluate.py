@@ -71,6 +71,17 @@ def main() -> None:
     cfg.sim.device = args.device or "cuda:0"
     cfg.seed = args.seed
     cfg.episode_length_s = config.get("episode_seconds", 4.0)
+    # Stage-specific curricula may pin a physical launch, target panel, or
+    # bounded arm/leg command scale.  Defaults remain byte-for-byte compatible
+    # with G04-G06 when this optional block is absent.
+    overrides = config.get("task_overrides", {})
+    for name, value in overrides.items():
+        if hasattr(cfg, name):
+            setattr(cfg, name, tuple(value) if isinstance(value, list) else value)
+        elif name == "robot_init_pos":
+            cfg.robot.init_state.pos = tuple(value)
+        else:
+            raise ValueError(f"unsupported task override: {name}")
     if args.physics_dt is not None:
         if args.stage not in ("real_contact", "jump_smash"):
             raise ValueError("--physics-dt is only supported for shuttle stages")

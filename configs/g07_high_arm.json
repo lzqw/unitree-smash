@@ -1,0 +1,49 @@
+{
+  "task": "Go2PiPERStandard-AirborneHighArmSmash-18D-net1524-v1",
+  "seed": 0,
+  "num_envs": 64,
+  "episode_seconds": 4.0,
+  "task_overrides": {
+    "arm_action_scale": 2.0,
+    "shuttle_start": [7.4, 0.0, 1.15],
+    "shuttle_velocity": [-6.0, 0.0, 6.82],
+    "event_goal_position": [0.3, 0.0, 1.25],
+    "event_goal_normal": [0.0, 0.0, 1.0],
+    "event_goal_velocity": [0.0, 0.0, 0.0],
+    "include_net": true
+  },
+  "runner": {
+    "seed": 17,
+    "num_steps_per_env": 128,
+    "save_interval": 1,
+    "obs_groups": {"policy": ["policy"], "critic": ["policy"]},
+    "logger": "tensorboard",
+    "policy": {
+      "class_name": "ActorCritic",
+      "actor_hidden_dims": [512, 256, 128],
+      "critic_hidden_dims": [512, 256, 128],
+      "activation": "elu",
+      "init_noise_std": 0.05,
+      "noise_std_type": "log",
+      "actor_obs_normalization": true,
+      "critic_obs_normalization": true
+    },
+    "algorithm": {
+      "class_name": "PPO",
+      "num_learning_epochs": 5,
+      "num_mini_batches": 4,
+      "learning_rate": 0.0003,
+      "schedule": "adaptive",
+      "gamma": 0.997,
+      "lam": 0.98,
+      "entropy_coef": 0.0,
+      "desired_kl": 0.01,
+      "max_grad_norm": 1.0,
+      "value_loss_coef": 1.0,
+      "use_clipped_value_loss": true,
+      "clip_param": 0.2
+    },
+    "task_reward_version": "target-conditioned-high-arm-net1524-v1",
+    "method": "teacher_guided_BC_DAgger"
+  }
+}

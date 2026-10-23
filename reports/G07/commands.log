@@ -6,3 +6,9 @@
 
 # G07 independent formal baseline diagnostic (400 ground episodes)
 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/run_gpu_job.py --goal G07 --budget-window g05-g07-20261022 --max-seconds 1200 --env-steps-cap 2000000 --output reports/G07/eval_formal01 --require-artifact metrics.json -- /home/autodrive/Isaac/env_isaaclab/bin/python scripts/isaac_stage_evaluate.py --stage jump_smash --checkpoint artifacts/G06/policy.pt --config configs/g05_imitation.json --output reports/G07/eval_formal01 --episodes 400 --num-envs 64 --physics-dt 0.00025 --suite dev_smash_net1524 --headless
+
+# 2026-10-23 high-arm continuation
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/search_g07_attack_cfg.py --output reports/G07/search_attack_cfg05 --num-envs 64 --physics-dt .00025 --shuttle-vx -6.6 --shuttle-vz 6.82 --shuttle-start-x 8.18 --switch 1.16 --headless
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/train_g07_high_attack.py --output reports/G07/train_high_attack01 --config configs/g07_high_attack.json --init-checkpoint artifacts/G06/policy.pt --num-envs 64 --updates 500 --rounds 3 --seed 613061 --physics-dt .00025 --headless
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/isaac_stage_evaluate.py --stage jump_smash --checkpoint reports/G07/train_high_attack01/checkpoint.pt --config configs/g07_high_attack.json --output reports/G07/eval_high_attack01 --episodes 400 --num-envs 64 --physics-dt .00025 --suite g07_high_attack_independent --headless
+/home/autodrive/Isaac/env_isaaclab/bin/python scripts/render_g07_measured_video.py --input reports/G07/high_arm_traj05 --output reports/G07/video/G07_high_arm_measured.mp4

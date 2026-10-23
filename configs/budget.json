@@ -32,14 +32,27 @@
     "job_walltime_limit"
   ],
   "first_training_batch_note": "G04-G07共60 GPU-hours为建议累计上限；授权后总预算含G00-G03为62。不自动授权。",
-  "revision_authorization_note": "2026-10-22 new user goal explicitly removes three-revision, A/B-exclusive and 50-update limits for G04; existing GPU0 8-hour and 200-million-interaction cumulative caps remain unchanged."
-  ,"authorization_windows": {
+  "revision_authorization_note": "2026-10-22 new user goal explicitly removes three-revision, A/B-exclusive and 50-update limits for G04; existing GPU0 8-hour and 200-million-interaction cumulative caps remain unchanged.",
+  "authorization_windows": {
     "g05-g07-20261022": {
-      "goals": ["G05", "G06", "G07"],
+      "goals": [
+        "G05",
+        "G06",
+        "G07"
+      ],
       "max_gpu_hours": 10.0,
       "max_wallclock_hours": 10.0,
       "max_env_steps": null,
       "note": "New explicit user authorization from pasted-text-1.txt; starts with the first job in this window. Historical G04 charges are retained but do not consume this window."
+    },
+    "g07-high-arm-20261023": {
+      "goals": [
+        "G07"
+      ],
+      "max_gpu_hours": 8.5,
+      "max_wallclock_hours": 10.0,
+      "max_env_steps": null,
+      "note": "Continuation of the user-authorized g05-g07-20261022 10 GPU-hour window; prior ledger charges are retained and this continuation cap is the remaining budget, not a new authorization."
     }
   }
 }

@@ -1,0 +1,84 @@
+{
+  "method": "real-PhysX high-arm teacher BC + DAgger",
+  "physics_dt_s": 0.00025,
+  "teacher": {
+    "episodes": 64,
+    "contacts": 64,
+    "airborne_contacts": 64,
+    "attacks": 64,
+    "recoveries": 25,
+    "crossed_net": 0,
+    "contact_rate": 1.0,
+    "airborne_contact_rate": 1.0,
+    "attack_rate": 1.0
+  },
+  "learner_checks": [
+    {
+      "round": 0,
+      "episodes": 64,
+      "contacts": 0,
+      "airborne_contacts": 0,
+      "attacks": 0,
+      "recoveries": 0,
+      "crossed_net": 0,
+      "contact_rate": 0.0,
+      "airborne_contact_rate": 0.0,
+      "attack_rate": 0.0,
+      "validation_mse": 0.00023815949680283666,
+      "training_mse_samples": [
+        0.21038506925106049,
+        0.0020313793793320656,
+        0.0006013585370965302,
+        0.0006543855997733772,
+        0.0004055517783854157
+      ]
+    },
+    {
+      "round": 1,
+      "episodes": 64,
+      "contacts": 0,
+      "airborne_contacts": 0,
+      "attacks": 0,
+      "recoveries": 0,
+      "crossed_net": 0,
+      "contact_rate": 0.0,
+      "airborne_contact_rate": 0.0,
+      "attack_rate": 0.0,
+      "validation_mse": 5.984706513117999e-05,
+      "training_mse_samples": [
+        0.06283799558877945,
+        0.0006869480130262673,
+        0.00030287858680821955,
+        0.00016770442016422749,
+        0.00010344418842578307
+      ]
+    },
+    {
+      "round": 2,
+      "episodes": 128,
+      "contacts": 28,
+      "airborne_contacts": 0,
+      "attacks": 12,
+      "recoveries": 0,
+      "crossed_net": 0,
+      "contact_rate": 0.21875,
+      "airborne_contact_rate": 0.0,
+      "attack_rate": 0.09375,
+      "validation_mse": 6.09588241786696e-05,
+      "training_mse_samples": [
+        0.08430182933807373,
+        0.0012178412871435285,
+        0.0005454194615595043,
+        0.0004029692499898374,
+        0.00023365153174381703
+      ]
+    }
+  ],
+  "env_steps": 102400,
+  "config_sha256": "7a0f60dbb56da59d71e3d9d807190344b93649f6eef849b0cd1e85393f449497",
+  "init_checkpoint_sha256": "ef9143475a15b5132da8b7f0079eef88d37ae6e39e5785d7857c77a73df86647",
+  "best_round": 2,
+  "best_attacks": 12,
+  "best_attack_rate": 0.1875,
+  "checkpoint": "reports/G07/train_high_attack01/checkpoint.pt"
+}
