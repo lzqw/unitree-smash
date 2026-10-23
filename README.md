@@ -7,9 +7,9 @@
 代码与文本证据保存在本仓库；权重、完整运行记录及资产见
 [交接附件与恢复说明](docs/HANDOFF_ARTIFACTS.md)。上传不代表训练验收通过。
 
-**当前状态（2026-10-22）：G00–G03 工程验收及 G04 自主跳跃恢复均已通过。G04 原固定双面板为 199/200（99.5%）和 191/200（95.5%），使用教师搜索 + BC + DAgger 学习的神经网络，全程从地面自主执行。G05 尚未启动。**
+**当前状态（2026-10-23）：G00–G06 已通过各自验收，G07 继续开发，尚未通过正式400回合。正确球网下，冻结学习混合控制器从原起点完成单一来球32/32完整扣杀，并在两种物理分辨率复验；变化发球开发64回合的高精度完整率为40.625%、条件恢复89.0625%，仍不足正式要求。旧错误球网坐标下的G07成功声明已撤回。**
 
-最新入口：[实际训练与评测总结](reports/G04/autonomous_learning_20261022/REPORT.md)、[可复用策略接口](docs/G04_POLICY_INTERFACE.md)。前述交接文档记录的是本轮之前的失败状态，予以保留。
+最新入口：[G07实测报告](reports/G07/REPORT.md)、[继续执行与资源窗口](status/NEXT.md)、[完整名义课程视频与权重](https://github.com/lzqw/unitree-smash/releases/tag/g07-progress-20261023)。G04结果与接口见[训练总结](reports/G04/autonomous_learning_20261022/REPORT.md)、[策略接口](docs/G04_POLICY_INTERFACE.md)。旧交接文档保留历史状态。
 生产资产为标准 PiPER、Go2、安装板和球拍组成的约 20.647 kg 浮动系统。
 统一 794 维观测、18 维动作、原生 PPO、独立评测及可恢复检查点已实现。
 最新状态与累计资源记录分别见 `status/STATUS.json`、`status/NEXT.md` 和 `status/GPU_LEDGER.json`。
@@ -17,9 +17,9 @@
 
 ## 开始
 1. 将本目录内容放入新的研究工作区；已有项目先建立分支，不覆盖原有 AGENTS.md。
-2. 阅读 `configs/budget.json`。本次会话已额外授权 G04 使用 GPU0、累计最多 8 GPU-hours；G05+ 未授权。
+2. 阅读 `configs/budget.json` 和 `status/NEXT.md`。当前G07独立授权GPU0新增最多10 GPU-hours，固定窗口北京时间2026-10-23 16:04至10月24日02:04；历史成本保留，重启不延长窗口。
 3. 在同一工作区打开 Codex CLI/IDE。先输入 `CODEX_GOAL_PROMPTS.md` 的“第一轮启动目标”。
-4. G04 训练与评测均计入同一累计预算；继续 G05–G07 前仍须获得对应阶段授权。
+4. 搜索、诊断、失败重试和评测均计入对应授权账本；使用`scripts/run_gpu_job.py`，不可因恢复会话重复启动作业。G08以后尚未授权。
 5. 不需要每轮重贴完整方案；Goal 引用这些持久文件。换会话时先读状态和最近报告。
 
 官方 Goal 用法为 `/goal <目标>`；`/goal` 查看，`/goal pause` 暂停，`/goal resume` 恢复，

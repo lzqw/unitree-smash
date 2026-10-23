@@ -167,6 +167,7 @@ def main():
         (args.output/'eval_manifest.json').write_text(json.dumps(manifest, indent=2)+'\n')
         ticks = round(cfg.episode_length_s/.01)
         traces = [[] for _ in range(min(2, count))]
+        first_episode_finished = torch.zeros(count, dtype=torch.bool, device=env.device)
         with torch.inference_mode():
             for tick in range(ticks):
                 env.goal_position_w.copy_(env.scene.env_origins+policy.command_positions(obs))
@@ -175,12 +176,15 @@ def main():
                     raise RuntimeError('Nonfinite policy action')
                 if tick % 2 == 0:
                     for index, trace in enumerate(traces):
+                        if first_episode_finished[index]:
+                            continue
                         trace.append(dict(time_s=tick*.01,
                             ball_xyz=(env.shuttle.data.root_pos_w[index]-env.scene.env_origins[index]).cpu().tolist(),
                             tool_xyz=(env.robot.data.body_pos_w[index, env.racket_body_id]-env.scene.env_origins[index]).cpu().tolist(),
                             root_xyz=(env.robot.data.root_pos_w[index]-env.scene.env_origins[index]).cpu().tolist(),
                             airborne=bool(env.observed_airborne[index]), contact=bool(env.contact_seen[index])))
-                obs, _, _, _ = wrapped.step(action)
+                obs, _, dones, _ = wrapped.step(action)
+                first_episode_finished |= dones.bool()
                 if (tick+1)%50==0:print(json.dumps(dict(control_steps=tick+1,total_steps=ticks,simulation_time_s=(tick+1)*.01)),flush=True)
         first, nets = {}, {}
         for row in env.smash_episode_records:

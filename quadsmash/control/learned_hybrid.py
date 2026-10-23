@@ -13,7 +13,7 @@ from .initial_intercept import predict_initial_intercept
 
 class LearnedHybridPolicy:
     def __init__(self, checkpoint, manifest, count, device, default, limits,
-                 physics, calibration=None):
+                 physics, calibration=None, planner_parameters=None):
         self.checkpoint = checkpoint
         self.default, self.limits = default, limits
         self.physics, self.calibration = physics, calibration
@@ -29,10 +29,17 @@ class LearnedHybridPolicy:
         self.intercepts = torch.tensor(checkpoint['result']['virtual_ball_center_m'], device=device).repeat(count, 1)
         self.arrival = self.phase_start.clone()
         self.plan_log = None
+        initial = checkpoint.get('planner_parameters', torch.tensor([0.]*10+[1.]))
+        self.planner_parameters = initial.to(device).repeat(count, 1) if planner_parameters is None else planner_parameters.clone()
+        self.arm_pitch_parameters = checkpoint.get('arm_pitch_parameters', torch.zeros(4)).to(device).repeat(count, 1)
+        self.arm_pitch_basis = checkpoint.get('arm_pitch_basis', torch.zeros(6)).to(device)
+        self.arm_pitch_amplitude = torch.zeros(count, device=device)
+        self.has_arm_residual = bool(self.arm_pitch_basis.abs().sum() > 0)
 
     def initialize(self, observation):
         self.walk.reset()
         self.stand.reset()
+        self.arm_pitch_amplitude.zero_()
         self.phase_start.fill_(self.checkpoint['walk_seconds'])
         self.waypoints.copy_(torch.tensor([self.checkpoint['walk_waypoint_x'], 0., .3],
                                          device=self.phase_start.device))
@@ -47,14 +54,46 @@ class LearnedHybridPolicy:
             public, [self.checkpoint['walk_waypoint_x'], 0., .3],
             self.checkpoint['result']['face_normal_world'],
             self.calibration['intercept_x_m'], self.physics)
+        weights = self.planner_parameters.detach().cpu().numpy()
+        reference_time = self.checkpoint['walk_seconds']+self.calibration['reference_local_arrival_s']
+        reference_vx = self.checkpoint.get('planner_feature_reference', {}).get('incoming_vx_mps', -3.2652405806200373)
+        reference_z = self.checkpoint['result']['virtual_ball_center_m'][2]
+
+        def features(prediction):
+            return np.c_[np.ones(len(public)), prediction['arrival_time_s']-reference_time,
+                         prediction['incoming_velocity_mps'][:, 0]-reference_vx,
+                         prediction['position_m'][:, 2]-reference_z,
+                         prediction['position_m'][:, 1]-self.calibration['reference_intercept_y_m']]
+
+        x_features = features(plan)
+        shift_x = np.clip(np.nansum(weights[:, 4:9]*x_features, axis=1), -.08, .08)
+        if np.any(np.abs(shift_x) > 1e-9):
+            plan = predict_initial_intercept(public, [self.checkpoint['walk_waypoint_x'], 0., .3],
+                self.checkpoint['result']['face_normal_world'],
+                self.calibration['intercept_x_m']+shift_x, self.physics)
+        phase_features = features(plan)[:, :4]
+        reference_vz = self.checkpoint.get('planner_feature_reference', {}).get('incoming_vz_mps', -16.89315645360073)
+        pitch_features = np.c_[np.ones(len(public)),
+            np.maximum(plan['incoming_velocity_mps'][:, 0]-reference_vx, 0.),
+            np.minimum(plan['incoming_velocity_mps'][:, 2]-reference_vz, 0.),
+            np.minimum(plan['position_m'][:, 2]-reference_z, 0.)]
+        pitch_weights = self.arm_pitch_parameters.detach().cpu().numpy()
+        pitch = np.clip(np.nansum(pitch_weights*pitch_features, axis=1), -.05, .04)
+        pitch = np.where(plan['valid'], pitch, 0.)
+        self.arm_pitch_amplitude.copy_(torch.as_tensor(pitch, device=self.phase_start.device, dtype=torch.float32))
+        phase_correction = np.nansum(weights[:, :4]*phase_features, axis=1)
         raw_phase = plan['arrival_time_s']-self.calibration['reference_local_arrival_s']
+        raw_phase += phase_correction
         raw_phase = np.where(plan['valid'], raw_phase, self.checkpoint['walk_seconds'])
         phase = np.round(raw_phase/.01)*.01
         phase = np.clip(phase, self.calibration['minimum_prepare_s'], self.calibration['maximum_prepare_s'])
         shift_y = plan['position_m'][:, 1]-self.calibration['reference_intercept_y_m']
+        shift_y = weights[:, 9]+weights[:, 10]*shift_y
         shift_y = np.where(plan['valid'], np.clip(shift_y, -.6, .6), 0.)
         self.phase_start.copy_(torch.as_tensor(phase, device=self.phase_start.device, dtype=torch.float32))
+        self.waypoints[:, 0].add_(torch.as_tensor(shift_x, device=self.phase_start.device, dtype=torch.float32))
         self.waypoints[:, 1].copy_(torch.as_tensor(shift_y, device=self.phase_start.device, dtype=torch.float32))
+        self.intercepts[:, 0].add_(torch.as_tensor(shift_x, device=self.phase_start.device, dtype=torch.float32))
         self.intercepts[:, 1].add_(self.waypoints[:, 1])
         arrival = np.where(plan['valid'], plan['arrival_time_s'],
                            self.checkpoint['walk_seconds']+self.calibration['reference_local_arrival_s'])
@@ -63,6 +102,8 @@ class LearnedHybridPolicy:
                              public_observation_sha256=hashlib.sha256(public.tobytes()).hexdigest(),
                              computation_wall_s=time.perf_counter()-started,
                              phase_start_s=phase.tolist(), waypoints_m=self.waypoints.cpu().tolist(),
+                             planner_parameters=weights.tolist(),
+                             arm_pitch_correction_rad=pitch.tolist(),
                              **{key: value.tolist() for key, value in plan.items()})
 
     def command_positions(self, observation):
@@ -75,6 +116,10 @@ class LearnedHybridPolicy:
         local[:, 775] -= self.phase_start
         walk_action = self.walk.action(observation, self.walk_parameters, self.default, self.limits)
         strike_action = self.strike(local)
+        if self.has_arm_residual:
+            envelope = ((local[:, 775]-.8)/.35).clamp(0, 1)*((1.6-local[:, 775])/.18).clamp(0, 1)
+            delta = (self.arm_pitch_amplitude*envelope)[:, None]*self.arm_pitch_basis[None, :]
+            strike_action[:, 12:] = (strike_action[:, 12:]+2*delta/(self.limits[12:, 1]-self.limits[12:, 0])).clamp(-1, 1)
         action = torch.where((clock >= self.phase_start)[:, None], strike_action, walk_action)
         recovering = local[:, 775] >= self.standing_start
         standing_action = self.stand.action(observation, self.standing_parameters, self.default,
