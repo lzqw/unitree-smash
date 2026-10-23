@@ -48,9 +48,11 @@
       "notes": "Independent 400 ground episodes with real PhysX shuttle: 100% airborne contact, 76.5% contact-conditioned recovery, ground initialization 1.0, numerical failures 0. Formal suite uses the G02-validated 0.25 ms PhysX fixture and records body-contact diagnostics separately."
     },
     "G07": {
-      "state": "BLOCKED_PERMISSION",
+      "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "Latest completed native policy evaluation remains 400 episodes: actual airborne contact 1.0, recovery conditional on contact 0.8925, complete success 0.0. The 1.535 m hardware upper bound is withdrawn: finite random FK/jump samples and incorrect arbitrary-rotation box projection do not establish impossibility. CPU v3 preparation reports/G07/feasibility_v3_20261023 computes effective-face kinematics and coupled drag/net/first-landing targets, verifies current placeholder USD assembly, and adds an opt-in ordered-event/full-joint-search path. No v3 native rollout or policy training has run. Original g05-g07 authorization expired 2026-10-23T00:08:14.991569+00:00; continuation no longer resets its clock or family-wide charges. New GPU0 window requested; G07 remains IN_PROGRESS. Resource authorization blocker verified in three consecutive goal turns; no new GPU0 window/hour cap received, no live project job. CPU preparation and objective regressions complete; native search/training/evaluation remain unperformed. See status/PENDING_G07_RESOURCE_AUTHORIZATION.json."
+      "notes": "New independent GPU0 window active until 2026-10-24 02:04:13 Asia/Taipei. Frozen near-net curriculum teacher independently replayed: 64/64 airborne contact/net/first-target, 53/64 recovery/full success, numerical 0; root x=1.0, one launch, not a learned policy or formal G07. Canonical movement bridge search in progress. All prior artifacts preserved.",
+      "active_authorization_window": "g07-net-feasibility-20261023",
+      "curriculum_evidence": "reports/G07/dynamic_strike_replay01/metrics.json"
     },
     "G08": {
       "state": "TODO",

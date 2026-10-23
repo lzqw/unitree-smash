@@ -1,5 +1,5 @@
 {
-  "authorization_note": "用户已明确授权 G04 使用 GPU0，最多 8 GPU-hours；G05 及后续目标仍未授权。数值是上限，不保证训练收敛。",
+  "authorization_note": "Legacy G04 authorization is retained; current G07 GPU0 execution uses the independently authorized g07-net-feasibility-20261023 window, with 10 additional GPU-hours and a fixed 10-hour wall-clock deadline.",
   "authorized_goals": [
     "G00",
     "G01",
@@ -54,6 +54,22 @@
       "max_env_steps": null,
       "note": "Continuation of the user-authorized g05-g07-20261022 10 GPU-hour window; prior ledger charges are retained and this continuation cap is the remaining budget, not a new authorization. The original authorization start/deadline and family-wide 10 GPU-hour cap apply; this key does not renew the clock.",
       "continuation_of": "g05-g07-20261022"
+    },
+    "g07-net-feasibility-20261023": {
+      "goals": [
+        "G07"
+      ],
+      "max_gpu_hours": 10.0,
+      "max_wallclock_hours": 10.0,
+      "max_env_steps": null,
+      "authorized_at": "2026-10-23T08:04:13.742590+00:00",
+      "deadline": "2026-10-23T18:04:13.742590+00:00",
+      "timezone": "Asia/Taipei",
+      "started_at_local": "2026-10-23T16:04:13.742590+08:00",
+      "deadline_local": "2026-10-24T02:04:13.742590+08:00",
+      "authorization_source": "/home/autodrive/.codex/attachments/020eb582-c91b-47fd-9a6c-10bbc3280369/pasted-text-1.txt",
+      "note": "New independent user authorization. New charges capped at 10 GPU-hours; all historical charges retained and excluded from this new cap. Clock anchored at registration, never renewed by restarts."
     }
-  }
+  },
+  "current_authorization_window": "g07-net-feasibility-20261023"
 }

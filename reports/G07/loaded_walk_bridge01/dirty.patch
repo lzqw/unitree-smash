@@ -1,0 +1,637 @@
+diff --git a/configs/budget.json b/configs/budget.json
+index 62308d2..8eaf9d7 100644
+--- a/configs/budget.json
++++ b/configs/budget.json
+@@ -1,5 +1,5 @@
+ {
+-  "authorization_note": "用户已明确授权 G04 使用 GPU0，最多 8 GPU-hours；G05 及后续目标仍未授权。数值是上限，不保证训练收敛。",
++  "authorization_note": "Legacy G04 authorization is retained; current G07 GPU0 execution uses the independently authorized g07-net-feasibility-20261023 window, with 10 additional GPU-hours and a fixed 10-hour wall-clock deadline.",
+   "authorized_goals": [
+     "G00",
+     "G01",
+@@ -54,6 +54,22 @@
+       "max_env_steps": null,
+       "note": "Continuation of the user-authorized g05-g07-20261022 10 GPU-hour window; prior ledger charges are retained and this continuation cap is the remaining budget, not a new authorization. The original authorization start/deadline and family-wide 10 GPU-hour cap apply; this key does not renew the clock.",
+       "continuation_of": "g05-g07-20261022"
++    },
++    "g07-net-feasibility-20261023": {
++      "goals": [
++        "G07"
++      ],
++      "max_gpu_hours": 10.0,
++      "max_wallclock_hours": 10.0,
++      "max_env_steps": null,
++      "authorized_at": "2026-10-23T08:04:13.742590+00:00",
++      "deadline": "2026-10-23T18:04:13.742590+00:00",
++      "timezone": "Asia/Taipei",
++      "started_at_local": "2026-10-23T16:04:13.742590+08:00",
++      "deadline_local": "2026-10-24T02:04:13.742590+08:00",
++      "authorization_source": "/home/autodrive/.codex/attachments/020eb582-c91b-47fd-9a6c-10bbc3280369/pasted-text-1.txt",
++      "note": "New independent user authorization. New charges capped at 10 GPU-hours; all historical charges retained and excluded from this new cap. Clock anchored at registration, never renewed by restarts."
+     }
+-  }
++  },
++  "current_authorization_window": "g07-net-feasibility-20261023"
+ }
+diff --git a/quadsmash/physics/smash_events.py b/quadsmash/physics/smash_events.py
+index ae534d9..d6f4653 100644
+--- a/quadsmash/physics/smash_events.py
++++ b/quadsmash/physics/smash_events.py
+@@ -19,7 +19,8 @@ class OrderedSmashEvents:
+         self.target_x, self.target_y = target_x, target_y
+         self.count = count
+         for name in ("contact", "airborne_contact", "effective_face", "released",
+-                     "crossed", "ground_seen", "landed_target", "invalid_multiple_contact"):
++                     "crossed", "geometric_crossed", "ground_seen", "landed_target",
++                     "geometric_landed_target", "invalid_multiple_contact"):
+             setattr(self, name, torch.zeros(count, dtype=torch.bool, device=device))
+         self.quiet_frames = torch.zeros(count, dtype=torch.long, device=device)
+         self.contact_count = torch.zeros_like(self.quiet_frames)
+@@ -33,7 +34,8 @@ class OrderedSmashEvents:
+ 
+     def reset(self, ids):
+         for name in ("contact", "airborne_contact", "effective_face", "released", "crossed",
+-                     "ground_seen", "landed_target", "invalid_multiple_contact"):
++                     "geometric_crossed", "ground_seen", "landed_target", "geometric_landed_target",
++                     "invalid_multiple_contact"):
+             getattr(self, name)[ids] = False
+         self.quiet_frames[ids] = self.contact_count[ids] = 0
+         for name in ("contact_time", "outgoing_time", "release_time", "crossing_time", "landing_time", "net_margin",
+@@ -59,8 +61,8 @@ class OrderedSmashEvents:
+         self._last_touch_time[touching] = time[touching]
+         separated = (~touching) if separated is None else separated & (~touching)
+         quiet = self.contact & separated
+-        self.quiet_frames = torch.where(quiet, self.quiet_frames + 1,
+-                                       torch.zeros_like(self.quiet_frames))
++        self.quiet_frames.copy_(torch.where(quiet, self.quiet_frames + 1,
++                                           torch.zeros_like(self.quiet_frames)))
+         release = quiet & (self.quiet_frames >= 2) & (~self.released)
+         self.outgoing_velocity[release] = self._last_touch_velocity[release]
+         self.outgoing_position[release] = self._last_touch_position[release]
+@@ -77,6 +79,9 @@ class OrderedSmashEvents:
+         self.net_margin[first_crossing] = margin[first_crossing]
+         legal = first_crossing & attack & (margin > 0) & (point[:, 1].abs() + self.radius <= self.net_half_width)
+         self.crossed |= legal
++        self.geometric_crossed |= (first_crossing & self.airborne_contact & self.effective_face
++                                   & (~self.invalid_multiple_contact) & (margin > 0)
++                                   & (point[:, 1].abs() + self.radius <= self.net_half_width))
+         landing, fraction, point = segment_plane_crossing(
+             previous_position, position, 2, self.radius, -1)
+         first_landing = (landing | ground_touch) & before_ground
+@@ -90,6 +95,8 @@ class OrderedSmashEvents:
+                   & (point[:, 1].abs() <= self.target_y))
+         ordered = (self.release_time < self.crossing_time) & (self.crossing_time < self.landing_time)
+         self.landed_target |= first_landing & self.crossed & target & attack & ordered
++        self.geometric_landed_target |= (first_landing & self.geometric_crossed & target & ordered
++                                         & (~self.invalid_multiple_contact))
+         self.ground_seen |= landing | ground_touch
+ 
+     def attack(self):
+diff --git a/quadsmash/tasks/stand/smash_env_v3.py b/quadsmash/tasks/stand/smash_env_v3.py
+index c1a27a6..6f36cdc 100644
+--- a/quadsmash/tasks/stand/smash_env_v3.py
++++ b/quadsmash/tasks/stand/smash_env_v3.py
+@@ -52,10 +52,14 @@ class OrderedSmashEnv(BallEnv):
+         gap = (delta.clamp_min(0).norm(dim=-1) + delta.max(dim=-1).values.clamp_max(0)
+                - self.cfg.shuttle_radius_m)
+         separated = (~touching) & (gap > PHYSICS['separation_hysteresis_m'])
+-        incoming_window = ((self.ball_clock - self.goal_time_s).abs() <= .2) & (~events.ground_seen)
+-        self.interception_min_distance = torch.where(
++        local_ball = position - self.scene.env_origins
++        incoming_window = (((self.ball_clock - self.goal_time_s).abs() <= .2)
++                           & (~events.ground_seen)
++                           & (local_ball[:, 2] > self.cfg.net_height_m + self.cfg.shuttle_radius_m)
++                           & (local_ball[:, 0] < self.cfg.net_x_m))
++        self.interception_min_distance.copy_(torch.where(
+             incoming_window, torch.minimum(self.interception_min_distance, local.norm(dim=-1)),
+-            self.interception_min_distance)
++            self.interception_min_distance))
+         first = (self.contact_events.count > counts) & (~events.contact)
+         if bool(first.any()):
+             normal = quat_rotate(tool_quaternion, torch.tensor([1., 0., 0.], device=self.device).expand(self.num_envs, -1))
+@@ -99,6 +103,8 @@ class OrderedSmashEnv(BallEnv):
+                     interception_min_distance_m=float(self.interception_min_distance[i]),
+                     release_time_s=float(events.release_time[i]),
+                     ordered_crossed_net=bool(events.crossed[i]),
++                    geometric_crossed_net=bool(events.geometric_crossed[i]),
++                    geometric_landed_target=bool(events.geometric_landed_target[i]),
+                     net_margin_m=float(events.net_margin[i]),
+                     net_crossing_position_m=events.net_position[i].cpu().tolist(),
+                     net_crossing_time_s=float(events.crossing_time[i]),
+@@ -118,3 +124,16 @@ class OrderedSmashEnv(BallEnv):
+             self.contact_face_normal[ids] = float('nan')
+             self.contact_root_position[ids] = float('nan')
+             self.interception_min_distance[ids] = float('inf')
++
++
++class FullJointSmashEnv(OrderedSmashEnv):
++    """Opt-in absolute joint-position interface with unchanged native actuators."""
++    def _pre_physics_step(self, actions):
++        self.action_delta.copy_((actions.clamp(-1, 1) - self.last_action).square().sum(1))
++        self._record_action(actions)
++        self.action_clip_count += (actions.abs() > 1).sum(1)
++        limits = self.robot.data.joint_pos_limits[:, self.joint_ids]
++        q = limits[..., 0] + .5 * (self.last_action + 1) * (limits[..., 1] - limits[..., 0])
++        self.targets.copy_(self.robot.data.default_joint_pos)
++        self.targets[:, self.joint_ids] = q
++        self._contact_bonus.zero_()
+diff --git a/scripts/search_g07_whole_body_v3.py b/scripts/search_g07_whole_body_v3.py
+index 5ee8e80..9ef030d 100644
+--- a/scripts/search_g07_whole_body_v3.py
++++ b/scripts/search_g07_whole_body_v3.py
+@@ -12,6 +12,7 @@ import json
+ from pathlib import Path
+ import signal
+ import sys
++import traceback
+ 
+ ROOT = Path(__file__).resolve().parents[1]
+ sys.path.insert(0, str(ROOT))
+@@ -25,6 +26,7 @@ parser.add_argument('--seed', type=int, default=714001)
+ parser.add_argument('--physics-dt', type=float, default=.00025)
+ parser.add_argument('--launch-config', type=Path, required=True)
+ parser.add_argument('--init-trace', type=Path, default=ROOT/'reports/G07/root_probe_all01/trajectory.json')
++parser.add_argument('--init-mode', choices=('spline', 'residual'), default='residual')
+ AppLauncher.add_app_launcher_args(parser)
+ args = parser.parse_args()
+ if args.num_envs < 8 or args.generations < 1:
+@@ -39,7 +41,7 @@ from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper
+ from quadsmash.physics.smash_events import rank_candidate
+ from quadsmash.control.smash_search import add_flight_search_diagnostics, search_candidate_key
+ from quadsmash.tasks.stand.ball_env import BallEnvCfg
+-from quadsmash.tasks.stand.smash_env_v3 import OrderedSmashEnv
++from quadsmash.tasks.stand.smash_env_v3 import FullJointSmashEnv as FullJointSearchEnv
+ 
+ stopping = False
+ 
+@@ -53,20 +55,6 @@ signal.signal(signal.SIGTERM, stop)
+ signal.signal(signal.SIGINT, stop)
+ 
+ 
+-class FullJointSearchEnv(OrderedSmashEnv):
+-    def _pre_physics_step(self, actions):
+-        # New opt-in command interface: absolute joint positions cover audited
+-        # joint limits. Actual actuator efforts/velocities/gains are unchanged.
+-        self.action_delta.copy_((actions.clamp(-1, 1) - self.last_action).square().sum(1))
+-        self._record_action(actions)
+-        self.action_clip_count += (actions.abs() > 1).sum(1)
+-        limits = self.robot.data.joint_pos_limits[:, self.joint_ids]
+-        q = limits[..., 0] + .5 * (self.last_action + 1) * (limits[..., 1] - limits[..., 0])
+-        self.targets.copy_(self.robot.data.default_joint_pos)
+-        self.targets[:, self.joint_ids] = q
+-        self._contact_bonus.zero_()
+-
+-
+ def main():
+     args.output.mkdir(parents=True, exist_ok=True)
+     launch = json.loads(args.launch_config.read_text())
+@@ -96,6 +84,12 @@ def main():
+         trace = json.loads(args.init_trace.read_text())
+         sample_times = np.array([r['time_s'] for r in trace])
+         actions = np.array([r['action'] for r in trace])
++        tape = []
++        for row in trace:
++            scale = torch.tensor([.25 if row['time_s'] < .8 else .55]*12 + [2.]*6, device=env.device)
++            old = torch.tensor(row['action'], device=env.device)
++            tape.append(normalize(default + scale*old).clamp(-1, 1))
++        tape = torch.stack(tape)
+         initial = []
+         for t in times.cpu().tolist():
+             old = torch.tensor([np.interp(t, sample_times, actions[:, j]) for j in range(18)],
+@@ -103,15 +97,19 @@ def main():
+             scale = torch.tensor([.25 if t < .8 else .55]*12 + [2.]*6, device=env.device)
+             initial.append(normalize(default + scale * old).clamp(-1, 1))
+         mean = torch.stack(initial)
+-        sigma = torch.full_like(mean, .18)
++        if args.init_mode == 'residual':
++            mean.zero_()
++        sigma = torch.full_like(mean, .08 if args.init_mode == 'residual' else .18)
++        if args.init_mode == 'residual':
++            sigma[:, :12] = .04
+         sigma[0] = 0
+         sigma[-2:] = .04
+-        timing_mean, timing_sigma = 1., .18
++        timing_mean, timing_sigma = 1., .06 if args.init_mode == 'residual' else .18
+         history, all_best = [], None
+         for generation in range(args.generations):
+             knots = (mean[None] + sigma[None] * torch.randn(
+                 (args.num_envs, len(times), 18), generator=rng, device=env.device)).clamp(-1, 1)
+-            knots[:, 0] = normalize(default)
++            knots[:, 0] = 0 if args.init_mode == 'residual' else normalize(default)
+             knots[0] = mean
+             warp = (timing_mean + timing_sigma * torch.randn(args.num_envs, generator=rng, device=env.device)).clamp(.7, 1.5)
+             warp[0] = timing_mean
+@@ -128,6 +126,12 @@ def main():
+                     fraction = ((clock-times[index-1])/(times[index]-times[index-1])).clamp(0, 1)
+                     lane = torch.arange(args.num_envs, device=env.device)
+                     action = torch.lerp(knots[lane, index-1], knots[lane, index], fraction[:, None])
++                    if args.init_mode == 'residual':
++                        tape_tick = (clock*100).clamp(0, len(tape)-1)
++                        lo = tape_tick.long()
++                        hi = (lo+1).clamp(max=len(tape)-1)
++                        baseline = torch.lerp(tape[lo], tape[hi], (tape_tick-lo)[:, None])
++                        action = baseline + action
+                     obs, _, _, _ = wrapper.step(action)
+             first = {}
+             for row in env.smash_episode_records:
+@@ -153,6 +157,7 @@ def main():
+                 all_best = (search_candidate_key(best), best)
+                 torch.save(dict(knots=knots[order[0]].cpu(), knot_times=times.cpu(),
+                                 time_scale=float(warp[order[0]]), launch=launch,
++                                init_mode=args.init_mode, baseline_tape=tape.cpu(),
+                                 action_interface='absolute-joint-limits-18D-v3',
+                                 kind='open-loop demonstration candidate, not learned policy', result=best),
+                            args.output/'best_candidate.pt')
+@@ -165,6 +170,7 @@ def main():
+                 for i in promising:
+                     torch.save(dict(knots=knots[i].cpu(), knot_times=times.cpu(),
+                                     time_scale=float(warp[i]), launch=launch, result=rows[i],
++                                    init_mode=args.init_mode, baseline_tape=tape.cpu(),
+                                     generation=generation, env_id=i, seed=args.seed,
+                                     kind='measured ordered-net demonstration; not policy acceptance'),
+                                bank/f'generation_{generation:03d}_lane_{i:03d}.pt')
+@@ -176,11 +182,21 @@ def main():
+             print(json.dumps(entry), flush=True)
+             if stopping:
+                 break
++        if len(history) == args.generations:
++            (args.output/'completed.json').write_text(json.dumps(dict(
++                requested_generations=args.generations, completed_generations=len(history),
++                env_steps=len(history)*args.num_envs*400))+'\n')
+     finally:
+         env.close()
+ 
+ 
+ try:
+     main()
++except BaseException:
++    args.output.mkdir(parents=True, exist_ok=True)
++    error=traceback.format_exc()
++    (args.output/'error.txt').write_text(error)
++    print(error, file=sys.stderr, flush=True)
++    raise
+ finally:
+     app.close(skip_cleanup=True)
+diff --git a/status/GPU_LEDGER.json b/status/GPU_LEDGER.json
+index c6af1b3..bf6182e 100644
+--- a/status/GPU_LEDGER.json
++++ b/status/GPU_LEDGER.json
+@@ -6950,6 +6950,249 @@
+       "receipt_present": true,
+       "elapsed_s": 79.52766531100497,
+       "finished_at": "2026-10-23T05:14:31.469961+00:00"
++    },
++    {
++      "goal": "G07",
++      "budget_window": "g07-net-feasibility-20261023",
++      "command": [
++        "/home/autodrive/Isaac/env_isaaclab/bin/python",
++        "scripts/search_g07_whole_body_v3.py",
++        "--output",
++        "reports/G07/ordered_wholebody_smoke01",
++        "--launch-config",
++        "configs/g07_feasible_search_launch_v3.json",
++        "--num-envs",
++        "8",
++        "--generations",
++        "1",
++        "--physics-dt",
++        ".00025",
++        "--headless"
++      ],
++      "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/ordered_wholebody_smoke01",
++      "gpu": 0,
++      "status": "SUCCEEDED",
++      "charged_gpu_hours": 0.030214829746950677,
++      "charged_env_steps": 100000,
++      "started_at": "2026-10-23T08:04:23.876753+00:00",
++      "pid": 1138151,
++      "original_authorization": "g07-net-feasibility-20261023",
++      "authorization_started_at": "2026-10-23T08:04:13.742590+00:00",
++      "authorization_deadline": "2026-10-23T18:04:13.742590+00:00",
++      "child_pid": 1138160,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": true,
++      "elapsed_s": 108.77338708902244,
++      "finished_at": "2026-10-23T08:06:12.652762+00:00"
++    },
++    {
++      "goal": "G07",
++      "budget_window": "g07-net-feasibility-20261023",
++      "command": [
++        "/home/autodrive/Isaac/env_isaaclab/bin/python",
++        "scripts/search_g07_whole_body_v3.py",
++        "--output",
++        "reports/G07/ordered_residual_search01",
++        "--launch-config",
++        "configs/g07_feasible_search_launch_v3.json",
++        "--num-envs",
++        "32",
++        "--generations",
++        "4",
++        "--init-mode",
++        "residual",
++        "--physics-dt",
++        ".00025",
++        "--headless"
++      ],
++      "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/ordered_residual_search01",
++      "gpu": 0,
++      "status": "SUCCEEDED",
++      "charged_gpu_hours": 0.030559908132789942,
++      "charged_env_steps": 100000,
++      "started_at": "2026-10-23T08:10:21.171288+00:00",
++      "pid": 1138984,
++      "original_authorization": "g07-net-feasibility-20261023",
++      "authorization_started_at": "2026-10-23T08:04:13.742590+00:00",
++      "authorization_deadline": "2026-10-23T18:04:13.742590+00:00",
++      "child_pid": 1138994,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": true,
++      "elapsed_s": 110.01566927804379,
++      "finished_at": "2026-10-23T08:12:11.189565+00:00"
++    },
++    {
++      "goal": "G07",
++      "budget_window": "g07-net-feasibility-20261023",
++      "command": [
++        "/home/autodrive/Isaac/env_isaaclab/bin/python",
++        "scripts/search_g07_dynamic_reach.py",
++        "--output",
++        "reports/G07/dynamic_reach_near_net01",
++        "--num-envs",
++        "128",
++        "--generations",
++        "12",
++        "--root-x",
++        "1.0",
++        "--headless"
++      ],
++      "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/dynamic_reach_near_net01",
++      "gpu": 0,
++      "status": "SUCCEEDED",
++      "charged_gpu_hours": 0.03570732960361056,
++      "charged_env_steps": 1000000,
++      "started_at": "2026-10-23T08:13:41.794665+00:00",
++      "pid": 1139782,
++      "original_authorization": "g07-net-feasibility-20261023",
++      "authorization_started_at": "2026-10-23T08:04:13.742590+00:00",
++      "authorization_deadline": "2026-10-23T18:04:13.742590+00:00",
++      "child_pid": 1139827,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": true,
++      "elapsed_s": 128.54638657299802,
++      "finished_at": "2026-10-23T08:15:50.343694+00:00"
++    },
++    {
++      "goal": "G07",
++      "budget_window": "g07-net-feasibility-20261023",
++      "command": [
++        "/home/autodrive/Isaac/env_isaaclab/bin/python",
++        "scripts/search_g07_dynamic_reach.py",
++        "--output",
++        "reports/G07/dynamic_reach_near_net02",
++        "--num-envs",
++        "128",
++        "--generations",
++        "20",
++        "--root-x",
++        "1.0",
++        "--initial",
++        "reports/G07/dynamic_reach_near_net01/best_candidate.pt",
++        "--seed",
++        "714102",
++        "--headless"
++      ],
++      "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/dynamic_reach_near_net02",
++      "gpu": 0,
++      "status": "SUCCEEDED",
++      "charged_gpu_hours": 0.05727773515583572,
++      "charged_env_steps": 1500000,
++      "started_at": "2026-10-23T08:16:32.779322+00:00",
++      "pid": 1140340,
++      "original_authorization": "g07-net-feasibility-20261023",
++      "authorization_started_at": "2026-10-23T08:04:13.742590+00:00",
++      "authorization_deadline": "2026-10-23T18:04:13.742590+00:00",
++      "child_pid": 1140351,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": true,
++      "elapsed_s": 206.1998465610086,
++      "finished_at": "2026-10-23T08:19:58.981858+00:00"
++    },
++    {
++      "goal": "G07",
++      "budget_window": "g07-net-feasibility-20261023",
++      "command": [
++        "/home/autodrive/Isaac/env_isaaclab/bin/python",
++        "scripts/probe_g07_dynamic_contact.py",
++        "--output",
++        "reports/G07/dynamic_contact_probe01",
++        "--candidate",
++        "reports/G07/dynamic_reach_near_net02/selected_contact_seed.pt",
++        "--num-envs",
++        "32",
++        "--physics-dt",
++        ".00025",
++        "--headless"
++      ],
++      "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/dynamic_contact_probe01",
++      "gpu": 0,
++      "status": "FAILED",
++      "charged_gpu_hours": 0.00519181254583398,
++      "charged_env_steps": 100000,
++      "started_at": "2026-10-23T08:20:59.424222+00:00",
++      "pid": 1141238,
++      "original_authorization": "g07-net-feasibility-20261023",
++      "authorization_started_at": "2026-10-23T08:04:13.742590+00:00",
++      "authorization_deadline": "2026-10-23T18:04:13.742590+00:00",
++      "child_pid": 1141281,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": false,
++      "elapsed_s": 18.690525165002327,
++      "finished_at": "2026-10-23T08:21:18.117389+00:00"
++    },
++    {
++      "goal": "G07",
++      "budget_window": "g07-net-feasibility-20261023",
++      "command": [
++        "/home/autodrive/Isaac/env_isaaclab/bin/python",
++        "scripts/probe_g07_dynamic_contact.py",
++        "--output",
++        "reports/G07/dynamic_contact_probe02",
++        "--candidate",
++        "reports/G07/dynamic_reach_near_net02/selected_contact_seed.pt",
++        "--num-envs",
++        "32",
++        "--physics-dt",
++        ".00025",
++        "--headless"
++      ],
++      "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/dynamic_contact_probe02",
++      "gpu": 0,
++      "status": "SUCCEEDED",
++      "charged_gpu_hours": 0.03283994059361349,
++      "charged_env_steps": 100000,
++      "started_at": "2026-10-23T08:22:20.062585+00:00",
++      "pid": 1141674,
++      "original_authorization": "g07-net-feasibility-20261023",
++      "authorization_started_at": "2026-10-23T08:04:13.742590+00:00",
++      "authorization_deadline": "2026-10-23T18:04:13.742590+00:00",
++      "child_pid": 1141684,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": true,
++      "elapsed_s": 118.22378613700857,
++      "finished_at": "2026-10-23T08:24:18.289040+00:00"
++    },
++    {
++      "goal": "G07",
++      "budget_window": "g07-net-feasibility-20261023",
++      "command": [
++        "/home/autodrive/Isaac/env_isaaclab/bin/python",
++        "scripts/refine_g07_dynamic_strike.py",
++        "--output",
++        "reports/G07/dynamic_strike_refine01",
++        "--candidate",
++        "reports/G07/dynamic_reach_near_net02/selected_contact_seed.pt",
++        "--probe",
++        "reports/G07/dynamic_contact_probe02",
++        "--num-envs",
++        "64",
++        "--generations",
++        "8",
++        "--headless"
++      ],
++      "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/dynamic_strike_refine01",
++      "gpu": 0,
++      "status": "SUCCEEDED",
++      "charged_gpu_hours": 0.22771174233583022,
++      "charged_env_steps": 300000,
++      "started_at": "2026-10-23T08:25:03.887010+00:00",
++      "pid": 1142246,
++      "original_authorization": "g07-net-feasibility-20261023",
++      "authorization_started_at": "2026-10-23T08:04:13.742590+00:00",
++      "authorization_deadline": "2026-10-23T18:04:13.742590+00:00",
++      "child_pid": 1142255,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": true,
++      "elapsed_s": 819.7622724089888,
++      "finished_at": "2026-10-23T08:38:43.652234+00:00"
+     }
+   ],
+   "budget_windows": {
+@@ -6968,6 +7211,18 @@
+       ],
+       "continuation_of": "g05-g07-20261022",
+       "remaining_gpu_hours_cap": 8.5
++    },
++    "g07-net-feasibility-20261023": {
++      "started_at": "2026-10-23T08:04:13.742590+00:00",
++      "deadline": "2026-10-23T18:04:13.742590+00:00",
++      "started_at_local": "2026-10-23T16:04:13.742590+08:00",
++      "deadline_local": "2026-10-24T02:04:13.742590+08:00",
++      "timezone": "Asia/Taipei",
++      "goals": [
++        "G07"
++      ],
++      "authorization_source": "/home/autodrive/.codex/attachments/020eb582-c91b-47fd-9a6c-10bbc3280369/pasted-text-1.txt",
++      "independent_authorization": true
+     }
+   }
+ }
+diff --git a/status/NEXT.md b/status/NEXT.md
+index 8301626..866af6d 100644
+--- a/status/NEXT.md
++++ b/status/NEXT.md
+@@ -1,3 +1,7 @@
++# G07 resumed with new independent GPU0 authorization
++
++Current authoritative authorization: g07-net-feasibility-20261023; T0 2026-10-23T16:04:13.742590+08:00; deadline 2026-10-24T02:04:13.742590+08:00 (Asia/Taipei); 10 additional GPU-hours. Historical resource-block notes below are resolved. Do not reset this clock.
++
+ # G07 blocked: new GPU0 authorization required
+ 
+ Read the new objective at `/home/autodrive/.codex/attachments/1e7d228f-313f-4cad-b9b1-a68c87655170/pasted-text-1.txt` and `reports/G07/feasibility_v3_20261023/REPORT.md`.
+diff --git a/status/PENDING_G07_RESOURCE_AUTHORIZATION.json b/status/PENDING_G07_RESOURCE_AUTHORIZATION.json
+index b1c54a4..6ee063e 100644
+--- a/status/PENDING_G07_RESOURCE_AUTHORIZATION.json
++++ b/status/PENDING_G07_RESOURCE_AUTHORIZATION.json
+@@ -1,5 +1,5 @@
+ {
+-  "status": "BLOCKED_PERMISSION",
++  "status": "AUTHORIZED",
+   "requested_at": "2026-10-23T07:30:58.198019+00:00",
+   "original_authorization_started_at": "2026-10-22T14:08:14.991569+00:00",
+   "original_authorization_deadline": "2026-10-23T00:08:14.991569+00:00",
+@@ -8,7 +8,7 @@
+   "reason": "New goal explicitly forbids extending expired authorization windows. CPU preparation completed; no new native rollout or training was run.",
+   "next_entrypoint": "scripts/search_g07_whole_body_v3.py",
+   "report": "reports/G07/feasibility_v3_20261023/REPORT.md",
+-  "blocking_audit_consecutive_turns": 3,
++  "blocking_audit_consecutive_turns": 0,
+   "latest_turn_classification": "no_progress_verified_resource_block",
+   "last_checked_at": "2026-10-23T07:40:58.612871+00:00",
+   "additional_progress": "Coupled search objective regression, authoritative final-event ranking, same-frame outgoing state and geometric separation, replayable promising shot retention; 89 CPU tests passed. No GPU run.",
+@@ -21,5 +21,8 @@
+     "remaining_required_work": "native whole-body search, closed-loop learning, independent G07 evaluation and execution video",
+     "latest_native_complete_smash_rate": 0.0,
+     "current_source_commit": "2ca6538"
+-  }
++  },
++  "resolved_at": "2026-10-23T08:04:13.742590+00:00",
++  "new_authorization_window": "g07-net-feasibility-20261023",
++  "new_authorization_source": "/home/autodrive/.codex/attachments/020eb582-c91b-47fd-9a6c-10bbc3280369/pasted-text-1.txt"
+ }
+diff --git a/status/RUNS.jsonl b/status/RUNS.jsonl
+index 47ca019..6529b60 100644
+--- a/status/RUNS.jsonl
++++ b/status/RUNS.jsonl
+@@ -195,3 +195,10 @@
+ {"goal": "G07", "budget_window": "g07-high-arm-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/probe_g07_vz_pose.py", "--output", "reports/G07/probe_q4_vz7_sw118", "--num-envs", "8", "--physics-dt", ".00025", "--vz", "7", "--vx", "-6.6", "--start-x", "8.18", "--pose", "q4", "--alpha", "1", "--switch", "1.18", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/probe_q4_vz7_sw118", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.021727884644157407, "charged_env_steps": 1500000, "started_at": "2026-10-23T05:08:38.475271+00:00", "pid": 1111865, "child_pid": 1111874, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 78.22038471896667, "finished_at": "2026-10-23T05:09:56.698255+00:00"}
+ {"goal": "G07", "budget_window": "g07-high-arm-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/search_g07_high_grid.py", "--output", "reports/G07/search_high_grid01", "--num-envs", "64", "--physics-dt", ".00025", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/search_high_grid01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.023870425209170206, "charged_env_steps": 3000000, "started_at": "2026-10-23T05:10:59.125576+00:00", "pid": 1112913, "child_pid": 1112922, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 85.93353075301275, "finished_at": "2026-10-23T05:12:25.061718+00:00"}
+ {"goal": "G07", "budget_window": "g07-high-arm-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/probe_g07_vz_pose.py", "--output", "reports/G07/probe_q0qc_fast01", "--num-envs", "8", "--physics-dt", ".00025", "--vz", "7", "--vx", "-8", "--start-x", "9.9", "--pose", "qc", "--alpha", ".607", "--switch", "1.22", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/probe_q0qc_fast01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.022091018141945824, "charged_env_steps": 1500000, "started_at": "2026-10-23T05:13:11.939618+00:00", "pid": 1113672, "child_pid": 1113681, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 79.52766531100497, "finished_at": "2026-10-23T05:14:31.469961+00:00"}
++{"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/search_g07_whole_body_v3.py", "--output", "reports/G07/ordered_wholebody_smoke01", "--launch-config", "configs/g07_feasible_search_launch_v3.json", "--num-envs", "8", "--generations", "1", "--physics-dt", ".00025", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/ordered_wholebody_smoke01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.030214829746950677, "charged_env_steps": 100000, "started_at": "2026-10-23T08:04:23.876753+00:00", "pid": 1138151, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1138160, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 108.77338708902244, "finished_at": "2026-10-23T08:06:12.652762+00:00"}
++{"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/search_g07_whole_body_v3.py", "--output", "reports/G07/ordered_residual_search01", "--launch-config", "configs/g07_feasible_search_launch_v3.json", "--num-envs", "32", "--generations", "4", "--init-mode", "residual", "--physics-dt", ".00025", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/ordered_residual_search01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.030559908132789942, "charged_env_steps": 100000, "started_at": "2026-10-23T08:10:21.171288+00:00", "pid": 1138984, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1138994, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 110.01566927804379, "finished_at": "2026-10-23T08:12:11.189565+00:00"}
++{"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/search_g07_dynamic_reach.py", "--output", "reports/G07/dynamic_reach_near_net01", "--num-envs", "128", "--generations", "12", "--root-x", "1.0", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/dynamic_reach_near_net01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.03570732960361056, "charged_env_steps": 1000000, "started_at": "2026-10-23T08:13:41.794665+00:00", "pid": 1139782, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1139827, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 128.54638657299802, "finished_at": "2026-10-23T08:15:50.343694+00:00"}
++{"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/search_g07_dynamic_reach.py", "--output", "reports/G07/dynamic_reach_near_net02", "--num-envs", "128", "--generations", "20", "--root-x", "1.0", "--initial", "reports/G07/dynamic_reach_near_net01/best_candidate.pt", "--seed", "714102", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/dynamic_reach_near_net02", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.05727773515583572, "charged_env_steps": 1500000, "started_at": "2026-10-23T08:16:32.779322+00:00", "pid": 1140340, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1140351, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 206.1998465610086, "finished_at": "2026-10-23T08:19:58.981858+00:00"}
++{"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/probe_g07_dynamic_contact.py", "--output", "reports/G07/dynamic_contact_probe01", "--candidate", "reports/G07/dynamic_reach_near_net02/selected_contact_seed.pt", "--num-envs", "32", "--physics-dt", ".00025", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/dynamic_contact_probe01", "gpu": 0, "status": "FAILED", "charged_gpu_hours": 0.00519181254583398, "charged_env_steps": 100000, "started_at": "2026-10-23T08:20:59.424222+00:00", "pid": 1141238, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1141281, "exit_code": 0, "timed_out": false, "receipt_present": false, "elapsed_s": 18.690525165002327, "finished_at": "2026-10-23T08:21:18.117389+00:00"}
++{"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/probe_g07_dynamic_contact.py", "--output", "reports/G07/dynamic_contact_probe02", "--candidate", "reports/G07/dynamic_reach_near_net02/selected_contact_seed.pt", "--num-envs", "32", "--physics-dt", ".00025", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/dynamic_contact_probe02", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.03283994059361349, "charged_env_steps": 100000, "started_at": "2026-10-23T08:22:20.062585+00:00", "pid": 1141674, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1141684, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 118.22378613700857, "finished_at": "2026-10-23T08:24:18.289040+00:00"}
++{"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/refine_g07_dynamic_strike.py", "--output", "reports/G07/dynamic_strike_refine01", "--candidate", "reports/G07/dynamic_reach_near_net02/selected_contact_seed.pt", "--probe", "reports/G07/dynamic_contact_probe02", "--num-envs", "64", "--generations", "8", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/dynamic_strike_refine01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.22771174233583022, "charged_env_steps": 300000, "started_at": "2026-10-23T08:25:03.887010+00:00", "pid": 1142246, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1142255, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 819.7622724089888, "finished_at": "2026-10-23T08:38:43.652234+00:00"}
+diff --git a/status/STATUS.json b/status/STATUS.json
+index 916449d..9c2ef1e 100644
+--- a/status/STATUS.json
++++ b/status/STATUS.json
+@@ -48,9 +48,10 @@
+       "notes": "Independent 400 ground episodes with real PhysX shuttle: 100% airborne contact, 76.5% contact-conditioned recovery, ground initialization 1.0, numerical failures 0. Formal suite uses the G02-validated 0.25 ms PhysX fixture and records body-contact diagnostics separately."
+     },
+     "G07": {
+-      "state": "BLOCKED_PERMISSION",
++      "state": "IN_PROGRESS",
+       "evidence": null,
+-      "notes": "Latest completed native policy evaluation remains 400 episodes: actual airborne contact 1.0, recovery conditional on contact 0.8925, complete success 0.0. The 1.535 m hardware upper bound is withdrawn: finite random FK/jump samples and incorrect arbitrary-rotation box projection do not establish impossibility. CPU v3 preparation reports/G07/feasibility_v3_20261023 computes effective-face kinematics and coupled drag/net/first-landing targets, verifies current placeholder USD assembly, and adds an opt-in ordered-event/full-joint-search path. No v3 native rollout or policy training has run. Original g05-g07 authorization expired 2026-10-23T00:08:14.991569+00:00; continuation no longer resets its clock or family-wide charges. New GPU0 window requested; G07 remains IN_PROGRESS. Resource authorization blocker verified in three consecutive goal turns; no new GPU0 window/hour cap received, no live project job. CPU preparation and objective regressions complete; native search/training/evaluation remain unperformed. See status/PENDING_G07_RESOURCE_AUTHORIZATION.json."
++      "notes": "New explicit independent GPU0 authorization registered. Native ordered-event/full-body search resumes; original G04-G06 and G07 checkpoints/evidence preserved. Historical best G07 complete success remains 0. New window: 2026-10-23T16:04:13.742590+08:00 to 2026-10-24T02:04:13.742590+08:00, max 10 additional GPU-hours.",
++      "active_authorization_window": "g07-net-feasibility-20261023"
+     },
+     "G08": {
+       "state": "TODO",
+diff --git a/tests/test_smash_events.py b/tests/test_smash_events.py
+index 535af38..9350a54 100644
+--- a/tests/test_smash_events.py
++++ b/tests/test_smash_events.py
+@@ -147,3 +147,11 @@ def test_net_clearance_without_first_target_landing_is_not_zero_violation():
+     assert row['predicted_net_margin_m'] > 0
+     assert row['predicted_first_landing_position_m'][0] > 4
+     assert row['coupled_flight_violation'] > 0 and not row['predicted_legal_attack']
++
++
++def test_native_inference_rollout_buffers_can_be_reset_outside_inference_mode():
++    events = OrderedSmashEvents(1, 'cpu')
++    with torch.inference_mode():
++        launch(events)
++    events.reset(torch.tensor([0]))
++    assert not events.contact.item() and events.quiet_frames.item() == 0

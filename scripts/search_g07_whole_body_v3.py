@@ -12,6 +12,7 @@ import json
 from pathlib import Path
 import signal
 import sys
+import traceback
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -25,6 +26,7 @@ parser.add_argument('--seed', type=int, default=714001)
 parser.add_argument('--physics-dt', type=float, default=.00025)
 parser.add_argument('--launch-config', type=Path, required=True)
 parser.add_argument('--init-trace', type=Path, default=ROOT/'reports/G07/root_probe_all01/trajectory.json')
+parser.add_argument('--init-mode', choices=('spline', 'residual'), default='residual')
 AppLauncher.add_app_launcher_args(parser)
 args = parser.parse_args()
 if args.num_envs < 8 or args.generations < 1:
@@ -39,7 +41,7 @@ from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper
 from quadsmash.physics.smash_events import rank_candidate
 from quadsmash.control.smash_search import add_flight_search_diagnostics, search_candidate_key
 from quadsmash.tasks.stand.ball_env import BallEnvCfg
-from quadsmash.tasks.stand.smash_env_v3 import OrderedSmashEnv
+from quadsmash.tasks.stand.smash_env_v3 import FullJointSmashEnv as FullJointSearchEnv
 
 stopping = False
 
@@ -51,20 +53,6 @@ def stop(*_):
 
 signal.signal(signal.SIGTERM, stop)
 signal.signal(signal.SIGINT, stop)
-
-
-class FullJointSearchEnv(OrderedSmashEnv):
-    def _pre_physics_step(self, actions):
-        # New opt-in command interface: absolute joint positions cover audited
-        # joint limits. Actual actuator efforts/velocities/gains are unchanged.
-        self.action_delta.copy_((actions.clamp(-1, 1) - self.last_action).square().sum(1))
-        self._record_action(actions)
-        self.action_clip_count += (actions.abs() > 1).sum(1)
-        limits = self.robot.data.joint_pos_limits[:, self.joint_ids]
-        q = limits[..., 0] + .5 * (self.last_action + 1) * (limits[..., 1] - limits[..., 0])
-        self.targets.copy_(self.robot.data.default_joint_pos)
-        self.targets[:, self.joint_ids] = q
-        self._contact_bonus.zero_()
 
 
 def main():
@@ -96,6 +84,12 @@ def main():
         trace = json.loads(args.init_trace.read_text())
         sample_times = np.array([r['time_s'] for r in trace])
         actions = np.array([r['action'] for r in trace])
+        tape = []
+        for row in trace:
+            scale = torch.tensor([.25 if row['time_s'] < .8 else .55]*12 + [2.]*6, device=env.device)
+            old = torch.tensor(row['action'], device=env.device)
+            tape.append(normalize(default + scale*old).clamp(-1, 1))
+        tape = torch.stack(tape)
         initial = []
         for t in times.cpu().tolist():
             old = torch.tensor([np.interp(t, sample_times, actions[:, j]) for j in range(18)],
@@ -103,15 +97,19 @@ def main():
             scale = torch.tensor([.25 if t < .8 else .55]*12 + [2.]*6, device=env.device)
             initial.append(normalize(default + scale * old).clamp(-1, 1))
         mean = torch.stack(initial)
-        sigma = torch.full_like(mean, .18)
+        if args.init_mode == 'residual':
+            mean.zero_()
+        sigma = torch.full_like(mean, .08 if args.init_mode == 'residual' else .18)
+        if args.init_mode == 'residual':
+            sigma[:, :12] = .04
         sigma[0] = 0
         sigma[-2:] = .04
-        timing_mean, timing_sigma = 1., .18
+        timing_mean, timing_sigma = 1., .06 if args.init_mode == 'residual' else .18
         history, all_best = [], None
         for generation in range(args.generations):
             knots = (mean[None] + sigma[None] * torch.randn(
                 (args.num_envs, len(times), 18), generator=rng, device=env.device)).clamp(-1, 1)
-            knots[:, 0] = normalize(default)
+            knots[:, 0] = 0 if args.init_mode == 'residual' else normalize(default)
             knots[0] = mean
             warp = (timing_mean + timing_sigma * torch.randn(args.num_envs, generator=rng, device=env.device)).clamp(.7, 1.5)
             warp[0] = timing_mean
@@ -128,6 +126,12 @@ def main():
                     fraction = ((clock-times[index-1])/(times[index]-times[index-1])).clamp(0, 1)
                     lane = torch.arange(args.num_envs, device=env.device)
                     action = torch.lerp(knots[lane, index-1], knots[lane, index], fraction[:, None])
+                    if args.init_mode == 'residual':
+                        tape_tick = (clock*100).clamp(0, len(tape)-1)
+                        lo = tape_tick.long()
+                        hi = (lo+1).clamp(max=len(tape)-1)
+                        baseline = torch.lerp(tape[lo], tape[hi], (tape_tick-lo)[:, None])
+                        action = baseline + action
                     obs, _, _, _ = wrapper.step(action)
             first = {}
             for row in env.smash_episode_records:
@@ -153,6 +157,7 @@ def main():
                 all_best = (search_candidate_key(best), best)
                 torch.save(dict(knots=knots[order[0]].cpu(), knot_times=times.cpu(),
                                 time_scale=float(warp[order[0]]), launch=launch,
+                                init_mode=args.init_mode, baseline_tape=tape.cpu(),
                                 action_interface='absolute-joint-limits-18D-v3',
                                 kind='open-loop demonstration candidate, not learned policy', result=best),
                            args.output/'best_candidate.pt')
@@ -165,6 +170,7 @@ def main():
                 for i in promising:
                     torch.save(dict(knots=knots[i].cpu(), knot_times=times.cpu(),
                                     time_scale=float(warp[i]), launch=launch, result=rows[i],
+                                    init_mode=args.init_mode, baseline_tape=tape.cpu(),
                                     generation=generation, env_id=i, seed=args.seed,
                                     kind='measured ordered-net demonstration; not policy acceptance'),
                                bank/f'generation_{generation:03d}_lane_{i:03d}.pt')
@@ -176,11 +182,21 @@ def main():
             print(json.dumps(entry), flush=True)
             if stopping:
                 break
+        if len(history) == args.generations:
+            (args.output/'completed.json').write_text(json.dumps(dict(
+                requested_generations=args.generations, completed_generations=len(history),
+                env_steps=len(history)*args.num_envs*400))+'\n')
     finally:
         env.close()
 
 
 try:
     main()
+except BaseException:
+    args.output.mkdir(parents=True, exist_ok=True)
+    error=traceback.format_exc()
+    (args.output/'error.txt').write_text(error)
+    print(error, file=sys.stderr, flush=True)
+    raise
 finally:
     app.close(skip_cleanup=True)

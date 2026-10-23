@@ -52,10 +52,14 @@ class OrderedSmashEnv(BallEnv):
         gap = (delta.clamp_min(0).norm(dim=-1) + delta.max(dim=-1).values.clamp_max(0)
                - self.cfg.shuttle_radius_m)
         separated = (~touching) & (gap > PHYSICS['separation_hysteresis_m'])
-        incoming_window = ((self.ball_clock - self.goal_time_s).abs() <= .2) & (~events.ground_seen)
-        self.interception_min_distance = torch.where(
+        local_ball = position - self.scene.env_origins
+        incoming_window = (((self.ball_clock - self.goal_time_s).abs() <= .2)
+                           & (~events.ground_seen)
+                           & (local_ball[:, 2] > self.cfg.net_height_m + self.cfg.shuttle_radius_m)
+                           & (local_ball[:, 0] < self.cfg.net_x_m))
+        self.interception_min_distance.copy_(torch.where(
             incoming_window, torch.minimum(self.interception_min_distance, local.norm(dim=-1)),
-            self.interception_min_distance)
+            self.interception_min_distance))
         first = (self.contact_events.count > counts) & (~events.contact)
         if bool(first.any()):
             normal = quat_rotate(tool_quaternion, torch.tensor([1., 0., 0.], device=self.device).expand(self.num_envs, -1))
@@ -99,6 +103,8 @@ class OrderedSmashEnv(BallEnv):
                     interception_min_distance_m=float(self.interception_min_distance[i]),
                     release_time_s=float(events.release_time[i]),
                     ordered_crossed_net=bool(events.crossed[i]),
+                    geometric_crossed_net=bool(events.geometric_crossed[i]),
+                    geometric_landed_target=bool(events.geometric_landed_target[i]),
                     net_margin_m=float(events.net_margin[i]),
                     net_crossing_position_m=events.net_position[i].cpu().tolist(),
                     net_crossing_time_s=float(events.crossing_time[i]),
@@ -118,3 +124,16 @@ class OrderedSmashEnv(BallEnv):
             self.contact_face_normal[ids] = float('nan')
             self.contact_root_position[ids] = float('nan')
             self.interception_min_distance[ids] = float('inf')
+
+
+class FullJointSmashEnv(OrderedSmashEnv):
+    """Opt-in absolute joint-position interface with unchanged native actuators."""
+    def _pre_physics_step(self, actions):
+        self.action_delta.copy_((actions.clamp(-1, 1) - self.last_action).square().sum(1))
+        self._record_action(actions)
+        self.action_clip_count += (actions.abs() > 1).sum(1)
+        limits = self.robot.data.joint_pos_limits[:, self.joint_ids]
+        q = limits[..., 0] + .5 * (self.last_action + 1) * (limits[..., 1] - limits[..., 0])
+        self.targets.copy_(self.robot.data.default_joint_pos)
+        self.targets[:, self.joint_ids] = q
+        self._contact_bonus.zero_()

@@ -1,5 +1,5 @@
 {
-  "status": "BLOCKED_PERMISSION",
+  "status": "AUTHORIZED",
   "requested_at": "2026-10-23T07:30:58.198019+00:00",
   "original_authorization_started_at": "2026-10-22T14:08:14.991569+00:00",
   "original_authorization_deadline": "2026-10-23T00:08:14.991569+00:00",
@@ -8,7 +8,7 @@
   "reason": "New goal explicitly forbids extending expired authorization windows. CPU preparation completed; no new native rollout or training was run.",
   "next_entrypoint": "scripts/search_g07_whole_body_v3.py",
   "report": "reports/G07/feasibility_v3_20261023/REPORT.md",
-  "blocking_audit_consecutive_turns": 3,
+  "blocking_audit_consecutive_turns": 0,
   "latest_turn_classification": "no_progress_verified_resource_block",
   "last_checked_at": "2026-10-23T07:40:58.612871+00:00",
   "additional_progress": "Coupled search objective regression, authoritative final-event ranking, same-frame outgoing state and geometric separation, replayable promising shot retention; 89 CPU tests passed. No GPU run.",
@@ -21,5 +21,8 @@
     "remaining_required_work": "native whole-body search, closed-loop learning, independent G07 evaluation and execution video",
     "latest_native_complete_smash_rate": 0.0,
     "current_source_commit": "2ca6538"
-  }
+  },
+  "resolved_at": "2026-10-23T08:04:13.742590+00:00",
+  "new_authorization_window": "g07-net-feasibility-20261023",
+  "new_authorization_source": "/home/autodrive/.codex/attachments/020eb582-c91b-47fd-9a6c-10bbc3280369/pasted-text-1.txt"
 }

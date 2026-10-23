@@ -1,0 +1,89 @@
+{
+  "kind": "independent frozen near-net curriculum replay",
+  "formal_policy_acceptance": false,
+  "root_start_x_m": 1.0,
+  "candidate": "reports/G07/dynamic_strike_refine01/best_candidate.pt",
+  "candidate_sha256": "c598d7961e0482cf44c1442a7c795424d9517ce617386f5d7bb04078b46491db",
+  "seed": 714501,
+  "episodes": 64,
+  "selected_video_lane": 25,
+  "selection": "highest ordered result; selected example, not a random success-rate estimate",
+  "airborne_contact": 64,
+  "ordered_net": 64,
+  "ordered_landing": 64,
+  "recovery": 53,
+  "complete": 53,
+  "numerical_failures": 0,
+  "best": {
+    "protocol": "ordered-smash-v3",
+    "env_id": 25,
+    "airborne_contact": true,
+    "effective_face_contact": true,
+    "contact_count": 1,
+    "contact_position_m": [
+      1.3972747325897217,
+      0.02074432373046875,
+      1.6087727546691895
+    ],
+    "contact_point_tool_velocity_mps": [
+      0.49203741550445557,
+      -0.6735810041427612,
+      -0.049105267971754074
+    ],
+    "contact_face_normal_world": [
+      0.9830069541931152,
+      0.08724164962768555,
+      0.16151227056980133
+    ],
+    "contact_root_position_m": [
+      0.9286425113677979,
+      0.0006327629089355469,
+      0.695822536945343
+    ],
+    "contact_time_s": 1.4841880798339844,
+    "outgoing_velocity_mps": [
+      7.363097667694092,
+      0.9775670170783997,
+      -3.0984952449798584
+    ],
+    "outgoing_position_m": [
+      1.3972747325897217,
+      0.02074432373046875,
+      1.6087727546691895
+    ],
+    "outgoing_measurement_time_s": 1.4841880798339844,
+    "interception_min_distance_m": 0.1330750286579132,
+    "release_time_s": 1.4849380254745483,
+    "ordered_crossed_net": true,
+    "geometric_crossed_net": true,
+    "geometric_landed_target": true,
+    "net_margin_m": 0.015570878982543945,
+    "net_crossing_position_m": [
+      1.5,
+      0.03438100218772888,
+      1.5645709037780762
+    ],
+    "net_crossing_time_s": 1.4981588125228882,
+    "first_landing_position_m": [
+      3.827606201171875,
+      0.34340858459472656,
+      0.025090768933296204
+    ],
+    "first_landing_time_s": 1.8264132738113403,
+    "ordered_landed_target": true,
+    "recovery_success": true,
+    "complete_smash": true,
+    "body_contact": false,
+    "numerical_failures": 0,
+    "sweep_misses": 0,
+    "sweep_unresolved": 0,
+    "coupled_flight_violation": 0.01981812790276914,
+    "predicted_legal_attack": true,
+    "predicted_net_margin_m": 9.093604861543092e-05,
+    "predicted_first_landing_position_m": [
+      3.828207443832188,
+      0.343488873171142,
+      0.025
+    ]
+  }
+}

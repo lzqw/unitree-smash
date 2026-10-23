@@ -1,0 +1,61 @@
+Traceback (most recent call last):
+  File "/home/autodrive/LZQW/unitree_smash/scripts/probe_g07_dynamic_contact.py", line 53, in <module>
+    try:main()
+        ^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash/scripts/probe_g07_dynamic_contact.py", line 38, in main
+    env=ProbeEnv(cfg);w=RslRlVecEnvWrapper(env,clip_actions=None);device=env.device;parameters=candidate['parameters'].to(device).repeat(a.num_envs,1);arm=candidate['arm_pose'].to(device);default=env.robot.data.default_joint_pos[0,env.joint_ids];limits=env.robot.data.joint_pos_limits[0,env.joint_ids];obs,_=w.reset();trajectories=[[] for _ in range(a.num_envs)]
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/Isaac/IsaacLab/source/isaaclab_rl/isaaclab_rl/rsl_rl/vecenv_wrapper.py", line 67, in __init__
+    self.env.reset()
+  File "/home/autodrive/Isaac/IsaacLab/source/isaaclab/isaaclab/envs/direct_rl_env.py", line 311, in reset
+    return self._get_observations(), self.extras
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash/quadsmash/tasks/stand/ball_env.py", line 297, in _get_observations
+    return super()._get_observations()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash/quadsmash/tasks/stand/coupled_env.py", line 183, in _get_observations
+    return observe_native(self)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash/quadsmash/tasks/stand/observation_contract.py", line 74, in observe_native
+    command[:,1:4]=inverse_rotate(q,goal-root)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash/quadsmash/tasks/stand/observation_contract.py", line 15, in inverse_rotate
+    return quat_rotate(torch.cat((q[:,:1],-q[:,1:]),-1),vector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash/quadsmash/physics/native.py", line 22, in quat_rotate
+    t = 2 * torch.linalg.cross(xyz, vector, dim=-1)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Found dtype Double but expected Float
+
+Loading user config located at: '/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/isaacsim/kit/data/Kit/Isaac-Sim/5.1/user.config.json'
+[Info] [carb] Logging to file: /home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/isaacsim/kit/logs/Kit/Isaac-Sim/5.1/kit_20261023_162059.log
+2026-10-23T08:20:59Z [0ms] [Warning] [carb.crashreporter-breakpad.plugin] [previous crash] preventing upload of minidump due to user opt-out: '/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/isaacsim/kit/data/Kit/Isaac-Sim/5.1/69f25773-9578-4b83-cb0a628d-f3361cda.dmp'
+2026-10-23T08:20:59Z [57ms] [Warning] [omni.usd_config.extension] Enable omni.materialx.libs extension to use MaterialX
+2026-10-23T08:20:59Z [349ms] [Warning] [carb] Acquiring non optional plugin interface which is not listed as dependency: [omni::physx::IPhysxBenchmarks v1.0] (plugin: <default plugin>), by client: omni.physics.physx.plugin. Add it to CARB_PLUGIN_IMPL_DEPS() macro of a client.
+2026-10-23T08:20:59Z [462ms] [Warning] [omni.isaac.dynamic_control] omni.isaac.dynamic_control is deprecated as of Isaac Sim 4.5. No action is needed from end-users.
+2026-10-23T08:21:03Z [3,849ms] [Warning] [carb.cudainterop.plugin] CUDA_VISIBLE_DEVICES environment variable is set.
+2026-10-23T08:21:03Z [3,849ms] [Warning] [carb.cudainterop.plugin] Note CUDA device enumeration and Omniverse device enumeration are different.
+2026-10-23T08:21:03Z [3,849ms] [Warning] [carb.cudainterop.plugin] Setting CUDA_VISIBLE_DEVICES can lead to undesired behavior or crashes.
+
+|---------------------------------------------------------------------------------------------|
+| Driver Version: 595.91.07     | Graphics API: Vulkan
+|=============================================================================================|
+| GPU | Name                             | Active | LDA | GPU Memory | Vendor-ID | LUID       |
+|     |                                  |        |     |            | Device-ID | UUID       |
+|     |                                  |        |     |            | Bus-ID    |            |
+|---------------------------------------------------------------------------------------------|
+| 0   | NVIDIA GeForce RTX 5080          | Yes: 0 |     | 16303   MB | 10de      | 0          |
+|     |                                  |        |     |            | 2c02      | ac315b09.. |
+|     |                                  |        |     |            | 1         |            |
+|=============================================================================================|
+| OS: 24.04.4 LTS (Noble Numbat) ubuntu, Version: 24.04.4, Kernel: 7.0.0-38-generic
+| XServer Vendor: The X.Org Foundation, XServer Version: 12101011 (1.21.1.11)
+| Processor: Intel(R) Core(TM) i9-14900KF
+| Bare Metal Cores: 24 | Bare Metal Logical Cores: 48
+| Available Cores:  32 
+|---------------------------------------------------------------------------------------------|
+| Total Memory (MB): 64065 | Free Memory: 54219
+| Total Page/Swap (MB): 8191 | Free Page/Swap: 5507
+|---------------------------------------------------------------------------------------------|
+2026-10-23T08:21:03Z [4,141ms] [Warning] [gpu.foundation.plugin] CPU performance profile is set to powersave. This profile sets the CPU to the lowest frequency reducing performance.
+2026-10-23T08:21:03Z [4,149ms] [Warning] [gpu.foundation.plugin] IOMMU is enabled.

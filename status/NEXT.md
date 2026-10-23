@@ -1,3 +1,18 @@
+# 当前继续入口（2026-10-23 有效越网课程已独立复现）
+
+- 窗口 `g07-net-feasibility-20261023`：Asia/Taipei 2026-10-23 16:04:13 至 2026-10-24 02:04:13，独立新增10 GPU-hours，GPU0；历史账本保留。
+- 已完成 `dynamic_strike_refine01` 8代搜索，冻结教师 `best_candidate.pt`。独立 `dynamic_strike_replay01`：64/64腾空有效拍面接触、向下高速出球并实际越网、首次目标落点；53/64恢复/完整，数值0。root x=1.0近网课程，单一来球，尚非自主神经策略/正式成绩。
+- 视频和实测连杆/球轨迹在 `reports/G07/dynamic_strike_replay01`。
+- 正在运行 `reports/G07/loaded_walk_bridge02`：原始root x=0、完整负载、无球步态课程；20代×128环境×6秒，必须轮询现有作业，不能重复启动。
+- 下一步：验证并改进真实移动衔接、恢复，随后学习全程观测闭环策略并扩展来球/目标。不能以近网教师53/64替代原G07双固定面板至少400回合的验收。
+- 所有GPU命令必须经 `scripts/run_gpu_job.py --budget-window g07-net-feasibility-20261023`，检查实时账本与固定截止时间。不得重新授权计时。
+
+---
+
+# G07 resumed with new independent GPU0 authorization
+
+Current authoritative authorization: g07-net-feasibility-20261023; T0 2026-10-23T16:04:13.742590+08:00; deadline 2026-10-24T02:04:13.742590+08:00 (Asia/Taipei); 10 additional GPU-hours. Historical resource-block notes below are resolved. Do not reset this clock.
+
 # G07 blocked: new GPU0 authorization required
 
 Read the new objective at `/home/autodrive/.codex/attachments/1e7d228f-313f-4cad-b9b1-a68c87655170/pasted-text-1.txt` and `reports/G07/feasibility_v3_20261023/REPORT.md`.

@@ -1,0 +1,117 @@
+diff --git a/configs/budget.json b/configs/budget.json
+index 62308d2..8eaf9d7 100644
+--- a/configs/budget.json
++++ b/configs/budget.json
+@@ -1,5 +1,5 @@
+ {
+-  "authorization_note": "用户已明确授权 G04 使用 GPU0，最多 8 GPU-hours；G05 及后续目标仍未授权。数值是上限，不保证训练收敛。",
++  "authorization_note": "Legacy G04 authorization is retained; current G07 GPU0 execution uses the independently authorized g07-net-feasibility-20261023 window, with 10 additional GPU-hours and a fixed 10-hour wall-clock deadline.",
+   "authorized_goals": [
+     "G00",
+     "G01",
+@@ -54,6 +54,22 @@
+       "max_env_steps": null,
+       "note": "Continuation of the user-authorized g05-g07-20261022 10 GPU-hour window; prior ledger charges are retained and this continuation cap is the remaining budget, not a new authorization. The original authorization start/deadline and family-wide 10 GPU-hour cap apply; this key does not renew the clock.",
+       "continuation_of": "g05-g07-20261022"
++    },
++    "g07-net-feasibility-20261023": {
++      "goals": [
++        "G07"
++      ],
++      "max_gpu_hours": 10.0,
++      "max_wallclock_hours": 10.0,
++      "max_env_steps": null,
++      "authorized_at": "2026-10-23T08:04:13.742590+00:00",
++      "deadline": "2026-10-23T18:04:13.742590+00:00",
++      "timezone": "Asia/Taipei",
++      "started_at_local": "2026-10-23T16:04:13.742590+08:00",
++      "deadline_local": "2026-10-24T02:04:13.742590+08:00",
++      "authorization_source": "/home/autodrive/.codex/attachments/020eb582-c91b-47fd-9a6c-10bbc3280369/pasted-text-1.txt",
++      "note": "New independent user authorization. New charges capped at 10 GPU-hours; all historical charges retained and excluded from this new cap. Clock anchored at registration, never renewed by restarts."
+     }
+-  }
++  },
++  "current_authorization_window": "g07-net-feasibility-20261023"
+ }
+diff --git a/status/GPU_LEDGER.json b/status/GPU_LEDGER.json
+index c6af1b3..dbb7ca4 100644
+--- a/status/GPU_LEDGER.json
++++ b/status/GPU_LEDGER.json
+@@ -6968,6 +6968,18 @@
+       ],
+       "continuation_of": "g05-g07-20261022",
+       "remaining_gpu_hours_cap": 8.5
++    },
++    "g07-net-feasibility-20261023": {
++      "started_at": "2026-10-23T08:04:13.742590+00:00",
++      "deadline": "2026-10-23T18:04:13.742590+00:00",
++      "started_at_local": "2026-10-23T16:04:13.742590+08:00",
++      "deadline_local": "2026-10-24T02:04:13.742590+08:00",
++      "timezone": "Asia/Taipei",
++      "goals": [
++        "G07"
++      ],
++      "authorization_source": "/home/autodrive/.codex/attachments/020eb582-c91b-47fd-9a6c-10bbc3280369/pasted-text-1.txt",
++      "independent_authorization": true
+     }
+   }
+ }
+diff --git a/status/NEXT.md b/status/NEXT.md
+index 8301626..866af6d 100644
+--- a/status/NEXT.md
++++ b/status/NEXT.md
+@@ -1,3 +1,7 @@
++# G07 resumed with new independent GPU0 authorization
++
++Current authoritative authorization: g07-net-feasibility-20261023; T0 2026-10-23T16:04:13.742590+08:00; deadline 2026-10-24T02:04:13.742590+08:00 (Asia/Taipei); 10 additional GPU-hours. Historical resource-block notes below are resolved. Do not reset this clock.
++
+ # G07 blocked: new GPU0 authorization required
+ 
+ Read the new objective at `/home/autodrive/.codex/attachments/1e7d228f-313f-4cad-b9b1-a68c87655170/pasted-text-1.txt` and `reports/G07/feasibility_v3_20261023/REPORT.md`.
+diff --git a/status/PENDING_G07_RESOURCE_AUTHORIZATION.json b/status/PENDING_G07_RESOURCE_AUTHORIZATION.json
+index b1c54a4..6ee063e 100644
+--- a/status/PENDING_G07_RESOURCE_AUTHORIZATION.json
++++ b/status/PENDING_G07_RESOURCE_AUTHORIZATION.json
+@@ -1,5 +1,5 @@
+ {
+-  "status": "BLOCKED_PERMISSION",
++  "status": "AUTHORIZED",
+   "requested_at": "2026-10-23T07:30:58.198019+00:00",
+   "original_authorization_started_at": "2026-10-22T14:08:14.991569+00:00",
+   "original_authorization_deadline": "2026-10-23T00:08:14.991569+00:00",
+@@ -8,7 +8,7 @@
+   "reason": "New goal explicitly forbids extending expired authorization windows. CPU preparation completed; no new native rollout or training was run.",
+   "next_entrypoint": "scripts/search_g07_whole_body_v3.py",
+   "report": "reports/G07/feasibility_v3_20261023/REPORT.md",
+-  "blocking_audit_consecutive_turns": 3,
++  "blocking_audit_consecutive_turns": 0,
+   "latest_turn_classification": "no_progress_verified_resource_block",
+   "last_checked_at": "2026-10-23T07:40:58.612871+00:00",
+   "additional_progress": "Coupled search objective regression, authoritative final-event ranking, same-frame outgoing state and geometric separation, replayable promising shot retention; 89 CPU tests passed. No GPU run.",
+@@ -21,5 +21,8 @@
+     "remaining_required_work": "native whole-body search, closed-loop learning, independent G07 evaluation and execution video",
+     "latest_native_complete_smash_rate": 0.0,
+     "current_source_commit": "2ca6538"
+-  }
++  },
++  "resolved_at": "2026-10-23T08:04:13.742590+00:00",
++  "new_authorization_window": "g07-net-feasibility-20261023",
++  "new_authorization_source": "/home/autodrive/.codex/attachments/020eb582-c91b-47fd-9a6c-10bbc3280369/pasted-text-1.txt"
+ }
+diff --git a/status/STATUS.json b/status/STATUS.json
+index 916449d..9c2ef1e 100644
+--- a/status/STATUS.json
++++ b/status/STATUS.json
+@@ -48,9 +48,10 @@
+       "notes": "Independent 400 ground episodes with real PhysX shuttle: 100% airborne contact, 76.5% contact-conditioned recovery, ground initialization 1.0, numerical failures 0. Formal suite uses the G02-validated 0.25 ms PhysX fixture and records body-contact diagnostics separately."
+     },
+     "G07": {
+-      "state": "BLOCKED_PERMISSION",
++      "state": "IN_PROGRESS",
+       "evidence": null,
+-      "notes": "Latest completed native policy evaluation remains 400 episodes: actual airborne contact 1.0, recovery conditional on contact 0.8925, complete success 0.0. The 1.535 m hardware upper bound is withdrawn: finite random FK/jump samples and incorrect arbitrary-rotation box projection do not establish impossibility. CPU v3 preparation reports/G07/feasibility_v3_20261023 computes effective-face kinematics and coupled drag/net/first-landing targets, verifies current placeholder USD assembly, and adds an opt-in ordered-event/full-joint-search path. No v3 native rollout or policy training has run. Original g05-g07 authorization expired 2026-10-23T00:08:14.991569+00:00; continuation no longer resets its clock or family-wide charges. New GPU0 window requested; G07 remains IN_PROGRESS. Resource authorization blocker verified in three consecutive goal turns; no new GPU0 window/hour cap received, no live project job. CPU preparation and objective regressions complete; native search/training/evaluation remain unperformed. See status/PENDING_G07_RESOURCE_AUTHORIZATION.json."
++      "notes": "New explicit independent GPU0 authorization registered. Native ordered-event/full-body search resumes; original G04-G06 and G07 checkpoints/evidence preserved. Historical best G07 complete success remains 0. New window: 2026-10-23T16:04:13.742590+08:00 to 2026-10-24T02:04:13.742590+08:00, max 10 additional GPU-hours.",
++      "active_authorization_window": "g07-net-feasibility-20261023"
+     },
+     "G08": {
+       "state": "TODO",

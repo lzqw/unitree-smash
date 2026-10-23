@@ -1,0 +1,33 @@
+{
+  "goal": "G07",
+  "budget_window": "g07-net-feasibility-20261023",
+  "command": [
+    "/home/autodrive/Isaac/env_isaaclab/bin/python",
+    "scripts/probe_g07_dynamic_contact.py",
+    "--output",
+    "reports/G07/dynamic_contact_probe02",
+    "--candidate",
+    "reports/G07/dynamic_reach_near_net02/selected_contact_seed.pt",
+    "--num-envs",
+    "32",
+    "--physics-dt",
+    ".00025",
+    "--headless"
+  ],
+  "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/dynamic_contact_probe02",
+  "gpu": 0,
+  "status": "SUCCEEDED",
+  "charged_gpu_hours": 0.03283994059361349,
+  "charged_env_steps": 100000,
+  "started_at": "2026-10-23T08:22:20.062585+00:00",
+  "pid": 1141674,
+  "original_authorization": "g07-net-feasibility-20261023",
+  "authorization_started_at": "2026-10-23T08:04:13.742590+00:00",
+  "authorization_deadline": "2026-10-23T18:04:13.742590+00:00",
+  "child_pid": 1141684,
+  "exit_code": 0,
+  "timed_out": false,
+  "receipt_present": true,
+  "elapsed_s": 118.22378613700857,
+  "finished_at": "2026-10-23T08:24:18.289040+00:00"
+}

@@ -147,3 +147,11 @@ def test_net_clearance_without_first_target_landing_is_not_zero_violation():
     assert row['predicted_net_margin_m'] > 0
     assert row['predicted_first_landing_position_m'][0] > 4
     assert row['coupled_flight_violation'] > 0 and not row['predicted_legal_attack']
+
+
+def test_native_inference_rollout_buffers_can_be_reset_outside_inference_mode():
+    events = OrderedSmashEvents(1, 'cpu')
+    with torch.inference_mode():
+        launch(events)
+    events.reset(torch.tensor([0]))
+    assert not events.contact.item() and events.quiet_frames.item() == 0

@@ -19,7 +19,8 @@ class OrderedSmashEvents:
         self.target_x, self.target_y = target_x, target_y
         self.count = count
         for name in ("contact", "airborne_contact", "effective_face", "released",
-                     "crossed", "ground_seen", "landed_target", "invalid_multiple_contact"):
+                     "crossed", "geometric_crossed", "ground_seen", "landed_target",
+                     "geometric_landed_target", "invalid_multiple_contact"):
             setattr(self, name, torch.zeros(count, dtype=torch.bool, device=device))
         self.quiet_frames = torch.zeros(count, dtype=torch.long, device=device)
         self.contact_count = torch.zeros_like(self.quiet_frames)
@@ -33,7 +34,8 @@ class OrderedSmashEvents:
 
     def reset(self, ids):
         for name in ("contact", "airborne_contact", "effective_face", "released", "crossed",
-                     "ground_seen", "landed_target", "invalid_multiple_contact"):
+                     "geometric_crossed", "ground_seen", "landed_target", "geometric_landed_target",
+                     "invalid_multiple_contact"):
             getattr(self, name)[ids] = False
         self.quiet_frames[ids] = self.contact_count[ids] = 0
         for name in ("contact_time", "outgoing_time", "release_time", "crossing_time", "landing_time", "net_margin",
@@ -59,8 +61,8 @@ class OrderedSmashEvents:
         self._last_touch_time[touching] = time[touching]
         separated = (~touching) if separated is None else separated & (~touching)
         quiet = self.contact & separated
-        self.quiet_frames = torch.where(quiet, self.quiet_frames + 1,
-                                       torch.zeros_like(self.quiet_frames))
+        self.quiet_frames.copy_(torch.where(quiet, self.quiet_frames + 1,
+                                           torch.zeros_like(self.quiet_frames)))
         release = quiet & (self.quiet_frames >= 2) & (~self.released)
         self.outgoing_velocity[release] = self._last_touch_velocity[release]
         self.outgoing_position[release] = self._last_touch_position[release]
@@ -77,6 +79,9 @@ class OrderedSmashEvents:
         self.net_margin[first_crossing] = margin[first_crossing]
         legal = first_crossing & attack & (margin > 0) & (point[:, 1].abs() + self.radius <= self.net_half_width)
         self.crossed |= legal
+        self.geometric_crossed |= (first_crossing & self.airborne_contact & self.effective_face
+                                   & (~self.invalid_multiple_contact) & (margin > 0)
+                                   & (point[:, 1].abs() + self.radius <= self.net_half_width))
         landing, fraction, point = segment_plane_crossing(
             previous_position, position, 2, self.radius, -1)
         first_landing = (landing | ground_touch) & before_ground
@@ -90,6 +95,8 @@ class OrderedSmashEvents:
                   & (point[:, 1].abs() <= self.target_y))
         ordered = (self.release_time < self.crossing_time) & (self.crossing_time < self.landing_time)
         self.landed_target |= first_landing & self.crossed & target & attack & ordered
+        self.geometric_landed_target |= (first_landing & self.geometric_crossed & target & ordered
+                                         & (~self.invalid_multiple_contact))
         self.ground_seen |= landing | ground_touch
 
     def attack(self):

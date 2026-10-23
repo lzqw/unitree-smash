@@ -1,0 +1,28 @@
+Traceback (most recent call last):
+  File "/home/autodrive/LZQW/unitree_smash/scripts/probe_g07_dynamic_contact.py", line 53, in <module>
+    try:main()
+        ^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash/scripts/probe_g07_dynamic_contact.py", line 38, in main
+    env=ProbeEnv(cfg);w=RslRlVecEnvWrapper(env,clip_actions=None);device=env.device;parameters=candidate['parameters'].to(device).repeat(a.num_envs,1);arm=candidate['arm_pose'].to(device);default=env.robot.data.default_joint_pos[0,env.joint_ids];limits=env.robot.data.joint_pos_limits[0,env.joint_ids];obs,_=w.reset();trajectories=[[] for _ in range(a.num_envs)]
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/Isaac/IsaacLab/source/isaaclab_rl/isaaclab_rl/rsl_rl/vecenv_wrapper.py", line 67, in __init__
+    self.env.reset()
+  File "/home/autodrive/Isaac/IsaacLab/source/isaaclab/isaaclab/envs/direct_rl_env.py", line 311, in reset
+    return self._get_observations(), self.extras
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash/quadsmash/tasks/stand/ball_env.py", line 297, in _get_observations
+    return super()._get_observations()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash/quadsmash/tasks/stand/coupled_env.py", line 183, in _get_observations
+    return observe_native(self)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash/quadsmash/tasks/stand/observation_contract.py", line 74, in observe_native
+    command[:,1:4]=inverse_rotate(q,goal-root)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash/quadsmash/tasks/stand/observation_contract.py", line 15, in inverse_rotate
+    return quat_rotate(torch.cat((q[:,:1],-q[:,1:]),-1),vector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash/quadsmash/physics/native.py", line 22, in quat_rotate
+    t = 2 * torch.linalg.cross(xyz, vector, dim=-1)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Found dtype Double but expected Float

@@ -1,0 +1,53 @@
+[INFO][AppLauncher]: Using device: cuda:0
+[INFO][AppLauncher]: Loading experience file: /home/autodrive/Isaac/IsaacLab/apps/isaaclab.python.headless.kit
+Setting seed: 714201
+[INFO]: Base environment:
+	Environment device    : cuda:0
+	Environment seed      : 714201
+	Physics step-size     : 0.00025
+	Rendering step-size   : 0.01
+	Environment step-size : 0.01
+[INFO]: Time taken for scene creation : 0.262210 seconds
+[INFO]: Scene manager:  <class InteractiveScene>
+	Number of environments: 32
+	Environment spacing   : 3.0
+	Source prim name      : /World/envs/env_0
+	Global prim paths     : ['/World/Ground']
+	Replicate physics     : True
+[INFO]: Starting the simulation. This may take a few seconds. Please wait...
+[INFO]: Time taken for simulation start : 0.429008 seconds
+[INFO]: Completed setting up the environment...
+{"kind": "real PhysX curriculum probe; near-net ground start; not autonomous-policy acceptance", "candidate": "reports/G07/dynamic_reach_near_net02/selected_contact_seed.pt", "root_start_x_m": 1.0, "episodes": 32, "contact": 24, "airborne_contact": 24, "ordered_net": 0, "ordered_landing": 0, "complete": 0, "recovery": 31, "numerical_failures": 0, "best": {"protocol": "ordered-smash-v3", "env_id": 8, "airborne_contact": true, "effective_face_contact": true, "contact_count": 1, "contact_position_m": [1.4185819625854492, 0.020557880401611328, 1.6290678977966309], "contact_point_tool_velocity_mps": [-0.11969560384750366, -0.06756728887557983, 0.1796773076057434], "contact_face_normal_world": [0.9486460089683533, -0.0241621732711792, 0.31541553139686584], "contact_root_position_m": [1.0443024635314941, -0.00568389892578125, 0.662015438079834], "contact_time_s": 1.4811882972717285, "outgoing_velocity_mps": [7.180704116821289, -0.33106157183647156, -0.5823026895523071], "outgoing_position_m": [1.4185819625854492, 0.020557880401611328, 1.6290678977966309], "outgoing_measurement_time_s": 1.4811882972717285, "interception_min_distance_m": 0.1516275256872177, "release_time_s": 1.4819382429122925, "ordered_crossed_net": false, "geometric_crossed_net": true, "geometric_landed_target": false, "net_margin_m": 0.07281994819641113, "net_crossing_position_m": [1.5, 0.016803011298179626, 1.6218199729919434], "net_crossing_time_s": 1.4925379753112793, "first_landing_position_m": [5.014346122741699, -0.14522242546081543, 0.025550536811351776], "first_landing_time_s": 2.0071535110473633, "ordered_landed_target": false, "recovery_success": true, "complete_smash": false, "body_contact": false, "numerical_failures": 0, "sweep_misses": 0, "sweep_unresolved": 0, "launch": {"env_id": 8, "arrival_time_s": 1.485, "shuttle_start": [13.781902546810555, 0.020612318068742752, 1.15], "shuttle_velocity": [-10.0, 0.0, 8.19348739143182]}, "coupled_flight_violation": 0.7103207841423006, "predicted_legal_attack": false, "predicted_net_margin_m": 0.06933336015197544, "predicted_first_landing_position_m": [5.014762508615906, -0.14524162404916025, 0.025]}}
+Loading user config located at: '/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/isaacsim/kit/data/Kit/Isaac-Sim/5.1/user.config.json'
+[Info] [carb] Logging to file: /home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/isaacsim/kit/logs/Kit/Isaac-Sim/5.1/kit_20261023_162220.log
+2026-10-23T08:22:20Z [0ms] [Warning] [carb.crashreporter-breakpad.plugin] [previous crash] preventing upload of minidump due to user opt-out: '/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/isaacsim/kit/data/Kit/Isaac-Sim/5.1/69f25773-9578-4b83-cb0a628d-f3361cda.dmp'
+2026-10-23T08:22:20Z [58ms] [Warning] [omni.usd_config.extension] Enable omni.materialx.libs extension to use MaterialX
+2026-10-23T08:22:20Z [355ms] [Warning] [carb] Acquiring non optional plugin interface which is not listed as dependency: [omni::physx::IPhysxBenchmarks v1.0] (plugin: <default plugin>), by client: omni.physics.physx.plugin. Add it to CARB_PLUGIN_IMPL_DEPS() macro of a client.
+2026-10-23T08:22:20Z [476ms] [Warning] [omni.isaac.dynamic_control] omni.isaac.dynamic_control is deprecated as of Isaac Sim 4.5. No action is needed from end-users.
+2026-10-23T08:22:23Z [3,815ms] [Warning] [carb.cudainterop.plugin] CUDA_VISIBLE_DEVICES environment variable is set.
+2026-10-23T08:22:23Z [3,815ms] [Warning] [carb.cudainterop.plugin] Note CUDA device enumeration and Omniverse device enumeration are different.
+2026-10-23T08:22:23Z [3,815ms] [Warning] [carb.cudainterop.plugin] Setting CUDA_VISIBLE_DEVICES can lead to undesired behavior or crashes.
+
+|---------------------------------------------------------------------------------------------|
+| Driver Version: 595.91.07     | Graphics API: Vulkan
+|=============================================================================================|
+| GPU | Name                             | Active | LDA | GPU Memory | Vendor-ID | LUID       |
+|     |                                  |        |     |            | Device-ID | UUID       |
+|     |                                  |        |     |            | Bus-ID    |            |
+|---------------------------------------------------------------------------------------------|
+| 0   | NVIDIA GeForce RTX 5080          | Yes: 0 |     | 16303   MB | 10de      | 0          |
+|     |                                  |        |     |            | 2c02      | ac315b09.. |
+|     |                                  |        |     |            | 1         |            |
+|=============================================================================================|
+| OS: 24.04.4 LTS (Noble Numbat) ubuntu, Version: 24.04.4, Kernel: 7.0.0-38-generic
+| XServer Vendor: The X.Org Foundation, XServer Version: 12101011 (1.21.1.11)
+| Processor: Intel(R) Core(TM) i9-14900KF
+| Bare Metal Cores: 24 | Bare Metal Logical Cores: 48
+| Available Cores:  32 
+|---------------------------------------------------------------------------------------------|
+| Total Memory (MB): 64065 | Free Memory: 54196
+| Total Page/Swap (MB): 8191 | Free Page/Swap: 5507
+|---------------------------------------------------------------------------------------------|
+2026-10-23T08:22:24Z [4,125ms] [Warning] [gpu.foundation.plugin] CPU performance profile is set to powersave. This profile sets the CPU to the lowest frequency reducing performance.
+2026-10-23T08:22:24Z [4,134ms] [Warning] [gpu.foundation.plugin] IOMMU is enabled.
+2026-10-23T08:22:38Z [18,836ms] [Warning] [isaaclab.assets.rigid_object.rigid_object] The external wrench frame has been changed from False to True. This may lead to unexpected behavior.
