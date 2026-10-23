@@ -12,6 +12,7 @@ from PIL import Image,ImageDraw,ImageFont
 p=argparse.ArgumentParser();p.add_argument('--input',type=Path,required=True);a=p.parse_args()
 meta=json.load(open(a.input/'geometry.json'));data=np.load(a.input/'geometry.npz');poses=np.load(a.input/'link_poses.npy');trace=json.load(open(a.input/'trajectory.json'));metrics=json.load(open(a.input/'metrics.json'))
 learned=metrics.get('controller','').startswith('learned')
+net_corrected=metrics.get('net_geometry_version')=='environment-local-net-v2'
 ctx=moderngl.create_standalone_context(backend='egl',device_index=1)
 assert 'llvmpipe' in ctx.info['GL_RENDERER'],ctx.info['GL_RENDERER']
 width,height=1280,720
@@ -75,7 +76,7 @@ def draw(index,slow=False):
  bp=np.eye(4,dtype='f4');bp[:3,3]=r['ball_xyz'];program['model'].write(bp.T.tobytes());program['color'].value=(1.,.35,.04);ball_mesh.render()
  frame=np.frombuffer(fbo.read(components=3,alignment=1),np.uint8).reshape(height,width,3)[::-1].copy()
  img=Image.fromarray(frame);d=ImageDraw.Draw(img);d.rectangle((0,0,width,88),fill=(18,28,43))
- d.text((24,8),'Go2 + PiPER｜'+('学习分段反馈策略' if learned else '近网课程教师')+' · 独立物理复现',font=title,fill='white')
+ d.text((24,8),'Go2 + PiPER｜'+('正确球网下重验' if net_corrected else '历史网坐标未修正')+' · '+('学习策略' if learned else '教师'),font=title,fill='white')
  d.text((24,50),'实测关节连杆与球轨迹 · 原负载与执行器 · 1.524 m 标准球网',font=small,fill=(166,193,214))
  d.text((1040,20),'0.5 倍慢放' if slow else '正常速度',font=small,fill=(115,218,206))
  t=r['time_s'];e=metrics['best'];v=np.asarray(r['ball_v'])
@@ -84,7 +85,8 @@ def draw(index,slow=False):
  d.rectangle((0,623,width,height),fill=(18,28,43))
  out=np.asarray(e['outgoing_velocity_mps']);landing=e['first_landing_position_m']
  d.text((24,632),f"本回合出球 [{out[0]:.2f}, {out[1]:.2f}, {out[2]:.2f}] m/s｜球心越网净空 {e['net_margin_m']*100:.1f} cm｜首次落点 [{landing[0]:.2f}, {landing[1]:.2f}] m",font=small,fill='white')
- d.text((24,669),f"独立重复：完整 {metrics['complete']}/{metrics['episodes']}，恢复 {metrics['recovery']}/{metrics['episodes']}｜选取案例 {metrics['selected_video_lane']}｜近网起点 1.0 m，尚非正式 G07 策略",font=small,fill=(166,193,214))
+ face='是' if e.get('effective_face_contact') else '否'
+ d.text((24,669),f"完整 {metrics['complete']}/{metrics['episodes']}，恢复 {metrics['recovery']}/{metrics['episodes']}｜有效拍面：{face}｜案例 {metrics['selected_video_lane']}｜近网课程，尚非正式 G07 通过",font=small,fill=(166,193,214))
  return np.asarray(img)
 out=a.input/('G07_near_net_learned_replay.mp4' if learned else 'G07_near_net_teacher_replay.mp4')
 with imageio.get_writer(str(out),fps=50,codec='libx264',quality=8,macro_block_size=8,output_params=['-movflags','+faststart']) as writer:

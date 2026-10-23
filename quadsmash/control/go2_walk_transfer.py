@@ -32,7 +32,8 @@ class Go2WalkTransfer:
         speed,kp,kd=parameters[:,:3].unbind(1)
         error=obs[:,760]
         self.reached|=(error.abs()<.04)&(obs[:,:2].norm(dim=1)<.12)
-        delay=parameters[:,10] if parameters.shape[1]>=11 else .15
+        delay=(parameters[:,14] if parameters.shape[1]==15 else
+               parameters[:,10] if parameters.shape[1]>=11 else .15)
         ramp=((t-delay)/.35).clamp(0,1)
         commands=torch.zeros((len(t),3),device=t.device)
         commands[:,0]=(speed*torch.tanh(kp*error-kd*obs[:,0])).clamp(-.4,1.)*ramp
@@ -52,10 +53,13 @@ class Go2WalkTransfer:
             q[:,8:12]+=parameters[:,5:6]
             q[:,:4]+=parameters[:,6:7]*obs[:,7:8]
             blend=((t-.1)/.45).clamp(0,1)
-            q[:,13]=torch.lerp(default[13].expand_as(t),parameters[:,8],blend)
-            q[:,14]=torch.lerp(default[14].expand_as(t),parameters[:,9],blend)
-            if parameters.shape[1]>=12:
-                q[:,16]=torch.lerp(default[16].expand_as(t),parameters[:,11],blend)
+            if parameters.shape[1]==15:
+                q[:,12:]=torch.lerp(default[12:][None,:],parameters[:,8:14],blend[:,None])
+            else:
+                q[:,13]=torch.lerp(default[13].expand_as(t),parameters[:,8],blend)
+                q[:,14]=torch.lerp(default[14].expand_as(t),parameters[:,9],blend)
+                if parameters.shape[1]>=12:
+                    q[:,16]=torch.lerp(default[16].expand_as(t),parameters[:,11],blend)
         rest=q.clone()
         rest[:,:12]=default[:12]
         q=torch.where((self.reached|(t>=3.4))[:,None],rest,q)

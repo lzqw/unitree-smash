@@ -1,37 +1,31 @@
-# 当前继续入口：正确物理球网下重新搜索（2026-10-23）
+# 当前继续入口：正确球网下靠近网前准备与起跳（2026-10-23）
 
-G07仍为IN_PROGRESS，没有满足正确物理网的有效完整策略。G04–G06和旧G07权重全部保留。
+G07为IN_PROGRESS；正确物理网下无借力完整成功仍为0。G04–G06与所有旧权重保留。
 
-## 固定授权
+## 固定授权与当前作业
 
-`g07-net-feasibility-20261023`，GPU0，独立新增最多10 GPU-hours；Asia/Taipei 2026-10-23 16:04:13 至 2026-10-24 02:04:13（UTC08:04:13至18:04:13）。重启/阶段切换不重置。此前用量不清零、不占用本轮10h。当前已完成作业实收约1.214976 GPUh，运行作业另有预留，账本为准。
+GPU0；独立新增最多10 GPU-hours，窗口 `g07-net-feasibility-20261023`：Asia/Taipei 2026-10-23 16:04:13 至 2026-10-24 02:04:13（UTC08:04:13至18:04:13）。重启或切换方法不重置。成本以GPU_LEDGER.json为准。
 
-## 必须知道的更正
+当前统一exec会话15404：`walk_close_high01`，30代×128环境×4秒，从root0学习行走至x1.10，提前抬臂；无球课程。先轮询现有进程并检查job.json/metrics.json，不重复启动。
 
-旧BallEnv/步态环境在子节点Net使用世界坐标作局部平移，导致物理网远离标称位置。修复为环境局部[1.5,0,0.762]，尺寸[.02,2,1.524]和机器人资产/执行器均不变。
+## 可信与无效证据
 
-- `net_blocking_probe02/verification.json`：32/32旧网偏移，0挡球。
-- `net_blocking_probe03/verification.json`：32/32正确位置且在网前反射、不穿网。原诊断metrics的末速度判定受后续反弹影响，须读verification.json，原数据保留。
-- 正确网冻结PWA复验 `eval_piecewise_netlocal02`：64/64空中触球，有效越网/目标首次落点/完整均0，恢复36/64，数值0。此前53/64教师、54/64学习策略结论撤回，仅保留历史/几何数据。对应目录新增scene_invalidation.json。
-- 旧击球和旧行走的球拍与正确网有几何交叠，检查在 `net_blocking_probe03/old_motion_net_intersection.json`。需要修正行走腕部姿态，并推迟起跳前的引拍。
+- 物理网修复为环境局部[1.5,0,.762]。`net_blocking_probe03/verification.json`：32/32位置正确并实际挡球；诊断原metrics末速度判定错误，须读verification。
+- 旧53/64教师、54/64学习策略的网实际偏移，已撤回。正确网冻结PWA复验0/64完整（恢复36/64）。发布页有更正和当前失败视频。
+- 首版分组ContactSensor源/目标数量不匹配，零值无效；当前每刚体一个过滤传感器，`net_robot_contact_positive02`已4/4检出真实网接触。不要再用旧分组零值证明不碰网。
+- `composed_replay_netlocal02`：从root0走到击球32/32空中有效拍面接触与越网，首次目标落点2/32、恢复2/32，但32/32碰网，数值1，无借力完整0。冻结无球复验 `composed_motion_net_timing01` 显示Racket在4.670s先碰网，早于约4.895s击球，不能用作可行教师。
+- `composed_high_ready01`20代×128：无碰网、腾空、恢复的最佳目标匹配点[1.313577,.005240,1.579334]m，仍不足，不是硬件上界。
 
-## 正在运行（轮询现有进程，不能重复启动）
+## 当前方法与下一步
 
-[{"output": "/home/autodrive/LZQW/unitree_smash/reports/G07/composed_reach_netlocal02", "child_pid": 1160469, "guard_pid": 1160458}]
+`close_base_ik_cpu01/pose_seed.pt` 是条件IK：机身x1.10、高.75、水平，拍面中心附近可达[1.4,0,1.65]、法向[.866,0,.5]且拍面与网SAT分离约5.5cm。只证明给定机身状态下几何可行，未证明动态到达、自碰撞或全臂安全。
 
-统一exec会话80971，对应 `composed_reach_netlocal02`：正确Net下，从root0开始调用已学习Go2行走actor，接40参数全身击球教师。16代×128环境×7.4秒，无球课程，不是实际击球成绩。新增独立机器人/网接触力监测，初期回合已实际运行，无程序错误。
+先检查close高臂行走是否稳定无碰网，再用该walker、该arm seed运行 `search_g07_composed_reach_v2.py`，可用 `--deep-crouch --vertical-seed --flight-objective --landing-feedback`。深蹲仅扩展搜索范围，实际原关节/扭矩/速度限制不变。飞行评分是理想恢复系数/无阻力弹道预测，只作塑形，必须实际BallEnv验证。
 
-## 最新可用控制器与来源
+所有GPU命令包在scripts/run_gpu_job.py，固定上述budget-window；保存checkpoint和完成回执。不把条件IK、无球拍面点、教师或单发重复当正式策略成绩。真实可行后继续学习、扩大来球/目标、全程自主独立双固定面板至少400回合。
 
-- `search_walk_netlocal02/best_candidate.pt`：正确网下搜索出的12参数行走适配器（速度/反馈、臂姿与腕部角度）；搜索多条成功、典型终点约x1.0，无保守球拍干涉。尚待冻结独立复验，不要把搜索内不同参数数目当重复成功率。
-- 行走actor为作者baryn公开平地Go2 TorchScript，48维输入、50Hz、动作.25rad，腿部25/.5增益、23.5Nm、30rad/s。来源和sha在configs/g07_go2_walk_transfer.json，二进制在assets/vendor/go2_flat_baryn20251217（忽略目录）；URL可按sha重新下载。已审查TorchScript仅Linear/ELU/Identity，无修改全局环境。
-- 原学习PWA `fit_piecewise_curriculum03/policy.pt` 保留作初始化，不是正确网达标策略。
-- `composed_reach_teacher.py` 保留步行臂姿直至起跳阶段再展开，参数schema为composed-reach-v2-40；其中后两维为引拍开始/时长，前38为原全身/挥拍/恢复反馈。绝不把它标为新的学习策略。
+## 复现资料
 
-## 后续
+Go2源行走actor、来源和sha：configs/g07_go2_walk_transfer.json。TorchScript在assets/vendor/go2_flat_baryn20251217（忽略目录），可按原URL/sha下载。原硬件标准PiPER+Go2+球拍20.646991kg，资产sha bfb831e4afc8a1a705bb0fb6f001c25eeaa401822978267a0ee5e151007511f3。行走为冻结学习actor+搜索反馈/臂姿，击球目前为搜索教师，不冒称新神经策略。
 
-先看当前搜索能否产生足够高、无机器人网接触的有效拍面事件，再做从初始自由来球发射开始的真实碰撞搜索。CPU长准备时间飞行候选在delayed_launch_cpu02（已匹配每个目标高度，01其他高度为近似旧记录）；条件IK在walk_strike_ik_cpu01。均不是动态成功证据。
-
-当前无球目标约[1.4,0,1.65]、法向[.866,0,.5]，在实际矩形拍面内选择最接近目标的点，避免只奖励最高角。保持完整硬件、标准网和原验收。发现真实可行路线后继续学习、扩展来球/目标，并进行原始起点全程自主双固定面板至少400回合；不能在课程阶段停止。
-
-GitHub旧发布页已明确撤回物理网成功结论： https://github.com/lzqw/unitree-smash/releases/tag/g07-progress-20261023 。旧资料不可混入修复后评估。更早继续入口已归档至status/history/NEXT_before_net_coordinate_fix_20261023.md。
+延长准备7.4s场景的球在reset时自由发射一次，部分初始位置达数十米，是单独模型探测版本，不能混入原面板。GitHub进展页：https://github.com/lzqw/unitree-smash/releases/tag/g07-progress-20261023 。

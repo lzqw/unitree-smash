@@ -15,6 +15,9 @@ p.add_argument('--num-envs',type=int,default=128)
 p.add_argument('--generations',type=int,default=30)
 p.add_argument('--initial',type=Path)
 p.add_argument('--wrist',action='store_true')
+p.add_argument('--high-arm',action='store_true')
+p.add_argument('--arm-seed',type=Path)
+p.add_argument('--target-x',type=float,default=1.)
 p.add_argument('--manifest',type=Path,default=ROOT/'configs/g07_go2_walk_transfer.json')
 AppLauncher.add_app_launcher_args(p)
 a=p.parse_args()
@@ -41,7 +44,7 @@ def main():
     cfg.sim.dt,cfg.decimation,cfg.sim.render_interval=.002,5,5
     cfg.episode_length_s=4.
     cfg.event_goal_enabled=True
-    cfg.event_goal_position=(1.,0.,.3)
+    cfg.event_goal_position=(a.target_x,0.,.3)
     env=LoadedWalkEnv(cfg)
     wrapped=RslRlVecEnvWrapper(env,clip_actions=None)
     policy=Go2WalkTransfer(a.manifest,a.num_envs,env.device)
@@ -58,9 +61,19 @@ def main():
         sigma=(high-low)*.15
     if a.initial:
         prior=torch.load(a.initial,map_location=env.device,weights_only=False)
-        mean[:len(prior['parameters'])]=prior['parameters']
+        seed_count=min(len(prior['parameters']),len(mean))
+        mean[:seed_count]=prior['parameters'][:seed_count]
         sigma=(high-low)*.05
         if a.wrist:sigma[-1]=.25
+    if a.high_arm:
+        if not a.arm_seed:raise ValueError('high-arm requires an arm pose seed')
+        arm=torch.load(a.arm_seed,map_location=env.device,weights_only=False)['arm_pose']
+        delay=(prior['parameters'][14].clone() if a.initial and len(prior['parameters'])==15 else mean[10].clone())
+        low=torch.cat((low[:8],torch.maximum(limits[12:,0],arm-.35),torch.tensor([.15],device=env.device)))
+        high=torch.cat((high[:8],torch.minimum(limits[12:,1],arm+.35),torch.tensor([.8],device=env.device)))
+        mean=torch.cat((mean[:8],arm,delay[None])).clamp(low,high)
+        if a.initial and len(prior['parameters'])==15:mean=prior['parameters'].clamp(low,high)
+        sigma=(high-low)*.10
     generator=torch.Generator(device=env.device).manual_seed(cfg.seed)
     history=[]
     best=-float('inf')
@@ -73,6 +86,7 @@ def main():
             env._episode_has_stepped.zero_()
             env._metrics_started=False
             env.episode_records.clear()
+            env.net_episode_records.clear()
             policy.reset()
             obs,_=wrapped.reset()
             finished=torch.zeros(a.num_envs,dtype=torch.bool,device=env.device)
@@ -95,10 +109,14 @@ def main():
                     finished|=done.bool()
             first={}
             for row in env.episode_records:first.setdefault(row['env_id'],row)
+            first_net={}
+            for row in env.net_episode_records:first_net.setdefault(row['env_id'],row)
+            if len(first_net)!=a.num_envs:raise RuntimeError('Incomplete net force telemetry')
+            net_bad=torch.tensor([first_net[i]['robot_net_contact'] for i in range(a.num_envs)],device=env.device)
             safe=torch.tensor([not first[i]['body_landing'] for i in range(a.num_envs)],device=env.device)
-            upright=safe&(~interference)&(final[:,2]>.2)&(tilt<.26)
-            success=upright&((final[:,0]-1.).abs()<.06)&(final[:,1].abs()<.06)&(velocity[:,:2].norm(dim=1)<.15)
-            scores=50*upright.float()+10*success.float()-8*(final[:,0]-1.).abs()-4*final[:,1].abs()-2*tilt-velocity.norm(dim=1)
+            upright=safe&(~interference)&(~net_bad)&(final[:,2]>.2)&(tilt<.26)
+            success=upright&((final[:,0]-a.target_x).abs()<.06)&(final[:,1].abs()<.06)&(velocity[:,:2].norm(dim=1)<.15)
+            scores=50*upright.float()+10*success.float()-8*(final[:,0]-a.target_x).abs()-4*final[:,1].abs()-2*tilt-velocity.norm(dim=1)
             elite=scores.topk(max(8,a.num_envs//8)).indices
             mean=.25*mean+.75*params[elite].mean(0)
             sigma=(.25*sigma+.75*params[elite].std(0)).clamp(min=(high-low)*.02)
@@ -108,6 +126,8 @@ def main():
                 upright=bool(upright[i]),movement_success=bool(success[i]),successes=int(success.sum()),
                 upright_lanes=int(upright.sum()),jump_metrics=first[i],
                 potential_net_interference=bool(interference[i]),net_geometry_version=env.net_geometry_version,
+                robot_net_contact=bool(net_bad[i]),net_contact_telemetry=first_net[i],
+                target_root_x_m=a.target_x,parameter_schema='walk-high-arm-15' if a.high_arm else 'walk-offsets-12',
                 kind='frozen walk actor plus searched arm posture/feedback; original payload/net; no ball')
             if float(scores[i])>best:
                 best=float(scores[i])
