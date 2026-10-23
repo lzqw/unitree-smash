@@ -1,71 +1,43 @@
-# 当前继续入口：起跳pitch/rate反馈原生复验（2026-10-23 14:50 UTC）
+# 当前继续入口：前向起跳反馈开发比较（2026-10-23 15:31 UTC）
 
-G07 IN_PROGRESS；正式400未执行，不可标PASSED。固定窗口UTC08:04:13.742590至18:04:13.742590（北京时间10月23日16:04至10月24日02:04），GPU0独立新增10 GPU-hours，不重置历史/窗口。
+G07 IN_PROGRESS；正式400未运行，不能标PASSED。固定授权仅GPU0：UTC2026-10-23 08:04:13.742590至18:04:13.742590（北京时间10月23日16:04至10月24日02:04），新增最多10 GPU-hours。历史保留，恢复不重置窗口。实际费用见GPU_LEDGER.json。
 
-## 当前活跃作业（不能重复启动）
+## 活跃作业：恢复先查，禁止重复启动
 
-统一exec会话58404，reports/G07/body_feedback_matrix_fine1280_01。guard max2700s/env-step-cap1088000，62.5us/.01s/8.5s，10冻结候选各128开发场景。输入body_feedback_candidates_v1/manifest.json，顺序baseline_reference及4个kp±.35/kd±.06反馈，再preparation_reference及4个相同反馈。Body参考由已完成net_free_teacher214_replay01/teacher_dataset.pt的公开pitch、omega_y、vx均值构成；只按固定相对时钟插值参考，用当前公开状态差调整前/后大腿位置命令，.75–1.30s窗口、最大.12rad。关节限位/增益/力矩/速度/质量未改，没有外力/状态重置/教师动作函数。CPU零增益动作差0、gyro扰动导致前后腿相反修正已查。真实效果待candidate_metrics.json。
+reports/G07/forward_body_matrix_fine1280_01，guard PID1214658/child1214666（启动15:25:55 UTC）；max2700s/env-step-cap1088000。10候选各128开发场景，physics62.5us/control.01s/episode8.5s，seed718901。输入forward_body_candidates_v1/manifest.json、causal_profiled_dev_ground128_v1/panel.json、causal_dev_panel64_v1/calibration.json。当前代码未提交部分为LearnedHybridPolicy新增前后腿共同vx反馈与walking waypoint小幅后移；guard保留启动source_snapshot/dirty。
 
-输出逐candidate和canonical/perturbed_b两组；不把1280总数当某个策略成绩。每组必须full≥.5、air≥.7、rec≥.85且总fault0，才可能冻结一个策略跑正式A/B。实际Net失败保留分母，完整和条件恢复均排除有机器人碰网的回合。
+候选顺序reference,stop_original,stop_back2cm,forward10,forward20,forward20_back3,extended_back3_forward,original_walk_forward15,original_walk_forward25,forward15_back1。新增mode differential-pitch-common-vx-v2：pitch/omega仍前后腿差分，vx共同大腿修正只在push1.00–1.25相对秒，单关节最大.12rad；不写根速度、无外力、不改硬件。CPU kv=0与旧模式动作差0，正参考速度产生同向前后腿命令，仅计算检查。实际成效等本批candidate_metrics.json。
 
-## 最近已完成、上传和诊断
+## 最近结果
 
-- exec7801 frozen_candidate_matrix_fine768_01已SUCCEEDED，6×128高精度。六组标准/B完整率依次.390625/.140625、.328125/.140625、.453125/.359375、.453125/.234375、.453125/.171875、.453125/.15625；无候选达标。全768故障1（candidate0/source112 sweep_unresolved），其他组0不代表全量0。
-- complementarity.json是事后oracle诊断，不能部署：标准最多46/64、B最多31/64，连B50%都不足，故没有训练/发布候选查表来冒充成功。
-- 准备快照校正：baseline在3.0到3.8s rootx中位漂移<1mm，B3.8s std .0102m；当前同组接触rootx std .0636m（旧独立128测.0682）。差异主要在起跳过程放大，所以新增上述腿部pitch/gyro反馈，而非直接更改准备位置。
-- preparation候选的14个Net中多数首次2.6–3.0s已发生（有Racket/Head），后段反馈不能消除已经发生的碰网。备用组件池original_walk_arm_feedback_candidates_v2/manifest.json已准备但未执行，共12项，去掉不稳的新步态，保留原walking，与后来学得arm residual组合，加/不加body反馈及3.0s重规划。该v2池所有候选3.0s前控制相同，若当前10候选不合格，优先测试此组件拆分。
-- 新开发场景causal_profiled_fresh_ground128_v2/panel.json已在后续学习/评测前冻结：发球seed718701、B扰动seed718702，64新球各canonical/B。若学习条件参数，应在这批新场景实际独立评估；原正式A/B仍未使用。
+body_feedback_matrix_fine1280_01 SUCCEEDED；最好candidate8=preparation_pitch+0.35_rate-0.06.pt，SHA5abca6cb4dd47e9dd576e5f95f8fe15b75b81b215cd5ba3f11bb460323eaebfe。标准完整44/64=.6875、AIR64/64、恢复54/64=.84375；B完整29/64=.453125、AIR63/64、恢复47/63=.74603；该候选数值0，但Net7+13，多数早在walking2.6–3.0秒发生。全1280数值2来自其他候选，原数据保留。
 
-## 后续可执行方向（未实现的不当成绩）
+original_walk_arm_body_matrix_fine1536_01 SUCCEEDED（已完成，不重启）；12×128。恢复原walking并保留arm/body并不能保留强扰动收益：最佳B完整16/64=.25；candidate6标准33/64、恢复61/64，但B完整16/64、恢复43/61。全部候选均未通过，两处候选数值故障合计4。故本批尝试更早停车、小幅后移准备点、只在推离时反馈前向速度。
 
-1. 等当前10候选结果。若一个冻结候选两组均合格，保持同一实现/文件，用新lock02和原profiled_net_eval_v2协议正式各200。只用同一策略，不能面板间改权重。
-2. 若不合格，原行走＋新arm/body组件12池已冻结，可用evaluate_g07_causal_hybrid.py的--candidate-checkpoint在原128开发面板实际比较。此池所有早期动作相同；global3.0s时尚未开始arm/body残差。
-3. 只有原walking共同前缀内的候选oracle明显超过门槛，才值得学习一个3.0s时基于当前公开状态的参数选择器。可以从preparation_snapshots的public_frame69/public_command_and_clock17和初始化预测特征学习选body gains/arm coefficients（不是按caseID，不读未来标签运行）；候选选择若用已完成结果只能当oracle，不能叫策略。此参数选择器目前未实现。要在fresh128实际评测，再考虑正式400。
+frozen_candidate_matrix_fine768_01六候选也均未合格，最好preparation标准29/64、B23/64。旧adaptive_planner_profiled_fine128_01为24/64与10/64。均开发结果，不是正式400。
 
-## 视频与发布（已上传）
+## 后续执行
 
-新网体v3真实效果：https://github.com/lzqw/unitree-smash/releases/download/g07-progress-20261023/G07_profiled_net_current_20261023.mp4 ，sha a80225bbc268e425d7ff4af852fa5668233730b615764db4cc3f7cf0f75cd4ee。来源frozen_candidate_matrix_fine768_01/candidate2/source0，固定录制全局env566，实际完整/无Net。画面统计仅该候选全部128开发回合full52/recovery98；不是formal400。
-新开发归档G07_profiled_development_5d19f95_1415UTC.zip已上传同一release（64,097,559bytes、sha358dbe2ba5fb81d02bc5b6e1a445fcbbbae03c8b883c99fd35b3529c7bcbc39e），source/checkpoint/population/publicGo2actor，增量包依赖先前基础资产；GitHub返回digest一致。当前1280活跃结果不在该归档中。
+1. 等当前1280结果，按候选分别看canonical/B。两组均full≥.5、AIR≥.7、条件恢复≥.85、所选候选数值0才进入正式。不能用混合候选平均或事后oracle冒充策略。
+2. 如不足，分析失败时间和实际接触/恢复数据，再在剩余固定窗口内做有假设的改进；为最终400至少预留约40分钟。独立fresh开发面板causal_profiled_fresh_ground128_v2已在调参前冻结（launch718701/reset718702），条件选择器若学习旧面板必须真正在fresh面板复验。
+3. 正式协议configs/g07_causal_profiled_net_eval_v2.json SHA6d11397ef63354217d63088d779fe449fe717ebeff10d3dbaf582b4b13c651a7，冻结A/B各200，原scenarios未改。lock01已弃用且从未跑；冻结一个新checkpoint和代码后用lock_g07_hybrid_evaluation.py生成lock02；同一策略依次A/B，不能中途换权重/源码。aggregate工具只重算，不自动发布PASSED。
+4. 若当前模型数值阻塞：runtime sweep仍原256迭代/tol1e-6。CPU sweep_iteration_diagnostic_cpu01显示3条原unknown在1024/4096同float32/tol下收敛miss；这不是原数值0、未改运行审计。如实现更大迭代只用于unknown，需要版本记录、针对性正例/原失败验证，原故障永不回写。
+5. UTC18:04:13前保存、停止本项目进程、准确记录费用与BUDGET_EXHAUSTED（若仍未通过）。不能因预算到期把goal标complete。
 
-视频工具prepare_g07_causal_video.py --scenario GLOBALENV读取manifest.recorded_env_ids（各候选case0/1预先固定随机位置），按candidate过滤统计，核对asset/body_names。renderer使用PYTHONPATH=/tmp/unitree_video_deps和Isaac解释器/llvmpipe CPU。后续本批候选也能生成真实视频，不需额外GPU录像。
+## 场景和证据边界
 
-## 近期停止的两个训练（已保存，不能重复启动）
+资产20.646991kg、SHA bfb831e4afc8a1a705bb0fb6f001c25eeaa401822978267a0ee5e151007511f3，原力矩/速度/PD不变。网v3中心1.524/侧1.55、宽2/厚.02，32段抛物线顶；仍是ground-to-top实体研究障碍，并非真实织网/场地标定。长准备球初位可数十米，属于已版本化模型场景。各网版本成绩不混。
 
-- 旧exec48903 preparation_arm_cem01，.25ms、16×32、原请求6代，实际完成2代后按方法切换SIGTERM保存退出；最佳第1代group8训练17/32、rec1、Net0、fault0。guard FAILED仅因无原6代完成回执，原因单存intentional_stop_reason.json。全部population000/001与raw保留。
-- 旧exec22969 local_preparation_arm_cem01，.125ms、12×32、原请求4代，完成2代最佳10/32，未改善。已验证best与population001可加载后停止未完成的下一代采样，guard exit-9/FAILED如实保留，不能称完成4代或程序崩溃。最优仍generation0/group5（delay比原少.05），checkpoint有readiness_extension=False。
-- candidate_matrix_native_smoke01：4个.2秒短回合已SUCCEEDED，仅验证开发路由/地面reset/保存，全部无接触、完整0，不冒充任务成绩。CPU CandidateBatch与独立控制器混合路由逐动作差0；仅计算检查。
+assets/assumptions.md是G01签名证据，必须保持SHA b78c443cb89de38d73f8b730fc7fba7e72b28c4e8f2dd2ffca4db70835a26b4a；不要再编辑。G07新增场景说明在reports/G07/ASSET_ASSUMPTIONS.md。b48bd1c已恢复原文；structural_pending_check_20261023_1510.json显示G00–G06依赖全部通过，G07仅缺自身evidence.json。
 
-## 最新失败（已完成，不能重复运行）
+## 上传和视频
 
-旧exec81037 adaptive_planner_profiled_fine128_01 SUCCEEDED，用冻结f615...在net-v3真实高精度128：标准64 AIR1、full.375、rec.921875、Net0、fault0；B扰动64 AIR.9375、full.15625、rec43/60=.7166667、Net1、fault0。合计full34/128、rec102/124、fault0。development_group_metrics.json已重算。正式门槛未满足，不启动400。
+仓库https://github.com/lzqw/unitree-smash，分支g04-guided-learning-20261022，已推送b48bd1c。release g07-progress-20261023。
 
-新原生网体诊断profiled_net_native_control01 16/16球挡/通行正确、4/4故意机器人碰网阳性；原恒高net-v2课程不替代新侧高网验收。
+新网真实视频G07_profiled_net_current_20261023.mp4已上传，SHA a80225bbc268e425d7ff4af852fa5668233730b615764db4cc3f7cf0f75cd4ee，来源768matrix candidate2/source0/globalenv566，固定录制案例实际完整；画面统计为该候选全128 full52/recovery98，不是400。
 
-## 网体补齐与正式协议
+开发机身反馈权重G07_body_feedback_development_20261023.pt/json已上传；SHA5abca...，minimum source dac845b，建议最新分支。其B/恢复未合格，不能宣称通过。
 
-原net-v2为恒高1.524矩形网，虽然局部坐标/碰撞已正确，却未实现原ACCEPTANCE/Goal中的侧边1.55。旧成绩保留为矩形网课程，不作完整标准高度验收。新物理静态闭合三角网32段抛物线顶，中心1.524/侧1.55，原宽2/厚.02；未降低网高或改机器人。OrderedSmashEvents按同一分段顶边计算y处净空。profiled_net_native_control01原生20环境测量几何正确，16/16挡球/通行和4/4故意机器人碰网阳性通过；CPU tests/test_smash_events.py 16项通过。
+64MB历史增量G07_profiled_development_5d19f95_1415UTC.zip，SHA358dbe2ba5fb81d02bc5b6e1a445fcbbbae03c8b883c99fd35b3529c7bcbc39e；不含后续body实验，且快照有G01说明文档签名不符。配套G07_documentation_integrity_fix_b48bd1c.zip已上传且digest核对，SHA b7eaacceefd3904b2a49f689a594514320bdc8f76e223c364e27b1f6e7afccec，或用最新分支。历史包不覆盖。
 
-新configs/g07_causal_profiled_net_eval_v2.json SHA6d11397ef63354217d63088d779fe449fe717ebeff10d3dbaf582b4b13c651a7，引用causal_profiled_eval_panel_a_v2和_b_v2各200。复制时逐项确认scenarios数组与旧预冻结A/B完全相同，仅网体/场景元数据另存。旧协议v1/旧panels/lock01保留未用；lock01因开发未合格、实现变更已弃用。正式门槛仍400/.5/.7/.85/0，取较差比例、数值累加。只有开发高精度合格后，调用scripts/lock_g07_hybrid_evaluation.py生成新不可变锁，使用同一checkpoint与实现依次正式A/B，不得中间改策略。aggregate_g07_hybrid_evaluation.py能重算，但不会自行发布PASSED。
-
-## 下一步
-
-1. 先等当前准备/残差CEM，再用其冻结best到新目录独立62.5us128复验；分标准/扰动两组。若均满足完整≥.5、air≥.7、rec≥.85、数值0，可准备同一新锁和正式400；尚未运行，不能先称通过。
-2. 若失败，备用机械臂姿态残差已实现但未实际运行：scripts/train_g07_adaptive_planner.py --arm-pitch-basis reports/G07/arm_pitch_residual_basis_cpu01/metrics.json，使用新profiled开发面板的标准64子集（需单独冻结，不要忽略robot_reset；trainer遇reset会拒绝）。4维残差依赖公开预测速度/高度，原关节限幅，不调用教师动作。CPU基向量只是种子，真实球CEM后还要细步长复验。
-3. 当前策略仅初始公开球状态做模型预测；若需要在线重规划，应单独版本化实现与测试，不能读取未来标签。固定calibration JSON未改；学习系数存在checkpoint。
-
-## 保留的关键结论
-
-- G04-G06原证据/PASSED未改；原硬件资产SHA bfb831e4afc8a1a705bb0fb6f001c25eeaa401822978267a0ee5e151007511f3、质量20.646991kg及执行器限制不变。
-- 旧物理网世界/局部平移错导致旧53/64教师、54/64学习结论撤回；net_blocking_probe03/verification32/32真正挡球。分组接触过滤零值曾无效，现one-source-per-environment-v2经阳性验证。
-- 无借力教师214冻结单球16/16真空中面/越网/首次目标、恢复0。PWA由实际数据拟合12段，留出最大动作误差4.17e-6；CPU误差不代替仿真。
-- 学习Go2行走/站立actor+PWA击球，teacher_calls0。矩形网可靠冻结参数在.25ms/62.5us各32/32完整/无Net/数值0，仍同一球课程。另一个候选高精度仅11/32且Net9；全部失败保留。
-- causal_hybrid_dev64_02矩形网高精度变化发球：AIR1、rec.890625、full.40625、Net1、数值0。adaptive_planner_fast_dev64_01粗步长：AIR1、rec.84375、full.453125、Net10、数值0，步长不同不可直接称提升。
-- adaptive_planner_cem01完成6代16组×16开发场景真实球搜索，best第5代group8 full.625/rec.9375/Net0/fault0，训练而非泛化成绩。checkpoint与population_000..005.pt保存了参数/均值/方差/RNG。
-- 细步长和原大场景仍可能出现sweep_unresolved；阈值/审计没有放宽，出现则保留并诊断。
-
-## 入口与上传
-
-仓库https://github.com/lzqw/unitree-smash，分支g04-guided-learning-20261022，最新已推送720f45d（包含128失败、准备学习入口）；后续矩阵/重规划源代码与训练证据待本次提交。
-发布https://github.com/lzqw/unitree-smash/releases/tag/g07-progress-20261023。完整视频G07_learned_hybrid_complete_nominal_20261023.mp4与清洁名义权重SHA0620b79d4b85fa746334d50122b1cef0cee933c8af179aa51b514395bbb41dc1为矩形网课程，不能代表新侧高网验收。原始旧视频/zip保留并分开标注。
-
-Isaac解释器/home/autodrive/Isaac/env_isaaclab/bin/python；系统python3没有numpy/torch。CPU视频依赖PYTHONPATH=/tmp/unitree_video_deps、llvmpipe。所有inference缓存原生状态写入/forward/history reset须放torch.inference_mode；策略缓冲分配在其外，持久copy_。不要清理MPS/AWESun/其他作业，只管理本项目PID。
+Isaac解释器/home/autodrive/Isaac/env_isaaclab/bin/python；system python3无torch/numpy。CPU视频依赖PYTHONPATH=/tmp/unitree_video_deps和llvmpipe。恢复先检查ps/ledger防重复，勿清理MPS/AWESun/无关进程。原G04–G06保持PASSED；不把搜索失败当硬件不可行证明。

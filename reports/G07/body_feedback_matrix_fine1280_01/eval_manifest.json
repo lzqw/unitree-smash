@@ -1,0 +1,137 @@
+{
+  "protocol": "g07-causal-long-prepare-development-v1",
+  "panel": "causal_profiled_dev_ground128_v1",
+  "formal_policy_acceptance": false,
+  "episodes": 1280,
+  "ground_initialization_only": true,
+  "formal_evaluation_eligible": false,
+  "protocol_sha256": null,
+  "policy_lock_sha256": null,
+  "checkpoint_sha256": "d1eda71eb7c83373416778a80873c7f3176ef94c46bd6f283b39b1eb8c2dfdad",
+  "launch_panel_sha256": "a45aa38c3948442d945b38834f5af42819ad35f1e5f0f12253a14c65d6dc0c8c",
+  "calibration_sha256": "60745396d0b980c268fb2406b42de7f95563b3585c4f8f31eef58b38d5e9933e",
+  "source_git_sha": "5d19f95728dcaf8b75d46aca9ef98f5318d21da6",
+  "asset_sha256": "bfb831e4afc8a1a705bb0fb6f001c25eeaa401822978267a0ee5e151007511f3",
+  "physics_dt_s": 6.25e-05,
+  "control_dt_s": 0.01,
+  "episode_seconds": 8.5,
+  "net_geometry_version": "environment-local-profiled-net-v3",
+  "controller": "frozen learned walking + learned PWA strike + frozen learned standing + model prediction; replan schedule recorded separately",
+  "teacher_prefix_steps": 0,
+  "teacher_action_function_calls": 0,
+  "causal_phase": true,
+  "fixed_phase_ablation": false,
+  "causal_replan_at_s": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "candidate_checkpoints": [
+    {
+      "path": "reports/G07/body_feedback_candidates_v1/baseline_reference.pt",
+      "sha256": "d1eda71eb7c83373416778a80873c7f3176ef94c46bd6f283b39b1eb8c2dfdad"
+    },
+    {
+      "path": "reports/G07/body_feedback_candidates_v1/baseline_pitch-0.35_rate-0.06.pt",
+      "sha256": "beb4ccba725861c1a2686ff112c56b938cdf9506edcc8dceb17e2c701085ab1e"
+    },
+    {
+      "path": "reports/G07/body_feedback_candidates_v1/baseline_pitch-0.35_rate+0.06.pt",
+      "sha256": "7ee8a3af35f48c170e568ee3f51392519a30ebeddf5be23dbe01d7e17f096c63"
+    },
+    {
+      "path": "reports/G07/body_feedback_candidates_v1/baseline_pitch+0.35_rate-0.06.pt",
+      "sha256": "9e0091d1b3e67b9c3460470686c64ef1fbf7dc035466f71ae61a4e9d91979330"
+    },
+    {
+      "path": "reports/G07/body_feedback_candidates_v1/baseline_pitch+0.35_rate+0.06.pt",
+      "sha256": "aefc81ea0db7d3023b2e1220b38683bab9232960bf3169688e6e353f6bf91424"
+    },
+    {
+      "path": "reports/G07/body_feedback_candidates_v1/preparation_reference.pt",
+      "sha256": "89e4594f7d0c87c6ba16849ad7a11666c3af5dc975524c75df8f46fea185621d"
+    },
+    {
+      "path": "reports/G07/body_feedback_candidates_v1/preparation_pitch-0.35_rate-0.06.pt",
+      "sha256": "30f84808a25cd0714c6751467e5d9decbfcf1acaef7fbe804654ce6bb14c0840"
+    },
+    {
+      "path": "reports/G07/body_feedback_candidates_v1/preparation_pitch-0.35_rate+0.06.pt",
+      "sha256": "de48b643581d46234eac5f1ce44827e08f735dbb0efc06baad72f283d3428352"
+    },
+    {
+      "path": "reports/G07/body_feedback_candidates_v1/preparation_pitch+0.35_rate-0.06.pt",
+      "sha256": "5abca6cb4dd47e9dd576e5f95f8fe15b75b81b215cd5ba3f11bb460323eaebfe"
+    },
+    {
+      "path": "reports/G07/body_feedback_candidates_v1/preparation_pitch+0.35_rate+0.06.pt",
+      "sha256": "a331d6ba73c6e7f465bd07d0391528279e8d51313d58d81354201cbeb6b5b663"
+    }
+  ],
+  "source_cases_per_candidate": 128,
+  "recorded_env_ids": [
+    604,
+    1237,
+    919,
+    223,
+    464,
+    900,
+    473,
+    1069,
+    1027,
+    934,
+    769,
+    976,
+    270,
+    240,
+    1097,
+    14,
+    582,
+    867,
+    403,
+    958
+  ],
+  "command": [
+    "scripts/evaluate_g07_causal_hybrid.py",
+    "--output",
+    "reports/G07/body_feedback_matrix_fine1280_01",
+    "--checkpoint",
+    "reports/G07/body_feedback_candidates_v1/baseline_reference.pt",
+    "--candidate-checkpoint",
+    "reports/G07/body_feedback_candidates_v1/baseline_pitch-0.35_rate-0.06.pt",
+    "--candidate-checkpoint",
+    "reports/G07/body_feedback_candidates_v1/baseline_pitch-0.35_rate+0.06.pt",
+    "--candidate-checkpoint",
+    "reports/G07/body_feedback_candidates_v1/baseline_pitch+0.35_rate-0.06.pt",
+    "--candidate-checkpoint",
+    "reports/G07/body_feedback_candidates_v1/baseline_pitch+0.35_rate+0.06.pt",
+    "--candidate-checkpoint",
+    "reports/G07/body_feedback_candidates_v1/preparation_reference.pt",
+    "--candidate-checkpoint",
+    "reports/G07/body_feedback_candidates_v1/preparation_pitch-0.35_rate-0.06.pt",
+    "--candidate-checkpoint",
+    "reports/G07/body_feedback_candidates_v1/preparation_pitch-0.35_rate+0.06.pt",
+    "--candidate-checkpoint",
+    "reports/G07/body_feedback_candidates_v1/preparation_pitch+0.35_rate-0.06.pt",
+    "--candidate-checkpoint",
+    "reports/G07/body_feedback_candidates_v1/preparation_pitch+0.35_rate+0.06.pt",
+    "--launch-panel",
+    "reports/G07/causal_profiled_dev_ground128_v1/panel.json",
+    "--calibration",
+    "reports/G07/causal_dev_panel64_v1/calibration.json",
+    "--physics-dt",
+    ".0000625",
+    "--episode-seconds",
+    "8.5",
+    "--seed",
+    "718401",
+    "--headless"
+  ]
+}

@@ -46,6 +46,8 @@ class LearnedHybridPolicy:
         self.body_reference_times = reference['times_s'].to(device) if reference else None
         self.body_reference_values = reference['pitch_omega_y_vx'].to(device) if reference else None
         self.body_feedback_parameters = checkpoint.get('body_feedback_parameters', torch.zeros(3)).to(device)
+        self.body_feedback_mode = checkpoint.get('body_feedback_mode', 'differential-v1')
+        self.body_velocity_bias = checkpoint.get('body_velocity_reference_bias_mps', 0.)
 
     def initialize(self, observation):
         self.walk.reset()
@@ -60,6 +62,7 @@ class LearnedHybridPolicy:
         self.phase_start.fill_(self.checkpoint['walk_seconds'])
         self.waypoints.copy_(torch.tensor([self.checkpoint['walk_waypoint_x'], 0., .3],
                                          device=self.phase_start.device))
+        self.waypoints[:, 0].add_(self.checkpoint.get('preparation_waypoint_offset_x_m', 0.))
         self.intercepts.copy_(torch.tensor(self.checkpoint['result']['virtual_ball_center_m'],
                                           device=self.phase_start.device))
         if self.calibration is None:
@@ -150,11 +153,19 @@ class LearnedHybridPolicy:
             fraction = ((time_local-left)/(right-left)).clamp(0, 1)
             reference = torch.lerp(self.body_reference_values[index-1], self.body_reference_values[index], fraction[:, None])
             measured = torch.stack((torch.atan2(local[:, 6], -local[:, 8]), local[:, 4], local[:, 0]), 1)
-            delta = ((measured-reference)*self.body_feedback_parameters).sum(1).clamp(-.12, .12)
             envelope = ((time_local-.75)/.1).clamp(0, 1)*((1.30-time_local)/.1).clamp(0, 1)
-            correction = delta*envelope
-            strike_action[:, 4:6] += 2*correction[:, None]/(self.limits[4:6, 1]-self.limits[4:6, 0])
-            strike_action[:, 6:8] -= 2*correction[:, None]/(self.limits[6:8, 1]-self.limits[6:8, 0])
+            if self.body_feedback_mode == 'differential-pitch-common-vx-v2':
+                pitch = ((measured[:, :2]-reference[:, :2])*self.body_feedback_parameters[:2]).sum(1).clamp(-.12, .12)*envelope
+                vx_envelope = ((time_local-1.)/.04).clamp(0, 1)*((1.25-time_local)/.07).clamp(0, 1)
+                common = (self.body_feedback_parameters[2]*(measured[:, 2]-reference[:, 2]-self.body_velocity_bias)).clamp(-.12, .12)*vx_envelope
+                front, rear = (pitch+common).clamp(-.12, .12), (-pitch+common).clamp(-.12, .12)
+            elif self.body_feedback_mode == 'differential-v1':
+                delta = ((measured-reference)*self.body_feedback_parameters).sum(1).clamp(-.12, .12)
+                front, rear = delta*envelope, -delta*envelope
+            else:
+                raise ValueError('Unknown body feedback mode')
+            strike_action[:, 4:6] += 2*front[:, None]/(self.limits[4:6, 1]-self.limits[4:6, 0])
+            strike_action[:, 6:8] += 2*rear[:, None]/(self.limits[6:8, 1]-self.limits[6:8, 0])
             strike_action.clamp_(-1, 1)
         if self.has_arm_residual:
             envelope = ((local[:, 775]-.8)/.35).clamp(0, 1)*((1.6-local[:, 775])/.18).clamp(0, 1)

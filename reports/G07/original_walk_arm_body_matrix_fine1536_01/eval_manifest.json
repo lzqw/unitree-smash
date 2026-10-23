@@ -1,0 +1,155 @@
+{
+  "protocol": "g07-causal-long-prepare-development-v1",
+  "panel": "causal_profiled_dev_ground128_v1",
+  "formal_policy_acceptance": false,
+  "episodes": 1536,
+  "ground_initialization_only": true,
+  "formal_evaluation_eligible": false,
+  "protocol_sha256": null,
+  "policy_lock_sha256": null,
+  "checkpoint_sha256": "5e55760da08f00c65467d1ad1c3b461229ebe14bc0c98799ad594005c09b09a6",
+  "launch_panel_sha256": "a45aa38c3948442d945b38834f5af42819ad35f1e5f0f12253a14c65d6dc0c8c",
+  "calibration_sha256": "60745396d0b980c268fb2406b42de7f95563b3585c4f8f31eef58b38d5e9933e",
+  "source_git_sha": "dac845b80cd3f088c6b2cf1afde2bf324d96bfaa",
+  "asset_sha256": "bfb831e4afc8a1a705bb0fb6f001c25eeaa401822978267a0ee5e151007511f3",
+  "physics_dt_s": 6.25e-05,
+  "control_dt_s": 0.01,
+  "episode_seconds": 8.5,
+  "net_geometry_version": "environment-local-profiled-net-v3",
+  "controller": "frozen learned walking + learned PWA strike + frozen learned standing + model prediction; replan schedule recorded separately",
+  "teacher_prefix_steps": 0,
+  "teacher_action_function_calls": 0,
+  "causal_phase": true,
+  "fixed_phase_ablation": false,
+  "causal_replan_at_s": [
+    null,
+    3.0,
+    null,
+    null,
+    null,
+    null,
+    null,
+    3.0,
+    3.0,
+    3.0,
+    3.0,
+    3.0
+  ],
+  "candidate_checkpoints": [
+    {
+      "path": "reports/G07/original_walk_arm_feedback_candidates_v1/baseline_reference.pt",
+      "sha256": "5e55760da08f00c65467d1ad1c3b461229ebe14bc0c98799ad594005c09b09a6"
+    },
+    {
+      "path": "reports/G07/frozen_development_candidates_v1/baseline_replan.pt",
+      "sha256": "85a0d375e75532a5b849a49463eea1a7c991f5c8a19adc0fefdad46de57aa21f"
+    },
+    {
+      "path": "reports/G07/original_walk_arm_feedback_candidates_v1/original_walk_arm_body_none_replan0.pt",
+      "sha256": "8a2f6689e2b9a842d772fc9a079f499b26c82321bece9ff1d45455092411aa16"
+    },
+    {
+      "path": "reports/G07/original_walk_arm_feedback_candidates_v1/original_walk_arm_body_-0.35_-0.06_replan0.pt",
+      "sha256": "6fde253b0b485323506a58e30b4ae93b4f9b9eec2a0dcd89516ebb3783f25f0e"
+    },
+    {
+      "path": "reports/G07/original_walk_arm_feedback_candidates_v1/original_walk_arm_body_-0.35_0.06_replan0.pt",
+      "sha256": "74a064dfd84524eea7d6d1d5c4d6e26a9b40e9924f239d63cfe7f586c816c91a"
+    },
+    {
+      "path": "reports/G07/original_walk_arm_feedback_candidates_v1/original_walk_arm_body_0.35_-0.06_replan0.pt",
+      "sha256": "8333e89f73d3257e6a4cdce0eaea86ee607244a7c3be86ca5746964f9d92ddfd"
+    },
+    {
+      "path": "reports/G07/original_walk_arm_feedback_candidates_v1/original_walk_arm_body_0.35_0.06_replan0.pt",
+      "sha256": "6dfa25ca758a27c773b1341edb3b7497d5a8698ea2a41aee042c16b925132c69"
+    },
+    {
+      "path": "reports/G07/original_walk_arm_feedback_candidates_v1/original_walk_arm_body_none_replan1.pt",
+      "sha256": "9ee564b467ead720590e888f7e2e478105084747a0c9259c9759c9b79cfa9a62"
+    },
+    {
+      "path": "reports/G07/original_walk_arm_feedback_candidates_v1/original_walk_arm_body_-0.35_-0.06_replan1.pt",
+      "sha256": "a034daa00631b03fd424142c5e2d027086cbdc543d4624804b6551cec8861462"
+    },
+    {
+      "path": "reports/G07/original_walk_arm_feedback_candidates_v1/original_walk_arm_body_-0.35_0.06_replan1.pt",
+      "sha256": "3d4f45408001382ea8f1bbb19e4f6c6bd30397e7d570d26dc284eefbb519df80"
+    },
+    {
+      "path": "reports/G07/original_walk_arm_feedback_candidates_v1/original_walk_arm_body_0.35_-0.06_replan1.pt",
+      "sha256": "d2699deadd24b09039a92a72b29870b0e0872a0853480e73b1ed7600679c74d6"
+    },
+    {
+      "path": "reports/G07/original_walk_arm_feedback_candidates_v1/original_walk_arm_body_0.35_0.06_replan1.pt",
+      "sha256": "e0496c33dc59f1f68e7585c40f8720c0ef5d288017a0987cd66716a3876d77fc"
+    }
+  ],
+  "source_cases_per_candidate": 128,
+  "recorded_env_ids": [
+    846,
+    631,
+    1325,
+    1031,
+    121,
+    344,
+    1497,
+    1386,
+    507,
+    658,
+    861,
+    1448,
+    767,
+    1013,
+    704,
+    1023,
+    254,
+    1404,
+    1385,
+    1147,
+    578,
+    40,
+    713,
+    1198
+  ],
+  "command": [
+    "scripts/evaluate_g07_causal_hybrid.py",
+    "--output",
+    "reports/G07/original_walk_arm_body_matrix_fine1536_01",
+    "--checkpoint",
+    "reports/G07/original_walk_arm_feedback_candidates_v1/baseline_reference.pt",
+    "--candidate-checkpoint",
+    "reports/G07/frozen_development_candidates_v1/baseline_replan.pt",
+    "--candidate-checkpoint",
+    "reports/G07/original_walk_arm_feedback_candidates_v1/original_walk_arm_body_none_replan0.pt",
+    "--candidate-checkpoint",
+    "reports/G07/original_walk_arm_feedback_candidates_v1/original_walk_arm_body_-0.35_-0.06_replan0.pt",
+    "--candidate-checkpoint",
+    "reports/G07/original_walk_arm_feedback_candidates_v1/original_walk_arm_body_-0.35_0.06_replan0.pt",
+    "--candidate-checkpoint",
+    "reports/G07/original_walk_arm_feedback_candidates_v1/original_walk_arm_body_0.35_-0.06_replan0.pt",
+    "--candidate-checkpoint",
+    "reports/G07/original_walk_arm_feedback_candidates_v1/original_walk_arm_body_0.35_0.06_replan0.pt",
+    "--candidate-checkpoint",
+    "reports/G07/original_walk_arm_feedback_candidates_v1/original_walk_arm_body_none_replan1.pt",
+    "--candidate-checkpoint",
+    "reports/G07/original_walk_arm_feedback_candidates_v1/original_walk_arm_body_-0.35_-0.06_replan1.pt",
+    "--candidate-checkpoint",
+    "reports/G07/original_walk_arm_feedback_candidates_v1/original_walk_arm_body_-0.35_0.06_replan1.pt",
+    "--candidate-checkpoint",
+    "reports/G07/original_walk_arm_feedback_candidates_v1/original_walk_arm_body_0.35_-0.06_replan1.pt",
+    "--candidate-checkpoint",
+    "reports/G07/original_walk_arm_feedback_candidates_v1/original_walk_arm_body_0.35_0.06_replan1.pt",
+    "--launch-panel",
+    "reports/G07/causal_profiled_dev_ground128_v1/panel.json",
+    "--calibration",
+    "reports/G07/causal_dev_panel64_v1/calibration.json",
+    "--physics-dt",
+    ".0000625",
+    "--episode-seconds",
+    "8.5",
+    "--seed",
+    "718601",
+    "--headless"
+  ]
+}
