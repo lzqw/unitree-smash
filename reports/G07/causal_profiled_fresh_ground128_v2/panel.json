@@ -1,0 +1,6510 @@
+{
+  "version": "g07-causal-long-prepare-development-v1",
+  "panel_id": "causal_profiled_fresh_ground128_v2",
+  "created_at": "2026-10-23T14:47:14.584380+00:00",
+  "seed": 718701,
+  "formal_acceptance": false,
+  "hardware_changed": false,
+  "net_geometry_version": "environment-local-profiled-net-v3",
+  "initial_state_only": "Shuttle state written once at ground reset; no post-reset corrections",
+  "controller_access": "Public observation only; per-scenario arrival/target labels unavailable to policy",
+  "ranges": {
+    "arrival_time_s": [
+      4.6,
+      5.25
+    ],
+    "intercept_y_offset_m": [
+      -0.1,
+      0.1
+    ],
+    "intercept_z_offset_m": [
+      -0.03,
+      0.03
+    ],
+    "initial_vx_mps": [
+      -8.0,
+      -12.0,
+      -20.0,
+      -30.0,
+      -45.0,
+      -70.0
+    ]
+  },
+  "reset_distribution": null,
+  "scenarios": [
+    {
+      "env_id": 0,
+      "shuttle_start": [
+        39.29584937137523,
+        -0.009781207889318466,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -20.0,
+        0.0,
+        38.53373096790165
+      ],
+      "arrival_time_s": 4.774999980926514,
+      "target_position_m": [
+        1.397490382194519,
+        -0.009781207889318466,
+        1.6342344284057617
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.265240580618877,
+        0.0,
+        -16.89315645360233
+      ],
+      "solver_height_residual_m": 3.446507701454493e-08,
+      "development_group": "canonical",
+      "source_scenario": 0
+    },
+    {
+      "env_id": 1,
+      "shuttle_start": [
+        51.37496548422808,
+        -0.054908193531910836,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -30.0,
+        0.0,
+        42.34740778338164
+      ],
+      "arrival_time_s": 4.819571722359715,
+      "target_position_m": [
+        1.397490382194519,
+        -0.054908193531910836,
+        1.6575532892879
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.852443500559475,
+        0.0,
+        -16.918240408904133
+      ],
+      "solver_height_residual_m": 7.81652231829355e-08,
+      "development_group": "canonical",
+      "source_scenario": 1
+    },
+    {
+      "env_id": 2,
+      "shuttle_start": [
+        51.00059910208767,
+        0.02798848927055103,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -30.0,
+        0.0,
+        47.0915395533666
+      ],
+      "arrival_time_s": 5.120318999131066,
+      "target_position_m": [
+        1.397490382194519,
+        0.02798848927055103,
+        1.6574443072106322
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.340635025889699,
+        0.0,
+        -17.39694151715014
+      ],
+      "solver_height_residual_m": 5.839011341102207e-08,
+      "development_group": "canonical",
+      "source_scenario": 2
+    },
+    {
+      "env_id": 3,
+      "shuttle_start": [
+        18.936063741529836,
+        -0.07018742946887431,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -8.0,
+        0.0,
+        37.73375528398901
+      ],
+      "arrival_time_s": 4.9250866967003155,
+      "target_position_m": [
+        1.397490382194519,
+        -0.07018742946887431,
+        1.6381495042527319
+      ],
+      "predicted_incoming_velocity_mps": [
+        -1.5977840025249312,
+        0.0,
+        -17.241247896652588
+      ],
+      "solver_height_residual_m": 2.0546764512019422e-08,
+      "development_group": "canonical",
+      "source_scenario": 3
+    },
+    {
+      "env_id": 4,
+      "shuttle_start": [
+        80.68231890756724,
+        -0.08917540693897506,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -70.0,
+        0.0,
+        59.2712796991691
+      ],
+      "arrival_time_s": 4.985467087053554,
+      "target_position_m": [
+        1.397490382194519,
+        -0.08917540693897506,
+        1.6166893583772333
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.504242037680394,
+        0.0,
+        -17.15703222167225
+      ],
+      "solver_height_residual_m": 4.3003992811208036e-08,
+      "development_group": "canonical",
+      "source_scenario": 4
+    },
+    {
+      "env_id": 5,
+      "shuttle_start": [
+        64.75363050057928,
+        -0.09789733239681311,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -45.0,
+        0.0,
+        51.46711540874094
+      ],
+      "arrival_time_s": 5.054241574133825,
+      "target_position_m": [
+        1.397490382194519,
+        -0.09789733239681311,
+        1.6600310487481058
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.956704010012118,
+        0.0,
+        -17.26882079589899
+      ],
+      "solver_height_residual_m": 4.4675627197676704e-08,
+      "development_group": "canonical",
+      "source_scenario": 5
+    },
+    {
+      "env_id": 6,
+      "shuttle_start": [
+        38.63306858141186,
+        -0.0928964472996903,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -20.0,
+        0.0,
+        44.61144127417356
+      ],
+      "arrival_time_s": 5.17765939240605,
+      "target_position_m": [
+        1.397490382194519,
+        -0.0928964472996903,
+        1.6537215946297614
+      ],
+      "predicted_incoming_velocity_mps": [
+        -2.6676490475343297,
+        0.0,
+        -17.522401796943335
+      ],
+      "solver_height_residual_m": 1.3759272832203351e-08,
+      "development_group": "canonical",
+      "source_scenario": 6
+    },
+    {
+      "env_id": 7,
+      "shuttle_start": [
+        19.09943946187233,
+        0.049336276909524884,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -8.0,
+        0.0,
+        35.845894063822925
+      ],
+      "arrival_time_s": 4.78854059971648,
+      "target_position_m": [
+        1.397490382194519,
+        0.049336276909524884,
+        1.651592524742748
+      ],
+      "predicted_incoming_velocity_mps": [
+        -1.7226104669859086,
+        0.0,
+        -17.022735916066978
+      ],
+      "solver_height_residual_m": 3.2619997814009594e-08,
+      "development_group": "canonical",
+      "source_scenario": 7
+    },
+    {
+      "env_id": 8,
+      "shuttle_start": [
+        64.62966880941696,
+        0.08637263748405696,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -45.0,
+        0.0,
+        53.40209424030036
+      ],
+      "arrival_time_s": 5.164149625609562,
+      "target_position_m": [
+        1.397490382194519,
+        0.08637263748405696,
+        1.6216564083821672
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.760692612906493,
+        0.0,
+        -17.43397118593283
+      ],
+      "solver_height_residual_m": 4.1195811872896115e-08,
+      "development_group": "canonical",
+      "source_scenario": 8
+    },
+    {
+      "env_id": 9,
+      "shuttle_start": [
+        80.6678948726337,
+        -0.07721331485498147,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -70.0,
+        0.0,
+        60.103991883806884
+      ],
+      "arrival_time_s": 5.0246760741853835,
+      "target_position_m": [
+        1.397490382194519,
+        -0.07721331485498147,
+        1.6515666212590197
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.426836956672391,
+        0.0,
+        -17.217917345785295
+      ],
+      "solver_height_residual_m": 4.404864561990962e-08,
+      "development_group": "canonical",
+      "source_scenario": 9
+    },
+    {
+      "env_id": 10,
+      "shuttle_start": [
+        80.6709640485626,
+        0.07438071114424338,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -70.0,
+        0.0,
+        57.770265522412956
+      ],
+      "arrival_time_s": 4.9094124920130815,
+      "target_position_m": [
+        1.397490382194519,
+        0.07438071114424338,
+        1.6274325329643773
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.657516429939794,
+        0.0,
+        -17.03321927149892
+      ],
+      "solver_height_residual_m": 4.608338621814312e-08,
+      "development_group": "canonical",
+      "source_scenario": 10
+    },
+    {
+      "env_id": 11,
+      "shuttle_start": [
+        80.67050297669502,
+        -0.058048312909722545,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -70.0,
+        0.0,
+        57.4426005827263
+      ],
+      "arrival_time_s": 4.8937459140986315,
+      "target_position_m": [
+        1.397490382194519,
+        -0.058048312909722545,
+        1.6106052446185648
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.689518461258156,
+        0.0,
+        -17.00768306049713
+      ],
+      "solver_height_residual_m": 2.599351600629518e-08,
+      "development_group": "canonical",
+      "source_scenario": 11
+    },
+    {
+      "env_id": 12,
+      "shuttle_start": [
+        39.09941144059965,
+        -0.052715142307780564,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -20.0,
+        0.0,
+        40.77521699946374
+      ],
+      "arrival_time_s": 4.9297593345019,
+      "target_position_m": [
+        1.397490382194519,
+        -0.052715142307780564,
+        1.652603348185409
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.026449182290315,
+        0.0,
+        -17.14970694638896
+      ],
+      "solver_height_residual_m": 4.479309945182308e-08,
+      "development_group": "canonical",
+      "source_scenario": 12
+    },
+    {
+      "env_id": 13,
+      "shuttle_start": [
+        18.937423568831857,
+        -0.05747934861623749,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -8.0,
+        0.0,
+        37.74255977477878
+      ],
+      "arrival_time_s": 4.927066604726039,
+      "target_position_m": [
+        1.397490382194519,
+        -0.05747934861623749,
+        1.6146421169749927
+      ],
+      "predicted_incoming_velocity_mps": [
+        -1.596274098364935,
+        0.0,
+        -17.24521486756437
+      ],
+      "solver_height_residual_m": 2.7402397018150282e-08,
+      "development_group": "canonical",
+      "source_scenario": 13
+    },
+    {
+      "env_id": 14,
+      "shuttle_start": [
+        51.3202024845428,
+        -0.008077587553783738,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -30.0,
+        0.0,
+        43.477807589806616
+      ],
+      "arrival_time_s": 4.895631641490844,
+      "target_position_m": [
+        1.397490382194519,
+        -0.008077587553783738,
+        1.6291797555907075
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.7185978229498957,
+        0.0,
+        -17.04714033085138
+      ],
+      "solver_height_residual_m": 1.1684544221068904e-08,
+      "development_group": "canonical",
+      "source_scenario": 14
+    },
+    {
+      "env_id": 15,
+      "shuttle_start": [
+        25.93197219596439,
+        0.012237968320155529,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -12.0,
+        0.0,
+        43.10105333570391
+      ],
+      "arrival_time_s": 5.22395213755949,
+      "target_position_m": [
+        1.397490382194519,
+        0.012237968320155529,
+        1.652450458131878
+      ],
+      "predicted_incoming_velocity_mps": [
+        -1.8608091360173962,
+        0.0,
+        -17.638619499038956
+      ],
+      "solver_height_residual_m": 6.578276590119003e-08,
+      "development_group": "canonical",
+      "source_scenario": 15
+    },
+    {
+      "env_id": 16,
+      "shuttle_start": [
+        39.19245446657672,
+        0.07404524216569355,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -20.0,
+        0.0,
+        39.78456964250654
+      ],
+      "arrival_time_s": 4.861747999655804,
+      "target_position_m": [
+        1.397490382194519,
+        0.07404524216569355,
+        1.6558278228523886
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.129902439378837,
+        0.0,
+        -17.03890384945523
+      ],
+      "solver_height_residual_m": 2.4760089534225926e-09,
+      "development_group": "canonical",
+      "source_scenario": 16
+    },
+    {
+      "env_id": 17,
+      "shuttle_start": [
+        64.78427212142803,
+        0.04580136345701094,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -45.0,
+        0.0,
+        51.102262060157955
+      ],
+      "arrival_time_s": 5.036191086180634,
+      "target_position_m": [
+        1.397490382194519,
+        0.04580136345701094,
+        1.6143143232479973
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.9896730882610902,
+        0.0,
+        -17.242275180121954
+      ],
+      "solver_height_residual_m": 5.3903487229334246e-08,
+      "development_group": "canonical",
+      "source_scenario": 17
+    },
+    {
+      "env_id": 18,
+      "shuttle_start": [
+        26.064253077919425,
+        0.026356682066092707,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -12.0,
+        0.0,
+        42.10651733446866
+      ],
+      "arrival_time_s": 5.16149287147067,
+      "target_position_m": [
+        1.397490382194519,
+        0.026356682066092707,
+        1.6547573972137102
+      ],
+      "predicted_incoming_velocity_mps": [
+        -1.927365882999266,
+        0.0,
+        -17.55330690931203
+      ],
+      "solver_height_residual_m": 6.41100377229975e-08,
+      "development_group": "canonical",
+      "source_scenario": 18
+    },
+    {
+      "env_id": 19,
+      "shuttle_start": [
+        80.68339079028812,
+        0.018472695138416484,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -70.0,
+        0.0,
+        59.58187475334853
+      ],
+      "arrival_time_s": 5.0014081246853355,
+      "target_position_m": [
+        1.397490382194519,
+        0.018472695138416484,
+        1.6079148480519512
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.47259456215089,
+        0.0,
+        -17.18255510064493
+      ],
+      "solver_height_residual_m": 5.125734170441376e-08,
+      "development_group": "canonical",
+      "source_scenario": 19
+    },
+    {
+      "env_id": 20,
+      "shuttle_start": [
+        64.81413643304535,
+        -0.06168371535535713,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -45.0,
+        0.0,
+        50.33900358248502
+      ],
+      "arrival_time_s": 4.99075150847396,
+      "target_position_m": [
+        1.397490382194519,
+        -0.06168371535535713,
+        1.6439980178085276
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.073261774774363,
+        0.0,
+        -17.170153085861156
+      ],
+      "solver_height_residual_m": 2.2348689565632185e-08,
+      "development_group": "canonical",
+      "source_scenario": 20
+    },
+    {
+      "env_id": 21,
+      "shuttle_start": [
+        51.063876639983015,
+        0.01020453414477887,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -30.0,
+        0.0,
+        46.5394469210878
+      ],
+      "arrival_time_s": 5.088264315724476,
+      "target_position_m": [
+        1.397490382194519,
+        0.01020453414477887,
+        1.632484633723538
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.393063709331132,
+        0.0,
+        -17.350045435850287
+      ],
+      "solver_height_residual_m": 6.732664181718917e-08,
+      "development_group": "canonical",
+      "source_scenario": 21
+    },
+    {
+      "env_id": 22,
+      "shuttle_start": [
+        26.739275676517728,
+        -0.08825076491439782,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -12.0,
+        0.0,
+        36.02415213827044
+      ],
+      "arrival_time_s": 4.745894913384666,
+      "target_position_m": [
+        1.397490382194519,
+        -0.08825076491439782,
+        1.612876971647001
+      ],
+      "predicted_incoming_velocity_mps": [
+        -2.410076945877805,
+        0.0,
+        -16.912209952943083
+      ],
+      "solver_height_residual_m": 5.477236397766205e-08,
+      "development_group": "canonical",
+      "source_scenario": 22
+    },
+    {
+      "env_id": 23,
+      "shuttle_start": [
+        51.22221139778114,
+        -0.10468643633946143,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -30.0,
+        0.0,
+        44.88127373624593
+      ],
+      "arrival_time_s": 4.9866546409856785,
+      "target_position_m": [
+        1.397490382194519,
+        -0.10468643633946143,
+        1.6101970669697876
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.5624411784703103,
+        0.0,
+        -17.194585187726954
+      ],
+      "solver_height_residual_m": 5.264820113204394e-08,
+      "development_group": "canonical",
+      "source_scenario": 23
+    },
+    {
+      "env_id": 24,
+      "shuttle_start": [
+        51.34104586344443,
+        -0.10297419549440626,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -30.0,
+        0.0,
+        43.20418650750071
+      ],
+      "arrival_time_s": 4.878922019752604,
+      "target_position_m": [
+        1.397490382194519,
+        -0.10297419549440626,
+        1.6099091202759697
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.747865919053429,
+        0.0,
+        -17.020138929449228
+      ],
+      "solver_height_residual_m": 6.756401038643389e-08,
+      "development_group": "canonical",
+      "source_scenario": 24
+    },
+    {
+      "env_id": 25,
+      "shuttle_start": [
+        18.688809601859703,
+        0.04039329471585515,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -8.0,
+        0.0,
+        40.243728063069284
+      ],
+      "arrival_time_s": 5.095403354757234,
+      "target_position_m": [
+        1.397490382194519,
+        0.04039329471585515,
+        1.6325941921234361
+      ],
+      "predicted_incoming_velocity_mps": [
+        -1.4503790439605957,
+        0.0,
+        -17.49296260492715
+      ],
+      "solver_height_residual_m": 4.241018625172899e-08,
+      "development_group": "canonical",
+      "source_scenario": 25
+    },
+    {
+      "env_id": 26,
+      "shuttle_start": [
+        64.88371363882283,
+        0.046275377990738026,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -45.0,
+        0.0,
+        46.444701100699604
+      ],
+      "arrival_time_s": 4.759813333949126,
+      "target_position_m": [
+        1.397490382194519,
+        0.046275377990738026,
+        1.6246457980694047
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.5176332780431245,
+        0.0,
+        -16.782635606209016
+      ],
+      "solver_height_residual_m": 7.079552077904339e-08,
+      "development_group": "canonical",
+      "source_scenario": 26
+    },
+    {
+      "env_id": 27,
+      "shuttle_start": [
+        64.83584257642066,
+        -0.002774219127607558,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -45.0,
+        0.0,
+        49.92762885522097
+      ],
+      "arrival_time_s": 4.968162397336321,
+      "target_position_m": [
+        1.397490382194519,
+        -0.002774219127607558,
+        1.6233007413556513
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.115328139710791,
+        0.0,
+        -17.134742102182553
+      ],
+      "solver_height_residual_m": 3.773718626476352e-08,
+      "development_group": "canonical",
+      "source_scenario": 27
+    },
+    {
+      "env_id": 28,
+      "shuttle_start": [
+        64.82487324061844,
+        -0.050927667777186984,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -45.0,
+        0.0,
+        50.212966301478446
+      ],
+      "arrival_time_s": 4.984794422919141,
+      "target_position_m": [
+        1.397490382194519,
+        -0.050927667777186984,
+        1.6214098491253863
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.0843508690396755,
+        0.0,
+        -17.161368109420025
+      ],
+      "solver_height_residual_m": 1.9831410513759806e-08,
+      "development_group": "canonical",
+      "source_scenario": 28
+    },
+    {
+      "env_id": 29,
+      "shuttle_start": [
+        26.65887873601076,
+        0.07475273054421816,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -12.0,
+        0.0,
+        36.9199012639001
+      ],
+      "arrival_time_s": 4.811215650312594,
+      "target_position_m": [
+        1.397490382194519,
+        0.07475273054421816,
+        1.6226171822635072
+      ],
+      "predicted_incoming_velocity_mps": [
+        -2.3296979659894075,
+        0.0,
+        -17.021809673916817
+      ],
+      "solver_height_residual_m": 3.3591004644506484e-08,
+      "development_group": "canonical",
+      "source_scenario": 29
+    },
+    {
+      "env_id": 30,
+      "shuttle_start": [
+        19.14058673170091,
+        -0.0028896637300265676,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -8.0,
+        0.0,
+        35.318167763762176
+      ],
+      "arrival_time_s": 4.7488801313875095,
+      "target_position_m": [
+        1.397490382194519,
+        -0.0028896637300265676,
+        1.6584510795746865
+      ],
+      "predicted_incoming_velocity_mps": [
+        -1.7599501858353839,
+        0.0,
+        -16.956309154261184
+      ],
+      "solver_height_residual_m": 2.135507193301578e-08,
+      "development_group": "canonical",
+      "source_scenario": 30
+    },
+    {
+      "env_id": 31,
+      "shuttle_start": [
+        80.67749874607453,
+        -0.07007088707129092,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -70.0,
+        0.0,
+        58.99072035681456
+      ],
+      "arrival_time_s": 4.970361237369147,
+      "target_position_m": [
+        1.397490382194519,
+        -0.07007088707129092,
+        1.6358095251100657
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.534418541755353,
+        0.0,
+        -17.13234677437056
+      ],
+      "solver_height_residual_m": 3.390331126951196e-09,
+      "development_group": "canonical",
+      "source_scenario": 31
+    },
+    {
+      "env_id": 32,
+      "shuttle_start": [
+        39.36849678358751,
+        -0.08982227227146211,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -20.0,
+        0.0,
+        37.29952366556972
+      ],
+      "arrival_time_s": 4.684741329119933,
+      "target_position_m": [
+        1.397490382194519,
+        -0.08982227227146211,
+        1.6457606540705088
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.409500118291881,
+        0.0,
+        -16.733549220552216
+      ],
+      "solver_height_residual_m": 4.016096544212644e-08,
+      "development_group": "canonical",
+      "source_scenario": 32
+    },
+    {
+      "env_id": 33,
+      "shuttle_start": [
+        26.617828895108712,
+        -0.0465847118791769,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -12.0,
+        0.0,
+        37.332593905739486
+      ],
+      "arrival_time_s": 4.840206463300876,
+      "target_position_m": [
+        1.397490382194519,
+        -0.0465847118791769,
+        1.636799616350859
+      ],
+      "predicted_incoming_velocity_mps": [
+        -2.294438285590434,
+        0.0,
+        -17.068955021899363
+      ],
+      "solver_height_residual_m": 5.25387964245283e-08,
+      "development_group": "canonical",
+      "source_scenario": 33
+    },
+    {
+      "env_id": 34,
+      "shuttle_start": [
+        64.89072543634705,
+        -0.049436888302303354,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -45.0,
+        0.0,
+        47.134388401173055
+      ],
+      "arrival_time_s": 4.802584818347832,
+      "target_position_m": [
+        1.397490382194519,
+        -0.049436888302303354,
+        1.6155605529073513
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.432875099722302,
+        0.0,
+        -16.85818045177356
+      ],
+      "solver_height_residual_m": 6.916630246323052e-08,
+      "development_group": "canonical",
+      "source_scenario": 34
+    },
+    {
+      "env_id": 35,
+      "shuttle_start": [
+        80.62170642832963,
+        0.027763740983982793,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -70.0,
+        0.0,
+        55.62905583065003
+      ],
+      "arrival_time_s": 4.800566220190475,
+      "target_position_m": [
+        1.397490382194519,
+        0.027763740983982793,
+        1.6062799593414325
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.883634730483523,
+        0.0,
+        -16.84872011388902
+      ],
+      "solver_height_residual_m": 5.666371749590837e-08,
+      "development_group": "canonical",
+      "source_scenario": 35
+    },
+    {
+      "env_id": 36,
+      "shuttle_start": [
+        18.997261538071538,
+        -0.03117763048859215,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -8.0,
+        0.0,
+        37.08487094845623
+      ],
+      "arrival_time_s": 4.88054502448239,
+      "target_position_m": [
+        1.397490382194519,
+        -0.03117763048859215,
+        1.6155001506121516
+      ],
+      "predicted_incoming_velocity_mps": [
+        -1.638142984901644,
+        0.0,
+        -17.172702652819755
+      ],
+      "solver_height_residual_m": 5.4723341413875914e-09,
+      "development_group": "canonical",
+      "source_scenario": 36
+    },
+    {
+      "env_id": 37,
+      "shuttle_start": [
+        18.94045606825721,
+        0.07731584989395432,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -8.0,
+        0.0,
+        37.67922723200172
+      ],
+      "arrival_time_s": 4.920853396645064,
+      "target_position_m": [
+        1.397490382194519,
+        0.07731584989395432,
+        1.6452306232936216
+      ],
+      "predicted_incoming_velocity_mps": [
+        -1.6014908332136129,
+        0.0,
+        -17.234435438483146
+      ],
+      "solver_height_residual_m": 1.781417235946492e-10,
+      "development_group": "canonical",
+      "source_scenario": 37
+    },
+    {
+      "env_id": 38,
+      "shuttle_start": [
+        51.08826831547778,
+        -0.04045940237646421,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -30.0,
+        0.0,
+        46.30332242231816
+      ],
+      "arrival_time_s": 5.073957072061536,
+      "target_position_m": [
+        1.397490382194519,
+        -0.04045940237646421,
+        1.6301949422995103
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.4165793331807564,
+        0.0,
+        -17.328609456355018
+      ],
+      "solver_height_residual_m": 2.0026032609976596e-08,
+      "development_group": "canonical",
+      "source_scenario": 38
+    },
+    {
+      "env_id": 39,
+      "shuttle_start": [
+        80.47277572576184,
+        0.02039257278496326,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -70.0,
+        0.0,
+        52.934884442947805
+      ],
+      "arrival_time_s": 4.657507077843365,
+      "target_position_m": [
+        1.397490382194519,
+        0.02039257278496326,
+        1.6097892095089235
+      ],
+      "predicted_incoming_velocity_mps": [
+        -5.193565751348737,
+        0.0,
+        -16.58979362662048
+      ],
+      "solver_height_residual_m": 6.043387856813354e-08,
+      "development_group": "canonical",
+      "source_scenario": 39
+    },
+    {
+      "env_id": 40,
+      "shuttle_start": [
+        39.27164257229111,
+        -0.01815900535821957,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -20.0,
+        0.0,
+        38.913361611776054
+      ],
+      "arrival_time_s": 4.803118303485157,
+      "target_position_m": [
+        1.397490382194519,
+        -0.01815900535821957,
+        1.6153032237392986
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.221219594791461,
+        0.0,
+        -16.942093145696635
+      ],
+      "solver_height_residual_m": 7.721523154202714e-08,
+      "development_group": "canonical",
+      "source_scenario": 40
+    },
+    {
+      "env_id": 41,
+      "shuttle_start": [
+        80.67558228313145,
+        -0.06519592596642132,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -70.0,
+        0.0,
+        60.390628105960786
+      ],
+      "arrival_time_s": 5.041301260201054,
+      "target_position_m": [
+        1.397490382194519,
+        -0.06519592596642132,
+        1.6079795652334716
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.3941929443307135,
+        0.0,
+        -17.244916885390136
+      ],
+      "solver_height_residual_m": 3.154922878501054e-08,
+      "development_group": "canonical",
+      "source_scenario": 41
+    },
+    {
+      "env_id": 42,
+      "shuttle_start": [
+        26.164113511728164,
+        0.00860430398552195,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -12.0,
+        0.0,
+        41.360462573356926
+      ],
+      "arrival_time_s": 5.1156030015675205,
+      "target_position_m": [
+        1.397490382194519,
+        0.00860430398552195,
+        1.621580276287212
+      ],
+      "predicted_incoming_velocity_mps": [
+        -1.9776720400262693,
+        0.0,
+        -17.489903237710106
+      ],
+      "solver_height_residual_m": 4.4306935453874985e-08,
+      "development_group": "canonical",
+      "source_scenario": 42
+    },
+    {
+      "env_id": 43,
+      "shuttle_start": [
+        39.21976412710633,
+        0.05009226641774722,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -20.0,
+        0.0,
+        39.46535533759743
+      ],
+      "arrival_time_s": 4.839507203134657,
+      "target_position_m": [
+        1.397490382194519,
+        0.05009226641774722,
+        1.6564043595535447
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.1642098935297756,
+        0.0,
+        -17.001874574404443
+      ],
+      "solver_height_residual_m": 5.702368621740561e-08,
+      "development_group": "canonical",
+      "source_scenario": 43
+    },
+    {
+      "env_id": 44,
+      "shuttle_start": [
+        80.67602214696204,
+        -0.004669788282161649,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -70.0,
+        0.0,
+        58.71002746280283
+      ],
+      "arrival_time_s": 4.956126647166443,
+      "target_position_m": [
+        1.397490382194519,
+        -0.004669788282161649,
+        1.6390124819174894
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.56295798561664,
+        0.0,
+        -17.10932144018422
+      ],
+      "solver_height_residual_m": 4.103448780767849e-08,
+      "development_group": "canonical",
+      "source_scenario": 44
+    },
+    {
+      "env_id": 45,
+      "shuttle_start": [
+        26.177911219686663,
+        -0.02937269942249958,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -12.0,
+        0.0,
+        41.22359238099307
+      ],
+      "arrival_time_s": 5.104968570344423,
+      "target_position_m": [
+        1.397490382194519,
+        -0.02937269942249958,
+        1.6525190138501735
+      ],
+      "predicted_incoming_velocity_mps": [
+        -1.9889827386965324,
+        0.0,
+        -17.47375715737486
+      ],
+      "solver_height_residual_m": 5.4532968585263575e-08,
+      "development_group": "canonical",
+      "source_scenario": 45
+    },
+    {
+      "env_id": 46,
+      "shuttle_start": [
+        64.864678005228,
+        0.0033800109623480096,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -45.0,
+        0.0,
+        45.7187524298206
+      ],
+      "arrival_time_s": 4.713511157153363,
+      "target_position_m": [
+        1.397490382194519,
+        0.0033800109623480096,
+        1.6464179105759678
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.610683257204648,
+        0.0,
+        -16.698621600205335
+      ],
+      "solver_height_residual_m": 4.780994933284433e-09,
+      "development_group": "canonical",
+      "source_scenario": 46
+    },
+    {
+      "env_id": 47,
+      "shuttle_start": [
+        50.91161566178586,
+        -0.016115079220377332,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -30.0,
+        0.0,
+        47.92284721042961
+      ],
+      "arrival_time_s": 5.171673138968312,
+      "target_position_m": [
+        1.397490382194519,
+        -0.016115079220377332,
+        1.6289727103580314
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.258222240310666,
+        0.0,
+        -17.4723864374038
+      ],
+      "solver_height_residual_m": 5.58022406060843e-09,
+      "development_group": "canonical",
+      "source_scenario": 47
+    },
+    {
+      "env_id": 48,
+      "shuttle_start": [
+        39.309308254482204,
+        -0.05712821952393868,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -20.0,
+        0.0,
+        38.407294009812176
+      ],
+      "arrival_time_s": 4.767376812933389,
+      "target_position_m": [
+        1.397490382194519,
+        -0.05712821952393868,
+        1.6101611900321295
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.2774958473524034,
+        0.0,
+        -16.880970725906906
+      ],
+      "solver_height_residual_m": 1.770967195113826e-08,
+      "development_group": "canonical",
+      "source_scenario": 48
+    },
+    {
+      "env_id": 49,
+      "shuttle_start": [
+        64.88035444184678,
+        -0.0410514332766834,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -45.0,
+        0.0,
+        47.80748861376196
+      ],
+      "arrival_time_s": 4.841524539017498,
+      "target_position_m": [
+        1.397490382194519,
+        -0.0410514332766834,
+        1.6459528596418969
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.3566807110550245,
+        0.0,
+        -16.924281820026337
+      ],
+      "solver_height_residual_m": 3.0129346795249035e-08,
+      "development_group": "canonical",
+      "source_scenario": 49
+    },
+    {
+      "env_id": 50,
+      "shuttle_start": [
+        80.60898221362395,
+        -0.01988411538858484,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -70.0,
+        0.0,
+        62.94164147693664
+      ],
+      "arrival_time_s": 5.164375410339505,
+      "target_position_m": [
+        1.397490382194519,
+        -0.01988411538858484,
+        1.6109616311020214
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.158907454479098,
+        0.0,
+        -17.429271475143484
+      ],
+      "solver_height_residual_m": 1.246864411719173e-08,
+      "development_group": "canonical",
+      "source_scenario": 50
+    },
+    {
+      "env_id": 51,
+      "shuttle_start": [
+        19.12343481299966,
+        0.0013513114492209877,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -8.0,
+        0.0,
+        35.540981660597026
+      ],
+      "arrival_time_s": 4.765681815798158,
+      "target_position_m": [
+        1.397490382194519,
+        0.0013513114492209877,
+        1.655823292166694
+      ],
+      "predicted_incoming_velocity_mps": [
+        -1.7440676105757524,
+        0.0,
+        -16.984596092983594
+      ],
+      "solver_height_residual_m": 8.091717540459342e-08,
+      "development_group": "canonical",
+      "source_scenario": 51
+    },
+    {
+      "env_id": 52,
+      "shuttle_start": [
+        80.6813072649828,
+        0.08898939981374071,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -70.0,
+        0.0,
+        58.28285871539265
+      ],
+      "arrival_time_s": 4.936356776197003,
+      "target_position_m": [
+        1.397490382194519,
+        0.08898939981374071,
+        1.6099212157336653
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.6027271830077705,
+        0.0,
+        -17.07802853340708
+      ],
+      "solver_height_residual_m": 2.893168082884756e-08,
+      "development_group": "canonical",
+      "source_scenario": 52
+    },
+    {
+      "env_id": 53,
+      "shuttle_start": [
+        38.982036637197524,
+        0.048028011811716925,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -20.0,
+        0.0,
+        41.870429436676204
+      ],
+      "arrival_time_s": 5.002889430138931,
+      "target_position_m": [
+        1.397490382194519,
+        0.048028011811716925,
+        1.6522735373640696
+      ],
+      "predicted_incoming_velocity_mps": [
+        -2.9176072159479385,
+        0.0,
+        -17.264619820751516
+      ],
+      "solver_height_residual_m": 2.5422592475621286e-08,
+      "development_group": "canonical",
+      "source_scenario": 53
+    },
+    {
+      "env_id": 54,
+      "shuttle_start": [
+        64.60550080968102,
+        -0.08597588889919135,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -45.0,
+        0.0,
+        53.635818720795214
+      ],
+      "arrival_time_s": 5.175498758077114,
+      "target_position_m": [
+        1.397490382194519,
+        -0.08597588889919135,
+        1.6465251422796439
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.740779478441692,
+        0.0,
+        -17.44974927543644
+      ],
+      "solver_height_residual_m": 6.33663170823695e-08,
+      "development_group": "canonical",
+      "source_scenario": 54
+    },
+    {
+      "env_id": 55,
+      "shuttle_start": [
+        38.75067121719528,
+        -0.08319596026660495,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -20.0,
+        0.0,
+        43.75346547458321
+      ],
+      "arrival_time_s": 5.124432820248417,
+      "target_position_m": [
+        1.397490382194519,
+        -0.08319596026660495,
+        1.6484686919313494
+      ],
+      "predicted_incoming_velocity_mps": [
+        -2.742305652549239,
+        0.0,
+        -17.4464958444357
+      ],
+      "solver_height_residual_m": 4.6335109082917825e-08,
+      "development_group": "canonical",
+      "source_scenario": 55
+    },
+    {
+      "env_id": 56,
+      "shuttle_start": [
+        26.312124529290834,
+        0.08589894961575625,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -12.0,
+        0.0,
+        40.16208134125918
+      ],
+      "arrival_time_s": 5.037040086470944,
+      "target_position_m": [
+        1.397490382194519,
+        0.08589894961575625,
+        1.6196461768830055
+      ],
+      "predicted_incoming_velocity_mps": [
+        -2.0650654445304304,
+        0.0,
+        -17.376029005484124
+      ],
+      "solver_height_residual_m": 2.4410651722206467e-08,
+      "development_group": "canonical",
+      "source_scenario": 56
+    },
+    {
+      "env_id": 57,
+      "shuttle_start": [
+        80.52079764374588,
+        0.03645989475992645,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -70.0,
+        0.0,
+        53.64555639680475
+      ],
+      "arrival_time_s": 4.695672833593206,
+      "target_position_m": [
+        1.397490382194519,
+        0.03645989475992645,
+        1.6097099557038272
+      ],
+      "predicted_incoming_velocity_mps": [
+        -5.109456583822147,
+        0.0,
+        -16.660594398055817
+      ],
+      "solver_height_residual_m": 7.285923198097066e-09,
+      "development_group": "canonical",
+      "source_scenario": 57
+    },
+    {
+      "env_id": 58,
+      "shuttle_start": [
+        25.884429965414895,
+        -0.09924349775998374,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -12.0,
+        0.0,
+        43.469221447594464
+      ],
+      "arrival_time_s": 5.248095904455182,
+      "target_position_m": [
+        1.397490382194519,
+        -0.09924349775998374,
+        1.62669509344215
+      ],
+      "predicted_incoming_velocity_mps": [
+        -1.8357973515916794,
+        0.0,
+        -17.671537544362923
+      ],
+      "solver_height_residual_m": 6.334826974097041e-08,
+      "development_group": "canonical",
+      "source_scenario": 58
+    },
+    {
+      "env_id": 59,
+      "shuttle_start": [
+        80.57462625358333,
+        0.046993827267236415,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -70.0,
+        0.0,
+        54.773233900777996
+      ],
+      "arrival_time_s": 4.753715439836037,
+      "target_position_m": [
+        1.397490382194519,
+        0.046993827267236415,
+        1.639915936548517
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.983667173607923,
+        0.0,
+        -16.764800792713668
+      ],
+      "solver_height_residual_m": 4.833769673417976e-08,
+      "development_group": "canonical",
+      "source_scenario": 59
+    },
+    {
+      "env_id": 60,
+      "shuttle_start": [
+        38.47628650865266,
+        0.05507790008906285,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -20.0,
+        0.0,
+        45.6908363616094
+      ],
+      "arrival_time_s": 5.243040007451397,
+      "target_position_m": [
+        1.397490382194519,
+        0.05507790008906285,
+        1.662039547805584
+      ],
+      "predicted_incoming_velocity_mps": [
+        -2.577739843757426,
+        0.0,
+        -17.612730449521898
+      ],
+      "solver_height_residual_m": 1.9629477376881255e-08,
+      "development_group": "canonical",
+      "source_scenario": 60
+    },
+    {
+      "env_id": 61,
+      "shuttle_start": [
+        26.768575782276514,
+        -0.033628259461945476,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -12.0,
+        0.0,
+        35.66072217654437
+      ],
+      "arrival_time_s": 4.718571101797438,
+      "target_position_m": [
+        1.397490382194519,
+        -0.033628259461945476,
+        1.6149336210047884
+      ],
+      "predicted_incoming_velocity_mps": [
+        -2.4441178159015347,
+        0.0,
+        -16.865062676645938
+      ],
+      "solver_height_residual_m": 8.392406014579024e-08,
+      "development_group": "canonical",
+      "source_scenario": 61
+    },
+    {
+      "env_id": 62,
+      "shuttle_start": [
+        39.29077130802002,
+        0.06222203717988792,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -20.0,
+        0.0,
+        38.647435954771936
+      ],
+      "arrival_time_s": 4.784044495011669,
+      "target_position_m": [
+        1.397490382194519,
+        0.06222203717988792,
+        1.6184986294921409
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.251125118134185,
+        0.0,
+        -16.909363312795804
+      ],
+      "solver_height_residual_m": 5.3443325320756685e-09,
+      "development_group": "canonical",
+      "source_scenario": 62
+    },
+    {
+      "env_id": 63,
+      "shuttle_start": [
+        39.264314254813534,
+        -0.021634945262667224,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -20.0,
+        0.0,
+        38.95442734938115
+      ],
+      "arrival_time_s": 4.804722184017948,
+      "target_position_m": [
+        1.397490382194519,
+        -0.021634945262667224,
+        1.637355242406328
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.218512710779805,
+        0.0,
+        -16.943943411398916
+      ],
+      "solver_height_residual_m": 5.288139259818081e-08,
+      "development_group": "canonical",
+      "source_scenario": 63
+    },
+    {
+      "env_id": 0,
+      "shuttle_start": [
+        39.29584937137523,
+        -0.009781207889318466,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -20.0,
+        0.0,
+        38.53373096790165
+      ],
+      "arrival_time_s": 4.774999980926514,
+      "target_position_m": [
+        1.397490382194519,
+        -0.009781207889318466,
+        1.6342344284057617
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.265240580618877,
+        0.0,
+        -16.89315645360233
+      ],
+      "solver_height_residual_m": 3.446507701454493e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 0,
+      "robot_reset": {
+        "joint_offset_rad": [
+          0.0014141534840688245,
+          -0.018844745268445085,
+          -0.008718817124102059,
+          0.022595750273675858,
+          -0.006759127709214503,
+          -0.009215198257036483,
+          -0.019070681384032773,
+          0.02053275065909168,
+          -0.023035118774610876,
+          0.0164951156327865,
+          -0.015868841019010295,
+          -0.017144994892448355,
+          -0.01733662556907986,
+          -0.011810796038691585,
+          0.00614978605381436,
+          -0.004361161947795334,
+          -0.009253429731639735,
+          -0.024450541000159504
+        ],
+        "joint_velocity_rad_s": [
+          0.029153712157027882,
+          0.025396850526464128,
+          0.000507441864560268,
+          0.00492749394495591,
+          -0.009391242590378351,
+          -0.0017097858165775123,
+          -0.0391860940912089,
+          -0.0046574649229606385,
+          -0.03616553894099787,
+          -0.032137586390393345,
+          -0.0042163080889626794,
+          0.03944793421008493,
+          -0.00325746549265004,
+          0.025387331016558885,
+          0.010264715168083395,
+          -0.01714122998920942,
+          0.029198893930784946,
+          0.02215122922163909
+        ],
+        "yaw_rad": -0.005075662999209585,
+        "xy_m": [
+          0.03380487122317757,
+          0.03895039955921711
+        ]
+      }
+    },
+    {
+      "env_id": 1,
+      "shuttle_start": [
+        51.37496548422808,
+        -0.054908193531910836,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -30.0,
+        0.0,
+        42.34740778338164
+      ],
+      "arrival_time_s": 4.819571722359715,
+      "target_position_m": [
+        1.397490382194519,
+        -0.054908193531910836,
+        1.6575532892879
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.852443500559475,
+        0.0,
+        -16.918240408904133
+      ],
+      "solver_height_residual_m": 7.81652231829355e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 1,
+      "robot_reset": {
+        "joint_offset_rad": [
+          -0.008283754400642013,
+          -0.011339802243860565,
+          -0.0013328977987153816,
+          -0.008185298582798279,
+          0.016253991172047746,
+          -0.02333015614937919,
+          -0.01852992531806042,
+          0.012100463513637263,
+          -0.001856516461248875,
+          -0.01532687789458585,
+          -0.00824543388048132,
+          0.018643714004014163,
+          -0.01751235445708771,
+          0.018008798789921572,
+          -0.006632484630039497,
+          0.018814714834850026,
+          0.009048391351788879,
+          -0.004632045351276426
+        ],
+        "joint_velocity_rad_s": [
+          0.018874588842523438,
+          0.016901276642909024,
+          -0.007175739231743902,
+          0.032953760218454496,
+          0.02519528263491156,
+          0.02202405774489931,
+          -0.020216776515297238,
+          -0.007280506497649081,
+          0.030469275259066238,
+          -0.026908275479084472,
+          0.02598067924515616,
+          -0.017946234298228055,
+          0.006408245809613494,
+          -0.007397232636188543,
+          -0.007879723786988348,
+          0.012945155378147562,
+          0.0031335994083960886,
+          0.021852634319388997
+        ],
+        "yaw_rad": 0.026858049884813356,
+        "xy_m": [
+          0.0296591719831713,
+          0.001087525149909549
+        ]
+      }
+    },
+    {
+      "env_id": 2,
+      "shuttle_start": [
+        51.00059910208767,
+        0.02798848927055103,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -30.0,
+        0.0,
+        47.0915395533666
+      ],
+      "arrival_time_s": 5.120318999131066,
+      "target_position_m": [
+        1.397490382194519,
+        0.02798848927055103,
+        1.6574443072106322
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.340635025889699,
+        0.0,
+        -17.39694151715014
+      ],
+      "solver_height_residual_m": 5.839011341102207e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 2,
+      "robot_reset": {
+        "joint_offset_rad": [
+          0.023881747584031797,
+          0.014194925560422011,
+          -0.009538808092162277,
+          0.01883338996851773,
+          -0.022173794531384735,
+          -0.016125742196683647,
+          0.0007644879216081972,
+          -0.006006873543288799,
+          -0.0076264580423179955,
+          -0.01774517861795651,
+          -0.008791377747495329,
+          0.02296326890641911,
+          0.005891922900914386,
+          0.0010033782267728983,
+          0.020875557646693958,
+          0.0026815994229040067,
+          0.00852071407016107,
+          -0.014580032600202249
+        ],
+        "joint_velocity_rad_s": [
+          -0.009628062610511624,
+          -0.015119430615476138,
+          -0.0064948914767933436,
+          0.02259213555643628,
+          -0.012052010516690713,
+          0.030488194852564578,
+          -0.03549953257664222,
+          -0.038792980687172726,
+          0.03838394520819368,
+          0.005239683052843065,
+          0.009843188690172075,
+          0.00919619385096171,
+          -0.016871702632387794,
+          0.00867243582018299,
+          -0.007588409147210949,
+          -0.034653926523298254,
+          -0.009826526045170175,
+          -0.03812193415266895
+        ],
+        "yaw_rad": -0.034765053900361574,
+        "xy_m": [
+          -0.015873174889969616,
+          0.02421166767322997
+        ]
+      }
+    },
+    {
+      "env_id": 3,
+      "shuttle_start": [
+        18.936063741529836,
+        -0.07018742946887431,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -8.0,
+        0.0,
+        37.73375528398901
+      ],
+      "arrival_time_s": 4.9250866967003155,
+      "target_position_m": [
+        1.397490382194519,
+        -0.07018742946887431,
+        1.6381495042527319
+      ],
+      "predicted_incoming_velocity_mps": [
+        -1.5977840025249312,
+        0.0,
+        -17.241247896652588
+      ],
+      "solver_height_residual_m": 2.0546764512019422e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 3,
+      "robot_reset": {
+        "joint_offset_rad": [
+          0.017592688380554056,
+          0.02139567881055155,
+          0.007138597789312161,
+          0.015871117356040083,
+          -0.02348260955967148,
+          -0.01738684588329731,
+          0.022205514539746805,
+          -0.021936462133963882,
+          -0.0073434094718859595,
+          0.022485334754663494,
+          0.003434924014850755,
+          0.018093349570281976,
+          -0.02113053406155623,
+          -0.003885891709842604,
+          -0.0018519640248938,
+          -0.012000274048529342,
+          -0.006320075848969691,
+          0.0011884952466561863
+        ],
+        "joint_velocity_rad_s": [
+          0.0283760905198256,
+          0.020331018980157246,
+          0.021434206567130305,
+          0.008600489838009269,
+          -0.0007436882276471504,
+          0.02157475457003384,
+          -0.03459484143792515,
+          0.002247245135620919,
+          0.010013836734124676,
+          -0.012684698246795748,
+          0.0030254372526049636,
+          0.02647417500523249,
+          0.0007102191961704529,
+          -0.027939747918949376,
+          -0.02893411524148786,
+          0.0388928079217759,
+          0.019774530088523742,
+          0.03455978013487008
+        ],
+        "yaw_rad": -0.019747836100251152,
+        "xy_m": [
+          -0.027334248950203623,
+          -0.03951103742750859
+        ]
+      }
+    },
+    {
+      "env_id": 4,
+      "shuttle_start": [
+        80.68231890756724,
+        -0.08917540693897506,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -70.0,
+        0.0,
+        59.2712796991691
+      ],
+      "arrival_time_s": 4.985467087053554,
+      "target_position_m": [
+        1.397490382194519,
+        -0.08917540693897506,
+        1.6166893583772333
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.504242037680394,
+        0.0,
+        -17.15703222167225
+      ],
+      "solver_height_residual_m": 4.3003992811208036e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 4,
+      "robot_reset": {
+        "joint_offset_rad": [
+          0.01675274321232178,
+          -0.012603444570506585,
+          -0.009307566505166731,
+          -0.022871103771846597,
+          0.01918006247586214,
+          -0.007275410407198875,
+          -0.0156334180739296,
+          0.02419096743860418,
+          -0.009912231693088231,
+          -0.010943513923398119,
+          -0.022834344939544917,
+          0.021055037996649005,
+          0.011754488637583257,
+          -0.02314094043228336,
+          0.0043548726772997155,
+          -0.01923582244828726,
+          0.014203575938048815,
+          -0.01458844879031409
+        ],
+        "joint_velocity_rad_s": [
+          0.0359222544322205,
+          0.03413032831909437,
+          -0.009161700069157844,
+          -0.02103897237819175,
+          0.02312446049205475,
+          -0.029653715113678647,
+          -0.03088942949832168,
+          -0.012217617414876144,
+          -0.02630338809882618,
+          -0.03699851762758016,
+          0.03078964904409253,
+          -0.03823747125129252,
+          0.03387981664469735,
+          -0.026053532613162452,
+          0.029919091310874134,
+          -0.0003618457245707085,
+          0.03272604921993725,
+          -0.02816096146417677
+        ],
+        "yaw_rad": -0.030979781225242357,
+        "xy_m": [
+          -0.02539520125243442,
+          -0.03506907794182381
+        ]
+      }
+    },
+    {
+      "env_id": 5,
+      "shuttle_start": [
+        64.75363050057928,
+        -0.09789733239681311,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -45.0,
+        0.0,
+        51.46711540874094
+      ],
+      "arrival_time_s": 5.054241574133825,
+      "target_position_m": [
+        1.397490382194519,
+        -0.09789733239681311,
+        1.6600310487481058
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.956704010012118,
+        0.0,
+        -17.26882079589899
+      ],
+      "solver_height_residual_m": 4.4675627197676704e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 5,
+      "robot_reset": {
+        "joint_offset_rad": [
+          0.0013868206302916006,
+          -0.016461220081013687,
+          -0.005098492214780398,
+          -0.01161686410041456,
+          -0.005914928488661476,
+          0.02051754495759433,
+          0.007287214427601926,
+          0.015524401249345031,
+          -0.02357973272918012,
+          0.005718598393687803,
+          0.006349627019963708,
+          0.01793462188328334,
+          0.023526882408589612,
+          -0.020981309982674525,
+          -0.0008705955768412259,
+          0.024872830160558655,
+          -0.014688766555817424,
+          -0.02270856573870121
+        ],
+        "joint_velocity_rad_s": [
+          -0.009256316392454576,
+          -0.03002782852005243,
+          -0.024148818922500592,
+          0.011015106049519531,
+          0.03746642679080218,
+          -0.034767231844170104,
+          -0.019799074876620627,
+          0.0016197636375237245,
+          0.02543302465907337,
+          -0.036347269061063496,
+          -0.008463042816851195,
+          -0.007185105339312915,
+          0.02568262982062256,
+          0.018641060584053987,
+          0.016571273684220796,
+          -0.012416213678379782,
+          -0.010414742429023488,
+          -0.018095615476318567
+        ],
+        "yaw_rad": 0.05237549329240283,
+        "xy_m": [
+          -0.004078348580917483,
+          -0.02377331260267872
+        ]
+      }
+    },
+    {
+      "env_id": 6,
+      "shuttle_start": [
+        38.63306858141186,
+        -0.0928964472996903,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -20.0,
+        0.0,
+        44.61144127417356
+      ],
+      "arrival_time_s": 5.17765939240605,
+      "target_position_m": [
+        1.397490382194519,
+        -0.0928964472996903,
+        1.6537215946297614
+      ],
+      "predicted_incoming_velocity_mps": [
+        -2.6676490475343297,
+        0.0,
+        -17.522401796943335
+      ],
+      "solver_height_residual_m": 1.3759272832203351e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 6,
+      "robot_reset": {
+        "joint_offset_rad": [
+          0.024360365419528407,
+          0.024881977890587707,
+          -0.0075271527099089915,
+          -0.004248294809950658,
+          -0.015349317300184129,
+          -0.02300811025760904,
+          -0.018129408775437107,
+          -0.009122271444182012,
+          0.024989002514156533,
+          -0.009321967247792502,
+          0.0021964123648939224,
+          -0.0024704661648591794,
+          0.0029222753564441158,
+          0.01195625856122439,
+          0.00416891386752306,
+          0.015597149566904639,
+          0.014861213818860075,
+          0.01183726392885627
+        ],
+        "joint_velocity_rad_s": [
+          -0.01387736866872099,
+          0.011024934947801095,
+          0.018695236038963427,
+          0.03688388213024223,
+          -0.029487010824324783,
+          -0.02411350384307176,
+          0.012345397560489461,
+          -0.007325820840462863,
+          0.0010136054663416952,
+          -0.012298282450693518,
+          0.03890380653245804,
+          -0.015979048791036243,
+          0.03905012009126208,
+          -0.01874461865583177,
+          -0.02349203469509904,
+          0.027428851414192094,
+          0.016337148968767472,
+          -0.021824464403903444
+        ],
+        "yaw_rad": -0.03164883288119349,
+        "xy_m": [
+          0.0013675745652909216,
+          -0.02687726012884312
+        ]
+      }
+    },
+    {
+      "env_id": 7,
+      "shuttle_start": [
+        19.09943946187233,
+        0.049336276909524884,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -8.0,
+        0.0,
+        35.845894063822925
+      ],
+      "arrival_time_s": 4.78854059971648,
+      "target_position_m": [
+        1.397490382194519,
+        0.049336276909524884,
+        1.651592524742748
+      ],
+      "predicted_incoming_velocity_mps": [
+        -1.7226104669859086,
+        0.0,
+        -17.022735916066978
+      ],
+      "solver_height_residual_m": 3.2619997814009594e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 7,
+      "robot_reset": {
+        "joint_offset_rad": [
+          -0.006297214998520286,
+          0.016166440093198384,
+          0.0019005279447818109,
+          0.014394537426921608,
+          -0.015042350683736811,
+          0.0030518464961777556,
+          -0.011827326823101543,
+          0.007099905316383867,
+          0.0008099190798264155,
+          0.018027158657284957,
+          0.021809698410833724,
+          0.002939573602656304,
+          -0.015932972869727918,
+          0.002449160654792254,
+          -0.017896638167390788,
+          -0.010473036629581545,
+          0.0037697061204993443,
+          -0.011426345413200922
+        ],
+        "joint_velocity_rad_s": [
+          0.017419501863500948,
+          0.004043026607208018,
+          0.03885326579111325,
+          -0.027226190173191125,
+          -0.03303626472222745,
+          0.006000553920814812,
+          0.029497217048710674,
+          -0.012210845765726574,
+          -0.03391946084802475,
+          -0.0362171401688539,
+          -0.028020625591924038,
+          -0.011743662131388284,
+          0.029498163779230584,
+          0.026543234519359103,
+          -0.019268036409310792,
+          0.011169189794453416,
+          -0.006067364310458095,
+          -0.021827709168843763
+        ],
+        "yaw_rad": -0.06046112204010884,
+        "xy_m": [
+          0.0039495219273811,
+          0.006798418716687078
+        ]
+      }
+    },
+    {
+      "env_id": 8,
+      "shuttle_start": [
+        64.62966880941696,
+        0.08637263748405696,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -45.0,
+        0.0,
+        53.40209424030036
+      ],
+      "arrival_time_s": 5.164149625609562,
+      "target_position_m": [
+        1.397490382194519,
+        0.08637263748405696,
+        1.6216564083821672
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.760692612906493,
+        0.0,
+        -17.43397118593283
+      ],
+      "solver_height_residual_m": 4.1195811872896115e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 8,
+      "robot_reset": {
+        "joint_offset_rad": [
+          -0.021036870030002503,
+          0.017956981715597127,
+          0.011846554365457146,
+          0.023906563737853444,
+          -0.019196843210213983,
+          -0.011531744503571818,
+          -0.01220355021572952,
+          -0.023530274981097533,
+          -0.00746525840069694,
+          0.017655321881058228,
+          -0.0011920219127297509,
+          -0.0098575955865799,
+          -0.010208385225751987,
+          0.010681535403222094,
+          -0.020197063928602568,
+          -0.013427257417944144,
+          0.01816293778897648,
+          -0.010741371348719242
+        ],
+        "joint_velocity_rad_s": [
+          -0.03244315375071453,
+          0.028230209207933378,
+          -0.002661894790866176,
+          0.015991924057168358,
+          -0.016563459063628282,
+          -0.0394106817005197,
+          -0.03720788278052845,
+          -0.028693723848842653,
+          0.0374525081897751,
+          0.01694984200249241,
+          0.02081504670998048,
+          0.01817630453203712,
+          0.03487902608424181,
+          0.03570357042686761,
+          -0.0037382596984435745,
+          -0.03734624691761689,
+          0.023760880204374675,
+          -0.0038218175923663486
+        ],
+        "yaw_rad": 0.022359417508275053,
+        "xy_m": [
+          0.017756763477779443,
+          0.011256607084123793
+        ]
+      }
+    },
+    {
+      "env_id": 9,
+      "shuttle_start": [
+        80.6678948726337,
+        -0.07721331485498147,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -70.0,
+        0.0,
+        60.103991883806884
+      ],
+      "arrival_time_s": 5.0246760741853835,
+      "target_position_m": [
+        1.397490382194519,
+        -0.07721331485498147,
+        1.6515666212590197
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.426836956672391,
+        0.0,
+        -17.217917345785295
+      ],
+      "solver_height_residual_m": 4.404864561990962e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 9,
+      "robot_reset": {
+        "joint_offset_rad": [
+          0.023234120458284123,
+          -0.012570417102333142,
+          -0.01711527723644355,
+          0.00856648403370023,
+          0.018967731359427475,
+          -0.012612665924815825,
+          -0.018897512502601493,
+          0.009610615240246409,
+          -0.011083416876252429,
+          0.020785686525768586,
+          0.004806672116119133,
+          0.01653191811596088,
+          -0.019270901021661943,
+          -0.013703986392937025,
+          -0.022790310772469798,
+          -3.3386960198045906e-05,
+          0.015141161358284257,
+          0.01987363076986897
+        ],
+        "joint_velocity_rad_s": [
+          -0.03083896942203751,
+          0.021723050333982218,
+          -0.003659737176329697,
+          -0.014149047714788462,
+          -0.004316494223277789,
+          0.02428449305959226,
+          -0.03051391730022387,
+          0.0010851038039260963,
+          -0.016945683049260012,
+          0.001121706448075424,
+          0.014113598669265287,
+          0.019063475989560284,
+          0.028784301915233755,
+          -0.002662162700899924,
+          -0.00026157146115028673,
+          -0.028303490186366957,
+          0.01265509389336189,
+          0.026390403095513028
+        ],
+        "yaw_rad": -0.014819180739617188,
+        "xy_m": [
+          -0.014184178498727402,
+          0.03340686594160434
+        ]
+      }
+    },
+    {
+      "env_id": 10,
+      "shuttle_start": [
+        80.6709640485626,
+        0.07438071114424338,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -70.0,
+        0.0,
+        57.770265522412956
+      ],
+      "arrival_time_s": 4.9094124920130815,
+      "target_position_m": [
+        1.397490382194519,
+        0.07438071114424338,
+        1.6274325329643773
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.657516429939794,
+        0.0,
+        -17.03321927149892
+      ],
+      "solver_height_residual_m": 4.608338621814312e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 10,
+      "robot_reset": {
+        "joint_offset_rad": [
+          0.024019551977308005,
+          -0.005503173536084548,
+          0.012842616946828138,
+          0.006956268074484115,
+          -0.020568615018739446,
+          -0.005622027970355548,
+          -0.019844781063273437,
+          0.01863798096291657,
+          -0.01614584312987359,
+          -0.007075866804010508,
+          -0.02035471078198353,
+          0.0014568152800768785,
+          -0.015394324121330922,
+          0.024873612700544,
+          0.0035235174587641034,
+          -0.0027450018379663703,
+          -0.014883963287902681,
+          0.018927271578211266
+        ],
+        "joint_velocity_rad_s": [
+          -0.013576110939979326,
+          0.03035997649470986,
+          0.03690446554696713,
+          0.002678427154535576,
+          0.02679088382854935,
+          0.02677459354210101,
+          0.003333598972671249,
+          -0.016708491960270102,
+          -0.0307648428623195,
+          -0.007265164103275899,
+          -0.037593281002340107,
+          -0.03729461160173046,
+          -0.024557988531514606,
+          0.03805065134659157,
+          0.0007363109946020158,
+          -0.017503899380530905,
+          0.03421715664660222,
+          -0.03552876005016837
+        ],
+        "yaw_rad": -0.018650797171453952,
+        "xy_m": [
+          0.030656393985563295,
+          -0.030526942080895392
+        ]
+      }
+    },
+    {
+      "env_id": 11,
+      "shuttle_start": [
+        80.67050297669502,
+        -0.058048312909722545,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -70.0,
+        0.0,
+        57.4426005827263
+      ],
+      "arrival_time_s": 4.8937459140986315,
+      "target_position_m": [
+        1.397490382194519,
+        -0.058048312909722545,
+        1.6106052446185648
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.689518461258156,
+        0.0,
+        -17.00768306049713
+      ],
+      "solver_height_residual_m": 2.599351600629518e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 11,
+      "robot_reset": {
+        "joint_offset_rad": [
+          0.015624397175902159,
+          0.02117677262686842,
+          0.014195279128227462,
+          0.004302018810138596,
+          0.022604139960277506,
+          0.021672267408737143,
+          0.01000064752659173,
+          -0.012280933693690422,
+          0.012077409384827292,
+          0.01988952514137357,
+          0.016407703217788547,
+          0.011933114461989622,
+          0.009239020813667974,
+          0.023019725625478278,
+          -0.0011754222006315415,
+          0.02268021111054387,
+          0.019762387343794145,
+          -0.014459478317693104
+        ],
+        "joint_velocity_rad_s": [
+          -0.030867747044238822,
+          0.03169869011195695,
+          0.012501384822378822,
+          -0.014344090838623806,
+          -0.03275751032333417,
+          -0.01306671809356854,
+          0.01704063102536657,
+          0.012951862092255378,
+          -0.017267957096616965,
+          0.011648773639205044,
+          -0.011834469757220658,
+          -0.016227500563781715,
+          0.02887890524246394,
+          0.020326404828061292,
+          -0.03299186188725379,
+          -0.027466629560399317,
+          -0.0027844256795823905,
+          0.021073758189694515
+        ],
+        "yaw_rad": -0.021280202714588296,
+        "xy_m": [
+          -0.0037858867261705495,
+          -0.01602888600276195
+        ]
+      }
+    },
+    {
+      "env_id": 12,
+      "shuttle_start": [
+        39.09941144059965,
+        -0.052715142307780564,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -20.0,
+        0.0,
+        40.77521699946374
+      ],
+      "arrival_time_s": 4.9297593345019,
+      "target_position_m": [
+        1.397490382194519,
+        -0.052715142307780564,
+        1.652603348185409
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.026449182290315,
+        0.0,
+        -17.14970694638896
+      ],
+      "solver_height_residual_m": 4.479309945182308e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 12,
+      "robot_reset": {
+        "joint_offset_rad": [
+          -0.0189047796003479,
+          0.005679244966106188,
+          0.020755587926777966,
+          -0.0231617360194961,
+          0.018644608133739624,
+          0.02494851812209868,
+          0.009115235701448794,
+          -0.02158856110221831,
+          0.012483375839718404,
+          -0.004099110943745432,
+          -0.007493320463585109,
+          0.016391275408227213,
+          -0.005783853764448142,
+          0.008313714792008,
+          0.000340459533221954,
+          0.019541274594164312,
+          -0.00520597695809779,
+          -0.018237966839717252
+        ],
+        "joint_velocity_rad_s": [
+          0.022544205674659028,
+          -0.007485328011653906,
+          0.03249071993956865,
+          -0.03425121132333135,
+          0.006243335365249625,
+          -0.03900995750739894,
+          -0.015738495301597294,
+          -0.027989173652530043,
+          -0.02976166584301667,
+          0.030940071373344764,
+          -0.039535884990816714,
+          0.008584721943861194,
+          -0.004252462917265429,
+          0.017298594101863046,
+          -0.00641505524953416,
+          -0.024104524767303025,
+          -0.025152082377077466,
+          0.033741851171127414
+        ],
+        "yaw_rad": -0.05877409495216655,
+        "xy_m": [
+          0.016016257516094826,
+          0.03981397716213426
+        ]
+      }
+    },
+    {
+      "env_id": 13,
+      "shuttle_start": [
+        18.937423568831857,
+        -0.05747934861623749,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -8.0,
+        0.0,
+        37.74255977477878
+      ],
+      "arrival_time_s": 4.927066604726039,
+      "target_position_m": [
+        1.397490382194519,
+        -0.05747934861623749,
+        1.6146421169749927
+      ],
+      "predicted_incoming_velocity_mps": [
+        -1.596274098364935,
+        0.0,
+        -17.24521486756437
+      ],
+      "solver_height_residual_m": 2.7402397018150282e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 13,
+      "robot_reset": {
+        "joint_offset_rad": [
+          0.01655173381888716,
+          0.024310633906583966,
+          0.007026077357042311,
+          0.001468936755228363,
+          0.015307265535843766,
+          -0.000998737491103508,
+          0.022324565743314886,
+          -0.020831947512774802,
+          0.022318521959404918,
+          0.016559749344556576,
+          0.001207285069468489,
+          0.005613445622997631,
+          -0.007034501117971131,
+          -0.0018263368521020777,
+          0.012927985389791473,
+          -0.003446725100622751,
+          -0.00397911155297025,
+          0.003823184140033742
+        ],
+        "joint_velocity_rad_s": [
+          -0.024510386022444604,
+          -0.005226330812095635,
+          0.01660561861942575,
+          -0.019277941248485277,
+          -0.026909769278046024,
+          0.020661552660449313,
+          -0.024531857360189414,
+          -0.008932068766558256,
+          0.03380327962084786,
+          -0.011613302018913352,
+          -0.018949030385232088,
+          0.0030857540903640734,
+          -0.032671979112827224,
+          0.007309918652778566,
+          0.025162497176674452,
+          0.020726365091258643,
+          -0.016348624686877145,
+          0.015971734662896316
+        ],
+        "yaw_rad": 0.035128446831829085,
+        "xy_m": [
+          -0.0005762164064582881,
+          -0.0275663821929334
+        ]
+      }
+    },
+    {
+      "env_id": 14,
+      "shuttle_start": [
+        51.3202024845428,
+        -0.008077587553783738,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -30.0,
+        0.0,
+        43.477807589806616
+      ],
+      "arrival_time_s": 4.895631641490844,
+      "target_position_m": [
+        1.397490382194519,
+        -0.008077587553783738,
+        1.6291797555907075
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.7185978229498957,
+        0.0,
+        -17.04714033085138
+      ],
+      "solver_height_residual_m": 1.1684544221068904e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 14,
+      "robot_reset": {
+        "joint_offset_rad": [
+          -0.012817155856091646,
+          0.0015151754223481154,
+          0.008473746795539444,
+          0.006004306603038273,
+          0.016528354684385148,
+          -0.00558082748637348,
+          0.021163636058874294,
+          0.02061624308385958,
+          0.008653986909489042,
+          0.023690019370598232,
+          0.012659201820452666,
+          -0.024951765800708726,
+          -0.014276067088115614,
+          -0.0034447460135817454,
+          0.007155540927240814,
+          -0.001479043064970459,
+          0.018531325678104962,
+          -0.018304591244703017
+        ],
+        "joint_velocity_rad_s": [
+          0.03029933398058097,
+          -0.026999356076607892,
+          -0.028564003162873067,
+          -0.02607172288053855,
+          -0.016671854230127296,
+          -0.019895790335257076,
+          -0.02827569228079785,
+          -0.029027400268575206,
+          -0.031440306829084406,
+          0.034727494983834185,
+          -0.0393877023570267,
+          0.004831949613918363,
+          0.030643740902530296,
+          -0.014287537627553037,
+          0.027030274054064475,
+          0.031894961585995425,
+          0.030118172225497918,
+          -0.00672615473863921
+        ],
+        "yaw_rad": -0.018152850766709146,
+        "xy_m": [
+          -0.014117030739815455,
+          0.027254350159366954
+        ]
+      }
+    },
+    {
+      "env_id": 15,
+      "shuttle_start": [
+        25.93197219596439,
+        0.012237968320155529,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -12.0,
+        0.0,
+        43.10105333570391
+      ],
+      "arrival_time_s": 5.22395213755949,
+      "target_position_m": [
+        1.397490382194519,
+        0.012237968320155529,
+        1.652450458131878
+      ],
+      "predicted_incoming_velocity_mps": [
+        -1.8608091360173962,
+        0.0,
+        -17.638619499038956
+      ],
+      "solver_height_residual_m": 6.578276590119003e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 15,
+      "robot_reset": {
+        "joint_offset_rad": [
+          0.0035024124941107695,
+          0.014364768075778682,
+          0.009664123741019902,
+          0.011055236402457064,
+          0.01636982001628081,
+          0.00194129997294442,
+          0.01623853844744831,
+          -0.014894504723707614,
+          -0.013640453980064516,
+          0.01924402376682259,
+          0.0038358492987926873,
+          -0.01197131248142101,
+          -0.02063555190935512,
+          0.0033054310096625635,
+          -0.02350074856711938,
+          -0.02427826073209348,
+          0.013851939234126157,
+          -0.014689491852220361
+        ],
+        "joint_velocity_rad_s": [
+          -0.03046202725358236,
+          0.021430439791512094,
+          0.01378939499629489,
+          -0.025748863853418326,
+          0.0009648226648412833,
+          -0.033225428346981487,
+          -0.01008575573041286,
+          -0.007761169640116146,
+          -0.015770084621547165,
+          -0.004338555374467694,
+          0.019619030378178443,
+          0.02765455002344789,
+          -0.007781451436423045,
+          0.014665029050254186,
+          0.02028617905944611,
+          0.009888437054936298,
+          0.030531639589059585,
+          -0.01263952592971606
+        ],
+        "yaw_rad": 0.05872513154576413,
+        "xy_m": [
+          -0.03256584549734767,
+          -0.032626397230536716
+        ]
+      }
+    },
+    {
+      "env_id": 16,
+      "shuttle_start": [
+        39.19245446657672,
+        0.07404524216569355,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -20.0,
+        0.0,
+        39.78456964250654
+      ],
+      "arrival_time_s": 4.861747999655804,
+      "target_position_m": [
+        1.397490382194519,
+        0.07404524216569355,
+        1.6558278228523886
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.129902439378837,
+        0.0,
+        -17.03890384945523
+      ],
+      "solver_height_residual_m": 2.4760089534225926e-09,
+      "development_group": "perturbed_b",
+      "source_scenario": 16,
+      "robot_reset": {
+        "joint_offset_rad": [
+          0.020668456918664584,
+          0.022163265227358453,
+          0.012917617350331187,
+          -0.005763895653539214,
+          0.024952557051793958,
+          0.001578370466450596,
+          -0.0038501531607951847,
+          -0.00025576706760969264,
+          -0.017049333116835194,
+          -0.01690463014944384,
+          -0.02423963885994794,
+          0.003624814862362942,
+          0.019624309579471887,
+          -0.0006580626544988415,
+          0.01258314742633622,
+          0.0008447416924379988,
+          -0.018967235465233507,
+          -0.019909522155729664
+        ],
+        "joint_velocity_rad_s": [
+          -0.03496716904243478,
+          0.008410745400887258,
+          0.03803797829273937,
+          -0.007302552518920764,
+          -0.005011921503135494,
+          0.028050740648558413,
+          -0.014827960572907556,
+          0.0335065148226615,
+          0.005774884859017837,
+          -0.018883903693418153,
+          -0.010982174640879326,
+          0.038435727729057824,
+          -0.03980572704100629,
+          -0.0012890614537768089,
+          0.007966274338578279,
+          -0.006663546829623258,
+          0.02341091048510515,
+          -0.007858349036620284
+        ],
+        "yaw_rad": 0.002451850768024552,
+        "xy_m": [
+          0.03090562144980271,
+          0.011345586948105765
+        ]
+      }
+    },
+    {
+      "env_id": 17,
+      "shuttle_start": [
+        64.78427212142803,
+        0.04580136345701094,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -45.0,
+        0.0,
+        51.102262060157955
+      ],
+      "arrival_time_s": 5.036191086180634,
+      "target_position_m": [
+        1.397490382194519,
+        0.04580136345701094,
+        1.6143143232479973
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.9896730882610902,
+        0.0,
+        -17.242275180121954
+      ],
+      "solver_height_residual_m": 5.3903487229334246e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 17,
+      "robot_reset": {
+        "joint_offset_rad": [
+          -0.01286948373922056,
+          0.0008600976174382366,
+          0.0013758131143309926,
+          -0.013565952045430141,
+          0.0052468733436352374,
+          -0.01592306551501174,
+          0.024391582007826387,
+          -0.002948079832359174,
+          0.0014167865994028084,
+          -0.01445915943926836,
+          -0.005466082008833362,
+          -0.005589559352647433,
+          -0.015249885596475284,
+          0.00904320206652183,
+          0.021425605523123267,
+          -0.012663009458488151,
+          -0.013046352562083752,
+          0.01351040883640698
+        ],
+        "joint_velocity_rad_s": [
+          -0.024934058637757498,
+          0.03999008290264761,
+          -0.0007080961882416775,
+          -0.022664848732889417,
+          0.006734588701989945,
+          -0.03284569827870547,
+          0.029952444126417975,
+          -0.005076083804792991,
+          -0.031218987822371754,
+          -0.02180107802978708,
+          0.032304218861537955,
+          0.00338347679184043,
+          -0.03238828064001264,
+          -0.03455200531263026,
+          -0.012542480337601861,
+          0.0237662872340954,
+          0.0003812073687803619,
+          0.0033343901717270627
+        ],
+        "yaw_rad": 0.013907854884997961,
+        "xy_m": [
+          0.014715559742775594,
+          -0.036137870286772185
+        ]
+      }
+    },
+    {
+      "env_id": 18,
+      "shuttle_start": [
+        26.064253077919425,
+        0.026356682066092707,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -12.0,
+        0.0,
+        42.10651733446866
+      ],
+      "arrival_time_s": 5.16149287147067,
+      "target_position_m": [
+        1.397490382194519,
+        0.026356682066092707,
+        1.6547573972137102
+      ],
+      "predicted_incoming_velocity_mps": [
+        -1.927365882999266,
+        0.0,
+        -17.55330690931203
+      ],
+      "solver_height_residual_m": 6.41100377229975e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 18,
+      "robot_reset": {
+        "joint_offset_rad": [
+          -0.017428869820739365,
+          -0.0011297345996583788,
+          0.008160950481264362,
+          0.015453764525201308,
+          0.024509226848106018,
+          -0.02408191948702303,
+          -0.02057393844479069,
+          -3.871478744246065e-05,
+          0.0063074399043830665,
+          -0.016260553339424368,
+          0.00823567618123315,
+          -0.012789296424276536,
+          -0.00113362250548215,
+          0.0036822509563749703,
+          -0.0028057301084808417,
+          0.003443650876136524,
+          -0.008460409851767832,
+          -0.020509322905843383
+        ],
+        "joint_velocity_rad_s": [
+          0.0015769836513257196,
+          -0.00863926965497698,
+          0.019799425625638023,
+          -0.005403682113243151,
+          -0.03895360641578325,
+          0.028714178264031935,
+          -0.005588569121270516,
+          0.028321410309838792,
+          -0.026814418178161582,
+          -0.029779419900507184,
+          -0.005789339128695309,
+          0.035739755216368206,
+          -0.026999518543287256,
+          0.001620587150977633,
+          0.022091196242291673,
+          0.007563405098995023,
+          -0.0028775137540088674,
+          0.01727530183002754
+        ],
+        "yaw_rad": -0.023621867640978067,
+        "xy_m": [
+          -0.015505810185706279,
+          0.010187353633777478
+        ]
+      }
+    },
+    {
+      "env_id": 19,
+      "shuttle_start": [
+        80.68339079028812,
+        0.018472695138416484,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -70.0,
+        0.0,
+        59.58187475334853
+      ],
+      "arrival_time_s": 5.0014081246853355,
+      "target_position_m": [
+        1.397490382194519,
+        0.018472695138416484,
+        1.6079148480519512
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.47259456215089,
+        0.0,
+        -17.18255510064493
+      ],
+      "solver_height_residual_m": 5.125734170441376e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 19,
+      "robot_reset": {
+        "joint_offset_rad": [
+          0.007251688757449873,
+          0.005548137302858764,
+          0.002475722753216357,
+          -0.02325779704051268,
+          -0.017338564545108376,
+          0.006034642733754203,
+          -0.022287307911433574,
+          0.017212657669044867,
+          0.002382341409169892,
+          0.022338128096410774,
+          0.01092280677874903,
+          0.0081505614967095,
+          -0.020372884868312152,
+          -0.005956628750504189,
+          0.001682910947323507,
+          0.008817512541751685,
+          0.009608234645910194,
+          0.01669866033802015
+        ],
+        "joint_velocity_rad_s": [
+          0.026474606933048574,
+          0.0085952394945265,
+          -0.016318865288371703,
+          -0.012688564845619938,
+          -0.008555570744848341,
+          0.02001388326362242,
+          -0.018012505555654652,
+          -0.037295844921605224,
+          -0.009869877946388578,
+          -0.01037078959176915,
+          0.02123074043952277,
+          -0.013984824951110503,
+          0.013751228180674098,
+          0.0005845396481287402,
+          0.02936519925220877,
+          0.02224144313053219,
+          0.01752687175098642,
+          0.010529974641282774
+        ],
+        "yaw_rad": -0.003339147374512963,
+        "xy_m": [
+          -0.029572983006716465,
+          -0.01573909241853647
+        ]
+      }
+    },
+    {
+      "env_id": 20,
+      "shuttle_start": [
+        64.81413643304535,
+        -0.06168371535535713,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -45.0,
+        0.0,
+        50.33900358248502
+      ],
+      "arrival_time_s": 4.99075150847396,
+      "target_position_m": [
+        1.397490382194519,
+        -0.06168371535535713,
+        1.6439980178085276
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.073261774774363,
+        0.0,
+        -17.170153085861156
+      ],
+      "solver_height_residual_m": 2.2348689565632185e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 20,
+      "robot_reset": {
+        "joint_offset_rad": [
+          -0.020019449215645937,
+          -0.01295952001921878,
+          0.0030642943273795527,
+          0.019300087522704616,
+          -0.005404731521041095,
+          0.02155856328376886,
+          0.018037738633979082,
+          -0.0015585107752430494,
+          0.016854603741066725,
+          0.008881395625677559,
+          -0.00032453573392130647,
+          -0.011005230426562235,
+          -0.02452690827395957,
+          -0.002594511285375724,
+          0.00838339760872777,
+          -0.004180200633334387,
+          0.006411209609193232,
+          0.006541741147502264
+        ],
+        "joint_velocity_rad_s": [
+          0.01553325584809815,
+          -0.004666962557005758,
+          -0.03703240314760259,
+          -0.014616835181282442,
+          -0.009076666622536589,
+          -0.020295039709635185,
+          0.01876254143777069,
+          0.03005935004966711,
+          0.01688725320074603,
+          0.03382030071244673,
+          0.023619155578656577,
+          0.03194471291242929,
+          -0.010472987812462344,
+          0.023473468535318807,
+          -0.013662135316375217,
+          -0.024664605333605448,
+          0.037468979528356615,
+          0.035219473725054386
+        ],
+        "yaw_rad": -0.06619648176564068,
+        "xy_m": [
+          0.0008954280766378525,
+          0.009784879725004789
+        ]
+      }
+    },
+    {
+      "env_id": 21,
+      "shuttle_start": [
+        51.063876639983015,
+        0.01020453414477887,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -30.0,
+        0.0,
+        46.5394469210878
+      ],
+      "arrival_time_s": 5.088264315724476,
+      "target_position_m": [
+        1.397490382194519,
+        0.01020453414477887,
+        1.632484633723538
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.393063709331132,
+        0.0,
+        -17.350045435850287
+      ],
+      "solver_height_residual_m": 6.732664181718917e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 21,
+      "robot_reset": {
+        "joint_offset_rad": [
+          -0.014082644142271762,
+          0.005600801330726483,
+          -0.007916010361708626,
+          0.007897123321680508,
+          -0.013555110878410376,
+          -0.02054057992257502,
+          0.005136115740611031,
+          0.021255612677152404,
+          0.017577351987251494,
+          0.02191524376417469,
+          0.008545122608780799,
+          0.0031091865697722328,
+          -0.02118081584299248,
+          0.002789838111795312,
+          0.015769885848463942,
+          0.0025701848137459696,
+          0.014734626856936488,
+          -0.0023360090211255284
+        ],
+        "joint_velocity_rad_s": [
+          0.035163846040565154,
+          -0.018112426972471143,
+          0.009238890357127633,
+          0.035435526987297274,
+          -0.03176824757185935,
+          0.03236349766802695,
+          -0.036063751143667604,
+          -0.011855370349553515,
+          -0.029516699238863423,
+          0.014920642292509688,
+          -0.029600123599347085,
+          0.003828861285136674,
+          0.01336767354851251,
+          0.00917980733233853,
+          -0.014925960144911175,
+          0.03194789886500924,
+          0.020190890546391817,
+          0.0029095505397009266
+        ],
+        "yaw_rad": -0.030188838511397406,
+        "xy_m": [
+          -0.006058653685935472,
+          -0.03672310154479737
+        ]
+      }
+    },
+    {
+      "env_id": 22,
+      "shuttle_start": [
+        26.739275676517728,
+        -0.08825076491439782,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -12.0,
+        0.0,
+        36.02415213827044
+      ],
+      "arrival_time_s": 4.745894913384666,
+      "target_position_m": [
+        1.397490382194519,
+        -0.08825076491439782,
+        1.612876971647001
+      ],
+      "predicted_incoming_velocity_mps": [
+        -2.410076945877805,
+        0.0,
+        -16.912209952943083
+      ],
+      "solver_height_residual_m": 5.477236397766205e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 22,
+      "robot_reset": {
+        "joint_offset_rad": [
+          0.019378696797676655,
+          -0.010526548102722895,
+          -0.009303577200519116,
+          0.008741128088389075,
+          -0.005347270677433041,
+          0.017611834820168953,
+          0.019141981590788434,
+          0.011435370291654631,
+          -0.023331168821927813,
+          0.020859552377633053,
+          0.011430646502328765,
+          -0.003075629602194801,
+          -0.0029088802255310027,
+          0.013349419087485319,
+          -0.02426501641100645,
+          0.022507864289588342,
+          0.010989728772699256,
+          -0.012707093899505523
+        ],
+        "joint_velocity_rad_s": [
+          -0.035059761781803575,
+          0.02586957571528129,
+          0.03600717249048182,
+          -0.004495319132606826,
+          0.03134282058618292,
+          -0.01954041718794912,
+          -0.03874476873274147,
+          -0.01710411422577975,
+          0.007310871457385036,
+          0.0386648754272633,
+          0.03782159014688593,
+          0.03460780831181128,
+          -0.03873279960644332,
+          -0.020463686652571776,
+          0.009367254187392496,
+          0.01663177711470558,
+          -0.008147296397193575,
+          -0.031622620683614946
+        ],
+        "yaw_rad": -0.035773887479229674,
+        "xy_m": [
+          0.013080932892165338,
+          -0.027172464203468374
+        ]
+      }
+    },
+    {
+      "env_id": 23,
+      "shuttle_start": [
+        51.22221139778114,
+        -0.10468643633946143,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -30.0,
+        0.0,
+        44.88127373624593
+      ],
+      "arrival_time_s": 4.9866546409856785,
+      "target_position_m": [
+        1.397490382194519,
+        -0.10468643633946143,
+        1.6101970669697876
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.5624411784703103,
+        0.0,
+        -17.194585187726954
+      ],
+      "solver_height_residual_m": 5.264820113204394e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 23,
+      "robot_reset": {
+        "joint_offset_rad": [
+          0.013991815433388552,
+          0.00960550703603924,
+          0.0030934539327741144,
+          -0.00353361809018125,
+          -0.01089664130701893,
+          0.005096579586600702,
+          0.019442652567179405,
+          0.01749560464749047,
+          -0.008739044158817301,
+          -0.004611630766282199,
+          0.023682750087262915,
+          0.009288438151633015,
+          0.022230544400572552,
+          0.011740851406579031,
+          -0.017404217707894146,
+          -0.017324389843643647,
+          -0.024989997630020896,
+          -0.01700319039559487
+        ],
+        "joint_velocity_rad_s": [
+          -0.028262611369497502,
+          0.021885764839746503,
+          -0.01960263212627143,
+          -0.017643091179100984,
+          0.003525270924531629,
+          -0.03838566008802233,
+          -0.023172572127510112,
+          0.0007784050349930391,
+          -0.025719744024471865,
+          -0.038250198623819086,
+          -0.010555679642381799,
+          -0.03575302547659842,
+          -0.03148953676564439,
+          0.018044153271609423,
+          -0.036805121183214294,
+          0.037729889356391176,
+          -0.00012970665162528872,
+          0.0036350615880488962
+        ],
+        "yaw_rad": -0.06763419620395038,
+        "xy_m": [
+          0.03832748720278422,
+          0.007726594054877474
+        ]
+      }
+    },
+    {
+      "env_id": 24,
+      "shuttle_start": [
+        51.34104586344443,
+        -0.10297419549440626,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -30.0,
+        0.0,
+        43.20418650750071
+      ],
+      "arrival_time_s": 4.878922019752604,
+      "target_position_m": [
+        1.397490382194519,
+        -0.10297419549440626,
+        1.6099091202759697
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.747865919053429,
+        0.0,
+        -17.020138929449228
+      ],
+      "solver_height_residual_m": 6.756401038643389e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 24,
+      "robot_reset": {
+        "joint_offset_rad": [
+          0.01065968979322865,
+          0.011533560699897652,
+          -0.011052283298141076,
+          -0.024847147016524563,
+          0.016622495992796187,
+          0.022835476309837704,
+          -0.009932772898382253,
+          0.020497435543469188,
+          0.020285887475871983,
+          -0.011667615576043906,
+          0.0035469731970230733,
+          -0.013358819685612505,
+          0.008212985029058602,
+          0.009314036811457413,
+          0.02306393013614045,
+          0.013336384066750945,
+          0.024937927465564426,
+          -0.012081821243963321
+        ],
+        "joint_velocity_rad_s": [
+          0.02289831449183733,
+          0.01257883375196582,
+          -0.0198254323427358,
+          -0.012941642125890072,
+          0.027054362537339165,
+          0.03171800950487096,
+          0.03937439840407197,
+          0.013283609960092237,
+          0.02543053754645582,
+          0.03509506862388779,
+          0.017182084567350958,
+          0.039651704263637906,
+          0.031223474093198693,
+          -0.004883959172050707,
+          -0.010649488552538378,
+          0.013253177531061124,
+          -0.004745532113531736,
+          -0.03696957606558254
+        ],
+        "yaw_rad": 0.04914431820882813,
+        "xy_m": [
+          0.0011819293314176346,
+          0.007979245870190173
+        ]
+      }
+    },
+    {
+      "env_id": 25,
+      "shuttle_start": [
+        18.688809601859703,
+        0.04039329471585515,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -8.0,
+        0.0,
+        40.243728063069284
+      ],
+      "arrival_time_s": 5.095403354757234,
+      "target_position_m": [
+        1.397490382194519,
+        0.04039329471585515,
+        1.6325941921234361
+      ],
+      "predicted_incoming_velocity_mps": [
+        -1.4503790439605957,
+        0.0,
+        -17.49296260492715
+      ],
+      "solver_height_residual_m": 4.241018625172899e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 25,
+      "robot_reset": {
+        "joint_offset_rad": [
+          -0.007659344630868065,
+          -0.010183939362261741,
+          0.004413602865842699,
+          0.009886293123792793,
+          -0.003856089531217178,
+          -0.010729670366880745,
+          -0.006477766601307621,
+          -0.013659593136683629,
+          -0.017583096791102,
+          0.012012258099833036,
+          0.01119213933898814,
+          2.64174805348176e-05,
+          0.012483068031640912,
+          0.0200792887645906,
+          -0.01514577475556203,
+          0.012137614618054772,
+          0.010537530227497295,
+          -0.0028494814270201493
+        ],
+        "joint_velocity_rad_s": [
+          0.0032191262462070644,
+          0.028952021054286896,
+          0.03067419129099825,
+          -0.00505290720325572,
+          0.038713141653707574,
+          0.02162989093396006,
+          -0.008433388619285082,
+          0.011022689093940156,
+          0.03801061737934699,
+          0.027232837542817627,
+          -0.03451435395214879,
+          0.003997584872637197,
+          0.03781652116052988,
+          0.03556503866329947,
+          0.021035116647843737,
+          -0.0024085080518487373,
+          0.01046834617973725,
+          -0.0287149659306852
+        ],
+        "yaw_rad": -0.014962212433243666,
+        "xy_m": [
+          0.007569006772381072,
+          0.006377015691432737
+        ]
+      }
+    },
+    {
+      "env_id": 26,
+      "shuttle_start": [
+        64.88371363882283,
+        0.046275377990738026,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -45.0,
+        0.0,
+        46.444701100699604
+      ],
+      "arrival_time_s": 4.759813333949126,
+      "target_position_m": [
+        1.397490382194519,
+        0.046275377990738026,
+        1.6246457980694047
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.5176332780431245,
+        0.0,
+        -16.782635606209016
+      ],
+      "solver_height_residual_m": 7.079552077904339e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 26,
+      "robot_reset": {
+        "joint_offset_rad": [
+          -0.0026326483640227924,
+          -0.015012514445976894,
+          0.004445145304220816,
+          -0.018186564577201504,
+          -0.02414922159465442,
+          -0.009469588444199884,
+          -0.012203407930636873,
+          0.0032981690308827964,
+          0.01732265090855871,
+          -0.0001102419033794759,
+          0.0047799086050089035,
+          0.0002670728149587673,
+          -0.0023801992265412852,
+          -0.024505976854280572,
+          0.005121559071486682,
+          -0.019822594824242114,
+          0.007975951378824689,
+          0.000247525206516587
+        ],
+        "joint_velocity_rad_s": [
+          -0.010592421294684157,
+          -0.03598122328379504,
+          -0.021067735059122406,
+          0.03227481720921727,
+          0.019123396942704735,
+          -0.035290596922442505,
+          -0.008206614248153964,
+          -0.0024713538325708134,
+          -0.03952189694689341,
+          0.037285704702313634,
+          -0.03916317356190531,
+          -0.033568009191737795,
+          0.039053195126269986,
+          -0.0015011742138865067,
+          -0.015367652226423154,
+          -0.03494337439487096,
+          0.006586723784691578,
+          0.010748886792605168
+        ],
+        "yaw_rad": -0.054731517785178166,
+        "xy_m": [
+          0.02617683449175876,
+          -0.034460786964593114
+        ]
+      }
+    },
+    {
+      "env_id": 27,
+      "shuttle_start": [
+        64.83584257642066,
+        -0.002774219127607558,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -45.0,
+        0.0,
+        49.92762885522097
+      ],
+      "arrival_time_s": 4.968162397336321,
+      "target_position_m": [
+        1.397490382194519,
+        -0.002774219127607558,
+        1.6233007413556513
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.115328139710791,
+        0.0,
+        -17.134742102182553
+      ],
+      "solver_height_residual_m": 3.773718626476352e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 27,
+      "robot_reset": {
+        "joint_offset_rad": [
+          0.0012657850020922727,
+          0.016316430161722205,
+          -0.000392518538950809,
+          0.003973591537882053,
+          -0.01770261660404328,
+          -0.022674006533554333,
+          -0.02300631512149163,
+          0.015989326247517394,
+          0.002980702612437054,
+          -0.017311423206098395,
+          0.012266480715353703,
+          0.0042985891233355625,
+          0.013469700208487909,
+          0.008426040841724172,
+          -0.013974579842136976,
+          -0.008159660169045457,
+          0.0010046223360103482,
+          -0.022492575357717072
+        ],
+        "joint_velocity_rad_s": [
+          0.019613917879924954,
+          -0.02770507112937665,
+          0.031308869164656215,
+          -0.0313742800370521,
+          0.0021300529326094067,
+          -0.027408006607215887,
+          -0.008753613342150423,
+          -0.035534388522742336,
+          -0.0018685424146576077,
+          -0.01756950826062492,
+          0.0069292326006137744,
+          0.03650281044792327,
+          -0.036547026329541696,
+          -0.031510984481259545,
+          -0.026967111468141118,
+          -0.005405845334887936,
+          -0.007866501215806725,
+          -0.0032478042976226695
+        ],
+        "yaw_rad": 0.018575843755544594,
+        "xy_m": [
+          -0.021941038404467043,
+          0.012322582396544865
+        ]
+      }
+    },
+    {
+      "env_id": 28,
+      "shuttle_start": [
+        64.82487324061844,
+        -0.050927667777186984,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -45.0,
+        0.0,
+        50.212966301478446
+      ],
+      "arrival_time_s": 4.984794422919141,
+      "target_position_m": [
+        1.397490382194519,
+        -0.050927667777186984,
+        1.6214098491253863
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.0843508690396755,
+        0.0,
+        -17.161368109420025
+      ],
+      "solver_height_residual_m": 1.9831410513759806e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 28,
+      "robot_reset": {
+        "joint_offset_rad": [
+          -0.018402998136591426,
+          -0.024557289676826674,
+          -0.012556803878284135,
+          -0.009062341707550048,
+          0.008622395273959506,
+          0.022110911650589413,
+          0.022181687466392097,
+          2.85316227720267e-07,
+          -0.019351838732191814,
+          -0.01691427596571084,
+          0.016914655249013748,
+          0.01162065913664577,
+          0.0077739158814941825,
+          0.02447194532085077,
+          0.015476723386891933,
+          -0.006084758714158915,
+          0.007576848858555037,
+          -0.006019978005289632
+        ],
+        "joint_velocity_rad_s": [
+          0.039667162856880274,
+          -0.038327124112848054,
+          0.010274235570226754,
+          0.008727830204090382,
+          -0.03081448733229889,
+          0.03770481158269758,
+          -0.00926627159564027,
+          -0.005941807784370479,
+          0.0012149384205450073,
+          0.036736852923325895,
+          -0.027329931402016703,
+          -0.010968952839544351,
+          -0.028144453912200326,
+          0.010185234910368726,
+          -0.01612139424828693,
+          -0.012171516854082593,
+          -0.015173193394593065,
+          -0.03160060742549364
+        ],
+        "yaw_rad": 0.027540537594805736,
+        "xy_m": [
+          -0.026680122585217507,
+          0.028827299303697422
+        ]
+      }
+    },
+    {
+      "env_id": 29,
+      "shuttle_start": [
+        26.65887873601076,
+        0.07475273054421816,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -12.0,
+        0.0,
+        36.9199012639001
+      ],
+      "arrival_time_s": 4.811215650312594,
+      "target_position_m": [
+        1.397490382194519,
+        0.07475273054421816,
+        1.6226171822635072
+      ],
+      "predicted_incoming_velocity_mps": [
+        -2.3296979659894075,
+        0.0,
+        -17.021809673916817
+      ],
+      "solver_height_residual_m": 3.3591004644506484e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 29,
+      "robot_reset": {
+        "joint_offset_rad": [
+          -0.02160387250598027,
+          -0.016110398612027253,
+          -0.007193403591816024,
+          -0.010170472129094105,
+          -0.004046492973190957,
+          0.02228446351558582,
+          -0.007542305410603252,
+          0.017491685755242223,
+          0.013134131386121572,
+          0.012659388663043752,
+          0.003895969692420724,
+          -0.002937885969321284,
+          -0.015560325845199752,
+          0.0005882683916788693,
+          -0.004894098541455772,
+          0.002103740230561129,
+          -0.014097826228945703,
+          0.024312434860778942
+        ],
+        "joint_velocity_rad_s": [
+          0.0103235752828933,
+          -0.03221106021765627,
+          0.007206892515667987,
+          0.025301835142135985,
+          -0.022057216470200418,
+          0.026954888863107686,
+          -0.02097712973209062,
+          0.019389812608432422,
+          0.0009186311333538935,
+          -0.022999585300115265,
+          -0.02201568994577726,
+          0.00798036942239639,
+          -0.0021068876079081214,
+          0.02188808637459482,
+          -0.005455415859089215,
+          -0.006867292365246885,
+          -0.02937140899313069,
+          0.030176950553897706
+        ],
+        "yaw_rad": 0.037728469387087196,
+        "xy_m": [
+          -0.015491278516857294,
+          -0.028263130395783573
+        ]
+      }
+    },
+    {
+      "env_id": 30,
+      "shuttle_start": [
+        19.14058673170091,
+        -0.0028896637300265676,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -8.0,
+        0.0,
+        35.318167763762176
+      ],
+      "arrival_time_s": 4.7488801313875095,
+      "target_position_m": [
+        1.397490382194519,
+        -0.0028896637300265676,
+        1.6584510795746865
+      ],
+      "predicted_incoming_velocity_mps": [
+        -1.7599501858353839,
+        0.0,
+        -16.956309154261184
+      ],
+      "solver_height_residual_m": 2.135507193301578e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 30,
+      "robot_reset": {
+        "joint_offset_rad": [
+          0.0022807051535757225,
+          -0.0010027539345158383,
+          0.014320133078149298,
+          -0.0157726896808148,
+          -0.008257678833726235,
+          -0.016343710689837185,
+          0.014446128596281256,
+          -0.0015704859291253252,
+          -0.0024391563363309783,
+          0.01959843369430405,
+          0.02470673347080931,
+          0.024337353510859243,
+          -0.002188420336296071,
+          0.01894678771144017,
+          -0.018177031275264113,
+          0.021633533814646583,
+          -0.001486021792388114,
+          0.022341246714717412
+        ],
+        "joint_velocity_rad_s": [
+          -0.021742470559850135,
+          0.027993157122966135,
+          0.035729222766283965,
+          -0.027014106928139096,
+          -0.01856079357919861,
+          -0.023236818116959875,
+          0.006193787103986902,
+          0.029898134356214863,
+          0.0350054503798043,
+          0.01221572785412394,
+          -0.01883323327338582,
+          -0.017564664400581548,
+          0.03508708178076073,
+          -0.002874913981379637,
+          -0.014514565206636937,
+          0.015567295755630255,
+          -0.019990244033932375,
+          -0.029501618727013873
+        ],
+        "yaw_rad": -0.01763703564477479,
+        "xy_m": [
+          -0.03552953245667208,
+          -0.01913782817119544
+        ]
+      }
+    },
+    {
+      "env_id": 31,
+      "shuttle_start": [
+        80.67749874607453,
+        -0.07007088707129092,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -70.0,
+        0.0,
+        58.99072035681456
+      ],
+      "arrival_time_s": 4.970361237369147,
+      "target_position_m": [
+        1.397490382194519,
+        -0.07007088707129092,
+        1.6358095251100657
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.534418541755353,
+        0.0,
+        -17.13234677437056
+      ],
+      "solver_height_residual_m": 3.390331126951196e-09,
+      "development_group": "perturbed_b",
+      "source_scenario": 31,
+      "robot_reset": {
+        "joint_offset_rad": [
+          -0.004461462345881323,
+          -0.0193960489085203,
+          -0.007794484884373565,
+          0.007311447361197224,
+          -0.002912844976758637,
+          0.016329238792695648,
+          -0.010426211056152058,
+          0.017523015094225373,
+          0.005426166562616592,
+          0.018833083867001492,
+          -0.007105407336267768,
+          -0.023185992045559014,
+          -0.020974104603266874,
+          -0.014242626878201348,
+          0.01772102796940008,
+          0.014777149665258914,
+          -0.01151272551933465,
+          -0.00538874203141787
+        ],
+        "joint_velocity_rad_s": [
+          0.010576184915873567,
+          -0.027931115789669808,
+          0.02045718766353509,
+          0.005047070662381692,
+          0.03684928056700194,
+          -0.011288422834955833,
+          0.013238433371570817,
+          0.039988818223525756,
+          -0.012497025619831303,
+          -0.03787719325808884,
+          0.014344978032308144,
+          -0.018318371487996615,
+          0.017583252570749226,
+          0.021657085662602694,
+          -0.0057009177725748025,
+          -0.025684924983363038,
+          0.011654985837874249,
+          0.0023023497175845703
+        ],
+        "yaw_rad": 0.02183415846362706,
+        "xy_m": [
+          0.030085441723365088,
+          -0.03210111095833708
+        ]
+      }
+    },
+    {
+      "env_id": 32,
+      "shuttle_start": [
+        39.36849678358751,
+        -0.08982227227146211,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -20.0,
+        0.0,
+        37.29952366556972
+      ],
+      "arrival_time_s": 4.684741329119933,
+      "target_position_m": [
+        1.397490382194519,
+        -0.08982227227146211,
+        1.6457606540705088
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.409500118291881,
+        0.0,
+        -16.733549220552216
+      ],
+      "solver_height_residual_m": 4.016096544212644e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 32,
+      "robot_reset": {
+        "joint_offset_rad": [
+          0.006255011197703213,
+          -0.0032820233452225296,
+          0.005489582465732973,
+          0.01194973202142284,
+          -0.006150534239702132,
+          -0.018326256992823094,
+          -0.01483975102727187,
+          -0.011373871032346711,
+          0.015251997281286428,
+          0.013490384354740988,
+          -0.024363413995011532,
+          -0.011942022317398944,
+          0.0017972933845548482,
+          -0.015488751817896324,
+          0.0002253821647442214,
+          0.023008304016907108,
+          0.014329413450328489,
+          0.01657271941283244
+        ],
+        "joint_velocity_rad_s": [
+          0.0337238855034702,
+          0.011602155089077026,
+          -0.037881591674836915,
+          0.010655409771395334,
+          -0.0278465837099977,
+          -0.029561978858071658,
+          -0.009122089196283545,
+          -0.01276794927180223,
+          -0.017900634790024635,
+          0.037916121463876816,
+          0.013999811387286412,
+          -0.003705130430282748,
+          -0.014928414054321434,
+          0.0339849524118609,
+          0.028512047856301785,
+          -0.021854950276428368,
+          0.0019819556341012026,
+          0.0030543008354753653
+        ],
+        "yaw_rad": 0.02468369396457229,
+        "xy_m": [
+          -0.018865010815921606,
+          0.031473603975642965
+        ]
+      }
+    },
+    {
+      "env_id": 33,
+      "shuttle_start": [
+        26.617828895108712,
+        -0.0465847118791769,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -12.0,
+        0.0,
+        37.332593905739486
+      ],
+      "arrival_time_s": 4.840206463300876,
+      "target_position_m": [
+        1.397490382194519,
+        -0.0465847118791769,
+        1.636799616350859
+      ],
+      "predicted_incoming_velocity_mps": [
+        -2.294438285590434,
+        0.0,
+        -17.068955021899363
+      ],
+      "solver_height_residual_m": 5.25387964245283e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 33,
+      "robot_reset": {
+        "joint_offset_rad": [
+          0.01886637293020943,
+          0.007612603033798841,
+          -0.011011835990167352,
+          0.0037960923258727637,
+          -0.0004759084930063828,
+          -0.021197187996672126,
+          -0.021512551757991202,
+          0.010378541968117196,
+          0.022530212144183513,
+          -0.01743161779751587,
+          -0.012443175500565541,
+          0.011433303528956641,
+          0.020343000952704395,
+          -0.01804385735891763,
+          -0.010321032872994207,
+          0.013030739019381843,
+          -0.008434491277955765,
+          -0.01257833338819796
+        ],
+        "joint_velocity_rad_s": [
+          0.004085431508132051,
+          -0.012004514778462677,
+          -0.013283052107287582,
+          0.028885830699907557,
+          -0.0386965218699095,
+          -0.015132044269937604,
+          -0.027326876794153743,
+          0.022460448393936377,
+          0.010337444096790903,
+          0.0036619408573713916,
+          0.019299262046848523,
+          0.0004916447038556537,
+          0.026260996583514433,
+          0.010641378162392821,
+          -0.03749507458495347,
+          -0.03619445175300519,
+          0.0373163820362741,
+          -0.03792442676570921
+        ],
+        "yaw_rad": -0.023509293347556748,
+        "xy_m": [
+          -0.019416661160225397,
+          0.029306651516731973
+        ]
+      }
+    },
+    {
+      "env_id": 34,
+      "shuttle_start": [
+        64.89072543634705,
+        -0.049436888302303354,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -45.0,
+        0.0,
+        47.134388401173055
+      ],
+      "arrival_time_s": 4.802584818347832,
+      "target_position_m": [
+        1.397490382194519,
+        -0.049436888302303354,
+        1.6155605529073513
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.432875099722302,
+        0.0,
+        -16.85818045177356
+      ],
+      "solver_height_residual_m": 6.916630246323052e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 34,
+      "robot_reset": {
+        "joint_offset_rad": [
+          0.022304358217579763,
+          0.0029037468610399915,
+          -0.02383311656656453,
+          -0.0059716842178595235,
+          0.003832935760607465,
+          -0.006464074896739641,
+          0.011647733433618676,
+          0.004250366268348578,
+          0.006528969107789592,
+          0.015252472984877412,
+          -0.009901019946586582,
+          0.009109143137571996,
+          0.015836657097606184,
+          0.024854716475394355,
+          -0.005560358599455983,
+          -0.0020474501794096253,
+          0.010652944459467947,
+          0.006730794962708099
+        ],
+        "joint_velocity_rad_s": [
+          -0.02797987251030114,
+          -0.029504036997539423,
+          -0.029752974882354816,
+          -0.027044763678806455,
+          0.016214289206815613,
+          0.024727557872712615,
+          -0.006620371722024183,
+          0.011085404534755351,
+          -0.0224785959156247,
+          -0.013936319969545377,
+          -0.02412428201211963,
+          0.03724203464113756,
+          -0.03952678246256136,
+          -0.028528426806896635,
+          0.03709462129229437,
+          0.014005393178381356,
+          0.018176931835608902,
+          -0.03027000857906094
+        ],
+        "yaw_rad": 0.057209311610129,
+        "xy_m": [
+          0.03715731885666789,
+          0.015234800396985493
+        ]
+      }
+    },
+    {
+      "env_id": 35,
+      "shuttle_start": [
+        80.62170642832963,
+        0.027763740983982793,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -70.0,
+        0.0,
+        55.62905583065003
+      ],
+      "arrival_time_s": 4.800566220190475,
+      "target_position_m": [
+        1.397490382194519,
+        0.027763740983982793,
+        1.6062799593414325
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.883634730483523,
+        0.0,
+        -16.84872011388902
+      ],
+      "solver_height_residual_m": 5.666371749590837e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 35,
+      "robot_reset": {
+        "joint_offset_rad": [
+          -0.016091015634444615,
+          -0.005266368196999431,
+          0.006268108920800063,
+          0.001797580566549821,
+          -0.007303916228047692,
+          -0.00403359441246005,
+          -0.020504007220421974,
+          -0.01934958142808087,
+          0.00782767809578773,
+          0.023350821571628634,
+          0.00849475800508269,
+          0.011931177629108988,
+          0.001815080790280997,
+          0.024505696930750998,
+          0.00922792648942429,
+          -0.016298834039408117,
+          0.002291599439384489,
+          -0.009589716472176647
+        ],
+        "joint_velocity_rad_s": [
+          -0.013981755868683728,
+          0.03351929899095462,
+          0.009597428919673814,
+          0.004188015759555512,
+          -0.025703910589099772,
+          0.033843706847166234,
+          -0.0048961631505599415,
+          -0.028037838591553864,
+          0.0077136784513016435,
+          -0.014021462230422221,
+          -0.0315061596287802,
+          -0.027748744491780768,
+          0.006587666599634667,
+          -0.012521266921529516,
+          0.001318657473546099,
+          -0.02497732154864158,
+          -0.0051739279995780055,
+          0.02136295152528049
+        ],
+        "yaw_rad": 0.05680109009592278,
+        "xy_m": [
+          -0.011914444018760947,
+          -0.03683368162721858
+        ]
+      }
+    },
+    {
+      "env_id": 36,
+      "shuttle_start": [
+        18.997261538071538,
+        -0.03117763048859215,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -8.0,
+        0.0,
+        37.08487094845623
+      ],
+      "arrival_time_s": 4.88054502448239,
+      "target_position_m": [
+        1.397490382194519,
+        -0.03117763048859215,
+        1.6155001506121516
+      ],
+      "predicted_incoming_velocity_mps": [
+        -1.638142984901644,
+        0.0,
+        -17.172702652819755
+      ],
+      "solver_height_residual_m": 5.4723341413875914e-09,
+      "development_group": "perturbed_b",
+      "source_scenario": 36,
+      "robot_reset": {
+        "joint_offset_rad": [
+          0.011638076056921416,
+          0.019837683017584512,
+          0.013620275280991564,
+          -0.023841236652003873,
+          0.021023538092634464,
+          0.01612546592905819,
+          0.010097037389901357,
+          -0.0026492513928011996,
+          0.007204372923568639,
+          -0.022349731391098755,
+          0.008076228903984524,
+          0.00017289868179258885,
+          -0.013216606777963408,
+          -0.011604423209944998,
+          0.02054980944529545,
+          0.0025629388671853104,
+          0.024661642763419325,
+          0.006497653306279209
+        ],
+        "joint_velocity_rad_s": [
+          -0.03639603930609204,
+          -0.018883936047968345,
+          -2.8640583663613883e-05,
+          -0.03352667842303215,
+          -0.029646211314037964,
+          -0.0192818246299316,
+          -0.02954032053834111,
+          0.03142529208793871,
+          -0.016498093403569065,
+          0.02163117896654647,
+          -0.027560307085587786,
+          -0.00834934018747343,
+          -0.006918445539482329,
+          -0.008217065189752043,
+          0.02483468293337176,
+          0.03988341132249335,
+          0.03976225840238488,
+          -0.027320471917092054
+        ],
+        "yaw_rad": -0.05739346985512325,
+        "xy_m": [
+          -0.005740107363798902,
+          0.019872714347090745
+        ]
+      }
+    },
+    {
+      "env_id": 37,
+      "shuttle_start": [
+        18.94045606825721,
+        0.07731584989395432,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -8.0,
+        0.0,
+        37.67922723200172
+      ],
+      "arrival_time_s": 4.920853396645064,
+      "target_position_m": [
+        1.397490382194519,
+        0.07731584989395432,
+        1.6452306232936216
+      ],
+      "predicted_incoming_velocity_mps": [
+        -1.6014908332136129,
+        0.0,
+        -17.234435438483146
+      ],
+      "solver_height_residual_m": 1.781417235946492e-10,
+      "development_group": "perturbed_b",
+      "source_scenario": 37,
+      "robot_reset": {
+        "joint_offset_rad": [
+          -0.021941096381349053,
+          -0.0029248561203380763,
+          -0.005765559536228131,
+          -0.016177290591398347,
+          0.024992568306727553,
+          -0.01960420239125753,
+          -0.012137802978795575,
+          0.020595703162617843,
+          -0.015327647783227,
+          -0.011172376312190714,
+          0.0062625152067152315,
+          -0.02055822935305998,
+          0.024786908801047586,
+          -0.018228603224292525,
+          0.008498972344981086,
+          0.014733317442036549,
+          -0.003271523852515213,
+          0.023130067480013325
+        ],
+        "joint_velocity_rad_s": [
+          0.027066359564869864,
+          0.032084570907044384,
+          0.03754659304903755,
+          -0.034168818577249065,
+          -0.025119219246958514,
+          -0.017031176417836573,
+          0.026354053324349612,
+          0.0013522960299403308,
+          0.025896019419148923,
+          0.037643255520991535,
+          -0.025764425829022518,
+          -0.0065136474288505775,
+          0.024704457241826912,
+          0.029359135511984,
+          -0.025419128043127986,
+          0.016221878750355613,
+          0.025858112437947313,
+          -0.0016109238812598708
+        ],
+        "yaw_rad": -0.01960818184218182,
+        "xy_m": [
+          -0.02868254866307208,
+          0.01875964478846679
+        ]
+      }
+    },
+    {
+      "env_id": 38,
+      "shuttle_start": [
+        51.08826831547778,
+        -0.04045940237646421,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -30.0,
+        0.0,
+        46.30332242231816
+      ],
+      "arrival_time_s": 5.073957072061536,
+      "target_position_m": [
+        1.397490382194519,
+        -0.04045940237646421,
+        1.6301949422995103
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.4165793331807564,
+        0.0,
+        -17.328609456355018
+      ],
+      "solver_height_residual_m": 2.0026032609976596e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 38,
+      "robot_reset": {
+        "joint_offset_rad": [
+          -0.0017024500841663522,
+          0.010061419921887152,
+          0.024350663383733977,
+          0.023645201380200848,
+          0.0035411235499683766,
+          -0.002651557278941903,
+          -0.002322930533739255,
+          0.004880292913870911,
+          0.008797899084591304,
+          -0.01610081267495255,
+          0.018686904461701785,
+          0.007501599318520805,
+          -0.016452724756450793,
+          -0.017147821788021197,
+          -0.022129207434232214,
+          0.019086682632779836,
+          0.006932526651075979,
+          0.020544265556482345
+        ],
+        "joint_velocity_rad_s": [
+          -0.028880821995053083,
+          0.017316403919693038,
+          0.016612469787535965,
+          0.035414535970756035,
+          0.0206035782747791,
+          0.036812630259976976,
+          0.024079208447459734,
+          -0.013383168779126028,
+          0.00960792483005301,
+          -0.02678576268462393,
+          0.01431145781375455,
+          0.031198229424852682,
+          -0.014725673131979873,
+          0.011704509950948357,
+          0.029184389938920273,
+          -0.022465785009015065,
+          -0.0008416133640495801,
+          0.021592322878753595
+        ],
+        "yaw_rad": -0.053722311898579615,
+        "xy_m": [
+          -0.004310744930151843,
+          0.035225505821495216
+        ]
+      }
+    },
+    {
+      "env_id": 39,
+      "shuttle_start": [
+        80.47277572576184,
+        0.02039257278496326,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -70.0,
+        0.0,
+        52.934884442947805
+      ],
+      "arrival_time_s": 4.657507077843365,
+      "target_position_m": [
+        1.397490382194519,
+        0.02039257278496326,
+        1.6097892095089235
+      ],
+      "predicted_incoming_velocity_mps": [
+        -5.193565751348737,
+        0.0,
+        -16.58979362662048
+      ],
+      "solver_height_residual_m": 6.043387856813354e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 39,
+      "robot_reset": {
+        "joint_offset_rad": [
+          -0.015435072853423049,
+          0.023741531837337813,
+          0.01270863731430246,
+          0.019746540818349673,
+          0.0046737313162126745,
+          0.01789075548642228,
+          -0.01638704862117024,
+          -0.006903214671643728,
+          0.0184778568179391,
+          -0.01035898841319733,
+          -0.024215391386905778,
+          0.004613300703036088,
+          0.006206454305270975,
+          0.019874879550000148,
+          -0.008833666526101094,
+          -0.015489468413058927,
+          -0.0005216727220204165,
+          -0.01819848854224715
+        ],
+        "joint_velocity_rad_s": [
+          -0.02714897999968965,
+          0.019032139365649493,
+          -0.022998991204912233,
+          -0.023718903859272063,
+          -0.003751660737024619,
+          0.007512670751027135,
+          -0.02190166942307358,
+          0.009942823473061857,
+          -0.026316425932968342,
+          -0.0002564974447466714,
+          -0.0353075459495092,
+          -0.021638118966165402,
+          0.019582356378736503,
+          -0.03134775001109033,
+          -0.02951645212909966,
+          -0.023348199145531802,
+          -0.02818476906481321,
+          -0.02094956812658664
+        ],
+        "yaw_rad": 0.05385335772953494,
+        "xy_m": [
+          0.019426549930220978,
+          -0.021145044816645708
+        ]
+      }
+    },
+    {
+      "env_id": 40,
+      "shuttle_start": [
+        39.27164257229111,
+        -0.01815900535821957,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -20.0,
+        0.0,
+        38.913361611776054
+      ],
+      "arrival_time_s": 4.803118303485157,
+      "target_position_m": [
+        1.397490382194519,
+        -0.01815900535821957,
+        1.6153032237392986
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.221219594791461,
+        0.0,
+        -16.942093145696635
+      ],
+      "solver_height_residual_m": 7.721523154202714e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 40,
+      "robot_reset": {
+        "joint_offset_rad": [
+          0.015534805232080853,
+          0.0003284920259454885,
+          -0.002063407631719711,
+          0.016266067004673056,
+          0.022286688477355508,
+          0.017147354068615936,
+          -0.021326500822696555,
+          0.011355565247768339,
+          0.01981807898743817,
+          -0.004354916627744232,
+          0.006431350364489004,
+          0.0007018339861874778,
+          0.00765259703474741,
+          -0.021595271300222346,
+          -0.009085308391883668,
+          -0.006501456803384955,
+          0.01487195993682075,
+          -0.019748929335343834
+        ],
+        "joint_velocity_rad_s": [
+          0.012313894058547,
+          0.019204489959327192,
+          0.005047310336495088,
+          -0.038747820924008795,
+          -0.006847166464560503,
+          -0.030248940579787647,
+          -0.03144469917452681,
+          -0.025522154352411015,
+          -0.009525139930908838,
+          0.014870181949810171,
+          -0.02427050105955109,
+          -0.009926633832686091,
+          0.015665705505213658,
+          0.0050190803716402,
+          -0.013321681075225016,
+          0.015981268332427405,
+          -0.012208848083371356,
+          0.034536436636504346
+        ],
+        "yaw_rad": -0.015955722887275106,
+        "xy_m": [
+          0.03680152173925568,
+          0.005639293679027206
+        ]
+      }
+    },
+    {
+      "env_id": 41,
+      "shuttle_start": [
+        80.67558228313145,
+        -0.06519592596642132,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -70.0,
+        0.0,
+        60.390628105960786
+      ],
+      "arrival_time_s": 5.041301260201054,
+      "target_position_m": [
+        1.397490382194519,
+        -0.06519592596642132,
+        1.6079795652334716
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.3941929443307135,
+        0.0,
+        -17.244916885390136
+      ],
+      "solver_height_residual_m": 3.154922878501054e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 41,
+      "robot_reset": {
+        "joint_offset_rad": [
+          -0.02228588423960028,
+          0.01320150390822046,
+          0.019585596016334368,
+          0.0020370348488632888,
+          0.00406544436034233,
+          -0.021882899396420602,
+          -0.001046406743336059,
+          -0.011135458290104806,
+          0.01940772887182781,
+          0.01932569343417593,
+          0.013710901052528215,
+          0.02464142614844509,
+          0.017016310525572786,
+          -0.021558298372663782,
+          0.018907407269243115,
+          0.018090139819794925,
+          0.019002742608423003,
+          0.023864653241919984
+        ],
+        "joint_velocity_rad_s": [
+          0.030704028679826988,
+          0.027896249458900894,
+          0.028159992919048048,
+          -0.03970040821100796,
+          0.014843053074393452,
+          -0.03340632709774791,
+          -0.035959107337867356,
+          -0.0034713421550123177,
+          -0.02980286843239917,
+          -0.025836134368452193,
+          -0.007102161380202844,
+          0.0038947121554998507,
+          -0.020758862656477844,
+          0.03561350605698401,
+          -0.022016776556511887,
+          0.025982410646344885,
+          0.03716662491699451,
+          0.03862966509914869
+        ],
+        "yaw_rad": 0.05842942785661094,
+        "xy_m": [
+          0.019484628876976107,
+          0.039101074595742656
+        ]
+      }
+    },
+    {
+      "env_id": 42,
+      "shuttle_start": [
+        26.164113511728164,
+        0.00860430398552195,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -12.0,
+        0.0,
+        41.360462573356926
+      ],
+      "arrival_time_s": 5.1156030015675205,
+      "target_position_m": [
+        1.397490382194519,
+        0.00860430398552195,
+        1.621580276287212
+      ],
+      "predicted_incoming_velocity_mps": [
+        -1.9776720400262693,
+        0.0,
+        -17.489903237710106
+      ],
+      "solver_height_residual_m": 4.4306935453874985e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 42,
+      "robot_reset": {
+        "joint_offset_rad": [
+          -0.021846396867554598,
+          -0.013312313432998952,
+          -0.005855873366909226,
+          -0.02247570761177461,
+          0.009457203130538445,
+          -0.021066423330800395,
+          -0.012911109676359679,
+          -0.008522951546298719,
+          0.017641633760958404,
+          0.01438636221581635,
+          -0.01903228442149566,
+          -0.0005072555839090165,
+          0.011685612105797986,
+          -0.021392807323509556,
+          0.007387348584147052,
+          -0.014225214531502895,
+          0.00695756398903917,
+          0.01801142850985235
+        ],
+        "joint_velocity_rad_s": [
+          -0.02163674549682713,
+          -0.03759570158937885,
+          0.030373288626122256,
+          0.004389220098900658,
+          0.037409621228739594,
+          -0.014676382510980579,
+          0.009702138654056482,
+          -0.010354693675202899,
+          -0.001330833853939943,
+          0.0007010257066969935,
+          0.007207410919444782,
+          -0.02064013365147038,
+          0.004801869102205189,
+          -0.035244657683380164,
+          0.016752071504603713,
+          0.03402980716974446,
+          -1.0834477191135061e-05,
+          -0.019110675042023788
+        ],
+        "yaw_rad": -0.02050909048045394,
+        "xy_m": [
+          0.026074452081576237,
+          -0.00017742372905403536
+        ]
+      }
+    },
+    {
+      "env_id": 43,
+      "shuttle_start": [
+        39.21976412710633,
+        0.05009226641774722,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -20.0,
+        0.0,
+        39.46535533759743
+      ],
+      "arrival_time_s": 4.839507203134657,
+      "target_position_m": [
+        1.397490382194519,
+        0.05009226641774722,
+        1.6564043595535447
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.1642098935297756,
+        0.0,
+        -17.001874574404443
+      ],
+      "solver_height_residual_m": 5.702368621740561e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 43,
+      "robot_reset": {
+        "joint_offset_rad": [
+          0.018001855261371706,
+          -0.015601748730475885,
+          -0.00490786012899444,
+          -0.013954624856022163,
+          -0.002281119615804305,
+          -0.0007032501389412082,
+          0.00629006074827014,
+          0.0028001900567360023,
+          0.0026565000175508106,
+          0.021482375575431624,
+          -0.01651516109122736,
+          -0.013853983446057134,
+          0.010901110507023026,
+          -0.01884293063780624,
+          -0.006235735807302002,
+          0.014692489319963857,
+          -0.01721116143363906,
+          0.008659460676548304
+        ],
+        "joint_velocity_rad_s": [
+          0.029214563810313253,
+          0.016550502977058394,
+          -0.036674381025814703,
+          -0.018098721338469712,
+          -0.00423883785232302,
+          -0.012092736875537673,
+          -0.023678760323822406,
+          -0.03677718828487929,
+          0.03148675526423698,
+          0.007947728340966922,
+          -0.01937454480060822,
+          0.01767232894970209,
+          0.01620554101014364,
+          0.010220296106513739,
+          0.025570722013905638,
+          0.039616668360020056,
+          0.014135763720569468,
+          0.027378836537280744
+        ],
+        "yaw_rad": 0.05095563522106751,
+        "xy_m": [
+          0.011225487550009579,
+          -0.023236455294127385
+        ]
+      }
+    },
+    {
+      "env_id": 44,
+      "shuttle_start": [
+        80.67602214696204,
+        -0.004669788282161649,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -70.0,
+        0.0,
+        58.71002746280283
+      ],
+      "arrival_time_s": 4.956126647166443,
+      "target_position_m": [
+        1.397490382194519,
+        -0.004669788282161649,
+        1.6390124819174894
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.56295798561664,
+        0.0,
+        -17.10932144018422
+      ],
+      "solver_height_residual_m": 4.103448780767849e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 44,
+      "robot_reset": {
+        "joint_offset_rad": [
+          -0.012425938379516372,
+          -0.02270512433548529,
+          0.021535323861847443,
+          0.024286338388583573,
+          -0.009112603733709097,
+          0.011419927003859215,
+          -0.02353432255291485,
+          0.020289079514587936,
+          -0.0038861473153134866,
+          0.012769249960423334,
+          5.805864745041592e-05,
+          -0.011892130836571863,
+          0.0013623036143499759,
+          0.00716481138397216,
+          0.01871963005326987,
+          -0.024192061867028488,
+          -0.024752560414823866,
+          0.024929897056979573
+        ],
+        "joint_velocity_rad_s": [
+          -0.011390807231471359,
+          -0.032161300044650475,
+          -0.017793643264798726,
+          -0.01531810636857621,
+          0.024726577915342836,
+          0.03498898249294669,
+          -0.01842512458598305,
+          0.006985068866111277,
+          0.037268308864361284,
+          -0.020134808932080965,
+          0.008412482187284895,
+          -0.030460475594534103,
+          0.02809748530815074,
+          -0.005642323176628328,
+          0.029955597463208687,
+          -0.005622921027938543,
+          -0.02071540807877981,
+          0.004631723339695186
+        ],
+        "yaw_rad": 0.030213454265297965,
+        "xy_m": [
+          0.00743743257243671,
+          -0.013899091979840288
+        ]
+      }
+    },
+    {
+      "env_id": 45,
+      "shuttle_start": [
+        26.177911219686663,
+        -0.02937269942249958,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -12.0,
+        0.0,
+        41.22359238099307
+      ],
+      "arrival_time_s": 5.104968570344423,
+      "target_position_m": [
+        1.397490382194519,
+        -0.02937269942249958,
+        1.6525190138501735
+      ],
+      "predicted_incoming_velocity_mps": [
+        -1.9889827386965324,
+        0.0,
+        -17.47375715737486
+      ],
+      "solver_height_residual_m": 5.4532968585263575e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 45,
+      "robot_reset": {
+        "joint_offset_rad": [
+          -0.01647511713064362,
+          0.012382447618705182,
+          0.005694503665698951,
+          -0.0016228013142536094,
+          -0.010388555845982084,
+          -0.013999730202778456,
+          -0.007037530614119193,
+          0.0030810444943997137,
+          -0.0014985653284292286,
+          0.015730737276617106,
+          0.018833194742796176,
+          0.0028706585608330275,
+          0.018428307637923268,
+          0.014839580488397876,
+          -0.0028824381556733676,
+          -0.019399990823697106,
+          -0.010926356586742564,
+          -0.02039442019653307
+        ],
+        "joint_velocity_rad_s": [
+          -0.022372568576812482,
+          -0.01725831649484718,
+          -0.031847887822428665,
+          0.022159503919530366,
+          -0.01750387280863052,
+          -0.02805841273603166,
+          -0.01733093673254377,
+          0.008403457040321367,
+          -0.028249979341034077,
+          -0.03273593562646993,
+          -0.037338182630548486,
+          0.00892221600829507,
+          0.02185354747597614,
+          -0.01979175005096093,
+          0.008120680058774046,
+          -0.02445306146610294,
+          0.030197246304768312,
+          -0.0034341963123992528
+        ],
+        "yaw_rad": -0.0510696521930063,
+        "xy_m": [
+          -0.013577548806315613,
+          -0.01940395895215186
+        ]
+      }
+    },
+    {
+      "env_id": 46,
+      "shuttle_start": [
+        64.864678005228,
+        0.0033800109623480096,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -45.0,
+        0.0,
+        45.7187524298206
+      ],
+      "arrival_time_s": 4.713511157153363,
+      "target_position_m": [
+        1.397490382194519,
+        0.0033800109623480096,
+        1.6464179105759678
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.610683257204648,
+        0.0,
+        -16.698621600205335
+      ],
+      "solver_height_residual_m": 4.780994933284433e-09,
+      "development_group": "perturbed_b",
+      "source_scenario": 46,
+      "robot_reset": {
+        "joint_offset_rad": [
+          -0.023660569620941166,
+          -0.009026679641858354,
+          0.0019765655479893965,
+          -0.01299649502308477,
+          -0.007737623888908286,
+          -0.01730306611242013,
+          -0.022507745078606575,
+          -0.01724981997687767,
+          -0.012452579004073972,
+          0.011115079099500547,
+          -0.023616580656421166,
+          -0.008695393276629909,
+          -0.004230063069800161,
+          -0.00761435895304893,
+          0.00355111623381818,
+          0.011856223612002018,
+          0.018974334824746378,
+          -0.0031679120758829164
+        ],
+        "joint_velocity_rad_s": [
+          0.025573339920107165,
+          -0.0008966140005373727,
+          0.034433757250598544,
+          -0.018327013892620096,
+          0.0020126791567966346,
+          -0.02760662861374894,
+          0.026190785233827917,
+          0.004032689245677103,
+          0.022187630889555728,
+          -0.013181061350215347,
+          -6.768905512222895e-05,
+          0.0019141744627280202,
+          0.01822578757886987,
+          0.0159515257851641,
+          -0.03824880140536303,
+          0.01235117984893292,
+          -0.00011691984463770705,
+          0.038840575294664954
+        ],
+        "yaw_rad": -0.06736921575489518,
+        "xy_m": [
+          0.024666701329906414,
+          -0.010012305362694367
+        ]
+      }
+    },
+    {
+      "env_id": 47,
+      "shuttle_start": [
+        50.91161566178586,
+        -0.016115079220377332,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -30.0,
+        0.0,
+        47.92284721042961
+      ],
+      "arrival_time_s": 5.171673138968312,
+      "target_position_m": [
+        1.397490382194519,
+        -0.016115079220377332,
+        1.6289727103580314
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.258222240310666,
+        0.0,
+        -17.4723864374038
+      ],
+      "solver_height_residual_m": 5.58022406060843e-09,
+      "development_group": "perturbed_b",
+      "source_scenario": 47,
+      "robot_reset": {
+        "joint_offset_rad": [
+          0.007855006832934441,
+          0.01445090449944187,
+          -0.01800187735130139,
+          0.007576917713576686,
+          0.0021806864340119733,
+          0.012067842520059463,
+          0.012794028108890472,
+          0.008002156927707352,
+          -0.011925007928814513,
+          0.0005395314387441064,
+          -0.0091574301929906,
+          0.004191169884395784,
+          0.013933975138319371,
+          -0.005021326279081129,
+          0.015310574200755177,
+          -0.008416296386378638,
+          -0.0201661052236044,
+          -0.0027105939724937286
+        ],
+        "joint_velocity_rad_s": [
+          -0.019627409528213607,
+          0.012327810080289645,
+          -0.018775014343260947,
+          -0.010238200439115941,
+          3.5792511223216306e-05,
+          0.02234448320957367,
+          0.02969173270105737,
+          -0.03920385579473082,
+          0.03595361480276,
+          -0.016314954274711812,
+          0.001737316570849308,
+          -0.01254963975195425,
+          0.02713463120906092,
+          -0.009977995386300266,
+          -0.03362461143159145,
+          -0.00040575620859009676,
+          0.009711290309860086,
+          -0.026300908996157467
+        ],
+        "yaw_rad": 0.03418986728102287,
+        "xy_m": [
+          -0.011641901555678302,
+          -0.015575825893287484
+        ]
+      }
+    },
+    {
+      "env_id": 48,
+      "shuttle_start": [
+        39.309308254482204,
+        -0.05712821952393868,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -20.0,
+        0.0,
+        38.407294009812176
+      ],
+      "arrival_time_s": 4.767376812933389,
+      "target_position_m": [
+        1.397490382194519,
+        -0.05712821952393868,
+        1.6101611900321295
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.2774958473524034,
+        0.0,
+        -16.880970725906906
+      ],
+      "solver_height_residual_m": 1.770967195113826e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 48,
+      "robot_reset": {
+        "joint_offset_rad": [
+          0.020845317354835476,
+          -0.012029751377187599,
+          -0.02365117024305041,
+          0.0014370204476391694,
+          0.004451302959538488,
+          -0.021132159228243866,
+          -0.005278951295510113,
+          -0.007292100981083793,
+          0.0032776098896688914,
+          -0.01050897057673244,
+          -0.018542401168450653,
+          -0.007828419137585679,
+          0.010572234901739128,
+          0.0167123667828247,
+          -0.006764839028629933,
+          -0.024443680712416285,
+          -0.022173513286173847,
+          -0.023443275207141803
+        ],
+        "joint_velocity_rad_s": [
+          -0.02720115406396409,
+          0.009641797637241253,
+          -0.009060564570153362,
+          0.015760628682714613,
+          -0.015200852300297472,
+          -0.03628510127375508,
+          0.030604499195657282,
+          -0.0001251187205005902,
+          0.03285571107864555,
+          -0.0326080310728198,
+          0.01583285907658987,
+          0.033627957542846025,
+          -0.02253451973380483,
+          0.03317084784165541,
+          -0.007169975115272509,
+          -0.016699913574971543,
+          0.02570409679288265,
+          0.010723691130155082
+        ],
+        "yaw_rad": -0.04804910131195303,
+        "xy_m": [
+          -0.02979275963851088,
+          0.01407938312569744
+        ]
+      }
+    },
+    {
+      "env_id": 49,
+      "shuttle_start": [
+        64.88035444184678,
+        -0.0410514332766834,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -45.0,
+        0.0,
+        47.80748861376196
+      ],
+      "arrival_time_s": 4.841524539017498,
+      "target_position_m": [
+        1.397490382194519,
+        -0.0410514332766834,
+        1.6459528596418969
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.3566807110550245,
+        0.0,
+        -16.924281820026337
+      ],
+      "solver_height_residual_m": 3.0129346795249035e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 49,
+      "robot_reset": {
+        "joint_offset_rad": [
+          0.0030363725828312267,
+          -0.020097755424301495,
+          -0.008472328250590754,
+          0.013662078590442682,
+          -0.017088193362814752,
+          0.012592850875108322,
+          0.008725978672155701,
+          -0.003581796299677458,
+          0.022395110465616583,
+          -0.01394763341152135,
+          -0.005561245780093961,
+          -0.011336250940168453,
+          -0.016429806801449,
+          0.013436619578813903,
+          0.00012039994538946483,
+          -0.014584021397320401,
+          0.014758813944893166,
+          -0.0053589198766578125
+        ],
+        "joint_velocity_rad_s": [
+          0.003399439650484476,
+          0.03930997953942127,
+          0.01248719769399357,
+          -0.02784360190554243,
+          -0.03653073941590143,
+          0.011246927700697774,
+          -0.009520346636945093,
+          -0.03008969615902258,
+          -0.02152604690093149,
+          0.015351168204187672,
+          -0.006547183671840047,
+          0.010885737352860969,
+          0.0137582847776853,
+          0.005498560494179919,
+          -0.038284336543510246,
+          -0.023858688707277694,
+          -0.014622684692345046,
+          0.01618611754160905
+        ],
+        "yaw_rad": 0.02809635921726912,
+        "xy_m": [
+          0.005200833150519724,
+          0.024842505990047524
+        ]
+      }
+    },
+    {
+      "env_id": 50,
+      "shuttle_start": [
+        80.60898221362395,
+        -0.01988411538858484,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -70.0,
+        0.0,
+        62.94164147693664
+      ],
+      "arrival_time_s": 5.164375410339505,
+      "target_position_m": [
+        1.397490382194519,
+        -0.01988411538858484,
+        1.6109616311020214
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.158907454479098,
+        0.0,
+        -17.429271475143484
+      ],
+      "solver_height_residual_m": 1.246864411719173e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 50,
+      "robot_reset": {
+        "joint_offset_rad": [
+          -0.01449210103850206,
+          0.012483043327670876,
+          -0.009587312662235344,
+          -0.02473355864097573,
+          0.0011379358675739012,
+          -0.013973894142194144,
+          0.02034513289214218,
+          -0.0008050730722547819,
+          -0.012655524182025951,
+          -0.02408493377813202,
+          -0.022867083890388936,
+          -0.007872306517645134,
+          0.024744837960744767,
+          -0.005217686917864745,
+          -0.021263651357469396,
+          -0.018788259009955302,
+          0.021042385740482145,
+          -0.020431142221503457
+        ],
+        "joint_velocity_rad_s": [
+          -0.019285357017406416,
+          -0.0048577738358414335,
+          0.012320756539365832,
+          -0.019378639715733465,
+          0.013910940028469349,
+          -0.0323928937512639,
+          -0.01045864527320272,
+          -0.03607257945678549,
+          0.01726900175795084,
+          0.03143481829758315,
+          -0.006876638502441593,
+          -0.023504835524674857,
+          0.023390717545578428,
+          -0.008658198459654376,
+          -0.009170067177193344,
+          -0.02122759214754363,
+          -0.015691847198001298,
+          0.019711224007251886
+        ],
+        "yaw_rad": -0.043341087246589804,
+        "xy_m": [
+          0.007496957584412059,
+          -0.031006617412082223
+        ]
+      }
+    },
+    {
+      "env_id": 51,
+      "shuttle_start": [
+        19.12343481299966,
+        0.0013513114492209877,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -8.0,
+        0.0,
+        35.540981660597026
+      ],
+      "arrival_time_s": 4.765681815798158,
+      "target_position_m": [
+        1.397490382194519,
+        0.0013513114492209877,
+        1.655823292166694
+      ],
+      "predicted_incoming_velocity_mps": [
+        -1.7440676105757524,
+        0.0,
+        -16.984596092983594
+      ],
+      "solver_height_residual_m": 8.091717540459342e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 51,
+      "robot_reset": {
+        "joint_offset_rad": [
+          -0.003998169710872867,
+          -0.002234290375841358,
+          -0.0006714131494607381,
+          0.0231698626149712,
+          0.01861355638101183,
+          0.023137122920710407,
+          -0.012678215375933327,
+          0.007543921737621806,
+          -0.005514255859753275,
+          0.004291316253567018,
+          -0.01043284765219078,
+          0.005364368963954241,
+          0.006977974865500815,
+          -0.024419418788981153,
+          -0.009420236240838209,
+          0.0013432699814711138,
+          0.016393437259234256,
+          -0.009707120779466328
+        ],
+        "joint_velocity_rad_s": [
+          0.026038330577330744,
+          0.014402900709172578,
+          0.03414324624621417,
+          0.012885437280233523,
+          -0.0028600830602449265,
+          0.01261796523697737,
+          -0.023531954826760366,
+          -0.001068436688300388,
+          -0.035485660329528,
+          -0.013005421446019155,
+          0.0051602039594919324,
+          0.02405263629377525,
+          0.000776011215815664,
+          -0.0018161184323343682,
+          0.039046381295528156,
+          0.029542129791359374,
+          0.02254637854150044,
+          -0.0032980738516080327
+        ],
+        "yaw_rad": 0.058713628648960556,
+        "xy_m": [
+          -0.008742906563820568,
+          0.008762492054973044
+        ]
+      }
+    },
+    {
+      "env_id": 52,
+      "shuttle_start": [
+        80.6813072649828,
+        0.08898939981374071,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -70.0,
+        0.0,
+        58.28285871539265
+      ],
+      "arrival_time_s": 4.936356776197003,
+      "target_position_m": [
+        1.397490382194519,
+        0.08898939981374071,
+        1.6099212157336653
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.6027271830077705,
+        0.0,
+        -17.07802853340708
+      ],
+      "solver_height_residual_m": 2.893168082884756e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 52,
+      "robot_reset": {
+        "joint_offset_rad": [
+          -0.012117693614853365,
+          0.006431424226946925,
+          -0.02459935529161111,
+          0.011800576036909816,
+          0.019066090452546175,
+          -0.005341785232467023,
+          -0.01682178278402663,
+          0.00142665648139665,
+          0.020077348921672324,
+          0.007710707511063994,
+          0.0037720190309252152,
+          -0.014137597965081884,
+          -0.015020369063049266,
+          0.013122024005260545,
+          0.020636110695052376,
+          -0.02493571816054337,
+          -0.0027560095048918057,
+          0.001105240439490552
+        ],
+        "joint_velocity_rad_s": [
+          -0.010867803058089029,
+          0.017958613082734255,
+          0.03141426710888314,
+          -0.014210172302773154,
+          0.0067052775308577076,
+          -0.014535319429029272,
+          -0.00816863477445455,
+          0.016271973761845714,
+          -0.010155457317297882,
+          0.02037894318070345,
+          0.01881124828111977,
+          -0.0017790602166255082,
+          -0.0069255350950288355,
+          0.005319043298151513,
+          0.03205442040704185,
+          0.017248904188749484,
+          -0.0345315039135371,
+          -0.006304777083241966
+        ],
+        "yaw_rad": 0.0771953112542118,
+        "xy_m": [
+          -0.024265706744006136,
+          0.021937520072688503
+        ]
+      }
+    },
+    {
+      "env_id": 53,
+      "shuttle_start": [
+        38.982036637197524,
+        0.048028011811716925,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -20.0,
+        0.0,
+        41.870429436676204
+      ],
+      "arrival_time_s": 5.002889430138931,
+      "target_position_m": [
+        1.397490382194519,
+        0.048028011811716925,
+        1.6522735373640696
+      ],
+      "predicted_incoming_velocity_mps": [
+        -2.9176072159479385,
+        0.0,
+        -17.264619820751516
+      ],
+      "solver_height_residual_m": 2.5422592475621286e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 53,
+      "robot_reset": {
+        "joint_offset_rad": [
+          -0.000712452254752062,
+          -0.022071372927702337,
+          -0.004446746927575379,
+          -0.022712544900194195,
+          0.01243277482125122,
+          0.007077586166061772,
+          0.01700595055786893,
+          0.002734984797958223,
+          -0.01065001537827306,
+          -0.005939178409849043,
+          -0.0018813829762150333,
+          0.023755551581504622,
+          -0.014058415112943468,
+          0.0018392423304535895,
+          0.014292708716972698,
+          0.003719886834349973,
+          -0.01367437452494113,
+          -0.011257172986451314
+        ],
+        "joint_velocity_rad_s": [
+          0.001411836731597893,
+          0.034262284496207725,
+          0.018894454458115807,
+          0.019440914356288454,
+          -0.010331352580937356,
+          0.01764337400918884,
+          -0.011660124017992938,
+          -0.03488138670977404,
+          -0.020992996712977642,
+          -0.018407655223870032,
+          0.021953965314901888,
+          -0.03744897364699974,
+          0.020933430006385922,
+          -0.009248433182488639,
+          -0.010120403800394247,
+          -0.010453061182622854,
+          0.008477327591445365,
+          0.035760140263689365
+        ],
+        "yaw_rad": 0.02785798469222671,
+        "xy_m": [
+          0.021511762027691443,
+          -0.03572422095669995
+        ]
+      }
+    },
+    {
+      "env_id": 54,
+      "shuttle_start": [
+        64.60550080968102,
+        -0.08597588889919135,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -45.0,
+        0.0,
+        53.635818720795214
+      ],
+      "arrival_time_s": 5.175498758077114,
+      "target_position_m": [
+        1.397490382194519,
+        -0.08597588889919135,
+        1.6465251422796439
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.740779478441692,
+        0.0,
+        -17.44974927543644
+      ],
+      "solver_height_residual_m": 6.33663170823695e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 54,
+      "robot_reset": {
+        "joint_offset_rad": [
+          0.020122023220721118,
+          0.006094266998474235,
+          -0.023113748129579434,
+          0.01855286098000202,
+          0.013043181748421576,
+          0.023197147939721954,
+          -0.0106810300003787,
+          0.011268306261394342,
+          0.008982114310421313,
+          -0.02204412851437705,
+          -0.019821878016914193,
+          -0.01264484010990341,
+          0.002708792402786264,
+          -0.0051130765581769155,
+          -0.008468885140629986,
+          0.02294707789461594,
+          0.01756648423109876,
+          -0.017020160935208993
+        ],
+        "joint_velocity_rad_s": [
+          -0.01577982271083421,
+          0.027391491825770768,
+          0.026577808860425788,
+          0.018742094598241096,
+          0.03904454862440037,
+          0.03949929828164455,
+          0.025107720952294986,
+          -0.038702313708299,
+          0.015229162269374312,
+          -0.009911155576451714,
+          0.03279762804754282,
+          -0.021232818978858738,
+          -0.014776957738006784,
+          0.0315244591393728,
+          -0.0008890025707266394,
+          -0.017882126439504733,
+          0.004400830112907705,
+          -0.02477812989355109
+        ],
+        "yaw_rad": 0.03928249757895701,
+        "xy_m": [
+          -0.019673734776074047,
+          0.005105205082620676
+        ]
+      }
+    },
+    {
+      "env_id": 55,
+      "shuttle_start": [
+        38.75067121719528,
+        -0.08319596026660495,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -20.0,
+        0.0,
+        43.75346547458321
+      ],
+      "arrival_time_s": 5.124432820248417,
+      "target_position_m": [
+        1.397490382194519,
+        -0.08319596026660495,
+        1.6484686919313494
+      ],
+      "predicted_incoming_velocity_mps": [
+        -2.742305652549239,
+        0.0,
+        -17.4464958444357
+      ],
+      "solver_height_residual_m": 4.6335109082917825e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 55,
+      "robot_reset": {
+        "joint_offset_rad": [
+          0.01976503568011017,
+          0.023394216034726023,
+          0.010476348148307987,
+          -0.005753511396047677,
+          -0.0004358858451676932,
+          0.020390893285030666,
+          0.021863580069970592,
+          -0.022133721935153772,
+          -0.007329804377192561,
+          -0.008389697664429402,
+          0.023840643809569614,
+          0.016582613350965093,
+          0.01481938984863699,
+          -0.004235929103129699,
+          -0.0028644675072606943,
+          0.014861966202877809,
+          0.018123806786498407,
+          0.015024714906718833
+        ],
+        "joint_velocity_rad_s": [
+          0.02891172247087561,
+          -0.023918611035347065,
+          0.008554469913898195,
+          -0.0352741241555256,
+          0.023905886370510214,
+          0.02962802609925768,
+          -0.013120246891084993,
+          0.03542961369414845,
+          0.03674580582463057,
+          0.030704300264165076,
+          -0.02249981320095392,
+          0.03378210637131889,
+          0.005606703157598168,
+          -0.020250139733691493,
+          -0.01622933121762438,
+          -0.03211025508009384,
+          0.015079860522018908,
+          -0.027749909980564993
+        ],
+        "yaw_rad": 0.0152531615137355,
+        "xy_m": [
+          -0.010779762438860818,
+          -0.0005974282456401026
+        ]
+      }
+    },
+    {
+      "env_id": 56,
+      "shuttle_start": [
+        26.312124529290834,
+        0.08589894961575625,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -12.0,
+        0.0,
+        40.16208134125918
+      ],
+      "arrival_time_s": 5.037040086470944,
+      "target_position_m": [
+        1.397490382194519,
+        0.08589894961575625,
+        1.6196461768830055
+      ],
+      "predicted_incoming_velocity_mps": [
+        -2.0650654445304304,
+        0.0,
+        -17.376029005484124
+      ],
+      "solver_height_residual_m": 2.4410651722206467e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 56,
+      "robot_reset": {
+        "joint_offset_rad": [
+          -0.007944676847457793,
+          0.012102059207507378,
+          0.024624678567616416,
+          0.006020075167496704,
+          -0.016916979433884483,
+          0.0040512980534245235,
+          0.023391363879388533,
+          0.017647585918764856,
+          -0.01627884073540777,
+          0.013617176527318649,
+          0.013423965881163367,
+          0.0007151394696790839,
+          0.022888599703555466,
+          0.003560155230185918,
+          -0.012485008234200741,
+          -0.012939472783760243,
+          0.018360811077873726,
+          0.021463146075283712
+        ],
+        "joint_velocity_rad_s": [
+          0.0306830427285349,
+          0.03154906983491105,
+          -0.03507913744001149,
+          -0.025191281717551632,
+          2.95915457945925e-05,
+          0.019228568357617985,
+          0.032419474260695906,
+          -0.0026018112236712992,
+          0.03271477652749188,
+          0.030159856039340897,
+          0.021899701635618607,
+          -0.0054354278717408805,
+          0.007525496559220322,
+          -0.005894082649265282,
+          0.006450960804715598,
+          0.03014083438101848,
+          -0.025173792606101024,
+          0.0269140938080076
+        ],
+        "yaw_rad": 0.027773823690785585,
+        "xy_m": [
+          -0.01351626054903897,
+          0.037218512417506296
+        ]
+      }
+    },
+    {
+      "env_id": 57,
+      "shuttle_start": [
+        80.52079764374588,
+        0.03645989475992645,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -70.0,
+        0.0,
+        53.64555639680475
+      ],
+      "arrival_time_s": 4.695672833593206,
+      "target_position_m": [
+        1.397490382194519,
+        0.03645989475992645,
+        1.6097099557038272
+      ],
+      "predicted_incoming_velocity_mps": [
+        -5.109456583822147,
+        0.0,
+        -16.660594398055817
+      ],
+      "solver_height_residual_m": 7.285923198097066e-09,
+      "development_group": "perturbed_b",
+      "source_scenario": 57,
+      "robot_reset": {
+        "joint_offset_rad": [
+          -0.008973737724111149,
+          -0.007476352044985708,
+          0.0007145032997691939,
+          -0.021124027381698968,
+          -0.012336942151319408,
+          -0.013606345998373605,
+          -0.014944874900566502,
+          -0.023498624015621486,
+          0.005010997640373653,
+          -0.014946564360640568,
+          0.0016827966286414205,
+          -0.0010407279770309093,
+          0.001922188561593586,
+          0.016205383066421095,
+          -0.004013071334029124,
+          -0.017589474043787717,
+          -0.007394787971608991,
+          -0.008449349558268815
+        ],
+        "joint_velocity_rad_s": [
+          0.0036911092037160906,
+          -0.009270847874949285,
+          -0.03128693344279361,
+          -0.021119878165064793,
+          -0.016733470780711395,
+          -0.010534559610575086,
+          -0.02146724211498085,
+          -0.020859990782940575,
+          -0.034386454028935705,
+          0.017015453812144463,
+          0.0393078878616907,
+          0.0267741389288041,
+          -0.02197097333759997,
+          -0.00631075334161401,
+          -0.025587157682046335,
+          0.006982763894864873,
+          0.025212228407576052,
+          0.017358339728953037
+        ],
+        "yaw_rad": 0.03701214043269438,
+        "xy_m": [
+          -0.03161136768465128,
+          -0.014616638915577733
+        ]
+      }
+    },
+    {
+      "env_id": 58,
+      "shuttle_start": [
+        25.884429965414895,
+        -0.09924349775998374,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -12.0,
+        0.0,
+        43.469221447594464
+      ],
+      "arrival_time_s": 5.248095904455182,
+      "target_position_m": [
+        1.397490382194519,
+        -0.09924349775998374,
+        1.62669509344215
+      ],
+      "predicted_incoming_velocity_mps": [
+        -1.8357973515916794,
+        0.0,
+        -17.671537544362923
+      ],
+      "solver_height_residual_m": 6.334826974097041e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 58,
+      "robot_reset": {
+        "joint_offset_rad": [
+          -0.013974837511699796,
+          -0.0010403998689330791,
+          0.020290793815347395,
+          -0.013777507685848796,
+          0.019713659052833794,
+          0.009206729488314254,
+          -0.023269876119605196,
+          0.01206587802931118,
+          0.0035049622141155486,
+          0.01479359059239297,
+          0.0026244475832444096,
+          0.0127914624283375,
+          0.0038174493823942834,
+          -0.01076664190000693,
+          -0.01135440840679841,
+          -0.011699935675157397,
+          -0.023844747351671476,
+          0.020281188929448198
+        ],
+        "joint_velocity_rad_s": [
+          0.03910686585711499,
+          0.014035013539610279,
+          -0.023218667413489626,
+          0.006459180915417001,
+          -0.0050172003273508264,
+          -0.03027679718253455,
+          0.02339137428503555,
+          -0.029330330788715074,
+          0.03751880468120438,
+          0.024817706310121194,
+          -8.670753095732509e-05,
+          -0.024275402416258834,
+          -0.01714771410769049,
+          0.02912169907134824,
+          0.013398986922784434,
+          -0.0060198112859704694,
+          -0.015291335321798015,
+          0.013383160074203967
+        ],
+        "yaw_rad": -0.0024417784671670606,
+        "xy_m": [
+          0.0004690744319807358,
+          -0.025311225710495495
+        ]
+      }
+    },
+    {
+      "env_id": 59,
+      "shuttle_start": [
+        80.57462625358333,
+        0.046993827267236415,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -70.0,
+        0.0,
+        54.773233900777996
+      ],
+      "arrival_time_s": 4.753715439836037,
+      "target_position_m": [
+        1.397490382194519,
+        0.046993827267236415,
+        1.639915936548517
+      ],
+      "predicted_incoming_velocity_mps": [
+        -4.983667173607923,
+        0.0,
+        -16.764800792713668
+      ],
+      "solver_height_residual_m": 4.833769673417976e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 59,
+      "robot_reset": {
+        "joint_offset_rad": [
+          -0.010520419689659966,
+          -0.0013449679679087556,
+          0.008694168127146878,
+          -0.022084825539805755,
+          -0.01349616389595183,
+          -0.004541786205321741,
+          -0.007477986284982668,
+          -0.0010205213561655657,
+          -0.002563089841979428,
+          0.018272920582128725,
+          -0.018045040435440342,
+          -0.017330827662548832,
+          0.001914651109695159,
+          0.0035310242122681412,
+          0.014274220942457123,
+          0.01188927027229568,
+          -0.019676501154083384,
+          0.001612201854165586
+        ],
+        "joint_velocity_rad_s": [
+          0.025337126797482228,
+          -0.008851270874092283,
+          -0.027382516205944098,
+          -0.039561186791022294,
+          0.0022902535957516137,
+          0.024200991681410593,
+          -0.01032103788592411,
+          0.018783794015623835,
+          0.03920850470858863,
+          0.020237605443254522,
+          -0.004720211193337223,
+          0.037182825480115415,
+          0.0028524942929135377,
+          -0.002107513642363619,
+          -0.006327802102538457,
+          -0.0388818832296386,
+          0.027982734210909875,
+          0.028061553584906578
+        ],
+        "yaw_rad": 0.06113261480250652,
+        "xy_m": [
+          0.009381175831824608,
+          -0.007494342735183068
+        ]
+      }
+    },
+    {
+      "env_id": 60,
+      "shuttle_start": [
+        38.47628650865266,
+        0.05507790008906285,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -20.0,
+        0.0,
+        45.6908363616094
+      ],
+      "arrival_time_s": 5.243040007451397,
+      "target_position_m": [
+        1.397490382194519,
+        0.05507790008906285,
+        1.662039547805584
+      ],
+      "predicted_incoming_velocity_mps": [
+        -2.577739843757426,
+        0.0,
+        -17.612730449521898
+      ],
+      "solver_height_residual_m": 1.9629477376881255e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 60,
+      "robot_reset": {
+        "joint_offset_rad": [
+          -0.016371801766963387,
+          -0.007158341718717633,
+          -0.0046447828747588175,
+          0.017998227011114483,
+          -0.012696406570369674,
+          0.016524640426014037,
+          0.008613058915226533,
+          0.024104499336572258,
+          -0.01405984058068363,
+          -0.017051447601464098,
+          0.007377419983655355,
+          -0.014924699994330815,
+          -0.021347642770963328,
+          0.02037564571663133,
+          -0.0013139667820478637,
+          -0.009500936822023971,
+          0.00934589255577565,
+          0.0054399309016675765
+        ],
+        "joint_velocity_rad_s": [
+          -0.013660184945026802,
+          0.03708166971387255,
+          -0.03715706239205909,
+          0.032155310244726586,
+          -0.01841091623267255,
+          -0.010366285281369878,
+          0.024391254606338418,
+          -0.03499224521465194,
+          -0.03360706101413084,
+          -0.030622622324878206,
+          0.008004206346268729,
+          0.03224143116717348,
+          -0.03952735835002022,
+          0.016482749619300192,
+          -0.03363977390398183,
+          -0.01896510283897931,
+          0.010356886214496527,
+          0.03281859188775827
+        ],
+        "yaw_rad": -0.0752648597342991,
+        "xy_m": [
+          -0.021598960005304483,
+          0.026677113640283433
+        ]
+      }
+    },
+    {
+      "env_id": 61,
+      "shuttle_start": [
+        26.768575782276514,
+        -0.033628259461945476,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -12.0,
+        0.0,
+        35.66072217654437
+      ],
+      "arrival_time_s": 4.718571101797438,
+      "target_position_m": [
+        1.397490382194519,
+        -0.033628259461945476,
+        1.6149336210047884
+      ],
+      "predicted_incoming_velocity_mps": [
+        -2.4441178159015347,
+        0.0,
+        -16.865062676645938
+      ],
+      "solver_height_residual_m": 8.392406014579024e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 61,
+      "robot_reset": {
+        "joint_offset_rad": [
+          0.004620541443223991,
+          0.02251525725047966,
+          -0.006418270596042903,
+          -0.007432288552834284,
+          -0.011907329929412258,
+          -0.01411208154827956,
+          -0.01359028279379203,
+          -0.024665016108837087,
+          -0.012432262611139356,
+          -0.01805649983222258,
+          -0.011088330356907039,
+          -0.02183565461431855,
+          -0.024501345599903548,
+          -0.01727232050843044,
+          0.014200332438512125,
+          0.022699451694974664,
+          -0.014834347757846773,
+          -0.00281845674589452
+        ],
+        "joint_velocity_rad_s": [
+          0.023992511433184406,
+          -0.009954686865466744,
+          -0.027580213160720995,
+          0.021197338936270398,
+          0.03698893669610701,
+          -0.03541122530223105,
+          -0.032834232172451704,
+          0.0057307647218331065,
+          0.03836597778531301,
+          -0.029873882353096563,
+          0.01163691090838137,
+          0.009160609850827756,
+          -0.030771405797991484,
+          -0.02658766648558604,
+          0.0028780533952388887,
+          0.015167520693235292,
+          -0.011262314744506938,
+          -0.03703104831536377
+        ],
+        "yaw_rad": -0.039161337011179215,
+        "xy_m": [
+          0.0028612377970788985,
+          0.023209631813644473
+        ]
+      }
+    },
+    {
+      "env_id": 62,
+      "shuttle_start": [
+        39.29077130802002,
+        0.06222203717988792,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -20.0,
+        0.0,
+        38.647435954771936
+      ],
+      "arrival_time_s": 4.784044495011669,
+      "target_position_m": [
+        1.397490382194519,
+        0.06222203717988792,
+        1.6184986294921409
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.251125118134185,
+        0.0,
+        -16.909363312795804
+      ],
+      "solver_height_residual_m": 5.3443325320756685e-09,
+      "development_group": "perturbed_b",
+      "source_scenario": 62,
+      "robot_reset": {
+        "joint_offset_rad": [
+          0.0027358974234901468,
+          0.019711700949690922,
+          -0.011093217411840495,
+          -0.024840283369451356,
+          -0.01861866998965005,
+          -0.01008876161082813,
+          -0.016211857618157625,
+          -0.017626041655278542,
+          0.016591731545819846,
+          0.01729054273059425,
+          -0.01831228366775402,
+          -0.022576921628319327,
+          -0.01291433639695988,
+          0.003290509911826677,
+          -0.013980126210606892,
+          0.010296968709508254,
+          -0.019156071600810565,
+          0.01668003632176123
+        ],
+        "joint_velocity_rad_s": [
+          -0.004286191935616607,
+          0.03434267215645576,
+          0.028832960953601043,
+          0.003980169668703654,
+          -0.037087915491509034,
+          0.03505970738614781,
+          0.014017545409132158,
+          -0.029961674885412536,
+          0.010681394870232619,
+          0.037956348556598817,
+          -0.031644016347722626,
+          -0.0345647370118276,
+          -0.011916501915817817,
+          -0.02378599352451264,
+          -0.032695036984403715,
+          0.015092461970440237,
+          -0.00953023029257338,
+          0.002753680968231774
+        ],
+        "yaw_rad": -0.039324524418235286,
+        "xy_m": [
+          0.023440646652374324,
+          0.028894339734207707
+        ]
+      }
+    },
+    {
+      "env_id": 63,
+      "shuttle_start": [
+        39.264314254813534,
+        -0.021634945262667224,
+        1.15
+      ],
+      "shuttle_velocity": [
+        -20.0,
+        0.0,
+        38.95442734938115
+      ],
+      "arrival_time_s": 4.804722184017948,
+      "target_position_m": [
+        1.397490382194519,
+        -0.021634945262667224,
+        1.637355242406328
+      ],
+      "predicted_incoming_velocity_mps": [
+        -3.218512710779805,
+        0.0,
+        -16.943943411398916
+      ],
+      "solver_height_residual_m": 5.288139259818081e-08,
+      "development_group": "perturbed_b",
+      "source_scenario": 63,
+      "robot_reset": {
+        "joint_offset_rad": [
+          0.012941485129607341,
+          0.02476756517437561,
+          0.012908058973637948,
+          -0.01618411834859699,
+          -0.0032307067928613424,
+          0.007413772064415278,
+          0.007243578945864228,
+          -0.01778478031876457,
+          -0.01536396718034564,
+          0.015613571203666472,
+          -0.016882022958850613,
+          0.007367992012950589,
+          -0.008796329035502076,
+          0.01108385200899531,
+          0.022391611279682776,
+          0.018329583132683534,
+          -0.019944664030788397,
+          0.02158220421379556
+        ],
+        "joint_velocity_rad_s": [
+          0.005462532163981779,
+          0.026489171755200595,
+          0.034428888379954094,
+          0.02188459229708805,
+          0.029726072770463872,
+          -0.010498053139113308,
+          -0.03125144041123733,
+          -0.03987890643120707,
+          0.0004864023756785199,
+          0.009004709305512199,
+          -0.006215171235945699,
+          -0.033022110629453726,
+          -0.030057664580222136,
+          -0.0024027238480927512,
+          0.003758373465293452,
+          0.0330040663557176,
+          0.010343116626444847,
+          -0.03543541938546858
+        ],
+        "yaw_rad": 0.05797714590220278,
+        "xy_m": [
+          -0.01868854903947474,
+          0.037659795405049094
+        ]
+      }
+    }
+  ],
+  "net_profile": {
+    "center_height_m": 1.524,
+    "side_height_m": 1.55,
+    "width_m": 2.0,
+    "thickness_m": 0.02,
+    "segments": 32,
+    "shape": "piecewise-linear parabolic top; original center/side heights"
+  },
+  "reset_seed": 718702,
+  "frozen_before": "Any controller training on this panel or physical evaluation outcomes; not formal400"
+}

@@ -1,22 +1,33 @@
-# 当前继续入口：六冻结候选高精度开发复验（2026-10-23 14:13 UTC）
+# 当前继续入口：起跳pitch/rate反馈原生复验（2026-10-23 14:50 UTC）
 
-G07 IN_PROGRESS；正式400未执行，不可标PASSED。不要重复启动已停止的训练。
+G07 IN_PROGRESS；正式400未执行，不可标PASSED。固定窗口UTC08:04:13.742590至18:04:13.742590（北京时间10月23日16:04至10月24日02:04），GPU0独立新增10 GPU-hours，不重置历史/窗口。
 
-## 活跃作业（先查，不能重复启动）
+## 当前活跃作业（不能重复启动）
 
-统一exec会话7801，reports/G07/frozen_candidate_matrix_fine768_01。GPU0 guard max2700s/env_steps_cap652800，62.5us物理/.01s控制/8.5s回合，6冻结控制器各128开发场景，共768（不是正式400）。输入manifest reports/G07/frozen_development_candidates_v1/manifest.json，顺序baseline、baseline_replan、preparation、preparation_replan、local、local_replan。所有文件已冻结，不能在运行中改权重。Panel为causal_profiled_dev_ground128_v1，calibration仍causal_dev_panel64_v1/calibration.json，seed718201。
+统一exec会话58404，reports/G07/body_feedback_matrix_fine1280_01。guard max2700s/env-step-cap1088000，62.5us/.01s/8.5s，10冻结候选各128开发场景。输入body_feedback_candidates_v1/manifest.json，顺序baseline_reference及4个kp±.35/kd±.06反馈，再preparation_reference及4个相同反馈。Body参考由已完成net_free_teacher214_replay01/teacher_dataset.pt的公开pitch、omega_y、vx均值构成；只按固定相对时钟插值参考，用当前公开状态差调整前/后大腿位置命令，.75–1.30s窗口、最大.12rad。关节限位/增益/力矩/速度/质量未改，没有外力/状态重置/教师动作函数。CPU零增益动作差0、gyro扰动导致前后腿相反修正已查。真实效果待candidate_metrics.json。
 
-新评估入口 --candidate-checkpoint 可追加开发候选；有--protocol或--policy-lock时强制拒绝多候选。CandidateBatch给每个控制器独立NN历史/公开观测，只按固定随机排列的env映射分发，不给控制器场景标签。raw rows有candidate_id/source_scenario/development_group，结束后candidate_metrics.json逐候选、canonical/perturbed_b分组，不能用全768的合计当任何一个策略成绩。每候选都必须AIR≥.7、full≥.5、rec≥.85、fault0，两组都满足才考虑锁定正式400。
+输出逐candidate和canonical/perturbed_b两组；不把1280总数当某个策略成绩。每组必须full≥.5、air≥.7、rec≥.85且总fault0，才可能冻结一个策略跑正式A/B。实际Net失败保留分母，完整和条件恢复均排除有机器人碰网的回合。
 
-候选来源：baseline来自adaptive_planner_cem01/best_candidate.pt（11规划系数f615...）；preparation来自已停止preparation_arm_cem01/best_candidate.pt（粗步长32训练17/32完整，恢复32/32、Net0、fault0；非独立成绩）；local来自local_preparation_arm_cem01/best_candidate.pt（125us32训练10/32）。每个另有replan_at_s=3.0的独立冻结版本，仅从当时公开球状态重新预测到达时刻并调整phase/arm amplitude，既不改准备位置也不改球/机器人状态。CPU一致性检查通过，尚无物理改善结论。新方法的实际重规划日志保存causal_replans.json。
+## 最近已完成、上传和诊断
 
-大步幅preparation checkpoint没有readiness_extension字段，按True保留其原语义：heading准备停止条件且walk最迟4.5秒。local checkpoint明确preparation_readiness_extension=False，保留旧准备停止规则与3.4秒截止，只给行走actor小幅yaw命令；不能忽略该字段混用实现。原checkpoint未启用replan保持旧路径。
+- exec7801 frozen_candidate_matrix_fine768_01已SUCCEEDED，6×128高精度。六组标准/B完整率依次.390625/.140625、.328125/.140625、.453125/.359375、.453125/.234375、.453125/.171875、.453125/.15625；无候选达标。全768故障1（candidate0/source112 sweep_unresolved），其他组0不代表全量0。
+- complementarity.json是事后oracle诊断，不能部署：标准最多46/64、B最多31/64，连B50%都不足，故没有训练/发布候选查表来冒充成功。
+- 准备快照校正：baseline在3.0到3.8s rootx中位漂移<1mm，B3.8s std .0102m；当前同组接触rootx std .0636m（旧独立128测.0682）。差异主要在起跳过程放大，所以新增上述腿部pitch/gyro反馈，而非直接更改准备位置。
+- preparation候选的14个Net中多数首次2.6–3.0s已发生（有Racket/Head），后段反馈不能消除已经发生的碰网。备用组件池original_walk_arm_feedback_candidates_v2/manifest.json已准备但未执行，共12项，去掉不稳的新步态，保留原walking，与后来学得arm residual组合，加/不加body反馈及3.0s重规划。该v2池所有候选3.0s前控制相同，若当前10候选不合格，优先测试此组件拆分。
+- 新开发场景causal_profiled_fresh_ground128_v2/panel.json已在后续学习/评测前冻结：发球seed718701、B扰动seed718702，64新球各canonical/B。若学习条件参数，应在这批新场景实际独立评估；原正式A/B仍未使用。
 
-追踪视频：manifest.recorded_env_ids给每个候选原始source case0/1的随机全局env编号，traces_fixed_scenarios_0_1.json按该列表顺序，link_poses_fixed_scenario_GLOBALID.npy按全局编号保存。prepare_g07_causal_video.py --scenario GLOBALID --geometry-reference reports/G07/compact_native_contact01 可提取；会按candidate_id过滤完整统计，核对资产SHA/body_names。CPU渲染仍需PYTHONPATH=/tmp/unitree_video_deps、Isaac解释器。首次done后不继续录重置。
+## 后续可执行方向（未实现的不当成绩）
 
-本批保存initial_public_observation.npy和完整初始状态；preparation_snapshots.json有起跳前多时刻状态。未决扫掠精确输入有专门JSON，原判据/容差未改。
+1. 等当前10候选结果。若一个冻结候选两组均合格，保持同一实现/文件，用新lock02和原profiled_net_eval_v2协议正式各200。只用同一策略，不能面板间改权重。
+2. 若不合格，原行走＋新arm/body组件12池已冻结，可用evaluate_g07_causal_hybrid.py的--candidate-checkpoint在原128开发面板实际比较。此池所有早期动作相同；global3.0s时尚未开始arm/body残差。
+3. 只有原walking共同前缀内的候选oracle明显超过门槛，才值得学习一个3.0s时基于当前公开状态的参数选择器。可以从preparation_snapshots的public_frame69/public_command_and_clock17和初始化预测特征学习选body gains/arm coefficients（不是按caseID，不读未来标签运行）；候选选择若用已完成结果只能当oracle，不能叫策略。此参数选择器目前未实现。要在fresh128实际评测，再考虑正式400。
 
-固定授权GPU0独立新增10 GPU-hours；T0 UTC08:04:13.742590，截止18:04:13.742590（北京时间10月23日16:04至10月24日02:04）。重启不重置，历史用量保留并排除新上限。所有GPU作业经scripts/run_gpu_job.py --budget-window g07-net-feasibility-20261023，带max-seconds、env-steps-cap、新目录和completed.json回执。
+## 视频与发布（已上传）
+
+新网体v3真实效果：https://github.com/lzqw/unitree-smash/releases/download/g07-progress-20261023/G07_profiled_net_current_20261023.mp4 ，sha a80225bbc268e425d7ff4af852fa5668233730b615764db4cc3f7cf0f75cd4ee。来源frozen_candidate_matrix_fine768_01/candidate2/source0，固定录制全局env566，实际完整/无Net。画面统计仅该候选全部128开发回合full52/recovery98；不是formal400。
+新开发归档G07_profiled_development_5d19f95_1415UTC.zip已上传同一release（64,097,559bytes、sha358dbe2ba5fb81d02bc5b6e1a445fcbbbae03c8b883c99fd35b3529c7bcbc39e），source/checkpoint/population/publicGo2actor，增量包依赖先前基础资产；GitHub返回digest一致。当前1280活跃结果不在该归档中。
+
+视频工具prepare_g07_causal_video.py --scenario GLOBALENV读取manifest.recorded_env_ids（各候选case0/1预先固定随机位置），按candidate过滤统计，核对asset/body_names。renderer使用PYTHONPATH=/tmp/unitree_video_deps和Isaac解释器/llvmpipe CPU。后续本批候选也能生成真实视频，不需额外GPU录像。
 
 ## 近期停止的两个训练（已保存，不能重复启动）
 

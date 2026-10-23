@@ -42,6 +42,10 @@ class LearnedHybridPolicy:
         self.replan_at_s = checkpoint.get('replan_at_s')
         self.replanned = torch.zeros(count, dtype=torch.bool, device=device)
         self.replan_log = []
+        reference = checkpoint.get('body_reference')
+        self.body_reference_times = reference['times_s'].to(device) if reference else None
+        self.body_reference_values = reference['pitch_omega_y_vx'].to(device) if reference else None
+        self.body_feedback_parameters = checkpoint.get('body_feedback_parameters', torch.zeros(3)).to(device)
 
     def initialize(self, observation):
         self.walk.reset()
@@ -139,6 +143,19 @@ class LearnedHybridPolicy:
         else:
             walk_action = self.walk.action(observation, self.walk_parameters, self.default, self.limits)
         strike_action = self.strike(local)
+        if self.body_reference_times is not None:
+            time_local = local[:, 775].contiguous()
+            index = torch.searchsorted(self.body_reference_times, time_local).clamp(1, len(self.body_reference_times)-1)
+            left, right = self.body_reference_times[index-1], self.body_reference_times[index]
+            fraction = ((time_local-left)/(right-left)).clamp(0, 1)
+            reference = torch.lerp(self.body_reference_values[index-1], self.body_reference_values[index], fraction[:, None])
+            measured = torch.stack((torch.atan2(local[:, 6], -local[:, 8]), local[:, 4], local[:, 0]), 1)
+            delta = ((measured-reference)*self.body_feedback_parameters).sum(1).clamp(-.12, .12)
+            envelope = ((time_local-.75)/.1).clamp(0, 1)*((1.30-time_local)/.1).clamp(0, 1)
+            correction = delta*envelope
+            strike_action[:, 4:6] += 2*correction[:, None]/(self.limits[4:6, 1]-self.limits[4:6, 0])
+            strike_action[:, 6:8] -= 2*correction[:, None]/(self.limits[6:8, 1]-self.limits[6:8, 0])
+            strike_action.clamp_(-1, 1)
         if self.has_arm_residual:
             envelope = ((local[:, 775]-.8)/.35).clamp(0, 1)*((1.6-local[:, 775])/.18).clamp(0, 1)
             delta = (self.arm_pitch_amplitude*envelope)[:, None]*self.arm_pitch_basis[None, :]
