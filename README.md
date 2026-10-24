@@ -94,3 +94,5 @@ G10 = 冻结测试、消融、多种子及结论审计；结果可以是不支�
 本次[完整CEM07统计/第二代原始数据及当前四代训练程序、权重和前100步原生证据](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_interception_complete_and_body_learning_20261024_0912.zip)已上传（78,543,764字节，SHA256和49个归档文件均已核对）；第0代完整姿态见此前71MB附件。正式A/B各200回合仍未运行，完整扣杀仍为0。
 
 最新[前移准备失败与任务空间准备控制的原生证据附件](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_body_preparation_failures_and_cartesian_native_20261024_0938.zip)（120,166,563字节，84个文件SHA及GitHub摘要/大小已核对）包含CEM08两代完整轨迹、第三代21步中断、真实FAILED回执，以及CEM09精确源码/输入、81项CPU检查、120路回放和实际前100步。首100步只证明初始化与执行，后续触网规避与扣杀效果仍待实测。
+
+最新[任务空间准备失败与关节准备修正的程序/原生证据](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_cartesian_failed_and_joint_preparation_native_20261024_0952.zip)（54,384,135字节，78文件与GitHub SHA核对）包含CEM09完整第0代失败和第1代104步中断、CEM10精确源代码/输入/86CPU检查/真实前100步。CEM10随后已实测前200步128回合均未提前结束；后续触网、击球与恢复仍待运行结果。

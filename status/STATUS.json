@@ -66,7 +66,11 @@
           "generations": 4,
           "declared_control_env_steps": 409600,
           "max_seconds": 5400,
-          "native_initialization_pending": true
+          "native_initialization_pending": false,
+          "last_verified_generation": 0,
+          "last_verified_control_ticks": 200,
+          "native_initialization_evidence": "reports/G07_full_racket_v4/NATIVE_JOINT_PREPARATION_INITIALIZATION_0951.json",
+          "native_before_launch_evidence": "reports/G07_full_racket_v4/NATIVE_JOINT_PREPARATION_BEFORE_LAUNCH_0953.json"
         }
       ],
       "queued_native_sequence": {
@@ -223,9 +227,10 @@
         },
         "legacy26_and_embedded32_commands_bitwise_equal": true,
         "native_execution": true,
-        "native_execution_scope": "Actual128environment scene setup and active native control loop; first100tick proof pending.",
+        "native_execution_scope": "Actual128environment native first200ticks: all32reference parameters/60proposal rows preserved, finite recorded arrays and0early completions. First100body positions equal CEM08 exactly. Contact/net/recovery outcomes pending.",
         "report": "reports/G07_full_racket_v4/joint_preparation_ready01_0947/REPORT.json",
-        "native_state_counterfactual_report": "reports/G07_full_racket_v4/joint_preparation_native_state_commands02_0948/REPORT.json"
+        "native_state_counterfactual_report": "reports/G07_full_racket_v4/joint_preparation_native_state_commands02_0948/REPORT.json",
+        "native_initialization_report": "reports/G07_full_racket_v4/NATIVE_JOINT_PREPARATION_INITIALIZATION_0951.json"
       },
       "historical_stopped_gpu_jobs": [
         {
@@ -275,16 +280,18 @@
       ],
       "latest_stopped_generation_summary": "reports/G07_full_racket_v4/ball_cartesian_preparation_cem09/STOPPED_TRAIN_SUMMARY.json",
       "latest_program_evidence_bundle": {
-        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_body_preparation_failures_and_cartesian_native_20261024_0938.zip",
-        "bytes": 120166563,
-        "sha256": "cb3e99cf222acc03e26825f6b558f50f9ad552e75cb474ec4a112bfdb0e20382",
-        "scope": "CEM08full two generations and21tick interruption; CEM09exact source, warm/bank, CPU proofs and first100native ticks only.",
-        "upload_receipt": "reports/G07_full_racket_v4/body_preparation_cartesian_upload_receipt_0939.json",
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_cartesian_failed_and_joint_preparation_native_20261024_0952.zip",
+        "bytes": 54384135,
+        "sha256": "97a09c02927fc310936f00ff2b67e49abd3e0fd9fb4f59403b170223a14cc04d",
+        "scope": "CEM09full failed generation and104tick interruption; CEM10exact source, warm/bank,86CPU tests, counterfactual commands and actual100tick initialization only.",
+        "upload_receipt": "reports/G07_full_racket_v4/cartesian_failed_joint_native_upload_receipt_0953.json",
         "formal_acceptance": false
       },
       "latest_partial_native_contacts": {
         "run": "ball_joint_preparation_cem10",
-        "state": "WAITING_FOR_FIRST100TICK_CHECKPOINT",
+        "generation": 0,
+        "ticks": 200,
+        "first_episodes_complete": 0,
         "whole_generation_complete": false,
         "formal_acceptance": false
       },

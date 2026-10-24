@@ -1,0 +1,44 @@
+{
+  "verified_at": "2026-10-24T09:50:06.528590+00:00",
+  "scope": "Actual128environment initialization and100control ticks; no contact, dynamic net avoidance or recovery outcome claimed.",
+  "output": "reports/G07_full_racket_v4/ball_joint_preparation_cem10",
+  "guard_pid": 1389536,
+  "child_pid": 1389553,
+  "source_commit": "89d0eaabb2142604295d67b3d7c2f4c45c55097c",
+  "parameters": 32,
+  "action_width": 18,
+  "observation_width": 794,
+  "first_generation_allocation": {
+    "reference": 2,
+    "bank": 60,
+    "gaussian": 2
+  },
+  "later_generation_schedule": "No bank injection;2reference+62Gaussian",
+  "generations_requested": 4,
+  "reference_parameters_equal_actual_warm_start": true,
+  "all32reference_parameters_equal_original_measured_initialization": true,
+  "all60candidate_bank_rows_bitwise_equal_native_population": true,
+  "all60proposal_parameters_equal_original_body_bank": true,
+  "joint_preparation_configuration_matches": true,
+  "global_cartesian_preparation_absent": true,
+  "configuration": {
+    "maximum_x_m": 1.38,
+    "lookahead_s": 0.06,
+    "damping": 0.04,
+    "maximum_joint_delta_rad": 0.4,
+    "iterations": 4
+  },
+  "prefix_pose_shape": [
+    50,
+    128,
+    28,
+    7
+  ],
+  "all_native_prefix_arrays_finite": true,
+  "first_episodes_complete_at100": 0,
+  "observed_maximum_prefix_body_position_difference_from_CEM08_m": 0.0,
+  "warm_checkpoint_sha256": "39c5973eb4f62a8c4a0360c2fef8d07c820d706d3ee284731bb73f551904f013",
+  "bank_sha256": "c77ff75412e47862f870ad73114c46569f96a50c46cedeb9ff5adb4343789152",
+  "preserved_evidence_directory": "reports/G07_full_racket_v4/joint_preparation_native_tick100_snapshot",
+  "formal_acceptance": false
+}
