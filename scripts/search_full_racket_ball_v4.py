@@ -16,6 +16,7 @@ p.add_argument('--timing-grid',action='store_true',help='Reserve12 candidates fo
 p.add_argument('--push-grid',action='store_true',help='Reserve16 candidates for front/back thigh/calf push coordination')
 p.add_argument('--contact-curriculum',action='store_true',help='TRAIN: retain actual legal airborne strings contacts while optimizing failed return and recovery; formal flags unchanged')
 p.add_argument('--retain-contact-recovery',action='store_true',help='TRAIN: retain an actual same-episode legal airborne strings contact and qualified recovery ahead of additional contacts ending in falls; native task labels unchanged')
+p.add_argument('--target-landing-curriculum',action='store_true',help='TRAIN: shape actual released speed norm and actual first-landing distance to original target; native success/landing/rules remain unchanged')
 p.add_argument('--recovery-search-min',type=float,default=1.55,help='Algorithm-only lower bound for leg recovery handover in[1.20,1.55]local seconds; hardware/task gates unchanged')
 p.add_argument('--contact-grid',action='store_true',help='Reserve12 candidates for arm lead/speed around a measured contact, preserving leg timing')
 p.add_argument('--pitch-grid',action='store_true',help='Reserve12 candidates spanning existing arm pitch-compensation gain and timing; original joint/actuator limits remain')
@@ -50,6 +51,7 @@ from quadsmash.control.full_racket_search_mask_v4 import search_coordinate_mask,
 from quadsmash.control.full_racket_parameter_layout_v4 import controller_parameter_names
 from quadsmash.control.full_racket_contact_normal_search_v4 import (
     extend_contact_normal_parameters,NORMAL_LOW,NORMAL_HIGH)
+from quadsmash.control.full_racket_target_landing_curriculum_v4 import norm_outgoing_shaping,target_landing_shaping
 from quadsmash.control.full_racket_contact_curriculum_v4 import (
     contact_search_tiers,actual_outgoing_shaping,arm_timing_velocity_grid,measured_recovery_leg_crossovers,pitch_compensation_grid,validate_recovery_search_min)
 from quadsmash.physics.full_racket_v4 import string_prism_gap
@@ -90,6 +92,8 @@ def main():
         raise ValueError('Contact curriculum requires observing recovery after failed shuttle returns')
     if args.retain_contact_recovery and not args.contact_curriculum:
         raise ValueError('Retaining contact/recovery requires contact curriculum')
+    if args.target_landing_curriculum and not (args.contact_curriculum and args.retain_contact_recovery):
+        raise ValueError('Target landing shaping requires retaining actual contact/recovery chains')
     if args.recovery_leg_bank and (not (args.contact_grid or args.pitch_grid or args.arm_velocity_bank) or args.candidates<22):
         raise ValueError('Recovery leg crossover requires contact grid and at least22 candidates')
     if not .15<=args.push_search_range<=.5:raise ValueError('Push search range must be between .15 and .5rad')
@@ -108,6 +112,7 @@ def main():
     selection_contract=('actual-contact-recovery-chain-v2' if args.retain_contact_recovery else
         'actual-contact-then-return-and-recovery-v1' if args.contact_curriculum else
         'ball-with-jump-recovery-v3' if args.continue_after_miss else 'legal-first-ball-v4')
+    if args.target_landing_curriculum:selection_contract='actual-attack-recovery-chain-v3-actual-first-landing-and-speed-norm-v1'
     if args.recovery_leg_bank:sampling_contract+='-measured-recovery-leg-crossover-v1'
     if args.search_arm_velocity:sampling_contract+='-joint-velocity32-v1'
     if args.search_recovery_parameters:sampling_contract+='-standing-recovery37-v1'
@@ -241,6 +246,7 @@ def main():
         trajectory_contract='All lanes native50Hz poses/ball/clock/first-episode validity; exact terminal/contact snapshots separate',
         training_continue_after_miss=args.continue_after_miss,
         training_retain_contact_recovery=args.retain_contact_recovery,
+        training_target_landing_curriculum=args.target_landing_curriculum,
         training_early_termination=('Robot-rule fault, body ground or fallen; observe recovery after failed shuttle return without reviving its rally' if args.continue_after_miss else
             'Rally fault, first ground without target, body ground or fallen')+'; formal evaluator unchanged')
     if leg_bank is not None:
@@ -441,8 +447,12 @@ def main():
                     reward+=recovery_shaping
                     row['training_recovery_shaping']=recovery_shaping
                 if args.contact_curriculum:
-                    row['actual_outgoing_training_shaping']=actual_outgoing_shaping(row)
+                    row['actual_outgoing_training_shaping']=(norm_outgoing_shaping(row) if args.target_landing_curriculum else actual_outgoing_shaping(row))
                     reward+=row['actual_outgoing_training_shaping']
+                if args.target_landing_curriculum:
+                    row['actual_target_landing_training_shaping']=target_landing_shaping(row,
+                        env.court_config['target_x_limits_m'],env.court_config['target_y_half_width_m'])
+                    reward+=row['actual_target_landing_training_shaping']
                 row.update(training_score=reward,legal_episode=not fault and row['numerical_failures']==0
                     and row['active_rally_launch_count']==1 and not row['jump']['terminated'])
                 rows.append(row)
@@ -450,7 +460,8 @@ def main():
             scores=torch.tensor([min(r['training_score'] for r in g)*.7+np.mean([r['training_score'] for r in g])*.3 for g in groups],device=env.device)
             feasible=torch.tensor([all(r['legal_episode'] for r in g) for g in groups],device=env.device)
             if args.contact_curriculum:
-                tiers=torch.as_tensor(contact_search_tiers(groups,retain_recovery=args.retain_contact_recovery),device=env.device)
+                tiers=torch.as_tensor(contact_search_tiers(groups,retain_recovery=args.retain_contact_recovery,
+                    retain_attack_recovery=args.target_landing_curriculum),device=env.device)
                 if int(tiers.max())<0:raise RuntimeError('No numerically valid contact-curriculum candidate')
                 eligible=tiers==tiers.max()
                 selection=torch.where(eligible,scores,torch.full_like(scores,-float('inf')))

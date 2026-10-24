@@ -27,7 +27,7 @@ def usable_air_contact(row):
                 and not any(row[name] for name in ROBOT_FAULTS))
 
 
-def contact_search_tiers(groups, *, retain_recovery=False):
+def contact_search_tiers(groups, *, retain_recovery=False, retain_attack_recovery=False):
     """Rank measured TRAIN results without changing any native task labels.
 
     Once a contact and qualified recovery coexist in one episode, an optional
@@ -37,6 +37,8 @@ def contact_search_tiers(groups, *, retain_recovery=False):
     """
     if not groups or any(len(g) != len(groups[0]) for g in groups):
         raise ValueError('Require equal nonempty TRAIN case groups')
+    if retain_attack_recovery and not retain_recovery:
+        raise ValueError('Retaining attacking recovery requires the contact/recovery curriculum')
     case_count = len(groups[0])
     if not case_count:
         raise ValueError('At least one TRAIN case required')
@@ -50,8 +52,16 @@ def contact_search_tiers(groups, *, retain_recovery=False):
         if retain_recovery:
             joined = sum(usable_air_contact(row) and row.get('recovery_success', False)
                          for row in group)
-            tiers.append(complete * (case_count + 1) ** 2
-                         + joined * (case_count + 1) + contacts)
+            if retain_attack_recovery:
+                attacking_joined=sum(usable_air_contact(row) and row.get('recovery_success',False)
+                                     and row.get('attack_outgoing',False) for row in group)
+                # Base-(N+1) digits: a full success outranks all partial
+                # chains; an actual attacking recovery outranks weak returns.
+                tiers.append(complete*(case_count+1)**3+attacking_joined*(case_count+1)**2
+                             +joined*(case_count+1)+contacts)
+            else:
+                tiers.append(complete * (case_count + 1) ** 2
+                             + joined * (case_count + 1) + contacts)
         else:
             tiers.append(complete * (case_count + 1) + contacts)
     return np.asarray(tiers, dtype=np.int64)
