@@ -50,27 +50,27 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "GPU0 CEM13from37c1b7c remains live. Actual400tick prefix:124closed/4pending,7contacts/3airstrings;2robot-rule-free airstrings in both TRAIN cases of candidate13, both followed by body-ground failure and upward/lateral outgoing.0full/NF0. Final measured-face projection prepared in25c3c6d:96CPU tests, disabled legacy bitwise,4746native-state counterfactual samples with final command point shift<=.03m; no new dynamics yet. Original goal/physical assets/hardware/rules/400formal gates remain unchanged and unpassed.",
+      "notes": "CEM13stopped after full128episode generation0:7contacts/3airstrings/3qualified recoveries allmisses/2usable airstrings/2task-valid netcrosses/0joined/0attack/full/NF0;63net faults/6invasions. Candidate13contacts both TRAIN cases, then body-ground failure with upward/lateral return. Actual.331438919GPUh/114816control-env steps includes97interrupted gen1ticks. GPU0 CEM14from6097dd2 is live:actual100tick initialization and200tick prelaunch prefix verified,recorded128pose/ball/clock streams finite with0early ended; face-feedback phase not yet reached, retaining all32candidate13reference parameters and searching48recovery/face/lead proposals plus12recovery configurations.96CPU tests,120lane287tick new-bank replay and old26/32bitwise replay passed. Final-face projection preserves commanded hit point<=.03m in4746counterfactual native states, not a native success claim. Original assets/hardware/rules/success gates/formal400 unchanged and unpassed.",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/return_recovery_gen0_env12/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
       "active_gpu_jobs": [
         {
-          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_upper_timing_pitch_cem13",
-          "guard_pid": 1401912,
-          "child_pid": 1401924,
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_contact_face_recovery_cem14",
+          "guard_pid": 1406107,
+          "child_pid": 1406118,
           "state": "RUNNING",
-          "started_at": "2026-10-24T10:53:38.278878+00:00",
-          "source_commit": "37c1b7c5f1533c7fd6f01aee7715b2bae3356719",
+          "started_at": "2026-10-24T11:14:29.962887+00:00",
+          "source_commit": "6097dd2b8546b0dc6087e20a6294dba2f10ef84b",
           "generations": 4,
           "declared_control_env_steps": 409600,
-          "max_seconds": 5400,
+          "max_seconds": 7200,
           "native_initialization_pending": false,
           "last_verified_generation": 0,
-          "last_verified_control_ticks": 400,
-          "native_initialization_evidence": "reports/G07_full_racket_v4/NATIVE_UPPER_TIMING_INITIALIZATION_1057.json",
-          "native_partial_evidence": "reports/G07_full_racket_v4/NATIVE_UPPER_TIMING_PARTIAL400_1107.json"
+          "last_verified_control_ticks": 200,
+          "native_initialization_evidence": "reports/G07_full_racket_v4/NATIVE_CONTACT_FACE_RECOVERY_INITIALIZATION_1120.json",
+          "native_before_launch_evidence": "reports/G07_full_racket_v4/NATIVE_CONTACT_FACE_RECOVERY_BEFORE_LAUNCH_1122.json"
         }
       ],
       "queued_native_sequence": {
@@ -79,7 +79,7 @@
         "still_running": false
       },
       "native_air_string_contact_milestone": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
-      "latest_native_training_summary": "reports/G07_full_racket_v4/ball_projection_range_cem12/STOPPED_TRAIN_SUMMARY.json",
+      "latest_native_training_summary": "reports/G07_full_racket_v4/ball_upper_timing_pitch_cem13/STOPPED_TRAIN_SUMMARY.json",
       "latest_video": {
         "path": "reports/G07_full_racket_v4/video/Current_effect_latest_20261024_1048.mp4",
         "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_latest_20261024_1048.mp4",
@@ -93,29 +93,28 @@
         "scope": "Current CEM12generation0 env0 strings7.30m/s/robot-net fault and env57missed-ball qualified recovery4.45s; prior CEM07generation1 env64court-landing return7.52m/s. Separate failed task episodes."
       },
       "latest_completed_generation": {
-        "had_contact": 3,
-        "frame_hit": 2,
-        "airborne_string_hit": 1,
-        "recovery_success": 6,
-        "crossed_net": 1,
+        "had_contact": 7,
+        "frame_hit": 4,
+        "airborne_string_hit": 3,
+        "recovery_success": 3,
+        "crossed_net": 3,
         "landed_legal_court": 0,
         "landed_target": 0,
         "attack_outgoing": 0,
         "complete_smash": 0,
-        "robot_net_fault": 82,
-        "racket_invasion_fault": 13,
-        "engineering_body_crossing": 1,
+        "robot_net_fault": 63,
+        "racket_invasion_fault": 6,
         "executions": 128,
-        "usable_air_strings": 0,
+        "usable_air_strings": 2,
         "air_strings_and_recovery": 0,
-        "task_valid_air_strings_crosses": 0,
-        "robot_rule_terminal": 96,
-        "body_ground_terminal": 24,
+        "task_valid_air_strings_crosses": 2,
+        "robot_rule_terminal": 69,
+        "body_ground_terminal": 54,
         "numerical_failures": 0,
         "generation": 0,
         "control_ticks": 800,
         "env_steps": 102400,
-        "run": "ball_projection_range_cem12",
+        "run": "ball_upper_timing_pitch_cem13",
         "whole_job_complete": false
       },
       "pending_rule_regression": {
@@ -217,13 +216,14 @@
       ],
       "prepared_controller_branch": {
         "branch": "g07-arm-search-v4-20261024",
-        "commit": "b5c8ebb",
+        "commit": "593a2b4",
         "merged_to_primary": true,
-        "primary_launch_commit": "37c1b7c5f1533c7fd6f01aee7715b2bae3356719",
-        "report": "reports/G07_full_racket_v4/upper_timing_ready01_1052/REPORT.json",
-        "cpu_command_check": "reports/G07_full_racket_v4/upper_timing_bank_cpu01_1053/REPORT.json",
+        "primary_launch_commit": "6097dd2b8546b0dc6087e20a6294dba2f10ef84b",
+        "cpu_tests_passed": 96,
+        "report": "reports/G07_full_racket_v4/contact_face_recovery_ready01_1116/REPORT.json",
+        "cpu_command_check": "reports/G07_full_racket_v4/contact_face_recovery_bank_cpu01_1116/REPORT.json",
         "native_execution": true,
-        "native_execution_scope": "Actual64x32population,60bank,new strings target and128-environment first100native ticks verified; no later contact or performance claim."
+        "native_execution_scope": "Actual64x32population/60bank/measured-face seed and128native environments first100ticks verified. Face-feedback phase has not yet been reached."
       },
       "historical_stopped_gpu_jobs": [
         {
@@ -302,26 +302,33 @@
           "actual_gpu_hours": 0.3954765801761015,
           "actual_control_env_steps": 135040,
           "charged_environment_step_cap": 409600
+        },
+        {
+          "run": "ball_upper_timing_pitch_cem13",
+          "guard_pid": 1401912,
+          "child_pid": 1401924,
+          "guard_terminal_state": "FAILED",
+          "reason": "Generation0had7contacts/3airstrings/3recoveries/0joined/2usable airstrings/0attacks/full. Candidate13contacts both TRAIN cases without robot-rule faults, but both end with body-ground failure and upward/lateral returns.63net faults and6invasions.",
+          "resource_receipt": "reports/G07_full_racket_v4/ball_upper_timing_pitch_cem13/job.json",
+          "actual_gpu_hours": 0.3314389189580591,
+          "actual_control_env_steps": 114816,
+          "charged_environment_step_cap": 409600
         }
       ],
-      "latest_stopped_generation_summary": "reports/G07_full_racket_v4/ball_projection_range_cem12/STOPPED_TRAIN_SUMMARY.json",
+      "latest_stopped_generation_summary": "reports/G07_full_racket_v4/ball_upper_timing_pitch_cem13/STOPPED_TRAIN_SUMMARY.json",
       "latest_program_evidence_bundle": {
-        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_projection_failed_and_upper_timing_native_20261024_1058.zip",
-        "bytes": 131463960,
-        "sha256": "0443301fa1fe51201904504ff6f19cf17f82948b09b18088bfd2b92255dca1dc",
-        "scope": "CEM12full failed generation0/255tick interruption and CEM13exact source/initialization/native100tick prefix only.",
-        "upload_receipt": "reports/G07_full_racket_v4/projection_failed_upper_timing_upload_receipt_1100.json",
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_upper_timing_failed_and_contact_face_native_20261024_1121.zip",
+        "bytes": 144271553,
+        "sha256": "00d1164e67e3190cb9b7ef3dc2b586eef64041a0876d76c18688ab3b621cba84",
+        "scope": "CEM13complete failed generation0/97tick interruption; CEM14exact source/input/96CPU tests/command replays and actual100tick prefix only. New face-feedback phase not reached in bundled prefix.",
+        "upload_receipt": "reports/G07_full_racket_v4/upper_failed_contact_face_upload_receipt_1122.json",
         "formal_acceptance": false
       },
       "latest_partial_native_contacts": {
-        "run": "ball_upper_timing_pitch_cem13",
+        "run": "ball_contact_face_recovery_cem14",
         "generation": 0,
-        "ticks": 400,
-        "first_episodes_complete": 124,
-        "pending_first_episodes": 4,
-        "had_contact": 7,
-        "airborne_string_hit": 3,
-        "usable_air_strings": 2,
+        "ticks": 200,
+        "first_episodes_complete": 0,
         "whole_generation_complete": false,
         "formal_acceptance": false
       },
@@ -428,20 +435,7 @@
           "native_initialization_report": "reports/G07_full_racket_v4/NATIVE_TOOL_ANTICIPATION_INITIALIZATION_1016.json"
         }
       ],
-      "latest_net_approach_diagnostic": "reports/G07_full_racket_v4/ACTUAL_STROKE_AND_FACE_DIAGNOSTIC_1054.json",
-      "next_prepared_method": {
-        "branch": "g07-arm-search-v4-20261024",
-        "commit": "25c3c6d",
-        "state": "CODE_READY",
-        "merged_to_primary": false,
-        "native_execution": false,
-        "report": "reports/G07_full_racket_v4/measured_face_ready03_1114/REPORT.json",
-        "core_cpu_tests_passed": 96,
-        "disabled26_and32_commands_bitwise_equal": true,
-        "counterfactual_native_state_samples": 4746,
-        "counterfactual_maximum_final_command_point_shift_m": 0.02973504364490509,
-        "scope": "Final-face projection after the existing net guard, with a current measured-normal lead. Original physical bounds and acceptance unchanged. Native outcome pending."
-      }
+      "latest_net_approach_diagnostic": "reports/G07_full_racket_v4/ACTUAL_STROKE_AND_FACE_DIAGNOSTIC_1054.json"
     },
     "G08": {
       "state": "TODO",

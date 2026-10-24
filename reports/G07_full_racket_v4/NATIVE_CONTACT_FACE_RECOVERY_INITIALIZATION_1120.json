@@ -1,0 +1,46 @@
+{
+  "verified_at": "2026-10-24T11:17:41.645586+00:00",
+  "scope": "Actual128-environment native initialization and first100control ticks only. The new face-feedback phase starts later; no dynamic face correction, contact, attack or recovery outcome is claimed yet.",
+  "output": "reports/G07_full_racket_v4/ball_contact_face_recovery_cem14",
+  "guard_pid": 1406107,
+  "child_pid": 1406118,
+  "source_commit": "6097dd2b8546b0dc6087e20a6294dba2f10ef84b",
+  "control_ticks": 100,
+  "native_population_shape": [
+    64,
+    32
+  ],
+  "all60new_bank_rows_bitwise_equal_actual_native_population": true,
+  "all32reference_parameters_bitwise_equal_CEM13candidate13": true,
+  "measured_face_feedback_configuration": {
+    "damping": 0.02,
+    "normal_weight": 0.3,
+    "maximum_joint_delta_rad": 0.4,
+    "maximum_point_displacement_m": 0.03,
+    "measured_normal_lead_gain": 0.5,
+    "iterations": 3
+  },
+  "actual_string_uv_target_m": [
+    0.0,
+    0.1
+  ],
+  "physics_dt_s": 6.25e-05,
+  "all128native_prefix_states_finite": true,
+  "all128first_episodes_still_active": true,
+  "first_episodes_complete": 0,
+  "maximum_reference_body_position_difference_from_CEM13candidate13_prefix_m": 0.011417180299758911,
+  "preserved_evidence_directory": "reports/G07_full_racket_v4/contact_face_recovery_native_tick100_snapshot",
+  "warm_checkpoint_sha256": "c1f1f8f3b911e76a3ba48b3f555a4b8789797f1275bcc5c1c0f4b209c982dbe7",
+  "bank_sha256": "8719a44f9726be4bef91209638612b442a9d01fb6fcd523a849249d68e225481",
+  "source_sha256": {
+    "progress.json": "1786dbd6216bb6f930fed33803cbae3068e047c4e7a30d5d244cc00185471ea0",
+    "partial_search_state.pt": "036d0a7d9f0bc1e1672a7748c41030835fa6f612fbc7b335614a25eafbfdb5f3",
+    "partial_public_and_poses.npz": "dca95be1cda4cbb7640b41f91c16744b32053e82ea6b16e56b9c97e7aea9ec21",
+    "all_first_episodes.partial.npz": "960f95df541fc6fd44b6dc72a72f62680dd70785c72e11ad9be6936a4c7ba6a4",
+    "episodes.partial.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "contacts.partial.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "causal_plans.partial.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "trajectory.partial.json": "68c7d26d085c9b5127a540bfcf9e63a42e077a3fc75e5a0b302cd34ee96bd8f5"
+  },
+  "formal_acceptance": false
+}
