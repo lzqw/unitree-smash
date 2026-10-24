@@ -25,6 +25,9 @@ class FullRacketTeacherV4:
         self.arm_velocity=torch.tensor(seed['joint_velocity_seed_rad_s'],dtype=torch.float32,device=device)
         self.pitch_basis=torch.tensor(seed['pitch_compensation_basis_rad_per_rad'],dtype=torch.float32,device=device)
         self.smooth_recovery_arm=seed.get('smooth_recovery_arm',False)
+        self.nominal_pitch=float(seed.get('nominal_projected_pitch_rad',0.))
+        self.leg_event_time_gain=float(seed.get('leg_event_time_gain',1.))
+        if not 0.<=self.leg_event_time_gain<=1.:raise ValueError('Leg event time gain must be in[0,1]')
         self.kinematics=FullRacketKinematicsV4().to(device=device,dtype=torch.float32)
         self.task_eye=torch.eye(6,device=device)[None]
         self.face_sign=seed.get('face_sign',1)
@@ -41,7 +44,7 @@ class FullRacketTeacherV4:
     def action(self,observation,parameters,default,limits,event_time=None,target_offset_world=None):
         obs=observation['policy'];time=obs[:,775]
         event_time=torch.full_like(time,2.75) if event_time is None else event_time
-        local=(time-parameters[:,2]-(event_time-2.75))*parameters[:,4]
+        local=(time-parameters[:,2]-self.leg_event_time_gain*(event_time-2.75))*parameters[:,4]
         walk_obs=obs.clone()
         # Convert the public known head command to the public walking waypoint.
         # Command normal is world +X in the body frame; gravity supplies -Z.
@@ -73,7 +76,7 @@ class FullRacketTeacherV4:
         swing_clock=torch.maximum(torch.minimum(time-center,half_window),-half_window)
         trajectory=arm_hit+velocity*swing_clock[:,None]
         arm=torch.where(swinging[:,None],trajectory,arm)
-        pitch=torch.atan2(obs[:,6],-obs[:,8])
+        pitch=torch.atan2(obs[:,6],-obs[:,8])-self.nominal_pitch
         feedback=((time-event_time+.45)/.15).clamp(0,1)*((event_time+.45-time)/.20).clamp(0,1)
         arm+=parameters[:,15:16]*pitch[:,None]*feedback[:,None]*self.pitch_basis[None]
         if parameters.shape[1]>=20:

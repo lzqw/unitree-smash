@@ -44,10 +44,24 @@ class RallyRulesV4:
             result |= getattr(self,name)
         return result
 
+    def robot_rule_faulted(self):
+        """TRAIN may observe recovery after a failed shuttle return.
+
+        This subset never replaces faulted() in rally scoring or acceptance.
+        A simultaneous robot fault remains fatal even if the shuttle failed.
+        """
+        result=torch.zeros(self.count,dtype=torch.bool,device=self.device)
+        for name in self.flags:
+            if ((name.endswith('_fault') and name not in ('bad_return_fault','net_blocked_fault')) or
+                    name=='engineering_body_crossing'):
+                result|=getattr(self,name)
+        return result
+
     def advance(self,*,previous_position,position,velocity,time,dt,racket_contact_event,
                 racket_touching,separated,contact_point,string_contact,frame_contact,airborne,
                 ground_touch,robot_net_touch,body_ball_touch,shuttle_net_touch,
                 racket_over_net,body_over_net,engineering_body_crossing,
+                racket_fully_own_side,
                 under_net_obstruction=None,same_stroke_frame_string=None):
         active = self.in_play.clone()
         zeros = torch.zeros_like(active)
@@ -74,7 +88,7 @@ class RallyRulesV4:
         # Only the racket may follow through. Returning fully to the own side
         # ends that exception; a later separate crossing is not the same stroke.
         self.racket_invasion_fault |= active & racket_over_net & ((~self.legal_initial_contact)|self.followthrough_finished)
-        returned = active & self.followthrough_crossed & (~racket_over_net)
+        returned = active & self.followthrough_crossed & racket_fully_own_side
         self.followthrough_finished |= returned
         self.followthrough_crossed |= active & racket_over_net & self.legal_initial_contact
         touched = active & racket_touching

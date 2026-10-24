@@ -1,0 +1,74 @@
+{
+  "kind": "CPU retargeting proposal using upper strings and2m/s point-velocity goal. Original actual outgoing8m/s attack threshold unchanged. No dynamic execution/contact/recovery claim.",
+  "schema": "full-racket-ik-seeds-v4",
+  "seeds": [
+    {
+      "joint_position_rad": [
+        -0.6822544545409286,
+        1.7274518025952135,
+        -2.5581723355398904,
+        1.0408788162946265,
+        1.0140289678498111,
+        2.0400908476221873
+      ],
+      "joint_velocity_seed_rad_s": [
+        4.799999999967427,
+        2.3352736636679206,
+        0.6372399145067001,
+        -4.799999999999999,
+        -1.2012156052041574,
+        -0.6788644047226563
+      ],
+      "string_uv_m": [
+        0.0,
+        0.09
+      ],
+      "face_sign": 1,
+      "planned_root_position_m": [
+        0.5815277099609375,
+        -0.06453990936279297,
+        0.7146648168563843
+      ],
+      "planned_root_rpy_rad": [
+        -0.061521593374512476,
+        0.23292464118843292,
+        -0.16191347731033923
+      ],
+      "desired_ball_center_m": [
+        1.1246533393859863,
+        0.07150077819824219,
+        1.7731776237487793
+      ],
+      "outward_contact_normal_world": [
+        0.996815278536125,
+        0.0,
+        -0.07974522228289
+      ],
+      "desired_point_velocity_mps": [
+        2.0,
+        0.0,
+        -0.3
+      ],
+      "predicted_point_velocity_mps": [
+        1.3595058312105623,
+        -0.3085892970751172,
+        -0.6177904006018224
+      ],
+      "predicted_outward_normal_world": [
+        0.9968153685100178,
+        4.3778882278426925e-07,
+        -0.07974409760004544
+      ],
+      "position_error_m": 1.5016115075876926e-07,
+      "normal_error": 1.2102338018332913e-06,
+      "nominal_projected_pitch_rad": 0.23335033655166626
+    }
+  ],
+  "source": "reports/G07_full_racket_v4/recorded_pose_reach_comparison_0510.json",
+  "source_sha256": "469eb157b0fe8ec4ffa2acd141fc611b601942438f607b87972d6b3af955ea7e",
+  "source_training_run": "ball_recovery_cem01 generation0 env36 case1 at2.74s",
+  "causality": "Uses TRAIN state for offline teacher initialization only; runtime controller must still consume only public observations. No formal-case information.",
+  "physical_changes": false,
+  "formal_acceptance": false,
+  "immutable_training_input": "TRAIN_SOURCE_SNAPSHOT.json"
+}

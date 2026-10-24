@@ -164,6 +164,55 @@ def mass_properties(config):
                 component_count=len(components))
 
 
+class RacketPlaneSupport:
+    """Exact +X support of the declared USD racket primitives, without clamp.
+
+    Unlike rotated local AABB corners, these extents cannot invent racket
+    material beyond the court plane. No dynamics, state cache or forces.
+    """
+    def __init__(self,config,device='cpu',dtype=None):
+        import torch
+        dtype=torch.float32 if dtype is None else dtype
+        centers,axes,halflengths,radii,kinds,box_halves=[],[],[],[],[],[]
+        def add(center,axis,length,radius,kind,half):
+            centers.append(center);axes.append(axis);halflengths.append(length/2)
+            radii.append(radius);kinds.append(kind);box_halves.append(half)
+        for part in parts(config):
+            if part['name']=='Clamp' or not part['collision']:continue
+            if part['kind']=='string_prism':
+                if config.get('string_collision_representation')!='inscribed-z-strips':
+                    raise ValueError('Plane support requires the native strip racket version')
+                for strip in string_strips(config):
+                    add(strip['center'],[0,0,1],0,0,2,np.asarray(strip['size'])/2)
+            else:
+                if part['kind'] not in ('capsule','cylinder'):
+                    raise ValueError('Unsupported native racket primitive')
+                add(part['center'],part['axis'],part['length'],part['radius'],
+                    0 if part['kind']=='capsule' else 1,[0,0,0])
+        with torch.inference_mode(False):
+            self.centers=torch.tensor(np.asarray(centers),device=device,dtype=dtype)
+            self.axes=torch.tensor(np.asarray(axes),device=device,dtype=dtype)
+            self.halflengths=torch.tensor(halflengths,device=device,dtype=dtype)
+            self.radii=torch.tensor(radii,device=device,dtype=dtype)
+            self.kinds=torch.tensor(kinds,device=device)
+            self.box_halves=torch.tensor(np.asarray(box_halves),device=device,dtype=dtype)
+
+    def maximum_x(self,position,quaternion):
+        import torch
+        from .native import quat_rotate
+        inverse=torch.cat((quaternion[...,:1],-quaternion[...,1:]),-1)
+        direction=torch.zeros_like(position);direction[...,0]=1.
+        local_x=quat_rotate(inverse,direction)
+        projection=local_x@self.axes.T
+        center_x=position[...,:1]+local_x@self.centers.T
+        radial=torch.where(self.kinds==0,self.radii,
+            self.radii*torch.sqrt((1-projection.square()).clamp_min(0.)))
+        round_extent=projection.abs()*self.halflengths+radial
+        box_extent=local_x.abs()@self.box_halves.T
+        extent=torch.where(self.kinds==2,box_extent,round_extent)
+        return (center_x+extent).amax(-1)
+
+
 def string_prism_gap(ball_position, center, quaternion, config, radius):
     """Distance/sign to the same native string surface, including r2 strips."""
     import torch

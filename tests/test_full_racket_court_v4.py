@@ -2,12 +2,47 @@ import math
 import unittest
 import numpy as np
 import torch
-from quadsmash.physics.full_racket_v4 import load_racket,mass_properties,parts,string_prism_gap,swept_string_prism,string_strips,string_polygon
+from quadsmash.physics.full_racket_v4 import load_racket,mass_properties,parts,string_prism_gap,swept_string_prism,string_strips,string_polygon,RacketPlaneSupport
 from quadsmash.physics.court_v4 import load_court,net_band_segments,top_height
 from quadsmash.physics.rally_rules_v4 import RallyRulesV4
 
 
 class FullRacketGeometryTest(unittest.TestCase):
+    def test_rotated_aabb_empty_corner_does_not_invent_material_across_net(self):
+        import itertools
+        from quadsmash.physics.native import quat_rotate
+        config=load_racket();model=RacketPlaneSupport(config,dtype=torch.float64)
+        q=torch.tensor([[math.sqrt(.5),0.,.5,-.5]],dtype=torch.float64)
+        origin=torch.zeros((1,3),dtype=torch.float64)
+        exact=float(model.maximum_x(origin,q)[0])
+        position=torch.tensor([[1.5-exact-.001,0.,3.]],dtype=torch.float64)
+        self.assertAlmostEqual(float(model.maximum_x(position,q)[0]),1.499,places=12)
+        corners=[]
+        for part in parts(config):
+            if part['name']=='Clamp' or not part['collision']:continue
+            if part['kind']=='string_prism':
+                half=np.array([config['assumptions']['string_thickness_m']/2,
+                               *config['assumptions']['strings_semiaxes_yz_m']])
+            else:
+                half=np.abs(part['axis'])*part['length']/2+part['radius']
+            corners.extend(part['center']+np.array(list(itertools.product((-1,1),repeat=3)))*half)
+        old=quat_rotate(q[:,None],torch.tensor(np.array(corners)[None],dtype=torch.float64))+position[:,None]
+        self.assertGreater(float(old[...,0].max()),1.51)
+        self.assertGreater(float(old[...,2].min()),1.55)
+
+    def test_plane_support_rotations_and_translations_preserve_geometry(self):
+        model=RacketPlaneSupport(load_racket(),dtype=torch.float64)
+        q=torch.tensor([[1.,0,0,0],[math.sqrt(.5),0,math.sqrt(.5),0]],dtype=torch.float64)
+        center=torch.zeros((2,3),dtype=torch.float64)
+        maximum=model.maximum_x(center,q)
+        # Looking along the normal exposes exactly the frame tube radius;
+        # looking along the shaft exposes the head's actual rounded top.
+        a=load_racket()['assumptions']
+        self.assertAlmostEqual(float(maximum[0]),max(a['frame_tube_radius_m'],a['handle_radius_m']+.0005),places=10)
+        self.assertAlmostEqual(float(maximum[1]),a['head_outer_length_m']/2,places=10)
+        translated=center+torch.tensor([2.,-.7,.4],dtype=torch.float64)
+        torch.testing.assert_close(model.maximum_x(translated,q),maximum+2,atol=1e-12,rtol=0)
+
     def test_clamp_clears_source_wrist_mesh_in_flange_frame(self):
         import trimesh
         from quadsmash.control.full_racket_geometry_v4 import FullRacketGeometryV4
@@ -106,6 +141,8 @@ class RallyLawTest(unittest.TestCase):
             if isinstance(value,bool):value=torch.tensor([value])
             elif isinstance(value,list):value=torch.tensor(value,dtype=torch.float64)
             fields[name]=value
+        if 'racket_fully_own_side' not in overrides:
+            fields['racket_fully_own_side']=~fields['racket_over_net']
         self.events.advance(**fields)
 
     def hit_and_release(self,**overrides):
@@ -156,6 +193,20 @@ class RallyLawTest(unittest.TestCase):
         self.step(racket_over_net=True)
         self.assertTrue(self.events.racket_invasion_fault)
 
+    def test_lowering_racket_below_net_does_not_end_same_stroke_followthrough(self):
+        self.hit_and_release();self.step(racket_over_net=True)
+        self.step(racket_over_net=False,racket_fully_own_side=False)
+        self.assertFalse(self.events.followthrough_finished)
+        self.step(racket_over_net=True,racket_fully_own_side=False)
+        self.assertFalse(self.events.racket_invasion_fault)
+
+    def test_complete_return_to_own_side_ends_followthrough_exception(self):
+        self.hit_and_release();self.step(racket_over_net=True)
+        self.step(racket_over_net=False,racket_fully_own_side=True)
+        self.assertTrue(self.events.followthrough_finished)
+        self.step(racket_over_net=True,racket_fully_own_side=False)
+        self.assertTrue(self.events.racket_invasion_fault)
+
     def test_net_touch_by_shuttle_is_not_robot_net_fault(self):
         self.hit_and_release();self.step(shuttle_net_touch=True)
         self.cross_and_land()
@@ -202,6 +253,21 @@ class RallyLawTest(unittest.TestCase):
     def test_blocked_falling_net_shot_ends_rally(self):
         self.hit_and_release();self.step(shuttle_net_touch=True,velocity=[[-1.,0,-2.]])
         self.assertTrue(self.events.net_blocked_fault);self.assertFalse(self.events.in_play)
+
+    def test_training_recovery_continuation_does_not_revive_failed_shuttle_rally(self):
+        self.hit_and_release();self.step(shuttle_net_touch=True,velocity=[[-1.,0,-2.]])
+        self.assertTrue(self.events.faulted())
+        self.assertFalse(self.events.robot_rule_faulted())
+        self.assertFalse(self.events.in_play)
+        self.cross_and_land()
+        self.assertFalse(self.events.complete(torch.tensor([True])))
+
+    def test_shuttle_failure_cannot_hide_simultaneous_robot_net_fault(self):
+        self.hit_and_release()
+        self.step(shuttle_net_touch=True,robot_net_touch=True,velocity=[[-1.,0,-2.]])
+        self.assertTrue(self.events.net_blocked_fault)
+        self.assertTrue(self.events.robot_rule_faulted())
+        self.assertTrue(self.events.faulted())
 
     def test_preparation_contact_is_not_an_in_play_hit(self):
         self.events.reset(torch.tensor([0]));self.hit_and_release()

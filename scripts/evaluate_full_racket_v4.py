@@ -51,11 +51,16 @@ def main():
         (args.output/'initial_states.json').write_text(json.dumps([first_initial[i] for i in range(count)],indent=2)+'\n')
         default=env.robot.data.default_joint_pos[0,env.joint_ids];limits=env.robot.data.joint_pos_limits[0,env.joint_ids]
         finished=torch.zeros(count,dtype=torch.bool,device=env.device);poses,trace=[],[]
+        all_poses,all_balls,all_clocks,all_valid=[],[],[],[]
         ticks=round(protocol['episode_seconds']/protocol['policy_dt_s'])
         with torch.inference_mode():
             for tick in range(ticks):
                 if tick%2==0:
                     data=env.robot.data
+                    all_poses.append(torch.cat((data.body_link_pos_w-env.scene.env_origins[:,None],data.body_link_quat_w),-1).cpu().numpy())
+                    all_balls.append((env.shuttle.data.root_pos_w-env.scene.env_origins).cpu().numpy())
+                    all_clocks.append(observation['policy'][:,775].cpu().numpy().copy())
+                    all_valid.append((~finished).cpu().numpy().copy())
                     poses.append(torch.cat((data.body_link_pos_w[:2]-env.scene.env_origins[:2,None],data.body_link_quat_w[:2]),-1).cpu().numpy())
                     trace.append(dict(time_s=tick*.01,valid_first=(~finished[:2]).cpu().tolist(),
                         ball_position_m=(env.shuttle.data.root_pos_w[:2]-env.scene.env_origins[:2]).cpu().tolist(),
@@ -67,8 +72,13 @@ def main():
                         formal_acceptance=False,formal_eligible=True,panel=args.panel)
                     (args.output/'progress.json').write_text(json.dumps(progress,indent=2)+'\n')
                     (args.output/'episodes.partial.json').write_text(json.dumps(env.rally_records,indent=2)+'\n')
+                    np.savez_compressed(args.output/'all_first_episodes.partial.npz',link_poses=np.stack(all_poses),
+                        ball_position_m=np.stack(all_balls),episode_clock_s=np.stack(all_clocks),
+                        valid_first_episode=np.stack(all_valid))
                     print(json.dumps(progress),flush=True)
                 if bool(finished.all()):break
+        np.savez_compressed(args.output/'all_first_episodes.npz',link_poses=np.stack(all_poses),
+            ball_position_m=np.stack(all_balls),episode_clock_s=np.stack(all_clocks),valid_first_episode=np.stack(all_valid))
         first,jumps={},{}
         for row in env.rally_records:first.setdefault(row['env_id'],row)
         for row in env.episode_records:jumps.setdefault(row['env_id'],row)

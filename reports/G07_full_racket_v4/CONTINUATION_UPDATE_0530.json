@@ -1,0 +1,28 @@
+{
+  "created_at": "2026-10-24T05:32:45.266703+00:00",
+  "scope": "New unexecuted TRAIN curriculum-v3 code and a verified partial contact episode; current GPU job still uses launch-time v2 sources.",
+  "curriculum_contract": "ball-with-jump-recovery-v3",
+  "changes": [
+    "After blocked/backward shuttle-only failure, TRAIN may continue observing the same jump to landing/recovery. Rally remains dead and all faults remain failures. Robot-rule/body-ground/fallen conditions still terminate.",
+    "Formal FullRacketEnv/FrozenPanelEnv rules, attack8m/s and all original gates unchanged.",
+    "CPU40 tests now include dead-rally non-revival and simultaneous robot fault not hidden by shuttle fault.",
+    "Next native fixture sequence remains mandatory before actual upper-string04 adaptation."
+  ],
+  "native_scope": "NOT_RUN for v3/query corrections and upper-string04; do not attribute them to running v2 rollout.",
+  "partial_contact": {
+    "path": "recovery_gen1_contact_partial01/CONTACT_MILESTONE.json",
+    "generation": 1,
+    "env_id": 62,
+    "episode_index": 2,
+    "height_m": 1.702071189880371,
+    "outgoing_speed_mps": 4.9507320470707255,
+    "net_blocked": true,
+    "complete": false
+  },
+  "source_hashes": {
+    "quadsmash/physics/rally_rules_v4.py": "80960adcc3cc6ebc0bbf58060aea6e208e74a9f28a62bb2f4a66140db4a98bed",
+    "quadsmash/tasks/stand/full_racket_train_env_v4.py": "a5979c3afcd812ff9168f527f60be4df7035150aaeb26287e07451cff3b2ec3e",
+    "scripts/search_full_racket_ball_v4.py": "8dc163245940a94244c50ce05206269bd1cf1ef89f69b3350cb9095131295cfa"
+  },
+  "formal_acceptance": false
+}

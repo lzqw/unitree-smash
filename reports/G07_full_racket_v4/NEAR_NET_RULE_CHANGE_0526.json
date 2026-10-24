@@ -1,0 +1,136 @@
+{
+  "created_at": "2026-10-24T05:26:21.712393+00:00",
+  "status": "CPU_PASSED_NATIVE_PENDING",
+  "scope": "Necessary near-net rule/geometry corrections, not model/policy acceptance.",
+  "changes": [
+    "Whole-racket return uses analytic declared-USD-primitive support, including below-net material, excluding robot fixture. Lowering below net is no longer mistaken for complete return.",
+    "Prehit/second-stroke invasion verdict uses actual native PhysX overlap queries in opponent volumes above the exact stepped net profile. AABB corners only bound the queries; they no longer supply the verdict.",
+    "Native query has explicit1micrometre plane numerical tolerance and adds no collision shape or force.",
+    "New seed flags support a recorded nominal pitch reference and leg event-time gain0..1; defaults preserve old teacher behavior. Proposal04 remains unexecuted.",
+    "Future TRAIN/formal loggers save all lanes throughout the whole episode at50Hz, with native contact and terminal snapshots separate. Current running job retains older first2-lane/full versus all-lane/window logging."
+  ],
+  "cpu_tests": 38,
+  "independent_usd_surface_check": {
+    "scope": "CPU analytic support versus independently exported actual USD primitive surface samples; no native motion/rule-boundary acceptance claim",
+    "status": "PASSED",
+    "native_collision_primitives": 96,
+    "surface_samples": 308080,
+    "random_orientations": 64,
+    "maximum_support_underestimate_m": 0.0,
+    "maximum_surface_sampling_gap_m": 7.284632608739461e-06,
+    "allowed_sampling_gap_m": 4e-05,
+    "asset_sha256": "c2264fcece90b042c7c6a1cac7d516af83972729d0402947e3a519041e184cf2",
+    "source_hashes": {
+      "quadsmash/physics/full_racket_v4.py": "42d7681d716f6c8ec75b1fc49f4fdf5e75d68af702d7c24f1e4830d3877ba5d2",
+      "quadsmash/physics/rally_rules_v4.py": "71c795e96b6b10f50500bc707d102febf3f412d1a3ac0a3e207ec59df393d10e",
+      "quadsmash/tasks/stand/full_racket_env_v4.py": "a03eb2bfa2d87c718b573cae853273eab3f2fbae87e8853cb41d9eeb80b086c9"
+    },
+    "formal_acceptance": false
+  },
+  "native_fixtures": [
+    {
+      "variant": "near-net-contact",
+      "status": "NOT_RUN",
+      "argv": [
+        "/home/autodrive/Isaac/env_isaaclab/bin/python",
+        "scripts/run_gpu_job.py",
+        "--goal",
+        "G07",
+        "--budget-window",
+        "g07-full-racket-unlimited-20261024",
+        "--max-seconds",
+        "180",
+        "--env-steps-cap",
+        "1",
+        "--output",
+        "reports/G07_full_racket_v4/near_net_own_contact01",
+        "--require-artifact",
+        "completed.json",
+        "--",
+        "/home/autodrive/Isaac/env_isaaclab/bin/python",
+        "scripts/validate_full_racket_near_net_v4.py",
+        "--output",
+        "reports/G07_full_racket_v4/near_net_own_contact01",
+        "--variant",
+        "near-net-contact",
+        "--headless"
+      ]
+    },
+    {
+      "variant": "empty-aabb-corner",
+      "status": "NOT_RUN",
+      "argv": [
+        "/home/autodrive/Isaac/env_isaaclab/bin/python",
+        "scripts/run_gpu_job.py",
+        "--goal",
+        "G07",
+        "--budget-window",
+        "g07-full-racket-unlimited-20261024",
+        "--max-seconds",
+        "180",
+        "--env-steps-cap",
+        "1",
+        "--output",
+        "reports/G07_full_racket_v4/near_net_empty_corner01",
+        "--require-artifact",
+        "completed.json",
+        "--",
+        "/home/autodrive/Isaac/env_isaaclab/bin/python",
+        "scripts/validate_full_racket_near_net_v4.py",
+        "--output",
+        "reports/G07_full_racket_v4/near_net_empty_corner01",
+        "--variant",
+        "empty-aabb-corner",
+        "--headless"
+      ]
+    },
+    {
+      "variant": "prehit-invasion",
+      "status": "NOT_RUN",
+      "argv": [
+        "/home/autodrive/Isaac/env_isaaclab/bin/python",
+        "scripts/run_gpu_job.py",
+        "--goal",
+        "G07",
+        "--budget-window",
+        "g07-full-racket-unlimited-20261024",
+        "--max-seconds",
+        "180",
+        "--env-steps-cap",
+        "1",
+        "--output",
+        "reports/G07_full_racket_v4/near_net_prehit_invasion01",
+        "--require-artifact",
+        "completed.json",
+        "--",
+        "/home/autodrive/Isaac/env_isaaclab/bin/python",
+        "scripts/validate_full_racket_near_net_v4.py",
+        "--output",
+        "reports/G07_full_racket_v4/near_net_prehit_invasion01",
+        "--variant",
+        "prehit-invasion",
+        "--headless"
+      ]
+    }
+  ],
+  "run_order": "First let active ball_recovery_cem01 finish its existing two generations. Poll the same live guard; observation timeout is not termination. Then execute the3 fixtures sequentially, preserve any failure, and only after native regressions pass run actual upper-string adaptation using current best checkpoint as warm-start and ik_recorded_upper_strings04/seeds.json. Do not inherit stale optimizer fitness after these source/control changes.",
+  "asset_sha256": "c2264fcece90b042c7c6a1cac7d516af83972729d0402947e3a519041e184cf2",
+  "physical_configs_unchanged": true,
+  "formal_success_gates_unchanged": {
+    "complete_success_rate": 0.5,
+    "airborne_contact_rate": 0.7,
+    "conditional_recovery_rate": 0.85,
+    "numerical_failures": 0
+  },
+  "source_hashes": {
+    "quadsmash/physics/full_racket_v4.py": "3bc1a6e4829165f0db710cc68bb29982b811a6a81813750bd98319a6435a6b87",
+    "quadsmash/physics/rally_rules_v4.py": "71c795e96b6b10f50500bc707d102febf3f412d1a3ac0a3e207ec59df393d10e",
+    "quadsmash/tasks/stand/full_racket_env_v4.py": "fddf9ce64a491ef6886177d70cfd44b1fcd666283bd7368f03e5962e091842b7",
+    "quadsmash/control/full_racket_teacher_v4.py": "99a12c27ac3899564712190d0524f1ed09b1f3bcb8f6102007d411f391a86b32",
+    "scripts/validate_full_racket_near_net_v4.py": "f867cf119752c4625a409e6cbfa8ea0b256e6fe2d0231c9efec2ecde6fc7c720",
+    "scripts/retarget_full_racket_recorded_pose_v4.py": "4cda52e8a3d5df1b420e2abff5298805b2fe0e984503909c956a2626393bcb86",
+    "scripts/search_full_racket_ball_v4.py": "9ced0d462c042dddf0f486fe6accd28e7a94265d9e503bbcbd457d8f8da14dd1",
+    "scripts/evaluate_full_racket_v4.py": "00f228f25f373e37b8fbae2fd58dff32232ab455034a859592dbccaebd7178a3"
+  },
+  "formal_acceptance": false
+}

@@ -14,7 +14,7 @@ p.add_argument('--ik-seeds',type=Path)
 p.add_argument('--walk-speed',type=float);p.add_argument('--waypoint-x',type=float)
 p.add_argument('--timing-grid',action='store_true',help='Reserve12 candidates for measured leg timing/arm speed/Cartesian-gain combinations')
 p.add_argument('--push-grid',action='store_true',help='Reserve16 candidates for front/back thigh/calf push coordination')
-p.add_argument('--continue-after-miss',action='store_true',help='TRAIN curriculum: observe landing/recovery after a missed ball; all rally failures remain failures')
+p.add_argument('--continue-after-miss',action='store_true',help='TRAIN curriculum: observe landing after missed/blocked/backward shuttle return; all rally failures remain failures, robot faults terminate')
 p.add_argument('--push-search-range',type=float,default=.15,help='Symmetric front/back leg target-offset search range in rad; native actuator/joint limits stay unchanged')
 AppLauncher.add_app_launcher_args(p);args=p.parse_args();app=AppLauncher(args).app
 import numpy as np
@@ -54,7 +54,7 @@ def main():
     if not .15<=args.push_search_range<=.5:raise ValueError('Push search range must be between .15 and .5rad')
     sampling_contract=('front-back-push-grid-v1' if args.push_grid else
         'timing-velocity-cartesian-grid-v1' if args.timing_grid else 'gaussian-cem-v1')
-    selection_contract='ball-with-jump-recovery-v2' if args.continue_after_miss else 'legal-first-ball-v4'
+    selection_contract='ball-with-jump-recovery-v3' if args.continue_after_miss else 'legal-first-ball-v4'
     if not args.training_indices or len(set(args.training_indices))!=len(args.training_indices):raise ValueError('Distinct TRAIN indices required')
     args.output.mkdir(parents=True,exist_ok=True)
     protocol_path=ROOT/'configs/g07_full_racket_eval_v4_r3.json';protocol=json.loads(protocol_path.read_text())
@@ -129,8 +129,9 @@ def main():
         sampling_contract=sampling_contract,
         push_search_range=args.push_search_range,
         source_hashes=source_hashes,formal_acceptance=False,formal_panels_read=False,
+        trajectory_contract='All lanes native50Hz poses/ball/clock/first-episode validity; exact terminal/contact snapshots separate',
         training_continue_after_miss=args.continue_after_miss,
-        training_early_termination=('Rally fault, body ground or fallen; observe recovery after missed ball' if args.continue_after_miss else
+        training_early_termination=('Robot-rule fault, body ground or fallen; observe recovery after failed shuttle return without reviving its rally' if args.continue_after_miss else
             'Rally fault, first ground without target, body ground or fallen')+'; formal evaluator unchanged')
     try:
         for generation in range(args.generations):
@@ -160,11 +161,14 @@ def main():
                         index+=1
             env._episode_has_stepped.zero_();env._metrics_started=False
             env.rally_records.clear();env.episode_records.clear();env.contact_records.clear()
+            env.racket_plane_records.clear();env.episode_index.fill_(-1)
             observation,_=wrapper.reset();controller.reset();controller.parameters.copy_(population.repeat_interleave(case_count,dim=0))
+            assert bool((env.episode_index==0).all()),'Each generation must start fresh local episode identifiers'
             finished=torch.zeros(count,dtype=torch.bool,device=env.device)
             closest=torch.full((count,),10.,device=env.device);closest_time=torch.full((count,),float('nan'),device=env.device)
             closest_air=finished.clone();shaping=torch.full((count,),-100.,device=env.device)
             poses,public,actions,valid,trace=[],[],[],[],[]
+            all_poses,all_balls,all_clocks,all_valid=[],[],[],[]
             window_poses,window_balls,window_clocks,window_valid,window_observations=[],[],[],[],[]
             with torch.inference_mode():
                 for tick in range(ticks):
@@ -187,6 +191,10 @@ def main():
                     public.append(obs[:case_count].cpu().numpy().copy());actions.append(action[:case_count].cpu().numpy().copy())
                     valid.append((~finished[:case_count]).cpu().numpy().copy())
                     if tick%2==0:
+                        all_poses.append(torch.cat((data.body_link_pos_w-env.scene.env_origins[:,None],data.body_link_quat_w),-1).cpu().numpy())
+                        all_balls.append((env.shuttle.data.root_pos_w-env.scene.env_origins).cpu().numpy())
+                        all_clocks.append(obs[:,775].cpu().numpy().copy())
+                        all_valid.append((~finished).cpu().numpy().copy())
                         poses.append(torch.cat((data.body_link_pos_w[:case_count]-env.scene.env_origins[:case_count,None],data.body_link_quat_w[:case_count]),-1).cpu().numpy())
                         trace.append(dict(time_s=tick*.01,ball_position_m=(env.shuttle.data.root_pos_w[:case_count]-env.scene.env_origins[:case_count]).cpu().tolist(),
                             valid_first=(~finished[:case_count]).cpu().tolist(),in_play=env.rally.in_play[:case_count].cpu().tolist()))
@@ -215,6 +223,9 @@ def main():
                         np.savez_compressed(args.output/'partial_public_and_poses.npz',observations=np.stack(public),
                             actions=np.stack(actions),link_poses=np.stack(poses),valid_first_episode=np.stack(valid))
                         atomic_json(args.output/'trajectory.partial.json',trace)
+                        np.savez_compressed(args.output/'all_first_episodes.partial.npz',link_poses=np.stack(all_poses),
+                            ball_position_m=np.stack(all_balls),episode_clock_s=np.stack(all_clocks),
+                            valid_first_episode=np.stack(all_valid))
                         if window_poses:
                             np.savez_compressed(args.output/'near_contact_all.partial.npz',link_poses=np.stack(window_poses),
                                 ball_position_m=np.stack(window_balls),episode_clock_s=np.stack(window_clocks),
@@ -225,6 +236,8 @@ def main():
                 actions=np.stack(actions),link_poses=np.stack(poses),valid_first_episode=np.stack(valid))
             atomic_json(args.output/f'trajectory_{previous+generation:03d}.json',trace)
             atomic_json(args.output/f'contacts_{previous+generation:03d}.json',env.contact_records)
+            np.savez_compressed(args.output/f'all_first_episodes_{previous+generation:03d}.npz',link_poses=np.stack(all_poses),
+                ball_position_m=np.stack(all_balls),episode_clock_s=np.stack(all_clocks),valid_first_episode=np.stack(all_valid))
             if window_poses:
                 np.savez_compressed(args.output/f'near_contact_all_{previous+generation:03d}.npz',link_poses=np.stack(window_poses),
                     ball_position_m=np.stack(window_balls),episode_clock_s=np.stack(window_clocks),

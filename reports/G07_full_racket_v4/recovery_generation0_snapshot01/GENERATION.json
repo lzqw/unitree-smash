@@ -1,0 +1,63 @@
+{
+  "created_at": "2026-10-24T05:22:50.014261+00:00",
+  "scope": "Completed first generation of an ongoing native TRAIN job. Recoveries are after missed ball, not complete smashes or formal-panel scores.",
+  "generation": 0,
+  "generation_complete": true,
+  "job_complete": false,
+  "executions": 64,
+  "actual_control_env_steps": 51200,
+  "contacts": 0,
+  "complete_smash": 0,
+  "jump_recovery_episodes": 3,
+  "jump_recovery_examples": [
+    {
+      "env_id": 2,
+      "candidate_id": 1,
+      "training_case": 1,
+      "airborne_s": 0.47699740529060364,
+      "total_com_rise_m": 0.2503722310066223,
+      "stable_recovery_s": 3.9298975467681885,
+      "maximum_body_ground_force_n": 0.0,
+      "had_contact": false
+    },
+    {
+      "env_id": 8,
+      "candidate_id": 4,
+      "training_case": 1,
+      "airborne_s": 0.4659975469112396,
+      "total_com_rise_m": 0.23614466190338135,
+      "stable_recovery_s": 3.6269195079803467,
+      "maximum_body_ground_force_n": 0.0,
+      "had_contact": false
+    },
+    {
+      "env_id": 13,
+      "candidate_id": 6,
+      "training_case": 65,
+      "airborne_s": 0.4049983322620392,
+      "total_com_rise_m": 0.18686974048614502,
+      "stable_recovery_s": 3.871901750564575,
+      "maximum_body_ground_force_n": 0.0,
+      "had_contact": false
+    }
+  ],
+  "numerical_failures": 0,
+  "source_files_sha256": {
+    "population_000.pt": "e1e4d75a5853b39afde507b8dc9a8abe630e6316f1bde25814326c511cb1363e",
+    "episodes_000.json": "06e5a1a3817f8f52727f1fc8d2690715b82941eef2569d72e668181892d8043a",
+    "contacts_000.json": "abd4d4bb0dbcbbd0a408dec9f78938dda6cb3f793fe273265e0a75f5ac171ef2",
+    "public_and_poses_000.npz": "a78d51b933c11a2f00bbcc56f4b5033f92cf8363946c0fe85b99e3fb521f1828",
+    "near_contact_all_000.npz": "da5c160e57de59006bb4df1d2a9f222eaf5d18b8b72b4b65040ad4f9f32ff785",
+    "trajectory_000.json": "0a358874488b956ed522a6f01309910e86dd6779a61c475e404875a4b32633c2",
+    "geometry.json": "8afd390b7b92179ba6e2fde3774cc60162a98a5bd63ed50defd95b2e8f9d9c37",
+    "geometry.npz": "c64b425bba7b5278c1ab59e54e37582647a576ad5a5c4e1c3920954dd7cd3d73",
+    "source_hashes.json": "8a341fd2df2ef0572714108b74fd3ee3645254e784f363bbbc5c9ebfbd304742",
+    "source_snapshot.zip": "26e0a723e00d67a493732455f2072102b80af65753d0cbfc158233c8cb4acd83",
+    "asset_dependencies.json": "6591b33978bccc9f6f68aa781fb396a85475f54cc774840ffec700222d1649c0",
+    "dirty.patch": "2543b4a357ade6589d7a427ecc3e5e3bd4c689103d2d8d977004182660248968",
+    "best_candidate.pt": "2e929c7d5b2e087df0cd96e08360ce52fd9285cb1def857f88ebf9d9e3d83139"
+  },
+  "resource_accounting": "Whole-job actual GPU time will be finalized by its active guard; no invented per-generation GPU-hours.",
+  "video_scope": "Only first2 lanes have continuous whole-episode poses in this older logger; all-lane50Hz window covers2.2..3.4s and terminal snapshots record end state. Do not splice another lane into a recovery video. Future logger now records all lanes across the entire episode.",
+  "formal_acceptance": false
+}

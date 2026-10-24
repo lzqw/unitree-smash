@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "Push coordination grid completed36 native TRAIN executions:8 airborne string episodes/7 frame/0attack/0overnet/0complete/NF0. Running64 environments x2 generations with recovery curriculum after ball miss; all missed rallies remain failures. Native10-layer USD composition integrity verified.",
+      "notes": "Current recovery CEM generation1 live. Generation0:64 candidate first episodes,3 qualified jump recoveries after misses,0contacts/0complete/NF0. Generation1 partial:legal airborne strings at1.702m,4.951m/s downward return blocked by net,0complete. Future query/teacher04/curriculum-v3 code passes40 CPU tests but native regressions pending after this launch-source-v2 job. Evidence uploaded and verified.",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/reach_cem_fine_feedback01/metrics.json",
       "curriculum_policy": "reports/G07_full_racket_v4/reach_cem_fine_feedback01/best_candidate.pt",
@@ -84,7 +84,10 @@
         "duration_s": 28.94,
         "sha256": "88207b99019eb8acf01e849a984c4f8aa95215f01646d4fcb73d0a74d5c0a6c6",
         "formal_acceptance": false
-      }
+      },
+      "latest_completed_generation": "reports/G07_full_racket_v4/recovery_generation0_snapshot01/GENERATION.json",
+      "pending_rule_regression": "reports/G07_full_racket_v4/NEAR_NET_RULE_CHANGE_0526.json",
+      "partial_generation1_contact": "reports/G07_full_racket_v4/recovery_gen1_contact_partial01/CONTACT_MILESTONE.json"
     },
     "G08": {
       "state": "TODO",
@@ -124,7 +127,8 @@
       "old_passes_inherited": false,
       "native_reset_perturbation_public_observation_isolation": "PASSED",
       "independent_engine_view_reset_check": "PASSED",
-      "native_composed_asset_dependencies": "PASSED"
+      "native_composed_asset_dependencies": "PASSED",
+      "native_racket_plane_followthrough_boundaries": "TODO"
     }
   }
 }

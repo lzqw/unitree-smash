@@ -1,0 +1,87 @@
+{
+  "kind": "Unexecuted CPU upper-string teacher proposal. Use bounded feasible velocity projection, recorded nominal pitch reference, and a fixed leg clock while the arm retains causal ball timing. Original outgoing8m/s attack and every full-success gate unchanged.",
+  "schema": "full-racket-ik-seeds-v4",
+  "seeds": [
+    {
+      "joint_position_rad": [
+        -0.6822544545409286,
+        1.7274518025952135,
+        -2.5581723355398904,
+        1.0408788162946265,
+        1.0140289678498111,
+        2.0400908476221873
+      ],
+      "joint_velocity_seed_rad_s": [
+        4.586244215853978,
+        2.3102013607248395,
+        1.3747540922226398,
+        -4.799999999999999,
+        -0.055398031263567876,
+        -0.6788644047226565
+      ],
+      "string_uv_m": [
+        0.0,
+        0.09
+      ],
+      "face_sign": 1,
+      "planned_root_position_m": [
+        0.5815277099609375,
+        -0.06453990936279297,
+        0.7146648168563843
+      ],
+      "planned_root_rpy_rad": [
+        -0.061521593374512476,
+        0.23292464118843292,
+        -0.16191347731033923
+      ],
+      "desired_ball_center_m": [
+        1.1246533393859863,
+        0.07150077819824219,
+        1.7731776237487793
+      ],
+      "outward_contact_normal_world": [
+        0.996815278536125,
+        0.0,
+        -0.07974522228289
+      ],
+      "desired_point_velocity_mps": [
+        1.972279963726269,
+        -0.6281328336641727,
+        -0.8535767665367688
+      ],
+      "predicted_point_velocity_mps": [
+        1.972279963726269,
+        -0.6281328336641727,
+        -0.8535767665367688
+      ],
+      "predicted_outward_normal_world": [
+        0.9968153685100178,
+        4.3778882278426925e-07,
+        -0.07974409760004544
+      ],
+      "position_error_m": 1.5016115075876926e-07,
+      "normal_error": 1.2102338018332913e-06,
+      "original_velocity_solver_request_mps": [
+        3.2,
+        0.0,
+        -0.3
+      ],
+      "nominal_projected_pitch_rad": 0.23335033655166626,
+      "leg_event_time_gain": 0.0
+    }
+  ],
+  "source": "reports/G07_full_racket_v4/recorded_pose_reach_comparison_0510.json",
+  "source_sha256": "469eb157b0fe8ec4ffa2acd141fc611b601942438f607b87972d6b3af955ea7e",
+  "source_training_run": "ball_recovery_cem01 generation0 env36 case1 at2.74s",
+  "causality": "Uses TRAIN state for offline teacher initialization only; runtime controller must still consume only public observations. No formal-case information.",
+  "physical_changes": false,
+  "formal_acceptance": false,
+  "immutable_training_input": "TRAIN_SOURCE_SNAPSHOT.json",
+  "immutable_training_input_sha256": "b1ba04389fdfd5504415a1a5b36ad8dd90809d5dfc361e58e65583ecbcf2a6e4",
+  "hypotheses": [
+    "Upper strings can reach the observed ball pose in the low-base-rotation branch at env36 snapshot. This is static geometry, not native contact evidence.",
+    "The point velocity request is projected to the bounded joint-velocity fit, avoiding an inconsistent3.2m/s Cartesian lead. Actual outgoing attack must still be natively measured against original8m/s gate.",
+    "Fixing the leg clock removes one source of case-dependent preparation timing; paired native evidence does not isolate all arm/body causes.",
+    "Source env36 later failed recovery. Future trial must use newly measured recovery controller initialization and remeasure all coupled dynamics."
+  ]
+}
