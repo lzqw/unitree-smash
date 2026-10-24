@@ -6,6 +6,7 @@ from .piecewise_affine import PiecewiseAffinePolicy
 from .full_racket_kinematics_v4 import FullRacketKinematicsV4
 from .full_racket_recovery_blend_v4 import LegRecoveryBlend
 from .full_racket_arm_search_v4 import arm_velocity
+from .full_racket_preparation_v4 import validate_preparation,preparation_curve,own_side_reference
 
 LOW=[.35,.45,1.10,1.55,.85,-.15,-.15,.30]+[-.25]*6+[-.10,0.,.8,.7,0.,.04,-.20,-.15,-.15,-.15]
 HIGH=[1.,1.20,1.60,2.,1.15,.15,.15,1.50]+[.25]*6+[.12,1.5,1.7,1.2,1.,.15,.10,.15,.15,.15]
@@ -39,6 +40,7 @@ class FullRacketTeacherV4:
         self.target_world=torch.tensor(seed.get('desired_ball_center_m',[1.10,0.,1.80]),dtype=torch.float32,device=device)
         self.normal_world=torch.tensor(seed.get('outward_contact_normal_world',[.99503719,0.,-.09950372]),dtype=torch.float32,device=device)
         self.velocity_world=torch.tensor(seed.get('desired_point_velocity_mps',[1.5,0.,-.3]),dtype=torch.float32,device=device)
+        self.preparation=validate_preparation(seed.get('cartesian_preparation'))
 
     def reset(self):
         self.walk.reset();self.standing.reset();self.leg_recovery_blend.reset()
@@ -96,18 +98,42 @@ class FullRacketTeacherV4:
                 target+=target_offset_world[:,:1]*forward+target_offset_world[:,1:2]*left+target_offset_world[:,2:3]*up
             normal_target=self.face_sign*(self.normal_world[0]*forward+self.normal_world[1]*left+self.normal_world[2]*up)
             desired_velocity=self.velocity_world[0]*forward+self.velocity_world[1]*left+self.velocity_world[2]*up
+            if self.preparation is not None:
+                desired_velocity=desired_velocity*parameters[:,7:8]
+                known=torch.tensor([1.10,0.,1.80],device=time.device)
+                offset=torch.tensor(self.preparation['position_world_m'],device=time.device)-known
+                ready=obs[:,760:763]+offset[0]*forward+offset[1]*left+offset[2]*up
+                task_target,desired_velocity,preparation_progress=preparation_curve(time,event_time,ready,target,desired_velocity,
+                    self.preparation['transition_duration_s'])
+                task_target,desired_velocity=own_side_reference(task_target,desired_velocity,obs[:,760:763],forward,
+                    obs[:,773]>.5,self.preparation['unhit_reference_max_x_m'])
             # A60ms velocity lead compensates finite joint PD tracking lag.
             relative_command=desired_velocity-obs[:,:3]-torch.linalg.cross(obs[:,3:6],point)
-            error_position=target+desired_velocity*(time-event_time).clamp(-.15,.10)[:,None]+.06*relative_command-point
+            if self.preparation is None:
+                error_position=target+desired_velocity*(time-event_time).clamp(-.15,.10)[:,None]+.06*relative_command-point
+            else:
+                guided,_=own_side_reference(task_target+.06*relative_command,desired_velocity,obs[:,760:763],forward,
+                    obs[:,773]>.5,self.preparation['unhit_reference_max_x_m'])
+                error_position=guided-point
             error_normal=.3*(normal_target-obs[:,48:51])
             jacobian=torch.cat((jp,.3*jn),1)
             error=torch.cat((error_position,error_normal),1)
             solved=torch.linalg.solve(jacobian@jacobian.transpose(1,2)+.04**2*self.task_eye,error[:,:,None])
             delta=(jacobian.transpose(1,2)@solved).squeeze(-1).clamp(-.4,.4)
+            if self.preparation is not None:
+                preferred=torch.lerp(default[12:][None],arm_hit,preparation_progress[:,None])
+                bias=(preferred-actual).clamp(-.4,.4)
+                projected=torch.linalg.solve(jacobian@jacobian.transpose(1,2)+.04**2*self.task_eye,
+                    jacobian@bias[:,:,None])
+                null=bias-(jacobian.transpose(1,2)@projected).squeeze(-1)
+                delta=(delta+self.preparation['nullspace_gain']*null).clamp(-.4,.4)
             servo=actual+delta
             airborne=(obs[:,772]+obs[:,773])>.5
             correction=((time-event_time+.25)/.12).clamp(0,1)*((event_time+.12-time)/.12).clamp(0,1)
             gain=parameters[:,18]*correction*airborne
+            if self.preparation is not None:
+                preparation_gain=self.preparation['servo_gain']*((time-.20)/.50).clamp(0,1)
+                gain=torch.maximum(gain,preparation_gain)
             arm=torch.lerp(arm,servo,gain[:,None])
         fold=((time-(center+half_window))/.50).clamp(0,1)
         arm=torch.lerp(arm,default[12:][None],fold[:,None])
