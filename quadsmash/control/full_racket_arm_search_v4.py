@@ -18,9 +18,9 @@ def normal_preserving_position_inverse(position_jacobian,normal_jacobian):
 
 
 def extend_arm_velocity_parameters(parameters, seed_velocity):
-    if parameters.ndim != 1 or len(parameters) not in (26,32) or not torch.isfinite(parameters).all():
-        raise ValueError('Expected a finite26/32-vector')
-    if len(parameters) == 32:
+    if parameters.ndim != 1 or len(parameters) not in (26,32,37) or not torch.isfinite(parameters).all():
+        raise ValueError('Expected a finite26/32/37-vector')
+    if len(parameters) in (32,37):
         if (parameters[26:32].abs()>5.).any():
             raise ValueError('Velocity seeds exceed original5rad/s bounds')
         return parameters.clone()
@@ -31,7 +31,7 @@ def extend_arm_velocity_parameters(parameters, seed_velocity):
 
 
 def arm_velocity(parameters, legacy_seed):
-    if parameters.shape[1] == 32:
+    if parameters.shape[1] in (32,37):
         return parameters[:,26:32] * parameters[:,7:8]
     if parameters.shape[1] > 26:
         raise ValueError('Unknown arm parameter layout')
