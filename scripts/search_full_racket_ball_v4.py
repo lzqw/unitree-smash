@@ -21,6 +21,7 @@ p.add_argument('--contact-grid',action='store_true',help='Reserve12 candidates f
 p.add_argument('--pitch-grid',action='store_true',help='Reserve12 candidates spanning existing arm pitch-compensation gain and timing; original joint/actuator limits remain')
 p.add_argument('--search-arm-velocity',action='store_true',help='Append six bounded arm velocity seed coordinates to the26 controller parameters')
 p.add_argument('--search-recovery-parameters',action='store_true',help='Append five existing standing-controller target/feedback coordinates to32, leaving native hardware and success gates unchanged')
+p.add_argument('--search-coordinates',type=int,nargs='+',help='Optional block-coordinate Gaussian search; other coordinates keep warm reference. Generation0bank and exact best reevaluation are explicit exceptions')
 p.add_argument('--arm-velocity-bank',type=Path,help='Four offline velocity proposals for a12-candidate velocity/timing grid; requires --search-arm-velocity')
 p.add_argument('--interception-plane-grid',action='store_true',help='Expand velocity/timing bank to36 candidates across public interception planes1.10/1.25/1.40m; requires --arm-velocity-bank')
 p.add_argument('--candidate-bank',type=Path,help='Validated bounded whole-body proposals, generation0only; preserve two references and let later generations adapt freely')
@@ -44,6 +45,7 @@ from quadsmash.control.full_racket_arm_search_v4 import (
 from quadsmash.control.full_racket_candidate_bank_v4 import validate_candidate_bank,install_candidate_bank
 from quadsmash.control.full_racket_recovery_search_v4 import (
     extend_recovery_parameters,RECOVERY_PARAMETER_NAMES,RECOVERY_LOW,RECOVERY_HIGH)
+from quadsmash.control.full_racket_search_mask_v4 import search_coordinate_mask,project_reference_coordinates
 from quadsmash.control.full_racket_contact_curriculum_v4 import (
     contact_search_tiers,actual_outgoing_shaping,arm_timing_velocity_grid,measured_recovery_leg_crossovers,pitch_compensation_grid,validate_recovery_search_min)
 from quadsmash.physics.full_racket_v4 import string_prism_gap
@@ -101,6 +103,7 @@ def main():
     if args.recovery_leg_bank:sampling_contract+='-measured-recovery-leg-crossover-v1'
     if args.search_arm_velocity:sampling_contract+='-joint-velocity32-v1'
     if args.search_recovery_parameters:sampling_contract+='-standing-recovery37-v1'
+    if args.search_coordinates is not None:sampling_contract+='-coordinate-mask-v1:'+','.join(map(str,sorted(args.search_coordinates)))
     if args.interception_plane_grid:sampling_contract+='-interception-plane-grid36-v1'
     if not args.training_indices or len(set(args.training_indices))!=len(args.training_indices):raise ValueError('Distinct TRAIN indices required')
     args.output.mkdir(parents=True,exist_ok=True)
@@ -175,7 +178,9 @@ def main():
     low[22:24]=-args.push_search_range;high[22:24]=args.push_search_range
     low[3]=args.recovery_search_min
     mean=template['parameters'].to(env.device).clamp(low,high);reference=mean.clone()
+    search_mask=search_coordinate_mask(len(low),args.search_coordinates).to(env.device)
     sigma=(high-low)*args.sigma_fraction
+    if args.search_coordinates is not None:sigma*=search_mask
     rng=torch.Generator(device=env.device).manual_seed(args.seed)
     best_rank=(-1,-float('inf'));best_parameters=None;best_result=None;history=[];previous=0
     if args.resume:
@@ -214,6 +219,8 @@ def main():
         source_hashes=source_hashes,formal_acceptance=False,formal_panels_read=False,
         arm_velocity_search_enabled=args.search_arm_velocity,
         standing_recovery_parameter_search_enabled=args.search_recovery_parameters,
+        search_coordinate_indices=sorted(args.search_coordinates) if args.search_coordinates is not None else None,
+        search_coordinate_scope='Gaussian samples and updated mean keep warm reference on other coordinates; supplied generation0bank and exact best reevaluation are explicit exceptions',
         trajectory_contract='All lanes native50Hz poses/ball/clock/first-episode validity; exact terminal/contact snapshots separate',
         training_continue_after_miss=args.continue_after_miss,
         training_retain_contact_recovery=args.retain_contact_recovery,
@@ -240,6 +247,7 @@ def main():
             atomic_torch(args.output/'generation_start.pt',state)
             atomic_torch(args.output/f'generation_start_{previous+generation:03d}.pt',state)
             population=(mean[None]+sigma[None]*torch.randn((args.candidates,len(low)),generator=rng,device=env.device)).clamp(low,high)
+            if args.search_coordinates is not None:population=project_reference_coordinates(population,reference,search_mask)
             population[0]=mean;population[1]=best_parameters if best_parameters is not None else reference
             if args.timing_grid:
                 # Actual motor/body coordination, on the same frozen TRAIN
@@ -437,6 +445,9 @@ def main():
             elite=selection.topk(min(pool,max(2,args.candidates//8)) if pool else max(2,args.candidates//8)).indices
             mean=.3*mean+.7*population[elite].mean(0)
             sigma=(.3*sigma+.7*population[elite].std(0,unbiased=False)).clamp_min((high-low)*.025)
+            if args.search_coordinates is not None:
+                mean=project_reference_coordinates(mean,reference,search_mask)
+                sigma*=search_mask
             entry=dict(generation=previous+generation,episodes=count,control_ticks=tick+1,env_steps=(tick+1)*count,
                 legal_candidates=int(feasible.sum()),best_candidate=top,
                 best_score=float(scores[top]),contacts=sum(r['had_contact'] for r in rows),airborne_string_hits=sum(r['airborne_string_hit'] for r in rows),
