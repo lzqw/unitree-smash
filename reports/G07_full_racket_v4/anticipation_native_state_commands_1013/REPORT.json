@@ -1,0 +1,34 @@
+{
+  "created_at": "2026-10-24T10:08:52.532727+00:00",
+  "scope": "Counterfactual commanded full-tool support on original ball_joint_preparation_cem10 native public states and joint commands. No changed-state simulation or native avoidance claimed.",
+  "samples": 61,
+  "lanes": 128,
+  "valid_unhit_samples": 4398,
+  "unhit_commands_requiring_correction": 1593,
+  "unhit_remaining_excess_over5mm": 54,
+  "maximum_initial_excess_m": 0.4514063596725464,
+  "maximum_remaining_excess_m": 0.23848390579223633,
+  "all_corrected_targets_finite_and_within_original_hardware_limits": true,
+  "configuration": {
+    "maximum_x_m": 1.38,
+    "lookahead_s": 0.06,
+    "damping": 0.04,
+    "maximum_joint_delta_rad": 0.4,
+    "iterations": 4,
+    "anticipate_measured_motion": true,
+    "protect_post_hit_net_volume": true,
+    "maximum_predictive_margin_m": 0.25,
+    "post_hit_height_margin_m": 0.04
+  },
+  "native_execution": false,
+  "formal_acceptance": false,
+  "sources": {
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/reports/G07_full_racket_v4/anticipation_ready01_1013/policy.pt": "60106537197c807cc786f23207e73c25867f9c586f90bc99f7f63addba69bfce",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/reports/G07_full_racket_v4/CPU_REPLAY_AUTHORED_JOINTS_0724.json": "c91545fe9a1069586436c040338c5bc9dafd6ccbb6dad5f3df50c6506e31dd42",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_joint_preparation_cem10/near_contact_all_000.npz": "8714e26630e84e49306044412d669c7873c93f4a4fa5154a11633157921702b7",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_joint_preparation_cem10/control_window_000.npz": "779a41a00ce66b1cfbab7e04f9eb8a2caf4f0db3f61948b88abbbae4b7155557",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/configs/full_racket_reset_v4.json": "0d5246e0b39daabd0c0cb15f5259c7c61df455ccb191835932cc83f4886df25b",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/scripts/check_full_racket_joint_preparation_native_commands_v4.py": "1daba4f196a94c3620761425cfb4376cb81b0b61026357761a5ce1fad1a598b2",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/quadsmash/control/full_racket_joint_preparation_v4.py": "23c3bfa8a9e49fb60b385bff3eb6dc57a9c12b5ce48876bb124dae221e22e83e"
+  }
+}

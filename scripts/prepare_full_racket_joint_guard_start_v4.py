@@ -18,17 +18,24 @@ from quadsmash.control.full_racket_teacher_v4 import LOW,HIGH
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--checkpoint',type=Path,required=True);p.add_argument('--bank',type=Path,required=True)
-    p.add_argument('--output',type=Path,required=True);a=p.parse_args()
+    p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--anticipate-measured-motion',action='store_true')
+    p.add_argument('--protect-post-hit-net',action='store_true')
+    p.add_argument('--maximum-predictive-margin',type=float,default=.15)
+    a=p.parse_args()
     if a.output.exists():raise ValueError('Use a fresh output directory')
     source=torch.load(a.checkpoint,map_location='cpu',weights_only=True);bank=json.loads(a.bank.read_text())
     assert bank['seed']==source['seed'] and len(source['parameters'])==32
-    config=validate_joint_preparation({})
+    config=validate_joint_preparation(dict(anticipate_measured_motion=a.anticipate_measured_motion,
+        protect_post_hit_net_volume=a.protect_post_hit_net,
+        maximum_predictive_margin_m=a.maximum_predictive_margin))
     warm=copy.deepcopy(source);warm['seed']=dict(source['seed'],joint_preparation_guard=config)
     warm['seed'].pop('cartesian_preparation',None)
     warm.pop('training_result',None)
     warm.update(kind='Unexecuted bounded joint preparation; no native contact, power or recovery outcome inherited.',
                 native_execution=False,performance_inherited=False,formal_acceptance=False)
-    bank=copy.deepcopy(bank);bank.update(seed=warm['seed'],controller_revision='physical-support-joint-preparation-v1',
+    revision='measured-tool-motion-and-posthit-net-v2' if a.anticipate_measured_motion or a.protect_post_hit_net else 'physical-support-joint-preparation-v1'
+    bank=copy.deepcopy(bank);bank.update(seed=warm['seed'],controller_revision=revision,
         native_execution=False,scope='Original body and arm proposals with bounded own-side joint-command preparation; no outcomes inherited.')
     low=np.array(LOW+[.8,-.12]+[-5.]*6,dtype=np.float32);high=np.array(HIGH+[1.45,.12]+[5.]*6,dtype=np.float32)
     low[22:24]=-.3;high[22:24]=.3

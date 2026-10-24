@@ -143,7 +143,8 @@ class FullRacketTeacherV4:
         fold=((time-(center+half_window))/.50).clamp(0,1)
         arm=torch.lerp(arm,default[12:][None],fold[:,None])
         if self.joint_preparation is not None:
-            arm=self.joint_preparation(arm,obs,limits[12:],self.kinematics)
+            actual_arm=default[12:][None]+obs[:,21:27]
+            arm=self.joint_preparation(arm,obs,limits[12:],self.kinematics,actual_arm)
         q[:,12:]=arm
         strike=(2*(q-limits[:,0])/(limits[:,1]-limits[:,0])-1).clamp(-1,1)
         walking=local<.75
