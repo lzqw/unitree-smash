@@ -50,29 +50,27 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "CEM08two completed generations had12contacts/4airstrings/0joined/0attacks/full and194robot-rule terminations. CEM09Cartesian preparation rejected after completed128episodes:0contacts/124body-ground terminations/41before launch/NF0; .151311119GPUh/52608actual control-env steps incl104ticks interrupted gen1, trueFAILED receipt. GPU0 now runs fresh CEM10bounded joint preparation from89d0eaa, preserving all32reference parameters and60body proposals, with physical full-tool support and observed-hit followthrough.86CPU tests, disabled legacy bitwise replay,120lane287tick commands and actualCEM08-state counterfactual support checks passed. Four-generation native outcomes pending; every original asset/rule/hardware/success gate and A200/B200 unchanged and unpassed.",
+      "notes": "CEM12 generation0 completed128native TRAIN first episodes:3contacts/1airstrings/6qualified recoveries (all misses)/0joined/0usable airstrings/0attacks/full/NF0;82net faults/13invasions/1engineering crossing. Env0actual strings outgoing7.304626063m/s and geometric net crossing, then robot-net fault before any first landing. GPU0 four-generation job remains live from1a892a4. New34.72s CPU-rendered native video shows current hit failure/current4.45s missed-ball recovery/earlier CEM07court return. All original success gates and formalA200/B200 remain unpassed.",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/return_recovery_gen0_env12/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
       "active_gpu_jobs": [
         {
-          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_joint_preparation_cem10",
-          "guard_pid": 1389536,
-          "child_pid": 1389553,
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_projection_range_cem12",
+          "guard_pid": 1397476,
+          "child_pid": 1397494,
           "state": "RUNNING",
-          "started_at": "2026-10-24T09:46:51.763475+00:00",
-          "source_commit": "89d0eaabb2142604295d67b3d7c2f4c45c55097c",
+          "started_at": "2026-10-24T10:29:21.886519+00:00",
+          "source_commit": "1a892a4b4d9e6d2867e4ec34329acf13e9da9b86",
           "generations": 4,
           "declared_control_env_steps": 409600,
           "max_seconds": 5400,
           "native_initialization_pending": false,
           "last_verified_generation": 0,
-          "last_verified_control_ticks": 600,
-          "native_initialization_evidence": "reports/G07_full_racket_v4/NATIVE_JOINT_PREPARATION_INITIALIZATION_0951.json",
-          "native_before_launch_evidence": "reports/G07_full_racket_v4/NATIVE_JOINT_PREPARATION_BEFORE_LAUNCH_0953.json",
-          "last_process_verified_at": "2026-10-24T10:00:22.117899+00:00",
-          "latest_frozen_partial_report": "reports/G07_full_racket_v4/NATIVE_JOINT_PREPARATION_PARTIAL_0957.json"
+          "last_verified_control_ticks": 800,
+          "native_initialization_evidence": "reports/G07_full_racket_v4/NATIVE_PROJECTION_RANGE_INITIALIZATION_1033.json",
+          "last_completed_generation_evidence": "reports/G07_full_racket_v4/NATIVE_PROJECTION_RANGE_GENERATION0_VIDEO_1049.json"
         }
       ],
       "queued_native_sequence": {
@@ -81,41 +79,43 @@
         "still_running": false
       },
       "native_air_string_contact_milestone": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
-      "latest_native_training_summary": "reports/G07_full_racket_v4/ball_cartesian_preparation_cem09/STOPPED_TRAIN_SUMMARY.json",
+      "latest_native_training_summary": "reports/G07_full_racket_v4/NATIVE_PROJECTION_RANGE_GENERATION0_VIDEO_1049.json",
       "latest_video": {
-        "path": "reports/G07_full_racket_v4/video/Current_effect_latest_20261024_0931.mp4",
-        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_latest_20261024_0931.mp4",
-        "duration_s": 33.12,
-        "sha256": "ac6a1c32d3a6aebdb92b52f40f85b8ea1be8acd0a0cfbfefde55121b61b9790b",
+        "path": "reports/G07_full_racket_v4/video/Current_effect_latest_20261024_1048.mp4",
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_latest_20261024_1048.mp4",
+        "duration_s": 34.72,
+        "sha256": "41a29cbd5fe357b48f82afbbed8e27d772806835d3e6a6e722ac525ad10caebd",
         "independent_native_episodes": 3,
         "cases_are_independent": true,
         "formal_acceptance": false,
-        "evidence_url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_latest_20261024_0931_evidence.zip",
-        "upload_receipt": "reports/G07_full_racket_v4/video/Current_effect_latest_20261024_0931_upload_receipt.json",
-        "scope": "CEM07gen1 7.52m/s return failure and separate net-blocked recovered case, plusCEM08gen0net failure. CEM09 is not shown."
+        "evidence_url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_latest_20261024_1048_evidence.zip",
+        "upload_receipt": "reports/G07_full_racket_v4/video/Current_effect_latest_20261024_1048_upload_receipt.json",
+        "scope": "Current CEM12generation0 env0 strings7.30m/s/robot-net fault and env57missed-ball qualified recovery4.45s; prior CEM07generation1 env64court-landing return7.52m/s. Separate failed task episodes."
       },
       "latest_completed_generation": {
-        "had_contact": 0,
-        "frame_hit": 0,
-        "airborne_string_hit": 0,
-        "recovery_success": 0,
-        "crossed_net": 0,
+        "had_contact": 3,
+        "frame_hit": 2,
+        "airborne_string_hit": 1,
+        "recovery_success": 6,
+        "crossed_net": 1,
         "landed_legal_court": 0,
         "landed_target": 0,
         "attack_outgoing": 0,
         "complete_smash": 0,
-        "robot_net_fault": 4,
-        "racket_invasion_fault": 0,
+        "robot_net_fault": 82,
+        "racket_invasion_fault": 13,
+        "engineering_body_crossing": 1,
         "executions": 128,
+        "usable_air_strings": 0,
         "air_strings_and_recovery": 0,
         "task_valid_air_strings_crosses": 0,
-        "robot_rule_terminal": 5,
-        "body_ground_terminal": 124,
+        "robot_rule_terminal": 96,
+        "body_ground_terminal": 24,
         "numerical_failures": 0,
         "generation": 0,
-        "control_ticks": 307,
-        "env_steps": 39296,
-        "run": "ball_cartesian_preparation_cem09",
+        "control_ticks": 800,
+        "env_steps": 102400,
+        "run": "ball_projection_range_cem12",
         "whole_job_complete": false
       },
       "pending_rule_regression": {
@@ -217,22 +217,22 @@
       ],
       "prepared_controller_branch": {
         "branch": "g07-arm-search-v4-20261024",
-        "commit": "a13e598",
+        "commit": "c2aa12a",
         "merged_to_primary": true,
-        "primary_launch_commit": "89d0eaabb2142604295d67b3d7c2f4c45c55097c",
-        "cpu_tests_passed": 86,
+        "primary_launch_commit": "1a892a4b4d9e6d2867e4ec34329acf13e9da9b86",
+        "cpu_tests_passed": 92,
         "counterfactual_command_replay": {
           "candidates": 60,
           "lanes": 120,
           "ticks": 287,
           "native_execution": false
         },
-        "legacy26_and_embedded32_commands_bitwise_equal": true,
+        "original_enabled_v2_commands_bitwise_equal": true,
         "native_execution": true,
-        "native_execution_scope": "Actual native initialization and400tick frozen prefix verified, live process later beyond400ticks.1airstrings+2frame contacts,121closed/7pending. Airstrings case7.235m/s crossed but later robot-rule fault, no valid recovery or observed first landing; no full success.",
-        "report": "reports/G07_full_racket_v4/joint_preparation_ready01_0947/REPORT.json",
-        "native_state_counterfactual_report": "reports/G07_full_racket_v4/joint_preparation_native_state_commands02_0948/REPORT.json",
-        "native_initialization_report": "reports/G07_full_racket_v4/NATIVE_JOINT_PREPARATION_INITIALIZATION_0951.json"
+        "native_execution_scope": "Actual64x32 population/60original proposals and.8rad/8iteration config verified;128environment first100ticks finite,0early end, body positions equal CEM11prefix. Later outcomes pending.",
+        "report": "reports/G07_full_racket_v4/projection_range_ready01_1024/REPORT.json",
+        "native_projection_diagnostic": "reports/G07_full_racket_v4/projection_range_diagnostic_1026/REPORT.json",
+        "native_initialization_report": "reports/G07_full_racket_v4/NATIVE_PROJECTION_RANGE_INITIALIZATION_1033.json"
       },
       "historical_stopped_gpu_jobs": [
         {
@@ -278,29 +278,46 @@
           "actual_gpu_hours": 0.1513111191586035,
           "actual_control_env_steps": 52608,
           "charged_environment_step_cap": 409600
+        },
+        {
+          "run": "ball_joint_preparation_cem10",
+          "guard_pid": 1389536,
+          "child_pid": 1389553,
+          "guard_terminal_state": "FAILED",
+          "reason": "Generation0had3contacts/1airstrings/6recoveries/0joined/0usable airstrings/0attacks/full.88net faults and14invasions invalidate the contact; the best search candidate only recovers after missing.",
+          "resource_receipt": "reports/G07_full_racket_v4/ball_joint_preparation_cem10/job.json",
+          "actual_gpu_hours": 0.345377536630549,
+          "actual_control_env_steps": 119168,
+          "charged_environment_step_cap": 409600
+        },
+        {
+          "run": "ball_tool_motion_anticipation_cem11",
+          "guard_pid": 1393956,
+          "child_pid": 1393973,
+          "guard_terminal_state": "FAILED",
+          "reason": "Generation0had3contacts/1airstrings/5recoveries/0joined/0usable airstrings/0attacks/full.85net faults/15invasions/2engineering crossings persist. Native-command reconstruction identifies saturated.4rad corrections and112commanded poses beyond the net in4143saved unhit samples.",
+          "resource_receipt": "reports/G07_full_racket_v4/ball_tool_motion_anticipation_cem11/job.json",
+          "actual_gpu_hours": 0.3075417647358295,
+          "actual_control_env_steps": 106368,
+          "charged_environment_step_cap": 409600
         }
       ],
-      "latest_stopped_generation_summary": "reports/G07_full_racket_v4/ball_cartesian_preparation_cem09/STOPPED_TRAIN_SUMMARY.json",
+      "latest_stopped_generation_summary": "reports/G07_full_racket_v4/ball_tool_motion_anticipation_cem11/STOPPED_TRAIN_SUMMARY.json",
       "latest_program_evidence_bundle": {
-        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_joint_preparation_native_partial400_20261024_1000.zip",
-        "bytes": 49772106,
-        "sha256": "2bff9dad29d33e0fb364320deb552800beb83c909da614b426c308fd0eeadd75",
-        "scope": "Actual CEM10generation0through400ticks:121closed/7pending,1strings+2frame. Exact source/input and measured tool motion diagnostic. Full failure preserved; not whole-generation or formal acceptance.",
-        "upload_receipt": "reports/G07_full_racket_v4/joint_preparation_partial400_upload_receipt_1000.json",
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_tool_anticipation_failed_and_projection_range_native_20261024_1035.zip",
+        "bytes": 110053615,
+        "sha256": "1eaf777dadf2cd8ec661b0d280defc74d252f3d0b6b3e705de4be7fbb391e280",
+        "scope": "CEM11full failed generation/31tick interruption/native300snapshot and commanded-pose diagnostic; CEM12exact source/input/92CPU checks and actual100tick initialization.",
+        "upload_receipt": "reports/G07_full_racket_v4/tool_failed_projection_range_upload_receipt_1046.json",
         "formal_acceptance": false
       },
       "latest_partial_native_contacts": {
-        "run": "ball_joint_preparation_cem10",
+        "run": "ball_projection_range_cem12",
         "generation": 0,
-        "last_live_control_ticks": 600,
-        "published_snapshot_control_ticks": 400,
-        "closed_first_episodes": 121,
-        "pending_first_episodes": 7,
-        "first_contacts": 3,
-        "first_air_strings_contacts": 1,
-        "first_frame_contacts": 2,
-        "whole_generation_complete": false,
-        "report": "reports/G07_full_racket_v4/NATIVE_JOINT_PREPARATION_PARTIAL_0957.json",
+        "ticks": 800,
+        "first_episodes_complete": 128,
+        "whole_generation_complete": true,
+        "whole_job_complete": false,
         "formal_acceptance": false
       },
       "latest_airborne_strings_power_milestone": {
@@ -366,6 +383,44 @@
           "native_execution_scope": "Actual64x32 population,60bank rows, Cartesian configuration and128environment first100native ticks verified. No later contact/recovery outcome yet.",
           "report": "reports/G07_full_racket_v4/cartesian_preparation_ready01_0924/REPORT.json",
           "native_initialization_report": "reports/G07_full_racket_v4/NATIVE_CARTESIAN_PREPARATION_INITIALIZATION_0937.json"
+        },
+        {
+          "branch": "g07-arm-search-v4-20261024",
+          "commit": "a13e598",
+          "merged_to_primary": true,
+          "primary_launch_commit": "89d0eaabb2142604295d67b3d7c2f4c45c55097c",
+          "cpu_tests_passed": 86,
+          "counterfactual_command_replay": {
+            "candidates": 60,
+            "lanes": 120,
+            "ticks": 287,
+            "native_execution": false
+          },
+          "legacy26_and_embedded32_commands_bitwise_equal": true,
+          "native_execution": true,
+          "native_execution_scope": "Actual native initialization and400tick frozen prefix verified, live process later beyond400ticks.1airstrings+2frame contacts,121closed/7pending. Airstrings case7.235m/s crossed but later robot-rule fault, no valid recovery or observed first landing; no full success.",
+          "report": "reports/G07_full_racket_v4/joint_preparation_ready01_0947/REPORT.json",
+          "native_state_counterfactual_report": "reports/G07_full_racket_v4/joint_preparation_native_state_commands02_0948/REPORT.json",
+          "native_initialization_report": "reports/G07_full_racket_v4/NATIVE_JOINT_PREPARATION_INITIALIZATION_0951.json"
+        },
+        {
+          "branch": "g07-arm-search-v4-20261024",
+          "commit": "63a7b20",
+          "merged_to_primary": true,
+          "primary_launch_commit": "1191ba62b4c89331d3fdcf76d6126179aff892e8",
+          "cpu_tests_passed": 91,
+          "counterfactual_command_replay": {
+            "candidates": 60,
+            "lanes": 120,
+            "ticks": 287,
+            "native_execution": false
+          },
+          "legacy26_embedded32_and_enabled_v1_commands_bitwise_equal": true,
+          "native_execution": true,
+          "native_execution_scope": "Actual64x32 population,60original proposals and enabled measured-motion/posthit flags verified.128environment first100ticks finite,0early end, all body positions equal CEM10corresponding prefix. Later outcomes pending.",
+          "report": "reports/G07_full_racket_v4/anticipation_ready01_1013/REPORT.json",
+          "native_state_counterfactual_report": "reports/G07_full_racket_v4/anticipation_native_state_commands_1013/REPORT.json",
+          "native_initialization_report": "reports/G07_full_racket_v4/NATIVE_TOOL_ANTICIPATION_INITIALIZATION_1016.json"
         }
       ],
       "latest_net_approach_diagnostic": "reports/G07_full_racket_v4/JOINT_PREPARATION_NET_APPROACH_DIAGNOSTIC_0959.json"

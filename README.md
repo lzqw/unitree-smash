@@ -1,6 +1,8 @@
 # QuadSmash：Codex /goal 实施与训练任务包
 
-最新视频：[33秒当前真实效果：7.52米/秒回球、恢复与最新触网失败](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_latest_20261024_0931.mp4)（33.12秒，1280×720、50fps）。三个独立原生训练回合分别展示：CEM07空中拍线出球7.52米/秒并越网、场内首落但目标和恢复失败；另一回合击球后合格恢复2.92秒但球被网挡住；CEM08前移方案击球前触网失败。含侧视、俯视、四分之一慢放及真实接触/落点，完整扣杀仍0。[轨迹、事件、权重与精确程序](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_latest_20261024_0931_evidence.zip)一并上传，全部1656帧解码无误，5附件GitHub大小与SHA256已核对。当前CEM09新控制器不在视频内。
+最新视频：[35秒最新实际效果：空中击球、触网失败与恢复对照](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_latest_20261024_1048.mp4)（34.72秒，1280×720、50fps）。最新CEM12独立回合实际空中拍线出球7.30米/秒并越网，随后机器人触网；同方案另一回合合格恢复4.45秒但漏球；此前CEM07回球7.52米/秒并在对方场内首落，但目标和恢复失败。含侧视、俯视、四分之一慢放、真实接触点与首落点；三回合均未完成扣杀。[原始轨迹、事件、候选权重与精确源码](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_latest_20261024_1048_evidence.zip)已上传，全部1736帧解码通过，5附件GitHub大小/SHA256核对。当前四代训练仍在运行。
+
+此前视频：[33秒当前真实效果：7.52米/秒回球、恢复与最新触网失败](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_latest_20261024_0931.mp4)（33.12秒，1280×720、50fps）。三个独立原生训练回合分别展示：CEM07空中拍线出球7.52米/秒并越网、场内首落但目标和恢复失败；另一回合击球后合格恢复2.92秒但球被网挡住；CEM08前移方案击球前触网失败。含侧视、俯视、四分之一慢放及真实接触/落点，完整扣杀仍0。[轨迹、事件、权重与精确程序](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_latest_20261024_0931_evidence.zip)一并上传，全部1656帧解码无误，5附件GitHub大小与SHA256已核对。当前CEM09新控制器不在视频内。
 
 此前视频：[26秒最新实际效果：回球恢复与拍框失败对照](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_latest_20261024_0819.mp4)（26.04秒，1280×720、50fps）。来自两个独立原生训练回合：CEM03第二代候选16从地面起跳，在己方1.667米处拍线触球、越网、对方场内落地并合格恢复3.94秒；出球4.85米/秒且向上、横向偏出指定目标0.75米，完整扣杀仍失败。后一方案CEM04候选11拍框误击后在3.04秒身体触地，失败按原记录保留。含侧视、俯视、四分之一慢放、实际接触点和首次落点；[姿态、事件、候选权重和精确源码](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_latest_20261024_0819_evidence.zip)一并上传，全部1302帧解码无误，5个附件的GitHub大小和SHA256已核对。当前32参数新作业仍在运行，视频没有将它算作完成。
 
@@ -24,7 +26,11 @@
 
 任务空间准备 `ball_cartesian_preparation_cem09` 完整第0代128回合为0接触/0恢复/0完整，124身体触地，其中41回合在来球前已结束，数值0。该准备动作使行走失稳，已保存停止；第1代104步与FAILED回执保留，实际0.151311 GPU小时、52608控制环境步。
 
-当前GPU0运行 `ball_joint_preparation_cem10`：保持原32参数和60全身提案，根据完整球拍碰撞外形与当前公开状态，对靠近网面的关节目标作有界最小修正，再由原物理驱动执行。86项CPU检查、关闭功能时旧模式逐位回放、120路有限/限幅指令和真实CEM08状态上的反事实目标检查通过；这些不是实际避网或恢复成绩。4代原生运行已启动，后续结果待完成；原资产、规则、硬件限制和全部成功门槛保持。
+关节准备修正 `ball_joint_preparation_cem10` 已在完整第0代后保存停止：128执行3接触/1空中拍线/6合格恢复/0同回合拍线恢复/0有效拍线/0攻击/完整、数值0；88触网、14提前越网。第1代131步和FAILED回执保留，实际0.345378 GPU小时、119168控制环境步。其余合格恢复均漏球，没有用漏球恢复的最佳参数替代快击球初始化。
+
+工具运动预测 `ball_tool_motion_anticipation_cem11` 完整第0代128回合为3接触/1空中拍线/5合格恢复/0同回合/0有效拍线/0攻击完整、数值0；85触网、15提前越网、2身体工程越界。已保存停止，下一代31步与真实FAILED回执保留；实际0.307542 GPU小时/106368控制环境步。
+
+当前GPU0运行 `ball_projection_range_cem12`：诊断发现4143个真实状态中1050次已到达原规划修正幅度上限，112个关节目标仍让球拍越过网面。将规划求解范围扩大到.8rad/8次迭代后，固定状态反事实回放的112个越面目标全部收回，物理关节限位保持；实际第0代128回合已完整：3接触、1空中拍线、6合格恢复但全部漏球，0有效拍线/攻击/完整，数值0；82触网、13提前越网、1工程越界。92项CPU检查和原v2指令逐位回放通过，新一轮保持原32参数/60候选、原规则和全部成功门槛，原生训练已实际启动。
 
 [两轮失败的完整第0代、后续中断记录、本轮源码/权重和前100步原生证据](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_arm32_failures_and_interception_program_20261024_0833.zip)已上传（185,838,293字节），125个归档文件与GitHub附件大小/SHA256均已核对。各作业精确启动源码、实际资源回执和新旧权重分开保留。没有后续排队作业，正式A/B各200回合尚未运行；原8米/秒、向下分量、目标落点、合格跳跃恢复和全部物理条件保持。
 

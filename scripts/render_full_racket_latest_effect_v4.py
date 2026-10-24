@@ -74,6 +74,8 @@ def main():
             state = row['terminal_native_state']
             poses = np.column_stack((state['body_link_positions_m'], state['body_link_quaternions_wxyz']))
             t = state['time_s']
+            if row['launched'] and not row['ground_seen']:
+                ball = np.asarray(state['ball_position_m'])
         else:
             t = float(recorded['episode_clock_s'][index])
             poses = recorded['link_poses'][index]
@@ -86,7 +88,8 @@ def main():
                 trail = recorded['ball_position_m'][ids[mask]]
         if row['ground_seen'] and (t >= row['first_landing_time_s'] or landing_freeze):
             ball, landing = None, np.asarray(row['first_landing_m'])
-        wide = landing_freeze or (row['crossed_net'] and 2.84 <= t <= row['first_landing_time_s'] + .35)
+        wide = landing_freeze or (row['crossed_net'] and t >= row['crossing_time_s']
+                                 and (not row['ground_seen'] or t <= row['first_landing_time_s'] + .35))
         views = ['wide_side', 'wide_top'] if wide else ['side', 'top']
         picture = Image.new('RGB', (1280, 720), (18, 28, 43))
         for view, left in zip(views, [0, 776]):
@@ -130,6 +133,8 @@ def main():
             note = f"实际出球 vz={row['outgoing_velocity_mps'][2]:+.2f} m/s；原攻击要求速度≥8、vz≤-1"
         elif t < 2:
             status, note = '从地面自主准备与走位', '完整Go2、标准PiPER和675毫米球拍｜实际动力学执行记录'
+        elif row['ground_seen'] and t >= row['first_landing_time_s'] and not row['had_contact']:
+            status, note = '来球已落地，未击中｜继续播放机器人恢复', '跳跃恢复与击球分别统计；此回合未完成击球任务'
         elif not row['had_contact'] or t < row['contact_time_s']:
             status, note = '来球拦截与自主动作执行中', '不补造动作、触球或球路；失败按原记录保留'
         elif row['net_blocked_fault'] and t >= case.get('rally_fault_time_s', float('inf')):

@@ -1,0 +1,52 @@
+{
+  "scope": "Three independent completed native TRAIN first episodes: CEM12 generation0 actual strings hit then robot-net failure; separate CEM12 missed-ball recovery; earlier CEM07 generation1 court-landing return. CEM12 whole job is still running.",
+  "opening_title": "最新真实效果｜击球、触网失败与落地恢复",
+  "opening_lines": [
+    "最新方案：空中拍线出球7.30米/秒，越网后机器人触网失败。",
+    "同方案另一回合：完成4.45秒合格恢复，但未击中来球。",
+    "此前较快回球：7.52米/秒越网并场内落地，目标和恢复失败。"
+  ],
+  "closing_lines": [
+    "完整扣杀仍为0；三个独立回合的表现不能合并为一次成功。",
+    "出球速度、向下分量、目标落点和稳定恢复尚未同时达标。",
+    "视频来自原生全身轨迹；正式A/B各200回合尚未运行。"
+  ],
+  "caveats": [
+    "Selected independent TRAIN cases do not establish a success rate or formal acceptance.",
+    "CEM12 generation0 is complete; the four-generation job remains live at snapshot time.",
+    "Case2 is explicitly an earlier CEM07 comparison, not the current controller.",
+    "50Hz recorded native body poses are replayed without interpolation; contact stills use exact native substep poses.",
+    "Case0 is terminated by robot-net fault before any first landing was observed. No landing is invented.",
+    "Case2 landing uses the original first-ground event with the adjacent50Hz body pose; all post-ground ball motion is hidden.",
+    "The renderer uses CPU llvmpipe. Recorded solver joint-speed overshoots are retained; this video is not hardware validation."
+  ],
+  "cases": [
+    {
+      "run": "ball_projection_range_cem12",
+      "generation": 0,
+      "env_id": 0,
+      "title": "最新回合｜空中拍线击球，越网后机器人触网",
+      "subtitle": "CEM12 / 第1代 / 候选0 / TRAIN1 / 实际执行",
+      "terminal_status": "实际越网后机器人触网｜首次落点未观测｜完整任务失败",
+      "limitation": "出球7.30 m/s、vz=-0.64；未满足攻击门槛，合格恢复失败"
+    },
+    {
+      "run": "ball_projection_range_cem12",
+      "generation": 0,
+      "env_id": 57,
+      "title": "同方案独立回合｜自主跳跃后恢复，但未击中来球",
+      "subtitle": "CEM12 / 第1代 / 候选28 / TRAIN65",
+      "terminal_status": "合格恢复4.45秒｜未触球｜完整任务失败",
+      "limitation": "此段仅展示同方案的跳跃恢复，不能与上一回合拼成完整成功"
+    },
+    {
+      "run": "ball_native_reference_interception32_cem07",
+      "generation": 1,
+      "env_id": 64,
+      "title": "此前回球对照｜7.52米/秒越网，并在对方场内落地",
+      "subtitle": "此前CEM07 / 第2代 / 候选32 / TRAIN1 / 独立回合",
+      "terminal_status": "实际越网、场内首落｜身体触地，目标与合格恢复失败",
+      "limitation": "出球7.52 m/s、vz=-0.54；落点x=4.80米，超出目标区约0.80米"
+    }
+  ]
+}
