@@ -1,0 +1,89 @@
+{
+  "created_at": "2026-10-24T10:25:39.161114+00:00",
+  "scope": "Saved native states and original causal forecasts. Native command reconstruction and a counterfactual arm projection, without changed-state dynamics or new contact/recovery outcomes.",
+  "valid_unhit_samples": 4143,
+  "cpu_native_command_error_rad": {
+    "count": 4143,
+    "minimum": 0.0,
+    "median": 2.384185791015625e-07,
+    "maximum": 0.0031232833862304688
+  },
+  "modified_native_command_samples": 2379,
+  "native_command_samples_at_original_projection_bound": 1050,
+  "unconstrained_target_support_x_m": {
+    "count": 4143,
+    "minimum": 0.9772029519081116,
+    "median": 1.3478790521621704,
+    "maximum": 2.131490707397461
+  },
+  "native_target_support_x_m": {
+    "count": 4143,
+    "minimum": 0.9772029519081116,
+    "median": 1.2794369459152222,
+    "maximum": 1.712806224822998
+  },
+  "observed_support_x_m": {
+    "count": 4143,
+    "minimum": 0.9776412844657898,
+    "median": 1.344751238822937,
+    "maximum": 1.4976173639297485
+  },
+  "observed_minus_native_target_support_m": {
+    "count": 4143,
+    "minimum": -0.28089380264282227,
+    "median": 0.05502748489379883,
+    "maximum": 0.36551129817962646
+  },
+  "measured_model_position_error_m": {
+    "count": 4143,
+    "minimum": 5.960464477539063e-08,
+    "median": 4.242619979777373e-06,
+    "maximum": 2.3828466510167345e-05
+  },
+  "measured_model_normal_error": {
+    "count": 4143,
+    "minimum": 1.2737007182295201e-07,
+    "median": 1.3751115375271183e-06,
+    "maximum": 2.341711706321803e-06
+  },
+  "known_command_world_error_m": {
+    "count": 4143,
+    "minimum": 2.527551947206382e-08,
+    "median": 1.5142357099518413e-06,
+    "maximum": 1.8218668026630126e-06
+  },
+  "native_command_targets_beyond_net_plane": 112,
+  "counterfactual_command_targets_beyond_net_plane": 0,
+  "counterfactual_target_support_x_m": {
+    "count": 4143,
+    "minimum": 0.9772029519081116,
+    "median": 1.2667114734649658,
+    "maximum": 1.445000171661377
+  },
+  "counterfactual_all_targets_within_original_physical_joint_limits": true,
+  "counterfactual_configuration": {
+    "maximum_x_m": 1.38,
+    "lookahead_s": 0.06,
+    "damping": 0.04,
+    "maximum_joint_delta_rad": 0.8,
+    "iterations": 8,
+    "anticipate_measured_motion": true,
+    "protect_post_hit_net_volume": true,
+    "maximum_predictive_margin_m": 0.25,
+    "post_hit_height_margin_m": 0.04
+  },
+  "new_dynamics_executed": false,
+  "formal_acceptance": false,
+  "sources": {
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/reports/G07_full_racket_v4/anticipation_ready01_1013/policy.pt": "60106537197c807cc786f23207e73c25867f9c586f90bc99f7f63addba69bfce",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/reports/G07_full_racket_v4/projection_range_ready01_1024/policy.pt": "19771c5e5f701ea80c4b12d898f4454a433f506719c25b311c6cbfabee11d03c",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/reports/G07_full_racket_v4/CPU_REPLAY_AUTHORED_JOINTS_0724.json": "c91545fe9a1069586436c040338c5bc9dafd6ccbb6dad5f3df50c6506e31dd42",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/anticipation_native_tick300_snapshot/near_contact_all.partial.npz": "45835c5855dc796e8bb5b36eee6be3806a40abd2d2de4439dce4794e45f44e3b",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/anticipation_native_tick300_snapshot/control_window.partial.npz": "9964dca17c694d661588ed6df5cdf1cef3bed46f37d7d738e5fbd697b838c8de",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/anticipation_native_tick300_snapshot/causal_plans.partial.json": "a002e2f2a82985a32b0bf78b10f04cf10830d8fc6c8d773f043a99883f86b1e2",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/anticipation_native_tick300_snapshot/partial_search_state.pt": "2f6702e38df238d07dda61cfc68919bb5d78a7df8f877b9283996fb1f1730450",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/configs/full_racket_reset_v4.json": "0d5246e0b39daabd0c0cb15f5259c7c61df455ccb191835932cc83f4886df25b",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/scripts/diagnose_full_racket_joint_projection_v4.py": "f2f757aafffe6cf1d549ee3d43798950f2f76f5c8dd4999083bcbd452286ed3b",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/quadsmash/control/full_racket_joint_preparation_v4.py": "da0841510be9bb95e9e68e0ace13d3e7e064b69fc256f6c8d9037ec27fddc363"
+  }
+}

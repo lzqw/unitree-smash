@@ -26,7 +26,7 @@ def validate_joint_preparation(config):
         raise ValueError('Finite joint preparation settings required')
     if not 1.1<=values['maximum_x_m']<1.5 or not 0<=values['lookahead_s']<=.15:
         raise ValueError('Invalid own-side command planning bounds')
-    if not .01<=values['damping']<=.1 or not .05<=values['maximum_joint_delta_rad']<=.5:
+    if not .01<=values['damping']<=.1 or not .05<=values['maximum_joint_delta_rad']<=1.0:
         raise ValueError('Invalid bounded preparation solve')
     if type(values['iterations']) is not int or not 1<=values['iterations']<=8:
         raise ValueError('Require1..8preparation iterations')

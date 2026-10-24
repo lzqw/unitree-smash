@@ -124,5 +124,19 @@ class JointPreparationTest(unittest.TestCase):
         descending=guard.support_state(q,obs,model,torch.tensor([True]))[0]
         self.assertGreater(float(descending),float(high)+.02)
 
+    def test_larger_projection_solves_far_forward_target_with_same_physical_joint_limits(self):
+        q=torch.tensor([[-.6153451338,1.7700886461,-2.2884081663,.8714186655,.8830834721,2.0943899999]],dtype=torch.float64)
+        model=FullRacketKinematicsV4();limits=torch.tensor(FullRacketGeometryV4().bounds)
+        obs=observation(1);obs[:,760]=-.25
+        original=FullRacketJointPreparation({})
+        larger=FullRacketJointPreparation({'maximum_joint_delta_rad':.8,'iterations':8})
+        before=original.support_state(q,obs,model)[0]
+        small=original(q,obs,limits,model);large=larger(q,obs,limits,model)
+        self.assertGreater(float(before),1.7)
+        self.assertLess(float(larger.support_state(large,obs,model)[0]),float(original.support_state(small,obs,model)[0]))
+        self.assertLessEqual(float(larger.support_state(large,obs,model)[0]),1.382)
+        self.assertTrue(bool((large>=limits[:,0]).all() and (large<=limits[:,1]).all()))
+        self.assertLessEqual(float((large-q).abs().max()),.800001)
+
 
 if __name__=='__main__':unittest.main()
