@@ -1,0 +1,94 @@
+{
+  "created_at": "2026-10-24T12:07:39.263895+00:00",
+  "scope": "Unexecuted next TRAIN proposals. Retain all32actual attacking-reference parameters; bank varies11body coordinates and recovery timing using two prior same-episode airborne-string/recovery motions. Coupled performance does not transfer.",
+  "actual_attack_source": {
+    "run": "ball_near_intercept_blend_cem16",
+    "generation": 0,
+    "candidate_id": 17,
+    "env_id": 35,
+    "outgoing_velocity_mps": [
+      7.887247085571289,
+      -1.4885257482528687,
+      -1.6518054008483887
+    ],
+    "outgoing_speed_mps": 8.194683433442469,
+    "recovery_success": false,
+    "complete_smash": false
+  },
+  "body_sources": [
+    {
+      "run": "ball_contact_recovery_cem02",
+      "env_id": 12,
+      "candidate_id": 6,
+      "actual_recovery_s": 3.619920015335083,
+      "actual_airborne_strings": true,
+      "actual_crossed_net": true,
+      "actual_complete_smash": false
+    },
+    {
+      "run": "ball_pitch_blend_cem03_resume01",
+      "env_id": 32,
+      "candidate_id": 16,
+      "actual_recovery_s": 3.937896966934204,
+      "actual_airborne_strings": true,
+      "actual_crossed_net": true,
+      "actual_complete_smash": false
+    }
+  ],
+  "body_blend_fractions": [
+    0.2,
+    0.4,
+    0.6,
+    0.8,
+    1.0
+  ],
+  "recovery_local_times_s": [
+    1.55,
+    1.58,
+    1.61,
+    1.64,
+    1.67,
+    1.7
+  ],
+  "reference_all32_parameters_preserved_exactly": true,
+  "bank_fixed_coordinates": [
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    18,
+    19,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "all_proposals_keep_actual_attack_arm_face_interception_and_velocity_parameters": true,
+  "all_physical_assets_hardware_rules_success_gates_unchanged": true,
+  "recommended_training_flag": "--retain-contact-recovery",
+  "policy_sha256": "5cb753c6eaee4408c86494b03ac3c1519f4c92cca160db005ae32f8e3c39a0a6",
+  "bank_sha256": "ef214ce7606791c851e5d0da194dfc8824edbd26300985222ff473c2441c8067",
+  "native_execution": false,
+  "formal_acceptance": false,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/near_intercept_blend_native_tick300_snapshot/episodes.partial.json": "39cc37e04bfdfbe61b6a247c745127fdf36e01081c3ebdaca0572ec3f3aa9fa9",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/near_intercept_blend_native_tick300_snapshot/partial_search_state.pt": "9bd62a37a9108579aba2aa829d0599bc054b71770a031ef912b840eeaa13223d",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_near_intercept_blend_cem16/generation_start_000.pt": "733d363cf24f27eacfe188c6e4f970ed7b98fc369b0bad025ca6441ab90211ff",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_contact_recovery_cem02/episodes_000.json": "ab105b4844011da92ec97a0e98eb13568ebd1faf6d75485f038dd62358e9794a",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_contact_recovery_cem02/population_000.pt": "c8443366d68fb729f3668a567544254d99dcb819d419a3c7a645076b3702cc74",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_pitch_blend_cem03_resume01/episodes_001.json": "b95a7b7bdf7f40f93a319a844feb655a96f3980ce482c5d28794a4c7b70f831f",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_pitch_blend_cem03_resume01/population_001.pt": "50a4990181d970406fdfc840356b97e07b6a12cf262218eb068915679a51c134",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/scripts/prepare_full_racket_attack_recovery_bank_v4.py": "a468a3d8de2fced2326bbd8a03fa3c6796f4538dc818bab45ebc7e901c229a73",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/quadsmash/control/full_racket_contact_curriculum_v4.py": "3a827b8ffa50cb1dba039a0c5a599c703453cde6ed4ccc1c56fc6fc3fe27663f"
+  }
+}

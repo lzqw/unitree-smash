@@ -47,6 +47,41 @@ class ContactCurriculumTest(unittest.TestCase):
         fast['outgoing_velocity_mps'] = [float('nan'), 0., -1.]
         self.assertEqual(actual_outgoing_shaping(fast), 0.)
 
+    def test_recovery_curriculum_retains_same_episode_chain_ahead_of_two_falls(self):
+        joined = self.row(True, recovery_success=True)
+        fall = self.row(True, recovery_success=False)
+        groups = [[joined, self.row()], [fall, fall]]
+        saved = copy.deepcopy(groups)
+        self.assertLess(contact_search_tiers(groups)[0], contact_search_tiers(groups)[1])
+        tiers = contact_search_tiers(groups, retain_recovery=True)
+        self.assertGreater(tiers[0], tiers[1])
+        self.assertEqual(groups, saved)
+        self.assertFalse(joined['complete_smash'])
+
+    def test_recovery_in_another_episode_cannot_form_a_contact_chain(self):
+        contact = self.row(True, recovery_success=False)
+        recovered_miss = self.row(False, recovery_success=True)
+        two_contacts = [[contact, recovered_miss], [contact, contact]]
+        tiers = contact_search_tiers(two_contacts, retain_recovery=True)
+        self.assertLess(tiers[0], tiers[1])
+
+    def test_full_smash_still_beats_recovered_partial_contacts(self):
+        complete = self.row(True, recovery_success=True)
+        complete['complete_smash'] = True
+        partial = self.row(True, recovery_success=True)
+        tiers = contact_search_tiers([[complete, self.row()], [partial, partial]], retain_recovery=True)
+        self.assertGreater(tiers[0], tiers[1])
+
+    def test_recovery_does_not_override_robot_faults_or_numerical_failure(self):
+        for fault in ROBOT_FAULTS:
+            invalid = self.row(True, recovery_success=True)
+            invalid[fault] = True
+            tiers = contact_search_tiers([[invalid], [self.row(True)]], retain_recovery=True)
+            self.assertLess(tiers[0], tiers[1], fault)
+        invalid = self.row(True, recovery_success=True)
+        invalid['numerical_failures'] = 1
+        self.assertEqual(contact_search_tiers([[invalid]], retain_recovery=True)[0], -1)
+
     def test_controlled_grid_preserves_every_leg_and_interception_parameter(self):
         reference = np.linspace(-.2, .2, 26)
         lower, upper = np.full(26, -.15), np.full(26, .15)

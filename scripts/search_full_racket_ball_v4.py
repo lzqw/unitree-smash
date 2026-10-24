@@ -15,6 +15,7 @@ p.add_argument('--walk-speed',type=float);p.add_argument('--waypoint-x',type=flo
 p.add_argument('--timing-grid',action='store_true',help='Reserve12 candidates for measured leg timing/arm speed/Cartesian-gain combinations')
 p.add_argument('--push-grid',action='store_true',help='Reserve16 candidates for front/back thigh/calf push coordination')
 p.add_argument('--contact-curriculum',action='store_true',help='TRAIN: retain actual legal airborne strings contacts while optimizing failed return and recovery; formal flags unchanged')
+p.add_argument('--retain-contact-recovery',action='store_true',help='TRAIN: retain an actual same-episode legal airborne strings contact and qualified recovery ahead of additional contacts ending in falls; native task labels unchanged')
 p.add_argument('--contact-grid',action='store_true',help='Reserve12 candidates for arm lead/speed around a measured contact, preserving leg timing')
 p.add_argument('--pitch-grid',action='store_true',help='Reserve12 candidates spanning existing arm pitch-compensation gain and timing; original joint/actuator limits remain')
 p.add_argument('--search-arm-velocity',action='store_true',help='Append six bounded arm velocity seed coordinates to the26 controller parameters')
@@ -77,12 +78,15 @@ def main():
         raise ValueError('Contact grid requires contact curriculum and at least14 candidates')
     if args.contact_curriculum and not args.continue_after_miss:
         raise ValueError('Contact curriculum requires observing recovery after failed shuttle returns')
+    if args.retain_contact_recovery and not args.contact_curriculum:
+        raise ValueError('Retaining contact/recovery requires contact curriculum')
     if args.recovery_leg_bank and (not (args.contact_grid or args.pitch_grid or args.arm_velocity_bank) or args.candidates<22):
         raise ValueError('Recovery leg crossover requires contact grid and at least22 candidates')
     if not .15<=args.push_search_range<=.5:raise ValueError('Push search range must be between .15 and .5rad')
     sampling_contract=('bounded-candidate-bank-generation0-v1' if args.candidate_bank else 'contact-pitch-compensation-grid-v1' if args.pitch_grid else 'contact-arm-timing-speed-grid-v1' if args.contact_grid else 'front-back-push-grid-v1' if args.push_grid else
         'timing-velocity-cartesian-grid-v1' if args.timing_grid else 'gaussian-cem-v1')
-    selection_contract=('actual-contact-then-return-and-recovery-v1' if args.contact_curriculum else
+    selection_contract=('actual-contact-recovery-chain-v2' if args.retain_contact_recovery else
+        'actual-contact-then-return-and-recovery-v1' if args.contact_curriculum else
         'ball-with-jump-recovery-v3' if args.continue_after_miss else 'legal-first-ball-v4')
     if args.recovery_leg_bank:sampling_contract+='-measured-recovery-leg-crossover-v1'
     if args.search_arm_velocity:sampling_contract+='-joint-velocity32-v1'
@@ -190,6 +194,7 @@ def main():
         arm_velocity_search_enabled=args.search_arm_velocity,
         trajectory_contract='All lanes native50Hz poses/ball/clock/first-episode validity; exact terminal/contact snapshots separate',
         training_continue_after_miss=args.continue_after_miss,
+        training_retain_contact_recovery=args.retain_contact_recovery,
         training_early_termination=('Robot-rule fault, body ground or fallen; observe recovery after failed shuttle return without reviving its rally' if args.continue_after_miss else
             'Rally fault, first ground without target, body ground or fallen')+'; formal evaluator unchanged')
     if leg_bank is not None:
@@ -398,7 +403,7 @@ def main():
             scores=torch.tensor([min(r['training_score'] for r in g)*.7+np.mean([r['training_score'] for r in g])*.3 for g in groups],device=env.device)
             feasible=torch.tensor([all(r['legal_episode'] for r in g) for g in groups],device=env.device)
             if args.contact_curriculum:
-                tiers=torch.as_tensor(contact_search_tiers(groups),device=env.device)
+                tiers=torch.as_tensor(contact_search_tiers(groups,retain_recovery=args.retain_contact_recovery),device=env.device)
                 if int(tiers.max())<0:raise RuntimeError('No numerically valid contact-curriculum candidate')
                 eligible=tiers==tiers.max()
                 selection=torch.where(eligible,scores,torch.full_like(scores,-float('inf')))

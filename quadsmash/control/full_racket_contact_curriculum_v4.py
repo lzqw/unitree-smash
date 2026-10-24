@@ -19,7 +19,14 @@ def usable_air_contact(row):
                 and not any(row[name] for name in ROBOT_FAULTS))
 
 
-def contact_search_tiers(groups):
+def contact_search_tiers(groups, *, retain_recovery=False):
+    """Rank measured TRAIN results without changing any native task labels.
+
+    Once a contact and qualified recovery coexist in one episode, an optional
+    curriculum keeps that chain ahead of additional contacts that end in a
+    fall. Actual complete smashes always outrank partial chains. The default
+    retains the historical contact-first ordering.
+    """
     if not groups or any(len(g) != len(groups[0]) for g in groups):
         raise ValueError('Require equal nonempty TRAIN case groups')
     case_count = len(groups[0])
@@ -32,7 +39,13 @@ def contact_search_tiers(groups):
             continue
         complete = sum(bool(row['complete_smash']) for row in group)
         contacts = sum(usable_air_contact(row) for row in group)
-        tiers.append(complete * (case_count + 1) + contacts)
+        if retain_recovery:
+            joined = sum(usable_air_contact(row) and row.get('recovery_success', False)
+                         for row in group)
+            tiers.append(complete * (case_count + 1) ** 2
+                         + joined * (case_count + 1) + contacts)
+        else:
+            tiers.append(complete * (case_count + 1) + contacts)
     return np.asarray(tiers, dtype=np.int64)
 
 
