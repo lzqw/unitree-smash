@@ -51,6 +51,17 @@ def main():
                         active=env.rally.in_play[:2].cpu().tolist(),contact=env.rally.had_contact[:2].cpu().tolist(),
                         airborne=env.observed_airborne[:2].cpu().tolist()))
                 observation,_,done,_=wrapper.step(action);finished|=done.bool()
+                if (tick+1)%100==0:
+                    progress=dict(control_ticks=tick+1,requested_ticks=800,
+                        contacts=int(env.rally.had_contact.sum()),airborne_contacts=int(env.rally.airborne_string_hit.sum()),
+                        crossed_net=int(env.rally.crossed_net.sum()),active_rallies=int(env.rally.in_play.sum()),
+                        completed_first_episodes=int(finished.sum()),partial_data=True,formal_acceptance=False)
+                    np.save(args.output/'public_observations.partial.npy',np.stack(observations))
+                    np.save(args.output/'public_actions.partial.npy',np.stack(actions))
+                    np.save(args.output/'link_poses_first2.partial.npy',np.stack(poses))
+                    (args.output/'trajectory_first2.partial.json').write_text(json.dumps(traces)+'\n')
+                    temp=args.output/'progress.json.tmp';temp.write_text(json.dumps(progress,indent=2)+'\n');temp.replace(args.output/'progress.json')
+                    print(json.dumps(progress),flush=True)
         first={}
         for row in env.rally_records:first.setdefault(row['env_id'],row)
         assert len(first)==args.count
