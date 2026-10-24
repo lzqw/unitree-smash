@@ -18,6 +18,7 @@ from quadsmash.tasks.stand.full_racket_env_v4 import FullRacketEnvV4,full_racket
 from quadsmash.tasks.stand.full_racket_eval_env_v4 import FrozenPanelEnv
 from quadsmash.tasks.stand.visual_geometry import export_robot_geometry
 from quadsmash.control.full_racket_rally_controller_v4 import FullRacketRallyControllerV4
+from quadsmash.usd_dependencies_v4 import audit_composed_asset
 
 
 def main():
@@ -37,6 +38,8 @@ def main():
     env=FrozenPanelEnv(cfg,cases=cases,reset_noise=noise);wrapped=RslRlVecEnvWrapper(env,clip_actions=None)
     controller=FullRacketRallyControllerV4(torch.load(args.checkpoint,map_location='cpu',weights_only=False),count,env.device)
     try:
+        dependency_audit=audit_composed_asset(ROOT,cfg.robot.spawn.usd_path)
+        (args.output/'asset_dependencies.json').write_text(json.dumps(dependency_audit,indent=2)+'\n')
         if env.robot.is_fixed_base:raise ValueError('Formal robot must be floating and start from ground')
         observation,_=wrapped.reset();controller.reset()
         export_robot_geometry(get_current_stage(),env.robot,args.output)

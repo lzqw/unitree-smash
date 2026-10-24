@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import numpy as np
 from .physics.rally_rules_v4 import RallyRulesV4
+from .usd_dependencies_v4 import MANIFEST,verify_dependency_manifest
 
 FAULTS=tuple(name for name in RallyRulesV4.flags if name.endswith('_fault') or name=='engineering_body_crossing')
 
@@ -18,6 +19,11 @@ def validate_frozen_inputs(root,protocol_path,lock_path,checkpoint_path):
         raise ValueError('Policy or protocol changed after lock')
     if digest(root/protocol['asset']['path'])!=protocol['asset']['sha256'] or lock['asset_sha256']!=protocol['asset']['sha256']:
         raise ValueError('Native asset differs from the frozen protocol')
+    dependencies=verify_dependency_manifest(root)
+    if (dependencies['asset']!=protocol['asset']['path'] or
+        lock.get('asset_dependency_manifest_sha256')!=digest(root/MANIFEST) or
+        lock.get('asset_dependencies')!=dependencies['layers']):
+        raise ValueError('Composed USD dependencies differ from policy lock')
     required={str(path.relative_to(root)) for path in root.glob('quadsmash/**/*.py')}
     required.update({'scripts/evaluate_full_racket_v4.py','scripts/lock_full_racket_policy_v4.py','scripts/aggregate_full_racket_eval_v4.py'})
     if not required.issubset(lock['source_hashes']):raise ValueError('Policy lock omits evaluation or control source')

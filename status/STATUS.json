@@ -50,12 +50,21 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "Directed timing/velocity/Cartesian grid completed 32 native TRAIN executions:3 airborne string hit episodes,1 frame hit,0 complete,0 numerical failures. All3 string-hit episodes terminated on body-ground, no stable recovery. Latest28.94s actual side/top/contact-snapshot video uploaded and size/SHA verified. Formal400 stillTODO.",
+      "notes": "Latest video delivered. Actual contact decomposition: root rotation contributes about-5.4m/s X while arm relative motion contributes+2..3m/s X. Running18-candidate controlled front/back push thigh/calf grid on same TRAIN[1,65]; no changes to physics/hardware/rules/thresholds.",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/reach_cem_fine_feedback01/metrics.json",
       "curriculum_policy": "reports/G07_full_racket_v4/reach_cem_fine_feedback01/best_candidate.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
-      "active_gpu_jobs": [],
+      "active_gpu_jobs": [
+        {
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_push_grid01",
+          "guard_pid": 1332513,
+          "child_pid": 1332525,
+          "session_id": 65283,
+          "state": "RUNNING",
+          "started_at": "2026-10-24T04:53:30.963432+00:00"
+        }
+      ],
       "queued_native_sequence": {
         "state_file": "reports/G07_full_racket_v4/native_followup_sequence01/state.json",
         "pid": 1320916,

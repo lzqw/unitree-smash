@@ -16,12 +16,21 @@ def main():
     p.add_argument('--ball-x',type=float,default=1.10);p.add_argument('--ball-z',type=float,default=1.80)
     p.add_argument('--point-vx',type=float,default=1.6);p.add_argument('--point-vz',type=float,default=0.)
     p.add_argument('--uv-y',type=float,default=0.);p.add_argument('--uv-z',type=float,default=0.)
+    p.add_argument('--joint-search-bounds',type=Path,help='Optional pose-search subset of the unchanged physical joint bounds')
+    p.add_argument('--starts',type=int,default=32)
     args=p.parse_args();args.output.mkdir(exist_ok=False,parents=True)
     geometry=FullRacketGeometryV4();rng=np.random.default_rng(720201)
     outward=np.array([1.,0.,args.normal_z]);outward/=np.linalg.norm(outward)
     normal=args.face_sign*outward
     ball=np.array([args.ball_x,0.,args.ball_z]);target=ball-.0256*outward
-    root=np.array([args.root_x,0.,args.root_z]);bounds=geometry.bounds
+    root=np.array([args.root_x,0.,args.root_z]);hardware_bounds=geometry.bounds;bounds=hardware_bounds.copy()
+    if args.starts<1:raise ValueError('At least one search start is required')
+    if args.joint_search_bounds:
+        bounds=np.array(json.loads(args.joint_search_bounds.read_text())['bounds_rad'],dtype=float)
+        if (bounds.shape!=(6,2) or not np.isfinite(bounds).all() or
+            np.any(bounds[:,0]<hardware_bounds[:,0]) or np.any(bounds[:,1]>hardware_bounds[:,1]) or
+            np.any(bounds[:,1]-bounds[:,0]<=.002)):
+            raise ValueError('Pose-search bounds must be a nonempty subset of physical joint limits')
     uv=(args.uv_y,args.uv_z)
     default=np.array([0.,1.,-1.,0.,0.,0.])
     reference=default if args.face_sign==1 else np.array([.0786861032,1.20102334,-2.585356,-.156469598,-1.056915283,.13533029])
@@ -32,12 +41,12 @@ def main():
     def residual(q):
         contact,outward_actual=geometry.contact_center(q,uv=uv,face=args.face_sign,base_position=root)
         return np.r_[5*(contact-ball),outward_actual-outward,.001*(q-reference)]
-    for index in range(32):
-        initial=reference if index==0 else rng.uniform(bounds[:,0]+.001,bounds[:,1]-.001)
+    for index in range(args.starts):
+        initial=np.clip(reference,bounds[:,0]+.001,bounds[:,1]-.001) if index==0 else rng.uniform(bounds[:,0]+.001,bounds[:,1]-.001)
         fit=least_squares(residual,initial,bounds=(bounds[:,0]+1e-5,bounds[:,1]-1e-5),max_nfev=700)
         q=fit.x;point,rotation=geometry.forward(q,base_position=root)
         jacobian=geometry.contact_jacobian(q,uv=uv,face=args.face_sign,radius=.025,base_position=root)
-        room=np.minimum(q-bounds[:,0],bounds[:,1]-q)
+        room=np.minimum(q-hardware_bounds[:,0],hardware_bounds[:,1]-q)
         maximum=np.maximum(np.minimum(4.8,room/.08),1e-6)
         desired_velocity=np.array([args.point_vx,0.,args.point_vz])
         speed=lsq_linear(jacobian,desired_velocity,bounds=(-maximum,maximum)).x
@@ -54,7 +63,8 @@ def main():
     result=dict(kind='CPU geometric seeds only; no executable trajectory or success claim',
         schema='full-racket-ik-seeds-v4',default_pose_native_fk_error_m=error,base_position_assumed=root.tolist(),
         desired_ball_center_m=ball.tolist(),desired_normal_world=normal.tolist(),seeds=rows[:12],
-        all_search_results=rows,formal_acceptance=False)
+        all_search_results=rows,pose_search_bounds_rad=bounds.tolist(),
+        unchanged_physical_joint_bounds_rad=hardware_bounds.tolist(),search_starts=args.starts,formal_acceptance=False)
     (args.output/'seeds.json').write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps({'fk_error_m':error,'best':rows[0]}),flush=True)
 

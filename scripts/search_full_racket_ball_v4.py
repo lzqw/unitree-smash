@@ -13,6 +13,7 @@ p.add_argument('--sigma-fraction',type=float,default=.08)
 p.add_argument('--ik-seeds',type=Path)
 p.add_argument('--walk-speed',type=float);p.add_argument('--waypoint-x',type=float)
 p.add_argument('--timing-grid',action='store_true',help='Reserve12 candidates for measured leg timing/arm speed/Cartesian-gain combinations')
+p.add_argument('--push-grid',action='store_true',help='Reserve16 candidates for front/back thigh/calf push coordination')
 AppLauncher.add_app_launcher_args(p);args=p.parse_args();app=AppLauncher(args).app
 import numpy as np
 import torch
@@ -26,6 +27,7 @@ from quadsmash.control.full_racket_teacher_v4 import LOW,HIGH,PARAMETER_NAMES
 from quadsmash.control.full_racket_geometry_v4 import FullRacketGeometryV4
 from quadsmash.physics.full_racket_v4 import string_prism_gap
 from quadsmash.physics.native import quat_rotate
+from quadsmash.usd_dependencies_v4 import audit_composed_asset
 
 stopping=False
 def stop(*_):
@@ -45,6 +47,10 @@ def main():
     if bool(args.warm_start)==bool(args.resume):raise ValueError('Choose exactly one warm start or optimizer resume')
     if args.candidates<4 or args.generations<1 or not 0<args.sigma_fraction<=.5:raise ValueError('Invalid search settings')
     if args.timing_grid and args.candidates<14:raise ValueError('Timing grid requires at least14 candidates')
+    if args.push_grid and args.candidates<18:raise ValueError('Push grid requires at least18 candidates')
+    if args.timing_grid and args.push_grid:raise ValueError('Choose one controlled grid')
+    sampling_contract=('front-back-push-grid-v1' if args.push_grid else
+        'timing-velocity-cartesian-grid-v1' if args.timing_grid else 'gaussian-cem-v1')
     if not args.training_indices or len(set(args.training_indices))!=len(args.training_indices):raise ValueError('Distinct TRAIN indices required')
     args.output.mkdir(parents=True,exist_ok=True)
     protocol_path=ROOT/'configs/g07_full_racket_eval_v4_r3.json';protocol=json.loads(protocol_path.read_text())
@@ -82,6 +88,7 @@ def main():
     cases=[training_cases[i] for _ in range(args.candidates) for i in args.training_indices]
     cfg=full_racket_cfg(count,protocol['physics_dt_s']);cfg.seed=args.seed
     env=RallyTrainingEnvV4(cfg,cases=cases);wrapper=RslRlVecEnvWrapper(env,clip_actions=None)
+    atomic_json(args.output/'asset_dependencies.json',audit_composed_asset(ROOT,cfg.robot.spawn.usd_path))
     controller=FullRacketRallyControllerV4(template,count,env.device)
     surface_offset=controller.teacher.contact_offset.clone()
     surface_offset[0]=controller.teacher.face_sign*env.racket_config['assumptions']['string_thickness_m']/2
@@ -95,7 +102,7 @@ def main():
         assert prior['training_case_indices']==args.training_indices and prior['candidate_count']==args.candidates
         assert prior['protocol_sha256']==hashlib.sha256(protocol_path.read_bytes()).hexdigest()
         assert prior['physics_dt_s']==cfg.sim.dt and prior['selection_contract']=='legal-first-ball-v4'
-        assert prior.get('sampling_contract','gaussian-cem-v1')==('timing-velocity-cartesian-grid-v1' if args.timing_grid else 'gaussian-cem-v1'),'Sampling changed; use warm-start'
+        assert prior.get('sampling_contract','gaussian-cem-v1')==sampling_contract,'Sampling changed; use warm-start'
         mean=prior['mean'].to(env.device);sigma=prior['sigma'].to(env.device);rng.set_state(prior['rng'].cpu())
         previous=prior['generations'];best_result=prior['best_result'];reference=prior['reference_parameters'].to(env.device)
         if prior['best_parameters'] is not None:
@@ -113,7 +120,7 @@ def main():
         candidate_count=args.candidates,training_case_indices=args.training_indices,training_suite=suite,
         reference_parameters=reference.cpu(),parameter_names=PARAMETER_NAMES+['intercept_plane_x','strike_timing_residual'],
         selection_contract='legal-first-ball-v4',source_checkpoint_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),
-        sampling_contract='timing-velocity-cartesian-grid-v1' if args.timing_grid else 'gaussian-cem-v1',
+        sampling_contract=sampling_contract,
         source_hashes=source_hashes,formal_acceptance=False,formal_panels_read=False,
         training_early_termination='Rally fault, first ground without target, body ground or fallen; formal evaluator unchanged')
     try:
@@ -135,6 +142,13 @@ def main():
                             population[index]=mean
                             population[index,2]=phase;population[index,7]=speed;population[index,18]=servo_gain
                             index+=1
+            if args.push_grid:
+                index=2
+                for thigh in [-.15,-.05,.05,.15]:
+                    for calf in [-.15,-.05,.05,.15]:
+                        population[index]=mean
+                        population[index,22]=thigh;population[index,23]=calf
+                        index+=1
             env._episode_has_stepped.zero_();env._metrics_started=False
             env.rally_records.clear();env.episode_records.clear();env.contact_records.clear()
             observation,_=wrapper.reset();controller.reset();controller.parameters.copy_(population.repeat_interleave(case_count,dim=0))
@@ -142,7 +156,7 @@ def main():
             closest=torch.full((count,),10.,device=env.device);closest_time=torch.full((count,),float('nan'),device=env.device)
             closest_air=finished.clone();shaping=torch.full((count,),-100.,device=env.device)
             poses,public,actions,valid,trace=[],[],[],[],[]
-            window_poses,window_balls,window_clocks,window_valid=[],[],[],[]
+            window_poses,window_balls,window_clocks,window_valid,window_observations=[],[],[],[],[]
             with torch.inference_mode():
                 for tick in range(ticks):
                     obs=observation['policy'];data=env.robot.data
@@ -172,6 +186,7 @@ def main():
                             window_balls.append((env.shuttle.data.root_pos_w-env.scene.env_origins).cpu().numpy())
                             window_clocks.append(obs[:,775].cpu().numpy().copy())
                             window_valid.append((~finished).cpu().numpy().copy())
+                            window_observations.append(obs.cpu().numpy().copy())
                     observation,_,done,_=wrapper.step(action);finished|=done.bool()
                     if (tick+1)%100==0:
                         first_partial={}
@@ -194,7 +209,7 @@ def main():
                         if window_poses:
                             np.savez_compressed(args.output/'near_contact_all.partial.npz',link_poses=np.stack(window_poses),
                                 ball_position_m=np.stack(window_balls),episode_clock_s=np.stack(window_clocks),
-                                valid_first_episode=np.stack(window_valid))
+                                valid_first_episode=np.stack(window_valid),observations=np.stack(window_observations))
                         print(json.dumps(dict(generation=previous+generation,tick=tick+1,first_complete=int(finished.sum()))),flush=True)
                     if bool(finished.all()) or stopping:break
             np.savez_compressed(args.output/f'public_and_poses_{previous+generation:03d}.npz',observations=np.stack(public),
@@ -204,7 +219,7 @@ def main():
             if window_poses:
                 np.savez_compressed(args.output/f'near_contact_all_{previous+generation:03d}.npz',link_poses=np.stack(window_poses),
                     ball_position_m=np.stack(window_balls),episode_clock_s=np.stack(window_clocks),
-                    valid_first_episode=np.stack(window_valid))
+                    valid_first_episode=np.stack(window_valid),observations=np.stack(window_observations))
             if stopping and not bool(finished.all()):
                 atomic_json(args.output/'interrupted.json',dict(generation=previous+generation,control_ticks=tick+1,
                     resume_from='generation_start.pt',resume_semantics='Replay this generation from ground',formal_acceptance=False));return
