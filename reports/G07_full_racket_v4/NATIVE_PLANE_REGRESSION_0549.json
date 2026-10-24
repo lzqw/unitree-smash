@@ -1,0 +1,160 @@
+{
+  "created_at": "2026-10-24T05:50:28.808352+00:00",
+  "scope": "Targeted native geometry/first-contact regression only, not a jump or policy acceptance.",
+  "status": "PASSED",
+  "tests": [
+    {
+      "run": "near_net_prehit_invasion02",
+      "status": "PASSED",
+      "elapsed_s": 7.377301032014657,
+      "gpu_hours": 0.0020492502866707382,
+      "actual_env_steps": 1,
+      "flags": {
+        "launched": true,
+        "in_play": false,
+        "had_contact": false,
+        "legal_initial_contact": false,
+        "string_hit": false,
+        "airborne_string_hit": false,
+        "frame_hit": false,
+        "released": false,
+        "crossed_net": false,
+        "landed_legal_court": false,
+        "landed_target": false,
+        "ground_seen": false,
+        "robot_net_fault": false,
+        "body_ball_fault": false,
+        "wrong_side_fault": false,
+        "double_hit_fault": false,
+        "racket_invasion_fault": true,
+        "body_over_net_fault": false,
+        "under_net_obstruction_fault": false,
+        "engineering_body_crossing": false,
+        "bad_return_fault": false,
+        "net_blocked_fault": false,
+        "shuttle_net_contact": false,
+        "followthrough_crossed": false,
+        "followthrough_finished": false
+      },
+      "geometry_events": [
+        {
+          "env_id": 0,
+          "episode_index": 0,
+          "time_s": 6.25000029685907e-05,
+          "primitive": "Frame_02",
+          "net_strip": 32,
+          "query_box_local_min_m": [
+            1.500001,
+            0.002298611807419207,
+            1.524
+          ],
+          "query_box_local_max_m": [
+            1.5031227053449436,
+            0.0251939343238671,
+            2.9977017275392424
+          ],
+          "plane_numerical_tolerance_m": 1e-06,
+          "provider": "Declared collision primitives transformed by current GPU engine body pose; no forces"
+        }
+      ],
+      "source_hashes_sha256": "1a7ab5cbec028cc2f9757351ba8afcf981b2cf6816c5cfe52141fcad23d0b9b4",
+      "scope": "One actual10ms native fixture, fixed root/nonground. Geometry/rules only, not a jump or policy acceptance."
+    },
+    {
+      "run": "near_net_own_contact02",
+      "status": "PASSED",
+      "elapsed_s": 7.3810817140038125,
+      "gpu_hours": 0.00205030047611217,
+      "actual_env_steps": 1,
+      "flags": {
+        "launched": true,
+        "in_play": true,
+        "had_contact": true,
+        "legal_initial_contact": true,
+        "string_hit": true,
+        "airborne_string_hit": false,
+        "frame_hit": false,
+        "released": true,
+        "crossed_net": true,
+        "landed_legal_court": false,
+        "landed_target": false,
+        "ground_seen": false,
+        "robot_net_fault": false,
+        "body_ball_fault": false,
+        "wrong_side_fault": false,
+        "double_hit_fault": false,
+        "racket_invasion_fault": false,
+        "body_over_net_fault": false,
+        "under_net_obstruction_fault": false,
+        "engineering_body_crossing": false,
+        "bad_return_fault": false,
+        "net_blocked_fault": false,
+        "shuttle_net_contact": false,
+        "followthrough_crossed": false,
+        "followthrough_finished": false
+      },
+      "geometry_events": [],
+      "source_hashes_sha256": "1a7ab5cbec028cc2f9757351ba8afcf981b2cf6816c5cfe52141fcad23d0b9b4",
+      "scope": "One actual10ms native fixture, fixed root/nonground. Geometry/rules only, not a jump or policy acceptance."
+    },
+    {
+      "run": "near_net_empty_corner02",
+      "status": "PASSED",
+      "elapsed_s": 7.379815630032681,
+      "gpu_hours": 0.002049948786120189,
+      "actual_env_steps": 1,
+      "flags": {
+        "launched": true,
+        "in_play": true,
+        "had_contact": false,
+        "legal_initial_contact": false,
+        "string_hit": false,
+        "airborne_string_hit": false,
+        "frame_hit": false,
+        "released": false,
+        "crossed_net": false,
+        "landed_legal_court": false,
+        "landed_target": false,
+        "ground_seen": false,
+        "robot_net_fault": false,
+        "body_ball_fault": false,
+        "wrong_side_fault": false,
+        "double_hit_fault": false,
+        "racket_invasion_fault": false,
+        "body_over_net_fault": false,
+        "under_net_obstruction_fault": false,
+        "engineering_body_crossing": false,
+        "bad_return_fault": false,
+        "net_blocked_fault": false,
+        "shuttle_net_contact": false,
+        "followthrough_crossed": false,
+        "followthrough_finished": false
+      },
+      "geometry_events": [],
+      "source_hashes_sha256": "1a7ab5cbec028cc2f9757351ba8afcf981b2cf6816c5cfe52141fcad23d0b9b4",
+      "scope": "One actual10ms native fixture, fixed root/nonground. Geometry/rules only, not a jump or policy acceptance."
+    }
+  ],
+  "preserved_failed_attempts": [
+    {
+      "run": "near_net_prehit_invasion01",
+      "status": "FAILED",
+      "elapsed_s": 7.3770072140032426,
+      "gpu_hours": 0.0020491686705564564,
+      "reason": "CPU PhysX scene-query poses did not match current DirectGPU articulation state; true8mm intrusion was missed. Failure/source/metrics kept."
+    },
+    {
+      "run": "near_net_prehit_query_debug01",
+      "status": "FAILED",
+      "elapsed_s": 7.378391698002815,
+      "gpu_hours": 0.0020495532494452266,
+      "reason": "CPU PhysX scene-query poses did not match current DirectGPU articulation state; true8mm intrusion was missed. Failure/source/metrics kept."
+    }
+  ],
+  "root_cause_evidence": "Wide CPU query saw actor shapes, but above-net queries missed the live GPU-positioned racket. This matches the documented DirectGPU CPU-pose limitation.",
+  "primary_documentation": "https://nvidia-omniverse.github.io/PhysX/physx/5.7.0/docs/DirectGPUAPI.html",
+  "fix": "Transform declared96 USD collision primitives with current GPU body pose. Exact capsule/box intersection and finite-cylinder convex quadratic solve. No CPU scene-query pose dependence, no forces or asset/hardware/threshold changes.",
+  "cpu_tests_passed": 45,
+  "formal_acceptance": false,
+  "remaining_scope": "Dynamic whole-stroke success and full A/B200 panels still required. CPU state tests cover full return below net; no general umpire-completeness claim."
+}

@@ -1,0 +1,168 @@
+{
+  "created_at": "2026-10-24T06:00:56.540740+00:00",
+  "scope": "Completed generation0 only; generation1 remains running. TRAIN, not formal evaluation.",
+  "executions": 64,
+  "contacts": 0,
+  "airborne_strings": 0,
+  "complete": 0,
+  "body_recoveries": 0,
+  "body_ground": 46,
+  "robot_net_fault": 13,
+  "racket_invasion_fault": 5,
+  "numerical_failures": 0,
+  "examples": [
+    {
+      "env_id": 0,
+      "clock_s": 2.759999990463257,
+      "native_racket_body_pose": [
+        1.3396568298339844,
+        0.13512802124023438,
+        1.5450832843780518,
+        0.9747213125228882,
+        -0.1407245248556137,
+        0.1520473212003708,
+        0.08364468812942505
+      ],
+      "native_ball_center_m": [
+        0.9694175720214844,
+        0.063201904296875,
+        1.7117043733596802
+      ],
+      "planned_uv_ball_center_m": [
+        1.3882728773855582,
+        0.16518618553368386,
+        1.6191666609194266
+      ],
+      "error_to_actual_ball_m": [
+        0.4188553053640738,
+        0.10198428123680886,
+        -0.09253771244025355
+      ],
+      "note": "The marked proposed upper-strings point, not the nearest point over the entire racket."
+    },
+    {
+      "env_id": 10,
+      "clock_s": 2.759999990463257,
+      "native_racket_body_pose": [
+        1.2545852661132812,
+        0.22379302978515625,
+        1.6465188264846802,
+        0.9720305800437927,
+        -0.2085290551185608,
+        0.037033990025520325,
+        0.10149078816175461
+      ],
+      "native_ball_center_m": [
+        0.9694175720214844,
+        0.06366348266601562,
+        1.7117043733596802
+      ],
+      "planned_uv_ball_center_m": [
+        1.2822578562862195,
+        0.2656105724582383,
+        1.725518072543776
+      ],
+      "error_to_actual_ball_m": [
+        0.3128402842647351,
+        0.2019470897922227,
+        0.013813699184095807
+      ],
+      "note": "The marked proposed upper-strings point, not the nearest point over the entire racket."
+    },
+    {
+      "env_id": 12,
+      "clock_s": 2.759999990463257,
+      "native_racket_body_pose": [
+        1.117340087890625,
+        0.18749713897705078,
+        1.6594793796539307,
+        0.9716973304748535,
+        -0.23156626522541046,
+        0.010380306281149387,
+        0.045533668249845505
+      ],
+      "native_ball_center_m": [
+        0.9694175720214844,
+        0.06356620788574219,
+        1.7117043733596802
+      ],
+      "planned_uv_ball_center_m": [
+        1.142746059061775,
+        0.23022671741523346,
+        1.7387515674334153
+      ],
+      "error_to_actual_ball_m": [
+        0.1733284870402907,
+        0.16666050952949127,
+        0.027047194073735126
+      ],
+      "note": "The marked proposed upper-strings point, not the nearest point over the entire racket."
+    },
+    {
+      "env_id": 54,
+      "clock_s": 2.759999990463257,
+      "native_racket_body_pose": [
+        1.0860862731933594,
+        0.23285293579101562,
+        1.7044260501861572,
+        0.9727177023887634,
+        -0.17409372329711914,
+        -0.06873532384634018,
+        0.13706517219543457
+      ],
+      "native_ball_center_m": [
+        0.9694175720214844,
+        0.063201904296875,
+        1.7117043733596802
+      ],
+      "planned_uv_ball_center_m": [
+        1.094152479534851,
+        0.2690780093893679,
+        1.7903215701976831
+      ],
+      "error_to_actual_ball_m": [
+        0.12473490751336658,
+        0.20587610509249288,
+        0.07861719683800295
+      ],
+      "note": "The marked proposed upper-strings point, not the nearest point over the entire racket."
+    },
+    {
+      "env_id": 62,
+      "clock_s": 2.759999990463257,
+      "native_racket_body_pose": [
+        1.1616592407226562,
+        0.32816314697265625,
+        1.575007677078247,
+        0.9434518218040466,
+        -0.25136199593544006,
+        0.13575692474842072,
+        0.16818419098854065
+      ],
+      "native_ball_center_m": [
+        0.9694175720214844,
+        0.063201904296875,
+        1.7117043733596802
+      ],
+      "planned_uv_ball_center_m": [
+        1.2003122884230444,
+        0.3813364991313441,
+        1.641595187346162
+      ],
+      "error_to_actual_ball_m": [
+        0.23089471640156,
+        0.3181345948344691,
+        -0.07010918601351812
+      ],
+      "note": "The marked proposed upper-strings point, not the nearest point over the entire racket."
+    }
+  ],
+  "next_hypothesis": "Large seed/posture change altered coupled dynamics and missed the ball. Preserve actual previous contact candidate31, vary arm lead/speed while leaving its leg timing intact, and retain contact candidates during TRAIN while measuring failed-return recovery. All original success gates unchanged.",
+  "sources": {
+    "episodes_000.json": "e74cbbc383d8f9a43a0b8cc4794c24b446eddf70785ee71d7a50844e6b92294d",
+    "near_contact_all_000.npz": "e3439b8c27f93b64c6c0c7a385c199bb262dc08ae447e47a946f27d9ada92db2",
+    "source_hashes.json": "1a7ab5cbec028cc2f9757351ba8afcf981b2cf6816c5cfe52141fcad23d0b9b4",
+    "population_000.pt": "f85212ef98023be1be75dc5787de59c24a2a14e7e7bf6a5fffb3c38a7fc909ed"
+  },
+  "formal_acceptance": false
+}

@@ -1,0 +1,20 @@
+{
+  "created_at": "2026-10-24T06:01:57.353716+00:00",
+  "scope": "New TRAIN method, CPU validated only; native execution queued after upper_strings guard exits.",
+  "source": "ball_recovery_cem01/population_001.pt generation1 candidate31",
+  "source_actual_airborne_contact_cases": 1,
+  "source_cases": 2,
+  "source_other_case": "TRAIN65 body ground at2.99s; not complete success",
+  "warm_start": "contact_recovery_warm06/policy.pt",
+  "parameters_and_seed_preserved": true,
+  "selection_contract": "actual-contact-then-return-and-recovery-v1",
+  "sampling_contract": "contact-arm-timing-speed-grid-v1",
+  "priority": "Number of actual complete-smash cases first, then actual airborne own-side strings cases without robot-rule faults; bounded actual-outgoing and recovery reward within the priority pool.",
+  "shadow_check": "On completed generation1, candidate31 is the sole nonzero contact tier. Old feasibility-first CEM selected missed-ball recovery candidate1.",
+  "controlled_grid": "12 arm_lead deltas[-.06,-.03,0,.03] x arm_velocity_gain multipliers[.7,1,1.3]; every leg/walk/interception parameter preserved in these12 candidates. Remaining candidates use smaller CEM perturbations.",
+  "native_protocol_changes": false,
+  "formal_success_changes": false,
+  "remaining": "Actual outgoing>=8m/s/vx>0/vz<=-1, overnet first target landing and same-episode qualified jump stable.8s/no body ground; TRAIN expansion and original A/B200 each still required.",
+  "cpu_tests": 50,
+  "formal_acceptance": false
+}

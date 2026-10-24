@@ -1,0 +1,119 @@
+{
+  "scope": "One actual10ms native fixture, fixed root/nonground. Geometry/rules only, not a jump or policy acceptance.",
+  "variant": "prehit-invasion",
+  "initial": {
+    "tool_position_m": [
+      [
+        1.395146131515503,
+        1.043081283569336e-07,
+        3.000000238418579
+      ]
+    ],
+    "tool_quaternion_wxyz": [
+      [
+        -0.7071067690849304,
+        1.983790696158394e-07,
+        -0.49999967217445374,
+        0.5000001788139343
+      ]
+    ],
+    "native_racket_maximum_x_m": [
+      1.5079998970031738
+    ],
+    "old_aabb_proxy_maximum_x_m": [
+      1.5422242879867554
+    ]
+  },
+  "flags": {
+    "launched": true,
+    "in_play": false,
+    "had_contact": false,
+    "legal_initial_contact": false,
+    "string_hit": false,
+    "airborne_string_hit": false,
+    "frame_hit": false,
+    "released": false,
+    "crossed_net": false,
+    "landed_legal_court": false,
+    "landed_target": false,
+    "ground_seen": false,
+    "robot_net_fault": false,
+    "body_ball_fault": false,
+    "wrong_side_fault": false,
+    "double_hit_fault": false,
+    "racket_invasion_fault": true,
+    "body_over_net_fault": false,
+    "under_net_obstruction_fault": false,
+    "engineering_body_crossing": false,
+    "bad_return_fault": false,
+    "net_blocked_fault": false,
+    "shuttle_net_contact": false,
+    "followthrough_crossed": false,
+    "followthrough_finished": false
+  },
+  "actual_contacts": [],
+  "contact_point_m": [
+    NaN,
+    NaN,
+    NaN
+  ],
+  "crossing_point_m": [
+    NaN,
+    NaN,
+    NaN
+  ],
+  "contact_time_s": NaN,
+  "crossing_time_s": NaN,
+  "final_native_racket_maximum_x_m": [
+    1.50779128074646
+  ],
+  "numerical_failures": 0,
+  "asset_dependencies": {
+    "scope": "Composed USD source-layer integrity only, not policy performance",
+    "asset": "/home/autodrive/LZQW/unitree_smash/assets/quadsmash_full_racket_v4_r3.usd",
+    "layer_count": 10,
+    "all_layers_pinned": true,
+    "resolved_layers": [
+      "/home/autodrive/Isaac/unitree_model/Go2/usd/configuration/go2_description_base.usd",
+      "/home/autodrive/Isaac/unitree_model/Go2/usd/configuration/go2_description_physics.usd",
+      "/home/autodrive/Isaac/unitree_model/Go2/usd/configuration/go2_description_sensor.usd",
+      "/home/autodrive/Isaac/unitree_model/Go2/usd/go2.usd",
+      "/home/autodrive/LZQW/unitree_smash/assets/quadsmash_full_racket_v4_r3.usd",
+      "/home/autodrive/LZQW/unitree_smash/assets/robots/piper_standard/configuration/piper_standard_base.usd",
+      "/home/autodrive/LZQW/unitree_smash/assets/robots/piper_standard/configuration/piper_standard_physics.usd",
+      "/home/autodrive/LZQW/unitree_smash/assets/robots/piper_standard/configuration/piper_standard_robot.usd",
+      "/home/autodrive/LZQW/unitree_smash/assets/robots/piper_standard/configuration/piper_standard_sensor.usd",
+      "/home/autodrive/LZQW/unitree_smash/assets/robots/piper_standard/piper_standard.usd"
+    ],
+    "manifest_sha256": "d402e8873792fc9e0e03036757b6663e2424177a34907de6622004473e0cc220",
+    "visual_shader_caveat": "OmniPBR.mdl is an Isaac/Kit built-in visual shader; standalone USD discovery cannot resolve its runtime search path. It is not a robot collision or inertial layer. All10 robot source layers are explicitly hashed.",
+    "formal_acceptance": false
+  },
+  "plane_geometry_evaluations": 1,
+  "plane_geometry_events": [
+    {
+      "env_id": 0,
+      "episode_index": 0,
+      "time_s": 6.25000029685907e-05,
+      "primitive": "Frame_02",
+      "net_strip": 32,
+      "query_box_local_min_m": [
+        1.500001,
+        0.002298611807419207,
+        1.524
+      ],
+      "query_box_local_max_m": [
+        1.5031227053449436,
+        0.0251939343238671,
+        2.9977017275392424
+      ],
+      "plane_numerical_tolerance_m": 1e-06,
+      "provider": "Declared collision primitives transformed by current GPU engine body pose; no forces"
+    }
+  ],
+  "control_ticks": 1,
+  "physics_dt_s": 6.25e-05,
+  "formal_acceptance": false,
+  "fixed_base": true,
+  "ground_initialization": false
+}

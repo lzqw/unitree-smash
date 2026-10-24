@@ -50,19 +50,19 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "Current recovery CEM generation1 live. Generation0:64 candidate first episodes,3 qualified jump recoveries after misses,0contacts/0complete/NF0. Generation1 partial:legal airborne strings at1.702m,4.951m/s downward return blocked by net,0complete. Future query/teacher04/curriculum-v3 code passes40 CPU tests but native regressions pending after this launch-source-v2 job. Evidence uploaded and verified.",
+      "notes": "Completed recovery CEM2x64:13 qualified body recoveries after misses,1airborne string/4contacts/0complete/NF0. Native3 near-net regressions pass after fixing stale CPU scene-query issue using live GPU-pose primitive geometry. Upper-string05 warm-start training now running64env x2gens with curriculumv3; new complete outcomes unproven.",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/reach_cem_fine_feedback01/metrics.json",
       "curriculum_policy": "reports/G07_full_racket_v4/reach_cem_fine_feedback01/best_candidate.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
       "active_gpu_jobs": [
         {
-          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_recovery_cem01",
-          "guard_pid": 1334795,
-          "child_pid": 1334807,
-          "session_id": 53083,
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_upper_strings_cem01",
+          "guard_pid": 1344215,
+          "child_pid": 1344227,
+          "session_id": 3642,
           "state": "RUNNING",
-          "started_at": "2026-10-24T05:01:44.915344+00:00"
+          "started_at": "2026-10-24T05:47:53.848866+00:00"
         }
       ],
       "queued_native_sequence": {
@@ -77,7 +77,7 @@
         "still_running": false
       },
       "native_air_string_contact_milestone": "reports/G07_full_racket_v4/ball_cem_low_base_branch01/NATIVE_CONTACT_MILESTONE.json",
-      "latest_native_training_summary": "reports/G07_full_racket_v4/ball_push_grid01/TRAIN_RESULT_SUMMARY.json",
+      "latest_native_training_summary": "reports/G07_full_racket_v4/ball_recovery_cem01/FINAL_TRAIN_SUMMARY.json",
       "latest_video": {
         "path": "reports/G07_full_racket_v4/video/Current_effect_air_contact_20261024_0450.mp4",
         "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_air_contact_20261024_0450.mp4",
@@ -86,7 +86,7 @@
         "formal_acceptance": false
       },
       "latest_completed_generation": "reports/G07_full_racket_v4/recovery_generation0_snapshot01/GENERATION.json",
-      "pending_rule_regression": "reports/G07_full_racket_v4/NEAR_NET_RULE_CHANGE_0526.json",
+      "pending_rule_regression": "reports/G07_full_racket_v4/NATIVE_PLANE_REGRESSION_0549.json",
       "partial_generation1_contact": "reports/G07_full_racket_v4/recovery_gen1_contact_partial01/CONTACT_MILESTONE.json"
     },
     "G08": {
@@ -128,7 +128,8 @@
       "native_reset_perturbation_public_observation_isolation": "PASSED",
       "independent_engine_view_reset_check": "PASSED",
       "native_composed_asset_dependencies": "PASSED",
-      "native_racket_plane_followthrough_boundaries": "TODO"
+      "native_racket_plane_followthrough_boundaries": "IN_PROGRESS",
+      "native_near_net_first_contact_invasion_geometry": "PASSED"
     }
   }
 }

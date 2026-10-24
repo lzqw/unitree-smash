@@ -1,26 +1,25 @@
-# 唯一活跃GPU：ball_recovery_cem01第二代，原目标仍未达成
+# 唯一活跃GPU：ball_upper_strings_cem01，真实上部拍线与恢复联合训练
 
-继续前必须读 /home/autodrive/.codex/attachments/55e175f0-9444-4a09-ad37-681e6586ca51/pasted-text-1.txt。仅GPU0，无累计GPUh/总工作窗/截止，有限单job保护，历史失败/费用均保留。完整目标不可缩减：真实完整球拍/标准悬空网/己方实际合法空中拍线+原攻击>=8m/s、vx>0、vz<=-1+真实越网首次目标落点+同回合无bodyground稳定.8s，再原A/B200各面板worst .5/.7/.85/NF0、成功失败实际侧视俯视视频与旧新能力比较、Github完整交付。当前完整成功仍0，不能标完成或说不可行。
+继续前必须读 /home/autodrive/.codex/attachments/55e175f0-9444-4a09-ad37-681e6586ca51/pasted-text-1.txt。完整目标不缩减：真实完整球拍/标准悬空网/己方实际合法空中拍线+原攻击>=8m/s、vx>0、vz<=-1+真实越网首次目标落点+同回合无bodyground稳定.8s，之后原A/B各200 worst .5/.7/.85/NF0、真正成功/失败侧视俯视视频、旧新能力比较与全部Github交付。当前完整成功仍0，正式400未跑，绝不能标完成或说不可行。仅GPU0无累计GPUh/总工作窗/截止，有限单job保护、全部历史失败/费用保留。
 
-当前同一exec53083、guard1334795/child1334807，ball_recovery_cem01；32候选×TRAIN[1,65]=64环境×2代，62.5us物理/10ms控制，每回合原8s。单job5400s/102400控制-env步cap。先ps/poll同一handle/progress/error/job.json；观察超时不等于退出，不重复启动。GPU_LEDGER/RUNS由活跃guard持有勿手改。当前已实际进入generation1（第二代），第一代完整800ticks/51200步；整体GPU费用待guard终态结算，不捏造每代GPUh。
+当前同一exec3642，guard1344215/child1344227，ball_upper_strings_cem01；32候选×TRAIN[1,65]=64环境×2代，62.5us物理/10ms控制，每回合原8s，单job5400s/102400控制-env步cap。先ps/poll同一handle、progress/error/job.json，观察超时不是退出，不重复启动。GPU_LEDGER/RUNS由活跃guard持有，勿手改。旧recovery_cem01/exec53083/guard1334795已SUCCEEDED退出，不再当活跃。
 
-第一代结果：64次候选执行（含重复参考）0触球/0完整/NF0，3次qualified jump+稳定恢复，均在漏球后同一回合，不能称成功回球。env2/candidate1/TRAIN1：air.477、stable3.9299s；env8/candidate4/TRAIN1 air.466、stable3.6269s；env13/candidate6/TRAIN65 air.405、stable3.8719s。所有64失败也保留。recovery_generation0_snapshot01拷贝并逐文件SHA核对了第一代不可变raw/权重/源码，GENERATION.json说明job仍未完成。第一代至少一组两案例均无bodyground/无rallyfault，但一例稳定仅.554s，原恢复门槛未降低。第二代在同一旧源码进程继续实际CEM。
+当前控制：--warm-start upper_strings_warm05/policy.pt --ik-seeds ik_recorded_upper_strings05/seeds.json --continue-after-miss --push-search-range .30。warm取旧gen1 candidate12，两TRAIN均实际qualified jump+稳定3.9559/3.7869s、无bodyground，但都漏球，不是成功回球。用该成功恢复姿态的实际GPU snapshot重新拟合上部拍线uvz+.09，静态位置误差.02224m、速度投影[2.10577,-.30825,-.64999]m/s，仅初始化不是实际击球速度。旧04是失败恢复来源的草稿，已改用来源更可靠的05。新arm会改变基座反作用，所有fitness从头重测。
 
-当前运行源码是启动时snapshot；下列新代码仅已编译/CPU验证，绝不冒称当前job已用：
-1) RacketPlaneSupport对声明USD圆柱/胶囊/62拍线盒求真实support，整支球拍回己方才结束随挥；不是仅“不高于网顶”。CPU几何/规则38项通过；新增课程不复活回合/混合robot fault测试后当前40项通过，96个USD碰撞primitive/308080表面采样/64随机朝向核对，最大采样间隙7.285um、无低估；这不是原生运动验收。
-2) Native PhysX overlap_box查询对手侧、实际64网顶分段以上的体积，并只接受该环境实际球拍碰撞shape（Clamp仍属机器人）。AABB只作query范围，不再判材质越网；1um数值容差显式记录。cfg开启scene query，不加力、不改变asset/质量/执行器/球/来球/门槛。当前未原生执行，必须按NEAR_NET_RULE_CHANGE_0526.json的3条精确guard argv依次运行near_net_own_contact01、near_net_empty_corner01、near_net_prehit_invasion01；每个nonground/fixed-base诊断仅1控制步、max180s、cap1，不能称策略成功。必须等活跃GPU旧job终态后执行，不并发。失败保留新目录修复后测，不覆盖。
-3) 新TRAIN/formal logger将保存全部lane完整回合50Hz姿态/球/clock/first-valid，另存原生接触/终止快照。当前旧job仅首2lane连续全回合，all-lane窗口2.2..3.4；env2/8/13的后续恢复不能拼接别的lane伪造视频。新每代清除plane事件/重置local episode id0；当前旧jobgen1的global episode id可能>0，优化仍按每env第一条记录，勿误滤只episode0。
+seed05保留794D公开观测/因果ball forecast，nominal projected pitch取该TRAIN姿态，leg_event_time_gain0固定腿时钟；warm p2由1.3965557按源case1事件2.7209535转换成1.3675091，保持源case1原腿时间线而不是无故移后。半挥窗.08，新的strike residual清零，armlead仍原实测初值。argsIK清armoffset/armgain1，真正root始终地面.323起始且floating，实际关节/速度/力矩限幅保持。原outgoing8m/s等成功门槛未变。
 
-接着必须直接继续真实适配，别停在边界审计：3个原生短回归过后，以当前ball_recovery_cem01/best_candidate.pt作warm-start，--ik-seeds reports/G07_full_racket_v4/ik_recorded_upper_strings04/seeds.json，继续--continue-after-miss --push-search-range .30、32候选×[1,65]×2代，有限5400s/102400cap新目录ball_upper_strings_cem01。新源码/目标/控制用warm重测，不能直接resume旧fitness；若要旧optimizer精确resume须先恢复其完整source snapshot。
+当前课程v3：允许TRAIN在漏球、shuttle-only反向/挡网失败后继续观察同一跳跃恢复，rally始终dead/fault，后续弹跳不能变成功；robot-rule/bodyground/fallen仍提前结束。正式FullRacketEnv/FrozenPanelEnv始终原8s/原判定，不用TRAIN子类。45项CPU测试包含不复活回合、混合robot故障不能被shuttle故障掩盖。新记录将保存全部lane全8s50Hz姿态/球/clock/first-valid，以及exact contact/terminal states；每代local episode id从0重新开始，避免旧logger全局id混淆。新记录路径all_first_episodes_000.npz等。旧recoveryjob没有这些新字段，不冒称补录其未保存轨迹。
 
-upper_strings04是可复现CPU proposal，不是成功：scripts/retarget_full_racket_recorded_pose_v4.py从immutable TRAIN_SOURCE_SNAPSHOT拟合低joint1分支，uvz+.09仍在原真实拍线内（没有放大拍面）。native gen0/env36在t2.74的姿态，静态点误差1.5e-7m/normal1.2e-6，局部带根运动的速度投影[1.9723,-.6281,-.8536]m/s；实际受新arm反作用会改变，不能拿预测冒充真实v_hit。源env36后来恢复失败，下一步取实际恢复更好的新腿策略并重新测耦合动力学。seed新增nominal projected pitch.23335、leg_event_time_gain0（arm仍public ball causal timing，腿时钟固定，旧种子默认1不变）；实际outgoing8m/s攻击门槛完全未改。旧01/02/03都是未执行CPU草稿保留，以程序生成04为下一实测候选。CPU几何失败/搜索失败不代表任务不可行。
+刚完成recovery_cem01两代128次候选首回合（含elite重测）：13次qualified jump recoveries全部来自漏球回合、4接触中1空中拍线、0完整/NF0。实际2095.264856s/.582018016GPUh/102400步。gen0 3recoveries，gen1 10recoveries；gen1 candidate1/12/24两案例均完成body恢复，只有1组的最低稳定.803s，不能称泛化强。env62/episode2实际合法空中拍线高1.702071m，out[4.824756,-.361456,-1.049205]、速4.950732，后真实shuttle触网挡回，body恢复因旧v2早停未验证；不是攻击或完整成功。FINAL_TRAIN_SUMMARY.json/128行episodes.csv/全部raw/权重/精确source保留。旧gen0 raw contacts中有自动reset后episode1事件，不混进候选首回合统计。
 
-后续若该teacher无实质进展，按真实状态推进姿态/角速度反馈、反作用协调、轨迹优化或残差学习，不固守教师。扩大TRAIN128与原扰动，冻结真实最佳源码/权重（包括10层外部USD依赖，前轮已原生核对），独立原A/B200，再实际完整成功/失败全身视频和旧新比较。原r3资产c2264fce...、675mm整拍/451.8mm法兰至拍线中心/153g拍夹具/20.709991kg总重及全部原物理hash与门槛均不变。
+近网判定新修复已实际验证：02组near_net_prehit_invasion/own_contact/empty_corner三个nonground/fixed-root单控制步原生案例全部SUCCEEDED/NF0；NATIVE_PLANE_REGRESSION_0549.json。真正提前越网在第一个62.5us子步抓到Frame_02；合法接触点x1.491005在己方而球心x1.515918已在对方，实际strings/cross_net且无fault；空AABB角max1.526224但真实primitive support1.492，正确不判越网。只目标回归，不能称policy或完整裁判验收。Full-return逻辑CPU正反测试通过；后续实际合法扣杀仍须检查动态随挥及全回己方。
 
-已发布最新实际触球视频28.94秒：
+01旧native scene-query分支的提前越网/调试两次FAILED原样保留（费用计入）。原因为DirectGPU CPU scene-query姿态旧，wide query有actor而live侵入volume不命中，与NVIDIA官方DirectGPU API限制说明一致；不能恢复该错误分支当当前判定。现基于引擎当前GPU body pose计算声明USD96 primitive的精确box/capsule交叠与有限cylinder凸QP，1um显式plane数值容差，不加力、不改asset/质量/碰撞材质/网/球/执行器/门槛，也不开无效CPU scene-query支持。若数值几何求解未决会硬报错而非默认合法。新原生三个02通过后才启动当前实际训练。
+
+后续按当前native contact/attack/cross/firsttarget/recovery实际结果持续优化，不停在弱触球或CPU几何；必要时任务空间/角速度反馈、反作用协调、轨迹优化/残差学习。扩大TRAIN128/原扰动，冻结真正最佳源码权重（含此前原生核对的10层USD依赖），原A/B200独立评估，真正完整成功/失败全身视频和旧新比较。原r3 c2264fce...资产675mm整拍/451.8mm法兰至拍线中心/153g拍夹具/20.709991kg总重及全协议hash保持。
+
+最新已发布实际触球视频28.94秒：
 https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_air_contact_20261024_0450.mp4
-此前36次pushgrid的8拍线/7拍框/0完整原始证据、程序与10层USD完整性归档已经GitHub上传并核size/SHA。当前第一代snapshot与新代码已经GitHub上传并核size/SHA；第二代未完不当完整训练附件。已另保留gen1/env62/episode2的首回合部分证据：真实合法空中拍线点高1.702071m、out4.950732m/s/vz-1.0492，实际shuttle_net_contact和net_blocked_fault，0complete/NF0。policy_evidence.pt将旧初始化training_result单列，未虚称整对案例完成。历史上下文NEXT_before_near_net_change_0526.txt和此前NEXT文件。不能编辑preexisting status/G07_RESOURCE_STOP.json，不能停止无关MPS/GPU任务。
+已发布gen0不可变snapshot与gen1部分1.702m触球证据和程序，均核Github大小SHA。完整两代/本次02修复和新warm05正在同步；活跃upper_strings任务不能当完成数据。旧上下文NEXT_before_upper_strings_0549.txt及更早NEXT。不得改preexisting status/G07_RESOURCE_STOP.json，不停止无关MPS/GPU任务。
 
-未来课程v3补充（当前运行仍v2）：--continue-after-miss还允许shuttle-only的bad_return/net_blocked后继续观察同一跳跃，rally始终dead/fault、complete始终False，robot-rule/bodyground/fallen仍提前终止。CPU40测试包括“不能复活失败回合/不能用球故障掩盖同时robot fault”。新合同ball-with-jump-recovery-v3，必须warm重测。CONTINUATION_UPDATE_0530.json及GitHub最新分支记录完整来源。
-第一代包：https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_recovery_gen0_and_rule_code_20261024_0528.zip
-第二代接触部分证据/当前v3程序：https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_recovery_contact_and_curriculum_v3_20261024_0532.zip
+2026-10-24 06:03 UTC续进：最新30秒原生高位触球/独立恢复视频及42文件证据已上传核SHA，branch2de9f3d。upper_strings gen0已完成64次（405ticks/25920steps），0contact/0recover/0complete/NF0，46bodyground、13robotnet、5invasion；gen1仍在同一guard运行，不因观察超时重开。UPPER_STRINGS_GEN0_DIAGNOSIS_0601.json。新seed改变耦合反作用；下一轮已准备contact_recovery_warm06/policy.pt，精确取原recovery gen1 candidate31实际1.702m接触的原seed/26参数，未继承fitness。新可选contact-curriculum+contact-grid优先保留实际合法空中拍线，观察挡网后的同跳恢复，12组只变arm lead/speed、不动腿时钟；全50项CPU测试通过，但新模式未原生运行。当前guard退出后直接run_gpu_job有限5400s/102400步，32candidates×[1,65]×2gens、sigma.025、push_search_range.30、continue-after-miss；不加IK seed覆盖。原完整成功门槛/正式环境不改。源candidate31的TRAIN65原回合2.99s bodyground，不能称两case成功。

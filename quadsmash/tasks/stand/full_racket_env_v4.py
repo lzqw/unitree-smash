@@ -12,7 +12,8 @@ from .coupled_env import ROOT
 from .visual_geometry import collision_proxy_corners
 from quadsmash.physics.native import quat_rotate
 from quadsmash.physics.full_racket_v4 import load_racket,parts,string_prism_gap,swept_string_prism,string_polygon,string_strips,apply_neutral_arm_reset,RacketPlaneSupport
-from quadsmash.physics.court_v4 import load_court,VERSION,top_height,segment_top
+from quadsmash.physics.court_v4 import load_court,VERSION,top_height
+from quadsmash.physics.racket_plane_geometry_v4 import RacketPlaneGeometry
 from quadsmash.physics.rally_rules_v4 import RallyRulesV4
 
 
@@ -22,8 +23,6 @@ def full_racket_cfg(num_envs=16,physics_dt=.0000625):
     cfg.scene.num_envs,cfg.scene.env_spacing=num_envs,court['environment_spacing_m']
     cfg.ground_size_m=(4096.,4096.,.1)
     cfg.sim.device='cuda:0';cfg.sim.dt=physics_dt
-    # Queries inspect the existing native collision shapes; they add no force.
-    cfg.sim.enable_scene_query_support=True
     cfg.decimation=cfg.sim.render_interval=round(.01/physics_dt)
     cfg.episode_length_s=8.;cfg.include_net=True
     cfg.net_geometry_version=VERSION
@@ -71,8 +70,7 @@ class FullRacketEnvV4(BallEnv):
             racket_points.extend(part['center']+np.array(list(itertools.product((-1,1),repeat=3)))*half)
         self.racket_points=torch.tensor(np.array(racket_points),dtype=torch.float32,device=device)[None]
         self.racket_plane_support=RacketPlaneSupport(self.racket_config,device)
-        from omni.physx import get_physx_scene_query_interface
-        self.racket_native_query=get_physx_scene_query_interface()
+        self.racket_plane_geometry=RacketPlaneGeometry(self.racket_config,self.court_config)
         self.racket_plane_records=[];self.racket_plane_query_calls=0
         self.first_tool_normal=torch.zeros((n,3),device=device)
         self.first_tool_velocity=torch.zeros((n,3),device=device)
@@ -82,53 +80,21 @@ class FullRacketEnvV4(BallEnv):
         self._jump_metric_stride=max(1,round(.001/self.physics_dt))
         self._v4_ready=True
 
-    def _racket_over_net_native(self,racket_world,maximum_x,fully_own):
-        """Query actual PhysX shapes in the opponent volume above each strip.
-
-        Local AABB corners only bound the query volume. They are never the
-        invasion verdict. Once a legal followthrough has crossed, exact whole
-        racket return is sufficient to track its continuation without queries.
-        """
-        import carb
+    def _racket_over_net_geometry(self,tool,quaternion,fully_own):
+        """Use live GPU poses, not stale DirectGPU CPU scene-query poses."""
         over=self.rally.followthrough_crossed&(~self.rally.followthrough_finished)&(~fully_own)
         candidates=self.rally.in_play&(~fully_own)&(~over)
         ids=torch.where(candidates)[0].cpu().tolist()
         if not ids:return over
-        c=self.court_config;n=c['net_profile_segments'];half=c['net_width_m']/2
-        bounds=racket_world[ids].cpu().numpy();maxima=maximum_x[ids].cpu().tolist()
-        origins=self.scene.env_origins[ids].cpu().numpy()
+        positions=(tool[ids]-self.scene.env_origins[ids]).cpu().numpy()
+        rotations=quaternion[ids].cpu().numpy()
         for index,i in enumerate(ids):
-            lower=bounds[index].min(0);upper=bounds[index].max(0)
-            # One micrometre is an explicit query-plane numerical tolerance,
-            # not a resized racket or a physical safety-distance rule.
-            x0=c['net_plane_x_m']+1e-6;x1=maxima[index]+1e-7
-            if x1<=x0:continue
-            first=max(0,min(n-1,int(np.floor((lower[1]+half)*n/(2*half)))))
-            last=max(0,min(n-1,int(np.floor((upper[1]+half)*n/(2*half)))))
-            prefix=f'/World/envs/env_{i}/Robot/Racket/'
-            for strip in range(first,last+1):
-                y0=max(lower[1],-half+2*half*strip/n)
-                y1=min(upper[1],-half+2*half*(strip+1)/n)
-                z0=segment_top(strip,c);z1=upper[2]+1e-7
-                if y1<=y0 or z1<=z0:continue
-                hit_paths=[]
-                def report(hit):
-                    path=str(hit.collision)
-                    if path.startswith(prefix) and path.rsplit('/',1)[-1]!='Clamp':
-                        hit_paths.append(path);return False
-                    return True
-                center=np.array([(x0+x1)/2,(y0+y1)/2,(z0+z1)/2])+origins[index]
-                extent=[(x1-x0)/2,(y1-y0)/2,(z1-z0)/2]
-                self.racket_native_query.overlap_box(carb.Float3(*extent),carb.Float3(*center),
-                    carb.Float4(0.,0.,0.,1.),report,False)
-                self.racket_plane_query_calls+=1
-                if hit_paths:
-                    over[i]=True
-                    self.racket_plane_records.append(dict(env_id=i,episode_index=int(self.episode_index[i]),
-                        time_s=float(self.ball_clock[i]),provider='Native PhysX scene overlap query; no forces',
-                        collision_paths=hit_paths,net_strip=strip,plane_numerical_tolerance_m=1e-6,
-                        query_box_local_min_m=[x0,y0,z0],query_box_local_max_m=[x1,y1,z1]))
-                    break
+            witness=self.racket_plane_geometry.first_above_net_overlap(positions[index],rotations[index])
+            self.racket_plane_query_calls+=1
+            if witness:
+                over[i]=True
+                self.racket_plane_records.append(dict(env_id=i,episode_index=int(self.episode_index[i]),
+                    time_s=float(self.ball_clock[i]),**witness))
         return over
 
     def _setup_scene(self):
@@ -220,10 +186,9 @@ class FullRacketEnvV4(BallEnv):
         above=safety[...,2]>=top_height(safety[...,1],self.court_config)
         beyond=safety[...,0]>self.court_config['net_plane_x_m']
         body_over=(above&beyond).any((1,2));engineering=beyond.any((1,2))
-        racket_world=quat_rotate(q[:,None,:],self.racket_points)+tool[:,None,:]-self.scene.env_origins[:,None,:]
         racket_maximum_x=self.racket_plane_support.maximum_x(tool-self.scene.env_origins,q)
         racket_fully_own=racket_maximum_x<=self.court_config['net_plane_x_m']
-        racket_over=self._racket_over_net_native(racket_world,racket_maximum_x,racket_fully_own)
+        racket_over=self._racket_over_net_geometry(tool,q,racket_fully_own)
         normal=quat_rotate(q,torch.tensor([1.,0,0],device=self.device).expand(self.num_envs,-1))
         head_velocity=d.body_link_lin_vel_w[:,self.racket_body_id]
         events=(self.contact_events.count>counts)&self.rally.in_play

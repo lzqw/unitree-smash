@@ -1,0 +1,929 @@
+{
+  "scope": "One actual10ms native fixture, fixed root/nonground. Geometry/rules only, not a jump or policy acceptance.",
+  "variant": "prehit-invasion",
+  "initial": {
+    "tool_position_m": [
+      [
+        1.395146131515503,
+        1.043081283569336e-07,
+        3.000000238418579
+      ]
+    ],
+    "tool_quaternion_wxyz": [
+      [
+        -0.7071067690849304,
+        1.983790696158394e-07,
+        -0.49999967217445374,
+        0.5000001788139343
+      ]
+    ],
+    "native_racket_maximum_x_m": [
+      1.5079998970031738
+    ],
+    "old_aabb_proxy_maximum_x_m": [
+      1.5422242879867554
+    ]
+  },
+  "flags": {
+    "launched": true,
+    "in_play": true,
+    "had_contact": false,
+    "legal_initial_contact": false,
+    "string_hit": false,
+    "airborne_string_hit": false,
+    "frame_hit": false,
+    "released": false,
+    "crossed_net": false,
+    "landed_legal_court": false,
+    "landed_target": false,
+    "ground_seen": false,
+    "robot_net_fault": false,
+    "body_ball_fault": false,
+    "wrong_side_fault": false,
+    "double_hit_fault": false,
+    "racket_invasion_fault": false,
+    "body_over_net_fault": false,
+    "under_net_obstruction_fault": false,
+    "engineering_body_crossing": false,
+    "bad_return_fault": false,
+    "net_blocked_fault": false,
+    "shuttle_net_contact": false,
+    "followthrough_crossed": false,
+    "followthrough_finished": false
+  },
+  "actual_contacts": [],
+  "contact_point_m": [
+    NaN,
+    NaN,
+    NaN
+  ],
+  "crossing_point_m": [
+    NaN,
+    NaN,
+    NaN
+  ],
+  "contact_time_s": NaN,
+  "crossing_time_s": NaN,
+  "final_native_racket_maximum_x_m": [
+    1.50779128074646
+  ],
+  "numerical_failures": 0,
+  "asset_dependencies": {
+    "scope": "Composed USD source-layer integrity only, not policy performance",
+    "asset": "/home/autodrive/LZQW/unitree_smash/assets/quadsmash_full_racket_v4_r3.usd",
+    "layer_count": 10,
+    "all_layers_pinned": true,
+    "resolved_layers": [
+      "/home/autodrive/Isaac/unitree_model/Go2/usd/configuration/go2_description_base.usd",
+      "/home/autodrive/Isaac/unitree_model/Go2/usd/configuration/go2_description_physics.usd",
+      "/home/autodrive/Isaac/unitree_model/Go2/usd/configuration/go2_description_sensor.usd",
+      "/home/autodrive/Isaac/unitree_model/Go2/usd/go2.usd",
+      "/home/autodrive/LZQW/unitree_smash/assets/quadsmash_full_racket_v4_r3.usd",
+      "/home/autodrive/LZQW/unitree_smash/assets/robots/piper_standard/configuration/piper_standard_base.usd",
+      "/home/autodrive/LZQW/unitree_smash/assets/robots/piper_standard/configuration/piper_standard_physics.usd",
+      "/home/autodrive/LZQW/unitree_smash/assets/robots/piper_standard/configuration/piper_standard_robot.usd",
+      "/home/autodrive/LZQW/unitree_smash/assets/robots/piper_standard/configuration/piper_standard_sensor.usd",
+      "/home/autodrive/LZQW/unitree_smash/assets/robots/piper_standard/piper_standard.usd"
+    ],
+    "manifest_sha256": "d402e8873792fc9e0e03036757b6663e2424177a34907de6622004473e0cc220",
+    "visual_shader_caveat": "OmniPBR.mdl is an Isaac/Kit built-in visual shader; standalone USD discovery cannot resolve its runtime search path. It is not a robot collision or inertial layer. All10 robot source layers are explicitly hashed.",
+    "formal_acceptance": false
+  },
+  "native_plane_query_calls": 960,
+  "native_plane_events": [],
+  "native_plane_query_raw_hits": [
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_30",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_32",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_30",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_31",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_32",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_33",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_31",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_33",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_34",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_34",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_35",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_35",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_30",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_32",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_30",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_31",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_32",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_33",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_31",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_33",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_34",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_34",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_35",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_35",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_30",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_32",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_30",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_31",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_32",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_33",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_31",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_33",
+      "rigid_body": "/World/envs/env_0/Net"
+    }
+  ],
+  "wide_query_count": 174,
+  "wide_query_hits": [
+    {
+      "collision": "/World/envs/env_0/Robot/Go2/FR_calf/collisions/mesh_1/cylinder",
+      "rigid_body": "/World/envs/env_0/Robot/Go2/FR_calf"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Go2/FR_calf/collisions/mesh_2/cylinder",
+      "rigid_body": "/World/envs/env_0/Robot/Go2/FR_calf"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Go2/FR_foot/collisions/mesh_0/sphere",
+      "rigid_body": "/World/envs/env_0/Robot/Go2/FR_foot"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Go2/FR_calf/collisions/mesh_0/cylinder",
+      "rigid_body": "/World/envs/env_0/Robot/Go2/FR_calf"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Frame_01",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Frame_02",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Frame_03",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Frame_04",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Frame_05",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Frame_06",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Frame_07",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_60",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_61",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Frame_08",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_58",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_59",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Go2/FR_thigh/collisions/mesh_0/box",
+      "rigid_body": "/World/envs/env_0/Robot/Go2/FR_thigh"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Frame_30",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Frame_31",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Go2/Head_lower/collisions/mesh_0/sphere",
+      "rigid_body": "/World/envs/env_0/Robot/Go2/Head_lower"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Go2/FR_hip/collisions/mesh_0/cylinder",
+      "rigid_body": "/World/envs/env_0/Robot/Go2/FR_hip"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Frame_27",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Frame_28",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Frame_29",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Frame_26",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Frame_25",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_03",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_31",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_32",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Frame_00",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_36",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_37",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_38",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_35",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_34",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_33",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_41",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_42",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_43",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_44",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_40",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_39",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_46",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_47",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_48",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_45",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_50",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_51",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_49",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_53",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_52",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_55",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_54",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_57",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_56",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Frame_09",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Frame_10",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Frame_11",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Frame_12",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_27",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_28",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_29",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_30",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_25",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_26",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_24",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_22",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_23",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_20",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_21",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_19",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_17",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_18",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_14",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_15",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_16",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_13",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_12",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_10",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_11",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_09",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_08",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_05",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_06",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_07",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_04",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Frame_16",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Frame_13",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Frame_14",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Frame_15",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Go2/RR_thigh/collisions/mesh_0/box",
+      "rigid_body": "/World/envs/env_0/Robot/Go2/RR_thigh"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Go2/FL_foot/collisions/mesh_0/sphere",
+      "rigid_body": "/World/envs/env_0/Robot/Go2/FL_foot"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Go2/FL_calf/collisions/mesh_0/cylinder",
+      "rigid_body": "/World/envs/env_0/Robot/Go2/FL_calf"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Go2/FL_calf/collisions/mesh_1/cylinder",
+      "rigid_body": "/World/envs/env_0/Robot/Go2/FL_calf"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Go2/FL_calf/collisions/mesh_2/cylinder",
+      "rigid_body": "/World/envs/env_0/Robot/Go2/FL_calf"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Go2/RR_foot/collisions/mesh_0/sphere",
+      "rigid_body": "/World/envs/env_0/Robot/Go2/RR_foot"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Go2/RR_calf/collisions/mesh_2/cylinder",
+      "rigid_body": "/World/envs/env_0/Robot/Go2/RR_calf"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Go2/RR_calf/collisions/mesh_0/cylinder",
+      "rigid_body": "/World/envs/env_0/Robot/Go2/RR_calf"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Go2/RR_calf/collisions/mesh_1/cylinder",
+      "rigid_body": "/World/envs/env_0/Robot/Go2/RR_calf"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Go2/RL_calf/collisions/mesh_2/cylinder",
+      "rigid_body": "/World/envs/env_0/Robot/Go2/RL_calf"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Go2/RL_foot/collisions/mesh_0/sphere",
+      "rigid_body": "/World/envs/env_0/Robot/Go2/RL_foot"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Go2/RL_calf/collisions/mesh_1/cylinder",
+      "rigid_body": "/World/envs/env_0/Robot/Go2/RL_calf"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Go2/Head_upper/collisions/mesh_0/cylinder",
+      "rigid_body": "/World/envs/env_0/Robot/Go2/Head_upper"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Shaft",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_01",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_02",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Frame_24",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Collider/strip_00",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Frame_22",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Frame_23",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Frame_20",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Frame_21",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Frame_19",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Go2/FL_hip/collisions/mesh_0/cylinder",
+      "rigid_body": "/World/envs/env_0/Robot/Go2/FL_hip"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/MountPlate/Collider",
+      "rigid_body": "/World/envs/env_0/Robot/MountPlate"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Piper/link5/collisions/link5/node_STL_BINARY_",
+      "rigid_body": "/World/envs/env_0/Robot/Piper/link5"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Piper/link6/collisions/link6/node_STL_BINARY_",
+      "rigid_body": "/World/envs/env_0/Robot/Piper/link6"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Grip",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Clamp",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Piper/base_link/collisions/base_link/node_STL_BINARY_",
+      "rigid_body": "/World/envs/env_0/Robot/Piper/base_link"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Piper/link1/collisions/link1/node_STL_BINARY_",
+      "rigid_body": "/World/envs/env_0/Robot/Piper/link1"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Go2/RR_hip/collisions/mesh_0/cylinder",
+      "rigid_body": "/World/envs/env_0/Robot/Go2/RR_hip"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Go2/base/collisions/mesh_0/box",
+      "rigid_body": "/World/envs/env_0/Robot/Go2/base"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Piper/link2/collisions/link2/node_STL_BINARY_",
+      "rigid_body": "/World/envs/env_0/Robot/Piper/link2"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Piper/link3/collisions/link3/node_STL_BINARY_",
+      "rigid_body": "/World/envs/env_0/Robot/Piper/link3"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Piper/link4/collisions/link4/node_STL_BINARY_",
+      "rigid_body": "/World/envs/env_0/Robot/Piper/link4"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Frame_17",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Racket/Frame_18",
+      "rigid_body": "/World/envs/env_0/Robot/Racket"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Go2/FL_thigh/collisions/mesh_0/box",
+      "rigid_body": "/World/envs/env_0/Robot/Go2/FL_thigh"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Go2/RL_hip/collisions/mesh_0/cylinder",
+      "rigid_body": "/World/envs/env_0/Robot/Go2/RL_hip"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Go2/RL_calf/collisions/mesh_0/cylinder",
+      "rigid_body": "/World/envs/env_0/Robot/Go2/RL_calf"
+    },
+    {
+      "collision": "/World/envs/env_0/Robot/Go2/RL_thigh/collisions/mesh_0/box",
+      "rigid_body": "/World/envs/env_0/Robot/Go2/RL_thigh"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_60",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_61",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_56",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_57",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_58",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_59",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_52",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_53",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_54",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_55",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_48",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_49",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_50",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_51",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_44",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_45",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_46",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_47",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_40",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_41",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_42",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_43",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_36",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_37",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_38",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_39",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_32",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_33",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_34",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_35",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_29",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_30",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_28",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_31",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_24",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_25",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_26",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_27",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_20",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_21",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_22",
+      "rigid_body": "/World/envs/env_0/Net"
+    },
+    {
+      "collision": "/World/envs/env_0/Net/geometry/mesh/segment_23",
+      "rigid_body": "/World/envs/env_0/Net"
+    }
+  ],
+  "scene_query_enabled": true,
+  "control_ticks": 1,
+  "physics_dt_s": 6.25e-05,
+  "formal_acceptance": false,
+  "fixed_base": true,
+  "ground_initialization": false
+}

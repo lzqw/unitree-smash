@@ -49,6 +49,7 @@ def main():
     cfg.robot.init_state.pos=tuple(root);cfg.robot.init_state.rot=tuple(xyzw[[3,0,1,2]])
     env=NearNetFixtureEnv(cfg);wrapped=RslRlVecEnvWrapper(env,clip_actions=None)
     try:
+        if not env.robot.is_fixed_base:raise ValueError('This diagnostic requires an actual native fixed root')
         with torch.inference_mode():
             observation,_=wrapped.reset()
             dependencies=audit_composed_asset(ROOT,cfg.robot.spawn.usd_path)
@@ -87,7 +88,7 @@ def main():
                     data.body_link_pos_w[:,env.racket_body_id]-env.scene.env_origins,
                     data.body_link_quat_w[:,env.racket_body_id]).cpu().tolist(),
                 numerical_failures=numerical,asset_dependencies=dependencies,
-                native_plane_query_calls=env.racket_plane_query_calls,native_plane_events=env.racket_plane_records,
+                plane_geometry_evaluations=env.racket_plane_query_calls,plane_geometry_events=env.racket_plane_records,
                 control_ticks=1,physics_dt_s=cfg.sim.dt,formal_acceptance=False,fixed_base=True,ground_initialization=False)
             (args.output/'metrics.json').write_text(json.dumps(result,indent=2)+'\n')
             assert numerical==0

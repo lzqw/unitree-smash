@@ -70,7 +70,7 @@ def main():
         pose_search_bounds_rad=bounds.tolist(),physical_changes=False,formal_acceptance=False,
         limitations=['Uses measured TRAIN base motion only to initialize an offline teacher. Runtime still consumes public observations only.',
             'Joint velocity projection is local kinematics, not prediction of the changed whole-body reaction.',
-            'Source snapshot episode later failed recovery. New native rollout must establish every outcome.',
+            'Source recovery labels are preserved in the snapshot and do not transfer to the changed teacher. New native rollout must establish every outcome.',
             'Original actual outgoing8m/s/downward/overnet/landing/recovery requirements are unchanged.'])
     a.output.mkdir(parents=True)
     (a.output/'TRAIN_SOURCE_SNAPSHOT.json').write_bytes(a.snapshot.read_bytes())

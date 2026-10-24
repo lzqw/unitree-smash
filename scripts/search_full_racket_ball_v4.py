@@ -14,6 +14,8 @@ p.add_argument('--ik-seeds',type=Path)
 p.add_argument('--walk-speed',type=float);p.add_argument('--waypoint-x',type=float)
 p.add_argument('--timing-grid',action='store_true',help='Reserve12 candidates for measured leg timing/arm speed/Cartesian-gain combinations')
 p.add_argument('--push-grid',action='store_true',help='Reserve16 candidates for front/back thigh/calf push coordination')
+p.add_argument('--contact-curriculum',action='store_true',help='TRAIN: retain actual legal airborne strings contacts while optimizing failed return and recovery; formal flags unchanged')
+p.add_argument('--contact-grid',action='store_true',help='Reserve12 candidates for arm lead/speed around a measured contact, preserving leg timing')
 p.add_argument('--continue-after-miss',action='store_true',help='TRAIN curriculum: observe landing after missed/blocked/backward shuttle return; all rally failures remain failures, robot faults terminate')
 p.add_argument('--push-search-range',type=float,default=.15,help='Symmetric front/back leg target-offset search range in rad; native actuator/joint limits stay unchanged')
 AppLauncher.add_app_launcher_args(p);args=p.parse_args();app=AppLauncher(args).app
@@ -27,6 +29,8 @@ from quadsmash.tasks.stand.visual_geometry import export_robot_geometry
 from quadsmash.control.full_racket_rally_controller_v4 import FullRacketRallyControllerV4
 from quadsmash.control.full_racket_teacher_v4 import LOW,HIGH,PARAMETER_NAMES
 from quadsmash.control.full_racket_geometry_v4 import FullRacketGeometryV4
+from quadsmash.control.full_racket_contact_curriculum_v4 import (
+    contact_search_tiers,actual_outgoing_shaping,arm_timing_velocity_grid)
 from quadsmash.physics.full_racket_v4 import string_prism_gap
 from quadsmash.physics.native import quat_rotate
 from quadsmash.usd_dependencies_v4 import audit_composed_asset
@@ -50,11 +54,16 @@ def main():
     if args.candidates<4 or args.generations<1 or not 0<args.sigma_fraction<=.5:raise ValueError('Invalid search settings')
     if args.timing_grid and args.candidates<14:raise ValueError('Timing grid requires at least14 candidates')
     if args.push_grid and args.candidates<18:raise ValueError('Push grid requires at least18 candidates')
-    if args.timing_grid and args.push_grid:raise ValueError('Choose one controlled grid')
+    if sum([args.timing_grid,args.push_grid,args.contact_grid])>1:raise ValueError('Choose one controlled grid')
+    if args.contact_grid and (not args.contact_curriculum or args.candidates<14):
+        raise ValueError('Contact grid requires contact curriculum and at least14 candidates')
+    if args.contact_curriculum and not args.continue_after_miss:
+        raise ValueError('Contact curriculum requires observing recovery after failed shuttle returns')
     if not .15<=args.push_search_range<=.5:raise ValueError('Push search range must be between .15 and .5rad')
-    sampling_contract=('front-back-push-grid-v1' if args.push_grid else
+    sampling_contract=('contact-arm-timing-speed-grid-v1' if args.contact_grid else 'front-back-push-grid-v1' if args.push_grid else
         'timing-velocity-cartesian-grid-v1' if args.timing_grid else 'gaussian-cem-v1')
-    selection_contract='ball-with-jump-recovery-v3' if args.continue_after_miss else 'legal-first-ball-v4'
+    selection_contract=('actual-contact-then-return-and-recovery-v1' if args.contact_curriculum else
+        'ball-with-jump-recovery-v3' if args.continue_after_miss else 'legal-first-ball-v4')
     if not args.training_indices or len(set(args.training_indices))!=len(args.training_indices):raise ValueError('Distinct TRAIN indices required')
     args.output.mkdir(parents=True,exist_ok=True)
     protocol_path=ROOT/'configs/g07_full_racket_eval_v4_r3.json';protocol=json.loads(protocol_path.read_text())
@@ -92,6 +101,7 @@ def main():
     cases=[training_cases[i] for _ in range(args.candidates) for i in args.training_indices]
     cfg=full_racket_cfg(count,protocol['physics_dt_s']);cfg.seed=args.seed
     env=RallyTrainingEnvV4(cfg,cases=cases,continue_after_miss=args.continue_after_miss);wrapper=RslRlVecEnvWrapper(env,clip_actions=None)
+    if env.robot.is_fixed_base:raise ValueError('Training requires a floating robot and ground initialization')
     atomic_json(args.output/'asset_dependencies.json',audit_composed_asset(ROOT,cfg.robot.spawn.usd_path))
     controller=FullRacketRallyControllerV4(template,count,env.device)
     surface_offset=controller.teacher.contact_offset.clone()
@@ -159,6 +169,9 @@ def main():
                         population[index]=mean
                         population[index,22]=thigh;population[index,23]=calf
                         index+=1
+            if args.contact_grid:
+                grid=arm_timing_velocity_grid(reference.cpu().numpy(),low.cpu().numpy(),high.cpu().numpy())
+                population[2:14]=torch.as_tensor(grid,device=env.device,dtype=population.dtype)
             env._episode_has_stepped.zero_();env._metrics_started=False
             env.rally_records.clear();env.episode_records.clear();env.contact_records.clear()
             env.racket_plane_records.clear();env.episode_index.fill_(-1)
@@ -269,22 +282,35 @@ def main():
                         -15*jump['body_landing']-5*row['training_terminal_reasons']['root_fallen'])
                     reward+=recovery_shaping
                     row['training_recovery_shaping']=recovery_shaping
+                if args.contact_curriculum:
+                    row['actual_outgoing_training_shaping']=actual_outgoing_shaping(row)
+                    reward+=row['actual_outgoing_training_shaping']
                 row.update(training_score=reward,legal_episode=not fault and row['numerical_failures']==0
                     and row['active_rally_launch_count']==1 and not row['jump']['terminated'])
                 rows.append(row)
             groups=[rows[i*case_count:(i+1)*case_count] for i in range(args.candidates)]
             scores=torch.tensor([min(r['training_score'] for r in g)*.7+np.mean([r['training_score'] for r in g])*.3 for g in groups],device=env.device)
             feasible=torch.tensor([all(r['legal_episode'] for r in g) for g in groups],device=env.device)
-            selection=torch.where(feasible,scores,scores-1000.) if bool(feasible.any()) else scores
-            top=int(selection.argmax());rank=(int(feasible[top]),float(scores[top]))
+            if args.contact_curriculum:
+                tiers=torch.as_tensor(contact_search_tiers(groups),device=env.device)
+                if int(tiers.max())<0:raise RuntimeError('No numerically valid contact-curriculum candidate')
+                eligible=tiers==tiers.max()
+                selection=torch.where(eligible,scores,torch.full_like(scores,-float('inf')))
+            else:
+                selection=torch.where(feasible,scores,scores-1000.) if bool(feasible.any()) else scores
+            top=int(selection.argmax());rank=(int(tiers[top]) if args.contact_curriculum else int(feasible[top]),float(scores[top]))
             if rank>best_rank:best_rank=rank;best_parameters=population[top].clone();best_result=groups[top]
-            pool=int(feasible.sum());elite=selection.topk(min(pool,max(2,args.candidates//8)) if pool else max(2,args.candidates//8)).indices
+            pool=int(eligible.sum()) if args.contact_curriculum else int(feasible.sum())
+            elite=selection.topk(min(pool,max(2,args.candidates//8)) if pool else max(2,args.candidates//8)).indices
             mean=.3*mean+.7*population[elite].mean(0)
             sigma=(.3*sigma+.7*population[elite].std(0,unbiased=False)).clamp_min((high-low)*.025)
             entry=dict(generation=previous+generation,episodes=count,control_ticks=tick+1,env_steps=(tick+1)*count,
                 legal_candidates=int(feasible.sum()),best_candidate=top,
                 best_score=float(scores[top]),contacts=sum(r['had_contact'] for r in rows),airborne_string_hits=sum(r['airborne_string_hit'] for r in rows),
                 complete=sum(r['complete_smash'] for r in rows),minimum_gap_m=min(r['closest_string_gap_m'] for r in rows),formal_acceptance=False)
+            if args.contact_curriculum:
+                entry.update(contact_search_tiers=tiers.cpu().tolist(),best_contact_search_tier=int(tiers[top]),
+                    selection_contract=selection_contract)
             history.append(entry);atomic_json(args.output/f'episodes_{previous+generation:03d}.json',rows)
             state=dict(base_record,parameters=population.cpu(),rows=rows,mean=mean.cpu(),sigma=sigma.cpu(),rng=rng.get_state().cpu(),
                 generations=previous+generation+1,best_parameters=best_parameters.cpu(),best_result=best_result,best_rank=best_rank)
