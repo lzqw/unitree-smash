@@ -14,7 +14,11 @@
 
 后一方案 `ball_momentum_velocity_cem04` 第一代128次首回合仅有2次拍框接触、0拍线、6次合格恢复、0完整扣杀和0数值故障。该固定速度方向方案已主动停止，第二代部分记录保留；守护回执仍为FAILED，不伪称整轮成功。实际0.355604 GPU小时、122368控制环境步；计费步数上限仍保留204800。
 
-当前GPU0正在运行 `ball_prepose_velocity32_cem06`：64候选×两训练来球×两代，联合搜索六关节挥拍速度方向，并在首次公开来球观测时进行有原关节限位约束的提前引拍。程序已并入本分支；72项CPU检查与旧控制指令逐位兼容回放通过。实际原生前300步已记录104条来球规划，t=2.01秒、增益0.5、最大调整0.30弧度，控制窗口数值有限；[原生检查](reports/G07_full_racket_v4/NATIVE_ARM32_PREPOSE_0820.json)只证明执行与日志，整轮结果尚未完成。[程序、候选准备与CPU复现附件](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_arm_search_cpu_ready_20261024_0755.zip)已发布；该附件自身不含新方案原生成绩。没有后续排队作业，正式A/B各200回合尚未运行，原攻击和恢复判据保持。
+上一轮32参数提前引拍 `ball_prepose_velocity32_cem06` 第0代128次执行为1拍框、0拍线、8合格恢复、0攻击/完整、0数值故障。实际正向法向拍头速度在部分采样达到2–3米/秒，但拍头高度和横向仍未对准来球。该方案在本代完成后主动停止，第二代31步保留，guard回执仍为FAILED；实际0.316229 GPU小时、106368控制环境步。
+
+当前GPU0正在运行 `ball_native_reference_interception32_cem07`：恢复CEM03第2代候选16的原26参数与原seed，关闭提前引拍，再联合搜索六关节速度方向、挥拍时机和公开拦截位置x=1.10/1.25/1.40米。64候选包括2个原样参考、36个网格候选、8个恢复腿交叉和18个高斯候选；扩展32参数后在287步两条旧公开观测流上与原控制器指令逐位相同。73项CPU检查通过；[前100步原生检查](reports/G07_full_racket_v4/NATIVE_INTERCEPTION32_INITIALIZATION_0833.json)已核对实际候选矩阵及有限姿态，仅证明初始化和执行，整轮结果尚未完成。
+
+[两轮失败的完整第0代、后续中断记录、本轮源码/权重和前100步原生证据](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_arm32_failures_and_interception_program_20261024_0833.zip)已上传（185,838,293字节），125个归档文件与GitHub附件大小/SHA256均已核对。各作业精确启动源码、实际资源回执和新旧权重分开保留。没有后续排队作业，正式A/B各200回合尚未运行；原8米/秒、向下分量、目标落点、合格跳跃恢复和全部物理条件保持。
 
 此前上部拍线课程 `ball_upper_strings_cem01` 的128次候选首回合全部未触球、未完成合格恢复，完整成功0、数值故障0；实际77120步、0.464638 GPU小时。[完整失败轨迹、权重、精确源码及接续程序](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_upper_strings_failed_and_contact_update_20261024_0617.zip)保留，包含全部64环境50Hz原生全身姿态、运行依赖和CPU攻击窗口提案。
 

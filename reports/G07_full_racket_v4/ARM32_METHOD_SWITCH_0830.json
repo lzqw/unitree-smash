@@ -1,0 +1,20 @@
+{
+  "decided_at": "2026-10-24T08:30:05.271582+00:00",
+  "current_run": "reports/G07_full_racket_v4/ball_prepose_velocity32_cem06",
+  "decision": "Intentionally stop after completed generation0; preserve second-generation partial state and FAILED whole-job receipt if no completion artifact.",
+  "counts_completed_generation0": {
+    "had_contact": 1,
+    "frame_hit": 1,
+    "string_hit": 0,
+    "airborne_string_hit": 0,
+    "recovery_success": 8,
+    "attack_outgoing": 0,
+    "complete_smash": 0,
+    "numerical_failures": 0
+  },
+  "reason": "No actual strings contact in128executions despite measured positive head-normal velocity. Replace changed-preparation reference with actually measured contact/recovery reference and jointly probe interception plane, timing and velocity.",
+  "next_prepared_branch": "105f104",
+  "next_run": "ball_native_reference_interception32_cem07",
+  "scope": "Method switch after full generation, not acceptance.",
+  "formal_acceptance": false
+}

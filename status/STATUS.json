@@ -50,21 +50,21 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "CEM03 completed256 TRAIN first episodes:28contacts,19airstrings,11qualified recoveries,1airstrings+recovery,1target,0attack/0complete/NF0. Its new env32gen1 video shows4.85m/s upward return and3.94s recovery, target miss. CEM04 generation0 had2frame hits/0strings/6recoveries/0attack/0complete/NF0; intentionally stopped with guardFAILED and exact receipt preserved. GPU0 now runs32-parameter arm velocity plus bounded causal prepose:300ticks,104lanes planned at2.01s,gain.5,maxdelta.30rad,finite control window; whole result pending. All original gates and formal A/B400 remain unchanged.",
+      "notes": "CEM03 full256 TRAIN:19airstrings/11recoveries/1joined/1target/0attack/0complete/NF0. CEM04 gen0had2frame hits/0strings/6recoveries and CEM06 gen0had1frame/0strings/8recoveries; both intentionally stopped with exact FAILED guard receipts, interrupted next generations retained. GPU0 now runs actual-native-reference interception32 CEM07: source CEM03gen1candidate16original26parameters retained, prepose0,36 combinations of1.10/1.25/1.40m public interception planes with4velocity directions and3leads. First100native ticks/actual64x32population/finite128-envposes verified. Whole outcome, attack and independent formal400 remain unproven. No gates or physical parameters changed.",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/return_recovery_gen0_env12/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
       "active_gpu_jobs": [
         {
-          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_prepose_velocity32_cem06",
-          "guard_pid": 1370962,
-          "child_pid": 1370972,
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_native_reference_interception32_cem07",
+          "guard_pid": 1375607,
+          "child_pid": 1375617,
           "state": "RUNNING",
-          "started_at": "2026-10-24T08:11:08.100325+00:00",
-          "source_commit": "4b68e19c430af1fa93feb0027c656cd1b024ecad",
-          "last_verified_control_ticks": 300,
-          "native_prepose_evidence": "reports/G07_full_racket_v4/NATIVE_ARM32_PREPOSE_0820.json"
+          "started_at": "2026-10-24T08:30:24.952403+00:00",
+          "source_commit": "105f104cdc2dcc803ad3b10ec3e2e72aa64624bd",
+          "last_verified_control_ticks": 100,
+          "native_initialization_evidence": "reports/G07_full_racket_v4/NATIVE_INTERCEPTION32_INITIALIZATION_0833.json"
         }
       ],
       "queued_native_sequence": {
@@ -87,20 +87,20 @@
         "scope": "New CEM03gen1 recovery example plus CEM04gen0frame-hit failure; currently running32-parameter job not shown."
       },
       "latest_completed_generation": {
-        "run": "ball_momentum_velocity_cem04",
+        "run": "ball_prepose_velocity32_cem06",
         "generation": 0,
         "whole_job_complete": false,
         "guard_terminal_state": "FAILED",
         "intentionally_stopped": true,
         "executions": 128,
-        "contacts": 2,
-        "frame_hits": 2,
+        "contacts": 1,
+        "frame_hits": 1,
         "airborne_strings": 0,
-        "qualified_recoveries": 6,
+        "qualified_recoveries": 8,
         "airborne_strings_and_recovery": 0,
         "complete": 0,
         "numerical_failures": 0,
-        "report": "reports/G07_full_racket_v4/MOMENTUM_METHOD_SWITCH_0809.json"
+        "report": "reports/G07_full_racket_v4/ball_prepose_velocity32_cem06/GENERATION0_SUMMARY.json"
       },
       "pending_rule_regression": {
         "state": "PASSED_TARGETED_NATIVE02",
@@ -190,14 +190,14 @@
       ],
       "prepared_controller_branch": {
         "branch": "g07-arm-search-v4-20261024",
-        "commit": "4b68e19",
+        "commit": "105f104",
         "worktree": "/home/autodrive/LZQW/unitree_smash_arm_search_v4",
-        "cpu_tests_passed": 72,
+        "cpu_tests_passed": 73,
         "native_execution": true,
-        "report": "reports/G07_full_racket_v4/ARM_SEARCH_CPU_READY_0752.json",
+        "report": "reports/G07_full_racket_v4/interception_grid_ready_0826/PLAN.json",
         "merged_to_primary": true,
-        "native_execution_scope": "Initialization and first300 native ticks, not performance acceptance.",
-        "native_initialization_report": "reports/G07_full_racket_v4/NATIVE_ARM32_INITIALIZATION_0814.json",
+        "native_execution_scope": "Actual36-combination interception grid, initialization and first100native ticks only.",
+        "native_initialization_report": "reports/G07_full_racket_v4/NATIVE_INTERCEPTION32_INITIALIZATION_0833.json",
         "native_prepose_report": "reports/G07_full_racket_v4/NATIVE_ARM32_PREPOSE_0820.json"
       },
       "historical_stopped_gpu_jobs": [
@@ -211,8 +211,28 @@
           "actual_gpu_hours": 0.3556038421105606,
           "actual_control_env_steps": 122368,
           "charged_environment_step_cap": 204800
+        },
+        {
+          "run": "ball_prepose_velocity32_cem06",
+          "guard_pid": 1370962,
+          "child_pid": 1370972,
+          "guard_terminal_state": "FAILED",
+          "reason": "Intentional switch after complete generation0with1frame/0strings/8qualified recoveries/0attacks/NF0; next-generation31ticks preserved.",
+          "resource_receipt": "reports/G07_full_racket_v4/ball_prepose_velocity32_cem06/job.json",
+          "actual_gpu_hours": 0.3162292234525052,
+          "actual_control_env_steps": 106368,
+          "charged_environment_step_cap": 204800
         }
-      ]
+      ],
+      "latest_stopped_generation_summary": "reports/G07_full_racket_v4/ball_prepose_velocity32_cem06/GENERATION0_SUMMARY.json",
+      "latest_program_evidence_bundle": {
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_arm32_failures_and_interception_program_20261024_0833.zip",
+        "bytes": 185838293,
+        "sha256": "362b3c174a3c0bd54bccb2a5d02792461fb1200a701fb90064d71ede3100c7df",
+        "receipt": "reports/G07_full_racket_v4/arm32_native_and_interception_upload_receipt_0836.json",
+        "native_scope": "CEM04/CEM06 generation0failures and interrupted next generations, CEM07 actual initialization and100ticks.",
+        "formal_acceptance": false
+      }
     },
     "G08": {
       "state": "TODO",
