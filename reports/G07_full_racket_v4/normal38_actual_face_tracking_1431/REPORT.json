@@ -1,0 +1,94 @@
+{
+  "created_at": "2026-10-24T14:28:36.573489+00:00",
+  "scope": "Kinematic reconstruction at85actual native contact instants from the400tick snapshot; includes frame events. Commanded face uses actual body pose with commanded joints and is not a counterfactual robot rollout, achieved face or outgoing velocity.",
+  "contacts": 85,
+  "string_contacts": 38,
+  "maximum_native_normal_reconstruction_error": 2.18275570404183e-06,
+  "statistics": {
+    "all": {
+      "actual_to_commanded_normal_error_deg": {
+        "min": 7.181247209447057,
+        "median": 17.908434884016245,
+        "max": 32.957631818866076
+      },
+      "actual_to_desired_normal_error_deg": {
+        "min": 4.769243234287746,
+        "median": 14.731338917199594,
+        "max": 23.755811221588463
+      },
+      "maximum_arm_joint_tracking_error_rad": {
+        "min": 0.1697092056274414,
+        "median": 0.3009071350097656,
+        "max": 0.5191056728363037
+      },
+      "actual_to_commanded_point_displacement_m": {
+        "min": 0.10169375325007701,
+        "median": 0.2595851965061603,
+        "max": 0.5665327478491194
+      },
+      "actual_face_pitch_deg": {
+        "min": -0.1682231944417679,
+        "median": 6.606712717731449,
+        "max": 12.116190013912579
+      },
+      "commanded_face_pitch_deg": {
+        "min": -20.37867569654378,
+        "median": -10.644876221051101,
+        "max": -1.0210043862305915
+      },
+      "desired_face_pitch_deg": {
+        "min": -11.449414647791484,
+        "median": -7.43871027824366,
+        "max": -4.07243281614351
+      }
+    },
+    "strings": {
+      "actual_to_commanded_normal_error_deg": {
+        "min": 10.376761795837732,
+        "median": 18.893593613376865,
+        "max": 29.10850551762004
+      },
+      "actual_to_desired_normal_error_deg": {
+        "min": 9.977438763131012,
+        "median": 14.75673633614591,
+        "max": 21.96711574399719
+      },
+      "maximum_arm_joint_tracking_error_rad": {
+        "min": 0.2029733657836914,
+        "median": 0.331653356552124,
+        "max": 0.46126604080200195
+      },
+      "actual_to_commanded_point_displacement_m": {
+        "min": 0.18581893911451663,
+        "median": 0.2631031250533805,
+        "max": 0.4709216013313898
+      },
+      "actual_face_pitch_deg": {
+        "min": 3.4244907757154004,
+        "median": 7.659371310265927,
+        "max": 10.853913990968113
+      },
+      "commanded_face_pitch_deg": {
+        "min": -19.038853050741814,
+        "median": -11.102693250199568,
+        "max": -2.1090029309750626
+      },
+      "desired_face_pitch_deg": {
+        "min": -11.449414647791484,
+        "median": -7.43871027824366,
+        "max": -4.07243281614351
+      }
+    }
+  },
+  "native_contact_sources": true,
+  "new_controller_executed": false,
+  "interpretation": "A requested world face target, its joint command and the achieved contact face are distinct. Tracking/dynamic effects must be measured; the commanded tilt cannot be reported as achieved ball steepness.",
+  "formal_acceptance": false,
+  "sha256": {
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/normal38_native_tick400_snapshot/contacts.partial.json": "f1e5e9ea61121c355214c636d8104bd993fc60c223f771e04fc245a636030e5f",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/normal38_native_tick400_snapshot/partial_search_state.pt": "92eeadef990e85a6c2c19209f31a2e72d4d1121ca893a0ee399129be06e1ca6b",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/attack_recovered_normal38_ready03_1415/policy.pt": "4fb9e088f283390862f18fde33dfe6d46bc4f81008ba305d73436ef87b92eee2",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/normal38_actual_face_tracking_1431/analyze.py": "c4bc5df5748246e9d76be67af5bce180ed2c2ef70d5382182898fcc81b07be9f",
+    "/home/autodrive/LZQW/unitree_smash/quadsmash/control/full_racket_kinematics_v4.py": "9e7ce1df5f535a3aa48c0436e57a4478e8ef7d9a6f16419803e7d25d6cef0f4c"
+  }
+}

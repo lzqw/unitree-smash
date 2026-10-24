@@ -11,3 +11,11 @@ CEM20已实际保存停止：两代256次候选执行、仅两种不同TRAIN来�
 最新41.44秒视频已上传并核对2072帧及5附件SHA：https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_attack_recovery_20261024_1400.mp4 。侧视/俯视/慢放，三回合独立；视频属于CEM20generation0，含强攻击+恢复但目标偏远、同参数另一来球漏球、另一候选目标命中但速度不足且身体触地。
 
 当前完整成功仍0，正式A200+B200未运行。需要先获得同回合原门槛完整链，再扩大原TRAIN128及扰动覆盖，然后固定权重独立正式400；不能把两种来球的候选重复执行当成分布评测。原要求norm>=8、vx>0、vz<=-1、原目标X[2,4]/Y±1、原合格跳跃/落足/稳定恢复0.8秒和数值0全部保持。球拍675mm/20.709991kg、中心网高1.524m/侧1.55m、原18关节硬件限额保持。旧短拍板只作为历史对照，不继承成绩。上一NEXT原文完整保存在status/NEXT_before_normal38_1420.txt。
+
+最新实测更新（2026-10-24T14:39:41.624775+00:00）：CEM21第0代128候选执行完成，85接触/38空中拍线/4攻击/69合格恢复/17拍线+恢复/2攻击+恢复/33场内首落/7目标/0完整/0机器人规则/NF0；其中5次目标+恢复均速度不足。当前第1代同guard继续，先观察完整结果。第一代正式总结ball_attack_recovered_normal38_cem21/GENERATION0_SUMMARY.json；TRAIN1env14目标首落[3.842,-.454]/合格恢复4.143秒，但速度6.108且vz-.9525，仍失败。
+
+新增诊断normal38_actual_face_tracking_1431：38拍线事件实际与指令拍面夹角中位18.89度，重建实际法向误差最大2.2e-6；normal38_target_rate_diagnostic_1437：13.1rad/s为指令速率95分位，最大101.08，实测臂速捕获窗口最大5.3702rad/s，名义5rad/s未改，超调原样保留，不能宣称所有实际速度始终在5以内。
+
+后续f40cf20分支未合入/未原生执行：可选软件臂目标速率4.5/5rad/s、提前挥拍；134CPU测试、400步默认控制逐位一致/腿不变/命令速率有界，以及4.5方案120路287步bank预检通过。输入arm_target_rate45_normal38_ready01_1444，policy6829d44c7db041846fd8a39c0468b000f289cda1d97017fec8c3635fc8183e9b，bank3f792047df0f14e6deed66733459e44f73a941febdc0df46034bd1447d71e04d。60bank=6方向[-.04,0,.02,.04,.06,.08]×5lead偏移[0,.02,.04,.06,.08]×2gain[1,1.1]；mask[7,14,37]，源CEM21gen0best已冻结normal38_gen0_best_for_slew_1444，SHAd4f116ad254aa7a3d0991b2d96177e34d3e386cadaad2d1695468b0eea7a606a。若CEM21下一完整代仍无完整成功且跟踪短板持续，再通过已验证guard保存停止，等待实际终态/回执，再合入f40cf20启动ball_arm_target_slew45_normal38_cem22；不重复GPU作业、不伪造receipt、恢复全部gate。详见arm_target_rate_ready_1440/PLAN.json。
+
+另有TRAIN128固定策略/初始扰动诊断入口2e20830（已包含于f40cf20）完成5CPU测试与两条旧原生行交叉核对；新入口尚未原生执行，当前两种来球不能算128种覆盖。仍需首个完整同回合链、扩大TRAIN128/扰动，再冻结A200+B200正式评估。

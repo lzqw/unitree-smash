@@ -1,0 +1,44 @@
+{
+  "created_at": "2026-10-24T14:38:27.045144+00:00",
+  "scope": "Actual CEM21generation0candidate7/TRAIN1legal airborne strings, original target first landing and qualified recovery, but outgoing speed6.1078<8m/s andvz-.9525>-1; fullfalse. PairedTRAIN65is a separate episode. No population or formal success rate.",
+  "candidate_id": 7,
+  "env_id": 14,
+  "source_training_index": 1,
+  "outgoing_velocity_mps": [
+    5.938027381896973,
+    -1.066484808921814,
+    -0.9524905681610107
+  ],
+  "outgoing_norm_mps": 6.10776532933731,
+  "first_landing_m": [
+    3.8417816162109375,
+    -0.4540214538574219,
+    0.025124646723270416
+  ],
+  "recovery_s": 4.142882347106934,
+  "maximum_body_ground_force_n": 0.0,
+  "canonical_checks": [
+    {
+      "env_id": 14,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "fault": false
+    },
+    {
+      "env_id": 15,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false
+    }
+  ],
+  "checkpoint_source": "population_000.pt.parameters[7] with same generation controller_template/seed; not optimizer best",
+  "native_execution": true,
+  "complete_smash": false,
+  "formal_acceptance": false,
+  "source_sha256": {
+    "reports/G07_full_racket_v4/ball_attack_recovered_normal38_cem21/population_000.pt": "ae31a5fc5b2dd59fa538557e715b2cf0af339c27601a31780e5527d73b209b2d",
+    "reports/G07_full_racket_v4/ball_attack_recovered_normal38_cem21/episodes_000.json": "d045dc92b97cb8c66b9d8059939d0a52a6458f074f13c1e3757beff88d2d5d8d"
+  }
+}

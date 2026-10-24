@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "CEM20stopped after2complete generations256executions/2TRAINcases:72airstrings/33attacks/97qualifiedrecoveries/17air+recovery/6attack+recovery/64court/4target/0full/NF0. Exact37policy repeated attack+qualified recovery onTRAIN65 but firstlandingx4.55-4.70misses targetupper4; pairedTRAIN1miss/frame. Intentionalstop saved339ticks/3terminal125pending, guardFAILEDexit0/nocompletedreceipt, actual248192steps/.709536062554GPUh; declaredcap409600retained. CEM21new38native onGPU0, first100ticks/64x38/60bank/mask7,14,37verified, originalassets/rules/gates unchanged; actualfirstlanding/normTRAINguidance enabled. Noformal400result.",
+      "notes": "CEM21generation0complete128candidate executions/2TRAINcases:85contacts/38airstrings/4attacks/69qualifiedrecoveries/17air+recovery/2attack+recovery/33court/7target/0full/0robotrule/NF0.5target+recovery cases are below8m/s; strongest repeated base38env3out8.129/rec3.496s/firstx4.507targetmiss. Generation1continues unchanged d1e7a5source. Actual400tick diagnostic: strings face-command error median18.89deg, requested target-rate max101rad/s, measured armmax5.3702 retained versus nominal5. Futuref40cf20optional4.5target-slew/earlier-lead has134tests/400tick command compatibility/120lane287bankcheck but no native execution, not merged. Formal400unrun.",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/attack_recovery_repeat_gen1_env3/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/attack_recovery_repeat_gen1_env3/policy_evidence.pt",
@@ -76,8 +76,11 @@
           ],
           "native_initialization_pending": false,
           "last_verified_generation": 0,
-          "last_verified_control_ticks": 100,
-          "native_initialization_evidence": "reports/G07_full_racket_v4/normal38_initialization_1421/REPORT.json"
+          "last_verified_control_ticks": 800,
+          "native_initialization_evidence": "reports/G07_full_racket_v4/normal38_initialization_1421/REPORT.json",
+          "last_verified_contact_evidence": "reports/G07_full_racket_v4/ball_attack_recovered_normal38_cem21/GENERATION0_SUMMARY.json",
+          "last_observed_generation": 1,
+          "last_observed_control_ticks": 200
         }
       ],
       "queued_native_sequence": {
@@ -86,7 +89,7 @@
         "still_running": false
       },
       "native_air_string_contact_milestone": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
-      "latest_native_training_summary": "reports/G07_full_racket_v4/poststroke_retreat37_terminal_1420/REPORT.json",
+      "latest_native_training_summary": "reports/G07_full_racket_v4/ball_attack_recovered_normal38_cem21/GENERATION0_SUMMARY.json",
       "latest_video": {
         "path": "reports/G07_full_racket_v4/video/Current_effect_attack_recovery_20261024_1400.mp4",
         "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_attack_recovery_20261024_1400.mp4",
@@ -103,31 +106,31 @@
         "upload_receipt": "reports/G07_full_racket_v4/video/Current_effect_attack_recovery_20261024_1400_upload_receipt.json"
       },
       "latest_completed_generation": {
-        "had_contact": 79,
-        "frame_hit": 46,
-        "airborne_string_hit": 35,
-        "attack_outgoing": 14,
-        "recovery_success": 77,
-        "crossed_net": 33,
+        "had_contact": 85,
+        "frame_hit": 47,
+        "airborne_string_hit": 38,
+        "attack_outgoing": 4,
+        "recovery_success": 69,
+        "crossed_net": 37,
         "landed_legal_court": 33,
-        "landed_target": 1,
+        "landed_target": 7,
         "complete_smash": 0,
         "robot_net_fault": 0,
         "racket_invasion_fault": 0,
         "executions": 128,
-        "usable_air_strings": 33,
-        "air_strings_and_recovery": 15,
-        "attack_outgoing_and_recovery": 5,
-        "canonical_air_contacts": 35,
-        "canonical_conditional_recovery_count": 15,
+        "usable_air_strings": 38,
+        "air_strings_and_recovery": 17,
+        "attack_outgoing_and_recovery": 2,
+        "canonical_air_contacts": 38,
+        "canonical_conditional_recovery_count": 17,
         "canonical_complete": 0,
-        "robot_rule_terminal": 2,
-        "body_ground_terminal": 42,
+        "robot_rule_terminal": 0,
+        "body_ground_terminal": 55,
         "numerical_failures": 0,
-        "generation": 1,
+        "generation": 0,
         "control_ticks": 800,
         "env_steps": 102400,
-        "run": "ball_post_stroke_retreat37_cem20",
+        "run": "ball_attack_recovered_normal38_cem21",
         "whole_job_complete": false
       },
       "pending_rule_regression": {
@@ -443,25 +446,14 @@
       ],
       "latest_stopped_generation_summary": "reports/G07_full_racket_v4/poststroke_retreat37_terminal_1420/REPORT.json",
       "latest_program_evidence_bundle": {
-        "name": "G07_attacking_recovery_two_generations_and_normal38_native_20261024_1425.zip",
-        "bytes": 192690446,
-        "sha256": "52ce1bc09ccf315fc7c25d642828eba26aa8d1b6d1ec02a4428d304b9a578dd1",
-        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_attacking_recovery_two_generations_and_normal38_native_20261024_1425.zip",
-        "upload_receipt": "reports/G07_full_racket_v4/attacking_recovery_two_gen_normal38_upload_receipt_1426.json",
-        "scope": "CEM20two complete TRAINgenerations256candidate executions over2distinct cases,339tick generation2interruption and actualresource receipt; CEM21exact d1e7a5source/input/124CPUtests/actual100tick initialization only. Reproduce by checking out the new source commit (includes original frozen TRAIN/A/B files), extracting this archive plus runtime dependencies. No formal400performance."
+        "name": "G07_normal38_generation0_and_rate_tracking_update_20261024_1448.zip",
+        "bytes": 72744177,
+        "sha256": "f66e6f1e12e60b3d91b8e5b02d1fe5ee536b2900cfabbb5583fdbbaa14d00817",
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_normal38_generation0_and_rate_tracking_update_20261024_1448.zip",
+        "upload_receipt": "reports/G07_full_racket_v4/normal38_gen0_rate_update_upload_receipt_1450.json",
+        "scope": "Actual complete CEM21generation0,128candidate executions over2distinctTRAINcases,0full. Physical face/command mismatch and measured arm overshoot retained. Futuref40cf20target-slew inputs/code are CPU-only and unexecuted; TRAIN128entry not natively run. No formal400score."
       },
-      "latest_partial_native_contacts": {
-        "run": "ball_standing_recovery37_cem18_retry01",
-        "generation": 0,
-        "ticks": 300,
-        "contact_envs": 77,
-        "string_envs": 34,
-        "first_episodes_complete": 17,
-        "pending_first_episodes": 111,
-        "whole_generation_complete": false,
-        "formal_acceptance": false,
-        "report": "reports/G07_full_racket_v4/NATIVE_STANDING_RECOVERY37_PARTIAL300_1302.json"
-      },
+      "latest_partial_native_contacts": "reports/G07_full_racket_v4/NATIVE_NORMAL38_PARTIAL400_1430.json",
       "latest_airborne_strings_power_milestone": {
         "report": "reports/G07_full_racket_v4/AIR_STRINGS_POWER_MILESTONE_0844.json",
         "outgoing_speed_mps": 7.4679849578367365,
@@ -657,7 +649,11 @@
         "historical_note": "Superseded by CEM21actual38coordinate initialization; this older feature report remains unexecuted historical evidence."
       },
       "latest_actual_paired_retreat_comparison": "reports/G07_full_racket_v4/post_stroke_paired_native_1345/REPORT.json",
-      "latest_attacking_contact_recovery_milestone": "reports/G07_full_racket_v4/attack_recovery_repeat_gen1_env3/MILESTONE.json"
+      "latest_attacking_contact_recovery_milestone": "reports/G07_full_racket_v4/attack_recovery_repeat_gen1_env3/MILESTONE.json",
+      "latest_actual_face_tracking_diagnostic": "reports/G07_full_racket_v4/normal38_actual_face_tracking_1431/REPORT.json",
+      "latest_actual_target_rate_diagnostic": "reports/G07_full_racket_v4/normal38_target_rate_diagnostic_1437/REPORT.json",
+      "latest_target_and_recovery_milestone": "reports/G07_full_racket_v4/target_recovery_normal38_gen0_env14/MILESTONE.json",
+      "next_prepared_arm_target_rate_feature": "reports/G07_full_racket_v4/arm_target_rate_ready_1440/PLAN.json"
     },
     "G08": {
       "state": "TODO",

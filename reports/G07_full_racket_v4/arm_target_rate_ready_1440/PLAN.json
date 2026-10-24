@@ -1,0 +1,27 @@
+{
+  "created_at": "2026-10-24T14:39:41.623855+00:00",
+  "state": "CPU_READY_NATIVE_UNEXECUTED",
+  "feature_commit": "f40cf20",
+  "merged_to_running_primary": false,
+  "hypothesis": "Native requested-target rates up to101rad/s and measured face lag median18.89deg cause desired tilt to differ from achieved tilt. A4.5rad/s software target slew with earlier swing lead may improve physical tracking; new actual contacts/outgoing/recovery must be remeasured.",
+  "unit_tests": 134,
+  "counterfactual_command_report": "reports/G07_full_racket_v4/arm_target_rate_cpu01_1440/REPORT.json",
+  "candidate_bank_preflight": "reports/G07_full_racket_v4/arm_target_rate45_normal38_bank_cpu01_1444/REPORT.json",
+  "prepared_input": "reports/G07_full_racket_v4/arm_target_rate45_normal38_ready01_1444",
+  "parent_actual_checkpoint_sha256": "d4f116ad254aa7a3d0991b2d96177e34d3e386cadaad2d1695468b0eea7a606a",
+  "policy_sha256": "6829d44c7db041846fd8a39c0468b000f289cda1d97017fec8c3635fc8183e9b",
+  "bank_sha256": "3f792047df0f14e6deed66733459e44f73a941febdc0df46034bd1447d71e04d",
+  "suggested_next_run": "ball_arm_target_slew45_normal38_cem22",
+  "search_coordinates": [
+    7,
+    14,
+    37
+  ],
+  "sigma_fraction": 0.06,
+  "hardware_arm_velocity_limit_rad_s": 5.0,
+  "software_target_rate_rad_s": 4.5,
+  "all_physical_hardware_and_original_task_gates_unchanged": true,
+  "next_action": "Inspect completed CEM21generation1. If still no full success and tracking mismatch remains, save-and-stop the same verified guard, preserve exact interrupted ticks/receipt, then merge tested f40cf20 and launch one fresh guarded CEM22job. Never overlap or inherit old performance. FullTRAIN128diagnostic entry2e20830is also ready but unexecuted.",
+  "native_execution": false,
+  "formal_acceptance": false
+}

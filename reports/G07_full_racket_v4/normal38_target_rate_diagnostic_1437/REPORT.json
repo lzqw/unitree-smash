@@ -1,0 +1,44 @@
+{
+  "created_at": "2026-10-24T14:33:38.056473+00:00",
+  "scope": "Saved CEM21generation0actual public/control window, valid first episodes only. Differentiated commanded position is an implied command rate, not measured velocity or an applied physical force.",
+  "native_window_ticks": 131,
+  "commanded_arm_rate_quantiles_rad_s": {
+    "0": 0.0,
+    "0.5": 1.3448416460278363,
+    "0.9": 7.1356575472958,
+    "0.95": 13.122463503496832,
+    "0.99": 39.978735012370336,
+    "1.0": 101.08128807477375
+  },
+  "commanded_leg_rate_quantiles_rad_s": {
+    "0": 0.0,
+    "0.5": 0.0,
+    "0.9": 3.6955747920959525,
+    "0.95": 6.689944652122718,
+    "0.99": 21.289771745928174,
+    "1.0": 175.86254216673177
+  },
+  "commanded_arm_rate_above5_05_fraction": 0.1601440626505015,
+  "command_rate_diagnostic_threshold_rad_s": 5.05,
+  "measured_arm_velocity_quantiles_rad_s": {
+    "0": 4.13092493545264e-09,
+    "0.5": 1.1557939648628235,
+    "0.9": 4.8426734924316435,
+    "0.95": 4.999866008758545,
+    "0.99": 5.000004291534424,
+    "1.0": 5.370196342468262
+  },
+  "configured_nominal_arm_velocity_limit_rad_s": 5.0,
+  "observed_measured_arm_overshoot_above_nominal_rad_s": 0.3701963424682617,
+  "overshoot_retained_without_clipping_observations": true,
+  "note": "The5.05command diagnostic threshold includes0.05for differentiation roundoff; it never changes the configured5rad/s limit or acceptance. Actual5.37rad/s solver overshoot remains visible. A future software trajectory rate bound would need new native contact/recovery validation; none is claimed here.",
+  "proposed_followup": "Evaluate smooth bounded joint targets with anticipatory timing while preserving original actuator limits and all task gates.",
+  "new_controller_executed": false,
+  "formal_acceptance": false,
+  "sha256": {
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/normal38_native_tick400_snapshot/control_window.partial.npz": "2a2c797528eefd23d715facae723d2b6e81ff2ef479458570e35dd0f4c01595f",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/normal38_native_tick400_snapshot/near_contact_all.partial.npz": "6578f7858b1fe28323010dd79976a40160fcd072a6c59ec70186c22281039af1",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/CPU_REPLAY_AUTHORED_JOINTS_0724.json": "c91545fe9a1069586436c040338c5bc9dafd6ccbb6dad5f3df50c6506e31dd42",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/normal38_target_rate_diagnostic_1437/analyze.py": "b5790b2c2aefecce5756d09e00ffff5ab0b23ff09a325588ae34b6f823de1787"
+  }
+}
