@@ -1,0 +1,42 @@
+{
+  "created_at": "2026-10-24T15:56:40.495145+00:00",
+  "scope": "CPU-prepared input only, no new native performance. Tests the already implemented public-state Cartesian feedback gain, with the same bounded software slew and all physical/task conditions.",
+  "candidates": 60,
+  "parameter_width": 38,
+  "changed_coordinates": [
+    14,
+    18,
+    37
+  ],
+  "cartesian_gains": [
+    0.35,
+    0.55,
+    0.75,
+    1.0
+  ],
+  "arm_leads_s": [
+    0.0,
+    0.01,
+    0.02,
+    0.03,
+    0.04
+  ],
+  "normal_biases_rad": [
+    0.04,
+    0.08,
+    0.12
+  ],
+  "software_arm_target_rate_rad_s": 5.0,
+  "all_other_parameters_fixed": true,
+  "native_execution": false,
+  "performance_inherited": false,
+  "formal_acceptance": false,
+  "source_sha256": {
+    "reports/G07_full_racket_v4/slew50_near_attack_gen0_c54_1540/policy_evidence.pt": "634da4f6fb65298ccf5afb50e7807324efc0bab3add5abe0b0064c26aeaa0a68",
+    "reports/G07_full_racket_v4/servo_contact38_ready01_1600/prepare.py": "153a4c257dc75ed0a28a84212d8d6bf5ccb9a0f362b6dea2e6af60779c19fa8d",
+    "quadsmash/control/full_racket_teacher_v4.py": "97e76633c6853a70b7bf5331de47038e649ef6c34a99c6548bf6069ff21cc8d7",
+    "quadsmash/control/full_racket_candidate_bank_v4.py": "5290a057a962317b433e5e0839796e8b0df8af60997a4ccebd4283df1bce3f65"
+  },
+  "policy_sha256": "d47e573810195455939d46eb6305b69e8c242dd0e8ddd9b735b5dcab0cb5f62e",
+  "bank_sha256": "a271657fc7604fa6a8eca20c1d4efc72eb5add86f960bc29409664014ed03398"
+}

@@ -1,0 +1,73 @@
+{
+  "verified_at": "2026-10-24T16:03:08.583609+00:00",
+  "scope": "Actual CEM24generation0first400ticks only; closed and pending counts are recorded below. Every contact command is matched to the native pre/post-slew target log; actual goal-face error is kept separate from closeness to the limited command. Not a complete generation or formal score.",
+  "generation": 0,
+  "control_ticks": 400,
+  "closed_first_episodes": 13,
+  "pending_first_episodes": 115,
+  "closed_counts": {
+    "airborne_string_hit": 1,
+    "recovery_success": 0,
+    "crossed_net": 1,
+    "landed_legal_court": 1,
+    "landed_target": 0,
+    "complete_smash": 0,
+    "robot_net_fault": 0,
+    "racket_invasion_fault": 0,
+    "numerical_failures": 0
+  },
+  "contact_events": 77,
+  "string_contact_events": 15,
+  "pending_string_contact_episodes": 14,
+  "software_target_rate_rad_s": 5.0,
+  "logged_after_slew_command_rate_max_rad_s": 5.000011920928955,
+  "logged_before_slew_command_rate_max_rad_s": 97.50650787353516,
+  "maximum_target_adjustment_rad": 0.8412501811981201,
+  "measured100Hz_arm_velocity_peak_rad_s": 5.000512599945068,
+  "measured_samples_above5_plus1e_4_rad_s": 4,
+  "velocity_scope": "Valid first-episode100Hz samples, not continuous physics-substep maxima; physical observations retained unmodified.",
+  "all_contact_target_records_match_native_commands": true,
+  "maximum_contact_command_match_error_rad": 2.384185791015625e-07,
+  "maximum_native_normal_reconstruction_error": 1.9118131834808866e-06,
+  "string_face_statistics": {
+    "actual_to_after_slew_command_face_error_deg": {
+      "min": 9.937807656304564,
+      "median": 12.734457797759468,
+      "max": 21.869663485585267
+    },
+    "actual_to_before_slew_command_face_error_deg": {
+      "min": 11.88011603887164,
+      "median": 18.414615724706245,
+      "max": 32.86840198163144
+    },
+    "actual_to_desired_face_error_deg": {
+      "min": 10.228917574982681,
+      "median": 14.005185102289722,
+      "max": 23.510284708625203
+    },
+    "actual_face_pitch_deg": {
+      "min": 1.9393999255786583,
+      "median": 5.384153362078949,
+      "max": 11.472964171620427
+    }
+  },
+  "comparison_caution": "Candidate timing/normal grids differ from CEM22andCEM21. Aggregate medians alone cannot isolate the slew change, and smaller command-face error is not proof of better outgoing balls or recovery.",
+  "native_execution": true,
+  "formal_acceptance": false,
+  "sha256": {
+    "reports/G07_full_racket_v4/positive38_contact_prefix_1605/native_prefix/all_first_episodes.partial.npz": "4dfd700597612c706c310085aa92687b51c03ce518aca8e5099b44c24b6dbe2e",
+    "reports/G07_full_racket_v4/positive38_contact_prefix_1605/native_prefix/arm_targets.partial.npz": "bb968dd27d51f1cb1d57770bc1d7c76d9cc47ff71485ded8fab00b84fa5b2d6d",
+    "reports/G07_full_racket_v4/positive38_contact_prefix_1605/native_prefix/causal_plans.partial.json": "e66f4c474066e964444057b9c74c6064c74cde3a46b29fbedc75a82b9f434eb0",
+    "reports/G07_full_racket_v4/positive38_contact_prefix_1605/native_prefix/contacts.partial.json": "c7aa24319d0db9a3fc02b2bc060dacc05ebd03206802b935bd00c7bbe88b5966",
+    "reports/G07_full_racket_v4/positive38_contact_prefix_1605/native_prefix/control_window.partial.npz": "87331cb45f12442f62ed209ae7376619c420615e72691da1a5db3de5de254807",
+    "reports/G07_full_racket_v4/positive38_contact_prefix_1605/native_prefix/episodes.partial.json": "398633d7abfd33470390f20bb725c6817dd3bfa90d65de1c70d0f3540d8405ce",
+    "reports/G07_full_racket_v4/positive38_contact_prefix_1605/native_prefix/generation_start_000.pt": "23fdd7cbb1c68129af666aff9aca634477b3f432170d7e795bfebd5ca19cfb3e",
+    "reports/G07_full_racket_v4/positive38_contact_prefix_1605/native_prefix/near_contact_all.partial.npz": "b5c6527a6a8104fbbc55eefd2e0835ffe6dc4e4d70d6b436ffc8ef1b85c9d3aa",
+    "reports/G07_full_racket_v4/positive38_contact_prefix_1605/native_prefix/partial_public_and_poses.npz": "eae5400d428fa1b395fe6d0504184c2660bf48e5d7404555130201650de2d7bc",
+    "reports/G07_full_racket_v4/positive38_contact_prefix_1605/native_prefix/partial_search_state.pt": "343667abebc09d10f3a7c553986bcfd00cfad715d08a4dfa53a7a9ebab3365b8",
+    "reports/G07_full_racket_v4/positive38_contact_prefix_1605/native_prefix/progress.json": "b8b693ebe0b6b8eb109d4dd4040a740d1b137db50a43dee7cbdc3887bdb129b4",
+    "reports/G07_full_racket_v4/positive38_contact_prefix_1605/native_prefix/trajectory.partial.json": "57d8d4004dd9c97ee05798c8d6f3f256fbe112266f367e597f8ace31c973858d",
+    "reports/G07_full_racket_v4/positive38_contact_prefix_1605/analyze.py": "522c49ecd413eee8472b5170ef306978741857f46048f437ae0aa91fd7d70981",
+    "quadsmash/control/full_racket_kinematics_v4.py": "9e7ce1df5f535a3aa48c0436e57a4478e8ef7d9a6f16419803e7d25d6cef0f4c"
+  }
+}
