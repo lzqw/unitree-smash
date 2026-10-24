@@ -11,6 +11,7 @@ from .full_racket_joint_preparation_v4 import FullRacketJointPreparation
 from .full_racket_face_feedback_v4 import FullRacketFaceFeedback
 from .full_racket_recovery_search_v4 import recovery_parameters
 from .full_racket_contact_normal_search_v4 import contact_normal_body
+from .full_racket_arm_target_rate_v4 import ArmTargetRateV4
 
 LOW=[.35,.45,1.10,1.55,.85,-.15,-.15,.30]+[-.25]*6+[-.10,0.,.8,.7,0.,.04,-.20,-.15,-.15,-.15]
 HIGH=[1.,1.20,1.60,2.,1.15,.15,.15,1.50]+[.25]*6+[.12,1.5,1.7,1.2,1.,.15,.10,.15,.15,.15]
@@ -47,6 +48,9 @@ class FullRacketTeacherV4:
         self.preparation=validate_preparation(seed.get('cartesian_preparation'))
         self.joint_preparation=None
         self.face_feedback=None
+        self.arm_target_rate=None
+        if seed.get('arm_target_rate_limit_rad_s') is not None:
+            self.arm_target_rate=ArmTargetRateV4(count,device,seed['arm_target_rate_limit_rad_s'])
         if seed.get('measured_face_feedback') is not None:
             self.face_feedback=FullRacketFaceFeedback(seed['measured_face_feedback']).to(device=device,dtype=torch.float32)
         if seed.get('joint_preparation_guard') is not None:
@@ -55,6 +59,7 @@ class FullRacketTeacherV4:
 
     def reset(self):
         self.walk.reset();self.standing.reset();self.leg_recovery_blend.reset()
+        if self.arm_target_rate is not None:self.arm_target_rate.reset()
 
     @torch.inference_mode()
     def action(self,observation,parameters,default,limits,event_time=None,target_offset_world=None):
@@ -182,4 +187,11 @@ class FullRacketTeacherV4:
         standing=self.standing.action(observation,recovery_parameters(parameters,self.standing_seed),
             default,limits,recovery_arm,active=recovery)
         standing=self.leg_recovery_blend.action(time,recovery,obs[:,-18:],standing)
-        return torch.where(recovery[:,None],standing,action).clamp(-1,1)
+        action=torch.where(recovery[:,None],standing,action).clamp(-1,1)
+        if self.arm_target_rate is not None:
+            arm_limits=limits[12:]
+            desired=arm_limits[:,0]+.5*(action[:,12:]+1)*(arm_limits[:,1]-arm_limits[:,0])
+            actual=(default[12:][None]+obs[:,21:27]).clamp(arm_limits[:,0],arm_limits[:,1])
+            bounded=self.arm_target_rate(desired,actual,time)
+            action[:,12:]=(2*(bounded-arm_limits[:,0])/(arm_limits[:,1]-arm_limits[:,0])-1).clamp(-1,1)
+        return action

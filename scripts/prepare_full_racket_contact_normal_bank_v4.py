@@ -19,6 +19,7 @@ from quadsmash.control.full_racket_candidate_bank_v4 import validate_candidate_b
 from quadsmash.control.full_racket_teacher_v4 import LOW,HIGH
 from quadsmash.control.full_racket_recovery_search_v4 import RECOVERY_LOW,RECOVERY_HIGH
 from quadsmash.control.full_racket_contact_curriculum_v4 import validate_recovery_search_min
+from quadsmash.control.full_racket_arm_target_rate_v4 import ArmTargetRateV4
 
 
 def main():
@@ -30,6 +31,9 @@ def main():
                    help='Two distinct local swing-gain multipliers; all native arm limits remain unchanged')
     p.add_argument('--normal-biases',type=float,nargs=6,default=[-.04,0.,.02,.04,.06,.08],
                    help='Six distinct desired-normal pitch biases within the declared+/-0.12rad policy range')
+    p.add_argument('--arm-lead-deltas',type=float,nargs=5,default=[-.02,-.01,0.,.01,.02])
+    p.add_argument('--arm-target-rate-limit',type=float,default=None,
+                   help='Optional software target slew bound within original5rad/s hardware limit; requires fresh native outcomes')
     a=p.parse_args()
     if a.output.exists():raise ValueError('Use a fresh output directory')
     minimum=validate_recovery_search_min(a.recovery_search_min)
@@ -39,9 +43,13 @@ def main():
     if (len(set(a.normal_biases))!=6 or not np.isfinite(a.normal_biases).all()
             or not all(NORMAL_LOW[0]<=value<=NORMAL_HIGH[0] for value in a.normal_biases)):
         raise ValueError('Require six distinct finite normal biases within the declared policy range')
+    if len(set(a.arm_lead_deltas))!=5 or not np.isfinite(a.arm_lead_deltas).all():
+        raise ValueError('Require five distinct finite arm lead offsets')
+    if a.arm_target_rate_limit is not None:ArmTargetRateV4(1,'cpu',a.arm_target_rate_limit)
     source=torch.load(a.checkpoint,map_location='cpu',weights_only=True)
-    assert len(source['parameters'])==37
-    assert source['parameter_names']==controller_parameter_names(search_arm_velocity=True,search_recovery_parameters=True)
+    assert len(source['parameters']) in (37,38)
+    assert source['parameter_names']==controller_parameter_names(search_arm_velocity=True,search_recovery_parameters=True,
+        search_contact_normal=len(source['parameters'])==38)
     reference=extend_contact_normal_parameters(source['parameters']).numpy()
     names=controller_parameter_names(search_arm_velocity=True,search_recovery_parameters=True,search_contact_normal=True)
     lower=np.array(LOW+[.8,-.12]+[-5.]*6+RECOVERY_LOW+NORMAL_LOW,dtype=np.float32)
@@ -49,7 +57,7 @@ def main():
     lower[22:24],upper[22:24],lower[3]=-.3,.3,minimum
     rows,labels=[],[]
     for angle in a.normal_biases:
-        for lead_delta in [-.02,-.01,0.,.01,.02]:
+        for lead_delta in a.arm_lead_deltas:
             for multiplier in a.gain_multipliers:
                 row=reference.copy()
                 row[37]=angle
@@ -65,6 +73,8 @@ def main():
     np.testing.assert_array_equal(rows[:,fixed],np.tile(reference[fixed],(60,1)))
     assert (abs(rows[:,26:32]*rows[:,7:8])<=5.).all()
     warm=copy.deepcopy(source);warm['parameters']=torch.tensor(reference);warm['parameter_names']=names
+    if a.arm_target_rate_limit is not None:
+        warm['seed']=dict(warm['seed'],arm_target_rate_limit_rad_s=a.arm_target_rate_limit)
     warm.pop('training_result',None)
     warm.update(native_execution=False,performance_inherited=False,formal_acceptance=False,
                 kind='Unexecuted38-coordinate face/timing/gain proposals. Target direction is a bounded robot command, not assigned ball velocity; all physical outcomes must be remeasured.')
@@ -75,7 +85,8 @@ def main():
     validate_candidate_bank(bank,warm['seed'],warm['asset_sha256'],names,reference,lower,upper,62)
     paths=[a.checkpoint,Path(__file__)]+[ROOT/'quadsmash/control'/n for n in [
         'full_racket_teacher_v4.py','full_racket_parameter_layout_v4.py',
-        'full_racket_contact_normal_search_v4.py','full_racket_recovery_search_v4.py','full_racket_arm_search_v4.py']]
+        'full_racket_contact_normal_search_v4.py','full_racket_recovery_search_v4.py','full_racket_arm_search_v4.py',
+        'full_racket_arm_target_rate_v4.py']]
     provenance={str(p.resolve()):hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
     warm['contact_normal_search_provenance']=provenance;bank['contact_normal_search_provenance']=provenance
     a.output.mkdir(parents=True)
@@ -87,6 +98,9 @@ def main():
         appended_coordinate_name=names[-1],normal_bias_bounds_rad=[NORMAL_LOW[0],NORMAL_HIGH[0]],
         desired_normal_downward_bias_grid_rad=a.normal_biases,
         arm_velocity_gain_multipliers=a.gain_multipliers,
+        arm_lead_deltas_s=a.arm_lead_deltas,
+        arm_target_rate_limit_rad_s=warm['seed'].get('arm_target_rate_limit_rad_s'),
+        source_parameter_count=len(source['parameters']),
         source_native_execution=source.get('native_execution',False),
         source_actual_training_rows=[{k:r[k] for k in ['source_training_index','attack_outgoing','airborne_string_hit','recovery_success','landed_target','complete_smash']} for r in source.get('training_result',[])],
         new_policy_performance_inherited=False,all_existing_recovery_coordinates_preserved=True,
