@@ -24,6 +24,7 @@ def main():
     p.add_argument('--public',type=Path,required=True)
     p.add_argument('--joint-contract',type=Path,required=True)
     p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--allow-searched-velocities',action='store_true')
     a=p.parse_args()
     if a.output.exists():raise ValueError('Use a fresh output directory')
     torch.set_num_threads(2)
@@ -34,7 +35,9 @@ def main():
     low[22:24]=-.3;high[22:24]=.3
     rows=validate_candidate_bank(bank,checkpoint['seed'],checkpoint['asset_sha256'],checkpoint['parameter_names'],reference,low,high,62)
     assert rows.shape in [(48,32),(60,32)]
-    assert np.array_equal(rows[:,26:32],np.broadcast_to(reference[26:32],(len(rows),6)))
+    preserved=np.array_equal(rows[:,26:32],np.broadcast_to(reference[26:32],(len(rows),6)))
+    if not a.allow_searched_velocities:assert preserved
+    else:assert (np.abs(rows[:,26:32])<=5).all() and (np.abs(rows[:,26:32]*rows[:,7:8])<=5).all()
     count=2*len(rows)
     controller=FullRacketRallyControllerV4(checkpoint,count,'cpu');controller.reset()
     controller.parameters.copy_(torch.tensor(np.repeat(rows,2,axis=0)))
@@ -62,7 +65,8 @@ def main():
     report=dict(created_at=datetime.now(timezone.utc).isoformat(),scope='Counterfactual CPU commands on saved old-policy public observations, not changed-state simulation or new policy outcomes.',
                 ticks=len(commands),candidates=len(rows),public_case_streams=2,lanes=count,
                 observation_width=794,action_width=18,all_actions_finite_and_bounded=True,
-                all_proposals_inside_original_search_bounds=True,all_velocity_directions_equal_measured_power_reference=True,
+                all_proposals_inside_original_search_bounds=True,all_velocity_directions_equal_measured_power_reference=bool(preserved),
+                searched_velocity_seeds_explicitly_enabled=bool(a.allow_searched_velocities),
                 planning_completed_for_all_lanes=True,normalized_action_saturation_fraction=float(np.mean(np.abs(commands)>=.99999)),
                 native_execution=False,formal_acceptance=False,
                 sources={str(path):hashlib.sha256(path.read_bytes()).hexdigest() for path in paths})
