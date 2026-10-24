@@ -3,10 +3,17 @@ import unittest
 import numpy as np
 from quadsmash.control.full_racket_contact_curriculum_v4 import (
     ROBOT_FAULTS,usable_air_contact,contact_search_tiers,actual_outgoing_shaping,
-    arm_timing_velocity_grid,measured_recovery_leg_crossovers,pitch_compensation_grid)
+    arm_timing_velocity_grid,measured_recovery_leg_crossovers,pitch_compensation_grid,validate_recovery_search_min)
 
 
 class ContactCurriculumTest(unittest.TestCase):
+    def test_recovery_search_floor_allows_earlier_control_but_rejects_invalid_values(self):
+        self.assertEqual(validate_recovery_search_min(1.55), 1.55)
+        self.assertEqual(validate_recovery_search_min(1.30), 1.30)
+        for value in [float('nan'), float('inf'), 1.19, 1.56]:
+            with self.assertRaises(ValueError):
+                validate_recovery_search_min(value)
+
     def row(self, contact=False, **extra):
         return dict(legal_initial_contact=contact, airborne_string_hit=contact,
                     string_hit=contact, numerical_failures=0, complete_smash=False,

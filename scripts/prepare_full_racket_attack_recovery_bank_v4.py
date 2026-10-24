@@ -69,10 +69,11 @@ def main():
     low = np.array(LOW + [.8, -.12] + [-5.] * 6, dtype=np.float32)
     high = np.array(HIGH + [1.45, .12] + [5.] * 6, dtype=np.float32)
     low[22:24], high[22:24] = -.3, .3
+    low[3] = 1.30
     proposals, labels = [], []
     for source in recovery:
         for fraction in [.2, .4, .6, .8, 1.]:
-            for recovery_time in [1.55, 1.58, 1.61, 1.64, 1.67, 1.70]:
+            for recovery_time in [1.30, 1.35, 1.40, 1.45, 1.50, 1.55]:
                 proposal = reference.copy()
                 proposal[body_indices] = ((1-fraction) * reference[body_indices]
                                          + fraction * source['parameters'][body_indices])
@@ -110,11 +111,13 @@ def main():
             outgoing_speed_mps=float(np.linalg.norm(attack['outgoing_velocity_mps'])),
             recovery_success=attack['recovery_success'], complete_smash=attack['complete_smash']),
         body_sources=[{k: v for k, v in source.items() if k != 'parameters'} for source in recovery],
-        body_blend_fractions=[.2, .4, .6, .8, 1.], recovery_local_times_s=[1.55, 1.58, 1.61, 1.64, 1.67, 1.70],
+        body_blend_fractions=[.2, .4, .6, .8, 1.], recovery_local_times_s=[1.30, 1.35, 1.40, 1.45, 1.50, 1.55],
         reference_all32_parameters_preserved_exactly=True, bank_fixed_coordinates=fixed,
         all_proposals_keep_actual_attack_arm_face_interception_and_velocity_parameters=True,
         all_physical_assets_hardware_rules_success_gates_unchanged=True,
-        recommended_training_flag='--retain-contact-recovery',
+        recovery_time_search_lower_bound_expanded_from_original_1_55_to_s=1.30,
+        search_bound_scope='Only the controller handover-time search range changes; original hardware limits, recovery-success duration and all task gates stay fixed.',
+        recommended_training_flags=['--retain-contact-recovery', '--recovery-search-min', '1.30'],
         policy_sha256=hashlib.sha256((args.output / 'policy.pt').read_bytes()).hexdigest(),
         bank_sha256=hashlib.sha256((args.output / 'CANDIDATE_BANK.json').read_bytes()).hexdigest(),
         native_execution=False, formal_acceptance=False, source_sha256=provenance)

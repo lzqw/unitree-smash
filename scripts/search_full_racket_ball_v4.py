@@ -16,6 +16,7 @@ p.add_argument('--timing-grid',action='store_true',help='Reserve12 candidates fo
 p.add_argument('--push-grid',action='store_true',help='Reserve16 candidates for front/back thigh/calf push coordination')
 p.add_argument('--contact-curriculum',action='store_true',help='TRAIN: retain actual legal airborne strings contacts while optimizing failed return and recovery; formal flags unchanged')
 p.add_argument('--retain-contact-recovery',action='store_true',help='TRAIN: retain an actual same-episode legal airborne strings contact and qualified recovery ahead of additional contacts ending in falls; native task labels unchanged')
+p.add_argument('--recovery-search-min',type=float,default=1.55,help='Algorithm-only lower bound for leg recovery handover in[1.20,1.55]local seconds; hardware/task gates unchanged')
 p.add_argument('--contact-grid',action='store_true',help='Reserve12 candidates for arm lead/speed around a measured contact, preserving leg timing')
 p.add_argument('--pitch-grid',action='store_true',help='Reserve12 candidates spanning existing arm pitch-compensation gain and timing; original joint/actuator limits remain')
 p.add_argument('--search-arm-velocity',action='store_true',help='Append six bounded arm velocity seed coordinates to the26 controller parameters')
@@ -41,7 +42,7 @@ from quadsmash.control.full_racket_arm_search_v4 import (
     VELOCITY_PARAMETER_NAMES,extend_arm_velocity_parameters,arm_velocity_grid,interception_velocity_grid,body_crossovers_preserving_velocity)
 from quadsmash.control.full_racket_candidate_bank_v4 import validate_candidate_bank,install_candidate_bank
 from quadsmash.control.full_racket_contact_curriculum_v4 import (
-    contact_search_tiers,actual_outgoing_shaping,arm_timing_velocity_grid,measured_recovery_leg_crossovers,pitch_compensation_grid)
+    contact_search_tiers,actual_outgoing_shaping,arm_timing_velocity_grid,measured_recovery_leg_crossovers,pitch_compensation_grid,validate_recovery_search_min)
 from quadsmash.physics.full_racket_v4 import string_prism_gap
 from quadsmash.physics.native import quat_rotate
 from quadsmash.usd_dependencies_v4 import audit_composed_asset
@@ -83,6 +84,7 @@ def main():
     if args.recovery_leg_bank and (not (args.contact_grid or args.pitch_grid or args.arm_velocity_bank) or args.candidates<22):
         raise ValueError('Recovery leg crossover requires contact grid and at least22 candidates')
     if not .15<=args.push_search_range<=.5:raise ValueError('Push search range must be between .15 and .5rad')
+    validate_recovery_search_min(args.recovery_search_min)
     sampling_contract=('bounded-candidate-bank-generation0-v1' if args.candidate_bank else 'contact-pitch-compensation-grid-v1' if args.pitch_grid else 'contact-arm-timing-speed-grid-v1' if args.contact_grid else 'front-back-push-grid-v1' if args.push_grid else
         'timing-velocity-cartesian-grid-v1' if args.timing_grid else 'gaussian-cem-v1')
     selection_contract=('actual-contact-recovery-chain-v2' if args.retain_contact_recovery else
@@ -155,6 +157,7 @@ def main():
         low=torch.cat((low,torch.full((6,),-5.,device=env.device)))
         high=torch.cat((high,torch.full((6,),5.,device=env.device)))
     low[22:24]=-args.push_search_range;high[22:24]=args.push_search_range
+    low[3]=args.recovery_search_min
     mean=template['parameters'].to(env.device).clamp(low,high);reference=mean.clone()
     sigma=(high-low)*args.sigma_fraction
     rng=torch.Generator(device=env.device).manual_seed(args.seed)
@@ -165,6 +168,7 @@ def main():
         assert prior['protocol_sha256']==hashlib.sha256(protocol_path.read_bytes()).hexdigest()
         assert prior['physics_dt_s']==cfg.sim.dt and prior['selection_contract']==selection_contract
         assert prior.get('push_search_range',.15)==args.push_search_range,'Search bounds changed; use warm-start'
+        assert prior.get('recovery_search_min',1.55)==args.recovery_search_min,'Recovery search bounds changed; use warm-start'
         assert prior.get('sampling_contract','gaussian-cem-v1')==sampling_contract,'Sampling changed; use warm-start'
         mean=prior['mean'].to(env.device);sigma=prior['sigma'].to(env.device);rng.set_state(prior['rng'].cpu())
         previous=prior['generations'];best_result=prior['best_result'];reference=prior['reference_parameters'].to(env.device)
@@ -190,6 +194,7 @@ def main():
         selection_contract=selection_contract,source_checkpoint_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),
         sampling_contract=sampling_contract,
         push_search_range=args.push_search_range,
+        recovery_search_min=args.recovery_search_min,
         source_hashes=source_hashes,formal_acceptance=False,formal_panels_read=False,
         arm_velocity_search_enabled=args.search_arm_velocity,
         trajectory_contract='All lanes native50Hz poses/ball/clock/first-episode validity; exact terminal/contact snapshots separate',

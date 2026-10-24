@@ -7,6 +7,14 @@ ROBOT_FAULTS = ('robot_net_fault', 'body_ball_fault', 'wrong_side_fault',
                 'under_net_obstruction_fault', 'engineering_body_crossing')
 
 
+def validate_recovery_search_min(value):
+    """Earlier leg handover is an algorithm parameter, never a task gate."""
+    value = float(value)
+    if not np.isfinite(value) or not 1.20 <= value <= 1.55:
+        raise ValueError('Recovery search minimum must be in[1.20,1.55]local seconds')
+    return value
+
+
 def usable_air_contact(row):
     """Preserve an actual legal airborne strings event for further TRAIN work.
 
