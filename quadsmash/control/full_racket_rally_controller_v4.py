@@ -7,6 +7,7 @@ from .full_racket_teacher_v4 import FullRacketTeacherV4
 from .full_racket_geometry_v4 import FullRacketGeometryV4
 from .initial_intercept import predict_initial_intercept
 from .full_racket_arm_search_v4 import causal_prepose_delta
+from .full_racket_relative_prepose_v4 import validate_relative_prepose,relative_prepose_delta
 
 ROOT=Path(__file__).resolve().parents[2]
 
@@ -28,6 +29,7 @@ class FullRacketRallyControllerV4:
         self.logs=[]
         self.prepose_gain=float(checkpoint['seed'].get('causal_arm_prepose_gain',0.))
         if not 0.<=self.prepose_gain<=1.:raise ValueError('Causal preparation gain must be in[0,1]')
+        self.relative_prepose=validate_relative_prepose(checkpoint['seed'].get('relative_contact_prepose'))
         self.target_offset_world=torch.zeros((count,3),device=device)
 
     def reset(self):
@@ -72,11 +74,20 @@ class FullRacketRallyControllerV4:
                     _,_,position_jacobian,normal_jacobian=self.teacher.kinematics(bounded_hit,self.teacher.contact_offset)
                     lower_hit=torch.maximum(torch.maximum(limits[12:,0],self.teacher.arm[None]-.25),raw_hit-.30)
                     upper_hit=torch.minimum(torch.minimum(limits[12:,1],self.teacher.arm[None]+.25),raw_hit+.30)
-                    prepose=causal_prepose_delta(target_delta,public,position_jacobian.cpu().numpy(),normal_jacobian.cpu().numpy(),valid,self.prepose_gain,
-                        (lower_hit-bounded_hit).cpu().numpy(),(upper_hit-bounded_hit).cpu().numpy())
+                    bounds=((lower_hit-bounded_hit).cpu().numpy(),(upper_hit-bounded_hit).cpu().numpy())
+                    if self.relative_prepose is None:
+                        prepose=causal_prepose_delta(target_delta,public,position_jacobian.cpu().numpy(),normal_jacobian.cpu().numpy(),valid,self.prepose_gain,*bounds)
+                    else:
+                        prepose=relative_prepose_delta(plan['position_m'],public,self.relative_prepose['reference_target_body_m'],
+                            position_jacobian.cpu().numpy(),normal_jacobian.cpu().numpy(),valid,self.prepose_gain,*bounds)
                     proposed=bounded_hit+torch.as_tensor(prepose,device=obs.device,dtype=obs.dtype)-self.teacher.arm[None]
                     # Invalid forecasts retain the original controller path.
-                    after=torch.where(torch.as_tensor(valid,device=obs.device)[:,None],proposed,before)
+                    apply=valid if self.relative_prepose is None else valid & np.any(prepose!=0.,axis=1)
+                    # A zero relative correction also preserves an existing
+                    # raw target above a position bound; the action decoder
+                    # still clamps it as before. Replacing it with the bound
+                    # here would change the measured reference trajectory.
+                    after=torch.where(torch.as_tensor(apply,device=obs.device)[:,None],proposed,before)
                     self.parameters[ids,8:14]=after
                     applied_prepose=(after-before).cpu().numpy()
             self.planned[ids]=True
@@ -84,6 +95,7 @@ class FullRacketRallyControllerV4:
                 env_ids=ids.cpu().tolist(),observation_clock_s=public[:,775].tolist(),
                 used_public_observations=public.tolist(),calibrated_event_time_s=calibrated.tolist(),
                 arm_joint_correction_rad=correction.tolist(),causal_prepose_gain=self.prepose_gain,
+                relative_contact_prepose=self.relative_prepose,
                 causal_prepose_joint_delta_rad=applied_prepose.tolist(),**{k:v.tolist() for k,v in plan.items()}))
         return self.teacher.action(observation,self.parameters,default,limits,event_time=self.event_time,
                                    target_offset_world=self.target_offset_world)
