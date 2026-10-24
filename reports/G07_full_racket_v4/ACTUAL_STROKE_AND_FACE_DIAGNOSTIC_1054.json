@@ -1,0 +1,90 @@
+{
+  "created_at": "2026-10-24T10:52:28.594180+00:00",
+  "scope": "Exact recorded CEM12generation0 env0first physical string contact, not a controller or physics change.",
+  "contact_time_s": 2.7540881633758545,
+  "contact_point_m": [
+    0.9840087890625,
+    0.06915283203125,
+    1.7243292331695557
+  ],
+  "recorded_contact_point_velocity_mps": [
+    0.026966676115989685,
+    -1.517143964767456,
+    -0.32299724221229553
+  ],
+  "flange_linear_velocity_mps": [
+    0.5053525567054749,
+    -0.5679551959037781,
+    -0.7105686068534851
+  ],
+  "flange_rotation_contribution_mps": [
+    -0.4783875139849272,
+    -0.9491858519270409,
+    0.3875638372046524
+  ],
+  "reconstructed_contact_velocity_mps": [
+    0.02696504272054767,
+    -1.517141047830819,
+    -0.32300476964883273
+  ],
+  "velocity_identity_error_mps": 8.236431316812956e-06,
+  "actual_face_normal_world": [
+    0.9909284579240314,
+    -0.03799996474566665,
+    0.12890614397936737
+  ],
+  "desired_face_normal_world": [
+    0.9968152785361251,
+    0.0,
+    -0.07974522228289001
+  ],
+  "normal_error_deg": 12.179082976836282,
+  "root_angular_velocity_rad_s": [
+    -1.1715712547302246,
+    -2.2435340881347656,
+    -0.128647580742836
+  ],
+  "all_current_reference_parameters": [
+    0.5029296875,
+    0.6455508470535278,
+    1.3778364658355713,
+    1.6211159229278564,
+    0.9985146522521973,
+    0.002987839048728347,
+    -0.00016323779709637165,
+    0.8191458582878113,
+    -0.003232259303331375,
+    0.048722200095653534,
+    -0.05976405367255211,
+    -0.028411461040377617,
+    0.0004935404285788536,
+    0.009253598749637604,
+    -0.026701508089900017,
+    0.18109923601150513,
+    1.403520941734314,
+    0.9471956491470337,
+    0.37950101494789124,
+    0.0847630500793457,
+    -0.11102060973644257,
+    0.08987067639827728,
+    0.15053176879882812,
+    -0.15663567185401917,
+    1.399999976158142,
+    -0.007112113293260336,
+    1.9954369068145752,
+    2.3913731575012207,
+    5.0,
+    -3.320540428161621,
+    -2.5779571533203125,
+    0.0
+  ],
+  "interpretation": "Actual point forward velocity is only about0.027m/s despite the7.30m/s outgoing ball. Measured whole-body/arm motion leaves the actual face normal tilted upward relative to the downward desired normal. More outgoing speed alone is not evidence of a fast active swing.",
+  "next_hypothesis": "Search stronger body-pitch compensation with coordinated clock/preparation and a higher physical-string point. This changes commanded motions within original bounds, with no new outcome assumed.",
+  "sources": {
+    "reports/G07_full_racket_v4/ball_projection_range_cem12/contacts_000.json": "557ec6beddce4663010764f26f138ab0bf70c1f3840c506c3a3c1752f12d2bb2",
+    "reports/G07_full_racket_v4/ball_projection_range_cem12/episodes_000.json": "3b50d1de42252ba634a86f71aec58db908874c9320146225cfc14126d86d4d17",
+    "reports/G07_full_racket_v4/projection_range_ready01_1024/policy.pt": "19771c5e5f701ea80c4b12d898f4454a433f506719c25b311c6cbfabee11d03c"
+  },
+  "new_dynamics_executed": false,
+  "formal_acceptance": false
+}
