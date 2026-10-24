@@ -1,0 +1,180 @@
+{
+  "created_at": "2026-10-24T13:45:10.473978+00:00",
+  "scope": "Paired actually executed first400ticks with identical64x37population,80exact matching contact events and previously verified identical first100native prefix. Whole-generation labels remain pending; formal A200+B200episodes are unrun.",
+  "population_bitwise_equal": true,
+  "exact_matching_contact_events": 80,
+  "contact_comparison_fields": [
+    "time_s",
+    "point_m",
+    "string_contact",
+    "frame_contact",
+    "point_velocity_mps",
+    "ball_velocity_mps"
+  ],
+  "variants": [
+    {
+      "label": "CEM19: earlier leg targets",
+      "counts_at400ticks": {
+        "closed": 106,
+        "pending": 22,
+        "airborne_string_hit": 37,
+        "crossed_net": 37,
+        "landed_legal_court": 0,
+        "landed_target": 0,
+        "robot_net_fault": 66,
+        "recovery_success": 0,
+        "complete_smash": 0,
+        "body_ground_terminal": 38
+      }
+    },
+    {
+      "label": "CEM20: added post-stroke retreat",
+      "counts_at400ticks": {
+        "closed": 89,
+        "pending": 39,
+        "airborne_string_hit": 31,
+        "crossed_net": 31,
+        "landed_legal_court": 25,
+        "landed_target": 3,
+        "robot_net_fault": 0,
+        "recovery_success": 0,
+        "complete_smash": 0,
+        "body_ground_terminal": 85
+      }
+    }
+  ],
+  "cases": [
+    {
+      "env_id": 3,
+      "native_executions": [
+        {
+          "label": "CEM19: earlier leg targets",
+          "samples": 15,
+          "last_clock_s": 2.990000009536743,
+          "maximum_actual_full_tool_x_m": 1.2546965534228884,
+          "minimum_observed_root_height_m": 0.2546684443950653,
+          "final_label_available": true,
+          "robot_net_fault": false,
+          "body_ground_terminal": true,
+          "recovery_success": false
+        },
+        {
+          "label": "CEM20: added post-stroke retreat",
+          "samples": 35,
+          "last_clock_s": 3.3999998569488525,
+          "maximum_actual_full_tool_x_m": 1.2377066657381606,
+          "minimum_observed_root_height_m": 0.1743766963481903,
+          "final_label_available": false,
+          "robot_net_fault": null,
+          "body_ground_terminal": null,
+          "recovery_success": null
+        }
+      ]
+    },
+    {
+      "env_id": 47,
+      "native_executions": [
+        {
+          "label": "CEM19: earlier leg targets",
+          "samples": 22,
+          "last_clock_s": 3.1399998664855957,
+          "maximum_actual_full_tool_x_m": 1.497984136049221,
+          "minimum_observed_root_height_m": 0.20945526659488678,
+          "final_label_available": true,
+          "robot_net_fault": true,
+          "body_ground_terminal": false,
+          "recovery_success": false
+        },
+        {
+          "label": "CEM20: added post-stroke retreat",
+          "samples": 36,
+          "last_clock_s": 3.5199999809265137,
+          "maximum_actual_full_tool_x_m": 1.1656743028068792,
+          "minimum_observed_root_height_m": 0.18927229940891266,
+          "final_label_available": true,
+          "robot_net_fault": false,
+          "body_ground_terminal": true,
+          "recovery_success": false
+        }
+      ]
+    },
+    {
+      "env_id": 71,
+      "native_executions": [
+        {
+          "label": "CEM19: earlier leg targets",
+          "samples": 23,
+          "last_clock_s": 3.1499998569488525,
+          "maximum_actual_full_tool_x_m": 1.4979542762635214,
+          "minimum_observed_root_height_m": 0.21093398332595825,
+          "final_label_available": true,
+          "robot_net_fault": true,
+          "body_ground_terminal": false,
+          "recovery_success": false
+        },
+        {
+          "label": "CEM20: added post-stroke retreat",
+          "samples": 36,
+          "last_clock_s": 3.4499998092651367,
+          "maximum_actual_full_tool_x_m": 1.1643441807539021,
+          "minimum_observed_root_height_m": 0.1946716010570526,
+          "final_label_available": true,
+          "robot_net_fault": false,
+          "body_ground_terminal": true,
+          "recovery_success": false
+        }
+      ]
+    },
+    {
+      "env_id": 97,
+      "native_executions": [
+        {
+          "label": "CEM19: earlier leg targets",
+          "samples": 19,
+          "last_clock_s": 3.0799999237060547,
+          "maximum_actual_full_tool_x_m": 1.416573741712363,
+          "minimum_observed_root_height_m": 0.22764348983764648,
+          "final_label_available": true,
+          "robot_net_fault": false,
+          "body_ground_terminal": true,
+          "recovery_success": false
+        },
+        {
+          "label": "CEM20: added post-stroke retreat",
+          "samples": 20,
+          "last_clock_s": 3.0899999141693115,
+          "maximum_actual_full_tool_x_m": 1.1644494206388005,
+          "minimum_observed_root_height_m": 0.2123342603445053,
+          "final_label_available": true,
+          "robot_net_fault": false,
+          "body_ground_terminal": true,
+          "recovery_success": false
+        }
+      ]
+    }
+  ],
+  "figure": "PAIRED_ACTUAL_RETREAT.png",
+  "figure_sha256": "ab0b811d0698ddb5fa630cea59b4cfa2fe376d5f7e572883f8d03b749c116b06",
+  "physical_support_method": "Analytic support of all97authored racket/fixture primitives transformed by recorded actual native Racket body poses; terminal snapshots appended when available. No commanded/counterfactual pose is plotted.",
+  "limitations": [
+    "Above-net followthrough may legally crossx1.5; actual rule flags, not x alone, determine faults.",
+    "Earlier old net terminations censor later old body outcomes; different body-ground counts are not a direct estimate of a fall-rate effect.",
+    "Four cases were selected for command diagnostics before the new native outcome; they are not panel statistics.",
+    "Pending episodes do not receive inferred recovery or success labels."
+  ],
+  "native_execution": true,
+  "formal_acceptance": false,
+  "sha256": {
+    "reports/G07_full_racket_v4/post_stroke_paired_native_1345/analyze.py": "e6d10d6fdd605de0b263c59ab3bb592bbdf3c1b09b2152794bd9119b86e1d69d",
+    "quadsmash/control/full_racket_joint_preparation_v4.py": "a2ccfaf09fa13348b808fac6d0531cd3b6b39804ac8e751757125b116703df1b",
+    "configs/full_racket_v4_r3.json": "14d58dd674665424dab63e67d525daf9b2239821797b97202aa45f9af1e5a26c",
+    "reports/G07_full_racket_v4/early_landing37_native_tick400_snapshot/near_contact_all.partial.npz": "07113fe3abbf1b296ec4d88d47f670ed908257b0b217097392b77413a6e475ed",
+    "reports/G07_full_racket_v4/early_landing37_native_tick400_snapshot/episodes.partial.json": "4f706d31c0a0633336dc30c5e1f5786e9cf275313be0d1554de1ae22d6ed6e71",
+    "reports/G07_full_racket_v4/early_landing37_native_tick400_snapshot/contacts.partial.json": "5573275394a0145831fd466229c7c6e1edc8e92ef6f159da762a4cb3ed613e75",
+    "reports/G07_full_racket_v4/early_landing37_native_tick400_snapshot/partial_search_state.pt": "11b3e05319b7c27762cf2c1b8582f9966a9970728f960383a380b1def68aa3f6",
+    "reports/G07_full_racket_v4/post_stroke_retreat37_native_tick400_snapshot/near_contact_all.partial.npz": "a3f81b9e5e8432c07b7138c15960c5bfc746f53665b1a99f841e040c8e89b023",
+    "reports/G07_full_racket_v4/post_stroke_retreat37_native_tick400_snapshot/episodes.partial.json": "d430eb4578b53f0fc971cd3992b44fadcde4741f4cb1f921d11533cdc8904699",
+    "reports/G07_full_racket_v4/post_stroke_retreat37_native_tick400_snapshot/contacts.partial.json": "5573275394a0145831fd466229c7c6e1edc8e92ef6f159da762a4cb3ed613e75",
+    "reports/G07_full_racket_v4/post_stroke_retreat37_native_tick400_snapshot/partial_search_state.pt": "bcd44dc1bdb86d76101f98ff2d546aa2ddff466e2e66aad8071598b0c2e9e2a7"
+  }
+}

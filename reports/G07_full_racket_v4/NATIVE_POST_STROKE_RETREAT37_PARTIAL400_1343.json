@@ -1,0 +1,258 @@
+{
+  "verified_at": "2026-10-24T13:40:45.166089+00:00",
+  "scope": "Actual CEM20first400ticks only.89closed39pending; pending strings/attack/recovery/landing outcomes not inferred. Prefix robot-net count is not a complete generation or formal pass.",
+  "generation": 0,
+  "control_ticks": 400,
+  "closed_first_episodes": 89,
+  "pending_first_episodes": 39,
+  "contact_events": 80,
+  "unique_contact_envs": 80,
+  "unique_string_envs": 37,
+  "closed_counts": {
+    "had_contact": 55,
+    "frame_hit": 24,
+    "airborne_string_hit": 31,
+    "released": 55,
+    "crossed_net": 31,
+    "ground_seen": 63,
+    "landed_legal_court": 25,
+    "landed_target": 3,
+    "recovery_success": 0,
+    "complete_smash": 0,
+    "robot_net_fault": 0,
+    "racket_invasion_fault": 0,
+    "attack_outgoing": 16,
+    "attack_and_recovery": 0,
+    "body_ground_terminal": 85,
+    "robot_rule_terminal": 1,
+    "numerical_failures": 0
+  },
+  "pending_string_envs": [
+    3,
+    29,
+    43,
+    55,
+    61,
+    101
+  ],
+  "pending_string_details": [
+    {
+      "env_id": 3,
+      "candidate_id": 1,
+      "last_clock_s": 3.9800000190734863,
+      "root_height_m": 0.18094788491725922,
+      "foot_heights_m": [
+        0.021431341767311096,
+        0.022609978914260864,
+        0.02234380692243576,
+        0.1023545116186142
+      ],
+      "contact_time_s": 2.7553999423980713,
+      "instantaneous_contact_ball_velocity_mps": [
+        7.791711807250977,
+        -1.6406917572021484,
+        -1.4779939651489258
+      ],
+      "recovery_and_final_attack_labels_pending": true
+    },
+    {
+      "env_id": 29,
+      "candidate_id": 14,
+      "last_clock_s": 3.9800000190734863,
+      "root_height_m": 0.15543611347675323,
+      "foot_heights_m": [
+        0.022567585110664368,
+        0.021613121032714844,
+        0.022700630128383636,
+        0.021919935941696167
+      ],
+      "contact_time_s": 2.7558372020721436,
+      "instantaneous_contact_ball_velocity_mps": [
+        6.951951026916504,
+        -1.6205147504806519,
+        -1.4149000644683838
+      ],
+      "recovery_and_final_attack_labels_pending": true
+    },
+    {
+      "env_id": 43,
+      "candidate_id": 21,
+      "last_clock_s": 3.9800000190734863,
+      "root_height_m": 0.15867701172828674,
+      "foot_heights_m": [
+        0.022638574242591858,
+        0.021541647613048553,
+        0.032800547778606415,
+        0.021339990198612213
+      ],
+      "contact_time_s": 2.7579610347747803,
+      "instantaneous_contact_ball_velocity_mps": [
+        7.936402320861816,
+        -1.3579695224761963,
+        -1.139984369277954
+      ],
+      "recovery_and_final_attack_labels_pending": true
+    },
+    {
+      "env_id": 55,
+      "candidate_id": 27,
+      "last_clock_s": 3.9800000190734863,
+      "root_height_m": 0.17087779939174652,
+      "foot_heights_m": [
+        0.022456496953964233,
+        0.021617025136947632,
+        0.04165622591972351,
+        0.022057391703128815
+      ],
+      "contact_time_s": 2.757711172103882,
+      "instantaneous_contact_ball_velocity_mps": [
+        7.646261692047119,
+        -1.5951095819473267,
+        -1.4054782390594482
+      ],
+      "recovery_and_final_attack_labels_pending": true
+    },
+    {
+      "env_id": 61,
+      "candidate_id": 30,
+      "last_clock_s": 3.9800000190734863,
+      "root_height_m": 0.22148042917251587,
+      "foot_heights_m": [
+        0.29374751448631287,
+        0.03490343689918518,
+        0.31461742520332336,
+        0.02221328765153885
+      ],
+      "contact_time_s": 2.7547128200531006,
+      "instantaneous_contact_ball_velocity_mps": [
+        7.497950553894043,
+        -1.161878228187561,
+        -0.9676705002784729
+      ],
+      "recovery_and_final_attack_labels_pending": true
+    },
+    {
+      "env_id": 101,
+      "candidate_id": 50,
+      "last_clock_s": 3.9800000190734863,
+      "root_height_m": 0.15709856152534485,
+      "foot_heights_m": [
+        0.022729329764842987,
+        0.02147180587053299,
+        0.05353933572769165,
+        0.021775521337985992
+      ],
+      "contact_time_s": 2.756711721420288,
+      "instantaneous_contact_ball_velocity_mps": [
+        7.894139289855957,
+        -1.2908762693405151,
+        -1.2725296020507812
+      ],
+      "recovery_and_final_attack_labels_pending": true
+    }
+  ],
+  "closed_target_landing_cases": [
+    {
+      "env_id": 33,
+      "airborne_string_hit": true,
+      "outgoing_velocity_mps": [
+        6.855364799499512,
+        -1.3789173364639282,
+        -1.6126279830932617
+      ],
+      "first_landing_m": [
+        3.9997596740722656,
+        -0.7621688842773438,
+        0.025235271081328392
+      ],
+      "first_landing_time_s": 3.222080945968628,
+      "landed_legal_court": true,
+      "landed_target": true,
+      "recovery_success": false,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      }
+    },
+    {
+      "env_id": 18,
+      "airborne_string_hit": true,
+      "outgoing_velocity_mps": [
+        6.153160572052002,
+        -1.0640101432800293,
+        -1.501742959022522
+      ],
+      "first_landing_m": [
+        3.8507919311523438,
+        -0.4097747802734375,
+        0.025121523067355156
+      ],
+      "first_landing_time_s": 3.214897394180298,
+      "landed_legal_court": true,
+      "landed_target": true,
+      "recovery_success": false,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      }
+    },
+    {
+      "env_id": 45,
+      "airborne_string_hit": true,
+      "outgoing_velocity_mps": [
+        6.63397741317749,
+        -1.2433727979660034,
+        -1.888189435005188
+      ],
+      "first_landing_m": [
+        3.7952308654785156,
+        -0.6839065551757812,
+        0.02525964379310608
+      ],
+      "first_landing_time_s": 3.2010300159454346,
+      "landed_legal_court": true,
+      "landed_target": true,
+      "recovery_success": false,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      }
+    }
+  ],
+  "exact_matching_CEM19contact_events": 80,
+  "contact_comparison_fields": [
+    "time_s",
+    "point_m",
+    "string_contact",
+    "frame_contact",
+    "point_velocity_mps",
+    "ball_velocity_mps"
+  ],
+  "all_saved_numeric_arrays_finite": true,
+  "public_actions_bounded": true,
+  "native_execution": true,
+  "formal_acceptance": false,
+  "sha256": {
+    "all_first_episodes.partial.npz": "a5de7072803fd53ee9a77d854102caf6de656ac05c6f81c4fc60cd8d8377ffdd",
+    "near_contact_all.partial.npz": "a3f81b9e5e8432c07b7138c15960c5bfc746f53665b1a99f841e040c8e89b023",
+    "episodes.partial.json": "d430eb4578b53f0fc971cd3992b44fadcde4741f4cb1f921d11533cdc8904699",
+    "partial_public_and_poses.npz": "556e7cf37a682ad641d6f1f211c59e6597593f85d652d4a84171c6d25be3170b",
+    "causal_plans.partial.json": "f58a06b678fa6ba149a6c2421f1860c190523945a3e0ca70c010f673b4369800",
+    "contacts.partial.json": "5573275394a0145831fd466229c7c6e1edc8e92ef6f159da762a4cb3ed613e75",
+    "control_window.partial.npz": "a6a0d2a66f92b0e77e34e77bc6983ea7c598aeb02f6d41411e0efb68a150fa67",
+    "partial_search_state.pt": "bcd44dc1bdb86d76101f98ff2d546aa2ddff466e2e66aad8071598b0c2e9e2a7",
+    "progress.json": "21aca6217c177ba32368e9881ebc7974239567c907c536a91dfee789bba76d73"
+  }
+}
