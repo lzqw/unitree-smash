@@ -16,6 +16,7 @@ p.add_argument('--timing-grid',action='store_true',help='Reserve12 candidates fo
 p.add_argument('--push-grid',action='store_true',help='Reserve16 candidates for front/back thigh/calf push coordination')
 p.add_argument('--contact-curriculum',action='store_true',help='TRAIN: retain actual legal airborne strings contacts while optimizing failed return and recovery; formal flags unchanged')
 p.add_argument('--contact-grid',action='store_true',help='Reserve12 candidates for arm lead/speed around a measured contact, preserving leg timing')
+p.add_argument('--recovery-leg-bank',type=Path,help='Optional measured same-family recovery26-vector: reserve8 contact-arm/recovery-leg crossover candidates')
 p.add_argument('--continue-after-miss',action='store_true',help='TRAIN curriculum: observe landing after missed/blocked/backward shuttle return; all rally failures remain failures, robot faults terminate')
 p.add_argument('--push-search-range',type=float,default=.15,help='Symmetric front/back leg target-offset search range in rad; native actuator/joint limits stay unchanged')
 AppLauncher.add_app_launcher_args(p);args=p.parse_args();app=AppLauncher(args).app
@@ -30,7 +31,7 @@ from quadsmash.control.full_racket_rally_controller_v4 import FullRacketRallyCon
 from quadsmash.control.full_racket_teacher_v4 import LOW,HIGH,PARAMETER_NAMES
 from quadsmash.control.full_racket_geometry_v4 import FullRacketGeometryV4
 from quadsmash.control.full_racket_contact_curriculum_v4 import (
-    contact_search_tiers,actual_outgoing_shaping,arm_timing_velocity_grid)
+    contact_search_tiers,actual_outgoing_shaping,arm_timing_velocity_grid,measured_recovery_leg_crossovers)
 from quadsmash.physics.full_racket_v4 import string_prism_gap
 from quadsmash.physics.native import quat_rotate
 from quadsmash.usd_dependencies_v4 import audit_composed_asset
@@ -59,11 +60,14 @@ def main():
         raise ValueError('Contact grid requires contact curriculum and at least14 candidates')
     if args.contact_curriculum and not args.continue_after_miss:
         raise ValueError('Contact curriculum requires observing recovery after failed shuttle returns')
+    if args.recovery_leg_bank and (not args.contact_grid or args.candidates<22):
+        raise ValueError('Recovery leg crossover requires contact grid and at least22 candidates')
     if not .15<=args.push_search_range<=.5:raise ValueError('Push search range must be between .15 and .5rad')
     sampling_contract=('contact-arm-timing-speed-grid-v1' if args.contact_grid else 'front-back-push-grid-v1' if args.push_grid else
         'timing-velocity-cartesian-grid-v1' if args.timing_grid else 'gaussian-cem-v1')
     selection_contract=('actual-contact-then-return-and-recovery-v1' if args.contact_curriculum else
         'ball-with-jump-recovery-v3' if args.continue_after_miss else 'legal-first-ball-v4')
+    if args.recovery_leg_bank:sampling_contract+='-measured-recovery-leg-crossover-v1'
     if not args.training_indices or len(set(args.training_indices))!=len(args.training_indices):raise ValueError('Distinct TRAIN indices required')
     args.output.mkdir(parents=True,exist_ok=True)
     protocol_path=ROOT/'configs/g07_full_racket_eval_v4_r3.json';protocol=json.loads(protocol_path.read_text())
@@ -91,6 +95,11 @@ def main():
     if len(template['parameters'])!=24 and len(template['parameters'])!=26:raise ValueError('Use a24/26 parameter source')
     if len(template['parameters'])==24:
         template['parameters']=torch.cat((template['parameters'],torch.tensor([template['seed']['desired_ball_center_m'][0],0.])))
+    leg_bank=None
+    if args.recovery_leg_bank:
+        leg_bank=json.loads(args.recovery_leg_bank.read_text())
+        if leg_bank['seed']!=template['seed']:raise ValueError('Recovery crossover requires the same original arm/controller family')
+        if leg_bank['asset_sha256']!=template['asset_sha256']:raise ValueError('Recovery bank asset mismatch')
     template['event_calibration_s']=template.get('event_calibration_s',2.75-template['result']['event_time_s'])
     if args.walk_speed is not None or args.waypoint_x is not None:
         if args.resume:raise ValueError('Parameter overrides require warm-start and remeasured fitness')
@@ -143,6 +152,10 @@ def main():
         training_continue_after_miss=args.continue_after_miss,
         training_early_termination=('Robot-rule fault, body ground or fallen; observe recovery after failed shuttle return without reviving its rally' if args.continue_after_miss else
             'Rally fault, first ground without target, body ground or fallen')+'; formal evaluator unchanged')
+    if leg_bank is not None:
+        bank_sha=hashlib.sha256(args.recovery_leg_bank.read_bytes()).hexdigest()
+        if args.resume and prior.get('recovery_leg_bank_sha256')!=bank_sha:raise ValueError('Recovery bank changed; use warm-start')
+        base_record.update(recovery_leg_bank_path=str(args.recovery_leg_bank),recovery_leg_bank_sha256=bank_sha)
     try:
         for generation in range(args.generations):
             state=dict(base_record,mean=mean.cpu(),sigma=sigma.cpu(),rng=rng.get_state().cpu(),
@@ -172,6 +185,9 @@ def main():
             if args.contact_grid:
                 grid=arm_timing_velocity_grid(reference.cpu().numpy(),low.cpu().numpy(),high.cpu().numpy())
                 population[2:14]=torch.as_tensor(grid,device=env.device,dtype=population.dtype)
+            if leg_bank is not None:
+                grid=measured_recovery_leg_crossovers(reference.cpu().numpy(),leg_bank['parameters'],low.cpu().numpy(),high.cpu().numpy())
+                population[14:22]=torch.as_tensor(grid,device=env.device,dtype=population.dtype)
             env._episode_has_stepped.zero_();env._metrics_started=False
             env.rally_records.clear();env.episode_records.clear();env.contact_records.clear()
             env.racket_plane_records.clear();env.episode_index.fill_(-1)

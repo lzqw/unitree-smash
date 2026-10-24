@@ -61,3 +61,26 @@ def arm_timing_velocity_grid(reference, lower, upper):
             candidate[7] = np.clip(candidate[7] * speed_multiplier, lower[7], upper[7])
             result.append(candidate)
     return np.asarray(result)
+
+
+def measured_recovery_leg_crossovers(reference, recovered, lower, upper):
+    """Native TRAIN proposals mixing measured recovery legs with contact arms.
+
+    No outcome transfers to these new coupled trajectories. All native fitness
+    must be measured afresh, with the same physical limits and success gates.
+    """
+    reference = np.asarray(reference, dtype=float)
+    recovered = np.asarray(recovered, dtype=float)
+    if reference.shape != (26,) or recovered.shape != (26,):
+        raise ValueError('Require compatible 26-parameter controller families')
+    body_indices = [0,1,2,3,4,5,6,17,20,21,22,23]
+    result = []
+    for fraction in [.25, .5, .75, 1.]:
+        for lead_delta in [-.03, 0.]:
+            candidate = reference.copy()
+            candidate[body_indices] = np.clip(
+                (1-fraction)*reference[body_indices]+fraction*recovered[body_indices],
+                np.asarray(lower)[body_indices], np.asarray(upper)[body_indices])
+            candidate[14] = np.clip(reference[14]+lead_delta, lower[14], upper[14])
+            result.append(candidate)
+    return np.asarray(result)

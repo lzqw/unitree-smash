@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 from quadsmash.control.full_racket_contact_curriculum_v4 import (
     ROBOT_FAULTS,usable_air_contact,contact_search_tiers,actual_outgoing_shaping,
-    arm_timing_velocity_grid)
+    arm_timing_velocity_grid,measured_recovery_leg_crossovers)
 
 
 class ContactCurriculumTest(unittest.TestCase):
@@ -56,6 +56,18 @@ class ContactCurriculumTest(unittest.TestCase):
         np.testing.assert_array_equal(grid[:, untouched], np.tile(reference[untouched], (12, 1)))
         self.assertTrue(np.all(grid[:, [7,14]] <= .15))
         self.assertTrue(np.all(grid[:, [7,14]] >= -.15))
+
+    def test_recovery_crossover_preserves_contact_arm_and_ball_interception(self):
+        reference = np.zeros(26)
+        recovered = np.full(26, .1)
+        lower, upper = np.full(26, -.5), np.full(26, .5)
+        grid = measured_recovery_leg_crossovers(reference, recovered, lower, upper)
+        self.assertEqual(grid.shape, (8,26))
+        fixed = [7,8,9,10,11,12,13,15,16,18,19,24,25]
+        np.testing.assert_array_equal(grid[:,fixed], np.zeros((8,len(fixed))))
+        self.assertAlmostEqual(grid[0,2], .025)
+        self.assertAlmostEqual(grid[-1,2], .1)
+        self.assertAlmostEqual(grid[-1,14], 0.)
 
 
 if __name__ == '__main__':

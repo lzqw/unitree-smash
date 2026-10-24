@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "Recovery128:13 qualified miss recoveries,1airborne strings/4contacts/0complete/NF0. Native near-net02 all3 passed after live GPU-pose geometry fix, two old query failures preserved; CPU50 pass. Upper strings gen0 64 failed, gen1 still active. Queued fresh contact-preserving native training from measured candidate31, no inherited fitness or changed acceptance.",
+      "notes": "Recovery128:13 qualified miss recoveries,1airborne strings/4contacts/0complete/NF0. Native near-net02 all3 passed after live GPU-pose geometry fix, two old query failures preserved; CPU51 pass. Upper strings gen0 64 failed, gen1 still active. Queued fresh contact-preserving native training from measured candidate31, no inherited fitness or changed acceptance. Queued32 includes8 native-measured recovery-leg/contact-arm crossover proposals; all new fitness unmeasured.",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/reach_cem_fine_feedback01/metrics.json",
       "curriculum_policy": "reports/G07_full_racket_v4/reach_cem_fine_feedback01/best_candidate.pt",
@@ -67,14 +67,15 @@
       ],
       "queued_native_sequence": {
         "state_file": "reports/G07_full_racket_v4/contact_recovery_queue01/state.json",
-        "pid": 1349381,
-        "session_id": 98732,
+        "pid": 1349683,
+        "session_id": 74286,
         "state_at_last_check": "WAITING_FOR_PRIOR_TERMINAL_RECEIPT",
         "next_jobs": [
           "ball_contact_recovery_cem02"
         ],
         "still_running": true,
-        "note": "Do not manually duplicate this queued job; queue requires prior guard/child exit plus SUCCEEDED receipt and unchanged launch-source hashes."
+        "note": "Do not manually duplicate this queued job; queue requires prior guard/child exit plus SUCCEEDED receipt and unchanged launch-source hashes.",
+        "proposal": "reports/G07_full_racket_v4/CONTACT_RECOVERY_CROSSOVER_PLAN_0612.json"
       },
       "native_air_string_contact_milestone": "reports/G07_full_racket_v4/ball_cem_low_base_branch01/NATIVE_CONTACT_MILESTONE.json",
       "latest_native_training_summary": "reports/G07_full_racket_v4/ball_recovery_cem01/FINAL_TRAIN_SUMMARY.json",

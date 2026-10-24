@@ -1,4 +1,6 @@
-最高优先调度更新（2026-10-24 06:09 UTC）：已有串行接续 worker1349381 / exec98732，state=reports/G07_full_racket_v4/contact_recovery_queue01/state.json。它等待旧GPU guard1344215和child1344227都实际退出且job.json SUCCEEDED，再自动启动 ball_contact_recovery_cem02（warm06原candidate31，32×2TRAIN×2gen、sigma.025、contact-curriculum+contact-grid）。不要手工再启动该任务；先查worker/旧guard/新guard实际PID及state。worker启动前冻结了quadsmash全源码+search/guard/protocol/warm SHA，排队期间改这些源码会明确拒绝启动。每个GPU任务仍独立5400s/102400步cap。worker不写GPU_LEDGER/RUNS，原guard退出后由新guard独占资源锁。若用户要求停止训练，还要处理这个本项目worker及其子guard，避免停止后又接续。旧正文的“手工接续命令”已由本自动队列取代。
+接续方法更新（2026-10-24 06:12 UTC）：同一contact_recovery_queue01的新worker1349683 / exec74286已实际WAITING；保留当前GPU作业，等待其真实SUCCEEDED退出。32候选含2参考/均值、12只改arm时机/速度、8个实测恢复腿参数交叉、10高斯。--recovery-leg-bank contact_recovery_warm06/RECOVERY_LEG_BANK.json，来自原gen1 candidate12；与原contact31严格相同seed/family，按.25/.5/.75/1混合body参数，只再变arm_lead[-.03,0]，其余arm/球拦截参数保留。51项CPU测试通过，尚无新模式原生结果。其余调度、源hash冻结、单GPU/cap约束见下文；不可手工再启动重复任务。
+
+最高优先调度更新（2026-10-24 06:09 UTC）：已有串行接续 worker1349683 / exec74286，state=reports/G07_full_racket_v4/contact_recovery_queue01/state.json。它等待旧GPU guard1344215和child1344227都实际退出且job.json SUCCEEDED，再自动启动 ball_contact_recovery_cem02（warm06原candidate31，32×2TRAIN×2gen、sigma.025、contact-curriculum+contact-grid）。不要手工再启动该任务；先查worker/旧guard/新guard实际PID及state。worker启动前冻结了quadsmash全源码+search/guard/protocol/warm SHA，排队期间改这些源码会明确拒绝启动。每个GPU任务仍独立5400s/102400步cap。worker不写GPU_LEDGER/RUNS，原guard退出后由新guard独占资源锁。若用户要求停止训练，还要处理这个本项目worker及其子guard，避免停止后又接续。旧正文的“手工接续命令”已由本自动队列取代。
 
 # 唯一活跃GPU：ball_upper_strings_cem01，真实上部拍线与恢复联合训练
 
