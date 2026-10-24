@@ -50,18 +50,18 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "Completed near-net02 actual256 candidate executions:88 no-ball virtual-safe,8 safe jump/recovery executions including repeated elites. Best point1.742m, insufficient attack conditions. Native8-environment reset/public-observation/isolation smoke passed, scope limited; independent engine-view extension unrun. Actual-ball CEM smoke now RUNNING; no formal400 outcome.",
+      "notes": "Ball smoke8 all net-faulted before contact. Backoff first32 completed:0contacts,9net,16bodyground,7groundmiss; second-generation reset failed due inference-buffer rebinding. Buffer-lifecycle fix passed33CPU tests. Now running alternate low-base-rotation seed in actual-ball CEM; no formal400 or legal smash yet.",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/reach_cem_fine_feedback01/metrics.json",
       "curriculum_policy": "reports/G07_full_racket_v4/reach_cem_fine_feedback01/best_candidate.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
       "active_gpu_jobs": [
         {
-          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_cem_smoke01",
-          "guard_pid": 1323147,
-          "child_pid": 1323156,
-          "sequence_session_id": 30733,
-          "started_at": "2026-10-24T03:59:09.882873+00:00",
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_cem_low_base_branch01",
+          "guard_pid": 1327511,
+          "child_pid": 1327523,
+          "session_id": 33164,
+          "started_at": "2026-10-24T04:27:43.830995+00:00",
           "state": "RUNNING"
         }
       ],
@@ -69,11 +69,12 @@
         "state_file": "reports/G07_full_racket_v4/native_followup_sequence01/state.json",
         "pid": 1320916,
         "session_id": 30733,
-        "state_at_last_check": "RUNNING_ball_cem_smoke01",
+        "state_at_last_check": "COMPLETED_DEVELOPMENT_SMOKES",
         "next_jobs": [
           "reset_eval_native01",
           "ball_cem_smoke01"
-        ]
+        ],
+        "still_running": false
       }
     },
     "G08": {
@@ -113,7 +114,7 @@
       "protocol": "configs/g07_full_racket_eval_v4_r3.json",
       "old_passes_inherited": false,
       "native_reset_perturbation_public_observation_isolation": "PASSED",
-      "independent_engine_view_reset_check": "TODO"
+      "independent_engine_view_reset_check": "PASSED"
     }
   }
 }

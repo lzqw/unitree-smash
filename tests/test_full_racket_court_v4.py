@@ -112,6 +112,18 @@ class RallyLawTest(unittest.TestCase):
         self.step(racket_contact_event=True,racket_touching=True,separated=False,**overrides)
         self.step();self.step()
 
+    def test_rollout_inference_context_allows_next_generation_reset(self):
+        ids=torch.tensor([0])
+        for _ in range(2):
+            with torch.inference_mode():
+                self.hit_and_release()
+            self.assertTrue(bool(self.events.released[0]))
+            self.events.reset(ids)
+            self.assertFalse(self.events.quiet_frames.is_inference())
+            self.assertEqual(int(self.events.quiet_frames[0]),0)
+            self.assertFalse(bool(self.events.had_contact[0]))
+            self.events.launch(ids,torch.tensor([self.time],dtype=torch.float64))
+
     def cross_and_land(self,landing=(3.,0.,.025)):
         self.step(previous_position=[[1.51,0,1.7]],position=[[1.54,0,1.7]])
         self.step(previous_position=[[landing[0],landing[1],.04]],position=[[landing[0],landing[1],.01]],ground_touch=True)

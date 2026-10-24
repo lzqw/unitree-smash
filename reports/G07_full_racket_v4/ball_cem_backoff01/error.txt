@@ -1,0 +1,21 @@
+Traceback (most recent call last):
+  File "/home/autodrive/LZQW/unitree_smash/scripts/search_full_racket_ball_v4.py", line 232, in <module>
+    try:main()
+        ^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash/scripts/search_full_racket_ball_v4.py", line 125, in main
+    observation,_=wrapper.reset();controller.reset();controller.parameters.copy_(population.repeat_interleave(case_count,dim=0))
+                  ^^^^^^^^^^^^^^^
+  File "/home/autodrive/Isaac/IsaacLab/source/isaaclab_rl/isaaclab_rl/rsl_rl/vecenv_wrapper.py", line 141, in reset
+    obs_dict, extras = self.env.reset()
+                       ^^^^^^^^^^^^^^^^
+  File "/home/autodrive/Isaac/IsaacLab/source/isaaclab/isaaclab/envs/direct_rl_env.py", line 296, in reset
+    self._reset_idx(indices)
+  File "/home/autodrive/LZQW/unitree_smash/quadsmash/tasks/stand/full_racket_train_env_v4.py", line 22, in _reset_idx
+    super()._reset_idx(ids)
+  File "/home/autodrive/LZQW/unitree_smash/quadsmash/tasks/stand/full_racket_env_v4.py", line 227, in _reset_idx
+    self.rally.reset(ids);self.launch_done[ids]=False;self.launch_count[ids]=0
+    ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash/quadsmash/physics/rally_rules_v4.py", line 30, in reset
+    self.contact_count[ids]=self.quiet_frames[ids]=0
+                            ~~~~~~~~~~~~~~~~~^^^^^
+RuntimeError: Inplace update to inference tensor outside InferenceMode is not allowed.You can make a clone to get a normal tensor before doing inplace update.See https://github.com/pytorch/rfcs/pull/17 for more details.

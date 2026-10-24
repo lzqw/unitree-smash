@@ -1,0 +1,41 @@
+{
+  "timestamp": "2026-10-24T04:21:32.548709+00:00",
+  "execution_status": "SUCCEEDED",
+  "policy_outcome": "FAILED_ALL8_BEFORE_CONTACT",
+  "episodes": 8,
+  "robot_net_faults": 8,
+  "contacts": 0,
+  "complete": 0,
+  "numerical_failures": 0,
+  "elapsed_s": 948.449184785015,
+  "gpu_hours": 0.2634581068847264,
+  "control_env_steps": 6400,
+  "diagnostic": {
+    "source": "public_and_poses_000.npz and trajectory_000.json",
+    "first_dead_sample_time_s": 2.34,
+    "root_m": [
+      0.8499832153320312,
+      0.015027999877929688,
+      0.20745885372161865
+    ],
+    "head_origin_m": [
+      1.467203140258789,
+      0.12555694580078125,
+      1.179527997970581
+    ],
+    "maximum_exported_racket_mesh_x_m": 1.497954059771807,
+    "net_own_face_x_m": 1.498,
+    "note": "50Hz sampled mesh vicinity explains the native net-fault flag; not an exact per-substep contact point"
+  },
+  "next_method": {
+    "output": "ball_cem_backoff01",
+    "waypoint_x_m": 0.58,
+    "walk_speed_mps": 0.52,
+    "candidates": 16,
+    "cases_per_candidate": 2,
+    "generations": 2,
+    "training_only_irrevocable_failure_termination": true,
+    "formal_evaluator_unchanged": true
+  },
+  "formal_acceptance": false
+}

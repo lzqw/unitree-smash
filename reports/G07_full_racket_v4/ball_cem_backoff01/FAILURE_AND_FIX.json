@@ -1,0 +1,18 @@
+{
+  "execution_status": "FAILED_ON_SECOND_GENERATION_RESET",
+  "completed_generations": 1,
+  "completed_first_episodes": 32,
+  "contacts": 0,
+  "net_faults": 9,
+  "body_ground_terminations": 16,
+  "first_ground_misses": 7,
+  "minimum_string_gap_m": 0.2263132929801941,
+  "known_control_env_steps": 9984,
+  "ledger_conservative_charged_steps": 51200,
+  "elapsed_s": 390.43702991702594,
+  "charged_gpu_hours": 0.1084547305325072,
+  "cause": "RallyRulesV4.advance rebound quiet_frames to an inference tensor; next generation reset ran outside inference mode",
+  "fix": "Preserve preallocated normal buffer with copy_; arithmetic, geometry, rules and thresholds unchanged",
+  "validation": "33 CPU geometry/rule/Jacobian/evaluation tests passed, including reset across inference context; multi-generation native rerun now active",
+  "formal_acceptance": false
+}

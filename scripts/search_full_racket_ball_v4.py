@@ -11,12 +11,14 @@ p.add_argument('--generations',type=int,default=2);p.add_argument('--seed',type=
 p.add_argument('--training-indices',type=int,nargs='+',default=[0,64])
 p.add_argument('--sigma-fraction',type=float,default=.08)
 p.add_argument('--ik-seeds',type=Path)
+p.add_argument('--walk-speed',type=float);p.add_argument('--waypoint-x',type=float)
 AppLauncher.add_app_launcher_args(p);args=p.parse_args();app=AppLauncher(args).app
 import numpy as np
 import torch
 from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper
 from isaacsim.core.utils.stage import get_current_stage
 from quadsmash.tasks.stand.full_racket_env_v4 import full_racket_cfg,FullRacketEnvV4
+from quadsmash.tasks.stand.full_racket_train_env_v4 import RallyTrainingEnvV4
 from quadsmash.tasks.stand.visual_geometry import export_robot_geometry
 from quadsmash.control.full_racket_rally_controller_v4 import FullRacketRallyControllerV4
 from quadsmash.control.full_racket_teacher_v4 import LOW,HIGH,PARAMETER_NAMES
@@ -69,10 +71,15 @@ def main():
     if len(template['parameters'])==24:
         template['parameters']=torch.cat((template['parameters'],torch.tensor([template['seed']['desired_ball_center_m'][0],0.])))
     template['event_calibration_s']=template.get('event_calibration_s',2.75-template['result']['event_time_s'])
+    if args.walk_speed is not None or args.waypoint_x is not None:
+        if args.resume:raise ValueError('Parameter overrides require warm-start and remeasured fitness')
+        template['parameters']=template['parameters'].clone()
+        if args.walk_speed is not None:template['parameters'][0]=args.walk_speed
+        if args.waypoint_x is not None:template['parameters'][1]=args.waypoint_x
     case_count=len(args.training_indices);count=args.candidates*case_count
     cases=[training_cases[i] for _ in range(args.candidates) for i in args.training_indices]
     cfg=full_racket_cfg(count,protocol['physics_dt_s']);cfg.seed=args.seed
-    env=FullRacketEnvV4(cfg,cases=cases);wrapper=RslRlVecEnvWrapper(env,clip_actions=None)
+    env=RallyTrainingEnvV4(cfg,cases=cases);wrapper=RslRlVecEnvWrapper(env,clip_actions=None)
     controller=FullRacketRallyControllerV4(template,count,env.device)
     surface_offset=controller.teacher.contact_offset.clone()
     surface_offset[0]=controller.teacher.face_sign*env.racket_config['assumptions']['string_thickness_m']/2
@@ -103,7 +110,8 @@ def main():
         candidate_count=args.candidates,training_case_indices=args.training_indices,training_suite=suite,
         reference_parameters=reference.cpu(),parameter_names=PARAMETER_NAMES+['intercept_plane_x','strike_timing_residual'],
         selection_contract='legal-first-ball-v4',source_checkpoint_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),
-        source_hashes=source_hashes,formal_acceptance=False,formal_panels_read=False)
+        source_hashes=source_hashes,formal_acceptance=False,formal_panels_read=False,
+        training_early_termination='Rally fault, first ground without target, body ground or fallen; formal evaluator unchanged')
     try:
         for generation in range(args.generations):
             state=dict(base_record,mean=mean.cpu(),sigma=sigma.cpu(),rng=rng.get_state().cpu(),

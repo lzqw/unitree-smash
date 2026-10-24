@@ -79,8 +79,8 @@ class RallyRulesV4:
         self.followthrough_crossed |= active & racket_over_net & self.legal_initial_contact
         touched = active & racket_touching
         self.last_touch_velocity[touched]=velocity[touched]
-        self.quiet_frames = torch.where(active & self.had_contact & separated,
-                                        self.quiet_frames+1,torch.zeros_like(self.quiet_frames))
+        self.quiet_frames.copy_(torch.where(active & self.had_contact & separated,
+                                           self.quiet_frames+1,torch.zeros_like(self.quiet_frames)))
         release = active & self.had_contact & (~self.released) & (self.quiet_frames>=2)
         self.outgoing_velocity[release]=self.last_touch_velocity[release]
         self.release_time[release]=time[release]
