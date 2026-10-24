@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 import fcntl
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import signal
@@ -46,7 +47,7 @@ def check_window_budget(budget, ledger, name, seconds, step_cap, now):
             r for r in all_records if r.get("budget_window") == key]
         config = windows[key]
         hours = sum(r["charged_gpu_hours"] for r in records)
-        if hours + seconds / 3600 > config["max_gpu_hours"]:
+        if config["max_gpu_hours"] is not None and hours + seconds / 3600 > config["max_gpu_hours"]:
             raise ValueError(f"cumulative GPU budget exceeds {config['max_gpu_hours']} h in {key}; charged {hours:.4f} h")
         if config.get("max_env_steps") is not None:
             steps = sum(r["charged_env_steps"] for r in records)
@@ -57,7 +58,10 @@ def check_window_budget(budget, ledger, name, seconds, step_cap, now):
     if state:
         starts.append(datetime.fromisoformat(state["started_at"]))
     started = min(starts) if starts else now
-    deadline = started.timestamp() + windows[original]["max_wallclock_hours"] * 3600
+    wallclock_hours = windows[original]["max_wallclock_hours"]
+    if wallclock_hours is None:
+        return original, started, None
+    deadline = started.timestamp() + wallclock_hours * 3600
     if now.timestamp() + seconds > deadline:
         raise ValueError(f"original authorization {original} wall-clock deadline is {datetime.fromtimestamp(deadline, timezone.utc).isoformat()}; requested job would exceed it")
     return original, started, datetime.fromtimestamp(deadline, timezone.utc)
@@ -76,7 +80,7 @@ def main():
     parser.add_argument("command", nargs=argparse.REMAINDER)
     args = parser.parse_args()
     command = args.command[1:] if args.command[:1] == ["--"] else args.command
-    if not command or args.max_seconds < 35 or args.env_steps_cap < 0:
+    if not command or not math.isfinite(args.max_seconds) or args.max_seconds < 35 or args.env_steps_cap < 0:
         parser.error("command, max-seconds >= 35 and nonnegative env-steps-cap are required")
     budget = json.loads((ROOT / "configs/budget.json").read_text())
     windows = budget.get("authorization_windows", {})
@@ -100,7 +104,7 @@ def main():
         steps = sum(r["charged_env_steps"] for r in window_records)
         window = windows.get(args.budget_window)
         cap = (window["max_gpu_hours"] if window else budget["suggested_incremental_budgets_gpu_hours"][args.goal])
-        if hours + args.max_seconds / 3600 > cap:
+        if cap is not None and hours + args.max_seconds / 3600 > cap:
             parser.error(f"cumulative GPU budget would exceed {cap} h in {args.budget_window}; already charged {hours:.4f} h")
         if window and window.get("max_env_steps") is not None and steps + args.env_steps_cap > window["max_env_steps"]:
             parser.error("cumulative environment step budget would exceed the authorization window")
@@ -148,7 +152,7 @@ def main():
         if window:
             record.update(original_authorization=original_window,
                           authorization_started_at=original_start.isoformat(),
-                          authorization_deadline=original_deadline.isoformat())
+                          authorization_deadline=original_deadline.isoformat() if original_deadline else None)
         if paused:record['explicitly_paused_external_jobs']=paused
         ledger["runs"].append(record)
         atomic_json(ledger_path, ledger)

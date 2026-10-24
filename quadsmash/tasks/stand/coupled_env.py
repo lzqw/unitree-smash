@@ -46,6 +46,7 @@ class CoupledEnvCfg(DirectRLEnvCfg):
     action_space = 18
     observation_space = OBSERVATION_SIZE
     state_space = 0
+    ground_size_m = (200.0, 200.0, 0.1)
     sim = sim_utils.SimulationCfg(dt=0.002, render_interval=5)
     scene = InteractiveSceneCfg(num_envs=32, env_spacing=3.0, replicate_physics=True)
     event_goal_enabled = False
@@ -125,7 +126,7 @@ class CoupledEnv(DirectRLEnv):
     def _setup_scene(self):
         self.robot = Articulation(self.cfg.robot)
         ground = sim_utils.CuboidCfg(
-            size=(200.0, 200.0, 0.1),
+            size=self.cfg.ground_size_m,
             collision_props=sim_utils.CollisionPropertiesCfg(),
             physics_material=sim_utils.RigidBodyMaterialCfg(static_friction=0.8, dynamic_friction=0.8),
         )

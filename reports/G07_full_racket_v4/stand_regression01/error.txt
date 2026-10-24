@@ -1,0 +1,19 @@
+Traceback (most recent call last):
+  File "/home/autodrive/LZQW/unitree_smash/scripts/validate_full_racket_v4.py", line 121, in <module>
+    main()
+  File "/home/autodrive/LZQW/unitree_smash/scripts/validate_full_racket_v4.py", line 59, in main
+    env = RegressionEnv(cfg)
+          ^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash/quadsmash/tasks/stand/jump_env.py", line 44, in __init__
+    super().__init__(cfg,**kwargs)
+  File "/home/autodrive/LZQW/unitree_smash/quadsmash/tasks/stand/coupled_env.py", line 101, in __init__
+    super().__init__(cfg, **kwargs)
+  File "/home/autodrive/Isaac/IsaacLab/source/isaaclab/isaaclab/envs/direct_rl_env.py", line 131, in __init__
+    self._setup_scene()
+  File "/home/autodrive/LZQW/unitree_smash/scripts/validate_full_racket_v4.py", line 38, in _setup_scene
+    spawn_court_net(stage,f'/World/envs/env_{i}/Net',court)
+  File "/home/autodrive/LZQW/unitree_smash/quadsmash/physics/court_v4.py", line 37, in spawn_court_net
+    root.AddTranslateOp().Set(Gf.Vec3d(config['net_plane_x_m'],0,0))
+    ^^^^^^^^^^^^^^^^^^^^^
+pxr.Tf.ErrorException: 
+	Error in 'pxrInternal_v0_24__pxrReserved__::UsdGeomXformable::AddXformOp' at line 189 in file /builds/omniverse/usd-ci/USD/pxr/usd/usdGeom/xformable.cpp : 'The xformOp 'xformOp:translate' already exists in xformOpOrder [[xformOp:translate]].'

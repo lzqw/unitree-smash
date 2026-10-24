@@ -31,7 +31,7 @@ def sphere_box_gap(ball_position, box_position, box_quaternion, half_extents, ra
 
 
 def swept_sphere_box(start, end, center_start, center_end, quat_start, quat_end,
-                     half_extents, radius, iterations=256, tolerance=1e-6):
+                     half_extents, radius, iterations=256, tolerance=1e-6, gap_function=None):
     """Batched conservative advancement for translating and rotating blades.
 
     Returns hit, first-contact fraction, unresolved. Unresolved grazing cases
@@ -39,6 +39,7 @@ def swept_sphere_box(start, end, center_start, center_end, quat_start, quat_end,
     This is a detection/audit query, not a second collision-response engine.
     """
     q0 = quat_start / quat_start.norm(dim=-1, keepdim=True).clamp_min(1e-12)
+    query_gap = sphere_box_gap if gap_function is None else gap_function
     q1 = quat_end / quat_end.norm(dim=-1, keepdim=True).clamp_min(1e-12)
     dot = (q0*q1).sum(-1)
     q1 = torch.where((dot<0)[:, None], -q1, q1)
@@ -58,7 +59,7 @@ def swept_sphere_box(start, end, center_start, center_end, quat_start, quat_end,
         linear = (1-fraction[:,None])*q0+fraction[:,None]*q1
         spherical = (((1-fraction)*theta).sin()[:,None]*q0+(fraction*theta).sin()[:,None]*q1)/sine[:,None]
         q = torch.where((theta<1e-5)[:,None],linear,spherical)
-        gap = sphere_box_gap(start+fraction[:,None]*(end-start),
+        gap = query_gap(start+fraction[:,None]*(end-start),
             center_start+fraction[:,None]*(center_end-center_start),q,half,radius)
         new = active & (gap<=tolerance)
         hit |= new

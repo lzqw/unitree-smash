@@ -1,0 +1,708 @@
+diff --git a/configs/budget.json b/configs/budget.json
+index 8eaf9d7..3a90a50 100644
+--- a/configs/budget.json
++++ b/configs/budget.json
+@@ -1,5 +1,5 @@
+ {
+-  "authorization_note": "Legacy G04 authorization is retained; current G07 GPU0 execution uses the independently authorized g07-net-feasibility-20261023 window, with 10 additional GPU-hours and a fixed 10-hour wall-clock deadline.",
++  "authorization_note": "Current full-racket/court G07 task has explicit GPU0 unlimited-total authorization. Historical finite windows retained unchanged; no historical charges reset.",
+   "authorized_goals": [
+     "G00",
+     "G01",
+@@ -12,7 +12,7 @@
+   ],
+   "gpu_id_policy": "只使用调度器已分配或用户明确指定的GPU；空列表不是全部GPU。",
+   "max_concurrent_gpu_processes": 1,
+-  "authorized_total_gpu_hours": 10.0,
++  "authorized_total_gpu_hours": null,
+   "max_training_revisions_per_goal": null,
+   "cloud_spend_authorized": false,
+   "suggested_incremental_budgets_gpu_hours": {
+@@ -69,7 +69,20 @@
+       "deadline_local": "2026-10-24T02:04:13.742590+08:00",
+       "authorization_source": "/home/autodrive/.codex/attachments/020eb582-c91b-47fd-9a6c-10bbc3280369/pasted-text-1.txt",
+       "note": "New independent user authorization. New charges capped at 10 GPU-hours; all historical charges retained and excluded from this new cap. Clock anchored at registration, never renewed by restarts."
++    },
++    "g07-full-racket-unlimited-20261024": {
++      "goals": [
++        "G07"
++      ],
++      "max_gpu_hours": null,
++      "max_wallclock_hours": null,
++      "max_env_steps": null,
++      "authorized_at": "2026-10-24T01:53:52.256487+00:00",
++      "deadline": null,
++      "authorization_source": "/home/autodrive/.codex/attachments/55e175f0-9444-4a09-ad37-681e6586ca51/pasted-text-1.txt",
++      "authorization_source_sha256": "2a66eb3ec391ab2bece82cf8d04a707ad52befd2aedf5c21e6b2b072f6289563",
++      "note": "Explicit new user goal authorizes GPU0 without cumulative GPU-hour, wall-clock, or calendar limit for correcting court/net/full-racket/rules and continuing adaptation/training/evaluation. Preserve all historical charges; finite per-job timeout/interaction caps and single-job GPU0 protection remain. No cloud resources."
+     }
+   },
+-  "current_authorization_window": "g07-net-feasibility-20261023"
++  "current_authorization_window": "g07-full-racket-unlimited-20261024"
+ }
+diff --git a/quadsmash/physics/native.py b/quadsmash/physics/native.py
+index 19c47eb..fa36743 100644
+--- a/quadsmash/physics/native.py
++++ b/quadsmash/physics/native.py
+@@ -31,7 +31,7 @@ def sphere_box_gap(ball_position, box_position, box_quaternion, half_extents, ra
+ 
+ 
+ def swept_sphere_box(start, end, center_start, center_end, quat_start, quat_end,
+-                     half_extents, radius, iterations=256, tolerance=1e-6):
++                     half_extents, radius, iterations=256, tolerance=1e-6, gap_function=None):
+     """Batched conservative advancement for translating and rotating blades.
+ 
+     Returns hit, first-contact fraction, unresolved. Unresolved grazing cases
+@@ -39,6 +39,7 @@ def swept_sphere_box(start, end, center_start, center_end, quat_start, quat_end,
+     This is a detection/audit query, not a second collision-response engine.
+     """
+     q0 = quat_start / quat_start.norm(dim=-1, keepdim=True).clamp_min(1e-12)
++    query_gap = sphere_box_gap if gap_function is None else gap_function
+     q1 = quat_end / quat_end.norm(dim=-1, keepdim=True).clamp_min(1e-12)
+     dot = (q0*q1).sum(-1)
+     q1 = torch.where((dot<0)[:, None], -q1, q1)
+@@ -58,7 +59,7 @@ def swept_sphere_box(start, end, center_start, center_end, quat_start, quat_end,
+         linear = (1-fraction[:,None])*q0+fraction[:,None]*q1
+         spherical = (((1-fraction)*theta).sin()[:,None]*q0+(fraction*theta).sin()[:,None]*q1)/sine[:,None]
+         q = torch.where((theta<1e-5)[:,None],linear,spherical)
+-        gap = sphere_box_gap(start+fraction[:,None]*(end-start),
++        gap = query_gap(start+fraction[:,None]*(end-start),
+             center_start+fraction[:,None]*(center_end-center_start),q,half,radius)
+         new = active & (gap<=tolerance)
+         hit |= new
+diff --git a/quadsmash/tasks/stand/ball_env.py b/quadsmash/tasks/stand/ball_env.py
+index 688f6f8..58d0601 100644
+--- a/quadsmash/tasks/stand/ball_env.py
++++ b/quadsmash/tasks/stand/ball_env.py
+@@ -74,6 +74,13 @@ class BallEnvCfg(JumpEnvCfg):
+ class BallEnv(JumpEnv):
+     cfg: BallEnvCfg
+ 
++    def _tool_gap(self,position,center,quaternion):
++        return sphere_box_gap(position,center,quaternion,PHYSICS['racket_half_extents_m'],self.cfg.shuttle_radius_m)
++
++    def _tool_sweep(self,start,end,center_start,center_end,quat_start,quat_end):
++        return swept_sphere_box(start,end,center_start,center_end,quat_start,quat_end,
++            PHYSICS['racket_half_extents_m'],self.cfg.shuttle_radius_m,iterations=self.cfg.sweep_audit_iterations)
++
+     def __init__(self, cfg, **kwargs):
+         self.contact_events = None
+         cfg.sim.physx.enable_ccd = False
+@@ -142,7 +149,17 @@ class BallEnv(JumpEnv):
+                     continue
+                 # Net is a child of the translated environment. The spawner's
+                 # translation is LOCAL; adding env_origins displaces it twice.
+-                if self.cfg.net_side_height_m > self.cfg.net_height_m:
++                if self.cfg.net_geometry_version == 'regulation-suspended-band-net-v4':
++                    from quadsmash.physics.court_v4 import load_court,spawn_court_net,spawn_court_lines
++                    from isaaclab.sim.utils import bind_physics_material
++                    config = load_court()
++                    colliders = spawn_court_net(stage,path,config)
++                    spawn_court_lines(stage,f'/World/envs/env_{i}/Court',config)
++                    material_path = path+'/geometry/material'
++                    net.physics_material.func(material_path,net.physics_material)
++                    for collider in colliders:
++                        bind_physics_material(collider,material_path)
++                elif self.cfg.net_side_height_m > self.cfg.net_height_m:
+                     from quadsmash.physics.net_geometry import spawn_profiled_net, PROFILE_VERSION
+                     from isaaclab.sim.utils import bind_physics_material
+                     if self.cfg.net_geometry_version != PROFILE_VERSION:
+@@ -237,8 +254,8 @@ class BallEnv(JumpEnv):
+             raise RuntimeError(f"Unexpected filtered contact shape: {forces.shape}")
+         racket_force, ground_force = forces[:, 0, 0], forces[:, 0, 1]
+         self._latest_racket_force.copy_(racket_force)
+-        gap = sphere_box_gap(position, data.body_pos_w[:, self.racket_body_id],
+-            data.body_quat_w[:, self.racket_body_id], PHYSICS["racket_half_extents_m"], self.cfg.shuttle_radius_m)
++        gap = self._tool_gap(position, data.body_pos_w[:, self.racket_body_id],
++            data.body_quat_w[:, self.racket_body_id])
+         new, touching = self.contact_events.update(racket_force, gap)
+         # Independent swept geometry audits translation AND angular motion.
+         # Contact response remains entirely in PhysX. A detected crossing that
+@@ -252,10 +269,9 @@ class BallEnv(JumpEnv):
+             # Avoid invoking conservative advancement for
+             # the overwhelmingly common far-away shuttle frames.  The
+             # query itself remains unchanged for every near-tool frame.
+-            hit, _, unresolved_near = swept_sphere_box(self.previous_ball_position[near_tool], position[near_tool],
++            hit, _, unresolved_near = self._tool_sweep(self.previous_ball_position[near_tool], position[near_tool],
+                 self.previous_tool_position[near_tool], tool_position[near_tool], self.previous_tool_quaternion[near_tool],
+-                tool_quaternion[near_tool], PHYSICS["racket_half_extents_m"], self.cfg.shuttle_radius_m,
+-                iterations=self.cfg.sweep_audit_iterations)
++                tool_quaternion[near_tool])
+             swept[near_tool] = hit
+             unresolved[near_tool] = unresolved_near
+             if getattr(self, 'capture_sweep_failures', False):
+@@ -270,8 +286,8 @@ class BallEnv(JumpEnv):
+                         quat_start=self.previous_tool_quaternion[i].cpu().tolist(), quat_end=tool_quaternion[i].cpu().tolist(),
+                         half_extents=PHYSICS['racket_half_extents_m'], radius=self.cfg.shuttle_radius_m,
+                         iterations=self.cfg.sweep_audit_iterations, tolerance=1e-6, dtype=str(position.dtype)))
+-        previous_gap = sphere_box_gap(self.previous_ball_position, self.previous_tool_position,
+-            self.previous_tool_quaternion, PHYSICS["racket_half_extents_m"], self.cfg.shuttle_radius_m)
++        previous_gap = self._tool_gap(self.previous_ball_position, self.previous_tool_position,
++            self.previous_tool_quaternion)
+         candidate = swept & self.sweep_ready & (previous_gap > 1e-5) & (~touching)
+         pending = self.pending_sweep_age >= 0
+         self.pending_sweep_age[pending] += 1
+diff --git a/quadsmash/tasks/stand/coupled_env.py b/quadsmash/tasks/stand/coupled_env.py
+index 4e2cf53..b78f559 100644
+--- a/quadsmash/tasks/stand/coupled_env.py
++++ b/quadsmash/tasks/stand/coupled_env.py
+@@ -46,6 +46,7 @@ class CoupledEnvCfg(DirectRLEnvCfg):
+     action_space = 18
+     observation_space = OBSERVATION_SIZE
+     state_space = 0
++    ground_size_m = (200.0, 200.0, 0.1)
+     sim = sim_utils.SimulationCfg(dt=0.002, render_interval=5)
+     scene = InteractiveSceneCfg(num_envs=32, env_spacing=3.0, replicate_physics=True)
+     event_goal_enabled = False
+@@ -125,7 +126,7 @@ class CoupledEnv(DirectRLEnv):
+     def _setup_scene(self):
+         self.robot = Articulation(self.cfg.robot)
+         ground = sim_utils.CuboidCfg(
+-            size=(200.0, 200.0, 0.1),
++            size=self.cfg.ground_size_m,
+             collision_props=sim_utils.CollisionPropertiesCfg(),
+             physics_material=sim_utils.RigidBodyMaterialCfg(static_friction=0.8, dynamic_friction=0.8),
+         )
+diff --git a/quadsmash/tasks/stand/observation_contract.py b/quadsmash/tasks/stand/observation_contract.py
+index ed9a3b9..40c8bd9 100644
+--- a/quadsmash/tasks/stand/observation_contract.py
++++ b/quadsmash/tasks/stand/observation_contract.py
+@@ -58,9 +58,15 @@ def observe_native(env):
+         env.observed_foot_contact.float()]
+     if hasattr(env,'shuttle'):
+         ball=env.shuttle.data
+-        fields += [inverse_rotate(q,ball.root_pos_w-root),
+-            relative_velocity(q,ball.root_pos_w,ball.root_lin_vel_w,root,velocity,omega),
+-            torch.ones((env.num_envs,1),device=env.device)]
++        present=getattr(env,'ball_observation_enabled',None)
++        if present is None:
++            fields += [inverse_rotate(q,ball.root_pos_w-root),
++                relative_velocity(q,ball.root_pos_w,ball.root_lin_vel_w,root,velocity,omega),
++                torch.ones((env.num_envs,1),device=env.device)]
++        else:
++            fields += [inverse_rotate(q,ball.root_pos_w-root)*present[:,None],
++                relative_velocity(q,ball.root_pos_w,ball.root_lin_vel_w,root,velocity,omega)*present[:,None],
++                present[:,None].float()]
+     else:
+         fields += [torch.zeros((env.num_envs,7),device=env.device)]
+     fields += [torch.ones((env.num_envs,1),device=env.device)]
+diff --git a/scripts/run_gpu_job.py b/scripts/run_gpu_job.py
+index ee14633..c239b0a 100644
+--- a/scripts/run_gpu_job.py
++++ b/scripts/run_gpu_job.py
+@@ -5,6 +5,7 @@ from datetime import datetime, timezone
+ import fcntl
+ import hashlib
+ import json
++import math
+ import os
+ from pathlib import Path
+ import signal
+@@ -46,7 +47,7 @@ def check_window_budget(budget, ledger, name, seconds, step_cap, now):
+             r for r in all_records if r.get("budget_window") == key]
+         config = windows[key]
+         hours = sum(r["charged_gpu_hours"] for r in records)
+-        if hours + seconds / 3600 > config["max_gpu_hours"]:
++        if config["max_gpu_hours"] is not None and hours + seconds / 3600 > config["max_gpu_hours"]:
+             raise ValueError(f"cumulative GPU budget exceeds {config['max_gpu_hours']} h in {key}; charged {hours:.4f} h")
+         if config.get("max_env_steps") is not None:
+             steps = sum(r["charged_env_steps"] for r in records)
+@@ -57,7 +58,10 @@ def check_window_budget(budget, ledger, name, seconds, step_cap, now):
+     if state:
+         starts.append(datetime.fromisoformat(state["started_at"]))
+     started = min(starts) if starts else now
+-    deadline = started.timestamp() + windows[original]["max_wallclock_hours"] * 3600
++    wallclock_hours = windows[original]["max_wallclock_hours"]
++    if wallclock_hours is None:
++        return original, started, None
++    deadline = started.timestamp() + wallclock_hours * 3600
+     if now.timestamp() + seconds > deadline:
+         raise ValueError(f"original authorization {original} wall-clock deadline is {datetime.fromtimestamp(deadline, timezone.utc).isoformat()}; requested job would exceed it")
+     return original, started, datetime.fromtimestamp(deadline, timezone.utc)
+@@ -76,7 +80,7 @@ def main():
+     parser.add_argument("command", nargs=argparse.REMAINDER)
+     args = parser.parse_args()
+     command = args.command[1:] if args.command[:1] == ["--"] else args.command
+-    if not command or args.max_seconds < 35 or args.env_steps_cap < 0:
++    if not command or not math.isfinite(args.max_seconds) or args.max_seconds < 35 or args.env_steps_cap < 0:
+         parser.error("command, max-seconds >= 35 and nonnegative env-steps-cap are required")
+     budget = json.loads((ROOT / "configs/budget.json").read_text())
+     windows = budget.get("authorization_windows", {})
+@@ -100,7 +104,7 @@ def main():
+         steps = sum(r["charged_env_steps"] for r in window_records)
+         window = windows.get(args.budget_window)
+         cap = (window["max_gpu_hours"] if window else budget["suggested_incremental_budgets_gpu_hours"][args.goal])
+-        if hours + args.max_seconds / 3600 > cap:
++        if cap is not None and hours + args.max_seconds / 3600 > cap:
+             parser.error(f"cumulative GPU budget would exceed {cap} h in {args.budget_window}; already charged {hours:.4f} h")
+         if window and window.get("max_env_steps") is not None and steps + args.env_steps_cap > window["max_env_steps"]:
+             parser.error("cumulative environment step budget would exceed the authorization window")
+@@ -148,7 +152,7 @@ def main():
+         if window:
+             record.update(original_authorization=original_window,
+                           authorization_started_at=original_start.isoformat(),
+-                          authorization_deadline=original_deadline.isoformat())
++                          authorization_deadline=original_deadline.isoformat() if original_deadline else None)
+         if paused:record['explicitly_paused_external_jobs']=paused
+         ledger["runs"].append(record)
+         atomic_json(ledger_path, ledger)
+diff --git a/status/G07_RESOURCE_STOP.json b/status/G07_RESOURCE_STOP.json
+index 891ed0f..104d0b1 100644
+--- a/status/G07_RESOURCE_STOP.json
++++ b/status/G07_RESOURCE_STOP.json
+@@ -1,7 +1,25 @@
+ {
+-  "condition": "Original authorization wall-clock expired; clarification unanswered",
+-  "first_detected_at": "2026-10-23T18:04:22.171094+00:00",
+-  "consecutive_goal_turns": 1,
++  "condition": "Original authorization wall-clock expired; no explicit amendment received",
++  "first_detected_at": "2026-10-24T01:08:03.233858+00:00",
++  "consecutive_goal_turns": 3,
+   "current_goal_achieved": false,
+-  "notes": "Do not mark goal complete. First stopped goal turn; only use goal blocked if the same condition recurs for at least three consecutive goal turns. Resume authorization restarts the blocked audit."
++  "blocked_audit_passed": true,
++  "resumed_at": "2026-10-24T01:08:03.233858+00:00",
++  "previous_blocked_audits": [
++    {
++      "condition": "Original authorization wall-clock expired; clarification unanswered",
++      "first_detected_at": "2026-10-23T18:04:22.171094+00:00",
++      "consecutive_goal_turns": 3,
++      "current_goal_achieved": false,
++      "notes": "Same genuine blocker verified across original stopped turn and two automatic continuations. No authorized experiment remains available; goal is unmet. Mark goal blocked without changing budget/T0/history.",
++      "last_revalidated_at": "2026-10-23T18:09:07.046857+00:00",
++      "previous_turn_classification": "no progress: unchanged expired-window blocker, no live process or new authorization",
++      "current_turn_classification": "no progress: same original wall-clock blocker verified for the third consecutive goal turn",
++      "blocked_audit_passed": true
++    }
++  ],
++  "previous_turn_classification": "no progress: requested time-limit amendment but received no answer; waiting for user input is not a verified live-job wait",
++  "current_turn_classification": "no progress: same expired wall-clock authorization and terminal project processes verified on third consecutive resumed turn",
++  "notes": "Fresh resumed blocked audit now meets the three-consecutive-turn threshold. No authorized experiment remains available without explicit time-limit amendment. Mark goal blocked; preserve original T0 and all GPU charges.",
++  "last_revalidated_at": "2026-10-24T01:10:13.400740+00:00"
+ }
+diff --git a/status/GPU_LEDGER.json b/status/GPU_LEDGER.json
+index 875dfc1..4799d37 100644
+--- a/status/GPU_LEDGER.json
++++ b/status/GPU_LEDGER.json
+@@ -9568,6 +9568,274 @@
+       "receipt_present": true,
+       "elapsed_s": 897.1771762690041,
+       "finished_at": "2026-10-23T18:03:05.198643+00:00"
++    },
++    {
++      "goal": "G07",
++      "budget_window": "g07-full-racket-unlimited-20261024",
++      "git_sha": "5352a79fc71054bd6af45ce5b08980e55b62b3fb",
++      "command": [
++        "/home/autodrive/Isaac/env_isaaclab/bin/python",
++        "scripts/build_full_racket_v4.py",
++        "--output",
++        "reports/G07_full_racket_v4/build_asset01",
++        "--headless"
++      ],
++      "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/build_asset01",
++      "gpu": 0,
++      "status": "SUCCEEDED",
++      "charged_gpu_hours": 0.00175993286527551,
++      "charged_env_steps": 0,
++      "started_at": "2026-10-24T02:01:39.896629+00:00",
++      "pid": 1295870,
++      "original_authorization": "g07-full-racket-unlimited-20261024",
++      "authorization_started_at": "2026-10-24T01:53:52.256487+00:00",
++      "authorization_deadline": null,
++      "child_pid": 1295881,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": true,
++      "elapsed_s": 6.3357583149918355,
++      "finished_at": "2026-10-24T02:01:46.237867+00:00"
++    },
++    {
++      "goal": "G07",
++      "budget_window": "g07-full-racket-unlimited-20261024",
++      "git_sha": "5352a79fc71054bd6af45ce5b08980e55b62b3fb",
++      "command": [
++        "/home/autodrive/Isaac/env_isaaclab/bin/python",
++        "scripts/validate_full_racket_v4.py",
++        "--output",
++        "reports/G07_full_racket_v4/stand_regression01",
++        "--num-envs",
++        "8",
++        "--headless"
++      ],
++      "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/stand_regression01",
++      "gpu": 0,
++      "status": "FAILED",
++      "charged_gpu_hours": 0.0014099166241713747,
++      "charged_env_steps": 3200,
++      "started_at": "2026-10-24T02:07:50.978328+00:00",
++      "pid": 1296611,
++      "original_authorization": "g07-full-racket-unlimited-20261024",
++      "authorization_started_at": "2026-10-24T01:53:52.256487+00:00",
++      "authorization_deadline": null,
++      "child_pid": 1296623,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": false,
++      "elapsed_s": 5.075699847016949,
++      "finished_at": "2026-10-24T02:07:56.059563+00:00"
++    },
++    {
++      "goal": "G07",
++      "budget_window": "g07-full-racket-unlimited-20261024",
++      "git_sha": "5352a79fc71054bd6af45ce5b08980e55b62b3fb",
++      "command": [
++        "/home/autodrive/Isaac/env_isaaclab/bin/python",
++        "scripts/validate_full_racket_v4.py",
++        "--output",
++        "reports/G07_full_racket_v4/stand_regression02",
++        "--num-envs",
++        "8",
++        "--headless"
++      ],
++      "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/stand_regression02",
++      "gpu": 0,
++      "status": "SUCCEEDED",
++      "charged_gpu_hours": 0.006749954128624975,
++      "charged_env_steps": 3200,
++      "started_at": "2026-10-24T02:09:10.542467+00:00",
++      "pid": 1297012,
++      "original_authorization": "g07-full-racket-unlimited-20261024",
++      "authorization_started_at": "2026-10-24T01:53:52.256487+00:00",
++      "authorization_deadline": null,
++      "child_pid": 1297023,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": true,
++      "elapsed_s": 24.29983486304991,
++      "finished_at": "2026-10-24T02:09:34.846808+00:00"
++    },
++    {
++      "goal": "G07",
++      "budget_window": "g07-full-racket-unlimited-20261024",
++      "git_sha": "5352a79fc71054bd6af45ce5b08980e55b62b3fb",
++      "command": [
++        "/home/autodrive/Isaac/env_isaaclab/bin/python",
++        "scripts/validate_full_racket_v4.py",
++        "--output",
++        "reports/G07_full_racket_v4/net_robot_positive01",
++        "--num-envs",
++        "8",
++        "--positive-net-fixture",
++        "--headless"
++      ],
++      "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/net_robot_positive01",
++      "gpu": 0,
++      "status": "FAILED",
++      "charged_gpu_hours": 0.0016597420530484264,
++      "charged_env_steps": 400,
++      "started_at": "2026-10-24T02:12:42.842645+00:00",
++      "pid": 1297563,
++      "original_authorization": "g07-full-racket-unlimited-20261024",
++      "authorization_started_at": "2026-10-24T01:53:52.256487+00:00",
++      "authorization_deadline": null,
++      "child_pid": 1297574,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": false,
++      "elapsed_s": 5.975071390974335,
++      "finished_at": "2026-10-24T02:12:48.822574+00:00"
++    },
++    {
++      "goal": "G07",
++      "budget_window": "g07-full-racket-unlimited-20261024",
++      "git_sha": "5352a79fc71054bd6af45ce5b08980e55b62b3fb",
++      "command": [
++        "/home/autodrive/Isaac/env_isaaclab/bin/python",
++        "scripts/validate_full_racket_v4.py",
++        "--output",
++        "reports/G07_full_racket_v4/net_robot_positive02",
++        "--num-envs",
++        "8",
++        "--positive-net-fixture",
++        "--headless"
++      ],
++      "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/net_robot_positive02",
++      "gpu": 0,
++      "status": "FAILED",
++      "charged_gpu_hours": 0.002717378330837366,
++      "charged_env_steps": 400,
++      "started_at": "2026-10-24T02:13:50.912597+00:00",
++      "pid": 1298002,
++      "original_authorization": "g07-full-racket-unlimited-20261024",
++      "authorization_started_at": "2026-10-24T01:53:52.256487+00:00",
++      "authorization_deadline": null,
++      "child_pid": 1298013,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": false,
++      "elapsed_s": 9.782561991014518,
++      "finished_at": "2026-10-24T02:14:00.698575+00:00"
++    },
++    {
++      "goal": "G07",
++      "budget_window": "g07-full-racket-unlimited-20261024",
++      "git_sha": "5352a79fc71054bd6af45ce5b08980e55b62b3fb",
++      "command": [
++        "/home/autodrive/Isaac/env_isaaclab/bin/python",
++        "scripts/validate_full_racket_v4.py",
++        "--output",
++        "reports/G07_full_racket_v4/net_robot_positive03",
++        "--num-envs",
++        "8",
++        "--positive-net-fixture",
++        "--headless"
++      ],
++      "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/net_robot_positive03",
++      "gpu": 0,
++      "status": "FAILED",
++      "charged_gpu_hours": 0.0027169158683358952,
++      "charged_env_steps": 400,
++      "started_at": "2026-10-24T02:15:54.075909+00:00",
++      "pid": 1298449,
++      "original_authorization": "g07-full-racket-unlimited-20261024",
++      "authorization_started_at": "2026-10-24T01:53:52.256487+00:00",
++      "authorization_deadline": null,
++      "child_pid": 1298460,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": false,
++      "elapsed_s": 9.780897126009222,
++      "finished_at": "2026-10-24T02:16:03.860306+00:00"
++    },
++    {
++      "goal": "G07",
++      "budget_window": "g07-full-racket-unlimited-20261024",
++      "git_sha": "5352a79fc71054bd6af45ce5b08980e55b62b3fb",
++      "command": [
++        "/home/autodrive/Isaac/env_isaaclab/bin/python",
++        "scripts/validate_full_racket_v4.py",
++        "--output",
++        "reports/G07_full_racket_v4/net_robot_positive04",
++        "--num-envs",
++        "8",
++        "--positive-net-fixture",
++        "--headless"
++      ],
++      "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/net_robot_positive04",
++      "gpu": 0,
++      "status": "SUCCEEDED",
++      "charged_gpu_hours": 0.0027456797752852756,
++      "charged_env_steps": 400,
++      "started_at": "2026-10-24T02:17:53.151689+00:00",
++      "pid": 1298951,
++      "original_authorization": "g07-full-racket-unlimited-20261024",
++      "authorization_started_at": "2026-10-24T01:53:52.256487+00:00",
++      "authorization_deadline": null,
++      "child_pid": 1298964,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": true,
++      "elapsed_s": 9.884447191026993,
++      "finished_at": "2026-10-24T02:18:03.039908+00:00"
++    },
++    {
++      "goal": "G07",
++      "budget_window": "g07-full-racket-unlimited-20261024",
++      "git_sha": "5352a79fc71054bd6af45ce5b08980e55b62b3fb",
++      "command": [
++        "/home/autodrive/Isaac/env_isaaclab/bin/python",
++        "scripts/validate_full_racket_contacts_v4.py",
++        "--output",
++        "reports/G07_full_racket_v4/contact_fixtures01",
++        "--headless"
++      ],
++      "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/contact_fixtures01",
++      "gpu": 0,
++      "status": "FAILED",
++      "charged_gpu_hours": 0.004942262394987564,
++      "charged_env_steps": 280,
++      "started_at": "2026-10-24T02:22:21.842608+00:00",
++      "pid": 1299616,
++      "original_authorization": "g07-full-racket-unlimited-20261024",
++      "authorization_started_at": "2026-10-24T01:53:52.256487+00:00",
++      "authorization_deadline": null,
++      "child_pid": 1299627,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": false,
++      "elapsed_s": 17.79214462195523,
++      "finished_at": "2026-10-24T02:22:39.640346+00:00"
++    },
++    {
++      "goal": "G07",
++      "budget_window": "g07-full-racket-unlimited-20261024",
++      "git_sha": "5352a79fc71054bd6af45ce5b08980e55b62b3fb",
++      "command": [
++        "/home/autodrive/Isaac/env_isaaclab/bin/python",
++        "scripts/validate_full_racket_contacts_v4.py",
++        "--output",
++        "reports/G07_full_racket_v4/contact_fixtures02",
++        "--headless"
++      ],
++      "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/contact_fixtures02",
++      "gpu": 0,
++      "status": "FAILED",
++      "charged_gpu_hours": 0.004943371331109019,
++      "charged_env_steps": 280,
++      "started_at": "2026-10-24T02:24:08.817419+00:00",
++      "pid": 1300655,
++      "original_authorization": "g07-full-racket-unlimited-20261024",
++      "authorization_started_at": "2026-10-24T01:53:52.256487+00:00",
++      "authorization_deadline": null,
++      "child_pid": 1300667,
++      "exit_code": 0,
++      "timed_out": false,
++      "receipt_present": false,
++      "elapsed_s": 17.796136791992467,
++      "finished_at": "2026-10-24T02:24:26.619236+00:00"
+     }
+   ],
+   "budget_windows": {
+@@ -9598,6 +9866,16 @@
+       ],
+       "authorization_source": "/home/autodrive/.codex/attachments/020eb582-c91b-47fd-9a6c-10bbc3280369/pasted-text-1.txt",
+       "independent_authorization": true
++    },
++    "g07-full-racket-unlimited-20261024": {
++      "started_at": "2026-10-24T01:53:52.256487+00:00",
++      "deadline": null,
++      "goals": [
++        "G07"
++      ],
++      "authorization_source": "/home/autodrive/.codex/attachments/55e175f0-9444-4a09-ad37-681e6586ca51/pasted-text-1.txt",
++      "max_gpu_hours": null,
++      "max_wallclock_hours": null
+     }
+   }
+ }
+diff --git a/status/NEXT.md b/status/NEXT.md
+index 6880796..de92043 100644
+--- a/status/NEXT.md
++++ b/status/NEXT.md
+@@ -1,32 +1,7 @@
+-# G07固定工作窗结束：BUDGET_EXHAUSTED
++# 新目标：完整球拍、真实球场与合法跳跃扣杀 v4
+ 
+-北京时间2026-10-24 02:04原截止已到，GPU0本项目作业全部停止。实际本轮结算7.645612263 GPUh，原10GPUh上限尚余2.354387737；不能因仍有GPUh余额越过固定时间窗。历史/T0/截止均未重置。用户“随时GPU”是否取消原截止的异步问题仍待答复；未获得明确修订前不要启动GPU。
++授权文件55e175f0...已读，当前窗口g07-full-racket-unlimited-20261024，仅GPU0，总GPUh/工作窗/日历截止均无上限；仍须通过run_gpu_job单进程、有限每job超时和交互上限，记录全部成本，不使用云或其他GPU。旧窗口和历史成本保留，不再阻塞新目标。
+ 
+-当前Goal没有完成；没有G07 evidence.json/artifacts/G07/policy.pt，禁止goal complete。G00–G06结构/证据仍通过。若同一资源限制连续3个goal turn确实阻塞，才可goal blocked；本停止turn记录在G07_RESOURCE_STOP.json，不要直接假定已满足3次。
++当前分支g07-full-racket-court-v4-20261024；旧5352a79和所有旧资产/权重/报告保留。新模型另命名assets/quadsmash_full_racket_v4.usd，报告reports/G07_full_racket_v4。G00-G06旧通过不代表新资产通过；新模型先必要站立/惯性/碰撞/击球点速度/规则回归，再直接适配训练和原门槛A/B各200独立评估。
+ 
+-## 已完成的真实结果
+-
+-- 正式lock02全部400失败：Afull100/200、AIR200/200、rec178/200；Bfull71/200、AIR196/200、rec146/196；数值0。原始/聚合/失败锁均保留。
+-- contingency推离/yaw1536已SUCCEEDED、NF0，无新候选合格。
+-- landing_velocity_noisy1536已SUCCEEDED、NF0，无新候选合格。参考0full44/64、27/64，rec61/64、48/63；新3full40/64、24/64，rec54/64、45/64，低于参考。等落地/延迟站立普遍明显退化。
+-- 最后独立B16：SUCCEEDED。全部16回合完成：完整4/16，空中触球16/16，条件恢复12/16，机器人碰网1，数值故障0。样本量仅16，且该新候选已在训练组失败，不能替代正式400或宣布通过。
+-- 实际数据形状obs=[850, 16, 794]、action=[850, 16, 18]，有效第一回合帧13600；completed=True，观测/动作有限=True/True，最大动作绝对值1.000000。这是真实控制器输入与动作，不是新教师标签；自行模仿这些动作本身不构成性能提升。
+-
+-最新完整报告reports/G07/REPORT.md，结算reports/G07/lastwindow_handoff.json。公开数据供分析/学习，不是教师标签；自我模仿不能证明提升。B16已暴露，不再把fresh128全体称未使用。
+-
+-## 检查点和恢复
+-
+-最佳已知参考reports/G07/formal_candidate_v1/policy.pt，SHA d24460e97fc16ea378606caf6d17682db72886b0550115a5fb9f2c144747dba6（正式未通过）。最佳新候选reports/G07/lastwindow_training_candidate_v1/policy.pt，SHA8b2b7dbb8b6c6fbd215a236fa72f66bb4feabcadd8fda593abce6c9546511902（训练未通过且低于参考）。不要混称二者合格。
+-
+-CPU可运行：
+-`CUDA_VISIBLE_DEVICES='' /home/autodrive/Isaac/env_isaaclab/bin/python scripts/analyze_g07_public_rollout.py --input reports/G07/lastwindow_fresh_b16_stress01`
+-
+-具体下一条GPU数据采集命令在status/G07_RESUME.json，当前尚未运行。先明确修订时间授权，保留累计10GPUh/T0/历史；scripts/run_gpu_job.py现有固定截止会拒绝原窗口外启动。不要直接跑child绕过guard，也不要调用legacy train launcher来避开新窗口限制。下一方法应实现/训练基于公开身体状态的恢复适配，而非继续机械固定参数搜索；该新学习器尚未实施，不能假定数据采集即完成学习。
+-
+-如后来新策略真正开发合格，创建新锁03/新输出，同一权重源码完成原400；保留失败lock02，禁止改acceptance/verify/硬件/面板/阈值。独立B16不是400替代。G10最终holdout/多种子未做。
+-
+-## GitHub/交付
+-
+-工作分支g04-guided-learning-20261022；main与release tag自动源码包可能落后。release g07-progress-20261023已有失败400包、正式B固定case0/1视频（51秒）以及历史开发包。最新G07_lastwindow_development_20261024.zip/json已上传（73,321,942bytes，SHAa61d01eeedae61d5c28ad145f446c843468f065d64a29277dbca9c2dae711d22）；431文件，含实际权重与完整公开数据。GitHub digest已核对，详见reports/G07/lastwindow_release.json。
+-
+-原NEXT和REPORT逐字节保存在reports/G07/history_before_window_end_20261024。资产说明assets/assumptions.md必须保持G01签名SHA b78c443cb89de38d73f8b730fc7fba7e72b28c4e8f2dd2ffca4db70835a26b4a；G07假设另列ASSET_ASSUMPTIONS.md。USD SHA bfb831e4afc8a1a705bb0fb6f001c25eeaa401822978267a0ee5e151007511f3。只管理本项目进程，不动MPS/AWESun/其他作业。
++当前在核对现行BWF规则和公开完整球拍资料，建立新court/racket配置及规则映射。不得在建模/审计结束后停止，须连续训练到正式目标达成。保留当前已失败旧400，不改写。资源授权已落实；不再询问旧截止。
+diff --git a/status/RUNS.jsonl b/status/RUNS.jsonl
+index 44bd919..0d9694a 100644
+--- a/status/RUNS.jsonl
++++ b/status/RUNS.jsonl
+@@ -259,3 +259,12 @@
+ {"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "git_sha": "b10eeffd049064861c6245a3fd792ed8e5753f99", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/evaluate_g07_causal_hybrid.py", "--output", "reports/G07/contingency_push_yaw_matrix_fine1536_01", "--checkpoint", "reports/G07/contingency_push_yaw_candidates_v1/frozen_reference.pt", "--candidate-checkpoint", "reports/G07/contingency_push_yaw_candidates_v1/yaw04.pt", "--candidate-checkpoint", "reports/G07/contingency_push_yaw_candidates_v1/yaw08.pt", "--candidate-checkpoint", "reports/G07/contingency_push_yaw_candidates_v1/yaw12.pt", "--candidate-checkpoint", "reports/G07/contingency_push_yaw_candidates_v1/push05.pt", "--candidate-checkpoint", "reports/G07/contingency_push_yaw_candidates_v1/push10.pt", "--candidate-checkpoint", "reports/G07/contingency_push_yaw_candidates_v1/push10_yaw06.pt", "--candidate-checkpoint", "reports/G07/contingency_push_yaw_candidates_v1/push10_yaw06_fold02.pt", "--candidate-checkpoint", "reports/G07/contingency_push_yaw_candidates_v1/back2_push10_yaw06.pt", "--candidate-checkpoint", "reports/G07/contingency_push_yaw_candidates_v1/back2_push15_yaw06_fold05.pt", "--candidate-checkpoint", "reports/G07/contingency_push_yaw_candidates_v1/forward_push10_yaw06_fold02.pt", "--candidate-checkpoint", "reports/G07/contingency_push_yaw_candidates_v1/yaw08_fold02_legs10.pt", "--launch-panel", "reports/G07/causal_profiled_dev_ground128_v1/panel.json", "--calibration", "reports/G07/causal_dev_panel64_v1/calibration.json", "--physics-dt", ".0000625", "--episode-seconds", "8.5", "--sweep-audit-iterations", "4096", "--seed", "719101", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/contingency_push_yaw_matrix_fine1536_01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.31621491555417175, "charged_env_steps": 1305600, "started_at": "2026-10-23T17:05:12.025462+00:00", "pid": 1231672, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1231680, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 1138.3736959950184, "finished_at": "2026-10-23T17:24:10.404738+00:00"}
+ {"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "git_sha": "fffe5546cab714ac0cbf62a1e6eb5f7750740707", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/evaluate_g07_causal_hybrid.py", "--output", "reports/G07/landing_velocity_noisy_matrix_fine1536_01", "--checkpoint", "reports/G07/landing_velocity_candidates_v1/reference.pt", "--candidate-checkpoint", "reports/G07/landing_velocity_candidates_v1/wait_landing.pt", "--candidate-checkpoint", "reports/G07/landing_velocity_candidates_v1/later_stand.pt", "--candidate-checkpoint", "reports/G07/landing_velocity_candidates_v1/vx_bias_zero.pt", "--candidate-checkpoint", "reports/G07/landing_velocity_candidates_v1/vx_bias_back.pt", "--candidate-checkpoint", "reports/G07/landing_velocity_candidates_v1/vx_back_wait.pt", "--candidate-checkpoint", "reports/G07/landing_velocity_candidates_v1/strong_vx_zero.pt", "--candidate-checkpoint", "reports/G07/landing_velocity_candidates_v1/strong_vx_back.pt", "--candidate-checkpoint", "reports/G07/landing_velocity_candidates_v1/back4_wait.pt", "--candidate-checkpoint", "reports/G07/landing_velocity_candidates_v1/back4_pitch_wait.pt", "--candidate-checkpoint", "reports/G07/landing_velocity_candidates_v1/pitch_wait.pt", "--candidate-checkpoint", "reports/G07/landing_velocity_candidates_v1/no_vx_wait.pt", "--launch-panel", "reports/G07/causal_profiled_noisy_both128_v2/panel.json", "--calibration", "reports/G07/causal_dev_panel64_v1/calibration.json", "--physics-dt", ".0000625", "--episode-seconds", "8.5", "--sweep-audit-iterations", "4096", "--seed", "719251", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/landing_velocity_noisy_matrix_fine1536_01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.3142740790672219, "charged_env_steps": 1305600, "started_at": "2026-10-23T17:28:54.293782+00:00", "pid": 1235716, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1235724, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 1131.3866846419987, "finished_at": "2026-10-23T17:47:45.683896+00:00"}
+ {"goal": "G07", "budget_window": "g07-net-feasibility-20261023", "git_sha": "1f2c581f6a31af6ffb892648dd87f2eb143d8c16", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/evaluate_g07_causal_hybrid.py", "--output", "reports/G07/lastwindow_fresh_b16_stress01", "--checkpoint", "reports/G07/lastwindow_training_candidate_v1/policy.pt", "--launch-panel", "reports/G07/fresh_b16_stress_v1/panel.json", "--calibration", "reports/G07/causal_dev_panel64_v1/calibration.json", "--physics-dt", ".0000625", "--episode-seconds", "8.5", "--sweep-audit-iterations", "4096", "--record-public-dataset", "--seed", "719301", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07/lastwindow_fresh_b16_stress01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.24921588229694558, "charged_env_steps": 13600, "started_at": "2026-10-23T17:48:08.016202+00:00", "pid": 1238576, "original_authorization": "g07-net-feasibility-20261023", "authorization_started_at": "2026-10-23T08:04:13.742590+00:00", "authorization_deadline": "2026-10-23T18:04:13.742590+00:00", "child_pid": 1238588, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 897.1771762690041, "finished_at": "2026-10-23T18:03:05.198643+00:00"}
++{"goal": "G07", "budget_window": "g07-full-racket-unlimited-20261024", "git_sha": "5352a79fc71054bd6af45ce5b08980e55b62b3fb", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/build_full_racket_v4.py", "--output", "reports/G07_full_racket_v4/build_asset01", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/build_asset01", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.00175993286527551, "charged_env_steps": 0, "started_at": "2026-10-24T02:01:39.896629+00:00", "pid": 1295870, "original_authorization": "g07-full-racket-unlimited-20261024", "authorization_started_at": "2026-10-24T01:53:52.256487+00:00", "authorization_deadline": null, "child_pid": 1295881, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 6.3357583149918355, "finished_at": "2026-10-24T02:01:46.237867+00:00"}
++{"goal": "G07", "budget_window": "g07-full-racket-unlimited-20261024", "git_sha": "5352a79fc71054bd6af45ce5b08980e55b62b3fb", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/validate_full_racket_v4.py", "--output", "reports/G07_full_racket_v4/stand_regression01", "--num-envs", "8", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/stand_regression01", "gpu": 0, "status": "FAILED", "charged_gpu_hours": 0.0014099166241713747, "charged_env_steps": 3200, "started_at": "2026-10-24T02:07:50.978328+00:00", "pid": 1296611, "original_authorization": "g07-full-racket-unlimited-20261024", "authorization_started_at": "2026-10-24T01:53:52.256487+00:00", "authorization_deadline": null, "child_pid": 1296623, "exit_code": 0, "timed_out": false, "receipt_present": false, "elapsed_s": 5.075699847016949, "finished_at": "2026-10-24T02:07:56.059563+00:00"}
++{"goal": "G07", "budget_window": "g07-full-racket-unlimited-20261024", "git_sha": "5352a79fc71054bd6af45ce5b08980e55b62b3fb", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/validate_full_racket_v4.py", "--output", "reports/G07_full_racket_v4/stand_regression02", "--num-envs", "8", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/stand_regression02", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.006749954128624975, "charged_env_steps": 3200, "started_at": "2026-10-24T02:09:10.542467+00:00", "pid": 1297012, "original_authorization": "g07-full-racket-unlimited-20261024", "authorization_started_at": "2026-10-24T01:53:52.256487+00:00", "authorization_deadline": null, "child_pid": 1297023, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 24.29983486304991, "finished_at": "2026-10-24T02:09:34.846808+00:00"}
++{"goal": "G07", "budget_window": "g07-full-racket-unlimited-20261024", "git_sha": "5352a79fc71054bd6af45ce5b08980e55b62b3fb", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/validate_full_racket_v4.py", "--output", "reports/G07_full_racket_v4/net_robot_positive01", "--num-envs", "8", "--positive-net-fixture", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/net_robot_positive01", "gpu": 0, "status": "FAILED", "charged_gpu_hours": 0.0016597420530484264, "charged_env_steps": 400, "started_at": "2026-10-24T02:12:42.842645+00:00", "pid": 1297563, "original_authorization": "g07-full-racket-unlimited-20261024", "authorization_started_at": "2026-10-24T01:53:52.256487+00:00", "authorization_deadline": null, "child_pid": 1297574, "exit_code": 0, "timed_out": false, "receipt_present": false, "elapsed_s": 5.975071390974335, "finished_at": "2026-10-24T02:12:48.822574+00:00"}
++{"goal": "G07", "budget_window": "g07-full-racket-unlimited-20261024", "git_sha": "5352a79fc71054bd6af45ce5b08980e55b62b3fb", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/validate_full_racket_v4.py", "--output", "reports/G07_full_racket_v4/net_robot_positive02", "--num-envs", "8", "--positive-net-fixture", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/net_robot_positive02", "gpu": 0, "status": "FAILED", "charged_gpu_hours": 0.002717378330837366, "charged_env_steps": 400, "started_at": "2026-10-24T02:13:50.912597+00:00", "pid": 1298002, "original_authorization": "g07-full-racket-unlimited-20261024", "authorization_started_at": "2026-10-24T01:53:52.256487+00:00", "authorization_deadline": null, "child_pid": 1298013, "exit_code": 0, "timed_out": false, "receipt_present": false, "elapsed_s": 9.782561991014518, "finished_at": "2026-10-24T02:14:00.698575+00:00"}
++{"goal": "G07", "budget_window": "g07-full-racket-unlimited-20261024", "git_sha": "5352a79fc71054bd6af45ce5b08980e55b62b3fb", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/validate_full_racket_v4.py", "--output", "reports/G07_full_racket_v4/net_robot_positive03", "--num-envs", "8", "--positive-net-fixture", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/net_robot_positive03", "gpu": 0, "status": "FAILED", "charged_gpu_hours": 0.0027169158683358952, "charged_env_steps": 400, "started_at": "2026-10-24T02:15:54.075909+00:00", "pid": 1298449, "original_authorization": "g07-full-racket-unlimited-20261024", "authorization_started_at": "2026-10-24T01:53:52.256487+00:00", "authorization_deadline": null, "child_pid": 1298460, "exit_code": 0, "timed_out": false, "receipt_present": false, "elapsed_s": 9.780897126009222, "finished_at": "2026-10-24T02:16:03.860306+00:00"}
++{"goal": "G07", "budget_window": "g07-full-racket-unlimited-20261024", "git_sha": "5352a79fc71054bd6af45ce5b08980e55b62b3fb", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/validate_full_racket_v4.py", "--output", "reports/G07_full_racket_v4/net_robot_positive04", "--num-envs", "8", "--positive-net-fixture", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/net_robot_positive04", "gpu": 0, "status": "SUCCEEDED", "charged_gpu_hours": 0.0027456797752852756, "charged_env_steps": 400, "started_at": "2026-10-24T02:17:53.151689+00:00", "pid": 1298951, "original_authorization": "g07-full-racket-unlimited-20261024", "authorization_started_at": "2026-10-24T01:53:52.256487+00:00", "authorization_deadline": null, "child_pid": 1298964, "exit_code": 0, "timed_out": false, "receipt_present": true, "elapsed_s": 9.884447191026993, "finished_at": "2026-10-24T02:18:03.039908+00:00"}
++{"goal": "G07", "budget_window": "g07-full-racket-unlimited-20261024", "git_sha": "5352a79fc71054bd6af45ce5b08980e55b62b3fb", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/validate_full_racket_contacts_v4.py", "--output", "reports/G07_full_racket_v4/contact_fixtures01", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/contact_fixtures01", "gpu": 0, "status": "FAILED", "charged_gpu_hours": 0.004942262394987564, "charged_env_steps": 280, "started_at": "2026-10-24T02:22:21.842608+00:00", "pid": 1299616, "original_authorization": "g07-full-racket-unlimited-20261024", "authorization_started_at": "2026-10-24T01:53:52.256487+00:00", "authorization_deadline": null, "child_pid": 1299627, "exit_code": 0, "timed_out": false, "receipt_present": false, "elapsed_s": 17.79214462195523, "finished_at": "2026-10-24T02:22:39.640346+00:00"}
++{"goal": "G07", "budget_window": "g07-full-racket-unlimited-20261024", "git_sha": "5352a79fc71054bd6af45ce5b08980e55b62b3fb", "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "scripts/validate_full_racket_contacts_v4.py", "--output", "reports/G07_full_racket_v4/contact_fixtures02", "--headless"], "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/contact_fixtures02", "gpu": 0, "status": "FAILED", "charged_gpu_hours": 0.004943371331109019, "charged_env_steps": 280, "started_at": "2026-10-24T02:24:08.817419+00:00", "pid": 1300655, "original_authorization": "g07-full-racket-unlimited-20261024", "authorization_started_at": "2026-10-24T01:53:52.256487+00:00", "authorization_deadline": null, "child_pid": 1300667, "exit_code": 0, "timed_out": false, "receipt_present": false, "elapsed_s": 17.796136791992467, "finished_at": "2026-10-24T02:24:26.619236+00:00"}
+diff --git a/status/STATUS.json b/status/STATUS.json
+index 929ce5e..a617889 100644
+--- a/status/STATUS.json
++++ b/status/STATUS.json
+@@ -48,10 +48,10 @@
+       "notes": "Independent 400 ground episodes with real PhysX shuttle: 100% airborne contact, 76.5% contact-conditioned recovery, ground initialization 1.0, numerical failures 0. Formal suite uses the G02-validated 0.25 ms PhysX fixture and records body-contact diagnostics separately."
+     },
+     "G07": {
+-      "state": "BUDGET_EXHAUSTED",
++      "state": "IN_PROGRESS",
+       "evidence": null,
+-      "notes": "Original fixed window expired. Actual new-window charge 7.645612263 GPUh; no project GPU job remains. Formal400 lock02 failed (A100/200, B71/200; recovery178/200 and146/196). Both subsequent1536 developer batches failed to qualify a new policy. IndependentB16 job SUCCEEDED, actual public dataset preserved. No pass artifacts; resume requires explicit authorization amendment, keep T0 and all charges.",
+-      "active_authorization_window": "g07-net-feasibility-20261023",
++      "notes": "New user goal explicitly authorizes correcting net/court/full racket and legal-hit rules, then adapting/training/evaluating. GPU0 unlimited total time/hours, finite per-job safeguards. Legacy weights/results preserved; no new-model pass inherited.",
++      "active_authorization_window": "g07-full-racket-unlimited-20261024",
+       "curriculum_evidence": "reports/G07/eval_piecewise_netlocal02/metrics.json",
+       "curriculum_policy": "reports/G07/fit_piecewise_curriculum03/policy.pt",
+       "net_diagnostic": "reports/G07/net_blocking_probe03/verification.json",
+@@ -72,5 +72,16 @@
+       "evidence": null,
+       "notes": "尚未实施/训练；不得将任务包CPU测试当作此Goal通过。"
+     }
++  },
++  "active_model_version": "full-racket-court-v4",
++  "historical_evidence_scope": "G00-G06 PASSED entries refer to the preserved legacy asset/protocol. They are not validation of the new full-racket asset.",
++  "model_validation": {
++    "full-racket-court-v4": {
++      "asset": "TODO",
++      "physics": "TODO",
++      "rules": "TODO",
++      "policy": "TODO",
++      "formal400": "TODO"
++    }
+   }
+ }
+diff --git a/tests/test_gpu_job_guard.py b/tests/test_gpu_job_guard.py
+index 9825f6a..1c2be6a 100644
+--- a/tests/test_gpu_job_guard.py
++++ b/tests/test_gpu_job_guard.py
+@@ -99,6 +99,32 @@ class ContinuationBudgetTest(unittest.TestCase):
+         self.assertEqual(name, "original")
+         self.assertEqual((deadline - start).total_seconds(), 36000)
+ 
++    def test_explicit_unlimited_window_preserves_history_without_expiry(self):
++        self.budget['authorization_windows']['unlimited'] = {
++            'max_gpu_hours': None, 'max_wallclock_hours': None}
++        self.ledger['runs'].append(dict(budget_window='unlimited', charged_gpu_hours=1000.,
++            charged_env_steps=100, started_at='2025-01-01T00:00:00+00:00'))
++        original_runs = json.dumps(self.ledger, sort_keys=True)
++        name, start, deadline = job.check_window_budget(self.budget, self.ledger, 'unlimited',
++            7200, 100, datetime(2026, 10, 24, tzinfo=timezone.utc))
++        self.assertEqual(name, 'unlimited')
++        self.assertEqual(start.year, 2025)
++        self.assertIsNone(deadline)
++        self.assertEqual(json.dumps(self.ledger, sort_keys=True), original_runs)
++
++    def test_unlimited_clock_does_not_remove_finite_gpu_cap(self):
++        self.budget['authorization_windows']['original']['max_wallclock_hours'] = None
++        self.ledger['runs'][0]['charged_gpu_hours'] = 10.
++        with self.assertRaisesRegex(ValueError, 'cumulative GPU budget'):
++            job.check_window_budget(self.budget, self.ledger, 'original', 60, 100,
++                datetime(2026, 10, 24, tzinfo=timezone.utc))
++
++    def test_unlimited_gpu_cap_does_not_remove_finite_clock(self):
++        self.budget['authorization_windows']['original']['max_gpu_hours'] = None
++        with self.assertRaisesRegex(ValueError, 'deadline'):
++            job.check_window_budget(self.budget, self.ledger, 'original', 60, 100,
++                datetime(2026, 10, 24, tzinfo=timezone.utc))
++
+ 
+ if __name__ == "__main__":
+     unittest.main()

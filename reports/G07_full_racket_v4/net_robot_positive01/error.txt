@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/home/autodrive/LZQW/unitree_smash/scripts/validate_full_racket_v4.py", line 138, in <module>
+    main()
+  File "/home/autodrive/LZQW/unitree_smash/scripts/validate_full_racket_v4.py", line 74, in main
+    env.robot.write_root_state_to_sim(root)
+  File "/home/autodrive/Isaac/IsaacLab/source/isaaclab/isaaclab/assets/articulation/articulation.py", line 326, in write_root_state_to_sim
+    self.write_root_link_pose_to_sim(root_state[:, :7], env_ids=env_ids)
+  File "/home/autodrive/Isaac/IsaacLab/source/isaaclab/isaaclab/assets/articulation/articulation.py", line 383, in write_root_link_pose_to_sim
+    self._data.root_link_pose_w[env_ids] = root_pose.clone()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+RuntimeError: Inplace update to inference tensor outside InferenceMode is not allowed.You can make a clone to get a normal tensor before doing inplace update.See https://github.com/pytorch/rfcs/pull/17 for more details.

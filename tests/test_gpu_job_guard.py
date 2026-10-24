@@ -99,6 +99,32 @@ class ContinuationBudgetTest(unittest.TestCase):
         self.assertEqual(name, "original")
         self.assertEqual((deadline - start).total_seconds(), 36000)
 
+    def test_explicit_unlimited_window_preserves_history_without_expiry(self):
+        self.budget['authorization_windows']['unlimited'] = {
+            'max_gpu_hours': None, 'max_wallclock_hours': None}
+        self.ledger['runs'].append(dict(budget_window='unlimited', charged_gpu_hours=1000.,
+            charged_env_steps=100, started_at='2025-01-01T00:00:00+00:00'))
+        original_runs = json.dumps(self.ledger, sort_keys=True)
+        name, start, deadline = job.check_window_budget(self.budget, self.ledger, 'unlimited',
+            7200, 100, datetime(2026, 10, 24, tzinfo=timezone.utc))
+        self.assertEqual(name, 'unlimited')
+        self.assertEqual(start.year, 2025)
+        self.assertIsNone(deadline)
+        self.assertEqual(json.dumps(self.ledger, sort_keys=True), original_runs)
+
+    def test_unlimited_clock_does_not_remove_finite_gpu_cap(self):
+        self.budget['authorization_windows']['original']['max_wallclock_hours'] = None
+        self.ledger['runs'][0]['charged_gpu_hours'] = 10.
+        with self.assertRaisesRegex(ValueError, 'cumulative GPU budget'):
+            job.check_window_budget(self.budget, self.ledger, 'original', 60, 100,
+                datetime(2026, 10, 24, tzinfo=timezone.utc))
+
+    def test_unlimited_gpu_cap_does_not_remove_finite_clock(self):
+        self.budget['authorization_windows']['original']['max_gpu_hours'] = None
+        with self.assertRaisesRegex(ValueError, 'deadline'):
+            job.check_window_budget(self.budget, self.ledger, 'original', 60, 100,
+                datetime(2026, 10, 24, tzinfo=timezone.utc))
+
 
 if __name__ == "__main__":
     unittest.main()

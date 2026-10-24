@@ -1,0 +1,46 @@
+{
+  "version": "singles-rally-court-net-v4",
+  "net_plane_x_m": 1.5,
+  "court_length_m": 13.4,
+  "singles_width_m": 5.18,
+  "doubles_width_m": 6.1,
+  "line_width_m": 0.04,
+  "own_x_limits_m": [
+    -5.2,
+    1.5
+  ],
+  "opponent_x_limits_m": [
+    1.5,
+    8.2
+  ],
+  "net_center_top_m": 1.524,
+  "net_side_top_m": 1.55,
+  "net_width_m": 6.1,
+  "net_depth_m": 0.76,
+  "net_equivalent_thickness_m": 0.004,
+  "net_profile_segments": 64,
+  "net_top_tape_depth_m": 0.075,
+  "post_height_m": 1.55,
+  "post_radius_m": 0.025,
+  "post_y_center_abs_m": 3.075,
+  "post_position_assumption": "Inner post surfaces meet net ends at doubles outer boundaries ±3.05; supports do not protrude into court.",
+  "target_x_limits_m": [
+    2.0,
+    4.0
+  ],
+  "target_y_half_width_m": 1.0,
+  "engineering_nonracket_stays_own_half": true,
+  "engineering_body_plane_margin_m": 0.0,
+  "rally_preparation_seconds": 2.0,
+  "environment_spacing_m": 16.0,
+  "coordinate_convention": "Each environment local x increases from own to opponent; world coordinates=env_origin+local exactly once. Court outer boundaries include painted lines. Z=0 floor.",
+  "simplifications": [
+    "Rigid equivalent net membrane with correct suspended band extent; no cloth dynamics or mesh holes",
+    "Sag approximated by64 box strips; exact center/post heights, at most1.7mm deviation from the descriptive parabola; scoring/visualization use the actual strip tops",
+    "No opponent agent; body/fixture must remain own half as a separately labelled engineering safety constraint",
+    "Shuttle physics remains a declared5.2g rigid surrogate; no claim of real-shuttle aerodynamics or tournament certification"
+  ],
+  "net_profile_shape": "64 primitive-box strips approximating sag; exact center/post heights and constant0.76m vertical depth",
+  "net_collision_revision": "gpu-primitive-band-r2",
+  "net_collision_revision_reason": "Previous convex-mesh band failed actual robot contact positive fixtures while posts responded; failed records retained."
+}

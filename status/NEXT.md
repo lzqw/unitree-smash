@@ -1,32 +1,21 @@
-# G07固定工作窗结束：BUDGET_EXHAUSTED
+# 完整球拍、真实球场与合法跳跃扣杀 v4-r3
 
-北京时间2026-10-24 02:04原截止已到，GPU0本项目作业全部停止。实际本轮结算7.645612263 GPUh，原10GPUh上限尚余2.354387737；不能因仍有GPUh余额越过固定时间窗。历史/T0/截止均未重置。用户“随时GPU”是否取消原截止的异步问题仍待答复；未获得明确修订前不要启动GPU。
+当前分支g07-full-racket-court-v4-20261024。授权55e175f0...延续：仅GPU0，无累计GPUh、工作窗或日历截止；所有作业仍通过run_gpu_job，保留单作业有限超时/交互上限、单GPU任务保护和真实费用。旧授权窗口与历史费用不变。不要重新询问旧截止。
 
-当前Goal没有完成；没有G07 evidence.json/artifacts/G07/policy.pt，禁止goal complete。G00–G06结构/证据仍通过。若同一资源限制连续3个goal turn确实阻塞，才可goal blocked；本停止turn记录在G07_RESOURCE_STOP.json，不要直接假定已满足3次。
+当前资产assets/quadsmash_full_racket_v4_r3.usd，总质量20.709991kg，完整球拍675mm、法兰至拍线中心约452mm，球拍+夹具153g。13.4m球场、6.1m宽/0.76m悬空网，中央1.524m、侧1.55m。来源、假设、规则映射与限制在reports/G07_full_racket_v4/MODEL_RULES.json。旧G00–G06通过仅适用于旧短拍板，不能继承。
 
-## 已完成的真实结果
+必要修复与证据：
+- 初始安全包围盒漏掉purpose=guide，产生FLT_MAX空范围；改为实际碰撞顶点/原始几何尺寸，未关闭身体越网检查。
+- r1凸网格拍线面实际漏碰（contact_fixtures07/08，NF=1）；r2使用同一32gon内62个非空薄盒片，占面积97.8505%，不扩大有效区域。旧资产和失败均保留。
+- r2夹具从法兰z=-5mm开始，与官方link5.STL（最高z=-1mm）相交，原生测到持续21–36kN自碰力。r3将夹具法向深度45->38mm，开始位置+2mm；球拍/握持位置/452mm力臂/65g夹具质量/原执行器不变，重新计算COM/惯量。没有删除任何机器人碰撞对。
+- reset_self_contact_r3_01成功：直立持拍地面2秒，实际自碰力0N、最低根高0.23424m、最大重力XY0.12169；原生工具COM/惯量匹配。t=0旧传感器缓存单独保存，不作新姿态接触，后续真实步仍全部检查。
+- contact_fixtures_r3_01成功：62.5us原生真实拍线中心正例、边角/拍杆/夹具反例、网下/网上、网体/柱接触；NF=0。仅是非地面固定根接触工装，不是策略成功。
+-22项针对性CPU测试通过，含源STL夹具间隙、真实盒片边界、质量惯量、连续扫掠和规则正反例。
 
-- 正式lock02全部400失败：Afull100/200、AIR200/200、rec178/200；Bfull71/200、AIR196/200、rec146/196；数值0。原始/聚合/失败锁均保留。
-- contingency推离/yaw1536已SUCCEEDED、NF0，无新候选合格。
-- landing_velocity_noisy1536已SUCCEEDED、NF0，无新候选合格。参考0full44/64、27/64，rec61/64、48/63；新3full40/64、24/64，rec54/64、45/64，低于参考。等落地/延迟站立普遍明显退化。
-- 最后独立B16：SUCCEEDED。全部16回合完成：完整4/16，空中触球16/16，条件恢复12/16，机器人碰网1，数值故障0。样本量仅16，且该新候选已在训练组失败，不能替代正式400或宣布通过。
-- 实际数据形状obs=[850, 16, 794]、action=[850, 16, 18]，有效第一回合帧13600；completed=True，观测/动作有限=True/True，最大动作绝对值1.000000。这是真实控制器输入与动作，不是新教师标签；自行模仿这些动作本身不构成性能提升。
+评测：configs/g07_full_racket_eval_v4_r3.json已冻结；A/B各200和训练128案例与最初冻结完全相同，没有因结果删除来球或降低阈值。真实半场x=6..7.8m、初速7.47..11.93m/s，明确2秒回合前准备。协议r1/r2保留；r3记录必要夹具/初始持拍修正及此前无效r2搜索。正式训练须用r3，最终正式400仍未运行。
 
-最新完整报告reports/G07/REPORT.md，结算reports/G07/lastwindow_handoff.json。公开数据供分析/学习，不是教师标签；自我模仿不能证明提升。B16已暴露，不再把fresh128全体称未使用。
+已实际搜索：reach_cem_r3_01，8代×64候选×6秒=307200控制步，GPU0 245.730464秒/0.068258462GPUh，保存每代population、resume.pt和best_candidate.pt。512候选中15次原任务跳跃恢复；最佳综合候选在2.81s虚拟击球点[1.2456,-0.0293,1.5743]m、实际点速[-0.2949,0.1987,0.0409]m/s，腾空0.446s、稳定恢复1.626s，无身体落地或碰网。最高位候选与最佳恢复候选不同；这不是实际触球或扣杀。最后一代63/64目标时间附近腾空、4/64恢复、14/64碰网。
 
-## 检查点和恢复
+下一步：scripts/probe_full_racket_rally_v4.py用该学习候选、当前公开794D观测估计来球、校正动作时机和臂位，执行真实球开发试验。只取冻结训练库预定A/B案例，不用正式400挑策略。开始前核对GPU账本无RUNNING/PID活跃，不能重复启动。命令通过run_gpu_job：max-seconds1200，env-steps-cap3200，output reports/G07_full_racket_v4/rally_probe_r3_01；子命令python scripts/probe_full_racket_rally_v4.py --checkpoint reports/G07_full_racket_v4/reach_cem_r3_01/best_candidate.pt --count4 --output同上 --headless。物理62.5us，控制10ms，8秒，保留真实失败、公开数据和原始几何。该脚本是开发探针，不是正式评估器；正式初始扰动和400锁定评估仍需实现/运行。之后继续联合优化、BC/DAgger或RL及独立评测，不在无球课程结束。
 
-最佳已知参考reports/G07/formal_candidate_v1/policy.pt，SHA d24460e97fc16ea378606caf6d17682db72886b0550115a5fb9f2c144747dba6（正式未通过）。最佳新候选reports/G07/lastwindow_training_candidate_v1/policy.pt，SHA8b2b7dbb8b6c6fbd215a236fa72f66bb4feabcadd8fda593abce6c9546511902（训练未通过且低于参考）。不要混称二者合格。
-
-CPU可运行：
-`CUDA_VISIBLE_DEVICES='' /home/autodrive/Isaac/env_isaaclab/bin/python scripts/analyze_g07_public_rollout.py --input reports/G07/lastwindow_fresh_b16_stress01`
-
-具体下一条GPU数据采集命令在status/G07_RESUME.json，当前尚未运行。先明确修订时间授权，保留累计10GPUh/T0/历史；scripts/run_gpu_job.py现有固定截止会拒绝原窗口外启动。不要直接跑child绕过guard，也不要调用legacy train launcher来避开新窗口限制。下一方法应实现/训练基于公开身体状态的恢复适配，而非继续机械固定参数搜索；该新学习器尚未实施，不能假定数据采集即完成学习。
-
-如后来新策略真正开发合格，创建新锁03/新输出，同一权重源码完成原400；保留失败lock02，禁止改acceptance/verify/硬件/面板/阈值。独立B16不是400替代。G10最终holdout/多种子未做。
-
-## GitHub/交付
-
-工作分支g04-guided-learning-20261022；main与release tag自动源码包可能落后。release g07-progress-20261023已有失败400包、正式B固定case0/1视频（51秒）以及历史开发包。最新G07_lastwindow_development_20261024.zip/json已上传（73,321,942bytes，SHAa61d01eeedae61d5c28ad145f446c843468f065d64a29277dbca9c2dae711d22）；431文件，含实际权重与完整公开数据。GitHub digest已核对，详见reports/G07/lastwindow_release.json。
-
-原NEXT和REPORT逐字节保存在reports/G07/history_before_window_end_20261024。资产说明assets/assumptions.md必须保持G01签名SHA b78c443cb89de38d73f8b730fc7fba7e72b28c4e8f2dd2ffca4db70835a26b4a；G07假设另列ASSET_ASSUMPTIONS.md。USD SHA bfb831e4afc8a1a705bb0fb6f001c25eeaa401822978267a0ee5e151007511f3。只管理本项目进程，不动MPS/AWESun/其他作业。
+已交付38秒进度视频（包含此前r1机械测试与明确标注的旧短拍板对照，不是r3扣杀）：https://github.com/lzqw/unitree-smash/releases/download/g07-progress-20261023/Current_effect_v4_20261024.mp4 。SHA256与GitHub大小核对见video/upload_receipt.json。

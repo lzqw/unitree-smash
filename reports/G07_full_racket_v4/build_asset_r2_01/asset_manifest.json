@@ -1,0 +1,123 @@
+{
+  "asset": "assets/quadsmash_full_racket_v4_r2.usd",
+  "asset_sha256": "9c564c170f05d620bac865fc186a0bb07099c1665f0d529a8f7c9aebcf3db394",
+  "legacy_asset_sha256": "bfb831e4afc8a1a705bb0fb6f001c25eeaa401822978267a0ee5e151007511f3",
+  "configuration": {
+    "version": "full-racket-court-v4-r2",
+    "representative": "Parameterized rigid full racket informed by Li-Ning AXFORCE80 5U AYPS006-1/AYPT271-5; not a manufacturer CAD or hardware calibration",
+    "source_url": "https://lining-sport.eu/badminton/badmintonschlaeger/axforce/1555/badmintonschlaeger-axforce-80-5u-unbespannt-ayps006-1",
+    "published": {
+      "total_length_m": 0.675,
+      "unstrung_balance_from_butt_m": 0.304,
+      "handle_length_m": 0.2,
+      "weight_class": "5U; exact grams field absent"
+    },
+    "assumptions": {
+      "unstrung_mass_kg": 0.078,
+      "strings_mass_kg": 0.005,
+      "added_grip_mass_kg": 0.005,
+      "clamp_mass_kg": 0.065,
+      "head_outer_length_m": 0.25,
+      "head_outer_width_m": 0.2,
+      "frame_tube_radius_m": 0.004,
+      "shaft_diameter_m": 0.007,
+      "handle_radius_m": 0.014,
+      "string_thickness_m": 0.0012,
+      "strings_semiaxes_yz_m": [
+        0.0915,
+        0.1165
+      ],
+      "shaft_mass_kg": 0.018,
+      "clamp_is_equivalent_hollow_fixture": true
+    },
+    "grip_center_from_butt_m": 0.1,
+    "head_center_from_butt_m": 0.55,
+    "flange_frame": "Official standard PiPER URDF link6 frame; gripper-base fixed joint has identity transform",
+    "grip_center_in_flange_m": [
+      0,
+      0,
+      0.04
+    ],
+    "racket_body_frame": "Origin at string-center; +X face normal, +Z shaft from handle to head, +Y lateral",
+    "body_rotation_in_flange_wxyz": [
+      0,
+      0.7071067811865476,
+      0,
+      0.7071067811865476
+    ],
+    "shaft_axis_in_flange": [
+      1,
+      0,
+      0
+    ],
+    "face_normal_in_flange": [
+      0,
+      0,
+      1
+    ],
+    "string_center_in_flange_m": [
+      0.45,
+      0,
+      0.04
+    ],
+    "frame_segments": 32,
+    "strings_polygon_sides": 32,
+    "collision": "Single rigid tool body with finite-mass clamp/handle/shaft/frame plus convex32gon string membrane; frame/shaft/handle contacts are separate geometric classes",
+    "mass_status": "Representative assumptions fitted to published unstrung balance, with explicit extra grip/strings/clamp. No real racket or fixture measured.",
+    "legacy_asset": "assets/quadsmash_standard_v2.usd",
+    "output_asset": "assets/quadsmash_full_racket_v4_r2.usd",
+    "string_collision_representation": "inscribed-z-strips",
+    "strings_strip_count": 64,
+    "revision_reason": "Native positive fixtures07/08 prove the convex mesh string surface tunnels. Replace only the equivalent string collision with64 GPU primitive boxes strictly inside the same32gon; preserve r1 asset/config/failures. Same tool mass/dimensions/actuators; inertia recomputed for actual strips."
+  },
+  "mass_properties": {
+    "mass_kg": 0.153,
+    "center_of_mass_in_body_m": [
+      -0.009558823529411765,
+      -1.2401005240847273e-18,
+      -0.3312941176470589
+    ],
+    "inertia_in_body_kg_m2": [
+      [
+        0.005690577386988594,
+        2.8896980030041025e-21,
+        -0.0001736073529411765
+      ],
+      [
+        2.8896980030041025e-21,
+        0.005563810568648802,
+        9.560570621950417e-20
+      ],
+      [
+        -0.0001736073529411765,
+        9.560570621950417e-20,
+        0.00019114693451626478
+      ]
+    ],
+    "principal_inertia_kg_m2": [
+      0.00018567190627085382,
+      0.005563810568648802,
+      0.005696052415234004
+    ],
+    "principal_axes_in_body": [
+      [
+        -0.031521174220711545,
+        1.0586136255253037e-16,
+        0.9995030843252799
+      ],
+      [
+        1.1102230246251565e-16,
+        1.0,
+        -1.0408340855860843e-16
+      ],
+      [
+        -0.9995030843252799,
+        1.1102230246251565e-16,
+        -0.031521174220711545
+      ]
+    ],
+    "component_count": 37
+  },
+  "old_passes_inherited": false,
+  "physical_validation_pending": true
+}

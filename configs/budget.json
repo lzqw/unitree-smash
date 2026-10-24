@@ -1,5 +1,5 @@
 {
-  "authorization_note": "Legacy G04 authorization is retained; current G07 GPU0 execution uses the independently authorized g07-net-feasibility-20261023 window, with 10 additional GPU-hours and a fixed 10-hour wall-clock deadline.",
+  "authorization_note": "Current full-racket/court G07 task has explicit GPU0 unlimited-total authorization. Historical finite windows retained unchanged; no historical charges reset.",
   "authorized_goals": [
     "G00",
     "G01",
@@ -12,7 +12,7 @@
   ],
   "gpu_id_policy": "只使用调度器已分配或用户明确指定的GPU；空列表不是全部GPU。",
   "max_concurrent_gpu_processes": 1,
-  "authorized_total_gpu_hours": 10.0,
+  "authorized_total_gpu_hours": null,
   "max_training_revisions_per_goal": null,
   "cloud_spend_authorized": false,
   "suggested_incremental_budgets_gpu_hours": {
@@ -69,7 +69,20 @@
       "deadline_local": "2026-10-24T02:04:13.742590+08:00",
       "authorization_source": "/home/autodrive/.codex/attachments/020eb582-c91b-47fd-9a6c-10bbc3280369/pasted-text-1.txt",
       "note": "New independent user authorization. New charges capped at 10 GPU-hours; all historical charges retained and excluded from this new cap. Clock anchored at registration, never renewed by restarts."
+    },
+    "g07-full-racket-unlimited-20261024": {
+      "goals": [
+        "G07"
+      ],
+      "max_gpu_hours": null,
+      "max_wallclock_hours": null,
+      "max_env_steps": null,
+      "authorized_at": "2026-10-24T01:53:52.256487+00:00",
+      "deadline": null,
+      "authorization_source": "/home/autodrive/.codex/attachments/55e175f0-9444-4a09-ad37-681e6586ca51/pasted-text-1.txt",
+      "authorization_source_sha256": "2a66eb3ec391ab2bece82cf8d04a707ad52befd2aedf5c21e6b2b072f6289563",
+      "note": "Explicit new user goal authorizes GPU0 without cumulative GPU-hour, wall-clock, or calendar limit for correcting court/net/full-racket/rules and continuing adaptation/training/evaluation. Preserve all historical charges; finite per-job timeout/interaction caps and single-job GPU0 protection remain. No cloud resources."
     }
   },
-  "current_authorization_window": "g07-net-feasibility-20261023"
+  "current_authorization_window": "g07-full-racket-unlimited-20261024"
 }

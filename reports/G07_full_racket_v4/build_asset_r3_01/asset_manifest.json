@@ -1,0 +1,133 @@
+{
+  "asset": "assets/quadsmash_full_racket_v4_r3.usd",
+  "asset_sha256": "c2264fcece90b042c7c6a1cac7d516af83972729d0402947e3a519041e184cf2",
+  "legacy_asset_sha256": "bfb831e4afc8a1a705bb0fb6f001c25eeaa401822978267a0ee5e151007511f3",
+  "configuration": {
+    "version": "full-racket-court-v4-r3",
+    "representative": "Parameterized rigid full racket informed by Li-Ning AXFORCE80 5U AYPS006-1/AYPT271-5; not a manufacturer CAD or hardware calibration",
+    "source_url": "https://lining-sport.eu/badminton/badmintonschlaeger/axforce/1555/badmintonschlaeger-axforce-80-5u-unbespannt-ayps006-1",
+    "published": {
+      "total_length_m": 0.675,
+      "unstrung_balance_from_butt_m": 0.304,
+      "handle_length_m": 0.2,
+      "weight_class": "5U; exact grams field absent"
+    },
+    "assumptions": {
+      "unstrung_mass_kg": 0.078,
+      "strings_mass_kg": 0.005,
+      "added_grip_mass_kg": 0.005,
+      "clamp_mass_kg": 0.065,
+      "head_outer_length_m": 0.25,
+      "head_outer_width_m": 0.2,
+      "frame_tube_radius_m": 0.004,
+      "shaft_diameter_m": 0.007,
+      "handle_radius_m": 0.014,
+      "string_thickness_m": 0.0012,
+      "strings_semiaxes_yz_m": [
+        0.0915,
+        0.1165
+      ],
+      "shaft_mass_kg": 0.018,
+      "clamp_is_equivalent_hollow_fixture": true,
+      "clamp_size_m": [
+        0.038,
+        0.055,
+        0.06
+      ],
+      "clamp_center_in_body_m": [
+        -0.019,
+        0.0,
+        -0.45
+      ]
+    },
+    "grip_center_from_butt_m": 0.1,
+    "head_center_from_butt_m": 0.55,
+    "flange_frame": "Official standard PiPER URDF link6 frame; gripper-base fixed joint has identity transform",
+    "grip_center_in_flange_m": [
+      0,
+      0,
+      0.04
+    ],
+    "racket_body_frame": "Origin at string-center; +X face normal, +Z shaft from handle to head, +Y lateral",
+    "body_rotation_in_flange_wxyz": [
+      0,
+      0.7071067811865476,
+      0,
+      0.7071067811865476
+    ],
+    "shaft_axis_in_flange": [
+      1,
+      0,
+      0
+    ],
+    "face_normal_in_flange": [
+      0,
+      0,
+      1
+    ],
+    "string_center_in_flange_m": [
+      0.45,
+      0,
+      0.04
+    ],
+    "frame_segments": 32,
+    "strings_polygon_sides": 32,
+    "collision": "Single rigid tool body with finite-mass clamp/handle/shaft/frame plus convex32gon string membrane; frame/shaft/handle contacts are separate geometric classes",
+    "mass_status": "Representative assumptions fitted to published unstrung balance, with explicit extra grip/strings/clamp. No real racket or fixture measured.",
+    "legacy_asset": "assets/quadsmash_standard_v2.usd",
+    "output_asset": "assets/quadsmash_full_racket_v4_r3.usd",
+    "string_collision_representation": "inscribed-z-strips",
+    "strings_strip_count": 64,
+    "revision_reason": "R2 reset self-contact fixture measures persistent21-36kN against link5. Official link5 STL ends at flange z=-0.001m, while old clamp starts at-0.005m. Correct erroneous clamp normal depth45->38mm, retaining grip position, racket dimensions,452mm hit lever,65g fixture mass and all robot collision pairs. New clamp starts at flange z=+0.002m; recompute COM/inertia. Preserve failed r1/r2 assets."
+  },
+  "mass_properties": {
+    "mass_kg": 0.153,
+    "center_of_mass_in_body_m": [
+      -0.0080718954248366,
+      -1.2401005240847273e-18,
+      -0.3312941176470589
+    ],
+    "inertia_in_body_kg_m2": [
+      [
+        0.005690577386988593,
+        1.889618009043725e-21,
+        -0.00014660176470588233
+      ],
+      [
+        1.889618009043725e-21,
+        0.005555233223877556,
+        9.560570621950416e-20
+      ],
+      [
+        -0.00014660176470588233,
+        9.560570621950416e-20,
+        0.00018256958974502305
+      ]
+    ],
+    "principal_inertia_kg_m2": [
+      0.0001786703807433968,
+      0.005555233223877557,
+      0.005694476595990219
+    ],
+    "principal_axes_in_body": [
+      [
+        -0.026587882895667103,
+        -8.492395353569085e-17,
+        0.9996464797532807
+      ],
+      [
+        -1.1102230246251565e-16,
+        0.9999999999999999,
+        8.326672684688674e-17
+      ],
+      [
+        -0.9996464797532807,
+        0.0,
+        -0.026587882895667103
+      ]
+    ],
+    "component_count": 37
+  },
+  "old_passes_inherited": false,
+  "physical_validation_pending": true
+}

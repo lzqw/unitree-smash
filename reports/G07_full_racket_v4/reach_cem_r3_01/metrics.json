@@ -1,0 +1,538 @@
+{
+  "history": [
+    {
+      "generation": 0,
+      "best": {
+        "env_id": 45,
+        "robot_net_contact": false,
+        "engineering_body_crossing": false,
+        "maximum_net_force_n": 0.0,
+        "score": -0.8579957485198975,
+        "event_time_s": 2.700000047683716,
+        "virtual_ball_center_m": [
+          1.0457044839859009,
+          -0.08155253529548645,
+          1.716199278831482
+        ],
+        "point_velocity_mps": [
+          -0.11358891427516937,
+          0.574821949005127,
+          0.6849989295005798
+        ],
+        "normal_world": [
+          0.7449303865432739,
+          0.6667512059211731,
+          0.022838369011878967
+        ],
+        "root_at_event_m": [
+          0.7567081451416016,
+          -0.20400428771972656,
+          0.6291571855545044
+        ],
+        "feet_airborne": true,
+        "recovery": false,
+        "jump": {
+          "env_id": 45,
+          "max_height_m": 0.6381322145462036,
+          "total_com_rise_m": 0.24567705392837524,
+          "airborne_s": 0.4749974310398102,
+          "recovery_s": 0.0,
+          "takeoff_time_s": 2.5209996700286865,
+          "landing_time_s": 3.0149638652801514,
+          "maximum_body_ground_force_n": 1431.8546142578125,
+          "max_leg_torque_nm": 23.5,
+          "max_arm_torque_nm": 76.10308074951172,
+          "max_joint_speed_rad_s": 30.000436782836914,
+          "clipped_action_values": 0.0,
+          "limited_joint_targets": 0.0,
+          "saturated_leg_joint_substeps": 1140.0,
+          "qualified_jump_landed": true,
+          "qualified_flight_seen": true,
+          "body_landing": true,
+          "stable_recovery": false,
+          "success": false,
+          "terminated": true
+        }
+      },
+      "airborne_lanes": 53,
+      "recovered_lanes": 0,
+      "net_contact_lanes": 36,
+      "body_crossing_lanes": 21,
+      "formal_acceptance": false
+    },
+    {
+      "generation": 1,
+      "best": {
+        "env_id": 33,
+        "robot_net_contact": false,
+        "engineering_body_crossing": false,
+        "maximum_net_force_n": 0.0,
+        "score": -1.3350458145141602,
+        "event_time_s": 2.7300000190734863,
+        "virtual_ball_center_m": [
+          1.252622365951538,
+          0.1553143411874771,
+          1.572343111038208
+        ],
+        "point_velocity_mps": [
+          0.679554283618927,
+          0.3996089696884155,
+          0.611024796962738
+        ],
+        "normal_world": [
+          0.9571661949157715,
+          0.23003238439559937,
+          -0.17583513259887695
+        ],
+        "root_at_event_m": [
+          0.6720185279846191,
+          -0.058170318603515625,
+          0.6256479024887085
+        ],
+        "feet_airborne": true,
+        "recovery": false,
+        "jump": {
+          "env_id": 33,
+          "max_height_m": 0.6808790564537048,
+          "total_com_rise_m": 0.28372663259506226,
+          "airborne_s": 2.7349841594696045,
+          "recovery_s": 0.0,
+          "takeoff_time_s": 3.252946615219116,
+          "landing_time_s": 3.2049500942230225,
+          "maximum_body_ground_force_n": 31233.927734375,
+          "max_leg_torque_nm": 23.5,
+          "max_arm_torque_nm": 84.56769561767578,
+          "max_joint_speed_rad_s": 30.003070831298828,
+          "clipped_action_values": 0.0,
+          "limited_joint_targets": 0.0,
+          "saturated_leg_joint_substeps": 903.0,
+          "qualified_jump_landed": false,
+          "qualified_flight_seen": true,
+          "body_landing": true,
+          "stable_recovery": false,
+          "success": false,
+          "terminated": false
+        }
+      },
+      "airborne_lanes": 57,
+      "recovered_lanes": 2,
+      "net_contact_lanes": 33,
+      "body_crossing_lanes": 17,
+      "formal_acceptance": false
+    },
+    {
+      "generation": 2,
+      "best": {
+        "env_id": 60,
+        "robot_net_contact": false,
+        "engineering_body_crossing": false,
+        "maximum_net_force_n": 0.0,
+        "score": 2.6353407382965086,
+        "event_time_s": 2.809999942779541,
+        "virtual_ball_center_m": [
+          1.245605230331421,
+          -0.029333913698792458,
+          1.5742955207824707
+        ],
+        "point_velocity_mps": [
+          -0.2949464023113251,
+          0.19873669743537903,
+          0.04092634096741676
+        ],
+        "normal_world": [
+          0.9608196020126343,
+          -0.015845097601413727,
+          -0.27672120928764343
+        ],
+        "root_at_event_m": [
+          0.6219749450683594,
+          -0.06182670593261719,
+          0.6238356232643127
+        ],
+        "feet_airborne": true,
+        "recovery": true,
+        "jump": {
+          "env_id": 60,
+          "max_height_m": 0.6239799857139587,
+          "total_com_rise_m": 0.24536916613578796,
+          "airborne_s": 0.44599780440330505,
+          "recovery_s": 1.6260199546813965,
+          "takeoff_time_s": 2.5909945964813232,
+          "landing_time_s": 3.04496169090271,
+          "maximum_body_ground_force_n": 0.0,
+          "max_leg_torque_nm": 23.5,
+          "max_arm_torque_nm": 100.0,
+          "max_joint_speed_rad_s": 30.005186080932617,
+          "clipped_action_values": 0.0,
+          "limited_joint_targets": 0.0,
+          "saturated_leg_joint_substeps": 693.0,
+          "qualified_jump_landed": true,
+          "qualified_flight_seen": true,
+          "body_landing": false,
+          "stable_recovery": true,
+          "success": true,
+          "terminated": false
+        }
+      },
+      "airborne_lanes": 58,
+      "recovered_lanes": 2,
+      "net_contact_lanes": 32,
+      "body_crossing_lanes": 6,
+      "formal_acceptance": false
+    },
+    {
+      "generation": 3,
+      "best": {
+        "env_id": 38,
+        "robot_net_contact": false,
+        "engineering_body_crossing": false,
+        "maximum_net_force_n": 0.0,
+        "score": 1.6922834396362305,
+        "event_time_s": 2.7899999618530273,
+        "virtual_ball_center_m": [
+          1.1378694772720337,
+          0.2140200138092041,
+          1.4899671077728271
+        ],
+        "point_velocity_mps": [
+          -0.9138873815536499,
+          0.41508376598358154,
+          1.3985676765441895
+        ],
+        "normal_world": [
+          0.9945433139801025,
+          0.04277545213699341,
+          -0.09515152126550674
+        ],
+        "root_at_event_m": [
+          0.6592826843261719,
+          -0.06873703002929688,
+          0.525550127029419
+        ],
+        "feet_airborne": true,
+        "recovery": true,
+        "jump": {
+          "env_id": 38,
+          "max_height_m": 0.6012980937957764,
+          "total_com_rise_m": 0.21944081783294678,
+          "airborne_s": 0.45299771428108215,
+          "recovery_s": 1.9320342540740967,
+          "takeoff_time_s": 2.700986623764038,
+          "landing_time_s": 3.1599533557891846,
+          "maximum_body_ground_force_n": 0.0,
+          "max_leg_torque_nm": 23.5,
+          "max_arm_torque_nm": 28.619239807128906,
+          "max_joint_speed_rad_s": 30.018911361694336,
+          "clipped_action_values": 0.0,
+          "limited_joint_targets": 0.0,
+          "saturated_leg_joint_substeps": 1232.0,
+          "qualified_jump_landed": true,
+          "qualified_flight_seen": true,
+          "body_landing": false,
+          "stable_recovery": true,
+          "success": true,
+          "terminated": false
+        }
+      },
+      "airborne_lanes": 63,
+      "recovered_lanes": 4,
+      "net_contact_lanes": 25,
+      "body_crossing_lanes": 7,
+      "formal_acceptance": false
+    },
+    {
+      "generation": 4,
+      "best": {
+        "env_id": 19,
+        "robot_net_contact": false,
+        "engineering_body_crossing": false,
+        "maximum_net_force_n": 0.0,
+        "score": 0.8650672912597657,
+        "event_time_s": 2.75,
+        "virtual_ball_center_m": [
+          0.977990984916687,
+          0.23443494737148285,
+          1.4491246938705444
+        ],
+        "point_velocity_mps": [
+          -1.135320782661438,
+          0.6573648452758789,
+          1.778126835823059
+        ],
+        "normal_world": [
+          0.9410772323608398,
+          0.17228922247886658,
+          -0.2910155951976776
+        ],
+        "root_at_event_m": [
+          0.4473838806152344,
+          0.0324254035949707,
+          0.47772061824798584
+        ],
+        "feet_airborne": true,
+        "recovery": true,
+        "jump": {
+          "env_id": 19,
+          "max_height_m": 0.5842287540435791,
+          "total_com_rise_m": 0.22736108303070068,
+          "airborne_s": 0.45299771428108215,
+          "recovery_s": 1.8340296745300293,
+          "takeoff_time_s": 2.680988073348999,
+          "landing_time_s": 3.1399548053741455,
+          "maximum_body_ground_force_n": 0.0,
+          "max_leg_torque_nm": 23.5,
+          "max_arm_torque_nm": 55.641014099121094,
+          "max_joint_speed_rad_s": 30.00405502319336,
+          "clipped_action_values": 0.0,
+          "limited_joint_targets": 0.0,
+          "saturated_leg_joint_substeps": 1056.0,
+          "qualified_jump_landed": true,
+          "qualified_flight_seen": true,
+          "body_landing": false,
+          "stable_recovery": true,
+          "success": true,
+          "terminated": false
+        }
+      },
+      "airborne_lanes": 55,
+      "recovered_lanes": 1,
+      "net_contact_lanes": 16,
+      "body_crossing_lanes": 6,
+      "formal_acceptance": false
+    },
+    {
+      "generation": 5,
+      "best": {
+        "env_id": 30,
+        "robot_net_contact": false,
+        "engineering_body_crossing": false,
+        "maximum_net_force_n": 0.0,
+        "score": -1.2772560119628906,
+        "event_time_s": 2.7300000190734863,
+        "virtual_ball_center_m": [
+          0.8372492790222168,
+          -0.11180872470140457,
+          1.694839596748352
+        ],
+        "point_velocity_mps": [
+          -0.42891454696655273,
+          0.935046374797821,
+          0.24044078588485718
+        ],
+        "normal_world": [
+          0.9986562132835388,
+          0.041278161108493805,
+          -0.03133537620306015
+        ],
+        "root_at_event_m": [
+          0.5251760482788086,
+          -0.13756179809570312,
+          0.6197010278701782
+        ],
+        "feet_airborne": true,
+        "recovery": false,
+        "jump": {
+          "env_id": 30,
+          "max_height_m": 0.6201971173286438,
+          "total_com_rise_m": 0.2658156156539917,
+          "airborne_s": 0.46299758553504944,
+          "recovery_s": 0.0,
+          "takeoff_time_s": 2.9649674892425537,
+          "landing_time_s": 2.975966691970825,
+          "maximum_body_ground_force_n": 33171.06640625,
+          "max_leg_torque_nm": 23.5,
+          "max_arm_torque_nm": 100.0,
+          "max_joint_speed_rad_s": 30.95922088623047,
+          "clipped_action_values": 0.0,
+          "limited_joint_targets": 0.0,
+          "saturated_leg_joint_substeps": 1208.0,
+          "qualified_jump_landed": false,
+          "qualified_flight_seen": true,
+          "body_landing": true,
+          "stable_recovery": false,
+          "success": false,
+          "terminated": false
+        }
+      },
+      "airborne_lanes": 55,
+      "recovered_lanes": 1,
+      "net_contact_lanes": 15,
+      "body_crossing_lanes": 6,
+      "formal_acceptance": false
+    },
+    {
+      "generation": 6,
+      "best": {
+        "env_id": 28,
+        "robot_net_contact": false,
+        "engineering_body_crossing": false,
+        "maximum_net_force_n": 0.0,
+        "score": 1.7876022338867188,
+        "event_time_s": 2.8299999237060547,
+        "virtual_ball_center_m": [
+          1.2404171228408813,
+          0.10534994304180145,
+          1.589598536491394
+        ],
+        "point_velocity_mps": [
+          -0.26464787125587463,
+          0.022940151393413544,
+          0.6277098655700684
+        ],
+        "normal_world": [
+          0.7680661082267761,
+          0.6032147407531738,
+          -0.2149566262960434
+        ],
+        "root_at_event_m": [
+          0.6690692901611328,
+          -0.051084041595458984,
+          0.6161770820617676
+        ],
+        "feet_airborne": true,
+        "recovery": true,
+        "jump": {
+          "env_id": 28,
+          "max_height_m": 0.6542582511901855,
+          "total_com_rise_m": 0.26647794246673584,
+          "airborne_s": 0.5059970617294312,
+          "recovery_s": 1.8860321044921875,
+          "takeoff_time_s": 2.680988073348999,
+          "landing_time_s": 3.196950674057007,
+          "maximum_body_ground_force_n": 0.0,
+          "max_leg_torque_nm": 23.5,
+          "max_arm_torque_nm": 46.29170227050781,
+          "max_joint_speed_rad_s": 30.003511428833008,
+          "clipped_action_values": 0.0,
+          "limited_joint_targets": 0.0,
+          "saturated_leg_joint_substeps": 1100.0,
+          "qualified_jump_landed": true,
+          "qualified_flight_seen": true,
+          "body_landing": false,
+          "stable_recovery": true,
+          "success": true,
+          "terminated": false
+        }
+      },
+      "airborne_lanes": 61,
+      "recovered_lanes": 1,
+      "net_contact_lanes": 12,
+      "body_crossing_lanes": 5,
+      "formal_acceptance": false
+    },
+    {
+      "generation": 7,
+      "best": {
+        "env_id": 13,
+        "robot_net_contact": false,
+        "engineering_body_crossing": false,
+        "maximum_net_force_n": 0.0,
+        "score": 2.2614601135253904,
+        "event_time_s": 2.8499999046325684,
+        "virtual_ball_center_m": [
+          1.0344363451004028,
+          -0.09047988802194595,
+          1.561371922492981
+        ],
+        "point_velocity_mps": [
+          -1.1866474151611328,
+          0.464645653963089,
+          0.1755877286195755
+        ],
+        "normal_world": [
+          0.9723438024520874,
+          0.19725273549556732,
+          -0.12505564093589783
+        ],
+        "root_at_event_m": [
+          0.6123580932617188,
+          0.028089523315429688,
+          0.5244024395942688
+        ],
+        "feet_airborne": true,
+        "recovery": true,
+        "jump": {
+          "env_id": 13,
+          "max_height_m": 0.5255675911903381,
+          "total_com_rise_m": 0.1838330328464508,
+          "airborne_s": 0.3989984095096588,
+          "recovery_s": 2.2850167751312256,
+          "takeoff_time_s": 2.6709887981414795,
+          "landing_time_s": 3.0779592990875244,
+          "maximum_body_ground_force_n": 0.0,
+          "max_leg_torque_nm": 23.5,
+          "max_arm_torque_nm": 100.0,
+          "max_joint_speed_rad_s": 30.00267791748047,
+          "clipped_action_values": 0.0,
+          "limited_joint_targets": 0.0,
+          "saturated_leg_joint_substeps": 633.0,
+          "qualified_jump_landed": true,
+          "qualified_flight_seen": true,
+          "body_landing": false,
+          "stable_recovery": true,
+          "success": true,
+          "terminated": false
+        }
+      },
+      "airborne_lanes": 63,
+      "recovered_lanes": 4,
+      "net_contact_lanes": 14,
+      "body_crossing_lanes": 4,
+      "formal_acceptance": false
+    }
+  ],
+  "best": {
+    "env_id": 60,
+    "robot_net_contact": false,
+    "engineering_body_crossing": false,
+    "maximum_net_force_n": 0.0,
+    "score": 2.6353407382965086,
+    "event_time_s": 2.809999942779541,
+    "virtual_ball_center_m": [
+      1.245605230331421,
+      -0.029333913698792458,
+      1.5742955207824707
+    ],
+    "point_velocity_mps": [
+      -0.2949464023113251,
+      0.19873669743537903,
+      0.04092634096741676
+    ],
+    "normal_world": [
+      0.9608196020126343,
+      -0.015845097601413727,
+      -0.27672120928764343
+    ],
+    "root_at_event_m": [
+      0.6219749450683594,
+      -0.06182670593261719,
+      0.6238356232643127
+    ],
+    "feet_airborne": true,
+    "recovery": true,
+    "jump": {
+      "env_id": 60,
+      "max_height_m": 0.6239799857139587,
+      "total_com_rise_m": 0.24536916613578796,
+      "airborne_s": 0.44599780440330505,
+      "recovery_s": 1.6260199546813965,
+      "takeoff_time_s": 2.5909945964813232,
+      "landing_time_s": 3.04496169090271,
+      "maximum_body_ground_force_n": 0.0,
+      "max_leg_torque_nm": 23.5,
+      "max_arm_torque_nm": 100.0,
+      "max_joint_speed_rad_s": 30.005186080932617,
+      "clipped_action_values": 0.0,
+      "limited_joint_targets": 0.0,
+      "saturated_leg_joint_substeps": 693.0,
+      "qualified_jump_landed": true,
+      "qualified_flight_seen": true,
+      "body_landing": false,
+      "stable_recovery": true,
+      "success": true,
+      "terminated": false
+    }
+  },
+  "env_steps": 307200,
+  "formal_acceptance": false
+}

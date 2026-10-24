@@ -74,6 +74,16 @@ class BallEnvCfg(JumpEnvCfg):
 class BallEnv(JumpEnv):
     cfg: BallEnvCfg
 
+    def _tool_gap(self,position,center,quaternion):
+        return sphere_box_gap(position,center,quaternion,PHYSICS['racket_half_extents_m'],self.cfg.shuttle_radius_m)
+
+    def _tool_sweep(self,start,end,center_start,center_end,quat_start,quat_end):
+        return swept_sphere_box(start,end,center_start,center_end,quat_start,quat_end,
+            PHYSICS['racket_half_extents_m'],self.cfg.shuttle_radius_m,iterations=self.cfg.sweep_audit_iterations)
+
+    def _sweep_geometry_spec(self):
+        return dict(half_extents=PHYSICS['racket_half_extents_m'])
+
     def __init__(self, cfg, **kwargs):
         self.contact_events = None
         cfg.sim.physx.enable_ccd = False
@@ -142,7 +152,17 @@ class BallEnv(JumpEnv):
                     continue
                 # Net is a child of the translated environment. The spawner's
                 # translation is LOCAL; adding env_origins displaces it twice.
-                if self.cfg.net_side_height_m > self.cfg.net_height_m:
+                if self.cfg.net_geometry_version == 'regulation-suspended-band-net-v4':
+                    from quadsmash.physics.court_v4 import load_court,spawn_court_net,spawn_court_lines
+                    from isaaclab.sim.utils import bind_physics_material
+                    config = load_court()
+                    colliders = spawn_court_net(stage,path,config)
+                    spawn_court_lines(stage,f'/World/envs/env_{i}/Court',config)
+                    material_path = path+'/geometry/material'
+                    net.physics_material.func(material_path,net.physics_material)
+                    for collider in colliders:
+                        bind_physics_material(collider,material_path)
+                elif self.cfg.net_side_height_m > self.cfg.net_height_m:
                     from quadsmash.physics.net_geometry import spawn_profiled_net, PROFILE_VERSION
                     from isaaclab.sim.utils import bind_physics_material
                     if self.cfg.net_geometry_version != PROFILE_VERSION:
@@ -237,8 +257,8 @@ class BallEnv(JumpEnv):
             raise RuntimeError(f"Unexpected filtered contact shape: {forces.shape}")
         racket_force, ground_force = forces[:, 0, 0], forces[:, 0, 1]
         self._latest_racket_force.copy_(racket_force)
-        gap = sphere_box_gap(position, data.body_pos_w[:, self.racket_body_id],
-            data.body_quat_w[:, self.racket_body_id], PHYSICS["racket_half_extents_m"], self.cfg.shuttle_radius_m)
+        gap = self._tool_gap(position, data.body_pos_w[:, self.racket_body_id],
+            data.body_quat_w[:, self.racket_body_id])
         new, touching = self.contact_events.update(racket_force, gap)
         # Independent swept geometry audits translation AND angular motion.
         # Contact response remains entirely in PhysX. A detected crossing that
@@ -252,10 +272,9 @@ class BallEnv(JumpEnv):
             # Avoid invoking conservative advancement for
             # the overwhelmingly common far-away shuttle frames.  The
             # query itself remains unchanged for every near-tool frame.
-            hit, _, unresolved_near = swept_sphere_box(self.previous_ball_position[near_tool], position[near_tool],
+            hit, _, unresolved_near = self._tool_sweep(self.previous_ball_position[near_tool], position[near_tool],
                 self.previous_tool_position[near_tool], tool_position[near_tool], self.previous_tool_quaternion[near_tool],
-                tool_quaternion[near_tool], PHYSICS["racket_half_extents_m"], self.cfg.shuttle_radius_m,
-                iterations=self.cfg.sweep_audit_iterations)
+                tool_quaternion[near_tool])
             swept[near_tool] = hit
             unresolved[near_tool] = unresolved_near
             if getattr(self, 'capture_sweep_failures', False):
@@ -268,10 +287,10 @@ class BallEnv(JumpEnv):
                         start=self.previous_ball_position[i].cpu().tolist(), end=position[i].cpu().tolist(),
                         center_start=self.previous_tool_position[i].cpu().tolist(), center_end=tool_position[i].cpu().tolist(),
                         quat_start=self.previous_tool_quaternion[i].cpu().tolist(), quat_end=tool_quaternion[i].cpu().tolist(),
-                        half_extents=PHYSICS['racket_half_extents_m'], radius=self.cfg.shuttle_radius_m,
+                        **self._sweep_geometry_spec(), radius=self.cfg.shuttle_radius_m,
                         iterations=self.cfg.sweep_audit_iterations, tolerance=1e-6, dtype=str(position.dtype)))
-        previous_gap = sphere_box_gap(self.previous_ball_position, self.previous_tool_position,
-            self.previous_tool_quaternion, PHYSICS["racket_half_extents_m"], self.cfg.shuttle_radius_m)
+        previous_gap = self._tool_gap(self.previous_ball_position, self.previous_tool_position,
+            self.previous_tool_quaternion)
         candidate = swept & self.sweep_ready & (previous_gap > 1e-5) & (~touching)
         pending = self.pending_sweep_age >= 0
         self.pending_sweep_age[pending] += 1

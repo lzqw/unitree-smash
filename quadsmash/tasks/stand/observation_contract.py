@@ -58,9 +58,15 @@ def observe_native(env):
         env.observed_foot_contact.float()]
     if hasattr(env,'shuttle'):
         ball=env.shuttle.data
-        fields += [inverse_rotate(q,ball.root_pos_w-root),
-            relative_velocity(q,ball.root_pos_w,ball.root_lin_vel_w,root,velocity,omega),
-            torch.ones((env.num_envs,1),device=env.device)]
+        present=getattr(env,'ball_observation_enabled',None)
+        if present is None:
+            fields += [inverse_rotate(q,ball.root_pos_w-root),
+                relative_velocity(q,ball.root_pos_w,ball.root_lin_vel_w,root,velocity,omega),
+                torch.ones((env.num_envs,1),device=env.device)]
+        else:
+            fields += [inverse_rotate(q,ball.root_pos_w-root)*present[:,None],
+                relative_velocity(q,ball.root_pos_w,ball.root_lin_vel_w,root,velocity,omega)*present[:,None],
+                present[:,None].float()]
     else:
         fields += [torch.zeros((env.num_envs,7),device=env.device)]
     fields += [torch.ones((env.num_envs,1),device=env.device)]

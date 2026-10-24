@@ -7,17 +7,19 @@
 代码与文本证据保存在本仓库；权重、完整运行记录及资产见
 [交接附件与恢复说明](docs/HANDOFF_ARTIFACTS.md)。上传不代表训练验收通过。
 
-**当前状态（2026-10-24北京时间）：G00–G06已通过；G07正式400未达标（A完整50%/恢复89%，B完整35.5%/条件恢复74.4898%，数值0）。后续两批1536开发比较均未找到新的合格策略。原02:04工作窗已到期，实际新增结算7.645612 GPUh，GPU0本项目作业已停止，状态BUDGET_EXHAUSTED。权重、失败数据、公开轨迹与正式固定案例视频已保留；没有G07通过证据。**
+**当前状态（2026-10-24北京时间）：新版完整球拍、真实球场和击球规则正在适配训练。用户新授权仅GPU0、无累计GPU小时上限和截止；旧窗口与费用保留。当前资产full-racket-court-v4-r3，675 mm完整球拍、6.1 m宽悬空网、20.709991 kg总质量。原生触球、网体/网柱、网下/网上通行及直立持拍自碰撞回归已运行；新版400案例已冻结，正式成绩尚无。当前在进行真实动力学全身动作搜索。**
+
+G00–G06的通过属于旧短拍板资产，不能继承为新版通过。旧G07正式400未达标（A完整50%/恢复89%，B完整35.5%/条件恢复74.4898%，数值0），旧权重、数据和失败保留。新版模型来源、规则映射与假设见[MODEL_RULES.json](reports/G07_full_racket_v4/MODEL_RULES.json)，评测配置见[新版协议](configs/g07_full_racket_eval_v4_r3.json)，实际下一步见[运行状态](status/NEXT.md)。
 
 最新入口：[77秒当前效果视频](https://github.com/lzqw/unitree-smash/releases/download/g07-progress-20261023/G07_current_effect_comparison_20261024.mp4)、[G07实测报告](reports/G07/REPORT.md)、[继续执行与资源窗口](status/NEXT.md)、[视频、权重与完整轨迹附件](https://github.com/lzqw/unitree-smash/releases/tag/g07-progress-20261023)。G04结果与接口见[训练总结](reports/G04/autonomous_learning_20261022/REPORT.md)、[策略接口](docs/G04_POLICY_INTERFACE.md)。旧交接文档保留历史状态。
-生产资产为标准 PiPER、Go2、安装板和球拍组成的约 20.647 kg 浮动系统。
+旧资产为约20.647 kg浮动系统；新版完整球拍资产为约20.710 kg，仍保留标准PiPER、Go2和原执行器限制。
 统一 794 维观测、18 维动作、原生 PPO、独立评测及可恢复检查点已实现。
 最新状态与累计资源记录分别见 `status/STATUS.json`、`status/NEXT.md` 和 `status/GPU_LEDGER.json`。
 工程通过或存在权重文件均不表示策略达到成功率要求；G04 的两个固定面板必须各达到 90%。
 
 ## 开始
 1. 将本目录内容放入新的研究工作区；已有项目先建立分支，不覆盖原有 AGENTS.md。
-2. 阅读 `configs/budget.json` 和 `status/NEXT.md`。G07原GPU0独立授权新增最多10 GPU-hours，固定窗口北京时间2026-10-23 16:04至10月24日02:04已结束；继续GPU前须明确修订截止，保留历史费用和原T0。
+2. 阅读 `configs/budget.json` 和 `status/NEXT.md`。当前授权窗口为`g07-full-racket-unlimited-20261024`，仅GPU0、无累计GPU小时或截止限制；保留所有旧费用、单任务有限超时和单GPU作业保护。
 3. 在同一工作区打开 Codex CLI/IDE。先输入 `CODEX_GOAL_PROMPTS.md` 的“第一轮启动目标”。
 4. 搜索、诊断、失败重试和评测均计入对应授权账本；使用`scripts/run_gpu_job.py`，不可因恢复会话重复启动作业。G08以后尚未授权。
 5. 不需要每轮重贴完整方案；Goal 引用这些持久文件。换会话时先读状态和最近报告。

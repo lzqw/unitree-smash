@@ -1,0 +1,188 @@
+{
+  "active_version": "full-racket-court-v4-r3",
+  "asset": "assets/quadsmash_full_racket_v4_r3.usd",
+  "asset_sha256": "c2264fcece90b042c7c6a1cac7d516af83972729d0402947e3a519041e184cf2",
+  "old_versions_preserved": [
+    "configs/full_racket_v4.json",
+    "configs/full_racket_v4_r2.json",
+    "assets/quadsmash_full_racket_v4.usd",
+    "assets/quadsmash_full_racket_v4_r2.usd"
+  ],
+  "source_rules": {
+    "version": "BWF Laws of Badminton, In Force26/04/2025,V5.0(1)",
+    "url": "https://badminton.dk/wp-content/uploads/2025/11/Section-4.1-Laws-of-Badminton-26-April-2025-V5.0-1-.pdf",
+    "download_manifest": "reports/G07_full_racket_v4/sources/SOURCES.json",
+    "future_2027_not_applied": true
+  },
+  "racket_source": {
+    "url": "https://lining-sport.eu/badminton/badmintonschlaeger/axforce/1555/badmintonschlaeger-axforce-80-5u-unbespannt-ayps006-1",
+    "published": {
+      "total_length_m": 0.675,
+      "unstrung_balance_from_butt_m": 0.304,
+      "handle_length_m": 0.2,
+      "weight_class": "5U; exact grams field absent"
+    },
+    "assumptions": {
+      "unstrung_mass_kg": 0.078,
+      "strings_mass_kg": 0.005,
+      "added_grip_mass_kg": 0.005,
+      "clamp_mass_kg": 0.065,
+      "head_outer_length_m": 0.25,
+      "head_outer_width_m": 0.2,
+      "frame_tube_radius_m": 0.004,
+      "shaft_diameter_m": 0.007,
+      "handle_radius_m": 0.014,
+      "string_thickness_m": 0.0012,
+      "strings_semiaxes_yz_m": [
+        0.0915,
+        0.1165
+      ],
+      "shaft_mass_kg": 0.018,
+      "clamp_is_equivalent_hollow_fixture": true,
+      "clamp_size_m": [
+        0.038,
+        0.055,
+        0.06
+      ],
+      "clamp_center_in_body_m": [
+        -0.019,
+        0.0,
+        -0.45
+      ]
+    },
+    "not_manufacturer_CAD": true,
+    "not_hardware_calibrated": true
+  },
+  "mass_properties": {
+    "mass_kg": 0.153,
+    "center_of_mass_in_body_m": [
+      -0.0080718954248366,
+      -1.2401005240847273e-18,
+      -0.3312941176470589
+    ],
+    "inertia_in_body_kg_m2": [
+      [
+        0.005690577386988593,
+        1.889618009043725e-21,
+        -0.00014660176470588233
+      ],
+      [
+        1.889618009043725e-21,
+        0.005555233223877556,
+        9.560570621950416e-20
+      ],
+      [
+        -0.00014660176470588233,
+        9.560570621950416e-20,
+        0.00018256958974502305
+      ]
+    ],
+    "principal_inertia_kg_m2": [
+      0.0001786703807433968,
+      0.005555233223877557,
+      0.005694476595990219
+    ],
+    "principal_axes_in_body": [
+      [
+        -0.026587882895667103,
+        -8.492395353569085e-17,
+        0.9996464797532807
+      ],
+      [
+        -1.1102230246251565e-16,
+        0.9999999999999999,
+        8.326672684688674e-17
+      ],
+      [
+        -0.9996464797532807,
+        0.0,
+        -0.026587882895667103
+      ]
+    ],
+    "component_count": 37
+  },
+  "rules": [
+    {
+      "law": "1.1-1.5",
+      "mapping": "13.4m court,5.18m singles,6.10m doubles,40mm lines and support placement",
+      "implementation": "configs/court_net_v4.json"
+    },
+    {
+      "law": "1.7-1.10",
+      "mapping": "6.10m width,0.76m suspended depth,1.524m center/1.55m sides,75mm white tape;64 rigid box strips",
+      "implementation": "quadsmash/physics/court_v4.py"
+    },
+    {
+      "law": "4.1-4.2",
+      "mapping": "Representative675mm racket,200mm head outer width,actual effective string region within32gon;62 inscribed collision boxes",
+      "implementation": "configs/full_racket_v4_r3.json"
+    },
+    {
+      "law": "10.2.1",
+      "mapping": "Rally shot may be taken anywhere on own side; no service-line/height restriction added",
+      "implementation": "quadsmash/physics/rally_rules_v4.py"
+    },
+    {
+      "law": "13.3.4",
+      "mapping": "Shuttle on body,arm,fixture faults; actual force/point records required",
+      "implementation": "quadsmash/tasks/stand/full_racket_env_v4.py"
+    },
+    {
+      "law": "13.3.7",
+      "mapping": "Continuous contact episodes separated by hysteresis; independent second strike faults; same-stroke head+strings exception",
+      "implementation": "quadsmash/physics/rally_rules_v4.py"
+    },
+    {
+      "law": "13.4.1",
+      "mapping": "Robot/racket on net or posts while in play faults; shuttle net touch is distinct and may be legal",
+      "implementation": "quadsmash/physics/rally_rules_v4.py"
+    },
+    {
+      "law": "13.4.2",
+      "mapping": "First actual racket contact point on own side; same-stroke racket follow-through exception, never for arm/body",
+      "implementation": "quadsmash/physics/rally_rules_v4.py"
+    },
+    {
+      "law": "13.4.3",
+      "mapping": "Under-net obstruction is separate from additional own-half robot engineering gate; no opponent agent is simulated",
+      "implementation": "quadsmash/physics/rally_rules_v4.py"
+    },
+    {
+      "law": "15",
+      "mapping": "First ground or invalidating fault ends the rally; bounce cannot restart success",
+      "implementation": "quadsmash/physics/rally_rules_v4.py"
+    }
+  ],
+  "material_limits": "Native PhysX contact only; no ball adhesion, artificial contact impulse, suspended root force or post-launch state correction.",
+  "approximations": [
+    "Rigid net membrane without cloth dynamics/holes; physical/scoring/render boundaries use the same strips.",
+    "Strings use62 boxes across64 slices inside the32gon,97.8505% of polygon area; all dimensions and area are versioned. No outward face enlargement.",
+    "Head+strings episode grouping uses40ms/15degrees/no velocity reversal; numerical resolution is an engineering approximation, not a BWF time rule.",
+    "Conservative bounds of actual colliders enforce a separately named own-half engineering constraint.",
+    "A spherical uncalibrated shuttle does not represent feather orientation, string deformation or full umpire judgement of catching/slinging/interference. No formal competition certification is claimed."
+  ],
+  "research_requirements": {
+    "outgoing_speed_min_mps": 8.0,
+    "outgoing_vz_max_mps": -1.0,
+    "not_BWF_speed_rules": true,
+    "qualified_jump_and_recovery": "Original evaluation_protocol_v2.json; unchanged"
+  },
+  "native_evidence": {
+    "physical_contact": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
+    "reset_mass_com_inertia_self_contact": "reports/G07_full_racket_v4/reset_self_contact_r3_01/metrics.json"
+  },
+  "formal_protocol": "configs/g07_full_racket_eval_v4_r3.json",
+  "formal400_completed": false,
+  "old_passes_inherited": false,
+  "comparison_to_short_blade": {
+    "old_tool_mass_kg": 0.09,
+    "new_tool_mass_kg": 0.153,
+    "old_flange_lever_m": 0.18,
+    "new_flange_hit_offset_m": [
+      0.45,
+      0,
+      0.04
+    ],
+    "new_dynamic_height_speed_recovery_not_yet_established": true
+  }
+}

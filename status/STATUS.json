@@ -48,12 +48,12 @@
       "notes": "Independent 400 ground episodes with real PhysX shuttle: 100% airborne contact, 76.5% contact-conditioned recovery, ground initialization 1.0, numerical failures 0. Formal suite uses the G02-validated 0.25 ms PhysX fixture and records body-contact diagnostics separately."
     },
     "G07": {
-      "state": "BUDGET_EXHAUSTED",
+      "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "Original fixed window expired. Actual new-window charge 7.645612263 GPUh; no project GPU job remains. Formal400 lock02 failed (A100/200, B71/200; recovery178/200 and146/196). Both subsequent1536 developer batches failed to qualify a new policy. IndependentB16 job SUCCEEDED, actual public dataset preserved. No pass artifacts; resume requires explicit authorization amendment, keep T0 and all charges.",
-      "active_authorization_window": "g07-net-feasibility-20261023",
-      "curriculum_evidence": "reports/G07/eval_piecewise_netlocal02/metrics.json",
-      "curriculum_policy": "reports/G07/fit_piecewise_curriculum03/policy.pt",
+      "notes": "Corrected full racket/court/net and rules. R3 native contact fixtures and upright reset mass/COM/inertia/self-collision tests succeeded;22 targeted CPU tests passed.400 cases frozen without deletion.8x64 native no-ball CEM candidates searched,15 jump/recovery outcomes; no real-ball or formal400 success claimed. Continue real-ball causal control and adaptation on GPU0.",
+      "active_authorization_window": "g07-full-racket-unlimited-20261024",
+      "curriculum_evidence": "reports/G07_full_racket_v4/reach_cem_r3_01/metrics.json",
+      "curriculum_policy": "reports/G07_full_racket_v4/reach_cem_r3_01/best_candidate.pt",
       "net_diagnostic": "reports/G07/net_blocking_probe03/verification.json",
       "active_gpu_jobs": []
     },
@@ -71,6 +71,28 @@
       "state": "TODO",
       "evidence": null,
       "notes": "尚未实施/训练；不得将任务包CPU测试当作此Goal通过。"
+    }
+  },
+  "active_model_version": "full-racket-court-v4-r3",
+  "historical_evidence_scope": "G00-G06 PASSED entries refer to the preserved legacy asset/protocol. They are not validation of the new full-racket asset.",
+  "model_validation": {
+    "full-racket-court-v4": {
+      "asset": "TODO",
+      "physics": "TODO",
+      "rules": "TODO",
+      "policy": "TODO",
+      "formal400": "TODO"
+    },
+    "full-racket-court-v4-r3": {
+      "asset": "IN_PROGRESS",
+      "physics": "IN_PROGRESS",
+      "rules": "IN_PROGRESS",
+      "policy": "IN_PROGRESS",
+      "formal400": "TODO",
+      "native_contact_smoke": "PASSED",
+      "native_upright_reset_mass_com_inertia_self_contact": "PASSED",
+      "protocol": "configs/g07_full_racket_eval_v4_r3.json",
+      "old_passes_inherited": false
     }
   }
 }
