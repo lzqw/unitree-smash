@@ -40,7 +40,7 @@ class RecoverySearchTest(unittest.TestCase):
         self.assertEqual(recovery_parameters(new, self.recovery)[1, -1], .9)
 
     def test_unknown_layout_nonfinite_and_out_of_bound_policy_values_are_rejected(self):
-        for width in [26, 31, 33, 36, 38]:
+        for width in [26, 31, 33, 36, 39]:
             with self.assertRaises(ValueError):
                 extend_recovery_parameters(torch.zeros(width), self.recovery)
         for recovery in [torch.tensor([float('nan')]*5), torch.tensor(RECOVERY_LOW)-.01,

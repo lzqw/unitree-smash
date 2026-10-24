@@ -10,6 +10,7 @@ from .full_racket_preparation_v4 import validate_preparation,preparation_curve,o
 from .full_racket_joint_preparation_v4 import FullRacketJointPreparation
 from .full_racket_face_feedback_v4 import FullRacketFaceFeedback
 from .full_racket_recovery_search_v4 import recovery_parameters
+from .full_racket_contact_normal_search_v4 import contact_normal_body
 
 LOW=[.35,.45,1.10,1.55,.85,-.15,-.15,.30]+[-.25]*6+[-.10,0.,.8,.7,0.,.04,-.20,-.15,-.15,-.15]
 HIGH=[1.,1.20,1.60,2.,1.15,.15,.15,1.50]+[.25]*6+[.12,1.5,1.7,1.2,1.,.15,.10,.15,.15,.15]
@@ -106,7 +107,7 @@ class FullRacketTeacherV4:
             target+=known_offset[0]*forward+known_offset[1]*left+known_offset[2]*up
             if target_offset_world is not None:
                 target+=target_offset_world[:,:1]*forward+target_offset_world[:,1:2]*left+target_offset_world[:,2:3]*up
-            normal_target=self.face_sign*(self.normal_world[0]*forward+self.normal_world[1]*left+self.normal_world[2]*up)
+            normal_target=self.face_sign*contact_normal_body(parameters,self.normal_world,forward,left,up)
             desired_velocity=self.velocity_world[0]*forward+self.velocity_world[1]*left+self.velocity_world[2]*up
             if self.preparation is not None:
                 desired_velocity=desired_velocity*parameters[:,7:8]
@@ -152,7 +153,7 @@ class FullRacketTeacherV4:
             arm=self.joint_preparation(arm,obs,limits[12:],self.kinematics,actual_arm)
         if self.face_feedback is not None and bool((feedback>0).any()):
             left=torch.linalg.cross(up,forward)
-            normal_target=self.face_sign*(self.normal_world[0]*forward+self.normal_world[1]*left+self.normal_world[2]*up)
+            normal_target=self.face_sign*contact_normal_body(parameters,self.normal_world,forward,left,up)
             desired=normal_target+self.face_feedback.config['measured_normal_lead_gain']*(normal_target-obs[:,48:51])
             desired=desired/torch.linalg.vector_norm(desired,dim=1,keepdim=True).clamp_min(1e-6)
             reference=arm.clamp(limits[12:,0],limits[12:,1])

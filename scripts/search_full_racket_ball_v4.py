@@ -21,6 +21,7 @@ p.add_argument('--contact-grid',action='store_true',help='Reserve12 candidates f
 p.add_argument('--pitch-grid',action='store_true',help='Reserve12 candidates spanning existing arm pitch-compensation gain and timing; original joint/actuator limits remain')
 p.add_argument('--search-arm-velocity',action='store_true',help='Append six bounded arm velocity seed coordinates to the26 controller parameters')
 p.add_argument('--search-recovery-parameters',action='store_true',help='Append five existing standing-controller target/feedback coordinates to32, leaving native hardware and success gates unchanged')
+p.add_argument('--search-contact-normal',action='store_true',help='Append one bounded desired-face downward pitch bias to37; shuttle velocity and all task gates remain native outcomes')
 p.add_argument('--search-coordinates',type=int,nargs='+',help='Optional block-coordinate Gaussian search; other coordinates keep warm reference. Generation0bank and exact best reevaluation are explicit exceptions')
 p.add_argument('--arm-velocity-bank',type=Path,help='Four offline velocity proposals for a12-candidate velocity/timing grid; requires --search-arm-velocity')
 p.add_argument('--interception-plane-grid',action='store_true',help='Expand velocity/timing bank to36 candidates across public interception planes1.10/1.25/1.40m; requires --arm-velocity-bank')
@@ -47,6 +48,8 @@ from quadsmash.control.full_racket_recovery_search_v4 import (
     extend_recovery_parameters,RECOVERY_PARAMETER_NAMES,RECOVERY_LOW,RECOVERY_HIGH)
 from quadsmash.control.full_racket_search_mask_v4 import search_coordinate_mask,project_reference_coordinates
 from quadsmash.control.full_racket_parameter_layout_v4 import controller_parameter_names
+from quadsmash.control.full_racket_contact_normal_search_v4 import (
+    extend_contact_normal_parameters,NORMAL_LOW,NORMAL_HIGH)
 from quadsmash.control.full_racket_contact_curriculum_v4 import (
     contact_search_tiers,actual_outgoing_shaping,arm_timing_velocity_grid,measured_recovery_leg_crossovers,pitch_compensation_grid,validate_recovery_search_min)
 from quadsmash.physics.full_racket_v4 import string_prism_gap
@@ -93,11 +96,13 @@ def main():
     validate_recovery_search_min(args.recovery_search_min)
     if args.search_recovery_parameters and not args.search_arm_velocity:
         raise ValueError('Recovery37search requires explicit arm-velocity32layout')
+    if args.search_contact_normal and not args.search_recovery_parameters:
+        raise ValueError('Contact-normal38search requires explicit recovery37layout')
     if args.search_recovery_parameters and (args.ik_seeds or args.recovery_leg_bank or args.arm_velocity_bank
             or args.timing_grid or args.push_grid or args.contact_grid or args.pitch_grid):
         raise ValueError('Recovery37search supports Gaussian or declared37bank; legacy grids require32layout')
     parameter_names=controller_parameter_names(search_arm_velocity=args.search_arm_velocity,
-        search_recovery_parameters=args.search_recovery_parameters)
+        search_recovery_parameters=args.search_recovery_parameters,search_contact_normal=args.search_contact_normal)
     sampling_contract=('bounded-candidate-bank-generation0-v1' if args.candidate_bank else 'contact-pitch-compensation-grid-v1' if args.pitch_grid else 'contact-arm-timing-speed-grid-v1' if args.contact_grid else 'front-back-push-grid-v1' if args.push_grid else
         'timing-velocity-cartesian-grid-v1' if args.timing_grid else 'gaussian-cem-v1')
     selection_contract=('actual-contact-recovery-chain-v2' if args.retain_contact_recovery else
@@ -106,6 +111,7 @@ def main():
     if args.recovery_leg_bank:sampling_contract+='-measured-recovery-leg-crossover-v1'
     if args.search_arm_velocity:sampling_contract+='-joint-velocity32-v1'
     if args.search_recovery_parameters:sampling_contract+='-standing-recovery37-v1'
+    if args.search_contact_normal:sampling_contract+='-contact-normal38-v1'
     if args.search_coordinates is not None:sampling_contract+='-coordinate-mask-v1:'+','.join(map(str,sorted(args.search_coordinates)))
     if args.interception_plane_grid:sampling_contract+='-interception-plane-grid36-v1'
     if not args.training_indices or len(set(args.training_indices))!=len(args.training_indices):raise ValueError('Distinct TRAIN indices required')
@@ -135,17 +141,21 @@ def main():
         template['initial_timing_scope']='New geometric seed: zero timing calibration is an initialization assumption; residual learned on actual TRAIN rollouts'
     assert template['asset_sha256']==protocol['asset']['sha256']
     assert hashlib.sha256((ROOT/protocol['asset']['path']).read_bytes()).hexdigest()==protocol['asset']['sha256']
-    if len(template['parameters']) not in (24,26,32,37):raise ValueError('Use a24/26/32/37 parameter source')
-    if len(template['parameters']) in (32,37) and not args.search_arm_velocity:
-        raise ValueError('A32/37-parameter source requires --search-arm-velocity')
-    if len(template['parameters'])==37 and not args.search_recovery_parameters:
-        raise ValueError('A37-parameter source requires --search-recovery-parameters')
+    if len(template['parameters']) not in (24,26,32,37,38):raise ValueError('Use a24/26/32/37/38 parameter source')
+    if len(template['parameters']) in (32,37,38) and not args.search_arm_velocity:
+        raise ValueError('A32/37/38-parameter source requires --search-arm-velocity')
+    if len(template['parameters']) in (37,38) and not args.search_recovery_parameters:
+        raise ValueError('A37/38-parameter source requires --search-recovery-parameters')
+    if len(template['parameters'])==38 and not args.search_contact_normal:
+        raise ValueError('A38-parameter source requires --search-contact-normal')
     if len(template['parameters'])==24:
         template['parameters']=torch.cat((template['parameters'],torch.tensor([template['seed']['desired_ball_center_m'][0],0.])))
     if args.search_arm_velocity:
         template['parameters']=extend_arm_velocity_parameters(template['parameters'],template['seed']['joint_velocity_seed_rad_s'])
     if args.search_recovery_parameters:
         template['parameters']=extend_recovery_parameters(template['parameters'],template['backbone']['recovery_parameters'])
+    if args.search_contact_normal:
+        template['parameters']=extend_contact_normal_parameters(template['parameters'])
     velocity_bank=None
     if args.arm_velocity_bank:
         velocity_bank=json.loads(args.arm_velocity_bank.read_text())
@@ -178,6 +188,9 @@ def main():
     if args.search_recovery_parameters:
         low=torch.cat((low,torch.tensor(RECOVERY_LOW,device=env.device)))
         high=torch.cat((high,torch.tensor(RECOVERY_HIGH,device=env.device)))
+    if args.search_contact_normal:
+        low=torch.cat((low,torch.tensor(NORMAL_LOW,device=env.device)))
+        high=torch.cat((high,torch.tensor(NORMAL_HIGH,device=env.device)))
     low[22:24]=-args.push_search_range;high[22:24]=args.push_search_range
     low[3]=args.recovery_search_min
     mean=template['parameters'].to(env.device).clamp(low,high);reference=mean.clone()
@@ -222,6 +235,7 @@ def main():
         source_hashes=source_hashes,formal_acceptance=False,formal_panels_read=False,
         arm_velocity_search_enabled=args.search_arm_velocity,
         standing_recovery_parameter_search_enabled=args.search_recovery_parameters,
+        contact_normal_search_enabled=args.search_contact_normal,
         search_coordinate_indices=sorted(args.search_coordinates) if args.search_coordinates is not None else None,
         search_coordinate_scope='Gaussian samples and updated mean keep warm reference on other coordinates; supplied generation0bank and exact best reevaluation are explicit exceptions',
         trajectory_contract='All lanes native50Hz poses/ball/clock/first-episode validity; exact terminal/contact snapshots separate',
