@@ -9,6 +9,7 @@ from .full_racket_arm_search_v4 import arm_velocity
 from .full_racket_preparation_v4 import validate_preparation,preparation_curve,own_side_reference
 from .full_racket_joint_preparation_v4 import FullRacketJointPreparation
 from .full_racket_face_feedback_v4 import FullRacketFaceFeedback
+from .full_racket_recovery_search_v4 import recovery_parameters
 
 LOW=[.35,.45,1.10,1.55,.85,-.15,-.15,.30]+[-.25]*6+[-.10,0.,.8,.7,0.,.04,-.20,-.15,-.15,-.15]
 HIGH=[1.,1.20,1.60,2.,1.15,.15,.15,1.50]+[.25]*6+[.12,1.5,1.7,1.2,1.,.15,.10,.15,.15,.15]
@@ -175,7 +176,7 @@ class FullRacketTeacherV4:
         action[:,12:]=strike[:,12:]
         recovery=local>=parameters[:,3]
         recovery_arm=arm if self.smooth_recovery_arm else default[12:][None].expand(len(obs),-1)
-        standing=self.standing.action(observation,self.standing_seed[None].expand(len(obs),-1),
+        standing=self.standing.action(observation,recovery_parameters(parameters,self.standing_seed),
             default,limits,recovery_arm,active=recovery)
         standing=self.leg_recovery_blend.action(time,recovery,obs[:,-18:],standing)
         return torch.where(recovery[:,None],standing,action).clamp(-1,1)

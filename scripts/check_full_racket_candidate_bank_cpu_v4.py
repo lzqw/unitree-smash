@@ -16,6 +16,7 @@ from quadsmash.control.full_racket_rally_controller_v4 import FullRacketRallyCon
 from quadsmash.control.full_racket_candidate_bank_v4 import validate_candidate_bank
 from quadsmash.control.full_racket_teacher_v4 import LOW,HIGH
 from quadsmash.control.full_racket_contact_curriculum_v4 import validate_recovery_search_min
+from quadsmash.control.full_racket_recovery_search_v4 import RECOVERY_LOW,RECOVERY_HIGH
 
 
 def main():
@@ -36,8 +37,11 @@ def main():
     high=np.array(HIGH+[1.45,.12]+[5.]*6,dtype=np.float32)
     low[22:24]=-.3;high[22:24]=.3
     low[3]=validate_recovery_search_min(a.recovery_search_min)
+    if len(reference)==37:
+        low=np.r_[low,np.array(RECOVERY_LOW,dtype=np.float32)]
+        high=np.r_[high,np.array(RECOVERY_HIGH,dtype=np.float32)]
     rows=validate_candidate_bank(bank,checkpoint['seed'],checkpoint['asset_sha256'],checkpoint['parameter_names'],reference,low,high,62)
-    assert rows.shape in [(48,32),(60,32)]
+    assert rows.shape in [(48,32),(60,32),(60,37),(61,37)]
     preserved=np.array_equal(rows[:,26:32],np.broadcast_to(reference[26:32],(len(rows),6)))
     if not a.allow_searched_velocities:assert preserved
     else:assert (np.abs(rows[:,26:32])<=5).all() and (np.abs(rows[:,26:32]*rows[:,7:8])<=5).all()
@@ -63,10 +67,11 @@ def main():
     a.output.mkdir(parents=True)
     np.savez_compressed(a.output/'counterfactual_commands.npz',actions=commands)
     paths=[a.checkpoint,a.bank,a.public,a.joint_contract,Path(__file__)]
-    paths += [ROOT/'quadsmash/control'/name for name in ['full_racket_candidate_bank_v4.py','full_racket_contact_curriculum_v4.py',
+    paths += [ROOT/'quadsmash/control'/name for name in ['full_racket_candidate_bank_v4.py','full_racket_contact_curriculum_v4.py','full_racket_recovery_search_v4.py','full_racket_arm_search_v4.py',
         'full_racket_teacher_v4.py','full_racket_kinematics_v4.py','full_racket_joint_preparation_v4.py']]
     report=dict(created_at=datetime.now(timezone.utc).isoformat(),scope='Counterfactual CPU commands on saved old-policy public observations, not changed-state simulation or new policy outcomes.',
                 ticks=len(commands),candidates=len(rows),public_case_streams=2,lanes=count,
+                parameter_width=len(reference),standing_recovery_parameters_searched=bool(len(reference)==37),
                 observation_width=794,action_width=18,all_actions_finite_and_bounded=True,
                 all_proposals_inside_original_search_bounds=bool((rows[:,3]>=LOW[3]).all()),
                 all_proposals_inside_declared_algorithm_search_bounds=True,
