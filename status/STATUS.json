@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "CEM03 full256 TRAIN:19airstrings/11recoveries/1joined/1target/0attack/0complete/NF0. CEM04 gen0had2frame hits/0strings/6recoveries and CEM06 gen0had1frame/0strings/8recoveries; both intentionally stopped with exact FAILED guard receipts, interrupted next generations retained. GPU0 now runs actual-native-reference interception32 CEM07: source CEM03gen1candidate16original26parameters retained, prepose0,36 combinations of1.10/1.25/1.40m public interception planes with4velocity directions and3leads. First100native ticks/actual64x32population/finite128-envposes verified. Whole outcome, attack and independent formal400 remain unproven. No gates or physical parameters changed.",
+      "notes": "CEM03 full256 TRAIN:19airstrings/11recoveries/1joined/1target/0attack/0complete/NF0. CEM04 gen0had2frame hits/0strings/6recoveries and CEM06 gen0had1frame/0strings/8recoveries; both intentionally stopped with exact FAILED guard receipts, interrupted next generations retained. GPU0 now runs actual-native-reference interception32 CEM07: source CEM03gen1candidate16original26parameters retained, prepose0,36 combinations of1.10/1.25/1.40m public interception planes with4velocity directions and3leads. First100native ticks/actual64x32population/finite128-envposes verified. Whole outcome, attack and independent formal400 remain unproven. No gates or physical parameters changed. At600ticks125of128first episodes ended;18contacts/12airstrings. Selected candidate32returns7.468m/s and crosses/lands in court but misses target and body recovery; all attack/full gates remain failed.",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/return_recovery_gen0_env12/policy_evidence.pt",
@@ -63,7 +63,7 @@
           "state": "RUNNING",
           "started_at": "2026-10-24T08:30:24.952403+00:00",
           "source_commit": "105f104cdc2dcc803ad3b10ec3e2e72aa64624bd",
-          "last_verified_control_ticks": 100,
+          "last_verified_control_ticks": 600,
           "native_initialization_evidence": "reports/G07_full_racket_v4/NATIVE_INTERCEPTION32_INITIALIZATION_0833.json"
         }
       ],
@@ -232,6 +232,32 @@
         "receipt": "reports/G07_full_racket_v4/arm32_native_and_interception_upload_receipt_0836.json",
         "native_scope": "CEM04/CEM06 generation0failures and interrupted next generations, CEM07 actual initialization and100ticks.",
         "formal_acceptance": false
+      },
+      "latest_partial_native_contacts": {
+        "run": "ball_native_reference_interception32_cem07",
+        "generation": 0,
+        "ticks": 600,
+        "first_episodes_complete": 125,
+        "first_contacts": 18,
+        "ended_airborne_strings": 12,
+        "whole_generation_complete": false,
+        "formal_acceptance": false
+      },
+      "latest_airborne_strings_power_milestone": {
+        "report": "reports/G07_full_racket_v4/AIR_STRINGS_POWER_MILESTONE_0844.json",
+        "outgoing_speed_mps": 7.4679849578367365,
+        "actual_outgoing_velocity_mps": [
+          7.324435710906982,
+          -1.422340989112854,
+          -0.3168390095233917
+        ],
+        "actual_crossed_net": true,
+        "landed_legal_court": true,
+        "landed_target": false,
+        "recovery_success": false,
+        "complete_smash": false,
+        "weight_sha256": "3a63c5cd5a3d30b856506d3d97a664584b1665f69d2deb9e569f6c4c5edfc50d",
+        "evidence_url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_air_strings_power_and_native_partial_20261024_0844.zip"
       }
     },
     "G08": {

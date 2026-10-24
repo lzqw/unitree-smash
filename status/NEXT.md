@@ -1,5 +1,9 @@
 当前唯一项目GPU作业（2026-10-24 08:33 UTC）：`ball_native_reference_interception32_cem07`，guard1375607 / child1375617。主分支源码105f104，GPU0，5400秒 /204800控制环境步单任务上限；无累计GPU时限。没有后续队列。不要重复启动，不因观察超时重开；不手改活跃GPU_LEDGER/RUNS，不碰preexisting RESOURCE_STOP或无关MPS。
 
+最新已核实（08:45 UTC）：第0代600步/125个首回合已结束，18接触/12空中拍线，三条未结束回合仍在继续。候选32/env64/TRAIN1实际出球7.467985米/秒，v=[7.324436,-1.422341,-0.316839]，真实越网并首落[4.926866,-0.699879]在对方场内；速度、向下分量、原目标、恢复均失败，bodyground终止3.45秒。AIR_STRINGS_POWER_MILESTONE_0844.json与power_candidate32_0844保存确切权重/事件/全身轨迹；18.7MB增量附件已上传核SHA。当前更快拍线出球是实测进展，继续完成当前学习后评估身体预置/起跳和拍面方向，不能把7.47或单例越网当完成。
+
+离线body_reach_grid_0843对同一真实TRAIN早时刻做条件静态IK：保持当前seed±.25弧度范围并使用上部拍线时，假设基座前移0.20米/提高0.10米可拟合高来球点；这只是离线假设值，仿真中没有平移或抬升机器人。下一轮如需要，应通过真实走位、受限腿部驱动和全身学习实现更好的击球状态，绝不能把假设基座状态注入训练。
+
 本轮64候选×TRAIN[1,65]×两代：2个原样参考、36个拦截位置/挥拍时机/六关节速度方向组合、8个实测恢复腿参数交叉、18个高斯候选。参考精确来自CEM03第2代候选16的原26参数与原seed，扩展32参数后保留原速度公式、提前引拍增益0；287步两条旧公开观测流的指令与原26参数控制器逐位相同，不能继承原生成绩。原来该候选仅TRAIN1触球并恢复，TRAIN65失败，仍需重新测量。三个拦截平面x=1.10/1.25/1.40米只改变策略选择，球场、来球、质量、碰撞和判据保持。73项CPU检查通过。前100步原生实际64×32参数矩阵、36组网格和8个腿参数交叉已核对，128环境姿态/球记录有限数值；这不代表触球、恢复或整轮完成。
 
 重点观察t=2.01秒的公开来球规划及t≈2.70–2.80秒接触。监看progress.json、contacts.partial.json、causal_plans.partial.json、control_window.partial.npz与all_first_episodes.partial.npz。按valid_first_episode排除重置后的轨迹。各代generation_start_000/001.pt与causal_plans_000/001.json固定保存。原生首100步证据见NATIVE_INTERCEPTION32_INITIALIZATION_0833.json和native_interception32_tick100_snapshot。
