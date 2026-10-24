@@ -1,3 +1,13 @@
+当前唯一GPU（2026-10-24 06:57 UTC）：ball_pitch_blend_cem03 guard1357286/child1357298，exec60822，直接guard无额外worker。64candidates×TRAIN[1,65]=128env×2gen、sigma.04、--pitch-grid、contact-curriculum、continue-after-miss、push范围.30；原8s/62.5us/10ms，5400s/204800control-env cap。warm return_recovery_smooth_leg09/policy.pt，bank同目录；leg_event_gain仍原1（本轮没有用fixed08），新seed仅leg_recovery_blend_s=.10，既有leg/arm参数及arm公式保持但全身实际轨迹必须重测。57CPU已过，原生generation_start/geometry/10USD审计已生成，新fitness尚无。不要重复启动，不因观察超时重开。GPU_LEDGER/RUNS仍活跃guard持有，勿手改，勿碰preexisting RESOURCE_STOP或无关MPS。
+
+旧CEM02 guard1350322/child1350331及worker1349683均实际退出、job SUCCEEDED和queue SUCCEEDED；2x64首回合32接触/15airstrings/24qualifiedrecoveries（含1airstrings+recover、另1frame+recover），9task-valid crosses/1target/0attack/0complete/NF0，2158.798223s/.599666173GPUh/102400actual steps。FINAL_TRAIN_SUMMARY.json和128行CSV已写，raw保留。G0 c6/TRAIN1已合法air+net碰后越网+场内首落+qualifiedrec3.6199，原出球/target失败；G1同c6参数完全相同且初始pose完全相同，目标落中[3.423939,-.62501]，但落足后出现1ms额外flight（takeoff2.950968/land2.951968），尽管后来stable3.8329，原qualified_jump_landedFalse/recFalse保持。没有改jump_metrics来“消除失败”。
+
+本轮方法：LegRecoveryBlend仅在站立恢复开始时，读取794D末18项上一个实际action的12腿目标，持有并在100ms内smoothstep过渡到站立反馈；臂收拍照旧，所有位置/速度/力矩硬件限制、原.08m/.1s/.8s和球路8m/s/vx>0/vz<=-1/target均不变。disabled0返回原standing action原对象，CPU边界/连续性/partial reset/臂不变/限幅等57检查已过，但不是原生通过。这样从控制上减少落足后反弹，而不是改判据。源码已commit a9614ae（后续报告提交只改docs）。
+
+原PWA时间分段先做了同public-state3ms的20ms采样检查，最大leg归一化目标差仅2.38e-7，不支持直接把TRAIN65失败归因于3ms分桶跳变，因此未改PWA架构，本轮保留原leg/event时钟。这个采样不是全10ms或原生因果证明。若本轮更强pitch仍miss或不前挥，再依据actualJacobian/point v/body omega做速度反馈控制；现有velocity_feedback_cpu01只fixed-state提案，不冒称全身动态可行。
+
+完整目标仍0、原A/B各200未跑，不能标完成。持续真正native优化，出现强出球/完整后扩TRAIN128/扰动并冻结独立400，最终成功/失败全身视频与旧短板对照、全部源码/权重/data/Github仍需完成。
+
 视频已实际发布（2026-10-24 06:49 UTC）：Current_effect_return_recovery_20261024_0640.mp4，31.56s/1578frames、全解码通过，main相同回合合法air strings→球触网后越网→对方场内首落→稳定3.62s；攻击及指定目标失败，配对TRAIN65失败，full仍0。视频SHA50a7e6d60728618f28f2d4e9d02a2134619d72b67b2219edb95d620dd37d106a；50,530,699B证据zip SHA3533b95276a2748bdbf157edb5abc79a107c4d6cacc6fdf1ab40bfb018910937，5个release资产均核SHA/大小，见video/Current_effect_return_recovery_20261024_0640_upload_receipt.json。当前仍guard1350322/child1350331/worker1349683/exec74286，gen1全程正在收尾，不重复启动。不改live GPU_LEDGER/RUNS或preexisting RESOURCE_STOP。
 
 实测链条进展（2026-10-24 06:47 UTC）：CEM02第0代64次已完整结束，16contacts/7airstrings/11qualifiedrecoveries/1airstrings+recovery/4task-valid crosses/0target/0complete/NF0。candidate6/env12/TRAIN1同一次qualifiedjump：takeoff2.531、air字符串2.772453、落足2.94997、shuttle真实越网2.930692（球有Net接触但未blocked）、首次落在对方场内[3.004436,-1.066558,.025156] at3.897022，最终稳定3.619920s、bodyground0、robotfault0。出球[4.636972,-1.316661,-.250078]、速4.826764；攻击8m/s/vz<=-1及原目标|y|<=1均未过，横向miss.066558m。配对TRAIN65/bodyground2.88s/没触球。真正完整仍0，正式400未跑，不能称G07通过。

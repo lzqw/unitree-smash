@@ -50,38 +50,38 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "CEM02 gen0 actual64:16contacts/7airstrings/11qualified recoveries,1same-episode legal air strings+overnet+in-court landing+3.61992s recovery (candidate6 TRAIN1); paired TRAIN65 failed. Source return4.82676m/s,vz-.25008, targetY-1.06656; full0/NF0. Gen1 remains running GPU0. CPU52 supports a future pitch-grid and offline velocity proposals, not new native success; formal400TODO.",
+      "notes": "CEM02 completed128:32contacts/15airstrings/24qualified recoveries,1airstrings+qualified recovery,9crosses/1target/0complete/NF0,.599666173GPUh/102400steps. Candidate6 gen1 target hit but1ms extra flight invalidated original qualified landing; failure retained. New pitch+100ms leg handover CEM03 actually GPU0 running128env x2gen,57CPU passed. All attack/target/recovery gates and physics unchanged; no new native outcome yet.",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/return_recovery_gen0_env12/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
       "active_gpu_jobs": [
         {
-          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_contact_recovery_cem02",
-          "guard_pid": 1350322,
-          "child_pid": 1350331,
-          "session_id": 74286,
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_pitch_blend_cem03",
+          "guard_pid": 1357286,
+          "child_pid": 1357298,
+          "session_id": 60822,
           "state": "RUNNING",
-          "started_at": "2026-10-24T06:15:49.572219+00:00",
-          "worker_pid": 1349683
+          "started_at": "2026-10-24T06:56:49.415526+00:00"
         }
       ],
       "queued_native_sequence": {
         "state_file": "reports/G07_full_racket_v4/contact_recovery_queue01/state.json",
         "pid": 1349683,
         "session_id": 74286,
-        "state_at_last_check": "RUNNING_GUARDED_JOB",
+        "state_at_last_check": "SUCCEEDED",
         "next_jobs": [
           "ball_contact_recovery_cem02"
         ],
-        "still_running": true,
+        "still_running": false,
         "note": "Do not manually duplicate this queued job; queue requires prior guard/child exit plus SUCCEEDED receipt and unchanged launch-source hashes.",
         "proposal": "reports/G07_full_racket_v4/CONTACT_RECOVERY_CROSSOVER_PLAN_0612.json",
         "guard_pid": 1350322,
-        "child_pid": 1350331
+        "child_pid": 1350331,
+        "exit_code": 0
       },
       "native_air_string_contact_milestone": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
-      "latest_native_training_summary": "reports/G07_full_racket_v4/contact_generation0_snapshot01/GENERATION.json",
+      "latest_native_training_summary": "reports/G07_full_racket_v4/ball_contact_recovery_cem02/FINAL_TRAIN_SUMMARY.json",
       "latest_video": {
         "path": "reports/G07_full_racket_v4/video/Current_effect_return_recovery_20261024_0640.mp4",
         "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_return_recovery_20261024_0640.mp4",
@@ -93,17 +93,17 @@
       },
       "latest_completed_generation": {
         "run": "ball_contact_recovery_cem02",
-        "generation": 0,
+        "generation": 1,
+        "whole_job_complete": true,
         "executions": 64,
         "contacts": 16,
-        "airborne_strings": 7,
-        "qualified_recoveries": 11,
-        "airborne_strings_and_recovery": 1,
-        "crossed_net": 4,
-        "landed_target": 0,
+        "airborne_strings": 8,
+        "qualified_recoveries": 13,
+        "airborne_strings_and_recovery": 0,
+        "crossed_net": 5,
+        "landed_target": 1,
         "complete": 0,
-        "numerical_failures": 0,
-        "whole_job_complete": false
+        "numerical_failures": 0
       },
       "pending_rule_regression": {
         "state": "PASSED_TARGETED_NATIVE02",

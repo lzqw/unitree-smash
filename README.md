@@ -4,7 +4,9 @@
 
 此前[高位触球与独立恢复视频](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_contact_recovery_20261024_0555.mp4)及[证据](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_contact_recovery_20261024_0555_evidence.zip)、[低位触球视频](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_air_contact_20261024_0450.mp4)及[证据](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_air_contact_20261024_0450_evidence.zip)保留。
 
-最新训练：`ball_contact_recovery_cem02` 首代64次候选首回合已完成，16次接触、7次空中拍线、11次合格恢复，其中1次拍线触球与合格恢复发生在同回合；4次满足任务触球条件的实际越网、0目标命中、0完整扣杀、0数值故障。上述视频选取的候选6不是两来球最差分数的优化器赢家，另一来球失败均保留。第二代仍在GPU0运行。俯仰速度分解见[实测诊断](reports/G07_full_racket_v4/CONTACT_BODY_VELOCITY_DIAGNOSIS_0631.json)，[52项CPU检查](reports/G07_full_racket_v4/CPU_TESTS_0631.txt)通过；更强俯仰补偿的 `--pitch-grid` 和新warm初始化是后续提案，尚未运行原生验证。正式A/B400仍未运行。
+最新完成训练：`ball_contact_recovery_cem02` 两代128次候选首回合共32次接触、15次空中拍线、24次合格恢复，其中1次拍线与合格恢复同回合；9次满足任务触球条件的实际越网、1次目标命中、0攻击达标、0完整扣杀、0数值故障。实际102400控制环境步、0.599666 GPU小时。第二代同候选6命中了目标并稳定3.83秒，但主落地后出现约1毫秒再次离地，原判据要求的合格落足为否，恢复仍按失败保留。没有通过修改判据重算成功。
+
+当前GPU0在执行 `ball_pitch_blend_cem03`：64候选×两训练来球＝128环境，扩大现有俯仰补偿增益范围，并在站立恢复开始时，把上一时刻实际腿部控制目标用100毫秒平滑过渡到站立反馈。臂收拍公式、物理模型、原攻击/落点/合格恢复要求保持；[57项CPU检查](reports/G07_full_racket_v4/CPU_TESTS_0654.txt)通过，新原生训练尚无完整结果。[上一轮完整数据、权重和本轮程序/初始化](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_completed_contact_training_and_pitch_blend_20261024_0659.zip)随本次更新发布。俯仰速度分解见[实测诊断](reports/G07_full_racket_v4/CONTACT_BODY_VELOCITY_DIAGNOSIS_0631.json)；正式A/B400仍未运行。
 
 此前上部拍线课程 `ball_upper_strings_cem01` 的128次候选首回合全部未触球、未完成合格恢复，完整成功0、数值故障0；实际77120步、0.464638 GPU小时。[完整失败轨迹、权重、精确源码及接续程序](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_upper_strings_failed_and_contact_update_20261024_0617.zip)保留，包含全部64环境50Hz原生全身姿态、运行依赖和CPU攻击窗口提案。
 
