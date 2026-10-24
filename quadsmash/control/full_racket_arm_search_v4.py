@@ -54,6 +54,21 @@ def arm_velocity_grid(reference, bank, lower, upper):
     return np.asarray(result)
 
 
+def interception_velocity_grid(reference, bank, lower, upper):
+    """Probe three public interception planes, with arm timing and velocity.
+
+    Planes are policy choices on the unchanged TRAIN trajectories. They do
+    not move the shuttle, net, robot, or any task success threshold.
+    """
+    grid = arm_velocity_grid(reference, bank, lower, upper)
+    result = []
+    for plane in [1.10, 1.25, 1.40]:
+        candidates = grid.copy()
+        candidates[:,24] = np.clip(plane, lower[24], upper[24])
+        result.append(candidates)
+    return np.concatenate(result)
+
+
 def body_crossovers_preserving_velocity(reference, recovered, lower, upper):
     reference, lower, upper = [np.asarray(x,dtype=float) for x in (reference,lower,upper)]
     if reference.shape not in [(26,),(32,)] or lower.shape!=reference.shape or upper.shape!=reference.shape:

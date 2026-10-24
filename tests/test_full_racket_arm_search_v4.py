@@ -3,7 +3,7 @@ import numpy as np
 import torch
 
 from quadsmash.control.full_racket_arm_search_v4 import (
-    extend_arm_velocity_parameters,arm_velocity,arm_velocity_grid,
+    extend_arm_velocity_parameters,arm_velocity,arm_velocity_grid,interception_velocity_grid,
     body_crossovers_preserving_velocity,causal_prepose_delta,normal_preserving_position_inverse,bounded_prepose_step)
 from quadsmash.control.full_racket_contact_curriculum_v4 import measured_recovery_leg_crossovers
 
@@ -55,6 +55,21 @@ class ArmSearchTest(unittest.TestCase):
         np.testing.assert_array_equal(result[:,:26],expected)
         np.testing.assert_array_equal(result[:,26:],np.broadcast_to(reference[26:],(8,6)))
         np.testing.assert_array_equal(body_crossovers_preserving_velocity(reference[:26],recovered,low[:26],high[:26]),expected)
+
+    def test_interception_grid_covers_planes_without_changing_other_control_parameters(self):
+        reference=np.linspace(-.1,.1,32)
+        bank=np.array([[1.,2.,3.,4.,5.,0.],[-1.,-2.,-3.,-4.,-5.,0.],
+                       [0.,1.,0.,-1.,0.,0.],[0.,0.,0.,0.,0.,0.]])
+        low,high=np.full(32,-5.),np.full(32,5.)
+        grid=interception_velocity_grid(reference,bank,low,high)
+        self.assertEqual(grid.shape,(36,32))
+        np.testing.assert_array_equal(grid[:,24],np.repeat([1.10,1.25,1.40],12))
+        fixed=[i for i in range(26) if i not in (14,24)]
+        np.testing.assert_array_equal(grid[:,fixed],np.broadcast_to(reference[fixed],(36,24)))
+        np.testing.assert_array_equal(grid[:,26:],np.tile(np.repeat(bank,3,axis=0),(3,1)))
+        high[24]=1.3
+        clipped=interception_velocity_grid(reference,bank,low,high)
+        self.assertLessEqual(clipped[:,24].max(),1.3)
 
 
 class CausalPreposeTest(unittest.TestCase):

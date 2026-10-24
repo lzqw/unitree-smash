@@ -19,6 +19,7 @@ p.add_argument('--contact-grid',action='store_true',help='Reserve12 candidates f
 p.add_argument('--pitch-grid',action='store_true',help='Reserve12 candidates spanning existing arm pitch-compensation gain and timing; original joint/actuator limits remain')
 p.add_argument('--search-arm-velocity',action='store_true',help='Append six bounded arm velocity seed coordinates to the26 controller parameters')
 p.add_argument('--arm-velocity-bank',type=Path,help='Four offline velocity proposals for a12-candidate velocity/timing grid; requires --search-arm-velocity')
+p.add_argument('--interception-plane-grid',action='store_true',help='Expand velocity/timing bank to36 candidates across public interception planes1.10/1.25/1.40m; requires --arm-velocity-bank')
 p.add_argument('--prepose-gain',type=float,help='Optional current-public-forecast preparation correction in[0,1]; warm start only')
 p.add_argument('--recovery-leg-bank',type=Path,help='Optional measured same-family recovery26-vector: reserve8 contact-arm/recovery-leg crossover candidates')
 p.add_argument('--continue-after-miss',action='store_true',help='TRAIN curriculum: observe landing after missed/blocked/backward shuttle return; all rally failures remain failures, robot faults terminate')
@@ -35,7 +36,7 @@ from quadsmash.control.full_racket_rally_controller_v4 import FullRacketRallyCon
 from quadsmash.control.full_racket_teacher_v4 import LOW,HIGH,PARAMETER_NAMES
 from quadsmash.control.full_racket_geometry_v4 import FullRacketGeometryV4
 from quadsmash.control.full_racket_arm_search_v4 import (
-    VELOCITY_PARAMETER_NAMES,extend_arm_velocity_parameters,arm_velocity_grid,body_crossovers_preserving_velocity)
+    VELOCITY_PARAMETER_NAMES,extend_arm_velocity_parameters,arm_velocity_grid,interception_velocity_grid,body_crossovers_preserving_velocity)
 from quadsmash.control.full_racket_contact_curriculum_v4 import (
     contact_search_tiers,actual_outgoing_shaping,arm_timing_velocity_grid,measured_recovery_leg_crossovers,pitch_compensation_grid)
 from quadsmash.physics.full_racket_v4 import string_prism_gap
@@ -64,6 +65,8 @@ def main():
     if sum([args.timing_grid,args.push_grid,args.contact_grid,args.pitch_grid,bool(args.arm_velocity_bank)])>1:raise ValueError('Choose one controlled grid')
     if args.arm_velocity_bank and (not args.search_arm_velocity or not args.contact_curriculum or args.candidates<14):
         raise ValueError('Velocity bank requires32-parameter contact curriculum and at least14 candidates')
+    if args.interception_plane_grid and (not args.arm_velocity_bank or args.candidates < 38 + 8*bool(args.recovery_leg_bank)):
+        raise ValueError('Interception grid requires velocity bank and38 candidates, or46 with recovery crossover')
     if args.prepose_gain is not None and (args.resume or not 0.<=args.prepose_gain<=1.):
         raise ValueError('Preparation gain in[0,1] requires a fresh warm start')
     if (args.contact_grid or args.pitch_grid) and (not args.contact_curriculum or args.candidates<14):
@@ -79,6 +82,7 @@ def main():
         'ball-with-jump-recovery-v3' if args.continue_after_miss else 'legal-first-ball-v4')
     if args.recovery_leg_bank:sampling_contract+='-measured-recovery-leg-crossover-v1'
     if args.search_arm_velocity:sampling_contract+='-joint-velocity32-v1'
+    if args.interception_plane_grid:sampling_contract+='-interception-plane-grid36-v1'
     if not args.training_indices or len(set(args.training_indices))!=len(args.training_indices):raise ValueError('Distinct TRAIN indices required')
     args.output.mkdir(parents=True,exist_ok=True)
     protocol_path=ROOT/'configs/g07_full_racket_eval_v4_r3.json';protocol=json.loads(protocol_path.read_text())
@@ -220,12 +224,15 @@ def main():
             if args.pitch_grid:
                 grid=pitch_compensation_grid(reference.cpu().numpy(),low.cpu().numpy(),high.cpu().numpy())
                 population[2:14]=torch.as_tensor(grid,device=env.device,dtype=population.dtype)
+            body_start=14
             if velocity_bank is not None:
-                grid=arm_velocity_grid(reference.cpu().numpy(),velocity_bank['joint_velocity_seeds_rad_s'],low.cpu().numpy(),high.cpu().numpy())
-                population[2:14]=torch.as_tensor(grid,device=env.device,dtype=population.dtype)
+                builder=interception_velocity_grid if args.interception_plane_grid else arm_velocity_grid
+                grid=builder(reference.cpu().numpy(),velocity_bank['joint_velocity_seeds_rad_s'],low.cpu().numpy(),high.cpu().numpy())
+                population[2:2+len(grid)]=torch.as_tensor(grid,device=env.device,dtype=population.dtype)
+                body_start=2+len(grid)
             if leg_bank is not None:
                 grid=body_crossovers_preserving_velocity(reference.cpu().numpy(),leg_bank['parameters'],low.cpu().numpy(),high.cpu().numpy())
-                population[14:22]=torch.as_tensor(grid,device=env.device,dtype=population.dtype)
+                population[body_start:body_start+len(grid)]=torch.as_tensor(grid,device=env.device,dtype=population.dtype)
             env._episode_has_stepped.zero_();env._metrics_started=False
             env.rally_records.clear();env.episode_records.clear();env.contact_records.clear()
             env.racket_plane_records.clear();env.episode_index.fill_(-1)
