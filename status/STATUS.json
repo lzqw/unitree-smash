@@ -50,10 +50,10 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "Upper-strings05 finished2x64 with0contact/0recovery/0complete/NF0,77120 actual steps,.464637646GPUh. Previous recovery128 retained13 miss recoveries and1airborne strings. New contact recovery CEM02 now actually running GPU0, exact warm31 plus12 arm timing/speed and8 same-family measured recovery-leg crossovers. CPU51 passed; no new policy success yet; formal400TODO.",
+      "notes": "CEM02 gen0 actual64:16contacts/7airstrings/11qualified recoveries,1same-episode legal air strings+overnet+in-court landing+3.61992s recovery (candidate6 TRAIN1); paired TRAIN65 failed. Source return4.82676m/s,vz-.25008, targetY-1.06656; full0/NF0. Gen1 remains running GPU0. CPU52 supports a future pitch-grid and offline velocity proposals, not new native success; formal400TODO.",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
-      "curriculum_evidence": "reports/G07_full_racket_v4/reach_cem_fine_feedback01/metrics.json",
-      "curriculum_policy": "reports/G07_full_racket_v4/reach_cem_fine_feedback01/best_candidate.pt",
+      "curriculum_evidence": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
+      "curriculum_policy": "reports/G07_full_racket_v4/return_recovery_gen0_env12/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
       "active_gpu_jobs": [
         {
@@ -80,8 +80,8 @@
         "guard_pid": 1350322,
         "child_pid": 1350331
       },
-      "native_air_string_contact_milestone": "reports/G07_full_racket_v4/ball_cem_low_base_branch01/NATIVE_CONTACT_MILESTONE.json",
-      "latest_native_training_summary": "reports/G07_full_racket_v4/ball_upper_strings_cem01/FINAL_TRAIN_SUMMARY.json",
+      "native_air_string_contact_milestone": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
+      "latest_native_training_summary": "reports/G07_full_racket_v4/contact_generation0_snapshot01/GENERATION.json",
       "latest_video": {
         "path": "reports/G07_full_racket_v4/video/Current_effect_contact_recovery_20261024_0555.mp4",
         "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_contact_recovery_20261024_0555.mp4",
@@ -91,14 +91,18 @@
         "formal_acceptance": false
       },
       "latest_completed_generation": {
-        "run": "ball_upper_strings_cem01",
-        "generation": 1,
-        "whole_job_complete": true,
+        "run": "ball_contact_recovery_cem02",
+        "generation": 0,
         "executions": 64,
-        "contacts": 0,
-        "recoveries": 0,
+        "contacts": 16,
+        "airborne_strings": 7,
+        "qualified_recoveries": 11,
+        "airborne_strings_and_recovery": 1,
+        "crossed_net": 4,
+        "landed_target": 0,
         "complete": 0,
-        "numerical_failures": 0
+        "numerical_failures": 0,
+        "whole_job_complete": false
       },
       "pending_rule_regression": {
         "state": "PASSED_TARGETED_NATIVE02",
@@ -118,7 +122,11 @@
           ],
           "still_running": false
         }
-      ]
+      ],
+      "historical_native_contact_milestones": [
+        "reports/G07_full_racket_v4/ball_cem_low_base_branch01/NATIVE_CONTACT_MILESTONE.json"
+      ],
+      "curriculum_policy_scope": "Selected single TRAIN1 return/recovery milestone, not the worst-case optimizer winner or a final formal policy; paired TRAIN65 failed."
     },
     "G08": {
       "state": "TODO",
@@ -160,7 +168,9 @@
       "independent_engine_view_reset_check": "PASSED",
       "native_composed_asset_dependencies": "PASSED",
       "native_racket_plane_followthrough_boundaries": "IN_PROGRESS",
-      "native_near_net_first_contact_invasion_geometry": "PASSED"
+      "native_near_net_first_contact_invasion_geometry": "PASSED",
+      "native_single_train_legal_air_return_and_recovery": "PASSED_COMPONENT_ONLY",
+      "native_single_train_legal_air_return_and_recovery_scope": "One selected TRAIN1 candidate; attack/target failed and paired TRAIN65 failed. No full policy or panel pass."
     }
   }
 }

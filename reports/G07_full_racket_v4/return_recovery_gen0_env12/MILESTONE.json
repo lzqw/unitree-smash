@@ -1,0 +1,66 @@
+{
+  "created_at": "2026-10-24T06:37:21.830484+00:00",
+  "scope": "Completed single native TRAIN first episode; whole two-generation GPU job continues. A legal return with qualified recovery, not a full smash.",
+  "run": "reports/G07_full_racket_v4/ball_contact_recovery_cem02",
+  "generation": 0,
+  "env_id": 12,
+  "candidate_id": 6,
+  "training_case_index": 1,
+  "episode_index": 0,
+  "airborne_strings": true,
+  "legal_initial_contact": true,
+  "contact_time_s": 2.7724530696868896,
+  "contact_point_m": [
+    0.8429985046386719,
+    0.06016826629638672,
+    1.6643164157867432
+  ],
+  "actual_outgoing_velocity_mps": [
+    4.636972427368164,
+    -1.3166613578796387,
+    -0.25007766485214233
+  ],
+  "actual_outgoing_speed_mps": 4.826763849823601,
+  "crossed_net": true,
+  "shuttle_net_contact": true,
+  "net_blocked_fault": false,
+  "first_landing_m": [
+    3.004436492919922,
+    -1.0665578842163086,
+    0.025155751034617424
+  ],
+  "first_landing_time_s": 3.8970224857330322,
+  "target_lateral_miss_m": 0.0665578842163086,
+  "qualified_recovery": true,
+  "stable_recovery_s": 3.619920015335083,
+  "body_ground_force_n": 0.0,
+  "complete_smash": false,
+  "numerical_failures": 0,
+  "configured_joint_velocity_limit_rad_s": 30.0,
+  "recorded_maximum_joint_velocity_rad_s": 30.002182006835938,
+  "causal_log_scope": "Not captured: partial log already moved to another generation",
+  "whole_generation": {
+    "executions": 64,
+    "contacts": 16,
+    "airborne_strings": 7,
+    "qualified_recoveries": 11,
+    "airborne_strings_and_recovery": 1,
+    "crossed_net": 4,
+    "landed_target": 0,
+    "complete": 0,
+    "numerical_failures": 0
+  },
+  "sources": {
+    "episodes_000.json": "ab105b4844011da92ec97a0e98eb13568ebd1faf6d75485f038dd62358e9794a",
+    "contacts_000.json": "8b755b3dd6cbdddfcbba9c9e344132a5fd51dba37178b6f663f4594efba6ed5a",
+    "all_first_episodes_000.npz": "eea8764452d207e1a2d6d000bce0dfa1acdf2dd00ea145b58bd2a67fa6c38441",
+    "population_000.pt": "c8443366d68fb729f3668a567544254d99dcb819d419a3c7a645076b3702cc74",
+    "source_hashes.json": "7cb94c19b0f1c151c03abac74e37fee8c4db21c55356bf6e224d23052a6395fb",
+    "source_snapshot.zip": "1dc77049721883feabdef7e5a589aee8b86ce49ea5725396ed8aa406e65def4c"
+  },
+  "policy_evidence_sha256": "04a6e178aea8a0401b51d83fdf56e4fd36d7013000ee9e6daa652d7bf5f22473",
+  "formal_acceptance": false,
+  "paired_case_recovery_success": false,
+  "paired_case_had_contact": false,
+  "paired_case_body_ground": true
+}

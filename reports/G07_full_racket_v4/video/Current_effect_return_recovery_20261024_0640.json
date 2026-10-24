@@ -1,0 +1,151 @@
+{
+  "created_at": "2026-10-24T06:43:01.915946+00:00",
+  "video": "reports/G07_full_racket_v4/video/Current_effect_return_recovery_20261024_0640.mp4",
+  "bytes": 2540499,
+  "sha256": "50a7e6d60728618f28f2d4e9d02a2134619d72b67b2219edb95d620dd37d106a",
+  "fps": 50,
+  "frames": 1578,
+  "duration_s": 31.56,
+  "resolution": [
+    1280,
+    720
+  ],
+  "renderer": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "renderer_uses_gpu": false,
+  "segments": [
+    {
+      "name": "opening",
+      "start_frame": 0,
+      "frames": 100
+    },
+    {
+      "name": "same_episode_normal",
+      "start_frame": 100,
+      "frames": 400,
+      "env_id": 12,
+      "generation": 0,
+      "episode_index": 0,
+      "recorded_start_s": 0.0,
+      "recorded_end_s": 7.980000019073486,
+      "interpolated": false
+    },
+    {
+      "name": "air_contact_quarter_speed",
+      "start_frame": 500,
+      "frames": 128,
+      "env_id": 12,
+      "generation": 0,
+      "episode_index": 0,
+      "recorded_start_s": 2.419999837875366,
+      "recorded_end_s": 3.0399999618530273,
+      "interpolated": false
+    },
+    {
+      "name": "exact_native_contact",
+      "start_frame": 628,
+      "frames": 125,
+      "time_s": 2.7724530696868896
+    },
+    {
+      "name": "overnet_landing_quarter_speed",
+      "start_frame": 753,
+      "frames": 256,
+      "env_id": 12,
+      "generation": 0,
+      "episode_index": 0,
+      "recorded_start_s": 2.7799999713897705,
+      "recorded_end_s": 4.039999961853027,
+      "interpolated": false
+    },
+    {
+      "name": "first_landing",
+      "start_frame": 1009,
+      "frames": 125,
+      "event_time_s": 3.8970224857330322,
+      "pose_time_s": 3.8999998569488525
+    },
+    {
+      "name": "qualified_recovered_terminal_state",
+      "start_frame": 1134,
+      "frames": 100,
+      "time_s": 8.0
+    },
+    {
+      "name": "paired_case_failure",
+      "start_frame": 1234,
+      "frames": 144,
+      "env_id": 13,
+      "generation": 0,
+      "episode_index": 0,
+      "recorded_start_s": 0.0,
+      "recorded_end_s": 2.859999895095825,
+      "interpolated": false
+    },
+    {
+      "name": "paired_case_body_ground_terminal",
+      "start_frame": 1378,
+      "frames": 75,
+      "time_s": 2.879999876022339
+    },
+    {
+      "name": "result",
+      "start_frame": 1453,
+      "frames": 125
+    }
+  ],
+  "previews": [
+    "reports/G07_full_racket_v4/video/Current_effect_return_recovery_20261024_0640_contact.jpg",
+    "reports/G07_full_racket_v4/video/Current_effect_return_recovery_20261024_0640_landing.jpg",
+    "reports/G07_full_racket_v4/video/Current_effect_return_recovery_20261024_0640_recovery.jpg",
+    "reports/G07_full_racket_v4/video/Current_effect_return_recovery_20261024_0640_paired_failure.jpg"
+  ],
+  "native_recorded_motion": true,
+  "interpolated_or_generated_motion": false,
+  "main_return_recovery_is_same_episode": true,
+  "paired_failure_is_separate_episode": true,
+  "whole_gpu_job_complete": false,
+  "formal_acceptance": false,
+  "result": {
+    "airborne_strings": true,
+    "crossed_net": true,
+    "qualified_recovery": true,
+    "stable_recovery_s": 3.619920015335083,
+    "actual_outgoing_speed_mps": 4.826763849823601,
+    "actual_outgoing_velocity_mps": [
+      4.636972427368164,
+      -1.3166613578796387,
+      -0.25007766485214233
+    ],
+    "first_landing_m": [
+      3.004436492919922,
+      -1.0665578842163086,
+      0.025155751034617424
+    ],
+    "target_lateral_miss_m": 0.0665578842163086,
+    "complete_smash": false
+  },
+  "caveats": [
+    "TRAIN1 candidate6 is a selected component milestone, not a full smash or the worst-case optimizer winner.",
+    "Paired TRAIN65 case failed. Formal A/B200 each remains unrun.",
+    "Only contact freeze is an exact native substep body snapshot. Landing freeze shows adjacent50Hz body sampling and exact native first-landing event marker.",
+    "Ball after its first landing is hidden; later rolling cannot count again.",
+    "Orange/yellow rings and red first-landing cross are annotations, not changed physics geometry.",
+    "Configured leg speed limit30rad/s; this episode recorded30.002182rad/s maximum solver overshoot, retained in raw metrics."
+  ],
+  "sources": {
+    "reports/G07_full_racket_v4/ball_contact_recovery_cem02/episodes_000.json": "ab105b4844011da92ec97a0e98eb13568ebd1faf6d75485f038dd62358e9794a",
+    "reports/G07_full_racket_v4/ball_contact_recovery_cem02/contacts_000.json": "8b755b3dd6cbdddfcbba9c9e344132a5fd51dba37178b6f663f4594efba6ed5a",
+    "reports/G07_full_racket_v4/ball_contact_recovery_cem02/all_first_episodes_000.npz": "eea8764452d207e1a2d6d000bce0dfa1acdf2dd00ea145b58bd2a67fa6c38441",
+    "reports/G07_full_racket_v4/ball_contact_recovery_cem02/population_000.pt": "c8443366d68fb729f3668a567544254d99dcb819d419a3c7a645076b3702cc74",
+    "reports/G07_full_racket_v4/ball_contact_recovery_cem02/geometry.json": "8afd390b7b92179ba6e2fde3774cc60162a98a5bd63ed50defd95b2e8f9d9c37",
+    "reports/G07_full_racket_v4/ball_contact_recovery_cem02/geometry.npz": "c64b425bba7b5278c1ab59e54e37582647a576ad5a5c4e1c3920954dd7cd3d73",
+    "reports/G07_full_racket_v4/ball_contact_recovery_cem02/source_hashes.json": "7cb94c19b0f1c151c03abac74e37fee8c4db21c55356bf6e224d23052a6395fb",
+    "reports/G07_full_racket_v4/ball_contact_recovery_cem02/source_snapshot.zip": "1dc77049721883feabdef7e5a589aee8b86ce49ea5725396ed8aa406e65def4c",
+    "scripts/render_full_racket_return_recovery_v4.py": "1742e667371322eaf1e16a4658c0bbf3078d2f2d2317fda9e243112861923224",
+    "scripts/render_full_racket_r3_effect.py": "406fdf3eea5d6fe12873499360fd590a22bfbf34b8b5075d1633e873d99bb76d",
+    "scripts/render_current_v4_progress.py": "5e9fce04a077c9f5b2eb79c829819874e9607c00231e15e36c904d2e75af8edd",
+    "configs/court_net_v4.json": "184d07dde336bf36be7dfde089373c851a2bcb855a6e44f4120442b59818b4f4",
+    "configs/g07_full_racket_eval_v4_r3.json": "04121cfb257ea4d2e288c69b44dd0c8dbada814e0bf95c8a16f5af7ef2390367",
+    "assets/quadsmash_full_racket_v4_r3.usd": "c2264fcece90b042c7c6a1cac7d516af83972729d0402947e3a519041e184cf2"
+  }
+}

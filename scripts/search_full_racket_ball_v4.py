@@ -269,6 +269,7 @@ def main():
                 actions=np.stack(actions),link_poses=np.stack(poses),valid_first_episode=np.stack(valid))
             atomic_json(args.output/f'trajectory_{previous+generation:03d}.json',trace)
             atomic_json(args.output/f'contacts_{previous+generation:03d}.json',env.contact_records)
+            atomic_json(args.output/f'causal_plans_{previous+generation:03d}.json',controller.logs)
             np.savez_compressed(args.output/f'all_first_episodes_{previous+generation:03d}.npz',link_poses=np.stack(all_poses),
                 ball_position_m=np.stack(all_balls),episode_clock_s=np.stack(all_clocks),valid_first_episode=np.stack(all_valid))
             if window_poses:
