@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "Full-racket r3 remains IN_PROGRESS. Fine no-ball curriculum has jump/recovery examples; real-ball probe missed. Near-net01 stopped after unsafe first generation and partial next generation; checkpoint preserved. Running near-net02 with waypoint0.85/speed0.65 and own-side-safe candidate selection. No formal400 result.",
+      "notes": "Near-net02 actual first2x64:15 then27 safe candidates, one safe jump/recovery in generation1; virtual point1.711m and insufficient strike conditions. Four-generation job still running. CPU-verified continuation queues perturbed-reset native smoke then actual-ball TRAIN CEM with flat-face seed and continuous arm recovery. Neither queued native stage has run yet; formal400 remainsTODO.",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/reach_cem_fine_feedback01/metrics.json",
       "curriculum_policy": "reports/G07_full_racket_v4/reach_cem_fine_feedback01/best_candidate.pt",
@@ -66,7 +66,17 @@
           "contact_contract": "full-racket-ball-material-parity-v4",
           "requested_candidates": 256
         }
-      ]
+      ],
+      "queued_native_sequence": {
+        "state_file": "reports/G07_full_racket_v4/native_followup_sequence01/state.json",
+        "pid": 1320916,
+        "session_id": 30733,
+        "state_at_last_check": "WAITING_VERIFIED_PREDECESSOR",
+        "next_jobs": [
+          "reset_eval_native01",
+          "ball_cem_smoke01"
+        ]
+      }
     },
     "G08": {
       "state": "TODO",

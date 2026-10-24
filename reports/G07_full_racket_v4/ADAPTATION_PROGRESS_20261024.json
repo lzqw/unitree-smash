@@ -141,5 +141,160 @@
     "upload_state": "VERIFIED",
     "download_url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_r3_20261024.mp4",
     "evidence_url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_r3_20261024_evidence.zip"
+  },
+  "near_net02_partial": {
+    "completed_generations": 2,
+    "executed_candidates": 128,
+    "history": [
+      {
+        "generation": 0,
+        "best": {
+          "env_id": 29,
+          "robot_net_contact": false,
+          "engineering_body_crossing": false,
+          "maximum_net_force_n": 0.0,
+          "score": -4.712627694010735,
+          "event_time_s": 2.8299999237060547,
+          "virtual_ball_center_m": [
+            1.240900993347168,
+            0.015997298061847687,
+            1.765674352645874
+          ],
+          "point_velocity_mps": [
+            0.9493787884712219,
+            0.5990663766860962,
+            -0.7030088901519775
+          ],
+          "normal_world": [
+            0.5818769931793213,
+            0.08437588810920715,
+            -0.808887779712677
+          ],
+          "root_at_event_m": [
+            0.5246114730834961,
+            -0.12346076965332031,
+            0.7269505262374878
+          ],
+          "feet_airborne": true,
+          "recovery": false,
+          "jump": {
+            "env_id": 29,
+            "max_height_m": 0.7425073981285095,
+            "total_com_rise_m": 0.31290823221206665,
+            "airborne_s": 0.5979958772659302,
+            "recovery_s": 0.13300009071826935,
+            "takeoff_time_s": 5.795762538909912,
+            "landing_time_s": 5.79476261138916,
+            "maximum_body_ground_force_n": 542.0587768554688,
+            "max_leg_torque_nm": 23.5,
+            "max_arm_torque_nm": 27.540599822998047,
+            "max_joint_speed_rad_s": 30.00003433227539,
+            "clipped_action_values": 0.0,
+            "limited_joint_targets": 0.0,
+            "saturated_leg_joint_substeps": 848.0,
+            "qualified_jump_landed": false,
+            "qualified_flight_seen": true,
+            "body_landing": true,
+            "stable_recovery": false,
+            "success": false,
+            "terminated": false
+          },
+          "preparation_survived_to2s": true,
+          "minimum_root_height_m": 0.1441846489906311,
+          "preparation_maximum_gravity_xy": 0.07215750217437744,
+          "first_episode_lifetime_s": 5.989999771118164,
+          "virtual_own_side_safe": true
+        },
+        "airborne_lanes": 54,
+        "recovered_lanes": 6,
+        "net_contact_lanes": 47,
+        "body_crossing_lanes": 8,
+        "virtual_own_side_safe_lanes": 15,
+        "formal_acceptance": false
+      },
+      {
+        "generation": 1,
+        "best": {
+          "env_id": 17,
+          "robot_net_contact": false,
+          "engineering_body_crossing": false,
+          "maximum_net_force_n": 0.0,
+          "score": -0.4752261161804199,
+          "event_time_s": 2.7699999809265137,
+          "virtual_ball_center_m": [
+            1.3847330808639526,
+            0.0748274177312851,
+            1.7114897966384888
+          ],
+          "point_velocity_mps": [
+            1.8176417350769043,
+            -0.821297287940979,
+            -0.09862403571605682
+          ],
+          "normal_world": [
+            0.6689057350158691,
+            -0.05739965662360191,
+            -0.7411277890205383
+          ],
+          "root_at_event_m": [
+            0.7411727905273438,
+            -0.0474090576171875,
+            0.637392520904541
+          ],
+          "feet_airborne": true,
+          "recovery": true,
+          "jump": {
+            "env_id": 17,
+            "max_height_m": 0.7050884962081909,
+            "total_com_rise_m": 0.288603812456131,
+            "airborne_s": 0.5099970102310181,
+            "recovery_s": 2.123028516769409,
+            "takeoff_time_s": 2.640990972518921,
+            "landing_time_s": 3.1579535007476807,
+            "maximum_body_ground_force_n": 0.0,
+            "max_leg_torque_nm": 23.5,
+            "max_arm_torque_nm": 30.29783821105957,
+            "max_joint_speed_rad_s": 30.00175666809082,
+            "clipped_action_values": 0.0,
+            "limited_joint_targets": 0.0,
+            "saturated_leg_joint_substeps": 769.0,
+            "qualified_jump_landed": true,
+            "qualified_flight_seen": true,
+            "body_landing": false,
+            "stable_recovery": true,
+            "success": true,
+            "terminated": false
+          },
+          "preparation_survived_to2s": true,
+          "minimum_root_height_m": 0.14697577059268951,
+          "preparation_maximum_gravity_xy": 0.14938557147979736,
+          "first_episode_lifetime_s": 5.989999771118164,
+          "virtual_own_side_safe": true
+        },
+        "airborne_lanes": 48,
+        "recovered_lanes": 5,
+        "net_contact_lanes": 34,
+        "body_crossing_lanes": 9,
+        "virtual_own_side_safe_lanes": 27,
+        "formal_acceptance": false
+      }
+    ],
+    "job_status": "RUNNING",
+    "formal_acceptance": false
+  },
+  "queued_native_sequence": {
+    "state_file": "reports/G07_full_racket_v4/native_followup_sequence01/state.json",
+    "pid": 1320916,
+    "session_id": 30733,
+    "state_at_last_check": "WAITING_VERIFIED_PREDECESSOR",
+    "next_jobs": [
+      "reset_eval_native01",
+      "ball_cem_smoke01"
+    ]
+  },
+  "new_control_mode": {
+    "source": "recovery_arm_continuity_cpu01.json",
+    "native_improvement": "UNTESTED",
+    "preserves_old_checkpoint_default": true
   }
 }

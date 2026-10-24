@@ -24,3 +24,14 @@
 后续必须连续推进：先读此任务真实结果→保留高位/速度与可恢复候选→执行真实球训练库开发试验及联合优化/学习，不在无球课程停止。正式400前需原生验证扰动reset和评估器；scripts/lock_full_racket_policy_v4.py、evaluate_full_racket_v4.py、aggregate_full_racket_eval_v4.py仅已实现/编译及7项CPU完整性测试，尚未原生运行、没有正式成绩。不要用正式面板选候选或删例。最后冻结代码/权重跑A/B200，生成实际触球与首次落点侧视/俯视视频及完整比较，再做完整目标审计。当前仍未完成合法跳跃扣杀。
 
 代码分支g07-full-racket-court-v4-20261024。已有初版进度附件：https://github.com/lzqw/unitree-smash/releases/tag/g07-full-racket-v4-progress-20261024 。后续报告ADAPTATION_PROGRESS_20261024.json包括本轮费用、失败、限制和活跃handle。38秒旧进度视频包含r1站立与旧短拍板对照，不是r3扣杀。
+
+
+本轮后续（2026-10-24T03:52Z）实质进展：reach_near_net_backface02前2代128次完成；安全候选15→27，第二代1个无触网/无身体越面并恢复的候选（lane17，腾空0.509997s、稳定2.123029s、body ground0N）。其虚拟球心[1.384733,0.074827,1.711490]m、点速[1.817642,-0.821297,-0.098624]m/s、面法向[0.668906,-0.057400,-0.741128]，仍不构成高位攻击触球；不要宣称完成扣杀。02四代任务继续，未停止或重复启动。
+
+已启动依赖队列native_followup_sequence01，exec session30733、CPU PID1320916（不是第二个GPU任务），state.json是权威状态。当前等待同一个02 guard1317741/child1317753成功终态；然后串行调用run_gpu_job：
+1. reset_eval_native01，8个TRAIN输入、6控制tick、原生核对B扰动实际q/qd/XY/yaw、公开观测、局部reset隔离，最多240s/48控制-env步；不是正式评测。
+2. 若1成功，ball_cem_smoke01，4候选×TRAIN indices[1,65]×1代×8s，62.5us，最多2100s/6400控制-env步；使用02最终最佳腿参数、CPU新平拍面ik_flat_face_fast01初始化，真实拍线距离/接触/出球/目标/恢复联合优化26参数（增加己方拦截x和时机残差）。CPU种子不是执行证据；新种子的初始时间校准为0假设，需实际fitness学习，不能沿用旧种子已验证时序的说法。
+
+队列固定了当前quadsmash和两个脚本/核心配置源码哈希；如在其等待时修改这些源码，它会停止待检查，不会默默运行另一版。先查sequence_state和GPU_LEDGER真实进程，再决定下一条命令；不要与队列重复启动任务。后续如任一步FAILED，保留error/stdout，核查并修复，不能把等待失败/timeout当终态成功。scripts/search_full_racket_ball_v4.py、smoke_full_racket_eval_reset_v4.py、共享full_racket_eval_env_v4.py目前仅编译，尚未原生执行。
+
+控制修订：旧教师进入腿恢复时直接把机械臂命令切到default，CPU同一公开状态在边界前后20us的目标最大跳变0.295982rad。新模式将完整的计划收拍带入腿恢复，跳变8.123e-5rad；只在新ball训练seed.smooth_recovery_arm=True启用，旧checkpoint默认行为保留。recovery_arm_continuity_cpu01.json有不可变population_000.pt来源hash。尚无原生恢复改善结论。公开观测规划测试核对4个己方拦截平面/时机残差，默认扩展动作差0；32项针对性CPU测试再次通过，仍不是策略验收。

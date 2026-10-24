@@ -1,0 +1,43 @@
+{
+  "kind": "CPU control-command discontinuity diagnostic, same recorded state on both sides of transition; not dynamics evidence",
+  "source_checkpoint": "reports/G07_full_racket_v4/reach_near_net_backface02/population_000.pt",
+  "source_checkpoint_sha256": "0cf27bd7c01a14b4e7634011c25415f9f1c49e2ec10ee27e25c639ca1467ddc6",
+  "source_parameter_field": "best_parameters",
+  "source_public_tick": 300,
+  "source_public_lane": 1,
+  "recovery_onset_s": 3.0970780849456787,
+  "time_separation_s": 2e-05,
+  "results": [
+    {
+      "smooth_recovery_arm": false,
+      "maximum_arm_target_jump_rad": 0.29598233103752136,
+      "joint_target_delta_rad": [
+        0.14894405007362366,
+        0.29598233103752136,
+        0.0030146220233291388,
+        0.15658274292945862,
+        0.07562702894210815,
+        0.2463170886039734
+      ]
+    },
+    {
+      "smooth_recovery_arm": true,
+      "maximum_arm_target_jump_rad": 8.123189036268741e-05,
+      "joint_target_delta_rad": [
+        7.474017183994874e-05,
+        5.811274240841158e-05,
+        1.2379288818920031e-05,
+        8.123189036268741e-05,
+        2.1088124412926845e-05,
+        5.467815208248794e-05
+      ]
+    }
+  ],
+  "native_recovery_improvement": "UNTESTED",
+  "old_checkpoint_mode_preserved": true,
+  "sources": {
+    "quadsmash/control/full_racket_teacher_v4.py": "c7c9c78dd9283baa8c1d82b58d833b5739c9ba873e14f0d6eedada769a43fbb6",
+    "scripts/search_full_racket_ball_v4.py": "1346c37f2169797ab02dd4fc17309bb4181941ecc180a6ea471cce927f9b63f6"
+  },
+  "formal_acceptance": false
+}

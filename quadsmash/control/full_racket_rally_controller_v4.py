@@ -38,12 +38,18 @@ class FullRacketRallyControllerV4:
         ids=torch.where((~self.planned)&(obs[:,67]>.5)&(obs[:,775]>=2.0))[0]
         if len(ids):
             public=obs[ids].cpu().numpy()
-            plan=predict_initial_intercept(public,[1.10,0,1.80],[1.,0,0],self.nominal_target[0],self.physics,
+            # The extra learned parameters choose a legal interception plane
+            # and a timing residual. Both are fixed policy parameters, never
+            # case labels or future simulator states.
+            intercept=self.parameters[ids,24].cpu().numpy() if self.parameters.shape[1]>=25 else self.nominal_target[0]
+            plan=predict_initial_intercept(public,[1.10,0,1.80],[1.,0,0],intercept,self.physics,
                                            dt=.001,max_seconds=1.5)
             arrival=public[:,775]+plan['arrival_time_s']
             # Correct the measured no-ball event offset, learned before this
             # episode, using only the current observation's ball prediction.
-            calibrated=arrival+2.75-self.checkpoint['result']['event_time_s']
+            calibration=self.checkpoint.get('event_calibration_s',2.75-self.checkpoint['result']['event_time_s'])
+            residual=self.parameters[ids,25].cpu().numpy() if self.parameters.shape[1]>=26 else 0.
+            calibrated=arrival+calibration+residual
             valid=plan['valid']&np.isfinite(calibrated)&(calibrated>=2.3)&(calibrated<=3.3)
             self.event_time[ids]=torch.as_tensor(np.where(valid,calibrated,2.75),device=obs.device,dtype=obs.dtype)
             delta=plan['position_m']-np.array(self.checkpoint['result']['virtual_ball_center_m'])

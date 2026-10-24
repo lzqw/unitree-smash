@@ -24,6 +24,7 @@ class FullRacketTeacherV4:
         self.arm=torch.tensor(seed['joint_position_rad'],dtype=torch.float32,device=device)
         self.arm_velocity=torch.tensor(seed['joint_velocity_seed_rad_s'],dtype=torch.float32,device=device)
         self.pitch_basis=torch.tensor(seed['pitch_compensation_basis_rad_per_rad'],dtype=torch.float32,device=device)
+        self.smooth_recovery_arm=seed.get('smooth_recovery_arm',False)
         self.kinematics=FullRacketKinematicsV4().to(device=device,dtype=torch.float32)
         self.task_eye=torch.eye(6,device=device)[None]
         self.face_sign=seed.get('face_sign',1)
@@ -111,6 +112,7 @@ class FullRacketTeacherV4:
         # Both walking and strike use the same newly planned real arm target.
         action[:,12:]=strike[:,12:]
         recovery=local>=parameters[:,3]
+        recovery_arm=arm if self.smooth_recovery_arm else default[12:][None].expand(len(obs),-1)
         standing=self.standing.action(observation,self.standing_seed[None].expand(len(obs),-1),
-            default,limits,default[12:][None].expand(len(obs),-1),active=recovery)
+            default,limits,recovery_arm,active=recovery)
         return torch.where(recovery[:,None],standing,action).clamp(-1,1)
