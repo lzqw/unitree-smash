@@ -11,6 +11,7 @@ import torch
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
 from quadsmash.control.full_racket_candidate_bank_v4 import validate_candidate_bank
 from quadsmash.control.full_racket_teacher_v4 import LOW,HIGH
+from quadsmash.control.full_racket_face_feedback_v4 import validate_face_feedback
 from quadsmash.physics.full_racket_v4 import load_racket,string_polygon
 
 
@@ -18,7 +19,8 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--checkpoint',type=Path,required=True);p.add_argument('--bank',type=Path,required=True)
     p.add_argument('--apex-run',type=Path,required=True);p.add_argument('--recovery-run',type=Path,required=True)
-    p.add_argument('--output',type=Path,required=True);a=p.parse_args()
+    p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--measured-face-feedback',action='store_true');a=p.parse_args()
     if a.output.exists():raise ValueError('Use a fresh output directory')
     warm=torch.load(a.checkpoint,map_location='cpu',weights_only=True)
     bank=json.loads(a.bank.read_text());reference=warm['parameters'].numpy().copy()
@@ -87,14 +89,17 @@ def main():
     assert np.all(edges[:,0]*delta[:,1]-edges[:,1]*delta[:,0]>=0)
     assert np.sum((uv/np.asarray(racket['assumptions']['strings_semiaxes_yz_m']))**2)<1.
     warm=copy.deepcopy(warm);warm['seed']=dict(warm['seed'],string_uv_m=uv.tolist());warm.pop('training_result',None)
+    if a.measured_face_feedback:
+        warm['seed']['measured_face_feedback']=validate_face_feedback({})
     warm.update(kind='Unexecuted upper-string target with coordinated timing/pitch proposals. No native outcome inherited.',
         native_execution=False,performance_inherited=False,formal_acceptance=False)
     bank=copy.deepcopy(bank);bank.update(seed=warm['seed'],reference_parameters=reference.tolist(),parameters=np.stack(rows).tolist(),
-        proposal_labels=labels,controller_revision='upper-string-timing-pitch-proposals-v1',native_execution=False,
+        proposal_labels=labels,controller_revision=('upper-string-final-face-projection-v3' if a.measured_face_feedback else 'upper-string-timing-pitch-proposals-v1'),native_execution=False,
         scope='60new proposals within original32parameter bounds, actual unchanged racket geometry and hardware; native outcomes must be remeasured.')
     checked=validate_candidate_bank(bank,warm['seed'],warm['asset_sha256'],warm['parameter_names'],reference,low,high,62)
     assert checked.shape==(60,32) and np.array_equal(checked[:,26:32],np.broadcast_to(reference[26:32],(60,6)))
-    sources=[a.checkpoint,a.bank,apex_population,apex_pose,plan_path,recovery_path,Path(__file__)]
+    sources=[a.checkpoint,a.bank,apex_population,apex_pose,plan_path,recovery_path,Path(__file__),
+        ROOT/'quadsmash/control/full_racket_face_feedback_v4.py',ROOT/'quadsmash/control/full_racket_teacher_v4.py']
     provenance={str(path.resolve()):hashlib.sha256(path.read_bytes()).hexdigest() for path in sources}
     warm['initialization_provenance']=provenance;bank['upper_timing_provenance']=provenance
     a.output.mkdir(parents=True);torch.save(warm,a.output/'policy.pt')
@@ -107,6 +112,8 @@ def main():
         groups=dict(clock_preparation_pitch=36,push_apex_alignment=12,recovered_configuration_pitch=12),
         old_reference_all32parameters_preserved=True,all_six_velocity_directions_preserved=True,
         shared_old_no_ball_calibration_retained_as_initialization_only=True,native_execution=False,formal_acceptance=False,
+        measured_face_feedback=warm['seed'].get('measured_face_feedback'),
+        parameter15_semantics=('Original pitch gain plus bounded final-face projection gain with measured-normal lead; final commanded point stays within configured margin' if a.measured_face_feedback else 'Original fixed body-pitch compensation gain'),
         policy_sha256=hashlib.sha256((a.output/'policy.pt').read_bytes()).hexdigest(),
         bank_sha256=hashlib.sha256((a.output/'CANDIDATE_BANK.json').read_bytes()).hexdigest(),sources=provenance)
     (a.output/'REPORT.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report),flush=True)

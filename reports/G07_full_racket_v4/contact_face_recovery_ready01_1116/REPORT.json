@@ -1,0 +1,52 @@
+{
+  "created_at": "2026-10-24T11:12:50.958419+00:00",
+  "scope": "CPU-only new motion proposals. The old candidate contacted both TRAIN cases; its outcomes do not transfer to the changed controller.",
+  "source_contact_candidate": 13,
+  "source_contact_training_cases": [
+    1,
+    65
+  ],
+  "source_contacts_without_robot_rule_faults": 2,
+  "source_contact_recovery_successes": 0,
+  "source_contact_complete_smashes": 0,
+  "recovery_local_times": [
+    1.55,
+    1.58,
+    1.62,
+    1.7
+  ],
+  "face_and_pitch_gains": [
+    0.2,
+    0.6,
+    1.0,
+    1.4
+  ],
+  "arm_lead_deltas_s": [
+    -0.015,
+    0.0,
+    0.015
+  ],
+  "proposal_groups": {
+    "contact_motion_recovery_face_timing": 48,
+    "prior_missed_ball_recovery": 12
+  },
+  "all_six_reference_velocity_directions_preserved": true,
+  "original_search_bounds_and_physics_unchanged": true,
+  "native_execution": false,
+  "performance_inherited": false,
+  "formal_acceptance": false,
+  "policy_sha256": "c1f1f8f3b911e76a3ba48b3f555a4b8789797f1275bcc5c1c0f4b209c982dbe7",
+  "bank_sha256": "8719a44f9726be4bef91209638612b442a9d01fb6fcd523a849249d68e225481",
+  "sources": {
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/reports/G07_full_racket_v4/measured_face_ready03_1114/policy.pt": "6627f8ab8bf42e7002c5702637d55bf2fc54564bd005cf2e190c8ef51dcdbcac",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/reports/G07_full_racket_v4/measured_face_ready03_1114/CANDIDATE_BANK.json": "0de1487f00e3afb125955faa41b1f44bc82ad7ad6f330970027dcfcc621a5ab2",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_upper_timing_pitch_cem13/population_000.pt": "56be90303a6cf109fe0231a82db9dd448e474b7ef20c061fbc5f02abc50ae420",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_joint_preparation_cem10/population_000.pt": "281824b5b5584747ae7f46bbee63ed1751c3120252aa2ddb47f451dd3046d97a",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/scripts/prepare_full_racket_contact_recovery_face_bank_v4.py": "a5d6adc96470de4b2879227e785867790950aff24dbc5f6c0176d4e168b9d5e5"
+  },
+  "cpu_command_check": "reports/G07_full_racket_v4/contact_face_recovery_bank_cpu01_1116/REPORT.json",
+  "core_cpu_test_evidence": "reports/G07_full_racket_v4/measured_face_ready03_1114/CPU_TESTS.txt",
+  "core_cpu_tests_passed": 96,
+  "face_controller_unchanged_from_verified_ready03": true,
+  "initialization_note": "Reference is actual CEM13candidate13two-case contact motion; no prior contact, attack or recovery outcome transfers to this changed controller."
+}

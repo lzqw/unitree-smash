@@ -349,8 +349,21 @@ def main():
                     valid_first_episode=np.stack(window_valid),observations=np.stack(window_observations))
             save_control_window(f'control_window_{previous+generation:03d}.npz')
             if stopping and not bool(finished.all()):
+                # Keep the latest terminal events and actual population even
+                # when stopping between the100tick periodic snapshots.
+                suffix=f'{previous+generation:03d}'
+                atomic_json(args.output/f'interrupted_rallies_{suffix}.json',env.rally_records)
+                atomic_json(args.output/f'interrupted_jumps_{suffix}.json',env.episode_records)
+                atomic_torch(args.output/f'interrupted_search_state_{suffix}.pt',dict(
+                    parameters=population.cpu(),first_finished=finished.cpu(),
+                    closest_string_gap_m=closest.cpu(),closest_gap_time_s=closest_time.cpu(),
+                    closest_gap_airborne=closest_air.cpu(),generation=previous+generation,
+                    control_ticks=tick+1,formal_acceptance=False))
                 atomic_json(args.output/'interrupted.json',dict(generation=previous+generation,control_ticks=tick+1,
-                    resume_from='generation_start.pt',resume_semantics='Replay this generation from ground',formal_acceptance=False));return
+                    resume_from='generation_start.pt',resume_semantics='Replay this generation from ground',
+                    terminal_rally_records=f'interrupted_rallies_{suffix}.json',
+                    terminal_jump_records=f'interrupted_jumps_{suffix}.json',
+                    actual_partial_population=f'interrupted_search_state_{suffix}.pt',formal_acceptance=False));return
             first,jumps={},{}
             for row in env.rally_records:first.setdefault(row['env_id'],row)
             for row in env.episode_records:jumps.setdefault(row['env_id'],row)
