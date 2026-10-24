@@ -1,5 +1,9 @@
-当前唯一GPU0作业（2026-10-24T20:59:47.049609+00:00核查）：distribution_cem29_train0_7，guard1500074/child1500089，16候选×8 TRAIN cases×3代，源码10b3d88，307200控制步保护。它针对固定候选30 TRAIN128分布诊断的0/128完整、7/128空中接触、0攻击结果，扩展到TRAIN[0..7]；不改变物理或门槛。
+当前没有运行中的 GPU0 作业。CEM28 的两个原生同回合完整扣杀视频仍保留，但独立验证已完成且未通过：candidate39 A/B 各200回合，A 为完整0/200、空中接触21/200、接触后恢复7/21、NF0；B 为完整0/200、空中接触9/200、接触后恢复1/9、NF0。较差面板 B 为完整0%、空中接触4.5%、条件恢复11.1%、数值故障0。
 
-CEM28已完成并产生两条独立完整里程碑。最新视频：https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_complete_smash_20261025_2030.mp4 ，展示candidate39的TRAIN65完整扣杀与同参数TRAIN1失败。候选30视频：https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_complete_smash_20261025_2005.mp4。
+TRAIN128 也已完成：candidate30 完整0/128、空中接触7/128；CEM29 无噪声恢复搜索两代仍无合法候选，CEM30 在 B 级地面扰动下两代仍无合法候选。已新增可追溯的 TRAIN 重置扰动支持，默认旧路径不变；实现提交 `4bbe3ae`，291 项测试通过。
 
-完整里程碑严格同回合：candidate30 norm8.10131, first[3.97664,-.89317], recovery3.6859s/body0；candidate39 norm8.01158, first[3.85285,-.77116], recovery4.0119s/body0。正式A/B各200和最终扰动评测仍未运行。
+当前完整扣杀视频：
+https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_complete_smash_20261025_2030.mp4
+
+独立评测、策略锁、训练诊断和搜索终端报告：
+`reports/G07_full_racket_v4/formal_and_robust_20261025.json`

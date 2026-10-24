@@ -143,3 +143,9 @@ G10 = 冻结测试、消融、多种子及结论审计；结果可以是不支�
 完整成功里程碑（2026-10-25）：CEM28原生TRAIN搜索在两个不同候选/代际中各得到一条同回合完整扣杀。候选30：TRAIN65出球norm8.1013米/秒，首次落点[3.9766,-.8932]米，恢复3.6859秒，身体触地0；候选39：norm8.0116米/秒，首次落点[3.8529,-.7712]米，恢复4.0119秒，身体触地0。两者均为独立TRAIN回合，正式128分布与A/B400尚未通过。
 
 [完整扣杀视频（候选39）](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_complete_smash_20261025_2030.mp4)与[候选30视频](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_complete_smash_20261025_2005.mp4)均来自实际全身原生轨迹，失败回合也保留。当前GPU0运行TRAIN[0..7]分布适配搜索。
+
+## 2026-10-25 独立评测与分布适配
+
+CEM28 的两个原生 TRAIN65 同回合完整扣杀里程碑已保留并上传，但它们不代表分布通过。candidate39 在冻结策略锁下完成正式 A/B 各 200 回合：A 为完整 0/200、空中接触 21/200、接触后恢复 7/21、数值故障 0；B 为完整 0/200、空中接触 9/200、接触后恢复 1/9、数值故障 0。按较差面板聚合，形式验收为 false。
+
+随后完成 candidate8 的 TRAIN128 诊断（完整 0/128、空中接触 16/128、接触后恢复 8/16、数值故障 0），并将固定地面重置扰动 A/B 支持加入 TRAIN 搜索，默认无噪声路径保持不变。CEM29 无噪声恢复两代和 CEM30 B 级扰动两代均保存了负结果；291 项测试通过。详细锁、面板、原始事件哈希和搜索收据见 [`formal_and_robust_20261025.json`](reports/G07_full_racket_v4/formal_and_robust_20261025.json)。
