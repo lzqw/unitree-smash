@@ -67,16 +67,16 @@
         }
       ],
       "queued_native_sequence": {
-        "state_file": "reports/G07_full_racket_v4/momentum_velocity_queue01/state.json",
-        "pid": 1362755,
-        "session_id": 95946,
+        "state_file": "reports/G07_full_racket_v4/momentum_velocity_queue02/state.json",
+        "pid": 1364645,
+        "session_id": 46714,
         "state_at_last_check": "WAITING_FOR_VERIFIED_PREDECESSOR",
         "next_jobs": [
           "ball_momentum_velocity_cem04"
         ],
         "still_running": true,
-        "note": "No overlap: requires prior terminal SUCCEEDED, no numerical failures or native attack progress, and unchanged launch hashes.",
-        "proposal": "reports/G07_full_racket_v4/MOMENTUM_VELOCITY_NEXT_NATIVE_0720.json"
+        "note": "Wait for both prior processes and successful completed receipt; require no native attacks/NF and unchanged source hashes. Uses newly measured same-blend body candidate48.",
+        "proposal": "reports/G07_full_racket_v4/MOMENTUM_NATIVE_QUEUE_REVISION_0733.json"
       },
       "native_air_string_contact_milestone": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
       "latest_native_training_summary": "reports/G07_full_racket_v4/ball_contact_recovery_cem02/FINAL_TRAIN_SUMMARY.json",
@@ -92,16 +92,17 @@
         "evidence_url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_three_cases_20261024_0713_evidence.zip"
       },
       "latest_completed_generation": {
-        "run": "ball_contact_recovery_cem02",
-        "generation": 1,
-        "whole_job_complete": true,
-        "executions": 64,
-        "contacts": 16,
+        "run": "ball_pitch_blend_cem03_resume01",
+        "generation": 0,
+        "whole_job_complete": false,
+        "executions": 128,
+        "contacts": 12,
         "airborne_strings": 8,
-        "qualified_recoveries": 13,
+        "qualified_recoveries": 6,
         "airborne_strings_and_recovery": 0,
-        "crossed_net": 5,
-        "landed_target": 1,
+        "geometrical_crossings": 4,
+        "task_valid_air_strings_crossings": 3,
+        "landed_target": 0,
         "complete": 0,
         "numerical_failures": 0
       },
@@ -137,6 +138,18 @@
           "guard_pid": 1350322,
           "child_pid": 1350331,
           "exit_code": 0
+        },
+        {
+          "state_file": "reports/G07_full_racket_v4/momentum_velocity_queue01/state.json",
+          "pid": 1362755,
+          "session_id": 95946,
+          "state_at_last_check": "SUPERSEDED_BY_COMPLETED_GENERATION0_BODY_EVIDENCE",
+          "next_jobs": [
+            "ball_momentum_velocity_cem04"
+          ],
+          "still_running": false,
+          "note": "No overlap: requires prior terminal SUCCEEDED, no numerical failures or native attack progress, and unchanged launch hashes.",
+          "proposal": "reports/G07_full_racket_v4/MOMENTUM_VELOCITY_NEXT_NATIVE_0720.json"
         }
       ],
       "historical_native_contact_milestones": [

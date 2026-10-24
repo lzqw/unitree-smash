@@ -8,9 +8,11 @@
 
 最新完成训练：`ball_contact_recovery_cem02` 两代128次候选首回合共32次接触、15次空中拍线、24次合格恢复，其中1次拍线与合格恢复同回合；9次满足任务触球条件的实际越网、1次目标命中、0攻击达标、0完整扣杀、0数值故障。实际102400控制环境步、0.599666 GPU小时。第二代同候选6命中了目标并稳定3.83秒，但主落地后出现约1毫秒再次离地，原判据要求的合格落足为否，恢复仍按失败保留。没有通过修改判据重算成功。
 
+当前训练第一代已完成128次首回合：12次触球、8次空中拍线、6次合格恢复，但空中拍线与合格恢复同回合为0；3次无机器人规则故障的拍线越网均因身体触地而在羽毛球首次落地前终止。攻击达标0、完整扣杀0、数值故障0。第二代继续运行。[本代原始姿态、有效掩码、逐回合CSV、候选权重和精确源码](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_pitch_blend_generation0_native_20261024_0731.zip)已上传；本代完成不等于整个训练作业或正式面板完成。
+
 当前GPU0在执行 `ball_pitch_blend_cem03_resume01`（原 `ball_pitch_blend_cem03` 在第503步收到中断信号，保留原记录并从本代地面起点恢复）：64候选×两训练来球＝128环境，扩大现有俯仰补偿增益范围，并在站立恢复开始时，把上一时刻实际腿部控制目标用100毫秒平滑过渡到站立反馈。臂收拍公式、物理模型、原攻击/落点/合格恢复要求保持；[57项CPU检查](reports/G07_full_racket_v4/CPU_TESTS_0654.txt)通过，新原生训练尚无完整结果。[上一轮完整数据、权重和本轮程序/初始化](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_completed_contact_training_and_pitch_blend_20261024_0659.zip)随本次更新发布。俯仰速度分解见[实测诊断](reports/G07_full_racket_v4/CONTACT_BODY_VELOCITY_DIAGNOSIS_0631.json)；正式A/B400仍未运行。
 
-下一轮已条件排队：`ball_momentum_velocity_cem04` 将试验基于原生接触、实际质量/惯量和瞬时动量守恒计算的挥拍速度候选；当前128环境训练退出且无攻击达标、无数值故障后才启动。62项CPU检查与两条旧观测流的控制接口回放通过，但新候选尚未原生执行，局部速度预测不能算成绩。[诊断程序、候选权重、上一中断作业的完整姿态与精确源码](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_momentum_velocity_and_interrupted_native_20261024_0720.zip)已上传并核对摘要。原攻击和合格恢复判据保持。
+下一轮已条件排队：`ball_momentum_velocity_cem04` 将试验基于原生接触、实际质量/惯量和瞬时动量守恒计算的挥拍速度候选；当前128环境训练退出且无攻击达标、无数值故障后才启动。衔接脚本已更新为 `momentum_velocity_queue02`，恢复腿候选来自本代48号在两条训练来球下的合格恢复（4.295/4.431秒，两次均漏球）；与新臂速组合后的表现必须重新测量。62项CPU检查与两条旧观测流的控制接口回放通过，但新候选尚未原生执行，局部速度预测不能算成绩。[诊断程序、候选权重、上一中断作业的完整姿态与精确源码](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_momentum_velocity_and_interrupted_native_20261024_0720.zip)已上传并核对摘要。原攻击和合格恢复判据保持。
 
 此前上部拍线课程 `ball_upper_strings_cem01` 的128次候选首回合全部未触球、未完成合格恢复，完整成功0、数值故障0；实际77120步、0.464638 GPU小时。[完整失败轨迹、权重、精确源码及接续程序](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_upper_strings_failed_and_contact_update_20261024_0617.zip)保留，包含全部64环境50Hz原生全身姿态、运行依赖和CPU攻击窗口提案。
 
