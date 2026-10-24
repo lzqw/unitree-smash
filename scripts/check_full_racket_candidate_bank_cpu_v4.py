@@ -56,7 +56,9 @@ def main():
     commands=np.stack(values);assert len(commands)>200 and controller.planned.all()
     a.output.mkdir(parents=True)
     np.savez_compressed(a.output/'counterfactual_commands.npz',actions=commands)
-    paths=[a.checkpoint,a.bank,a.public,a.joint_contract,Path(__file__),ROOT/'quadsmash/control/full_racket_candidate_bank_v4.py']
+    paths=[a.checkpoint,a.bank,a.public,a.joint_contract,Path(__file__)]
+    paths += [ROOT/'quadsmash/control'/name for name in ['full_racket_candidate_bank_v4.py',
+        'full_racket_teacher_v4.py','full_racket_kinematics_v4.py','full_racket_joint_preparation_v4.py']]
     report=dict(created_at=datetime.now(timezone.utc).isoformat(),scope='Counterfactual CPU commands on saved old-policy public observations, not changed-state simulation or new policy outcomes.',
                 ticks=len(commands),candidates=len(rows),public_case_streams=2,lanes=count,
                 observation_width=794,action_width=18,all_actions_finite_and_bounded=True,

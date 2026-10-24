@@ -14,7 +14,7 @@ class FullRacketKinematicsV4(torch.nn.Module):
             tool_offset=model.tool_offset,tool_rotation=model.tool_rotation).items():
             self.register_buffer(name,torch.tensor(value,dtype=torch.float64))
 
-    def forward(self,joints,local_offset=None):
+    def forward(self,joints,local_offset=None,return_pose=False):
         count=len(joints)
         rotation=torch.eye(3,device=joints.device,dtype=joints.dtype)[None].expand(count,-1,-1)
         position=self.arm_origin[None].expand(count,-1)
@@ -29,8 +29,11 @@ class FullRacketKinematicsV4(torch.nn.Module):
             rotation=rotation@turn
         offset=self.tool_offset if local_offset is None else self.tool_offset+self.tool_rotation@local_offset
         center=position+torch.einsum('nij,j->ni',rotation,offset)
-        normal=(rotation@self.tool_rotation)[:,:,0]
+        tool_orientation=rotation@self.tool_rotation
+        normal=tool_orientation[:,:,0]
         axes=torch.stack(axes,1);origins=torch.stack(origins,1)
         jacobian=torch.linalg.cross(axes,center[:,None]-origins).transpose(1,2)
         normal_jacobian=torch.linalg.cross(axes,normal[:,None].expand(-1,6,-1)).transpose(1,2)
+        if return_pose:
+            return center,normal,jacobian,normal_jacobian,tool_orientation,axes,origins
         return center,normal,jacobian,normal_jacobian
