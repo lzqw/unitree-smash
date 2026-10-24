@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "CEM17two completed generations256episodes:94contacts/59airstrings/12attacks/21qualified recoveries/1weak blocked-ball airstrings+recovery/0attack+recovery/0court/target/full/NF0. Best26reevaluation late body lands466.3N,recoveryfailed. Saved stop with28gen2ticks,.604201GPUh/208384steps,trueFAILED. New37standing-policy search startup failed canonical-name mismatch before control0steps (.001995GPUh); fixed without changing input. GPU0retryguard1423130child1423142sourceb247ce2now native startup37names/61bank/6-coordinate mask verified;110CPUtests and122lane287tick canonical preflight passed.100tick initialization/stroke/recovery pending; no full task or formal400pass.",
+      "notes": "CEM17two completed generations256episodes:94contacts/59airstrings/12attacks/21qualified recoveries/1weak blocked-ball airstrings+recovery/0attack+recovery/0court/target/full/NF0. Best26reevaluation late body lands466.3N,recoveryfailed. Saved stop with28gen2ticks,.604201GPUh/208384steps,trueFAILED. New37standing-policy search startup failed canonical-name mismatch before control0steps (.001995GPUh); fixed without changing input. GPU0retryguard1423130child1423142sourceb247ce2now native startup37names/61bank/6-coordinate mask verified;110CPUtests and122lane287tick canonical preflight passed.actual100tick37initialization finite/bounded for128recordedstreams and0early endings; stroke/recovery pending; no full task or formal400pass.",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/return_recovery_gen0_env12/policy_evidence.pt",
@@ -66,7 +66,7 @@
           "generations": 4,
           "declared_control_env_steps": 409600,
           "max_seconds": 7200,
-          "native_initialization_pending": true,
+          "native_initialization_pending": false,
           "parameter_width": 37,
           "gaussian_search_coordinates": [
             3,
@@ -75,7 +75,10 @@
             34,
             35,
             36
-          ]
+          ],
+          "last_verified_generation": 0,
+          "last_verified_control_ticks": 100,
+          "native_initialization_evidence": "reports/G07_full_racket_v4/NATIVE_STANDING_RECOVERY37_INITIALIZATION_1257.json"
         }
       ],
       "queued_native_sequence": {
@@ -230,8 +233,8 @@
         "report": "reports/G07_full_racket_v4/standing_recovery37_ready01_1238/REPORT.json",
         "cpu_command_check": "reports/G07_full_racket_v4/standing_recovery37_bank_cpu02_1254/REPORT.json",
         "legacy_equivalence": "reports/G07_full_racket_v4/recovery37_legacy_commands_1234/REPORT.json",
-        "native_execution": false,
-        "native_execution_scope": "Native startup passed37name/schema/bank validator and generation-start captures37coordinates/61bank/six-coordinate mask.100tick state and physical outcomes pending."
+        "native_execution": true,
+        "native_execution_scope": "Actual64x37population,61bank,canonical37names/six-coordinate Gaussian mask,31fixed Gaussian coordinates and128recordedbody/ball/clock streams verified at100ticks; stroke/recovery not reached."
       },
       "historical_stopped_gpu_jobs": [
         {
@@ -414,9 +417,12 @@
       "latest_partial_native_contacts": {
         "run": "ball_standing_recovery37_cem18_retry01",
         "generation": 0,
-        "ticks": null,
+        "ticks": 100,
         "whole_generation_complete": false,
-        "formal_acceptance": false
+        "formal_acceptance": false,
+        "first_episodes_complete": 0,
+        "actual_contacts": 0,
+        "report": "reports/G07_full_racket_v4/NATIVE_STANDING_RECOVERY37_INITIALIZATION_1257.json"
       },
       "latest_airborne_strings_power_milestone": {
         "report": "reports/G07_full_racket_v4/AIR_STRINGS_POWER_MILESTONE_0844.json",

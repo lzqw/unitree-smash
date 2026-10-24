@@ -1,0 +1,97 @@
+{
+  "verified_at": "2026-10-24T12:56:59.550437+00:00",
+  "scope": "Actual corrected CEM18retrygeneration0first100native ticks.37layout and61bank accepted by native validator; fixed-coordinate Gaussian sampling and128recorded body/ball/clock streams checked. Stroke and recovery phases not yet reached.",
+  "run": "ball_standing_recovery37_cem18_retry01",
+  "source_commit": "b247ce2e4dad26ae1b65debc42dee5466290d322",
+  "generation": 0,
+  "control_ticks": 100,
+  "population_shape": [
+    64,
+    37
+  ],
+  "native_canonical_parameter_names": 37,
+  "bank_rows_exactly_match": 61,
+  "reference37_parameters_exactly_match": true,
+  "gaussian_search_coordinates": [
+    3,
+    32,
+    33,
+    34,
+    35,
+    36
+  ],
+  "last_gaussian_fixed_coordinates_equal_warm_reference": true,
+  "fixed_coordinate_sigmas_zero": true,
+  "first_episodes_complete": 0,
+  "actual_contacts": 0,
+  "all_saved_numeric_arrays_finite": true,
+  "public_actions_bounded": true,
+  "root_max_abs_roll_rad": 0.03184887300359028,
+  "root_max_abs_pitch_rad": 0.14007085056321333,
+  "physical_configs_asset_rules_and_jump_metrics_unchanged": true,
+  "unchanged_source_sha256": {
+    "quadsmash/tasks/stand/full_racket_env_v4.py": "56909143cd4aef306f5cc5d3e547fe881a34aa9af9c571ea7edb9bafb2a50d8a",
+    "quadsmash/tasks/stand/full_racket_train_env_v4.py": "a5979c3afcd812ff9168f527f60be4df7035150aaeb26287e07451cff3b2ec3e",
+    "quadsmash/physics/rally_rules_v4.py": "80960adcc3cc6ebc0bbf58060aea6e208e74a9f28a62bb2f4a66140db4a98bed",
+    "quadsmash/tasks/stand/jump_metrics.py": "96102348a875e297b0ae230a99ba02249663a06bb5d0c10e7f5ae1026c5abe7d"
+  },
+  "first_failed_startup_preserved": true,
+  "native_execution": true,
+  "formal_acceptance": false,
+  "shapes": {
+    "partial_public_and_poses.npz": {
+      "observations": [
+        100,
+        2,
+        794
+      ],
+      "actions": [
+        100,
+        2,
+        18
+      ],
+      "link_poses": [
+        50,
+        2,
+        28,
+        7
+      ],
+      "valid_first_episode": [
+        100,
+        2
+      ]
+    },
+    "all_first_episodes.partial.npz": {
+      "link_poses": [
+        50,
+        128,
+        28,
+        7
+      ],
+      "ball_position_m": [
+        50,
+        128,
+        3
+      ],
+      "episode_clock_s": [
+        50,
+        128
+      ],
+      "valid_first_episode": [
+        50,
+        128
+      ]
+    }
+  },
+  "snapshot_sha256": {
+    "progress.json": "1786dbd6216bb6f930fed33803cbae3068e047c4e7a30d5d244cc00185471ea0",
+    "partial_search_state.pt": "767b2ea35d85323089ea65f343f40effaf426e185dda57d6419f92515906b135",
+    "episodes.partial.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "contacts.partial.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "causal_plans.partial.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "partial_public_and_poses.npz": "3c41dab97bd06a88219e024939d606b89406c4ee4d845405b2652b295998e597",
+    "all_first_episodes.partial.npz": "2bd6675dfd331e00b355dafc90015cc3d9657cb2f432562f79610131447d192d",
+    "trajectory.partial.json": "68c7d26d085c9b5127a540bfcf9e63a42e077a3fc75e5a0b302cd34ee96bd8f5",
+    "generation_start_000.pt": "c7d5057db9d430e274701bf90d2726979c9f9a9869eb6c0a643c85be3fd6439a"
+  }
+}

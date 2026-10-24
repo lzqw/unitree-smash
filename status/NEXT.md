@@ -2,7 +2,7 @@
 
 输入standing_recovery37_ready01_1238，policy SHA 62afc8cf55ecc29bfc4551a88a0053604cd825b9a94e77dd899a80101790f54a，bank SHA 8bb7ad250b2ad7cbedaf2fbe3e91d6688a0961561c82df98bb3c6b548fa362fa。37为策略坐标数，不是新增物理关节：原32动作策略坐标+5个原有standing目标/反馈参数（thigh/front-back-thigh/calf/roll-feedback/actor-gain），硬件仍18关节、原速度力矩质量惯量全部不改。61bank=60个实际CEM16强攻击参考的恢复交接/standing前后偏置/actor-gain提案+1个CEM17候选26弱击球恢复参考。前60仅改变[3,33,36]，其余原32坐标保持；原攻击与原恢复结果不继承。Gaussian仅搜索[3,32,33,34,35,36]，其他坐标/更新均值保留warm强击球参考；明示例外为generation0声明bank和精确best重测。之后仍需优化球路/首落目标，不能把站立课程算完成完整目标。
 
-已完成110CPU测试；122路287步使用与原生相同的canonical37参数顺序进行预检有限有界。旧32/默认37与精确f1deb6a原生teacher在两种恢复时机、287步×2流指令逐位一致；改变standing gain只在恢复门后改变腿，臂指令不变。实际retry generation_start已确认37名字/37reference/61bank、search_coordinate_indices和固定坐标sigma=0，正式面板未读取。下一步冻结核对原生100/200/300步，验证实际强击球能否同回合合格恢复、目标首落。
+已完成110CPU测试；122路287步使用与原生相同的canonical37参数顺序进行预检有限有界。旧32/默认37与精确f1deb6a原生teacher在两种恢复时机、287步×2流指令逐位一致；改变standing gain只在恢复门后改变腿，臂指令不变。实际retry generation_start已确认37名字/37reference/61bank、search_coordinate_indices和固定坐标sigma=0，正式面板未读取。NATIVE_STANDING_RECOVERY37_INITIALIZATION_1257.json已冻结核对原生100步：实际64×37/61bank/37canonical名字/固定Gaussian坐标与sigma=0均匹配，128记录姿态/球/时钟有限、0提前结束，root roll≤.031849/pitch≤.140071rad。仅初始化，不证明击球/恢复。下一步核对200/300步，验证实际强击球能否同回合合格恢复、目标首落。
 
 原ball_standing_recovery37_cem18从009e732启动，在首控制步前FAILED：原生候选bank校验仍按32名字构建，CPU旧预检只用checkpoint名字，漏掉入口整合错误。已统一canonical helper用于原生bank校验/状态元数据/CPU预检并新增回归，输入policy/bank字节保持。原FAILED/错误日志/7.182751秒/.001995208619GPU小时/0控制环境步全部保留，声明cap409600不改；见该目录STARTUP_FAILURE.json。不得覆盖原失败或伪称已完成37训练。
 
