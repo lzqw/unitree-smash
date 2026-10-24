@@ -22,13 +22,16 @@ def main():
     p.add_argument('--anticipate-measured-motion',action='store_true')
     p.add_argument('--protect-post-hit-net',action='store_true')
     p.add_argument('--maximum-predictive-margin',type=float,default=.15)
+    p.add_argument('--maximum-joint-correction',type=float,default=.4)
+    p.add_argument('--projection-iterations',type=int,default=4)
     a=p.parse_args()
     if a.output.exists():raise ValueError('Use a fresh output directory')
     source=torch.load(a.checkpoint,map_location='cpu',weights_only=True);bank=json.loads(a.bank.read_text())
     assert bank['seed']==source['seed'] and len(source['parameters'])==32
     config=validate_joint_preparation(dict(anticipate_measured_motion=a.anticipate_measured_motion,
         protect_post_hit_net_volume=a.protect_post_hit_net,
-        maximum_predictive_margin_m=a.maximum_predictive_margin))
+        maximum_predictive_margin_m=a.maximum_predictive_margin,
+        maximum_joint_delta_rad=a.maximum_joint_correction,iterations=a.projection_iterations))
     warm=copy.deepcopy(source);warm['seed']=dict(source['seed'],joint_preparation_guard=config)
     warm['seed'].pop('cartesian_preparation',None)
     warm.pop('training_result',None)
