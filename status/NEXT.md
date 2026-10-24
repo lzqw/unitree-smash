@@ -7,3 +7,6 @@ https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progr
 
 独立评测、策略锁、训练诊断和搜索终端报告：
 `reports/G07_full_racket_v4/formal_and_robust_20261025.json`
+
+GitHub 交付包（18,454,043 字节，SHA256 `736ea5f05e3128986f07c63c37c5b53fba5461547f1eb0a0b31755aa4475f46d`）：
+https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_formal_and_robust_delivery_20261025.zip

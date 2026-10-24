@@ -149,3 +149,5 @@ G10 = 冻结测试、消融、多种子及结论审计；结果可以是不支�
 CEM28 的两个原生 TRAIN65 同回合完整扣杀里程碑已保留并上传，但它们不代表分布通过。candidate39 在冻结策略锁下完成正式 A/B 各 200 回合：A 为完整 0/200、空中接触 21/200、接触后恢复 7/21、数值故障 0；B 为完整 0/200、空中接触 9/200、接触后恢复 1/9、数值故障 0。按较差面板聚合，形式验收为 false。
 
 随后完成 candidate8 的 TRAIN128 诊断（完整 0/128、空中接触 16/128、接触后恢复 8/16、数值故障 0），并将固定地面重置扰动 A/B 支持加入 TRAIN 搜索，默认无噪声路径保持不变。CEM29 无噪声恢复两代和 CEM30 B 级扰动两代均保存了负结果；291 项测试通过。详细锁、面板、原始事件哈希和搜索收据见 [`formal_and_robust_20261025.json`](reports/G07_full_racket_v4/formal_and_robust_20261025.json)。
+
+交付包：[G07_formal_and_robust_delivery_20261025.zip](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_formal_and_robust_delivery_20261025.zip)，包含策略锁、A/B 400 回合事件、TRAIN128 诊断、分布搜索终端结果和扰动训练代码快照；SHA256 为 `736ea5f05e3128986f07c63c37c5b53fba5461547f1eb0a0b31755aa4475f46d`。
