@@ -241,6 +241,8 @@ def main():
         arm_velocity_search_enabled=args.search_arm_velocity,
         standing_recovery_parameter_search_enabled=args.search_recovery_parameters,
         contact_normal_search_enabled=args.search_contact_normal,
+        software_arm_target_rate_limit_rad_s=template['seed'].get('arm_target_rate_limit_rad_s'),
+        arm_target_telemetry_scope='When slew is enabled, before/after-slew targets and actual public arm state are saved at100Hz with first-episode masks; this is not a physics-substep maximum.',
         search_coordinate_indices=sorted(args.search_coordinates) if args.search_coordinates is not None else None,
         search_coordinate_scope='Gaussian samples and updated mean keep warm reference on other coordinates; supplied generation0bank and exact best reevaluation are explicit exceptions',
         trajectory_contract='All lanes native50Hz poses/ball/clock/first-episode validity; exact terminal/contact snapshots separate',
@@ -319,6 +321,11 @@ def main():
             all_poses,all_balls,all_clocks,all_valid=[],[],[],[]
             window_poses,window_balls,window_clocks,window_valid,window_observations=[],[],[],[],[]
             control_clock,control_actions,control_previous,control_valid,control_recovery=[],[],[],[],[]
+            arm_targets={key:[] for key in ['targets_before_slew_rad','targets_after_slew_rad',
+                'observed_position_rad','observed_velocity_rad_s','clock_s','valid_first_episode']}
+            def save_arm_targets(name):
+                if arm_targets['clock_s']:
+                    np.savez_compressed(args.output/name,**{key:np.stack(value) for key,value in arm_targets.items()})
             def save_control_window(name):
                 if control_clock:
                     np.savez_compressed(args.output/name,clock_s=np.stack(control_clock),
@@ -342,6 +349,13 @@ def main():
                     score-=10*env.body_ground_seen.float()
                     shaping=torch.where(active,torch.maximum(shaping,score),shaping)
                     action=controller.action(observation,default,limits)
+                    if controller.teacher.arm_target_rate is not None:
+                        arm_targets['targets_before_slew_rad'].append(controller.teacher.last_arm_targets_before_slew.cpu().numpy().copy())
+                        arm_targets['targets_after_slew_rad'].append(controller.teacher.last_arm_targets_after_slew.cpu().numpy().copy())
+                        arm_targets['observed_position_rad'].append((default[12:][None]+obs[:,21:27]).cpu().numpy().copy())
+                        arm_targets['observed_velocity_rad_s'].append(obs[:,39:45].cpu().numpy().copy())
+                        arm_targets['clock_s'].append(obs[:,775].cpu().numpy().copy())
+                        arm_targets['valid_first_episode'].append((~finished).cpu().numpy().copy())
                     if 2.2<=tick*.01<=3.5:
                         local=(obs[:,775]-controller.parameters[:,2]-controller.teacher.leg_event_time_gain*(controller.event_time-2.75))*controller.parameters[:,4]
                         control_clock.append(obs[:,775].cpu().numpy().copy())
@@ -392,6 +406,7 @@ def main():
                                 ball_position_m=np.stack(window_balls),episode_clock_s=np.stack(window_clocks),
                                 valid_first_episode=np.stack(window_valid),observations=np.stack(window_observations))
                         save_control_window('control_window.partial.npz')
+                        save_arm_targets('arm_targets.partial.npz')
                         print(json.dumps(dict(generation=previous+generation,tick=tick+1,first_complete=int(finished.sum()))),flush=True)
                     if bool(finished.all()) or stopping:break
             np.savez_compressed(args.output/f'public_and_poses_{previous+generation:03d}.npz',observations=np.stack(public),
@@ -406,6 +421,7 @@ def main():
                     ball_position_m=np.stack(window_balls),episode_clock_s=np.stack(window_clocks),
                     valid_first_episode=np.stack(window_valid),observations=np.stack(window_observations))
             save_control_window(f'control_window_{previous+generation:03d}.npz')
+            save_arm_targets(f'arm_targets_{previous+generation:03d}.npz')
             if stopping and not bool(finished.all()):
                 # Keep the latest terminal events and actual population even
                 # when stopping between the100tick periodic snapshots.

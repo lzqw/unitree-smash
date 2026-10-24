@@ -49,6 +49,8 @@ class FullRacketTeacherV4:
         self.joint_preparation=None
         self.face_feedback=None
         self.arm_target_rate=None
+        self.last_arm_targets_before_slew=None
+        self.last_arm_targets_after_slew=None
         if seed.get('arm_target_rate_limit_rad_s') is not None:
             self.arm_target_rate=ArmTargetRateV4(count,device,seed['arm_target_rate_limit_rad_s'])
         if seed.get('measured_face_feedback') is not None:
@@ -60,6 +62,7 @@ class FullRacketTeacherV4:
     def reset(self):
         self.walk.reset();self.standing.reset();self.leg_recovery_blend.reset()
         if self.arm_target_rate is not None:self.arm_target_rate.reset()
+        self.last_arm_targets_before_slew=None;self.last_arm_targets_after_slew=None
 
     @torch.inference_mode()
     def action(self,observation,parameters,default,limits,event_time=None,target_offset_world=None):
@@ -193,5 +196,7 @@ class FullRacketTeacherV4:
             desired=arm_limits[:,0]+.5*(action[:,12:]+1)*(arm_limits[:,1]-arm_limits[:,0])
             actual=(default[12:][None]+obs[:,21:27]).clamp(arm_limits[:,0],arm_limits[:,1])
             bounded=self.arm_target_rate(desired,actual,time)
+            self.last_arm_targets_before_slew=desired.detach()
+            self.last_arm_targets_after_slew=bounded.detach()
             action[:,12:]=(2*(bounded-arm_limits[:,0])/(arm_limits[:,1]-arm_limits[:,0])-1).clamp(-1,1)
         return action
