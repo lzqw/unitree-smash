@@ -1,0 +1,64 @@
+{
+  "created_at": "2026-10-24T10:58:04.339523+00:00",
+  "scope": "Static kinematic sign check on original CEM12contact state, using only the incremental pitch-basis offset. No full teacher, guard, tracking, changed-state dynamics or new performance outcome is modeled.",
+  "body_projected_pitch_rad": 0.16450046712288566,
+  "samples": [
+    {
+      "pitch_gain": 0.18109923601150513,
+      "hypothetical_joint_positions_rad": [
+        -0.5438749194145203,
+        1.6235225200653076,
+        -2.5918354988098145,
+        0.8267433643341064,
+        0.9035215377807617,
+        2.0921623706817627
+      ],
+      "resulting_static_face_normal_world": [
+        0.9909283714457424,
+        -0.038001157076806985,
+        0.12890693333158784
+      ]
+    },
+    {
+      "pitch_gain": 0.8,
+      "hypothetical_joint_positions_rad": [
+        -0.680343575481406,
+        1.5052765740909744,
+        -2.576474167796418,
+        0.9827465432267428,
+        0.9753008904837567,
+        2.035256697844455
+      ],
+      "resulting_static_face_normal_world": [
+        0.9818533662802313,
+        -0.013100249233662958,
+        0.18918876707387727
+      ]
+    },
+    {
+      "pitch_gain": 1.4,
+      "hypothetical_joint_positions_rad": [
+        -0.812644581401078,
+        1.3906417703990552,
+        -2.561581960282178,
+        1.1339855023328296,
+        1.044888155725196,
+        1.9800888814689375
+      ],
+      "resulting_static_face_normal_world": [
+        0.9719970378987517,
+        0.026900349387540573,
+        0.23344868218064396
+      ]
+    }
+  ],
+  "normal_baseline_matches_recorded_error": 1.432045721506128e-06,
+  "interpretation": "At this original contact state, increasing the inherited fixed pitch basis increases the upward face-normal component from.129 to.189/.233. It does not provide downward orientation correction. This fixed-basis sign check motivates replacing the orientation part with a measured-current-Jacobian correction; native new-body trajectories remain unmeasured.",
+  "formal_acceptance": false,
+  "new_dynamics_executed": false,
+  "sources": {
+    "reports/G07_full_racket_v4/ball_projection_range_cem12/contacts_000.json": "557ec6beddce4663010764f26f138ab0bf70c1f3840c506c3a3c1752f12d2bb2",
+    "reports/G07_full_racket_v4/projection_range_ready01_1024/policy.pt": "19771c5e5f701ea80c4b12d898f4454a433f506719c25b311c6cbfabee11d03c",
+    "quadsmash/control/full_racket_kinematics_v4.py": "9e7ce1df5f535a3aa48c0436e57a4478e8ef7d9a6f16419803e7d25d6cef0f4c"
+  }
+}

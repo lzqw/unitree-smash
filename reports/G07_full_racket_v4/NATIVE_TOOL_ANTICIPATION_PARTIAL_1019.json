@@ -1,0 +1,76 @@
+{
+  "verified_at": "2026-10-24T10:17:24.715788+00:00",
+  "scope": "Actual CEM11generation0through300control ticks;99closed/29pending first episodes. No completed generation or formal acceptance.",
+  "run": "ball_tool_motion_anticipation_cem11",
+  "generation": 0,
+  "control_ticks": 300,
+  "closed_first_episodes": 99,
+  "pending_first_episodes": 29,
+  "first_contacts": [
+    {
+      "env_id": 2,
+      "time_s": 2.7479665279388428,
+      "string_contact": false,
+      "frame_contact": true,
+      "same_stroke_frame_string": false
+    },
+    {
+      "env_id": 0,
+      "time_s": 2.7540881633758545,
+      "string_contact": true,
+      "frame_contact": false,
+      "same_stroke_frame_string": false
+    },
+    {
+      "env_id": 8,
+      "time_s": 2.764082670211792,
+      "string_contact": false,
+      "frame_contact": true,
+      "same_stroke_frame_string": false
+    }
+  ],
+  "terminal_reason_counts": {
+    "rally_fault": 93,
+    "robot_rule_fault": 93,
+    "body_ground": 6
+  },
+  "closed_fault_counts": {
+    "robot_net_fault": 76,
+    "racket_invasion_fault": 15,
+    "engineering_body_crossing": 2
+  },
+  "numerical_failures_in_closed_rows": 0,
+  "pending_env_ids": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    12,
+    13,
+    16,
+    17,
+    52,
+    53,
+    54,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    76,
+    77,
+    82,
+    84,
+    85,
+    86,
+    87,
+    90,
+    92
+  ],
+  "preserved_evidence_directory": "reports/G07_full_racket_v4/anticipation_native_tick300_snapshot",
+  "formal_acceptance": false
+}

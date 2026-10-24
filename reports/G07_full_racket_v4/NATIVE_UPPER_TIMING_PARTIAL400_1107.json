@@ -1,0 +1,100 @@
+{
+  "verified_at": "2026-10-24T11:04:09.112862+00:00",
+  "scope": "Actual generation0 first400ticks.124first episodes ended;4still pending. Partial TRAIN evidence, not whole-generation metrics.",
+  "run": "reports/G07_full_racket_v4/ball_upper_timing_pitch_cem13",
+  "generation": 0,
+  "control_ticks": 400,
+  "closed_first_episodes": 124,
+  "pending_first_episodes": 4,
+  "counts_in_closed_first_episodes": {
+    "had_contact": 7,
+    "frame_hit": 4,
+    "airborne_string_hit": 3,
+    "crossed_net": 3,
+    "ground_seen": 14,
+    "landed_legal_court": 0,
+    "landed_target": 0,
+    "robot_net_fault": 63,
+    "racket_invasion_fault": 6,
+    "engineering_body_crossing": 0,
+    "complete_smash": 0,
+    "usable_air_strings": 2,
+    "numerical_failures": 0
+  },
+  "actual_airborne_string_contact_envs": [
+    27,
+    26,
+    0
+  ],
+  "contact_failures": [
+    {
+      "env_id": 27,
+      "outgoing_velocity_mps": [
+        5.839024543762207,
+        -4.347293853759766,
+        1.0427173376083374
+      ],
+      "crossed_net": true,
+      "robot_net_fault": false,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      }
+    },
+    {
+      "env_id": 26,
+      "outgoing_velocity_mps": [
+        4.9664082527160645,
+        -3.3530113697052,
+        1.8397374153137207
+      ],
+      "crossed_net": true,
+      "robot_net_fault": false,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      }
+    },
+    {
+      "env_id": 0,
+      "outgoing_velocity_mps": [
+        7.0964508056640625,
+        -1.3840080499649048,
+        -0.9722477197647095
+      ],
+      "crossed_net": true,
+      "robot_net_fault": true,
+      "training_terminal_reasons": {
+        "rally_fault": true,
+        "robot_rule_fault": true,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": false,
+        "root_fallen": false
+      }
+    }
+  ],
+  "preserved_evidence_directory": "reports/G07_full_racket_v4/upper_timing_native_tick400_snapshot",
+  "all_source_payloads_sha256": {
+    "progress.json": "6a820b03107beb233378049fbd2f681095cea9bcb57f5ef47e267664346aaa63",
+    "partial_search_state.pt": "15b2f20e48d5cd3b54eb543e016f323dac4ea94d92af64110d255d6ae8dbcfa4",
+    "partial_public_and_poses.npz": "041d71346922d505c93614cd24b40712bc0beb58d8794f325ce41324315d621f",
+    "all_first_episodes.partial.npz": "7ce6ea431a93d90c73133304e3a35cd9bee077a264bf41ae17ab681aedb92e1b",
+    "episodes.partial.json": "124302567efcb93535ca1963b0db2dd3b1b3cb389976fc0b20bfad916b89feb5",
+    "contacts.partial.json": "851ac49120f77dd542ca7fc6d1089e16853471ec577eeb83d426d2dd3b2148ed",
+    "causal_plans.partial.json": "9da17b92f2047ac5036e5f289d78e65502c7321381d0218d73afc6bdc17b16e7",
+    "trajectory.partial.json": "c2e1ccaadf99003f250b7a71a835e77648a978454d17c6ead1547a1bdc080c58",
+    "near_contact_all.partial.npz": "cfebbbee95e530ca3f964af5417d51def85aaf51e56ec63a6dc41345f8870fd3",
+    "control_window.partial.npz": "062b2726497060c8e7a4996d1d8f8046f7a38b2584641b61731f37763499f45c"
+  },
+  "formal_acceptance": false,
+  "whole_generation_complete": false
+}

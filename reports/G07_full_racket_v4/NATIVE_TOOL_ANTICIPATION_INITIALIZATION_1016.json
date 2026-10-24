@@ -1,0 +1,48 @@
+{
+  "verified_at": "2026-10-24T10:13:31.647926+00:00",
+  "scope": "Actual native128environment initialization and100control ticks; not contact, net avoidance or recovery acceptance.",
+  "output": "reports/G07_full_racket_v4/ball_tool_motion_anticipation_cem11",
+  "guard_pid": 1393956,
+  "child_pid": 1393973,
+  "source_commit": "1191ba62b4c89331d3fdcf76d6126179aff892e8",
+  "parameters": 32,
+  "action_width": 18,
+  "observation_width": 794,
+  "physics_dt_s": 6.25e-05,
+  "first_generation_allocation": {
+    "reference": 2,
+    "bank": 60,
+    "gaussian": 2
+  },
+  "later_generation_schedule": "No bank injection;2references+62Gaussian",
+  "generations_requested": 4,
+  "reference_parameters_equal_actual_warm_start": true,
+  "all32reference_parameters_equal_previous_initialization": true,
+  "all60candidate_bank_rows_bitwise_equal_native_population": true,
+  "all60proposals_equal_previous_bank": true,
+  "new_measured_motion_and_post_hit_flags_active": true,
+  "configuration": {
+    "maximum_x_m": 1.38,
+    "lookahead_s": 0.06,
+    "damping": 0.04,
+    "maximum_joint_delta_rad": 0.4,
+    "iterations": 4,
+    "anticipate_measured_motion": true,
+    "protect_post_hit_net_volume": true,
+    "maximum_predictive_margin_m": 0.25,
+    "post_hit_height_margin_m": 0.04
+  },
+  "prefix_pose_shape": [
+    50,
+    128,
+    28,
+    7
+  ],
+  "all_native_prefix_arrays_finite": true,
+  "first_episodes_complete_at100": 0,
+  "observed_maximum_prefix_body_position_difference_from_CEM10_m": 0.0,
+  "warm_checkpoint_sha256": "60106537197c807cc786f23207e73c25867f9c586f90bc99f7f63addba69bfce",
+  "bank_sha256": "7a1533507b3ac5373c9b3f645decd78bbbf82058d068a458595f835727ca776a",
+  "preserved_evidence_directory": "reports/G07_full_racket_v4/anticipation_native_tick100_snapshot",
+  "formal_acceptance": false
+}
