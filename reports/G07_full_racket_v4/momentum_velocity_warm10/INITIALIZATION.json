@@ -1,0 +1,72 @@
+{
+  "created_at": "2026-10-24T07:18:05.320286+00:00",
+  "source_checkpoint": "reports/G07_full_racket_v4/return_recovery_smooth_leg09/policy.pt",
+  "source_sha256": "ba20c9f44b70f5faee63f4d6b0ba53566621961f8d38d7ebf8a125eb5b4f7843",
+  "new_checkpoint_sha256": "d958206bd5f55dd1315a06db7cb5e78b1996e0f7e92f3142282d9bca80bcadd6",
+  "proposal_source": "reports/G07_full_racket_v4/centroidal_velocity_cpu02/PROPOSALS.json",
+  "reference_native_contact": {
+    "run": "ball_contact_recovery_cem02",
+    "generation": 0,
+    "env_id": 12,
+    "episode_index": 0
+  },
+  "old_velocity_seed_rad_s": [
+    4.799999999999999,
+    4.799999999999999,
+    -1.2948293721217872,
+    3.319378970719429,
+    4.2114565981268965,
+    0.00012500129598080886
+  ],
+  "new_velocity_seed_rad_s": [
+    4.431968991299018,
+    4.999999999999999,
+    4.999999999999999,
+    -3.8260562436978565,
+    -4.999999999999999,
+    0.0
+  ],
+  "changed_parameter_indices": {
+    "7": {
+      "old": 0.8191458582878113,
+      "new": 1.0
+    },
+    "13": {
+      "old": 0.009253598749637604,
+      "new": -0.009999999776482582
+    },
+    "19": {
+      "old": 0.0847630500793457,
+      "new": 0.05999999865889549
+    }
+  },
+  "reference_coupled_local_normal_speed_after_stationary_wrist_mps": 1.1712049081048934,
+  "nominal_zero_pitch_pre_joint_target_rad": [
+    -0.8844955266711512,
+    1.5188108529124533,
+    -2.6481722132915424,
+    1.0725705739715663,
+    1.1835770058729045,
+    2.0843900001198388
+  ],
+  "nominal_zero_pitch_post_joint_target_rad": [
+    -0.3526592596027361,
+    2.1188108395014082,
+    -2.0481722267025875,
+    0.6134438349901061,
+    0.5835770192839496,
+    2.0843900001198388
+  ],
+  "nominal_zero_pitch_target_in_original_bounds": true,
+  "other_parameters_unchanged": true,
+  "leg_blend_s": 0.1,
+  "native_execution_of_new_seed": false,
+  "performance_inherited": false,
+  "formal_acceptance": false,
+  "limitations": [
+    "Instantaneous fixed-configuration momentum proposal is not an integrated whole-body trajectory.",
+    "Native finite swing changes posture, earlier ball contact, reaction, foot support and recovery.",
+    "Pitch feedback and CEM candidates can saturate original targets; actual native actuator limits remain in force.",
+    "Strict attack, legal initial contact, actual overnet/first target landing and qualified recovery gates are unchanged."
+  ]
+}
