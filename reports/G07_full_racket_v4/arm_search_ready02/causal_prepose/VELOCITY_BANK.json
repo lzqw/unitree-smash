@@ -1,0 +1,118 @@
+{
+  "asset_sha256": "c2264fcece90b042c7c6a1cac7d516af83972729d0402947e3a519041e184cf2",
+  "reference_seed": {
+    "index": 15,
+    "joint_position_rad": [
+      -0.6153451338336122,
+      1.7700886461112773,
+      -2.288408166324513,
+      0.8714186655212138,
+      0.8830834721498482,
+      2.0943899998963214
+    ],
+    "joint_velocity_seed_rad_s": [
+      4.431968991299018,
+      4.999999999999999,
+      4.999999999999999,
+      -3.8260562436978565,
+      -4.999999999999999,
+      0.0
+    ],
+    "string_center_m": [
+      1.08263057089648,
+      -0.0021853519312381164,
+      1.7564064513553284
+    ],
+    "normal_world": [
+      0.9986983466198687,
+      0.018130893563575688,
+      -0.047674764365718714
+    ],
+    "planned_root_position_m": [
+      0.65,
+      0.0,
+      0.72
+    ],
+    "desired_ball_center_m": [
+      1.12,
+      0.0,
+      1.78
+    ],
+    "face_sign": 1,
+    "outward_contact_normal_world": [
+      0.996815278536125,
+      0.0,
+      -0.07974522228289
+    ],
+    "desired_point_velocity_mps": [
+      3.2,
+      0.0,
+      -0.3
+    ],
+    "string_uv_m": [
+      0.0,
+      0.0
+    ],
+    "virtual_ball_center_m": [
+      1.1081972485699487,
+      -0.0017212010560105789,
+      1.755185977387566
+    ],
+    "pitch_compensation_basis_rad_per_rad": [
+      -1.3404319172423194,
+      -1.1614435478196785,
+      0.15088313298541878,
+      1.5323052648548383,
+      0.7050361462849852,
+      -0.5589428542909621
+    ],
+    "smooth_recovery_arm": true,
+    "leg_recovery_blend_s": 0.1,
+    "velocity_proposal_scope": "Offline momentum-aware instantaneous proposal; wrist6 held at0 to avoid a pre-swing target beyond its upper bound. No native performance inherited.",
+    "causal_arm_prepose_gain": 0.5
+  },
+  "joint_velocity_seeds_rad_s": [
+    [
+      4.799999999999999,
+      4.799999999999999,
+      -1.2948293721217872,
+      3.319378970719429,
+      4.2114565981268965,
+      0.00012500129598080886
+    ],
+    [
+      4.431968991299018,
+      4.999999999999999,
+      4.999999999999999,
+      -3.8260562436978565,
+      -4.999999999999999,
+      0.0
+    ],
+    [
+      1.9954368515577008,
+      2.3913732005410284,
+      4.999999999999999,
+      -3.3205403490808987,
+      -2.5779572494895033,
+      0.0
+    ],
+    [
+      0.20386082627249782,
+      -2.451899089567497,
+      4.999999999999999,
+      -4.999999999985913,
+      1.0551565813094699,
+      0.0
+    ]
+  ],
+  "source_provenance": {
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/momentum_velocity_warm10/policy.pt": "d958206bd5f55dd1315a06db7cb5e78b1996e0f7e92f3142282d9bca80bcadd6",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/return_recovery_smooth_leg09/policy.pt": "ba20c9f44b70f5faee63f4d6b0ba53566621961f8d38d7ebf8a125eb5b4f7843",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/momentum_velocity_warm10/RECOVERY_LEG_BANK_FROM_CEM03_GEN0.json": "857063d83067308c345147935d7f608e63579699ad67f3c2482c1c4774e9503f",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/CENTROIDAL_PITCH_TRADEOFF_0719.json": "1e24574a62e8899b862da0f36273f5746a21f4ced2764ea52126a8a65b9c1cdc",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/scripts/prepare_full_racket_arm_search_v4.py": "2b6019acc29b56f73c375791b86cc87147691bf5d875fca3a98677e10087135e"
+  },
+  "scope": "Four unexecuted directional proposals, spanning old and instantaneous momentum/pitch objectives; each native outcome must be remeasured.",
+  "native_execution": false,
+  "formal_acceptance": false
+}

@@ -17,6 +17,9 @@ p.add_argument('--push-grid',action='store_true',help='Reserve16 candidates for 
 p.add_argument('--contact-curriculum',action='store_true',help='TRAIN: retain actual legal airborne strings contacts while optimizing failed return and recovery; formal flags unchanged')
 p.add_argument('--contact-grid',action='store_true',help='Reserve12 candidates for arm lead/speed around a measured contact, preserving leg timing')
 p.add_argument('--pitch-grid',action='store_true',help='Reserve12 candidates spanning existing arm pitch-compensation gain and timing; original joint/actuator limits remain')
+p.add_argument('--search-arm-velocity',action='store_true',help='Append six bounded arm velocity seed coordinates to the26 controller parameters')
+p.add_argument('--arm-velocity-bank',type=Path,help='Four offline velocity proposals for a12-candidate velocity/timing grid; requires --search-arm-velocity')
+p.add_argument('--prepose-gain',type=float,help='Optional current-public-forecast preparation correction in[0,1]; warm start only')
 p.add_argument('--recovery-leg-bank',type=Path,help='Optional measured same-family recovery26-vector: reserve8 contact-arm/recovery-leg crossover candidates')
 p.add_argument('--continue-after-miss',action='store_true',help='TRAIN curriculum: observe landing after missed/blocked/backward shuttle return; all rally failures remain failures, robot faults terminate')
 p.add_argument('--push-search-range',type=float,default=.15,help='Symmetric front/back leg target-offset search range in rad; native actuator/joint limits stay unchanged')
@@ -31,6 +34,8 @@ from quadsmash.tasks.stand.visual_geometry import export_robot_geometry
 from quadsmash.control.full_racket_rally_controller_v4 import FullRacketRallyControllerV4
 from quadsmash.control.full_racket_teacher_v4 import LOW,HIGH,PARAMETER_NAMES
 from quadsmash.control.full_racket_geometry_v4 import FullRacketGeometryV4
+from quadsmash.control.full_racket_arm_search_v4 import (
+    VELOCITY_PARAMETER_NAMES,extend_arm_velocity_parameters,arm_velocity_grid,body_crossovers_preserving_velocity)
 from quadsmash.control.full_racket_contact_curriculum_v4 import (
     contact_search_tiers,actual_outgoing_shaping,arm_timing_velocity_grid,measured_recovery_leg_crossovers,pitch_compensation_grid)
 from quadsmash.physics.full_racket_v4 import string_prism_gap
@@ -56,12 +61,16 @@ def main():
     if args.candidates<4 or args.generations<1 or not 0<args.sigma_fraction<=.5:raise ValueError('Invalid search settings')
     if args.timing_grid and args.candidates<14:raise ValueError('Timing grid requires at least14 candidates')
     if args.push_grid and args.candidates<18:raise ValueError('Push grid requires at least18 candidates')
-    if sum([args.timing_grid,args.push_grid,args.contact_grid,args.pitch_grid])>1:raise ValueError('Choose one controlled grid')
+    if sum([args.timing_grid,args.push_grid,args.contact_grid,args.pitch_grid,bool(args.arm_velocity_bank)])>1:raise ValueError('Choose one controlled grid')
+    if args.arm_velocity_bank and (not args.search_arm_velocity or not args.contact_curriculum or args.candidates<14):
+        raise ValueError('Velocity bank requires32-parameter contact curriculum and at least14 candidates')
+    if args.prepose_gain is not None and (args.resume or not 0.<=args.prepose_gain<=1.):
+        raise ValueError('Preparation gain in[0,1] requires a fresh warm start')
     if (args.contact_grid or args.pitch_grid) and (not args.contact_curriculum or args.candidates<14):
         raise ValueError('Contact grid requires contact curriculum and at least14 candidates')
     if args.contact_curriculum and not args.continue_after_miss:
         raise ValueError('Contact curriculum requires observing recovery after failed shuttle returns')
-    if args.recovery_leg_bank and (not (args.contact_grid or args.pitch_grid) or args.candidates<22):
+    if args.recovery_leg_bank and (not (args.contact_grid or args.pitch_grid or args.arm_velocity_bank) or args.candidates<22):
         raise ValueError('Recovery leg crossover requires contact grid and at least22 candidates')
     if not .15<=args.push_search_range<=.5:raise ValueError('Push search range must be between .15 and .5rad')
     sampling_contract=('contact-pitch-compensation-grid-v1' if args.pitch_grid else 'contact-arm-timing-speed-grid-v1' if args.contact_grid else 'front-back-push-grid-v1' if args.push_grid else
@@ -69,6 +78,7 @@ def main():
     selection_contract=('actual-contact-then-return-and-recovery-v1' if args.contact_curriculum else
         'ball-with-jump-recovery-v3' if args.continue_after_miss else 'legal-first-ball-v4')
     if args.recovery_leg_bank:sampling_contract+='-measured-recovery-leg-crossover-v1'
+    if args.search_arm_velocity:sampling_contract+='-joint-velocity32-v1'
     if not args.training_indices or len(set(args.training_indices))!=len(args.training_indices):raise ValueError('Distinct TRAIN indices required')
     args.output.mkdir(parents=True,exist_ok=True)
     protocol_path=ROOT/'configs/g07_full_racket_eval_v4_r3.json';protocol=json.loads(protocol_path.read_text())
@@ -81,6 +91,8 @@ def main():
     if not args.resume:
         template['seed']=dict(template['seed'],smooth_recovery_arm=True)
         template['control_revision']='Continuous planned arm fold across leg-recovery transition; no target reset discontinuity'
+    if args.prepose_gain is not None:
+        template['seed']=dict(template['seed'],causal_arm_prepose_gain=args.prepose_gain)
     if args.ik_seeds:
         if args.resume:raise ValueError('Changing geometric seed requires warm-start and remeasured fitness')
         seed=json.loads(args.ik_seeds.read_text())['seeds'][0].copy()
@@ -89,13 +101,23 @@ def main():
         seed['smooth_recovery_arm']=True;template['seed']=seed
         template['parameters']=template['parameters'].clone();template['parameters'][8:14]=0.;template['parameters'][7]=1.
         if len(template['parameters'])>=25:template['parameters'][24]=seed['desired_ball_center_m'][0]
+        if len(template['parameters'])==32:template['parameters'][26:32]=torch.tensor(seed['joint_velocity_seed_rad_s'])
         template['event_calibration_s']=0.
         template['initial_timing_scope']='New geometric seed: zero timing calibration is an initialization assumption; residual learned on actual TRAIN rollouts'
     assert template['asset_sha256']==protocol['asset']['sha256']
     assert hashlib.sha256((ROOT/protocol['asset']['path']).read_bytes()).hexdigest()==protocol['asset']['sha256']
-    if len(template['parameters'])!=24 and len(template['parameters'])!=26:raise ValueError('Use a24/26 parameter source')
+    if len(template['parameters']) not in (24,26,32):raise ValueError('Use a24/26/32 parameter source')
+    if len(template['parameters'])==32 and not args.search_arm_velocity:
+        raise ValueError('A32-parameter source requires --search-arm-velocity')
     if len(template['parameters'])==24:
         template['parameters']=torch.cat((template['parameters'],torch.tensor([template['seed']['desired_ball_center_m'][0],0.])))
+    if args.search_arm_velocity:
+        template['parameters']=extend_arm_velocity_parameters(template['parameters'],template['seed']['joint_velocity_seed_rad_s'])
+    velocity_bank=None
+    if args.arm_velocity_bank:
+        velocity_bank=json.loads(args.arm_velocity_bank.read_text())
+        if velocity_bank['asset_sha256']!=template['asset_sha256']:raise ValueError('Velocity bank asset mismatch')
+        if velocity_bank['reference_seed']!=template['seed']:raise ValueError('Velocity bank controller family mismatch')
     leg_bank=None
     if args.recovery_leg_bank:
         leg_bank=json.loads(args.recovery_leg_bank.read_text())
@@ -117,6 +139,9 @@ def main():
     surface_offset=controller.teacher.contact_offset.clone()
     surface_offset[0]=controller.teacher.face_sign*env.racket_config['assumptions']['string_thickness_m']/2
     low=torch.tensor([*LOW,.80,-.12],device=env.device);high=torch.tensor([*HIGH,1.45,.12],device=env.device)
+    if args.search_arm_velocity:
+        low=torch.cat((low,torch.full((6,),-5.,device=env.device)))
+        high=torch.cat((high,torch.full((6,),5.,device=env.device)))
     low[22:24]=-args.push_search_range;high[22:24]=args.push_search_range
     mean=template['parameters'].to(env.device).clamp(low,high);reference=mean.clone()
     sigma=(high-low)*args.sigma_fraction
@@ -144,11 +169,12 @@ def main():
     base_record=dict(schema='full-racket-ball-search-state-v4',controller_template=template,
         protocol_sha256=protocol_sha,asset_sha256=template['asset_sha256'],physics_dt_s=cfg.sim.dt,
         candidate_count=args.candidates,training_case_indices=args.training_indices,training_suite=suite,
-        reference_parameters=reference.cpu(),parameter_names=PARAMETER_NAMES+['intercept_plane_x','strike_timing_residual'],
+        reference_parameters=reference.cpu(),parameter_names=PARAMETER_NAMES+['intercept_plane_x','strike_timing_residual']+(VELOCITY_PARAMETER_NAMES if args.search_arm_velocity else []),
         selection_contract=selection_contract,source_checkpoint_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),
         sampling_contract=sampling_contract,
         push_search_range=args.push_search_range,
         source_hashes=source_hashes,formal_acceptance=False,formal_panels_read=False,
+        arm_velocity_search_enabled=args.search_arm_velocity,
         trajectory_contract='All lanes native50Hz poses/ball/clock/first-episode validity; exact terminal/contact snapshots separate',
         training_continue_after_miss=args.continue_after_miss,
         training_early_termination=('Robot-rule fault, body ground or fallen; observe recovery after failed shuttle return without reviving its rally' if args.continue_after_miss else
@@ -157,12 +183,17 @@ def main():
         bank_sha=hashlib.sha256(args.recovery_leg_bank.read_bytes()).hexdigest()
         if args.resume and prior.get('recovery_leg_bank_sha256')!=bank_sha:raise ValueError('Recovery bank changed; use warm-start')
         base_record.update(recovery_leg_bank_path=str(args.recovery_leg_bank),recovery_leg_bank_sha256=bank_sha)
+    if velocity_bank is not None:
+        bank_sha=hashlib.sha256(args.arm_velocity_bank.read_bytes()).hexdigest()
+        if args.resume and prior.get('arm_velocity_bank_sha256')!=bank_sha:raise ValueError('Velocity bank changed; use warm-start')
+        base_record.update(arm_velocity_bank_path=str(args.arm_velocity_bank),arm_velocity_bank_sha256=bank_sha)
     try:
         for generation in range(args.generations):
             state=dict(base_record,mean=mean.cpu(),sigma=sigma.cpu(),rng=rng.get_state().cpu(),
                 generations=previous+generation,best_parameters=best_parameters.cpu() if best_parameters is not None else None,
                 best_result=best_result,best_rank=best_rank)
             atomic_torch(args.output/'generation_start.pt',state)
+            atomic_torch(args.output/f'generation_start_{previous+generation:03d}.pt',state)
             population=(mean[None]+sigma[None]*torch.randn((args.candidates,len(low)),generator=rng,device=env.device)).clamp(low,high)
             population[0]=mean;population[1]=best_parameters if best_parameters is not None else reference
             if args.timing_grid:
@@ -189,8 +220,11 @@ def main():
             if args.pitch_grid:
                 grid=pitch_compensation_grid(reference.cpu().numpy(),low.cpu().numpy(),high.cpu().numpy())
                 population[2:14]=torch.as_tensor(grid,device=env.device,dtype=population.dtype)
+            if velocity_bank is not None:
+                grid=arm_velocity_grid(reference.cpu().numpy(),velocity_bank['joint_velocity_seeds_rad_s'],low.cpu().numpy(),high.cpu().numpy())
+                population[2:14]=torch.as_tensor(grid,device=env.device,dtype=population.dtype)
             if leg_bank is not None:
-                grid=measured_recovery_leg_crossovers(reference.cpu().numpy(),leg_bank['parameters'],low.cpu().numpy(),high.cpu().numpy())
+                grid=body_crossovers_preserving_velocity(reference.cpu().numpy(),leg_bank['parameters'],low.cpu().numpy(),high.cpu().numpy())
                 population[14:22]=torch.as_tensor(grid,device=env.device,dtype=population.dtype)
             env._episode_has_stepped.zero_();env._metrics_started=False
             env.rally_records.clear();env.episode_records.clear();env.contact_records.clear()
@@ -203,6 +237,12 @@ def main():
             poses,public,actions,valid,trace=[],[],[],[],[]
             all_poses,all_balls,all_clocks,all_valid=[],[],[],[]
             window_poses,window_balls,window_clocks,window_valid,window_observations=[],[],[],[],[]
+            control_clock,control_actions,control_previous,control_valid,control_recovery=[],[],[],[],[]
+            def save_control_window(name):
+                if control_clock:
+                    np.savez_compressed(args.output/name,clock_s=np.stack(control_clock),
+                        actions=np.stack(control_actions),observed_previous_actions=np.stack(control_previous),
+                        valid_first_episode=np.stack(control_valid),recovery_active=np.stack(control_recovery))
             with torch.inference_mode():
                 for tick in range(ticks):
                     obs=observation['policy'];data=env.robot.data
@@ -221,6 +261,13 @@ def main():
                     score-=10*env.body_ground_seen.float()
                     shaping=torch.where(active,torch.maximum(shaping,score),shaping)
                     action=controller.action(observation,default,limits)
+                    if 2.2<=tick*.01<=3.5:
+                        local=(obs[:,775]-controller.parameters[:,2]-controller.teacher.leg_event_time_gain*(controller.event_time-2.75))*controller.parameters[:,4]
+                        control_clock.append(obs[:,775].cpu().numpy().copy())
+                        control_actions.append(action.cpu().numpy().copy())
+                        control_previous.append(obs[:,-18:].cpu().numpy().copy())
+                        control_valid.append((~finished).cpu().numpy().copy())
+                        control_recovery.append((local>=controller.parameters[:,3]).cpu().numpy().copy())
                     public.append(obs[:case_count].cpu().numpy().copy());actions.append(action[:case_count].cpu().numpy().copy())
                     valid.append((~finished[:case_count]).cpu().numpy().copy())
                     if tick%2==0:
@@ -263,6 +310,7 @@ def main():
                             np.savez_compressed(args.output/'near_contact_all.partial.npz',link_poses=np.stack(window_poses),
                                 ball_position_m=np.stack(window_balls),episode_clock_s=np.stack(window_clocks),
                                 valid_first_episode=np.stack(window_valid),observations=np.stack(window_observations))
+                        save_control_window('control_window.partial.npz')
                         print(json.dumps(dict(generation=previous+generation,tick=tick+1,first_complete=int(finished.sum()))),flush=True)
                     if bool(finished.all()) or stopping:break
             np.savez_compressed(args.output/f'public_and_poses_{previous+generation:03d}.npz',observations=np.stack(public),
@@ -276,6 +324,7 @@ def main():
                 np.savez_compressed(args.output/f'near_contact_all_{previous+generation:03d}.npz',link_poses=np.stack(window_poses),
                     ball_position_m=np.stack(window_balls),episode_clock_s=np.stack(window_clocks),
                     valid_first_episode=np.stack(window_valid),observations=np.stack(window_observations))
+            save_control_window(f'control_window_{previous+generation:03d}.npz')
             if stopping and not bool(finished.all()):
                 atomic_json(args.output/'interrupted.json',dict(generation=previous+generation,control_ticks=tick+1,
                     resume_from='generation_start.pt',resume_semantics='Replay this generation from ground',formal_acceptance=False));return

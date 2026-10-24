@@ -1,0 +1,38 @@
+{
+  "created_at": "2026-10-24T07:53:28.877813+00:00",
+  "scope": "Separate CPU-only controller branch; current native source and queued jobs are untouched.",
+  "previous_goal_turn_classification": "progress: completed native128-case generation, published evidence and updated the guarded continuation from actual paired body recovery.",
+  "branch": "g07-arm-search-v4-20261024",
+  "main_branch": "g07-full-racket-court-v4-20261024",
+  "worktree": "/home/autodrive/LZQW/unitree_smash_arm_search_v4",
+  "features": [
+    "Optional six explicit velocity seed coordinates:32 controller parameters, same18 actions and794 public observations.",
+    "Optional preparation correction from current public forecast, solved with position/face-normal terms inside existing joint and pose-offset bounds.",
+    "Stable per-generation RNG-start checkpoints and all-lane10ms control-window recording for future native runs."
+  ],
+  "cpu_tests": {
+    "passed": 72,
+    "report": "arm_search_ready02/CPU_TESTS.txt"
+  },
+  "recorded_input_replays": [
+    "arm_search_cpu_replay04/REPORT.json",
+    "arm_search_warm10_cpu_replay01/REPORT.json"
+  ],
+  "unchanged_contracts": {
+    "configs/g07_full_racket_eval_v4_r3.json": "04121cfb257ea4d2e288c69b44dd0c8dbada814e0bf95c8a16f5af7ef2390367",
+    "configs/court_net_v4.json": "184d07dde336bf36be7dfde089373c851a2bcb855a6e44f4120442b59818b4f4",
+    "configs/full_racket_v4_r3.json": "14d58dd674665424dab63e67d525daf9b2239821797b97202aa45f9af1e5a26c",
+    "quadsmash/tasks/stand/jump_metrics.py": "96102348a875e297b0ae230a99ba02249663a06bb5d0c10e7f5ae1026c5abe7d",
+    "quadsmash/physics/rally_rules_v4.py": "80960adcc3cc6ebc0bbf58060aea6e208e74a9f28a62bb2f4a66140db4a98bed",
+    "assets/quadsmash_full_racket_v4_r3.usd": "c2264fcece90b042c7c6a1cac7d516af83972729d0402947e3a519041e184cf2"
+  },
+  "initializations": "arm_search_ready02/INITIALIZATIONS.json",
+  "native_execution": false,
+  "formal_acceptance": false,
+  "activation": "After the existing main-worktree native job finishes, inspect its actual outcomes before selecting and merging a future controller experiment. No second GPU process is launched here.",
+  "limitations": [
+    "A static planned pose improvement is not a native ball contact, outgoing speed or recovery.",
+    "The two saved public observation streams cover TRAIN1/65, not full TRAIN128 or formal A/B200.",
+    "The new native logging and32-parameter optimizer path require a guarded native execution after merge."
+  ]
+}

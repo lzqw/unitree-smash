@@ -5,6 +5,7 @@ from .go2_standing_transfer import Go2StandingTransfer
 from .piecewise_affine import PiecewiseAffinePolicy
 from .full_racket_kinematics_v4 import FullRacketKinematicsV4
 from .full_racket_recovery_blend_v4 import LegRecoveryBlend
+from .full_racket_arm_search_v4 import arm_velocity
 
 LOW=[.35,.45,1.10,1.55,.85,-.15,-.15,.30]+[-.25]*6+[-.10,0.,.8,.7,0.,.04,-.20,-.15,-.15,-.15]
 HIGH=[1.,1.20,1.60,2.,1.15,.15,.15,1.50]+[.25]*6+[.12,1.5,1.7,1.2,1.,.15,.10,.15,.15,.15]
@@ -68,7 +69,7 @@ class FullRacketTeacherV4:
             q[:,4:6]+=parameters[:,22:23]*push[:,None];q[:,6:8]-=parameters[:,22:23]*push[:,None]
             q[:,8:10]+=parameters[:,23:24]*push[:,None];q[:,10:12]-=parameters[:,23:24]*push[:,None]
         arm_hit=self.arm[None]+parameters[:,8:14]
-        velocity=self.arm_velocity[None]*parameters[:,7:8]
+        velocity=arm_velocity(parameters,self.arm_velocity)
         center=event_time-parameters[:,14]
         half_window=parameters[:,19] if parameters.shape[1]>=20 else torch.full_like(time,.12)
         arm_pre=arm_hit-half_window[:,None]*velocity
