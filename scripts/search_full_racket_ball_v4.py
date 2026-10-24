@@ -410,7 +410,8 @@ def main():
             atomic_torch(args.output/f'population_{previous+generation:03d}.pt',state);atomic_torch(args.output/'resume.pt',state)
             learned=dict(template,schema='full-racket-ball-cem-v4',parameters=best_parameters.cpu(),training_result=best_result,
                 training_suite=suite,training_case_indices=args.training_indices,parameter_names=base_record['parameter_names'],
-                event_calibration_s=template['event_calibration_s'],formal_acceptance=False,kind='Actual ball TRAIN optimization; no formal pass')
+                event_calibration_s=template['event_calibration_s'],native_execution=True,performance_inherited=False,
+                formal_acceptance=False,kind='Actual ball TRAIN optimization; no formal pass')
             atomic_torch(args.output/'best_candidate.pt',learned)
             atomic_json(args.output/'metrics.json',dict(history=history,best_training_episodes=best_result,
                 initialization_no_ball_result=template['result'],event_calibration_s=template['event_calibration_s'],
