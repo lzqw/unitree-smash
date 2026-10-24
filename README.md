@@ -138,3 +138,8 @@ G10 = 冻结测试、消融、多种子及结论审计；结果可以是不支�
 最新 CEM26b（2026-10-25）完成4代、512候选/409600控制步：84次空中拍线、11次攻击门槛、30次拍线+恢复、5次目标落点、完整0、NF0。第3代候选43在TRAIN65同回合出球8.3196米/秒、vz=-2.2454、恢复3.873秒、身体触地0，首落x=4.1707米，目标后沿仍超17.1厘米。
 
 [最新真实攻击恢复视频](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_attack_recovery_20261025_1900.mp4)展示候选43及独立失败回合；完整扣杀仍0。相对引拍gain=.10的代码、权重和CEM26原始数据随后上传。
+
+
+完整成功里程碑（2026-10-25）：CEM28原生TRAIN搜索在两个不同候选/代际中各得到一条同回合完整扣杀。候选30：TRAIN65出球norm8.1013米/秒，首次落点[3.9766,-.8932]米，恢复3.6859秒，身体触地0；候选39：norm8.0116米/秒，首次落点[3.8529,-.7712]米，恢复4.0119秒，身体触地0。两者均为独立TRAIN回合，正式128分布与A/B400尚未通过。
+
+[完整扣杀视频（候选39）](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_complete_smash_20261025_2030.mp4)与[候选30视频](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_complete_smash_20261025_2005.mp4)均来自实际全身原生轨迹，失败回合也保留。当前GPU0运行TRAIN[0..7]分布适配搜索。

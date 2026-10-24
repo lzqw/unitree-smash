@@ -1,0 +1,41 @@
+{
+  "scope": "Two independent completed CEM28generation1candidate30 TRAINepisodes. TRAIN65 is a native complete-smash episode; paired TRAIN1 failure is preserved. This is a milestone, not formal A/B400.",
+  "opening_title": "首次完整扣杀里程碑｜8.10米/秒、目标落点、恢复同时成立",
+  "opening_lines": [
+    "同一回合：合法空中拍线、攻击出球、真实越网、目标区首落、稳定恢复。",
+    "TRAIN65候选30：速度8.101米/秒，首落x=3.977,y=-.893米，恢复3.686秒。",
+    "保留同参数另一来球失败，两个回合不拼接为分布成绩。"
+  ],
+  "closing_lines": [
+    "这一独立TRAIN回合满足完整扣杀定义。",
+    "正式TRAIN128、扰动和A/B各200仍未运行；整体成功率不能由单回合推断。",
+    "失败回合按原生标签保留。"
+  ],
+  "caveats": [
+    "Native CEM28 generation1 candidate30 TRAIN65 complete flag recomputed independently and true.",
+    "Outgoing velocity [7.4917,-1.9142,-2.4168] m/s, norm8.1013, first landing [3.97664,-.89317] in original target, recovery3.6859s, body ground force0, robot faults0.",
+    "Paired TRAIN1 misses and body-lands; no cross-episode composition.",
+    "Native50Hz body samples; exact native contact still; CPUllvmpipe renderer.",
+    "Single TRAIN milestone is not formal acceptance or a population success rate."
+  ],
+  "cases": [
+    {
+      "run": "contact_lead_gain_normal_candidate43_cem28",
+      "generation": 1,
+      "env_id": 61,
+      "title": "完整扣杀｜8.10米/秒、目标区首落、恢复3.69秒",
+      "subtitle": "CEM28 / 第2代 / 候选30 / TRAIN65 / 原生实际执行",
+      "terminal_status": "完整扣杀条件同一回合成立｜目标区首落｜稳定恢复",
+      "limitation": "真实拍线/攻击越网/首落[3.977,-.893]/恢复3.686秒/body0；formal A/B仍未运行"
+    },
+    {
+      "run": "contact_lead_gain_normal_candidate43_cem28",
+      "generation": 1,
+      "env_id": 60,
+      "title": "同参数另一来球｜失败回合保留",
+      "subtitle": "CEM28 / 第2代 / 同候选30 / TRAIN1 / 独立实际执行",
+      "terminal_status": "未形成合法攻击回球｜身体触地，完整任务失败",
+      "limitation": "同一参数在另一来球失败；未与成功回合拼接"
+    }
+  ]
+}

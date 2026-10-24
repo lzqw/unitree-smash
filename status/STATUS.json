@@ -50,24 +50,55 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "CEM26b completed4native generations/512executions/409600steps using candidate11-derived relative prepose gain.10: 84airborne strings/11attack gates/30air+recovery/5targets/0full/NF0. Best gen3 candidate43 TRAIN65 norm8.31959,vz-2.24538,firstx4.17066,target overshoot.17066m,recovery3.87290s/body0; complete false. Latest video 1900 shows this real candidate and an independent paired failure. Formal TRAIN128/perturbation and A200+B200 remain unrun. CEM25b gain.35 failure and CEM26 startup failure retained.",
+      "notes": "CEM28 completed4native generations/512executions/409600steps with two independent complete-smash TRAIN milestones: gen1 candidate30 TRAIN65 norm8.10131, first[3.97664,-.89317], recovery3.6859s/body0; gen3 candidate39 TRAIN65 norm8.01158, first[3.85285,-.77116], recovery4.0119s/body0. Formal TRAIN128 candidate30 diagnostic is complete=0/128, air7/128, attack0; single milestones are not distribution performance. CEM29 now explores 8 TRAIN cases with 16 candidates to improve distribution; original gates remain.",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
-      "active_gpu_jobs": [],
+      "active_gpu_jobs": [
+        {
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/distribution_cem29_train0_7",
+          "guard_pid": 1500074,
+          "child_pid": 1500089,
+          "state": "RUNNING",
+          "started_at": "2026-10-24T20:40:00+00:00",
+          "source_commit": "10b3d88b568242f153a36109555ea433d5a5161c",
+          "generations": 3,
+          "candidates": 16,
+          "training_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "declared_control_env_steps": 307200,
+          "max_seconds": 7200,
+          "search_coordinates": [
+            7,
+            14,
+            18,
+            37
+          ],
+          "relative_prepose_gain": 0.1,
+          "native_initialization_pending": true
+        }
+      ],
       "queued_native_sequence": {
         "state_at_last_check": "NO_QUEUED_JOBS",
         "next_jobs": [],
         "still_running": false
       },
       "native_air_string_contact_milestone": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
-      "latest_native_training_summary": "reports/G07_full_racket_v4/ball_relative_candidate11_gain10_cem26b/GENERATION3_SUMMARY.json",
+      "latest_native_training_summary": "reports/G07_full_racket_v4/contact_lead_gain_normal_candidate43_cem28/GENERATION3_SUMMARY.json",
       "latest_video": {
-        "path": "reports/G07_full_racket_v4/video/Current_effect_attack_recovery_20261025_1900.mp4",
-        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_attack_recovery_20261025_1900.mp4",
-        "duration_s": 31.08,
-        "sha256": "a1bb3f841bf5273bffa982f34df9c7b4d876e4a08c4ab9430e948b8b39502fc1",
+        "path": "reports/G07_full_racket_v4/video/Current_effect_complete_smash_20261025_2030.mp4",
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_complete_smash_20261025_2030.mp4",
+        "duration_s": 31.0,
+        "sha256": "8578f97057d6d41da425617f90b9275d91f43b5597df060168accad56b257119",
         "formal_acceptance": false
       },
       "latest_completed_generation": {
@@ -446,14 +477,10 @@
           "reason": "Two complete generations have0attacks/full; second-generation fastest legal strings6.6872m/s. Fresh positive family around actual near8recovered case."
         }
       ],
-      "latest_stopped_generation_summary": "reports/G07_full_racket_v4/cem26_terminal_1900/REPORT.json",
+      "latest_stopped_generation_summary": "reports/G07_full_racket_v4/cem28_terminal_2030/REPORT.json",
       "latest_program_evidence_bundle": {
-        "name": "G07_CEM26b_four_generations_candidate43_and_video_20261025_1900.zip",
-        "bytes": 294735266,
-        "sha256": "21bf6dc9aae79d4a104b9556078ea59ae64759846e0fcfbfe0fc3d02cac00429",
-        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_CEM26b_four_generations_candidate43_and_video_20261025_1900.zip",
-        "scope": "Four complete native CEM26b generations, candidate43 attack+recovery milestone and latest video; formal acceptance false/full0.",
-        "upload_receipt": "reports/G07_full_racket_v4/cem26_delivery_upload_receipt_1900.json"
+        "name": "CEM28 package pending",
+        "scope": "CEM28 complete search/milestones and latest complete-smash video."
       },
       "latest_partial_native_contacts": "reports/G07_full_racket_v4/slew50_contact_prefix_1530/REPORT.json",
       "latest_airborne_strings_power_milestone": {

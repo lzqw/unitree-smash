@@ -58,7 +58,7 @@ def main():
         assert recorded['valid_first_episode'].all()
         assert np.isfinite(recorded['link_poses']).all()
         assert np.allclose(np.diff(recorded['episode_clock_s']), .02, atol=2e-6)
-        assert not case['row']['complete_smash']
+        assert isinstance(case['row']['complete_smash'], bool)
     font = '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc'
     title, text, small = [ImageFont.truetype(font, n) for n in [29, 23, 20]]
     fps, frames, segments, previews = 50, 0, [], []
@@ -147,7 +147,10 @@ def main():
             note = '本回合是否完成越网与恢复，以后续原生事件记录为准'
         draw.text((20, 598), status, font=text, fill=(255, 205, 131))
         draw.text((20, 640), note, font=small, fill=(211, 225, 234))
-        draw.text((20, 681), '独立精选训练回合｜完整扣杀仍为0｜尚未正式评测A/B各200回合',
+        footer = ('该独立回合完整扣杀成立｜整体正式A/B各200回合尚未运行'
+                  if row['complete_smash'] else
+                  '独立精选训练回合｜完整扣杀仍为0｜尚未正式评测A/B各200回合')
+        draw.text((20, 681), footer,
                   font=small, fill=(163, 188, 204))
         return picture
 

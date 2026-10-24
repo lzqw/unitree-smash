@@ -1,0 +1,63 @@
+{
+  "created_at": "2026-10-24T20:38:10.565422+00:00",
+  "scope": "Actually executed CEM28 generation3 second complete-smash candidate. Native TRAIN65 complete flag true; paired TRAIN1 failure preserved. No formal panel pass.",
+  "candidate_id": 39,
+  "checks": [
+    {
+      "env_id": 78,
+      "source_training_index": 1,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": true,
+      "attack_outgoing": false,
+      "actual_outgoing_velocity_mps": [
+        -1.6125129461288452,
+        4.092848777770996,
+        0.6241778135299683
+      ],
+      "outgoing_norm_mps": 4.443107815711624,
+      "first_landing_m": [
+        NaN,
+        NaN,
+        NaN
+      ],
+      "landed_target": false,
+      "recovery_s": 4.1028852462768555,
+      "maximum_body_ground_force_n": 0.0,
+      "sampled100Hz_arm_speed_peak_rad_s": 4.837381839752197
+    },
+    {
+      "env_id": 79,
+      "source_training_index": 65,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": true,
+      "fault": false,
+      "attack_outgoing": true,
+      "actual_outgoing_velocity_mps": [
+        7.3889617919921875,
+        -1.6559401750564575,
+        -2.616593837738037
+      ],
+      "outgoing_norm_mps": 8.011582711211005,
+      "first_landing_m": [
+        3.852853775024414,
+        -0.7711601257324219,
+        0.02519349567592144
+      ],
+      "landed_target": true,
+      "recovery_s": 4.011891841888428,
+      "maximum_body_ground_force_n": 0.0,
+      "sampled100Hz_arm_speed_peak_rad_s": 4.932592868804932
+    }
+  ],
+  "policy_sha256": "e064a9735a49c6ac72cd5170dff4196228c91cca7f015ef8d36e6ff382be81d6",
+  "native_execution": true,
+  "formal_acceptance": false,
+  "source_sha256": {
+    "reports/G07_full_racket_v4/contact_lead_gain_normal_candidate43_cem28/population_003.pt": "1f9315d71e19935fe287532366657d3502a5bb50e89936a030ee66d7141adb12",
+    "reports/G07_full_racket_v4/contact_lead_gain_normal_candidate43_cem28/episodes_003.json": "7ef6dcb43201ca6dcdb28ff4a14f51c4c20c23e0e0e5b8ab1b605518469ac45b",
+    "reports/G07_full_racket_v4/complete_smash_gen3_cem28_2030/extract.py": "927e6648e0a0d07298763a1f2bed049300d007168e7f833bc44aa5820f7da1b7"
+  }
+}
