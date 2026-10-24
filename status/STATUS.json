@@ -50,45 +50,19 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "CEM18completed128:77contacts/34airstrings/18attacks/10recoveries/0joined/0court/target/full/NF0; saved19tick interruption,.298592GPUh/104832steps,trueFAILED. GPU0CEM19earlier leg handover1.20-1.40and extended existing targets now running source d1768b1,guard1427124child1427134. Actual64x37population/61bank/37names/6-coordinate mask and native128streams100ticks finite/bounded,0early endings/contacts. Later stroke/recovery pending; formal400unrun.",
+      "notes": "CEM19completed128episodes:80contacts/37airstrings/19attacks/9qualifiedrecoveries/0airstrings+recovery/0court/target/full/NF0. Saved9ticknext-generation interruption,.295379GPUh/103552actualsteps,trueFAILED.118tests/122lane287tickbank preflight/four actual-state61tick command comparison pass for stronger poststroke retreat. Next native launch pending; original task/physical conditions unchanged.",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/return_recovery_gen0_env12/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
-      "active_gpu_jobs": [
-        {
-          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_early_landing37_cem19",
-          "guard_pid": 1427124,
-          "child_pid": 1427134,
-          "state": "RUNNING",
-          "started_at": "2026-10-24T13:12:20.217252+00:00",
-          "source_commit": "d1768b1f8a8e1db945141577ea4acaf05e9a1c1f",
-          "generations": 4,
-          "declared_control_env_steps": 409600,
-          "max_seconds": 7200,
-          "parameter_width": 37,
-          "gaussian_search_coordinates": [
-            3,
-            32,
-            33,
-            34,
-            35,
-            36
-          ],
-          "last_verified_generation": 0,
-          "last_verified_control_ticks": 300,
-          "native_initialization_pending": false,
-          "native_initialization_evidence": "reports/G07_full_racket_v4/NATIVE_EARLY_LANDING37_INITIALIZATION_1316.json",
-          "last_verified_contact_evidence": "reports/G07_full_racket_v4/NATIVE_EARLY_LANDING37_PARTIAL300_1321.json"
-        }
-      ],
+      "active_gpu_jobs": [],
       "queued_native_sequence": {
         "state_at_last_check": "NO_QUEUED_JOBS",
         "next_jobs": [],
         "still_running": false
       },
       "native_air_string_contact_milestone": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
-      "latest_native_training_summary": "reports/G07_full_racket_v4/ball_standing_recovery37_cem18_retry01/STOPPED_TRAIN_SUMMARY.json",
+      "latest_native_training_summary": "reports/G07_full_racket_v4/ball_early_landing37_cem19/STOPPED_TRAIN_SUMMARY.json",
       "latest_video": {
         "path": "reports/G07_full_racket_v4/video/Current_effect_attack_20261024_1216.mp4",
         "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_attack_20261024_1216.mp4",
@@ -104,29 +78,29 @@
         "upload_receipt": "reports/G07_full_racket_v4/video/Current_effect_attack_20261024_1216_upload_receipt.json"
       },
       "latest_completed_generation": {
-        "had_contact": 77,
-        "frame_hit": 44,
-        "airborne_string_hit": 34,
-        "recovery_success": 10,
-        "crossed_net": 33,
+        "had_contact": 80,
+        "frame_hit": 43,
+        "airborne_string_hit": 37,
+        "recovery_success": 9,
+        "crossed_net": 37,
         "landed_legal_court": 0,
         "landed_target": 0,
-        "attack_outgoing": 18,
+        "attack_outgoing": 19,
         "complete_smash": 0,
-        "robot_net_fault": 65,
+        "robot_net_fault": 66,
         "racket_invasion_fault": 0,
         "executions": 128,
-        "usable_air_strings": 7,
+        "usable_air_strings": 8,
         "air_strings_and_recovery": 0,
         "attack_outgoing_and_recovery": 0,
-        "task_valid_air_strings_crosses": 7,
-        "robot_rule_terminal": 67,
-        "body_ground_terminal": 38,
+        "task_valid_air_strings_crosses": 8,
+        "robot_rule_terminal": 66,
+        "body_ground_terminal": 51,
         "numerical_failures": 0,
         "generation": 0,
         "control_ticks": 800,
         "env_steps": 102400,
-        "run": "ball_standing_recovery37_cem18_retry01",
+        "run": "ball_early_landing37_cem19",
         "whole_job_complete": false
       },
       "pending_rule_regression": {
@@ -414,6 +388,17 @@
           "resource_receipt": "reports/G07_full_racket_v4/ball_standing_recovery37_cem18_retry01/job.json",
           "actual_gpu_hours": 0.2985923538472141,
           "actual_control_env_steps": 104832,
+          "charged_environment_step_cap": 409600
+        },
+        {
+          "run": "ball_early_landing37_cem19",
+          "guard_pid": 1427124,
+          "child_pid": 1427134,
+          "guard_terminal_state": "FAILED",
+          "reason": "Earlier standing handover/extended leg targets retain actual attacking contacts but all airborne strings still fail recovery. Actual post-stroke net contact persists despite early foot support; target/full still0. Next hypothesis is earlier stronger arm retreat, not changed native rules.",
+          "resource_receipt": "reports/G07_full_racket_v4/ball_early_landing37_cem19/job.json",
+          "actual_gpu_hours": 0.2953786440944532,
+          "actual_control_env_steps": 103552,
           "charged_environment_step_cap": 409600
         }
       ],
