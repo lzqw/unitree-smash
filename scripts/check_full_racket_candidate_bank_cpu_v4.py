@@ -76,7 +76,8 @@ def main():
     np.savez_compressed(a.output/'counterfactual_commands.npz',actions=commands)
     paths=[a.checkpoint,a.bank,a.public,a.joint_contract,Path(__file__)]
     paths += [ROOT/'quadsmash/control'/name for name in ['full_racket_candidate_bank_v4.py','full_racket_contact_curriculum_v4.py','full_racket_recovery_search_v4.py','full_racket_arm_search_v4.py','full_racket_parameter_layout_v4.py',
-        'full_racket_teacher_v4.py','full_racket_kinematics_v4.py','full_racket_joint_preparation_v4.py','full_racket_contact_normal_search_v4.py']]
+        'full_racket_teacher_v4.py','full_racket_kinematics_v4.py','full_racket_joint_preparation_v4.py','full_racket_contact_normal_search_v4.py',
+        'full_racket_rally_controller_v4.py','full_racket_relative_prepose_v4.py']]
     report=dict(created_at=datetime.now(timezone.utc).isoformat(),scope='Counterfactual CPU commands on saved old-policy public observations, not changed-state simulation or new policy outcomes.',
                 ticks=len(commands),candidates=len(rows),public_case_streams=2,lanes=count,
                 parameter_width=len(reference),standing_recovery_parameters_searched=bool(len(reference)>=37),
