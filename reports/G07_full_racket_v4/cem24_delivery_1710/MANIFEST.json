@@ -1,0 +1,632 @@
+{
+  "created_at": "2026-10-24T17:08:52.383780+00:00",
+  "scope": "Four complete native CEM24 generations over TRAIN[1,65], 512 candidate executions/409600 control env steps, plus selected actual candidate milestones and latest native replay video. No formal A200+B200 acceptance; complete=0.",
+  "source_commit": "9e1643d1767f35bd297718e16e8f3153ac7ee17d",
+  "native_execution": true,
+  "formal_acceptance": false,
+  "video": "Current_effect_attack_recovery_20261025_1710.mp4",
+  "video_sha256": "d7a0f6883c71fe6d4708e98ab47a1a6de9282bccc393b331f27d640f656f0b58",
+  "resource_note": "CEM24 native child completed all four generations. Guard receipt was unavailable after orphaning; cem24_terminal_1710/REPORT.json records the exact completion marker and elapsed single-GPU lower bound; stale protected ledger is preserved.",
+  "files": [
+    {
+      "path": "ACCEPTANCE.md",
+      "bytes": 4337,
+      "sha256": "2ba6d3393eb2c91dd22d0bacd1f5fd684f990e3668b67d41fe83eef275111a10"
+    },
+    {
+      "path": "AGENTS.md",
+      "bytes": 3158,
+      "sha256": "bc93f9a3c9895fcb32c12a3b762b71c08f298fbced620f104dc0922458bfe569"
+    },
+    {
+      "path": "PLAN.md",
+      "bytes": 2410,
+      "sha256": "a980fd84ef2cf0b8c0492de92b73f0ffec5e300f350a1cea5091ae270b4c0fc6"
+    },
+    {
+      "path": "README.md",
+      "bytes": 27877,
+      "sha256": "24646893b6dc1dc6735797b601a7d26d385b436430040f3aa9302b57867eace2"
+    },
+    {
+      "path": "TRAINING_SPEC.md",
+      "bytes": 10899,
+      "sha256": "f348d7441d64a5c85b2d1e95db11ee6b492f6489419096106769f6fe5e33794c"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/GENERATION0_SUMMARY.csv",
+      "bytes": 14436,
+      "sha256": "d0328673617b41aaaffdc83edd4716787f3a6cd35ac532d52f0c57ccc3d07adf"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/GENERATION0_SUMMARY.json",
+      "bytes": 2901,
+      "sha256": "2ba7b782eee9a51d07d5123768e0bb5a7d7779a00dcb4de3e660931edd0f8bba"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/GENERATION1_SUMMARY.csv",
+      "bytes": 14517,
+      "sha256": "e649a5c0c7b8586f47561ab217d9352ef81e90f0ca1ebb277a4f5bb80a7e413f"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/GENERATION1_SUMMARY.json",
+      "bytes": 2901,
+      "sha256": "c13b8c32bdd007b932f829ef9d6c7c283534bbe766a52e90541ea7daa7b4a992"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/GENERATION2_SUMMARY.csv",
+      "bytes": 14448,
+      "sha256": "aa4177abb266f8df6a1b365dd5fa940c5985f88bf431b100bade134c1daea161"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/GENERATION2_SUMMARY.json",
+      "bytes": 2899,
+      "sha256": "50aa086fe50662074811eede3bcac58dd1611d0041d22f47637c608376b6ea3d"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/GENERATION3_SUMMARY.csv",
+      "bytes": 14336,
+      "sha256": "9e9c0fb86fdac9509fd019cca186554cc66cb81d351f117e9515bd665932d0d6"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/GENERATION3_SUMMARY.json",
+      "bytes": 2900,
+      "sha256": "eb979a014f06827ff24d79d25c93731c158fea6ac5eb75b79300701944c7c76b"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/all_first_episodes_000.npz",
+      "bytes": 33245252,
+      "sha256": "37fa71ef50ec02e2dd933912f502dad60e50e2f634244ef4cab02010ca384d59"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/all_first_episodes_001.npz",
+      "bytes": 33257414,
+      "sha256": "65e419aedecad047fccecb6b250aeeea0033a0a1ac9e580ddea70bd57177e0be"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/all_first_episodes_002.npz",
+      "bytes": 33237892,
+      "sha256": "d2b0763278900c3913a640fe3c0aa9d5792408a404103c2f8489b25b3e2a0f30"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/all_first_episodes_003.npz",
+      "bytes": 33256675,
+      "sha256": "c81ece9f34614f05b47e961d43a907844a540815c329d710538de662be6acf36"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/arm_targets_000.npz",
+      "bytes": 6752618,
+      "sha256": "b4047394f158d61235490efeae606cecd4d09bb17b13838bedf3add66d9a478b"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/arm_targets_001.npz",
+      "bytes": 7108356,
+      "sha256": "774c51e31aa5559a7f339a90c0339635b8d1709f66e9a02cb12d58ec49e0178e"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/arm_targets_002.npz",
+      "bytes": 7039895,
+      "sha256": "4044660454437368b05d2442e5cf640065e7ef4be993ebd547ebe77dbee27250"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/arm_targets_003.npz",
+      "bytes": 7083900,
+      "sha256": "c873fb3bc01cae4e645e9bac142568434c1ac84a350f884b977eee8ef0dd80b9"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/asset_dependencies.json",
+      "bytes": 1555,
+      "sha256": "6591b33978bccc9f6f68aa781fb396a85475f54cc774840ffec700222d1649c0"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/best_candidate.pt",
+      "bytes": 99002,
+      "sha256": "649733c2fd329a919508ea8b54a2e022c6db6f7e04ce1d4c9e0f4e31a3ea874a"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/causal_plans_000.json",
+      "bytes": 2751598,
+      "sha256": "e66f4c474066e964444057b9c74c6064c74cde3a46b29fbedc75a82b9f434eb0"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/causal_plans_001.json",
+      "bytes": 2751882,
+      "sha256": "8152b60b70e98f832aef37185980d4811e3394194d23f1019ccc3d2a888bd6c8"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/causal_plans_002.json",
+      "bytes": 2751631,
+      "sha256": "6076cde2574c3c12011a057ec08015f681455ed85d7dc224cb16ba2f20f508d9"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/causal_plans_003.json",
+      "bytes": 2751667,
+      "sha256": "726cb6a166eeb9f8158407a855c7f740a3b857a3b17685b6e0f80b19a053cb5d"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/completed.json",
+      "bytes": 26,
+      "sha256": "13d9448f8819aff0197cd5347e727ee2536b199bd42a11354c0d3e79d68565e3"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/contacts_000.json",
+      "bytes": 748537,
+      "sha256": "c7aa24319d0db9a3fc02b2bc060dacc05ebd03206802b935bd00c7bbe88b5966"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/contacts_001.json",
+      "bytes": 757974,
+      "sha256": "a073ce5001d9929c5e2d1a727bcc8733408d657143be77205e17f963f4e82178"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/contacts_002.json",
+      "bytes": 719566,
+      "sha256": "2572f0f0e5a40347d7033aaa00d62baa43b888a28e5b43fa75dc2037ff92c605"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/contacts_003.json",
+      "bytes": 787974,
+      "sha256": "eca1cd28483e028806456fa2d85864cd07e7081ebe185cf9fad1508f6807a9b8"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/control_window_000.npz",
+      "bytes": 1270267,
+      "sha256": "87331cb45f12442f62ed209ae7376619c420615e72691da1a5db3de5de254807"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/control_window_001.npz",
+      "bytes": 1271735,
+      "sha256": "b728e0f1ca154c16fb5a31c838fb699c08bad75836b7db31f51c14b8e2ea511d"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/control_window_002.npz",
+      "bytes": 1271793,
+      "sha256": "b1db74da89fb596d3ae74c7399f1a7d7ed868a92189a4889234bfe200a24686d"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/control_window_003.npz",
+      "bytes": 1265187,
+      "sha256": "03c7eafa13e7a2edfbd26c02ca721144f2dd997e7b8906e2c423bb3882f410d6"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/dirty.patch",
+      "bytes": 128115,
+      "sha256": "40f3e382c14d80add4fb478a9be0be265c3c80e0d29e1c8e5b3282b94c969db3"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/episodes_000.json",
+      "bytes": 1427909,
+      "sha256": "626686d658c136b0bcdaf6a2b138292d1fccd341ff5d3d7f1ad468b700f785f9"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/episodes_001.json",
+      "bytes": 1429536,
+      "sha256": "7f775c60e4c5ecef788121edc453e219bbdf3481982566555aa021a76776ec7d"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/episodes_002.json",
+      "bytes": 1426981,
+      "sha256": "99a52e053c600ec2fd5cc951498bb5e9ba169dd40f2c6f79d8873143e4677675"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/episodes_003.json",
+      "bytes": 1429189,
+      "sha256": "ca3626ffb2feaed0d0c16e9831212805a652e3b032973d5075f83b83a72aaaac"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/generation_start_000.pt",
+      "bytes": 105952,
+      "sha256": "23fdd7cbb1c68129af666aff9aca634477b3f432170d7e795bfebd5ca19cfb3e"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/generation_start_001.pt",
+      "bytes": 115245,
+      "sha256": "299129a3eaff7db33885b4f10c230ee76ad4d8d78ba650b0a31c5ba97fad60dc"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/generation_start_002.pt",
+      "bytes": 115245,
+      "sha256": "55072a7ccaf30ca9604937177894f86bf2bca193109a8d6677f406a261b58749"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/generation_start_003.pt",
+      "bytes": 115245,
+      "sha256": "f67d0343f1fb2084ab623733d9ab0879921c1d5b8caebb9ed17035d42c1e08fe"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/geometry.json",
+      "bytes": 25872,
+      "sha256": "8afd390b7b92179ba6e2fde3774cc60162a98a5bd63ed50defd95b2e8f9d9c37"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/geometry.npz",
+      "bytes": 7997208,
+      "sha256": "6bf934a8a6c1e975c68148f4920642d14ba75179b444a060129cb03062ca198e"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/metrics.json",
+      "bytes": 31504,
+      "sha256": "88906ae3105934223831fe5799e113cffd49c9d918c6d836298f8b4b8803fdbb"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/near_contact_all_000.npz",
+      "bytes": 26354472,
+      "sha256": "b5c6527a6a8104fbbc55eefd2e0835ffe6dc4e4d70d6b436ffc8ef1b85c9d3aa"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/near_contact_all_001.npz",
+      "bytes": 26364513,
+      "sha256": "29857e3a2d9aa666b2c60180b2641d70895351ecb53ac53e1b434a4348ecf114"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/near_contact_all_002.npz",
+      "bytes": 26363242,
+      "sha256": "37380d9cc1a396a8339d3e11a6c66c5701113c6451f74bc08a83ad3f85a59254"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/near_contact_all_003.npz",
+      "bytes": 26345098,
+      "sha256": "913d84749557226be92194fac279cfddd4e501030ab86c37c97e43952538ef4e"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/population_000.pt",
+      "bytes": 548964,
+      "sha256": "48cc8e2145ef6a18d68e44100312a7a7a1a84cf54caac68df947af5ecfb7c83a"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/population_001.pt",
+      "bytes": 548964,
+      "sha256": "760a7ad8c80257dcfc24f3e83fe63a91ec59f22ec9d89900523fb0abff7d7bef"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/population_002.pt",
+      "bytes": 555684,
+      "sha256": "0c4fb0691f8150dcb9c7ca9faeb1f13d3f420ffa3d7e764acec897da199cd405"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/population_003.pt",
+      "bytes": 548964,
+      "sha256": "18ef8c5053b8e3a2b6f3fc1e86683202d126309ad3c5c7fe5693149efa096af0"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/public_and_poses_000.npz",
+      "bytes": 1122522,
+      "sha256": "36a0faf9e6c3df751aa26477845c0883df1ecdfe0557a36ef974600c149f66d7"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/public_and_poses_001.npz",
+      "bytes": 1086464,
+      "sha256": "a0b32c898420cc068b57a147898018bd28c91432dd2c54834353bd1c9996b5c9"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/public_and_poses_002.npz",
+      "bytes": 1125012,
+      "sha256": "b08266873b08ea606c4267d52ab14c0dbfedbcf53f77c079e767bb21e2a1d3a2"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/public_and_poses_003.npz",
+      "bytes": 1127739,
+      "sha256": "00e78e3c81e37c4821b6e611822601899bd410dbf0047658264978cbf255cbc8"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/resume.pt",
+      "bytes": 548636,
+      "sha256": "506a45c74df5ccf0a6e60b834b77678faedc41b4c41676ede5b5f842ed500fe7"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/source_hashes.json",
+      "bytes": 36058,
+      "sha256": "7fa4efe45c934d6c925a6b65098201d6f762828649612aba47ddf9bb7fe461b0"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/source_snapshot.zip",
+      "bytes": 723010,
+      "sha256": "92e214cf4a5dc729dd5e895564f56f7ba2c192004d3df581d1f75c302c46ed02"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/trajectory_000.json",
+      "bytes": 138430,
+      "sha256": "69db92a4325f1719bdff2691e6226386335427c80ae8765baa651fd46abc757b"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/trajectory_001.json",
+      "bytes": 138412,
+      "sha256": "0132009c9f669ea131378412a17e4732b6f8686af0883d697826bd09d85decac"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/trajectory_002.json",
+      "bytes": 138640,
+      "sha256": "68743a77b107e8ef7a8558446677c67f1524dc1a56a52a487ccc09069930b4a7"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/trajectory_003.json",
+      "bytes": 138445,
+      "sha256": "1f1c316fdf145eac6444c947cb8252ce87182ab76e989caa875acbdfb859a712"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/cem24_delivery_1710/build.py",
+      "bytes": 3355,
+      "sha256": "80c56e5736f23f0e0a7b7c90cd19eb87494af459d92926731a1408c883912e8f"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/cem24_terminal_1710/REPORT.json",
+      "bytes": 2780,
+      "sha256": "a3d15b91ced1f6379edfe159770ad3a8526a9d3f0d9a6fc57e4cc29b0cc568ab"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/cem24_terminal_1710/verify.py",
+      "bytes": 417,
+      "sha256": "27cd799d6e1ef9e9fe09afa74dec60b3ac92a559fb2f40b72d7768fe47b4a747"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive38_contact_prefix_1605/REPORT.json",
+      "bytes": 4763,
+      "sha256": "b081f14a06296c71f93ce8c03e5ca8268416e00780c34e42bcb511424258b7b7"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive38_contact_prefix_1605/ROWS.json",
+      "bytes": 40259,
+      "sha256": "955bb71551d5ce72e73a1de9c3081c02c4fbc99601eb3b43b0afea2286139a4d"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive38_contact_prefix_1605/analyze.py",
+      "bytes": 6953,
+      "sha256": "522c49ecd413eee8472b5170ef306978741857f46048f437ae0aa91fd7d70981"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive38_contact_prefix_1605/native_prefix/all_first_episodes.partial.npz",
+      "bytes": 16397096,
+      "sha256": "4dfd700597612c706c310085aa92687b51c03ce518aca8e5099b44c24b6dbe2e"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive38_contact_prefix_1605/native_prefix/arm_targets.partial.npz",
+      "bytes": 2962166,
+      "sha256": "bb968dd27d51f1cb1d57770bc1d7c76d9cc47ff71485ded8fab00b84fa5b2d6d"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive38_contact_prefix_1605/native_prefix/causal_plans.partial.json",
+      "bytes": 2751598,
+      "sha256": "e66f4c474066e964444057b9c74c6064c74cde3a46b29fbedc75a82b9f434eb0"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive38_contact_prefix_1605/native_prefix/contacts.partial.json",
+      "bytes": 748537,
+      "sha256": "c7aa24319d0db9a3fc02b2bc060dacc05ebd03206802b935bd00c7bbe88b5966"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive38_contact_prefix_1605/native_prefix/control_window.partial.npz",
+      "bytes": 1270267,
+      "sha256": "87331cb45f12442f62ed209ae7376619c420615e72691da1a5db3de5de254807"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive38_contact_prefix_1605/native_prefix/episodes.partial.json",
+      "bytes": 128915,
+      "sha256": "398633d7abfd33470390f20bb725c6817dd3bfa90d65de1c70d0f3540d8405ce"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive38_contact_prefix_1605/native_prefix/generation_start_000.pt",
+      "bytes": 105952,
+      "sha256": "23fdd7cbb1c68129af666aff9aca634477b3f432170d7e795bfebd5ca19cfb3e"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive38_contact_prefix_1605/native_prefix/near_contact_all.partial.npz",
+      "bytes": 26354472,
+      "sha256": "b5c6527a6a8104fbbc55eefd2e0835ffe6dc4e4d70d6b436ffc8ef1b85c9d3aa"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive38_contact_prefix_1605/native_prefix/partial_public_and_poses.npz",
+      "bytes": 558956,
+      "sha256": "eae5400d428fa1b395fe6d0504184c2660bf48e5d7404555130201650de2d7bc"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive38_contact_prefix_1605/native_prefix/partial_search_state.pt",
+      "bytes": 14025,
+      "sha256": "343667abebc09d10f3a7c553986bcfd00cfad715d08a4dfa53a7a9ebab3365b8"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive38_contact_prefix_1605/native_prefix/progress.json",
+      "bytes": 3500,
+      "sha256": "b8b693ebe0b6b8eb109d4dd4040a740d1b137db50a43dee7cbdc3887bdb129b4"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive38_contact_prefix_1605/native_prefix/trajectory.partial.json",
+      "bytes": 65957,
+      "sha256": "57d8d4004dd9c97ee05798c8d6f3f256fbe112266f367e597f8ace31c973858d"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive38_initialization_1600/REPORT.json",
+      "bytes": 4520,
+      "sha256": "140f6398ab87a2a9da7b1038cf7dc07d3614c6fdc6ebefc14c6fc51a77829733"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive38_initialization_1600/native_prefix/all_first_episodes.partial.npz",
+      "bytes": 3931154,
+      "sha256": "cc890c3b0ce0384682ea96d9f2d3dce6d14a2b8e92f9fb8f5ad1aa4d50dd67fb"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive38_initialization_1600/native_prefix/arm_targets.partial.npz",
+      "bytes": 480329,
+      "sha256": "330ed81ea3cab7bdd66990f3b7c922722cceea11be90e11d042738d178b21e4a"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive38_initialization_1600/native_prefix/causal_plans.partial.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive38_initialization_1600/native_prefix/contacts.partial.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive38_initialization_1600/native_prefix/episodes.partial.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive38_initialization_1600/native_prefix/generation_start_000.pt",
+      "bytes": 105952,
+      "sha256": "23fdd7cbb1c68129af666aff9aca634477b3f432170d7e795bfebd5ca19cfb3e"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive38_initialization_1600/native_prefix/partial_public_and_poses.npz",
+      "bytes": 137914,
+      "sha256": "148373cd9d4249a0984bb0cdc5951fbf600671b9d6437fbced33e1cc80255a5e"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive38_initialization_1600/native_prefix/partial_search_state.pt",
+      "bytes": 14025,
+      "sha256": "d965bf952c85a08473d7ba52b9cc9c3350cd5419a68c81fd51344347f79b4c45"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive38_initialization_1600/native_prefix/progress.json",
+      "bytes": 1518,
+      "sha256": "1786dbd6216bb6f930fed33803cbae3068e047c4e7a30d5d244cc00185471ea0"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive38_initialization_1600/native_prefix/trajectory.partial.json",
+      "bytes": 15086,
+      "sha256": "68c7d26d085c9b5127a540bfcf9e63a42e077a3fc75e5a0b302cd34ee96bd8f5"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive38_initialization_1600/verify.py",
+      "bytes": 7875,
+      "sha256": "5fba7db746526c9b4303ea41e061337b8ea70e31061711a3e606f2468288dd62"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive_attack_recovery_gen0_1615/candidate36/MILESTONE.json",
+      "bytes": 2369,
+      "sha256": "e15ac7b5e91daa86c988af182f312382b0bd5d22003ac2ceac0a53966276ea65"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive_attack_recovery_gen0_1615/candidate36/NATIVE_EPISODE_72.json",
+      "bytes": 10337,
+      "sha256": "6a3ce7def6f84bec5a5dbf3cd7dee29a9297bb039c67ad3ca496504d4f3ce022"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive_attack_recovery_gen0_1615/candidate36/NATIVE_EPISODE_73.json",
+      "bytes": 10446,
+      "sha256": "a7083e40d5d160b5e0dbce071a54d287f8dc9854bae1c9cf67393fe7d683fd0d"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive_attack_recovery_gen0_1615/candidate36/policy_evidence.pt",
+      "bytes": 70009,
+      "sha256": "e001e059e5496a09724fe41374834d2fd4b82562e1ff9c5cb50a4c9b3dc518cc"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive_attack_recovery_gen0_1615/candidate46/MILESTONE.json",
+      "bytes": 2310,
+      "sha256": "9bba7e6a8444950c8fd6ca1609b114e04971d0a87542c6608110fc3a9572743c"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive_attack_recovery_gen0_1615/candidate46/NATIVE_EPISODE_92.json",
+      "bytes": 10204,
+      "sha256": "fc8402d9f749865f5a6c41f4e776a8158018c562bf272bfcdb514567d659eb01"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive_attack_recovery_gen0_1615/candidate46/NATIVE_EPISODE_93.json",
+      "bytes": 10465,
+      "sha256": "c8a266db4a712de7af91dd9eed40eb2800babfa36c395d48a65900ab093579fa"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive_attack_recovery_gen0_1615/candidate46/policy_evidence.pt",
+      "bytes": 70009,
+      "sha256": "55e40b9c75d4146fefede936a076aa8fc7bbc44469e366254488bcbebec107b7"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive_attack_recovery_gen0_1615/extract.py",
+      "bytes": 3744,
+      "sha256": "b84b8f4e7d90ef526404169f81915e2906efa6b3320262c20a134e5debb68d9b"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive_attack_recovery_gen3_1710/candidate11/MILESTONE.json",
+      "bytes": 2315,
+      "sha256": "b2820c17c0262763ac4ea20dd4b9a198235f1fc77f7e3d0657760f95e27fb60a"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive_attack_recovery_gen3_1710/candidate11/NATIVE_EPISODE_22.json",
+      "bytes": 10133,
+      "sha256": "563304609da4874a5ec3081fd2e874639c7851a53afc25108145a8acf3255727"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive_attack_recovery_gen3_1710/candidate11/NATIVE_EPISODE_23.json",
+      "bytes": 10437,
+      "sha256": "a770a2a1626649b5135ac5629da3156268b09e9884ec0d124b7f11bd6a52d11d"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive_attack_recovery_gen3_1710/candidate11/policy_evidence.pt",
+      "bytes": 70073,
+      "sha256": "6e6d4f782fb1ef0eeeb47fb535adc5dd70b021d20999667284ddd0e97f3ef90c"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive_attack_recovery_gen3_1710/candidate39/MILESTONE.json",
+      "bytes": 2382,
+      "sha256": "b45581ce5d751e44d8035b9c416914e2d15c7fdbeb7102a33c5fcf5fec59d80f"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive_attack_recovery_gen3_1710/candidate39/NATIVE_EPISODE_78.json",
+      "bytes": 10406,
+      "sha256": "941f34187b229aa1ad07cb55d4c38b5bfa7497f2b433703f51502ae95a2ef731"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive_attack_recovery_gen3_1710/candidate39/NATIVE_EPISODE_79.json",
+      "bytes": 10436,
+      "sha256": "4dd28276fc8c3fa602165579366bbe7f2d03ef9764344c0b273f023212373ab1"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive_attack_recovery_gen3_1710/candidate39/policy_evidence.pt",
+      "bytes": 70073,
+      "sha256": "1cd91c3fa6adb1b1d75764377238237b59aec3866431da0cff814b12fc6cd191"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive_attack_recovery_gen3_1710/candidate48/MILESTONE.json",
+      "bytes": 2368,
+      "sha256": "78c3076c4ed047c00f796ea3bc5a5c8df320734fe376e27758224a7560023ccc"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive_attack_recovery_gen3_1710/candidate48/NATIVE_EPISODE_96.json",
+      "bytes": 10354,
+      "sha256": "23f4fa86c73902bcfd8beba922667625bee51bc3814d378c1bc4451293b102f3"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive_attack_recovery_gen3_1710/candidate48/NATIVE_EPISODE_97.json",
+      "bytes": 10405,
+      "sha256": "a5f5bcd6852db1c22418270cfc41f6aba34342ea42b8b2237285fdae34d695ea"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive_attack_recovery_gen3_1710/candidate48/policy_evidence.pt",
+      "bytes": 70073,
+      "sha256": "4bfd3f4a396cd74e5a6158c8df7748d0f812c849b7911ec80b13282f6a8e1694"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/positive_attack_recovery_gen3_1710/extract.py",
+      "bytes": 3311,
+      "sha256": "2357c13d7c624b77c987aed19661da0bdfe2d3edd98481019f8b3fedf476d0f3"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/video/Current_effect_attack_recovery_20261025_1710.json",
+      "bytes": 54606,
+      "sha256": "0b7ee0386593c04ff286ef3d3a8fb9087d5faf7ab6ba1c4d9781b937e4e7e8db"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/video/Current_effect_attack_recovery_20261025_1710.mp4",
+      "bytes": 2743373,
+      "sha256": "d7a0f6883c71fe6d4708e98ab47a1a6de9282bccc393b331f27d640f656f0b58"
+    },
+    {
+      "path": "reports/G07_full_racket_v4/video_spec_20261025_1710.json",
+      "bytes": 2324,
+      "sha256": "6a2f39b43aa833259baa1822dc3023f4e404f224354a7251436a52852b5193ae"
+    },
+    {
+      "path": "status/NEXT.md",
+      "bytes": 3824,
+      "sha256": "8f6fd1993cbf03ab2175ea4f9c7b8cc7ae9fffa3c53ef2813bbdf054d6820bd7"
+    },
+    {
+      "path": "status/STATUS.json",
+      "bytes": 45499,
+      "sha256": "4bf2e7236ccfdfc32789d7428f4970a7b954e7617d50803070423984b82821e8"
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "created_at": "2026-10-24T16:12:10.447063+00:00",
+  "scope": "One actually executed CEM24candidate with TRAIN65attacking air+recovery but original target missed. Paired TRAIN1frame/body failure preserved; no full or distribution pass.",
+  "candidate_id": 46,
+  "optimizer_generation_winner": false,
+  "checks": [
+    {
+      "env_id": 92,
+      "source_training_index": 1,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": true,
+      "attack_outgoing": false,
+      "actual_outgoing_velocity_mps": [
+        -3.439105987548828,
+        4.283041954040527,
+        0.20397982001304626
+      ],
+      "outgoing_norm_mps": 5.4966813752152355,
+      "first_landing_m": [
+        NaN,
+        NaN,
+        NaN
+      ],
+      "target_x_overshoot_m": null,
+      "recovery_s": 0.0,
+      "maximum_body_ground_force_n": 189.55435180664062,
+      "sampled100Hz_arm_speed_peak_rad_s": 4.778663158416748
+    },
+    {
+      "env_id": 93,
+      "source_training_index": 65,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "fault": false,
+      "attack_outgoing": true,
+      "actual_outgoing_velocity_mps": [
+        7.847681999206543,
+        -1.0597084760665894,
+        -1.4419127702713013
+      ],
+      "outgoing_norm_mps": 8.04911220272082,
+      "first_landing_m": [
+        4.60443115234375,
+        -0.6256351470947266,
+        0.02504313737154007
+      ],
+      "target_x_overshoot_m": 0.60443115234375,
+      "recovery_s": 3.430933713912964,
+      "maximum_body_ground_force_n": 0.0,
+      "sampled100Hz_arm_speed_peak_rad_s": 4.830764293670654
+    }
+  ],
+  "policy_sha256": "55e40b9c75d4146fefede936a076aa8fc7bbc44469e366254488bcbebec107b7",
+  "native_execution": true,
+  "formal_acceptance": false,
+  "source_sha256": {
+    "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/population_000.pt": "48cc8e2145ef6a18d68e44100312a7a7a1a84cf54caac68df947af5ecfb7c83a",
+    "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/episodes_000.json": "626686d658c136b0bcdaf6a2b138292d1fccd341ff5d3d7f1ad468b700f785f9",
+    "reports/G07_full_racket_v4/positive_attack_recovery_gen0_1615/extract.py": "b84b8f4e7d90ef526404169f81915e2906efa6b3320262c20a134e5debb68d9b"
+  }
+}

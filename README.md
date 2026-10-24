@@ -126,3 +126,10 @@ G10 = 冻结测试、消融、多种子及结论审计；结果可以是不支�
 [最新5软件目标方案第0代完整轨迹、原始权重与采样诊断](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_slew50_generation0_and_power_sampling_20261024_1545.zip)已上传，79,110,726字节、32归档成员及GitHub大小/SHA核对通过，严格保留7.9665m/s未达到8和落点超界的失败。当前第1代继续；新正方向输入未原生运行，120路506步CPU预检已完成。
 
 [软件5方案完整两代与新正方向搜索程序](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_slew50_two_generations_and_positive_search_20261024_1605.zip)已上传：167,207,887字节、448成员、全部数据SHA核验；CEM23两代原生失败/73步中断与CEM24前100步分开标识。后续400步快照不在此归档内，CPU反馈增益方案尚未原生运行。
+
+
+最新 CEM24 四代原生结果（2026-10-25）：512 次候选执行、409600 控制环境步，83 次空中拍线、16 次攻击门槛、54 次拍线与合格恢复同回合、6 次目标落点、完整成功 0、数值故障 0。第3代候选11在TRAIN65中实际出球8.0968米/秒、向下2.0671米/秒、恢复3.02秒，首落x=4.2200米，目标后沿仍超22.0厘米；候选48出球8.1752米/秒并恢复但首落x=4.4305米。
+
+最新[真实攻击恢复视频](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_attack_recovery_20261025_1710.mp4)（31.08秒）展示CEM24候选11的同回合攻击、越网和恢复，以及同参数另一来球失败。完整任务仍0。四代原始数据、权重、视频和终端核验已上传至[G07_CEM24_four_generations_and_latest_attack_recovery_20261025_1710.zip](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_CEM24_four_generations_and_latest_attack_recovery_20261025_1710.zip)。
+
+当前GPU0运行CEM25b相对公共来球预测引拍方案：以真实CEM23 TRAIN65接触恢复回合为参考，gain=.35；默认路径逐位等价和142项CPU测试已验证，CEM25b前100步原生初始化已验证，尚无新的接触成绩。

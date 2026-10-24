@@ -50,36 +50,36 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "CEM23two complete generations/256executions over2TRAINcases:66airstrings/28air+recovery/30targets/0attacks/full/NF0. Stopped after saving73ticks ofgen2; actual214144steps/.614570775GPUh. CEM24fresh positive normal family from actualc54near8recovered case is now live GPU0, first100ticks128streams/actions verified. Same control/physics hashes as CEM23; no new contact/full result yet. Original gates and formal400unrun retained.",
+      "notes": "CEM24 completed4native generations/512executions overTRAIN[1,65],409600control steps; aggregate83airborne strings/16attack gates/54air+recovery/6targets/0full/NF0. Best actual gen3 candidate11 TRAIN65: norm8.09675,vz-2.06706,first x4.22002,recovery3.02196s/body0; target miss .220m. Candidate48 reaches8.17516 with recovery but x4.4305; no full. Guard orphan was reconciled with validated completion marker; exact lower-bound1.18164GPUh recorded. CEM25b now live with relative public-forecast prepose gain.35 anchored to actual CEM23 TRAIN65 reference; first100 native ticks verified, no outcome yet. Formal A/B400 remains unrun.",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
       "active_gpu_jobs": [
         {
-          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24",
-          "guard_pid": 1455144,
-          "child_pid": 1455158,
-          "session_id": 21247,
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_relative_prepose38_cem25b",
+          "guard_pid": 1469660,
+          "child_pid": 1469684,
+          "session_id": 88313,
           "state": "RUNNING",
-          "started_at": "2026-10-24T15:54:02.451573+00:00",
-          "source_commit": "9e1643d1767f35bd297718e16e8f3153ac7ee17d",
+          "started_at": "2026-10-24T17:09:54.507148+00:00",
+          "source_commit": "dba323d431defd826ef0afe344c6e4fdf7ee58d7",
           "generations": 4,
           "declared_control_env_steps": 409600,
           "max_seconds": 7200,
           "parameter_width": 38,
+          "relative_contact_prepose": true,
+          "relative_prepose_reference_env_id": 109,
           "software_arm_target_rate_limit_rad_s": 5.0,
-          "gaussian_search_coordinates": [
+          "search_coordinates": [
             7,
             14,
+            18,
             37
           ],
-          "native_initialization_pending": false,
-          "native_initialization_evidence": "reports/G07_full_racket_v4/positive38_initialization_1600/REPORT.json",
           "last_verified_generation": 0,
-          "last_verified_control_ticks": 400,
-          "last_verified_contact_evidence": "reports/G07_full_racket_v4/positive38_contact_prefix_1605/REPORT.json",
-          "rate_binding_observed": true
+          "last_verified_control_ticks": 100,
+          "native_initialization_evidence": "reports/G07_full_racket_v4/relative_prepose_initialization_1715/REPORT.json"
         }
       ],
       "queued_native_sequence": {
@@ -88,21 +88,13 @@
         "still_running": false
       },
       "native_air_string_contact_milestone": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
-      "latest_native_training_summary": "reports/G07_full_racket_v4/ball_arm_target_slew50_normal38_cem23/GENERATION1_SUMMARY.json",
+      "latest_native_training_summary": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/GENERATION3_SUMMARY.json",
       "latest_video": {
-        "path": "reports/G07_full_racket_v4/video/Current_effect_attack_recovery_20261024_1400.mp4",
-        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_attack_recovery_20261024_1400.mp4",
-        "duration_s": 41.44,
-        "sha256": "8d93138a6b65c1e155754ee2c63f456ccc237495eb1b34cba45672f95b99b086",
-        "independent_native_episodes": 3,
-        "cases_are_independent": true,
-        "attack_and_qualified_recovery_in_one_episode": true,
-        "target_missed_in_that_episode": true,
-        "complete_smash": false,
-        "formal_acceptance": false,
-        "renderer_uses_gpu": false,
-        "verification": "reports/G07_full_racket_v4/video/Current_effect_attack_recovery_20261024_1400_verification.json",
-        "upload_receipt": "reports/G07_full_racket_v4/video/Current_effect_attack_recovery_20261024_1400_upload_receipt.json"
+        "path": "reports/G07_full_racket_v4/video/Current_effect_attack_recovery_20261025_1710.mp4",
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_attack_recovery_20261025_1710.mp4",
+        "duration_s": 31.08,
+        "sha256": "d7a0f6883c71fe6d4708e98ab47a1a6de9282bccc393b331f27d640f656f0b58",
+        "formal_acceptance": false
       },
       "latest_completed_generation": {
         "had_contact": 76,
@@ -480,14 +472,14 @@
           "reason": "Two complete generations have0attacks/full; second-generation fastest legal strings6.6872m/s. Fresh positive family around actual near8recovered case."
         }
       ],
-      "latest_stopped_generation_summary": "reports/G07_full_racket_v4/slew50_terminal_1556/REPORT.json",
+      "latest_stopped_generation_summary": "reports/G07_full_racket_v4/cem24_terminal_1710/REPORT.json",
       "latest_program_evidence_bundle": {
-        "name": "G07_slew50_two_generations_and_positive_search_20261024_1605.zip",
-        "bytes": 167207887,
-        "sha256": "ffc434aaee00305191e7ba530dd4ccca01eef1adf7f723bc92841d17f94e9627",
-        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_slew50_two_generations_and_positive_search_20261024_1605.zip",
-        "scope": "Actual complete CEM23two TRAIN generations/256candidate executions over2distinctcases, full100Hz target/state telemetry, plus separately saved73tick generation2interruption.0attacks/full. CurrentCEM24fresh positive family shares identical control/physics sources and has only100initial native ticks in this archive; later contact/landing/recovery not inferred. Existing Cartesian-gain grid is CPU-only and not queued.",
-        "upload_receipt": "reports/G07_full_racket_v4/slew50_positive_search_upload_receipt_1605.json"
+        "name": "G07_CEM24_four_generations_and_latest_attack_recovery_20261025_1710.zip",
+        "bytes": 348363694,
+        "sha256": "70fb127ddfbd5e2c6b1b4f48cc01a53c0d6f21a30e88ad79ca48d9f2d338c470",
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_CEM24_four_generations_and_latest_attack_recovery_20261025_1710.zip",
+        "scope": "Four complete native CEM24 generations plus selected milestones and latest replay video; formal acceptance false.",
+        "upload_receipt": "Pending GitHub API verification"
       },
       "latest_partial_native_contacts": "reports/G07_full_racket_v4/slew50_contact_prefix_1530/REPORT.json",
       "latest_airborne_strings_power_milestone": {
@@ -699,7 +691,7 @@
       "latest_actual_paired_retreat_comparison": "reports/G07_full_racket_v4/post_stroke_paired_native_1345/REPORT.json",
       "latest_attacking_contact_recovery_milestone": "reports/G07_full_racket_v4/attack_recovery_repeat_gen1_env3/MILESTONE.json",
       "latest_actual_face_tracking_diagnostic": "reports/G07_full_racket_v4/normal38_gen1_tracking_1510/REPORT.json",
-      "latest_actual_target_rate_diagnostic": "reports/G07_full_racket_v4/slew45_contact_prefix_1535/REPORT.json",
+      "latest_actual_target_rate_diagnostic": "reports/G07_full_racket_v4/positive38_contact_prefix_1605/REPORT.json",
       "latest_target_and_recovery_milestone": "reports/G07_full_racket_v4/target_recovery_normal38_gen0_env14/MILESTONE.json",
       "next_prepared_arm_target_rate_feature": "reports/G07_full_racket_v4/arm_target_rate_ready_1440/PLAN.json",
       "current_arm_target_rate_evidence": "reports/G07_full_racket_v4/positive38_contact_prefix_1605/REPORT.json",
@@ -716,7 +708,9 @@
         "initialization": "reports/G07_full_racket_v4/positive38_initialization_1600/REPORT.json"
       },
       "prepared_existing_cartesian_feedback_grid": "reports/G07_full_racket_v4/servo_contact38_ready01_1600/REPORT.json",
-      "prepared_existing_cartesian_feedback_grid_cpu": "reports/G07_full_racket_v4/servo_contact38_bank_cpu01_1600/REPORT.json"
+      "prepared_existing_cartesian_feedback_grid_cpu": "reports/G07_full_racket_v4/servo_contact38_bank_cpu01_1600/REPORT.json",
+      "prepared_relative_prepose_feature": "reports/G07_full_racket_v4/relative_prepose38_ready04_1615/REPORT.json",
+      "relative_prepose_cpu_verification": "reports/G07_full_racket_v4/relative_prepose_feature_ready02_1615/REPORT.json"
     },
     "G08": {
       "state": "TODO",

@@ -1,0 +1,64 @@
+{
+  "created_at": "2026-10-24T17:06:39.912889+00:00",
+  "scope": "Actually executed CEM24generation3 candidate. TRAIN65 attacking airborne strings and recovery are native; original target remains missed; paired TRAIN1 result preserved. No formal pass.",
+  "candidate_id": 39,
+  "optimizer_generation_winner": true,
+  "checks": [
+    {
+      "env_id": 78,
+      "source_training_index": 1,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "fault": false,
+      "attack_outgoing": false,
+      "actual_outgoing_velocity_mps": [
+        7.189835548400879,
+        -1.3933510780334473,
+        -1.2444168329238892
+      ],
+      "outgoing_norm_mps": 7.42857561674984,
+      "first_landing_m": [
+        4.423908233642578,
+        -0.5853652954101562,
+        0.0252082459628582
+      ],
+      "target_x_overshoot_m": 0.4239082336425781,
+      "recovery_s": 4.297871112823486,
+      "maximum_body_ground_force_n": 0.0,
+      "sampled100Hz_arm_speed_peak_rad_s": 4.745851039886475
+    },
+    {
+      "env_id": 79,
+      "source_training_index": 65,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "fault": false,
+      "attack_outgoing": true,
+      "actual_outgoing_velocity_mps": [
+        7.978411674499512,
+        -0.8824436068534851,
+        -1.1819734573364258
+      ],
+      "outgoing_norm_mps": 8.11361946488215,
+      "first_landing_m": [
+        4.8078460693359375,
+        -0.5579261779785156,
+        0.02511669509112835
+      ],
+      "target_x_overshoot_m": 0.8078460693359375,
+      "recovery_s": 2.977966547012329,
+      "maximum_body_ground_force_n": 0.0,
+      "sampled100Hz_arm_speed_peak_rad_s": 4.938668251037598
+    }
+  ],
+  "policy_sha256": "1cd91c3fa6adb1b1d75764377238237b59aec3866431da0cff814b12fc6cd191",
+  "native_execution": true,
+  "formal_acceptance": false,
+  "source_sha256": {
+    "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/population_003.pt": "18ef8c5053b8e3a2b6f3fc1e86683202d126309ad3c5c7fe5693149efa096af0",
+    "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/episodes_003.json": "ca3626ffb2feaed0d0c16e9831212805a652e3b032973d5075f83b83a72aaaac",
+    "reports/G07_full_racket_v4/positive_attack_recovery_gen3_1710/extract.py": "2357c13d7c624b77c987aed19661da0bdfe2d3edd98481019f8b3fedf476d0f3"
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "verified_at": "2026-10-24T17:08:26.724771+00:00",
+  "scope": "Four completed native CEM24 TRAIN generations, each 64 candidates over frozen TRAIN indices [1,65]. The guard process was orphaned before receipt writing; native child output is complete and every generation was independently re-summarized. No formal panel result.",
+  "run": "ball_slew50_near_attack_positive38_cem24",
+  "source_commit": "9e1643d1767f35bd297718e16e8f3153ac7ee17d",
+  "completed_generations": 4,
+  "candidates_per_generation": 64,
+  "distinct_TRAIN_indices": [
+    1,
+    65
+  ],
+  "distinct_cases": 2,
+  "control_ticks_per_generation": 800,
+  "actual_control_env_steps": 409600,
+  "charged_cap_control_env_steps": 409600,
+  "counts": {
+    "had_contact": 310,
+    "frame_hit": 227,
+    "airborne_string_hit": 83,
+    "attack_outgoing": 16,
+    "recovery_success": 322,
+    "crossed_net": 81,
+    "landed_legal_court": 81,
+    "landed_target": 6,
+    "complete_smash": 0,
+    "robot_net_fault": 0,
+    "racket_invasion_fault": 0,
+    "executions": 512,
+    "usable_air_strings": 83,
+    "air_strings_and_recovery": 54,
+    "attack_outgoing_and_recovery": 11,
+    "canonical_air_contacts": 83,
+    "canonical_conditional_recovery_count": 53,
+    "canonical_complete": 0,
+    "robot_rule_terminal": 1,
+    "body_ground_terminal": 166,
+    "numerical_failures": 0
+  },
+  "generation_summaries": [
+    "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/GENERATION0_SUMMARY.json",
+    "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/GENERATION1_SUMMARY.json",
+    "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/GENERATION2_SUMMARY.json",
+    "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/GENERATION3_SUMMARY.json"
+  ],
+  "completed_marker_sha256": "13d9448f8819aff0197cd5347e727ee2536b199bd42a11354c0d3e79d68565e3",
+  "guard_and_child": {
+    "guard_pid": 1455144,
+    "child_pid": 1455158,
+    "guard_receipt": "missing: guard exited before terminal reconciliation; child completed natively",
+    "child_exit_observed_absent": true,
+    "completion_marker": "reports/G07_full_racket_v4/ball_slew50_near_attack_positive38_cem24/completed.json",
+    "formal_acceptance": false
+  },
+  "started_at": "2026-10-24T15:54:02.451573+00:00",
+  "completed_marker_mtime": "2026-10-24T17:04:56.369819+00:00",
+  "elapsed_wallclock_s": 4253.918246,
+  "gpu_hours_lower_bound_single_gpu": 1.1816439572222224,
+  "resource_note": "Exact guard charge receipt is unavailable because the guard was orphaned; the lower bound is elapsed wall time on one GPU from the recorded start to the native completed marker. The stale RUNNING ledger entry is preserved and not hand-edited.",
+  "native_execution": true,
+  "formal_acceptance": false
+}
