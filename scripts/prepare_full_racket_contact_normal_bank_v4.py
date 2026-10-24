@@ -26,9 +26,19 @@ def main():
     p.add_argument('--checkpoint',type=Path,required=True)
     p.add_argument('--output',type=Path,required=True)
     p.add_argument('--recovery-search-min',type=float,default=1.20)
+    p.add_argument('--gain-multipliers',type=float,nargs=2,default=[.9,1.],
+                   help='Two distinct local swing-gain multipliers; all native arm limits remain unchanged')
+    p.add_argument('--normal-biases',type=float,nargs=6,default=[-.04,0.,.02,.04,.06,.08],
+                   help='Six distinct desired-normal pitch biases within the declared+/-0.12rad policy range')
     a=p.parse_args()
     if a.output.exists():raise ValueError('Use a fresh output directory')
     minimum=validate_recovery_search_min(a.recovery_search_min)
+    if (len(set(a.gain_multipliers))!=2 or not np.isfinite(a.gain_multipliers).all()
+            or not all(.5<=value<=1.5 for value in a.gain_multipliers)):
+        raise ValueError('Require two distinct finite swing multipliers within[.5,1.5]')
+    if (len(set(a.normal_biases))!=6 or not np.isfinite(a.normal_biases).all()
+            or not all(NORMAL_LOW[0]<=value<=NORMAL_HIGH[0] for value in a.normal_biases)):
+        raise ValueError('Require six distinct finite normal biases within the declared policy range')
     source=torch.load(a.checkpoint,map_location='cpu',weights_only=True)
     assert len(source['parameters'])==37
     assert source['parameter_names']==controller_parameter_names(search_arm_velocity=True,search_recovery_parameters=True)
@@ -38,9 +48,9 @@ def main():
     upper=np.array(HIGH+[1.45,.12]+[5.]*6+RECOVERY_HIGH+NORMAL_HIGH,dtype=np.float32)
     lower[22:24],upper[22:24],lower[3]=-.3,.3,minimum
     rows,labels=[],[]
-    for angle in [-.04,0.,.02,.04,.06,.08]:
+    for angle in a.normal_biases:
         for lead_delta in [-.02,-.01,0.,.01,.02]:
-            for multiplier in [.9,1.]:
+            for multiplier in a.gain_multipliers:
                 row=reference.copy()
                 row[37]=angle
                 row[14]=np.clip(reference[14]+lead_delta,lower[14],upper[14])
@@ -75,7 +85,8 @@ def main():
         scope='Unexecuted optional38coordinate normal/timing/gain grid. Same standing37reference coordinates; no new ball path, physical joint, asset or acceptance gate.',
         parameter_count=38,candidates=60,first37_changed_coordinates=[7,14],
         appended_coordinate_name=names[-1],normal_bias_bounds_rad=[NORMAL_LOW[0],NORMAL_HIGH[0]],
-        desired_normal_downward_bias_grid_rad=[-.04,0.,.02,.04,.06,.08],
+        desired_normal_downward_bias_grid_rad=a.normal_biases,
+        arm_velocity_gain_multipliers=a.gain_multipliers,
         source_native_execution=source.get('native_execution',False),
         source_actual_training_rows=[{k:r[k] for k in ['source_training_index','attack_outgoing','airborne_string_hit','recovery_success','landed_target','complete_smash']} for r in source.get('training_result',[])],
         new_policy_performance_inherited=False,all_existing_recovery_coordinates_preserved=True,
