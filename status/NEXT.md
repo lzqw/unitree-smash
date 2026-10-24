@@ -16,6 +16,8 @@
 
 已实际搜索：reach_cem_r3_01，8代×64候选×6秒=307200控制步，GPU0 245.730464秒/0.068258462GPUh，保存每代population、resume.pt和best_candidate.pt。512候选中15次原任务跳跃恢复；最佳综合候选在2.81s虚拟击球点[1.2456,-0.0293,1.5743]m、实际点速[-0.2949,0.1987,0.0409]m/s，腾空0.446s、稳定恢复1.626s，无身体落地或碰网。最高位候选与最佳恢复候选不同；这不是实际触球或扣杀。最后一代63/64目标时间附近腾空、4/64恢复、14/64碰网。
 
-下一步：scripts/probe_full_racket_rally_v4.py用该学习候选、当前公开794D观测估计来球、校正动作时机和臂位，执行真实球开发试验。只取冻结训练库预定A/B案例，不用正式400挑策略。开始前核对GPU账本无RUNNING/PID活跃，不能重复启动。命令通过run_gpu_job：max-seconds1200，env-steps-cap3200，output reports/G07_full_racket_v4/rally_probe_r3_01；子命令python scripts/probe_full_racket_rally_v4.py --checkpoint reports/G07_full_racket_v4/reach_cem_r3_01/best_candidate.pt --count4 --output同上 --headless。物理62.5us，控制10ms，8秒，保留真实失败、公开数据和原始几何。该脚本是开发探针，不是正式评估器；正式初始扰动和400锁定评估仍需实现/运行。之后继续联合优化、BC/DAgger或RL及独立评测，不在无球课程结束。
+已启动真实球开发探针（不是正式400）：scripts/probe_full_racket_rally_v4.py用该学习候选、当前公开794D观测估计来球、校正动作时机和臂位，执行真实球开发试验。只取冻结训练库预定A/B案例，不用正式400挑策略。开始前核对GPU账本无RUNNING/PID活跃，不能重复启动。命令通过run_gpu_job：max-seconds1200，env-steps-cap3200，output reports/G07_full_racket_v4/rally_probe_r3_01；子命令python scripts/probe_full_racket_rally_v4.py --checkpoint reports/G07_full_racket_v4/reach_cem_r3_01/best_candidate.pt --count4 --output同上 --headless。物理62.5us，控制10ms，8秒，保留真实失败、公开数据和原始几何。该脚本是开发探针，不是正式评估器；正式初始扰动和400锁定评估仍需实现/运行。之后继续联合优化、BC/DAgger或RL及独立评测，不在无球课程结束。
 
 已交付38秒进度视频（包含此前r1机械测试与明确标注的旧短拍板对照，不是r3扣杀）：https://github.com/lzqw/unitree-smash/releases/download/g07-progress-20261023/Current_effect_v4_20261024.mp4 。SHA256与GitHub大小核对见video/upload_receipt.json。
+
+当前活跃原生作业：rally_probe_r3_01，exec session22673，guard PID 1309544 / child PID 1309557，started_at 2026-10-24T02:53:35.653414+00:00。已用/proc存活检查确认运行；优先write_stdin轮询同一session或核对同一PID/command/progress.json/job.json，不因观察超时重复启动。每100控制步保存partial公开观测/动作/几何轨迹；只在completed.json+终态job.json后作为完整开发结果。

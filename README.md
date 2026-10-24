@@ -9,9 +9,9 @@
 
 **当前状态（2026-10-24北京时间）：新版完整球拍、真实球场和击球规则正在适配训练。用户新授权仅GPU0、无累计GPU小时上限和截止；旧窗口与费用保留。当前资产full-racket-court-v4-r3，675 mm完整球拍、6.1 m宽悬空网、20.709991 kg总质量。原生触球、网体/网柱、网下/网上通行及直立持拍自碰撞回归已运行；新版400案例已冻结，正式成绩尚无。当前在进行真实动力学全身动作搜索。**
 
-G00–G06的通过属于旧短拍板资产，不能继承为新版通过。旧G07正式400未达标（A完整50%/恢复89%，B完整35.5%/条件恢复74.4898%，数值0），旧权重、数据和失败保留。新版模型来源、规则映射与假设见[MODEL_RULES.json](reports/G07_full_racket_v4/MODEL_RULES.json)，评测配置见[新版协议](configs/g07_full_racket_eval_v4_r3.json)，实际下一步见[运行状态](status/NEXT.md)。
+G00–G06的通过属于旧短拍板资产，不能继承为新版通过。旧G07正式400未达标（A完整50%/恢复89%，B完整35.5%/条件恢复74.4898%，数值0），旧权重、数据和失败保留。新版模型来源、规则映射与假设见[MODEL_RULES.json](reports/G07_full_racket_v4/MODEL_RULES.json)，评测配置见[新版协议](configs/g07_full_racket_eval_v4_r3.json)，实际下一步见[运行状态](status/NEXT.md)。[新版完整程序、资产、失败记录和无来球学习检查点](https://github.com/lzqw/unitree-smash/releases/tag/g07-full-racket-v4-progress-20261024)已上传并核对大小及SHA256。已完成512次候选搜索，真实球4案例开发探针正在运行；这些均不代表正式400通过。
 
-最新入口：[77秒当前效果视频](https://github.com/lzqw/unitree-smash/releases/download/g07-progress-20261023/G07_current_effect_comparison_20261024.mp4)、[G07实测报告](reports/G07/REPORT.md)、[继续执行与资源窗口](status/NEXT.md)、[视频、权重与完整轨迹附件](https://github.com/lzqw/unitree-smash/releases/tag/g07-progress-20261023)。G04结果与接口见[训练总结](reports/G04/autonomous_learning_20261022/REPORT.md)、[策略接口](docs/G04_POLICY_INTERFACE.md)。旧交接文档保留历史状态。
+视频入口：[38秒新版r1机械测试与旧策略对照](https://github.com/lzqw/unitree-smash/releases/download/g07-progress-20261023/Current_effect_v4_20261024.mp4)、[77秒旧短拍板效果](https://github.com/lzqw/unitree-smash/releases/download/g07-progress-20261023/G07_current_effect_comparison_20261024.mp4)。历史报告：[旧G07实测报告](reports/G07/REPORT.md)、[旧视频、权重与完整轨迹附件](https://github.com/lzqw/unitree-smash/releases/tag/g07-progress-20261023)。G04结果与接口见[训练总结](reports/G04/autonomous_learning_20261022/REPORT.md)、[策略接口](docs/G04_POLICY_INTERFACE.md)。旧交接文档保留历史状态。
 旧资产为约20.647 kg浮动系统；新版完整球拍资产为约20.710 kg，仍保留标准PiPER、Go2和原执行器限制。
 统一 794 维观测、18 维动作、原生 PPO、独立评测及可恢复检查点已实现。
 最新状态与累计资源记录分别见 `status/STATUS.json`、`status/NEXT.md` 和 `status/GPU_LEDGER.json`。
