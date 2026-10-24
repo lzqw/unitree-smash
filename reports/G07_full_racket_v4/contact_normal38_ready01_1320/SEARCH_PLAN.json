@@ -1,0 +1,30 @@
+{
+  "created_at": "2026-10-24T13:18:54.125655+00:00",
+  "scope": "Unexecuted feature only. Current CEM19continues with exactd17637-controller on main; no queued secondGPUjob.",
+  "feature_branch": "g07-arm-search-v4-20261024",
+  "feature_commit": "a0edc41fc686c49e59ee3cdf6e159ea86b688e75",
+  "merged_to_main": false,
+  "native_execution": false,
+  "formal_acceptance": false,
+  "cpu_tests_passed": 116,
+  "canonical38_bank_cpu_preflight": "contact_normal38_bank_cpu02_1320/REPORT.json",
+  "counterfactual_lanes": 120,
+  "counterfactual_ticks": 287,
+  "legacy_check": "contact_normal38_legacy_commands01_1317/REPORT.json",
+  "default38_equals_exact_live37_on_identical_inputs": true,
+  "legacy_comparison_scope": "Two public streams,287ticks,actual1.55and deliberately earlier1.20handover. Tilt+.04only changes arm targets on fixed inputs; altered-state dynamics not tested.",
+  "normal_bias_bounds_rad": [
+    -0.12,
+    0.12
+  ],
+  "bias_meaning": "Positive rotates desired world+X contact face normal toward world-Z, never writes ball state or contact response.",
+  "bank_anchor": "Actual CEM18best50: one attacking airborne strings return followed by failed recovery, other TRAINcase frame/failed recovery. New38policy performance not inherited.",
+  "next_condition": "Review current CEM19actual full recovery outcomes. If it produces a better37reference, regenerate optional38bank around that policy before native target-landing adaptation. Prepared current bank is not a recovered reference.",
+  "unchanged_requirements": [
+    "Full675mmracket and coupled native mass/inertia/actuator limits",
+    "Original net/court/rules/target and qualified recovery metric",
+    "Actual released outgoing norm>=8,vx>0,vz<=-1",
+    "Same-episode real airborne strings,original target firstlanding and qualified recovery",
+    "Frozen A200+B200performance thresholds; formal results remain unrun"
+  ]
+}
