@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "CEM17two completed generations256episodes:94contacts/59airstrings/12attacks/21qualified recoveries/1weak blocked-ball airstrings+recovery/0attack+recovery/0court/target/full/NF0. Best26reevaluation late body lands466.3N,recoveryfailed. Saved stop with28gen2ticks,.604201GPUh/208384steps,trueFAILED. New37standing-policy search startup failed canonical-name mismatch before control0steps (.001995GPUh); fixed without changing input. GPU0retryguard1423130child1423142sourceb247ce2now native startup37names/61bank/6-coordinate mask verified;110CPUtests and122lane287tick canonical preflight passed.actual100tick37initialization finite/bounded for128recordedstreams and0early endings; stroke/recovery pending; no full task or formal400pass.",
+      "notes": "CEM17two completed generations256episodes:94contacts/59airstrings/12attacks/21qualified recoveries/1weak blocked-ball airstrings+recovery/0attack+recovery/0court/target/full/NF0. Best26reevaluation late body lands466.3N,recoveryfailed. Saved stop with28gen2ticks,.604201GPUh/208384steps,trueFAILED. New37standing-policy search startup failed canonical-name mismatch before control0steps (.001995GPUh); fixed without changing input. GPU0retryguard1423130child1423142sourceb247ce2now native startup37names/61bank/6-coordinate mask verified;110CPUtests and122lane287tick canonical preflight passed.actual100tick37initialization finite/bounded for128recordedstreams and0early endings; actual300tick prefix77contactenvs/34stringenvs,17closed111pending; final stroke/landing/recovery outcomes pending; no full task or formal400pass.",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/return_recovery_gen0_env12/policy_evidence.pt",
@@ -77,8 +77,9 @@
             36
           ],
           "last_verified_generation": 0,
-          "last_verified_control_ticks": 100,
-          "native_initialization_evidence": "reports/G07_full_racket_v4/NATIVE_STANDING_RECOVERY37_INITIALIZATION_1257.json"
+          "last_verified_control_ticks": 300,
+          "native_initialization_evidence": "reports/G07_full_racket_v4/NATIVE_STANDING_RECOVERY37_INITIALIZATION_1257.json",
+          "last_verified_contact_evidence": "reports/G07_full_racket_v4/NATIVE_STANDING_RECOVERY37_PARTIAL300_1302.json"
         }
       ],
       "queued_native_sequence": {
@@ -406,23 +407,25 @@
       ],
       "latest_stopped_generation_summary": "reports/G07_full_racket_v4/ball_attack_recovery_cem17/STOPPED_TRAIN_SUMMARY.json",
       "latest_program_evidence_bundle": {
-        "name": "G07_attacking_return_complete_and_recovery_native_20261024_1219.zip",
-        "bytes": 74114678,
-        "sha256": "61a2b3fc4ae1cfc1d9050fd04cadfcff12a081b395a6057703ee3166dcdbce42",
-        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_attacking_return_complete_and_recovery_native_20261024_1219.zip",
-        "scope": "CEM16complete failed128episodes/26tick interruption; CEM17exact program/input/101CPUtests/command checks/actual100tick initialization only.",
-        "upload_receipt": "reports/G07_full_racket_v4/attack_complete_recovery_native_upload_receipt_1220.json",
+        "name": "G07_recovery_two_generations_and_standing37_native_20261024_1259.zip",
+        "bytes": 138361736,
+        "sha256": "0777dde1e7f058a3cd793a7b407f72ec68944fe6ddd4d183d147e5c49b1521e4",
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_recovery_two_generations_and_standing37_native_20261024_1259.zip",
+        "scope": "CEM17two completed failed generations and28tick interruption; CEM18startup failure/canonical37fix/source/input/110CPUtests/actual100tick retryprefix only.",
+        "upload_receipt": "reports/G07_full_racket_v4/recovery_two_gen_standing37_upload_receipt_1302.json",
         "formal_acceptance": false
       },
       "latest_partial_native_contacts": {
         "run": "ball_standing_recovery37_cem18_retry01",
         "generation": 0,
-        "ticks": 100,
+        "ticks": 300,
+        "contact_envs": 77,
+        "string_envs": 34,
+        "first_episodes_complete": 17,
+        "pending_first_episodes": 111,
         "whole_generation_complete": false,
         "formal_acceptance": false,
-        "first_episodes_complete": 0,
-        "actual_contacts": 0,
-        "report": "reports/G07_full_racket_v4/NATIVE_STANDING_RECOVERY37_INITIALIZATION_1257.json"
+        "report": "reports/G07_full_racket_v4/NATIVE_STANDING_RECOVERY37_PARTIAL300_1302.json"
       },
       "latest_airborne_strings_power_milestone": {
         "report": "reports/G07_full_racket_v4/AIR_STRINGS_POWER_MILESTONE_0844.json",
