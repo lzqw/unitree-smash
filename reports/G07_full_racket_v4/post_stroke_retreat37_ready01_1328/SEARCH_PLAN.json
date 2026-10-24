@@ -1,0 +1,30 @@
+{
+  "created_at": "2026-10-24T13:27:10.475467+00:00",
+  "scope": "Unexecuted next proposal family; current CEM19runs unchanged until completed-generation review, no queued GPUjob.",
+  "feature_commit": "977cfc05605b24c046c8bcae97975f7ea19e58eb",
+  "parameter_width": 37,
+  "normal38search_enabled": false,
+  "all61proposal_parameters_bitwise_equal_CEM19": true,
+  "reference37parameters_bitwise_equal_CEM19": true,
+  "only_seed_changes": {
+    "joint_preparation_guard.post_stroke_maximum_x_m": 1.15,
+    "joint_preparation_guard.post_stroke_lookahead_s": 0.12
+  },
+  "post_stroke_trigger": "Current public clock>=causally planned event_time-arm_lead+swing_half_window; no future true contact.",
+  "reason": "CEM19first400ticks closes all37airborne strings with failed recovery, predominantly late robot net contact. Earlier feet reach ground but racket enters net at3.1s while root dips; actualfailing poses show tracking lag beyond already safe old command.",
+  "checks": {
+    "unit_tests_passed": 118,
+    "bank_cpu_lanes": 122,
+    "bank_cpu_ticks": 287,
+    "default_37_38_legacy_equal": "post_stroke_retreat_default_legacy_commands01_1328/REPORT.json",
+    "native_state_counterfactual": "post_stroke_retreat37_ready01_1328/NATIVE_STATE_COMMAND_CHECK.json"
+  },
+  "limitations": [
+    "61tick command replay uses four saved native public streams with original causal forecasts; not changed-state simulation.",
+    "Tighter commands retract full tool by median0.16-0.30m at post-stroke samples but actual tracking/net avoidance/recovery remain untested.",
+    "Original hardware speed/torque/mass/inertia/asset/net/rules/target and jump criteria remain unchanged.",
+    "No policy performance inherited; native outputs and full same-episode goal must be remeasured."
+  ],
+  "native_execution": false,
+  "formal_acceptance": false
+}

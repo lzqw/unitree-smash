@@ -1,0 +1,108 @@
+{
+  "created_at": "2026-10-24T13:25:02.215647+00:00",
+  "scope": "CPU-only unexecuted standing-recovery37search preparation.60proposals retain all attacking coordinates except handover;61st repeats actual weaker contact/recovery parameters. Coupled performance must be remeasured.",
+  "parameter_count": 37,
+  "old32_reference_coordinates_preserved_exactly": true,
+  "appended_legacy_recovery_values": [
+    0.2717982232570648,
+    0.004998747259378433,
+    -0.2705513834953308,
+    -0.3994941711425781,
+    0.3931591808795929
+  ],
+  "new_policy_coordinate_names": [
+    "recovery_thigh_bias_rad",
+    "recovery_front_back_thigh_bias_rad",
+    "recovery_calf_bias_rad",
+    "recovery_roll_feedback_gain",
+    "recovery_actor_gain"
+  ],
+  "new_algorithm_lower_bounds": [
+    0.05,
+    -0.15,
+    -0.45,
+    -1.0,
+    0.2
+  ],
+  "new_algorithm_upper_bounds": [
+    0.45,
+    0.15,
+    0.05,
+    0.0,
+    1.2
+  ],
+  "early_landing_grid": true,
+  "post_stroke_retreat": true,
+  "post_stroke_command_bound_m": 1.15,
+  "post_stroke_prediction_s": 0.12,
+  "post_stroke_trigger": "Public planned swing end:time>=event_time-arm_lead+swing_half_window",
+  "first60_changed_coordinates": [
+    3,
+    32,
+    33,
+    34,
+    36
+  ],
+  "first60_original32_except_handover_fixed": true,
+  "controlled_local_handover_times_s": [
+    1.2,
+    1.25,
+    1.3,
+    1.35,
+    1.4
+  ],
+  "controlled_standing_thigh_calf_bias_pairs_rad": [
+    [
+      0.2717982232570648,
+      -0.2705513834953308
+    ],
+    [
+      0.15,
+      -0.1
+    ],
+    [
+      0.05,
+      0.05
+    ]
+  ],
+  "controlled_standing_actor_gains": [
+    0.4,
+    1.0
+  ],
+  "controlled_standing_front_back_thigh_delta_rad": [
+    -0.05,
+    0.05
+  ],
+  "actual_airborne_recovery_reference": {
+    "env_id": 53,
+    "recovery_s": 3.4379332065582275,
+    "outgoing_velocity_mps": [
+      4.920186519622803,
+      -0.8500469326972961,
+      -1.9618918895721436
+    ],
+    "net_blocked_fault": true,
+    "complete_smash": false
+  },
+  "all_physical_assets_hardware_limits_and_original_success_gates_unchanged": true,
+  "recommended_flags": [
+    "--search-arm-velocity",
+    "--search-recovery-parameters",
+    "--retain-contact-recovery",
+    "--recovery-search-min",
+    "1.20"
+  ],
+  "policy_sha256": "8b288be3f47c0327d230814c8edadd18bb97abe9a87fe289e30d8033559a37cb",
+  "bank_sha256": "4735feac14eda18278ddcfaecf169a9a4d35895a594057c1e943dfa20974d1f4",
+  "native_execution": false,
+  "formal_acceptance": false,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/attack_return_gen0_candidate17/policy_evidence.pt": "0dc18617315241fdc8ef54f825aa920ad244039fd9773f3aeb922b3f5642c9ce",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/air_recovery_gen0_env53/policy_evidence.pt": "df8a4934694b6baaa37908146757d04496ea087c81e6e44200981f5dd31caeca",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/scripts/prepare_full_racket_standing_recovery_bank_v4.py": "16384bcc461ea6f1d1cc3657387bc09b09bc981dd422704bbfa598519b0625fd",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/quadsmash/control/full_racket_recovery_search_v4.py": "811ec557e3506a5640d0a8a800a9c26b12bb1cc9320996114818a17adc97258b",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/quadsmash/control/full_racket_teacher_v4.py": "e95ec36b1c5ff947d28a157a48a7f0f9c9abfd3e427ae13b0fbd99e91268f70b",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/quadsmash/control/full_racket_joint_preparation_v4.py": "a2ccfaf09fa13348b808fac6d0531cd3b6b39804ac8e751757125b116703df1b",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/quadsmash/control/full_racket_arm_search_v4.py": "7f755abb820635fbb4b963fa7d12fddc41029d4b70693a6468f4cf7057271ee2"
+  }
+}

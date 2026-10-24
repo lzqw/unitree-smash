@@ -1,0 +1,67 @@
+{
+  "created_at": "2026-10-24T13:25:55.538827+00:00",
+  "scope": "Counterfactual commands on four saved failed CEM19native public streams and original causal forecasts. Not changed-state dynamics, collision avoidance or recovery proof.",
+  "env_ids": [
+    3,
+    47,
+    71,
+    97
+  ],
+  "ticks": 61,
+  "all_commands_finite_bounded": true,
+  "leg_commands_bitwise_equal_on_identical_inputs": true,
+  "pre_stroke_commands_bitwise_equal": true,
+  "post_stroke_command_comparison": [
+    {
+      "env_id": 3,
+      "valid_post_stroke_samples": 1,
+      "old_command_maximum_tool_x_m": 1.2166661024093628,
+      "new_command_maximum_tool_x_m": 1.0596537590026855,
+      "median_command_tool_x_reduction_m": 0.15701234340667725,
+      "samples_old_full_tool_beyond_net": 0,
+      "samples_new_full_tool_beyond_net": 0,
+      "samples_new_tool_within1p151_m": 1
+    },
+    {
+      "env_id": 47,
+      "valid_post_stroke_samples": 8,
+      "old_command_maximum_tool_x_m": 1.2733222246170044,
+      "new_command_maximum_tool_x_m": 1.0150407552719116,
+      "median_command_tool_x_reduction_m": 0.26639068126678467,
+      "samples_old_full_tool_beyond_net": 0,
+      "samples_new_full_tool_beyond_net": 0,
+      "samples_new_tool_within1p151_m": 8
+    },
+    {
+      "env_id": 71,
+      "valid_post_stroke_samples": 9,
+      "old_command_maximum_tool_x_m": 1.2925562858581543,
+      "new_command_maximum_tool_x_m": 1.0084905624389648,
+      "median_command_tool_x_reduction_m": 0.26892292499542236,
+      "samples_old_full_tool_beyond_net": 0,
+      "samples_new_full_tool_beyond_net": 0,
+      "samples_new_tool_within1p151_m": 9
+    },
+    {
+      "env_id": 97,
+      "valid_post_stroke_samples": 5,
+      "old_command_maximum_tool_x_m": 1.3173582553863525,
+      "new_command_maximum_tool_x_m": 1.0263339281082153,
+      "median_command_tool_x_reduction_m": 0.30369019508361816,
+      "samples_old_full_tool_beyond_net": 0,
+      "samples_new_full_tool_beyond_net": 0,
+      "samples_new_tool_within1p151_m": 5
+    }
+  ],
+  "native_execution": false,
+  "formal_acceptance": false,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/early_landing37_native_tick400_snapshot/near_contact_all.partial.npz": "07113fe3abbf1b296ec4d88d47f670ed908257b0b217097392b77413a6e475ed",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/early_landing37_native_tick400_snapshot/partial_search_state.pt": "11b3e05319b7c27762cf2c1b8582f9966a9970728f960383a380b1def68aa3f6",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/early_landing37_native_tick400_snapshot/causal_plans.partial.json": "f58a06b678fa6ba149a6c2421f1860c190523945a3e0ca70c010f673b4369800",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/post_stroke_retreat37_ready01_1328/policy.pt": "8b288be3f47c0327d230814c8edadd18bb97abe9a87fe289e30d8033559a37cb",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/post_stroke_retreat37_ready01_1328/check_native_state_commands.py": "4ddb96412cdb975ac0622514b3caf21926f29fe85dee9edbd280609746596198",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/quadsmash/control/full_racket_joint_preparation_v4.py": "a2ccfaf09fa13348b808fac6d0531cd3b6b39804ac8e751757125b116703df1b",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/quadsmash/control/full_racket_teacher_v4.py": "e95ec36b1c5ff947d28a157a48a7f0f9c9abfd3e427ae13b0fbd99e91268f70b"
+  }
+}
