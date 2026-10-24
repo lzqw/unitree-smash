@@ -1,0 +1,88 @@
+{
+  "created_at": "2026-10-24T08:24:44.177760+00:00",
+  "scope": "Offline finite outgoing-velocity grid; no robot feasibility or native performance claim.",
+  "velocity_grid": {
+    "vx_mps": [
+      4.0,
+      12.0,
+      0.1
+    ],
+    "vy_mps": 0.0,
+    "vz_mps": [
+      -8.0,
+      -1.0,
+      0.1
+    ]
+  },
+  "net_top_bound_m": 1.55,
+  "uses_real_net_width_and_thickness": true,
+  "rows": [
+    {
+      "point_m": [
+        0.854091644,
+        0.068199158,
+        1.66700745
+      ],
+      "grid_feasible_count": 0
+    },
+    {
+      "point_m": [
+        1.1,
+        0.07,
+        1.78
+      ],
+      "grid_feasible_count": 101,
+      "lowest_speed_grid_velocity_mps": [
+        7.499999999999988,
+        0.0,
+        -2.8000000000000185
+      ],
+      "predicted_landing_m": [
+        3.88678897494461,
+        0.07,
+        0.025
+      ],
+      "conservative_net_exit_margin_m": 0.029562196660405382
+    },
+    {
+      "point_m": [
+        1.25,
+        0.07,
+        1.8
+      ],
+      "grid_feasible_count": 1363,
+      "lowest_speed_grid_velocity_mps": [
+        6.3999999999999915,
+        0.0,
+        -4.800000000000011
+      ],
+      "predicted_landing_m": [
+        3.0672266007305464,
+        0.07,
+        0.025
+      ],
+      "conservative_net_exit_margin_m": 0.008005762402095051
+    },
+    {
+      "point_m": [
+        1.4,
+        0.07,
+        1.85
+      ],
+      "grid_feasible_count": 2123,
+      "lowest_speed_grid_velocity_mps": [
+        6.3999999999999915,
+        0.0,
+        -4.800000000000011
+      ],
+      "predicted_landing_m": [
+        3.258239111896726,
+        0.07,
+        0.025
+      ],
+      "conservative_net_exit_margin_m": 0.17781280334923166
+    }
+  ],
+  "next_hypothesis": "Jointly probe earlier interception planes and arm timing with original26-parameter contact/recovery reference preserved; measured low contact is not a sufficient attack state.",
+  "formal_acceptance": false
+}
