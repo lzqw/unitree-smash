@@ -1,0 +1,55 @@
+{
+  "created_at": "2026-10-24T11:07:56.740522+00:00",
+  "scope": "CPU-only parameter proposal generation and physical strings target validation, not new dynamics.",
+  "string_uv_target_m": [
+    0.0,
+    0.1
+  ],
+  "target_inside_original_physical_string_polygon": true,
+  "original_collision_geometry_and_limits_unchanged": true,
+  "measured_root_link_peak_time_s": 2.740000009536743,
+  "measured_root_link_peak_height_m": 0.5924022197723389,
+  "original_calibrated_event_s": 2.697636238051222,
+  "estimated_local_root_link_peak_clock": 1.4124262407022972,
+  "peak_scope": "Observed root-link height is a timing proxy, not a COM jump metric or a guarantee after controller changes.",
+  "groups": {
+    "clock_preparation_pitch": 36,
+    "push_apex_alignment": 12,
+    "recovered_configuration_pitch": 12
+  },
+  "old_reference_all32parameters_preserved": true,
+  "all_six_velocity_directions_preserved": true,
+  "shared_old_no_ball_calibration_retained_as_initialization_only": true,
+  "native_execution": false,
+  "formal_acceptance": false,
+  "measured_face_feedback": {
+    "damping": 0.02,
+    "normal_weight": 0.3,
+    "maximum_joint_delta_rad": 0.4,
+    "maximum_point_displacement_m": 0.03,
+    "measured_normal_lead_gain": 0.5,
+    "iterations": 3
+  },
+  "parameter15_semantics": "Original pitch gain plus bounded final-face projection gain with measured-normal lead; final commanded point stays within configured margin",
+  "policy_sha256": "6627f8ab8bf42e7002c5702637d55bf2fc54564bd005cf2e190c8ef51dcdbcac",
+  "bank_sha256": "0de1487f00e3afb125955faa41b1f44bc82ad7ad6f330970027dcfcc621a5ab2",
+  "sources": {
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/reports/G07_full_racket_v4/projection_range_ready01_1024/policy.pt": "19771c5e5f701ea80c4b12d898f4454a433f506719c25b311c6cbfabee11d03c",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/reports/G07_full_racket_v4/projection_range_ready01_1024/CANDIDATE_BANK.json": "a8090c515d00c9eecd22c6a93553812b979fe3484b1a772aab10ef6527190cf4",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_tool_motion_anticipation_cem11/population_000.pt": "0a3a2efc10819425961d7f63620c72bebb746cfd2a8a2ce88d4056cced302b2b",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_tool_motion_anticipation_cem11/all_first_episodes_000.npz": "29185afda6dfeb8d22f16605dac36dfb012266ecd5804262391b6ebdb516e62a",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_tool_motion_anticipation_cem11/causal_plans_000.json": "a002e2f2a82985a32b0bf78b10f04cf10830d8fc6c8d773f043a99883f86b1e2",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_joint_preparation_cem10/population_000.pt": "281824b5b5584747ae7f46bbee63ed1751c3120252aa2ddb47f451dd3046d97a",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/scripts/prepare_full_racket_upper_timing_bank_v4.py": "4829b9f14025cc6a86921076208b3789e26529500915dabbb5ee7db255a9e3b7",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/quadsmash/control/full_racket_face_feedback_v4.py": "ff06d998baf0c4b856697fbc00be2b7e567f817e7462e0db23b81af1f7e598a1",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/quadsmash/control/full_racket_teacher_v4.py": "2f0c0d9db72fe76067dc3d1eaf765c43c280b4e3db235f070e62849cb863042b"
+  },
+  "core_cpu_tests_passed": 96,
+  "legacy26_and32_teacher_commands_bitwise_equal": true,
+  "counterfactual_native_state_command_check": "reports/G07_full_racket_v4/measured_face_native_state_cpu03_1114/REPORT.json",
+  "counterfactual_valid_unhit_samples": 4746,
+  "counterfactual_median_command_normal_error_before_deg": 13.463242530822754,
+  "counterfactual_median_command_normal_error_after_deg": 11.816431045532227,
+  "counterfactual_maximum_final_command_point_shift_m": 0.02973504364490509,
+  "additional_interrupted_terminal_logging": "Future native runs save exact between-snapshot rally/jump events and population; path not yet exercised natively."
+}

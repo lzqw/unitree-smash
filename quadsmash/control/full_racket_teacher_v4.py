@@ -8,6 +8,7 @@ from .full_racket_recovery_blend_v4 import LegRecoveryBlend
 from .full_racket_arm_search_v4 import arm_velocity
 from .full_racket_preparation_v4 import validate_preparation,preparation_curve,own_side_reference
 from .full_racket_joint_preparation_v4 import FullRacketJointPreparation
+from .full_racket_face_feedback_v4 import FullRacketFaceFeedback
 
 LOW=[.35,.45,1.10,1.55,.85,-.15,-.15,.30]+[-.25]*6+[-.10,0.,.8,.7,0.,.04,-.20,-.15,-.15,-.15]
 HIGH=[1.,1.20,1.60,2.,1.15,.15,.15,1.50]+[.25]*6+[.12,1.5,1.7,1.2,1.,.15,.10,.15,.15,.15]
@@ -43,6 +44,9 @@ class FullRacketTeacherV4:
         self.velocity_world=torch.tensor(seed.get('desired_point_velocity_mps',[1.5,0.,-.3]),dtype=torch.float32,device=device)
         self.preparation=validate_preparation(seed.get('cartesian_preparation'))
         self.joint_preparation=None
+        self.face_feedback=None
+        if seed.get('measured_face_feedback') is not None:
+            self.face_feedback=FullRacketFaceFeedback(seed['measured_face_feedback']).to(device=device,dtype=torch.float32)
         if seed.get('joint_preparation_guard') is not None:
             if self.preparation is not None:raise ValueError('Use one preparation family per controller')
             self.joint_preparation=FullRacketJointPreparation(seed['joint_preparation_guard']).to(device=device,dtype=torch.float32)
@@ -145,6 +149,24 @@ class FullRacketTeacherV4:
         if self.joint_preparation is not None:
             actual_arm=default[12:][None]+obs[:,21:27]
             arm=self.joint_preparation(arm,obs,limits[12:],self.kinematics,actual_arm)
+        if self.face_feedback is not None and bool((feedback>0).any()):
+            left=torch.linalg.cross(up,forward)
+            normal_target=self.face_sign*(self.normal_world[0]*forward+self.normal_world[1]*left+self.normal_world[2]*up)
+            desired=normal_target+self.face_feedback.config['measured_normal_lead_gain']*(normal_target-obs[:,48:51])
+            desired=desired/torch.linalg.vector_norm(desired,dim=1,keepdim=True).clamp_min(1e-6)
+            reference=arm.clamp(limits[12:,0],limits[12:,1])
+            correction=self.face_feedback(reference,desired,limits[12:],self.kinematics,self.contact_offset)
+            amount=(parameters[:,15]*feedback).clamp(0,1)
+            candidate=reference+amount[:,None]*correction
+            if self.joint_preparation is not None:
+                candidate=self.joint_preparation(candidate,obs,limits[12:],self.kinematics,actual_arm)
+            point,normal,*_=self.kinematics(reference,self.contact_offset)
+            new_point,new_normal,*_=self.kinematics(candidate,self.contact_offset)
+            cfg=self.face_feedback.config
+            keep=(torch.linalg.vector_norm(new_point-point,dim=1)<=cfg['maximum_point_displacement_m'])
+            keep&=(candidate-reference).abs().amax(1)<=cfg['maximum_joint_delta_rad']+1e-6
+            keep&=(desired-new_normal).square().sum(1)<=(desired-normal).square().sum(1)
+            arm=torch.where((keep&(amount>0))[:,None],candidate,arm)
         q[:,12:]=arm
         strike=(2*(q-limits[:,0])/(limits[:,1]-limits[:,0])-1).clamp(-1,1)
         walking=local<.75
