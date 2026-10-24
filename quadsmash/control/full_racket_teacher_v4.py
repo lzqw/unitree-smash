@@ -4,6 +4,7 @@ from .go2_walk_transfer import Go2WalkTransfer
 from .go2_standing_transfer import Go2StandingTransfer
 from .piecewise_affine import PiecewiseAffinePolicy
 from .full_racket_kinematics_v4 import FullRacketKinematicsV4
+from .full_racket_recovery_blend_v4 import LegRecoveryBlend
 
 LOW=[.35,.45,1.10,1.55,.85,-.15,-.15,.30]+[-.25]*6+[-.10,0.,.8,.7,0.,.04,-.20,-.15,-.15,-.15]
 HIGH=[1.,1.20,1.60,2.,1.15,.15,.15,1.50]+[.25]*6+[.12,1.5,1.7,1.2,1.,.15,.10,.15,.15,.15]
@@ -27,6 +28,7 @@ class FullRacketTeacherV4:
         self.smooth_recovery_arm=seed.get('smooth_recovery_arm',False)
         self.nominal_pitch=float(seed.get('nominal_projected_pitch_rad',0.))
         self.leg_event_time_gain=float(seed.get('leg_event_time_gain',1.))
+        self.leg_recovery_blend=LegRecoveryBlend(count,device,seed.get('leg_recovery_blend_s',0.))
         if not 0.<=self.leg_event_time_gain<=1.:raise ValueError('Leg event time gain must be in[0,1]')
         self.kinematics=FullRacketKinematicsV4().to(device=device,dtype=torch.float32)
         self.task_eye=torch.eye(6,device=device)[None]
@@ -38,7 +40,7 @@ class FullRacketTeacherV4:
         self.velocity_world=torch.tensor(seed.get('desired_point_velocity_mps',[1.5,0.,-.3]),dtype=torch.float32,device=device)
 
     def reset(self):
-        self.walk.reset();self.standing.reset()
+        self.walk.reset();self.standing.reset();self.leg_recovery_blend.reset()
 
     @torch.inference_mode()
     def action(self,observation,parameters,default,limits,event_time=None,target_offset_world=None):
@@ -118,4 +120,5 @@ class FullRacketTeacherV4:
         recovery_arm=arm if self.smooth_recovery_arm else default[12:][None].expand(len(obs),-1)
         standing=self.standing.action(observation,self.standing_seed[None].expand(len(obs),-1),
             default,limits,recovery_arm,active=recovery)
+        standing=self.leg_recovery_blend.action(time,recovery,obs[:,-18:],standing)
         return torch.where(recovery[:,None],standing,action).clamp(-1,1)

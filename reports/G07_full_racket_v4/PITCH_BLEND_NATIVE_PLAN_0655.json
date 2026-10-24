@@ -1,0 +1,23 @@
+{
+  "created_at": "2026-10-24T06:55:57.589086+00:00",
+  "scope": "Next authorized native training, new controller handover requires fresh fitness.",
+  "output": "ball_pitch_blend_cem03",
+  "warm_start": "reports/G07_full_racket_v4/return_recovery_smooth_leg09/policy.pt",
+  "candidate_count": 64,
+  "training_cases": [
+    1,
+    65
+  ],
+  "generations": 2,
+  "sigma_fraction": 0.04,
+  "sampling": "12existing pitch gains/timing,8same-family measured recovery-leg crossovers,42Gaussian,2reference/mean",
+  "finite_guard": {
+    "gpu": 0,
+    "max_seconds": 5400,
+    "env_steps_cap": 204800
+  },
+  "cpu_checks": 57,
+  "original_attack_target_recovery_thresholds_unchanged": true,
+  "all_native_previous_failures_retained": true,
+  "formal_acceptance": false
+}

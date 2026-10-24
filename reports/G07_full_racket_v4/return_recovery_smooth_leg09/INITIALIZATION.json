@@ -1,0 +1,15 @@
+{
+  "created_at": "2026-10-24T06:55:57.588186+00:00",
+  "source_policy": "reports/G07_full_racket_v4/return_recovery_warm07/policy.pt",
+  "source_sha256": "377f850b2d504a186c952248a8769e7047488fdd43b789bd11a943df3824d41d",
+  "parameters_unchanged": true,
+  "leg_event_time_gain": 1.0,
+  "leg_recovery_blend_s": 0.1,
+  "transition": "At recovery onset hold the actually observed previous12 leg actions; smoothstep to standing feedback over100ms. Arm fold stays unchanged.",
+  "original_recovery_gate_unchanged": true,
+  "native_policy_fitness": false,
+  "physical_changes": false,
+  "formal_acceptance": false,
+  "arm_seed_and_control_formula_unchanged": true,
+  "realized_coupled_arm_and_body_trajectory": "Must be remeasured after leg handover changes."
+}
