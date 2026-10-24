@@ -1,0 +1,43 @@
+{
+  "created_at": "2026-10-24T09:48:14.615076+00:00",
+  "scope": "Measured rejection of Cartesian preparation family; no claim that all task-space controllers or the hardware are infeasible.",
+  "complete_generation_executions": 128,
+  "contacts": 0,
+  "body_ground_terminals": 124,
+  "first_episodes_ended_at_or_before_launch": 41,
+  "numerical_failures": 0,
+  "reference_trajectory_comparison": [
+    {
+      "run": "ball_power_body_bank_cem08",
+      "scope": "Reference candidate0 TRAIN1 actual50Hz first-episode samples before2second launch.",
+      "valid_samples": 100,
+      "maximum_absolute_roll_rad": 0.07233998389913984,
+      "maximum_absolute_pitch_rad": 0.13046856795629713,
+      "maximum_absolute_root_y_m": 0.0204925537109375,
+      "final_sample_time_s": 1.9799998998641968,
+      "final_sample_head_m": [
+        0.8698348999023438,
+        0.08992767333984375,
+        1.260020136833191
+      ]
+    },
+    {
+      "run": "ball_cartesian_preparation_cem09",
+      "scope": "Reference candidate0 TRAIN1 actual50Hz first-episode samples before2second launch.",
+      "valid_samples": 100,
+      "maximum_absolute_roll_rad": 0.44534087151350443,
+      "maximum_absolute_pitch_rad": 0.3335441422026846,
+      "maximum_absolute_root_y_m": 0.14599609375,
+      "final_sample_time_s": 1.9799998998641968,
+      "final_sample_head_m": [
+        0.9172286987304688,
+        -0.03722381591796875,
+        1.1395889520645142
+      ]
+    }
+  ],
+  "interpretation": "The measured new controller family introduces substantial body roll and lateral drift before impact. Reject this family and preserve the original native arm preparation while correcting predicted tool-plane support.",
+  "confounds": "Controller family and arm velocity gain semantics changed together; the comparison is a diagnostic, not a matched formal policy benchmark.",
+  "original_success_gates_unchanged": true,
+  "formal_acceptance": false
+}

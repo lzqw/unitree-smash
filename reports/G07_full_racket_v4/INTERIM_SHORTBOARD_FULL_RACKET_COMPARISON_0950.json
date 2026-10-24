@@ -1,0 +1,182 @@
+{
+  "created_at": "2026-10-24T09:48:52.052335+00:00",
+  "scope": "Interim quantitative description of separately measured legacy and full-racket records. Different incoming-ball distributions, assets and protocols prohibit a matched performance claim.",
+  "geometry": {
+    "old_short_board_center_in_flange_m": [
+      0.18,
+      0.0,
+      0.0
+    ],
+    "new_strings_center_in_flange_m": [
+      0.45,
+      0,
+      0.04
+    ],
+    "old_center_distance_m": 0.18,
+    "new_center_distance_m": 0.4517742799230607,
+    "new_total_racket_length_m": 0.675,
+    "scope": "Rigid geometry only; neither a dynamic maximum height nor a guaranteed speed multiplier."
+  },
+  "historical_short_board": [
+    {
+      "panel": "a",
+      "scope": "Historical short-board formal protocol; new full-racket rules and geometry were not in effect.",
+      "recorded_metrics": {
+        "sample_count": 200,
+        "episodes": 200,
+        "ground_init_fraction": 1.0,
+        "airborne_contact_rate": 1.0,
+        "recovery_given_airborne_contact": 0.89,
+        "complete_smash_success_rate": 0.5,
+        "ordered_net": 144,
+        "ordered_landing": 100,
+        "robot_net_contact": 10,
+        "numerical_failures": 0,
+        "formal_policy_acceptance": false,
+        "formal_evaluation_eligible": true,
+        "protocol": "g07-causal-profiled-net-frozen-evaluation-v3",
+        "panel": "causal_profiled_eval_panel_a_v2",
+        "env_steps": 170000
+      },
+      "airborne_effective_face_contacts": 194,
+      "observed_contact_positions_m": {
+        "count": 194,
+        "minimum": [
+          1.3801922798156738,
+          -0.10796642303466797,
+          1.5474750995635986
+        ],
+        "median": [
+          1.4015911221504211,
+          -0.010423481464385986,
+          1.6457490921020508
+        ],
+        "maximum": [
+          1.4219293594360352,
+          0.08963584899902344,
+          1.7150293588638306
+        ]
+      },
+      "observed_contact_point_speeds_mps": {
+        "count": 194,
+        "minimum": 0.3820694440206519,
+        "median": 0.6126280484654291,
+        "maximum": 1.0780710006599044
+      },
+      "observed_outgoing_speeds_mps": {
+        "count": 194,
+        "minimum": 14.432044170960584,
+        "median": 15.088210663333507,
+        "maximum": 15.803935284948373
+      }
+    },
+    {
+      "panel": "b",
+      "scope": "Historical short-board formal protocol; new full-racket rules and geometry were not in effect.",
+      "recorded_metrics": {
+        "sample_count": 200,
+        "episodes": 200,
+        "ground_init_fraction": 1.0,
+        "airborne_contact_rate": 0.98,
+        "recovery_given_airborne_contact": 0.7448979591836735,
+        "complete_smash_success_rate": 0.355,
+        "ordered_net": 110,
+        "ordered_landing": 73,
+        "robot_net_contact": 22,
+        "numerical_failures": 0,
+        "formal_policy_acceptance": false,
+        "formal_evaluation_eligible": true,
+        "protocol": "g07-causal-profiled-net-frozen-evaluation-v3",
+        "panel": "causal_profiled_eval_panel_b_v2",
+        "env_steps": 170000
+      },
+      "airborne_effective_face_contacts": 175,
+      "observed_contact_positions_m": {
+        "count": 175,
+        "minimum": [
+          1.371260643005371,
+          -0.10969424247741699,
+          1.496058464050293
+        ],
+        "median": [
+          1.400782585144043,
+          -0.021158933639526367,
+          1.6376581192016602
+        ],
+        "maximum": [
+          1.423604965209961,
+          0.08874082565307617,
+          1.717250943183899
+        ]
+      },
+      "observed_contact_point_speeds_mps": {
+        "count": 175,
+        "minimum": 0.24175949370271846,
+        "median": 0.5876198454152233,
+        "maximum": 1.026953441721268
+      },
+      "observed_outgoing_speeds_mps": {
+        "count": 175,
+        "minimum": 13.563270356060242,
+        "median": 15.103156023523344,
+        "maximum": 15.914527586023206
+      }
+    }
+  ],
+  "current_full_racket": {
+    "run": "ball_native_reference_interception32_cem07",
+    "scope": "Two native TRAIN generations, selected during optimization; no formal evaluation.",
+    "executions": 256,
+    "airborne_strings": 25,
+    "airborne_strings_with_recovery": 1,
+    "complete_smash": 0,
+    "observed_string_contact_positions_m": {
+      "count": 25,
+      "minimum": [
+        0.5328750610351562,
+        0.04456329345703125,
+        1.514656901359558
+      ],
+      "median": [
+        0.8573760986328125,
+        0.0678253173828125,
+        1.6666603088378906
+      ],
+      "maximum": [
+        0.9633922576904297,
+        0.07098388671875,
+        1.715914249420166
+      ]
+    },
+    "observed_string_point_speeds_mps": {
+      "count": 25,
+      "minimum": 1.4154628465123904,
+      "median": 2.0422873875859913,
+      "maximum": 2.4848427746822512
+    },
+    "observed_airborne_strings_outgoing_speeds_mps": {
+      "count": 25,
+      "minimum": 3.4423169619267435,
+      "median": 4.242726487278078,
+      "maximum": 7.523561590883015
+    }
+  },
+  "remaining_for_final_comparison": [
+    "Matched controlled measurements of dynamically reached height and head velocity across both assets.",
+    "Frozen full-racket A200+B200 evaluation under its original gates."
+  ],
+  "formal_full_racket_evaluation_run": false,
+  "all_objective_requirements_complete": false,
+  "sources": {
+    "reports/G07/causal_profiled_formal_a_200_v2/metrics.json": "fade172122f42478d019335cca0134ea9246873c9110eccaefd809e74ce836b4",
+    "reports/G07/causal_profiled_formal_a_200_v2/episodes.json": "6a8bd5ad0fc6f83032e8ee708e455d048c8feb95feccd7746c99cb88a2f01658",
+    "reports/G07/causal_profiled_formal_b_200_v2/metrics.json": "937d11a39652ddfbf1ced9cf5fcd86d51ff9bc3cacd18890e387a4dfd5afabd6",
+    "reports/G07/causal_profiled_formal_b_200_v2/episodes.json": "7fb75b5dd6f3087e82b84fd7c4d4e165399d44f243391325fb7d9b5c92015e56",
+    "reports/G07_full_racket_v4/ball_native_reference_interception32_cem07/episodes_000.json": "d50d4331631d597ed8a4404eca762251b2e46b61fb078165140334008ade3af8",
+    "reports/G07_full_racket_v4/ball_native_reference_interception32_cem07/contacts_000.json": "4bfed203e54bf7aec16e88f72bce15184a7fa3d2489a4752386c409171889697",
+    "reports/G07_full_racket_v4/ball_native_reference_interception32_cem07/episodes_001.json": "d8f801ef3919c9df31e985ae559a7bebcf8a0d9a5d4429500a186481c616f0e6",
+    "reports/G07_full_racket_v4/ball_native_reference_interception32_cem07/contacts_001.json": "e58864b5a64189613ab348b1123d501293ceed2282c74da2c6acb4e17ac95f27",
+    "configs/assembly_v2.json": "648c75fd0018eb8de3f76995fcc728177ff377b896ff473ec75042e4316043dd",
+    "configs/full_racket_v4_r3.json": "14d58dd674665424dab63e67d525daf9b2239821797b97202aa45f9af1e5a26c"
+  }
+}

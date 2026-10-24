@@ -1,0 +1,80 @@
+{
+  "created_at": "2026-10-24T09:07:20.305422+00:00",
+  "scope": "Completed two native TRAIN generations,256first episodes including repeated controlled references; not formal evaluation.",
+  "counts": {
+    "had_contact": 37,
+    "frame_hit": 12,
+    "airborne_string_hit": 25,
+    "recovery_success": 10,
+    "crossed_net": 8,
+    "landed_legal_court": 2,
+    "landed_target": 0,
+    "attack_outgoing": 0,
+    "complete_smash": 0,
+    "executions": 256,
+    "air_strings_and_recovery": 1,
+    "task_valid_air_strings_crosses": 3,
+    "numerical_failures": 0
+  },
+  "history": [
+    {
+      "had_contact": 18,
+      "frame_hit": 6,
+      "airborne_string_hit": 12,
+      "recovery_success": 2,
+      "crossed_net": 3,
+      "landed_legal_court": 1,
+      "landed_target": 0,
+      "attack_outgoing": 0,
+      "complete_smash": 0,
+      "generation": 0,
+      "executions": 128,
+      "air_strings_and_recovery": 0,
+      "task_valid_air_strings_crosses": 1,
+      "numerical_failures": 0
+    },
+    {
+      "had_contact": 19,
+      "frame_hit": 6,
+      "airborne_string_hit": 13,
+      "recovery_success": 8,
+      "crossed_net": 5,
+      "landed_legal_court": 1,
+      "landed_target": 0,
+      "attack_outgoing": 0,
+      "complete_smash": 0,
+      "generation": 1,
+      "executions": 128,
+      "air_strings_and_recovery": 1,
+      "task_valid_air_strings_crosses": 2,
+      "numerical_failures": 0
+    }
+  ],
+  "whole_job_complete": true,
+  "guard_terminal_state": "SUCCEEDED",
+  "actual_gpu_hours": 0.6005444276922208,
+  "actual_control_env_steps": 204800,
+  "resource_receipt": "job.json",
+  "formal_acceptance": false,
+  "joined_recovery_examples": [
+    {
+      "generation": 1,
+      "env_id": 32,
+      "candidate_id": 16,
+      "source_training_index": 1,
+      "outgoing_velocity_mps": [
+        4.464435577392578,
+        -0.2949501872062683,
+        -0.17865747213363647
+      ],
+      "crossed_net": false,
+      "landed_target": false,
+      "shuttle_net_contact": true,
+      "net_blocked_fault": true,
+      "stable_recovery_s": 2.9219706058502197,
+      "qualified_jump_landed": true,
+      "maximum_body_ground_force_n": 0.0,
+      "complete_smash": false
+    }
+  ]
+}
