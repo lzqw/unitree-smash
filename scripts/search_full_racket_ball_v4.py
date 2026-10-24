@@ -145,8 +145,23 @@ def main():
                             valid_first=(~finished[:case_count]).cpu().tolist(),in_play=env.rally.in_play[:case_count].cpu().tolist()))
                     observation,_,done,_=wrapper.step(action);finished|=done.bool()
                     if (tick+1)%100==0:
+                        first_partial={}
+                        for row in env.rally_records:first_partial.setdefault(row['env_id'],row)
                         atomic_json(args.output/'progress.json',dict(generation=previous+generation,control_ticks=tick+1,
-                            requested_ticks=ticks,first_episodes_complete=int(finished.sum()),formal_acceptance=False))
+                            requested_ticks=ticks,first_episodes_complete=int(finished.sum()),
+                            first_contacts=sum(r['had_contact'] for r in first_partial.values())+int(((~finished)&env.rally.had_contact).sum()),
+                            active_first_rallies=int(((~finished)&env.rally.in_play).sum()),
+                            closest_string_gaps_m=closest.cpu().tolist(),partial=True,formal_acceptance=False))
+                        atomic_json(args.output/'episodes.partial.json',env.rally_records)
+                        atomic_json(args.output/'contacts.partial.json',env.contact_records)
+                        atomic_json(args.output/'causal_plans.partial.json',controller.logs)
+                        atomic_torch(args.output/'partial_search_state.pt',dict(parameters=population.cpu(),
+                            closest_string_gap_m=closest.cpu(),closest_gap_time_s=closest_time.cpu(),
+                            closest_gap_airborne=closest_air.cpu(),first_finished=finished.cpu(),
+                            generation=previous+generation,control_ticks=tick+1,formal_acceptance=False))
+                        np.savez_compressed(args.output/'partial_public_and_poses.npz',observations=np.stack(public),
+                            actions=np.stack(actions),link_poses=np.stack(poses),valid_first_episode=np.stack(valid))
+                        atomic_json(args.output/'trajectory.partial.json',trace)
                         print(json.dumps(dict(generation=previous+generation,tick=tick+1,first_complete=int(finished.sum()))),flush=True)
                     if bool(finished.all()) or stopping:break
             np.savez_compressed(args.output/f'public_and_poses_{previous+generation:03d}.npz',observations=np.stack(public),

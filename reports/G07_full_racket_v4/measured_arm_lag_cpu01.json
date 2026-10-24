@@ -1,0 +1,61 @@
+{
+  "kind": "Read-only empirical local lag fit on measured no-net flight; not a physical motor model",
+  "source": "reports/G07_full_racket_v4/reach_near_net_backface02/public_and_poses_002.npz",
+  "source_sha256": "e1581f99064e1a0063be332065759161090af6bd35c8f3097542974813d2f5ec",
+  "lane": 1,
+  "physics_dt_s": 6.25e-05,
+  "policy_dt_s": 0.01,
+  "method": "Joint speed at next10ms sample versus current commanded position error; uncapped interior-speed samples",
+  "results": [
+    {
+      "joint": 1,
+      "samples": 39,
+      "least_squares_gain_per_s": 17.20803617101169,
+      "apparent_tau_s": 0.0581123836597101,
+      "r_squared": 0.973902117079868,
+      "fit_usable": true
+    },
+    {
+      "joint": 2,
+      "samples": 42,
+      "least_squares_gain_per_s": 13.01418934661326,
+      "apparent_tau_s": 0.07683920783435,
+      "r_squared": 0.6214036077200943,
+      "fit_usable": true
+    },
+    {
+      "joint": 3,
+      "samples": 42,
+      "least_squares_gain_per_s": 15.2545401247821,
+      "apparent_tau_s": 0.06555425413155706,
+      "r_squared": 0.5832972406693115,
+      "fit_usable": true
+    },
+    {
+      "joint": 4,
+      "samples": 39,
+      "least_squares_gain_per_s": 16.491792918306263,
+      "apparent_tau_s": 0.06063622099510947,
+      "r_squared": 0.9996063245186576,
+      "fit_usable": true
+    },
+    {
+      "joint": 5,
+      "samples": 23,
+      "least_squares_gain_per_s": 17.02557659501848,
+      "apparent_tau_s": 0.0587351620321975,
+      "r_squared": 0.8786451864013247,
+      "fit_usable": true
+    },
+    {
+      "joint": 6,
+      "samples": 45,
+      "least_squares_gain_per_s": 16.898200432168515,
+      "apparent_tau_s": 0.059177899091333704,
+      "r_squared": 0.9997152650256709,
+      "fit_usable": true
+    }
+  ],
+  "controller_changed": false,
+  "formal_acceptance": false
+}

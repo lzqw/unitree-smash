@@ -50,28 +50,26 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "Near-net02 actual first2x64:15 then27 safe candidates, one safe jump/recovery in generation1; virtual point1.711m and insufficient strike conditions. Four-generation job still running. CPU-verified continuation queues perturbed-reset native smoke then actual-ball TRAIN CEM with flat-face seed and continuous arm recovery. Neither queued native stage has run yet; formal400 remainsTODO.",
+      "notes": "Completed near-net02 actual256 candidate executions:88 no-ball virtual-safe,8 safe jump/recovery executions including repeated elites. Best point1.742m, insufficient attack conditions. Native8-environment reset/public-observation/isolation smoke passed, scope limited; independent engine-view extension unrun. Actual-ball CEM smoke now RUNNING; no formal400 outcome.",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/reach_cem_fine_feedback01/metrics.json",
       "curriculum_policy": "reports/G07_full_racket_v4/reach_cem_fine_feedback01/best_candidate.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
       "active_gpu_jobs": [
         {
-          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/reach_near_net_backface02",
-          "guard_pid": 1317741,
-          "child_pid": 1317753,
-          "session_id": 26054,
-          "started_at": "2026-10-24T03:37:03.211119+00:00",
-          "state": "RUNNING",
-          "contact_contract": "full-racket-ball-material-parity-v4",
-          "requested_candidates": 256
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_cem_smoke01",
+          "guard_pid": 1323147,
+          "child_pid": 1323156,
+          "sequence_session_id": 30733,
+          "started_at": "2026-10-24T03:59:09.882873+00:00",
+          "state": "RUNNING"
         }
       ],
       "queued_native_sequence": {
         "state_file": "reports/G07_full_racket_v4/native_followup_sequence01/state.json",
         "pid": 1320916,
         "session_id": 30733,
-        "state_at_last_check": "WAITING_VERIFIED_PREDECESSOR",
+        "state_at_last_check": "RUNNING_ball_cem_smoke01",
         "next_jobs": [
           "reset_eval_native01",
           "ball_cem_smoke01"
@@ -113,7 +111,9 @@
       "native_contact_smoke": "PASSED",
       "native_upright_reset_mass_com_inertia_self_contact": "PASSED",
       "protocol": "configs/g07_full_racket_eval_v4_r3.json",
-      "old_passes_inherited": false
+      "old_passes_inherited": false,
+      "native_reset_perturbation_public_observation_isolation": "PASSED",
+      "independent_engine_view_reset_check": "TODO"
     }
   }
 }

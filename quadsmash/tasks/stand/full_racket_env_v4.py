@@ -170,7 +170,8 @@ class FullRacketEnvV4(BallEnv):
                      (racket_world[...,2]>=top_height(racket_world[...,1],self.court_config))).any(1)
         normal=quat_rotate(q,torch.tensor([1.,0,0],device=self.device).expand(self.num_envs,-1))
         head_velocity=d.body_link_lin_vel_w[:,self.racket_body_id]
-        first=(self.contact_events.count>counts)&(~self.rally.had_contact)&self.rally.in_play
+        events=(self.contact_events.count>counts)&self.rally.in_play
+        first=events&(~self.rally.had_contact)
         first_strings=touching&string&self.rally.in_play&torch.isnan(self.first_string_time)
         self.first_string_point[first_strings]=(point-self.scene.env_origins)[first_strings]
         self.first_string_time[first_strings]=self.ball_clock[first_strings]
@@ -189,12 +190,20 @@ class FullRacketEnvV4(BallEnv):
             body_ball_touch=body_touch,shuttle_net_touch=net[:,-1].norm(dim=-1)>.001,
             racket_over_net=racket_over,body_over_net=body_over,engineering_body_crossing=engineering,
             same_stroke_frame_string=same_stroke)
-        if bool(first.any()):
+        if bool(events.any()):
             contact_velocity=head_velocity+torch.linalg.cross(d.body_link_ang_vel_w[:,self.racket_body_id],torch.nan_to_num(point)-tool)
             expected=d.body_link_lin_vel_w[:,self.flange_id]+torch.linalg.cross(d.body_link_ang_vel_w[:,self.flange_id],torch.nan_to_num(point)-d.body_link_pos_w[:,self.flange_id])
             self.hit_velocity_error[first]=(contact_velocity-expected).norm(dim=-1)[first]
-            for i in torch.where(first)[0].cpu().tolist():
-                self.contact_records.append(dict(env_id=i,time_s=float(self.ball_clock[i]),point_m=(point[i]-self.scene.env_origins[i]).cpu().tolist(),string_contact=bool(string[i]),frame_contact=bool(rim[i]),fixture_contact=bool(clamp[i]),point_velocity_mps=contact_velocity[i].cpu().tolist(),face_normal=normal[i].cpu().tolist()))
+            for i in torch.where(events)[0].cpu().tolist():
+                self.contact_records.append(dict(env_id=i,episode_index=int(self.episode_index[i]),
+                    event_index=int(self.rally.contact_count[i]),first_racket_contact=bool(first[i]),
+                    same_stroke_frame_string=bool(same_stroke[i]),time_s=float(self.ball_clock[i]),
+                    point_m=(point[i]-self.scene.env_origins[i]).cpu().tolist(),string_contact=bool(string[i]),
+                    frame_contact=bool(rim[i]),fixture_contact=bool(clamp[i]),
+                    point_velocity_mps=contact_velocity[i].cpu().tolist(),face_normal=normal[i].cpu().tolist(),
+                    legal_initial_contact=bool(self.rally.legal_initial_contact[i]),
+                    fault_flags={name:bool(getattr(self.rally,name)[i]) for name in self.rally.flags
+                                 if name.endswith('_fault') or name=='engineering_body_crossing'}))
 
     def _reset_idx(self,ids):
         if self._v4_ready:

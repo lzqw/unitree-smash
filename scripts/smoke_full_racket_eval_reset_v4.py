@@ -42,6 +42,15 @@ def main():
             root_xy_m=float((actual_local[:,:2]-desired_xy).abs().max()),root_z_m=float((actual_local[:,2]-.323).abs().max()),
             quaternion=float((root[:,3:7]-desired_quat).abs().max()))
         assert all(v<1e-5 for v in errors.values()),errors
+        # Query the engine view independently of the ArticulationData values
+        # that write_*_to_sim also updates, so this checks physical writes.
+        view=env.robot.root_physx_view
+        native_pose=view.get_root_transforms().clone()
+        native_errors=dict(joint_position_rad=float((view.get_dof_positions()[:,env.joint_ids]-desired_q).abs().max()),
+            joint_velocity_rad_s=float((view.get_dof_velocities()[:,env.joint_ids]-desired_qd).abs().max()),
+            root_position_m=float((native_pose[:,:3]-root[:,:3]).abs().max()),
+            root_quaternion=float((native_pose[:,[6,3,4,5]]-desired_quat).abs().max()))
+        assert all(v<1e-5 for v in native_errors.values()),native_errors
         assert not env.robot.is_fixed_base and torch.isfinite(observation['policy']).all()
         assert torch.equal(observation['policy'][:,9:27],data.joint_pos[:,env.joint_ids]-default)
         assert torch.equal(observation['policy'][:,27:45],data.joint_vel[:,env.joint_ids])
@@ -64,6 +73,7 @@ def main():
         result=dict(kind='Native perturbed/partial reset smoke only; no strategy evaluation',
             status='PASSED',environments=8,control_ticks=6,physics_dt_s=env.physics_dt,formal_cases_read=False,
             noise_panel='B',noise_seed=protocol['initialization']['reset_seeds']['B'],initial_errors=errors,
+            independent_engine_view_errors=native_errors,
             unaffected_root_error=isolated_root,unaffected_joint_error=isolated_q,
             initial_states=initial,asset_sha256=protocol['asset']['sha256'],formal_acceptance=False)
         (args.output/'metrics.json').write_text(json.dumps(result,indent=2)+'\n')
