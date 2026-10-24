@@ -31,6 +31,8 @@ p.add_argument('--prepose-gain',type=float,help='Optional current-public-forecas
 p.add_argument('--recovery-leg-bank',type=Path,help='Optional measured same-family recovery26-vector: reserve8 contact-arm/recovery-leg crossover candidates')
 p.add_argument('--continue-after-miss',action='store_true',help='TRAIN curriculum: observe landing after missed/blocked/backward shuttle return; all rally failures remain failures, robot faults terminate')
 p.add_argument('--push-search-range',type=float,default=.15,help='Symmetric front/back leg target-offset search range in rad; native actuator/joint limits stay unchanged')
+p.add_argument('--reset-noise',choices=('none','A','B'),default='none',help='Apply deterministic ground-reset perturbations to TRAIN lanes; default preserves legacy zero-noise search')
+p.add_argument('--reset-noise-seed',type=int,default=724201)
 AppLauncher.add_app_launcher_args(p);args=p.parse_args();app=AppLauncher(args).app
 import numpy as np
 import torch
@@ -52,6 +54,7 @@ from quadsmash.control.full_racket_parameter_layout_v4 import controller_paramet
 from quadsmash.control.full_racket_contact_normal_search_v4 import (
     extend_contact_normal_parameters,NORMAL_LOW,NORMAL_HIGH)
 from quadsmash.control.full_racket_target_landing_curriculum_v4 import norm_outgoing_shaping,target_landing_shaping
+from quadsmash.control.full_racket_train_evaluation_v4 import training_noise
 from quadsmash.control.full_racket_contact_curriculum_v4 import (
     contact_search_tiers,actual_outgoing_shaping,arm_timing_velocity_grid,measured_recovery_leg_crossovers,pitch_compensation_grid,validate_recovery_search_min)
 from quadsmash.physics.full_racket_v4 import string_prism_gap
@@ -180,7 +183,15 @@ def main():
     case_count=len(args.training_indices);count=args.candidates*case_count
     cases=[training_cases[i] for _ in range(args.candidates) for i in args.training_indices]
     cfg=full_racket_cfg(count,protocol['physics_dt_s']);cfg.seed=args.seed
-    env=RallyTrainingEnvV4(cfg,cases=cases,continue_after_miss=args.continue_after_miss);wrapper=RslRlVecEnvWrapper(env,clip_actions=None)
+    reset_noise=None
+    if args.reset_noise!='none':
+        amplitudes=protocol['initialization']['perturbations'][args.reset_noise]
+        lane_noise=training_noise(case_count,amplitudes,args.reset_noise_seed)
+        reset_noise={name:np.tile(values,(args.candidates,)+(1,)*(values.ndim-1))
+                     for name,values in lane_noise.items()}
+        atomic_json(args.output/'RESET_NOISE.json',dict(level=args.reset_noise,seed=args.reset_noise_seed,
+            amplitudes=amplitudes,scope='Same deterministic reset perturbation per TRAIN case across all CEM candidates; no formal cases read.'))
+    env=RallyTrainingEnvV4(cfg,cases=cases,continue_after_miss=args.continue_after_miss,reset_noise=reset_noise);wrapper=RslRlVecEnvWrapper(env,clip_actions=None)
     if env.robot.is_fixed_base:raise ValueError('Training requires a floating robot and ground initialization')
     atomic_json(args.output/'asset_dependencies.json',audit_composed_asset(ROOT,cfg.robot.spawn.usd_path))
     controller=FullRacketRallyControllerV4(template,count,env.device)
@@ -251,6 +262,9 @@ def main():
         training_target_landing_curriculum=args.target_landing_curriculum,
         training_early_termination=('Robot-rule fault, body ground or fallen; observe recovery after failed shuttle return without reviving its rally' if args.continue_after_miss else
             'Rally fault, first ground without target, body ground or fallen')+'; formal evaluator unchanged')
+    base_record.update(reset_noise_level=args.reset_noise,
+                       reset_noise_seed=args.reset_noise_seed if args.reset_noise!='none' else None,
+                       reset_noise_amplitudes=(protocol['initialization']['perturbations'][args.reset_noise] if args.reset_noise!='none' else None))
     if leg_bank is not None:
         bank_sha=hashlib.sha256(args.recovery_leg_bank.read_bytes()).hexdigest()
         if args.resume and prior.get('recovery_leg_bank_sha256')!=bank_sha:raise ValueError('Recovery bank changed; use warm-start')
