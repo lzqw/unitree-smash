@@ -1,0 +1,164 @@
+{
+  "created_at": "2026-10-24T12:44:45.369996+00:00",
+  "scope": "Matched observed flange pose/linear/angular velocity only. The old shortboard is reconstructed kinematically from its verified legacy USD mount; no old-body dynamics, legal strike, global maximum reach or recovery performance is inferred. Old and new face normals differ at these poses.",
+  "old_shortboard_center_in_flange_m": [
+    0.18,
+    0.0,
+    0.0
+  ],
+  "full_racket_string_center_in_flange_m": [
+    0.45,
+    0.0,
+    0.04
+  ],
+  "old_payload_mass_kg": 0.09,
+  "full_racket_and_fixture_mass_kg": 0.15300000000000002,
+  "records": [
+    {
+      "run": "ball_near_intercept_blend_cem16",
+      "env_id": 35,
+      "time_s": 2.7590229511260986,
+      "actual_flange_position_m": [
+        0.9757843017578125,
+        -0.33953094482421875,
+        1.2651424407958984
+      ],
+      "actual_flange_velocity_mps": [
+        0.2859640419483185,
+        -0.6493217945098877,
+        -0.8330119252204895
+      ],
+      "actual_flange_angular_velocity_rad_s": [
+        3.202089786529541,
+        0.6534222364425659,
+        0.964579701423645
+      ],
+      "counterfactual_shortboard_center_m": [
+        0.961071652804114,
+        -0.26945225436915665,
+        1.4302863631935114
+      ],
+      "reconstructed_full_racket_center_m": [
+        0.9788195479605886,
+        -0.16488908619714937,
+        1.6817849836258059
+      ],
+      "same_flange_state_center_height_gain_m": 0.25149862043229443,
+      "counterfactual_shortboard_center_velocity_mps": [
+        0.32627627074096055,
+        -1.1923189842616209,
+        -0.5990000942776499
+      ],
+      "full_racket_center_velocity_mps": [
+        0.38975155223078517,
+        -1.9805208886632102,
+        -0.27577631077218645
+      ],
+      "counterfactual_shortboard_center_speed_mps": 1.3736381903630683,
+      "full_racket_center_speed_mps": 2.0372584118075783,
+      "same_flange_state_forward_center_velocity_gain_mps": 0.06347528148982462,
+      "counterfactual_old_blade_normal_world": [
+        -0.08173693863165851,
+        0.38932605808367815,
+        0.9174662355422946
+      ],
+      "actual_full_racket_normal_world": [
+        0.9954217146755601,
+        -0.013871687764644425,
+        0.09456842089687281
+      ],
+      "actual_strings_contact_point_m": [
+        0.9726982116699219,
+        -0.14331436157226562,
+        1.7550909519195557
+      ],
+      "actual_strings_contact_point_velocity_mps": [
+        0.4168391227722168,
+        -2.221158742904663,
+        -0.20268617570400238
+      ],
+      "new_center_native_position_error_m": 1.7413124959824857e-06,
+      "new_normal_native_error": 7.334529384392353e-08,
+      "actual_hit_velocity_identity_error_mps": 6.41378719655607e-06
+    },
+    {
+      "run": "ball_attack_recovery_cem17",
+      "env_id": 53,
+      "time_s": 2.764394998550415,
+      "actual_flange_position_m": [
+        0.9181938171386719,
+        -0.37114715576171875,
+        1.2536386251449585
+      ],
+      "actual_flange_velocity_mps": [
+        0.1538321077823639,
+        -0.4063914120197296,
+        -0.003136970568448305
+      ],
+      "actual_flange_angular_velocity_rad_s": [
+        -0.6168818473815918,
+        -2.042475700378418,
+        1.2236469984054565
+      ],
+      "counterfactual_shortboard_center_m": [
+        0.9084729693861829,
+        -0.3017159681275767,
+        1.4194240747558502
+      ],
+      "reconstructed_full_racket_center_m": [
+        0.9337847575261291,
+        -0.19855464544446805,
+        1.6708540946091484
+      ],
+      "same_flange_state_center_height_gain_m": 0.25143001985329816,
+      "counterfactual_shortboard_center_velocity_mps": [
+        -0.2697399088684369,
+        -0.31601626376906455,
+        -0.06582240518363267
+      ],
+      "full_racket_center_velocity_mps": [
+        -0.9095126576171846,
+        -0.12994095505305164,
+        -0.07776204028975058
+      ],
+      "counterfactual_shortboard_center_speed_mps": 0.4206643393812577,
+      "full_racket_center_speed_mps": 0.9220330043311888,
+      "same_flange_state_forward_center_velocity_gain_mps": -0.6397727487487477,
+      "counterfactual_old_blade_normal_world": [
+        -0.0540047097360498,
+        0.38572882018967813,
+        0.9210302756160645
+      ],
+      "actual_full_racket_normal_world": [
+        0.99732649421699,
+        -0.024636469202611505,
+        0.0687961359240233
+      ],
+      "actual_strings_contact_point_m": [
+        0.9313030242919922,
+        -0.1452484130859375,
+        1.7351322174072266
+      ],
+      "actual_strings_contact_point_velocity_mps": [
+        -1.1060271263122559,
+        -0.0933234766125679,
+        -0.11571086198091507
+      ],
+      "new_center_native_position_error_m": 2.2108700015685114e-06,
+      "new_normal_native_error": 1.4620777922354002e-07,
+      "actual_hit_velocity_identity_error_mps": 4.3282575659382625e-06
+    }
+  ],
+  "old_shortboard_native_rollout_performed": false,
+  "formal_acceptance": false,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash/configs/assembly_v2.json": "648c75fd0018eb8de3f76995fcc728177ff377b896ff473ec75042e4316043dd",
+    "/home/autodrive/LZQW/unitree_smash/configs/full_racket_v4_r3.json": "14d58dd674665424dab63e67d525daf9b2239821797b97202aa45f9af1e5a26c",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/matched_flange_kinematics_1245/compare.py": "0606dd36a9a023ca28e4b73679d753a9ac0edb430fc3cda5d1eb33d3f5a559bc",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/matched_flange_kinematics_1245/LEGACY_MOUNT.json": "699dd17fb5615aff54663c4e5c28cc5934e67c3d157c5d5bdc96ec45a47247d9",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_near_intercept_blend_cem16/geometry.json": "8afd390b7b92179ba6e2fde3774cc60162a98a5bd63ed50defd95b2e8f9d9c37",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_near_intercept_blend_cem16/contacts_000.json": "4116249f6dcf427320a8d01c2bed2527e7d1027bbca423d92bc9a7b0fdd7746b",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_attack_recovery_cem17/geometry.json": "8afd390b7b92179ba6e2fde3774cc60162a98a5bd63ed50defd95b2e8f9d9c37",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_attack_recovery_cem17/contacts_000.json": "974d62826287bbf2fb36cbd3328e04a4ec28b81448f52f32e799e23adc6200e5"
+  }
+}
