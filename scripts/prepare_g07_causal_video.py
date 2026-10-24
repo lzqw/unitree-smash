@@ -49,6 +49,9 @@ def main():
                    net_geometry_version=manifest['net_geometry_version'], episodes=len(rows),
                    complete=sum(r['complete_smash'] and free(r) for r in rows),
                    recovery=sum(r['recovery_success'] and free(r) for r in rows),
+                   airborne_contact_count=sum(r['airborne_contact'] for r in rows),
+                   conditional_recovery_count=sum(r['airborne_contact'] and r['recovery_success']
+                                                  and not r['robot_net_contact'] for r in rows),
                    formal_panel_recording=manifest.get('formal_evaluation_eligible', False),
                    source_panel=manifest.get('panel'),
                    selected_video_lane=a.scenario, best=selected[0], formal_acceptance=False)

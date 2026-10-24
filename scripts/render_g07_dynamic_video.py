@@ -9,7 +9,7 @@ import numpy as np
 import moderngl
 import imageio.v2 as imageio
 from PIL import Image,ImageDraw,ImageFont
-p=argparse.ArgumentParser();p.add_argument('--input',type=Path,required=True);p.add_argument('--output',type=Path);a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--input',type=Path,required=True);p.add_argument('--output',type=Path);p.add_argument('--normal-only',action='store_true');a=p.parse_args()
 meta=json.load(open(a.input/'geometry.json'));data=np.load(a.input/'geometry.npz');poses=np.load(a.input/'link_poses.npy');trace=json.load(open(a.input/'trajectory.json'));metrics=json.load(open(a.input/'metrics.json'))
 learned=metrics.get('controller','').startswith('learned')
 net_corrected=metrics.get('net_geometry_version') in {'environment-local-net-v2','environment-local-profiled-net-v3'}
@@ -81,13 +81,15 @@ def draw(index,slow=False):
  bp=np.eye(4,dtype='f4');bp[:3,3]=r['ball_xyz'];program['model'].write(bp.T.tobytes());program['color'].value=(1.,.35,.04);ball_mesh.render()
  frame=np.frombuffer(fbo.read(components=3,alignment=1),np.uint8).reshape(height,width,3)[::-1].copy()
  img=Image.fromarray(frame);d=ImageDraw.Draw(img);d.rectangle((0,0,width,88),fill=(18,28,43))
- d.text((24,8),'Go2 + PiPER｜'+('正确球网下重验' if net_corrected else '历史网坐标未修正')+' · '+('学习策略' if learned else '教师'),font=title,fill='white')
+ heading=metrics.get('presentation_title') or 'Go2 + PiPER｜'+('正确球网下重验' if net_corrected else '历史网坐标未修正')+' · '+('学习策略' if learned else '教师')
+ d.text((24,8),heading,font=title,fill='white')
  net_label='中心1.524 / 侧边1.55 m 网体v3' if profiled_net else '恒高1.524 m矩形网课程' if net_corrected else '历史网位置错误'
- d.text((24,50),'实测关节连杆与球轨迹 · 原负载与执行器 · '+net_label,font=small,fill=(166,193,214))
+ subtitle=metrics.get('presentation_subtitle') or '实测关节连杆与球轨迹 · 原负载与执行器 · '+net_label
+ d.text((24,50),subtitle,font=small,fill=(166,193,214))
  d.text((1040,20),'0.5 倍慢放' if slow else '正常速度',font=small,fill=(115,218,206))
  t=r['time_s'];e=metrics['best'];v=np.asarray(r['ball_v'])
  contact_time=e.get('contact_time_s') or float('inf');landing_time=e.get('first_landing_time_s') or float('inf')
- phase='地面准备/移动' if not r.get('airborne') and not r.get('contact') else ('腾空拦截' if t<contact_time else ('击球后飞行' if t<landing_time else '落地恢复'))
+ phase=('击球后腾空' if r.get('airborne') else '着地/恢复') if r.get('contact') else ('腾空拦截' if r.get('airborne') else '地面准备/移动')
  d.rectangle((20,104,390,143),fill=(22,39,55));d.text((30,109),f"{t:.2f} s · {phase} · 球速 {np.linalg.norm(v):.2f}",font=small,fill='white')
  d.rectangle((0,623,width,height),fill=(18,28,43))
  out=e.get('outgoing_velocity_mps');landing=e.get('first_landing_position_m');margin=e.get('net_margin_m')
@@ -101,16 +103,19 @@ def draw(index,slow=False):
  d.text((24,658),f"本回合完整：{yes(valid)}｜机器人碰网：{yes(e.get('robot_net_contact'))}｜稳定恢复：{yes(e.get('recovery_success'))}｜有效拍面：{face}",font=small,fill=(220,225,235))
  population='正式单面板' if metrics.get('formal_panel_recording') else '开发整组'
  conclusion='完整结论见双面板400回合报告' if metrics.get('formal_panel_recording') else '非正式400回合验收'
- d.text((24,687),f"{population} {metrics['episodes']} 回合：完整 {metrics['complete']}，恢复 {metrics['recovery']}｜案例 {metrics['selected_video_lane']}｜{conclusion}",font=small,fill=(166,193,214))
+ population=metrics.get('presentation_population',population)
+ conclusion=metrics.get('presentation_conclusion',conclusion)
+ recovery_text=f"条件恢复 {metrics['conditional_recovery_count']}/{metrics['airborne_contact_count']}" if 'conditional_recovery_count' in metrics else f"原始恢复 {metrics['recovery']}"
+ d.text((24,687),f"{population} {metrics['episodes']} 回合：完整 {metrics['complete']}，{recovery_text}｜案例 {metrics['selected_video_lane']}｜{conclusion}",font=small,fill=(166,193,214))
  return np.asarray(img)
 out=a.output or a.input/('G07_near_net_learned_replay.mp4' if learned else 'G07_near_net_teacher_replay.mp4')
 contact_index=min(range(len(trace)),key=lambda i:abs(trace[i]['time_s']-(metrics['best'].get('contact_time_s') or 1.48)))
 with imageio.get_writer(str(out),fps=50,codec='libx264',quality=8,macro_block_size=8,output_params=['-movflags','+faststart']) as writer:
- for slow in (False,True):
+ for slow in ((False,) if a.normal_only else (False,True)):
   for i in range(len(poses)):
    frame=draw(i,slow);writer.append_data(frame)
    if slow:writer.append_data(frame)
    if not slow and i in (0,contact_index,max(0,contact_index-5),min(len(poses)-1,contact_index+10)):imageio.imwrite(a.input/f'preview_{i:03d}.jpg',frame)
 imageio.imwrite(a.input/'poster.jpg',draw(contact_index))
-(a.input/'video.json').write_text(json.dumps(dict(path=str(out),frames=len(poses)*3,fps=50,duration_s=len(poses)*.06,resolution=[width,height],renderer=ctx.info['GL_RENDERER'],motion='Measured 50 Hz link poses and ball positions, no invented motion',curriculum=True,formal_acceptance=False,selected_lane=metrics['selected_video_lane'],segments=['normal speed','half speed replay']),indent=2)+'\n')
+(a.input/'video.json').write_text(json.dumps(dict(path=str(out),frames=len(poses)*(1 if a.normal_only else 3),fps=50,duration_s=len(poses)*(.02 if a.normal_only else .06),resolution=[width,height],renderer=ctx.info['GL_RENDERER'],motion='Measured 50 Hz link poses and ball positions, no invented motion',development_recording=not metrics.get('formal_panel_recording',False),formal_acceptance=False,selected_lane=metrics['selected_video_lane'],segments=['normal speed'] if a.normal_only else ['normal speed','half speed replay']),indent=2)+'\n')
 print(out,flush=True)

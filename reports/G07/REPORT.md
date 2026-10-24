@@ -52,6 +52,8 @@
 
 ## 视频与交付
 
+[最新效果对照视频（77秒）](https://github.com/lzqw/unitree-smash/releases/download/g07-progress-20261023/G07_current_effect_comparison_20261024.mp4)已生成并上传：1280×720、50fps，8,517,771bytes。前段是当前参考策略正式B组固定case0/1，后段是最新试验固定case0/1的正常与0.5倍慢放；最新两个案例恰好一成功一失败，均为事先固定记录，未按结果选片。标题卡和页脚明确区分参考B200（完整71/200、条件恢复146/196）与最新B16（完整4/16、条件恢复12/16）。原始连杆/球轨迹CPU llvmpipe渲染，全部3850帧已解码核对，未新增仿真或策略训练。SHA256 `71c00be771176716f5def036d7dcf86831e4841668de7c7f9f9c8dca08bfd3d5`；[来源、版本和发布校验](current_effect_video_20261024.json)。
+
 [正式B固定case0/1视频，51秒](https://github.com/lzqw/unitree-smash/releases/download/g07-progress-20261023/G07_formal_B_fixed_examples_20261024.mp4)来自实际50Hz连杆/球位姿和原USD几何CPU离线渲染，固定录制，不按结果挑选。视频页脚的恢复总数是原始非条件恢复，正式条件指标以本报告146/196为准。视频SHA256 `f2edb5142e98816437d138a74a43e19de42d52de2a3d45eb02b45425c1f4b6f1`。
 
 [失败400完整包](https://github.com/lzqw/unitree-smash/releases/download/g07-progress-20261023/G07_formal400_failed_lock02_20261024.zip)（5,691,849bytes，SHA256 `e6bc7892efea822792aacc07c61c2a73a0b98561e0835fac00dd95982e6aaf2b`）保留策略、源码、锁与全部结果。最新增量包的状态、文件名和SHA以发布页及对应JSON为准；Python/Isaac环境与基础runtime资产仍按既有[恢复说明](../../docs/HANDOFF_ARTIFACTS.md)准备，不能把增量包当作完整环境。

@@ -1,0 +1,303 @@
+{
+  "kind": "Verified video publication; G07 remains unpassed",
+  "verified_at": "2026-10-24T01:28:55.523222+00:00",
+  "assets": [
+    {
+      "name": "G07_current_effect_comparison_20261024.mp4",
+      "size": 8517771,
+      "digest": "sha256:71c00be771176716f5def036d7dcf86831e4841668de7c7f9f9c8dca08bfd3d5",
+      "browser_download_url": "https://github.com/lzqw/unitree-smash/releases/download/g07-progress-20261023/G07_current_effect_comparison_20261024.mp4"
+    },
+    {
+      "name": "G07_current_effect_comparison_20261024.json",
+      "size": 7780,
+      "digest": "sha256:f7aed5be221596204c1e2926c90bf93d1b6f721ac872fcad0932311a880fd61b",
+      "browser_download_url": "https://github.com/lzqw/unitree-smash/releases/download/g07-progress-20261023/G07_current_effect_comparison_20261024.json"
+    }
+  ],
+  "all_local_hashes_match_github_digests": true,
+  "video": {
+    "kind": "Current measured effect: reference policy and latest experiment",
+    "created_at": "2026-10-24T01:27:30.373109+00:00",
+    "path": "reports/G07/video/G07_current_effect_comparison_20261024.mp4",
+    "bytes": 8517771,
+    "sha256": "71c00be771176716f5def036d7dcf86831e4841668de7c7f9f9c8dca08bfd3d5",
+    "frames": 3850,
+    "fps": 50,
+    "duration_s": 77.0,
+    "resolution": [
+      1280,
+      720
+    ],
+    "reference_scores": {
+      "episodes": 200,
+      "complete": 71,
+      "airborne": 196,
+      "conditional_recovery": 146,
+      "robot_net": 22,
+      "numerical_failures": 0
+    },
+    "latest_scores": {
+      "episodes": 16,
+      "complete": 4,
+      "airborne": 16,
+      "conditional_recovery": 12,
+      "robot_net": 1,
+      "numerical_failures": 0
+    },
+    "clips": [
+      {
+        "kind": "reference",
+        "source": "reports/G07/causal_profiled_formal_b_200_v2",
+        "case": 0,
+        "derived": "reports/G07/video/current_effect_20261024/reference_case0",
+        "normal_only": true,
+        "episode_complete": false,
+        "episode_recovery": true,
+        "robot_net_contact": false,
+        "checkpoint_sha256": "d24460e97fc16ea378606caf6d17682db72886b0550115a5fb9f2c144747dba6",
+        "raw_files": {
+          "reports/G07/causal_profiled_formal_b_200_v2/episodes.json": "7fb75b5dd6f3087e82b84fd7c4d4e165399d44f243391325fb7d9b5c92015e56",
+          "reports/G07/causal_profiled_formal_b_200_v2/link_poses_fixed_scenario_0.npy": "70cba342a140d939279e19997ed1160f9ccddc79cd7e197f699b9f89edbb7af8",
+          "reports/G07/causal_profiled_formal_b_200_v2/traces_fixed_scenarios_0_1.json": "be77e658be7deb1cf016733bc5e729da083c87d51c467a93d9d1400b5ecebd92"
+        },
+        "video": {
+          "path": "reports/G07/video/current_effect_20261024/reference_case0.mp4",
+          "frames": 425,
+          "fps": 50,
+          "duration_s": 8.5,
+          "resolution": [
+            1280,
+            720
+          ],
+          "renderer": "llvmpipe (LLVM 20.1.2, 256 bits)",
+          "motion": "Measured 50 Hz link poses and ball positions, no invented motion",
+          "development_recording": false,
+          "formal_acceptance": false,
+          "selected_lane": 0,
+          "segments": [
+            "normal speed"
+          ]
+        },
+        "clip": "reports/G07/video/current_effect_20261024/reference_case0.mp4"
+      },
+      {
+        "kind": "reference",
+        "source": "reports/G07/causal_profiled_formal_b_200_v2",
+        "case": 1,
+        "derived": "reports/G07/video/current_effect_20261024/reference_case1",
+        "normal_only": true,
+        "episode_complete": false,
+        "episode_recovery": false,
+        "robot_net_contact": false,
+        "checkpoint_sha256": "d24460e97fc16ea378606caf6d17682db72886b0550115a5fb9f2c144747dba6",
+        "raw_files": {
+          "reports/G07/causal_profiled_formal_b_200_v2/episodes.json": "7fb75b5dd6f3087e82b84fd7c4d4e165399d44f243391325fb7d9b5c92015e56",
+          "reports/G07/causal_profiled_formal_b_200_v2/link_poses_fixed_scenario_1.npy": "84e3dd01a4be1942be10cd670c72025881dd5ad5dbbcfbda53aef8f7c9f6b717",
+          "reports/G07/causal_profiled_formal_b_200_v2/traces_fixed_scenarios_0_1.json": "be77e658be7deb1cf016733bc5e729da083c87d51c467a93d9d1400b5ecebd92"
+        },
+        "video": {
+          "path": "reports/G07/video/current_effect_20261024/reference_case1.mp4",
+          "frames": 425,
+          "fps": 50,
+          "duration_s": 8.5,
+          "resolution": [
+            1280,
+            720
+          ],
+          "renderer": "llvmpipe (LLVM 20.1.2, 256 bits)",
+          "motion": "Measured 50 Hz link poses and ball positions, no invented motion",
+          "development_recording": false,
+          "formal_acceptance": false,
+          "selected_lane": 1,
+          "segments": [
+            "normal speed"
+          ]
+        },
+        "clip": "reports/G07/video/current_effect_20261024/reference_case1.mp4"
+      },
+      {
+        "kind": "latest",
+        "source": "reports/G07/lastwindow_fresh_b16_stress01",
+        "case": 0,
+        "derived": "reports/G07/video/current_effect_20261024/latest_case0",
+        "normal_only": false,
+        "episode_complete": true,
+        "episode_recovery": true,
+        "robot_net_contact": false,
+        "checkpoint_sha256": "8b2b7dbb8b6c6fbd215a236fa72f66bb4feabcadd8fda593abce6c9546511902",
+        "raw_files": {
+          "reports/G07/lastwindow_fresh_b16_stress01/episodes.json": "158af66afdc33c579a1593cb717f32e850f64881cb6adbc80ef334afd7b07bde",
+          "reports/G07/lastwindow_fresh_b16_stress01/link_poses_fixed_scenario_0.npy": "d79b031510320a683ae1f9a49275fbba5584e909093c72b965424d6ce5f413cf",
+          "reports/G07/lastwindow_fresh_b16_stress01/traces_fixed_scenarios_0_1.json": "11d16840aef5472b59e9213d837cd3a12d50a9b3a4362d1477e7b2e2ec8ac2fd"
+        },
+        "video": {
+          "path": "reports/G07/video/current_effect_20261024/latest_case0.mp4",
+          "frames": 1275,
+          "fps": 50,
+          "duration_s": 25.5,
+          "resolution": [
+            1280,
+            720
+          ],
+          "renderer": "llvmpipe (LLVM 20.1.2, 256 bits)",
+          "motion": "Measured 50 Hz link poses and ball positions, no invented motion",
+          "development_recording": true,
+          "formal_acceptance": false,
+          "selected_lane": 0,
+          "segments": [
+            "normal speed",
+            "half speed replay"
+          ]
+        },
+        "clip": "reports/G07/video/current_effect_20261024/latest_case0.mp4"
+      },
+      {
+        "kind": "latest",
+        "source": "reports/G07/lastwindow_fresh_b16_stress01",
+        "case": 1,
+        "derived": "reports/G07/video/current_effect_20261024/latest_case1",
+        "normal_only": false,
+        "episode_complete": false,
+        "episode_recovery": true,
+        "robot_net_contact": false,
+        "checkpoint_sha256": "8b2b7dbb8b6c6fbd215a236fa72f66bb4feabcadd8fda593abce6c9546511902",
+        "raw_files": {
+          "reports/G07/lastwindow_fresh_b16_stress01/episodes.json": "158af66afdc33c579a1593cb717f32e850f64881cb6adbc80ef334afd7b07bde",
+          "reports/G07/lastwindow_fresh_b16_stress01/link_poses_fixed_scenario_1.npy": "7647c37cc03644e8b4404c184dc3d4132115800d6c951cd5555d615a4553193d",
+          "reports/G07/lastwindow_fresh_b16_stress01/traces_fixed_scenarios_0_1.json": "11d16840aef5472b59e9213d837cd3a12d50a9b3a4362d1477e7b2e2ec8ac2fd"
+        },
+        "video": {
+          "path": "reports/G07/video/current_effect_20261024/latest_case1.mp4",
+          "frames": 1275,
+          "fps": 50,
+          "duration_s": 25.5,
+          "resolution": [
+            1280,
+            720
+          ],
+          "renderer": "llvmpipe (LLVM 20.1.2, 256 bits)",
+          "motion": "Measured 50 Hz link poses and ball positions, no invented motion",
+          "development_recording": true,
+          "formal_acceptance": false,
+          "selected_lane": 1,
+          "segments": [
+            "normal speed",
+            "half speed replay"
+          ]
+        },
+        "clip": "reports/G07/video/current_effect_20261024/latest_case1.mp4"
+      }
+    ],
+    "source_manifest_sha256": "59825fea9c00e5a03657955745c61a20899bcb6b48ba3a4022a18892716fdb4f",
+    "source_evaluations_unchanged": true,
+    "renderer": "CPU llvmpipe; original measured50Hz link/ball poses",
+    "new_simulation": false,
+    "new_policy_training": false,
+    "gpu_hours_for_render": 0,
+    "formal_acceptance": false,
+    "selection": "Cases0 and1 recorded before outcomes, all4 included; latest candidate is not better than reference",
+    "segments": [
+      "reports/G07/video/current_effect_20261024/reference_title.mp4",
+      "reports/G07/video/current_effect_20261024/reference_case0.mp4",
+      "reports/G07/video/current_effect_20261024/reference_case1.mp4",
+      "reports/G07/video/current_effect_20261024/latest_title.mp4",
+      "reports/G07/video/current_effect_20261024/latest_case0.mp4",
+      "reports/G07/video/current_effect_20261024/latest_case1.mp4",
+      "reports/G07/video/current_effect_20261024/ending_title.mp4"
+    ]
+  },
+  "sources": {
+    "kind": "New CPU video comparison from already measured fixed cases; no new simulation",
+    "created_at": "2026-10-24T01:25:37.603249+00:00",
+    "selection": "Cases0 and1 recorded before outcomes in both source evaluations; all4 shown without outcome filtering",
+    "sources": [
+      {
+        "kind": "reference",
+        "source": "reports/G07/causal_profiled_formal_b_200_v2",
+        "case": 0,
+        "derived": "reports/G07/video/current_effect_20261024/reference_case0",
+        "normal_only": true,
+        "episode_complete": false,
+        "episode_recovery": true,
+        "robot_net_contact": false,
+        "checkpoint_sha256": "d24460e97fc16ea378606caf6d17682db72886b0550115a5fb9f2c144747dba6",
+        "raw_files": {
+          "reports/G07/causal_profiled_formal_b_200_v2/episodes.json": "7fb75b5dd6f3087e82b84fd7c4d4e165399d44f243391325fb7d9b5c92015e56",
+          "reports/G07/causal_profiled_formal_b_200_v2/link_poses_fixed_scenario_0.npy": "70cba342a140d939279e19997ed1160f9ccddc79cd7e197f699b9f89edbb7af8",
+          "reports/G07/causal_profiled_formal_b_200_v2/traces_fixed_scenarios_0_1.json": "be77e658be7deb1cf016733bc5e729da083c87d51c467a93d9d1400b5ecebd92"
+        }
+      },
+      {
+        "kind": "reference",
+        "source": "reports/G07/causal_profiled_formal_b_200_v2",
+        "case": 1,
+        "derived": "reports/G07/video/current_effect_20261024/reference_case1",
+        "normal_only": true,
+        "episode_complete": false,
+        "episode_recovery": false,
+        "robot_net_contact": false,
+        "checkpoint_sha256": "d24460e97fc16ea378606caf6d17682db72886b0550115a5fb9f2c144747dba6",
+        "raw_files": {
+          "reports/G07/causal_profiled_formal_b_200_v2/episodes.json": "7fb75b5dd6f3087e82b84fd7c4d4e165399d44f243391325fb7d9b5c92015e56",
+          "reports/G07/causal_profiled_formal_b_200_v2/link_poses_fixed_scenario_1.npy": "84e3dd01a4be1942be10cd670c72025881dd5ad5dbbcfbda53aef8f7c9f6b717",
+          "reports/G07/causal_profiled_formal_b_200_v2/traces_fixed_scenarios_0_1.json": "be77e658be7deb1cf016733bc5e729da083c87d51c467a93d9d1400b5ecebd92"
+        }
+      },
+      {
+        "kind": "latest",
+        "source": "reports/G07/lastwindow_fresh_b16_stress01",
+        "case": 0,
+        "derived": "reports/G07/video/current_effect_20261024/latest_case0",
+        "normal_only": false,
+        "episode_complete": true,
+        "episode_recovery": true,
+        "robot_net_contact": false,
+        "checkpoint_sha256": "8b2b7dbb8b6c6fbd215a236fa72f66bb4feabcadd8fda593abce6c9546511902",
+        "raw_files": {
+          "reports/G07/lastwindow_fresh_b16_stress01/episodes.json": "158af66afdc33c579a1593cb717f32e850f64881cb6adbc80ef334afd7b07bde",
+          "reports/G07/lastwindow_fresh_b16_stress01/link_poses_fixed_scenario_0.npy": "d79b031510320a683ae1f9a49275fbba5584e909093c72b965424d6ce5f413cf",
+          "reports/G07/lastwindow_fresh_b16_stress01/traces_fixed_scenarios_0_1.json": "11d16840aef5472b59e9213d837cd3a12d50a9b3a4362d1477e7b2e2ec8ac2fd"
+        }
+      },
+      {
+        "kind": "latest",
+        "source": "reports/G07/lastwindow_fresh_b16_stress01",
+        "case": 1,
+        "derived": "reports/G07/video/current_effect_20261024/latest_case1",
+        "normal_only": false,
+        "episode_complete": false,
+        "episode_recovery": true,
+        "robot_net_contact": false,
+        "checkpoint_sha256": "8b2b7dbb8b6c6fbd215a236fa72f66bb4feabcadd8fda593abce6c9546511902",
+        "raw_files": {
+          "reports/G07/lastwindow_fresh_b16_stress01/episodes.json": "158af66afdc33c579a1593cb717f32e850f64881cb6adbc80ef334afd7b07bde",
+          "reports/G07/lastwindow_fresh_b16_stress01/link_poses_fixed_scenario_1.npy": "7647c37cc03644e8b4404c184dc3d4132115800d6c951cd5555d615a4553193d",
+          "reports/G07/lastwindow_fresh_b16_stress01/traces_fixed_scenarios_0_1.json": "11d16840aef5472b59e9213d837cd3a12d50a9b3a4362d1477e7b2e2ec8ac2fd"
+        }
+      }
+    ],
+    "gpu_compute_hours_for_render": 0,
+    "source_files_untouched": true,
+    "render_code_hashes": {
+      "scripts/prepare_g07_causal_video.py": "29e4d1b3cce95819eab8108d5328be39095efd55864738d8a6448b45c28a6760",
+      "scripts/render_g07_dynamic_video.py": "2df43575fc6d3d8a27251414045e686fd0d29ea22b708cc360ef1f717e9f71ac"
+    }
+  },
+  "versions": {
+    "numpy": "1.26.0",
+    "moderngl": "5.12.0",
+    "glcontext": "3.0.0",
+    "imageio": "2.37.0",
+    "imageio-ffmpeg": "0.6.0",
+    "Pillow": "11.3.0",
+    "trimesh": "4.5.1"
+  },
+  "visualization_python": "/home/autodrive/Isaac/env_isaaclab/bin/python",
+  "visualization_dependency_path": "/tmp/unitree_video_deps",
+  "code_hashes": {
+    "scripts/prepare_g07_causal_video.py": "29e4d1b3cce95819eab8108d5328be39095efd55864738d8a6448b45c28a6760",
+    "scripts/render_g07_dynamic_video.py": "2df43575fc6d3d8a27251414045e686fd0d29ea22b708cc360ef1f717e9f71ac",
+    "scripts/assemble_g07_effect_video.py": "fb4e5893d34ffeeca24fd30d11f4f7813b965c41175e7f461a53644930a75b5c"
+  }
+}

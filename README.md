@@ -9,7 +9,7 @@
 
 **当前状态（2026-10-24北京时间）：G00–G06已通过；G07正式400未达标（A完整50%/恢复89%，B完整35.5%/条件恢复74.4898%，数值0）。后续两批1536开发比较均未找到新的合格策略。原02:04工作窗已到期，实际新增结算7.645612 GPUh，GPU0本项目作业已停止，状态BUDGET_EXHAUSTED。权重、失败数据、公开轨迹与正式固定案例视频已保留；没有G07通过证据。**
 
-最新入口：[G07实测报告](reports/G07/REPORT.md)、[继续执行与资源窗口](status/NEXT.md)、[视频、权重与完整轨迹附件](https://github.com/lzqw/unitree-smash/releases/tag/g07-progress-20261023)。G04结果与接口见[训练总结](reports/G04/autonomous_learning_20261022/REPORT.md)、[策略接口](docs/G04_POLICY_INTERFACE.md)。旧交接文档保留历史状态。
+最新入口：[77秒当前效果视频](https://github.com/lzqw/unitree-smash/releases/download/g07-progress-20261023/G07_current_effect_comparison_20261024.mp4)、[G07实测报告](reports/G07/REPORT.md)、[继续执行与资源窗口](status/NEXT.md)、[视频、权重与完整轨迹附件](https://github.com/lzqw/unitree-smash/releases/tag/g07-progress-20261023)。G04结果与接口见[训练总结](reports/G04/autonomous_learning_20261022/REPORT.md)、[策略接口](docs/G04_POLICY_INTERFACE.md)。旧交接文档保留历史状态。
 生产资产为标准 PiPER、Go2、安装板和球拍组成的约 20.647 kg 浮动系统。
 统一 794 维观测、18 维动作、原生 PPO、独立评测及可恢复检查点已实现。
 最新状态与累计资源记录分别见 `status/STATUS.json`、`status/NEXT.md` 和 `status/GPU_LEDGER.json`。
