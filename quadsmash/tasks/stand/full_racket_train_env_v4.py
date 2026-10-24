@@ -3,11 +3,16 @@ from .full_racket_env_v4 import FullRacketEnvV4
 
 
 class RallyTrainingEnvV4(FullRacketEnvV4):
+    def __init__(self,*args,continue_after_miss=False,**kwargs):
+        self.continue_after_miss=continue_after_miss
+        super().__init__(*args,**kwargs)
+
     def _get_dones(self):
         fallen,timeout=super()._get_dones()
         if not self._v4_ready:return fallen,timeout
-        impossible=(self.launch_done&(self.rally.faulted()|
-            (self.rally.ground_seen&(~self.rally.landed_target))))|self.body_ground_seen
+        impossible=(self.launch_done&self.rally.faulted())|self.body_ground_seen
+        if not self.continue_after_miss:
+            impossible|=self.launch_done&self.rally.ground_seen&(~self.rally.landed_target)
         return fallen|impossible,timeout
 
     def _reset_idx(self,ids):
@@ -32,5 +37,8 @@ class RallyTrainingEnvV4(FullRacketEnvV4):
         super()._reset_idx(ids)
         for row in self.rally_records[start:]:
             row['training_terminal_reasons']=reasons[row['env_id']]
-            row['training_early_termination']=any(reasons[row['env_id']].values())
+            why=reasons[row['env_id']]
+            row['training_early_termination']=(why['rally_fault'] or why['body_ground'] or why['root_fallen'] or
+                (why['first_ground_without_target'] and not self.continue_after_miss))
+            row['training_continue_after_miss']=self.continue_after_miss
             row['terminal_native_state']=terminal_states[row['env_id']]

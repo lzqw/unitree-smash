@@ -14,6 +14,8 @@ p.add_argument('--ik-seeds',type=Path)
 p.add_argument('--walk-speed',type=float);p.add_argument('--waypoint-x',type=float)
 p.add_argument('--timing-grid',action='store_true',help='Reserve12 candidates for measured leg timing/arm speed/Cartesian-gain combinations')
 p.add_argument('--push-grid',action='store_true',help='Reserve16 candidates for front/back thigh/calf push coordination')
+p.add_argument('--continue-after-miss',action='store_true',help='TRAIN curriculum: observe landing/recovery after a missed ball; all rally failures remain failures')
+p.add_argument('--push-search-range',type=float,default=.15,help='Symmetric front/back leg target-offset search range in rad; native actuator/joint limits stay unchanged')
 AppLauncher.add_app_launcher_args(p);args=p.parse_args();app=AppLauncher(args).app
 import numpy as np
 import torch
@@ -49,8 +51,10 @@ def main():
     if args.timing_grid and args.candidates<14:raise ValueError('Timing grid requires at least14 candidates')
     if args.push_grid and args.candidates<18:raise ValueError('Push grid requires at least18 candidates')
     if args.timing_grid and args.push_grid:raise ValueError('Choose one controlled grid')
+    if not .15<=args.push_search_range<=.5:raise ValueError('Push search range must be between .15 and .5rad')
     sampling_contract=('front-back-push-grid-v1' if args.push_grid else
         'timing-velocity-cartesian-grid-v1' if args.timing_grid else 'gaussian-cem-v1')
+    selection_contract='ball-with-jump-recovery-v2' if args.continue_after_miss else 'legal-first-ball-v4'
     if not args.training_indices or len(set(args.training_indices))!=len(args.training_indices):raise ValueError('Distinct TRAIN indices required')
     args.output.mkdir(parents=True,exist_ok=True)
     protocol_path=ROOT/'configs/g07_full_racket_eval_v4_r3.json';protocol=json.loads(protocol_path.read_text())
@@ -87,12 +91,13 @@ def main():
     case_count=len(args.training_indices);count=args.candidates*case_count
     cases=[training_cases[i] for _ in range(args.candidates) for i in args.training_indices]
     cfg=full_racket_cfg(count,protocol['physics_dt_s']);cfg.seed=args.seed
-    env=RallyTrainingEnvV4(cfg,cases=cases);wrapper=RslRlVecEnvWrapper(env,clip_actions=None)
+    env=RallyTrainingEnvV4(cfg,cases=cases,continue_after_miss=args.continue_after_miss);wrapper=RslRlVecEnvWrapper(env,clip_actions=None)
     atomic_json(args.output/'asset_dependencies.json',audit_composed_asset(ROOT,cfg.robot.spawn.usd_path))
     controller=FullRacketRallyControllerV4(template,count,env.device)
     surface_offset=controller.teacher.contact_offset.clone()
     surface_offset[0]=controller.teacher.face_sign*env.racket_config['assumptions']['string_thickness_m']/2
     low=torch.tensor([*LOW,.80,-.12],device=env.device);high=torch.tensor([*HIGH,1.45,.12],device=env.device)
+    low[22:24]=-args.push_search_range;high[22:24]=args.push_search_range
     mean=template['parameters'].to(env.device).clamp(low,high);reference=mean.clone()
     sigma=(high-low)*args.sigma_fraction
     rng=torch.Generator(device=env.device).manual_seed(args.seed)
@@ -101,7 +106,8 @@ def main():
         assert prior['schema']=='full-racket-ball-search-state-v4'
         assert prior['training_case_indices']==args.training_indices and prior['candidate_count']==args.candidates
         assert prior['protocol_sha256']==hashlib.sha256(protocol_path.read_bytes()).hexdigest()
-        assert prior['physics_dt_s']==cfg.sim.dt and prior['selection_contract']=='legal-first-ball-v4'
+        assert prior['physics_dt_s']==cfg.sim.dt and prior['selection_contract']==selection_contract
+        assert prior.get('push_search_range',.15)==args.push_search_range,'Search bounds changed; use warm-start'
         assert prior.get('sampling_contract','gaussian-cem-v1')==sampling_contract,'Sampling changed; use warm-start'
         mean=prior['mean'].to(env.device);sigma=prior['sigma'].to(env.device);rng.set_state(prior['rng'].cpu())
         previous=prior['generations'];best_result=prior['best_result'];reference=prior['reference_parameters'].to(env.device)
@@ -119,10 +125,13 @@ def main():
         protocol_sha256=protocol_sha,asset_sha256=template['asset_sha256'],physics_dt_s=cfg.sim.dt,
         candidate_count=args.candidates,training_case_indices=args.training_indices,training_suite=suite,
         reference_parameters=reference.cpu(),parameter_names=PARAMETER_NAMES+['intercept_plane_x','strike_timing_residual'],
-        selection_contract='legal-first-ball-v4',source_checkpoint_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),
+        selection_contract=selection_contract,source_checkpoint_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),
         sampling_contract=sampling_contract,
+        push_search_range=args.push_search_range,
         source_hashes=source_hashes,formal_acceptance=False,formal_panels_read=False,
-        training_early_termination='Rally fault, first ground without target, body ground or fallen; formal evaluator unchanged')
+        training_continue_after_miss=args.continue_after_miss,
+        training_early_termination=('Rally fault, body ground or fallen; observe recovery after missed ball' if args.continue_after_miss else
+            'Rally fault, first ground without target, body ground or fallen')+'; formal evaluator unchanged')
     try:
         for generation in range(args.generations):
             state=dict(base_record,mean=mean.cpu(),sigma=sigma.cpu(),rng=rng.get_state().cpu(),
@@ -238,6 +247,15 @@ def main():
                     and np.isfinite(outgoing).all() and np.linalg.norm(outgoing)>=8. and outgoing[0]>0 and outgoing[2]<=-1.)
                 reward=float(shaping[i])+12*legal_contact+8*row['airborne_string_hit']+6*row['released']+10*row['attack_outgoing']
                 reward+=12*row['crossed_net']+15*row['landed_target']+10*row['recovery_success']+100*row['complete_smash']-30*fault
+                if args.continue_after_miss:
+                    # This curriculum supplies landing feedback even after a
+                    # miss. Actual complete/attack/legal/landing flags remain
+                    # untouched; no dead-ball return can become successful.
+                    jump=row['jump']
+                    recovery_shaping=(6*min(jump['recovery_s']/.8,1.)+8*jump['qualified_jump_landed']
+                        -15*jump['body_landing']-5*row['training_terminal_reasons']['root_fallen'])
+                    reward+=recovery_shaping
+                    row['training_recovery_shaping']=recovery_shaping
                 row.update(training_score=reward,legal_episode=not fault and row['numerical_failures']==0
                     and row['active_rally_launch_count']==1 and not row['jump']['terminated'])
                 rows.append(row)
