@@ -1,0 +1,163 @@
+{
+  "verified_at": "2026-10-24T14:17:47.556610+00:00",
+  "scope": "Two completed native TRAIN generations plus separately preserved interrupted generation2. Not a complete four-generation job or formal-panel result.",
+  "run": "ball_post_stroke_retreat37_cem20",
+  "source_commit": "b470b6c19aad205edf24c7b8a833c8a170e9ab0c",
+  "guard_terminal_status": "FAILED",
+  "child_exit_code": 0,
+  "completed_receipt_present": false,
+  "completed_generations": 2,
+  "completed_generation_counts": {
+    "had_contact": 159,
+    "frame_hit": 89,
+    "airborne_string_hit": 72,
+    "attack_outgoing": 33,
+    "recovery_success": 97,
+    "crossed_net": 70,
+    "landed_legal_court": 64,
+    "landed_target": 4,
+    "complete_smash": 0,
+    "robot_net_fault": 0,
+    "racket_invasion_fault": 0,
+    "executions": 256,
+    "usable_air_strings": 70,
+    "air_strings_and_recovery": 17,
+    "attack_outgoing_and_recovery": 6,
+    "canonical_air_contacts": 72,
+    "canonical_conditional_recovery_count": 17,
+    "canonical_complete": 0,
+    "robot_rule_terminal": 3,
+    "body_ground_terminal": 143,
+    "numerical_failures": 0
+  },
+  "distinct_TRAIN_indices": [
+    1,
+    65
+  ],
+  "distinct_cases": 2,
+  "interrupted_generation": 2,
+  "interrupted_ticks": 339,
+  "interrupted_terminal_records": 3,
+  "interrupted_pending_first_episodes": 125,
+  "interrupted_complete": 0,
+  "arrays": {
+    "all_first_episodes_002.npz": {
+      "link_poses": [
+        170,
+        128,
+        28,
+        7
+      ],
+      "ball_position_m": [
+        170,
+        128,
+        3
+      ],
+      "episode_clock_s": [
+        170,
+        128
+      ],
+      "valid_first_episode": [
+        170,
+        128
+      ]
+    },
+    "public_and_poses_002.npz": {
+      "observations": [
+        339,
+        2,
+        794
+      ],
+      "actions": [
+        339,
+        2,
+        18
+      ],
+      "link_poses": [
+        170,
+        2,
+        28,
+        7
+      ],
+      "valid_first_episode": [
+        339,
+        2
+      ]
+    },
+    "control_window_002.npz": {
+      "clock_s": [
+        119,
+        128
+      ],
+      "actions": [
+        119,
+        128,
+        18
+      ],
+      "observed_previous_actions": [
+        119,
+        128,
+        18
+      ],
+      "valid_first_episode": [
+        119,
+        128
+      ],
+      "recovery_active": [
+        119,
+        128
+      ]
+    },
+    "near_contact_all_002.npz": {
+      "link_poses": [
+        60,
+        128,
+        28,
+        7
+      ],
+      "ball_position_m": [
+        60,
+        128,
+        3
+      ],
+      "episode_clock_s": [
+        60,
+        128
+      ],
+      "valid_first_episode": [
+        60,
+        128
+      ],
+      "observations": [
+        60,
+        128,
+        794
+      ]
+    }
+  },
+  "all_interrupted_arrays_finite": true,
+  "public_actions_bounded": true,
+  "actual_control_env_steps": 248192,
+  "charged_control_env_steps_cap": 409600,
+  "actual_gpu_hours": 0.7095360625538807,
+  "actual_elapsed_s": 2554.3298251939705,
+  "native_execution": true,
+  "formal_acceptance": false,
+  "sha256": {
+    "reports/G07_full_racket_v4/ball_post_stroke_retreat37_cem20/all_first_episodes_002.npz": "0961163da1dbe5cf404f6eec6ab8f1815551c2250512d5f4958e7407d66dc725",
+    "reports/G07_full_racket_v4/ball_post_stroke_retreat37_cem20/public_and_poses_002.npz": "774577ae4adbf3a355e0141e00e21a5f18ec3a906e7e2deaa722b31ef6e2d3c2",
+    "reports/G07_full_racket_v4/ball_post_stroke_retreat37_cem20/control_window_002.npz": "c4c8914821dcfdf89792a5c98f3255fa6e5b22a9624a5cf20ad5966b6a8f36e0",
+    "reports/G07_full_racket_v4/ball_post_stroke_retreat37_cem20/near_contact_all_002.npz": "ada328c828e8059602a576a44e21f577a9087bf2b0c02b30c12e110b23b6e67a",
+    "reports/G07_full_racket_v4/ball_post_stroke_retreat37_cem20/job.json": "bb886786cd5fe2934d524e2bfbca6b4b9245f318cf0f5ef34a45b224a8850a08",
+    "reports/G07_full_racket_v4/ball_post_stroke_retreat37_cem20/interrupted.json": "bcc67fb0dad8d951689214960657832f9a1fd108fa95d1d79537346ab43ad8a5",
+    "reports/G07_full_racket_v4/ball_post_stroke_retreat37_cem20/interrupted_search_state_002.pt": "0cca6f126eb30967f5cf65d2a1e61085bdc624bdf73390f749dc2632ed9a824d",
+    "reports/G07_full_racket_v4/ball_post_stroke_retreat37_cem20/interrupted_rallies_002.json": "7f3e4bcd9f240bffe691254da2f61463cf90ec4748b229d01682876f06013fa2",
+    "reports/G07_full_racket_v4/ball_post_stroke_retreat37_cem20/interrupted_jumps_002.json": "1663d035581fe46b05229b0bffc21a2605ca3d89688e73ff804d9978e95e67a0",
+    "reports/G07_full_racket_v4/ball_post_stroke_retreat37_cem20/source_hashes.json": "27dcf5cdf874207bfc811d3255f0e6b15f52fb3e494d430a4d8477b215883c37",
+    "reports/G07_full_racket_v4/ball_post_stroke_retreat37_cem20/GENERATION0_SUMMARY.json": "2239c24e2ed30b96fcfe8db657554c96a3dd1ec101592d9047405c7f31cbc5fa",
+    "reports/G07_full_racket_v4/ball_post_stroke_retreat37_cem20/GENERATION1_SUMMARY.json": "7a357d266f89bb50f0a6d9008a9d8ca5828cbbeda29b771f6dca1793deeb1c5f",
+    "reports/G07_full_racket_v4/ball_post_stroke_retreat37_cem20/population_000.pt": "9cf46d9b0ec3ea3c892cd9361aa4cb55e9fb27e128b56cd39d3008a462412eff",
+    "reports/G07_full_racket_v4/ball_post_stroke_retreat37_cem20/population_001.pt": "06aba314ae4335cb1be2d8e778a10e4f8224b5d192bb4d5a4808bdb7046b574f",
+    "reports/G07_full_racket_v4/poststroke_retreat37_terminal_1420/verify.py": "a21acc36f63d1c2884c4e4ddbf6b3d577cc6343a765be2456acf1a3e85da9dec"
+  }
+}

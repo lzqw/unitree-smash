@@ -1,0 +1,48 @@
+{
+  "created_at": "2026-10-24T14:04:41.238735+00:00",
+  "scope": "CPU replay of immutable CEM20TRAINrecords under unexecuted next selection/reward. Native labels/history untouched; no new38policy results.",
+  "strong_attack_recovery_candidate50_tier": 13,
+  "weak_recovery_candidate14_tier": 4,
+  "future_best_eligible_candidates": [
+    50
+  ],
+  "actual_data_examples": [
+    {
+      "env_id": 29,
+      "native_attack": false,
+      "native_recovery": true,
+      "native_target": false,
+      "native_complete": false,
+      "future_norm_outgoing_shaping": 12.09649944085665,
+      "future_actual_target_landing_shaping": 14.035416601906373
+    },
+    {
+      "env_id": 101,
+      "native_attack": true,
+      "native_recovery": true,
+      "native_target": false,
+      "native_complete": false,
+      "future_norm_outgoing_shaping": 13.0,
+      "future_actual_target_landing_shaping": 0.3563375093738618
+    },
+    {
+      "env_id": 45,
+      "native_attack": false,
+      "native_recovery": false,
+      "native_target": true,
+      "native_complete": false,
+      "future_norm_outgoing_shaping": 11.760787241286463,
+      "future_actual_target_landing_shaping": 25.0
+    }
+  ],
+  "training_feedback_uses_actual_first_landing_only": true,
+  "native_task_gates_unchanged": true,
+  "native_execution": false,
+  "formal_acceptance": false,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_post_stroke_retreat37_cem20/episodes_000.json": "d2d3128e8613136f50fe76f421000fda7e3155e0c336ac6a5bb600f8bd632ddf",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/quadsmash/control/full_racket_target_landing_curriculum_v4.py": "1ab8ef571c76ad9bae28aeb7f078512e8ab0b002eb658f912131147b96c20282",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/quadsmash/control/full_racket_contact_curriculum_v4.py": "eab74660116397d8a33c983c9c5a5613fb1a998418934bfac5877e5079ff9c86",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/scripts/search_full_racket_ball_v4.py": "f5da9d21ef38b00c1b9554a6a582a43a364c28aa0e9d9f45049149314425b60d"
+  }
+}

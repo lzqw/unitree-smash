@@ -50,38 +50,34 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "CEM20gen0full128:80contacts/37airstrings/19attacks/20qualifiedrecoveries/2air+rec/1attack+rec/31court/3targets/0full/0robotnet/NF0. Actualbest50TRAIN65out8.0996,vz-1.2725,courtfirstx4.7024/targetlong.7024,qualifiedrec3.6819s/body0; canonical TRAINepisode check confirms. SamepolicyTRAIN1misses. Gen1actual400ticks23closed105pending/35strings/22pendingstringcases; exactbest50retainedactualslot1. Sameguard1431620child1431630continuesunchangedb470; optionalnext38phase124tests/120lane287CPUonly, not launched while reviewing improvedgen1.41.44sactualvideo2072decoded/upload5SHAverified; fullgoal/formal400unpassed.",
+      "notes": "CEM20stopped after2complete generations256executions/2TRAINcases:72airstrings/33attacks/97qualifiedrecoveries/17air+recovery/6attack+recovery/64court/4target/0full/NF0. Exact37policy repeated attack+qualified recovery onTRAIN65 but firstlandingx4.55-4.70misses targetupper4; pairedTRAIN1miss/frame. Intentionalstop saved339ticks/3terminal125pending, guardFAILEDexit0/nocompletedreceipt, actual248192steps/.709536062554GPUh; declaredcap409600retained. CEM21new38native onGPU0, first100ticks/64x38/60bank/mask7,14,37verified, originalassets/rules/gates unchanged; actualfirstlanding/normTRAINguidance enabled. Noformal400result.",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
-      "curriculum_evidence": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
-      "curriculum_policy": "reports/G07_full_racket_v4/return_recovery_gen0_env12/policy_evidence.pt",
+      "curriculum_evidence": "reports/G07_full_racket_v4/attack_recovery_repeat_gen1_env3/MILESTONE.json",
+      "curriculum_policy": "reports/G07_full_racket_v4/attack_recovery_repeat_gen1_env3/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
       "active_gpu_jobs": [
         {
-          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_post_stroke_retreat37_cem20",
-          "guard_pid": 1431620,
-          "child_pid": 1431630,
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_attack_recovered_normal38_cem21",
+          "guard_pid": 1439677,
+          "child_pid": 1439690,
           "state": "RUNNING",
-          "started_at": "2026-10-24T13:30:45.785324+00:00",
-          "source_commit": "b470b6c19aad205edf24c7b8a833c8a170e9ab0c",
+          "started_at": "2026-10-24T14:17:06.657126+00:00",
+          "source_commit": "d1e7a53559cfd5c752e753c3a71a7c3c8a96cdff",
           "generations": 4,
           "declared_control_env_steps": 409600,
           "max_seconds": 7200,
-          "parameter_width": 37,
-          "normal38search_enabled": false,
+          "parameter_width": 38,
+          "normal38search_enabled": true,
+          "actual_first_landing_and_norm_curriculum": true,
           "gaussian_search_coordinates": [
-            3,
-            32,
-            33,
-            34,
-            35,
-            36
+            7,
+            14,
+            37
           ],
           "native_initialization_pending": false,
-          "last_verified_generation": 1,
-          "last_verified_control_ticks": 400,
-          "native_initialization_evidence": "reports/G07_full_racket_v4/NATIVE_POST_STROKE_RETREAT37_INITIALIZATION_1336.json",
-          "last_verified_contact_evidence": "reports/G07_full_racket_v4/NATIVE_POSTSTROKE_GEN1_PARTIAL_1402.json",
-          "last_observed_control_ticks": 700
+          "last_verified_generation": 0,
+          "last_verified_control_ticks": 100,
+          "native_initialization_evidence": "reports/G07_full_racket_v4/normal38_initialization_1421/REPORT.json"
         }
       ],
       "queued_native_sequence": {
@@ -90,7 +86,7 @@
         "still_running": false
       },
       "native_air_string_contact_milestone": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
-      "latest_native_training_summary": "reports/G07_full_racket_v4/ball_post_stroke_retreat37_cem20/GENERATION0_SUMMARY.json",
+      "latest_native_training_summary": "reports/G07_full_racket_v4/poststroke_retreat37_terminal_1420/REPORT.json",
       "latest_video": {
         "path": "reports/G07_full_racket_v4/video/Current_effect_attack_recovery_20261024_1400.mp4",
         "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_attack_recovery_20261024_1400.mp4",
@@ -107,28 +103,28 @@
         "upload_receipt": "reports/G07_full_racket_v4/video/Current_effect_attack_recovery_20261024_1400_upload_receipt.json"
       },
       "latest_completed_generation": {
-        "had_contact": 80,
-        "frame_hit": 43,
-        "airborne_string_hit": 37,
-        "attack_outgoing": 19,
-        "recovery_success": 20,
-        "crossed_net": 37,
-        "landed_legal_court": 31,
-        "landed_target": 3,
+        "had_contact": 79,
+        "frame_hit": 46,
+        "airborne_string_hit": 35,
+        "attack_outgoing": 14,
+        "recovery_success": 77,
+        "crossed_net": 33,
+        "landed_legal_court": 33,
+        "landed_target": 1,
         "complete_smash": 0,
         "robot_net_fault": 0,
         "racket_invasion_fault": 0,
         "executions": 128,
-        "usable_air_strings": 37,
-        "air_strings_and_recovery": 2,
-        "attack_outgoing_and_recovery": 1,
-        "canonical_air_contacts": 37,
-        "canonical_conditional_recovery_count": 2,
+        "usable_air_strings": 33,
+        "air_strings_and_recovery": 15,
+        "attack_outgoing_and_recovery": 5,
+        "canonical_air_contacts": 35,
+        "canonical_conditional_recovery_count": 15,
         "canonical_complete": 0,
-        "robot_rule_terminal": 1,
-        "body_ground_terminal": 101,
+        "robot_rule_terminal": 2,
+        "body_ground_terminal": 42,
         "numerical_failures": 0,
-        "generation": 0,
+        "generation": 1,
         "control_ticks": 800,
         "env_steps": 102400,
         "run": "ball_post_stroke_retreat37_cem20",
@@ -196,7 +192,7 @@
       "historical_native_contact_milestones": [
         "reports/G07_full_racket_v4/ball_cem_low_base_branch01/NATIVE_CONTACT_MILESTONE.json"
       ],
-      "curriculum_policy_scope": "Selected single TRAIN1 return/recovery milestone, not the worst-case optimizer winner or a final formal policy; paired TRAIN65 failed.",
+      "curriculum_policy_scope": "Selected37policy repeats actual attacking legal airborne strings and qualified recovery onTRAIN65; originaltargetmisses, pairedTRAIN1miss/frame. No formal or inherited38performance.",
       "historical_interrupted_gpu_jobs": [
         {
           "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_pitch_blend_cem03",
@@ -233,15 +229,15 @@
       ],
       "prepared_controller_branch": {
         "branch": "g07-arm-search-v4-20261024",
-        "commit": "14dc32d",
+        "commit": "395df6c",
         "merged_to_primary": true,
-        "primary_launch_commit": "b247ce2e4dad26ae1b65debc42dee5466290d322",
-        "cpu_tests_passed": 110,
-        "report": "reports/G07_full_racket_v4/standing_recovery37_ready01_1238/REPORT.json",
-        "cpu_command_check": "reports/G07_full_racket_v4/standing_recovery37_bank_cpu02_1254/REPORT.json",
-        "legacy_equivalence": "reports/G07_full_racket_v4/recovery37_legacy_commands_1234/REPORT.json",
+        "primary_launch_commit": "d1e7a53559cfd5c752e753c3a71a7c3c8a96cdff",
+        "cpu_tests_passed": 124,
+        "report": "reports/G07_full_racket_v4/attack_recovered_normal38_ready03_1415/REPORT.json",
+        "cpu_command_check": "reports/G07_full_racket_v4/attack_recovered_normal38_bank_cpu04_1415/REPORT.json",
+        "legacy_equivalence": "reports/G07_full_racket_v4/attack_recovered_normal38_legacy_commands01_1355/REPORT.json",
         "native_execution": true,
-        "native_execution_scope": "Actual64x37population,61bank,canonical37names/six-coordinate Gaussian mask,31fixed Gaussian coordinates and128recordedbody/ball/clock streams verified at100ticks; stroke/recovery not reached."
+        "native_execution_scope": "Actual64x38population/60bank/first100ticks/128native pose-ball-clock streams only; no contact outcome yet."
       },
       "historical_stopped_gpu_jobs": [
         {
@@ -431,20 +427,28 @@
           "actual_gpu_hours": 0.2953786440944532,
           "actual_control_env_steps": 103552,
           "charged_environment_step_cap": 409600
+        },
+        {
+          "run": "ball_post_stroke_retreat37_cem20",
+          "guard_pid": 1431620,
+          "child_pid": 1431630,
+          "guard_terminal_state": "FAILED",
+          "reason": "Intentional transition after two completed generations established repeated attacking recovery but0full/originaltargetovershoot; preserved third-generation339ticks.",
+          "resource_receipt": "reports/G07_full_racket_v4/ball_post_stroke_retreat37_cem20/job.json",
+          "actual_gpu_hours": 0.7095360625538807,
+          "actual_control_env_steps": 248192,
+          "charged_environment_step_cap": 409600,
+          "terminal_verification": "reports/G07_full_racket_v4/poststroke_retreat37_terminal_1420/REPORT.json"
         }
       ],
-      "latest_stopped_generation_summary": "reports/G07_full_racket_v4/ball_attack_recovery_cem17/STOPPED_TRAIN_SUMMARY.json",
+      "latest_stopped_generation_summary": "reports/G07_full_racket_v4/poststroke_retreat37_terminal_1420/REPORT.json",
       "latest_program_evidence_bundle": {
-        "created_at": "2026-10-24T13:34:05.192216+00:00",
-        "name": "G07_early_landing_failed_and_poststroke_retreat_native_20261024_1337.zip",
-        "bytes": 124776151,
-        "sha256": "9a136f7f3cd5c73b54f0877cbd0798fda8c4be03bf61377a73bc1497e59939d6",
-        "archive_members": 91,
-        "verified_sha256_members": 90,
-        "scope": "Actual CEM19completed128failed episodes plus9tick interruption, exact source/weights/resource receipt/400tick frozen failing states; currentCEM20b470source/input/118tests/poststroke command checks/actual100tick native initialization only. All64candidate parameters and first100native body/ball/clocks/publicactions equal priorCEM19; new poststroke behavior not reached. No38normal execution or formal400result.",
-        "formal_acceptance": false,
-        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_early_landing_failed_and_poststroke_retreat_native_20261024_1337.zip",
-        "upload_receipt": "reports/G07_full_racket_v4/early_landing_failed_poststroke_retreat_upload_receipt_1339.json"
+        "name": "G07_attacking_recovery_two_generations_and_normal38_native_20261024_1425.zip",
+        "bytes": 192690446,
+        "sha256": "52ce1bc09ccf315fc7c25d642828eba26aa8d1b6d1ec02a4428d304b9a578dd1",
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_attacking_recovery_two_generations_and_normal38_native_20261024_1425.zip",
+        "upload_receipt": "reports/G07_full_racket_v4/attacking_recovery_two_gen_normal38_upload_receipt_1426.json",
+        "scope": "CEM20two complete TRAINgenerations256candidate executions over2distinct cases,339tick generation2interruption and actualresource receipt; CEM21exact d1e7a5source/input/124CPUtests/actual100tick initialization only. Reproduce by checking out the new source commit (includes original frozen TRAIN/A/B files), extracting this archive plus runtime dependencies. No formal400performance."
       },
       "latest_partial_native_contacts": {
         "run": "ball_standing_recovery37_cem18_retry01",
@@ -559,6 +563,18 @@
           "report": "reports/G07_full_racket_v4/anticipation_ready01_1013/REPORT.json",
           "native_state_counterfactual_report": "reports/G07_full_racket_v4/anticipation_native_state_commands_1013/REPORT.json",
           "native_initialization_report": "reports/G07_full_racket_v4/NATIVE_TOOL_ANTICIPATION_INITIALIZATION_1016.json"
+        },
+        {
+          "branch": "g07-arm-search-v4-20261024",
+          "commit": "14dc32d",
+          "merged_to_primary": true,
+          "primary_launch_commit": "b247ce2e4dad26ae1b65debc42dee5466290d322",
+          "cpu_tests_passed": 110,
+          "report": "reports/G07_full_racket_v4/standing_recovery37_ready01_1238/REPORT.json",
+          "cpu_command_check": "reports/G07_full_racket_v4/standing_recovery37_bank_cpu02_1254/REPORT.json",
+          "legacy_equivalence": "reports/G07_full_racket_v4/recovery37_legacy_commands_1234/REPORT.json",
+          "native_execution": true,
+          "native_execution_scope": "Actual64x37population,61bank,canonical37names/six-coordinate Gaussian mask,31fixed Gaussian coordinates and128recordedbody/ball/clock streams verified at100ticks; stroke/recovery not reached."
         }
       ],
       "latest_net_approach_diagnostic": "reports/G07_full_racket_v4/intercept_reference_diagnostic_1153/REPORT.json",
@@ -606,7 +622,7 @@
         "complete_smash": false,
         "formal_acceptance": false
       },
-      "latest_ball_landing_planning_diagnostic": "reports/G07_full_racket_v4/attack_landing_forecast_1228/REPORT.json",
+      "latest_ball_landing_planning_diagnostic": "reports/G07_full_racket_v4/recovered_attack_landing_forecast_1358/REPORT.json",
       "latest_matched_flange_geometry_comparison": "reports/G07_full_racket_v4/matched_flange_kinematics_1245/REPORT.json",
       "historical_failed_startup_gpu_jobs": [
         {
@@ -637,30 +653,11 @@
         "primary_source_commit": "b470b6c19aad205edf24c7b8a833c8a170e9ab0c",
         "enabled_in_current_job": false,
         "face38_interface_in_primary": true,
-        "target_landing_curriculum_in_primary": false
+        "target_landing_curriculum_in_primary": false,
+        "historical_note": "Superseded by CEM21actual38coordinate initialization; this older feature report remains unexecuted historical evidence."
       },
       "latest_actual_paired_retreat_comparison": "reports/G07_full_racket_v4/post_stroke_paired_native_1345/REPORT.json",
-      "latest_attacking_contact_recovery_milestone": {
-        "report": "reports/G07_full_racket_v4/attack_recovery_gen0_env101/MILESTONE.json",
-        "policy": "reports/G07_full_racket_v4/attack_recovery_gen0_env101/policy_evidence.pt",
-        "policy_sha256": "ec55a278b3fb6081a8a933879ceb10cbc0f3dccac97903f7081c90112081f5ab",
-        "outgoing_norm_mps": 8.099575807317906,
-        "outgoing_velocity_mps": [
-          7.894139289855957,
-          -1.2908762693405151,
-          -1.2725296020507812
-        ],
-        "actual_first_landing_m": [
-          4.702411651611328,
-          -0.7451705932617188,
-          0.025145359337329865
-        ],
-        "qualified_recovery_s": 3.681915521621704,
-        "maximum_body_ground_force_n": 0.0,
-        "canonical_per_episode_recomputation_passed": true,
-        "complete_smash": false,
-        "formal_acceptance": false
-      }
+      "latest_attacking_contact_recovery_milestone": "reports/G07_full_racket_v4/attack_recovery_repeat_gen1_env3/MILESTONE.json"
     },
     "G08": {
       "state": "TODO",

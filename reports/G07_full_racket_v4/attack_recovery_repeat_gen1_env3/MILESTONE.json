@@ -1,0 +1,48 @@
+{
+  "created_at": "2026-10-24T14:12:34.471399+00:00",
+  "scope": "Actual same37policy re-evaluated in CEM20generation1slot1TRAIN65, exact parameters/seed equal priorgen0best50. Attacking legal airborne strings/court landing/qualified recovery repeats, target stillmissed. Selected TRAINcases, no panel rate.",
+  "generation": 1,
+  "candidate_id": 1,
+  "env_id": 3,
+  "same_policy_as_gen0_best50": true,
+  "outgoing_velocity_mps": [
+    7.793929100036621,
+    -1.6408255100250244,
+    -1.479894995689392
+  ],
+  "outgoing_norm_mps": 8.101094269851021,
+  "first_landing_m": [
+    4.55419921875,
+    -0.88409423828125,
+    0.025076396763324738
+  ],
+  "recovery_s": 3.658917188644409,
+  "maximum_body_ground_force_n": 0.0,
+  "paired_train1_frame_only": true,
+  "paired_train1_recovery": true,
+  "canonical_per_episode_checks": [
+    {
+      "env_id": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false
+    },
+    {
+      "env_id": 3,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "fault": false
+    }
+  ],
+  "policy_sha256": "212fd34f70f25836ec1cd305b56a2c57011e3bf38c7d202754733c45df5359cb",
+  "source_sha256": {
+    "episodes_001.json": "1ec57bbcecf211942209d67e774f16df012e90a06632e879db696a8ad05c0294",
+    "population_001.pt": "06aba314ae4335cb1be2d8e778a10e4f8224b5d192bb4d5a4808bdb7046b574f",
+    "best_candidate.pt": "212fd34f70f25836ec1cd305b56a2c57011e3bf38c7d202754733c45df5359cb"
+  },
+  "native_execution": true,
+  "complete_smash": false,
+  "formal_acceptance": false
+}
