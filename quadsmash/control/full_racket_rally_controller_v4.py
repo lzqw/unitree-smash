@@ -21,13 +21,16 @@ class FullRacketRallyControllerV4:
         self.planned=torch.zeros(count,dtype=torch.bool,device=device)
         self.physics=json.loads((ROOT/'configs/shuttle_physics_v2.json').read_text())
         model=FullRacketGeometryV4();q=np.array(checkpoint['seed']['joint_position_rad'])
-        self.jacobian=model.contact_jacobian(q,base_position=(0,0,0))
+        self.nominal_target=np.array(checkpoint['seed'].get('desired_ball_center_m',[1.10,0.,1.80]))
+        self.jacobian=model.contact_jacobian(q,uv=checkpoint['seed'].get('string_uv_m',[0.,0.]),face=checkpoint['seed'].get('face_sign',1),base_position=(0,0,0))
         self.inverse=self.jacobian.T@np.linalg.inv(self.jacobian@self.jacobian.T+.04**2*np.eye(3))
         self.logs=[]
+        self.target_offset_world=torch.zeros((count,3),device=device)
 
     def reset(self):
         self.teacher.reset();self.parameters.copy_(self.base[None])
         self.event_time.fill_(2.75);self.planned.zero_();self.logs=[]
+        self.target_offset_world.zero_()
 
     @torch.inference_mode()
     def action(self,observation,default,limits):
@@ -35,7 +38,7 @@ class FullRacketRallyControllerV4:
         ids=torch.where((~self.planned)&(obs[:,67]>.5)&(obs[:,775]>=2.0))[0]
         if len(ids):
             public=obs[ids].cpu().numpy()
-            plan=predict_initial_intercept(public,[1.10,0,1.80],[1.,0,0],1.10,self.physics,
+            plan=predict_initial_intercept(public,[1.10,0,1.80],[1.,0,0],self.nominal_target[0],self.physics,
                                            dt=.001,max_seconds=1.5)
             arrival=public[:,775]+plan['arrival_time_s']
             # Correct the measured no-ball event offset, learned before this
@@ -46,10 +49,16 @@ class FullRacketRallyControllerV4:
             delta=plan['position_m']-np.array(self.checkpoint['result']['virtual_ball_center_m'])
             correction=np.clip(np.nan_to_num(delta)@self.inverse.T,-.30,.30)
             correction[~valid]=0.
-            self.parameters[ids,8:14]+=torch.as_tensor(correction,device=obs.device,dtype=obs.dtype)
+            if self.parameters.shape[1]<20:
+                self.parameters[ids,8:14]+=torch.as_tensor(correction,device=obs.device,dtype=obs.dtype)
+            else:
+                target_delta=plan['position_m']-self.nominal_target
+                target_delta[~valid]=0.
+                self.target_offset_world[ids]=torch.as_tensor(target_delta,device=obs.device,dtype=obs.dtype)
             self.planned[ids]=True
             self.logs.append(dict(input='Current public794D observation, fixed known command and learned no-ball calibration only',
                 env_ids=ids.cpu().tolist(),observation_clock_s=public[:,775].tolist(),
                 used_public_observations=public.tolist(),calibrated_event_time_s=calibrated.tolist(),
                 arm_joint_correction_rad=correction.tolist(),**{k:v.tolist() for k,v in plan.items()}))
-        return self.teacher.action(observation,self.parameters,default,limits,event_time=self.event_time)
+        return self.teacher.action(observation,self.parameters,default,limits,event_time=self.event_time,
+                                   target_offset_world=self.target_offset_world)

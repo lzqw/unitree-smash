@@ -1,0 +1,133 @@
+{
+  "partial": true,
+  "source_sha256": "5ff4144595afb3f3883012c4dec5d938d8ce4ed952652679094c9bdd0d6f0e0f",
+  "control_ticks": 300,
+  "rows": [
+    {
+      "env_id": 0,
+      "first_episode_ended_at_s": 0.8999999761581421,
+      "max_head_height_before_first_end_m": 1.4842739582061768,
+      "public_frames": 91,
+      "ball_present_frames": 0
+    },
+    {
+      "env_id": 1,
+      "first_episode_ended_at_s": null,
+      "max_head_height_before_first_end_m": 1.5502550063275264,
+      "public_frames": 300,
+      "ball_present_frames": 99,
+      "closest_head_center_sample": {
+        "time_s": 2.799999952316284,
+        "distance_m": 0.4786038257788035,
+        "head_m": [
+          0.5826107005803483,
+          0.48824880006313354,
+          1.4072247405785685
+        ],
+        "ball_m": [
+          0.6606890357322966,
+          0.04794785635691967,
+          1.5778133527466285
+        ],
+        "head_velocity_mps": [
+          -1.6325950699670944,
+          0.9474695229347959,
+          -2.0820918077867825
+        ]
+      },
+      "public_first_forecast": {
+        "time_s": 2.009999990463257,
+        "predicted_arrival_s": [
+          2.7431604060583266
+        ],
+        "predicted_position_m": [
+          [
+            1.1,
+            0.0702572343848826,
+            1.7639520473066665
+          ]
+        ]
+      }
+    },
+    {
+      "env_id": 2,
+      "first_episode_ended_at_s": null,
+      "max_head_height_before_first_end_m": 1.618341714991848,
+      "public_frames": 300,
+      "ball_present_frames": 99,
+      "closest_head_center_sample": {
+        "time_s": 2.7899999618530273,
+        "distance_m": 0.25045857533489774,
+        "head_m": [
+          1.2229033409946863,
+          0.03907872028961862,
+          1.6174155234604632
+        ],
+        "ball_m": [
+          1.0994258620071835,
+          0.0803461077996259,
+          1.8313776997201385
+        ],
+        "head_velocity_mps": [
+          -0.370643610612532,
+          -0.2499629429377423,
+          0.1435105258870149
+        ]
+      },
+      "public_first_forecast": {
+        "time_s": 2.009999990463257,
+        "predicted_arrival_s": [
+          2.789909571508702
+        ],
+        "predicted_position_m": [
+          [
+            1.1,
+            0.08022043875567009,
+            1.831941887770059
+          ]
+        ]
+      }
+    },
+    {
+      "env_id": 3,
+      "first_episode_ended_at_s": null,
+      "max_head_height_before_first_end_m": 1.6946027623383693,
+      "public_frames": 300,
+      "ball_present_frames": 99,
+      "closest_head_center_sample": {
+        "time_s": 2.75,
+        "distance_m": 0.26425564188198875,
+        "head_m": [
+          1.1417843033944788,
+          0.09737874564002102,
+          1.6944162128793825
+        ],
+        "ball_m": [
+          1.071455093800833,
+          -0.13781452750498457,
+          1.7922373292691156
+        ],
+        "head_velocity_mps": [
+          -0.22150186870154492,
+          -0.14001753789063578,
+          0.11746125751322053
+        ]
+      },
+      "public_first_forecast": {
+        "time_s": 2.009999990463257,
+        "predicted_arrival_s": [
+          2.7462592964729495
+        ],
+        "predicted_position_m": [
+          [
+            1.1,
+            -0.13494777848172518,
+            1.8060102208869029
+          ]
+        ]
+      }
+    }
+  ],
+  "limitation": "100Hz sample distances diagnose misses; native forces and per-substep sweep remain authoritative contact evidence. Only first episodes included.",
+  "formal_acceptance": false
+}

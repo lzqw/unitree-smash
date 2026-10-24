@@ -50,19 +50,21 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "Corrected full racket/court/net and rules. R3 native contact fixtures and upright reset mass/COM/inertia/self-collision tests succeeded;22 targeted CPU tests passed.400 cases frozen without deletion.8x64 native no-ball CEM candidates searched,15 jump/recovery outcomes; no real-ball or formal400 success claimed. Continue real-ball causal control and adaptation on GPU0.",
+      "notes": "Full-racket r3 remains IN_PROGRESS. Fine no-ball curriculum has jump/recovery examples; real-ball probe missed. Near-net01 stopped after unsafe first generation and partial next generation; checkpoint preserved. Running near-net02 with waypoint0.85/speed0.65 and own-side-safe candidate selection. No formal400 result.",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
-      "curriculum_evidence": "reports/G07_full_racket_v4/reach_cem_r3_01/metrics.json",
-      "curriculum_policy": "reports/G07_full_racket_v4/reach_cem_r3_01/best_candidate.pt",
-      "net_diagnostic": "reports/G07/net_blocking_probe03/verification.json",
+      "curriculum_evidence": "reports/G07_full_racket_v4/reach_cem_fine_feedback01/metrics.json",
+      "curriculum_policy": "reports/G07_full_racket_v4/reach_cem_fine_feedback01/best_candidate.pt",
+      "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
       "active_gpu_jobs": [
         {
-          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/rally_probe_r3_01",
-          "guard_pid": 1309544,
-          "child_pid": 1309557,
-          "started_at": "2026-10-24T02:53:35.653414+00:00",
-          "session_id": 22673,
-          "status": "RUNNING"
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/reach_near_net_backface02",
+          "guard_pid": 1317741,
+          "child_pid": 1317753,
+          "session_id": 26054,
+          "started_at": "2026-10-24T03:37:03.211119+00:00",
+          "state": "RUNNING",
+          "contact_contract": "full-racket-ball-material-parity-v4",
+          "requested_candidates": 256
         }
       ]
     },

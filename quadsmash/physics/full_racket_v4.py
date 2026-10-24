@@ -65,6 +65,18 @@ def _string_strips(semiaxes,sides,thickness,count):
     return result
 
 
+@lru_cache(maxsize=32)
+def _strip_tensors(semiaxes,sides,thickness,count,device,dtype):
+    import torch
+    strips=_string_strips(semiaxes,sides,thickness,count)
+    # Avoid rebuilding and copying the same62 boxes to the GPU at each
+    # native substep. Cache only geometry constants, never measured states.
+    with torch.inference_mode(False):
+        centers=torch.tensor([s['center'] for s in strips],device=device,dtype=dtype)
+        half=torch.tensor([s['size'] for s in strips],device=device,dtype=dtype)/2
+    return centers,half
+
+
 def cylinder_inertia(mass, radius, length, axis, inner_radius=0.):
     axis = np.asarray(axis, dtype=float)
     axis /= np.linalg.norm(axis)
@@ -159,9 +171,9 @@ def string_prism_gap(ball_position, center, quaternion, config, radius):
     inverse = torch.cat((quaternion[..., :1], -quaternion[..., 1:]), -1)
     local = quat_rotate(inverse, ball_position-center)
     if config.get('string_collision_representation')=='inscribed-z-strips':
-        strips=string_strips(config)
-        centers=torch.as_tensor([s['center'] for s in strips],device=local.device,dtype=local.dtype)
-        half=torch.as_tensor([s['size'] for s in strips],device=local.device,dtype=local.dtype)/2
+        centers,half=_strip_tensors(tuple(config['assumptions']['strings_semiaxes_yz_m']),
+            config['strings_polygon_sides'],config['assumptions']['string_thickness_m'],
+            config['strings_strip_count'],str(local.device),local.dtype)
         delta=(local[...,None,:]-centers).abs()-half
         gap=delta.clamp_min(0).norm(dim=-1)+delta.max(dim=-1).values.clamp_max(0)
         return gap.min(-1).values-radius

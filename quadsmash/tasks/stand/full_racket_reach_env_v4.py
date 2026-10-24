@@ -1,14 +1,17 @@
 """Ground-start no-ball curriculum on the actual full-racket asset/court."""
 import torch
+import isaaclab.sim as sim_utils
 from pxr import Usd,UsdPhysics
 from isaaclab.sensors import ContactSensor,ContactSensorCfg
 from isaacsim.core.utils.stage import get_current_stage
 from .jump_env import JumpEnv,JumpEnvCfg
-from .coupled_env import ROOT
+from .coupled_env import ROOT,CoupledEnv
 from .visual_geometry import collision_proxy_corners
 from quadsmash.physics.full_racket_v4 import load_racket,apply_neutral_arm_reset
 from quadsmash.physics.court_v4 import load_court,spawn_court_net,spawn_court_lines
-from quadsmash.physics.native import quat_rotate
+from quadsmash.physics.native import quat_rotate,configure_ccd,physics_contract
+
+CONTACT_CONTRACT='full-racket-ball-material-parity-v4'
 
 
 def reach_cfg(num_envs,physics_dt=.001):
@@ -17,6 +20,7 @@ def reach_cfg(num_envs,physics_dt=.001):
     cfg.scene.num_envs,cfg.scene.env_spacing=num_envs,court['environment_spacing_m']
     cfg.ground_size_m=(4096.,4096.,.1)
     cfg.sim.device='cuda:0';cfg.sim.dt=physics_dt
+    cfg.sim.physx.enable_ccd=False;cfg.sim.physx.bounce_threshold_velocity=.05
     cfg.decimation=cfg.sim.render_interval=round(.01/physics_dt)
     cfg.episode_length_s=6.;cfg.event_goal_enabled=True
     cfg.event_goal_position=(1.10,0.,1.80);cfg.event_goal_normal=(1.,0.,0.)
@@ -34,14 +38,27 @@ class FullRacketReachEnvV4(JumpEnv):
         ids,points,self.proxy_paths=collision_proxy_corners(get_current_stage(),self.robot)
         self.proxy_ids=torch.tensor(ids,device=self.device)
         self.proxy_points=torch.tensor(points,dtype=torch.float32,device=self.device)[None]
+        self.metric_stride=max(1,round(.001/self.physics_dt))
         self._reach_ready=True
 
     def _setup_scene(self):
         super()._setup_scene()
         stage=get_current_stage();court=load_court()
+        physics=physics_contract()
+        material=sim_utils.RigidBodyMaterialCfg(restitution=physics['restitution'],
+            static_friction=physics['friction'],dynamic_friction=physics['friction'],restitution_combine_mode='max')
+        material.func('/World/ShuttleContactMaterial',material)
+        configure_ccd(stage,[f'/World/envs/env_{i}/Robot/Racket' for i in range(self.num_envs)],
+            [f'/World/envs/env_{i}/Robot/Racket/Collider' for i in range(self.num_envs)],'/World/ShuttleContactMaterial')
+        from isaaclab.sim.utils import bind_physics_material
         for i in range(self.num_envs):
-            spawn_court_net(stage,f'/World/envs/env_{i}/Net',court)
+            path=f'/World/envs/env_{i}/Net'
+            colliders=spawn_court_net(stage,path,court)
             spawn_court_lines(stage,f'/World/envs/env_{i}/Court',court)
+            net_material=sim_utils.RigidBodyMaterialCfg(restitution=.1)
+            material_path=path+'/geometry/material'
+            net_material.func(material_path,net_material)
+            for collider in colliders:bind_physics_material(collider,material_path)
         paths=[str(p.GetPath()).replace('/env_0/','/env_.*/')
                for p in Usd.PrimRange(stage.GetPrimAtPath('/World/envs/env_0/Robot'),Usd.TraverseInstanceProxies())
                if p.HasAPI(UsdPhysics.RigidBodyAPI)]
@@ -57,7 +74,13 @@ class FullRacketReachEnvV4(JumpEnv):
         self.targets[:,self.joint_ids]=limits[...,0]+.5*(self.last_action+1)*(limits[...,1]-limits[...,0])
 
     def _apply_action(self):
-        super()._apply_action()
+        # Match the formal BallEnv's1ms jump/recovery metric sampling while
+        # preserving the chosen native integration step and every net/plane
+        # force sample. This lets the no-ball curriculum adapt at62.5us too.
+        CoupledEnv._apply_action(self)
+        frame=self._sim_step_counter-1
+        if frame==0 or frame%getattr(self,'metric_stride',1)==0:
+            self._consume_jump_frame(frame)
         if self._reach_ready:
             force=self.scene.sensors['inverse_net'].data.force_matrix_w.norm(dim=-1).sum((1,2))
             self.net_seen|=force>.1

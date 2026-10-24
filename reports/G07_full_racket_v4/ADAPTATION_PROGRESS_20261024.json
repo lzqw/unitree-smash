@@ -1,0 +1,145 @@
+{
+  "updated_at": "2026-10-24T03:31:26.539159+00:00",
+  "goal_state": "IN_PROGRESS",
+  "failed_real_ball_probe": {
+    "path": "reports/G07_full_racket_v4/rally_probe_r3_01",
+    "status": "Explicit diagnostic early stop; guard FAILED/exit-9; not a completed8-second evaluation",
+    "evidence": "EARLY_STOP_REASON.json and early_stop_snapshot",
+    "charged_gpu_hours": 0.20820588200388657,
+    "findings": "One original episode fell before launch; other three had dead rallies without racket contact by recorded tick500. Forecast was accurate but measured head position missed. Recovery/NF final totals are not claimed."
+  },
+  "fine_curriculum": {
+    "path": "reports/G07_full_racket_v4/reach_cem_fine_feedback01",
+    "completed_generations": 2,
+    "candidates": 64,
+    "physics_dt_s": 6.25e-05,
+    "charged_gpu_hours": 0.17895064164388005,
+    "jump_recoveries": 6,
+    "recovered_without_net_or_body_crossing": 3,
+    "robot_net_contact_lanes": 40,
+    "best": {
+      "env_id": 1,
+      "robot_net_contact": false,
+      "engineering_body_crossing": false,
+      "maximum_net_force_n": 0.0,
+      "score": 2.793213653564453,
+      "event_time_s": 2.8299999237060547,
+      "virtual_ball_center_m": [
+        1.2064542770385742,
+        -0.054637592285871506,
+        1.5792326927185059
+      ],
+      "point_velocity_mps": [
+        -0.14288774132728577,
+        0.30575791001319885,
+        -0.4440164864063263
+      ],
+      "normal_world": [
+        0.9642170071601868,
+        0.03495558723807335,
+        -0.26279956102371216
+      ],
+      "root_at_event_m": [
+        0.5987281799316406,
+        -0.07650184631347656,
+        0.6161159873008728
+      ],
+      "feet_airborne": true,
+      "recovery": true,
+      "jump": {
+        "env_id": 1,
+        "max_height_m": 0.6174755096435547,
+        "total_com_rise_m": 0.24089142680168152,
+        "airborne_s": 0.44199785590171814,
+        "recovery_s": 1.750025749206543,
+        "takeoff_time_s": 2.5909945964813232,
+        "landing_time_s": 3.040961980819702,
+        "maximum_body_ground_force_n": 0.0,
+        "max_leg_torque_nm": 23.5,
+        "max_arm_torque_nm": 100.0,
+        "max_joint_speed_rad_s": 30.001008987426758,
+        "clipped_action_values": 0.0,
+        "limited_joint_targets": 0.0,
+        "saturated_leg_joint_substeps": 530.0,
+        "qualified_jump_landed": true,
+        "qualified_flight_seen": true,
+        "body_landing": false,
+        "stable_recovery": true,
+        "success": true,
+        "terminated": false
+      },
+      "preparation_survived_to2s": true,
+      "minimum_root_height_m": 0.14599555730819702,
+      "preparation_maximum_gravity_xy": 0.2625146508216858,
+      "first_episode_lifetime_s": 5.989999771118164
+    },
+    "material_scope": "No-ball curriculum did not explicitly match the ball-environment materials. Not formal material-parity evidence; see CONTACT_MATERIAL_SCOPE.json."
+  },
+  "new_control": {
+    "public_input_only": true,
+    "body_frame_jacobian": "Source URDF analytic batched point/normal Jacobian",
+    "native_public_alignment": "kinematics_public_alignment01.json",
+    "new_candidates": "Opposite string face; actual upper-string point uv=(0,0.09)m; interceptx1.38m; walking stance/front-back push compensation; original mass/limits unchanged.",
+    "cpu_geometric_seeds_are_not_dynamics_proof": true
+  },
+  "frozen_contract": {
+    "formal_cases_unchanged": 400,
+    "training_cases_unchanged": 128,
+    "thresholds_unchanged": true,
+    "formal400_completed": false
+  },
+  "formal_evaluator": {
+    "source_and_weight_lock": "scripts/lock_full_racket_policy_v4.py",
+    "native_panel": "scripts/evaluate_full_racket_v4.py",
+    "aggregation": "scripts/aggregate_full_racket_eval_v4.py",
+    "state": "Implemented/compiled with7 CPU integrity tests; not yet native-tested or executed on formal panels"
+  },
+  "cpu_tests": {
+    "count": 32,
+    "log": "reports/G07_full_racket_v4/cpu_full_racket_followup01.log",
+    "not_native_policy_acceptance": true
+  },
+  "active_job": {
+    "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/reach_near_net_backface02",
+    "guard_pid": 1317741,
+    "child_pid": 1317753,
+    "session_id": 26054,
+    "started_at": "2026-10-24T03:37:03.211119+00:00",
+    "state": "RUNNING",
+    "contact_contract": "full-racket-ball-material-parity-v4",
+    "requested_candidates": 256
+  },
+  "remaining": [
+    "Find and train real legal airborne racket contact with attack and valid first landing",
+    "Adapt recovery under real-ball dynamics",
+    "Native-test disturbed evaluation resets and frozen evaluator",
+    "Lock source/weights and run unchanged A/B200 each",
+    "Render actual ball side/top contact/first-landing videos including failures",
+    "Finish comparison, reproducibility and evidence audit before goal completion"
+  ],
+  "near_net01_interruption": {
+    "job": "reach_near_net_backface01",
+    "complete_generations": 1,
+    "partial_generation_ticks": 449,
+    "candidates_per_generation": 64,
+    "net_contacts_first64": 62,
+    "body_crossings_first64": 30,
+    "safe_first64": 0,
+    "elapsed_s": 576.5865332150133,
+    "charged_gpu_hours": 0.16016292589305925,
+    "charged_steps_conservative": 153600,
+    "observed_control_steps_lower_bound": 67136,
+    "reason": "No legal candidates; revise walking mean and safe selection; interruption preserved"
+  },
+  "current_effect_video": {
+    "path": "reports/G07_full_racket_v4/video/Current_effect_r3_20261024.mp4",
+    "duration_s": 38.12,
+    "frames": 1906,
+    "sha256": "2cbce97da8ab037d43585425edccadbafa1fdf1b281c6c5e97be7e6011dd36f7",
+    "all_frames_decoded": true,
+    "scope": "Actual r3 poses: no-ball recovery, partial real-ball miss, near-net failure; no successful smash",
+    "upload_state": "VERIFIED",
+    "download_url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_r3_20261024.mp4",
+    "evidence_url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_r3_20261024_evidence.zip"
+  }
+}

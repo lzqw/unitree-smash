@@ -113,7 +113,7 @@ class RallyLawTest(unittest.TestCase):
         self.step();self.step()
 
     def cross_and_land(self,landing=(3.,0.,.025)):
-        self.step(previous_position=[[1.49,0,1.7]],position=[[1.51,0,1.7]])
+        self.step(previous_position=[[1.51,0,1.7]],position=[[1.54,0,1.7]])
         self.step(previous_position=[[landing[0],landing[1],.04]],position=[[landing[0],landing[1],.01]],ground_touch=True)
 
     def test_own_side_airborne_string_hit_can_complete(self):
@@ -123,6 +123,16 @@ class RallyLawTest(unittest.TestCase):
     def test_actual_contact_point_on_opponent_side_is_fault(self):
         self.hit_and_release(contact_point=[[1.501,0,1.8]])
         self.assertTrue(self.events.wrong_side_fault);self.assertFalse(self.events.in_play)
+
+    def test_own_side_near_net_hit_can_pass_while_center_already_on_opponent_side(self):
+        self.step(previous_position=[[1.522,0,1.8]],position=[[1.5206,0,1.8]],
+            contact_point=[[1.495,0,1.8]],racket_contact_event=True,racket_touching=True,separated=False)
+        self.step(previous_position=[[1.5206,0,1.8]],position=[[1.530,0,1.8]],
+            racket_touching=True,separated=False)
+        self.step();self.step()
+        self.step(previous_position=[[3.,0,.04]],position=[[3.,0,.01]],ground_touch=True)
+        self.assertTrue(self.events.crossed_net)
+        self.assertTrue(self.events.complete(torch.tensor([True])))
 
     def test_racket_followthrough_exception_does_not_extend_to_body(self):
         self.hit_and_release();self.step(racket_over_net=True)

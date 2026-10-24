@@ -1,6 +1,7 @@
 """Regulation-scale court and suspended equivalent net; legacy net is separate."""
 from pathlib import Path
 import json
+from functools import lru_cache
 
 ROOT = Path(__file__).resolve().parents[2]
 VERSION = 'regulation-suspended-band-net-v4'
@@ -38,13 +39,21 @@ def net_band_segments(config):
 def top_height(y, config):
     import torch
     n = config['net_profile_segments']
-    values = [segment_top(i,config) for i in range(n)]
     if torch.is_tensor(y):
         index = (((y/(config['net_width_m']/2)).clamp(-1,1)+1)*(.5*n)).long().clamp(0,n-1)
-        return torch.tensor(values,dtype=y.dtype,device=y.device)[index]
+        return _top_height_tensor(n,config['net_center_top_m'],config['net_side_top_m'],str(y.device),y.dtype)[index]
     import numpy as np
+    values = [segment_top(i,config) for i in range(n)]
     index = np.clip(((np.clip(np.asarray(y)/(config['net_width_m']/2),-1,1)+1)*(.5*n)).astype(int),0,n-1)
     return np.asarray(values)[index]
+
+
+@lru_cache(maxsize=32)
+def _top_height_tensor(count,center,side,device,dtype):
+    import torch
+    config=dict(net_profile_segments=count,net_center_top_m=center,net_side_top_m=side)
+    with torch.inference_mode(False):
+        return torch.tensor([segment_top(i,config) for i in range(count)],device=device,dtype=dtype)
 
 
 def spawn_court_net(stage, path, config):

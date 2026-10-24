@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Actual court-scale shuttle rollout of a learned full-racket controller."""
-import argparse,hashlib,json,sys,traceback
+import argparse,hashlib,json,sys,traceback,signal
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
 from isaaclab.app import AppLauncher
@@ -14,6 +14,11 @@ from isaacsim.core.utils.stage import get_current_stage
 from quadsmash.tasks.stand.full_racket_env_v4 import full_racket_cfg,FullRacketEnvV4
 from quadsmash.tasks.stand.visual_geometry import export_robot_geometry
 from quadsmash.control.full_racket_rally_controller_v4 import FullRacketRallyControllerV4
+
+stopping=False
+def stop(*_):
+    global stopping;stopping=True
+signal.signal(signal.SIGTERM,stop);signal.signal(signal.SIGINT,stop)
 
 
 def main():
@@ -60,17 +65,30 @@ def main():
                     np.save(args.output/'public_actions.partial.npy',np.stack(actions))
                     np.save(args.output/'link_poses_first2.partial.npy',np.stack(poses))
                     (args.output/'trajectory_first2.partial.json').write_text(json.dumps(traces)+'\n')
+                    (args.output/'episodes.partial.json').write_text(json.dumps(env.rally_records,indent=2)+'\n')
+                    (args.output/'contacts.partial.json').write_text(json.dumps(env.contact_records,indent=2)+'\n')
+                    (args.output/'causal_plans.partial.json').write_text(json.dumps(controller.logs,indent=2)+'\n')
                     temp=args.output/'progress.json.tmp';temp.write_text(json.dumps(progress,indent=2)+'\n');temp.replace(args.output/'progress.json')
                     print(json.dumps(progress),flush=True)
+                if bool(finished.all()):break
+                if stopping:break
         first={}
         for row in env.rally_records:first.setdefault(row['env_id'],row)
-        assert len(first)==args.count
-        rows=[dict(first[i],case_id=cases[i]['case_id'],source_case_index=indices[i]) for i in range(args.count)]
         np.save(args.output/'public_observations.npy',np.stack(observations))
         np.save(args.output/'public_actions.npy',np.stack(actions))
         np.save(args.output/'valid_first_episode_mask.npy',np.stack(masks))
         np.save(args.output/'link_poses_first2.npy',np.stack(poses))
         (args.output/'trajectory_first2.json').write_text(json.dumps(traces)+'\n')
+        if stopping and len(first)!=args.count:
+            (args.output/'interrupted.json').write_text(json.dumps(dict(
+                control_ticks=tick+1,first_episodes_completed=len(first),requested_cases=args.count,
+                partial=True,formal_acceptance=False),indent=2)+'\n')
+            (args.output/'episodes.partial.json').write_text(json.dumps(env.rally_records,indent=2)+'\n')
+            (args.output/'contacts.partial.json').write_text(json.dumps(env.contact_records,indent=2)+'\n')
+            (args.output/'causal_plans.partial.json').write_text(json.dumps(controller.logs,indent=2)+'\n')
+            return
+        assert len(first)==args.count
+        rows=[dict(first[i],case_id=cases[i]['case_id'],source_case_index=indices[i]) for i in range(args.count)]
         (args.output/'episodes.json').write_text(json.dumps(rows,indent=2)+'\n')
         (args.output/'contacts.json').write_text(json.dumps(env.contact_records,indent=2)+'\n')
         (args.output/'causal_plans.json').write_text(json.dumps(controller.logs,indent=2)+'\n')
@@ -85,7 +103,9 @@ def main():
             source_training_suite=suite,ground_initialization=True,reset_perturbations=False,
             physics_dt_s=cfg.sim.dt,formal_acceptance=False,old_passes_inherited=False)
         (args.output/'metrics.json').write_text(json.dumps(result,indent=2)+'\n')
-        (args.output/'completed.json').write_text(json.dumps(dict(env_steps=800*args.count))+'\n')
+        result['executed_control_ticks']=tick+1
+        (args.output/'metrics.json').write_text(json.dumps(result,indent=2)+'\n')
+        (args.output/'completed.json').write_text(json.dumps(dict(env_steps=(tick+1)*args.count))+'\n')
         print(json.dumps(result),flush=True)
     finally:env.close()
 

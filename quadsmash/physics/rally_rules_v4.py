@@ -94,8 +94,15 @@ class RallyRulesV4:
                                            (~own) & (velocity[:,0]>=0))
         blocked = active & self.shuttle_net_contact & returning_to_striker & (velocity[:,2]<0)
         self.net_blocked_fault |= blocked
-        crossing,fraction,point = segment_plane_crossing(previous_position,position,0,self.court['net_plane_x_m'])
-        first_cross = active & crossing & self.released & torch.isnan(self.crossing_time)
+        # A legal own-side contact may occur while a finite-radius shuttle's
+        # center is already above the opponent half. Observe the trailing
+        # surface passing the plane, including passage during the same stroke;
+        # requiring a later center crossing would reject that legal return.
+        trailing_previous=previous_position.clone();trailing_previous[:,0]-=self.radius
+        trailing_position=position.clone();trailing_position[:,0]-=self.radius
+        crossing,fraction,point = segment_plane_crossing(trailing_previous,trailing_position,0,self.court['net_plane_x_m'])
+        point=point.clone();point[:,0]+=self.radius
+        first_cross = active & crossing & self.legal_initial_contact & (velocity[:,0]>0) & torch.isnan(self.crossing_time)
         self.crossing_time[first_cross]=time[first_cross]-dt+fraction[first_cross]*dt
         self.crossing_point[first_cross]=point[first_cross]
         height = top_height(point[:,1],self.court)

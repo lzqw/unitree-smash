@@ -71,6 +71,8 @@ class FullRacketEnvV4(BallEnv):
         self.first_tool_normal=torch.zeros((n,3),device=device)
         self.first_tool_velocity=torch.zeros((n,3),device=device)
         self.hit_velocity_error=torch.zeros(n,device=device)
+        self.first_string_point=torch.full((n,3),float('nan'),device=device)
+        self.first_string_time=torch.full((n,),float('nan'),device=device)
         self._jump_metric_stride=max(1,round(.001/self.physics_dt))
         self._v4_ready=True
 
@@ -169,6 +171,9 @@ class FullRacketEnvV4(BallEnv):
         normal=quat_rotate(q,torch.tensor([1.,0,0],device=self.device).expand(self.num_envs,-1))
         head_velocity=d.body_link_lin_vel_w[:,self.racket_body_id]
         first=(self.contact_events.count>counts)&(~self.rally.had_contact)&self.rally.in_play
+        first_strings=touching&string&self.rally.in_play&torch.isnan(self.first_string_time)
+        self.first_string_point[first_strings]=(point-self.scene.env_origins)[first_strings]
+        self.first_string_time[first_strings]=self.ball_clock[first_strings]
         self.first_tool_normal[first]=normal[first];self.first_tool_velocity[first]=head_velocity[first]
         same_pair=((self.rally.frame_hit&string)|(self.rally.string_hit&rim))
         same_stroke=(same_pair&((self.ball_clock-self.rally.contact_time)<.04)&
@@ -202,6 +207,10 @@ class FullRacketEnvV4(BallEnv):
                     contact_point_m=self.rally.contact_point[i].cpu().tolist(),
                     outgoing_velocity_mps=self.rally.outgoing_velocity[i].cpu().tolist(),
                     first_landing_m=self.rally.landing_point[i].cpu().tolist(),
+                    first_landing_time_s=float(self.rally.landing_time[i]),
+                    crossing_point_m=self.rally.crossing_point[i].cpu().tolist(),crossing_time_s=float(self.rally.crossing_time[i]),
+                    release_time_s=float(self.rally.release_time[i]),
+                    first_string_contact_point_m=self.first_string_point[i].cpu().tolist(),first_string_time_s=float(self.first_string_time[i]),
                     contact_time_s=float(self.rally.contact_time[i]),net_margin_m=float(self.rally.net_margin[i]),
                     numerical_failures=int((self.sweep_misses+self.sweep_unresolved)[i]),
                     active_rally_launch_count=int(self.launch_count[i]),hit_velocity_error_mps=float(self.hit_velocity_error[i]))
@@ -212,4 +221,5 @@ class FullRacketEnvV4(BallEnv):
             self.episode_index[complete]+=1
             self.episode_index[ids]=self.episode_index[ids].clamp_min(0)
             self.hit_velocity_error[ids]=0.
+            self.first_string_point[ids]=float('nan');self.first_string_time[ids]=float('nan')
         super()._reset_idx(ids)
