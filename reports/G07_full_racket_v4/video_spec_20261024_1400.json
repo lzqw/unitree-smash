@@ -1,0 +1,52 @@
+{
+  "scope": "Three independent completed CEM20generation0TRAINepisodes: candidate50attacking airstrings/court landing/qualified recovery but target long, samecandidateTRAIN1miss, and differentcandidate22target landing but slow/body failure. Full task remains0; no formal panel rate.",
+  "opening_title": "最新真实效果｜8.10米/秒空中击球后恢复3.68秒",
+  "opening_lines": [
+    "同一回合：合法空中拍线、攻击出球、越网、合格恢复。",
+    "首落点x=4.702米，超出原目标上界0.702米，完整任务仍失败。",
+    "保留同策略漏球与另一参数的目标命中/身体触地失败。"
+  ],
+  "closing_lines": [
+    "攻击出球与合格恢复首次在同一回合成立。",
+    "原目标落点仍未与上述条件同时满足，完整扣杀仍为0。",
+    "三回合独立；当前仅两类TRAIN来球，正式A/B各200回合未运行。"
+  ],
+  "caveats": [
+    "Selected completed TRAINepisodes, not formal performance or a success rate.",
+    "Case0has actual outgoing8.099575807m/s,vz-1.27253,firstlandingx4.70241and qualified recovery3.6819155s; target miss keepscompletefalse.",
+    "Case1uses exact same candidate50parameters on TRAIN1and misses the ball; its qualified recovery alone is not a contact success.",
+    "Case2uses different candidate22parameters; target hit, speed below8m/s and body contact all remain original native labels.",
+    "All motion is recorded50Hznative fullbody samples without interpolation; contact stills use exact native substep poses, firstlanding uses native event plus nearest body sample.",
+    "Current physics/assets/rules/target and original qualified-jump recovery gates unchanged.",
+    "CPUllvmpipe visualization, no generated movement and no hardware validation."
+  ],
+  "cases": [
+    {
+      "run": "ball_post_stroke_retreat37_cem20",
+      "generation": 0,
+      "env_id": 101,
+      "title": "同回合｜空中拍线8.10米/秒，合格恢复3.68秒",
+      "subtitle": "CEM20 / 第1代 / 候选50 / TRAIN65 / 实际执行",
+      "terminal_status": "攻击出球、越网、恢复成立｜首落超出目标｜完整任务失败",
+      "limitation": "首落x=4.702米，超出目标上界0.702米；稳定恢复3.68秒，身体触地0"
+    },
+    {
+      "run": "ball_post_stroke_retreat37_cem20",
+      "generation": 0,
+      "env_id": 100,
+      "title": "同策略另一来球｜未击中，虽能恢复仍失败",
+      "subtitle": "CEM20 / 第1代 / 同候选50 / TRAIN1 / 独立实际执行",
+      "terminal_status": "漏球｜合格恢复4.28秒｜完整任务失败",
+      "limitation": "此回合未触球；同策略对不同来球仍缺乏稳定接触"
+    },
+    {
+      "run": "ball_post_stroke_retreat37_cem20",
+      "generation": 0,
+      "env_id": 45,
+      "title": "另一参数对照｜命中目标，但速度不足且身体触地",
+      "subtitle": "CEM20 / 第1代 / 候选22 / TRAIN65 / 独立失败回合",
+      "terminal_status": "命中原目标｜出球未达8米/秒｜身体触地，完整任务失败",
+      "limitation": "不同候选参数；不能与第一回合合并成完整成功"
+    }
+  ]
+}
