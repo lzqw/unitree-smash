@@ -3,10 +3,17 @@ import unittest
 import numpy as np
 from quadsmash.control.full_racket_contact_curriculum_v4 import (
     ROBOT_FAULTS,usable_air_contact,contact_search_tiers,actual_outgoing_shaping,
-    arm_timing_velocity_grid,measured_recovery_leg_crossovers,pitch_compensation_grid)
+    arm_timing_velocity_grid,measured_recovery_leg_crossovers,pitch_compensation_grid,validate_recovery_search_min)
 
 
 class ContactCurriculumTest(unittest.TestCase):
+    def test_recovery_search_floor_allows_earlier_control_but_rejects_invalid_values(self):
+        self.assertEqual(validate_recovery_search_min(1.55), 1.55)
+        self.assertEqual(validate_recovery_search_min(1.30), 1.30)
+        for value in [float('nan'), float('inf'), 1.19, 1.56]:
+            with self.assertRaises(ValueError):
+                validate_recovery_search_min(value)
+
     def row(self, contact=False, **extra):
         return dict(legal_initial_contact=contact, airborne_string_hit=contact,
                     string_hit=contact, numerical_failures=0, complete_smash=False,
@@ -46,6 +53,41 @@ class ContactCurriculumTest(unittest.TestCase):
         self.assertEqual(actual_outgoing_shaping(self.row()), 0.)
         fast['outgoing_velocity_mps'] = [float('nan'), 0., -1.]
         self.assertEqual(actual_outgoing_shaping(fast), 0.)
+
+    def test_recovery_curriculum_retains_same_episode_chain_ahead_of_two_falls(self):
+        joined = self.row(True, recovery_success=True)
+        fall = self.row(True, recovery_success=False)
+        groups = [[joined, self.row()], [fall, fall]]
+        saved = copy.deepcopy(groups)
+        self.assertLess(contact_search_tiers(groups)[0], contact_search_tiers(groups)[1])
+        tiers = contact_search_tiers(groups, retain_recovery=True)
+        self.assertGreater(tiers[0], tiers[1])
+        self.assertEqual(groups, saved)
+        self.assertFalse(joined['complete_smash'])
+
+    def test_recovery_in_another_episode_cannot_form_a_contact_chain(self):
+        contact = self.row(True, recovery_success=False)
+        recovered_miss = self.row(False, recovery_success=True)
+        two_contacts = [[contact, recovered_miss], [contact, contact]]
+        tiers = contact_search_tiers(two_contacts, retain_recovery=True)
+        self.assertLess(tiers[0], tiers[1])
+
+    def test_full_smash_still_beats_recovered_partial_contacts(self):
+        complete = self.row(True, recovery_success=True)
+        complete['complete_smash'] = True
+        partial = self.row(True, recovery_success=True)
+        tiers = contact_search_tiers([[complete, self.row()], [partial, partial]], retain_recovery=True)
+        self.assertGreater(tiers[0], tiers[1])
+
+    def test_recovery_does_not_override_robot_faults_or_numerical_failure(self):
+        for fault in ROBOT_FAULTS:
+            invalid = self.row(True, recovery_success=True)
+            invalid[fault] = True
+            tiers = contact_search_tiers([[invalid], [self.row(True)]], retain_recovery=True)
+            self.assertLess(tiers[0], tiers[1], fault)
+        invalid = self.row(True, recovery_success=True)
+        invalid['numerical_failures'] = 1
+        self.assertEqual(contact_search_tiers([[invalid]], retain_recovery=True)[0], -1)
 
     def test_controlled_grid_preserves_every_leg_and_interception_parameter(self):
         reference = np.linspace(-.2, .2, 26)
