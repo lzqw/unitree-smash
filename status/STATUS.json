@@ -50,19 +50,20 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "CEM02 completed128:32contacts/15airstrings/24qualified recoveries,1airstrings+qualified recovery,9crosses/1target/0complete/NF0,.599666173GPUh/102400steps. Candidate6 gen1 target hit but1ms extra flight invalidated original qualified landing; failure retained. New pitch+100ms leg handover CEM03 actually GPU0 running128env x2gen,57CPU passed. All attack/target/recovery gates and physics unchanged; no new native outcome yet.",
+      "notes": "CEM02 completed128:32contacts/15airstrings/24qualified recoveries,1airstrings+qualified recovery,9crosses/1target/0complete/NF0,.599666173GPUh/102400steps. Candidate6 gen1 target hit but1ms extra flight invalidated original qualified landing; failure retained. New pitch+100ms leg handover CEM03 actually GPU0 running128env x2gen,57CPU passed. All attack/target/recovery gates and physics unchanged; no new native outcome yet. Video request completed: new41.86s three-case video and13.43MB evidence uploaded andSHA verified. Original pitch/blend CEM03 interrupted at503ticks, source hashes unchanged; generation0 replay resumed onGPU0 asball_pitch_blend_cem03_resume01. No completed new-generation result yet.",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/return_recovery_gen0_env12/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
       "active_gpu_jobs": [
         {
-          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_pitch_blend_cem03",
-          "guard_pid": 1357286,
-          "child_pid": 1357298,
-          "session_id": 60822,
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_pitch_blend_cem03_resume01",
+          "guard_pid": 1360158,
+          "child_pid": 1360170,
+          "session_id": 97657,
           "state": "RUNNING",
-          "started_at": "2026-10-24T06:56:49.415526+00:00"
+          "started_at": "2026-10-24T07:11:06.142695+00:00",
+          "resume_semantics": "Replay interrupted generation0 from ground; native state not restored"
         }
       ],
       "queued_native_sequence": {
@@ -129,7 +130,18 @@
       "historical_native_contact_milestones": [
         "reports/G07_full_racket_v4/ball_cem_low_base_branch01/NATIVE_CONTACT_MILESTONE.json"
       ],
-      "curriculum_policy_scope": "Selected single TRAIN1 return/recovery milestone, not the worst-case optimizer winner or a final formal policy; paired TRAIN65 failed."
+      "curriculum_policy_scope": "Selected single TRAIN1 return/recovery milestone, not the worst-case optimizer winner or a final formal policy; paired TRAIN65 failed.",
+      "historical_interrupted_gpu_jobs": [
+        {
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_pitch_blend_cem03",
+          "guard_pid": 1357286,
+          "child_pid": 1357298,
+          "session_id": 60822,
+          "state": "INTERRUPTED",
+          "started_at": "2026-10-24T06:56:49.415526+00:00",
+          "report": "reports/G07_full_racket_v4/PITCH_BLEND_INTERRUPTION_AND_RESUME_0711.json"
+        }
+      ]
     },
     "G08": {
       "state": "TODO",
