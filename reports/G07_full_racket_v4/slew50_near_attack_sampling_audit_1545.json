@@ -1,0 +1,22 @@
+{
+  "created_at": "2026-10-24T15:42:07.715554+00:00",
+  "scope": "TRAIN sampler diagnostic only. The unchanged v3tier prefers an extra usable contact on candidate15over candidate54s faster but still-failed airborne recovery. No native success flag or formal threshold is changed.",
+  "generation0_optimizer_best_candidate": 15,
+  "optimizer_best_tier": 5,
+  "near_attack_candidate": 54,
+  "near_attack_tier": 4,
+  "near_attack_speed_mps": 7.966534894975324,
+  "selected_generation1_mean_normal_bias_rad": -0.0559999980032444,
+  "selected_generation1_sigma_normal_bias_rad": 0.006000000052154064,
+  "actual_generation1_population_normal_bias_range_rad": [
+    -0.07999999821186066,
+    -0.04289156571030617
+  ],
+  "near_attack_actual_normal_bias_rad": 0.07999999821186066,
+  "proposed_sampling_revision": "If generation1still has no full success or useful power progress, use an explicitly fresh warm start around actually executed candidate54, positive normal biases. Original8m/s/target/recovery/fault gates stay unchanged. This changes TRAIN exploration, not acceptance.",
+  "formal_acceptance": false,
+  "source_sha256": {
+    "reports/G07_full_racket_v4/ball_arm_target_slew50_normal38_cem23/population_000.pt": "74371f4e35f4ce31acbe648c29bc84067b636af902ac998b35a3a8d4f3987621",
+    "reports/G07_full_racket_v4/ball_arm_target_slew50_normal38_cem23/partial_search_state.pt": "fd149a582dfd34053dfa23245f3743326c8d6679a61850feecaafbd799203fbe"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "requested_at": "2026-10-24T14:53:27.483916+00:00",
+  "guard_pid": 1439677,
+  "child_pid": 1439690,
+  "signal": "SIGTERM through verified guard",
+  "completed_generations": 2,
+  "completed_candidate_executions": 256,
+  "distinct_TRAIN_indices": [
+    1,
+    65
+  ],
+  "aggregate_completed_counts": {
+    "had_contact": 161,
+    "frame_hit": 91,
+    "airborne_string_hit": 70,
+    "attack_outgoing": 10,
+    "recovery_success": 132,
+    "crossed_net": 69,
+    "landed_legal_court": 65,
+    "landed_target": 12,
+    "complete_smash": 0,
+    "robot_net_fault": 0,
+    "racket_invasion_fault": 0,
+    "executions": 256,
+    "usable_air_strings": 70,
+    "air_strings_and_recovery": 26,
+    "attack_outgoing_and_recovery": 4,
+    "canonical_air_contacts": 70,
+    "canonical_conditional_recovery_count": 26,
+    "canonical_complete": 0,
+    "robot_rule_terminal": 0,
+    "body_ground_terminal": 109,
+    "numerical_failures": 0
+  },
+  "reason": "No full success after two complete generations, globalbest unchanged, strong+recovery firstlandings remain outside target and median actual-command face error14.45deg persists. Tested smooth4.5rad/s target commands and earlier-lead candidates address measured infeasible requested rates; hardware/physics/gates unchanged.",
+  "next_feature_commit": "99f7d39",
+  "formal_acceptance": false
+}

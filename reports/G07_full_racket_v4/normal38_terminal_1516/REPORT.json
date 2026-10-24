@@ -1,0 +1,107 @@
+{
+  "verified_at": "2026-10-24T14:55:02.895722+00:00",
+  "scope": "Two complete native TRAIN generations and separately preserved50tick generation2interruption. No four-generation completed receipt or formal panel result.",
+  "run": "ball_attack_recovered_normal38_cem21",
+  "source_commit": "d1e7a53559cfd5c752e753c3a71a7c3c8a96cdff",
+  "guard_terminal_status": "FAILED",
+  "child_exit_code": 0,
+  "completed_generations": 2,
+  "completed_generation_counts": {
+    "had_contact": 161,
+    "frame_hit": 91,
+    "airborne_string_hit": 70,
+    "attack_outgoing": 10,
+    "recovery_success": 132,
+    "crossed_net": 69,
+    "landed_legal_court": 65,
+    "landed_target": 12,
+    "complete_smash": 0,
+    "robot_net_fault": 0,
+    "racket_invasion_fault": 0,
+    "executions": 256,
+    "usable_air_strings": 70,
+    "air_strings_and_recovery": 26,
+    "attack_outgoing_and_recovery": 4,
+    "canonical_air_contacts": 70,
+    "canonical_conditional_recovery_count": 26,
+    "canonical_complete": 0,
+    "robot_rule_terminal": 0,
+    "body_ground_terminal": 109,
+    "numerical_failures": 0
+  },
+  "distinct_TRAIN_indices": [
+    1,
+    65
+  ],
+  "distinct_cases": 2,
+  "interrupted_generation": 2,
+  "interrupted_ticks": 50,
+  "interrupted_terminal_records": 0,
+  "interrupted_pending_first_episodes": 128,
+  "all_interrupted_arrays_finite": true,
+  "public_actions_bounded": true,
+  "arrays": {
+    "all_first_episodes_002.npz": {
+      "link_poses": [
+        25,
+        128,
+        28,
+        7
+      ],
+      "ball_position_m": [
+        25,
+        128,
+        3
+      ],
+      "episode_clock_s": [
+        25,
+        128
+      ],
+      "valid_first_episode": [
+        25,
+        128
+      ]
+    },
+    "public_and_poses_002.npz": {
+      "observations": [
+        50,
+        2,
+        794
+      ],
+      "actions": [
+        50,
+        2,
+        18
+      ],
+      "link_poses": [
+        25,
+        2,
+        28,
+        7
+      ],
+      "valid_first_episode": [
+        50,
+        2
+      ]
+    }
+  },
+  "actual_control_env_steps": 211200,
+  "charged_control_env_steps_cap": 409600,
+  "actual_gpu_hours": 0.6060577931422125,
+  "elapsed_s": 2181.8080553119653,
+  "native_execution": true,
+  "formal_acceptance": false,
+  "sha256": {
+    "reports/G07_full_racket_v4/ball_attack_recovered_normal38_cem21/job.json": "9a069771047c60e74796487f5543f293e2ce112e62d8254f69dcd05eb1c8b45e",
+    "reports/G07_full_racket_v4/ball_attack_recovered_normal38_cem21/interrupted.json": "d75bd07d9fda066b255f7c01c84317926ee75a1debe12976a91a4c7261cb1ad0",
+    "reports/G07_full_racket_v4/ball_attack_recovered_normal38_cem21/interrupted_search_state_002.pt": "3c3b4dfa61e2e0c4db3f80ceb0d7fb8504f0735c31e663f9c4a591e90db8ef36",
+    "reports/G07_full_racket_v4/ball_attack_recovered_normal38_cem21/interrupted_rallies_002.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "reports/G07_full_racket_v4/ball_attack_recovered_normal38_cem21/interrupted_jumps_002.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "reports/G07_full_racket_v4/ball_attack_recovered_normal38_cem21/public_and_poses_002.npz": "429333be9c63707a0c8cf33281d0d195f00161aa59c8c914d32f64ebdcf73a29",
+    "reports/G07_full_racket_v4/ball_attack_recovered_normal38_cem21/all_first_episodes_002.npz": "3d89720421ff4f35597717f439970f7203c7fc6e3677e673e1d490e5d8095041",
+    "reports/G07_full_racket_v4/ball_attack_recovered_normal38_cem21/GENERATION0_SUMMARY.json": "9fb7ca0a3d49442cf26b173eccb09fe36c76bd4fdfa754003b5c6c6756351d53",
+    "reports/G07_full_racket_v4/ball_attack_recovered_normal38_cem21/GENERATION1_SUMMARY.json": "6dae7779a789e22712df92ab84b328b8126844cd1060b365e9031f7b3d917c2b",
+    "reports/G07_full_racket_v4/ball_attack_recovered_normal38_cem21/source_hashes.json": "d1297472d14bc263623599bd3fbe09176f84902519da03fb10e30f205a1b0269",
+    "reports/G07_full_racket_v4/normal38_terminal_1516/verify.py": "7ec31eef320a7a369c7a4efb6cf869aca2107a61d18df7a70f984463525cf178"
+  }
+}

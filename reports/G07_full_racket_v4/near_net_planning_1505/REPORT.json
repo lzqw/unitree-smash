@@ -1,0 +1,387 @@
+{
+  "created_at": "2026-10-24T14:47:32.596710+00:00",
+  "scope": "Planning-only causal ball forecasts from one saved TRAIN65public input, free-flight velocity grids and static joint-limit IK at one fixed observed body pose. Old/new tool transforms differ but body pose and hardware joint bounds match. No native collision, full-tool net clearance, dynamic reach, body recovery or distribution success is proven.",
+  "source_native_env_id": 3,
+  "held_body_pose_from_time_s": 2.7553999423980713,
+  "records": [
+    {
+      "intercept_plane_x_m": 1.05,
+      "predicted_ball_center_m": [
+        1.05,
+        -0.14012986620389753,
+        1.7824700303553958
+      ],
+      "causal_arrival_clock_s": 2.752748572375614,
+      "sampled_outgoing_velocities": 4331,
+      "feasible_free_flight_targets": 461,
+      "planning_margin_targets_3cm_net_and15cm_target_interior": 16,
+      "nearest_velocity_proposal": {
+        "velocity_mps": [
+          7.45,
+          -1.6784948110580444,
+          -2.4
+        ],
+        "speed_mps": 8.004988746447355,
+        "landing_m": [
+          3.991879705509726,
+          -0.8029392380770562,
+          0.025
+        ],
+        "net_clearance_m": 0.05936201066931135,
+        "target_interior_margin_m": 0.00812029449027385
+      },
+      "static_joint_limit_IK_at_same_observed_body_pose": {
+        "full_racket": {
+          "observed_native_full_racket_face": {
+            "joints_rad": [
+              -0.8007231709756263,
+              1.3551328618556164,
+              -2.2966206295705702,
+              1.0692387050644212,
+              1.086340253519301,
+              2.0943997629241577
+            ],
+            "position_error_m": 0.005709943452922111,
+            "face_error_deg": 0.1333461104879964,
+            "maximum_joint_change_from_observed_full_racket_pose_rad": 0.21381273295503778,
+            "solver_converged": true
+          },
+          "teacher_world_command": {
+            "joints_rad": [
+              -0.9397672743659469,
+              1.0973705223244916,
+              -1.9631301746414995,
+              1.185826263363123,
+              1.2199999543196969,
+              2.0943997629251028
+            ],
+            "position_error_m": 0.01592012946588081,
+            "face_error_deg": 4.102945249288492,
+            "maximum_joint_change_from_observed_full_racket_pose_rad": 0.29101830863486766,
+            "solver_converged": true
+          }
+        },
+        "legacy_shortboard": {
+          "observed_native_full_racket_face": {
+            "joints_rad": [
+              -1.5558861391162637,
+              1.2045590999739122,
+              -2.8311092391418256,
+              1.4465702336854411,
+              -0.467009064063803,
+              0.19482710248521445
+            ],
+            "position_error_m": 0.22493947809612605,
+            "face_error_deg": 15.169868765076034,
+            "maximum_joint_change_from_observed_full_racket_pose_rad": 1.8201327096790922,
+            "solver_converged": true
+          },
+          "teacher_world_command": {
+            "joints_rad": [
+              -1.4328937373766206,
+              1.2087287927596646,
+              -2.8311203568629977,
+              1.3051771245987318,
+              -0.3669015016124563,
+              0.2455812330835586
+            ],
+            "position_error_m": 0.2347347383702526,
+            "face_error_deg": 20.34101198583292,
+            "maximum_joint_change_from_observed_full_racket_pose_rad": 1.7693785790807481,
+            "solver_converged": true
+          }
+        }
+      }
+    },
+    {
+      "intercept_plane_x_m": 1.15,
+      "predicted_ball_center_m": [
+        1.15,
+        -0.1296795427165866,
+        1.8295159812774833
+      ],
+      "causal_arrival_clock_s": 2.7396727983635656,
+      "sampled_outgoing_velocities": 4331,
+      "feasible_free_flight_targets": 599,
+      "planning_margin_targets_3cm_net_and15cm_target_interior": 382,
+      "nearest_velocity_proposal": {
+        "velocity_mps": [
+          7.4,
+          -1.6784948110580444,
+          -2.7
+        ],
+        "speed_mps": 8.054026622177803,
+        "landing_m": [
+          3.99470789503717,
+          -0.7749264941754689,
+          0.025
+        ],
+        "net_clearance_m": 0.12998250889477014,
+        "target_interior_margin_m": 0.0052921049628298356
+      },
+      "static_joint_limit_IK_at_same_observed_body_pose": {
+        "full_racket": {
+          "observed_native_full_racket_face": {
+            "joints_rad": [
+              -0.5205324373113074,
+              1.4839413210375842,
+              -2.334669644104738,
+              0.8139445211449037,
+              0.9246285726621601,
+              2.094399762913096
+            ],
+            "position_error_m": 0.08497658277411586,
+            "face_error_deg": 1.164859657638199,
+            "maximum_joint_change_from_observed_full_racket_pose_rad": 0.4940034666193567,
+            "solver_converged": true
+          },
+          "teacher_world_command": {
+            "joints_rad": [
+              -0.8311808965929058,
+              1.3512838997926155,
+              -2.274768275568824,
+              1.0227579591739475,
+              1.2199999542998614,
+              2.0943997629251028
+            ],
+            "position_error_m": 0.08473848136518747,
+            "face_error_deg": 1.4173531244067996,
+            "maximum_joint_change_from_observed_full_racket_pose_rad": 0.24745111484643822,
+            "solver_converged": true
+          }
+        },
+        "legacy_shortboard": {
+          "observed_native_full_racket_face": {
+            "joints_rad": [
+              -1.9474525893302,
+              1.1641239852674128,
+              -2.8089468933667248,
+              1.7449998391029369,
+              -0.5185755961845556,
+              0.25571484719759335
+            ],
+            "position_error_m": 0.28964878072225037,
+            "face_error_deg": 14.034326142995626,
+            "maximum_joint_change_from_observed_full_racket_pose_rad": 1.7592449649667132,
+            "solver_converged": true
+          },
+          "teacher_world_command": {
+            "joints_rad": [
+              -1.4547187588616823,
+              1.172370813796421,
+              -2.9669998072627304,
+              -0.5167971799534616,
+              0.3843483624471232,
+              2.0943997627107906
+            ],
+            "position_error_m": 0.32950682516871976,
+            "face_error_deg": 10.689299393378974,
+            "maximum_joint_change_from_observed_full_racket_pose_rad": 1.7870062539738474,
+            "solver_converged": true
+          }
+        }
+      }
+    },
+    {
+      "intercept_plane_x_m": 1.25,
+      "predicted_ball_center_m": [
+        1.25,
+        -0.11922921922927568,
+        1.8748894731651526
+      ],
+      "causal_arrival_clock_s": 2.7266337834596124,
+      "sampled_outgoing_velocities": 4331,
+      "feasible_free_flight_targets": 382,
+      "planning_margin_targets_3cm_net_and15cm_target_interior": 212,
+      "nearest_velocity_proposal": {
+        "velocity_mps": [
+          7.25,
+          -1.6784948110580444,
+          -2.95
+        ],
+        "speed_mps": 8.005144897548625,
+        "landing_m": [
+          3.984715756954439,
+          -0.7523611099557158,
+          0.025
+        ],
+        "net_clearance_m": 0.20582257385523417,
+        "target_interior_margin_m": 0.015284243045560864
+      },
+      "static_joint_limit_IK_at_same_observed_body_pose": {
+        "full_racket": {
+          "observed_native_full_racket_face": {
+            "joints_rad": [
+              -0.3597740276447901,
+              1.6009355559743454,
+              -2.3464896966552398,
+              0.6987268639216726,
+              0.810103032130872,
+              2.0943997629216655
+            ],
+            "position_error_m": 0.1652840550156439,
+            "face_error_deg": 2.8260250664256965,
+            "maximum_joint_change_from_observed_full_racket_pose_rad": 0.654761876285874,
+            "solver_converged": true
+          },
+          "teacher_world_command": {
+            "joints_rad": [
+              -0.4932194937519088,
+              1.5191306346666262,
+              -2.3255230039923536,
+              0.7670347990535806,
+              1.0049154033582053,
+              2.0943997629248963
+            ],
+            "position_error_m": 0.1649010702093969,
+            "face_error_deg": 2.4561970875655184,
+            "maximum_joint_change_from_observed_full_racket_pose_rad": 0.5213164101787553,
+            "solver_converged": true
+          }
+        },
+        "legacy_shortboard": {
+          "observed_native_full_racket_face": {
+            "joints_rad": [
+              -1.6515519262976692,
+              1.1256576686308326,
+              -2.9669997918054976,
+              -0.34884457696597776,
+              0.496079045134595,
+              2.0943997629251028
+            ],
+            "position_error_m": 0.4027408233396052,
+            "face_error_deg": 0.4245251574006066,
+            "maximum_joint_change_from_observed_full_racket_pose_rad": 1.6190536509863636,
+            "solver_converged": true
+          },
+          "teacher_world_command": {
+            "joints_rad": [
+              -1.6643584797185227,
+              1.1483591123991197,
+              -2.9657285892820857,
+              -0.3054504849750289,
+              0.42694791817722905,
+              2.0943997629251028
+            ],
+            "position_error_m": 0.4032548227602285,
+            "face_error_deg": 7.92562312410695,
+            "maximum_joint_change_from_observed_full_racket_pose_rad": 1.5756595589954148,
+            "solver_converged": false
+          }
+        }
+      }
+    },
+    {
+      "intercept_plane_x_m": 1.35,
+      "predicted_ball_center_m": [
+        1.35,
+        -0.10877889574196471,
+        1.918599825461118
+      ],
+      "causal_arrival_clock_s": 2.7136311983136694,
+      "sampled_outgoing_velocities": 4331,
+      "feasible_free_flight_targets": 217,
+      "planning_margin_targets_3cm_net_and15cm_target_interior": 91,
+      "nearest_velocity_proposal": {
+        "velocity_mps": [
+          7.15,
+          -1.6784948110580444,
+          -3.2
+        ],
+        "speed_mps": 8.01123241647306,
+        "landing_m": [
+          3.9964834924026635,
+          -0.7300528551193962,
+          0.025
+        ],
+        "net_clearance_m": 0.2873095688181908,
+        "target_interior_margin_m": 0.00351650759733646
+      },
+      "static_joint_limit_IK_at_same_observed_body_pose": {
+        "full_racket": {
+          "observed_native_full_racket_face": {
+            "joints_rad": [
+              -0.2620087122605554,
+              1.698040259207446,
+              -2.3465752587931172,
+              0.6520431517442121,
+              0.7366981881386443,
+              2.094399762874837
+            ],
+            "position_error_m": 0.24688227222347886,
+            "face_error_deg": 5.455862278249869,
+            "maximum_joint_change_from_observed_full_racket_pose_rad": 0.7525271916701086,
+            "solver_converged": true
+          },
+          "teacher_world_command": {
+            "joints_rad": [
+              -0.33123053760790305,
+              1.6435378982693178,
+              -2.333139455973799,
+              0.6792610144108812,
+              0.8745447023085905,
+              2.094399762913222
+            ],
+            "position_error_m": 0.2457454696018916,
+            "face_error_deg": 4.073316627638998,
+            "maximum_joint_change_from_observed_full_racket_pose_rad": 0.6833053663227611,
+            "solver_converged": true
+          }
+        },
+        "legacy_shortboard": {
+          "observed_native_full_racket_face": {
+            "joints_rad": [
+              -1.8042835074915307,
+              1.085695894312909,
+              -2.931478713998802,
+              -0.18091146349279807,
+              0.5018616393089443,
+              2.0943997629251028
+            ],
+            "position_error_m": 0.4810725352225381,
+            "face_error_deg": 3.1768701431244,
+            "maximum_joint_change_from_observed_full_racket_pose_rad": 1.4511205375131837,
+            "solver_converged": true
+          },
+          "teacher_world_command": {
+            "joints_rad": [
+              -1.837498275673027,
+              1.0856825791774725,
+              -2.8792825764057945,
+              -0.09617486631481334,
+              0.4194702274023796,
+              2.0943997629246778
+            ],
+            "position_error_m": 0.48085158103932585,
+            "face_error_deg": 5.484205714180197,
+            "maximum_joint_change_from_observed_full_racket_pose_rad": 1.3663839403351992,
+            "solver_converged": true
+          }
+        }
+      }
+    }
+  ],
+  "original_target_x_m": [
+    2.0,
+    4.0
+  ],
+  "original_target_y_half_width_m": 1.0,
+  "stricter_buffers_are_planning_preferences_only": true,
+  "old_payload_dynamics_simulated": false,
+  "changed_simulator_state": false,
+  "formal_acceptance": false,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_attack_recovered_normal38_cem21/causal_plans_000.json": "26b89b47afc10e63e25b89a1e29d89e890375cee6d76a8f78809244abfd0a3e0",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_attack_recovered_normal38_cem21/contacts_000.json": "f1e5e9ea61121c355214c636d8104bd993fc60c223f771e04fc245a636030e5f",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_attack_recovered_normal38_cem21/episodes_000.json": "d045dc92b97cb8c66b9d8059939d0a52a6458f074f13c1e3757beff88d2d5d8d",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/normal38_gen0_best_for_slew_1444/policy_evidence.pt": "d4f116ad254aa7a3d0991b2d96177e34d3e386cadaad2d1695468b0eea7a606a",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/CPU_REPLAY_AUTHORED_JOINTS_0724.json": "c91545fe9a1069586436c040338c5bc9dafd6ccbb6dad5f3df50c6506e31dd42",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/matched_flange_kinematics_1245/LEGACY_MOUNT.json": "699dd17fb5615aff54663c4e5c28cc5934e67c3d157c5d5bdc96ec45a47247d9",
+    "/home/autodrive/LZQW/unitree_smash/configs/shuttle_physics_v2.json": "dba0e8d45edd661185c7f0b8a379f63993d1a87269740e672688b4577e359229",
+    "/home/autodrive/LZQW/unitree_smash/configs/court_net_v4.json": "184d07dde336bf36be7dfde089373c851a2bcb855a6e44f4120442b59818b4f4",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/near_net_planning_1505/analyze.py": "ca3926263414e8ad2dcfaf40663aed227bbea94b0c3f89afee1602c2c90e4ec2",
+    "/home/autodrive/LZQW/unitree_smash/quadsmash/control/initial_intercept.py": "85628aa4b0d9f802ea4d9e14c722b90348e4897c7ad396ec3b7ecd6112db92c7",
+    "/home/autodrive/LZQW/unitree_smash/quadsmash/control/full_racket_kinematics_v4.py": "9e7ce1df5f535a3aa48c0436e57a4478e8ef7d9a6f16419803e7d25d6cef0f4c",
+    "/home/autodrive/LZQW/unitree_smash/quadsmash/physics/smash_feasibility.py": "fa853c11524d18ba680b26de0e5a320408da78cb0b507296866257997a6d28e8"
+  }
+}

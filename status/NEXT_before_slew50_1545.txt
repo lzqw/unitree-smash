@@ -1,0 +1,15 @@
+当前唯一GPU0作业（2026-10-24T14:59:27.044718+00:00核查）：ball_arm_target_slew45_normal38_cem22，guard1447226 / child1447239，session80474。精确启动源码4ef7961a79ffb50be48fd9175f197138d62dad88。4代×64候选×TRAIN[1,65]，7200秒/409600控制环境步。仅GPU0、总GPU小时和日历无上限，单作业保护和真实账本保留；无后续队列。不得因观察超时重启，不手改GPU_LEDGER/RUNS、旧RESOURCE_STOP/queue或无关MPS。
+
+本次启用软件臂目标变化率4.5rad/s，原生臂速度配置仍5rad/s、力矩100Nm（未实机标定假设），腿23.5Nm/30rad/s、质量惯量/球场/球拍/原成功gate均不变。全程100Hz记录targets_before_slew/targets_after_slew、实际公开臂位置/速度、时钟和首回合mask；100Hz不是物理子步峰值，不裁剪实际超调。所有新结果须重新实测，不能继承CEM21成绩。
+
+输入arm_target_rate45_normal38_ready02_1515：policy SHA37aaa201aad1260d5eed4d914ff0ddd573d9f3ee9e8ab31d19c8527086389a71，bank SHAd3275c4a3f8e5d6e20b393f2ce29e63e6b4843ce02344e17775ea0021960a84b。源actual38gen0best SHAd4f116ad254aa7a3d0991b2d96177e34d3e386cadaad2d1695468b0eea7a606a（normal38_gen0_best_for_slew_1444）；除seed新增4.5目标速率，其余源控制保持。60bank=6期望法向偏角[-.04,0,.02,.04,.06,.08]×5lead偏移[0,.02,.04,.06,.08]×2速度gain[1,1.1]。Gaussian mask[7,14,37]、sigma_fraction.06，其余恢复/身体坐标固定，38是策略坐标，硬件仍18关节。
+
+99f7d39（含f40cf20）已合入。134CPU测试通过；485步120路bank预检、485步两路默认指令逐位一致/腿不变/软件4.5与5命令速率有界，增加只读遥测前后400步指令逐位一致。实际前100步证据reports/G07_full_racket_v4/slew45_initialization_1520/REPORT.json：64×38/60bank/canonical名字/固定sigma0/128状态流有限有界/0提前结束；首2路after-slew目标与真实动作解码差1.2e-7rad，下一公开观测的previous_actions逐位相等。首100步目标速率最高2.765rad/s，限速尚未绑定（最大修正0）；不证明击球或新方法有效。下一步冻结200/300步，与before-slew原目标对照，核对实际接触/法向/出球/越网/首落及同回合恢复。
+
+CEM21实际已保存停止，guard1439677child1439690均消失；两代256候选执行、仅两种不同来球，共161接触/91拍框/70空中拍线/10攻击/132合格恢复/26拍线+恢复/4攻击+恢复/65场内首落/12目标/0完整/0机器人规则/NF0；第1代32拍线/6攻击/9拍线+恢复/2攻击+恢复/5目标/0完整，globalbest仍第0代候选1。第1代强攻击恢复的首落[4.804,-.878]与[4.471,-1.093]均失败，法向追踪误差中位14.448度。第三代50步中断/0终态/128待结局原样保存。实际211200步/.606057793142GPU小时，guard FAILED/child exit0/无completed回执，声明cap409600不改。normal38_terminal_1516/REPORT.json为核验。
+
+近网规划near_net_planning_1505：来自同一TRAIN65公开输入的四平面预测，X1.15较1.05有更大自由飞行余量，但相同观测机身姿态下局部IK约8.5cm位置误差，不能只改击球平面。此为规划/静态局部逆解，未写仿真状态、未验证整拍/机身动态净空或恢复，不是可达上界或不可能性证明。旧短拍板几何仅在相同机身/关节限制下对照，旧动力学未运行。后续如需前移，应联合调整移动和引拍，不放宽硬件或原目标。
+
+全部128不同TRAIN来球与原A/B幅度扰动的固定策略诊断入口evaluate_full_racket_train_v4.py已合入，CPU5测试/旧原生两行核对完成，尚未原生运行。先获得完整同回合链，再扩大原TRAIN128/扰动覆盖，然后锁定源/权重执行原A200+B200；原门槛full>=.50、air>=.70、conditional-recovery>=.85、NF0按较差面板。原攻击norm>=8/vx>0/vz<=-1、首落X[2,4]/Y±1、原合格跳跃/落足/连续0.8秒恢复均保持，当前完整成功仍0。旧模型分数不继承。
+
+最新视频仍为已验证41.44秒CEM20原生三独立案例：https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_attack_recovery_20261024_1400.mp4 。最新历史完整附件G07_normal38_generation0_and_rate_tracking_update_20261024_1448.zip为CEM21gen0及当时CPU方案，不是本轮新效果。更早NEXT完整保存在status/NEXT_before_slew45_1518.txt，CEM20两代和全部失败原始数据保留。

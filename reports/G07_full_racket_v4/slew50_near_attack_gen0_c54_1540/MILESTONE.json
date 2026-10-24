@@ -1,0 +1,51 @@
+{
+  "created_at": "2026-10-24T15:38:04.503075+00:00",
+  "scope": "Selected actual CEM23candidate54/TRAIN65has legal airborne strings, real over-net court landing and qualified recovery, but norm7.966535<8and firstx4.508449>4. All original gates remain failed. Same policy pairedTRAIN1is retained; not a population/formal score or optimizer-winner claim.",
+  "candidate_id": 54,
+  "env_id": 109,
+  "outgoing_velocity_mps": [
+    7.6948370933532715,
+    -1.4626821279525757,
+    -1.4545519351959229
+  ],
+  "outgoing_norm_mps": 7.966534894975324,
+  "speed_deficit_from_original8_mps": 0.0334651050246757,
+  "first_landing_m": [
+    4.508449554443359,
+    -0.814483642578125,
+    0.025099297985434532
+  ],
+  "target_x_overshoot_m": 0.5084495544433594,
+  "recovery_s": 3.1839516162872314,
+  "maximum_body_ground_force_n": 0.0,
+  "sampled100Hz_arm_speed_peaks_rad_s": {
+    "108": 4.791292190551758,
+    "109": 4.883727550506592
+  },
+  "canonical_per_episode_checks": [
+    {
+      "env_id": 108,
+      "source_training_index": 1,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false
+    },
+    {
+      "env_id": 109,
+      "source_training_index": 65,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "fault": false
+    }
+  ],
+  "policy_sha256": "634da4f6fb65298ccf5afb50e7807324efc0bab3add5abe0b0064c26aeaa0a68",
+  "native_execution": true,
+  "complete_smash": false,
+  "formal_acceptance": false,
+  "source_sha256": {
+    "reports/G07_full_racket_v4/ball_arm_target_slew50_normal38_cem23/population_000.pt": "74371f4e35f4ce31acbe648c29bc84067b636af902ac998b35a3a8d4f3987621",
+    "reports/G07_full_racket_v4/ball_arm_target_slew50_normal38_cem23/episodes_000.json": "cbf25e20930fb721bfed6b91f75c78fd41069c1faafd6320c0b65ae74cc3676e"
+  }
+}

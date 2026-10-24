@@ -1,0 +1,73 @@
+{
+  "verified_at": "2026-10-24T15:28:00.907999+00:00",
+  "scope": "Actual CEM23generation0first400ticks only.15closed113pending. Every contact command is matched to the native pre/post-slew target log; actual goal-face error is kept separate from closeness to the limited command. Not a complete generation or formal score.",
+  "generation": 0,
+  "control_ticks": 400,
+  "closed_first_episodes": 15,
+  "pending_first_episodes": 113,
+  "closed_counts": {
+    "airborne_string_hit": 6,
+    "recovery_success": 0,
+    "crossed_net": 5,
+    "landed_legal_court": 1,
+    "landed_target": 0,
+    "complete_smash": 0,
+    "robot_net_fault": 0,
+    "racket_invasion_fault": 0,
+    "numerical_failures": 0
+  },
+  "contact_events": 84,
+  "string_contact_events": 24,
+  "pending_string_contact_episodes": 18,
+  "software_target_rate_rad_s": 5.0,
+  "logged_after_slew_command_rate_max_rad_s": 5.000011920928955,
+  "logged_before_slew_command_rate_max_rad_s": 79.47770690917969,
+  "maximum_target_adjustment_rad": 0.7749251127243042,
+  "measured100Hz_arm_velocity_peak_rad_s": 5.0045576095581055,
+  "measured_samples_above5_plus1e_4_rad_s": 5,
+  "velocity_scope": "Valid first-episode100Hz samples, not continuous physics-substep maxima; physical observations retained unmodified.",
+  "all84_contact_target_records_match_native_commands": true,
+  "maximum_contact_command_match_error_rad": 2.384185791015625e-07,
+  "maximum_native_normal_reconstruction_error": 2.1839927000017952e-06,
+  "string_face_statistics": {
+    "actual_to_after_slew_command_face_error_deg": {
+      "min": 1.5303191753072327,
+      "median": 9.07268712250688,
+      "max": 18.65485177579437
+    },
+    "actual_to_before_slew_command_face_error_deg": {
+      "min": 5.164269838136552,
+      "median": 18.555809644832692,
+      "max": 30.398805326561828
+    },
+    "actual_to_desired_face_error_deg": {
+      "min": 6.742271140656069,
+      "median": 13.472843197715001,
+      "max": 23.021941578962473
+    },
+    "actual_face_pitch_deg": {
+      "min": 5.301892163976919,
+      "median": 9.344864529506676,
+      "max": 23.64067070433558
+    }
+  },
+  "comparison_caution": "Candidate timing/normal grids differ from CEM22andCEM21. Aggregate medians alone cannot isolate the slew change, and smaller command-face error is not proof of better outgoing balls or recovery.",
+  "native_execution": true,
+  "formal_acceptance": false,
+  "sha256": {
+    "reports/G07_full_racket_v4/slew50_contact_prefix_1530/native_prefix/all_first_episodes.partial.npz": "38755351145283ebc3cd5f550dedbe83b584a318ac0b2322887c9b20a3b0721f",
+    "reports/G07_full_racket_v4/slew50_contact_prefix_1530/native_prefix/arm_targets.partial.npz": "5527caf81c18f5fbdb1cb0c7dcd2db8d251603d0eff205c0072c7b63ea18ffe0",
+    "reports/G07_full_racket_v4/slew50_contact_prefix_1530/native_prefix/causal_plans.partial.json": "5171165f468fdb3992d108f085de34dee54004af3bdc21bd885b84a3ccbc8060",
+    "reports/G07_full_racket_v4/slew50_contact_prefix_1530/native_prefix/contacts.partial.json": "f8ff867a352a9cb8683e7389e57fbc24421b1fec63000740e15b8a5acc41d027",
+    "reports/G07_full_racket_v4/slew50_contact_prefix_1530/native_prefix/control_window.partial.npz": "4b79c43da3719c4b58c6dcdd02388ff5eb1d83ff33d1deb49537e677502372e5",
+    "reports/G07_full_racket_v4/slew50_contact_prefix_1530/native_prefix/episodes.partial.json": "05283d023c0c6e2af5609b8adb6f3b5a01cf49bf2c7928c385b93968e8e5f008",
+    "reports/G07_full_racket_v4/slew50_contact_prefix_1530/native_prefix/generation_start_000.pt": "49fe7022db41fa13d84c9327c8552ebb67919bc8fde209d8c8124a0e3309ca14",
+    "reports/G07_full_racket_v4/slew50_contact_prefix_1530/native_prefix/near_contact_all.partial.npz": "d1f45b8a10e56afada5f855cbe378e8640d573b6eefe770ffd41ce35e3eafc2a",
+    "reports/G07_full_racket_v4/slew50_contact_prefix_1530/native_prefix/partial_public_and_poses.npz": "fbe9b961cd22c4114287c4b57b3accc34941273f3e59793b8455d67bdb3ca3b1",
+    "reports/G07_full_racket_v4/slew50_contact_prefix_1530/native_prefix/partial_search_state.pt": "6b82bab326f829ccd1197a8d5cd17ce30e58d1b42160725898c045edeb6cc98d",
+    "reports/G07_full_racket_v4/slew50_contact_prefix_1530/native_prefix/progress.json": "ad666071a2188f2437b81ddc3a97aa03c013e905dee1d0a5fab2139f1071f220",
+    "reports/G07_full_racket_v4/slew50_contact_prefix_1530/native_prefix/trajectory.partial.json": "7c4bf9ebb3d3dced79bf541b25976e773238bb57081398ac560b398bb787a017",
+    "reports/G07_full_racket_v4/slew50_contact_prefix_1530/analyze.py": "9bcde96e88041de9e583007b937e6112f006156ef733540a1da03ec816ac6647",
+    "quadsmash/control/full_racket_kinematics_v4.py": "9e7ce1df5f535a3aa48c0436e57a4478e8ef7d9a6f16419803e7d25d6cef0f4c"
+  }
+}

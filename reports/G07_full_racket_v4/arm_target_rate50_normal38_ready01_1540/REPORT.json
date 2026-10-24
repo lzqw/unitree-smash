@@ -1,0 +1,83 @@
+{
+  "created_at": "2026-10-24T15:14:39.224306+00:00",
+  "scope": "Unexecuted optional38coordinate normal/timing/gain grid. Same standing37reference coordinates; no new ball path, physical joint, asset or acceptance gate.",
+  "parameter_count": 38,
+  "candidates": 60,
+  "first37_changed_coordinates": [
+    7,
+    14
+  ],
+  "appended_coordinate_name": "contact_normal_downward_pitch_bias_rad",
+  "normal_bias_bounds_rad": [
+    -0.12,
+    0.12
+  ],
+  "desired_normal_downward_bias_grid_rad": [
+    -0.12,
+    -0.08,
+    -0.04,
+    0.0,
+    0.04,
+    0.08
+  ],
+  "arm_velocity_gain_multipliers": [
+    0.95,
+    1.0
+  ],
+  "arm_lead_deltas_s": [
+    -0.02,
+    0.0,
+    0.02,
+    0.04,
+    0.06
+  ],
+  "arm_target_rate_limit_rad_s": 5.0,
+  "source_parameter_count": 38,
+  "source_native_execution": true,
+  "source_actual_training_rows": [
+    {
+      "source_training_index": 1,
+      "attack_outgoing": false,
+      "airborne_string_hit": true,
+      "recovery_success": true,
+      "landed_target": false,
+      "complete_smash": false
+    },
+    {
+      "source_training_index": 65,
+      "attack_outgoing": false,
+      "airborne_string_hit": true,
+      "recovery_success": true,
+      "landed_target": false,
+      "complete_smash": false
+    }
+  ],
+  "new_policy_performance_inherited": false,
+  "all_existing_recovery_coordinates_preserved": true,
+  "all_physical_assets_hardware_limits_and_original_task_gates_unchanged": true,
+  "recovery_search_min_local_s": 1.2,
+  "recommended_search_coordinates": [
+    7,
+    14,
+    37
+  ],
+  "required_flags": [
+    "--search-arm-velocity",
+    "--search-recovery-parameters",
+    "--search-contact-normal"
+  ],
+  "native_execution": false,
+  "formal_acceptance": false,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt": "37ed738828dab99ae4c505e6f024998cb43d72deadfbf27883f56b94d5132f0a",
+    "/home/autodrive/LZQW/unitree_smash/scripts/prepare_full_racket_contact_normal_bank_v4.py": "3e65edca9a6bdea475f0f1bc684bd9ac87246a8201ff688bad48407bc548605d",
+    "/home/autodrive/LZQW/unitree_smash/quadsmash/control/full_racket_teacher_v4.py": "97e76633c6853a70b7bf5331de47038e649ef6c34a99c6548bf6069ff21cc8d7",
+    "/home/autodrive/LZQW/unitree_smash/quadsmash/control/full_racket_parameter_layout_v4.py": "9bac2323b1b05187da0e17b13d291136bbb18cac2355431d0a40bf6cecd3d86c",
+    "/home/autodrive/LZQW/unitree_smash/quadsmash/control/full_racket_contact_normal_search_v4.py": "1c24453dfb79e5fea638ac47f0a31add11f48903fb55b51eda4f4c95530ca92f",
+    "/home/autodrive/LZQW/unitree_smash/quadsmash/control/full_racket_recovery_search_v4.py": "811ec557e3506a5640d0a8a800a9c26b12bb1cc9320996114818a17adc97258b",
+    "/home/autodrive/LZQW/unitree_smash/quadsmash/control/full_racket_arm_search_v4.py": "7f755abb820635fbb4b963fa7d12fddc41029d4b70693a6468f4cf7057271ee2",
+    "/home/autodrive/LZQW/unitree_smash/quadsmash/control/full_racket_arm_target_rate_v4.py": "06b637ec7d872198e606a8ac43d8c6b9f569fd14a4f3e3f296ceeb9ec3e8b2bd"
+  },
+  "policy_sha256": "84f0da4785fd3b11bac910066c6eb193d31f3d1315ba86ff9cf651aced7f11c0",
+  "bank_sha256": "918badac7467e561f50ec7d9d89e57b1fd37290bb5ca91791bcb2bcb8d18defd"
+}
