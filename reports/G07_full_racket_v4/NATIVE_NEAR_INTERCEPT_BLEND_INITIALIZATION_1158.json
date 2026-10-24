@@ -1,0 +1,94 @@
+{
+  "created_at": "2026-10-24T11:57:24.534568+00:00",
+  "scope": "Actual CEM16generation0 first100native control ticks: population/input/controller activation and128recorded body/ball/clock streams. Stroke/contact/recovery not yet reached.",
+  "run": "ball_near_intercept_blend_cem16",
+  "generation": 0,
+  "control_ticks": 100,
+  "population_shape": [
+    64,
+    32
+  ],
+  "bank_rows_exactly_match": 60,
+  "reference_parameters_exactly_match": true,
+  "commanded_point_velocity_mps": [
+    1.5,
+    0.0,
+    -0.3
+  ],
+  "event_calibration_s": 0.0,
+  "all_saved_pose_ball_clock_public_and_action_values_finite": true,
+  "all_public_actions_bounded": true,
+  "first_episodes_complete": 0,
+  "first_contacts": 0,
+  "root_max_abs_roll_rad": 0.03248778669300647,
+  "root_max_abs_pitch_rad": 0.16655885500828682,
+  "all_physical_hashes_match_frozen_protocol": true,
+  "core_controller_and_search_source_unchanged_from_cem14": true,
+  "unchanged_core_sha256": {
+    "quadsmash/control/full_racket_teacher_v4.py": "2f0c0d9db72fe76067dc3d1eaf765c43c280b4e3db235f070e62849cb863042b",
+    "quadsmash/control/full_racket_joint_preparation_v4.py": "da0841510be9bb95e9e68e0ace13d3e7e064b69fc256f6c8d9037ec27fddc363",
+    "quadsmash/control/full_racket_face_feedback_v4.py": "ff06d998baf0c4b856697fbc00be2b7e567f817e7462e0db23b81af1f7e598a1",
+    "quadsmash/control/full_racket_rally_controller_v4.py": "40754fb695270b8bd29ddff834111a3800d17782740c6269bc6520405d25fccb",
+    "scripts/search_full_racket_ball_v4.py": "6da91963026ac86676efedc715f8413c3b794be83bd4f0d1fc6f8a2a908df8f7"
+  },
+  "formal_panels_read": false,
+  "native_execution": true,
+  "formal_acceptance": false,
+  "snapshot": "reports/G07_full_racket_v4/near_intercept_blend_native_tick100_snapshot",
+  "shapes": {
+    "partial_public_and_poses.npz": {
+      "observations": [
+        100,
+        2,
+        794
+      ],
+      "actions": [
+        100,
+        2,
+        18
+      ],
+      "link_poses": [
+        50,
+        2,
+        28,
+        7
+      ],
+      "valid_first_episode": [
+        100,
+        2
+      ]
+    },
+    "all_first_episodes.partial.npz": {
+      "link_poses": [
+        50,
+        128,
+        28,
+        7
+      ],
+      "ball_position_m": [
+        50,
+        128,
+        3
+      ],
+      "episode_clock_s": [
+        50,
+        128
+      ],
+      "valid_first_episode": [
+        50,
+        128
+      ]
+    }
+  },
+  "snapshot_sha256": {
+    "progress.json": "1786dbd6216bb6f930fed33803cbae3068e047c4e7a30d5d244cc00185471ea0",
+    "partial_search_state.pt": "3dae83a7d82f76bc0b140845912e007413133026d329bd848ba3989dc3c88b73",
+    "episodes.partial.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "contacts.partial.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "causal_plans.partial.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "partial_public_and_poses.npz": "dca95be1cda4cbb7640b41f91c16744b32053e82ea6b16e56b9c97e7aea9ec21",
+    "all_first_episodes.partial.npz": "67666d605d99b3fcb9e85a50a4b9f53117e988e1b5d115013c53ed28e06c3554",
+    "trajectory.partial.json": "68c7d26d085c9b5127a540bfcf9e63a42e077a3fc75e5a0b302cd34ee96bd8f5",
+    "generation_start_000.pt": "733d363cf24f27eacfe188c6e4f970ed7b98fc369b0bad025ca6441ab90211ff"
+  }
+}
