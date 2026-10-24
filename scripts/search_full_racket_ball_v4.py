@@ -20,6 +20,7 @@ p.add_argument('--pitch-grid',action='store_true',help='Reserve12 candidates spa
 p.add_argument('--search-arm-velocity',action='store_true',help='Append six bounded arm velocity seed coordinates to the26 controller parameters')
 p.add_argument('--arm-velocity-bank',type=Path,help='Four offline velocity proposals for a12-candidate velocity/timing grid; requires --search-arm-velocity')
 p.add_argument('--interception-plane-grid',action='store_true',help='Expand velocity/timing bank to36 candidates across public interception planes1.10/1.25/1.40m; requires --arm-velocity-bank')
+p.add_argument('--candidate-bank',type=Path,help='Validated bounded whole-body proposals, generation0only; preserve two references and let later generations adapt freely')
 p.add_argument('--prepose-gain',type=float,help='Optional current-public-forecast preparation correction in[0,1]; warm start only')
 p.add_argument('--recovery-leg-bank',type=Path,help='Optional measured same-family recovery26-vector: reserve8 contact-arm/recovery-leg crossover candidates')
 p.add_argument('--continue-after-miss',action='store_true',help='TRAIN curriculum: observe landing after missed/blocked/backward shuttle return; all rally failures remain failures, robot faults terminate')
@@ -37,6 +38,7 @@ from quadsmash.control.full_racket_teacher_v4 import LOW,HIGH,PARAMETER_NAMES
 from quadsmash.control.full_racket_geometry_v4 import FullRacketGeometryV4
 from quadsmash.control.full_racket_arm_search_v4 import (
     VELOCITY_PARAMETER_NAMES,extend_arm_velocity_parameters,arm_velocity_grid,interception_velocity_grid,body_crossovers_preserving_velocity)
+from quadsmash.control.full_racket_candidate_bank_v4 import validate_candidate_bank,install_candidate_bank
 from quadsmash.control.full_racket_contact_curriculum_v4 import (
     contact_search_tiers,actual_outgoing_shaping,arm_timing_velocity_grid,measured_recovery_leg_crossovers,pitch_compensation_grid)
 from quadsmash.physics.full_racket_v4 import string_prism_gap
@@ -62,7 +64,9 @@ def main():
     if args.candidates<4 or args.generations<1 or not 0<args.sigma_fraction<=.5:raise ValueError('Invalid search settings')
     if args.timing_grid and args.candidates<14:raise ValueError('Timing grid requires at least14 candidates')
     if args.push_grid and args.candidates<18:raise ValueError('Push grid requires at least18 candidates')
-    if sum([args.timing_grid,args.push_grid,args.contact_grid,args.pitch_grid,bool(args.arm_velocity_bank)])>1:raise ValueError('Choose one controlled grid')
+    if sum([args.timing_grid,args.push_grid,args.contact_grid,args.pitch_grid,bool(args.arm_velocity_bank),bool(args.candidate_bank)])>1:raise ValueError('Choose one controlled grid')
+    if args.candidate_bank and (not args.contact_curriculum or args.recovery_leg_bank):
+        raise ValueError('Candidate bank requires contact curriculum and supplies its own body proposals')
     if args.arm_velocity_bank and (not args.search_arm_velocity or not args.contact_curriculum or args.candidates<14):
         raise ValueError('Velocity bank requires32-parameter contact curriculum and at least14 candidates')
     if args.interception_plane_grid and (not args.arm_velocity_bank or args.candidates < 38 + 8*bool(args.recovery_leg_bank)):
@@ -76,7 +80,7 @@ def main():
     if args.recovery_leg_bank and (not (args.contact_grid or args.pitch_grid or args.arm_velocity_bank) or args.candidates<22):
         raise ValueError('Recovery leg crossover requires contact grid and at least22 candidates')
     if not .15<=args.push_search_range<=.5:raise ValueError('Push search range must be between .15 and .5rad')
-    sampling_contract=('contact-pitch-compensation-grid-v1' if args.pitch_grid else 'contact-arm-timing-speed-grid-v1' if args.contact_grid else 'front-back-push-grid-v1' if args.push_grid else
+    sampling_contract=('bounded-candidate-bank-generation0-v1' if args.candidate_bank else 'contact-pitch-compensation-grid-v1' if args.pitch_grid else 'contact-arm-timing-speed-grid-v1' if args.contact_grid else 'front-back-push-grid-v1' if args.push_grid else
         'timing-velocity-cartesian-grid-v1' if args.timing_grid else 'gaussian-cem-v1')
     selection_contract=('actual-contact-then-return-and-recovery-v1' if args.contact_curriculum else
         'ball-with-jump-recovery-v3' if args.continue_after_miss else 'legal-first-ball-v4')
@@ -162,6 +166,11 @@ def main():
         previous=prior['generations'];best_result=prior['best_result'];reference=prior['reference_parameters'].to(env.device)
         if prior['best_parameters'] is not None:
             best_parameters=prior['best_parameters'].to(env.device);best_rank=tuple(prior['best_rank'])
+    candidate_bank=None
+    if args.candidate_bank:
+        candidate_bank=validate_candidate_bank(json.loads(args.candidate_bank.read_text()),template['seed'],template['asset_sha256'],
+            PARAMETER_NAMES+['intercept_plane_x','strike_timing_residual']+(VELOCITY_PARAMETER_NAMES if args.search_arm_velocity else []),
+            reference.cpu().numpy(),low.cpu().numpy(),high.cpu().numpy(),args.candidates-2)
     default=env.robot.data.default_joint_pos[0,env.joint_ids];limits=env.robot.data.joint_pos_limits[0,env.joint_ids]
     export_robot_geometry(get_current_stage(),env.robot,args.output)
     ticks=round(cfg.episode_length_s/.01)
@@ -191,6 +200,11 @@ def main():
         bank_sha=hashlib.sha256(args.arm_velocity_bank.read_bytes()).hexdigest()
         if args.resume and prior.get('arm_velocity_bank_sha256')!=bank_sha:raise ValueError('Velocity bank changed; use warm-start')
         base_record.update(arm_velocity_bank_path=str(args.arm_velocity_bank),arm_velocity_bank_sha256=bank_sha)
+    if candidate_bank is not None:
+        bank_sha=hashlib.sha256(args.candidate_bank.read_bytes()).hexdigest()
+        if args.resume and prior.get('candidate_bank_sha256')!=bank_sha:raise ValueError('Candidate bank changed; use warm-start')
+        base_record.update(candidate_bank_path=str(args.candidate_bank),candidate_bank_sha256=bank_sha,
+                          candidate_bank_rows=len(candidate_bank),candidate_bank_schedule='generation0only')
     try:
         for generation in range(args.generations):
             state=dict(base_record,mean=mean.cpu(),sigma=sigma.cpu(),rng=rng.get_state().cpu(),
@@ -233,6 +247,8 @@ def main():
             if leg_bank is not None:
                 grid=body_crossovers_preserving_velocity(reference.cpu().numpy(),leg_bank['parameters'],low.cpu().numpy(),high.cpu().numpy())
                 population[body_start:body_start+len(grid)]=torch.as_tensor(grid,device=env.device,dtype=population.dtype)
+            if candidate_bank is not None:
+                install_candidate_bank(population,candidate_bank,previous+generation)
             env._episode_has_stepped.zero_();env._metrics_started=False
             env.rally_records.clear();env.episode_records.clear();env.contact_records.clear()
             env.racket_plane_records.clear();env.episode_index.fill_(-1)
