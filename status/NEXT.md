@@ -1,3 +1,9 @@
+当前唯一GPU已切换（2026-10-24 06:17 UTC）：ball_contact_recovery_cem02 guard1350322/child1350331；顺序worker1349683仍live，exec74286。state=contact_recovery_queue01/state.json已RUNNING_GUARDED_JOB；不要再按下方旧WAITING段手工启动。旧upper_strings guard1344215/child1344227已实际退出，jobSUCCEEDED，128次0hit/0recover/0complete/NF0，实际77120步/.464637646GPUh；最后存活env3亦未满足qualified recovery。FINAL_TRAIN_SUMMARY.json与128行episodes.csv已写，不改历史raw。旧ledger由guard自动封账，新guard独占资源锁；勿手改GPU_LEDGER/RUNS。
+
+新run32候选×TRAIN[1,65]×2gen，原8s/62.5us/10ms，sigma.025、contact-curriculum、12arm lead/speed网格、8recovery-leg交叉、10高斯、push范围.30；5400s/102400步cap。warm06精确原recovery gen1 candidate31，legbank原candidate12两个漏球qualified恢复，全部新fitness重测。原生配置/10USD审核和generation_start已生成，当前源验证51CPU已过。先读本段实际PID与queue state；code源/driver加载后固定，无需因观察超时重开。
+
+CPU attack_window_cpu01/PLAN.json和INTERPRETATION.json只规划，不是原生成功/不可行证明：原实际触球比公共观测预测的x1.167参考状态晚26.68ms；实测法向点速-1.2466，理想早窗回球原法向约[.996,.027,-.079]需+1.029m/s。模型出球[6.9,0,-4.1]可越网落x3.307，但跟踪、关节/反作用/全拍合法性必须原生验证，不改变门槛。
+
 接续方法更新（2026-10-24 06:12 UTC）：同一contact_recovery_queue01的新worker1349683 / exec74286已实际WAITING；保留当前GPU作业，等待其真实SUCCEEDED退出。32候选含2参考/均值、12只改arm时机/速度、8个实测恢复腿参数交叉、10高斯。--recovery-leg-bank contact_recovery_warm06/RECOVERY_LEG_BANK.json，来自原gen1 candidate12；与原contact31严格相同seed/family，按.25/.5/.75/1混合body参数，只再变arm_lead[-.03,0]，其余arm/球拦截参数保留。51项CPU测试通过，尚无新模式原生结果。其余调度、源hash冻结、单GPU/cap约束见下文；不可手工再启动重复任务。
 
 最高优先调度更新（2026-10-24 06:09 UTC）：已有串行接续 worker1349683 / exec74286，state=reports/G07_full_racket_v4/contact_recovery_queue01/state.json。它等待旧GPU guard1344215和child1344227都实际退出且job.json SUCCEEDED，再自动启动 ball_contact_recovery_cem02（warm06原candidate31，32×2TRAIN×2gen、sigma.025、contact-curriculum+contact-grid）。不要手工再启动该任务；先查worker/旧guard/新guard实际PID及state。worker启动前冻结了quadsmash全源码+search/guard/protocol/warm SHA，排队期间改这些源码会明确拒绝启动。每个GPU任务仍独立5400s/102400步cap。worker不写GPU_LEDGER/RUNS，原guard退出后由新guard独占资源锁。若用户要求停止训练，还要处理这个本项目worker及其子guard，避免停止后又接续。旧正文的“手工接续命令”已由本自动队列取代。

@@ -1,0 +1,48 @@
+{
+  "scope": "Completed native TRAIN first episodes from upper-strings05, includes elite repeats. No original success thresholds were changed.",
+  "executions": 128,
+  "contact_episodes": 0,
+  "airborne_string_hits": 0,
+  "qualified_recoveries_after_miss": 0,
+  "complete": 0,
+  "numerical_failures": 0,
+  "body_ground_episodes": 79,
+  "robot_net_fault_episodes": 28,
+  "racket_invasion_fault_episodes": 19,
+  "history": [
+    {
+      "generation": 0,
+      "episodes": 64,
+      "control_ticks": 405,
+      "env_steps": 25920,
+      "legal_candidates": 0,
+      "best_candidate": 11,
+      "best_score": -16.83677132129669,
+      "contacts": 0,
+      "airborne_string_hits": 0,
+      "complete": 0,
+      "minimum_gap_m": 0.044874608516693115,
+      "formal_acceptance": false
+    },
+    {
+      "generation": 1,
+      "episodes": 64,
+      "control_ticks": 800,
+      "env_steps": 51200,
+      "legal_candidates": 0,
+      "best_candidate": 17,
+      "best_score": -14.803501942008733,
+      "contacts": 0,
+      "airborne_string_hits": 0,
+      "complete": 0,
+      "minimum_gap_m": 0.041261374950408936,
+      "formal_acceptance": false
+    }
+  ],
+  "elapsed_s": 1672.695525455987,
+  "gpu_hours": 0.4646376459599964,
+  "actual_control_env_steps": 77120,
+  "charged_env_step_cap": 102400,
+  "conclusion": "Large changed posture did not transfer the source leg recovery or actual contact. Next native method retains the previously measured contact-arm seed and crosses same-family measured recovery-leg parameters.",
+  "formal_acceptance": false
+}

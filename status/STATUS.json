@@ -50,35 +50,38 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "Recovery128:13 qualified miss recoveries,1airborne strings/4contacts/0complete/NF0. Native near-net02 all3 passed after live GPU-pose geometry fix, two old query failures preserved; CPU51 pass. Upper strings gen0 64 failed, gen1 still active. Queued fresh contact-preserving native training from measured candidate31, no inherited fitness or changed acceptance. Queued32 includes8 native-measured recovery-leg/contact-arm crossover proposals; all new fitness unmeasured.",
+      "notes": "Upper-strings05 finished2x64 with0contact/0recovery/0complete/NF0,77120 actual steps,.464637646GPUh. Previous recovery128 retained13 miss recoveries and1airborne strings. New contact recovery CEM02 now actually running GPU0, exact warm31 plus12 arm timing/speed and8 same-family measured recovery-leg crossovers. CPU51 passed; no new policy success yet; formal400TODO.",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/reach_cem_fine_feedback01/metrics.json",
       "curriculum_policy": "reports/G07_full_racket_v4/reach_cem_fine_feedback01/best_candidate.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
       "active_gpu_jobs": [
         {
-          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_upper_strings_cem01",
-          "guard_pid": 1344215,
-          "child_pid": 1344227,
-          "session_id": 3642,
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_contact_recovery_cem02",
+          "guard_pid": 1350322,
+          "child_pid": 1350331,
+          "session_id": 74286,
           "state": "RUNNING",
-          "started_at": "2026-10-24T05:47:53.848866+00:00"
+          "started_at": "2026-10-24T06:15:49.572219+00:00",
+          "worker_pid": 1349683
         }
       ],
       "queued_native_sequence": {
         "state_file": "reports/G07_full_racket_v4/contact_recovery_queue01/state.json",
         "pid": 1349683,
         "session_id": 74286,
-        "state_at_last_check": "WAITING_FOR_PRIOR_TERMINAL_RECEIPT",
+        "state_at_last_check": "RUNNING_GUARDED_JOB",
         "next_jobs": [
           "ball_contact_recovery_cem02"
         ],
         "still_running": true,
         "note": "Do not manually duplicate this queued job; queue requires prior guard/child exit plus SUCCEEDED receipt and unchanged launch-source hashes.",
-        "proposal": "reports/G07_full_racket_v4/CONTACT_RECOVERY_CROSSOVER_PLAN_0612.json"
+        "proposal": "reports/G07_full_racket_v4/CONTACT_RECOVERY_CROSSOVER_PLAN_0612.json",
+        "guard_pid": 1350322,
+        "child_pid": 1350331
       },
       "native_air_string_contact_milestone": "reports/G07_full_racket_v4/ball_cem_low_base_branch01/NATIVE_CONTACT_MILESTONE.json",
-      "latest_native_training_summary": "reports/G07_full_racket_v4/ball_recovery_cem01/FINAL_TRAIN_SUMMARY.json",
+      "latest_native_training_summary": "reports/G07_full_racket_v4/ball_upper_strings_cem01/FINAL_TRAIN_SUMMARY.json",
       "latest_video": {
         "path": "reports/G07_full_racket_v4/video/Current_effect_contact_recovery_20261024_0555.mp4",
         "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_contact_recovery_20261024_0555.mp4",
@@ -89,14 +92,13 @@
       },
       "latest_completed_generation": {
         "run": "ball_upper_strings_cem01",
-        "generation": 0,
+        "generation": 1,
+        "whole_job_complete": true,
         "executions": 64,
         "contacts": 0,
         "recoveries": 0,
         "complete": 0,
-        "numerical_failures": 0,
-        "snapshot": "reports/G07_full_racket_v4/upper_strings_generation0_snapshot01/GENERATION.json",
-        "whole_job_complete": false
+        "numerical_failures": 0
       },
       "pending_rule_regression": {
         "state": "PASSED_TARGETED_NATIVE02",

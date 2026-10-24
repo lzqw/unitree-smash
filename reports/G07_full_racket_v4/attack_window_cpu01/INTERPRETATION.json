@@ -1,0 +1,27 @@
+{
+  "scope": "TRAIN planning interpretation only; original native full-smash success remains0.",
+  "plan_sha256": "7969f0d4876b5b56701ce78da8bbeb422cbac083ac425be7e37e329cbb8233d2",
+  "actual_contact_ball_center_m": [
+    0.954376220703125,
+    0.06246185302734375,
+    1.7054418325424194
+  ],
+  "actual_contact_time_s": 2.76120924949646,
+  "planned_reference_ball_center_m": [
+    1.167252540588379,
+    0.07334269873404992,
+    1.7896077267553347
+  ],
+  "planned_reference_time_s": 2.7345264041709347,
+  "actual_contact_later_than_reference_s": 0.02668284532552523,
+  "actual_native_point_normal_speed_mps": -1.2466354961990738,
+  "proposal_point_normal_speed_mps": 1.0293221613845471,
+  "proposal_outgoing_velocity_mps": [
+    6.89999999999999,
+    0.0,
+    -4.1
+  ],
+  "hypothesis": "Improve actual tracking to the earlier interception window and maintain forward point velocity; the existing planned face normal near[.996,0,-.08] already matches a sampled clear/target return at that earlier state.",
+  "limits": "Finite free-flight grid, surrogate restitution and no whole-body/racket net-clearance or actuator feasibility test. Zero candidates at the recorded late state is not a proof of task impossibility. Native outgoing/first landing/same-episode recovery remain authoritative.",
+  "formal_acceptance": false
+}
