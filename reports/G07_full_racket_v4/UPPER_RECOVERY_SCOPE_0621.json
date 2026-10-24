@@ -1,0 +1,21 @@
+{
+  "scope": "Explain the final surviving missed-ball episode without changing the frozen qualified-recovery gate.",
+  "source": "reports/G07_full_racket_v4/ball_upper_strings_cem01/episodes_001.json",
+  "source_sha256": "7ec42d6160efd630ed8cfeaaef6d4abfc505cda2f34a82b44a99caee5252f83a",
+  "generation": 1,
+  "env_id": 3,
+  "training_case_index": 65,
+  "terminal_time_s": 8.0,
+  "had_contact": false,
+  "qualified_jump_landed": false,
+  "stable_recovery": true,
+  "stable_recovery_s": 3.9248979091644287,
+  "last_takeoff_time_s": 2.9729669094085693,
+  "last_landing_time_s": 2.9849660396575928,
+  "last_flight_duration_s": 0.011999130249023438,
+  "episode_max_com_rise_m": 0.157740980386734,
+  "episode_max_airborne_s": 0.4099982678890228,
+  "native_recovery_success": false,
+  "explanation": "Latest recorded flight was only about12ms, so the original metric did not qualify its landing despite later stable support. Max rise and max continuous air time are episode maxima and cannot be assumed to describe the same last flight. Preserve native qualified-recoveryFalse; do not relax or recompute a pass from stable time alone.",
+  "formal_acceptance": false
+}
