@@ -50,12 +50,35 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "CEM19completed128episodes:80contacts/37airstrings/19attacks/9qualifiedrecoveries/0airstrings+recovery/0court/target/full/NF0. Saved9ticknext-generation interruption,.295379GPUh/103552actualsteps,trueFAILED.118tests/122lane287tickbank preflight/four actual-state61tick command comparison pass for stronger poststroke retreat. Next native launch pending; original task/physical conditions unchanged.",
+      "notes": "CEM19completed128:80contacts/37airstrings/19attacks/9recoveries/0joined/0court/target/full/NF0; saved9ticks,.295379GPUh/103552steps,trueFAILED. GPU0CEM20poststroke retreat nowrunning sourceb470b6c,guard1431620; same61proposal numbers and37reference asCEM19, only seed poststroke command x1.15m/lookahead.12s tightened.118tests/122lane287tickCPUpreflight/four actual-state61tick counterfactual commands passed; native37startup and later performance pending; optional38normal disabled.",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/return_recovery_gen0_env12/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
-      "active_gpu_jobs": [],
+      "active_gpu_jobs": [
+        {
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_post_stroke_retreat37_cem20",
+          "guard_pid": 1431620,
+          "child_pid": 1431630,
+          "state": "RUNNING",
+          "started_at": "2026-10-24T13:30:45.785324+00:00",
+          "source_commit": "b470b6c19aad205edf24c7b8a833c8a170e9ab0c",
+          "generations": 4,
+          "declared_control_env_steps": 409600,
+          "max_seconds": 7200,
+          "parameter_width": 37,
+          "normal38search_enabled": false,
+          "gaussian_search_coordinates": [
+            3,
+            32,
+            33,
+            34,
+            35,
+            36
+          ],
+          "native_initialization_pending": true
+        }
+      ],
       "queued_native_sequence": {
         "state_at_last_check": "NO_QUEUED_JOBS",
         "next_jobs": [],
@@ -594,7 +617,7 @@
       "latest_unexecuted_contact_normal_feature": {
         "branch": "g07-arm-search-v4-20261024",
         "commit": "a0edc41",
-        "merged_to_primary": false,
+        "merged_to_primary": true,
         "native_execution": false,
         "cpu_tests": 116,
         "counterfactual_preflight_lanes": 120,
@@ -602,7 +625,9 @@
         "legacy_37_and_default38_commands_bitwise_equal": true,
         "report": "reports/G07_full_racket_v4/contact_normal38_ready01_1320/SEARCH_PLAN.json",
         "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_contact_normal38_unexecuted_feature_20261024_1321.zip",
-        "formal_acceptance": false
+        "formal_acceptance": false,
+        "primary_source_commit": "b470b6c19aad205edf24c7b8a833c8a170e9ab0c",
+        "enabled_in_current_job": false
       }
     },
     "G08": {
