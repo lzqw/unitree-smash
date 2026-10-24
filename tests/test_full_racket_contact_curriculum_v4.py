@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 from quadsmash.control.full_racket_contact_curriculum_v4 import (
     ROBOT_FAULTS,usable_air_contact,contact_search_tiers,actual_outgoing_shaping,
-    arm_timing_velocity_grid,measured_recovery_leg_crossovers)
+    arm_timing_velocity_grid,measured_recovery_leg_crossovers,pitch_compensation_grid)
 
 
 class ContactCurriculumTest(unittest.TestCase):
@@ -68,6 +68,15 @@ class ContactCurriculumTest(unittest.TestCase):
         self.assertAlmostEqual(grid[0,2], .025)
         self.assertAlmostEqual(grid[-1,2], .1)
         self.assertAlmostEqual(grid[-1,14], 0.)
+
+    def test_pitch_grid_spans_body_rotation_compensation_without_changing_leg_timing(self):
+        reference = np.linspace(-.2,.2,26)
+        lower, upper = np.full(26,-2.),np.full(26,2.)
+        grid = pitch_compensation_grid(reference,lower,upper)
+        self.assertEqual(grid.shape,(12,26))
+        np.testing.assert_allclose(np.unique(grid[:,15]),[.4,.7,1.,1.3])
+        fixed = [i for i in range(26) if i not in [14,15]]
+        np.testing.assert_array_equal(grid[:,fixed],np.tile(reference[fixed],(12,1)))
 
 
 if __name__ == '__main__':

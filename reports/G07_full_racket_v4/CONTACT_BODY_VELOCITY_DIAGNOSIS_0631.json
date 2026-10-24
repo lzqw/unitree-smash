@@ -1,0 +1,92 @@
+{
+  "created_at": "2026-10-24T06:30:49.562374+00:00",
+  "scope": "Actual contact velocity decomposition plus a prospective TRAIN pitch-compensation experiment; current native run remains unchanged.",
+  "run": "ball_contact_recovery_cem02",
+  "generation": 0,
+  "actual_first_contact_events_at300ticks": 16,
+  "actual_first_contact_strings": 7,
+  "source_snapshot": "velocity_feedback_cpu01/SOURCE_CONTACTS.json",
+  "source_snapshot_sha256": "1b3ad59bfeb4235fee93c1325399b4533f9dc71a607d845ff989769d4228fd95",
+  "representative_actual_contact": {
+    "env_id": 20,
+    "candidate_id": 10,
+    "generation": 0,
+    "time_s": 2.748591184616089,
+    "native_contact_point_m": [
+      1.0272903442382812,
+      0.06945419311523438,
+      1.7446057796478271
+    ],
+    "native_face_normal_world": [
+      0.9978120923042297,
+      -0.06235257163643837,
+      0.021981915459036827
+    ],
+    "native_point_velocity_mps": [
+      -1.0570162534713745,
+      -1.183190107345581,
+      0.1480545699596405
+    ],
+    "native_joint_velocity_rad_s": [
+      4.556459426879883,
+      4.994486331939697,
+      0.8974811434745789,
+      4.931613922119141,
+      -0.22133921086788177,
+      -2.247227430343628
+    ],
+    "actual_arm_relative_normal_contributions_mps": [
+      -0.2800115237928005,
+      4.001391456490784,
+      0.5212862626773751,
+      -1.651591413263325,
+      -0.06783162816290031,
+      1.9046693667522773e-06
+    ],
+    "arm_relative_normal_speed_mps": 2.5232450586184996,
+    "body_rotation_normal_speed_mps": -3.482689435736693,
+    "root_translation_normal_speed_mps": -0.01822975338968908,
+    "actual_total_normal_speed_mps": -0.9776741305078829,
+    "reconstructed_contact_position_error_m": 3.36450856838639e-06,
+    "local_goal_normal_speed_mps": 1.2,
+    "proposed_joint_velocity_rad_s": [
+      3.0954523056401357,
+      4.999999999999999,
+      4.066876430747227,
+      -0.1410949211065207,
+      -4.999999999999999,
+      -2.247297008758239
+    ],
+    "local_proposed_point_velocity_mps": [
+      1.084105939833567,
+      -2.0676218262250963,
+      -0.8581952468698433
+    ],
+    "local_proposed_normal_speed_mps": 1.1917907787774988,
+    "local_proposed_world_normal_rate_rad_s": [
+      0.00929011764490724,
+      -0.0327008636608076,
+      -0.514305776261986
+    ],
+    "proposal_joint_position_lookahead_s": 0.08,
+    "proposal_joint_target_rad": [
+      -0.18163837456978524,
+      2.3346712827682494,
+      -2.1905955585291133,
+      0.7184711457829139,
+      0.4453175425529481,
+      1.9137688287158447
+    ],
+    "fixed_state_max_normal_speed_from_joint_box_mps": 6.826134297503866,
+    "weighted_solver_residual": 0.28140597147797985,
+    "native_execution_of_proposal": false
+  },
+  "diagnostic": "Measured base pitch rotation dominates the forward arm-relative motion at the recorded high strings contact. Existing pitch-compensation gain is only0.1811; ordinary small sigma exploration does not cover gains near1.",
+  "next_hypothesis": "Probe the existing public-gravity arm pitch compensation at gains[.4,.7,1,1.3] and arm lead deltas[-.03,0,.03], retaining other body/arm/ball-interception parameters and original native limits. Use a fresh warm-start from actual completed contact/recovery results, not inherited fitness.",
+  "new_cli_flag": "--pitch-grid --contact-curriculum --continue-after-miss",
+  "sampling_contract": "contact-pitch-compensation-grid-v1",
+  "cpu_test_count": 52,
+  "native_pitch_grid_run": false,
+  "full_success_gate_changes": false,
+  "formal_acceptance": false
+}

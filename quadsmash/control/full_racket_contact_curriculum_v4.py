@@ -84,3 +84,15 @@ def measured_recovery_leg_crossovers(reference, recovered, lower, upper):
             candidate[14] = np.clip(reference[14]+lead_delta, lower[14], upper[14])
             result.append(candidate)
     return np.asarray(result)
+
+
+def pitch_compensation_grid(reference, lower, upper):
+    """Probe existing public-gravity compensation, preserving other controls."""
+    result = []
+    for gain in [.4, .7, 1., 1.3]:
+        for lead_delta in [-.03, 0., .03]:
+            candidate = np.asarray(reference, dtype=float).copy()
+            candidate[15] = np.clip(gain, lower[15], upper[15])
+            candidate[14] = np.clip(reference[14]+lead_delta, lower[14], upper[14])
+            result.append(candidate)
+    return np.asarray(result)

@@ -1,3 +1,9 @@
+速度诊断与后续方法（2026-10-24 06:32 UTC）：当前唯一GPU仍1350322/1350331，CEM02按已归档51测试版本运行，不是pitch-grid。首代300ticks出现16次初次接触（7初拍线/9拍框，皆己方初始合法；腾空/恢复最终以各episode记录为准），400ticks49首回合结束，其中6空中拍线，0完整；env12拍线首回合仍在8s恢复观察，别提前当成功。velocity_feedback_cpu01冻结实际contact JSON与population参数，7个原生拍线点的URDF重建误差<4um：env20手臂相对normal+2.523，root旋转-3.483、平移-.018，合成-.978m/s。固定实测body运动的bounded CPU求解可给出normal约+1.19，但新全身反作用/执行器跟踪/球路未验证，绝非原生成功或全局可行性证明。
+
+已实现下一步可选--pitch-grid（仍contact-curriculum/continue-after-miss，原26参数不扩展）：12组现有p15公共gravity俯仰补偿gain[.4,.7,1,1.3]×arm lead偏移[-.03,0,.03]，只变14/15，其余保留，可再加原8recovery-leg交叉。52CPU检查通过，当前p15仅.181。等当前CEM02两代实际结果后，若仍普遍world点速向己方，可从真实最佳contact/recovery参数fresh warm-start ball_pitch_compensation_cem03（32×TRAIN[1,65]×2gen/sigma.025/5400s/102400cap），不要把待跑方法说已运行；若已出现真正完整/强出球，应优先扩大TRAIN而不是机械重跑旧试验。
+
+当前运行后磁盘代码新增了未来pitch-grid采样选项，当前actor/物理无变化，但search/helper源码SHA与已启动run不同；要恢复当前optimizer必须还原contact_generation0_launch_snapshot01/source_snapshot.zip中的精确源，或下一轮warm-start重测fitness，不能绕过source检查。该snapshot保存了本代最初generation_start.pt/RNG/模板/原source归档。还需在gen0完成后保存当前causal_plans.partial.json为本代专属副本，避免gen1覆写。
+
 当前唯一GPU已切换（2026-10-24 06:17 UTC）：ball_contact_recovery_cem02 guard1350322/child1350331；顺序worker1349683仍live，exec74286。state=contact_recovery_queue01/state.json已RUNNING_GUARDED_JOB；不要再按下方旧WAITING段手工启动。旧upper_strings guard1344215/child1344227已实际退出，jobSUCCEEDED，128次0hit/0recover/0complete/NF0，实际77120步/.464637646GPUh；最后存活env3亦未满足qualified recovery。FINAL_TRAIN_SUMMARY.json与128行episodes.csv已写，不改历史raw。旧ledger由guard自动封账，新guard独占资源锁；勿手改GPU_LEDGER/RUNS。
 
 新run32候选×TRAIN[1,65]×2gen，原8s/62.5us/10ms，sigma.025、contact-curriculum、12arm lead/speed网格、8recovery-leg交叉、10高斯、push范围.30；5400s/102400步cap。warm06精确原recovery gen1 candidate31，legbank原candidate12两个漏球qualified恢复，全部新fitness重测。原生配置/10USD审核和generation_start已生成，当前源验证51CPU已过。先读本段实际PID与queue state；code源/driver加载后固定，无需因观察超时重开。

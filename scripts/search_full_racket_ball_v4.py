@@ -16,6 +16,7 @@ p.add_argument('--timing-grid',action='store_true',help='Reserve12 candidates fo
 p.add_argument('--push-grid',action='store_true',help='Reserve16 candidates for front/back thigh/calf push coordination')
 p.add_argument('--contact-curriculum',action='store_true',help='TRAIN: retain actual legal airborne strings contacts while optimizing failed return and recovery; formal flags unchanged')
 p.add_argument('--contact-grid',action='store_true',help='Reserve12 candidates for arm lead/speed around a measured contact, preserving leg timing')
+p.add_argument('--pitch-grid',action='store_true',help='Reserve12 candidates spanning existing arm pitch-compensation gain and timing; original joint/actuator limits remain')
 p.add_argument('--recovery-leg-bank',type=Path,help='Optional measured same-family recovery26-vector: reserve8 contact-arm/recovery-leg crossover candidates')
 p.add_argument('--continue-after-miss',action='store_true',help='TRAIN curriculum: observe landing after missed/blocked/backward shuttle return; all rally failures remain failures, robot faults terminate')
 p.add_argument('--push-search-range',type=float,default=.15,help='Symmetric front/back leg target-offset search range in rad; native actuator/joint limits stay unchanged')
@@ -31,7 +32,7 @@ from quadsmash.control.full_racket_rally_controller_v4 import FullRacketRallyCon
 from quadsmash.control.full_racket_teacher_v4 import LOW,HIGH,PARAMETER_NAMES
 from quadsmash.control.full_racket_geometry_v4 import FullRacketGeometryV4
 from quadsmash.control.full_racket_contact_curriculum_v4 import (
-    contact_search_tiers,actual_outgoing_shaping,arm_timing_velocity_grid,measured_recovery_leg_crossovers)
+    contact_search_tiers,actual_outgoing_shaping,arm_timing_velocity_grid,measured_recovery_leg_crossovers,pitch_compensation_grid)
 from quadsmash.physics.full_racket_v4 import string_prism_gap
 from quadsmash.physics.native import quat_rotate
 from quadsmash.usd_dependencies_v4 import audit_composed_asset
@@ -55,15 +56,15 @@ def main():
     if args.candidates<4 or args.generations<1 or not 0<args.sigma_fraction<=.5:raise ValueError('Invalid search settings')
     if args.timing_grid and args.candidates<14:raise ValueError('Timing grid requires at least14 candidates')
     if args.push_grid and args.candidates<18:raise ValueError('Push grid requires at least18 candidates')
-    if sum([args.timing_grid,args.push_grid,args.contact_grid])>1:raise ValueError('Choose one controlled grid')
-    if args.contact_grid and (not args.contact_curriculum or args.candidates<14):
+    if sum([args.timing_grid,args.push_grid,args.contact_grid,args.pitch_grid])>1:raise ValueError('Choose one controlled grid')
+    if (args.contact_grid or args.pitch_grid) and (not args.contact_curriculum or args.candidates<14):
         raise ValueError('Contact grid requires contact curriculum and at least14 candidates')
     if args.contact_curriculum and not args.continue_after_miss:
         raise ValueError('Contact curriculum requires observing recovery after failed shuttle returns')
-    if args.recovery_leg_bank and (not args.contact_grid or args.candidates<22):
+    if args.recovery_leg_bank and (not (args.contact_grid or args.pitch_grid) or args.candidates<22):
         raise ValueError('Recovery leg crossover requires contact grid and at least22 candidates')
     if not .15<=args.push_search_range<=.5:raise ValueError('Push search range must be between .15 and .5rad')
-    sampling_contract=('contact-arm-timing-speed-grid-v1' if args.contact_grid else 'front-back-push-grid-v1' if args.push_grid else
+    sampling_contract=('contact-pitch-compensation-grid-v1' if args.pitch_grid else 'contact-arm-timing-speed-grid-v1' if args.contact_grid else 'front-back-push-grid-v1' if args.push_grid else
         'timing-velocity-cartesian-grid-v1' if args.timing_grid else 'gaussian-cem-v1')
     selection_contract=('actual-contact-then-return-and-recovery-v1' if args.contact_curriculum else
         'ball-with-jump-recovery-v3' if args.continue_after_miss else 'legal-first-ball-v4')
@@ -184,6 +185,9 @@ def main():
                         index+=1
             if args.contact_grid:
                 grid=arm_timing_velocity_grid(reference.cpu().numpy(),low.cpu().numpy(),high.cpu().numpy())
+                population[2:14]=torch.as_tensor(grid,device=env.device,dtype=population.dtype)
+            if args.pitch_grid:
+                grid=pitch_compensation_grid(reference.cpu().numpy(),low.cpu().numpy(),high.cpu().numpy())
                 population[2:14]=torch.as_tensor(grid,device=env.device,dtype=population.dtype)
             if leg_bank is not None:
                 grid=measured_recovery_leg_crossovers(reference.cpu().numpy(),leg_bank['parameters'],low.cpu().numpy(),high.cpu().numpy())

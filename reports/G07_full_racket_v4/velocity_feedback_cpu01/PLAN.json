@@ -1,0 +1,612 @@
+{
+  "created_at": "2026-10-24T06:28:34.804516+00:00",
+  "scope": "Offline fixed-recorded-state kinematic velocity feedback proposals only, not native policy performance.",
+  "source_run": "reports/G07_full_racket_v4/ball_contact_recovery_cem02",
+  "generation": 0,
+  "observed_progress": {
+    "generation": 0,
+    "control_ticks": 500,
+    "requested_ticks": 800,
+    "first_episodes_complete": 49,
+    "first_contacts": 16,
+    "active_first_rallies": 0,
+    "closest_string_gaps_m": [
+      0.013693014159798622,
+      0.11621855944395065,
+      0.01113804243505001,
+      0.11632200330495834,
+      0.13801665604114532,
+      0.1645323634147644,
+      0.0053744129836559296,
+      0.1528470516204834,
+      0.029009917750954628,
+      0.17388013005256653,
+      0.041357479989528656,
+      0.0996144711971283,
+      0.025365540757775307,
+      0.22774577140808105,
+      0.011597922071814537,
+      0.1455201357603073,
+      0.012580348178744316,
+      0.10440852493047714,
+      0.01680637337267399,
+      0.23978006839752197,
+      0.003525916486978531,
+      0.14293520152568817,
+      0.026916107162833214,
+      0.07168296724557877,
+      0.06080421805381775,
+      0.1855381429195404,
+      0.20047450065612793,
+      0.14722907543182373,
+      0.00934995524585247,
+      0.21738822758197784,
+      0.05265311896800995,
+      0.18639571964740753,
+      0.013524504378437996,
+      0.27758780121803284,
+      0.11117147654294968,
+      0.025083938613533974,
+      0.025718314573168755,
+      0.13591508567333221,
+      0.030005009844899178,
+      0.2001328468322754,
+      0.01032448373734951,
+      0.1823648065328598,
+      0.03400631248950958,
+      0.1518101692199707,
+      0.4264182448387146,
+      0.2994628846645355,
+      0.2812378704547882,
+      0.10575977712869644,
+      0.7073778510093689,
+      0.8972632884979248,
+      0.5240103602409363,
+      0.3682115972042084,
+      5.337024211883545,
+      3.5401439666748047,
+      0.034646667540073395,
+      0.20096853375434875,
+      0.8816914558410645,
+      0.6109243035316467,
+      0.10668478161096573,
+      0.236590176820755,
+      0.11486922949552536,
+      0.2423686385154724,
+      0.4137278199195862,
+      0.3467745780944824
+    ],
+    "partial": true,
+    "formal_acceptance": false
+  },
+  "source_contacts_sha256": "1b3ad59bfeb4235fee93c1325399b4533f9dc71a607d845ff989769d4228fd95",
+  "source_search_state_sha256": "7e37978bce823b7d66f7ebf7737482e0d31f812f11989da439408ec467de9f85",
+  "rows": [
+    {
+      "env_id": 20,
+      "candidate_id": 10,
+      "generation": 0,
+      "time_s": 2.748591184616089,
+      "native_contact_point_m": [
+        1.0272903442382812,
+        0.06945419311523438,
+        1.7446057796478271
+      ],
+      "native_face_normal_world": [
+        0.9978120923042297,
+        -0.06235257163643837,
+        0.021981915459036827
+      ],
+      "native_point_velocity_mps": [
+        -1.0570162534713745,
+        -1.183190107345581,
+        0.1480545699596405
+      ],
+      "native_joint_velocity_rad_s": [
+        4.556459426879883,
+        4.994486331939697,
+        0.8974811434745789,
+        4.931613922119141,
+        -0.22133921086788177,
+        -2.247227430343628
+      ],
+      "actual_arm_relative_normal_contributions_mps": [
+        -0.2800115237928005,
+        4.001391456490784,
+        0.5212862626773751,
+        -1.651591413263325,
+        -0.06783162816290031,
+        1.9046693667522773e-06
+      ],
+      "arm_relative_normal_speed_mps": 2.5232450586184996,
+      "body_rotation_normal_speed_mps": -3.482689435736693,
+      "root_translation_normal_speed_mps": -0.01822975338968908,
+      "actual_total_normal_speed_mps": -0.9776741305078829,
+      "reconstructed_contact_position_error_m": 3.36450856838639e-06,
+      "local_goal_normal_speed_mps": 1.2,
+      "proposed_joint_velocity_rad_s": [
+        3.0954523056401357,
+        4.999999999999999,
+        4.066876430747227,
+        -0.1410949211065207,
+        -4.999999999999999,
+        -2.247297008758239
+      ],
+      "local_proposed_point_velocity_mps": [
+        1.084105939833567,
+        -2.0676218262250963,
+        -0.8581952468698433
+      ],
+      "local_proposed_normal_speed_mps": 1.1917907787774988,
+      "local_proposed_world_normal_rate_rad_s": [
+        0.00929011764490724,
+        -0.0327008636608076,
+        -0.514305776261986
+      ],
+      "proposal_joint_position_lookahead_s": 0.08,
+      "proposal_joint_target_rad": [
+        -0.18163837456978524,
+        2.3346712827682494,
+        -2.1905955585291133,
+        0.7184711457829139,
+        0.4453175425529481,
+        1.9137688287158447
+      ],
+      "fixed_state_max_normal_speed_from_joint_box_mps": 6.826134297503866,
+      "weighted_solver_residual": 0.28140597147797985,
+      "native_execution_of_proposal": false
+    },
+    {
+      "env_id": 2,
+      "candidate_id": 1,
+      "generation": 0,
+      "time_s": 2.7570865154266357,
+      "native_contact_point_m": [
+        0.9614601135253906,
+        0.06482505798339844,
+        1.71652090549469
+      ],
+      "native_face_normal_world": [
+        0.99373859167099,
+        0.00134294293820858,
+        0.11172211915254593
+      ],
+      "native_point_velocity_mps": [
+        -1.1422152519226074,
+        -1.12738037109375,
+        -0.18151548504829407
+      ],
+      "native_joint_velocity_rad_s": [
+        3.562892436981201,
+        4.985743522644043,
+        1.0704715251922607,
+        4.983180522918701,
+        -0.27822810411453247,
+        -2.3751332759857178
+      ],
+      "actual_arm_relative_normal_contributions_mps": [
+        -0.18399022568477977,
+        3.934283482922947,
+        0.6055354009080062,
+        -1.6017456567546011,
+        -0.0809627078457212,
+        2.1614961743628137e-06
+      ],
+      "arm_relative_normal_speed_mps": 2.673122455042026,
+      "body_rotation_normal_speed_mps": -3.9264923990035596,
+      "root_translation_normal_speed_mps": 0.09651326597420395,
+      "actual_total_normal_speed_mps": -1.15685667798733,
+      "reconstructed_contact_position_error_m": 3.3715582516039395e-06,
+      "local_goal_normal_speed_mps": 1.2,
+      "proposed_joint_velocity_rad_s": [
+        2.9421852327962594,
+        4.999999999999999,
+        4.45301211680261,
+        -0.5039493972867312,
+        -4.999999999999999,
+        -2.3752281277907743
+      ],
+      "local_proposed_point_velocity_mps": [
+        1.3259082643561282,
+        -1.3972159172939194,
+        -1.1291631776093785
+      ],
+      "local_proposed_normal_speed_mps": 1.1895773269853605,
+      "local_proposed_world_normal_rate_rad_s": [
+        0.0713958920303484,
+        -0.0030011716688387313,
+        -0.6349961531712323
+      ],
+      "proposal_joint_position_lookahead_s": 0.08,
+      "proposal_joint_target_rad": [
+        -0.15430836838420328,
+        2.3640058279037475,
+        -2.1493218129433886,
+        0.6709358435089622,
+        0.43616232872009286,
+        1.9038893444575242
+      ],
+      "fixed_state_max_normal_speed_from_joint_box_mps": 6.205453187337831,
+      "weighted_solver_residual": 0.3090870121659377,
+      "native_execution_of_proposal": false
+    },
+    {
+      "env_id": 36,
+      "candidate_id": 18,
+      "generation": 0,
+      "time_s": 2.762458562850952,
+      "native_contact_point_m": [
+        0.9201273918151855,
+        0.06553268432617188,
+        1.697411298751831
+      ],
+      "native_face_normal_world": [
+        0.9779166579246521,
+        -0.1292657107114792,
+        0.1642235517501831
+      ],
+      "native_point_velocity_mps": [
+        -1.3695276975631714,
+        -1.0173532962799072,
+        0.20607955753803253
+      ],
+      "native_joint_velocity_rad_s": [
+        3.4048235416412354,
+        4.111435890197754,
+        0.9474378228187561,
+        4.917416095733643,
+        0.07669622451066971,
+        -2.073995351791382
+      ],
+      "actual_arm_relative_normal_contributions_mps": [
+        -0.2735188353671864,
+        3.2041026213519976,
+        0.5249837087166521,
+        -1.3376885859356131,
+        0.022168796592013346,
+        1.5895550472564387e-06
+      ],
+      "arm_relative_normal_speed_mps": 2.1400492949129117,
+      "body_rotation_normal_speed_mps": -3.300117655963258,
+      "root_translation_normal_speed_mps": -0.013863574115583553,
+      "actual_total_normal_speed_mps": -1.17393193516593,
+      "reconstructed_contact_position_error_m": 1.1601856361585458e-06,
+      "local_goal_normal_speed_mps": 1.2,
+      "proposed_joint_velocity_rad_s": [
+        2.387399160424818,
+        4.999999999999999,
+        4.255520677478453,
+        0.42255411157428857,
+        -4.999999999999999,
+        -2.0740823565596247
+      ],
+      "local_proposed_point_velocity_mps": [
+        1.0598006092092747,
+        -2.1233152835970213,
+        -0.7442331076078628
+      ],
+      "local_proposed_normal_speed_mps": 1.1886479247617197,
+      "local_proposed_world_normal_rate_rad_s": [
+        0.10279496566845614,
+        -0.05082903001993677,
+        -0.6521218837752052
+      ],
+      "proposal_joint_position_lookahead_s": 0.08,
+      "proposal_joint_target_rad": [
+        -0.28264591625849805,
+        2.2973678350448608,
+        -2.170991231925381,
+        0.6917028741911408,
+        0.3702330946922303,
+        1.9271479716406352
+      ],
+      "fixed_state_max_normal_speed_from_joint_box_mps": 6.560192313674369,
+      "weighted_solver_residual": 0.30575691862676646,
+      "native_execution_of_proposal": false
+    },
+    {
+      "env_id": 6,
+      "candidate_id": 3,
+      "generation": 0,
+      "time_s": 2.7681429386138916,
+      "native_contact_point_m": [
+        0.877349853515625,
+        0.06623077392578125,
+        1.6770761013031006
+      ],
+      "native_face_normal_world": [
+        0.9348093271255493,
+        -0.2482970654964447,
+        0.2539292573928833
+      ],
+      "native_point_velocity_mps": [
+        -1.7024277448654175,
+        -0.8114666938781738,
+        -0.12013965100049973
+      ],
+      "native_joint_velocity_rad_s": [
+        3.019514322280884,
+        3.587660074234009,
+        1.0867055654525757,
+        4.924163818359375,
+        -0.48023518919944763,
+        -2.0730395317077637
+      ],
+      "actual_arm_relative_normal_contributions_mps": [
+        -0.4051349540962873,
+        2.755047422713182,
+        0.5879219823539625,
+        -1.2559939031555836,
+        -0.1311999939274115,
+        1.5021803282222201e-06
+      ],
+      "arm_relative_normal_speed_mps": 1.5506420560681904,
+      "body_rotation_normal_speed_mps": -2.905988188165439,
+      "root_translation_normal_speed_mps": -0.06512137608420356,
+      "actual_total_normal_speed_mps": -1.420467508181452,
+      "reconstructed_contact_position_error_m": 9.923157577436935e-07,
+      "local_goal_normal_speed_mps": 1.2,
+      "proposed_joint_velocity_rad_s": [
+        1.7460606986227154,
+        4.999999999999999,
+        4.158748967114344,
+        1.293618315621689,
+        -4.999999999999999,
+        -2.0731249239029963
+      ],
+      "local_proposed_point_velocity_mps": [
+        0.8866870030159886,
+        -2.4062485018302304,
+        -0.9377888247380294
+      ],
+      "local_proposed_normal_speed_mps": 1.1882157026629363,
+      "local_proposed_world_normal_rate_rad_s": [
+        0.1420235059121152,
+        -0.11778565354191495,
+        -0.6380132128429494
+      ],
+      "proposal_joint_position_lookahead_s": 0.08,
+      "proposal_joint_target_rad": [
+        -0.3957983851914205,
+        2.235099220275879,
+        -2.189211226887444,
+        0.7009553976189673,
+        0.32904974222183236,
+        1.9272734420618813
+      ],
+      "fixed_state_max_normal_speed_from_joint_box_mps": 6.885771411219308,
+      "weighted_solver_residual": 0.28800339015753684,
+      "native_execution_of_proposal": false
+    },
+    {
+      "env_id": 0,
+      "candidate_id": 0,
+      "generation": 0,
+      "time_s": 2.770953893661499,
+      "native_contact_point_m": [
+        0.8542366027832031,
+        0.057086944580078125,
+        1.6707834005355835
+      ],
+      "native_face_normal_world": [
+        0.9825971722602844,
+        0.08661451190710068,
+        0.16431882977485657
+      ],
+      "native_point_velocity_mps": [
+        -1.1170109510421753,
+        -0.7090481519699097,
+        -0.5414541959762573
+      ],
+      "native_joint_velocity_rad_s": [
+        3.4172351360321045,
+        4.524666786193848,
+        1.3501757383346558,
+        4.101559162139893,
+        -0.8995851874351501,
+        -2.1945884227752686
+      ],
+      "actual_arm_relative_normal_contributions_mps": [
+        0.08942837718781024,
+        3.4537474247676934,
+        0.7249265012148892,
+        -1.1618254320872106,
+        -0.2500731225940623,
+        1.7184530484395983e-06
+      ],
+      "arm_relative_normal_speed_mps": 2.8562054669421686,
+      "body_rotation_normal_speed_mps": -4.093119551914445,
+      "root_translation_normal_speed_mps": -0.011042696366545627,
+      "actual_total_normal_speed_mps": -1.2479567813388224,
+      "reconstructed_contact_position_error_m": 3.1808725329683664e-06,
+      "local_goal_normal_speed_mps": 1.2,
+      "proposed_joint_velocity_rad_s": [
+        4.042751090079933,
+        4.999999999999999,
+        3.7284712608968262,
+        -2.6666353532712592,
+        -4.999999999999999,
+        -2.194701928232759
+      ],
+      "local_proposed_point_velocity_mps": [
+        1.4218583624167422,
+        0.31094206348931963,
+        -1.4516995210628931
+      ],
+      "local_proposed_normal_speed_mps": 1.1855045348400692,
+      "local_proposed_world_normal_rate_rad_s": [
+        0.13390907771940386,
+        0.081762787048965,
+        -0.8438349742132516
+      ],
+      "proposal_joint_position_lookahead_s": 0.08,
+      "proposal_joint_target_rad": [
+        0.002187887537510369,
+        2.470673942565918,
+        -2.184658681421955,
+        0.489453769611987,
+        0.4240966200828553,
+        1.9187324604722142
+      ],
+      "fixed_state_max_normal_speed_from_joint_box_mps": 5.319853069289188,
+      "weighted_solver_residual": 0.3608290092631856,
+      "native_execution_of_proposal": false
+    },
+    {
+      "env_id": 12,
+      "candidate_id": 6,
+      "generation": 0,
+      "time_s": 2.7724530696868896,
+      "native_contact_point_m": [
+        0.8429985046386719,
+        0.06016826629638672,
+        1.6643164157867432
+      ],
+      "native_face_normal_world": [
+        0.9745420217514038,
+        -0.0644337609410286,
+        0.21474656462669373
+      ],
+      "native_point_velocity_mps": [
+        -1.2330811023712158,
+        -0.9300656318664551,
+        -0.32669445872306824
+      ],
+      "native_joint_velocity_rad_s": [
+        3.4211618900299072,
+        4.40692663192749,
+        1.0406962633132935,
+        4.977167129516602,
+        0.980441153049469,
+        -1.8066058158874512
+      ],
+      "actual_arm_relative_normal_contributions_mps": [
+        -0.23274848898544415,
+        3.31814999201199,
+        0.5472673085043678,
+        -1.3681490184225154,
+        0.25020839428507763,
+        1.2171252604621866e-06
+      ],
+      "arm_relative_normal_speed_mps": 2.5147294045187367,
+      "body_rotation_normal_speed_mps": -3.6751553633252008,
+      "root_translation_normal_speed_mps": -0.05149227779203616,
+      "actual_total_normal_speed_mps": -1.2119182365985006,
+      "reconstructed_contact_position_error_m": 2.639632984835571e-06,
+      "local_goal_normal_speed_mps": 1.2,
+      "proposed_joint_velocity_rad_s": [
+        3.1896467273954014,
+        4.999999999999999,
+        4.341079783055649,
+        -1.292346457468174,
+        -4.999999999999999,
+        -1.806719469211365
+      ],
+      "local_proposed_point_velocity_mps": [
+        1.4086803917827453,
+        -1.1742884268122133,
+        -1.2356512910278985
+      ],
+      "local_proposed_normal_speed_mps": 1.1831301869537707,
+      "local_proposed_world_normal_rate_rad_s": [
+        0.20288420560952314,
+        -0.04228817189065348,
+        -0.9333865378240072
+      ],
+      "proposal_joint_position_lookahead_s": 0.08,
+      "proposal_joint_target_rad": [
+        -0.16439733691594233,
+        2.3580365419387816,
+        -2.155650218994342,
+        0.5560435025034982,
+        0.38501921892166147,
+        1.9494785175973681
+      ],
+      "fixed_state_max_normal_speed_from_joint_box_mps": 5.6579712136143545,
+      "weighted_solver_residual": 0.40319857314618796,
+      "native_execution_of_proposal": false
+    },
+    {
+      "env_id": 32,
+      "candidate_id": 16,
+      "generation": 0,
+      "time_s": 2.8063719272613525,
+      "native_contact_point_m": [
+        0.5841388702392578,
+        0.040790557861328125,
+        1.5413498878479004
+      ],
+      "native_face_normal_world": [
+        0.869670033454895,
+        0.20821817219257355,
+        0.44757044315338135
+      ],
+      "native_point_velocity_mps": [
+        -1.5726886987686157,
+        0.01372005045413971,
+        -1.226572871208191
+      ],
+      "native_joint_velocity_rad_s": [
+        3.3539979457855225,
+        4.128091812133789,
+        1.1433703899383545,
+        3.6135246753692627,
+        0.12792852520942688,
+        -1.6609305143356323
+      ],
+      "actual_arm_relative_normal_contributions_mps": [
+        0.23650478702759603,
+        2.9172295391760836,
+        0.5423142292751789,
+        -0.8537663890335492,
+        0.029139493327817016,
+        4.348036863602738e-07
+      ],
+      "arm_relative_normal_speed_mps": 2.8714220945768134,
+      "body_rotation_normal_speed_mps": -4.66001335517673,
+      "root_translation_normal_speed_mps": -0.12524997237093516,
+      "actual_total_normal_speed_mps": -1.9138412329708518,
+      "reconstructed_contact_position_error_m": 2.7825071221242206e-06,
+      "local_goal_normal_speed_mps": 1.2,
+      "proposed_joint_velocity_rad_s": [
+        4.956361438816036,
+        4.999999999999999,
+        4.276218808753774,
+        -4.9999999999999964,
+        -4.999999999999999,
+        -1.6610134169578497
+      ],
+      "local_proposed_point_velocity_mps": [
+        1.6527499113961035,
+        1.8845223667614237,
+        -1.4777725207629508
+      ],
+      "local_proposed_normal_speed_mps": 1.1683315714017473,
+      "local_proposed_world_normal_rate_rad_s": [
+        0.6907443808766267,
+        0.27798832264068807,
+        -1.4714968430363813
+      ],
+      "proposal_joint_position_lookahead_s": 0.08,
+      "proposal_joint_target_rad": [
+        0.1525635102180835,
+        2.5732265949249267,
+        -2.124708668624283,
+        0.2659082770347598,
+        0.4210548758506776,
+        1.9614575821151738
+      ],
+      "fixed_state_max_normal_speed_from_joint_box_mps": 3.7894989907227457,
+      "weighted_solver_residual": 0.5967140348998126,
+      "native_execution_of_proposal": false
+    }
+  ],
+  "formal_acceptance": false,
+  "limitations": [
+    "Measured body angular/linear motion is held fixed; changing arm motion changes the coupled body response.",
+    "A locally solvable joint-velocity target does not establish actuator tracking, legal earlier contact, net clearance, first target landing or recovery.",
+    "Joint target lookahead uses unchanged source joint position bounds and5rad/s arm speed; all native torque limits remain required.",
+    "Only actual first-contact strings examples are included; same-stroke frame-to-strings contacts are outside this diagnostic subset."
+  ],
+  "generator_sha256": "d19756cabe110dfac14fa8b65ade399a36e5589380746c200ef362883daf3b4f"
+}
