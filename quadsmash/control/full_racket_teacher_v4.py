@@ -7,6 +7,7 @@ from .full_racket_kinematics_v4 import FullRacketKinematicsV4
 from .full_racket_recovery_blend_v4 import LegRecoveryBlend
 from .full_racket_arm_search_v4 import arm_velocity
 from .full_racket_preparation_v4 import validate_preparation,preparation_curve,own_side_reference
+from .full_racket_joint_preparation_v4 import FullRacketJointPreparation
 
 LOW=[.35,.45,1.10,1.55,.85,-.15,-.15,.30]+[-.25]*6+[-.10,0.,.8,.7,0.,.04,-.20,-.15,-.15,-.15]
 HIGH=[1.,1.20,1.60,2.,1.15,.15,.15,1.50]+[.25]*6+[.12,1.5,1.7,1.2,1.,.15,.10,.15,.15,.15]
@@ -41,6 +42,10 @@ class FullRacketTeacherV4:
         self.normal_world=torch.tensor(seed.get('outward_contact_normal_world',[.99503719,0.,-.09950372]),dtype=torch.float32,device=device)
         self.velocity_world=torch.tensor(seed.get('desired_point_velocity_mps',[1.5,0.,-.3]),dtype=torch.float32,device=device)
         self.preparation=validate_preparation(seed.get('cartesian_preparation'))
+        self.joint_preparation=None
+        if seed.get('joint_preparation_guard') is not None:
+            if self.preparation is not None:raise ValueError('Use one preparation family per controller')
+            self.joint_preparation=FullRacketJointPreparation(seed['joint_preparation_guard']).to(device=device,dtype=torch.float32)
 
     def reset(self):
         self.walk.reset();self.standing.reset();self.leg_recovery_blend.reset()
@@ -137,6 +142,8 @@ class FullRacketTeacherV4:
             arm=torch.lerp(arm,servo,gain[:,None])
         fold=((time-(center+half_window))/.50).clamp(0,1)
         arm=torch.lerp(arm,default[12:][None],fold[:,None])
+        if self.joint_preparation is not None:
+            arm=self.joint_preparation(arm,obs,limits[12:],self.kinematics)
         q[:,12:]=arm
         strike=(2*(q-limits[:,0])/(limits[:,1]-limits[:,0])-1).clamp(-1,1)
         walking=local<.75
