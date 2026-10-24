@@ -81,7 +81,7 @@ def main():
         np.save(args.output/'link_poses_first2.npy',np.stack(poses))
         (args.output/'trajectory_first2.json').write_text(json.dumps(trace)+'\n')
         with (args.output/'episodes.csv').open('w',newline='') as stream:
-            writer=csv.DictWriter(stream,fieldnames=list(rows[0]));writer.writeheader()
+            writer=csv.DictWriter(stream,fieldnames=list(rows[0]),lineterminator='\n');writer.writeheader()
             writer.writerows({k:json.dumps(v) if isinstance(v,(list,dict)) else v for k,v in row.items()} for row in rows)
         (args.output/'metrics.json').write_text(json.dumps(summary,indent=2)+'\n')
         (args.output/'completed.json').write_text(json.dumps(dict(env_steps=(tick+1)*count))+'\n')
