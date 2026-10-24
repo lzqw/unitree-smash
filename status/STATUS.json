@@ -50,26 +50,23 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "CEM16actual300tick snapshot:37firstcontacts/11strings,67closed61pending; one closed TRAIN65candidate17hits legally while airborne, outgoing[7.887247,-1.488526,-1.651805]m/s total8.194683m/s, actualcross with.074476m clearance. Original attack gate met, but body-ground terminal at3s, recoveryfalse/firstlandingunobserved/fullfalse. Live guard1413106child1413122continue, source68b94ca. Formal400 not run; no full success. CEM15full128failed result and next-program/native100 evidence101876566B uploaded/verified.",
+      "notes": "CEM16complete128episodes:37contacts/11airstrings/1original-gate attack+cross/2qualified recoveries(bothframe)/6usableairstrings/5taskvalidcrosses/0strings+recovery/0target/full/NF0. Bestcandidate17TRAIN65outgoing8.194683m/s,vz−1.651805,actualcross/.074476m margin,but bodyground3s; samecandidateTRAIN1frame-onlyrec3.9199s. Stopped after26gen1ticks,.300986816GPUh/105728steps,trueFAILED. GPU0CEM17fromf1deb6a retains exact attackingreference, blends recovered-body motions, expands only algorithm handover-time lower bound1.55→1.30and enables contact/recovery-chain TRAINpriority;101CPUtests/120lane287tick check passed. Physical/task/formal gates unchanged, formal400unrun.",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/return_recovery_gen0_env12/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
       "active_gpu_jobs": [
         {
-          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_near_intercept_blend_cem16",
-          "guard_pid": 1413106,
-          "child_pid": 1413122,
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_attack_recovery_cem17",
+          "guard_pid": 1416543,
+          "child_pid": 1416555,
           "state": "RUNNING",
-          "started_at": "2026-10-24T11:54:39.259243+00:00",
-          "source_commit": "68b94ca96186949fba2afc7f1575e50b2e65f4c8",
+          "started_at": "2026-10-24T12:13:15.010708+00:00",
+          "source_commit": "f1deb6ab826084af33ad970ef9afa4b35e12c676",
           "generations": 4,
           "declared_control_env_steps": 409600,
           "max_seconds": 7200,
-          "native_initialization_pending": false,
-          "last_verified_generation": 0,
-          "last_verified_control_ticks": 100,
-          "native_initialization_evidence": "reports/G07_full_racket_v4/NATIVE_NEAR_INTERCEPT_BLEND_INITIALIZATION_1158.json"
+          "native_initialization_pending": true
         }
       ],
       "queued_native_sequence": {
@@ -78,7 +75,7 @@
         "still_running": false
       },
       "native_air_string_contact_milestone": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
-      "latest_native_training_summary": "reports/G07_full_racket_v4/ball_measured_velocity_recovery_cem15/STOPPED_TRAIN_SUMMARY.json",
+      "latest_native_training_summary": "reports/G07_full_racket_v4/ball_near_intercept_blend_cem16/STOPPED_TRAIN_SUMMARY.json",
       "latest_video": {
         "path": "reports/G07_full_racket_v4/video/Current_effect_latest_20261024_1048.mp4",
         "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_latest_20261024_1048.mp4",
@@ -215,16 +212,16 @@
       ],
       "prepared_controller_branch": {
         "branch": "g07-arm-search-v4-20261024",
-        "commit": "cddcd09",
+        "commit": "a6a1e68",
         "merged_to_primary": true,
-        "primary_launch_commit": "68b94ca96186949fba2afc7f1575e50b2e65f4c8",
-        "core_controller_unchanged": true,
-        "existing_core_cpu_tests": 96,
-        "existing_tests_not_rerun": true,
-        "report": "reports/G07_full_racket_v4/near_intercept_blend_ready01_1153/REPORT.json",
-        "cpu_command_check": "reports/G07_full_racket_v4/near_intercept_blend_bank_cpu01_1155/REPORT.json",
-        "native_execution": true,
-        "native_execution_scope": "Actual64x32 population/60bank/new1.5m/s velocity/zero event calibration and128recorded body-ball-clock streams verified for first100ticks. Stroke/contact/recovery not reached."
+        "primary_launch_commit": "f1deb6ab826084af33ad970ef9afa4b35e12c676",
+        "teacher_and_physical_model_unchanged": true,
+        "optimizer_selection_and_algorithm_recovery_bounds_changed": true,
+        "cpu_tests_passed": 101,
+        "cpu_command_check": "reports/G07_full_racket_v4/attack_recovery_bank_cpu02_1214/REPORT.json",
+        "report": "reports/G07_full_racket_v4/attack_recovery_ready02_1214/REPORT.json",
+        "native_execution": false,
+        "native_execution_scope": "Guard/child verified live; actual startup state confirms new selection contract/recovery1.30floor/60bank/input hash. Full128stream initialization pending."
       },
       "historical_stopped_gpu_jobs": [
         {
@@ -347,9 +344,31 @@
           "actual_control_env_steps": 110208,
           "interrupted_generation": 1,
           "interrupted_control_ticks": 398
+        },
+        {
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_near_intercept_blend_cem16",
+          "guard_pid": 1413106,
+          "child_pid": 1413122,
+          "state": "FAILED",
+          "started_at": "2026-10-24T11:54:39.259243+00:00",
+          "source_commit": "68b94ca96186949fba2afc7f1575e50b2e65f4c8",
+          "generations": 4,
+          "declared_control_env_steps": 409600,
+          "max_seconds": 7200,
+          "native_initialization_pending": false,
+          "last_verified_generation": 0,
+          "last_verified_control_ticks": 100,
+          "native_initialization_evidence": "reports/G07_full_racket_v4/NATIVE_NEAR_INTERCEPT_BLEND_INITIALIZATION_1158.json",
+          "finished_at": "2026-10-24T12:12:42.908391+00:00",
+          "actual_gpu_hours": 0.30098681567972463,
+          "actual_control_env_steps": 105728,
+          "resource_receipt": "reports/G07_full_racket_v4/ball_near_intercept_blend_cem16/job.json",
+          "interrupted_generation": 1,
+          "interrupted_control_ticks": 26,
+          "reason": "Generation0had37contacts/11airstrings/1actual attack+cross/2qualified recoveries(bothframe)/0airstrings+recovery/0target/full/NF0. Bestcandidate17TRAIN65outgoing8.194683m/s withvz−1.651805andactualcross, but body-ground terminal3s. SamecandidateTRAIN1framehitqualifiedrecovery3.9199s; cases cannot be joined."
         }
       ],
-      "latest_stopped_generation_summary": "reports/G07_full_racket_v4/ball_measured_velocity_recovery_cem15/STOPPED_TRAIN_SUMMARY.json",
+      "latest_stopped_generation_summary": "reports/G07_full_racket_v4/ball_near_intercept_blend_cem16/STOPPED_TRAIN_SUMMARY.json",
       "latest_program_evidence_bundle": {
         "name": "G07_measured_velocity_failed_and_near_intercept_native_20261024_1159.zip",
         "bytes": 101876566,
@@ -503,7 +522,9 @@
         "first_landing_observed": false,
         "complete_smash": false,
         "formal_acceptance": false,
-        "evidence_url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_attack_velocity_crossing_native_partial300_20261024_1208.zip"
+        "evidence_url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_attack_velocity_crossing_native_partial300_20261024_1208.zip",
+        "completed_generation_report": "reports/G07_full_racket_v4/attack_return_gen0_candidate17/MILESTONE.json",
+        "completed_generation_policy": "reports/G07_full_racket_v4/attack_return_gen0_candidate17/policy_evidence.pt"
       }
     },
     "G08": {

@@ -1,0 +1,43 @@
+{
+  "scope": "Two independent completed CEM16generation0TRAIN episodes of the same candidate17: attacking airborne strings return over net but body landing, and frame-only hit with qualified recovery. Four-generation CEM16job stopped after fullgeneration0; CEM17new recovery search runs separately.",
+  "opening_title": "最新真实效果｜8.19米/秒攻击回球与恢复失败",
+  "opening_lines": [
+    "空中拍线出球8.19米/秒、向下1.65米/秒，并真实越网。",
+    "该回合3秒处身体触地，首落点未观察，完整任务仍失败。",
+    "同参数另一回合拍框误击后恢复3.92秒；不能拼成一次成功。"
+  ],
+  "closing_lines": [
+    "攻击出球与实际越网已出现，完整扣杀仍为0。",
+    "首落目标和合格恢复尚未在攻击回合中完成。",
+    "两个回合独立；GPU0继续训练，正式A/B各200回合尚未运行。"
+  ],
+  "caveats": [
+    "Two selected independent TRAIN cases of candidate17 do not establish a success rate or formal acceptance.",
+    "Case0 is a legal airborne strings attacking return over net; body-ground termination occurs at3s before any first landing is observed. No first landing or continuation is invented.",
+    "Case1 is a frame contact with qualified recovery, not an airborne strings or complete smash success.",
+    "50Hz native whole-body samples are replayed without interpolation; contact stills use exact native substep poses.",
+    "Case1 first ground is the original event on the own side; post-ground shuttle motion is hidden.",
+    "Original asset, motor limits, net/rules, outgoing>=8m/s,vz<=-1 and qualified0.8s recovery gates remain unchanged.",
+    "CPU llvmpipe rendering only; no model-generated actions or hardware validation."
+  ],
+  "cases": [
+    {
+      "run": "ball_near_intercept_blend_cem16",
+      "generation": 0,
+      "env_id": 35,
+      "title": "攻击回合｜空中拍线8.19米/秒，越网后身体触地",
+      "subtitle": "CEM16 / 第1代 / 候选17 / TRAIN65 / 实际执行",
+      "terminal_status": "攻击阈值与实际越网达标｜身体触地｜完整任务失败",
+      "limitation": "出球8.19 m/s、vz=-1.65；未观察到首落点，合格恢复失败"
+    },
+    {
+      "run": "ball_near_intercept_blend_cem16",
+      "generation": 0,
+      "env_id": 34,
+      "title": "同参数独立回合｜拍框误击后合格恢复3.92秒",
+      "subtitle": "CEM16 / 第1代 / 候选17 / TRAIN1 / 独立实际执行",
+      "terminal_status": "拍框误击｜合格恢复3.92秒｜完整任务失败",
+      "limitation": "此回合未发生拍线击球，也未合法回球；不能与上一回合合并为成功"
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "created_at": "2026-10-24T12:12:56.232425+00:00",
+  "scope": "Completed CEM16generation0 best candidate17, two independent TRAIN cases. TRAIN65is a legal airborne attacking return over net but body landing; TRAIN1is frame-only with qualified recovery. They cannot be joined into one successful episode.",
+  "source_commit": "68b94ca96186949fba2afc7f1575e50b2e65f4c8",
+  "generation": 0,
+  "candidate_id": 17,
+  "whole_generation_episodes": 128,
+  "whole_generation_counts": {
+    "had_contact": 37,
+    "airborne_string_hit": 11,
+    "frame_hit": 26,
+    "attack_outgoing": 1,
+    "crossed_net": 10,
+    "landed_legal_court": 0,
+    "landed_target": 0,
+    "recovery_success": 2,
+    "complete_smash": 0,
+    "robot_net_fault": 36
+  },
+  "candidate_cases": [
+    {
+      "env_id": 34,
+      "training_index": 1,
+      "airborne_strings": false,
+      "frame_hit": true,
+      "attack_outgoing": false,
+      "outgoing_velocity_mps": [
+        4.324063301086426,
+        -4.161554336547852,
+        -3.631916046142578
+      ],
+      "actual_crossed_net": false,
+      "recovery_success": true,
+      "qualified_recovery_s": 3.919898271560669,
+      "body_ground_force_n": 0.0,
+      "body_landing": false,
+      "complete_smash": false
+    },
+    {
+      "env_id": 35,
+      "training_index": 65,
+      "airborne_strings": true,
+      "frame_hit": false,
+      "attack_outgoing": true,
+      "outgoing_velocity_mps": [
+        7.887247085571289,
+        -1.4885257482528687,
+        -1.6518054008483887
+      ],
+      "actual_crossed_net": true,
+      "recovery_success": false,
+      "qualified_recovery_s": 0.0,
+      "body_ground_force_n": 116.53770446777344,
+      "body_landing": true,
+      "complete_smash": false
+    }
+  ],
+  "policy_sha256": "0dc18617315241fdc8ef54f825aa920ad244039fd9773f3aeb922b3f5642c9ce",
+  "native_execution": true,
+  "formal_acceptance": false,
+  "whole_four_generation_job_complete": false,
+  "source_sha256": {
+    "population_000.pt": "01b20522c38c330a4180148ea8bce3fd0db26f0b6c17b1e3e0363d172473faef",
+    "episodes_000.json": "8410723bd125321d6201e1ab8ce77f90f2d875005045357c3e5b72082b4a8c51",
+    "best_candidate.pt": "0dc18617315241fdc8ef54f825aa920ad244039fd9773f3aeb922b3f5642c9ce",
+    "contacts_000.json": "4116249f6dcf427320a8d01c2bed2527e7d1027bbca423d92bc9a7b0fdd7746b"
+  }
+}
