@@ -46,6 +46,7 @@ from quadsmash.control.full_racket_candidate_bank_v4 import validate_candidate_b
 from quadsmash.control.full_racket_recovery_search_v4 import (
     extend_recovery_parameters,RECOVERY_PARAMETER_NAMES,RECOVERY_LOW,RECOVERY_HIGH)
 from quadsmash.control.full_racket_search_mask_v4 import search_coordinate_mask,project_reference_coordinates
+from quadsmash.control.full_racket_parameter_layout_v4 import controller_parameter_names
 from quadsmash.control.full_racket_contact_curriculum_v4 import (
     contact_search_tiers,actual_outgoing_shaping,arm_timing_velocity_grid,measured_recovery_leg_crossovers,pitch_compensation_grid,validate_recovery_search_min)
 from quadsmash.physics.full_racket_v4 import string_prism_gap
@@ -95,6 +96,8 @@ def main():
     if args.search_recovery_parameters and (args.ik_seeds or args.recovery_leg_bank or args.arm_velocity_bank
             or args.timing_grid or args.push_grid or args.contact_grid or args.pitch_grid):
         raise ValueError('Recovery37search supports Gaussian or declared37bank; legacy grids require32layout')
+    parameter_names=controller_parameter_names(search_arm_velocity=args.search_arm_velocity,
+        search_recovery_parameters=args.search_recovery_parameters)
     sampling_contract=('bounded-candidate-bank-generation0-v1' if args.candidate_bank else 'contact-pitch-compensation-grid-v1' if args.pitch_grid else 'contact-arm-timing-speed-grid-v1' if args.contact_grid else 'front-back-push-grid-v1' if args.push_grid else
         'timing-velocity-cartesian-grid-v1' if args.timing_grid else 'gaussian-cem-v1')
     selection_contract=('actual-contact-recovery-chain-v2' if args.retain_contact_recovery else
@@ -198,7 +201,7 @@ def main():
     candidate_bank=None
     if args.candidate_bank:
         candidate_bank=validate_candidate_bank(json.loads(args.candidate_bank.read_text()),template['seed'],template['asset_sha256'],
-            PARAMETER_NAMES+['intercept_plane_x','strike_timing_residual']+(VELOCITY_PARAMETER_NAMES if args.search_arm_velocity else []),
+            parameter_names,
             reference.cpu().numpy(),low.cpu().numpy(),high.cpu().numpy(),args.candidates-2)
     default=env.robot.data.default_joint_pos[0,env.joint_ids];limits=env.robot.data.joint_pos_limits[0,env.joint_ids]
     export_robot_geometry(get_current_stage(),env.robot,args.output)
@@ -211,7 +214,7 @@ def main():
     base_record=dict(schema='full-racket-ball-search-state-v4',controller_template=template,
         protocol_sha256=protocol_sha,asset_sha256=template['asset_sha256'],physics_dt_s=cfg.sim.dt,
         candidate_count=args.candidates,training_case_indices=args.training_indices,training_suite=suite,
-        reference_parameters=reference.cpu(),parameter_names=PARAMETER_NAMES+['intercept_plane_x','strike_timing_residual']+(VELOCITY_PARAMETER_NAMES if args.search_arm_velocity else [])+(RECOVERY_PARAMETER_NAMES if args.search_recovery_parameters else []),
+        reference_parameters=reference.cpu(),parameter_names=parameter_names,
         selection_contract=selection_contract,source_checkpoint_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),
         sampling_contract=sampling_contract,
         push_search_range=args.push_search_range,
