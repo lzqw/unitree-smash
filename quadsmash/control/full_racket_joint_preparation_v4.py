@@ -20,6 +20,8 @@ def validate_joint_preparation(config):
                 protect_post_hit_net_volume=config.get('protect_post_hit_net_volume',False),
                 maximum_predictive_margin_m=float(config.get('maximum_predictive_margin_m',.15)),
                 post_hit_height_margin_m=float(config.get('post_hit_height_margin_m',.04)))
+    values.update(post_stroke_maximum_x_m=float(config.get('post_stroke_maximum_x_m',values['maximum_x_m'])),
+                  post_stroke_lookahead_s=float(config.get('post_stroke_lookahead_s',values['lookahead_s'])))
     flags=['anticipate_measured_motion','protect_post_hit_net_volume']
     if any(type(values[k]) is not bool for k in flags):raise ValueError('Preparation switches must be boolean')
     if not all(math.isfinite(values[k]) for k in values if k not in ['iterations',*flags]):
@@ -32,6 +34,10 @@ def validate_joint_preparation(config):
         raise ValueError('Require1..8preparation iterations')
     if not .05<=values['maximum_predictive_margin_m']<=.30 or not .01<=values['post_hit_height_margin_m']<=.10:
         raise ValueError('Invalid predictive preparation margins')
+    if not 1.1<=values['post_stroke_maximum_x_m']<=values['maximum_x_m']:
+        raise ValueError('Post-stroke planning must retain or tighten own-side target bound')
+    if not values['lookahead_s']<=values['post_stroke_lookahead_s']<=.15:
+        raise ValueError('Post-stroke prediction must retain or extend the original lookahead')
     return values
 
 
@@ -82,7 +88,7 @@ class FullRacketJointPreparation(torch.nn.Module):
         indices=values.argmax(1)
         return points[torch.arange(len(direction),device=direction.device),indices]
 
-    def support_state(self,joints,observation,kinematics,post_hit_mask=None,observed_center=False):
+    def support_state(self,joints,observation,kinematics,post_hit_mask=None,observed_center=False,prediction_seconds=None):
         center,_,jp,jn,rotation,axes,origins=kinematics(joints,return_pose=True)
         if observed_center:center=observation[:,45:48]
         forward=observation[:,763:766]
@@ -100,7 +106,8 @@ class FullRacketJointPreparation(torch.nn.Module):
             bottom_velocity=observation[:,None,:3]+torch.linalg.cross(observation[:,None,3:6].expand_as(bottom_body),bottom_body)
             bottom_velocity+=observation[:,None,51:54]+torch.linalg.cross(
                 observation[:,None,54:57].expand_as(bottom_body),bottom_body-observation[:,None,45:48])
-            descent=(self.config['lookahead_s']*(bottom_velocity*up[:,None]).sum(2).clamp_max(0.)).clamp_min(-.15)
+            seconds=self.config['lookahead_s'] if prediction_seconds is None else prediction_seconds[:,None]
+            descent=(seconds*(bottom_velocity*up[:,None]).sum(2).clamp_max(0.)).clamp_min(-.15)
             above=minimum_z+descent>self.net_top+self.config['post_hit_height_margin_m']
             exempt=post_hit_mask[:,None]&above&self.followthrough_eligible[None]
             allowed=~exempt
@@ -110,34 +117,44 @@ class FullRacketJointPreparation(torch.nn.Module):
         gradient=torch.einsum('ni,nij->nj',forward,point_jacobian)
         return x,gradient,jp,jn,point
 
-    def forward(self,arm,observation,limits,kinematics,actual_joints=None):
+    def forward(self,arm,observation,limits,kinematics,actual_joints=None,post_stroke_mask=None):
         if self.config is None:return arm
         lower=limits[:,0];upper=limits[:,1]
         original=arm.clamp(lower,upper);joints=original.clone()
         forward=observation[:,763:766]
         observed_hit=observation[:,773]>.5
         post_hit_mask=observed_hit if self.config['protect_post_hit_net_volume'] else None
+        maximum_x=self.config['maximum_x_m'];lookahead=self.config['lookahead_s'];prediction_seconds=None
+        if post_stroke_mask is not None and (self.config['post_stroke_maximum_x_m']!=maximum_x
+                or self.config['post_stroke_lookahead_s']!=lookahead):
+            if post_stroke_mask.shape!=(len(arm),) or post_stroke_mask.dtype!=torch.bool:
+                raise ValueError('Post-stroke mask must be one public-clock boolean per lane')
+            maximum_x=torch.where(post_stroke_mask,original.new_full((len(arm),),self.config['post_stroke_maximum_x_m']),
+                                  original.new_full((len(arm),),maximum_x))
+            lookahead=torch.where(post_stroke_mask,original.new_full((len(arm),),self.config['post_stroke_lookahead_s']),
+                                  original.new_full((len(arm),),lookahead))
+            prediction_seconds=lookahead
         observed_x=observed_vx=original_x=None
         if self.config['anticipate_measured_motion']:
             if actual_joints is None:raise ValueError('Measured joint positions required for tool motion prediction')
-            observed_x,_,_,_,observed_point=self.support_state(actual_joints,observation,kinematics,post_hit_mask,True)
+            observed_x,_,_,_,observed_point=self.support_state(actual_joints,observation,kinematics,post_hit_mask,True,prediction_seconds)
             observed_velocity=observation[:,:3]+torch.linalg.cross(observation[:,3:6],observed_point)
             observed_velocity+=observation[:,51:54]+torch.linalg.cross(
                 observation[:,54:57],observed_point-observation[:,45:48])
             observed_vx=(observed_velocity*forward).sum(1)
-            original_x=self.support_state(original,observation,kinematics,post_hit_mask)[0]
+            original_x=self.support_state(original,observation,kinematics,post_hit_mask,prediction_seconds=prediction_seconds)[0]
         for _ in range(self.config['iterations']):
-            x,g,_,_,point=self.support_state(joints,observation,kinematics,post_hit_mask)
+            x,g,_,_,point=self.support_state(joints,observation,kinematics,post_hit_mask,prediction_seconds=prediction_seconds)
             point_velocity=observation[:,:3]+torch.linalg.cross(observation[:,3:6],point)
             vx=(point_velocity*forward).sum(1)
             if observed_vx is not None:vx=torch.maximum(vx,observed_vx)
-            margin=(self.config['lookahead_s']*vx.clamp_min(0.)).clamp_max(self.config['maximum_predictive_margin_m'])
-            excess=(x-self.config['maximum_x_m']+margin).clamp_min(0.)
+            margin=(lookahead*vx.clamp_min(0.)).clamp_max(self.config['maximum_predictive_margin_m'])
+            excess=(x-maximum_x+margin).clamp_min(0.)
             if observed_x is not None:
-                observed_margin=(self.config['lookahead_s']*observed_vx.clamp_min(0.)).clamp_max(self.config['maximum_predictive_margin_m'])
+                observed_margin=(lookahead*observed_vx.clamp_min(0.)).clamp_max(self.config['maximum_predictive_margin_m'])
                 # Retracting the command reduces this observed-state demand;
                 # do not apply the same fixed correction once per iteration.
-                actual_demand=(observed_x+observed_margin-self.config['maximum_x_m']+x-original_x).clamp_min(0.)
+                actual_demand=(observed_x+observed_margin-maximum_x+x-original_x).clamp_min(0.)
                 excess=torch.maximum(excess,actual_demand)
             if not self.config['protect_post_hit_net_volume']:
                 excess=torch.where(observed_hit,torch.zeros_like(excess),excess)
