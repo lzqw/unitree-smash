@@ -50,61 +50,57 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "CEM02 completed128:32contacts/15airstrings/24qualified recoveries,1airstrings+qualified recovery,9crosses/1target/0complete/NF0,.599666173GPUh/102400steps. Candidate6 gen1 target hit but1ms extra flight invalidated original qualified landing; failure retained. New pitch+100ms leg handover CEM03 actually GPU0 running128env x2gen,57CPU passed. All attack/target/recovery gates and physics unchanged; no new native outcome yet. Video request completed: new41.86s three-case video and13.43MB evidence uploaded andSHA verified. Original pitch/blend CEM03 interrupted at503ticks, source hashes unchanged; generation0 replay resumed onGPU0 asball_pitch_blend_cem03_resume01. No completed new-generation result yet. Added authored-inertia centroidal momentum proposal and62CPU regressions. Warm10 is unexecuted. Conditional single GPU0 followup is queued only if CEM03_resume completes without attack progress.",
+      "notes": "CEM03 completed256 TRAIN first episodes:28contacts,19airstrings,11qualified recoveries,1airstrings+recovery,1target,0attack/0complete/NF0. Its new env32gen1 video shows4.85m/s upward return and3.94s recovery, target miss. CEM04 generation0 had2frame hits/0strings/6recoveries/0attack/0complete/NF0; intentionally stopped with guardFAILED and exact receipt preserved. GPU0 now runs32-parameter arm velocity plus bounded causal prepose:300ticks,104lanes planned at2.01s,gain.5,maxdelta.30rad,finite control window; whole result pending. All original gates and formal A/B400 remain unchanged.",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/return_recovery_gen0_env12/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
       "active_gpu_jobs": [
         {
-          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_pitch_blend_cem03_resume01",
-          "guard_pid": 1360158,
-          "child_pid": 1360170,
-          "session_id": 97657,
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_prepose_velocity32_cem06",
+          "guard_pid": 1370962,
+          "child_pid": 1370972,
           "state": "RUNNING",
-          "started_at": "2026-10-24T07:11:06.142695+00:00",
-          "resume_semantics": "Replay interrupted generation0 from ground; native state not restored"
+          "started_at": "2026-10-24T08:11:08.100325+00:00",
+          "source_commit": "4b68e19c430af1fa93feb0027c656cd1b024ecad",
+          "last_verified_control_ticks": 300,
+          "native_prepose_evidence": "reports/G07_full_racket_v4/NATIVE_ARM32_PREPOSE_0820.json"
         }
       ],
       "queued_native_sequence": {
-        "state_file": "reports/G07_full_racket_v4/momentum_velocity_queue02/state.json",
-        "pid": 1364645,
-        "session_id": 46714,
-        "state_at_last_check": "WAITING_FOR_VERIFIED_PREDECESSOR",
-        "next_jobs": [
-          "ball_momentum_velocity_cem04"
-        ],
-        "still_running": true,
-        "note": "Wait for both prior processes and successful completed receipt; require no native attacks/NF and unchanged source hashes. Uses newly measured same-blend body candidate48.",
-        "proposal": "reports/G07_full_racket_v4/MOMENTUM_NATIVE_QUEUE_REVISION_0733.json"
+        "state_at_last_check": "NO_QUEUED_JOBS",
+        "next_jobs": [],
+        "still_running": false
       },
       "native_air_string_contact_milestone": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
-      "latest_native_training_summary": "reports/G07_full_racket_v4/ball_contact_recovery_cem02/FINAL_TRAIN_SUMMARY.json",
+      "latest_native_training_summary": "reports/G07_full_racket_v4/ball_pitch_blend_cem03_resume01/FINAL_TRAIN_SUMMARY.json",
       "latest_video": {
-        "path": "reports/G07_full_racket_v4/video/Current_effect_three_cases_20261024_0713.mp4",
-        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_three_cases_20261024_0713.mp4",
-        "duration_s": 41.86,
-        "sha256": "b41d599410237e1c5ddbdc8490798e9a172526fd155b17dafdac777f581b6784",
-        "independent_native_episodes": 3,
-        "includes_current_training_failure": true,
+        "path": "reports/G07_full_racket_v4/video/Current_effect_latest_20261024_0819.mp4",
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_latest_20261024_0819.mp4",
+        "duration_s": 26.04,
+        "sha256": "2879342156e608c6a9f45d640ebc3ada9bc661a872664f20a2344ef79d35082b",
+        "independent_native_episodes": 2,
         "cases_are_independent": true,
         "formal_acceptance": false,
-        "evidence_url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_three_cases_20261024_0713_evidence.zip"
+        "evidence_url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_latest_20261024_0819_evidence.zip",
+        "upload_receipt": "reports/G07_full_racket_v4/video/Current_effect_latest_20261024_0819_upload_receipt.json",
+        "scope": "New CEM03gen1 recovery example plus CEM04gen0frame-hit failure; currently running32-parameter job not shown."
       },
       "latest_completed_generation": {
-        "run": "ball_pitch_blend_cem03_resume01",
+        "run": "ball_momentum_velocity_cem04",
         "generation": 0,
         "whole_job_complete": false,
+        "guard_terminal_state": "FAILED",
+        "intentionally_stopped": true,
         "executions": 128,
-        "contacts": 12,
-        "airborne_strings": 8,
+        "contacts": 2,
+        "frame_hits": 2,
+        "airborne_strings": 0,
         "qualified_recoveries": 6,
         "airborne_strings_and_recovery": 0,
-        "geometrical_crossings": 4,
-        "task_valid_air_strings_crossings": 3,
-        "landed_target": 0,
         "complete": 0,
-        "numerical_failures": 0
+        "numerical_failures": 0,
+        "report": "reports/G07_full_racket_v4/MOMENTUM_METHOD_SWITCH_0809.json"
       },
       "pending_rule_regression": {
         "state": "PASSED_TARGETED_NATIVE02",
@@ -150,6 +146,19 @@
           "still_running": false,
           "note": "No overlap: requires prior terminal SUCCEEDED, no numerical failures or native attack progress, and unchanged launch hashes.",
           "proposal": "reports/G07_full_racket_v4/MOMENTUM_VELOCITY_NEXT_NATIVE_0720.json"
+        },
+        {
+          "state_file": "reports/G07_full_racket_v4/momentum_velocity_queue02/state.json",
+          "pid": 1364645,
+          "session_id": 46714,
+          "state_at_last_check": "EXITED_AFTER_INTENTIONAL_CEM04_STOP",
+          "next_jobs": [],
+          "still_running": false,
+          "note": "Wait for both prior processes and successful completed receipt; require no native attacks/NF and unchanged source hashes. Uses newly measured same-blend body candidate48.",
+          "proposal": "reports/G07_full_racket_v4/MOMENTUM_NATIVE_QUEUE_REVISION_0733.json",
+          "guard_pid": 1367610,
+          "child_pid": 1367619,
+          "current_job": "ball_momentum_velocity_cem04"
         }
       ],
       "historical_native_contact_milestones": [
@@ -165,6 +174,43 @@
           "state": "INTERRUPTED",
           "started_at": "2026-10-24T06:56:49.415526+00:00",
           "report": "reports/G07_full_racket_v4/PITCH_BLEND_INTERRUPTION_AND_RESUME_0711.json"
+        }
+      ],
+      "historical_completed_gpu_jobs": [
+        {
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_pitch_blend_cem03_resume01",
+          "guard_pid": 1360158,
+          "child_pid": 1360170,
+          "session_id": 97657,
+          "state": "SUCCEEDED",
+          "started_at": "2026-10-24T07:11:06.142695+00:00",
+          "resume_semantics": "Replay interrupted generation0 from ground; native state not restored",
+          "resource_receipt": "reports/G07_full_racket_v4/ball_pitch_blend_cem03_resume01/job.json"
+        }
+      ],
+      "prepared_controller_branch": {
+        "branch": "g07-arm-search-v4-20261024",
+        "commit": "4b68e19",
+        "worktree": "/home/autodrive/LZQW/unitree_smash_arm_search_v4",
+        "cpu_tests_passed": 72,
+        "native_execution": true,
+        "report": "reports/G07_full_racket_v4/ARM_SEARCH_CPU_READY_0752.json",
+        "merged_to_primary": true,
+        "native_execution_scope": "Initialization and first300 native ticks, not performance acceptance.",
+        "native_initialization_report": "reports/G07_full_racket_v4/NATIVE_ARM32_INITIALIZATION_0814.json",
+        "native_prepose_report": "reports/G07_full_racket_v4/NATIVE_ARM32_PREPOSE_0820.json"
+      },
+      "historical_stopped_gpu_jobs": [
+        {
+          "run": "ball_momentum_velocity_cem04",
+          "guard_pid": 1367610,
+          "child_pid": 1367619,
+          "guard_terminal_state": "FAILED",
+          "reason": "Intentional method switch after generation0had0strings and2framehits; generation1partial preserved.",
+          "resource_receipt": "reports/G07_full_racket_v4/ball_momentum_velocity_cem04/job.json",
+          "actual_gpu_hours": 0.3556038421105606,
+          "actual_control_env_steps": 122368,
+          "charged_environment_step_cap": 204800
         }
       ]
     },

@@ -1,0 +1,70 @@
+{
+  "created_at": "2026-10-24T07:47:56.214868+00:00",
+  "scope": "Completed two native TRAIN generations;256 first episodes including elite repeats, not formal acceptance.",
+  "counts": {
+    "had_contact": 28,
+    "airborne_string_hit": 19,
+    "recovery_success": 11,
+    "crossed_net": 10,
+    "landed_legal_court": 2,
+    "landed_target": 1,
+    "attack_outgoing": 0,
+    "complete_smash": 0,
+    "executions": 256,
+    "air_strings_and_recovery": 1,
+    "numerical_failures": 0,
+    "actual_control_env_steps": 204800,
+    "actual_gpu_hours": 0.6019002175180584
+  },
+  "history": [
+    {
+      "had_contact": 12,
+      "airborne_string_hit": 8,
+      "recovery_success": 6,
+      "crossed_net": 4,
+      "landed_legal_court": 0,
+      "landed_target": 0,
+      "attack_outgoing": 0,
+      "complete_smash": 0,
+      "generation": 0,
+      "executions": 128,
+      "air_strings_and_recovery": 0,
+      "numerical_failures": 0
+    },
+    {
+      "had_contact": 16,
+      "airborne_string_hit": 11,
+      "recovery_success": 5,
+      "crossed_net": 6,
+      "landed_legal_court": 2,
+      "landed_target": 1,
+      "attack_outgoing": 0,
+      "complete_smash": 0,
+      "generation": 1,
+      "executions": 128,
+      "air_strings_and_recovery": 1,
+      "numerical_failures": 0
+    }
+  ],
+  "resource_receipt": "job.json",
+  "initial_interrupted_run_preserved_separately": true,
+  "formal_acceptance": false,
+  "task_valid_air_strings_crosses": 8,
+  "joined_recovery_example": {
+    "generation": 1,
+    "env_id": 32,
+    "source_training_index": 1,
+    "outgoing_velocity_mps": [
+      3.8051869869232178,
+      -2.965402364730835,
+      0.47146087884902954
+    ],
+    "first_landing_m": [
+      3.204906463623047,
+      -1.7514801025390625,
+      0.025197286158800125
+    ],
+    "qualified_recovery_s": 3.937896966934204,
+    "complete_smash": false
+  }
+}
