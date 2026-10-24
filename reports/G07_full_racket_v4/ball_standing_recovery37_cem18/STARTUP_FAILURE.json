@@ -1,0 +1,20 @@
+{
+  "recorded_at": "2026-10-24T12:52:49.537131+00:00",
+  "source_commit": "009e73238818ece661578e57a02c78afdecfba54",
+  "guard_terminal_state": "FAILED",
+  "actual_gpu_hours": 0.0019952086191753755,
+  "actual_control_env_steps": 0,
+  "charged_control_env_step_cap": 409600,
+  "reason": "Native candidate-bank validation still built32parameter names despite37policy input; CPUchecker used checkpoint names and missed this integration mismatch.",
+  "exception": "ValueError: Candidate bank parameter order mismatch",
+  "before_first_control_tick": true,
+  "physics_environment_initialization_only": true,
+  "planned_fix": "Canonical parameter order shared by native validator/state metadata and CPU bank preflight; add layout regression tests, retain all failed logs and retry in new output directory.",
+  "warm_and_bank_unchanged": true,
+  "formal_acceptance": false,
+  "source_sha256": {
+    "job.json": "f2c680e0286582b064a603dc49c2802be9d2ca85e7c698fc056e4cd121a0ee07",
+    "error.txt": "3a357d0ccec5ab1a727f475c94748b317112af04d004296bd220d44fc27b51bd",
+    "source_hashes.json": "00de17ac06eb6ad487acd6f184705a78b1b113a928b03de5591c290a36148e28"
+  }
+}

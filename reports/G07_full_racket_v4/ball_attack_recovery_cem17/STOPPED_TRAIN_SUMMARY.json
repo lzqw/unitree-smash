@@ -1,0 +1,567 @@
+{
+  "created_at": "2026-10-24T12:51:03.199395+00:00",
+  "scope": "Two completed attack/recovery generations plus an interrupted next generation. Four-generation job intentionally stopped; not formal acceptance.",
+  "counts": {
+    "had_contact": 94,
+    "frame_hit": 36,
+    "airborne_string_hit": 59,
+    "recovery_success": 21,
+    "crossed_net": 42,
+    "landed_legal_court": 0,
+    "landed_target": 0,
+    "attack_outgoing": 12,
+    "complete_smash": 0,
+    "robot_net_fault": 56,
+    "racket_invasion_fault": 0,
+    "executions": 256,
+    "usable_air_strings": 30,
+    "air_strings_and_recovery": 1,
+    "task_valid_air_strings_crosses": 14,
+    "robot_rule_terminal": 70,
+    "body_ground_terminal": 161,
+    "numerical_failures": 0
+  },
+  "history": [
+    {
+      "had_contact": 73,
+      "frame_hit": 23,
+      "airborne_string_hit": 51,
+      "recovery_success": 14,
+      "crossed_net": 37,
+      "landed_legal_court": 0,
+      "landed_target": 0,
+      "attack_outgoing": 12,
+      "complete_smash": 0,
+      "robot_net_fault": 42,
+      "racket_invasion_fault": 0,
+      "executions": 128,
+      "usable_air_strings": 27,
+      "air_strings_and_recovery": 1,
+      "task_valid_air_strings_crosses": 14,
+      "robot_rule_terminal": 43,
+      "body_ground_terminal": 69,
+      "numerical_failures": 0,
+      "generation": 0,
+      "control_ticks": 800,
+      "env_steps": 102400
+    },
+    {
+      "had_contact": 21,
+      "frame_hit": 13,
+      "airborne_string_hit": 8,
+      "recovery_success": 7,
+      "crossed_net": 5,
+      "landed_legal_court": 0,
+      "landed_target": 0,
+      "attack_outgoing": 0,
+      "complete_smash": 0,
+      "robot_net_fault": 14,
+      "racket_invasion_fault": 0,
+      "executions": 128,
+      "usable_air_strings": 3,
+      "air_strings_and_recovery": 0,
+      "task_valid_air_strings_crosses": 0,
+      "robot_rule_terminal": 27,
+      "body_ground_terminal": 92,
+      "numerical_failures": 0,
+      "generation": 1,
+      "control_ticks": 800,
+      "env_steps": 102400
+    }
+  ],
+  "first_generation_guided_proposals": {
+    "had_contact": 70,
+    "frame_hit": 21,
+    "airborne_string_hit": 50,
+    "recovery_success": 14,
+    "crossed_net": 36,
+    "landed_legal_court": 0,
+    "landed_target": 0,
+    "attack_outgoing": 11,
+    "complete_smash": 0,
+    "robot_net_fault": 39,
+    "racket_invasion_fault": 0,
+    "executions": 120,
+    "usable_air_strings": 26,
+    "air_strings_and_recovery": 1,
+    "task_valid_air_strings_crosses": 13,
+    "robot_rule_terminal": 40,
+    "body_ground_terminal": 64,
+    "numerical_failures": 0
+  },
+  "whole_job_complete": false,
+  "requested_generations": 4,
+  "completed_generations": 2,
+  "guard_terminal_state": "FAILED",
+  "actual_gpu_hours": 0.6042010045233311,
+  "actual_control_env_steps": 208384,
+  "charged_control_env_step_cap": 409600,
+  "interrupted": {
+    "generation": 2,
+    "control_ticks": 28,
+    "resume_from": "generation_start.pt",
+    "resume_semantics": "Replay this generation from ground",
+    "terminal_rally_records": "interrupted_rallies_002.json",
+    "terminal_jump_records": "interrupted_jumps_002.json",
+    "actual_partial_population": "interrupted_search_state_002.pt",
+    "formal_acceptance": false
+  },
+  "source_commit": "f1deb6ab826084af33ad970ef9afa4b35e12c676",
+  "formal_acceptance": false,
+  "reason": "Two completed128-episode generations still0target/full. First generation has51airstrings/12attacks/one weak blocked-ball qualified recovery; second has8airstrings/0attacks/0joined recovery. Exact best26reevaluation contacts again but later body-lands and fails recovery. Fixed five standing-controller parameters remain outside32-coordinate search.",
+  "next_method": "Extend existing policy to37coordinates with five existing standing-controller biases/gains, initialized at legacy values. Retain attacking candidate17and weak recovered26.61proposals adjust recovery handover/front-back stance/actor gain; focus Gaussian coordinates[3,32,33,34,35,36]. Hardware/assets/leg and arm limits/task and qualified-recovery gates unchanged.",
+  "source_sha256": {
+    "metrics.json": "f51e1b39e93f74f4e3c8ab564b6591bd3b1ce547becd876b45eb5ae295029950",
+    "job.json": "e0da1f78f14fdb636d4947b24f1a37909795eb0bca186dc5e4c7cd46cd3d0799",
+    "interrupted.json": "a53c3e62308446eb4b51dd3f07e87df4a4e0d212375aa8b3b7836925395b0f99",
+    "episodes_000.json": "1186afd9def66bf615571378966d95f11f2217ba8502138b34f8d2a2adcf8c17",
+    "episodes_001.json": "cd954df80ecbf2af30a656eb42d0452b8c56bf5b6ac16edd65784cbebb49d19a"
+  },
+  "attack_outgoing_and_recovery": 0,
+  "failed_recovery_reference_reevaluation": {
+    "launched": true,
+    "in_play": false,
+    "had_contact": true,
+    "legal_initial_contact": true,
+    "string_hit": true,
+    "airborne_string_hit": true,
+    "frame_hit": false,
+    "released": true,
+    "crossed_net": false,
+    "landed_legal_court": false,
+    "landed_target": false,
+    "ground_seen": false,
+    "robot_net_fault": false,
+    "body_ball_fault": false,
+    "wrong_side_fault": false,
+    "double_hit_fault": false,
+    "racket_invasion_fault": false,
+    "body_over_net_fault": false,
+    "under_net_obstruction_fault": false,
+    "engineering_body_crossing": false,
+    "bad_return_fault": false,
+    "net_blocked_fault": true,
+    "shuttle_net_contact": true,
+    "followthrough_crossed": false,
+    "followthrough_finished": false,
+    "env_id": 3,
+    "episode_index": 0,
+    "complete_smash": false,
+    "recovery_success": false,
+    "contact_count": 1,
+    "contact_point_m": [
+      0.959075927734375,
+      -0.14414215087890625,
+      1.7486140727996826
+    ],
+    "outgoing_velocity_mps": [
+      5.2990312576293945,
+      -0.9548330307006836,
+      -1.966009497642517
+    ],
+    "first_landing_m": [
+      NaN,
+      NaN,
+      NaN
+    ],
+    "first_landing_time_s": NaN,
+    "crossing_point_m": [
+      NaN,
+      NaN,
+      NaN
+    ],
+    "crossing_time_s": NaN,
+    "release_time_s": 2.7610843181610107,
+    "first_string_contact_point_m": [
+      0.959075927734375,
+      -0.14414215087890625,
+      1.7486140727996826
+    ],
+    "first_string_time_s": 2.7606470584869385,
+    "contact_time_s": 2.7606470584869385,
+    "net_margin_m": NaN,
+    "numerical_failures": 0,
+    "racket_plane_native_events": [],
+    "active_rally_launch_count": 1,
+    "hit_velocity_error_mps": 1.6379250382669852e-06,
+    "training_terminal_reasons": {
+      "rally_fault": true,
+      "robot_rule_fault": false,
+      "shuttle_only_fault": true,
+      "first_ground_without_target": false,
+      "body_ground": true,
+      "root_fallen": false
+    },
+    "training_early_termination": true,
+    "training_continue_after_miss": true,
+    "terminal_native_state": {
+      "scope": "Actual native state at terminal control step, before automatic reset; not exact first-collision substep",
+      "time_s": 5.519999980926514,
+      "body_link_positions_m": [
+        [
+          1.175567626953125,
+          -0.07813644409179688,
+          0.17087236046791077
+        ],
+        [
+          1.3281097412109375,
+          -0.17891693115234375,
+          0.09250824898481369
+        ],
+        [
+          1.286834716796875,
+          -0.2413787841796875,
+          0.1476728469133377
+        ],
+        [
+          1.3757553100585938,
+          -0.2697906494140625,
+          0.10364934802055359
+        ],
+        [
+          1.064300537109375,
+          0.08510780334472656,
+          0.19407185912132263
+        ],
+        [
+          1.0230255126953125,
+          0.022640228271484375,
+          0.24923644959926605
+        ],
+        [
+          1.2468643188476562,
+          -0.09383392333984375,
+          0.20645128190517426
+        ],
+        [
+          1.3508377075195312,
+          -0.12671661376953125,
+          0.015831246972084045
+        ],
+        [
+          1.2651138305664062,
+          -0.2928657531738281,
+          0.22511601448059082
+        ],
+        [
+          1.3405227661132812,
+          -0.29541015625,
+          0.048274796456098557
+        ],
+        [
+          1.0960845947265625,
+          0.14330101013183594,
+          0.12534257769584656
+        ],
+        [
+          1.0020523071289062,
+          -0.028316497802734375,
+          0.3272362947463989
+        ],
+        [
+          1.2503509521484375,
+          -0.09210586547851562,
+          0.21101762354373932
+        ],
+        [
+          1.290313720703125,
+          0.04999732971191406,
+          0.1181958019733429
+        ],
+        [
+          1.0582962036132812,
+          -0.25261688232421875,
+          0.19388383626937866
+        ],
+        [
+          0.9395217895507812,
+          0.2808341979980469,
+          0.16939368844032288
+        ],
+        [
+          0.8334579467773438,
+          0.09667205810546875,
+          0.3635648787021637
+        ],
+        [
+          1.3218460083007812,
+          -0.05667877197265625,
+          0.30462756752967834
+        ],
+        [
+          1.1121063232421875,
+          -0.01486968994140625,
+          0.021230202168226242
+        ],
+        [
+          1.1277999877929688,
+          -0.42871856689453125,
+          0.0962870866060257
+        ],
+        [
+          0.852630615234375,
+          0.15408706665039062,
+          0.021898843348026276
+        ],
+        [
+          0.755157470703125,
+          -0.058868408203125,
+          0.24090318381786346
+        ],
+        [
+          1.32183837890625,
+          -0.05667877197265625,
+          0.30462759733200073
+        ],
+        [
+          1.3253021240234375,
+          0.11434745788574219,
+          0.5326187610626221
+        ],
+        [
+          1.2966232299804688,
+          0.2742652893066406,
+          0.7248746752738953
+        ],
+        [
+          1.2966232299804688,
+          0.2742633819580078,
+          0.7248746752738953
+        ],
+        [
+          1.222625732421875,
+          0.3270549774169922,
+          0.7204479575157166
+        ],
+        [
+          1.27996826171875,
+          0.5113697052001953,
+          1.1289088726043701
+        ]
+      ],
+      "body_link_quaternions_wxyz": [
+        [
+          0.8824319839477539,
+          -0.2496429681777954,
+          0.23906077444553375,
+          -0.3191274106502533
+        ],
+        [
+          0.8312283158302307,
+          -0.38738492131233215,
+          0.28696441650390625,
+          -0.27684611082077026
+        ],
+        [
+          0.8282673358917236,
+          -0.3936763107776642,
+          0.289055198431015,
+          -0.2746623158454895
+        ],
+        [
+          0.8824318647384644,
+          -0.24964292347431183,
+          0.23906075954437256,
+          -0.3191273808479309
+        ],
+        [
+          0.8564628958702087,
+          -0.3278397023677826,
+          0.26673972606658936,
+          -0.2963818907737732
+        ],
+        [
+          0.8260407447814941,
+          -0.39832693338394165,
+          0.2905949354171753,
+          -0.2730327546596527
+        ],
+        [
+          0.8824318647384644,
+          -0.24964293837547302,
+          0.23906074464321136,
+          -0.3191273808479309
+        ],
+        [
+          0.18520128726959229,
+          0.03609442710876465,
+          0.8596449494361877,
+          -0.474771648645401
+        ],
+        [
+          0.6347429752349854,
+          -0.24495729804039001,
+          0.6055418252944946,
+          -0.41281506419181824
+        ],
+        [
+          0.8824319243431091,
+          -0.24964293837547302,
+          0.23906077444553375,
+          -0.3191273808479309
+        ],
+        [
+          0.4505089819431305,
+          -0.04105907678604126,
+          0.7757063508033752,
+          -0.4400400221347809
+        ],
+        [
+          0.44518038630485535,
+          -0.12913236021995544,
+          0.7540577054023743,
+          -0.46533432602882385
+        ],
+        [
+          0.8824318051338196,
+          -0.24964295327663422,
+          0.23906074464321136,
+          -0.3191274106502533
+        ],
+        [
+          0.7898032069206238,
+          -0.35054412484169006,
+          0.3866523206233978,
+          -0.3222261965274811
+        ],
+        [
+          0.8536484241485596,
+          -0.4796203076839447,
+          -0.20214825868606567,
+          -0.01961589604616165
+        ],
+        [
+          0.8876972794532776,
+          -0.37026408314704895,
+          0.1291215568780899,
+          -0.2412998229265213
+        ],
+        [
+          0.8679218292236328,
+          -0.44560202956199646,
+          0.1161918118596077,
+          -0.18614539504051208
+        ],
+        [
+          0.8983193039894104,
+          -0.23642326891422272,
+          0.25214219093322754,
+          -0.27120229601860046
+        ],
+        [
+          0.789803147315979,
+          -0.3505440950393677,
+          0.3866523206233978,
+          -0.3222261667251587
+        ],
+        [
+          0.8536484241485596,
+          -0.4796203076839447,
+          -0.2021482288837433,
+          -0.019615918397903442
+        ],
+        [
+          0.8876972794532776,
+          -0.37026405334472656,
+          0.1291216015815735,
+          -0.2412998378276825
+        ],
+        [
+          0.8679217100143433,
+          -0.4456019699573517,
+          0.11619183421134949,
+          -0.18614539504051208
+        ],
+        [
+          0.19327419996261597,
+          -0.6846393346786499,
+          -0.5586023926734924,
+          -0.42647093534469604
+        ],
+        [
+          -0.43409791588783264,
+          0.8810076117515564,
+          -0.06777443736791611,
+          0.17547455430030823
+        ],
+        [
+          -0.9120715260505676,
+          0.3084504306316376,
+          0.10257256776094437,
+          0.2499251812696457
+        ],
+        [
+          -0.2070554941892624,
+          0.7670789957046509,
+          0.40900465846061707,
+          0.4488130211830139
+        ],
+        [
+          -0.6859655976295471,
+          0.359595388174057,
+          0.6288313865661621,
+          0.06865424662828445
+        ],
+        [
+          -0.3028181493282318,
+          -0.040400031954050064,
+          -0.2057264745235443,
+          -0.9297018051147461
+        ]
+      ],
+      "ball_position_m": [
+        -6.345100402832031,
+        -1.4334373474121094,
+        0.031057871878147125
+      ],
+      "ball_velocity_mps": [
+        -2.405571937561035,
+        -0.37365084886550903,
+        0.6128490567207336
+      ],
+      "root_com_velocity_mps": [
+        0.14864997565746307,
+        0.1670486330986023,
+        0.08730491995811462
+      ],
+      "root_angular_velocity_rad_s": [
+        -0.6944078803062439,
+        0.7132644057273865,
+        -0.23996828496456146
+      ]
+    },
+    "jump": {
+      "env_id": 3,
+      "max_height_m": 0.5775437951087952,
+      "total_com_rise_m": 0.20261627435684204,
+      "airborne_s": 0.36099889874458313,
+      "recovery_s": 0.023000001907348633,
+      "takeoff_time_s": 5.5097832679748535,
+      "landing_time_s": 5.5107831954956055,
+      "maximum_body_ground_force_n": 466.328369140625,
+      "max_leg_torque_nm": 23.5,
+      "max_arm_torque_nm": 51.48734664916992,
+      "max_joint_speed_rad_s": 30.000083923339844,
+      "clipped_action_values": 0.0,
+      "limited_joint_targets": 0.0,
+      "saturated_leg_joint_substeps": 583.0,
+      "qualified_jump_landed": false,
+      "qualified_flight_seen": true,
+      "body_landing": true,
+      "stable_recovery": false,
+      "success": false,
+      "terminated": true
+    },
+    "candidate_id": 1,
+    "source_training_index": 65,
+    "closest_string_gap_m": 0.011869462206959724,
+    "closest_gap_time_s": 2.759999990463257,
+    "closest_gap_airborne": true,
+    "attack_outgoing": false,
+    "training_recovery_shaping": -14.827499985694885,
+    "actual_outgoing_training_shaping": 9.623789072036743,
+    "training_score": -7.419095158576965,
+    "legal_episode": false,
+    "generation": 1
+  }
+}
