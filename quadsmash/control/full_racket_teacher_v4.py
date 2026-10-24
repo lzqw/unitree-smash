@@ -150,7 +150,8 @@ class FullRacketTeacherV4:
         arm=torch.lerp(arm,default[12:][None],fold[:,None])
         if self.joint_preparation is not None:
             actual_arm=default[12:][None]+obs[:,21:27]
-            arm=self.joint_preparation(arm,obs,limits[12:],self.kinematics,actual_arm)
+            arm=self.joint_preparation(arm,obs,limits[12:],self.kinematics,actual_arm,
+                post_stroke_mask=time>=center+half_window)
         if self.face_feedback is not None and bool((feedback>0).any()):
             left=torch.linalg.cross(up,forward)
             normal_target=self.face_sign*contact_normal_body(parameters,self.normal_world,forward,left,up)
@@ -161,7 +162,8 @@ class FullRacketTeacherV4:
             amount=(parameters[:,15]*feedback).clamp(0,1)
             candidate=reference+amount[:,None]*correction
             if self.joint_preparation is not None:
-                candidate=self.joint_preparation(candidate,obs,limits[12:],self.kinematics,actual_arm)
+                candidate=self.joint_preparation(candidate,obs,limits[12:],self.kinematics,actual_arm,
+                    post_stroke_mask=time>=center+half_window)
             point,normal,*_=self.kinematics(reference,self.contact_offset)
             new_point,new_normal,*_=self.kinematics(candidate,self.contact_offset)
             cfg=self.face_feedback.config

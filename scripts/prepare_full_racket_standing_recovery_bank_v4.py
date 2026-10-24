@@ -25,6 +25,8 @@ def main():
         parser.add_argument('--'+name, type=Path, required=True)
     parser.add_argument('--early-landing-grid', action='store_true',
         help='Native remeasurement proposals: earlier1.20-1.40handover and longer leg targets; physical hardware and task gates unchanged')
+    parser.add_argument('--post-stroke-retreat', action='store_true',
+        help='Tighten robot command planning to1.15m/.12s after the planned swing ends; native contact/rules unchanged')
     args = parser.parse_args()
     if args.output.exists():
         raise ValueError('Use a fresh output directory')
@@ -70,6 +72,11 @@ def main():
     np.testing.assert_array_equal(proposals[:60, fixed32], np.tile(reference[fixed32], (60, 1)))
     assert np.max(abs(proposals[:,26:32]*proposals[:,7:8])) <= 5.
     warm = copy.deepcopy(attack)
+    if args.post_stroke_retreat:
+        guard = warm['seed'].get('joint_preparation_guard')
+        if not guard or not guard.get('protect_post_hit_net_volume'):
+            raise ValueError('Post-stroke retreat requires the existing full-tool net-volume guard')
+        guard.update(post_stroke_maximum_x_m=1.15, post_stroke_lookahead_s=.12)
     warm['parameters'] = torch.tensor(reference)
     warm['parameter_names'] = names
     warm.pop('training_result', None)
@@ -78,12 +85,13 @@ def main():
     bank = dict(schema='full-racket-candidate-bank-v4', asset_sha256=warm['asset_sha256'],
         seed=warm['seed'], parameter_names=names, reference_parameters=reference.tolist(),
         parameters=proposals.tolist(), proposal_labels=labels,
-        controller_revision='earlier-landing-existing-standing-recovery37-v1' if args.early_landing_grid else 'searched-existing-standing-recovery37-v1',
+        controller_revision=('earlier-landing-existing-standing-recovery37-v1' if args.early_landing_grid else 'searched-existing-standing-recovery37-v1')+('-post-stroke-retreat-v1' if args.post_stroke_retreat else ''),
         native_execution=False, performance_inherited=False)
     validate_candidate_bank(bank, warm['seed'], warm['asset_sha256'], names, reference, lower, upper, 62)
     paths = [args.attack_checkpoint, args.recovered_checkpoint, Path(__file__),
              ROOT/'quadsmash/control/full_racket_recovery_search_v4.py',
              ROOT/'quadsmash/control/full_racket_teacher_v4.py',
+             ROOT/'quadsmash/control/full_racket_joint_preparation_v4.py',
              ROOT/'quadsmash/control/full_racket_arm_search_v4.py']
     provenance = {str(p.resolve()):hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
     warm['standing_recovery_search_provenance'] = provenance
@@ -98,6 +106,10 @@ def main():
         new_policy_coordinate_names=RECOVERY_PARAMETER_NAMES,
         new_algorithm_lower_bounds=RECOVERY_LOW,new_algorithm_upper_bounds=RECOVERY_HIGH,
         early_landing_grid=bool(args.early_landing_grid),
+        post_stroke_retreat=bool(args.post_stroke_retreat),
+        post_stroke_command_bound_m=1.15 if args.post_stroke_retreat else None,
+        post_stroke_prediction_s=.12 if args.post_stroke_retreat else None,
+        post_stroke_trigger='Public planned swing end:time>=event_time-arm_lead+swing_half_window' if args.post_stroke_retreat else None,
         first60_changed_coordinates=[3,32,33,34,36] if args.early_landing_grid else [3,33,36], first60_original32_except_handover_fixed=True,
         controlled_local_handover_times_s=handovers,
         controlled_standing_thigh_calf_bias_pairs_rad=postures,
