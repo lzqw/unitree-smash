@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "CEM13stopped after full128episode generation0:7contacts/3airstrings/3qualified recoveries allmisses/2usable airstrings/2task-valid netcrosses/0joined/0attack/full/NF0;63net faults/6invasions. Candidate13contacts both TRAIN cases, then body-ground failure with upward/lateral return. Actual.331438919GPUh/114816control-env steps includes97interrupted gen1ticks. GPU0 CEM14from6097dd2 is live:actual100tick initialization and200tick prelaunch prefix verified,recorded128pose/ball/clock streams finite with0early ended; face-feedback phase not yet reached, retaining all32candidate13reference parameters and searching48recovery/face/lead proposals plus12recovery configurations.96CPU tests,120lane287tick new-bank replay and old26/32bitwise replay passed. Final-face projection preserves commanded hit point<=.03m in4746counterfactual native states, not a native success claim. Original assets/hardware/rules/success gates/formal400 unchanged and unpassed.",
+      "notes": "GPU0 CEM14from6097dd2 live:actual300tick prefix has38unique first contacts including14strings events;58first episodes closed/70pending.Closed7airstrings/0recovery/full so far; no string event meets instantaneous8m/s/downward attack gates. Face-feedback time window executed with recorded public observations/actions finite and bounded. Original success definition requires final released outgoing, legal net/landing and stable recovery in the same episode, still unproven. Prior CEM13full generation0:3airstrings/3recoveries allmisses/2usable airstrings/0joined/attack/full/NF0. All physical assets/hardware/rules and formalA200/B200 unchanged and unpassed.",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/return_recovery_gen0_env12/policy_evidence.pt",
@@ -68,9 +68,10 @@
           "max_seconds": 7200,
           "native_initialization_pending": false,
           "last_verified_generation": 0,
-          "last_verified_control_ticks": 200,
+          "last_verified_control_ticks": 300,
           "native_initialization_evidence": "reports/G07_full_racket_v4/NATIVE_CONTACT_FACE_RECOVERY_INITIALIZATION_1120.json",
-          "native_before_launch_evidence": "reports/G07_full_racket_v4/NATIVE_CONTACT_FACE_RECOVERY_BEFORE_LAUNCH_1122.json"
+          "native_before_launch_evidence": "reports/G07_full_racket_v4/NATIVE_CONTACT_FACE_RECOVERY_BEFORE_LAUNCH_1122.json",
+          "native_partial_evidence": "reports/G07_full_racket_v4/NATIVE_CONTACT_FACE_RECOVERY_PARTIAL300_1125.json"
         }
       ],
       "queued_native_sequence": {
@@ -223,7 +224,7 @@
         "report": "reports/G07_full_racket_v4/contact_face_recovery_ready01_1116/REPORT.json",
         "cpu_command_check": "reports/G07_full_racket_v4/contact_face_recovery_bank_cpu01_1116/REPORT.json",
         "native_execution": true,
-        "native_execution_scope": "Actual64x32population/60bank/measured-face seed and128native environments first100ticks verified. Face-feedback phase has not yet been reached."
+        "native_execution_scope": "Actual64x32population/60bank/reference13 and300native ticks including face-feedback time window.38first contacts/14strings events;58closed/70pending, no full generation or formal acceptance."
       },
       "historical_stopped_gpu_jobs": [
         {
@@ -327,8 +328,12 @@
       "latest_partial_native_contacts": {
         "run": "ball_contact_face_recovery_cem14",
         "generation": 0,
-        "ticks": 200,
-        "first_episodes_complete": 0,
+        "ticks": 300,
+        "first_episodes_complete": 58,
+        "pending_first_episodes": 70,
+        "first_contacts": 38,
+        "unique_string_contact_events": 14,
+        "closed_airborne_string_hits": 7,
         "whole_generation_complete": false,
         "formal_acceptance": false
       },
@@ -435,7 +440,17 @@
           "native_initialization_report": "reports/G07_full_racket_v4/NATIVE_TOOL_ANTICIPATION_INITIALIZATION_1016.json"
         }
       ],
-      "latest_net_approach_diagnostic": "reports/G07_full_racket_v4/ACTUAL_STROKE_AND_FACE_DIAGNOSTIC_1054.json"
+      "latest_net_approach_diagnostic": "reports/G07_full_racket_v4/ACTUAL_STROKE_AND_FACE_DIAGNOSTIC_1054.json",
+      "latest_partial_native_evidence_bundle": {
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_contact_face_native_partial300_20261024_1125.zip",
+        "bytes": 31779158,
+        "sha256": "001482ac0a1a777eedd163b506e2bb5b3acf453c95b3d6ecf42ec2fca62889ee",
+        "native_ticks": 300,
+        "closed_first_episodes": 58,
+        "pending_first_episodes": 70,
+        "formal_acceptance": false,
+        "upload_receipt": "reports/G07_full_racket_v4/contact_face_partial300_upload_receipt_1126.json"
+      }
     },
     "G08": {
       "state": "TODO",
