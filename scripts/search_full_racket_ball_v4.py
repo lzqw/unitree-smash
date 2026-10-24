@@ -12,6 +12,7 @@ p.add_argument('--training-indices',type=int,nargs='+',default=[0,64])
 p.add_argument('--sigma-fraction',type=float,default=.08)
 p.add_argument('--ik-seeds',type=Path)
 p.add_argument('--walk-speed',type=float);p.add_argument('--waypoint-x',type=float)
+p.add_argument('--timing-grid',action='store_true',help='Reserve12 candidates for measured leg timing/arm speed/Cartesian-gain combinations')
 AppLauncher.add_app_launcher_args(p);args=p.parse_args();app=AppLauncher(args).app
 import numpy as np
 import torch
@@ -43,6 +44,7 @@ def atomic_torch(path,data):
 def main():
     if bool(args.warm_start)==bool(args.resume):raise ValueError('Choose exactly one warm start or optimizer resume')
     if args.candidates<4 or args.generations<1 or not 0<args.sigma_fraction<=.5:raise ValueError('Invalid search settings')
+    if args.timing_grid and args.candidates<14:raise ValueError('Timing grid requires at least14 candidates')
     if not args.training_indices or len(set(args.training_indices))!=len(args.training_indices):raise ValueError('Distinct TRAIN indices required')
     args.output.mkdir(parents=True,exist_ok=True)
     protocol_path=ROOT/'configs/g07_full_racket_eval_v4_r3.json';protocol=json.loads(protocol_path.read_text())
@@ -93,6 +95,7 @@ def main():
         assert prior['training_case_indices']==args.training_indices and prior['candidate_count']==args.candidates
         assert prior['protocol_sha256']==hashlib.sha256(protocol_path.read_bytes()).hexdigest()
         assert prior['physics_dt_s']==cfg.sim.dt and prior['selection_contract']=='legal-first-ball-v4'
+        assert prior.get('sampling_contract','gaussian-cem-v1')==('timing-velocity-cartesian-grid-v1' if args.timing_grid else 'gaussian-cem-v1'),'Sampling changed; use warm-start'
         mean=prior['mean'].to(env.device);sigma=prior['sigma'].to(env.device);rng.set_state(prior['rng'].cpu())
         previous=prior['generations'];best_result=prior['best_result'];reference=prior['reference_parameters'].to(env.device)
         if prior['best_parameters'] is not None:
@@ -110,6 +113,7 @@ def main():
         candidate_count=args.candidates,training_case_indices=args.training_indices,training_suite=suite,
         reference_parameters=reference.cpu(),parameter_names=PARAMETER_NAMES+['intercept_plane_x','strike_timing_residual'],
         selection_contract='legal-first-ball-v4',source_checkpoint_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),
+        sampling_contract='timing-velocity-cartesian-grid-v1' if args.timing_grid else 'gaussian-cem-v1',
         source_hashes=source_hashes,formal_acceptance=False,formal_panels_read=False,
         training_early_termination='Rally fault, first ground without target, body ground or fallen; formal evaluator unchanged')
     try:
@@ -120,6 +124,17 @@ def main():
             atomic_torch(args.output/'generation_start.pt',state)
             population=(mean[None]+sigma[None]*torch.randn((args.candidates,len(low)),generator=rng,device=env.device)).clamp(low,high)
             population[0]=mean;population[1]=best_parameters if best_parameters is not None else reference
+            if args.timing_grid:
+                # Actual motor/body coordination, on the same frozen TRAIN
+                # balls. Reference candidates remain unchanged and every
+                # controller is evaluated by the same native event chain.
+                index=2
+                for phase in [1.28,1.38,1.48]:
+                    for speed in [.55,.85]:
+                        for servo_gain in [.4,.8]:
+                            population[index]=mean
+                            population[index,2]=phase;population[index,7]=speed;population[index,18]=servo_gain
+                            index+=1
             env._episode_has_stepped.zero_();env._metrics_started=False
             env.rally_records.clear();env.episode_records.clear();env.contact_records.clear()
             observation,_=wrapper.reset();controller.reset();controller.parameters.copy_(population.repeat_interleave(case_count,dim=0))
@@ -127,6 +142,7 @@ def main():
             closest=torch.full((count,),10.,device=env.device);closest_time=torch.full((count,),float('nan'),device=env.device)
             closest_air=finished.clone();shaping=torch.full((count,),-100.,device=env.device)
             poses,public,actions,valid,trace=[],[],[],[],[]
+            window_poses,window_balls,window_clocks,window_valid=[],[],[],[]
             with torch.inference_mode():
                 for tick in range(ticks):
                     obs=observation['policy'];data=env.robot.data
@@ -151,6 +167,11 @@ def main():
                         poses.append(torch.cat((data.body_link_pos_w[:case_count]-env.scene.env_origins[:case_count,None],data.body_link_quat_w[:case_count]),-1).cpu().numpy())
                         trace.append(dict(time_s=tick*.01,ball_position_m=(env.shuttle.data.root_pos_w[:case_count]-env.scene.env_origins[:case_count]).cpu().tolist(),
                             valid_first=(~finished[:case_count]).cpu().tolist(),in_play=env.rally.in_play[:case_count].cpu().tolist()))
+                        if 2.2<=tick*.01<=3.4:
+                            window_poses.append(torch.cat((data.body_link_pos_w-env.scene.env_origins[:,None],data.body_link_quat_w),-1).cpu().numpy())
+                            window_balls.append((env.shuttle.data.root_pos_w-env.scene.env_origins).cpu().numpy())
+                            window_clocks.append(obs[:,775].cpu().numpy().copy())
+                            window_valid.append((~finished).cpu().numpy().copy())
                     observation,_,done,_=wrapper.step(action);finished|=done.bool()
                     if (tick+1)%100==0:
                         first_partial={}
@@ -170,12 +191,20 @@ def main():
                         np.savez_compressed(args.output/'partial_public_and_poses.npz',observations=np.stack(public),
                             actions=np.stack(actions),link_poses=np.stack(poses),valid_first_episode=np.stack(valid))
                         atomic_json(args.output/'trajectory.partial.json',trace)
+                        if window_poses:
+                            np.savez_compressed(args.output/'near_contact_all.partial.npz',link_poses=np.stack(window_poses),
+                                ball_position_m=np.stack(window_balls),episode_clock_s=np.stack(window_clocks),
+                                valid_first_episode=np.stack(window_valid))
                         print(json.dumps(dict(generation=previous+generation,tick=tick+1,first_complete=int(finished.sum()))),flush=True)
                     if bool(finished.all()) or stopping:break
             np.savez_compressed(args.output/f'public_and_poses_{previous+generation:03d}.npz',observations=np.stack(public),
                 actions=np.stack(actions),link_poses=np.stack(poses),valid_first_episode=np.stack(valid))
             atomic_json(args.output/f'trajectory_{previous+generation:03d}.json',trace)
             atomic_json(args.output/f'contacts_{previous+generation:03d}.json',env.contact_records)
+            if window_poses:
+                np.savez_compressed(args.output/f'near_contact_all_{previous+generation:03d}.npz',link_poses=np.stack(window_poses),
+                    ball_position_m=np.stack(window_balls),episode_clock_s=np.stack(window_clocks),
+                    valid_first_episode=np.stack(window_valid))
             if stopping and not bool(finished.all()):
                 atomic_json(args.output/'interrupted.json',dict(generation=previous+generation,control_ticks=tick+1,
                     resume_from='generation_start.pt',resume_semantics='Replay this generation from ground',formal_acceptance=False));return

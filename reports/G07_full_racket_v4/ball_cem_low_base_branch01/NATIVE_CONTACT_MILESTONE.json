@@ -1,0 +1,185 @@
+{
+  "created_at": "2026-10-24T04:45:20.340768+00:00",
+  "kind": "Native own-side airborne string-contact milestone; no complete smash",
+  "episodes_per_generation": 16,
+  "generations": 2,
+  "candidate_executions": 32,
+  "includes_elite_retest": true,
+  "airborne_string_contacts": 2,
+  "distinct_contacting_parameter_vectors": 1,
+  "complete": 0,
+  "numerical_failures": 0,
+  "events": [
+    {
+      "generation": 0,
+      "source": "contacts_000.json",
+      "source_sha256": "a5c6ab982905f3a7dcfcdc221c5c28dc1e7fadd21d41ede3785c6b425a5d1155",
+      "env_id": 4,
+      "episode_index": 0,
+      "event_index": 1,
+      "first_racket_contact": true,
+      "same_stroke_frame_string": false,
+      "time_s": 2.7964398860931396,
+      "point_m": [
+        0.6608467102050781,
+        0.04189491271972656,
+        1.5771363973617554
+      ],
+      "string_contact": true,
+      "frame_contact": false,
+      "fixture_contact": false,
+      "point_velocity_mps": [
+        -2.4091129302978516,
+        0.04690350592136383,
+        -0.34068894386291504
+      ],
+      "face_normal": [
+        0.8796066045761108,
+        0.27030184864997864,
+        0.3914448618888855
+      ],
+      "legal_initial_contact": true,
+      "fault_flags": {
+        "robot_net_fault": false,
+        "body_ball_fault": false,
+        "wrong_side_fault": false,
+        "double_hit_fault": false,
+        "racket_invasion_fault": false,
+        "body_over_net_fault": false,
+        "under_net_obstruction_fault": false,
+        "engineering_body_crossing": false,
+        "bad_return_fault": false,
+        "net_blocked_fault": false
+      },
+      "airborne_string_hit": true,
+      "full_episode_complete": false,
+      "outgoing_velocity_mps": [
+        1.9237260818481445,
+        2.2121880054473877,
+        0.9909013509750366
+      ],
+      "outgoing_speed_mps": 3.094573201071879,
+      "hit_velocity_error_mps": 3.5551372548070503e-06,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "body_ground_force_n": 120.34840393066406
+    },
+    {
+      "generation": 1,
+      "source": "contacts_001.json",
+      "source_sha256": "fb0014c2b68b6ec23878bc3b24d318188b6a0dfd8187e5efb0f9485975fc2997",
+      "env_id": 2,
+      "episode_index": 1,
+      "event_index": 1,
+      "first_racket_contact": true,
+      "same_stroke_frame_string": false,
+      "time_s": 2.793379068374634,
+      "point_m": [
+        0.6837673187255859,
+        0.044653892517089844,
+        1.5881385803222656
+      ],
+      "string_contact": true,
+      "frame_contact": false,
+      "fixture_contact": false,
+      "point_velocity_mps": [
+        -1.987847924232483,
+        0.20287373661994934,
+        -0.5207479596138
+      ],
+      "face_normal": [
+        0.8816773891448975,
+        0.22407034039497375,
+        0.41525590419769287
+      ],
+      "legal_initial_contact": true,
+      "fault_flags": {
+        "robot_net_fault": false,
+        "body_ball_fault": false,
+        "wrong_side_fault": false,
+        "double_hit_fault": false,
+        "racket_invasion_fault": false,
+        "body_over_net_fault": false,
+        "under_net_obstruction_fault": false,
+        "engineering_body_crossing": false,
+        "bad_return_fault": false,
+        "net_blocked_fault": false
+      },
+      "airborne_string_hit": true,
+      "full_episode_complete": false,
+      "outgoing_velocity_mps": [
+        2.694761276245117,
+        1.9504297971725464,
+        1.3867825269699097
+      ],
+      "outgoing_speed_mps": 3.604036696089234,
+      "hit_velocity_error_mps": 4.38053575635422e-06,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "body_ground_force_n": 431.774169921875
+    }
+  ],
+  "job": {
+    "goal": "G07",
+    "budget_window": "g07-full-racket-unlimited-20261024",
+    "git_sha": "9a7f171478491beab4cf10368ea7b3ee2f45189c",
+    "command": [
+      "/home/autodrive/Isaac/env_isaaclab/bin/python",
+      "scripts/search_full_racket_ball_v4.py",
+      "--output",
+      "reports/G07_full_racket_v4/ball_cem_low_base_branch01",
+      "--warm-start",
+      "reports/G07_full_racket_v4/ball_cem_backoff01/best_candidate.pt",
+      "--candidates",
+      "8",
+      "--generations",
+      "2",
+      "--sigma-fraction",
+      ".08",
+      "--training-indices",
+      "1",
+      "65",
+      "--ik-seeds",
+      "reports/G07_full_racket_v4/ik_flat_low_base_rotation01/seeds.json",
+      "--walk-speed",
+      ".58",
+      "--waypoint-x",
+      ".64",
+      "--headless"
+    ],
+    "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_cem_low_base_branch01",
+    "gpu": 0,
+    "status": "SUCCEEDED",
+    "charged_gpu_hours": 0.21225932007860845,
+    "charged_env_steps": 25600,
+    "started_at": "2026-10-24T04:27:43.830995+00:00",
+    "pid": 1327511,
+    "original_authorization": "g07-full-racket-unlimited-20261024",
+    "authorization_started_at": "2026-10-24T01:53:52.256487+00:00",
+    "authorization_deadline": null,
+    "child_pid": 1327523,
+    "exit_code": 0,
+    "timed_out": false,
+    "receipt_present": true,
+    "elapsed_s": 764.1335522829904,
+    "finished_at": "2026-10-24T04:40:27.969000+00:00"
+  },
+  "reported_control_env_steps": 9984,
+  "ledger_env_step_charge_scope": "Declared maximum25600 is conservatively charged; completion receipt reports actual9984 vector-control-env steps",
+  "native_second_generation_reset": "PASSED_ACTUAL_RUN",
+  "missing": [
+    "Attack outgoing>=8m/s and vz<=-1",
+    "Over-net first target landing",
+    "Stable recovery without body ground",
+    "Independent formal400 and complete goal deliverables"
+  ],
+  "formal_acceptance": false
+}

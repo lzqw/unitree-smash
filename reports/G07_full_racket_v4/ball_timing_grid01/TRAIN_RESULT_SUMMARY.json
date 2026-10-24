@@ -1,0 +1,117 @@
+{
+  "created_at": "2026-10-24T04:51:21.363820+00:00",
+  "scope": "TRAIN-only; repeated reference policies are included, not a formal evaluation.",
+  "executions": 32,
+  "contact_episodes": 4,
+  "airborne_string_episodes": 3,
+  "frame_hit_episodes": 1,
+  "complete_smash": 0,
+  "numerical_failures": 0,
+  "terminal_reasons": {
+    "rally_fault": 2,
+    "first_ground_without_target": 12,
+    "body_ground": 18,
+    "root_fallen": 0
+  },
+  "actual_control_env_steps": 10176,
+  "conservatively_charged_control_env_step_cap": 25600,
+  "gpu_hours": 0.10883631961526892,
+  "elapsed_s": 391.81075061496813,
+  "job_status": "SUCCEEDED",
+  "contact_events": [
+    {
+      "env_id": 20,
+      "episode_index": 0,
+      "time_s": 2.777325391769409,
+      "string_contact": false,
+      "frame_contact": true,
+      "point_m": [
+        0.8046464920043945,
+        0.056621551513671875,
+        1.6528211832046509
+      ],
+      "point_velocity_mps": [
+        -3.157711982727051,
+        -0.04939714074134827,
+        0.47747480869293213
+      ],
+      "face_normal": [
+        0.9516636729240417,
+        -0.16510269045829773,
+        0.25899291038513184
+      ],
+      "legal_initial_contact": true
+    },
+    {
+      "env_id": 24,
+      "episode_index": 0,
+      "time_s": 2.7863829135894775,
+      "string_contact": true,
+      "frame_contact": false,
+      "point_m": [
+        0.7366971969604492,
+        0.0467681884765625,
+        1.6154628992080688
+      ],
+      "point_velocity_mps": [
+        -2.6332170963287354,
+        -0.4417121410369873,
+        0.08219842612743378
+      ],
+      "face_normal": [
+        0.9060426950454712,
+        0.27299341559410095,
+        0.32335925102233887
+      ],
+      "legal_initial_contact": true
+    },
+    {
+      "env_id": 0,
+      "episode_index": 0,
+      "time_s": 2.8044354915618896,
+      "string_contact": true,
+      "frame_contact": false,
+      "point_m": [
+        0.599945068359375,
+        0.03778266906738281,
+        1.5485401153564453
+      ],
+      "point_velocity_mps": [
+        -2.3108131885528564,
+        0.599146842956543,
+        -0.7584034204483032
+      ],
+      "face_normal": [
+        0.8381840586662292,
+        0.32168471813201904,
+        0.44041624665260315
+      ],
+      "legal_initial_contact": true
+    },
+    {
+      "env_id": 2,
+      "episode_index": 0,
+      "time_s": 2.8050601482391357,
+      "string_contact": true,
+      "frame_contact": false,
+      "point_m": [
+        0.5953445434570312,
+        0.03788940608501434,
+        1.545295238494873
+      ],
+      "point_velocity_mps": [
+        -2.2825653553009033,
+        0.7194101214408875,
+        -0.7622169256210327
+      ],
+      "face_normal": [
+        0.8411099314689636,
+        0.30394768714904785,
+        0.4473811388015747
+      ],
+      "legal_initial_contact": true
+    }
+  ],
+  "formal_acceptance": false,
+  "next_work": "Continue physical full-body coordination optimization, expand TRAIN variation, independent original A/B200 panels, verified success/failure videos; weak contact alone is not the complete goal."
+}

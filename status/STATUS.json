@@ -50,21 +50,12 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "Ball smoke8 all net-faulted before contact. Backoff first32 completed:0contacts,9net,16bodyground,7groundmiss; second-generation reset failed due inference-buffer rebinding. Buffer-lifecycle fix passed33CPU tests. Now running alternate low-base-rotation seed in actual-ball CEM; no formal400 or legal smash yet.",
+      "notes": "Directed timing/velocity/Cartesian grid completed 32 native TRAIN executions:3 airborne string hit episodes,1 frame hit,0 complete,0 numerical failures. All3 string-hit episodes terminated on body-ground, no stable recovery. Latest28.94s actual side/top/contact-snapshot video uploaded and size/SHA verified. Formal400 stillTODO.",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/reach_cem_fine_feedback01/metrics.json",
       "curriculum_policy": "reports/G07_full_racket_v4/reach_cem_fine_feedback01/best_candidate.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
-      "active_gpu_jobs": [
-        {
-          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_cem_low_base_branch01",
-          "guard_pid": 1327511,
-          "child_pid": 1327523,
-          "session_id": 33164,
-          "started_at": "2026-10-24T04:27:43.830995+00:00",
-          "state": "RUNNING"
-        }
-      ],
+      "active_gpu_jobs": [],
       "queued_native_sequence": {
         "state_file": "reports/G07_full_racket_v4/native_followup_sequence01/state.json",
         "pid": 1320916,
@@ -75,6 +66,15 @@
           "ball_cem_smoke01"
         ],
         "still_running": false
+      },
+      "native_air_string_contact_milestone": "reports/G07_full_racket_v4/ball_cem_low_base_branch01/NATIVE_CONTACT_MILESTONE.json",
+      "latest_native_training_summary": "reports/G07_full_racket_v4/ball_timing_grid01/TRAIN_RESULT_SUMMARY.json",
+      "latest_video": {
+        "path": "reports/G07_full_racket_v4/video/Current_effect_air_contact_20261024_0450.mp4",
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_air_contact_20261024_0450.mp4",
+        "duration_s": 28.94,
+        "sha256": "88207b99019eb8acf01e849a984c4f8aa95215f01646d4fcb73d0a74d5c0a6c6",
+        "formal_acceptance": false
       }
     },
     "G08": {

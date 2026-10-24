@@ -1,0 +1,146 @@
+{
+  "created_at": "2026-10-24T04:51:12.958683+00:00",
+  "video": "reports/G07_full_racket_v4/video/Current_effect_air_contact_20261024_0450.mp4",
+  "bytes": 1907454,
+  "sha256": "88207b99019eb8acf01e849a984c4f8aa95215f01646d4fcb73d0a74d5c0a6c6",
+  "fps": 50,
+  "frames": 1447,
+  "resolution": [
+    1280,
+    720
+  ],
+  "duration_s": 28.94,
+  "renderer": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "renderer_uses_gpu": false,
+  "asset_version": "full-racket-court-v4-r3",
+  "run": "reports/G07_full_racket_v4/ball_timing_grid01",
+  "segments": [
+    {
+      "name": "introduction",
+      "start_frame": 0,
+      "frames": 100
+    },
+    {
+      "name": "env0_full_normal_overview",
+      "start_frame": 100,
+      "frames": 148,
+      "env_id": 0,
+      "episode_index": 0,
+      "recorded_start_s": 0.0,
+      "recorded_end_s": 2.93999981880188,
+      "interpolated": false
+    },
+    {
+      "name": "env0_full_normal_side_top",
+      "start_frame": 248,
+      "frames": 148,
+      "env_id": 0,
+      "episode_index": 0,
+      "recorded_start_s": 0.0,
+      "recorded_end_s": 2.93999981880188,
+      "interpolated": false
+    },
+    {
+      "name": "env0_full_quarter_speed_side_top",
+      "start_frame": 396,
+      "frames": 108,
+      "env_id": 0,
+      "episode_index": 0,
+      "recorded_start_s": 2.419999837875366,
+      "recorded_end_s": 2.93999981880188,
+      "interpolated": false
+    },
+    {
+      "name": "env0_exact_contact_snapshot",
+      "start_frame": 504,
+      "frames": 150,
+      "env_id": 0,
+      "contact_time_s": 2.8044354915618896
+    },
+    {
+      "name": "env24_window_quarter_speed_side_top",
+      "start_frame": 654,
+      "frames": 172,
+      "env_id": 24,
+      "episode_index": 0,
+      "recorded_start_s": 2.200000047683716,
+      "recorded_end_s": 3.0399999618530273,
+      "interpolated": false
+    },
+    {
+      "name": "env24_exact_contact_snapshot",
+      "start_frame": 826,
+      "frames": 150,
+      "env_id": 24,
+      "contact_time_s": 2.7863829135894775
+    },
+    {
+      "name": "env20_window_quarter_speed_side_top",
+      "start_frame": 976,
+      "frames": 196,
+      "env_id": 20,
+      "episode_index": 0,
+      "recorded_start_s": 2.200000047683716,
+      "recorded_end_s": 3.1599998474121094,
+      "interpolated": false
+    },
+    {
+      "name": "env20_first_landing_record",
+      "start_frame": 1172,
+      "frames": 125,
+      "landing_time_s": 3.177293062210083,
+      "pose_time_s": 3.1599998474121094
+    },
+    {
+      "name": "ending",
+      "start_frame": 1297,
+      "frames": 150
+    }
+  ],
+  "previews": [
+    "reports/G07_full_racket_v4/video/Current_effect_air_contact_20261024_0450_contact0.jpg",
+    "reports/G07_full_racket_v4/video/Current_effect_air_contact_20261024_0450_contact24.jpg",
+    "reports/G07_full_racket_v4/video/Current_effect_air_contact_20261024_0450_before24.jpg",
+    "reports/G07_full_racket_v4/video/Current_effect_air_contact_20261024_0450_landing20.jpg"
+  ],
+  "poses_are_native_recorded": true,
+  "interpolated_or_generated_motion": false,
+  "contact_freezes_are_exact_native_substep_snapshots": true,
+  "formal_acceptance": false,
+  "batch": {
+    "executions": 32,
+    "airborne_string_hits": 3,
+    "frame_hit_episodes": 1,
+    "complete_smash": 0,
+    "numerical_failures": 0
+  },
+  "caveats": [
+    "TRAIN executions include repeated reference policies, not independent formal evaluation.",
+    "Training episodes terminate on irreversible failure. Unrecorded post-termination trajectories are not reconstructed.",
+    "Env20 first-landing marker is an exact native event position; displayed body pose is the last valid 50Hz sample at an earlier time.",
+    "Orange ball rings and yellow contact circles are annotations, not enlarged collision geometry.",
+    "Shared renderer ground visual surface is 5mm below physical ground; native recorded robot/ball coordinates are unchanged."
+  ],
+  "sources": {
+    "reports/G07_full_racket_v4/ball_timing_grid01/episodes_000.json": "162d2bccd8f55a05a8d1b440c74f019e3ba7a49c718d8e5fc9439e857664b1b2",
+    "reports/G07_full_racket_v4/ball_timing_grid01/contacts_000.json": "1ce28106bbfe3f9ab2b62c22f45e8378755851911fdee79cad2f2e09a4ff2ee1",
+    "reports/G07_full_racket_v4/ball_timing_grid01/trajectory_000.json": "f510ff8504a4c35d0693d8aa4610a73682551117d34cdf1194bb50bdf2048746",
+    "reports/G07_full_racket_v4/ball_timing_grid01/public_and_poses_000.npz": "b2b01401cbad82b95e9c91786f0d96de42273d541e2997e53d84487e3e935cad",
+    "reports/G07_full_racket_v4/ball_timing_grid01/near_contact_all_000.npz": "87f35e399c4ecf097355395fbf6e29fd33b262c45de469871d858f53e5311ff1",
+    "reports/G07_full_racket_v4/ball_timing_grid01/geometry.json": "8afd390b7b92179ba6e2fde3774cc60162a98a5bd63ed50defd95b2e8f9d9c37",
+    "reports/G07_full_racket_v4/ball_timing_grid01/geometry.npz": "2d52c7a88261ea95c1b91b289e074fd017e201d27551bc5d346b0c2fe1a6c4ec",
+    "reports/G07_full_racket_v4/ball_timing_grid01/job.json": "debce14d97c094b72737be2785f9da190e1ab6cfc36751e182dc7d213d2896af",
+    "reports/G07_full_racket_v4/ball_timing_grid01/completed.json": "c66d18bca60b4edb65386bb2fc97044fa84e405220971889ec9bf92c2b9b1453",
+    "reports/G07_full_racket_v4/ball_timing_grid01/metrics.json": "5fd254b3a4f6983d5b0e5e6be224fcd60cf494cae80de7530244c0f54facc4ca",
+    "reports/G07_full_racket_v4/ball_timing_grid01/source_hashes.json": "4f2f393a56b78356a26b003a5549167afee9aa6ad814e6a0be2ac4e32de5f53b",
+    "reports/G07_full_racket_v4/ball_timing_grid01/source_snapshot.zip": "1c7eda3922ba85b5c70a8148c6cd58ff988929a2fadb1f7d58195f80e4c2af8b",
+    "reports/G07_full_racket_v4/ball_timing_grid01/population_000.pt": "01ccbb6f624dad66ff43292888882d1c6e2efff794bbb5e4203f11171a9c09a8",
+    "scripts/render_full_racket_air_contact_v4.py": "64b65063c3d24e6c8292a0f9d6daaa07958c77a428da953e8eccdea71061a929",
+    "scripts/render_full_racket_r3_effect.py": "406fdf3eea5d6fe12873499360fd590a22bfbf34b8b5075d1633e873d99bb76d",
+    "scripts/render_current_v4_progress.py": "5e9fce04a077c9f5b2eb79c829819874e9607c00231e15e36c904d2e75af8edd",
+    "quadsmash/physics/court_v4.py": "d00cd68d9e5264933b81ec6c8190dfb12e4f3157b735f0dd3cd9c224e1e058ce",
+    "configs/court_net_v4.json": "184d07dde336bf36be7dfde089373c851a2bcb855a6e44f4120442b59818b4f4",
+    "configs/g07_full_racket_eval_v4_r3.json": "04121cfb257ea4d2e288c69b44dd0c8dbada814e0bf95c8a16f5af7ef2390367",
+    "assets/quadsmash_full_racket_v4_r3.usd": "c2264fcece90b042c7c6a1cac7d516af83972729d0402947e3a519041e184cf2"
+  }
+}

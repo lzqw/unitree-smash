@@ -1,5 +1,8 @@
 # QuadSmash：Codex /goal 实施与训练任务包
 
+最新视频：[29秒真实空中拍线触球、慢放与失败对照](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_air_contact_20261024_0450.mp4)（2026-10-24，侧视/俯视/精确接触快照）。本批32次TRAIN候选执行中有3次空中拍线接触、1次拍框误击、0完整成功、0数值故障；3次拍线接触均未稳定恢复。视频与[原始姿态、接触事件、权重和源码证据](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_air_contact_20261024_0450_evidence.zip)均已上传核验；不是正式400回合成绩。
+
+
 日期：2026-10-21。对象：Go2 + 标准 AgileX PiPER + 固定安装球拍；Isaac Lab；PPO。
 
 **交接阅读入口（2026-10-22）：[给 GPT 的当前情况与代码导读](docs/GPT_HANDOFF_20261022.md)。**
