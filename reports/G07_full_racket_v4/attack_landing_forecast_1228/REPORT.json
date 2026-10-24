@@ -1,0 +1,138 @@
+{
+  "created_at": "2026-10-24T12:26:07.285699+00:00",
+  "scope": "Unchanged drag/gravity free-flight forecast after an observed contact. Ball velocity proposals are policy-planning objectives, never simulator state writes. No new racket collision, joint tracking, body recovery or formal outcome is certified.",
+  "native_flight_validations": [
+    {
+      "run": "ball_native_reference_interception32_cem07",
+      "generation": 0,
+      "env_id": 64,
+      "native_first_landing_m": [
+        4.926865577697754,
+        -0.6998786926269531,
+        0.025104645639657974
+      ],
+      "predicted_first_landing_m": [
+        4.926946502414765,
+        -0.6974828534000953,
+        0.025
+      ],
+      "landing_error_m": 0.0023994885123028668,
+      "flight_time_error_s": 0.00030662121185964786
+    },
+    {
+      "run": "ball_native_reference_interception32_cem07",
+      "generation": 1,
+      "env_id": 64,
+      "native_first_landing_m": [
+        4.7956132888793945,
+        -0.7247848510742188,
+        0.025212883949279785
+      ],
+      "predicted_first_landing_m": [
+        4.795901199628609,
+        -0.7250833301381271,
+        0.025
+      ],
+      "landing_error_m": 0.0004661565477026132,
+      "flight_time_error_s": 0.00032067794407464323
+    },
+    {
+      "run": "ball_pitch_blend_cem03_resume01",
+      "generation": 1,
+      "env_id": 32,
+      "native_first_landing_m": [
+        3.204906463623047,
+        -1.7514801025390625,
+        0.025197286158800125
+      ],
+      "predicted_first_landing_m": [
+        3.20539684049361,
+        -1.752201452506042,
+        0.025
+      ],
+      "landing_error_m": 0.0008942802013345823,
+      "flight_time_error_s": 0.0003727309056229533
+    },
+    {
+      "run": "ball_pitch_blend_cem03_resume01",
+      "generation": 1,
+      "env_id": 94,
+      "native_first_landing_m": [
+        3.2465782165527344,
+        -0.6506195068359375,
+        0.025090834125876427
+      ],
+      "predicted_first_landing_m": [
+        3.2465715327186113,
+        -0.6503284815630446,
+        0.025
+      ],
+      "landing_error_m": 0.0003049446204226657,
+      "flight_time_error_s": 0.00037582854100959295
+    }
+  ],
+  "maximum_native_landing_prediction_error_m": 0.0023994885123028668,
+  "anchor_run": "ball_near_intercept_blend_cem16",
+  "generation": 0,
+  "env_id": 35,
+  "observed_outgoing_velocity_mps": [
+    7.887247085571289,
+    -1.4885257482528687,
+    -1.6518054008483887
+  ],
+  "baseline_predicted_first_landing_m": [
+    4.457133693427793,
+    -0.7971145778469536,
+    0.025
+  ],
+  "native_first_landing_observed": false,
+  "planning_clearance_buffer_m": 0.005,
+  "unchanged_target_x_m": [
+    2.0,
+    4.0
+  ],
+  "unchanged_target_y_half_width_m": 1.0,
+  "sampled_velocity_targets": 4331,
+  "feasible_free_flight_targets": 35,
+  "nearest_free_flight_proposal": {
+    "outgoing_velocity_target_mps": [
+      7.55,
+      -1.4885257482528687,
+      -2.3
+    ],
+    "outgoing_speed_target_mps": 8.031700249835758,
+    "delta_from_observed_outgoing_mps": [
+      -0.33724708557128924,
+      0.0,
+      -0.6481945991516112
+    ],
+    "predicted_first_landing_m": [
+      3.994033826791884,
+      -0.7349773735420532,
+      0.025
+    ],
+    "conservative_net_exit_margin_m": 0.021402637295942828
+  },
+  "changed_state_dynamics": false,
+  "all_original_physical_and_task_gates_unchanged": true,
+  "formal_acceptance": false,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/configs/court_net_v4.json": "184d07dde336bf36be7dfde089373c851a2bcb855a6e44f4120442b59818b4f4",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/configs/shuttle_physics_v2.json": "dba0e8d45edd661185c7f0b8a379f63993d1a87269740e672688b4577e359229",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/scripts/diagnose_full_racket_attack_landing_v4.py": "7e4e5f5f81bbe342c54a78e5eeea44b56e2cf507c12889d3567181aeb67eee11",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/quadsmash/physics/smash_feasibility.py": "fa853c11524d18ba680b26de0e5a320408da78cb0b507296866257997a6d28e8",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/quadsmash/physics/court_v4.py": "d00cd68d9e5264933b81ec6c8190dfb12e4f3157b735f0dd3cd9c224e1e058ce",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_native_reference_interception32_cem07/source_hashes.json": "608f7473d4b52eb19d0fc3021355b856072b74304d85e355769033b0b3cb1f5f",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_native_reference_interception32_cem07/episodes_000.json": "d50d4331631d597ed8a4404eca762251b2e46b61fb078165140334008ade3af8",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_native_reference_interception32_cem07/contacts_000.json": "4bfed203e54bf7aec16e88f72bce15184a7fa3d2489a4752386c409171889697",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_native_reference_interception32_cem07/episodes_001.json": "d8f801ef3919c9df31e985ae559a7bebcf8a0d9a5d4429500a186481c616f0e6",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_native_reference_interception32_cem07/contacts_001.json": "e58864b5a64189613ab348b1123d501293ceed2282c74da2c6acb4e17ac95f27",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_pitch_blend_cem03_resume01/source_hashes.json": "9a76d948635eabbbaa4e7845f18d3ab1743737695486d8ddb192e6b3e2afde89",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_pitch_blend_cem03_resume01/episodes_000.json": "3c80feb5e2c8c7d096fdb1c26b5105465e64326ed2a364655823b4448647c74b",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_pitch_blend_cem03_resume01/contacts_000.json": "d81910dc035ca0e96c24953ed955d471529913c2a1449c2f4f59ab1622e8d94c",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_pitch_blend_cem03_resume01/episodes_001.json": "b95a7b7bdf7f40f93a319a844feb655a96f3980ce482c5d28794a4c7b70f831f",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_pitch_blend_cem03_resume01/contacts_001.json": "22ec796ba4160b28e0c3d9931f21b4f75f8c11b22f9b992d0c8e339d2ceb4a7c",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_near_intercept_blend_cem16/episodes_000.json": "8410723bd125321d6201e1ab8ce77f90f2d875005045357c3e5b72082b4a8c51",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_near_intercept_blend_cem16/contacts_000.json": "4116249f6dcf427320a8d01c2bed2527e7d1027bbca423d92bc9a7b0fdd7746b"
+  }
+}
