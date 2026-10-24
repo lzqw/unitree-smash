@@ -1,0 +1,3466 @@
+{
+  "created_at": "2026-10-24T11:32:06.117272+00:00",
+  "scope": "Exact TRAIN contact-state kinematics and instantaneous bounded rate proposals. Root motion is held at its observed value. No torque, tracking, future pose, collision or recovery feasibility is certified.",
+  "actual_strings_contacts": 14,
+  "usable_air_contacts_with_completed_rows": 8,
+  "maximum_point_position_error_m": 1.0067748288039444e-05,
+  "maximum_point_velocity_reconstruction_error_mps": 5.731120548552687e-05,
+  "maximum_normal_rate_reconstruction_error_per_s": 5.185619048249599e-06,
+  "proposed_joint_rate_limit_rad_s": 5.0,
+  "position_forecast_horizon_s": 0.08,
+  "records": [
+    {
+      "env_id": 40,
+      "source_candidate": 20,
+      "source_training_index": 1,
+      "time_s": 2.7524640560150146,
+      "usable_air_contact_in_completed_row": true,
+      "point_position_error_m": 4.39758536767666e-06,
+      "measured_point_velocity_mps": [
+        -0.7892346978187561,
+        -2.126547336578369,
+        0.07221953570842743
+      ],
+      "reconstructed_point_velocity_mps": [
+        -0.7892433899069,
+        -2.1265523623486033,
+        0.07221942029827233
+      ],
+      "point_velocity_reconstruction_error_mps": 1.004111957166366e-05,
+      "normal_rate_reconstruction_error_per_s": 4.3058035868312345e-06,
+      "base_velocity_contribution_mps": [
+        -0.377972546927829,
+        1.7962970976269688,
+        -0.8768011996310179
+      ],
+      "arm_velocity_contribution_mps": [
+        -0.411270842979071,
+        -3.922849459975572,
+        0.9490206199292902
+      ],
+      "reference_seed_predicted_velocity_mps": [
+        0.4224424571760619,
+        -2.9924742777834616,
+        0.23878544829083248
+      ],
+      "joint_velocity_rad_s": [
+        5.000003814697266,
+        1.2628099918365479,
+        4.995996475219727,
+        -1.8227728605270386,
+        -1.4901461601257324,
+        -1.2915329933166504
+      ],
+      "position_forecast_horizon_s": 0.08,
+      "joint_rate_lower_rad_s": [
+        -5.0,
+        -5.0,
+        -4.351171755790712,
+        -5.0,
+        -5.0,
+        -5.0
+      ],
+      "joint_rate_upper_rad_s": [
+        5.0,
+        5.0,
+        5.0,
+        4.581785142421723,
+        0.27297252416610684,
+        0.21353154659271012
+      ],
+      "solutions": [
+        {
+          "normal_turn_gain_per_s": 0.0,
+          "lateral_speed_tolerance_mps": 0.25,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            3.913447439078777,
+            5.0,
+            -4.202095085135654,
+            -5.0,
+            0.27297252416610684,
+            -0.08694401424920098
+          ],
+          "predicted_point_velocity_mps": [
+            0.9768413119118398,
+            -0.0673965252535238,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            0.0023027499598141377,
+            -0.7500000000000011,
+            -0.75
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 0.0,
+          "lateral_speed_tolerance_mps": 0.75,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            3.913447439078777,
+            5.0,
+            -4.202095085135654,
+            -5.0,
+            0.27297252416610684,
+            -0.08694401424920098
+          ],
+          "predicted_point_velocity_mps": [
+            0.9768413119118398,
+            -0.0673965252535238,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            0.0023027499598141377,
+            -0.7500000000000011,
+            -0.75
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 4.0,
+          "lateral_speed_tolerance_mps": 0.25,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            0.4661241762056272,
+            5.0,
+            -3.9426927212450598,
+            0.27297252416610684,
+            -4.073946953797564
+          ],
+          "predicted_point_velocity_mps": [
+            1.034596022249348,
+            -0.24999999999999956,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            0.33351900515518773,
+            -0.023431527974072275,
+            -1.6627552163220947
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 4.0,
+          "lateral_speed_tolerance_mps": 0.75,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            1.1584131378251235,
+            5.0,
+            -3.7364253059219075,
+            0.27297252416610684,
+            -4.472654221767022
+          ],
+          "predicted_point_velocity_mps": [
+            1.0942799401548242,
+            -0.75,
+            -1.1999999999999997
+          ],
+          "predicted_normal_rate_per_s": [
+            0.3621060330773892,
+            -0.023431527974072275,
+            -1.8032974412055243
+          ]
+        }
+      ]
+    },
+    {
+      "env_id": 18,
+      "source_candidate": 9,
+      "source_training_index": 1,
+      "time_s": 2.753713369369507,
+      "usable_air_contact_in_completed_row": true,
+      "point_position_error_m": 8.679182522968883e-06,
+      "measured_point_velocity_mps": [
+        -0.8844398260116577,
+        -2.1994476318359375,
+        0.06313690543174744
+      ],
+      "reconstructed_point_velocity_mps": [
+        -0.8844383632922628,
+        -2.199461132235605,
+        0.06313638167933378
+      ],
+      "point_velocity_reconstruction_error_mps": 1.3589505355308164e-05,
+      "normal_rate_reconstruction_error_per_s": 2.3263361795222273e-06,
+      "base_velocity_contribution_mps": [
+        -0.36207063690815033,
+        1.4879536150094594,
+        -0.832881022483889
+      ],
+      "arm_velocity_contribution_mps": [
+        -0.5223677263841124,
+        -3.6874147472450645,
+        0.8960174041632227
+      ],
+      "reference_seed_predicted_velocity_mps": [
+        0.4287700645294127,
+        -3.309544372084451,
+        0.2554828206812889
+      ],
+      "joint_velocity_rad_s": [
+        4.999594211578369,
+        0.9597260355949402,
+        4.997550010681152,
+        -1.6330475807189941,
+        -0.9862927198410034,
+        -1.1436494588851929
+      ],
+      "position_forecast_horizon_s": 0.08,
+      "joint_rate_lower_rad_s": [
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0
+      ],
+      "joint_rate_upper_rad_s": [
+        5.0,
+        5.0,
+        5.0,
+        4.111523866653443,
+        0.16791188716888394,
+        0.07501929283141862
+      ],
+      "solutions": [
+        {
+          "normal_turn_gain_per_s": 0.0,
+          "lateral_speed_tolerance_mps": 0.25,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            3.910220553217136,
+            5.0,
+            -4.419874908534264,
+            -5.0,
+            0.16791188716888394,
+            -0.16145719893452323
+          ],
+          "predicted_point_velocity_mps": [
+            0.9376510530458881,
+            -0.18809651941064454,
+            -1.1999999999999997
+          ],
+          "predicted_normal_rate_per_s": [
+            0.016179056506689327,
+            -0.7499999999999996,
+            -0.75
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 0.0,
+          "lateral_speed_tolerance_mps": 0.75,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            3.910220553217136,
+            5.0,
+            -4.419874908534264,
+            -5.0,
+            0.16791188716888394,
+            -0.16145719893452323
+          ],
+          "predicted_point_velocity_mps": [
+            0.9376510530458881,
+            -0.18809651941064454,
+            -1.1999999999999997
+          ],
+          "predicted_normal_rate_per_s": [
+            0.016179056506689327,
+            -0.7499999999999996,
+            -0.75
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 4.0,
+          "lateral_speed_tolerance_mps": 0.25,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            0.1195790872935484,
+            5.0,
+            -4.0524776186355345,
+            0.16791188716888394,
+            -3.952651786610931
+          ],
+          "predicted_point_velocity_mps": [
+            0.9063951972999977,
+            -0.25,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            0.295828024548795,
+            -0.07271797363655352,
+            -1.4891547032650356
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 4.0,
+          "lateral_speed_tolerance_mps": 0.75,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            0.8102744394242503,
+            5.0,
+            -3.847143207232931,
+            0.16791188716888394,
+            -4.342732757241345
+          ],
+          "predicted_point_velocity_mps": [
+            0.9511836240922438,
+            -0.75,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            0.31985658828150176,
+            -0.07271797363655397,
+            -1.604817775941684
+          ]
+        }
+      ]
+    },
+    {
+      "env_id": 24,
+      "source_candidate": 12,
+      "source_training_index": 1,
+      "time_s": 2.75402569770813,
+      "usable_air_contact_in_completed_row": false,
+      "point_position_error_m": 4.433092796774068e-06,
+      "measured_point_velocity_mps": [
+        -0.7283191084861755,
+        -2.2983884811401367,
+        0.08826455473899841
+      ],
+      "reconstructed_point_velocity_mps": [
+        -0.7283226764378627,
+        -2.2983757127373643,
+        0.0882771778677105
+      ],
+      "point_velocity_reconstruction_error_mps": 1.830589432622664e-05,
+      "normal_rate_reconstruction_error_per_s": 1.3608843114809897e-06,
+      "base_velocity_contribution_mps": [
+        0.32013026292237967,
+        2.9626627988298537,
+        -1.1556983577882534
+      ],
+      "arm_velocity_contribution_mps": [
+        -1.0484529393602424,
+        -5.261038511567218,
+        1.2439755356559639
+      ],
+      "reference_seed_predicted_velocity_mps": [
+        0.3067820989011436,
+        -1.7559341435018698,
+        -0.06782053133211452
+      ],
+      "joint_velocity_rad_s": [
+        5.000002384185791,
+        2.574267864227295,
+        4.996010780334473,
+        -2.0848641395568848,
+        -2.2706246376037598,
+        -1.1647800207138062
+      ],
+      "position_forecast_horizon_s": 0.08,
+      "joint_rate_lower_rad_s": [
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0
+      ],
+      "joint_rate_upper_rad_s": [
+        5.0,
+        5.0,
+        5.0,
+        3.1846090555191053,
+        0.18057787418365445,
+        0.2808847951889015
+      ],
+      "solutions": [
+        {
+          "normal_turn_gain_per_s": 0.0,
+          "lateral_speed_tolerance_mps": 0.25,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            4.874166316651356,
+            5.0,
+            -1.9087525132949361,
+            -5.0,
+            -0.45505961838841436,
+            -2.0697500415896766
+          ],
+          "predicted_point_velocity_mps": [
+            1.069165622764097,
+            0.25,
+            -1.2000000000000002
+          ],
+          "predicted_normal_rate_per_s": [
+            -0.02345171361217603,
+            -0.7499999999999996,
+            -0.75
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 0.0,
+          "lateral_speed_tolerance_mps": 0.75,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            4.314590335502605,
+            5.0,
+            -3.332573616055852,
+            -5.0,
+            -0.18697099893071828,
+            -0.9569139838462445
+          ],
+          "predicted_point_velocity_mps": [
+            1.1370660954482503,
+            0.7499999999999996,
+            -1.2000000000000002
+          ],
+          "predicted_normal_rate_per_s": [
+            -0.02345171361217592,
+            -0.7499999999999996,
+            -0.75
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 4.0,
+          "lateral_speed_tolerance_mps": 0.25,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            5.0,
+            -1.8461894295343808,
+            -4.404243021083611,
+            0.18057787418365445,
+            -2.1230531912228847
+          ],
+          "predicted_point_velocity_mps": [
+            1.0170574464691762,
+            0.25,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            0.23388988721869275,
+            0.05929793444415704,
+            -1.14347665586098
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 4.0,
+          "lateral_speed_tolerance_mps": 0.75,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            5.0,
+            -3.2160223782712447,
+            -4.886954951000097,
+            0.18057787418365445,
+            -1.0760099509519487
+          ],
+          "predicted_point_velocity_mps": [
+            1.0416792772548642,
+            0.75,
+            -1.1999999999999997
+          ],
+          "predicted_normal_rate_per_s": [
+            0.2118730490270967,
+            0.05929793444415793,
+            -1.0293507123306778
+          ]
+        }
+      ]
+    },
+    {
+      "env_id": 96,
+      "source_candidate": 48,
+      "source_training_index": 1,
+      "time_s": 2.7545878887176514,
+      "usable_air_contact_in_completed_row": false,
+      "point_position_error_m": 2.5470290995509807e-06,
+      "measured_point_velocity_mps": [
+        -0.5709677934646606,
+        -2.1757144927978516,
+        0.03115694969892502
+      ],
+      "reconstructed_point_velocity_mps": [
+        -0.5709727790810155,
+        -2.175716026338498,
+        0.03115275557702235
+      ],
+      "point_velocity_reconstruction_error_mps": 6.693188768199209e-06,
+      "normal_rate_reconstruction_error_per_s": 1.671280667281614e-06,
+      "base_velocity_contribution_mps": [
+        0.007158632563916356,
+        2.239167907130053,
+        -1.0148767705725277
+      ],
+      "arm_velocity_contribution_mps": [
+        -0.5781314116449319,
+        -4.414883933468551,
+        1.04602952614955
+      ],
+      "reference_seed_predicted_velocity_mps": [
+        0.1476589100614819,
+        -2.4725203152841093,
+        0.03371116208794778
+      ],
+      "joint_velocity_rad_s": [
+        5.000003814697266,
+        1.5108789205551147,
+        4.997489929199219,
+        -2.7568957805633545,
+        -2.237595319747925,
+        -0.7029423713684082
+      ],
+      "position_forecast_horizon_s": 0.08,
+      "joint_rate_lower_rad_s": [
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0
+      ],
+      "joint_rate_upper_rad_s": [
+        5.0,
+        5.0,
+        5.0,
+        3.49420601129532,
+        0.11020117998123136,
+        0.3400453853607155
+      ],
+      "solutions": [
+        {
+          "normal_turn_gain_per_s": 0.0,
+          "lateral_speed_tolerance_mps": 0.25,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            4.407834156061863,
+            5.0,
+            -3.5832069936130684,
+            -5.0,
+            -0.15398488109921854,
+            -1.038114238469612
+          ],
+          "predicted_point_velocity_mps": [
+            1.0391445586204486,
+            0.25,
+            -1.2000000000000002
+          ],
+          "predicted_normal_rate_per_s": [
+            -0.018701314502073574,
+            -0.7500000000000007,
+            -0.7500000000000001
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 0.0,
+          "lateral_speed_tolerance_mps": 0.75,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            3.951447325699855,
+            5.0,
+            -4.758794770013476,
+            -5.0,
+            0.11020117998123136,
+            -0.1429325836263006
+          ],
+          "predicted_point_velocity_mps": [
+            1.0784790653847025,
+            0.6672410582309634,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            -0.018701314502073463,
+            -0.7499999999999998,
+            -0.7500000000000006
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 4.0,
+          "lateral_speed_tolerance_mps": 0.25,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            5.0,
+            -3.419379105588451,
+            -4.740486391837278,
+            0.11020117998123136,
+            -1.2113341196222978
+          ],
+          "predicted_point_velocity_mps": [
+            0.9087412381219846,
+            0.24999999999999956,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            0.197764592362914,
+            0.061170565501648066,
+            -0.9167246079425183
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 4.0,
+          "lateral_speed_tolerance_mps": 0.75,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            5.0,
+            -4.192978025346492,
+            -5.0,
+            0.11020117998123136,
+            -0.6351951071133867
+          ],
+          "predicted_point_velocity_mps": [
+            0.9108540937605365,
+            0.5373191377778372,
+            -1.2000000000000002
+          ],
+          "predicted_normal_rate_per_s": [
+            0.1808512580950904,
+            0.061170565501648955,
+            -0.83244246859881
+          ]
+        }
+      ]
+    },
+    {
+      "env_id": 98,
+      "source_candidate": 49,
+      "source_training_index": 1,
+      "time_s": 2.7550876140594482,
+      "usable_air_contact_in_completed_row": false,
+      "point_position_error_m": 8.963083306156805e-06,
+      "measured_point_velocity_mps": [
+        -0.7056792974472046,
+        -0.9525260329246521,
+        -0.5751411318778992
+      ],
+      "reconstructed_point_velocity_mps": [
+        -0.7056452666698909,
+        -0.9525219208277464,
+        -0.5751870619457052
+      ],
+      "point_velocity_reconstruction_error_mps": 5.731120548552687e-05,
+      "normal_rate_reconstruction_error_per_s": 1.5380728304188953e-06,
+      "base_velocity_contribution_mps": [
+        -1.362555018032758,
+        3.377826950187867,
+        -0.9630625979530123
+      ],
+      "arm_velocity_contribution_mps": [
+        0.656909751362867,
+        -4.330348871015613,
+        0.38787553600730706
+      ],
+      "reference_seed_predicted_velocity_mps": [
+        0.2447258065056257,
+        -1.0687646462086038,
+        -0.408685748070182
+      ],
+      "joint_velocity_rad_s": [
+        4.920689582824707,
+        4.805351734161377,
+        1.6443476676940918,
+        -0.3846869468688965,
+        -2.470972776412964,
+        -1.3984357118606567
+      ],
+      "position_forecast_horizon_s": 0.08,
+      "joint_rate_lower_rad_s": [
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0
+      ],
+      "joint_rate_upper_rad_s": [
+        5.0,
+        5.0,
+        5.0,
+        5.0,
+        0.19308888912200894,
+        0.20368783950805436
+      ],
+      "solutions": [
+        {
+          "normal_turn_gain_per_s": 0.0,
+          "lateral_speed_tolerance_mps": 0.25,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            5.0,
+            0.3871684553444495,
+            -4.500323971349225,
+            -1.7426706421995022,
+            -1.8340954904020754
+          ],
+          "predicted_point_velocity_mps": [
+            1.1575091525989993,
+            -0.24999999999999956,
+            -1.2000000000000002
+          ],
+          "predicted_normal_rate_per_s": [
+            -0.026153810150889134,
+            -0.75,
+            -0.7500000000000004
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 0.0,
+          "lateral_speed_tolerance_mps": 0.75,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            5.0,
+            1.6728507504416643,
+            -4.033269754647329,
+            -2.15517144734948,
+            -2.636985045992728
+          ],
+          "predicted_point_velocity_mps": [
+            1.1659993909161943,
+            -0.75,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            -0.026153810150888912,
+            -0.7499999999999991,
+            -0.75
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 4.0,
+          "lateral_speed_tolerance_mps": 0.25,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            5.0,
+            0.15937068365641333,
+            -4.297129577434556,
+            -0.4571967986277359,
+            -1.45277777755969
+          ],
+          "predicted_point_velocity_mps": [
+            1.3570736090332094,
+            -0.25,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            0.2851832207881403,
+            -0.0009959784089774715,
+            -1.6897990165875987
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 4.0,
+          "lateral_speed_tolerance_mps": 0.75,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            5.0,
+            1.4450529787536281,
+            -3.830075360732662,
+            -0.8696976037777144,
+            -2.2556673331503427
+          ],
+          "predicted_point_velocity_mps": [
+            1.3655638473504061,
+            -0.75,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            0.28518322078814007,
+            -0.0009959784089770274,
+            -1.6897990165875987
+          ]
+        }
+      ]
+    },
+    {
+      "env_id": 46,
+      "source_candidate": 23,
+      "source_training_index": 1,
+      "time_s": 2.7557122707366943,
+      "usable_air_contact_in_completed_row": true,
+      "point_position_error_m": 9.418117880666905e-07,
+      "measured_point_velocity_mps": [
+        -0.8705654144287109,
+        -1.3071675300598145,
+        -0.1891193389892578
+      ],
+      "reconstructed_point_velocity_mps": [
+        -0.8705562677685825,
+        -1.307165310240852,
+        -0.18911969131260942
+      ],
+      "point_velocity_reconstruction_error_mps": 9.41876422226922e-06,
+      "normal_rate_reconstruction_error_per_s": 5.185619048249599e-06,
+      "base_velocity_contribution_mps": [
+        0.2919047689043843,
+        3.067945430656806,
+        -1.2813222866786873
+      ],
+      "arm_velocity_contribution_mps": [
+        -1.1624610366729669,
+        -4.375110740897658,
+        1.0922025953660779
+      ],
+      "reference_seed_predicted_velocity_mps": [
+        0.19119045680121105,
+        -1.6187119109097452,
+        -0.00440195965255219
+      ],
+      "joint_velocity_rad_s": [
+        3.7831475734710693,
+        3.602389335632324,
+        2.142608165740967,
+        -2.6912553310394287,
+        -3.7546226978302,
+        -1.1072351932525635
+      ],
+      "position_forecast_horizon_s": 0.08,
+      "joint_rate_lower_rad_s": [
+        -5.0,
+        -5.0,
+        -4.860949420928956,
+        -5.0,
+        -5.0,
+        -5.0
+      ],
+      "joint_rate_upper_rad_s": [
+        5.0,
+        5.0,
+        5.0,
+        2.9963850378990187,
+        0.2290304899215695,
+        0.2514758634567238
+      ],
+      "solutions": [
+        {
+          "normal_turn_gain_per_s": 0.0,
+          "lateral_speed_tolerance_mps": 0.25,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            3.217250718185312,
+            5.0,
+            -1.960618104974988,
+            -3.5356717840010106,
+            0.2290304899215695,
+            -1.7829000993092028
+          ],
+          "predicted_point_velocity_mps": [
+            0.9891738618345984,
+            0.25,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            0.024501436825967088,
+            -0.7500000000000001,
+            -0.7499999999999998
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 0.0,
+          "lateral_speed_tolerance_mps": 0.75,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            3.6755648202616817,
+            5.0,
+            -3.474979077061408,
+            -4.570183677199476,
+            0.2290304899215695,
+            -0.48785085888762636
+          ],
+          "predicted_point_velocity_mps": [
+            1.0521364555980122,
+            0.75,
+            -1.2000000000000002
+          ],
+          "predicted_normal_rate_per_s": [
+            0.024501436825967088,
+            -0.7500000000000001,
+            -0.7500000000000002
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 4.0,
+          "lateral_speed_tolerance_mps": 0.25,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            5.0,
+            -1.8215854537879153,
+            -4.536582592611673,
+            0.2290304899215695,
+            -1.9337826946609442
+          ],
+          "predicted_point_velocity_mps": [
+            0.8478167579378877,
+            0.25,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            0.20728829540855467,
+            -0.031317200592921535,
+            -0.9134555534794442
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 4.0,
+          "lateral_speed_tolerance_mps": 0.75,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            4.747219888964129,
+            -2.8352701530718885,
+            -5.0,
+            0.2290304899215695,
+            -0.8739970525929923
+          ],
+          "predicted_point_velocity_mps": [
+            0.8682083953140212,
+            0.7500000000000009,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            0.18765252944847902,
+            -0.03131720059292242,
+            -0.8294788978649243
+          ]
+        }
+      ]
+    },
+    {
+      "env_id": 48,
+      "source_candidate": 24,
+      "source_training_index": 1,
+      "time_s": 2.757711172103882,
+      "usable_air_contact_in_completed_row": true,
+      "point_position_error_m": 2.399643415704071e-06,
+      "measured_point_velocity_mps": [
+        -0.6311198472976685,
+        -1.8507080078125,
+        -0.20587040483951569
+      ],
+      "reconstructed_point_velocity_mps": [
+        -0.6311181542446542,
+        -1.8507089698452388,
+        -0.2058736157865706
+      ],
+      "point_velocity_reconstruction_error_mps": 3.7552784835426977e-06,
+      "normal_rate_reconstruction_error_per_s": 4.606724382093404e-06,
+      "base_velocity_contribution_mps": [
+        -0.9959282020750138,
+        2.2876758073689274,
+        -0.9025713603573422
+      ],
+      "arm_velocity_contribution_mps": [
+        0.36481004783035953,
+        -4.138384777214166,
+        0.6966977445707716
+      ],
+      "reference_seed_predicted_velocity_mps": [
+        0.3345935063583694,
+        -2.122171836436187,
+        -0.21618586913556592
+      ],
+      "joint_velocity_rad_s": [
+        4.93917989730835,
+        1.9564061164855957,
+        4.995921611785889,
+        0.3796676695346832,
+        -0.7714888453483582,
+        -0.9450873136520386
+      ],
+      "position_forecast_horizon_s": 0.08,
+      "joint_rate_lower_rad_s": [
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0
+      ],
+      "joint_rate_upper_rad_s": [
+        5.0,
+        5.0,
+        5.0,
+        5.0,
+        0.657072305679321,
+        0.196994237899778
+      ],
+      "solutions": [
+        {
+          "normal_turn_gain_per_s": 0.0,
+          "lateral_speed_tolerance_mps": 0.25,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            5.0,
+            -1.8988060632047574,
+            -5.0,
+            -1.0599504014624064,
+            -1.297762061442207
+          ],
+          "predicted_point_velocity_mps": [
+            1.132001104609849,
+            -0.22516975308756315,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            -0.011690900840683971,
+            -0.7500000000000004,
+            -0.75
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 0.0,
+          "lateral_speed_tolerance_mps": 0.75,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            5.0,
+            -1.8988060632047574,
+            -5.0,
+            -1.0599504014624064,
+            -1.297762061442207
+          ],
+          "predicted_point_velocity_mps": [
+            1.132001104609849,
+            -0.22516975308756315,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            -0.011690900840683971,
+            -0.7500000000000004,
+            -0.75
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 4.0,
+          "lateral_speed_tolerance_mps": 0.25,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            5.0,
+            -2.7735695724763016,
+            -5.0,
+            0.5478781357905184,
+            -0.465444182357093
+          ],
+          "predicted_point_velocity_mps": [
+            1.3465877451386499,
+            0.009950090508456633,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            0.3911595841700135,
+            0.05377618110468463,
+            -1.816883751252914
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 4.0,
+          "lateral_speed_tolerance_mps": 0.75,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            5.0,
+            -2.7735695724763016,
+            -5.0,
+            0.5478781357905184,
+            -0.465444182357093
+          ],
+          "predicted_point_velocity_mps": [
+            1.3465877451386499,
+            0.009950090508456633,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            0.3911595841700135,
+            0.05377618110468463,
+            -1.816883751252914
+          ]
+        }
+      ]
+    },
+    {
+      "env_id": 88,
+      "source_candidate": 44,
+      "source_training_index": 1,
+      "time_s": 2.7580859661102295,
+      "usable_air_contact_in_completed_row": true,
+      "point_position_error_m": 1.0067748288039444e-05,
+      "measured_point_velocity_mps": [
+        -0.9401515126228333,
+        -2.2084810733795166,
+        0.01257827877998352
+      ],
+      "reconstructed_point_velocity_mps": [
+        -0.9401372630004912,
+        -2.208489524292349,
+        0.01258812200028614
+      ],
+      "point_velocity_reconstruction_error_mps": 1.92706681387891e-05,
+      "normal_rate_reconstruction_error_per_s": 3.900706721227651e-06,
+      "base_velocity_contribution_mps": [
+        -0.5533360951270438,
+        1.6318613980517327,
+        -0.9206426894352262
+      ],
+      "arm_velocity_contribution_mps": [
+        -0.3868011678734473,
+        -3.8403509223440815,
+        0.9332308114355123
+      ],
+      "reference_seed_predicted_velocity_mps": [
+        0.2274696497997849,
+        -3.103255323140159,
+        0.14381204600566844
+      ],
+      "joint_velocity_rad_s": [
+        4.999986171722412,
+        1.0718457698822021,
+        4.997358798980713,
+        -1.6994165182113647,
+        -0.8239580392837524,
+        -0.7757396101951599
+      ],
+      "position_forecast_horizon_s": 0.08,
+      "joint_rate_lower_rad_s": [
+        -5.0,
+        -5.0,
+        -4.990523958206178,
+        -5.0,
+        -5.0,
+        -5.0
+      ],
+      "joint_rate_upper_rad_s": [
+        5.0,
+        5.0,
+        5.0,
+        4.503692626953126,
+        0.2623628973960873,
+        0.267455868721006
+      ],
+      "solutions": [
+        {
+          "normal_turn_gain_per_s": 0.0,
+          "lateral_speed_tolerance_mps": 0.25,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            3.843189870345971,
+            5.0,
+            -4.274872813685566,
+            -5.0,
+            0.2623628973960873,
+            0.009232628787317199
+          ],
+          "predicted_point_velocity_mps": [
+            0.8723071486409593,
+            -0.21155633957502484,
+            -1.1999999999999997
+          ],
+          "predicted_normal_rate_per_s": [
+            0.023291417753832755,
+            -0.75,
+            -0.7499999999999996
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 0.0,
+          "lateral_speed_tolerance_mps": 0.75,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            3.843189870345971,
+            5.0,
+            -4.274872813685566,
+            -5.0,
+            0.2623628973960873,
+            0.009232628787317199
+          ],
+          "predicted_point_velocity_mps": [
+            0.8723071486409593,
+            -0.21155633957502484,
+            -1.1999999999999997
+          ],
+          "predicted_normal_rate_per_s": [
+            0.023291417753832755,
+            -0.75,
+            -0.7499999999999996
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 4.0,
+          "lateral_speed_tolerance_mps": 0.25,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            0.16767976252127165,
+            5.0,
+            -4.084268064224212,
+            0.2623628973960873,
+            -3.648719132547364
+          ],
+          "predicted_point_velocity_mps": [
+            0.8720973138052608,
+            -0.25,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            0.40465282999358065,
+            0.019519372582922634,
+            -1.6036573488398023
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 4.0,
+          "lateral_speed_tolerance_mps": 0.75,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            0.8582410393468225,
+            5.0,
+            -3.8845433831337437,
+            0.2623628973960873,
+            -4.029828200289479
+          ],
+          "predicted_point_velocity_mps": [
+            0.9230720684900804,
+            -0.75,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            0.4388929295169183,
+            0.019519372582923078,
+            -1.7407986123853287
+          ]
+        }
+      ]
+    },
+    {
+      "env_id": 2,
+      "source_candidate": 1,
+      "source_training_index": 1,
+      "time_s": 2.758148431777954,
+      "usable_air_contact_in_completed_row": true,
+      "point_position_error_m": 1.3651575603942801e-06,
+      "measured_point_velocity_mps": [
+        -0.3703158497810364,
+        -1.7180545330047607,
+        -0.28957241773605347
+      ],
+      "reconstructed_point_velocity_mps": [
+        -0.3703064052149453,
+        -1.718064117792843,
+        -0.28957768187746136
+      ],
+      "point_velocity_reconstruction_error_mps": 1.4449192918441542e-05,
+      "normal_rate_reconstruction_error_per_s": 3.637471903047359e-06,
+      "base_velocity_contribution_mps": [
+        -0.8459675443946679,
+        1.5058493600079288,
+        -0.9664399584480634
+      ],
+      "arm_velocity_contribution_mps": [
+        0.47566113917972264,
+        -3.223913477800772,
+        0.676862276570602
+      ],
+      "reference_seed_predicted_velocity_mps": [
+        0.3031894027508937,
+        -3.0742809474253274,
+        0.0627940755817662
+      ],
+      "joint_velocity_rad_s": [
+        4.941133499145508,
+        0.7333930730819702,
+        4.995701313018799,
+        -1.884870171546936,
+        -1.1356703042984009,
+        -1.0862739086151123
+      ],
+      "position_forecast_horizon_s": 0.08,
+      "joint_rate_lower_rad_s": [
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0
+      ],
+      "joint_rate_upper_rad_s": [
+        5.0,
+        5.0,
+        5.0,
+        5.0,
+        0.2929013371467587,
+        0.05815415859222184
+      ],
+      "solutions": [
+        {
+          "normal_turn_gain_per_s": 0.0,
+          "lateral_speed_tolerance_mps": 0.25,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            4.120385995571464,
+            5.0,
+            -4.068273996932551,
+            -5.0,
+            -0.03581055744507635,
+            -0.15596771891664665
+          ],
+          "predicted_point_velocity_mps": [
+            0.9793889388115875,
+            -0.24999999999999956,
+            -1.2000000000000002
+          ],
+          "predicted_normal_rate_per_s": [
+            0.03909330961201435,
+            -0.75,
+            -0.7500000000000002
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 0.0,
+          "lateral_speed_tolerance_mps": 0.75,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            4.701592831594616,
+            5.0,
+            -2.6344520056313523,
+            -5.0,
+            -0.5987251633285889,
+            -1.164862769745311
+          ],
+          "predicted_point_velocity_mps": [
+            1.031306472967762,
+            -0.75,
+            -1.2000000000000002
+          ],
+          "predicted_normal_rate_per_s": [
+            0.03909330961201424,
+            -0.75,
+            -0.7500000000000002
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 4.0,
+          "lateral_speed_tolerance_mps": 0.25,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            1.0247618360982436,
+            3.0515703380475543,
+            -4.465069101508674,
+            0.2929013371467587,
+            -2.358628492009113
+          ],
+          "predicted_point_velocity_mps": [
+            1.176975096368159,
+            -0.24999999999999956,
+            -1.2000000000000006
+          ],
+          "predicted_normal_rate_per_s": [
+            0.4430054098635313,
+            -0.0826461705616453,
+            -1.923114681833946
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 4.0,
+          "lateral_speed_tolerance_mps": 0.75,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            2.695777350004823,
+            1.380554824140975,
+            -4.465069101508674,
+            0.2929013371467587,
+            -2.2808561807466257
+          ],
+          "predicted_point_velocity_mps": [
+            1.2501679590413879,
+            -0.75,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            0.4430054098635313,
+            -0.0826461705616453,
+            -1.923114681833946
+          ]
+        }
+      ]
+    },
+    {
+      "env_id": 94,
+      "source_candidate": 47,
+      "source_training_index": 1,
+      "time_s": 2.7614591121673584,
+      "usable_air_contact_in_completed_row": false,
+      "point_position_error_m": 8.177149018009224e-06,
+      "measured_point_velocity_mps": [
+        -0.48947960138320923,
+        -1.7949386835098267,
+        -0.2256811559200287
+      ],
+      "reconstructed_point_velocity_mps": [
+        -0.4894797750208182,
+        -1.7949626254526203,
+        -0.22567402791646618
+      ],
+      "point_velocity_reconstruction_error_mps": 2.4981097044378894e-05,
+      "normal_rate_reconstruction_error_per_s": 2.752937437161918e-06,
+      "base_velocity_contribution_mps": [
+        -0.9015823140890191,
+        1.7161085895191874,
+        -1.0094463811501555
+      ],
+      "arm_velocity_contribution_mps": [
+        0.41210253906820093,
+        -3.5110712149718077,
+        0.7837723532336893
+      ],
+      "reference_seed_predicted_velocity_mps": [
+        0.41423241104178254,
+        -2.7527717714075743,
+        -0.0613761486112514
+      ],
+      "joint_velocity_rad_s": [
+        4.93874979019165,
+        1.0596922636032104,
+        5.000003337860107,
+        -1.4057886600494385,
+        -1.161403775215149,
+        -0.7007157802581787
+      ],
+      "position_forecast_horizon_s": 0.08,
+      "joint_rate_lower_rad_s": [
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0
+      ],
+      "joint_rate_upper_rad_s": [
+        5.0,
+        5.0,
+        5.0,
+        5.0,
+        0.1933481693267819,
+        0.33370047092437516
+      ],
+      "solutions": [
+        {
+          "normal_turn_gain_per_s": 0.0,
+          "lateral_speed_tolerance_mps": 0.25,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            4.264287512252879,
+            5.0,
+            -3.5524811498639957,
+            -5.0,
+            -0.2649607434055149,
+            -0.25177080274193403
+          ],
+          "predicted_point_velocity_mps": [
+            0.9912386904832717,
+            -0.24999999999999956,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            0.031907411005477115,
+            -0.7500000000000002,
+            -0.7499999999999998
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 0.0,
+          "lateral_speed_tolerance_mps": 0.75,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            4.8302827381129525,
+            5.0,
+            -2.1112686734542145,
+            -5.0,
+            -0.8804078766574184,
+            -1.220580765948068
+          ],
+          "predicted_point_velocity_mps": [
+            1.0569874000212032,
+            -0.75,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            0.03190741100547689,
+            -0.7500000000000011,
+            -0.7499999999999998
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 4.0,
+          "lateral_speed_tolerance_mps": 0.25,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            2.0663235462933147,
+            1.5940806491347341,
+            -4.728415180961969,
+            0.1933481693267819,
+            -1.5993535466474094
+          ],
+          "predicted_point_velocity_mps": [
+            1.1833346183191806,
+            -0.25,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            0.40143624885343454,
+            -0.09639664893025318,
+            -1.876494201064738
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 4.0,
+          "lateral_speed_tolerance_mps": 0.75,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            3.7788966874689764,
+            -0.11849249204092742,
+            -4.728415180961969,
+            0.1933481693267819,
+            -1.5406568356886994
+          ],
+          "predicted_point_velocity_mps": [
+            1.2803121302779599,
+            -0.75,
+            -1.1999999999999995
+          ],
+          "predicted_normal_rate_per_s": [
+            0.40143624885343454,
+            -0.09639664893025318,
+            -1.876494201064738
+          ]
+        }
+      ]
+    },
+    {
+      "env_id": 45,
+      "source_candidate": 22,
+      "source_training_index": 65,
+      "time_s": 2.7632081508636475,
+      "usable_air_contact_in_completed_row": true,
+      "point_position_error_m": 7.900669441869901e-06,
+      "measured_point_velocity_mps": [
+        -0.31893426179885864,
+        -1.8220471143722534,
+        -0.9073787927627563
+      ],
+      "reconstructed_point_velocity_mps": [
+        -0.31895810397863156,
+        -1.8220506850378433,
+        -0.9073582090096168
+      ],
+      "point_velocity_reconstruction_error_mps": 3.170000129948118e-05,
+      "normal_rate_reconstruction_error_per_s": 3.065653467380735e-06,
+      "base_velocity_contribution_mps": [
+        -2.1676865019956892,
+        1.9961076970165834,
+        -0.45883716789012396
+      ],
+      "arm_velocity_contribution_mps": [
+        1.8487283980170577,
+        -3.8181583820544267,
+        -0.44852104111949287
+      ],
+      "reference_seed_predicted_velocity_mps": [
+        0.42317782218804556,
+        -1.9630588074137902,
+        -0.7042432855134098
+      ],
+      "joint_velocity_rad_s": [
+        4.859863758087158,
+        2.7645163536071777,
+        4.9730753898620605,
+        -1.7833514213562012,
+        -4.9944233894348145,
+        -2.2517757415771484
+      ],
+      "position_forecast_horizon_s": 0.08,
+      "joint_rate_lower_rad_s": [
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0
+      ],
+      "joint_rate_upper_rad_s": [
+        5.0,
+        5.0,
+        5.0,
+        5.0,
+        1.0913398265838619,
+        0.09080856323241959
+      ],
+      "solutions": [
+        {
+          "normal_turn_gain_per_s": 0.0,
+          "lateral_speed_tolerance_mps": 0.25,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            4.445168401522468,
+            5.0,
+            -1.099679415164419,
+            -5.0,
+            -1.544036001139624,
+            -1.0548421935292833
+          ],
+          "predicted_point_velocity_mps": [
+            1.1060477069081012,
+            -0.25,
+            -1.2000000000000002
+          ],
+          "predicted_normal_rate_per_s": [
+            0.05166062431835705,
+            -0.7499999999999996,
+            -0.75
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 0.0,
+          "lateral_speed_tolerance_mps": 0.75,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            4.887096502004918,
+            5.0,
+            -0.12169346915819582,
+            -5.0,
+            -2.1618368468226987,
+            -1.2092901289283466
+          ],
+          "predicted_point_velocity_mps": [
+            1.2052976506910902,
+            -0.75,
+            -1.2000000000000002
+          ],
+          "predicted_normal_rate_per_s": [
+            0.05166062431835716,
+            -0.7499999999999996,
+            -0.75
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 4.0,
+          "lateral_speed_tolerance_mps": 0.25,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            3.9971999916884564,
+            5.0,
+            -1.4472514009269037,
+            -5.0,
+            -0.05746576043806181,
+            -0.6140299572970896
+          ],
+          "predicted_point_velocity_mps": [
+            1.4555406193643723,
+            -0.25000000000000044,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            0.30178159331405885,
+            -0.29767091219881886,
+            -1.7787273010175166
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 4.0,
+          "lateral_speed_tolerance_mps": 0.75,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            4.439128092170906,
+            5.0,
+            -0.46926545492068067,
+            -5.0,
+            -0.6752666061211368,
+            -0.7684778926961533
+          ],
+          "predicted_point_velocity_mps": [
+            1.5547905631473613,
+            -0.75,
+            -1.1999999999999997
+          ],
+          "predicted_normal_rate_per_s": [
+            0.30178159331405885,
+            -0.2976709121988193,
+            -1.7787273010175166
+          ]
+        }
+      ]
+    },
+    {
+      "env_id": 19,
+      "source_candidate": 9,
+      "source_training_index": 65,
+      "time_s": 2.7650821208953857,
+      "usable_air_contact_in_completed_row": false,
+      "point_position_error_m": 5.10160567523238e-06,
+      "measured_point_velocity_mps": [
+        -0.43546736240386963,
+        -1.6195827722549438,
+        -0.9530337452888489
+      ],
+      "reconstructed_point_velocity_mps": [
+        -0.4354850931660388,
+        -1.6195739062737151,
+        -0.9530199571847635
+      ],
+      "point_velocity_reconstruction_error_mps": 2.414740906425112e-05,
+      "normal_rate_reconstruction_error_per_s": 4.1466648957468305e-06,
+      "base_velocity_contribution_mps": [
+        -2.5710576311511204,
+        1.5332983651133247,
+        -0.545522353007982
+      ],
+      "arm_velocity_contribution_mps": [
+        2.1355725379850816,
+        -3.15287227138704,
+        -0.4074976041767815
+      ],
+      "reference_seed_predicted_velocity_mps": [
+        0.47608461837710525,
+        -1.9759389642758949,
+        -0.8700256792265382
+      ],
+      "joint_velocity_rad_s": [
+        4.743137836456299,
+        2.556363344192505,
+        4.9331865310668945,
+        -1.5513651371002197,
+        -4.984397888183594,
+        -1.7427388429641724
+      ],
+      "position_forecast_horizon_s": 0.08,
+      "joint_rate_lower_rad_s": [
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0
+      ],
+      "joint_rate_upper_rad_s": [
+        5.0,
+        5.0,
+        5.0,
+        5.0,
+        0.9722184538841244,
+        0.03398149490356217
+      ],
+      "solutions": [
+        {
+          "normal_turn_gain_per_s": 0.0,
+          "lateral_speed_tolerance_mps": 0.25,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            5.0,
+            -1.1753362651596921,
+            -5.0,
+            -1.3118426374596348,
+            -0.46533687898829723
+          ],
+          "predicted_point_velocity_mps": [
+            1.0340529396220237,
+            -0.2500000000000002,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            0.14758432813365785,
+            0.14189414715377008,
+            -0.7499999999999996
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 0.0,
+          "lateral_speed_tolerance_mps": 0.75,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            5.0,
+            -0.2973635971448448,
+            -5.0,
+            -2.0096074936193244,
+            -0.5408623102057323
+          ],
+          "predicted_point_velocity_mps": [
+            1.1644083379170342,
+            -0.7500000000000004,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            0.10542623949785457,
+            -0.23939488716304885,
+            -0.7499999999999996
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 4.0,
+          "lateral_speed_tolerance_mps": 0.25,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            5.0,
+            -1.412164700732083,
+            -5.0,
+            0.1163850003868763,
+            -0.06532387439355296
+          ],
+          "predicted_point_velocity_mps": [
+            1.3648533374141865,
+            -0.25000000000000044,
+            -1.1999999999999997
+          ],
+          "predicted_normal_rate_per_s": [
+            0.41060341407077094,
+            0.9592541400364702,
+            -1.7317195118981337
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 4.0,
+          "lateral_speed_tolerance_mps": 0.75,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            5.0,
+            -0.5341920327172354,
+            -5.0,
+            -0.5813798557728135,
+            -0.1408493056109885
+          ],
+          "predicted_point_velocity_mps": [
+            1.4952087357091974,
+            -0.75,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            0.36844532543496755,
+            0.5779651057196509,
+            -1.7317195118981337
+          ]
+        }
+      ]
+    },
+    {
+      "env_id": 22,
+      "source_candidate": 11,
+      "source_training_index": 1,
+      "time_s": 2.765207052230835,
+      "usable_air_contact_in_completed_row": false,
+      "point_position_error_m": 5.554401777143749e-06,
+      "measured_point_velocity_mps": [
+        -0.28080132603645325,
+        -0.4707522988319397,
+        -1.1187961101531982
+      ],
+      "reconstructed_point_velocity_mps": [
+        -0.2807901648182347,
+        -0.4707586767635372,
+        -1.1187856081221752
+      ],
+      "point_velocity_reconstruction_error_mps": 1.6599501775456358e-05,
+      "normal_rate_reconstruction_error_per_s": 4.079099009463749e-06,
+      "base_velocity_contribution_mps": [
+        -2.120912399850482,
+        3.180579507679994,
+        -1.202232941263901
+      ],
+      "arm_velocity_contribution_mps": [
+        1.8401222350322475,
+        -3.651338184443531,
+        0.08344733314172584
+      ],
+      "reference_seed_predicted_velocity_mps": [
+        0.041270253739814855,
+        -0.8644498743507611,
+        -0.5861982159945305
+      ],
+      "joint_velocity_rad_s": [
+        4.877256870269775,
+        4.982007026672363,
+        1.8364908695220947,
+        -0.7868680357933044,
+        -2.642324209213257,
+        -2.4215753078460693
+      ],
+      "position_forecast_horizon_s": 0.08,
+      "joint_rate_lower_rad_s": [
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0
+      ],
+      "joint_rate_upper_rad_s": [
+        5.0,
+        5.0,
+        5.0,
+        5.0,
+        0.9323667883872983,
+        0.18654852390289078
+      ],
+      "solutions": [
+        {
+          "normal_turn_gain_per_s": 0.0,
+          "lateral_speed_tolerance_mps": 0.25,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            5.0,
+            0.3281169590940745,
+            -4.663986790791013,
+            -1.7658814099575673,
+            -0.8497652251917528
+          ],
+          "predicted_point_velocity_mps": [
+            1.0814302241388023,
+            -0.25,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            0.02230857602000713,
+            -0.7500000000000007,
+            -0.7500000000000004
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 0.0,
+          "lateral_speed_tolerance_mps": 0.75,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            5.0,
+            1.7380376686506933,
+            -4.087330007357833,
+            -2.3723292246272605,
+            -1.7574895888936113
+          ],
+          "predicted_point_velocity_mps": [
+            1.1322298643782842,
+            -0.7499999999999996,
+            -1.2000000000000002
+          ],
+          "predicted_normal_rate_per_s": [
+            0.02230857602000713,
+            -0.7500000000000002,
+            -0.7500000000000004
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 4.0,
+          "lateral_speed_tolerance_mps": 0.25,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            5.0,
+            0.07747032947366628,
+            -4.555154006623875,
+            -0.18370362181371935,
+            -0.4509852547657546
+          ],
+          "predicted_point_velocity_mps": [
+            1.3504052522629202,
+            -0.24999999999999956,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            0.48164354339903637,
+            0.015275942431967282,
+            -1.9391941764143135
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 4.0,
+          "lateral_speed_tolerance_mps": 0.75,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            5.0,
+            1.4873910390302851,
+            -3.9784972231906957,
+            -0.790151436483413,
+            -1.3587096184676128
+          ],
+          "predicted_point_velocity_mps": [
+            1.4012048925024025,
+            -0.7499999999999996,
+            -1.2000000000000002
+          ],
+          "predicted_normal_rate_per_s": [
+            0.48164354339903637,
+            0.01527594243196817,
+            -1.9391941764143144
+          ]
+        }
+      ]
+    },
+    {
+      "env_id": 93,
+      "source_candidate": 46,
+      "source_training_index": 65,
+      "time_s": 2.7680180072784424,
+      "usable_air_contact_in_completed_row": true,
+      "point_position_error_m": 7.809312542217629e-06,
+      "measured_point_velocity_mps": [
+        -0.9348676800727844,
+        -0.28795117139816284,
+        -1.1811116933822632
+      ],
+      "reconstructed_point_velocity_mps": [
+        -0.9348669431555559,
+        -0.28796801290360685,
+        -1.1811053077377258
+      ],
+      "point_velocity_reconstruction_error_mps": 1.80265306917321e-05,
+      "normal_rate_reconstruction_error_per_s": 2.818036621298959e-06,
+      "base_velocity_contribution_mps": [
+        -3.5601268392177055,
+        1.4932057220812567,
+        -0.5302468653305823
+      ],
+      "arm_velocity_contribution_mps": [
+        2.6252598960621496,
+        -1.7811737349848635,
+        -0.6508584424071435
+      ],
+      "reference_seed_predicted_velocity_mps": [
+        0.09866945867741794,
+        -1.1334626419101337,
+        -1.058389217299681
+      ],
+      "joint_velocity_rad_s": [
+        4.624098300933838,
+        4.999755382537842,
+        1.7406044006347656,
+        -0.24612997472286224,
+        -4.999603748321533,
+        -2.335383415222168
+      ],
+      "position_forecast_horizon_s": 0.08,
+      "joint_rate_lower_rad_s": [
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0,
+        -5.0
+      ],
+      "joint_rate_upper_rad_s": [
+        5.0,
+        5.0,
+        5.0,
+        5.0,
+        1.848807573318481,
+        0.1691171455383278
+      ],
+      "solutions": [
+        {
+          "normal_turn_gain_per_s": 0.0,
+          "lateral_speed_tolerance_mps": 0.25,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            3.9255880436020085,
+            1.9609227381763639,
+            -5.0,
+            -2.787165206067758,
+            0.1691171455383278
+          ],
+          "predicted_point_velocity_mps": [
+            0.9217789191825414,
+            -0.25,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            0.0766965231424972,
+            -0.3412025499826432,
+            -0.7499999999999982
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 0.0,
+          "lateral_speed_tolerance_mps": 0.75,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            3.803529537457045,
+            3.085385599361374,
+            -4.9763408297376035,
+            -3.7144591780174987,
+            0.1691171455383278
+          ],
+          "predicted_point_velocity_mps": [
+            1.069582068740015,
+            -0.75,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            0.023593135774217844,
+            -0.7499999999999976,
+            -0.7500000000000018
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 4.0,
+          "lateral_speed_tolerance_mps": 0.25,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            1.934397611040178,
+            4.7995872409165505,
+            -5.0,
+            -2.4133429516375613,
+            0.1691171455383278
+          ],
+          "predicted_point_velocity_mps": [
+            1.0478923318148414,
+            -0.25000000000000044,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            0.26619636108470224,
+            -0.035041898466881216,
+            -1.6779255620638072
+          ]
+        },
+        {
+          "normal_turn_gain_per_s": 4.0,
+          "lateral_speed_tolerance_mps": 0.75,
+          "feasible": true,
+          "status": 0,
+          "joint_velocity_seed_rad_s": [
+            5.0,
+            2.442200708027692,
+            5.0,
+            -4.586491576600428,
+            -2.8095051361736196,
+            0.1691171455383278
+          ],
+          "predicted_point_velocity_mps": [
+            1.1844177028890925,
+            -0.75,
+            -1.2
+          ],
+          "predicted_normal_rate_per_s": [
+            0.28460705908962636,
+            0.10668628066521335,
+            -1.6779255620638072
+          ]
+        }
+      ]
+    }
+  ],
+  "eligible_rate_proposals": [
+    {
+      "source_env_id": 40,
+      "normal_turn_gain_per_s": 0.0,
+      "lateral_speed_tolerance_mps": 0.25,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        3.913447439078777,
+        5.0,
+        -4.202095085135654,
+        -5.0,
+        0.27297252416610684,
+        -0.08694401424920098
+      ],
+      "predicted_point_velocity_mps": [
+        0.9768413119118398,
+        -0.0673965252535238,
+        -1.2
+      ],
+      "predicted_normal_rate_per_s": [
+        0.0023027499598141377,
+        -0.7500000000000011,
+        -0.75
+      ],
+      "worst_observed_state_forward_velocity_mps": -0.21670247132218456,
+      "maximum_observed_state_lateral_speed_mps": 1.9005623751097303,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.1050606369972229,
+      "proposal_score": -1.1620648096175406
+    },
+    {
+      "source_env_id": 40,
+      "normal_turn_gain_per_s": 0.0,
+      "lateral_speed_tolerance_mps": 0.75,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        3.913447439078777,
+        5.0,
+        -4.202095085135654,
+        -5.0,
+        0.27297252416610684,
+        -0.08694401424920098
+      ],
+      "predicted_point_velocity_mps": [
+        0.9768413119118398,
+        -0.0673965252535238,
+        -1.2
+      ],
+      "predicted_normal_rate_per_s": [
+        0.0023027499598141377,
+        -0.7500000000000011,
+        -0.75
+      ],
+      "worst_observed_state_forward_velocity_mps": -0.21670247132218456,
+      "maximum_observed_state_lateral_speed_mps": 1.9005623751097303,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.1050606369972229,
+      "proposal_score": -1.1620648096175406
+    },
+    {
+      "source_env_id": 40,
+      "normal_turn_gain_per_s": 4.0,
+      "lateral_speed_tolerance_mps": 0.25,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        5.0,
+        0.4661241762056272,
+        5.0,
+        -3.9426927212450598,
+        0.27297252416610684,
+        -4.073946953797564
+      ],
+      "predicted_point_velocity_mps": [
+        1.034596022249348,
+        -0.24999999999999956,
+        -1.2
+      ],
+      "predicted_normal_rate_per_s": [
+        0.33351900515518773,
+        -0.023431527974072275,
+        -1.6627552163220947
+      ],
+      "worst_observed_state_forward_velocity_mps": 0.9139905865790967,
+      "maximum_observed_state_lateral_speed_mps": 2.776374433584021,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.1050606369972229,
+      "proposal_score": -0.40117504766441314
+    },
+    {
+      "source_env_id": 40,
+      "normal_turn_gain_per_s": 4.0,
+      "lateral_speed_tolerance_mps": 0.75,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        5.0,
+        1.1584131378251235,
+        5.0,
+        -3.7364253059219075,
+        0.27297252416610684,
+        -4.472654221767022
+      ],
+      "predicted_point_velocity_mps": [
+        1.0942799401548242,
+        -0.75,
+        -1.1999999999999997
+      ],
+      "predicted_normal_rate_per_s": [
+        0.3621060330773892,
+        -0.023431527974072275,
+        -1.8032974412055243
+      ],
+      "worst_observed_state_forward_velocity_mps": 0.9558656746331604,
+      "maximum_observed_state_lateral_speed_mps": 2.4807664489760137,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.1050606369972229,
+      "proposal_score": -0.3479603729403308
+    },
+    {
+      "source_env_id": 18,
+      "normal_turn_gain_per_s": 0.0,
+      "lateral_speed_tolerance_mps": 0.25,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        3.910220553217136,
+        5.0,
+        -4.419874908534264,
+        -5.0,
+        0.16791188716888394,
+        -0.16145719893452323
+      ],
+      "predicted_point_velocity_mps": [
+        0.9376510530458881,
+        -0.18809651941064454,
+        -1.1999999999999997
+      ],
+      "predicted_normal_rate_per_s": [
+        0.016179056506689327,
+        -0.7499999999999996,
+        -0.75
+      ],
+      "worst_observed_state_forward_velocity_mps": -0.34717648493505626,
+      "maximum_observed_state_lateral_speed_mps": 2.0385873446499305,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.06870315274355221,
+      "proposal_score": -1.288352118357139
+    },
+    {
+      "source_env_id": 18,
+      "normal_turn_gain_per_s": 0.0,
+      "lateral_speed_tolerance_mps": 0.75,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        3.910220553217136,
+        5.0,
+        -4.419874908534264,
+        -5.0,
+        0.16791188716888394,
+        -0.16145719893452323
+      ],
+      "predicted_point_velocity_mps": [
+        0.9376510530458881,
+        -0.18809651941064454,
+        -1.1999999999999997
+      ],
+      "predicted_normal_rate_per_s": [
+        0.016179056506689327,
+        -0.7499999999999996,
+        -0.75
+      ],
+      "worst_observed_state_forward_velocity_mps": -0.34717648493505626,
+      "maximum_observed_state_lateral_speed_mps": 2.0385873446499305,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.06870315274355221,
+      "proposal_score": -1.288352118357139
+    },
+    {
+      "source_env_id": 18,
+      "normal_turn_gain_per_s": 4.0,
+      "lateral_speed_tolerance_mps": 0.25,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        5.0,
+        0.1195790872935484,
+        5.0,
+        -4.0524776186355345,
+        0.16791188716888394,
+        -3.952651786610931
+      ],
+      "predicted_point_velocity_mps": [
+        0.9063951972999977,
+        -0.25,
+        -1.2
+      ],
+      "predicted_normal_rate_per_s": [
+        0.295828024548795,
+        -0.07271797363655352,
+        -1.4891547032650356
+      ],
+      "worst_observed_state_forward_velocity_mps": 0.7191464131032923,
+      "maximum_observed_state_lateral_speed_mps": 2.9600664832011727,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.0,
+      "proposal_score": -0.39198442752791296
+    },
+    {
+      "source_env_id": 18,
+      "normal_turn_gain_per_s": 4.0,
+      "lateral_speed_tolerance_mps": 0.75,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        5.0,
+        0.8102744394242503,
+        5.0,
+        -3.847143207232931,
+        0.16791188716888394,
+        -4.342732757241345
+      ],
+      "predicted_point_velocity_mps": [
+        0.9511836240922438,
+        -0.75,
+        -1.2
+      ],
+      "predicted_normal_rate_per_s": [
+        0.31985658828150176,
+        -0.07271797363655397,
+        -1.604817775941684
+      ],
+      "worst_observed_state_forward_velocity_mps": 0.9261430045779524,
+      "maximum_observed_state_lateral_speed_mps": 2.661337804566662,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.0,
+      "proposal_score": -0.17177944386075866
+    },
+    {
+      "source_env_id": 46,
+      "normal_turn_gain_per_s": 0.0,
+      "lateral_speed_tolerance_mps": 0.25,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        3.217250718185312,
+        5.0,
+        -1.960618104974988,
+        -3.5356717840010106,
+        0.2290304899215695,
+        -1.7829000993092028
+      ],
+      "predicted_point_velocity_mps": [
+        0.9891738618345984,
+        0.25,
+        -1.2
+      ],
+      "predicted_normal_rate_per_s": [
+        0.024501436825967088,
+        -0.7500000000000001,
+        -0.7499999999999998
+      ],
+      "worst_observed_state_forward_velocity_mps": 0.4208976672777025,
+      "maximum_observed_state_lateral_speed_mps": 1.29089466972082,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.06111860275268555,
+      "proposal_score": -0.31414004151544095
+    },
+    {
+      "source_env_id": 46,
+      "normal_turn_gain_per_s": 0.0,
+      "lateral_speed_tolerance_mps": 0.75,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        3.6755648202616817,
+        5.0,
+        -3.474979077061408,
+        -4.570183677199476,
+        0.2290304899215695,
+        -0.48785085888762636
+      ],
+      "predicted_point_velocity_mps": [
+        1.0521364555980122,
+        0.75,
+        -1.2000000000000002
+      ],
+      "predicted_normal_rate_per_s": [
+        0.024501436825967088,
+        -0.7500000000000001,
+        -0.7500000000000002
+      ],
+      "worst_observed_state_forward_velocity_mps": -0.013156959255572698,
+      "maximum_observed_state_lateral_speed_mps": 1.6276477168043306,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.06111860275268555,
+      "proposal_score": -0.8052011651621275
+    },
+    {
+      "source_env_id": 46,
+      "normal_turn_gain_per_s": 4.0,
+      "lateral_speed_tolerance_mps": 0.25,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        5.0,
+        5.0,
+        -1.8215854537879153,
+        -4.536582592611673,
+        0.2290304899215695,
+        -1.9337826946609442
+      ],
+      "predicted_point_velocity_mps": [
+        0.8478167579378877,
+        0.25,
+        -1.2
+      ],
+      "predicted_normal_rate_per_s": [
+        0.20728829540855467,
+        -0.031317200592921535,
+        -0.9134555534794442
+      ],
+      "worst_observed_state_forward_velocity_mps": 0.7898911550114596,
+      "maximum_observed_state_lateral_speed_mps": 1.969889155189012,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.06111860275268555,
+      "proposal_score": -0.07004555678906643
+    },
+    {
+      "source_env_id": 46,
+      "normal_turn_gain_per_s": 4.0,
+      "lateral_speed_tolerance_mps": 0.75,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        5.0,
+        4.747219888964129,
+        -2.8352701530718885,
+        -5.0,
+        0.2290304899215695,
+        -0.8739970525929923
+      ],
+      "predicted_point_velocity_mps": [
+        0.8682083953140212,
+        0.7500000000000009,
+        -1.2
+      ],
+      "predicted_normal_rate_per_s": [
+        0.18765252944847902,
+        -0.03131720059292242,
+        -0.8294788978649243
+      ],
+      "worst_observed_state_forward_velocity_mps": 0.2493515612079782,
+      "maximum_observed_state_lateral_speed_mps": 2.1515299235535132,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.06111860275268555,
+      "proposal_score": -0.6124353683694631
+    },
+    {
+      "source_env_id": 48,
+      "normal_turn_gain_per_s": 0.0,
+      "lateral_speed_tolerance_mps": 0.25,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        5.0,
+        5.0,
+        -1.8988060632047574,
+        -5.0,
+        -1.0599504014624064,
+        -1.297762061442207
+      ],
+      "predicted_point_velocity_mps": [
+        1.132001104609849,
+        -0.22516975308756315,
+        -1.2
+      ],
+      "predicted_normal_rate_per_s": [
+        -0.011690900840683971,
+        -0.7500000000000004,
+        -0.75
+      ],
+      "worst_observed_state_forward_velocity_mps": 0.4954241384411926,
+      "maximum_observed_state_lateral_speed_mps": 1.6858210420336337,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.0,
+      "proposal_score": -0.2577082919216429
+    },
+    {
+      "source_env_id": 48,
+      "normal_turn_gain_per_s": 0.0,
+      "lateral_speed_tolerance_mps": 0.75,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        5.0,
+        5.0,
+        -1.8988060632047574,
+        -5.0,
+        -1.0599504014624064,
+        -1.297762061442207
+      ],
+      "predicted_point_velocity_mps": [
+        1.132001104609849,
+        -0.22516975308756315,
+        -1.2
+      ],
+      "predicted_normal_rate_per_s": [
+        -0.011690900840683971,
+        -0.7500000000000004,
+        -0.75
+      ],
+      "worst_observed_state_forward_velocity_mps": 0.4954241384411926,
+      "maximum_observed_state_lateral_speed_mps": 1.6858210420336337,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.0,
+      "proposal_score": -0.2577082919216429
+    },
+    {
+      "source_env_id": 48,
+      "normal_turn_gain_per_s": 4.0,
+      "lateral_speed_tolerance_mps": 0.25,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        5.0,
+        5.0,
+        -2.7735695724763016,
+        -5.0,
+        0.5478781357905184,
+        -0.465444182357093
+      ],
+      "predicted_point_velocity_mps": [
+        1.3465877451386499,
+        0.009950090508456633,
+        -1.2
+      ],
+      "predicted_normal_rate_per_s": [
+        0.3911595841700135,
+        0.05377618110468463,
+        -1.816883751252914
+      ],
+      "worst_observed_state_forward_velocity_mps": 0.5140032370279126,
+      "maximum_observed_state_lateral_speed_mps": 1.7563856275007579,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.3799662486216344,
+      "proposal_score": -0.8997544209842774
+    },
+    {
+      "source_env_id": 48,
+      "normal_turn_gain_per_s": 4.0,
+      "lateral_speed_tolerance_mps": 0.75,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        5.0,
+        5.0,
+        -2.7735695724763016,
+        -5.0,
+        0.5478781357905184,
+        -0.465444182357093
+      ],
+      "predicted_point_velocity_mps": [
+        1.3465877451386499,
+        0.009950090508456633,
+        -1.2
+      ],
+      "predicted_normal_rate_per_s": [
+        0.3911595841700135,
+        0.05377618110468463,
+        -1.816883751252914
+      ],
+      "worst_observed_state_forward_velocity_mps": 0.5140032370279126,
+      "maximum_observed_state_lateral_speed_mps": 1.7563856275007579,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.3799662486216344,
+      "proposal_score": -0.8997544209842774
+    },
+    {
+      "source_env_id": 88,
+      "normal_turn_gain_per_s": 0.0,
+      "lateral_speed_tolerance_mps": 0.25,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        3.843189870345971,
+        5.0,
+        -4.274872813685566,
+        -5.0,
+        0.2623628973960873,
+        0.009232628787317199
+      ],
+      "predicted_point_velocity_mps": [
+        0.8723071486409593,
+        -0.21155633957502484,
+        -1.1999999999999997
+      ],
+      "predicted_normal_rate_per_s": [
+        0.023291417753832755,
+        -0.75,
+        -0.7499999999999996
+      ],
+      "worst_observed_state_forward_velocity_mps": -0.25899528132390426,
+      "maximum_observed_state_lateral_speed_mps": 1.8648681338356417,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.09445101022720337,
+      "proposal_score": -1.1804620323786117
+    },
+    {
+      "source_env_id": 88,
+      "normal_turn_gain_per_s": 0.0,
+      "lateral_speed_tolerance_mps": 0.75,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        3.843189870345971,
+        5.0,
+        -4.274872813685566,
+        -5.0,
+        0.2623628973960873,
+        0.009232628787317199
+      ],
+      "predicted_point_velocity_mps": [
+        0.8723071486409593,
+        -0.21155633957502484,
+        -1.1999999999999997
+      ],
+      "predicted_normal_rate_per_s": [
+        0.023291417753832755,
+        -0.75,
+        -0.7499999999999996
+      ],
+      "worst_observed_state_forward_velocity_mps": -0.25899528132390426,
+      "maximum_observed_state_lateral_speed_mps": 1.8648681338356417,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.09445101022720337,
+      "proposal_score": -1.1804620323786117
+    },
+    {
+      "source_env_id": 88,
+      "normal_turn_gain_per_s": 4.0,
+      "lateral_speed_tolerance_mps": 0.25,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        5.0,
+        0.16767976252127165,
+        5.0,
+        -4.084268064224212,
+        0.2623628973960873,
+        -3.648719132547364
+      ],
+      "predicted_point_velocity_mps": [
+        0.8720973138052608,
+        -0.25,
+        -1.2
+      ],
+      "predicted_normal_rate_per_s": [
+        0.40465282999358065,
+        0.019519372582922634,
+        -1.6036573488398023
+      ],
+      "worst_observed_state_forward_velocity_mps": 0.7671595337689414,
+      "maximum_observed_state_lateral_speed_mps": 2.7820635049177485,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.09445101022720337,
+      "proposal_score": -0.4932795204016782
+    },
+    {
+      "source_env_id": 88,
+      "normal_turn_gain_per_s": 4.0,
+      "lateral_speed_tolerance_mps": 0.75,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        5.0,
+        0.8582410393468225,
+        5.0,
+        -3.8845433831337437,
+        0.2623628973960873,
+        -4.029828200289479
+      ],
+      "predicted_point_velocity_mps": [
+        0.9230720684900804,
+        -0.75,
+        -1.2
+      ],
+      "predicted_normal_rate_per_s": [
+        0.4388929295169183,
+        0.019519372582923078,
+        -1.7407986123853287
+      ],
+      "worst_observed_state_forward_velocity_mps": 0.9230720684900804,
+      "maximum_observed_state_lateral_speed_mps": 2.4794861174438214,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.09445101022720337,
+      "proposal_score": -0.32350662855832274
+    },
+    {
+      "source_env_id": 2,
+      "normal_turn_gain_per_s": 0.0,
+      "lateral_speed_tolerance_mps": 0.25,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        4.120385995571464,
+        5.0,
+        -4.068273996932551,
+        -5.0,
+        -0.03581055744507635,
+        -0.15596771891664665
+      ],
+      "predicted_point_velocity_mps": [
+        0.9793889388115875,
+        -0.24999999999999956,
+        -1.2000000000000002
+      ],
+      "predicted_normal_rate_per_s": [
+        0.03909330961201435,
+        -0.75,
+        -0.7500000000000002
+      ],
+      "worst_observed_state_forward_velocity_mps": -0.2593895317295374,
+      "maximum_observed_state_lateral_speed_mps": 1.9251822948323283,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.0,
+      "proposal_score": -1.0118692113085734
+    },
+    {
+      "source_env_id": 2,
+      "normal_turn_gain_per_s": 0.0,
+      "lateral_speed_tolerance_mps": 0.75,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        4.701592831594616,
+        5.0,
+        -2.6344520056313523,
+        -5.0,
+        -0.5987251633285889,
+        -1.164862769745311
+      ],
+      "predicted_point_velocity_mps": [
+        1.031306472967762,
+        -0.75,
+        -1.2000000000000002
+      ],
+      "predicted_normal_rate_per_s": [
+        0.03909330961201424,
+        -0.75,
+        -0.7500000000000002
+      ],
+      "worst_observed_state_forward_velocity_mps": 0.2996826190924162,
+      "maximum_observed_state_lateral_speed_mps": 1.898054486807223,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.0,
+      "proposal_score": -0.47263876713936714
+    },
+    {
+      "source_env_id": 2,
+      "normal_turn_gain_per_s": 4.0,
+      "lateral_speed_tolerance_mps": 0.25,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        5.0,
+        1.0247618360982436,
+        3.0515703380475543,
+        -4.465069101508674,
+        0.2929013371467587,
+        -2.358628492009113
+      ],
+      "predicted_point_velocity_mps": [
+        1.176975096368159,
+        -0.24999999999999956,
+        -1.2000000000000006
+      ],
+      "predicted_normal_rate_per_s": [
+        0.4430054098635313,
+        -0.0826461705616453,
+        -1.923114681833946
+      ],
+      "worst_observed_state_forward_velocity_mps": 0.4692124465625591,
+      "maximum_observed_state_lateral_speed_mps": 2.5352321900666492,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.12498944997787476,
+      "proposal_score": -0.6954557142927376
+    },
+    {
+      "source_env_id": 2,
+      "normal_turn_gain_per_s": 4.0,
+      "lateral_speed_tolerance_mps": 0.75,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        5.0,
+        2.695777350004823,
+        1.380554824140975,
+        -4.465069101508674,
+        0.2929013371467587,
+        -2.2808561807466257
+      ],
+      "predicted_point_velocity_mps": [
+        1.2501679590413879,
+        -0.75,
+        -1.2
+      ],
+      "predicted_normal_rate_per_s": [
+        0.4430054098635313,
+        -0.0826461705616453,
+        -1.923114681833946
+      ],
+      "worst_observed_state_forward_velocity_mps": 0.7962620339437372,
+      "maximum_observed_state_lateral_speed_mps": 2.1625532863950023,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.12498944997787476,
+      "proposal_score": -0.28217304760368095
+    },
+    {
+      "source_env_id": 45,
+      "normal_turn_gain_per_s": 0.0,
+      "lateral_speed_tolerance_mps": 0.25,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        4.445168401522468,
+        5.0,
+        -1.099679415164419,
+        -5.0,
+        -1.544036001139624,
+        -1.0548421935292833
+      ],
+      "predicted_point_velocity_mps": [
+        1.1060477069081012,
+        -0.25,
+        -1.2000000000000002
+      ],
+      "predicted_normal_rate_per_s": [
+        0.05166062431835705,
+        -0.7499999999999996,
+        -0.75
+      ],
+      "worst_observed_state_forward_velocity_mps": 0.504693601127681,
+      "maximum_observed_state_lateral_speed_mps": 2.1060195497856427,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.0,
+      "proposal_score": -0.44231396363859815
+    },
+    {
+      "source_env_id": 45,
+      "normal_turn_gain_per_s": 0.0,
+      "lateral_speed_tolerance_mps": 0.75,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        4.887096502004918,
+        5.0,
+        -0.12169346915819582,
+        -5.0,
+        -2.1618368468226987,
+        -1.2092901289283466
+      ],
+      "predicted_point_velocity_mps": [
+        1.2052976506910902,
+        -0.75,
+        -1.2000000000000002
+      ],
+      "predicted_normal_rate_per_s": [
+        0.05166062431835716,
+        -0.7499999999999996,
+        -0.75
+      ],
+      "worst_observed_state_forward_velocity_mps": 0.1974742800690854,
+      "maximum_observed_state_lateral_speed_mps": 2.700822729359116,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.0,
+      "proposal_score": -0.9387593283126676
+    },
+    {
+      "source_env_id": 45,
+      "normal_turn_gain_per_s": 4.0,
+      "lateral_speed_tolerance_mps": 0.25,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        3.9971999916884564,
+        5.0,
+        -1.4472514009269037,
+        -5.0,
+        -0.05746576043806181,
+        -0.6140299572970896
+      ],
+      "predicted_point_velocity_mps": [
+        1.4555406193643723,
+        -0.25000000000000044,
+        -1.2
+      ],
+      "predicted_normal_rate_per_s": [
+        0.30178159331405885,
+        -0.29767091219881886,
+        -1.7787273010175166
+      ],
+      "worst_observed_state_forward_velocity_mps": 1.0372826427480568,
+      "maximum_observed_state_lateral_speed_mps": 2.0645673041863875,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.0,
+      "proposal_score": 0.16229527879315075
+    },
+    {
+      "source_env_id": 45,
+      "normal_turn_gain_per_s": 4.0,
+      "lateral_speed_tolerance_mps": 0.75,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        4.439128092170906,
+        5.0,
+        -0.46926545492068067,
+        -5.0,
+        -0.6752666061211368,
+        -0.7684778926961533
+      ],
+      "predicted_point_velocity_mps": [
+        1.5547905631473613,
+        -0.75,
+        -1.1999999999999997
+      ],
+      "predicted_normal_rate_per_s": [
+        0.30178159331405885,
+        -0.2976709121988193,
+        -1.7787273010175166
+      ],
+      "worst_observed_state_forward_velocity_mps": 0.7526858319921557,
+      "maximum_observed_state_lateral_speed_mps": 2.6593704837598606,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.0,
+      "proposal_score": -0.29291367227679216
+    },
+    {
+      "source_env_id": 93,
+      "normal_turn_gain_per_s": 0.0,
+      "lateral_speed_tolerance_mps": 0.25,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        5.0,
+        3.9255880436020085,
+        1.9609227381763639,
+        -5.0,
+        -2.787165206067758,
+        0.1691171455383278
+      ],
+      "predicted_point_velocity_mps": [
+        0.9217789191825414,
+        -0.25,
+        -1.2
+      ],
+      "predicted_normal_rate_per_s": [
+        0.0766965231424972,
+        -0.3412025499826432,
+        -0.7499999999999982
+      ],
+      "worst_observed_state_forward_velocity_mps": -0.2216931569597429,
+      "maximum_observed_state_lateral_speed_mps": 3.695895950812284,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.11096298694610596,
+      "proposal_score": -1.8791911946284936
+    },
+    {
+      "source_env_id": 93,
+      "normal_turn_gain_per_s": 0.0,
+      "lateral_speed_tolerance_mps": 0.75,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        5.0,
+        3.803529537457045,
+        3.085385599361374,
+        -4.9763408297376035,
+        -3.7144591780174987,
+        0.1691171455383278
+      ],
+      "predicted_point_velocity_mps": [
+        1.069582068740015,
+        -0.75,
+        -1.2
+      ],
+      "predicted_normal_rate_per_s": [
+        0.023593135774217844,
+        -0.7499999999999976,
+        -0.7500000000000018
+      ],
+      "worst_observed_state_forward_velocity_mps": -0.5229342975600562,
+      "maximum_observed_state_lateral_speed_mps": 4.370925857432435,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.11096298694610596,
+      "proposal_score": -2.4795252715009832
+    },
+    {
+      "source_env_id": 93,
+      "normal_turn_gain_per_s": 4.0,
+      "lateral_speed_tolerance_mps": 0.25,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        5.0,
+        1.934397611040178,
+        4.7995872409165505,
+        -5.0,
+        -2.4133429516375613,
+        0.1691171455383278
+      ],
+      "predicted_point_velocity_mps": [
+        1.0478923318148414,
+        -0.25000000000000044,
+        -1.2
+      ],
+      "predicted_normal_rate_per_s": [
+        0.26619636108470224,
+        -0.035041898466881216,
+        -1.6779255620638072
+      ],
+      "worst_observed_state_forward_velocity_mps": -0.08337647033699791,
+      "maximum_observed_state_lateral_speed_mps": 3.7244407558876382,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.11096298694610596,
+      "proposal_score": -1.7635263581407337
+    },
+    {
+      "source_env_id": 93,
+      "normal_turn_gain_per_s": 4.0,
+      "lateral_speed_tolerance_mps": 0.75,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        5.0,
+        2.442200708027692,
+        5.0,
+        -4.586491576600428,
+        -2.8095051361736196,
+        0.1691171455383278
+      ],
+      "predicted_point_velocity_mps": [
+        1.1844177028890925,
+        -0.75,
+        -1.2
+      ],
+      "predicted_normal_rate_per_s": [
+        0.28460705908962636,
+        0.10668628066521335,
+        -1.6779255620638072
+      ],
+      "worst_observed_state_forward_velocity_mps": -0.3686984569072098,
+      "maximum_observed_state_lateral_speed_mps": 4.349813498306129,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.11096298694610596,
+      "proposal_score": -2.2513261923571646
+    }
+  ],
+  "robust_multi_state_rate_proposals": [
+    {
+      "source_env_id": 93,
+      "source_scope": "One joint-rate direction jointly constrained over all prior usable contact states",
+      "normal_turn_gain_per_s": 0.0,
+      "lateral_speed_tolerance_mps": 0.75,
+      "normal_rate_tolerance_per_s": 0.75,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        0.5388001940577657,
+        5.0,
+        -1.8151699514102935,
+        -0.41640274095816815,
+        0.16791188716888394,
+        -3.175457642536962
+      ],
+      "predicted_point_velocity_mps": [
+        -0.5470719416179168,
+        0.7500000000000004,
+        -1.5000000000000002
+      ],
+      "worst_observed_state_forward_velocity_mps": -0.5470719416179168,
+      "maximum_observed_state_lateral_speed_mps": 0.7500000000000009,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.0,
+      "proposal_score": -1.0726717744489656
+    },
+    {
+      "source_env_id": 93,
+      "source_scope": "One joint-rate direction jointly constrained over all prior usable contact states",
+      "normal_turn_gain_per_s": 0.0,
+      "lateral_speed_tolerance_mps": 0.75,
+      "normal_rate_tolerance_per_s": 1.5,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        0.42330423417092256,
+        5.0,
+        -2.086014857059743,
+        -1.2495374609395071,
+        0.16791188716888394,
+        -2.827234506666594
+      ],
+      "predicted_point_velocity_mps": [
+        -0.3449452258694281,
+        0.7500000000000004,
+        -1.5000000000000002
+      ],
+      "worst_observed_state_forward_velocity_mps": -0.3449452258694281,
+      "maximum_observed_state_lateral_speed_mps": 0.7500000000000004,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.0,
+      "proposal_score": -0.9258593132202595
+    },
+    {
+      "source_env_id": 93,
+      "source_scope": "One joint-rate direction jointly constrained over all prior usable contact states",
+      "normal_turn_gain_per_s": 0.0,
+      "lateral_speed_tolerance_mps": 1.25,
+      "normal_rate_tolerance_per_s": 0.75,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        3.190168754922002,
+        5.0,
+        -1.663514286976855,
+        -3.1513883185011626,
+        -0.2654307198322556,
+        -2.1186773477769996
+      ],
+      "predicted_point_velocity_mps": [
+        0.27368961128321123,
+        1.25,
+        -1.5
+      ],
+      "worst_observed_state_forward_velocity_mps": 0.27368961128321123,
+      "maximum_observed_state_lateral_speed_mps": 1.25,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.0,
+      "proposal_score": -0.34718587407855134
+    },
+    {
+      "source_env_id": 93,
+      "source_scope": "One joint-rate direction jointly constrained over all prior usable contact states",
+      "normal_turn_gain_per_s": 0.0,
+      "lateral_speed_tolerance_mps": 1.25,
+      "normal_rate_tolerance_per_s": 1.5,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        3.075863643216543,
+        5.0,
+        -2.0780015791142943,
+        -4.239851255632275,
+        0.16791188716888394,
+        -1.5482465126477223
+      ],
+      "predicted_point_velocity_mps": [
+        0.6340809449621645,
+        1.25,
+        -1.5
+      ],
+      "worst_observed_state_forward_velocity_mps": 0.6340809449621645,
+      "maximum_observed_state_lateral_speed_mps": 1.2500000000000004,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.0,
+      "proposal_score": -0.044542001617200344
+    },
+    {
+      "source_env_id": 93,
+      "source_scope": "One joint-rate direction jointly constrained over all prior usable contact states",
+      "normal_turn_gain_per_s": 4.0,
+      "lateral_speed_tolerance_mps": 0.75,
+      "normal_rate_tolerance_per_s": 1.5,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        0.5251124386350938,
+        4.331976298935738,
+        -0.8069768591202519,
+        -0.25364431274447746,
+        0.16791188716888394,
+        -3.2792943989290566
+      ],
+      "predicted_point_velocity_mps": [
+        -0.5771082813585302,
+        0.7499999999999996,
+        -1.5
+      ],
+      "worst_observed_state_forward_velocity_mps": -0.5771082813585302,
+      "maximum_observed_state_lateral_speed_mps": 0.75,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.0,
+      "proposal_score": -1.0942099837877184
+    },
+    {
+      "source_env_id": 93,
+      "source_scope": "One joint-rate direction jointly constrained over all prior usable contact states",
+      "normal_turn_gain_per_s": 4.0,
+      "lateral_speed_tolerance_mps": 1.25,
+      "normal_rate_tolerance_per_s": 0.75,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        3.310212916994605,
+        5.0,
+        -1.5284385726885874,
+        -2.549363408453842,
+        0.16791188716888394,
+        -2.254815288593595
+      ],
+      "predicted_point_velocity_mps": [
+        0.22395188855870174,
+        1.25,
+        -1.5
+      ],
+      "worst_observed_state_forward_velocity_mps": 0.22395188855870174,
+      "maximum_observed_state_lateral_speed_mps": 1.2500000000000009,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.0,
+      "proposal_score": -0.3234615954078626
+    },
+    {
+      "source_env_id": 93,
+      "source_scope": "One joint-rate direction jointly constrained over all prior usable contact states",
+      "normal_turn_gain_per_s": 4.0,
+      "lateral_speed_tolerance_mps": 1.25,
+      "normal_rate_tolerance_per_s": 1.5,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        3.1928901408160555,
+        5.0,
+        -1.8035674713595333,
+        -3.3956759407252357,
+        0.16791188716888394,
+        -1.9010842570498152
+      ],
+      "predicted_point_velocity_mps": [
+        0.42927567178626314,
+        1.2500000000000004,
+        -1.5
+      ],
+      "worst_observed_state_forward_velocity_mps": 0.42927567178626314,
+      "maximum_observed_state_lateral_speed_mps": 1.2500000000000004,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.0,
+      "proposal_score": -0.1744837530965466
+    }
+  ],
+  "selected_joint_rate_proposals": [
+    {
+      "source_env_id": 93,
+      "source_scope": "One joint-rate direction jointly constrained over all prior usable contact states",
+      "normal_turn_gain_per_s": 0.0,
+      "lateral_speed_tolerance_mps": 1.25,
+      "normal_rate_tolerance_per_s": 1.5,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        3.075863643216543,
+        5.0,
+        -2.0780015791142943,
+        -4.239851255632275,
+        0.16791188716888394,
+        -1.5482465126477223
+      ],
+      "predicted_point_velocity_mps": [
+        0.6340809449621645,
+        1.25,
+        -1.5
+      ],
+      "worst_observed_state_forward_velocity_mps": 0.6340809449621645,
+      "maximum_observed_state_lateral_speed_mps": 1.2500000000000004,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.0,
+      "proposal_score": -0.044542001617200344,
+      "selection_family": "robust_prior_states"
+    },
+    {
+      "source_env_id": 93,
+      "source_scope": "One joint-rate direction jointly constrained over all prior usable contact states",
+      "normal_turn_gain_per_s": 4.0,
+      "lateral_speed_tolerance_mps": 1.25,
+      "normal_rate_tolerance_per_s": 1.5,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        3.1928901408160555,
+        5.0,
+        -1.8035674713595333,
+        -3.3956759407252357,
+        0.16791188716888394,
+        -1.9010842570498152
+      ],
+      "predicted_point_velocity_mps": [
+        0.42927567178626314,
+        1.2500000000000004,
+        -1.5
+      ],
+      "worst_observed_state_forward_velocity_mps": 0.42927567178626314,
+      "maximum_observed_state_lateral_speed_mps": 1.2500000000000004,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.0,
+      "proposal_score": -0.1744837530965466,
+      "selection_family": "robust_prior_states"
+    },
+    {
+      "source_env_id": 45,
+      "normal_turn_gain_per_s": 4.0,
+      "lateral_speed_tolerance_mps": 0.25,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        3.9971999916884564,
+        5.0,
+        -1.4472514009269037,
+        -5.0,
+        -0.05746576043806181,
+        -0.6140299572970896
+      ],
+      "predicted_point_velocity_mps": [
+        1.4555406193643723,
+        -0.25000000000000044,
+        -1.2
+      ],
+      "predicted_normal_rate_per_s": [
+        0.30178159331405885,
+        -0.29767091219881886,
+        -1.7787273010175166
+      ],
+      "worst_observed_state_forward_velocity_mps": 1.0372826427480568,
+      "maximum_observed_state_lateral_speed_mps": 2.0645673041863875,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.0,
+      "proposal_score": 0.16229527879315075,
+      "selection_family": "faster_single_state_proposal"
+    },
+    {
+      "source_env_id": 18,
+      "normal_turn_gain_per_s": 4.0,
+      "lateral_speed_tolerance_mps": 0.75,
+      "feasible": true,
+      "status": 0,
+      "joint_velocity_seed_rad_s": [
+        5.0,
+        0.8102744394242503,
+        5.0,
+        -3.847143207232931,
+        0.16791188716888394,
+        -4.342732757241345
+      ],
+      "predicted_point_velocity_mps": [
+        0.9511836240922438,
+        -0.75,
+        -1.2
+      ],
+      "predicted_normal_rate_per_s": [
+        0.31985658828150176,
+        -0.07271797363655397,
+        -1.604817775941684
+      ],
+      "worst_observed_state_forward_velocity_mps": 0.9261430045779524,
+      "maximum_observed_state_lateral_speed_mps": 2.661337804566662,
+      "maximum_forecast_rate_bound_violation_rad_s": 0.0,
+      "proposal_score": -0.17177944386075866,
+      "selection_family": "faster_single_state_proposal"
+    }
+  ],
+  "selection_scope": "Worst-state instantaneous kinematic proposal score over the eight prior usable TRAIN contacts; no changed-state outcome, torque or tracking feasibility.",
+  "new_dynamics_executed": false,
+  "formal_acceptance": false,
+  "sources": {
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/contact_face_recovery_native_tick500_snapshot/contacts.partial.json": "e01499d61c98e0ac4f04b34237a78a807eedf516835bcee74da223c36b07814f",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/contact_face_recovery_native_tick500_snapshot/episodes.partial.json": "d79ef7a6e8eabe862187f4722d168f3f0dbf056bc54fd9e2f0811227d44e1e64",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_contact_face_recovery_cem14/geometry.json": "8afd390b7b92179ba6e2fde3774cc60162a98a5bd63ed50defd95b2e8f9d9c37",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/reports/G07_full_racket_v4/contact_face_recovery_ready01_1116/policy.pt": "c1f1f8f3b911e76a3ba48b3f555a4b8789797f1275bcc5c1c0f4b209c982dbe7",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/scripts/diagnose_full_racket_measured_velocity_v4.py": "c8687ce4c01558dbb5c95d7abd18957f272eb704940d176081693f75e98a899f",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/quadsmash/control/full_racket_kinematics_v4.py": "9e7ce1df5f535a3aa48c0436e57a4478e8ef7d9a6f16419803e7d25d6cef0f4c"
+  }
+}
