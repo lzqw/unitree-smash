@@ -1,0 +1,43 @@
+{
+  "created_at": "2026-10-24T09:57:48.794417+00:00",
+  "scope": "Measured public-state velocity reconstruction at actual physical-tool forward-support points in the last100ms before closed native net faults. Not a changed controller or proof of a specific fix.",
+  "valid_pre_fault_unhit_samples": 437,
+  "support_x_m": {
+    "count": 437,
+    "minimum": 1.3201589887975276,
+    "median": 1.43955762655729,
+    "maximum": 1.4981888869289415
+  },
+  "base_only_forward_velocity_mps": {
+    "count": 437,
+    "minimum": -2.369950375112663,
+    "median": 0.872958350660496,
+    "maximum": 6.155330716113926
+  },
+  "measured_arm_relative_contribution_mps": {
+    "count": 437,
+    "minimum": -3.2939272869863263,
+    "median": -0.19071233190321157,
+    "maximum": 6.826185915972669
+  },
+  "full_measured_forward_velocity_mps": {
+    "count": 437,
+    "minimum": -1.0716624527627228,
+    "median": 0.6310839497929519,
+    "maximum": 6.284173247671205
+  },
+  "interpretation": "The current forecast omits measured arm-relative tool motion.119of437pre-fault samples have a positive arm contribution exceeding1m/s, with maximum6.826m/s, while its median is-0.191m/s. This identifies an omitted term and a testable braking hypothesis; it does not explain every net fault or establish a working fix.",
+  "next_unexecuted_hypotheses": [
+    "Use the full currently observed tool point velocity when anticipating net approach.",
+    "Inspect collision-aware post-contact retraction while retaining legal above-net followthrough."
+  ],
+  "native_rules_or_success_metrics_changed": false,
+  "formal_acceptance": false,
+  "sources": {
+    "reports/G07_full_racket_v4/joint_preparation_native_tick400_snapshot/near_contact_all.partial.npz": "8714e26630e84e49306044412d669c7873c93f4a4fa5154a11633157921702b7",
+    "reports/G07_full_racket_v4/joint_preparation_native_tick400_snapshot/episodes.partial.json": "28d15ab69ee3ea5ee692c7e23afd0950c7c01e6bb5d84e383650dc02fb96761a",
+    "quadsmash/tasks/stand/observation_contract.py": "3e884b4c5d72a2f86aff74114ebf0d9ece0264ea4b9e59880375a1fcc23a5772",
+    "quadsmash/control/full_racket_joint_preparation_v4.py": "0469df8778bd67c95c9bf886bc47d0ee63e0ada60611a18bbe442a0b75a658e0"
+  },
+  "arm_relative_forward_contribution_over1mps_samples": 119
+}

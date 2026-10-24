@@ -96,3 +96,5 @@ G10 = 冻结测试、消融、多种子及结论审计；结果可以是不支�
 最新[前移准备失败与任务空间准备控制的原生证据附件](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_body_preparation_failures_and_cartesian_native_20261024_0938.zip)（120,166,563字节，84个文件SHA及GitHub摘要/大小已核对）包含CEM08两代完整轨迹、第三代21步中断、真实FAILED回执，以及CEM09精确源码/输入、81项CPU检查、120路回放和实际前100步。首100步只证明初始化与执行，后续触网规避与扣杀效果仍待实测。
 
 最新[任务空间准备失败与关节准备修正的程序/原生证据](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_cartesian_failed_and_joint_preparation_native_20261024_0952.zip)（54,384,135字节，78文件与GitHub SHA核对）包含CEM09完整第0代失败和第1代104步中断、CEM10精确源代码/输入/86CPU检查/真实前100步。CEM10随后已实测前200步128回合均未提前结束；后续触网、击球与恢复仍待运行结果。
+
+当前[关节准备修正第0代前400步原始证据](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_joint_preparation_native_partial400_20261024_1000.zip)（49,772,106字节，26成员和GitHub大小/SHA核对）已发布：121首回合结束、7待恢复，1空中拍线+2拍框；拍线出球7.235米/秒并越网，但随后规则故障且恢复失败。3秒截点机器人规则终止由116减至92，触网仍未解决，完整扣杀仍0。四代作业继续运行，正式400未运行。

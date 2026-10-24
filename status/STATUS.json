@@ -68,9 +68,11 @@
           "max_seconds": 5400,
           "native_initialization_pending": false,
           "last_verified_generation": 0,
-          "last_verified_control_ticks": 200,
+          "last_verified_control_ticks": 600,
           "native_initialization_evidence": "reports/G07_full_racket_v4/NATIVE_JOINT_PREPARATION_INITIALIZATION_0951.json",
-          "native_before_launch_evidence": "reports/G07_full_racket_v4/NATIVE_JOINT_PREPARATION_BEFORE_LAUNCH_0953.json"
+          "native_before_launch_evidence": "reports/G07_full_racket_v4/NATIVE_JOINT_PREPARATION_BEFORE_LAUNCH_0953.json",
+          "last_process_verified_at": "2026-10-24T10:00:22.117899+00:00",
+          "latest_frozen_partial_report": "reports/G07_full_racket_v4/NATIVE_JOINT_PREPARATION_PARTIAL_0957.json"
         }
       ],
       "queued_native_sequence": {
@@ -227,7 +229,7 @@
         },
         "legacy26_and_embedded32_commands_bitwise_equal": true,
         "native_execution": true,
-        "native_execution_scope": "Actual128environment native first200ticks: all32reference parameters/60proposal rows preserved, finite recorded arrays and0early completions. First100body positions equal CEM08 exactly. Contact/net/recovery outcomes pending.",
+        "native_execution_scope": "Actual native initialization and400tick frozen prefix verified, live process later beyond400ticks.1airstrings+2frame contacts,121closed/7pending. Airstrings case7.235m/s crossed but later robot-rule fault, no valid recovery or observed first landing; no full success.",
         "report": "reports/G07_full_racket_v4/joint_preparation_ready01_0947/REPORT.json",
         "native_state_counterfactual_report": "reports/G07_full_racket_v4/joint_preparation_native_state_commands02_0948/REPORT.json",
         "native_initialization_report": "reports/G07_full_racket_v4/NATIVE_JOINT_PREPARATION_INITIALIZATION_0951.json"
@@ -280,19 +282,25 @@
       ],
       "latest_stopped_generation_summary": "reports/G07_full_racket_v4/ball_cartesian_preparation_cem09/STOPPED_TRAIN_SUMMARY.json",
       "latest_program_evidence_bundle": {
-        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_cartesian_failed_and_joint_preparation_native_20261024_0952.zip",
-        "bytes": 54384135,
-        "sha256": "97a09c02927fc310936f00ff2b67e49abd3e0fd9fb4f59403b170223a14cc04d",
-        "scope": "CEM09full failed generation and104tick interruption; CEM10exact source, warm/bank,86CPU tests, counterfactual commands and actual100tick initialization only.",
-        "upload_receipt": "reports/G07_full_racket_v4/cartesian_failed_joint_native_upload_receipt_0953.json",
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_joint_preparation_native_partial400_20261024_1000.zip",
+        "bytes": 49772106,
+        "sha256": "2bff9dad29d33e0fb364320deb552800beb83c909da614b426c308fd0eeadd75",
+        "scope": "Actual CEM10generation0through400ticks:121closed/7pending,1strings+2frame. Exact source/input and measured tool motion diagnostic. Full failure preserved; not whole-generation or formal acceptance.",
+        "upload_receipt": "reports/G07_full_racket_v4/joint_preparation_partial400_upload_receipt_1000.json",
         "formal_acceptance": false
       },
       "latest_partial_native_contacts": {
         "run": "ball_joint_preparation_cem10",
         "generation": 0,
-        "ticks": 200,
-        "first_episodes_complete": 0,
+        "last_live_control_ticks": 600,
+        "published_snapshot_control_ticks": 400,
+        "closed_first_episodes": 121,
+        "pending_first_episodes": 7,
+        "first_contacts": 3,
+        "first_air_strings_contacts": 1,
+        "first_frame_contacts": 2,
         "whole_generation_complete": false,
+        "report": "reports/G07_full_racket_v4/NATIVE_JOINT_PREPARATION_PARTIAL_0957.json",
         "formal_acceptance": false
       },
       "latest_airborne_strings_power_milestone": {
@@ -359,7 +367,8 @@
           "report": "reports/G07_full_racket_v4/cartesian_preparation_ready01_0924/REPORT.json",
           "native_initialization_report": "reports/G07_full_racket_v4/NATIVE_CARTESIAN_PREPARATION_INITIALIZATION_0937.json"
         }
-      ]
+      ],
+      "latest_net_approach_diagnostic": "reports/G07_full_racket_v4/JOINT_PREPARATION_NET_APPROACH_DIAGNOSTIC_0959.json"
     },
     "G08": {
       "state": "TODO",

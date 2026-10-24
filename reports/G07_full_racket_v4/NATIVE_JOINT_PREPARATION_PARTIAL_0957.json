@@ -1,0 +1,130 @@
+{
+  "verified_at": "2026-10-24T09:56:36.706183+00:00",
+  "scope": "Actual CEM10generation0through400ticks.121first episodes closed and7pending; not a completed generation or formal acceptance.",
+  "run": "ball_joint_preparation_cem10",
+  "generation": 0,
+  "control_ticks": 400,
+  "closed_first_episodes": 121,
+  "pending_first_episodes": 7,
+  "all_first_contacts": 3,
+  "first_string_contacts": 1,
+  "first_frame_contacts": 2,
+  "closed_contacts": [
+    {
+      "env_id": 8,
+      "airborne_string_hit": false,
+      "outgoing_velocity_mps": [
+        3.2619519233703613,
+        -4.8086323738098145,
+        2.8108878135681152
+      ],
+      "crossed_net": false,
+      "ground_seen": false,
+      "landed_legal_court": false,
+      "landed_target": false,
+      "first_landing_m": [
+        null,
+        null,
+        null
+      ],
+      "recovery_success": false,
+      "complete_smash": false,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_outgoing_speed_mps": 6.454794029037422
+    },
+    {
+      "env_id": 0,
+      "airborne_string_hit": true,
+      "outgoing_velocity_mps": [
+        7.153679370880127,
+        -1.0290800333023071,
+        -0.34385716915130615
+      ],
+      "crossed_net": true,
+      "ground_seen": false,
+      "landed_legal_court": false,
+      "landed_target": false,
+      "first_landing_m": [
+        null,
+        null,
+        null
+      ],
+      "recovery_success": false,
+      "complete_smash": false,
+      "training_terminal_reasons": {
+        "rally_fault": true,
+        "robot_rule_fault": true,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": false,
+        "root_fallen": false
+      },
+      "actual_outgoing_speed_mps": 7.235493902220782
+    },
+    {
+      "env_id": 2,
+      "airborne_string_hit": false,
+      "outgoing_velocity_mps": [
+        6.003210544586182,
+        -3.3376877307891846,
+        2.070751667022705
+      ],
+      "crossed_net": false,
+      "ground_seen": false,
+      "landed_legal_court": false,
+      "landed_target": false,
+      "first_landing_m": [
+        null,
+        null,
+        null
+      ],
+      "recovery_success": false,
+      "complete_smash": false,
+      "training_terminal_reasons": {
+        "rally_fault": true,
+        "robot_rule_fault": true,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": false,
+        "root_fallen": false
+      },
+      "actual_outgoing_speed_mps": 7.174030157266464
+    }
+  ],
+  "closed_fault_counts": {
+    "robot_net_fault": 88,
+    "racket_invasion_fault": 14,
+    "engineering_body_crossing": 0
+  },
+  "same_time3second_comparison": {
+    "previous_CEM08": {
+      "closed": 122,
+      "robot_rule_fault": 116,
+      "body_ground": 6
+    },
+    "current_CEM10": {
+      "closed": 101,
+      "robot_rule_fault": 92,
+      "body_ground": 9
+    }
+  },
+  "pending_env_ids": [
+    13,
+    53,
+    54,
+    57,
+    58,
+    61,
+    85
+  ],
+  "numerical_failures_in_closed_rows": 0,
+  "preserved_evidence_directory": "reports/G07_full_racket_v4/joint_preparation_native_tick400_snapshot",
+  "formal_acceptance": false
+}
