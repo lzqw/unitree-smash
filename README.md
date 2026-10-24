@@ -133,3 +133,8 @@ G10 = 冻结测试、消融、多种子及结论审计；结果可以是不支�
 最新[真实攻击恢复视频](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_attack_recovery_20261025_1710.mp4)（31.08秒）展示CEM24候选11的同回合攻击、越网和恢复，以及同参数另一来球失败。完整任务仍0。四代原始数据、权重、视频和终端核验已上传至[G07_CEM24_four_generations_and_latest_attack_recovery_20261025_1710.zip](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_CEM24_four_generations_and_latest_attack_recovery_20261025_1710.zip)。
 
 当前GPU0运行CEM25b相对公共来球预测引拍方案：以真实CEM23 TRAIN65接触恢复回合为参考，gain=.35；默认路径逐位等价和142项CPU测试已验证，CEM25b前100步原生初始化已验证，尚无新的接触成绩。
+
+
+最新 CEM26b（2026-10-25）完成4代、512候选/409600控制步：84次空中拍线、11次攻击门槛、30次拍线+恢复、5次目标落点、完整0、NF0。第3代候选43在TRAIN65同回合出球8.3196米/秒、vz=-2.2454、恢复3.873秒、身体触地0，首落x=4.1707米，目标后沿仍超17.1厘米。
+
+[最新真实攻击恢复视频](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_attack_recovery_20261025_1900.mp4)展示候选43及独立失败回合；完整扣杀仍0。相对引拍gain=.10的代码、权重和CEM26原始数据随后上传。

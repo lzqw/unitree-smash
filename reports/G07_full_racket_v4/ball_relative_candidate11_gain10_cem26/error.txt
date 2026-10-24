@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/home/autodrive/LZQW/unitree_smash/scripts/search_full_racket_ball_v4.py", line 522, in <module>
+    try:main()
+        ^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash/scripts/search_full_racket_ball_v4.py", line 221, in main
+    candidate_bank=validate_candidate_bank(json.loads(args.candidate_bank.read_text()),template['seed'],template['asset_sha256'],
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash/quadsmash/control/full_racket_candidate_bank_v4.py", line 10, in validate_candidate_bank
+    raise ValueError('Candidate bank asset/controller seed mismatch')
+ValueError: Candidate bank asset/controller seed mismatch

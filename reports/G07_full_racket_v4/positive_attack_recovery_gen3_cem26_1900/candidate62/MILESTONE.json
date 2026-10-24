@@ -1,0 +1,64 @@
+{
+  "created_at": "2026-10-24T18:59:30.332693+00:00",
+  "scope": "Actually executed CEM26b generation3 candidate; TRAIN65 attacking airborne strings/recovery native, target miss preserved; paired TRAIN1 remains independent. No formal pass.",
+  "candidate_id": 62,
+  "optimizer_generation_winner": false,
+  "checks": [
+    {
+      "env_id": 124,
+      "source_training_index": 1,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "attack_outgoing": false,
+      "actual_outgoing_velocity_mps": [
+        2.6988120079040527,
+        5.004148483276367,
+        1.2744624614715576
+      ],
+      "outgoing_norm_mps": 5.8266064619454445,
+      "first_landing_m": [
+        2.95245361328125,
+        3.594493865966797,
+        0.02517528459429741
+      ],
+      "target_x_overshoot_m": 0.0,
+      "recovery_s": 4.106884956359863,
+      "maximum_body_ground_force_n": 0.0,
+      "sampled100Hz_arm_speed_peak_rad_s": 4.926506996154785
+    },
+    {
+      "env_id": 125,
+      "source_training_index": 65,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "attack_outgoing": false,
+      "actual_outgoing_velocity_mps": [
+        6.174741268157959,
+        -3.0219740867614746,
+        1.9589117765426636
+      ],
+      "outgoing_norm_mps": 7.1482230279999195,
+      "first_landing_m": [
+        5.8654632568359375,
+        -2.4976978302001953,
+        0.0250509362667799
+      ],
+      "target_x_overshoot_m": 1.8654632568359375,
+      "recovery_s": 4.09488582611084,
+      "maximum_body_ground_force_n": 0.0,
+      "sampled100Hz_arm_speed_peak_rad_s": 4.779847145080566
+    }
+  ],
+  "policy_sha256": "81224ed6f0ccba798ce31b6700d2b391ec6b60e87eca6ff3d9445910fbf43744",
+  "native_execution": true,
+  "formal_acceptance": false,
+  "source_sha256": {
+    "reports/G07_full_racket_v4/ball_relative_candidate11_gain10_cem26b/population_003.pt": "c1819c4aa732095609c5db1844a0dcf875b1ed7d395767a75614b5275d4cf29b",
+    "reports/G07_full_racket_v4/ball_relative_candidate11_gain10_cem26b/episodes_003.json": "863c67bcf51f9cd400d66aad3f6d9c7cb8a43381ffef622403f8f04337b6d409",
+    "reports/G07_full_racket_v4/positive_attack_recovery_gen3_cem26_1900/extract.py": "57312f10b69565ccf29eee03cd0b129e27b98b5275100fb60529ceabf1924264"
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "created_at": "2026-10-24T18:41:53.418529+00:00",
+  "scope": "Completed native TRAIN generation only. Canonical per-episode criteria recomputed on TRAINrows without reading formal panel cases; not a formal panel result or independent success rate.",
+  "run": "ball_relative_candidate11_gain10_cem26b",
+  "generation": 2,
+  "candidates": 64,
+  "distinct_TRAIN_indices": [
+    1,
+    65
+  ],
+  "distinct_cases": 2,
+  "control_ticks": 800,
+  "actual_control_env_steps": 102400,
+  "counts": {
+    "had_contact": 74,
+    "frame_hit": 47,
+    "airborne_string_hit": 27,
+    "attack_outgoing": 2,
+    "recovery_success": 46,
+    "crossed_net": 27,
+    "landed_legal_court": 27,
+    "landed_target": 3,
+    "complete_smash": 0,
+    "robot_net_fault": 0,
+    "racket_invasion_fault": 0,
+    "executions": 128,
+    "usable_air_strings": 27,
+    "air_strings_and_recovery": 6,
+    "attack_outgoing_and_recovery": 0,
+    "canonical_air_contacts": 27,
+    "canonical_conditional_recovery_count": 6,
+    "canonical_complete": 0,
+    "robot_rule_terminal": 0,
+    "body_ground_terminal": 75,
+    "numerical_failures": 0
+  },
+  "best_candidate_indices": [
+    62,
+    62
+  ],
+  "all_native_and_independent_complete_flags_agree": true,
+  "all_attack_gates_recomputed_from_actual_outgoing": true,
+  "all_first_ground_initializations_verified": true,
+  "whole_job_complete": false,
+  "native_execution": true,
+  "formal_acceptance": false,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_relative_candidate11_gain10_cem26b/episodes_002.json": "10a271a1380b5536c5d8025439d47249680f000133098d5a0ad6205973add2ab",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_relative_candidate11_gain10_cem26b/population_002.pt": "8c2cee35eb61342d5473f624ffba7a97403eb4cbb98b965b7f71ae2bad016ea4",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_relative_candidate11_gain10_cem26b/public_and_poses_002.npz": "8391e482ce86ed2e0ce9f5ea0cd45e079ba804f4dd4186a191be695e8b104bbe",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_relative_candidate11_gain10_cem26b/all_first_episodes_002.npz": "e5a4fc9f5c6540f7d42290fe97af4d4e1df94a65eb2fe2a021a24a602250590a",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_relative_candidate11_gain10_cem26b/source_hashes.json": "63eea33696121630420b406b14f6ae8c5000dc0d53b975a1456565c6294e9094",
+    "/home/autodrive/LZQW/unitree_smash/configs/g07_full_racket_eval_v4_r3.json": "04121cfb257ea4d2e288c69b44dd0c8dbada814e0bf95c8a16f5af7ef2390367",
+    "/home/autodrive/LZQW/unitree_smash/quadsmash/evaluation_v4.py": "efe610b42103a45b75fa98acb2a7fe221536abb752ebd665fc926c6ffb657b38",
+    "/home/autodrive/LZQW/unitree_smash/scripts/summarize_full_racket_train_generation_v4.py": "20fc854efa0a383c6cce453245befad79256dba0e17e5f8d64669359b2ec51f8"
+  }
+}

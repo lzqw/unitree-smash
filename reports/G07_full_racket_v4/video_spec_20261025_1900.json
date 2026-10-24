@@ -1,0 +1,41 @@
+{
+  "scope": "Two independent completed CEM26b generation3 candidate43 TRAINepisodes. TRAIN65 has legal airborne strings, attack gate, over-net court landing and qualified recovery but target miss; paired TRAIN1 failure preserved. Full0.",
+  "opening_title": "最新真实效果｜8.32米/秒空中击球与恢复，落点仍长17厘米",
+  "opening_lines": [
+    "同一回合：合法拍线、攻击出球、越网、合格恢复。",
+    "首落点x=4.171米，超过原目标上界0.171米，完整任务仍失败。",
+    "保留同参数另一来球失败，两个回合不拼接。"
+  ],
+  "closing_lines": [
+    "攻击速度、向下分量与恢复已在同一回合成立。",
+    "目标落点仍未满足，完整扣杀仍为0。",
+    "正式A/B各200回合尚未运行。"
+  ],
+  "caveats": [
+    "Selected completed native TRAINepisodes, not formal distribution or acceptance.",
+    "TRAIN65 candidate43 actual outgoing norm8.319587882m/s,vz-2.245375156,first landing x4.170661926,recovery3.872901678s,bodyground0; target miss keeps completefalse.",
+    "Paired TRAIN1 failure is preserved and not combined.",
+    "Native50Hz body samples without interpolation; contact exact native substep pose; landing event plus nearest body pose.",
+    "CPUllvmpipe rendering only; no hardware validation."
+  ],
+  "cases": [
+    {
+      "run": "ball_relative_candidate11_gain10_cem26b",
+      "generation": 3,
+      "env_id": 87,
+      "title": "同一回合｜8.32米/秒空中拍线，合格恢复3.87秒",
+      "subtitle": "CEM26b / 第4代 / 候选43 / TRAIN65 / 原生实际执行",
+      "terminal_status": "攻击出球、越网、恢复成立｜原目标未中｜完整任务失败",
+      "limitation": "首次落点x=4.171米，超出目标后沿0.171米；恢复3.87秒，身体触地0"
+    },
+    {
+      "run": "ball_relative_candidate11_gain10_cem26b",
+      "generation": 3,
+      "env_id": 86,
+      "title": "同参数另一来球｜未形成合法回球，失败保留",
+      "subtitle": "CEM26b / 第4代 / 同候选43 / TRAIN1 / 独立实际执行",
+      "terminal_status": "未形成合法拍线攻击回球｜完整任务失败",
+      "limitation": "同一参数另一来球失败；未把两个回合条件拼为成功"
+    }
+  ]
+}
