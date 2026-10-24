@@ -1,0 +1,170 @@
+{
+  "created_at": "2026-10-24T05:55:38.286184+00:00",
+  "video": "reports/G07_full_racket_v4/video/Current_effect_contact_recovery_20261024_0555.mp4",
+  "bytes": 2128926,
+  "sha256": "748ac4f59f00f5b2b622413c0a0661fbe9fa4a51a7dc0ea3b8540169aceb8712",
+  "fps": 50,
+  "frames": 1495,
+  "duration_s": 29.9,
+  "resolution": [
+    1280,
+    720
+  ],
+  "renderer": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "renderer_uses_gpu": false,
+  "run": "reports/G07_full_racket_v4/ball_recovery_cem01",
+  "segments": [
+    {
+      "name": "court_overview_pose_freeze",
+      "start_frame": 0,
+      "frames": 75
+    },
+    {
+      "name": "recovery_normal",
+      "start_frame": 75,
+      "frames": 400,
+      "env_id": 0,
+      "episode_index": 2,
+      "generation": 1,
+      "recorded_start_s": 0.0,
+      "recorded_end_s": 7.980000019073486,
+      "interpolated": false
+    },
+    {
+      "name": "recovery_quarter_speed",
+      "start_frame": 475,
+      "frames": 200,
+      "env_id": 0,
+      "episode_index": 2,
+      "generation": 1,
+      "recorded_start_s": 2.419999837875366,
+      "recorded_end_s": 3.3999998569488525,
+      "interpolated": false
+    },
+    {
+      "name": "recovered_pose_freeze",
+      "start_frame": 675,
+      "frames": 75
+    },
+    {
+      "name": "separate_episode_transition",
+      "start_frame": 750,
+      "frames": 100
+    },
+    {
+      "name": "contact_normal",
+      "start_frame": 850,
+      "frames": 44,
+      "env_id": 62,
+      "episode_index": 2,
+      "generation": 1,
+      "recorded_start_s": 2.200000047683716,
+      "recorded_end_s": 3.059999942779541,
+      "interpolated": false
+    },
+    {
+      "name": "contact_quarter_speed",
+      "start_frame": 894,
+      "frames": 176,
+      "env_id": 62,
+      "episode_index": 2,
+      "generation": 1,
+      "recorded_start_s": 2.200000047683716,
+      "recorded_end_s": 3.059999942779541,
+      "interpolated": false
+    },
+    {
+      "name": "exact_contact_substep_freeze",
+      "start_frame": 1070,
+      "frames": 150,
+      "time_s": 2.76120924949646
+    },
+    {
+      "name": "net_failure_terminal_native_freeze",
+      "start_frame": 1220,
+      "frames": 125,
+      "time_s": 3.069999933242798
+    },
+    {
+      "name": "result_card",
+      "start_frame": 1345,
+      "frames": 150
+    }
+  ],
+  "previews": [
+    "reports/G07_full_racket_v4/video/Current_effect_contact_recovery_20261024_0555_contact.jpg",
+    "reports/G07_full_racket_v4/video/Current_effect_contact_recovery_20261024_0555_recovery.jpg",
+    "reports/G07_full_racket_v4/video/Current_effect_contact_recovery_20261024_0555_net_failure.jpg"
+  ],
+  "poses_are_native_recorded": true,
+  "interpolated_or_generated_motion": false,
+  "contact_freeze_is_exact_native_substep": true,
+  "separate_episodes": true,
+  "formal_acceptance": false,
+  "contact": {
+    "env_id": 62,
+    "generation": 1,
+    "episode_index": 2,
+    "time_s": 2.76120924949646,
+    "point_m": [
+      0.9296684265136719,
+      0.0617828369140625,
+      1.702071189880371
+    ],
+    "outgoing_velocity_mps": [
+      4.824755668640137,
+      -0.3614557683467865,
+      -1.0492045879364014
+    ],
+    "outgoing_speed_mps": 4.9507320470707255,
+    "net_blocked": true,
+    "complete_smash": false,
+    "first_landing_observed": false,
+    "recovery_observed": false
+  },
+  "recovery": {
+    "env_id": 0,
+    "generation": 1,
+    "episode_index": 2,
+    "had_contact": false,
+    "stable_recovery_s": 4.096885681152344,
+    "first_landing_m": [
+      -1.6810951232910156,
+      -0.067047119140625,
+      0.025100138038396835
+    ],
+    "first_landing_time_s": 3.1147024631500244
+  },
+  "caveats": [
+    "Separate episodes are not a successful combined smash.",
+    "Env62 continuous full-body data exists only from 2.2 to 3.06 s; exact terminal state is separately labelled.",
+    "No post-termination recovery or first ball landing was recorded for env62.",
+    "Recovery-course env0 continues robot motion after the shuttle first landed; ball rally remains dead.",
+    "Ball rings and contact circles are visibility annotations, not expanded collision shapes.",
+    "Visual floor is 5 mm below physical ground; native body and ball positions are unchanged.",
+    "TRAIN results include elite repeats and are not formal evaluation rates."
+  ],
+  "sources": {
+    "reports/G07_full_racket_v4/ball_recovery_cem01/episodes_000.json": "06e5a1a3817f8f52727f1fc8d2690715b82941eef2569d72e668181892d8043a",
+    "reports/G07_full_racket_v4/ball_recovery_cem01/episodes_001.json": "dd93ed27f5ba843595e993e05938e5a79c821f5cd5affb867861be9d3da4a0dd",
+    "reports/G07_full_racket_v4/ball_recovery_cem01/contacts_001.json": "920e4c19ab336473ab2ac700eee7c5bb4c7354d326768db35bed5e776de8465c",
+    "reports/G07_full_racket_v4/ball_recovery_cem01/trajectory_001.json": "d4870e23e35007a98e805b71bb0cab9ef9871d0a5140c781b39530c837dbb9ef",
+    "reports/G07_full_racket_v4/ball_recovery_cem01/public_and_poses_001.npz": "42137cb24e1493e43789f73f873f7cb316f953dff753c00db3941ea80ff60b46",
+    "reports/G07_full_racket_v4/ball_recovery_cem01/near_contact_all_001.npz": "42f338658fb09dd0a0fc50dcf7f140cbf40754e08e8b4f1e5b840fec4cba2f6e",
+    "reports/G07_full_racket_v4/ball_recovery_cem01/geometry.json": "8afd390b7b92179ba6e2fde3774cc60162a98a5bd63ed50defd95b2e8f9d9c37",
+    "reports/G07_full_racket_v4/ball_recovery_cem01/geometry.npz": "c64b425bba7b5278c1ab59e54e37582647a576ad5a5c4e1c3920954dd7cd3d73",
+    "reports/G07_full_racket_v4/ball_recovery_cem01/job.json": "cf8c01a5cdd9a0370374146aa25076f39f3fcb532c0b9a99b88be573f41f4a90",
+    "reports/G07_full_racket_v4/ball_recovery_cem01/completed.json": "c4a2cdc51b7afa8f30801dae79e3db905be163f9c7bc5e5a8e2f496c01538989",
+    "reports/G07_full_racket_v4/ball_recovery_cem01/source_hashes.json": "8a341fd2df2ef0572714108b74fd3ee3645254e784f363bbbc5c9ebfbd304742",
+    "reports/G07_full_racket_v4/ball_recovery_cem01/source_snapshot.zip": "26e0a723e00d67a493732455f2072102b80af65753d0cbfc158233c8cb4acd83",
+    "reports/G07_full_racket_v4/ball_recovery_cem01/population_001.pt": "1e2087b948e564628a06aa81e322c0fb082264a18a3b854df892d1ec3d34b9ce",
+    "reports/G07_full_racket_v4/ball_recovery_cem01/FINAL_TRAIN_SUMMARY.json": "5029028a9c007dc328e5e49c7997c8e923ab4c374f40507150b569a37058ee5f",
+    "scripts/render_full_racket_recovery_contact_v4.py": "e38d06e582a27b2dad310a8a3b9318dcdcd7328537352ce0fbaa479fdab152d0",
+    "scripts/render_full_racket_r3_effect.py": "406fdf3eea5d6fe12873499360fd590a22bfbf34b8b5075d1633e873d99bb76d",
+    "scripts/render_current_v4_progress.py": "5e9fce04a077c9f5b2eb79c829819874e9607c00231e15e36c904d2e75af8edd",
+    "quadsmash/physics/court_v4.py": "d00cd68d9e5264933b81ec6c8190dfb12e4f3157b735f0dd3cd9c224e1e058ce",
+    "configs/court_net_v4.json": "184d07dde336bf36be7dfde089373c851a2bcb855a6e44f4120442b59818b4f4",
+    "configs/g07_full_racket_eval_v4_r3.json": "04121cfb257ea4d2e288c69b44dd0c8dbada814e0bf95c8a16f5af7ef2390367",
+    "assets/quadsmash_full_racket_v4_r3.usd": "c2264fcece90b042c7c6a1cac7d516af83972729d0402947e3a519041e184cf2"
+  }
+}
