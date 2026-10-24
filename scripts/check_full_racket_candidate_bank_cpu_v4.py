@@ -33,8 +33,8 @@ def main():
     high=np.array(HIGH+[1.45,.12]+[5.]*6,dtype=np.float32)
     low[22:24]=-.3;high[22:24]=.3
     rows=validate_candidate_bank(bank,checkpoint['seed'],checkpoint['asset_sha256'],checkpoint['parameter_names'],reference,low,high,62)
-    assert rows.shape==(48,32)
-    assert np.array_equal(rows[:,26:32],np.broadcast_to(reference[26:32],(48,6)))
+    assert rows.shape in [(48,32),(60,32)]
+    assert np.array_equal(rows[:,26:32],np.broadcast_to(reference[26:32],(len(rows),6)))
     count=2*len(rows)
     controller=FullRacketRallyControllerV4(checkpoint,count,'cpu');controller.reset()
     controller.parameters.copy_(torch.tensor(np.repeat(rows,2,axis=0)))

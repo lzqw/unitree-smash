@@ -1,0 +1,73 @@
+{
+  "created_at": "2026-10-24T09:04:45.333485+00:00",
+  "scope": "CPU-only bounded body,face and recovery proposals; no new dynamics or inherited outcome.",
+  "candidate_count": 64,
+  "reference_candidates": 2,
+  "first_generation_bank": 60,
+  "first_generation_gaussian": 2,
+  "later_generations_gaussian": 62,
+  "body_preparation_proposals": 24,
+  "face_proposals": 12,
+  "recovery_body_proposals": 12,
+  "combined_high_interception_proposals": 12,
+  "interception_planes_x_m": [
+    1.25,
+    1.4
+  ],
+  "original32_reference_parameters_preserved": true,
+  "source_contact_reconstruction_error_m": 7.599933209217407e-06,
+  "offline_face_joint_delta_rad": [
+    -0.05572467765535853,
+    -0.10090944349177014,
+    0.11999999999999998,
+    0.07677416568696234,
+    0.11999999999999998,
+    -0.025875195075500197
+  ],
+  "recorded_normal_world": [
+    0.985222879208553,
+    -0.05730656726968768,
+    0.1614058104027657
+  ],
+  "offline_corrected_normal_world": [
+    0.9972702398386392,
+    0.00568248979789035,
+    0.07361914181705685
+  ],
+  "offline_face_contact_shift_m": 0.007212175507641041,
+  "waypoint_range_m": [
+    0.75,
+    1.05
+  ],
+  "maximum_push_coordinate_change_rad": 0.08,
+  "native_recovery_sources": [
+    {
+      "candidate_id": 40,
+      "recovered_training_indices": [
+        65
+      ],
+      "performance_inherited": false
+    },
+    {
+      "candidate_id": 54,
+      "recovered_training_indices": [
+        1
+      ],
+      "performance_inherited": false
+    }
+  ],
+  "velocity_directions_coherent": true,
+  "unchanged_physical_joint_velocity_torque_limits": true,
+  "unchanged_physics_and_success_gates": true,
+  "policy_sha256": "7ef9ab80f281912b62cf0989735f6bd7190ba019519faddf9fde77a4e90ef612",
+  "bank_sha256": "caa9a13121bfd3ef7bc51c7270674c699d40cfc484bcbcf801f3a99d6a81f83d",
+  "sources": {
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/power_candidate32_0844/policy_evidence.pt": "3a63c5cd5a3d30b856506d3d97a664584b1665f69d2deb9e569f6c4c5edfc50d",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/reports/G07_full_racket_v4/power_candidate32_0844/contact_event.json": "27deef65785a88f35e5cadfcb0b16add119a33aadf955ee2fb6e1ff5e842cfcc",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/reports/G07_full_racket_v4/native_contact_reference32_0825/RECOVERY_BANK.json": "b59168fdd5cc836317515682e0df9c5520ce19643b411d61a6ab88afba22c15e",
+    "/home/autodrive/LZQW/unitree_smash_arm_search_v4/scripts/prepare_full_racket_body_bank_v4.py": "025c01d01795c5d6b193d0f4bb891b23f22741fd2225fe1769f57a047488f6ad",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_native_reference_interception32_cem07/population_000.pt": "a5d9203092140b3f3cff9d76e5f859a9ec149cf692f9eb7964f9b8c9b380b5d8"
+  },
+  "native_execution": false,
+  "formal_acceptance": false
+}

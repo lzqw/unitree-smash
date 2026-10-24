@@ -104,6 +104,13 @@ def main():
         row=reference.copy();row[body_indices]=(1-fraction)*reference[body_indices]+fraction*measured[body_indices]
         row[1]=waypoint
         add(row,kind='power_arm_recovery_body',body_source=name,measured_body_fraction=fraction,waypoint_x_m=waypoint)
+    for waypoint,speed in [(.80,.60),(.95,.65)]:
+        for velocity_gain in [float(reference[7]),1.]:
+            for fraction in [0.,.5,1.]:
+                row=reference.copy();row[1]=waypoint;row[0]=speed;row[7]=velocity_gain
+                row[24]=1.25;row[2]-=.02;row[5]-=.06;row[6]+=.08;row[8:14]+=fraction*delta
+                add(row,kind='combined_high_interception',waypoint_x_m=waypoint,interception_plane_x_m=1.25,
+                    arm_velocity_gain=velocity_gain,face_correction_fraction=fraction,leg_phase_delta_s=-.02,push_extension=True)
     inputs=[a.checkpoint,a.contact,a.recovery_bank,Path(__file__)]+([a.native_recovery_population] if a.native_recovery_population else [])
     provenance={str(path.resolve()):sha(path) for path in inputs}
     bank=dict(schema='full-racket-candidate-bank-v4',asset_sha256=source['asset_sha256'],seed=source['seed'],
@@ -111,7 +118,7 @@ def main():
               proposal_labels=labels,source_provenance=provenance,native_execution=False,formal_acceptance=False,
               schedule='generation0only; subsequent generations use all available Gaussian/CEM candidates')
     checked=validate_candidate_bank(bank,source['seed'],source['asset_sha256'],names,reference,low,high,62)
-    assert checked.shape==(48,32)
+    assert checked.shape==(60,32)
     warm=copy.deepcopy(source);warm.pop('training_result',None)
     warm.update(kind='Unexecuted body/face bank initialization from an actual native power candidate; no inherited fitness.',
                 native_execution=False,formal_acceptance=False,performance_inherited=False,initialization_provenance=provenance)
@@ -122,8 +129,9 @@ def main():
         moved_point,moved_normal,_,_=kin(torch.tensor((actual+delta)[None]),torch.tensor(contact_offset))
     actual_normal_after=root_rotation@moved_normal[0].numpy()
     report=dict(created_at=datetime.now(timezone.utc).isoformat(),scope='CPU-only bounded body,face and recovery proposals; no new dynamics or inherited outcome.',
-                candidate_count=64,reference_candidates=2,first_generation_bank=48,first_generation_gaussian=14,
+                candidate_count=64,reference_candidates=2,first_generation_bank=60,first_generation_gaussian=2,
                 later_generations_gaussian=62,body_preparation_proposals=24,face_proposals=12,recovery_body_proposals=12,
+                combined_high_interception_proposals=12,interception_planes_x_m=[1.25,1.40],
                 original32_reference_parameters_preserved=bool(np.array_equal(warm['parameters'].numpy(),reference)),
                 source_contact_reconstruction_error_m=float(reconstruction),offline_face_joint_delta_rad=delta.tolist(),
                 recorded_normal_world=normal.tolist(),offline_corrected_normal_world=actual_normal_after.tolist(),
