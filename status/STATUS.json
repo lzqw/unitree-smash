@@ -50,45 +50,19 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "CEM17two completed generations256episodes:94contacts/59airstrings/12attacks/21qualified recoveries/1weak blocked-ball airstrings+recovery/0attack+recovery/0court/target/full/NF0. Best26reevaluation late body lands466.3N,recoveryfailed. Saved stop with28gen2ticks,.604201GPUh/208384steps,trueFAILED. New37standing-policy search startup failed canonical-name mismatch before control0steps (.001995GPUh); fixed without changing input. GPU0retryguard1423130child1423142sourceb247ce2now native startup37names/61bank/6-coordinate mask verified;110CPUtests and122lane287tick canonical preflight passed.actual100tick37initialization finite/bounded for128recordedstreams and0early endings; actual300tick prefix77contactenvs/34stringenvs,17closed111pending; final stroke/landing/recovery outcomes pending; no full task or formal400pass.",
+      "notes": "CEM18retrygeneration0completed128episodes:77contacts/34airstrings/18attacks/10qualifiedrecoveries/0airstrings+recovery/0court/target/full/NF0. Saved stop with19gen1ticks,.298592GPUh/104832actualsteps,trueFAILED. Prepared61earlier-landing37proposals and122lane287tickCPUpreflight, actual USD nominal downward leg extent increases3-5cm; next native launch pending. Full task and formal400remain unpassed.",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/return_recovery_gen0_env12/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
-      "active_gpu_jobs": [
-        {
-          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_standing_recovery37_cem18_retry01",
-          "guard_pid": 1423130,
-          "child_pid": 1423142,
-          "state": "RUNNING",
-          "started_at": "2026-10-24T12:53:41.338557+00:00",
-          "source_commit": "b247ce2e4dad26ae1b65debc42dee5466290d322",
-          "generations": 4,
-          "declared_control_env_steps": 409600,
-          "max_seconds": 7200,
-          "native_initialization_pending": false,
-          "parameter_width": 37,
-          "gaussian_search_coordinates": [
-            3,
-            32,
-            33,
-            34,
-            35,
-            36
-          ],
-          "last_verified_generation": 0,
-          "last_verified_control_ticks": 500,
-          "native_initialization_evidence": "reports/G07_full_racket_v4/NATIVE_STANDING_RECOVERY37_INITIALIZATION_1257.json",
-          "last_verified_contact_evidence": "reports/G07_full_racket_v4/standing37_prefix500_diagnostic_1309/REPORT.json"
-        }
-      ],
+      "active_gpu_jobs": [],
       "queued_native_sequence": {
         "state_at_last_check": "NO_QUEUED_JOBS",
         "next_jobs": [],
         "still_running": false
       },
       "native_air_string_contact_milestone": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
-      "latest_native_training_summary": "reports/G07_full_racket_v4/ball_attack_recovery_cem17/STOPPED_TRAIN_SUMMARY.json",
+      "latest_native_training_summary": "reports/G07_full_racket_v4/ball_standing_recovery37_cem18_retry01/STOPPED_TRAIN_SUMMARY.json",
       "latest_video": {
         "path": "reports/G07_full_racket_v4/video/Current_effect_attack_20261024_1216.mp4",
         "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_attack_20261024_1216.mp4",
@@ -104,28 +78,29 @@
         "upload_receipt": "reports/G07_full_racket_v4/video/Current_effect_attack_20261024_1216_upload_receipt.json"
       },
       "latest_completed_generation": {
-        "had_contact": 38,
-        "frame_hit": 24,
-        "airborne_string_hit": 14,
-        "recovery_success": 3,
-        "crossed_net": 13,
+        "had_contact": 77,
+        "frame_hit": 44,
+        "airborne_string_hit": 34,
+        "recovery_success": 10,
+        "crossed_net": 33,
         "landed_legal_court": 0,
         "landed_target": 0,
-        "attack_outgoing": 0,
+        "attack_outgoing": 18,
         "complete_smash": 0,
-        "robot_net_fault": 35,
+        "robot_net_fault": 65,
         "racket_invasion_fault": 0,
         "executions": 128,
-        "usable_air_strings": 8,
+        "usable_air_strings": 7,
         "air_strings_and_recovery": 0,
+        "attack_outgoing_and_recovery": 0,
         "task_valid_air_strings_crosses": 7,
-        "robot_rule_terminal": 35,
-        "body_ground_terminal": 80,
+        "robot_rule_terminal": 67,
+        "body_ground_terminal": 38,
         "numerical_failures": 0,
         "generation": 0,
         "control_ticks": 800,
         "env_steps": 102400,
-        "run": "ball_contact_face_recovery_cem14",
+        "run": "ball_standing_recovery37_cem18_retry01",
         "whole_job_complete": false
       },
       "pending_rule_regression": {
@@ -403,6 +378,17 @@
           "interrupted_generation": 2,
           "interrupted_control_ticks": 28,
           "reason": "Two completed128-episode generations still0target/full. First generation has51airstrings/12attacks/one weak blocked-ball qualified recovery; second has8airstrings/0attacks/0joined recovery. Exact best26reevaluation contacts again but later body-lands and fails recovery. Fixed five standing-controller parameters remain outside32-coordinate search."
+        },
+        {
+          "run": "ball_standing_recovery37_cem18_retry01",
+          "guard_pid": 1423130,
+          "child_pid": 1423142,
+          "guard_terminal_state": "FAILED",
+          "reason": "Initial standing37bank still fails same-episode airborne strings/attack and recovery, court/target and full task. Saved physical outcomes motivate earlier handover and extended existing leg targets, not changes to the model or success gates.",
+          "resource_receipt": "reports/G07_full_racket_v4/ball_standing_recovery37_cem18_retry01/job.json",
+          "actual_gpu_hours": 0.2985923538472141,
+          "actual_control_env_steps": 104832,
+          "charged_environment_step_cap": 409600
         }
       ],
       "latest_stopped_generation_summary": "reports/G07_full_racket_v4/ball_attack_recovery_cem17/STOPPED_TRAIN_SUMMARY.json",
