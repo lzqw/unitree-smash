@@ -1,0 +1,52 @@
+{
+  "scope": "Three selected independent completed native TRAIN episodes from CEM07 generation1 and CEM08 generation0. No formal acceptance.",
+  "opening_title": "当前真实效果｜7.52米/秒回球与最新失败",
+  "opening_lines": [
+    "回合一：空中拍线出球7.52米/秒，实际越网；落点和恢复失败。",
+    "回合二：空中拍线接触后合格恢复2.92秒，但球被网挡住。",
+    "回合三：最新前移方案在击球前触网失败。三段均为独立回合。"
+  ],
+  "closing_lines": [
+    "当前完整球拍模型仍未完成合格扣杀；保留真实失败。",
+    "速度≥8米/秒、向下出球、目标落点与稳定恢复尚未同时达标。",
+    "画面来自实际原生全身轨迹；正式A/B各200回合尚未运行。"
+  ],
+  "caveats": [
+    "Selected TRAIN episodes do not establish a success rate or formal A/B acceptance.",
+    "The three cases are independent; their partial achievements must not be combined into one success.",
+    "CEM08 generation0 is complete, but its four-generation search was still running at snapshot time.",
+    "Native poses are sampled at50Hz and replayed without interpolation; contact stills use exact recorded native substep poses.",
+    "The net-blocked second case has no observed first-ground result; no landing is invented.",
+    "First-landing markers use actual first-ground events and adjacent50Hz body poses. Ball motion after first ground is hidden.",
+    "Recorded solver speed overshoots are retained. Latest failure case env4 recorded maximum joint speed31.7278rad/s against configured leg speed30rad/s; this is not a hardware-limit validation."
+  ],
+  "cases": [
+    {
+      "run": "ball_native_reference_interception32_cem07",
+      "generation": 1,
+      "env_id": 64,
+      "title": "实际回合一｜7.52米/秒空中回球，越网后恢复失败",
+      "subtitle": "完整球拍拦截方案 / 第2代 / 候选32 / TRAIN1",
+      "terminal_status": "实际越网、对方场内落地｜身体触地，合格恢复失败",
+      "limitation": "出球7.52 m/s、vz=-0.54；落点x=4.80米，超出目标区约0.80米"
+    },
+    {
+      "run": "ball_native_reference_interception32_cem07",
+      "generation": 1,
+      "env_id": 32,
+      "title": "实际回合二｜空中拍线接触后恢复，但回球被网挡住",
+      "subtitle": "完整球拍拦截方案 / 第2代 / 候选16 / TRAIN1",
+      "terminal_status": "同回合合格恢复2.92秒｜身体触地0｜球未越网，任务失败",
+      "limitation": "出球4.48 m/s、vz=-0.18；被网挡住，没有记录到首次落地结果"
+    },
+    {
+      "run": "ball_power_body_bank_cem08",
+      "generation": 0,
+      "env_id": 4,
+      "title": "最新方案失败回合｜前移与准备姿态导致触网",
+      "subtitle": "全身前移方案 / 第1代 / 候选2 / TRAIN1",
+      "terminal_status": "实际触网违规｜未触球、未完成恢复｜保留失败",
+      "limitation": "终止于3.06秒；准备姿态与走位需要联合调整，完整扣杀仍为0"
+    }
+  ]
+}

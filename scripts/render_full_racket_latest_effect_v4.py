@@ -48,7 +48,7 @@ def main():
             scene.views = dict(scene.views)
         for name, w, h, eye, target, fov in [
             ('wide_side', 760, 480, [1.3, -6., 3.], [1.3, 0., 1.], 49),
-            ('wide_top', 504, 480, [1.35, -.001, 5.5], [1.35, 0., 0.], 60),
+            ('wide_top', 504, 480, [2., -.001, 6.2], [2., 0., 0.], 60),
         ]:
             scene.views[name] = (scene.ctx.simple_framebuffer((w, h), components=3),
                                  camera(eye, target, w / h, fov))
@@ -121,7 +121,8 @@ def main():
             status, note = case['terminal_status'], case['limitation']
         elif landing_freeze:
             x, y, _ = row['first_landing_m']
-            status = f'真实首次落点 x={x:.3f}, y={y:.3f} m｜对方单打场内'
+            landing_result = '命中目标区' if row['landed_target'] else ('对方场内、未中目标' if row['landed_legal_court'] else '未落入对方有效场内')
+            status = f'真实首次落点 x={x:.3f}, y={y:.3f} m｜{landing_result}'
             note = case['limitation']
         elif exact:
             speed = float(np.linalg.norm(row['outgoing_velocity_mps']))
@@ -131,6 +132,9 @@ def main():
             status, note = '从地面自主准备与走位', '完整Go2、标准PiPER和675毫米球拍｜实际动力学执行记录'
         elif not row['had_contact'] or t < row['contact_time_s']:
             status, note = '来球拦截与自主动作执行中', '不补造动作、触球或球路；失败按原记录保留'
+        elif row['net_blocked_fault'] and t >= case.get('rally_fault_time_s', float('inf')):
+            status = '球被网挡住｜本回合回球失败'
+            note = '继续播放同一回合的机器人恢复；恢复不代表完整任务成功'
         elif row['crossed_net'] and t >= row['crossing_time_s']:
             status, note = '实际越网已发生｜继续观察首次落点与机器人恢复', '橙线为球心轨迹；红叉为首次落点；均为辅助标注'
         else:
@@ -188,12 +192,12 @@ def main():
                                  start_frame=start, frames=frames-start, interpolated=False))
             print(f'Rendered case{case_id} slow={slow}', flush=True)
 
-        still(card('当前真实效果｜空中回球与恢复已出现', manifest['opening_lines']), 1.5, 'opening')
+        still(card(manifest.get('opening_title', '当前真实效果｜空中回球与恢复已出现'), manifest['opening_lines']), 1.5, 'opening')
         for i, case in enumerate(cases):
             ids = np.arange(len(data[i]['episode_clock_s']))
             clip(i, ids)
             times = data[i]['episode_clock_s']
-            focus = case.get('contact', {}).get('time_s', min(2.75, float(times[-1])))
+            focus = (case.get('contact') or {}).get('time_s', min(2.75, float(times[-1])))
             selected = ids[(times >= max(2., focus - .25)) & (times <= focus + .25)]
             if len(selected):
                 clip(i, selected, slow=True)
