@@ -4,6 +4,10 @@
 
 最新完成训练：恢复课程两代128次候选首回合（含精英重测）中13次合格跳跃恢复，全部来自漏球回合；4次接触中1次为空中拍线，0完整成功、0数值故障。上述视频及证据使用已完成的这批记录。第一代[原始数据/权重](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_recovery_gen0_and_rule_code_20261024_0528.zip)、第二代触球的[早期部分记录与当时程序](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_recovery_contact_and_curriculum_v3_20261024_0532.zip)保留。后续上部拍线联合恢复训练 `ball_upper_strings_cem01` 正在GPU0运行，其未完成结果未混入视频统计；正式A/B400尚未运行。
 
+[完整恢复训练、近网修复与最新程序附件](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_native_rule_fix_and_recovery_20261024_0605.zip)包含128次原始回合、权重、精确启动源码、10层USD、3个通过的原生近网边界回归，以及此前2个失败尝试。修复使用实际GPU刚体姿态计算球拍实体与网平面的关系，避免DirectGPU下CPU场景查询的旧姿态。目标回归通过不等于策略验收。[50项CPU测试](reports/G07_full_racket_v4/CPU_TESTS_0602.txt)通过；[新的接触保留课程](reports/G07_full_racket_v4/CONTACT_CURRICULUM_PLAN_0603.json)仍待原生运行。附件另含上部拍线第一代64次失败的不可变快照：0触球、0恢复，第二代仍在执行；没有将失败改为成功。
+
+复现时同时解压[运行依赖附件](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_runtime_dependencies_20261024_0608.zip)，补齐配置读取的冻结Go2步态/站立权重、标准PiPER无夹爪源URDF及其引用网格。清单逐项列明SHA；与最新程序包解压到同一仓库根目录。外部Go2 USD层的原始路径映射见 `configs/full_racket_usd_dependencies_v4.json`。
+
 
 日期：2026-10-21。对象：Go2 + 标准 AgileX PiPER + 固定安装球拍；Isaac Lab；PPO。
 

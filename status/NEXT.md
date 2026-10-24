@@ -1,3 +1,5 @@
+最高优先调度更新（2026-10-24 06:09 UTC）：已有串行接续 worker1349381 / exec98732，state=reports/G07_full_racket_v4/contact_recovery_queue01/state.json。它等待旧GPU guard1344215和child1344227都实际退出且job.json SUCCEEDED，再自动启动 ball_contact_recovery_cem02（warm06原candidate31，32×2TRAIN×2gen、sigma.025、contact-curriculum+contact-grid）。不要手工再启动该任务；先查worker/旧guard/新guard实际PID及state。worker启动前冻结了quadsmash全源码+search/guard/protocol/warm SHA，排队期间改这些源码会明确拒绝启动。每个GPU任务仍独立5400s/102400步cap。worker不写GPU_LEDGER/RUNS，原guard退出后由新guard独占资源锁。若用户要求停止训练，还要处理这个本项目worker及其子guard，避免停止后又接续。旧正文的“手工接续命令”已由本自动队列取代。
+
 # 唯一活跃GPU：ball_upper_strings_cem01，真实上部拍线与恢复联合训练
 
 继续前必须读 /home/autodrive/.codex/attachments/55e175f0-9444-4a09-ad37-681e6586ca51/pasted-text-1.txt。完整目标不缩减：真实完整球拍/标准悬空网/己方实际合法空中拍线+原攻击>=8m/s、vx>0、vz<=-1+真实越网首次目标落点+同回合无bodyground稳定.8s，之后原A/B各200 worst .5/.7/.85/NF0、真正成功/失败侧视俯视视频、旧新能力比较与全部Github交付。当前完整成功仍0，正式400未跑，绝不能标完成或说不可行。仅GPU0无累计GPUh/总工作窗/截止，有限单job保护、全部历史失败/费用保留。

@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "Completed recovery CEM2x64:13 qualified body recoveries after misses,1airborne string/4contacts/0complete/NF0. Native3 near-net regressions pass after fixing stale CPU scene-query issue using live GPU-pose primitive geometry. Upper-string05 warm-start training now running64env x2gens with curriculumv3; new complete outcomes unproven.",
+      "notes": "Recovery128:13 qualified miss recoveries,1airborne strings/4contacts/0complete/NF0. Native near-net02 all3 passed after live GPU-pose geometry fix, two old query failures preserved; CPU50 pass. Upper strings gen0 64 failed, gen1 still active. Queued fresh contact-preserving native training from measured candidate31, no inherited fitness or changed acceptance.",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/reach_cem_fine_feedback01/metrics.json",
       "curriculum_policy": "reports/G07_full_racket_v4/reach_cem_fine_feedback01/best_candidate.pt",
@@ -66,28 +66,56 @@
         }
       ],
       "queued_native_sequence": {
-        "state_file": "reports/G07_full_racket_v4/native_followup_sequence01/state.json",
-        "pid": 1320916,
-        "session_id": 30733,
-        "state_at_last_check": "COMPLETED_DEVELOPMENT_SMOKES",
+        "state_file": "reports/G07_full_racket_v4/contact_recovery_queue01/state.json",
+        "pid": 1349381,
+        "session_id": 98732,
+        "state_at_last_check": "WAITING_FOR_PRIOR_TERMINAL_RECEIPT",
         "next_jobs": [
-          "reset_eval_native01",
-          "ball_cem_smoke01"
+          "ball_contact_recovery_cem02"
         ],
-        "still_running": false
+        "still_running": true,
+        "note": "Do not manually duplicate this queued job; queue requires prior guard/child exit plus SUCCEEDED receipt and unchanged launch-source hashes."
       },
       "native_air_string_contact_milestone": "reports/G07_full_racket_v4/ball_cem_low_base_branch01/NATIVE_CONTACT_MILESTONE.json",
       "latest_native_training_summary": "reports/G07_full_racket_v4/ball_recovery_cem01/FINAL_TRAIN_SUMMARY.json",
       "latest_video": {
-        "path": "reports/G07_full_racket_v4/video/Current_effect_air_contact_20261024_0450.mp4",
-        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_air_contact_20261024_0450.mp4",
-        "duration_s": 28.94,
-        "sha256": "88207b99019eb8acf01e849a984c4f8aa95215f01646d4fcb73d0a74d5c0a6c6",
+        "path": "reports/G07_full_racket_v4/video/Current_effect_contact_recovery_20261024_0555.mp4",
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_contact_recovery_20261024_0555.mp4",
+        "duration_s": 29.9,
+        "sha256": "748ac4f59f00f5b2b622413c0a0661fbe9fa4a51a7dc0ea3b8540169aceb8712",
+        "separate_episodes": true,
         "formal_acceptance": false
       },
-      "latest_completed_generation": "reports/G07_full_racket_v4/recovery_generation0_snapshot01/GENERATION.json",
-      "pending_rule_regression": "reports/G07_full_racket_v4/NATIVE_PLANE_REGRESSION_0549.json",
-      "partial_generation1_contact": "reports/G07_full_racket_v4/recovery_gen1_contact_partial01/CONTACT_MILESTONE.json"
+      "latest_completed_generation": {
+        "run": "ball_upper_strings_cem01",
+        "generation": 0,
+        "executions": 64,
+        "contacts": 0,
+        "recoveries": 0,
+        "complete": 0,
+        "numerical_failures": 0,
+        "snapshot": "reports/G07_full_racket_v4/upper_strings_generation0_snapshot01/GENERATION.json",
+        "whole_job_complete": false
+      },
+      "pending_rule_regression": {
+        "state": "PASSED_TARGETED_NATIVE02",
+        "report": "reports/G07_full_racket_v4/NATIVE_PLANE_REGRESSION_0549.json",
+        "remaining": "Dynamic whole-stroke policy success remains unproven"
+      },
+      "partial_generation1_contact": "reports/G07_full_racket_v4/recovery_gen1_contact_partial01/CONTACT_MILESTONE.json",
+      "historical_queued_native_sequences": [
+        {
+          "state_file": "reports/G07_full_racket_v4/native_followup_sequence01/state.json",
+          "pid": 1320916,
+          "session_id": 30733,
+          "state_at_last_check": "COMPLETED_DEVELOPMENT_SMOKES",
+          "next_jobs": [
+            "reset_eval_native01",
+            "ball_cem_smoke01"
+          ],
+          "still_running": false
+        }
+      ]
     },
     "G08": {
       "state": "TODO",
