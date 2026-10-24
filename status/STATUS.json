@@ -50,12 +50,37 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": null,
-      "notes": "CEM18retrygeneration0completed128episodes:77contacts/34airstrings/18attacks/10qualifiedrecoveries/0airstrings+recovery/0court/target/full/NF0. Saved stop with19gen1ticks,.298592GPUh/104832actualsteps,trueFAILED. Prepared61earlier-landing37proposals and122lane287tickCPUpreflight, actual USD nominal downward leg extent increases3-5cm; next native launch pending. Full task and formal400remain unpassed.",
+      "notes": "CEM18completed128:77contacts/34airstrings/18attacks/10recoveries/0joined/0court/target/full/NF0; saved19tick interruption,.298592GPUh/104832steps,trueFAILED. GPU0CEM19earlier leg handover1.20-1.40and extended existing targets now running source d1768b1,guard1427124child1427134. Actual64x37population/61bank/37names/6-coordinate mask and native128streams100ticks finite/bounded,0early endings/contacts. Later stroke/recovery pending; formal400unrun.",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/return_recovery_gen0_env12/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
-      "active_gpu_jobs": [],
+      "active_gpu_jobs": [
+        {
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/ball_early_landing37_cem19",
+          "guard_pid": 1427124,
+          "child_pid": 1427134,
+          "state": "RUNNING",
+          "started_at": "2026-10-24T13:12:20.217252+00:00",
+          "source_commit": "d1768b1f8a8e1db945141577ea4acaf05e9a1c1f",
+          "generations": 4,
+          "declared_control_env_steps": 409600,
+          "max_seconds": 7200,
+          "parameter_width": 37,
+          "gaussian_search_coordinates": [
+            3,
+            32,
+            33,
+            34,
+            35,
+            36
+          ],
+          "last_verified_generation": 0,
+          "last_verified_control_ticks": 100,
+          "native_initialization_pending": false,
+          "native_initialization_evidence": "reports/G07_full_racket_v4/NATIVE_EARLY_LANDING37_INITIALIZATION_1316.json"
+        }
+      ],
       "queued_native_sequence": {
         "state_at_last_check": "NO_QUEUED_JOBS",
         "next_jobs": [],
