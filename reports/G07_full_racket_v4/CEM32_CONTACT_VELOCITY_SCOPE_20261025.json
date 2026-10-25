@@ -1,0 +1,436 @@
+{
+  "created_at": "2026-10-25T02:42:09.569366+00:00",
+  "scope": "Native CEM32 contact timing/velocity record audit; no new performance or pre-impact velocity claim.",
+  "execution_count": 128,
+  "distinct_training_case_count": 8,
+  "first_racket_contact_episodes": 63,
+  "legal_airborne_strings": 16,
+  "maximum_same_frame_flange_velocity_formula_error_mps": 1.694759885140229e-05,
+  "velocity_timing": "point_velocity_mps is read from live body data in _consume_physics_frame after the native PhysX integration/contact step; it is not an independently recorded pre-impact velocity.",
+  "consequence": "Do not calibrate an incident-speed controller by treating this post-step snapshot as a before-impact measurement.",
+  "examples": [
+    {
+      "env_id": 13,
+      "candidate_id": 1,
+      "source_training_index": 72,
+      "contact_time_s": 2.816553831100464,
+      "point_velocity_mps": [
+        1.198032259941101,
+        -1.361576795578003,
+        -0.07234606891870499
+      ],
+      "face_normal": [
+        0.9972307085990906,
+        0.0024284059181809425,
+        0.07433057576417923
+      ],
+      "release_time_s": 2.816991090774536,
+      "outgoing_velocity_mps": [
+        7.794858932495117,
+        -0.6445835828781128,
+        -1.9970264434814453
+      ],
+      "attack_outgoing": true,
+      "recovery_success": true,
+      "landed_target": false,
+      "complete_smash": false
+    },
+    {
+      "env_id": 24,
+      "candidate_id": 3,
+      "source_training_index": 0,
+      "contact_time_s": 2.7727653980255127,
+      "point_velocity_mps": [
+        0.05796127766370773,
+        -1.0749542713165283,
+        0.29696527123451233
+      ],
+      "face_normal": [
+        0.9974578619003296,
+        -0.06903386116027832,
+        0.017666926607489586
+      ],
+      "release_time_s": 2.773202657699585,
+      "outgoing_velocity_mps": [
+        7.310946464538574,
+        -1.536150336265564,
+        -2.0255961418151855
+      ],
+      "attack_outgoing": false,
+      "recovery_success": false,
+      "landed_target": false,
+      "complete_smash": false
+    },
+    {
+      "env_id": 25,
+      "candidate_id": 3,
+      "source_training_index": 8,
+      "contact_time_s": 2.740408182144165,
+      "point_velocity_mps": [
+        -0.13434115052223206,
+        -0.28789055347442627,
+        -0.012277243658900261
+      ],
+      "face_normal": [
+        0.9915127158164978,
+        -0.1158895343542099,
+        0.05892445147037506
+      ],
+      "release_time_s": 2.7407829761505127,
+      "outgoing_velocity_mps": [
+        6.38752555847168,
+        -2.21185564994812,
+        -1.9892652034759521
+      ],
+      "attack_outgoing": false,
+      "recovery_success": false,
+      "landed_target": true,
+      "complete_smash": false
+    },
+    {
+      "env_id": 32,
+      "candidate_id": 4,
+      "source_training_index": 0,
+      "contact_time_s": 2.775763750076294,
+      "point_velocity_mps": [
+        0.7280569076538086,
+        -1.445496916770935,
+        0.16620057821273804
+      ],
+      "face_normal": [
+        0.9949761033058167,
+        -0.044925276190042496,
+        0.08946678787469864
+      ],
+      "release_time_s": 2.7761385440826416,
+      "outgoing_velocity_mps": [
+        8.804487228393555,
+        -1.673264980316162,
+        -1.4741603136062622
+      ],
+      "attack_outgoing": true,
+      "recovery_success": true,
+      "landed_target": false,
+      "complete_smash": false
+    },
+    {
+      "env_id": 37,
+      "candidate_id": 4,
+      "source_training_index": 72,
+      "contact_time_s": 2.824549436569214,
+      "point_velocity_mps": [
+        1.0801808834075928,
+        -0.9282365441322327,
+        -0.33842626214027405
+      ],
+      "face_normal": [
+        0.9952871203422546,
+        -0.05933264642953873,
+        0.07670162618160248
+      ],
+      "release_time_s": 2.824986696243286,
+      "outgoing_velocity_mps": [
+        7.48217248916626,
+        -1.3385494947433472,
+        -2.37811541557312
+      ],
+      "attack_outgoing": false,
+      "recovery_success": true,
+      "landed_target": true,
+      "complete_smash": false
+    },
+    {
+      "env_id": 41,
+      "candidate_id": 5,
+      "source_training_index": 8,
+      "contact_time_s": 2.737847089767456,
+      "point_velocity_mps": [
+        0.22680416703224182,
+        -0.544649064540863,
+        -0.1506277173757553
+      ],
+      "face_normal": [
+        0.9924499988555908,
+        -0.10416162759065628,
+        0.06475646793842316
+      ],
+      "release_time_s": 2.7382218837738037,
+      "outgoing_velocity_mps": [
+        7.199217796325684,
+        -2.1945900917053223,
+        -1.855467677116394
+      ],
+      "attack_outgoing": false,
+      "recovery_success": true,
+      "landed_target": false,
+      "complete_smash": false
+    },
+    {
+      "env_id": 50,
+      "candidate_id": 6,
+      "source_training_index": 16,
+      "contact_time_s": 2.7358481884002686,
+      "point_velocity_mps": [
+        0.8935555815696716,
+        -0.6103018522262573,
+        -0.46893128752708435
+      ],
+      "face_normal": [
+        0.9860485196113586,
+        -0.10462711751461029,
+        0.12946602702140808
+      ],
+      "release_time_s": 2.736285448074341,
+      "outgoing_velocity_mps": [
+        7.627041339874268,
+        -2.1428375244140625,
+        -1.1401065587997437
+      ],
+      "attack_outgoing": true,
+      "recovery_success": true,
+      "landed_target": false,
+      "complete_smash": false
+    },
+    {
+      "env_id": 57,
+      "candidate_id": 7,
+      "source_training_index": 8,
+      "contact_time_s": 2.736597776412964,
+      "point_velocity_mps": [
+        0.135569766163826,
+        -0.05822038650512695,
+        -0.31774193048477173
+      ],
+      "face_normal": [
+        0.9975767135620117,
+        -0.0637795627117157,
+        0.02779947966337204
+      ],
+      "release_time_s": 2.737035036087036,
+      "outgoing_velocity_mps": [
+        7.143437385559082,
+        -1.4378703832626343,
+        -2.148024320602417
+      ],
+      "attack_outgoing": false,
+      "recovery_success": false,
+      "landed_target": true,
+      "complete_smash": false
+    },
+    {
+      "env_id": 66,
+      "candidate_id": 8,
+      "source_training_index": 16,
+      "contact_time_s": 2.7409703731536865,
+      "point_velocity_mps": [
+        0.26747745275497437,
+        0.08701267093420029,
+        -0.596494197845459
+      ],
+      "face_normal": [
+        0.9821683168411255,
+        -0.10239748656749725,
+        0.15767085552215576
+      ],
+      "release_time_s": 2.741407632827759,
+      "outgoing_velocity_mps": [
+        6.423086166381836,
+        -1.632975459098816,
+        -0.6769313812255859
+      ],
+      "attack_outgoing": false,
+      "recovery_success": false,
+      "landed_target": false,
+      "complete_smash": false
+    },
+    {
+      "env_id": 82,
+      "candidate_id": 10,
+      "source_training_index": 16,
+      "contact_time_s": 2.7256038188934326,
+      "point_velocity_mps": [
+        0.8547098636627197,
+        -1.215528964996338,
+        -0.15843912959098816
+      ],
+      "face_normal": [
+        0.9964224100112915,
+        0.02107429690659046,
+        0.08184255659580231
+      ],
+      "release_time_s": 2.726041078567505,
+      "outgoing_velocity_mps": [
+        7.856430530548096,
+        -0.5924333333969116,
+        -1.2173174619674683
+      ],
+      "attack_outgoing": false,
+      "recovery_success": true,
+      "landed_target": false,
+      "complete_smash": false
+    },
+    {
+      "env_id": 85,
+      "candidate_id": 10,
+      "source_training_index": 72,
+      "contact_time_s": 2.8225505352020264,
+      "point_velocity_mps": [
+        1.0527609586715698,
+        -0.8004527688026428,
+        -0.4551531970500946
+      ],
+      "face_normal": [
+        0.995061457157135,
+        -0.017633894458413124,
+        0.09768156707286835
+      ],
+      "release_time_s": 2.8229877948760986,
+      "outgoing_velocity_mps": [
+        7.539641857147217,
+        -0.7664604783058167,
+        -1.9914965629577637
+      ],
+      "attack_outgoing": false,
+      "recovery_success": true,
+      "landed_target": false,
+      "complete_smash": false
+    },
+    {
+      "env_id": 96,
+      "candidate_id": 12,
+      "source_training_index": 0,
+      "contact_time_s": 2.7772629261016846,
+      "point_velocity_mps": [
+        0.4709615111351013,
+        -1.2337000370025635,
+        0.06254299730062485
+      ],
+      "face_normal": [
+        0.9966227412223816,
+        -0.0016832947731018066,
+        0.08209949731826782
+      ],
+      "release_time_s": 2.7776377201080322,
+      "outgoing_velocity_mps": [
+        8.370635986328125,
+        -0.8393343091011047,
+        -1.4223120212554932
+      ],
+      "attack_outgoing": true,
+      "recovery_success": true,
+      "landed_target": false,
+      "complete_smash": false
+    },
+    {
+      "env_id": 97,
+      "candidate_id": 12,
+      "source_training_index": 8,
+      "contact_time_s": 2.7390964031219482,
+      "point_velocity_mps": [
+        0.020607657730579376,
+        -0.31049028038978577,
+        -0.15815407037734985
+      ],
+      "face_normal": [
+        0.9973571300506592,
+        -0.014046836644411087,
+        0.07128451019525528
+      ],
+      "release_time_s": 2.7395336627960205,
+      "outgoing_velocity_mps": [
+        7.087962627410889,
+        -1.0948964357376099,
+        -2.0126237869262695
+      ],
+      "attack_outgoing": false,
+      "recovery_success": true,
+      "landed_target": true,
+      "complete_smash": false
+    },
+    {
+      "env_id": 98,
+      "candidate_id": 12,
+      "source_training_index": 16,
+      "contact_time_s": 2.73003888130188,
+      "point_velocity_mps": [
+        0.33616018295288086,
+        -0.46307069063186646,
+        -0.1433524489402771
+      ],
+      "face_normal": [
+        0.9926882386207581,
+        -0.004690062254667282,
+        0.12061517685651779
+      ],
+      "release_time_s": 2.7304136753082275,
+      "outgoing_velocity_mps": [
+        6.939537525177002,
+        -0.7757114768028259,
+        -1.0171090364456177
+      ],
+      "attack_outgoing": false,
+      "recovery_success": true,
+      "landed_target": false,
+      "complete_smash": false
+    },
+    {
+      "env_id": 101,
+      "candidate_id": 12,
+      "source_training_index": 72,
+      "contact_time_s": 2.817303419113159,
+      "point_velocity_mps": [
+        1.0083110332489014,
+        -1.5232793092727661,
+        0.020441528409719467
+      ],
+      "face_normal": [
+        0.9971913695335388,
+        0.04525246471166611,
+        0.05967883765697479
+      ],
+      "release_time_s": 2.8177406787872314,
+      "outgoing_velocity_mps": [
+        7.304152011871338,
+        -0.3874569237232208,
+        -2.5284669399261475
+      ],
+      "attack_outgoing": false,
+      "recovery_success": false,
+      "landed_target": true,
+      "complete_smash": false
+    },
+    {
+      "env_id": 106,
+      "candidate_id": 13,
+      "source_training_index": 16,
+      "contact_time_s": 2.7278525829315186,
+      "point_velocity_mps": [
+        0.2738405764102936,
+        -0.3726487159729004,
+        -0.25132614374160767
+      ],
+      "face_normal": [
+        0.9954968690872192,
+        -0.05808577686548233,
+        0.07491332292556763
+      ],
+      "release_time_s": 2.728227376937866,
+      "outgoing_velocity_mps": [
+        6.7826151847839355,
+        -1.2889211177825928,
+        -1.4334745407104492
+      ],
+      "attack_outgoing": false,
+      "recovery_success": true,
+      "landed_target": false,
+      "complete_smash": false
+    }
+  ],
+  "formal_acceptance": false,
+  "source_sha256": {
+    "reports/G07_full_racket_v4/cem32_lateral_feedback_1015/episodes_000.json": "432f39d07725aae815b86a231994c64b1a6144ff985c8c49f831a2c7be00bd20",
+    "reports/G07_full_racket_v4/cem32_lateral_feedback_1015/contacts_000.json": "993f9879a1d41a6b66854550580a83741369ac491ae8f491a0e03d81b9047a1a",
+    "quadsmash/tasks/stand/full_racket_env_v4.py": "56909143cd4aef306f5cc5d3e547fe881a34aa9af9c571ea7edb9bafb2a50d8a",
+    "quadsmash/tasks/stand/ball_env.py": "1f58c625a026f0555b6c1603dd273ced03923084da9cc643b1f3b5a7cf40fcde"
+  }
+}
