@@ -34,10 +34,16 @@ class FullRacketRallyControllerV4:
         self.height_intercept=validate_height_intercept(checkpoint['seed'].get('height_intercept'))
         self.target_offset_world=torch.zeros((count,3),device=device)
 
-    def reset(self):
-        self.teacher.reset();self.parameters.copy_(self.base[None])
-        self.event_time.fill_(2.75);self.planned.zero_();self.logs=[]
-        self.target_offset_world.zero_()
+    def reset(self,ids=None):
+        self.teacher.reset(ids)
+        if ids is None:
+            self.parameters.copy_(self.base[None])
+            self.event_time.fill_(2.75);self.planned.zero_();self.logs=[]
+            self.target_offset_world.zero_()
+        else:
+            self.parameters[ids]=self.base
+            self.event_time[ids]=2.75;self.planned[ids]=False
+            self.target_offset_world[ids]=0.
 
     @torch.inference_mode()
     def action(self,observation,default,limits):

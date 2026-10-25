@@ -21,10 +21,14 @@ class Go2WalkTransfer:
         self.reached=torch.zeros(num_envs,dtype=torch.bool,device=device)
         self.tick=0
 
-    def reset(self):
-        self.last_raw.zero_()
-        self.reached.zero_()
-        self.tick=0
+    def reset(self, ids=None):
+        if ids is None:
+            self.last_raw.zero_()
+            self.reached.zero_()
+            self.tick=0
+        else:
+            self.last_raw[ids]=0.
+            self.reached[ids]=False
 
     def action(self, observation, parameters, default, limits, *, heading_error=None,
                heading_kp=None, maximum_time=3.4, heading_readiness=True):

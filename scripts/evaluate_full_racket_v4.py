@@ -17,7 +17,7 @@ from quadsmash.evaluation_v4 import validate_frozen_inputs,summarize_panel,diges
 from quadsmash.tasks.stand.full_racket_env_v4 import FullRacketEnvV4,full_racket_cfg
 from quadsmash.tasks.stand.full_racket_eval_env_v4 import FrozenPanelEnv
 from quadsmash.tasks.stand.visual_geometry import export_robot_geometry
-from quadsmash.control.full_racket_rally_controller_v4 import FullRacketRallyControllerV4
+from quadsmash.control.full_racket_residual_v4 import make_rally_controller
 from quadsmash.usd_dependencies_v4 import audit_composed_asset
 
 
@@ -36,7 +36,7 @@ def main():
     if abs(cfg.sim.dt*cfg.decimation-protocol['policy_dt_s'])>1e-12:
         raise ValueError('Control period differs from frozen protocol')
     env=FrozenPanelEnv(cfg,cases=cases,reset_noise=noise);wrapped=RslRlVecEnvWrapper(env,clip_actions=None)
-    controller=FullRacketRallyControllerV4(torch.load(args.checkpoint,map_location='cpu',weights_only=False),count,env.device)
+    controller=make_rally_controller(torch.load(args.checkpoint,map_location='cpu',weights_only=False),count,env.device)
     try:
         dependency_audit=audit_composed_asset(ROOT,cfg.robot.spawn.usd_path)
         (args.output/'asset_dependencies.json').write_text(json.dumps(dependency_audit,indent=2)+'\n')

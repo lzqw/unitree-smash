@@ -15,8 +15,9 @@ class ArmTargetRateV4:
         self.clock = torch.zeros(count, device=device)
         self.initialized = torch.zeros(count, dtype=torch.bool, device=device)
 
-    def reset(self):
-        self.initialized.zero_()
+    def reset(self, ids=None):
+        if ids is None:self.initialized.zero_()
+        else:self.initialized[ids]=False
 
     @torch.inference_mode()
     def __call__(self, desired, observed, time):

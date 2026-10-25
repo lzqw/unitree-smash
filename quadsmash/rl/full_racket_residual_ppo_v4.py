@@ -1,0 +1,107 @@
+"""Stock-RSL adapter and portable actor export for full-racket residual PPO."""
+import copy
+import hashlib
+import io
+import torch
+from tensordict import TensorDict
+
+from quadsmash.control.full_racket_rally_controller_v4 import FullRacketRallyControllerV4
+from quadsmash.control.full_racket_residual_v4 import ResidualActionMixerV4,SCHEMA
+from quadsmash.control.full_racket_contact_normal_search_v4 import contact_normal_body
+
+
+class ResidualTrainingInterrupted(Exception):
+    pass
+
+
+class ResidualRslAdapterV4:
+    def __init__(self,wrapped,base_checkpoint,joint_scale_rad,stop_requested=lambda:False):
+        self.wrapped=wrapped;self.base_checkpoint=base_checkpoint
+        self.controller=FullRacketRallyControllerV4(base_checkpoint,self.num_envs,self.device)
+        self.mixer=ResidualActionMixerV4(self.num_envs,self.device,joint_scale_rad)
+        env=self.unwrapped
+        self.default=env.robot.data.default_joint_pos[0,env.joint_ids]
+        self.limits=env.robot.data.joint_pos_limits[0,env.joint_ids]
+        self.stop_requested=stop_requested;self.total_control_env_steps=0
+        self.last_record_count=len(env.rally_records)
+        env.reward_offset.copy_(self.controller.teacher.contact_offset)
+        env.reward_velocity.copy_(self.controller.teacher.velocity_world)
+        axes=torch.eye(3,device=self.device)
+        n=contact_normal_body(self.controller.parameters,self.controller.teacher.normal_world,
+            axes[0][None].expand(self.num_envs,-1),axes[1][None].expand(self.num_envs,-1),
+            axes[2][None].expand(self.num_envs,-1))
+        env.reward_normal.copy_(self.controller.teacher.face_sign*n[0])
+        self.last_observation=self.wrapped.get_observations()
+        self.controller.reset();self.mixer.reset();self._sync_reference()
+
+    def __getattr__(self,name):return getattr(self.wrapped,name)
+
+    @property
+    def unwrapped(self):return self.wrapped.unwrapped
+
+    def _sync_reference(self):
+        env=self.unwrapped
+        target=torch.as_tensor(self.controller.nominal_target,device=self.device,dtype=torch.float32)
+        env.reward_target.copy_(target+self.controller.target_offset_world)
+        env.reward_event_time.copy_(self.controller.event_time)
+        env.reward_plan_valid.copy_(self.controller.planned)
+
+    def reset(self):
+        observation,extras=self.wrapped.reset()
+        self.controller.reset();self.mixer.reset();self._sync_reference()
+        self.last_observation=observation
+        return observation,extras
+
+    def get_observations(self):
+        self.last_observation=self.wrapped.get_observations()
+        return self.last_observation
+
+    def step(self,residual):
+        if self.stop_requested():raise ResidualTrainingInterrupted('Save at the last completed PPO update')
+        base=self.controller.action(self.last_observation,self.default,self.limits)
+        self._sync_reference()
+        self.unwrapped.residual_raw.copy_(residual.detach().clamp(-1,1))
+        actual=self.mixer.action(base,residual,self.last_observation['policy'],self.default,self.limits)
+        observation,reward,dones,extras=self.wrapped.step(actual)
+        self.total_control_env_steps+=self.num_envs
+        self.last_observation=observation
+        ids=torch.where(dones.bool())[0]
+        if len(ids):
+            self.controller.reset(ids);self.mixer.reset(ids);self._sync_reference()
+        if not torch.isfinite(observation['policy']).all() or not torch.isfinite(reward).all():
+            raise RuntimeError('Nonfinite native residual rollout')
+        if bool(((self.unwrapped.sweep_misses+self.unwrapped.sweep_unresolved)>0).any()):
+            raise RuntimeError('Native numerical contact audit failure; no performance accepted')
+        new_records=self.unwrapped.rally_records[self.last_record_count:]
+        self.last_record_count=len(self.unwrapped.rally_records)
+        if any(row['numerical_failures'] for row in new_records):
+            raise RuntimeError('Numerical audit failed in an automatically reset native episode')
+        return observation,reward,dones,extras
+
+
+def export_residual_policy(base_checkpoint,policy,joint_scale_rad,public_sample,metadata):
+    """Export exactly the actor's public normalization and network, no critic."""
+    actor=torch.nn.Sequential(copy.deepcopy(policy.actor_obs_normalizer).cpu().eval(),
+                              copy.deepcopy(policy.actor).cpu().eval())
+    scripted=torch.jit.script(actor)
+    with torch.inference_mode():
+        expected=policy.act_inference(TensorDict({'policy':public_sample},batch_size=[len(public_sample)])).cpu()
+        # Compare on the actual inference device, avoiding an unnecessary
+        # CPU/GPU arithmetic difference in the export fidelity check.
+        actual=scripted.to(public_sample.device)(public_sample).cpu()
+    maximum_error=float((expected-actual).abs().max())
+    if not torch.allclose(actual,expected,atol=2e-5,rtol=2e-5):
+        raise RuntimeError('Exported public residual actor disagrees with trained actor')
+    blob=io.BytesIO();torch.jit.save(scripted.cpu(),blob);data=blob.getvalue()
+    result=copy.deepcopy(base_checkpoint)
+    for key in ['training_result','selected_source_run','selected_generation','selected_candidate','selected_training_case_index']:
+        result.pop(key,None)
+    native=bool(metadata.get('native_execution',False))
+    result.update(schema=SCHEMA,base_controller=copy.deepcopy(base_checkpoint),residual_actor_jit=data,
+        residual_joint_scale_rad=list(joint_scale_rad),native_execution=native,performance_inherited=False,
+        formal_acceptance=False,kind=('Actual native residual PPO training; frozen-policy evaluation still required.'
+                                    if native else 'CPU residual export check only; no native performance.'),
+        residual_training_metadata=dict(metadata,export_actor_max_error=maximum_error,
+            export_comparison_device=str(public_sample.device),
+            actor_jit_sha256=hashlib.sha256(data).hexdigest(),actor_input='Current public794D observation only; no critic, case IDs or future labels.'))
+    return result

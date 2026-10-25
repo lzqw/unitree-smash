@@ -14,7 +14,10 @@ def main():
     p.add_argument('--output',type=Path,required=True);a=p.parse_args()
     if a.output.exists():raise ValueError('Lock output must be new')
     protocol=json.loads(a.protocol.read_text());checkpoint=torch.load(a.checkpoint,map_location='cpu',weights_only=False)
-    assert checkpoint['schema'] in ('full-racket-reach-cem-v4','full-racket-ball-cem-v4') and checkpoint['parameters'].ndim==1
+    assert checkpoint['schema'] in ('full-racket-reach-cem-v4','full-racket-ball-cem-v4','full-racket-residual-ppo-v4') and checkpoint['parameters'].ndim==1
+    if checkpoint['schema']=='full-racket-residual-ppo-v4':
+        assert checkpoint['base_controller']['asset_sha256']==checkpoint['asset_sha256']
+        assert torch.equal(checkpoint['parameters'],checkpoint['base_controller']['parameters'])
     assert checkpoint['asset_sha256']==protocol['asset']['sha256']
     assert digest(ROOT/protocol['asset']['path'])==protocol['asset']['sha256']
     dependencies=verify_dependency_manifest(ROOT)

@@ -64,10 +64,11 @@ class FullRacketTeacherV4:
             if self.preparation is not None:raise ValueError('Use one preparation family per controller')
             self.joint_preparation=FullRacketJointPreparation(seed['joint_preparation_guard']).to(device=device,dtype=torch.float32)
 
-    def reset(self):
-        self.walk.reset();self.standing.reset();self.leg_recovery_blend.reset()
-        if self.arm_target_rate is not None:self.arm_target_rate.reset()
-        self.last_arm_targets_before_slew=None;self.last_arm_targets_after_slew=None
+    def reset(self,ids=None):
+        self.walk.reset(ids);self.standing.reset(ids);self.leg_recovery_blend.reset(ids)
+        if self.arm_target_rate is not None:self.arm_target_rate.reset(ids)
+        if ids is None:
+            self.last_arm_targets_before_slew=None;self.last_arm_targets_after_slew=None
 
     @torch.inference_mode()
     def action(self,observation,parameters,default,limits,event_time=None,target_offset_world=None):

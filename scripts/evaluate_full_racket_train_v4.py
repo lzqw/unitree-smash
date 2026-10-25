@@ -30,7 +30,7 @@ import numpy as np
 import torch
 from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper
 from isaacsim.core.utils.stage import get_current_stage
-from quadsmash.control.full_racket_rally_controller_v4 import FullRacketRallyControllerV4
+from quadsmash.control.full_racket_residual_v4 import make_rally_controller
 from quadsmash.control.full_racket_train_evaluation_v4 import training_cases, training_noise, summarize_training
 from quadsmash.tasks.stand.full_racket_env_v4 import full_racket_cfg
 from quadsmash.tasks.stand.full_racket_eval_env_v4 import FrozenPanelEnv
@@ -84,7 +84,7 @@ def main():
         raise ValueError('Control period differs from original protocol')
     env = FrozenPanelEnv(cfg, cases=cases, reset_noise=noise)
     wrapped = RslRlVecEnvWrapper(env, clip_actions=None)
-    controller = FullRacketRallyControllerV4(checkpoint, count, env.device)
+    controller = make_rally_controller(checkpoint, count, env.device)
     stopping = False
     def stop(_signal, _frame):
         nonlocal stopping

@@ -14,9 +14,10 @@ class Go2StandingTransfer(Go2WalkTransfer):
         super().__init__(manifest, num_envs, device)
         self.standing_ticks = torch.zeros(num_envs, dtype=torch.long, device=device)
 
-    def reset(self):
-        super().reset()
-        self.standing_ticks.zero_()
+    def reset(self, ids=None):
+        super().reset(ids)
+        if ids is None:self.standing_ticks.zero_()
+        else:self.standing_ticks[ids]=0
 
     def action(self, observation, parameters, default, limits, arm_target, active=None):
         obs = observation['policy']

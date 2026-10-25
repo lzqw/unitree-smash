@@ -130,6 +130,8 @@ def main():
     training_cases=json.loads(case_path.read_text())['cases']
     if min(args.training_indices)<0 or max(args.training_indices)>=len(training_cases):raise ValueError('TRAIN index out of range')
     source=args.resume or args.warm_start;prior=torch.load(source,map_location='cpu',weights_only=False)
+    if prior.get('schema')=='full-racket-residual-ppo-v4' or 'residual_actor_jit' in prior:
+        raise ValueError('Use the residual PPO trainer for a residual actor; CEM must not silently discard it')
     template=prior['controller_template'] if args.resume else dict(prior)
     if not args.resume:
         template['seed']=dict(template['seed'],smooth_recovery_arm=True)
