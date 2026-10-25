@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/TRAIN128_LATERAL_DIAGNOSTIC_20261025.json",
-      "notes": "原PPO iter8固定TRAIN128已完成且逐回合重算：18/128合法空中、9/18条件恢复、攻击3、目标1、完整0、NF0；未优于之前横向基线19空中/12恢复/攻击7。GPU0现运行512环境PPO（原128来球各4副本），从真实地面继承原8更新模型/Adam/归一化/RNG，旧物理buffer不恢复；已独立验证首个新增update9和65536步、模型/优化器有限、NF0。24更新后由同一队列再评固定TRAIN128。41.36秒新iter8视频已上传回验，保留两个失败；所有原正式验收门槛与物理规则不变，G07仍未通过。",
+      "notes": "GPU0的512环境PPO已独立检查到update23、新增983040控制环境步、NF0。同批1894条变动权重训练记录含247合法空中、118条件恢复、1完整；TRAIN19_LANE275_EP1完整链经原判据重算，出球8.015m/s、首落[3.935,-.168]、恢复1.387s，经历actor14..20，不能当作冻结策略能力。当前训练继续至iter32，原队列随后固定评估TRAIN128；CPU视频队列已预选19/23/107/0。原iter8固定成绩18空中/9恢复/0完整，正式门槛及全模型不变，G07仍未通过。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
@@ -66,8 +66,8 @@
           "parent_queue_session_id": 47168,
           "scope": "Actual native residual PPO learner fork on512 ground environments,128 distinct TRAIN cases replicated4times;24additionalupdates to iter32. No frozen-policy performance yet.",
           "declared_control_env_steps": 1572864,
-          "independently_verified_update": 16,
-          "verified_current_job_steps": 524288,
+          "independently_verified_update": 23,
+          "verified_current_job_steps": 983040,
           "progress_file": "reports/G07_full_racket_v4/residual_ppo_n512_resume24_01/progress.json"
         }
       ],
@@ -1249,6 +1249,35 @@
           "reports/G07_full_racket_v4/residual_csv_queue01/iter32_training_episodes.csv",
           "reports/G07_full_racket_v4/residual_csv_queue01/iter32_fixed_episodes.csv"
         ]
+      },
+      "native_training_complete_milestone": {
+        "report": "reports/G07_full_racket_v4/residual_n512_first_complete_20261025/REPORT.json",
+        "native_case_id": "TRAIN19_LANE275_EP1",
+        "snapshot_update": 23,
+        "all_closed_training_counts": {
+          "completed_episodes": 1894,
+          "air": 247,
+          "conditional_recovery_count": 118,
+          "complete": 1,
+          "numerical_failures": 0
+        },
+        "fixed_policy_performance": false,
+        "contact_record_match_pending": true
+      },
+      "queued_iter32_video": {
+        "pid": 1575992,
+        "session_id": 80492,
+        "state_file": "reports/G07_full_racket_v4/residual_iter32_video_queue01/state.json",
+        "state_at_last_check": "WAITING_FOR_NATIVE_WORKFLOW",
+        "preselected_TRAIN_indices": [
+          19,
+          23,
+          107,
+          0
+        ],
+        "renderer_uses_gpu": false,
+        "selection_scope": "TRAIN19 selected after changing-policy training success, before fixed evaluation;23/107/0 retain previous comparison cases.",
+        "formal_acceptance": false
       }
     },
     "G08": {
