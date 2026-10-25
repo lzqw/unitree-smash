@@ -8,6 +8,8 @@
 
 当前进度（2026-10-25）：PPO iter32固定TRAIN128已完成并独立重算：合法空中22/128（17.19%）、条件恢复14/22（63.64%）、攻击3、目标3、完整0、数值故障0。第8次更新为18空中/9恢复/0完整，横向基线为19/12/0；这是不同原生执行的描述性对照，不作统计或因果结论。本轮3次空中攻击与3次目标命中没有同回合重叠，完整任务仍未解决。GPU0现已在2048个真实地面环境（128来球各16副本）从iter32继续学习64更新至iter96；正式G07仍未通过。
 
+[2048环境首批地面训练回合](reports/G07_full_racket_v4/residual_n2048_first_ground_cohort_20261025/REPORT.json)现已全部闭合并独立重算：197空中、97条件恢复、16空中攻击、26目标、0完整、数值故障0；攻击和目标仍无同回合重叠。它们经历了探索与权重更新，不是固定策略成绩，也不是2048种来球。原训练继续，下一版五案例视频已在第96次固定评估开始前登记。
+
 [训练完成报告](reports/G07_full_racket_v4/residual_iter32_training_completion_20261025/REPORT.json)与[3171行训练CSV](reports/G07_full_racket_v4/residual_iter32_training_completion_20261025/training_episodes.csv)保留完整训练计数、更新日志、实际资源用量和来源；[原生接触确认](reports/G07_full_racket_v4/residual_n512_first_complete_20261025/FINAL_CONTACT_CONFIRMATION.json)已与训练结束后的contacts.json匹配。固定评估的128个地面初态与新权重已核验，最新成绩与视频见上方；旧iter8视频保留为历史对照。
 
 [完整训练回合与全部同批原始记录](reports/G07_full_racket_v4/residual_n512_first_complete_20261025/REPORT.json)保留1894回合快照、原生索引、同lane前一失败及权重谱系。PPO训练没有保存这条回合的完整运动轨迹，不能将事件/终态记录补成真实动作视频。第32次更新后的固定TRAIN128评估与实际视频现已完成；TRAIN19/23/107/0四例在该次固定评估开始前已选定，追加TRAIN8的选择时间与依据已单独说明。此前首批512地面训练回合为70合法空中、33条件恢复、0完整；原PPO iter8固定TRAIN128为18/128空中、9/18条件恢复、完整0。

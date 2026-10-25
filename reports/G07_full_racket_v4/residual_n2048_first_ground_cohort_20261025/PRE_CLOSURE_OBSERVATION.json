@@ -1,0 +1,33 @@
+{
+  "observed_at": "2026-10-25T06:42:40.073089+00:00",
+  "scope": "Live early training observation with incomplete first cohort; no frozen-policy result.",
+  "update": 38,
+  "current_job_steps": 1572864,
+  "closed_first_episodes": 1604,
+  "pending_first_episodes": 444,
+  "closed_first_timeouts": 0,
+  "closed_first_terminal_reasons": {
+    "body_ground": 1526,
+    "rally_fault": 112,
+    "robot_rule_fault": 57,
+    "shuttle_only_fault": 55,
+    "first_ground_without_target": 577,
+    "root_fallen": 21
+  },
+  "all_closed_training_counts": {
+    "completed_episodes": 2753,
+    "air": 141,
+    "conditional_recovery_count": 0,
+    "complete": 0,
+    "numerical_failures": 0
+  },
+  "progress_sha256": "fe83a5ba63a96f06ec9e7be5c6e9ea5462921eabdf6e65e37daa7c840676303d",
+  "episodes_partial_sha256": "53bd70ae60cdfd41b90cfb83ffaa615ef85528c60890268787ac18e935f0458e",
+  "verified_live_gpu_child_pid": 1582980,
+  "verified_live_native_parent_pid": 1576853,
+  "verified_live_cpu_video_queue_pid": 1588259,
+  "video_queue_session": 3284,
+  "action": "Allow the same live job to continue; observe all2048 first closures before interpreting zero early recovery.",
+  "formal_acceptance": false,
+  "goal_complete": false
+}

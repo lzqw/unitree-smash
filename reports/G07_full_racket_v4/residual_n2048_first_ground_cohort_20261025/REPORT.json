@@ -1,0 +1,117 @@
+{
+  "created_at": "2026-10-25T06:43:42.562523+00:00",
+  "scope": "Actual first2048 ground training episodes,128 original TRAIN cases each repeated16 times. Changing actor/normalizer states and stochastic exploration; not frozen performance or formal A/B.",
+  "snapshot_update": 39,
+  "current_job_control_env_steps": 1835008,
+  "cumulative_learner_control_env_steps": 3538944,
+  "all_closed_training_counts_at_snapshot": {
+    "completed_episodes": 3582,
+    "air": 275,
+    "conditional_recovery_count": 97,
+    "complete": 0,
+    "numerical_failures": 0
+  },
+  "first_ground_cohort_counts": {
+    "episodes": 2048,
+    "distinct_TRAIN_cases": 128,
+    "lanes_per_case": 16,
+    "air": 197,
+    "conditional_recovery": 97,
+    "complete": 0,
+    "numerical_failures": 0,
+    "racket_contacts": 438,
+    "frame_contacts": 243,
+    "attack_outgoing": 16,
+    "target": 26,
+    "air_attack_and_target": 0,
+    "air_attack_and_recovery": 8,
+    "body_landing": 1526,
+    "early_terminated": 1604,
+    "timeout": 444,
+    "fault_counts": {
+      "robot_net_fault": 18,
+      "body_ball_fault": 0,
+      "wrong_side_fault": 0,
+      "double_hit_fault": 2,
+      "racket_invasion_fault": 12,
+      "body_over_net_fault": 0,
+      "under_net_obstruction_fault": 0,
+      "engineering_body_crossing": 25,
+      "bad_return_fault": 54,
+      "net_blocked_fault": 63
+    }
+  },
+  "TRAIN_cases_by_air_contacts_in16_lanes": {
+    "0": 38,
+    "3": 27,
+    "2": 26,
+    "1": 29,
+    "5": 3,
+    "4": 5
+  },
+  "training_terminal_reason_counts": {
+    "body_ground": 1526,
+    "first_ground_without_target": 937,
+    "rally_fault": 174,
+    "robot_rule_fault": 57,
+    "shuttle_only_fault": 117,
+    "root_fallen": 21
+  },
+  "all2048_actual_ground_states_verified": true,
+  "all_model_optimizer_tensors_finite": true,
+  "all_first_episode_terminal_robot_poses_finite": true,
+  "diagnostic_checkpoint_canonical_restart": false,
+  "diagnostic_checkpoint_sha256": "c6839614fceee3a5b43c1d1f7ff3a26400beee93c24df9f515d4431cbc60c730",
+  "earlier512_ground_cohort_descriptive_only": {
+    "episodes": 512,
+    "distinct_TRAIN_cases": 128,
+    "lanes_per_case": 4,
+    "air": 70,
+    "conditional_recovery": 33,
+    "complete": 0,
+    "numerical_failures": 0,
+    "racket_contacts": 172,
+    "frame_contacts": 103,
+    "frame_and_legal_air_overlap": 1,
+    "attack_outgoing": 7,
+    "target": 10,
+    "body_landing": 331,
+    "early_terminated": 356
+  },
+  "earlier512_report_sha256": "421cf5ee1ecfe9c09f19f37f1f98ee2669ed62e095191847df637a6336d612f8",
+  "raw_files": {
+    "all_closed_training_episodes.json.gz": {
+      "bytes": 7176003,
+      "sha256": "db373afa27f83dd872c6d30c0fc7235fa48603d52fbccc3917e381811d86cace"
+    },
+    "first_ground_episodes.json.gz": {
+      "bytes": 3830200,
+      "sha256": "42b4fbb9f11c8b8c98962fbb441e0c523f47a34a047d9bffd6c27bbb0910f0b5"
+    },
+    "progress.json": {
+      "bytes": 8491,
+      "sha256": "e674f7bf4e302ab6075cbcf5d1a09e2f4bd1c556ab2c11ee0c1b86bd3ee79f57"
+    }
+  },
+  "sources": {
+    "configs/g07_full_racket_eval_v4_r3.json": "04121cfb257ea4d2e288c69b44dd0c8dbada814e0bf95c8a16f5af7ef2390367",
+    "configs/court_net_v4.json": "184d07dde336bf36be7dfde089373c851a2bcb855a6e44f4120442b59818b4f4",
+    "configs/evaluation_protocol_v2.json": "421497aa51eecac023c70b200e8a75ecafff01527dcf215665d5d96c1e8266a8",
+    "quadsmash/evaluation_v4.py": "efe610b42103a45b75fa98acb2a7fe221536abb752ebd665fc926c6ffb657b38",
+    "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/initial_ground_states.json": "5c20c908bd06594562a642b50d1fbb26bda30d4fe83e3bede87a25b3ae5de890",
+    "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/INPUTS.json": "6c44a47d2ce7f6e0c03c95d9e601a1d538dbf330187a7b07a681e2124a802bd0",
+    "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/source_hashes.json": "9cab96b1e61da5f84225e96c8dae2cf0f0882731729b33be367d4708623e464f"
+  },
+  "partial_episode_snapshot_sha256": "fac58e4058b017d10d5a0a5d6955f6f353ef4a460a881d3e0acfd7bd503a1c83",
+  "limitations": [
+    "Native first episodes include changing actors/normalizers and exploration. No fixed-policy rate, statistical gain or causal batch-size comparison is inferred.",
+    "The earlier512 cohort began from iter8; this2048 cohort began from iter32 with another seed and placement. They are descriptive engineering snapshots.",
+    "Later episodes from early-reset lanes are excluded from the2048 first-ground cohort but included in the separately scoped all-closed snapshot.",
+    "Legal-air, frame and fault flags may overlap; count them using their original definitions.",
+    "Diagnostic PPO model files are not canonical environment restarts. Do not resume them directly or start another GPU owner.",
+    "Original task thresholds and all400 formal cases remain unchanged and unproven."
+  ],
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}

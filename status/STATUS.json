@@ -66,9 +66,11 @@
           "parent_queue_session_id": 81975,
           "scope": "Native residual PPO learner fork on2048 fresh ground environments,128 TRAIN cases replicated16 times;64additional updates from32 to96, no frozen performance yet.",
           "declared_control_env_steps": 16777216,
-          "independently_verified_update": 36,
-          "verified_current_job_steps": 1048576,
-          "progress_file": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/progress.json"
+          "independently_verified_update": 39,
+          "verified_current_job_steps": 1835008,
+          "progress_file": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/progress.json",
+          "verified_cumulative_learner_steps": 3538944,
+          "model_optimizer_tensors_finite": true
         }
       ],
       "queued_native_sequence": {
@@ -1520,6 +1522,64 @@
         "members": 151,
         "all_members_rehashed": true,
         "download_verified": true,
+        "formal_acceptance": false
+      },
+      "native2048_first_ground_cohort": {
+        "report": "reports/G07_full_racket_v4/residual_n2048_first_ground_cohort_20261025/REPORT.json",
+        "report_sha256": "dc99ab64f20aa9b33d164f81c6eeb2454b4a5aab9342c290b3de986b0eb05a30",
+        "snapshot_update": 39,
+        "counts": {
+          "episodes": 2048,
+          "distinct_TRAIN_cases": 128,
+          "lanes_per_case": 16,
+          "air": 197,
+          "conditional_recovery": 97,
+          "complete": 0,
+          "numerical_failures": 0,
+          "racket_contacts": 438,
+          "frame_contacts": 243,
+          "attack_outgoing": 16,
+          "target": 26,
+          "air_attack_and_target": 0,
+          "air_attack_and_recovery": 8,
+          "body_landing": 1526,
+          "early_terminated": 1604,
+          "timeout": 444,
+          "fault_counts": {
+            "robot_net_fault": 18,
+            "body_ball_fault": 0,
+            "wrong_side_fault": 0,
+            "double_hit_fault": 2,
+            "racket_invasion_fault": 12,
+            "body_over_net_fault": 0,
+            "under_net_obstruction_fault": 0,
+            "engineering_body_crossing": 25,
+            "bad_return_fault": 54,
+            "net_blocked_fault": 63
+          }
+        },
+        "raw_all_closed": "reports/G07_full_racket_v4/residual_n2048_first_ground_cohort_20261025/all_closed_training_episodes.json.gz",
+        "raw_first_cohort": "reports/G07_full_racket_v4/residual_n2048_first_ground_cohort_20261025/first_ground_episodes.json.gz",
+        "scope": "Actual first2048 ground training episodes,128 original TRAIN cases each repeated16 times. Changing actor/normalizer states and stochastic exploration; not frozen performance or formal A/B.",
+        "formal_acceptance": false
+      },
+      "queued_iter96_video": {
+        "pid": 1588259,
+        "session_id": 3284,
+        "state": "WAITING_FOR_NATIVE_WORKFLOW",
+        "state_file": "reports/G07_full_racket_v4/residual_iter96_video_queue01/state.json",
+        "source": "reports/G07_full_racket_v4/residual_iter96_video_queue01/run.py",
+        "predeclared_plan": "reports/G07_full_racket_v4/residual_iter96_video_queue01/PREDECLARED_PLAN.json",
+        "preselected_TRAIN_indices": [
+          19,
+          23,
+          107,
+          0,
+          8
+        ],
+        "selection_registered_at_training_update": 38,
+        "renderer_uses_gpu": false,
+        "requires_visual_review_before_upload": true,
         "formal_acceptance": false
       }
     },
