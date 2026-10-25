@@ -1,0 +1,60 @@
+{
+  "reviewed_at": "2026-10-25T19:53:09.677406+00:00",
+  "reviewed_by": "root assistant inspected all6 actual native-event previews and9 frames decoded from the finished video bytes",
+  "video_sha256": "2e1e2199ef59c565f1e47f40e637750c5215af1876fd26c589f9dfb844bc9819",
+  "decoded_frames": 1854,
+  "all_frames_decoded": true,
+  "duration_s": 37.08,
+  "reviewed_native_previews": [
+    "reports/G07_full_racket_v4/video/Current_training_centered_first_complete_and_failures_20261026_case0_terminal.jpg",
+    "reports/G07_full_racket_v4/video/Current_training_centered_first_complete_and_failures_20261026_case0_contact.jpg",
+    "reports/G07_full_racket_v4/video/Current_training_centered_first_complete_and_failures_20261026_case0_landing.jpg",
+    "reports/G07_full_racket_v4/video/Current_training_centered_first_complete_and_failures_20261026_case1_terminal.jpg",
+    "reports/G07_full_racket_v4/video/Current_training_centered_first_complete_and_failures_20261026_case1_landing.jpg",
+    "reports/G07_full_racket_v4/video/Current_training_centered_first_complete_and_failures_20261026_case2_terminal.jpg"
+  ],
+  "reviewed_decoded_frame_indices": [
+    25,
+    100,
+    209,
+    450,
+    612,
+    687,
+    1110,
+    1716,
+    1804
+  ],
+  "reviewed_images_sha256": {
+    "reports/G07_full_racket_v4/video/Current_training_centered_first_complete_and_failures_20261026_case0_terminal.jpg": "4991e34d4f4557c8d18d8f251fa7db560bcf5564e18deb7b52948a1325020b51",
+    "reports/G07_full_racket_v4/video/Current_training_centered_first_complete_and_failures_20261026_case0_contact.jpg": "c5f0aa9e6051307dad8d46f392f0a413687c5b9c22d4c3aa2e54c85df9bbf304",
+    "reports/G07_full_racket_v4/video/Current_training_centered_first_complete_and_failures_20261026_case0_landing.jpg": "d6e4919d3d8e3d0c0480b736d021aebe9421c24753ff0ddc9236ca24ea36266e",
+    "reports/G07_full_racket_v4/video/Current_training_centered_first_complete_and_failures_20261026_case1_terminal.jpg": "0c960289814ae837bb5ad8ca662a1976e584dc516560ab11b22d2711ce1a59d4",
+    "reports/G07_full_racket_v4/video/Current_training_centered_first_complete_and_failures_20261026_case1_landing.jpg": "4bc7102dab79b9016af3082a85a3682e5390cf1d890837bc0645233045418408",
+    "reports/G07_full_racket_v4/video/Current_training_centered_first_complete_and_failures_20261026_case2_terminal.jpg": "3c04a636f22dc3efc8a449de82934c0df9022acf74875829e6b3da4bf2fdee1c",
+    "reports/G07_full_racket_v4/centered_resume_training_capture_20261026/decoded_samples/frame_000025.jpg": "1e28fbc666540c3a88d516a2859807294152d6036d8ff2365d54a106a4f2c55b",
+    "reports/G07_full_racket_v4/centered_resume_training_capture_20261026/decoded_samples/frame_000100.jpg": "6d1000e7c0650e52e94ad7ec3be9965be331b3296cb008e3c2ad22bd9e243efd",
+    "reports/G07_full_racket_v4/centered_resume_training_capture_20261026/decoded_samples/frame_000209.jpg": "4480b326ca3e3d0650ad205c43d20494904d10eaa70a64b8226658ca1f0e7fdb",
+    "reports/G07_full_racket_v4/centered_resume_training_capture_20261026/decoded_samples/frame_000450.jpg": "f2061133faa000704902a80db89543396c26e655482348dfc966c55f7018a5d4",
+    "reports/G07_full_racket_v4/centered_resume_training_capture_20261026/decoded_samples/frame_000612.jpg": "df9df58b4ec6928912975511905f0209087cefea56cb77627f9b7eeceae8c648",
+    "reports/G07_full_racket_v4/centered_resume_training_capture_20261026/decoded_samples/frame_000687.jpg": "33c91c55eb7b4172225e13ad028aba8597c6b15eb848e3be4ea899349a7b8776",
+    "reports/G07_full_racket_v4/centered_resume_training_capture_20261026/decoded_samples/frame_001110.jpg": "2b22a92882543f4d1bf45ab90b12e544cf080c2a68e646fb241fe8fa1101adeb",
+    "reports/G07_full_racket_v4/centered_resume_training_capture_20261026/decoded_samples/frame_001716.jpg": "3d8178a04efe54ca14688163a53e7582d803699dada92c757560bec80f12ed6d",
+    "reports/G07_full_racket_v4/centered_resume_training_capture_20261026/decoded_samples/frame_001804.jpg": "4e486c876dae6cfddc0872534d2c8723270a4d241f0d330a94388963767fdcd2"
+  },
+  "scope": "Actual changing-policy TRAIN111 lane1519 episode3 complete ground-start motion, plus TRAIN23 episode2 recovery/miss and TRAIN8 episode3 body-ground failure; no frozen score.",
+  "observations": [
+    "Opening, per-case labels and closing distinguish selected training episodes from frozen performance and formal A/B.",
+    "Both side and top views show actual whole-body motion and complete arm/racket hardware. Exact string contact uses native substep poses and contact point.",
+    "The TRAIN111 first-landing marker is near the original target far edge; numeric original records, not pixels, establish its5.95mm margin.",
+    "The success includes actual ground preparation, airborne contact, first landing and continued recovery through8s; the two failures remain visible.",
+    "Wide court views make the robot small. Side hardware can overlap at narrow strokes; complementary top views help show geometry.",
+    "Actual outgoing speed8.00235m/s and racket-point speed0.36269m/s are separate quantities; no fast racket swing claim."
+  ],
+  "whole_source_job_completed": false,
+  "training_success_is_frozen_performance": false,
+  "actual_success_speed_margin_mps": 0.0023549285291668554,
+  "actual_success_target_far_x_margin_m": 0.005950927734375,
+  "approved_for_authorized_GitHub_video_upload": true,
+  "formal_acceptance": false,
+  "goal_complete": false
+}

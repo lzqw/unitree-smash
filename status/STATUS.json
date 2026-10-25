@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/centered_residual_pilot8_queue02/FIXED_TRAIN128_RESULT.json",
-      "notes": "新冻结增量8全原TRAIN128仍为0完整、26空中、13条件恢复（50%）、3合格攻击、6目标、NF0；85.52秒实际视频和全量证据已上传。GPU0正在严格8→40续训：最新global15、本作业1835008控制环境步、NF0。独立检查真实update15的17项Adam均保留推进140步、两套归一化增加1835008；首批2048个真实地面回合为247空中、113条件恢复、0完整、NF0，所有实际源episode ID链精确，完整记录器正常。这些是变化中策略训练，不是冻结成绩。已新增三次真实合格攻击的落点/网余量CPU诊断，RK4首落与原生偏差0.35–2.06毫米；两例同速自由飞行调整可瞄准3.9米且有正余量，第三例为负，仍须原生验证，不继承成功。原A/B各200及50/70/85门槛未通过。",
+      "notes": "本轮新增量严格续训在实际update17闭合记录中出现1次完整训练成功：TRAIN111/LANE1519/EP3，800条原生100Hz全身/动作/公共输入，actor10至16，出球8.00235493m/s、vz−2.27961、首落[3.994049,−0.695709]、恢复4.10289秒、无违规。余量仅0.00235m/s和目标后沿5.95mm；实际拍上接触点速度0.36269m/s，不冒充高速挥拍。37.08秒真实视频保留另两例失败，1854帧全解码、15张实际画面检查；161167119字节权重/源码/4516闭合原始回合/100Hz轨迹包及视频均上传并下载SHA回验。GPU0同作业仍正常运行，最新global18、本作业2621440控制环境步、NF0，完整轨迹记录器正常。上述训练成功不继承为冻结成绩；最近新冻结8仍为0/128完整、26空中、13条件恢复、3合格攻击、NF0。原A/B各200及50/70/85门槛仍未通过。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
@@ -58,7 +58,7 @@
       "active_gpu_jobs": [
         {
           "state": "RUNNING_NATIVE_CENTERED_RESUME32",
-          "observed_at": "2026-10-25T19:43:16.703321+00:00",
+          "observed_at": "2026-10-25T19:58:05.335224+00:00",
           "workflow_pid": 1678986,
           "workflow_session_id": 15135,
           "guard_pid": 1687054,
@@ -69,18 +69,18 @@
           "initial_iteration": 8,
           "target_iteration": 40,
           "requested_additional_updates": 32,
-          "latest_runtime_update": 15,
-          "current_job_actual_control_env_steps": 1835008,
+          "latest_runtime_update": 18,
+          "current_job_actual_control_env_steps": 2621440,
           "source_new_learner_steps": 2097152,
           "latest_independently_checked_resume_iteration": 15,
           "all17_Adam_states_preserved_and_advanced": true,
           "actual2048_ground_initialization_verified": true,
           "actual_trajectory_recording_enabled": true,
           "runtime_changing_policy_counts": {
-            "completed_episodes": 3365,
-            "air": 321,
-            "conditional_recovery_count": 113,
-            "complete": 0,
+            "completed_episodes": 4942,
+            "air": 490,
+            "conditional_recovery_count": 193,
+            "complete": 1,
             "numerical_failures": 0
           },
           "verification": "reports/G07_full_racket_v4/centered_residual_resume32_queue01/ROOT_ACTUAL_UPDATE15_FIRST_COHORT_CHECK.json",
@@ -5822,6 +5822,82 @@
         "actual_attack_count": 3,
         "freeflight_calculation_is_not_robot_execution": true,
         "formal_acceptance": false
+      },
+      "latest_training_complete_episode": {
+        "evidence": "reports/G07_full_racket_v4/centered_resume_training_capture_20261026/FIRST_COMPLETE_NATIVE_EPISODE_CHECK.json",
+        "case_id": "TRAIN111_LANE1519_EP3",
+        "TRAIN": 111,
+        "env_id": 1519,
+        "episode_index": 3,
+        "actual_outgoing_speed_mps": 8.002354928529167,
+        "actual_speed_threshold_margin_mps": 0.0023549285291668554,
+        "first_landing_m": [
+          3.994049072265625,
+          -0.695709228515625,
+          0.02526775561273098
+        ],
+        "target_far_x_margin_m": 0.005950927734375,
+        "actual_recovery_s": 4.1028852462768555,
+        "actual_racket_point_speed_mps": 0.3626862045199723,
+        "actual_all800_native100Hz_samples_preserved": true,
+        "actual_actor_iterations_encountered": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
+        ],
+        "frozen_policy_performance": false,
+        "formal_acceptance": false
+      },
+      "latest_training_complete_episode_video": {
+        "verified_at": "2026-10-25T19:53:49.842201+00:00",
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_training_centered_first_complete_and_failures_20261026.mp4",
+        "bytes": 2984276,
+        "sha256": "2e1e2199ef59c565f1e47f40e637750c5215af1876fd26c589f9dfb844bc9819",
+        "fresh_downloaded_sha256": "2e1e2199ef59c565f1e47f40e637750c5215af1876fd26c589f9dfb844bc9819",
+        "download_verified": true,
+        "scope": "Actual selected changing-policy training episodes: one complete TRAIN111 with very small margins and two retained failures. Not frozen-policy performance or formal acceptance.",
+        "formal_acceptance": false,
+        "goal_complete": false,
+        "duration_s": 37.08,
+        "frames": 1854,
+        "selected_keys": [
+          [
+            1519,
+            3
+          ],
+          [
+            23,
+            2
+          ],
+          [
+            8,
+            3
+          ]
+        ],
+        "root_reviewed_images": 15,
+        "includes_two_failures": true,
+        "source_job_complete": false
+      },
+      "latest_training_complete_episode_archive": {
+        "verified_at": "2026-10-25T19:57:24.830810+00:00",
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_centered_resume_first_complete_training_video_20261026.zip",
+        "bytes": 161167119,
+        "sha256": "cb7bf568d12593059ce7800ddee30c6e7f93ab89b60de7da0290fd28ca8a1457",
+        "fresh_downloaded_sha256": "cb7bf568d12593059ce7800ddee30c6e7f93ab89b60de7da0290fd28ca8a1457",
+        "download_verified": true,
+        "payload_members": 70,
+        "total_members": 71,
+        "all_member_CRC_verified_locally": true,
+        "all_source_payload_SHA_verified_locally": true,
+        "scope": "Partial actual centered8-to40 TRAIN: first complete episode with full100Hz recording, two failures, all4516 observed raw rows, video and code/weight custody. Actual source job still running; no completed job or new frozen score.",
+        "source_job_complete": false,
+        "frozen_policy_performance": false,
+        "formal_acceptance": false,
+        "goal_complete": false
       }
     },
     "G08": {

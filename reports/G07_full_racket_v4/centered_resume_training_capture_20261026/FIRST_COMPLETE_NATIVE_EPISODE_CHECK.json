@@ -1,0 +1,121 @@
+{
+  "checked_at": "2026-10-25T19:51:40.430044+00:00",
+  "scope": "First complete episode of this centered strict8-to40 TRAIN continuation, not the first historical project success, a completed job, a frozen-policy score or formal acceptance.",
+  "actual_case_id": "TRAIN111_LANE1519_EP3",
+  "env_id": 1519,
+  "episode_index": 3,
+  "TRAIN": 111,
+  "all800_actual100Hz_ground_start_samples": true,
+  "initial_root_position_max_error_m": 1.3828277578564752e-08,
+  "actor_iterations_encountered": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16
+  ],
+  "actual_independent_outcome": {
+    "airborne_contact": true,
+    "conditional_recovery": true,
+    "complete": true,
+    "fault": false
+  },
+  "actual_contact_time_s": 2.6838767528533936,
+  "actual_contact_point_m": [
+    0.9814910888671875,
+    0.00579833984375,
+    1.7710829973220825
+  ],
+  "actual_contact_point_local_racket_m": [
+    0.0014867341771866351,
+    0.018446280952994297,
+    0.10898723073298398
+  ],
+  "actual_contact_point_strings_rho_squared": 0.9158260662746038,
+  "actual_feet_heights_at_contact_m": {
+    "FL_foot": 0.47184187173843384,
+    "FR_foot": 0.5029715895652771,
+    "RL_foot": 0.3902761936187744,
+    "RR_foot": 0.4175676703453064
+  },
+  "actual_outgoing_velocity_mps": [
+    7.478099346160889,
+    -1.708535075187683,
+    -2.2796101570129395
+  ],
+  "actual_outgoing_speed_mps": 8.002354928529167,
+  "actual_speed_threshold_margin_mps": 0.0023549285291668554,
+  "actual_net_crossing_point_m": [
+    1.524999976158142,
+    -0.11910948902368546,
+    1.5854390859603882
+  ],
+  "actual_net_margin_m": 0.03638195991516113,
+  "actual_first_landing_m": [
+    3.994049072265625,
+    -0.695709228515625,
+    0.02526775561273098
+  ],
+  "actual_first_landing_time_s": 3.1015846729278564,
+  "actual_target_far_x_margin_m": 0.005950927734375,
+  "actual_recovery_s": 4.1028852462768555,
+  "actual_body_ground_maximum_force_n": 0.0,
+  "actual_point_velocity_mps": [
+    0.025000110268592834,
+    -0.09305806457996368,
+    -0.34965193271636963
+  ],
+  "actual_point_speed_mps": 0.3626862045199723,
+  "flange_plus_rotation_point_velocity_error_mps": 5.100332666579746e-06,
+  "last_080s_public_pose_and_velocity_corroboration": {
+    "samples": 80,
+    "start_time_s": 7.199999809265137,
+    "maximum_abs_roll_pitch_degrees": 3.6169712030904124,
+    "maximum_root_link_horizontal_speed_mps": 0.007457927335053682,
+    "maximum_root_angular_speed_rad_s": 0.12901325523853302,
+    "maximum_abs_joint_speed_rad_s": 0.801620602607727,
+    "minimum_supporting_feet": 3
+  },
+  "all_observed_closed_changing_policy_counts": {
+    "closed_episodes": 4516,
+    "air": 457,
+    "conditional_recovery": 182,
+    "complete": 1,
+    "numerical_failures": 0
+  },
+  "retained_failure_keys": [
+    [
+      23,
+      2
+    ],
+    [
+      8,
+      3
+    ]
+  ],
+  "limitations": [
+    "Very small speed and target-edge margins; this episode does not establish robust performance.",
+    "The actual racket-point speed is reported separately from outgoing ball speed; an8m/s outgoing ball is not an8m/s racket swing.",
+    "No restoring of in-contact PhysX state, no generated motion, no episode splice, and no new frozen score.",
+    "The native recovery tracker checks substeps;100Hz root-link corroboration is additional evidence, not a substitute for it."
+  ],
+  "source_sha256": {
+    "reports/G07_full_racket_v4/centered_resume_training_capture_20261026/audit.py": "1750b6ed9bb96677d64be3abbb459a9ca184366c5238806a7997013300e529a4",
+    "reports/G07_full_racket_v4/centered_resume_training_capture_20261026/prepare.py": "a39b8298771abf09c4ab7951318bc71f02029de4d1610eb2b8dbcdbc30164bd3",
+    "reports/G07_full_racket_v4/video_snapshot_centered_resume_first_complete_20261026/cases.json": "e1dae75ef1ce8803b35f9fbc6b836b251d9cdf3902f6f8762f13607af983909d",
+    "reports/G07_full_racket_v4/video_snapshot_centered_resume_first_complete_20261026/residual_ppo_centered_base8_n2048_resume32_01/observed_episodes.json": "005d295fe1352ea3969cce5e966ba74ae20c05e1d285c7b7ef6603cf073075a2",
+    "reports/G07_full_racket_v4/video_snapshot_centered_resume_first_complete_20261026/residual_ppo_centered_base8_n2048_resume32_01/observed_trace_manifest.json": "61be96fedfc1064ab4f4b81ebafa3fa307a3fe2b21bb57bd3aac49c08a0ba5d2",
+    "reports/G07_full_racket_v4/video_snapshot_centered_resume_first_complete_20261026/residual_ppo_centered_base8_n2048_resume32_01/lane1519_episode000003.npz": "86487647617e21e9895917047c7fd6567897b0c0b19f75bbae525504363ac15d",
+    "reports/G07_full_racket_v4/video_snapshot_centered_resume_first_complete_20261026/residual_ppo_centered_base8_n2048_resume32_01/lane1519_episode000003.json": "404b6d7543e7fc02eff7f9ecdc74930afe8e0ce6dd01f2ea479ad912b32dd9e0",
+    "configs/g07_full_racket_eval_v4_r3.json": "04121cfb257ea4d2e288c69b44dd0c8dbada814e0bf95c8a16f5af7ef2390367",
+    "quadsmash/tasks/stand/observation_contract.py": "3e884b4c5d72a2f86aff74114ebf0d9ece0264ea4b9e59880375a1fcc23a5772",
+    "quadsmash/evaluation_v4.py": "efe610b42103a45b75fa98acb2a7fe221536abb752ebd665fc926c6ffb657b38"
+  },
+  "native_source_job_still_running": true,
+  "frozen_policy_performance": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
