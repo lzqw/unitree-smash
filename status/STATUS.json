@@ -66,8 +66,8 @@
           "parent_queue_session_id": 47168,
           "scope": "Actual native residual PPO learner fork on512 ground environments,128 distinct TRAIN cases replicated4times;24additionalupdates to iter32. No frozen-policy performance yet.",
           "declared_control_env_steps": 1572864,
-          "independently_verified_update": 9,
-          "verified_current_job_steps": 65536,
+          "independently_verified_update": 16,
+          "verified_current_job_steps": 524288,
           "progress_file": "reports/G07_full_racket_v4/residual_ppo_n512_resume24_01/progress.json"
         }
       ],
@@ -1197,7 +1197,30 @@
         "download_verified": true
       },
       "model_comparison_progress": "reports/G07_full_racket_v4/model_task_comparison_20261025/REPORT.json",
-      "model_comparison_scope": "Old/new payload .09/.153kg and center offsets .18/[.45,0,.04]m; two same-flange kinematic comparisons are post-integration states, not pre-impact/dynamic capacity. Two complete full-model episodes independently rechecked on the SAME TRAIN65; no broad/formal pass or causal cross-model performance claim."
+      "model_comparison_scope": "Old/new payload .09/.153kg and center offsets .18/[.45,0,.04]m; two same-flange kinematic comparisons are post-integration states, not pre-impact/dynamic capacity. Two complete full-model episodes independently rechecked on the SAME TRAIN65; no broad/formal pass or causal cross-model performance claim.",
+      "native512_first_ground_cohort": {
+        "report": "reports/G07_full_racket_v4/residual_n512_first_ground_cohort_20261025/REPORT.json",
+        "raw": "reports/G07_full_racket_v4/residual_n512_first_ground_cohort_20261025/first_ground_episodes.json.gz",
+        "raw_sha256": "b9ca2555345c548888e938dd62ca78c7acac91c5321758d4371e4ee9f10b4d30",
+        "counts": {
+          "episodes": 512,
+          "distinct_TRAIN_cases": 128,
+          "lanes_per_case": 4,
+          "air": 70,
+          "conditional_recovery": 33,
+          "complete": 0,
+          "numerical_failures": 0,
+          "racket_contacts": 172,
+          "frame_contacts": 103,
+          "frame_and_legal_air_overlap": 1,
+          "attack_outgoing": 7,
+          "target": 10,
+          "body_landing": 331,
+          "early_terminated": 356
+        },
+        "scope": "First512 actual native ground episodes with changing actor/normalizer states and stochastic exploration. Not one frozen policy or formal A/B.",
+        "snapshot_update": 16
+      }
     },
     "G08": {
       "state": "TODO",

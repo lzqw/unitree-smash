@@ -1,0 +1,53 @@
+{
+  "created_at": "2026-10-25T04:54:37.273844+00:00",
+  "scope": "First512 actual native ground episodes with changing actor/normalizer states and stochastic exploration. Not one frozen policy or formal A/B.",
+  "snapshot_update": 16,
+  "first_cohort_seen_complete_at_update": 15,
+  "current_job_control_env_steps": 524288,
+  "cumulative_learner_control_env_steps": 655360,
+  "all_closed_training_counts_at_snapshot": {
+    "completed_episodes": 889,
+    "air": 100,
+    "conditional_recovery_count": 33,
+    "complete": 0,
+    "numerical_failures": 0
+  },
+  "first_ground_cohort_counts": {
+    "episodes": 512,
+    "distinct_TRAIN_cases": 128,
+    "lanes_per_case": 4,
+    "air": 70,
+    "conditional_recovery": 33,
+    "complete": 0,
+    "numerical_failures": 0,
+    "racket_contacts": 172,
+    "frame_contacts": 103,
+    "frame_and_legal_air_overlap": 1,
+    "attack_outgoing": 7,
+    "target": 10,
+    "body_landing": 331,
+    "early_terminated": 356
+  },
+  "TRAIN_cases_by_air_contacts_in_four_lanes": {
+    "1": 31,
+    "0": 78,
+    "2": 18,
+    "3": 1
+  },
+  "all_model_optimizer_tensors_finite": true,
+  "diagnostic_checkpoint_canonical_restart": false,
+  "diagnostic_checkpoint_sha256": "2fcf9542eeac7ae39865ce25fa01e769df0eeb4bdc4fb0b10f05b940d5b678c3",
+  "raw_first_cohort": "first_ground_episodes.json.gz",
+  "raw_first_cohort_sha256": "b9ca2555345c548888e938dd62ca78c7acac91c5321758d4371e4ee9f10b4d30",
+  "uncompressed_json_sha256": "ceb3bbc54565a653a8e1227e4212a011354478f156fc77e30892520589b7bcb6",
+  "original_partial_snapshot_sha256": "c491ab11bdafdfce4c706a1b9e9702b4fa32a6925bf34fcfa4ed342d47f65b72",
+  "first_cohort_native_indices_preserved": true,
+  "limitations": [
+    "Separate trajectories experience exploration, updated weights/normalizers and native placements. No fixed-policy rate or causal improvement is inferred.",
+    "Frame and legal-air counts can overlap within a stroke; they are not disjoint categories.",
+    "Later episodes from early-reset lanes are excluded from this complete512-episode first-ground cohort."
+  ],
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
