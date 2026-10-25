@@ -53,10 +53,32 @@ def main():
         robot_rule_terminal=sum(r['training_terminal_reasons']['robot_rule_fault'] for r in rows),
         body_ground_terminal=sum(r['training_terminal_reasons']['body_ground'] for r in rows),
         numerical_failures=sum(r['numerical_failures'] for r in rows))
+    per_candidate=[]
+    for candidate in range(state['candidate_count']):
+        indices=[i for i,r in enumerate(rows) if r['candidate_id']==candidate]
+        assert len(indices)==len(cases)
+        group=[rows[i] for i in indices];canonical=[checked[i] for i in indices]
+        values={key:sum(bool(r[key]) for r in group) for key in keys}
+        values.update(canonical_air_contacts=sum(v['airborne_contact'] for v in canonical),
+            canonical_conditional_recovery_count=sum(v['conditional_recovery'] for v in canonical),
+            canonical_complete=sum(v['complete'] for v in canonical),
+            canonical_attack_and_recovery=sum(r['attack_outgoing'] and v['conditional_recovery'] for r,v in zip(group,canonical)),
+            canonical_target_and_recovery=sum(r['landed_target'] and v['conditional_recovery'] for r,v in zip(group,canonical)),
+            body_ground_terminal=sum(r['training_terminal_reasons']['body_ground'] for r in group),
+            robot_rule_terminal=sum(r['training_terminal_reasons']['robot_rule_fault'] for r in group),
+            numerical_failures=sum(r['numerical_failures'] for r in group))
+        air=values['canonical_air_contacts'];recovered=values['canonical_conditional_recovery_count']
+        per_candidate.append(dict(candidate_id=candidate,executions=len(group),counts=values,
+            airborne_contact_rate=air/len(group),conditional_recovery_rate=recovered/air if air else 0.,
+            complete_success_rate=values['canonical_complete']/len(group)))
+    for key in ['canonical_air_contacts','canonical_conditional_recovery_count','canonical_complete',
+                'had_contact','attack_outgoing','landed_target','numerical_failures']:
+        assert sum(v['counts'][key] for v in per_candidate)==counts[key]
     report=dict(created_at=datetime.now(timezone.utc).isoformat(),
         scope='Completed native TRAIN generation only. Canonical per-episode criteria recomputed on TRAINrows without reading formal panel cases; not a formal panel result or independent success rate.',
         run=a.run.name,generation=a.generation,candidates=state['candidate_count'],distinct_TRAIN_indices=cases,
         distinct_cases=len(cases),control_ticks=ticks,actual_control_env_steps=ticks*count,counts=counts,
+        per_candidate=per_candidate,
         best_candidate_indices=[r['candidate_id'] for r in state['best_result']],
         all_native_and_independent_complete_flags_agree=True,all_attack_gates_recomputed_from_actual_outgoing=True,
         all_first_ground_initializations_verified=True,whole_job_complete=(a.run/'completed.json').exists(),
