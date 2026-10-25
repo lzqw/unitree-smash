@@ -57,36 +57,21 @@
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
       "active_gpu_jobs": [
         {
-          "state": "RUNNING_NATIVE_CENTERED_RESUME32",
-          "observed_at": "2026-10-25T21:13:30.620901+00:00",
+          "state": "RUNNING_FIXED_CENTERED_TRAIN128",
+          "observed_at": "2026-10-25T22:01:26.352343+00:00",
           "workflow_pid": 1678986,
           "workflow_session_id": 15135,
-          "guard_pid": 1687054,
-          "native_child_pid": 1687066,
+          "guard_pid": 1710061,
+          "native_child_pid": 1710073,
           "gpu": 0,
-          "training_output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_base8_n2048_resume32_01",
-          "source_canonical_checkpoint_sha256": "6f82a40cac28b1ecba4993ef2f7fb8f332b0668a58406327a8adc09f7b36eb9b",
-          "initial_iteration": 8,
-          "target_iteration": 40,
-          "requested_additional_updates": 32,
-          "latest_runtime_update": 33,
-          "current_job_actual_control_env_steps": 6553600,
-          "source_new_learner_steps": 2097152,
-          "latest_independently_checked_resume_iteration": 32,
-          "all17_Adam_states_preserved_and_advanced": true,
-          "actual2048_ground_initialization_verified": true,
-          "actual_trajectory_recording_enabled": true,
-          "runtime_changing_policy_counts": {
-            "completed_episodes": 13297,
-            "air": 1476,
-            "conditional_recovery_count": 686,
-            "complete": 2,
-            "numerical_failures": 0
-          },
-          "verification": "reports/G07_full_racket_v4/centered_intermediate_selection_queue01/ACTUAL_UPDATE32_HEALTH_AND_EXPORT_CHECK.json",
-          "formal_acceptance": false,
-          "initial_ground_verification": "reports/G07_full_racket_v4/centered_residual_resume32_queue01/ROOT_STRICT_RESUME_FIRST_UPDATE_CHECK.json",
-          "first_cohort_verification": "reports/G07_full_racket_v4/centered_residual_resume32_queue01/ROOT_ACTUAL_UPDATE15_FIRST_COHORT_CHECK.json"
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_base8_n2048_iter40_fixed_train128_01",
+          "policy_sha256": "2e1bf93056eff22dd309ea52a777ce0648aa50e025f63ec99e5ae8fe662fd84f",
+          "original_TRAIN_cases": 128,
+          "reset_noise": "none",
+          "seed": 724201,
+          "observation": "reports/G07_full_racket_v4/centered40_training_delivery_20261026/ONGOING_FIXED40_OBSERVATION.json",
+          "completed_training_receipt": "reports/G07_full_racket_v4/centered_residual_resume32_queue01/TRAINING_RECEIPT.json",
+          "formal_acceptance": false
         }
       ],
       "queued_native_sequence": {
@@ -1111,8 +1096,8 @@
         "state_file": "reports/G07_full_racket_v4/residual_resize512_queue01/state.json",
         "pid": 1566225,
         "session_id": 47168,
-        "state_at_last_check": "RUNNING_NATIVE_N512_LEARNER_FORK",
-        "still_running": true,
+        "state_at_last_check": "SUCCEEDED",
+        "still_running": false,
         "predecessor_queue_pid": 1560842,
         "protection": {
           "minimum_fixed_TRAIN128_air_contacts": 10,
@@ -1137,7 +1122,9 @@
         "note": "512 actual native ground resets and first additional update9 have been independently verified. Preserve this live job and its unchanged source; queue will validate completed iter32 before the original fixed TRAIN128 assessment.",
         "current_guard_pid": 1567872,
         "current_child_pid": 1567883,
-        "native512_PPO_executed": true
+        "native512_PPO_executed": true,
+        "previous_state_at_last_check": "RUNNING_NATIVE_N512_LEARNER_FORK",
+        "last_revalidated_at": "2026-10-25T22:01:26.352343+00:00"
       },
       "queued_residual_video": {
         "state_file": "reports/G07_full_racket_v4/residual_video_queue01/state.json",
@@ -3872,6 +3859,43 @@
           "formal_cases_read": false,
           "formal_acceptance": false,
           "goal_complete": false
+        },
+        {
+          "scope": "Previous centered8-to40 training observation retained; that native training job has now succeeded and frozen40 evaluation is running.",
+          "jobs": [
+            {
+              "state": "RUNNING_NATIVE_CENTERED_RESUME32",
+              "observed_at": "2026-10-25T21:13:30.620901+00:00",
+              "workflow_pid": 1678986,
+              "workflow_session_id": 15135,
+              "guard_pid": 1687054,
+              "native_child_pid": 1687066,
+              "gpu": 0,
+              "training_output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_base8_n2048_resume32_01",
+              "source_canonical_checkpoint_sha256": "6f82a40cac28b1ecba4993ef2f7fb8f332b0668a58406327a8adc09f7b36eb9b",
+              "initial_iteration": 8,
+              "target_iteration": 40,
+              "requested_additional_updates": 32,
+              "latest_runtime_update": 33,
+              "current_job_actual_control_env_steps": 6553600,
+              "source_new_learner_steps": 2097152,
+              "latest_independently_checked_resume_iteration": 32,
+              "all17_Adam_states_preserved_and_advanced": true,
+              "actual2048_ground_initialization_verified": true,
+              "actual_trajectory_recording_enabled": true,
+              "runtime_changing_policy_counts": {
+                "completed_episodes": 13297,
+                "air": 1476,
+                "conditional_recovery_count": 686,
+                "complete": 2,
+                "numerical_failures": 0
+              },
+              "verification": "reports/G07_full_racket_v4/centered_intermediate_selection_queue01/ACTUAL_UPDATE32_HEALTH_AND_EXPORT_CHECK.json",
+              "formal_acceptance": false,
+              "initial_ground_verification": "reports/G07_full_racket_v4/centered_residual_resume32_queue01/ROOT_STRICT_RESUME_FIRST_UPDATE_CHECK.json",
+              "first_cohort_verification": "reports/G07_full_racket_v4/centered_residual_resume32_queue01/ROOT_ACTUAL_UPDATE15_FIRST_COHORT_CHECK.json"
+            }
+          ]
         }
       ],
       "historical_completed_fixed_TRAIN128": [
@@ -5552,34 +5576,54 @@
       },
       "latest_training_delivery": {
         "video": {
-          "verified_at": "2026-10-25T18:46:11.172600+00:00",
-          "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_training_centered_initial_exploration_20261026.mp4",
-          "bytes": 1792054,
-          "sha256": "4601665c5d6326729c0ce14834a5f5f6cf24fa65feb026a262415c4d7ad4af89",
-          "fresh_downloaded_sha256": "4601665c5d6326729c0ce14834a5f5f6cf24fa65feb026a262415c4d7ad4af89",
+          "verified_at": "2026-10-25T21:25:34.630775+00:00",
+          "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_training_centered_second_complete_and_failure_20261026.mp4",
+          "bytes": 1912300,
+          "sha256": "d8422e90f330d98ed7e3087b7180cef1d315651820130185016f97d7efaaa4fc",
+          "fresh_downloaded_sha256": "d8422e90f330d98ed7e3087b7180cef1d315651820130185016f97d7efaaa4fc",
           "download_verified": true,
-          "duration_s": 22.18,
-          "frames": 1109,
-          "scope": "Actual initial exploratory training episodes107 and8; both fail. Not the final centered8 frozen-policy score.",
+          "duration_s": 24.0,
+          "frames": 1200,
+          "scope": "Actual second complete changing-policy TRAIN25 lane153 episode5, plus retained TRAIN8 body-ground failure. Not frozen-policy performance or formal acceptance.",
+          "selected_keys": [
+            [
+              153,
+              5
+            ],
+            [
+              8,
+              3
+            ]
+          ],
+          "root_reviewed_images": 11,
+          "source_job_complete_at_snapshot": false,
           "formal_acceptance": false,
           "goal_complete": false
         },
         "archive": {
-          "verified_at": "2026-10-25T18:55:59.699639+00:00",
-          "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_centered_residual_probe8_native_training_and_initial_video_20261026_v2.zip",
-          "bytes": 214767506,
-          "sha256": "d672edf51ec90649b1b0381fe9ff861e0c2433c98de944e0a07937e52954c4e4",
-          "fresh_downloaded_sha256": "d672edf51ec90649b1b0381fe9ff861e0c2433c98de944e0a07937e52954c4e4",
+          "verified_at": "2026-10-25T22:00:38.364419+00:00",
+          "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_centered40_completed_native_training_and_two_complete_videos_20261026.zip",
+          "bytes": 843374543,
+          "sha256": "63f4ceb476b352456fcf699cf8fff7c52f97428a132f9fccf0296d3224af80c3",
+          "fresh_downloaded_sha256": "63f4ceb476b352456fcf699cf8fff7c52f97428a132f9fccf0296d3224af80c3",
           "download_verified": true,
-          "scope": "Completed native centered pilot8 training/raw/policies/actual initial exploration video and runtime dependencies. New frozen TRAIN128 assessment is excluded.",
+          "payload_members": 223,
+          "total_members": 224,
+          "all_member_CRC_verified_locally": true,
+          "all_source_payload_SHA_verified_locally": true,
+          "source_job_complete": true,
+          "scope": "Completed actual centered8-to40 native TRAIN: all17156 final raw episodes, native contacts, all14 selected100Hz traces, canonical/public40, all32 diagnostic boundaries and two actual complete training videos with failures. Concurrent frozen40/intermediate assessments excluded.",
+          "frozen_policy_performance": false,
           "formal_acceptance": false,
-          "goal_complete": false,
-          "source_payload_members": 163,
-          "total_archive_members": 165,
-          "all165_member_CRC_verified_locally": true,
-          "all163_source_payload_SHA_verified_locally": true
+          "goal_complete": false
         },
-        "source_launch_commit": "f54c12168a22df663310b597fb0ce95aae5d681e",
+        "source_launch_commit": "1af5449a3d2336f0e8b7dbd6367e0fc7bf36eb27",
+        "canonical40_sha256": "3446560f26548cac7bad213fc779b8d62ae60d5525692402e1e0e0a54751fe73",
+        "public40_sha256": "2e1bf93056eff22dd309ea52a777ce0648aa50e025f63ec99e5ae8fe662fd84f",
+        "report": "reports/G07_full_racket_v4/centered40_training_delivery_20261026/REPORT.md",
+        "includes_both_actual_complete_training_videos_and_failures": true,
+        "source_job_complete": true,
+        "frozen_policy_performance": false,
         "formal_acceptance": false
       },
       "latest_frozen_diagnostic_video": {
@@ -5806,14 +5850,18 @@
         "required_training_companion_sha256": "d672edf51ec90649b1b0381fe9ff861e0c2433c98de944e0a07937e52954c4e4"
       },
       "latest_training_health": {
-        "path": "reports/G07_full_racket_v4/centered_residual_resume32_queue01/ROOT_ACTUAL_UPDATE15_FIRST_COHORT_CHECK.json",
-        "first_actual_ground_cohort": {
-          "actual_closed_episodes": 2048,
-          "actual_racket_contacts": 563,
-          "air": 247,
-          "conditional_recovery": 113,
-          "complete": 0,
-          "qualified_jump_and_recovery": 575,
+        "path": "reports/G07_full_racket_v4/centered_residual_resume32_queue01/TRAINING_RECEIPT.json",
+        "scope": "Completed actual canonical8-to40 strict continuation; changing-policy training only.",
+        "actual_control_env_steps": 8388608,
+        "cumulative_new_learner_steps": 10485760,
+        "all17_Adam_states_advanced640_steps": true,
+        "both_normalizer_counts_preserved_and_advanced": 8388608,
+        "all14_selected_training_traces_checked": true,
+        "independent_changing_policy_counts": {
+          "completed_episodes": 17156,
+          "air": 1945,
+          "conditional_recovery_count": 916,
+          "complete": 2,
           "numerical_failures": 0
         },
         "frozen_policy_performance": false
@@ -6064,7 +6112,92 @@
         "root_reviewed_images": 15,
         "includes_two_failures": true,
         "source_job_complete": false
-      }
+      },
+      "completed_centered_residual40_training": {
+        "checked_at": "2026-10-25T21:48:30.273217+00:00",
+        "actual_control_env_steps": 8388608,
+        "cumulative_new_learner_steps": 10485760,
+        "actual_GPU_hours": 2.7487627163413952,
+        "source_checkpoint_sha256": "6f82a40cac28b1ecba4993ef2f7fb8f332b0668a58406327a8adc09f7b36eb9b",
+        "checkpoint_sha256": "3446560f26548cac7bad213fc779b8d62ae60d5525692402e1e0e0a54751fe73",
+        "policy_sha256": "2e1bf93056eff22dd309ea52a777ce0648aa50e025f63ec99e5ae8fe662fd84f",
+        "fixed_base_policy_sha256": "846656e9d02c74f4b72929253ed9196557af4f9affe39236fc55d7f4bc5d744c",
+        "initial_iteration": 8,
+        "final_iteration": 40,
+        "all17_Adam_states_advanced640_steps": true,
+        "both_normalizer_counts_preserved_and_advanced": 8388608,
+        "actor_weights_changed": true,
+        "actual_episode_chains": {
+          "lanes": 2048,
+          "closed_episodes": 17156,
+          "initial_episode_id_min": 1,
+          "initial_episode_id_max": 3,
+          "every_source_inclusive_to_final_exclusive_chain_exact": true
+        },
+        "independent_changing_policy_counts": {
+          "completed_episodes": 17156,
+          "air": 1945,
+          "conditional_recovery_count": 916,
+          "complete": 2,
+          "numerical_failures": 0
+        },
+        "frozen_policy_performance": false,
+        "formal_acceptance": false,
+        "goal_complete": false,
+        "training_trace_audit": "reports/G07_full_racket_v4/centered_residual_resume32_queue01/TRAINING_TRACE_AUDIT.json",
+        "all14_selected_training_traces_checked": true,
+        "archive": {
+          "verified_at": "2026-10-25T22:00:38.364419+00:00",
+          "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_centered40_completed_native_training_and_two_complete_videos_20261026.zip",
+          "bytes": 843374543,
+          "sha256": "63f4ceb476b352456fcf699cf8fff7c52f97428a132f9fccf0296d3224af80c3",
+          "fresh_downloaded_sha256": "63f4ceb476b352456fcf699cf8fff7c52f97428a132f9fccf0296d3224af80c3",
+          "download_verified": true,
+          "payload_members": 223,
+          "total_members": 224,
+          "all_member_CRC_verified_locally": true,
+          "all_source_payload_SHA_verified_locally": true,
+          "source_job_complete": true,
+          "scope": "Completed actual centered8-to40 native TRAIN: all17156 final raw episodes, native contacts, all14 selected100Hz traces, canonical/public40, all32 diagnostic boundaries and two actual complete training videos with failures. Concurrent frozen40/intermediate assessments excluded.",
+          "frozen_policy_performance": false,
+          "formal_acceptance": false,
+          "goal_complete": false
+        }
+      },
+      "historical_training_deliveries": [
+        {
+          "video": {
+            "verified_at": "2026-10-25T18:46:11.172600+00:00",
+            "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_training_centered_initial_exploration_20261026.mp4",
+            "bytes": 1792054,
+            "sha256": "4601665c5d6326729c0ce14834a5f5f6cf24fa65feb026a262415c4d7ad4af89",
+            "fresh_downloaded_sha256": "4601665c5d6326729c0ce14834a5f5f6cf24fa65feb026a262415c4d7ad4af89",
+            "download_verified": true,
+            "duration_s": 22.18,
+            "frames": 1109,
+            "scope": "Actual initial exploratory training episodes107 and8; both fail. Not the final centered8 frozen-policy score.",
+            "formal_acceptance": false,
+            "goal_complete": false
+          },
+          "archive": {
+            "verified_at": "2026-10-25T18:55:59.699639+00:00",
+            "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_centered_residual_probe8_native_training_and_initial_video_20261026_v2.zip",
+            "bytes": 214767506,
+            "sha256": "d672edf51ec90649b1b0381fe9ff861e0c2433c98de944e0a07937e52954c4e4",
+            "fresh_downloaded_sha256": "d672edf51ec90649b1b0381fe9ff861e0c2433c98de944e0a07937e52954c4e4",
+            "download_verified": true,
+            "scope": "Completed native centered pilot8 training/raw/policies/actual initial exploration video and runtime dependencies. New frozen TRAIN128 assessment is excluded.",
+            "formal_acceptance": false,
+            "goal_complete": false,
+            "source_payload_members": 163,
+            "total_archive_members": 165,
+            "all165_member_CRC_verified_locally": true,
+            "all163_source_payload_SHA_verified_locally": true
+          },
+          "source_launch_commit": "f54c12168a22df663310b597fb0ce95aae5d681e",
+          "formal_acceptance": false
+        }
+      ]
     },
     "G08": {
       "state": "TODO",
