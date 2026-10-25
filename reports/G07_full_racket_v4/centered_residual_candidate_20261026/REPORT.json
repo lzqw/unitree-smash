@@ -1,0 +1,48 @@
+{
+  "created_at": "2026-10-25T17:28:37.921393+00:00",
+  "status": "CODE_READY_NOT_NATIVE_TRAINED",
+  "motivation": "Actual frozen40 and8 share initial state, incoming ball and analytic base, but measured precontact motion drift accompanies complete loss of contact. Learn new bounded corrections around a fixed useful public controller instead of letting its whole mean behavior drift.",
+  "architecture": "Original analytic controller plus a fixed measured learned public residual base, plus a new fresh18-joint residual. Zero new mean exactly preserves fixed-base commands on tested actual streams. Both final commands still pass original native targets and actuators.",
+  "initial_increment_bounds_rad": {
+    "legs": 0.03,
+    "arm": 0.15
+  },
+  "leg_joints_still_trainable": 12,
+  "arm_joints_still_trainable": 6,
+  "old_learned_base_actor_and_normalizer_fixed": true,
+  "new_actor_critic_normalizers_Adam_and_counters_fresh": true,
+  "original_hardware_court_net_ball_rules_protocol_and_thresholds_unchanged": true,
+  "optional_v3_reward": "Measured actual strings-center potential and actual release progress; target reward requires original attack predicate. None of these additions changes original scoring.",
+  "full_training_trajectory_recorder_enabled": true,
+  "CPU_tests": {
+    "passed": 83,
+    "failures": 0,
+    "errors": 0,
+    "junit": "reports/G07_full_racket_v4/centered_residual_candidate_20261026/CPU_FINAL_TEST_RESULT.xml"
+  },
+  "real_saved_native_public_input_rows": 3200,
+  "real_public_reset_events_replayed": 1,
+  "zero_new_residual_composition_bitwise_equal": true,
+  "source_base_actual_job_receipts_checked": true,
+  "existing_analytic_base_default_preserved": true,
+  "limitations": [
+    "CPU composition does not establish coupled dynamics, good policy learning or goal acceptance.",
+    "A limited new leg increment can still affect balance; it does not prove prevention of measured body drift.",
+    "The full native trajectory recorder still needs its first actual integrated native run."
+  ],
+  "previous_goal_turn_classification": "progress: recovered and executed frozen40 assessment, independently diagnosed its collapse, delivered actual reviewed videos/raw archives and completed the first fixed feedback probe.",
+  "next_action": "Wait for the current source-owning gain070 workflow and its actual GPU child to exit. Independently verify all three measured fixed TRAIN128 candidates. Select the baseline by the predeclared complete/attack/recovery/air score; rerun the chosen-base CPU check. Integrate reviewed code into the original main source/guard/ledger, then start native centered learning.",
+  "native_execution": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false,
+  "source_sha256": {
+    "quadsmash/control/full_racket_residual_v4.py": "399cd0972aaad0b73b85112c3d8d2f305490151394dea9ff4f894ed64264bcc8",
+    "quadsmash/rl/full_racket_residual_ppo_v4.py": "57a9f390b419694e7e5fbe930392a63445b7b36db158c681320aa504e6665c16",
+    "quadsmash/rl/frozen_baseline_source_v4.py": "9b74de59152c661ed0504a755a0b0d58d6b65495f577939dbed62d0e343d0d49",
+    "scripts/train_full_racket_residual_ppo_v4.py": "e0d95849139886c228f160271809a98635b564d2b4642956d3827cdeaef76d92",
+    "scripts/check_centered_residual_cpu_v4.py": "f5687928bfe499646c8dc7b747a062e4ebb32e434ec21247ef2189bda982ddd7",
+    "configs/g07_full_racket_residual_ppo_centered_v4.json": "b2a411d897ebb7e52d6185f8200cf63463d600040fdb6d822c89f6f0f6341467",
+    "tests/test_centered_residual_baseline_v4.py": "755479adbd4e464848c9c7604c5cfac0fd06348a8c959068e3c6c55861a6c0f0"
+  }
+}
