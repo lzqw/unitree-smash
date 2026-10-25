@@ -50,22 +50,22 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/TRAIN128_LATERAL_DIAGNOSTIC_20261025.json",
-      "notes": "原96续训及固定TRAIN128均已完成：固定完整0/128、空中24/128、条件恢复8/24、NF0，未达原门槛，条件队列跳过原A/B。两条真实新视频及1171962010字节完整资料包均已上传并下载验SHA。联合落点奖励与显式公共actor迁移已合并，42项CPU检查通过；已登记2048环境8更新的新学习器实验，canonical32仅作actor初始化，原物理、规则、全部来球及验收要求保持。新实验已在GPU0启动，实际2048地面状态、零时钟/初速、128来球各16副本和353源文件SHA已核验；首个完整PPO更新仍待完成，新策略尚无成绩，G07仍未通过。",
+      "notes": "原96续训及固定TRAIN128均已完成：固定完整0/128、空中24/128、条件恢复8/24、NF0，未达原门槛，条件队列跳过原A/B。两条真实新视频及1171962010字节完整资料包均已上传并下载验SHA。联合落点奖励与显式公共actor迁移已合并，42项CPU检查通过；已登记2048环境8更新的新学习器实验，canonical32仅作actor初始化，原物理、规则、全部来球及验收要求保持。新实验已在GPU0启动，实际2048地面状态、零时钟/初速、128来球各16副本和353源文件SHA已核验；首个PPO更新及262144控制环境步已实际完成，模型/Adam有限，尚无完整8秒回合；纠正后的独立TRAIN128后续评估观察进程已运行等待，新策略尚无成绩，G07仍未通过。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
       "active_gpu_jobs": [
         {
-          "state": "NATIVE_GROUND_INITIALIZATION_VERIFIED_ROLLOUT_IN_PROGRESS",
-          "observed_at": "2026-10-25T12:45:10.239720+00:00",
+          "state": "RUNNING_NATIVE_JOINT_PLACEMENT_PROBE8",
+          "observed_at": "2026-10-25T12:50:29.303424+00:00",
           "wrapper_pid": 1634321,
           "guard_pid": 1634322,
           "native_child_pid": 1634334,
           "session_id": 67232,
           "gpu": 0,
           "training_output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01",
-          "state_evidence": "Actual2048 ground states, zero clocks/velocities, all128 original TRAIN cases x16, actor32-only initialization and353 source hashes verified; no completed update or frozen score yet.",
+          "state_evidence": "First actual PPO update and262144 control env steps checked; model/Adam finite. Actor weights/log_std equal source32 during warmup, actor normalization evolves; no full ground episode closed yet.",
           "launch_git_sha": "d8664770fe92c36455ab799d8bd183f0d70051c7",
           "requested_updates": 8,
           "num_envs": 2048,
@@ -74,8 +74,12 @@
           "formal_acceptance": false,
           "goal_complete": false,
           "native_ground_initialization_verified": true,
-          "first_PPO_update_verified": false,
-          "startup_check": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_NATIVE_STARTUP_CHECK.json"
+          "first_PPO_update_verified": true,
+          "startup_check": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_NATIVE_STARTUP_CHECK.json",
+          "latest_verified_update": 1,
+          "actual_control_env_steps": 262144,
+          "closed_episodes": 0,
+          "first_update_check": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_FIRST_UPDATE_CHECK.json"
         }
       ],
       "queued_native_sequence": {
@@ -1396,15 +1400,15 @@
         "frozen_policy_performance": false
       },
       "current_native_workflow_state": {
-        "state": "NATIVE_GROUND_INITIALIZATION_VERIFIED_ROLLOUT_IN_PROGRESS",
-        "observed_at": "2026-10-25T12:45:10.239720+00:00",
+        "state": "RUNNING_NATIVE_JOINT_PLACEMENT_PROBE8",
+        "observed_at": "2026-10-25T12:50:29.303424+00:00",
         "wrapper_pid": 1634321,
         "guard_pid": 1634322,
         "native_child_pid": 1634334,
         "session_id": 67232,
         "gpu": 0,
         "training_output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01",
-        "state_evidence": "Actual2048 ground states, zero clocks/velocities, all128 original TRAIN cases x16, actor32-only initialization and353 source hashes verified; no completed update or frozen score yet.",
+        "state_evidence": "First actual PPO update and262144 control env steps checked; model/Adam finite. Actor weights/log_std equal source32 during warmup, actor normalization evolves; no full ground episode closed yet.",
         "launch_git_sha": "d8664770fe92c36455ab799d8bd183f0d70051c7",
         "requested_updates": 8,
         "num_envs": 2048,
@@ -1413,8 +1417,12 @@
         "formal_acceptance": false,
         "goal_complete": false,
         "native_ground_initialization_verified": true,
-        "first_PPO_update_verified": false,
-        "startup_check": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_NATIVE_STARTUP_CHECK.json"
+        "first_PPO_update_verified": true,
+        "startup_check": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_NATIVE_STARTUP_CHECK.json",
+        "latest_verified_update": 1,
+        "actual_control_env_steps": 262144,
+        "closed_episodes": 0,
+        "first_update_check": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_FIRST_UPDATE_CHECK.json"
       },
       "latest_completed_fixed_TRAIN128": {
         "report": "reports/G07_full_racket_v4/residual_iter96_fixed_diagnostic_20261025/REPORT.json",
@@ -1661,7 +1669,7 @@
         "download_verified": true
       },
       "prepared_joint_placement_reward": {
-        "state": "MERGED_CPU42_NATIVE_GROUND_VERIFIED_ROLLOUT_IN_PROGRESS",
+        "state": "MERGED_CPU42_NATIVE_FIRST_UPDATE_VERIFIED",
         "branch": "g07-joint-placement-reward-v4-20261025",
         "commit": "119b461010bee619905ad8736eb982b1fcf55160",
         "worktree": "/home/autodrive/LZQW/unitree_smash_joint_reward",
@@ -1711,7 +1719,7 @@
           "reports/G07_full_racket_v4/joint_placement_probe8_queue01/CPU_COMPATIBILITY_CHECKS.json"
         ],
         "native_run_started": true,
-        "native_execution_verified": false,
+        "native_execution_verified": true,
         "native_ground_initialization_verified": true
       },
       "formal_residual_loader_cpu_check": {
@@ -3828,7 +3836,7 @@
         "native_execution_verified": false,
         "launch_receipt": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/LAUNCH_RECEIPT.json",
         "native_ground_initialization_verified": true,
-        "first_PPO_update_verified": false,
+        "first_PPO_update_verified": true,
         "startup_check": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_NATIVE_STARTUP_CHECK.json"
       },
       "historical_completed_native_workflow_states": [
@@ -3839,7 +3847,31 @@
           "state_file": "reports/G07_full_racket_v4/residual_resize2048_queue01/state.json",
           "process_exited": true
         }
-      ]
+      ],
+      "native_joint_placement_first_update": {
+        "report": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_FIRST_UPDATE_CHECK.json",
+        "actual_control_env_steps": 262144,
+        "closed_episodes": 0,
+        "model_and_Adam_finite": true,
+        "actor_normalizer_evolves": true,
+        "frozen_policy_performance": false,
+        "formal_acceptance": false
+      },
+      "queued_joint_placement_probe_assessment": {
+        "state": "WAITING_FOR_EXISTING_NATIVE_JOINT_REWARD_TRAINING",
+        "pid": 1635640,
+        "session_id": 58190,
+        "state_file": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/state_v2.json",
+        "source": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/after_training.py",
+        "plan": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/POST_TRAINING_PLAN_V2.json",
+        "preparation_checks": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/POST_TRAINING_PREPARATION_CHECKS_V2.json",
+        "correction_history": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/OBSERVER_CORRECTION.json",
+        "evaluation_output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01",
+        "TRAIN_cases": 128,
+        "formal_cases_read": false,
+        "formal_acceptance": false,
+        "note": "Only after existing training truly exits successfully and finite canonical/export/new learner counters and all2048 first ground episodes validate; original GPU0 guard and cumulative ledger. Independent original TRAIN scoring and separate CSVs. Old observer cancelled before any assessment, no training interruption."
+      }
     },
     "G08": {
       "state": "TODO",

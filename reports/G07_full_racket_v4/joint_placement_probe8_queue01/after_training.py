@@ -28,8 +28,8 @@ core = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(core)
 TRAIN = REPORTS / 'residual_ppo_joint_placement_actor32_n2048_probe8_01'
 EVALUATION = REPORTS / 'residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01'
-PLAN = HERE / 'POST_TRAINING_PLAN.json'
-STATE = HERE / 'state.json'
+PLAN = HERE / 'POST_TRAINING_PLAN_V2.json'
+STATE = HERE / 'state_v2.json'
 STEPS = 2048 * 128 * 8
 stopping = False
 guard = None
@@ -109,7 +109,7 @@ def prepare():
         future_video_preselection=core.read(HERE / 'PREDECLARED_PLAN.json')['future_video_preselection'],
         formal_cases_read=False, formal_acceptance=False, goal_complete=False)
     save_once(PLAN, plan)
-    save_once(HERE / 'POST_TRAINING_PREPARATION_CHECKS.json', dict(
+    save_once(HERE / 'POST_TRAINING_PREPARATION_CHECKS_V2.json', dict(
         checked_at=datetime.now(timezone.utc).isoformat(), command_prepared_not_executed=True,
         original_source_hashes_verified=len(expected), native_ground_inputs_checked=True,
         actual_training_guard_live=live_guard, actual_training_child_live=live_child,
@@ -161,6 +161,7 @@ def verify_training():
     assert ground['source_training_indices'] == list(range(128)) * 16
     roots = np.asarray(ground['root_state_local'])
     protocol = core.read(ROOT / 'configs/g07_full_racket_eval_v4_r3.json')
+    protocol['_root'] = str(ROOT)
     expected_root = np.asarray(protocol['initialization']['root_position_m'])
     assert roots.shape == (2048, 13) and np.isfinite(roots).all()
     assert np.max(abs(roots[:, :3] - expected_root)) <= 1e-5
