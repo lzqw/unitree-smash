@@ -8,6 +8,8 @@
 
 当前进度（2026-10-25）：PPO iter32固定TRAIN128已完成并独立重算：合法空中22/128（17.19%）、条件恢复14/22（63.64%）、攻击3、目标3、完整0、数值故障0。第8次更新为18空中/9恢复/0完整，横向基线为19/12/0；这是不同原生执行的描述性对照，不作统计或因果结论。本轮3次空中攻击与3次目标命中没有同回合重叠，完整任务仍未解决。GPU0现已在2048个真实地面环境（128来球各16副本）从iter32继续学习64更新至iter96；正式G07仍未通过。
 
+候选现另支持显式`--initialize-actor`：在新奖励下建立新的学习器，只复制兼容策略网络、策略归一化和探索尺度；价值网络、其归一化、Adam与学习计数保持新建状态，不恢复旧物理或RNG。[真实iter32权重CPU迁移检查](reports/G07_full_racket_v4/actor_transfer_native_source_check_20261025/REPORT.json)动作误差为0，42项针对性检查通过；旧严格续训和扩批仍拒绝跨奖励恢复。该入口尚未原生运行，启用条件见[补充就绪记录](reports/G07_full_racket_v4/joint_placement_candidate_20261025/ACTOR_TRANSFER_READINESS.json)，原e0a8435准备记录保持历史状态。
+
 候选分支`g07-joint-placement-reward-v4-20261025`已实现可选的联合落点训练奖励；[CPU实测事件回放](reports/G07_full_racket_v4/joint_placement_candidate_20261025/REPORT.json)与[28项检查](reports/G07_full_racket_v4/joint_placement_candidate_20261025/CPU_CHECKS.json)已完成。它只为合法空中攻击并实际越网后的首次落点提供平滑反馈，低速目标命中不获该项奖励；原成功条件、物理/执行器与严格续训契约均不变。此候选尚未进行原生训练，当前主工作树的2048环境长训继续使用原奖励。是否运行候选先依据现有iter96固定评估，不继承此CPU回放为策略成绩。
 
 [2048环境首批地面训练回合](reports/G07_full_racket_v4/residual_n2048_first_ground_cohort_20261025/REPORT.json)现已全部闭合并独立重算：197空中、97条件恢复、16空中攻击、26目标、0完整、数值故障0；攻击和目标仍无同回合重叠。它们经历了探索与权重更新，不是固定策略成绩，也不是2048种来球。原训练继续，下一版五案例视频已在第96次固定评估开始前登记。

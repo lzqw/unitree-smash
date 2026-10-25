@@ -1,0 +1,73 @@
+{
+  "created_at": "2026-10-25T07:20:49.485577+00:00",
+  "scope": "Actual completed native iter32 weights transferred into a real fresh stock-RSL actor/critic on CPU. Environment interface/reset uses an explicitly labelled metadata fixture; no physical execution.",
+  "source_checkpoint": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_n512_resume24_01/checkpoint.pt",
+  "source_checkpoint_sha256": "2060f15dbe0ebabbb4b4657a6906fbf40ca661564025e8e06888f55b2fe1a041",
+  "source_portable_policy": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_n512_resume24_01/policy.pt",
+  "source_portable_policy_sha256": "772608a1c42ec78c09cdf3bd8b7bfe3fed1738d1273cde9d09610022553aa21b",
+  "actual_source_iteration": 32,
+  "actual_source_learner_steps": 1703936,
+  "original_strict_guards_rejected_changed_reward": {
+    "strict_full_resume": "resume changes the PPO configuration; use explicit weight initialization instead",
+    "strict_ground_resize": "Ground resizing cannot change PPO, seed, baseline, scales or rewards"
+  },
+  "initialization": {
+    "mode": "fresh_learner_with_transferred_public_actor",
+    "num_envs": 2048,
+    "initial_iteration": 0,
+    "current_job_steps_start_at_zero": true,
+    "source_checkpoint_sha256": "2060f15dbe0ebabbb4b4657a6906fbf40ca661564025e8e06888f55b2fe1a041",
+    "source_iteration": 32,
+    "source_num_envs": 512,
+    "source_learner_control_env_steps": 1703936,
+    "public_actor_and_actor_normalizer_transferred": true,
+    "exploration_log_std_transferred": true,
+    "critic_transferred": false,
+    "optimizer_transferred": false,
+    "source_rng_restored": false,
+    "old_physical_state_restored": false,
+    "old_environment_counters_restored": false,
+    "previous_learning_counters_restored": false,
+    "performance_inherited": false
+  },
+  "actual_saved_TRAIN_public_observation_shape": [
+    200,
+    794
+  ],
+  "output_shape": [
+    200,
+    18
+  ],
+  "comparison_with_actual_portable_actor_max_error": 0.0,
+  "comparison_atol": 2e-05,
+  "comparison_rtol": 2e-05,
+  "all_transferred_actor_normalizer_log_std_tensors_bitwise_equal": true,
+  "all_fresh_critic_and_critic_normalizer_tensors_bitwise_unchanged": true,
+  "parameter_objects_and_fresh_optimizer_bindings_preserved": true,
+  "source_optimizer_states": 17,
+  "target_optimizer_states": 0,
+  "new_learner_counters_zero": true,
+  "CPU_rng_unchanged_with_noop_reset_callback": true,
+  "actual_native_ground_reset_executed": false,
+  "new_native_training_run": false,
+  "performance_inherited": false,
+  "source_sha256": {
+    "scripts/initialize_residual_actor_v4.py": "d894ba8d59ea2b94d82ed39c0da321d868d51afde3f34cb2b99e6b70e73da4e0",
+    "scripts/train_full_racket_residual_ppo_v4.py": "e1aeb1b6738da2b28b4f2e44928b252181e880459c3d02f74f38db8c5774da5e",
+    "scripts/residual_ground_resize_v4.py": "b1803461faba4044d3560d0c81d57ba3bebb61298c790e1dfcef46b0981efa14",
+    "quadsmash/rl/native_checkpoint.py": "eb9bb68bd33134a65818afcbab76217293b96835e770fe164f578cec80659118",
+    "quadsmash/rl/native_ppo.py": "e8dc5eb05daec2497a0b4c19e2d81ff1931e485b0fe99025ed73c5759234ff9e",
+    "configs/g07_full_racket_residual_ppo_joint_placement_v4.json": "7f602853da25fee376c795b58c75b1d47bcf9bf76e5e3a7e04d4d25d942a00ca",
+    "tests/test_initialize_residual_actor_v4.py": "76ddb45648f6cbca8952bedde29b4662be2914abdbe574763fe3efcf369261e4"
+  },
+  "limitations": [
+    "This checks actual weight transfer, old-guard rejection and CPU inference. The reset callback is not a native environment.",
+    "The common trainer must still verify actual ground root/q/qd and zero episode clocks on a future single GPU0 native run.",
+    "The source is completed iter32, not the currently running learner. Choose and verify any later canonical source only after its job ends.",
+    "Actor transfer starts a distinct learner/reward lineage at iteration0; it is not continuous old PPO/critic/Adam/RNG/physics resume.",
+    "Existing sampling, evaluation rules and original A/B acceptance remain unchanged. No new policy-performance claim."
+  ],
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
