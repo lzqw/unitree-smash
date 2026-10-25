@@ -66,23 +66,23 @@
           "parent_queue_session_id": 81975,
           "scope": "Native residual PPO learner fork on2048 fresh ground environments,128 TRAIN cases replicated16 times;64additional updates from32 to96, no frozen performance yet.",
           "declared_control_env_steps": 16777216,
-          "independently_verified_update": 52,
-          "verified_current_job_steps": 5242880,
+          "independently_verified_update": 56,
+          "verified_current_job_steps": 6291456,
           "progress_file": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/progress.json",
-          "verified_cumulative_learner_steps": 6946816,
+          "verified_cumulative_learner_steps": 7995392,
           "model_optimizer_tensors_finite": true,
           "last_verified_training_counts": {
-            "completed_episodes": 11530,
-            "air": 952,
-            "conditional_recovery_count": 390,
+            "completed_episodes": 14048,
+            "air": 1142,
+            "conditional_recovery_count": 460,
             "complete": 3,
             "numerical_failures": 0
           },
-          "diagnostic_checkpoint_sha256": "83fde92c0b55581b707672bb3b93d10c78e9740af50a918f8fd014b12dbc943f",
+          "diagnostic_checkpoint_sha256": "05974af84614056b2f6640951c4ba7b4f9c710d88bafff410a2674d65aa826c7",
           "diagnostic_checkpoint_canonical_restart": false,
-          "verified_progress_sha256": "54e9500ab785c57018d1954babc241f3d53ade388360b2095c584812e677f35b",
-          "verified_episode_snapshot_sha256": "1b71ebaccac588520c952d889f38d02fe0f07dc1da2e718516e6d741b9b3d1ef",
-          "verified_at": "2026-10-25T07:53:05.600398+00:00"
+          "verified_progress_sha256": "8baa3ed91bd78c91b0c9a26dcf1e5aa67f47fed73981f6bc89bf0bc1d99f2d55",
+          "verified_episode_snapshot_sha256": "c8c1db4fa09119a2d255f5e1a329eb7c0d677e24ecb5005c1ca910a8b7015664",
+          "verified_at": "2026-10-25T08:11:54.852917+00:00"
         }
       ],
       "queued_native_sequence": {
@@ -1602,7 +1602,7 @@
         "report_url": "https://github.com/lzqw/unitree-smash/blob/e0a8435473ea8f4259c58c4e6f5406a67ba7d857/reports/G07_full_racket_v4/joint_placement_candidate_20261025/REPORT.json",
         "checks": "42targeted CPU checks; actual iter32 actor transfer has0 output error, critic unchanged and Adam/counters fresh; old strict resume/resize reject new reward.",
         "scope": "Optional TRAIN bonus for actual legal air attacks/crossing and first-landing distance. Original asset, physics, actuation, cases and acceptance unchanged. No native candidate training.",
-        "activation": "Review original iter96 fixed TRAIN128 first. Preserve its source if formal panels are warranted. Otherwise consider candidate integration only after all original native and CPU video owners (including separate TRAIN58 retest) end, in a prepared environment. A new reward learner may explicitly --initialize-actor from a compatible completed canonical source with fresh critic/Adam/counters; strict --resume remains unchanged.",
+        "activation": "Review original iter96 fixed TRAIN128 first. Preserve its source if formal panels are warranted. Otherwise consider candidate integration only after all original native and CPU video owners (including separate TRAIN58 retest) end, in a prepared environment. A new reward learner may explicitly --initialize-actor from a compatible completed canonical source with fresh critic/Adam/counters; strict --resume remains unchanged. The subsequently registered conditional formal A/B queue1599615/session75822 also owns the original source: wait for its actual terminal state and any qualified formal panels before integration.",
         "formal_acceptance": false,
         "previous_commit": "e0a8435473ea8f4259c58c4e6f5406a67ba7d857",
         "actor_transfer_source": "scripts/initialize_residual_actor_v4.py",
@@ -1778,6 +1778,38 @@
         "archive_created": false,
         "current2048_contacts_confirmed": false,
         "formal_acceptance": false
+      },
+      "queued_iter96_formal_AB": {
+        "pid": 1599615,
+        "session_id": 75822,
+        "state": "WAITING_FOR_NATIVE_WORKFLOW",
+        "state_file": "reports/G07_full_racket_v4/residual_iter96_formal_queue01/state.json",
+        "source": "reports/G07_full_racket_v4/residual_iter96_formal_queue01/run.py",
+        "source_sha256": "392ef900b8f3955bab01e405612231c565efb07a80ab0294b891e4d682128972",
+        "predeclared_plan": "reports/G07_full_racket_v4/residual_iter96_formal_queue01/PREDECLARED_PLAN.json",
+        "prelaunch_checks": "reports/G07_full_racket_v4/residual_iter96_formal_queue01/PRELAUNCH_CHECKS.json",
+        "CPU_resource_gate_checks_passed": 28,
+        "verified_native_progress": "reports/G07_full_racket_v4/residual_iter96_formal_queue01/NATIVE_PROGRESS_AT_REGISTRATION.json",
+        "parent_pid": 1576853,
+        "parent_session_id": 81975,
+        "target_policy_iteration": 96,
+        "qualification": "Actual existing parent must exit SUCCEEDED; verify canonical96/export and independently recompute all fixed TRAIN128 metrics. Only qualify at complete>=.50,air>=.70,conditional_recovery>=.85,NF0; otherwise skip panels and continue strategy work.",
+        "formal_panels": [
+          "A",
+          "B"
+        ],
+        "cases_per_panel": 200,
+        "aggregation": "worse panel",
+        "maximum_seconds_per_panel": 2700,
+        "maximum_control_env_steps_per_panel": 160000,
+        "GPU": 0,
+        "new_GPU_jobs_started": false,
+        "automatic_retries": false,
+        "guard_concurrency": "Existing nonblocking project GPU lock, unresolved RUNNING ledger rejection and actual GPU0 competing-process check; no termination of unrelated jobs.",
+        "goal_completion": "A/B policy thresholds alone cannot complete the full model/source/video/comparison objective.",
+        "formal_cases_read": false,
+        "formal_acceptance": false,
+        "goal_complete": false
       }
     },
     "G08": {

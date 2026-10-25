@@ -1,0 +1,205 @@
+{
+  "created_at": "2026-10-25T08:11:10.333764+00:00",
+  "status": "CPU_RESOURCE_GATE_CHECKS_PASSED",
+  "checks": [
+    {
+      "name": "actual_completed_iter32_fixed_TRAIN128_must_skip",
+      "result": "SKIPPED_TRAIN_BELOW_ORIGINAL_THRESHOLDS",
+      "passed": true
+    },
+    {
+      "name": "synthetic_all_original_rates_qualify",
+      "result": "RUN_ORIGINAL_FORMAL_AB",
+      "passed": true
+    },
+    {
+      "name": "synthetic_below_complete_success_rate",
+      "result": "SKIPPED_TRAIN_BELOW_ORIGINAL_THRESHOLDS",
+      "passed": true
+    },
+    {
+      "name": "synthetic_below_airborne_contact_rate",
+      "result": "SKIPPED_TRAIN_BELOW_ORIGINAL_THRESHOLDS",
+      "passed": true
+    },
+    {
+      "name": "synthetic_below_conditional_recovery_rate",
+      "result": "SKIPPED_TRAIN_BELOW_ORIGINAL_THRESHOLDS",
+      "passed": true
+    },
+    {
+      "name": "synthetic_nonzero_numerical_failure_stops",
+      "result": "STOP_FOR_NUMERICAL_FAILURE",
+      "passed": true
+    },
+    {
+      "name": "synthetic_invalid_episodes_0_rejected",
+      "passed": true
+    },
+    {
+      "name": "synthetic_invalid_episodes_1_rejected",
+      "passed": true
+    },
+    {
+      "name": "synthetic_invalid_episodes_2_rejected",
+      "passed": true
+    },
+    {
+      "name": "synthetic_invalid_numerical_failures_0_rejected",
+      "passed": true
+    },
+    {
+      "name": "synthetic_invalid_numerical_failures_1_rejected",
+      "passed": true
+    },
+    {
+      "name": "synthetic_invalid_numerical_failures_2_rejected",
+      "passed": true
+    },
+    {
+      "name": "synthetic_invalid_complete_success_rate_0_rejected",
+      "passed": true
+    },
+    {
+      "name": "synthetic_invalid_complete_success_rate_1_rejected",
+      "passed": true
+    },
+    {
+      "name": "synthetic_invalid_complete_success_rate_2_rejected",
+      "passed": true
+    },
+    {
+      "name": "synthetic_invalid_complete_success_rate_3_rejected",
+      "passed": true
+    },
+    {
+      "name": "synthetic_invalid_complete_success_rate_4_rejected",
+      "passed": true
+    },
+    {
+      "name": "synthetic_invalid_complete_success_rate_5_rejected",
+      "passed": true
+    },
+    {
+      "name": "synthetic_invalid_airborne_contact_rate_0_rejected",
+      "passed": true
+    },
+    {
+      "name": "synthetic_invalid_airborne_contact_rate_1_rejected",
+      "passed": true
+    },
+    {
+      "name": "synthetic_invalid_airborne_contact_rate_2_rejected",
+      "passed": true
+    },
+    {
+      "name": "synthetic_invalid_conditional_recovery_rate_0_rejected",
+      "passed": true
+    },
+    {
+      "name": "synthetic_invalid_conditional_recovery_rate_1_rejected",
+      "passed": true
+    },
+    {
+      "name": "synthetic_invalid_conditional_recovery_rate_2_rejected",
+      "passed": true
+    },
+    {
+      "name": "synthetic_missing_episode_count_rejected",
+      "passed": true
+    },
+    {
+      "name": "synthetic_lowered_formal_threshold_rejected",
+      "passed": true
+    },
+    {
+      "name": "formal_A_command_original_inputs_and_caps",
+      "passed": true
+    },
+    {
+      "name": "formal_B_command_original_inputs_and_caps",
+      "passed": true
+    }
+  ],
+  "total_checks": 28,
+  "source_sha256": "392ef900b8f3955bab01e405612231c565efb07a80ab0294b891e4d682128972",
+  "checker_sha256": "d9a74aea93a8db272ab5e4a2f69b4df313ed52692aad77d06be27b06701093f3",
+  "actual_completed_diagnostic": {
+    "path": "reports/G07_full_racket_v4/residual_iter32_fixed_diagnostic_20261025/REPORT.json",
+    "sha256": "e6ae427e61a973c3efc5ca6f28d3eac7402536f6cd76931406101cfc00a3cc35",
+    "episodes": 128,
+    "airborne_contacts": 22,
+    "conditional_recovery_count": 14,
+    "complete": 0,
+    "numerical_failures": 0
+  },
+  "synthetic_fixture_scope": "Pure decision-unit inputs, never native performance or policy acceptance evidence.",
+  "verified_live_parent_pid": 1576853,
+  "current_parent_sources_unchanged": true,
+  "new_GPU_jobs_started": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false,
+  "planned_commands": {
+    "A": [
+      "/home/autodrive/Isaac/env_isaaclab/bin/python",
+      "/home/autodrive/LZQW/unitree_smash/scripts/run_gpu_job.py",
+      "--goal",
+      "G07",
+      "--budget-window",
+      "g07-full-racket-unlimited-20261024",
+      "--max-seconds",
+      "2700",
+      "--env-steps-cap",
+      "160000",
+      "--output",
+      "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/formal_ppo_iter96_20261025/A",
+      "--require-artifact",
+      "completed.json",
+      "--",
+      "/home/autodrive/Isaac/env_isaaclab/bin/python",
+      "scripts/evaluate_full_racket_v4.py",
+      "--output",
+      "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/formal_ppo_iter96_20261025/A",
+      "--checkpoint",
+      "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/policy.pt",
+      "--policy-lock",
+      "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/formal_ppo_iter96_20261025/lock/LOCK.json",
+      "--protocol",
+      "/home/autodrive/LZQW/unitree_smash/configs/g07_full_racket_eval_v4_r3.json",
+      "--panel",
+      "A",
+      "--headless"
+    ],
+    "B": [
+      "/home/autodrive/Isaac/env_isaaclab/bin/python",
+      "/home/autodrive/LZQW/unitree_smash/scripts/run_gpu_job.py",
+      "--goal",
+      "G07",
+      "--budget-window",
+      "g07-full-racket-unlimited-20261024",
+      "--max-seconds",
+      "2700",
+      "--env-steps-cap",
+      "160000",
+      "--output",
+      "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/formal_ppo_iter96_20261025/B",
+      "--require-artifact",
+      "completed.json",
+      "--",
+      "/home/autodrive/Isaac/env_isaaclab/bin/python",
+      "scripts/evaluate_full_racket_v4.py",
+      "--output",
+      "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/formal_ppo_iter96_20261025/B",
+      "--checkpoint",
+      "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/policy.pt",
+      "--policy-lock",
+      "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/formal_ppo_iter96_20261025/lock/LOCK.json",
+      "--protocol",
+      "/home/autodrive/LZQW/unitree_smash/configs/g07_full_racket_eval_v4_r3.json",
+      "--panel",
+      "B",
+      "--headless"
+    ]
+  }
+}
