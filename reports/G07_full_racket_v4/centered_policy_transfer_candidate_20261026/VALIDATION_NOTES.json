@@ -1,0 +1,19 @@
+{
+  "recorded_at": "2026-10-25T20:30:13.546542+00:00",
+  "origin": "Root records the completed exec47756 output and actual CLI outputs; no new native execution.",
+  "CPU_test_command": "CUDA_VISIBLE_DEVICES= OMP_NUM_THREADS=2 /home/autodrive/Isaac/env_isaaclab/bin/python -m pytest -q tests/test_initialize_centered_policy_v4.py tests/test_initialize_residual_actor_v4.py tests/test_centered_residual_baseline_v4.py tests/test_full_racket_residual_v4.py",
+  "CPU_test_exit_code": 0,
+  "CPU_tests_passed": 50,
+  "CPU_tests_skipped": 0,
+  "CPU_test_reported_seconds": 1.54,
+  "CLI_help_with_required_output_and_base_arguments_exit_code": 0,
+  "CLI_missing_paired_source_evaluation_exit_code": 2,
+  "CLI_missing_pair_message": "Supply both --initialize-centered-policy and --centered-source-evaluation",
+  "CLI_invalid_pair_does_not_start_AppLauncher": true,
+  "initial_help_without_required_arguments_exit_code": 2,
+  "initial_help_note": "Existing IsaacLab add_app_launcher_args parses required arguments before the bare help request; repeating with required output/base values prints help successfully. No simulation started.",
+  "new_native_execution": false,
+  "new_training": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
