@@ -1,0 +1,44 @@
+--- reports/G07_full_racket_v4/live_tangent_trial_20261025/native_probe.py
++++ scripts/run_full_racket_public_tangent_probe_v2.py
+@@ -15,8 +15,18 @@
+ import traceback
+ import zipfile
+ 
+-ROOT = Path(__file__).resolve().parents[3]
++ROOT = Path(__file__).resolve().parents[1]
++TRIAL_ROOT = ROOT / 'reports/G07_full_racket_v4/live_tangent_trial_20261025'
+ sys.path.insert(0, str(ROOT))
++# The original report directory contains queue.py, which shadows stdlib
++# queue when used as a Python entrypoint. This entrypoint lives in scripts.
++if '--check-imports-only' in sys.argv:
++    import queue
++    import torch
++    assert hasattr(queue, 'Queue') and Path(queue.__file__).name == 'queue.py'
++    assert Path(queue.__file__).resolve() != TRIAL_ROOT / 'queue.py'
++    print(json.dumps(dict(stdlib_queue=queue.__file__, torch_version=torch.__version__, simulator_started=False)))
++    raise SystemExit(0)
+ from isaaclab.app import AppLauncher
+ 
+ parser = argparse.ArgumentParser(description=__doc__)
+@@ -64,7 +74,7 @@
+         raise ValueError('Use a fresh explicitly unexecuted proposal for this first-execution entrypoint')
+     if trial.get('schema') != 'causal-public-tangent-proposal-v1':
+         raise ValueError('This entrypoint executes only the reviewed public tangent proposal family')
+-    if trial['source_program_sha256'] != digest(Path(__file__).with_name('reactive.py')):
++    if trial['source_program_sha256'] != digest(TRIAL_ROOT / 'reactive.py'):
+         raise ValueError('Public tangent source changed after preparation')
+     if trial['actor_jit_sha256'] != hashlib.sha256(checkpoint['residual_actor_jit']).hexdigest():
+         raise ValueError('Prepared public actor changed')
+@@ -74,10 +84,11 @@
+         raise ValueError('Prepared command bounds changed')
+     if args.training_indices is not None or args.noise != 'none' or args.seed != 724201:
+         raise ValueError('Predeclared first probe uses all128 original TRAIN cases and original unperturbed reset seed')
+-    trial_root = Path(__file__).resolve().parent
++    trial_root = TRIAL_ROOT
+     source_paths = [trial_root/name for name in ['native_probe.py', 'reactive.py', 'prepare.py',
+         'queue.py', 'PREPARATION.json', 'PREDECLARED_PLAN.json']]
+     source_paths += [args.checkpoint, ROOT / trial['source_policy'], ROOT/'scripts/evaluate_full_racket_train_v4.py']
++    source_paths += [Path(__file__).resolve()]  # Actual corrected entrypoint is also pinned and archived.
+     trial_source_hashes = {str(path.relative_to(ROOT)): digest(path) for path in source_paths}
+     atomic_json(args.output/'trial_source_hashes.json', trial_source_hashes)
+     with zipfile.ZipFile(args.output/'trial_source_snapshot.zip', 'w', zipfile.ZIP_DEFLATED) as archive:

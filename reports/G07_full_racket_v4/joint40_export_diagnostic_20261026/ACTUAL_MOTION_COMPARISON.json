@@ -1,0 +1,117 @@
+{
+  "checked_at": "2026-10-25T16:58:44.336168+00:00",
+  "scope": "Matched actual native frozen TRAIN128 trajectories for new learner8 and40. No counterfactual simulation or isolated causal ablation.",
+  "frozen_summaries": [
+    {
+      "complete": 0,
+      "airborne_contacts": 20,
+      "conditional_recovery_count": 12,
+      "numerical_failures": 0,
+      "actual_racket_contacts": 71
+    },
+    {
+      "complete": 0,
+      "airborne_contacts": 0,
+      "conditional_recovery_count": 0,
+      "numerical_failures": 0,
+      "actual_racket_contacts": 0
+    }
+  ],
+  "base_controller_exactly_equal_to_original_for_both": true,
+  "unchanged_common_environment_control_and_evaluator_source_files": 93,
+  "initial_state_artifacts_exactly_equal": true,
+  "initial_state_different_fields": [],
+  "first_saved_public_observations_bitwise_equal": true,
+  "measured_precontact_ball_samples": 3328,
+  "precontact_ball_position_max_difference_m": 0.0,
+  "precontact_body_and_strings_comparison": [
+    {
+      "time_s": 0.0,
+      "matched_valid_cases": 128,
+      "root_displacement_median_m": 0.0,
+      "root_displacement_max_m": 0.0,
+      "root_rotation_difference_median_deg": 0.0,
+      "string_center_displacement_median_m": 0.0,
+      "string_center_displacement_max_m": 0.0,
+      "original8_strings_height_median_m": 1.484273910522461,
+      "new40_strings_height_median_m": 1.484273910522461
+    },
+    {
+      "time_s": 1.0,
+      "matched_valid_cases": 128,
+      "root_displacement_median_m": 0.003960396163165569,
+      "root_displacement_max_m": 0.013969436287879944,
+      "root_rotation_difference_median_deg": 0.7340586840513357,
+      "string_center_displacement_median_m": 0.01445020828396082,
+      "string_center_displacement_max_m": 0.019992798566818237,
+      "original8_strings_height_median_m": 1.2758030891418457,
+      "new40_strings_height_median_m": 1.2723156213760376
+    },
+    {
+      "time_s": 2.0,
+      "matched_valid_cases": 128,
+      "root_displacement_median_m": 0.050884559750556946,
+      "root_displacement_max_m": 0.0650894045829773,
+      "root_rotation_difference_median_deg": 6.581422810506471,
+      "string_center_displacement_median_m": 0.07610765099525452,
+      "string_center_displacement_max_m": 0.10116133093833923,
+      "original8_strings_height_median_m": 1.2078344821929932,
+      "new40_strings_height_median_m": 1.1807081699371338
+    },
+    {
+      "time_s": 2.4,
+      "matched_valid_cases": 128,
+      "root_displacement_median_m": 0.10925494879484177,
+      "root_displacement_max_m": 0.13862131536006927,
+      "root_rotation_difference_median_deg": 12.75586201671591,
+      "string_center_displacement_median_m": 0.23512302339076996,
+      "string_center_displacement_max_m": 0.3408050537109375,
+      "original8_strings_height_median_m": 1.2165558338165283,
+      "new40_strings_height_median_m": 1.2287514209747314
+    },
+    {
+      "time_s": 2.6,
+      "matched_valid_cases": 128,
+      "root_displacement_median_m": 0.11067568510770798,
+      "root_displacement_max_m": 0.22282980382442474,
+      "root_rotation_difference_median_deg": 18.82594314221398,
+      "string_center_displacement_median_m": 0.2057313621044159,
+      "string_center_displacement_max_m": 0.572204053401947,
+      "original8_strings_height_median_m": 1.5432095527648926,
+      "new40_strings_height_median_m": 1.4688527584075928
+    },
+    {
+      "time_s": 2.7,
+      "matched_valid_cases": 128,
+      "root_displacement_median_m": 0.12681442499160767,
+      "root_displacement_max_m": 0.2899685800075531,
+      "root_rotation_difference_median_deg": 28.774543349114026,
+      "string_center_displacement_median_m": 0.3753587305545807,
+      "string_center_displacement_max_m": 0.9060752391815186,
+      "original8_strings_height_median_m": 1.645371675491333,
+      "new40_strings_height_median_m": 1.520705223083496
+    }
+  ],
+  "interpretation": "Both policy exports retain the exact original analytic base controller. Compare measured closed-loop body/tool drift alongside unchanged precontact incoming ball positions. Coupled policy differences are not an isolated causal explanation, and these data do not establish which reward/control change will fix the collapse.",
+  "source_sha256": {
+    "reports/G07_full_racket_v4/cem32_lateral_feedback_1015/best_candidate.pt": "51a8b19b17e19e60bd7482c7bcb7ed1d4e8b7f50b9317cac3c49007089e8b62d",
+    "reports/G07_full_racket_v4/joint40_export_diagnostic_20261026/motion_drift.py": "8f25aa199bd2e9c97ca9617cdc8a76163e0f31f97e04d0562c5ad2eeb25992b3",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01/policy.pt": "846656e9d02c74f4b72929253ed9196557af4f9affe39236fc55d7f4bc5d744c",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01/job.json": "0f7161987d3c9632876147ae3e8f9f5b711b0f5393636adcd2fb144555b16595",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01/metrics.json": "9dde9f6ad803633fbc8827e0ee0e9ade45ac905975d3f4953d87fd5d9a782bd8",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01/source_hashes.json": "c86f58c91318ab9e2b4b26291043d3498262f31e40b835bb95877e5d8480c027",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01/all_first_episodes.npz": "14de9f4ae30d78734d19498b201efb8f30a8ab99a68d098a4dc60ff30a019648",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01/initial_states.json": "e4d0098b7cf3d4aa4933713392366caff61569e3d58dcac6d19ca40434f73fac",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01/public_and_actions_first2.npz": "58810fce894aa1bf2ae8262c0b629494edbd106a875b80b01790a665cbcbed57",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/policy.pt": "99be44acef2b84dd836023d47bfb1d141d913bb31a0ec8ebbaad5db0d9775b45",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_iter40_fixed_train128_01/job.json": "fcb0fd418def5a721711109721ef25de116a0472cc926feeac9aa76e7086df43",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_iter40_fixed_train128_01/metrics.json": "31877f29e34c60453f87b775d682afe6df2332f3151064f8545ad8a101e91921",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_iter40_fixed_train128_01/source_hashes.json": "c86f58c91318ab9e2b4b26291043d3498262f31e40b835bb95877e5d8480c027",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_iter40_fixed_train128_01/all_first_episodes.npz": "e2adf2b59247bf27cfa3d47a4f01c590e8a90b405d09ada18171b804165c98fa",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_iter40_fixed_train128_01/initial_states.json": "e4d0098b7cf3d4aa4933713392366caff61569e3d58dcac6d19ca40434f73fac",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_iter40_fixed_train128_01/public_and_actions_first2.npz": "de3ac8936d180581f0e035bbabfff0c296afdb42ec94150fc1d4e48ae829ceb7"
+  },
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
