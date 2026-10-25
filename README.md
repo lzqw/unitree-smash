@@ -4,6 +4,8 @@
 
 [完整训练回合与全部同批原始记录](reports/G07_full_racket_v4/residual_n512_first_complete_20261025/REPORT.json)保留1894回合快照、原生索引、同lane前一失败及权重谱系。PPO训练没有保存这条回合的完整运动轨迹，不能将事件/终态记录补成真实动作视频。第32次更新完成后，既定队列将冻结策略评估TRAIN128，再由CPU生成TRAIN19/23/107/0的实际视频；案例在本次固定评估开始前已选定。此前首批512地面训练回合为70合法空中、33条件恢复、0完整；原PPO iter8固定TRAIN128为18/128空中、9/18条件恢复、完整0。
 
+已登记[有条件后续训练](reports/G07_full_racket_v4/residual_resize2048_queue01/PREDECLARED_PLAN.json)：第32次更新的固定评估成功核验且未明显崩溃后，将在2048个真实地面环境（128来球各16副本）再学64次更新至iter96，再次固定评估TRAIN128。现有GPU0训练未被打断；新作业尚未开始，吞吐与效果均待实测。原模型、执行器、规则和正式验收条件保持不变。
+
 [最新PPO实际效果视频（41.36秒）](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_residual_PPO_iter8_20261025_v2.mp4)：同一iter8固定策略、预选TRAIN23/107/0。第一例8.42米/秒空中攻击并稳定恢复4.27秒，但首落x=4.793米超出目标；另两例为漏球和拍框失败。侧视/俯视包含完整机器人、机械臂与球拍；2068帧解码和GitHub附件下载SHA回验通过。相同编号可与此前基线视频比较，当前512环境新权重不在视频中。
 
 [固定TRAIN128全部原始轨迹、源码、权重与视频（69.7 MB）](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_PPO_iter8_fixed_TRAIN128_video_and_raw_20261025.zip)已上传回验，75成员均核验SHA256。

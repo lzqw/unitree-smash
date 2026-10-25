@@ -1,0 +1,151 @@
+{
+  "created_at": "2026-10-25T05:25:48.388675+00:00",
+  "state": "QUEUED_NOT_STARTED",
+  "queue_pid": 1576853,
+  "queue_session_id": 81975,
+  "previous_native_parent_pid": 1566225,
+  "training_num_envs": 2048,
+  "distinct_TRAIN_cases": 128,
+  "repeated_lanes_per_case": 16,
+  "source_checkpoint": "residual_ppo_n512_resume24_01/checkpoint.pt (pending actual successful completion)",
+  "start_iteration": 32,
+  "additional_updates": 64,
+  "target_iteration": 96,
+  "additional_control_env_steps": 16777216,
+  "expected_cumulative_learner_steps": 18481152,
+  "maximum_training_job_seconds": 28800,
+  "post_training_fixed_TRAIN128_steps": 102400,
+  "post_training_CSV_scopes": [
+    "changing-policy learning episodes",
+    "one fixed policy TRAIN128"
+  ],
+  "ground_reset_semantics": "Preserve model/Adam/normalizers/RNG/learner counters; invoke fresh native ground reset; never restore old physical buffers into resized scene",
+  "conditions": [
+    "Parent PID identity must match and exit with a SUCCEEDED workflow",
+    "Original32-update canonical checkpoint, finite actor/optimizer, actual native source hashes and policy export fidelity must validate",
+    "Original fixed TRAIN128 is independently recomputed; NF0 and at least10 legal air/3 conditional recoveries are internal continuation conditions",
+    "If original numerical rate targets already hold on TRAIN128, stop for a formal-panel attempt; no TRAIN result is a formal pass",
+    "The same global GPU guard rejects competing jobs; source changes and job failures stop this queue without retry"
+  ],
+  "observed512_rollout_timing": {
+    "samples": 17,
+    "median_collection_seconds": 211.394,
+    "median_learner_seconds": 0.089,
+    "median_env_steps_per_second": 309,
+    "source_log_prefix_bytes": 113616,
+    "source_log_prefix_sha256": "b6047c9d635ededc3e94812b4a310147e2f48fc428bbbd778712a9d9db679e1c",
+    "measured_samples": [
+      {
+        "env_steps_per_second": 334,
+        "collection_s": 195.9,
+        "learning_s": 0.161
+      },
+      {
+        "env_steps_per_second": 334,
+        "collection_s": 195.946,
+        "learning_s": 0.089
+      },
+      {
+        "env_steps_per_second": 328,
+        "collection_s": 199.211,
+        "learning_s": 0.089
+      },
+      {
+        "env_steps_per_second": 337,
+        "collection_s": 194.242,
+        "learning_s": 0.088
+      },
+      {
+        "env_steps_per_second": 309,
+        "collection_s": 211.545,
+        "learning_s": 0.092
+      },
+      {
+        "env_steps_per_second": 314,
+        "collection_s": 208.291,
+        "learning_s": 0.09
+      },
+      {
+        "env_steps_per_second": 313,
+        "collection_s": 209.195,
+        "learning_s": 0.089
+      },
+      {
+        "env_steps_per_second": 310,
+        "collection_s": 211.311,
+        "learning_s": 0.089
+      },
+      {
+        "env_steps_per_second": 310,
+        "collection_s": 211.077,
+        "learning_s": 0.089
+      },
+      {
+        "env_steps_per_second": 308,
+        "collection_s": 212.056,
+        "learning_s": 0.09
+      },
+      {
+        "env_steps_per_second": 307,
+        "collection_s": 213.004,
+        "learning_s": 0.089
+      },
+      {
+        "env_steps_per_second": 308,
+        "collection_s": 212.444,
+        "learning_s": 0.09
+      },
+      {
+        "env_steps_per_second": 306,
+        "collection_s": 213.831,
+        "learning_s": 0.089
+      },
+      {
+        "env_steps_per_second": 308,
+        "collection_s": 212.14,
+        "learning_s": 0.088
+      },
+      {
+        "env_steps_per_second": 308,
+        "collection_s": 212.421,
+        "learning_s": 0.091
+      },
+      {
+        "env_steps_per_second": 309,
+        "collection_s": 211.394,
+        "learning_s": 0.09
+      },
+      {
+        "env_steps_per_second": 306,
+        "collection_s": 213.544,
+        "learning_s": 0.091
+      }
+    ],
+    "scope": "Append-only native log prefix observed now; verify the first source_log_prefix_bytes after the source log grows."
+  },
+  "current_prior_progress": {
+    "update": 25,
+    "actor_warmup": false,
+    "actual_control_env_steps": 1114112,
+    "completed_episodes": 2141,
+    "air": 280,
+    "conditional_recovery_count": 130,
+    "complete": 1,
+    "numerical_failures": 0,
+    "formal_acceptance": false
+  },
+  "hardware_parameters_changed": false,
+  "task_protocol_changed": false,
+  "rewards_and_PPO_config_changed": false,
+  "resource_authorization": "Existing GPU0 only; user-authorized unlimited cumulative time; per-job timeout remains a fault safeguard",
+  "limitations": [
+    "2048 native memory, throughput and learning behavior remain unmeasured. No claim of improved performance is made.",
+    "128 TRAIN cases repeated16 times do not constitute2048 distinct cases.",
+    "Batch size, native placements and training duration change; this is not a controlled causal batch-size experiment.",
+    "Training counts across changing actors are separate from frozen policy measurements.",
+    "Formal A/B each200 and full deliverables remain required."
+  ],
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}

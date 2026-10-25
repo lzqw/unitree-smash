@@ -1,0 +1,29 @@
+{
+  "created_at": "2026-10-25T05:25:48.377705+00:00",
+  "scope": "CPU validation and a live512-env checkpoint check; not evidence of2048 native execution or task acceptance",
+  "continuation_decision_branches_checked": [
+    "original completed iter8 TRAIN128 permits continuation",
+    "numerical failure prevents continuation",
+    "fewer than10 air contacts prevents continuation",
+    "fewer than3 conditional recoveries prevents continuation",
+    "TRAIN rates at original thresholds route to formal review"
+  ],
+  "canonical_checkpoint_structural_check": {
+    "source": "residual_ppo_pilot_train128_1230/checkpoint.pt",
+    "sha256": "f1f58f6bbc6026d8066e1af9aa6d63b2237ab4a8a44da0b7f3ed18ec8bba4443",
+    "actual_native_checkpoint": true,
+    "larger_batch_argument": 2048,
+    "helper_accepted": true,
+    "noncanonical_source_rejected": true
+  },
+  "queue_source_sha256": "c313e378bd74a7faa3b265bbed710cf190cc636dff63ce5da4d87bf0ac63049d",
+  "live_prior_diagnostic_checkpoint": {
+    "path": "reports/G07_full_racket_v4/residual_ppo_n512_resume24_01/ppo/model_24.pt",
+    "sha256": "0ac701905c706d7585682b9c86d427663f3a54db024492d9ee56104c4ff73578",
+    "update": 25,
+    "actual_job_steps": 1114112,
+    "model_optimizer_finite": true,
+    "canonical_native_resume": false
+  },
+  "formal_acceptance": false
+}

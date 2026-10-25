@@ -66,8 +66,8 @@
           "parent_queue_session_id": 47168,
           "scope": "Actual native residual PPO learner fork on512 ground environments,128 distinct TRAIN cases replicated4times;24additionalupdates to iter32. No frozen-policy performance yet.",
           "declared_control_env_steps": 1572864,
-          "independently_verified_update": 23,
-          "verified_current_job_steps": 983040,
+          "independently_verified_update": 25,
+          "verified_current_job_steps": 1114112,
           "progress_file": "reports/G07_full_racket_v4/residual_ppo_n512_resume24_01/progress.json"
         }
       ],
@@ -1277,6 +1277,22 @@
         ],
         "renderer_uses_gpu": false,
         "selection_scope": "TRAIN19 selected after changing-policy training success, before fixed evaluation;23/107/0 retain previous comparison cases.",
+        "formal_acceptance": false
+      },
+      "queued_native_n2048": {
+        "pid": 1576853,
+        "session_id": 81975,
+        "state_file": "reports/G07_full_racket_v4/residual_resize2048_queue01/state.json",
+        "state_at_last_check": "WAITING_FOR_FIXED_TRAIN128_ITER32",
+        "plan": "reports/G07_full_racket_v4/residual_resize2048_queue01/PREDECLARED_PLAN.json",
+        "num_envs": 2048,
+        "distinct_TRAIN_cases": 128,
+        "repeated_lanes_per_case": 16,
+        "additional_updates": 64,
+        "target_iteration": 96,
+        "planned_control_env_steps": 16777216,
+        "per_job_timeout_s": 28800,
+        "source": "Actual iter32 canonical checkpoint only after prior fixed evaluation validates",
         "formal_acceptance": false
       }
     },
