@@ -1,5 +1,9 @@
 继续前重读完整目标：/home/autodrive/.codex/attachments/55e175f0-9444-4a09-ad37-681e6586ca51/pasted-text-1.txt。G07仍IN_PROGRESS，不得因代码/训练/上传完成而标记目标完成。只用现有GPU0（RTX5080 16GB），无累计GPU/工作窗上限，无云资源；原全模型、物理/规则与正式门槛保持。
 
+当前进一步核验到update41，本job2359296步、累计learner4063232步，全部4830闭合训练记录独立重算386空中/145条件恢复/0完整/NF0，模型及Adam有限；诊断checkpoint和原始进度SHA记入STATUS.active_gpu_jobs。现有guard1582969/child1582980继续运行，父1576853/session81975和CPU视频1588259/session3284均真实存活，原源码指纹未变。
+
+已另建候选工作树/home/autodrive/LZQW/unitree_smash_joint_reward，分支g07-joint-placement-reward-v4-20261025，GitHub commit e0a8435473ea8f4259c58c4e6f5406a67ba7d857。其reports/G07_full_racket_v4/joint_placement_candidate_20261025含build/REPORT/CPU_CHECKS/READINESS/SHARED_ASSETS；28项CPU检查通过，首批2048实测事件静态回放通过。26目标全部低于8m/s，16攻击中15实际落点、14超过X4；最近攻击+合格恢复为TRAIN102_LANE2022_EP0，首落X4.018158仍失败。可选weight20/scale.25m奖励只奖励合法空中攻击且实际越网后的首次落点接近度，低速目标不获此项，不改原成功判定；目前没有候选原生训练。该分支修改env/trainer并新增config，不得合入或改写当前主工作树捕获的源码。先等原iter96固定结果；达到门槛则保持原source做正式A/B，未达到再考虑候选。若启用候选，等当前CPU视频也完成后再合入已准备的主环境，或补齐隔离checkout所缺历史大文件；新奖励不可用旧reward canonical严格--resume，当前仅支持明确fresh learner。资产通过6个SHA核验软链共享原文件，10层SHA已核验，候选原生composition仍未运行。不得把CPU回放或候选代码当成策略改进/验收通过。
+
 本次新增实际证据：2048首批地面回合在update39已全部闭合，原128TRAIN各16lane；residual_n2048_first_ground_cohort_20261025/REPORT.json与两份gzip保留首批2048和当时全部3582闭合记录。独立重算首批197空中/97条件恢复/16空中攻击/26目标/0完整/NF0，攻击与目标无交集；body_landing1526，超时444。update38尚缺444时恢复0属于右删失的早期计数，不是冻结策略退化证据，PRE_CLOSURE_OBSERVATION.json保存该观察。update39模型/Adam有限、当前job1835008步、累计learner3538944。原GPU队列继续，不重启；第96轮固定128结果尚待运行。
 
 新增CPU视频队列1588259/session3284，residual_iter96_video_queue01/{run.py,state.json,PREDECLARED_PLAN.json}，实际WAITING_FOR_NATIVE_WORKFLOW。已在update38且第96次固定评估目录尚不存在时预选19/23/107/0/8，沿用已审核iter32五例；8在旧iter32是posthoc，在新iter96则为评估前登记。它只等待真实父1576853/session81975成功退出，重验新固定128/source/policy后CPU-only快照/渲染/逐帧解码；READY_FOR_VISUAL_REVIEW后必须查看接触/首次落点/终态预览再上传。它不创建或停止任何GPU作业，不重启现有队列。保持其捕获的renderer/prepare源码哈希；当前主视频仍是已交付iter32v3。

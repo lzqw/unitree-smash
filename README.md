@@ -8,6 +8,8 @@
 
 当前进度（2026-10-25）：PPO iter32固定TRAIN128已完成并独立重算：合法空中22/128（17.19%）、条件恢复14/22（63.64%）、攻击3、目标3、完整0、数值故障0。第8次更新为18空中/9恢复/0完整，横向基线为19/12/0；这是不同原生执行的描述性对照，不作统计或因果结论。本轮3次空中攻击与3次目标命中没有同回合重叠，完整任务仍未解决。GPU0现已在2048个真实地面环境（128来球各16副本）从iter32继续学习64更新至iter96；正式G07仍未通过。
 
+[联合落点奖励候选分支](https://github.com/lzqw/unitree-smash/tree/g07-joint-placement-reward-v4-20261025)已完成实现、28项CPU检查和真实2048回合静态事件回放。它针对低速目标与高速远落点的分离，提供仅在实际空中攻击及越网后生效的首次落点反馈；原门槛不变。候选尚未原生训练，当前2048长训和视频队列保持原源码，先看第96次更新的固定评估。
+
 [2048环境首批地面训练回合](reports/G07_full_racket_v4/residual_n2048_first_ground_cohort_20261025/REPORT.json)现已全部闭合并独立重算：197空中、97条件恢复、16空中攻击、26目标、0完整、数值故障0；攻击和目标仍无同回合重叠。它们经历了探索与权重更新，不是固定策略成绩，也不是2048种来球。原训练继续，下一版五案例视频已在第96次固定评估开始前登记。
 
 [训练完成报告](reports/G07_full_racket_v4/residual_iter32_training_completion_20261025/REPORT.json)与[3171行训练CSV](reports/G07_full_racket_v4/residual_iter32_training_completion_20261025/training_episodes.csv)保留完整训练计数、更新日志、实际资源用量和来源；[原生接触确认](reports/G07_full_racket_v4/residual_n512_first_complete_20261025/FINAL_CONTACT_CONFIRMATION.json)已与训练结束后的contacts.json匹配。固定评估的128个地面初态与新权重已核验，最新成绩与视频见上方；旧iter8视频保留为历史对照。

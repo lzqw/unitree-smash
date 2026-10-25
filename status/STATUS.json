@@ -66,11 +66,23 @@
           "parent_queue_session_id": 81975,
           "scope": "Native residual PPO learner fork on2048 fresh ground environments,128 TRAIN cases replicated16 times;64additional updates from32 to96, no frozen performance yet.",
           "declared_control_env_steps": 16777216,
-          "independently_verified_update": 39,
-          "verified_current_job_steps": 1835008,
+          "independently_verified_update": 41,
+          "verified_current_job_steps": 2359296,
           "progress_file": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/progress.json",
-          "verified_cumulative_learner_steps": 3538944,
-          "model_optimizer_tensors_finite": true
+          "verified_cumulative_learner_steps": 4063232,
+          "model_optimizer_tensors_finite": true,
+          "last_verified_training_counts": {
+            "completed_episodes": 4830,
+            "air": 386,
+            "conditional_recovery_count": 145,
+            "complete": 0,
+            "numerical_failures": 0
+          },
+          "diagnostic_checkpoint_sha256": "0e639ba6cbe412ac641e81995971d1979962ed0f7f3de0503a2089cfec001f90",
+          "diagnostic_checkpoint_canonical_restart": false,
+          "verified_progress_sha256": "cdae2dddaed29a92814f07231dcd52ef3f89067a63b2af2d9ebf9e7a9ade6a52",
+          "verified_episode_snapshot_sha256": "ce9ec8d623f1f456e53a97a35423631d51f5cf5691ae28572f8a8501637fdc07",
+          "verified_at": "2026-10-25T06:54:44.769261+00:00"
         }
       ],
       "queued_native_sequence": {
@@ -1580,6 +1592,17 @@
         "selection_registered_at_training_update": 38,
         "renderer_uses_gpu": false,
         "requires_visual_review_before_upload": true,
+        "formal_acceptance": false
+      },
+      "prepared_joint_placement_reward": {
+        "state": "CPU_VERIFIED_CANDIDATE_NATIVE_NOT_RUN",
+        "branch": "g07-joint-placement-reward-v4-20261025",
+        "commit": "e0a8435473ea8f4259c58c4e6f5406a67ba7d857",
+        "worktree": "/home/autodrive/LZQW/unitree_smash_joint_reward",
+        "report_url": "https://github.com/lzqw/unitree-smash/blob/e0a8435473ea8f4259c58c4e6f5406a67ba7d857/reports/G07_full_racket_v4/joint_placement_candidate_20261025/REPORT.json",
+        "checks": "28targeted CPU checks and static replay of actual2048 first-ground rows",
+        "scope": "Optional TRAIN bonus for actual legal air attacks/crossing and first-landing distance. Original asset, physics, actuation, cases and acceptance unchanged. No native candidate training.",
+        "activation": "Review existing iter96 frozen TRAIN128 first; preserve original source for formal panels if warranted. Otherwise consider merging only after both original source-fingerprinted native and CPU video workflows end, then run a fresh opt-in learner. Old-reward strict resume is still rejected.",
         "formal_acceptance": false
       }
     },
