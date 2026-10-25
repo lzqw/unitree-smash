@@ -1,0 +1,79 @@
+{
+  "created_at": "2026-10-25T14:45:46.850530+00:00",
+  "scope": "CPU export, bounded geometry fixtures and exact saved-input native public-sequence replay only. No proposed controller has run in PhysX; no native performance inherited.",
+  "source_policy_sha256": "846656e9d02c74f4b72929253ed9196557af4f9affe39236fc55d7f4bc5d744c",
+  "source_public_sha256": "58810fce894aa1bf2ae8262c0b629494edbd106a875b80b01790a665cbcbed57",
+  "variants": [
+    {
+      "name": "gain035",
+      "gain": 0.35,
+      "proposal": "reports/G07_full_racket_v4/live_tangent_trial_20261025/gain035/proposal.pt",
+      "proposal_sha256": "558d57b0c4b113d5e44f8a8edf74965875715213a4c18491e1bd526e292cfeb5",
+      "actor_jit_sha256": "e3c95c34074aeaa38afdad2199cf2c6a73a6f5f4afa19199c00321dba6c960dc",
+      "actual_public_rows": 1600,
+      "enabled_native_input_rows": 35,
+      "actual_public_correction_max_rad": 0.10000002384185791,
+      "native_input_enabled_tau_range_s": [
+        0.004208731930702925,
+        0.19637492299079895
+      ],
+      "eager_script_max_error": 0.0,
+      "split_batch_max_error": 7.450580596923828e-09,
+      "leg_actor_max_error": 0.0,
+      "fixture_actual_arm_configurations": 71,
+      "fixture_enabled": 71,
+      "fixture_static_position_error_median_before_m": 0.05000000819563866,
+      "fixture_static_position_error_median_after_m": 0.034271471202373505,
+      "fixture_is_native_execution": false,
+      "full_controller_replayed_ticks": 800,
+      "full_controller_leg_commands_bitwise_equal": true,
+      "maximum_first_episode_arm_target_step_rad": 0.05000019073486328,
+      "changed_first_episode_command_rows": 66
+    },
+    {
+      "name": "gain070",
+      "gain": 0.7,
+      "proposal": "reports/G07_full_racket_v4/live_tangent_trial_20261025/gain070/proposal.pt",
+      "proposal_sha256": "112d342fa75cdd3bd00fdc6090f423ee4b900fe48cfbed7ea3cf08de7edbee6e",
+      "actor_jit_sha256": "241d3f0b5f2ee806e468b3c5f7a05febf07bbd5a1c8f87ed3005d913691642d2",
+      "actual_public_rows": 1600,
+      "enabled_native_input_rows": 35,
+      "actual_public_correction_max_rad": 0.10000002384185791,
+      "native_input_enabled_tau_range_s": [
+        0.004208731930702925,
+        0.19637492299079895
+      ],
+      "eager_script_max_error": 0.0,
+      "split_batch_max_error": 7.450580596923828e-09,
+      "leg_actor_max_error": 0.0,
+      "fixture_actual_arm_configurations": 71,
+      "fixture_enabled": 71,
+      "fixture_static_position_error_median_before_m": 0.05000000819563866,
+      "fixture_static_position_error_median_after_m": 0.033204857259988785,
+      "fixture_is_native_execution": false,
+      "full_controller_replayed_ticks": 800,
+      "full_controller_leg_commands_bitwise_equal": true,
+      "maximum_first_episode_arm_target_step_rad": 0.05000019073486328,
+      "changed_first_episode_command_rows": 66
+    }
+  ],
+  "original_physics_rules_cases_thresholds_changed": false,
+  "history_previous_action_and_future_goal_time_do_not_affect_correction": true,
+  "ball_absent_air_hit_and_landed_gates_disable_correction": true,
+  "actual_native_baseline_actions_CPU_max_error_on_valid_rows": 1.7881393432617188e-06,
+  "limitations": [
+    "Short linear prediction omits future relative acceleration and normal curvature. Recompute from actual observations each 10ms.",
+    "A locally improving static position fixture does not establish actuator tracking, air contact, attack, first landing, legality or recovery.",
+    "Changing arm commands changes the coupled base dynamics. Frozen-input replay cannot predict those changes.",
+    "The additional own-side string-center gate is conservative software protection, not a replacement for original full-volume rule checks."
+  ],
+  "next_native_execution": "Only after the current joint40 learning AND its frozen TRAIN128 evaluation actually finish, and only if original formal readiness is still false. Probe these two predeclared candidates on all128 original TRAIN cases under the existing GPU0 guard and unchanged protocol.",
+  "source_program_sha256": {
+    "prepare.py": "941be9cbbb19fbf0b444e1424c8ee6d0ea531bb93fb2ffe3b8dcb0c9111b93e8",
+    "reactive.py": "5412dcbbe0836c5aff2b5e710af8b436e01da967292a31fde3887b9dc742d3bd"
+  },
+  "native_execution": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}

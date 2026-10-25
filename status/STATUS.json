@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/TRAIN128_LATERAL_DIAGNOSTIC_20261025.json",
-      "notes": "新联合奖励学习器8次更新已完成2097152步/0.661211GPUh；固定原TRAIN128也已完成102400步/0.303471GPUh：完整0/128、空中20/128、条件恢复12/20、攻击1、目标8、NF0。8个目标全部低于8m/s；唯一攻击TRAIN8出球8.006m/s、合格恢复4.069s，首落x4.218超原目标约0.218m，完整仍失败。86.16秒六案例视频已逐帧解码、实际画面审核、上传下载验SHA。GPU0已严格从新canonical8续训32更新至新学习器40；global11时实核2048地面状态、累计2883584步、17项Adam及两套归一化计数延续，模型/Adam有限。原模型、规则、全部来球和50%/70%/85%正式门槛不变，本次未运行新A/B，完整G07未通过。",
+      "notes": "新联合奖励学习器8已完成2097152步；固定原TRAIN128为完整0/128、空中20/128、条件恢复12/20、NF0。86.16秒真实视频已逐帧解码、画面审核、上传并下载验SHA。GPU0继续同契约canonical8→40训练；实核global21本作业3407872步、累计新学习器5505024步，7001闭合变化中策略训练回合独立重算606空中、231条件恢复、0完整、NF0，模型/17项Adam有限，参数确实更新。71次固定8实际接触诊断发现51次拍框集中上缘；历史内移静态目标失败已保留。两种实时公共来球切向修正完成CPU回放并保持native_execution=false，观察队列等待当前训练和第40次冻结TRAIN128完成后再按原门槛决定是否顺序试验。原物理、球拍、规则、来球、50%/70%/85%门槛不变，未新增正式A/B，本轮完整目标未通过。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
@@ -58,7 +58,7 @@
       "active_gpu_jobs": [
         {
           "state": "RUNNING_SAME_REWARD_RESUME32",
-          "observed_at": "2026-10-25T13:57:00.077461+00:00",
+          "observed_at": "2026-10-25T14:51:35.582226+00:00",
           "workflow_pid": 1638238,
           "workflow_session_id": 34609,
           "guard_pid": 1642834,
@@ -68,12 +68,12 @@
           "initial_iteration": 8,
           "target_iteration": 40,
           "requested_additional_updates": 32,
-          "latest_finite_verified_iteration": 11,
-          "verified_current_job_control_env_steps": 786432,
-          "verified_cumulative_new_learner_steps": 2883584,
+          "latest_finite_verified_iteration": 21,
+          "verified_current_job_control_env_steps": 3407872,
+          "verified_cumulative_new_learner_steps": 5505024,
           "all17_Adam_states_advanced_and_normalizer_counts_preserved": true,
           "actual2048_ground_states_verified": true,
-          "verification": "reports/G07_full_racket_v4/joint_placement_resume32_queue01/ROOT_NATIVE_RESUME_CHECK.json",
+          "verification": "reports/G07_full_racket_v4/joint_resume_health_20261025/REPORT.json",
           "formal_acceptance": false,
           "goal_complete": false
         }
@@ -910,7 +910,7 @@
         "first_native_update_report": "reports/G07_full_racket_v4/RESIDUAL_PPO_NATIVE_UPDATE1_20261025.json",
         "first_actor_update_report": "reports/G07_full_racket_v4/RESIDUAL_PPO_NATIVE_UPDATE3_20261025.json"
       },
-      "latest_native_ppo_progress_report": "reports/G07_full_racket_v4/residual_pilot_delivery_20261025/REPORT.json",
+      "latest_native_ppo_progress_report": "reports/G07_full_racket_v4/joint_resume_health_20261025/REPORT.json",
       "queued_residual_continuation": {
         "state_file": "reports/G07_full_racket_v4/residual_resize512_queue01/state.json",
         "pid": 1566225,
@@ -1387,7 +1387,7 @@
       },
       "current_native_workflow_state": {
         "state": "RUNNING_SAME_REWARD_RESUME32",
-        "observed_at": "2026-10-25T13:57:00.077461+00:00",
+        "observed_at": "2026-10-25T14:51:35.582226+00:00",
         "workflow_pid": 1638238,
         "workflow_session_id": 34609,
         "guard_pid": 1642834,
@@ -1397,12 +1397,12 @@
         "initial_iteration": 8,
         "target_iteration": 40,
         "requested_additional_updates": 32,
-        "latest_finite_verified_iteration": 11,
-        "verified_current_job_control_env_steps": 786432,
-        "verified_cumulative_new_learner_steps": 2883584,
+        "latest_finite_verified_iteration": 21,
+        "verified_current_job_control_env_steps": 3407872,
+        "verified_cumulative_new_learner_steps": 5505024,
         "all17_Adam_states_advanced_and_normalizer_counts_preserved": true,
         "actual2048_ground_states_verified": true,
-        "verification": "reports/G07_full_racket_v4/joint_placement_resume32_queue01/ROOT_NATIVE_RESUME_CHECK.json",
+        "verification": "reports/G07_full_racket_v4/joint_resume_health_20261025/REPORT.json",
         "formal_acceptance": false,
         "goal_complete": false
       },
@@ -4321,7 +4321,8 @@
         "guard_pid": 1642834,
         "native_child_pid": 1642846,
         "actual_initial_ground_and_resume_check": "reports/G07_full_racket_v4/joint_placement_resume32_queue01/ROOT_NATIVE_RESUME_CHECK.json",
-        "latest_verified_iteration": 11
+        "latest_verified_iteration": 21,
+        "latest_completed_update_health": "reports/G07_full_racket_v4/joint_resume_health_20261025/REPORT.json"
       },
       "native_joint_placement_update05_health": {
         "report": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_UPDATE05_HEALTH.json",
@@ -4422,9 +4423,74 @@
         "formal_acceptance": false
       },
       "legacy_G07_registry_check": {
-        "report": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/G07_REGISTRY_CHECK.json",
+        "report": "reports/G07_full_racket_v4/joint8_delivery_20261025/G07_REGISTRY_CHECK.json",
         "status": "FAILED",
         "reason": "Missing preserved reports/G07/evidence.json; structural registry only, not new-actor performance or a numerical job failure. Full-racket goal still requires original400 independent cases and all deliverables."
+      },
+      "latest_joint_resume_health": {
+        "report": "reports/G07_full_racket_v4/joint_resume_health_20261025/REPORT.json",
+        "iteration": 21,
+        "counts": {
+          "completed_episodes": 7001,
+          "air": 606,
+          "conditional_recovery_count": 231,
+          "complete": 0,
+          "numerical_failures": 0
+        },
+        "actual_model_and_Adam_finite": true,
+        "frozen_policy_performance": false,
+        "formal_acceptance": false
+      },
+      "latest_contact_centering_diagnostic": {
+        "report": "reports/G07_full_racket_v4/joint8_contact_centering_20261025/REPORT.json",
+        "plot": "reports/G07_full_racket_v4/joint8_contact_centering_20261025/contact_distribution.png",
+        "actual_first_contacts": 71,
+        "strings": 20,
+        "frame": 51,
+        "teacher_string_uv_m": [
+          0,
+          0.1
+        ],
+        "native_velocity_identity_is_post_state": true,
+        "no_new_native_execution": true,
+        "formal_acceptance": false
+      },
+      "prepared_public_tangent_trial": {
+        "state": "WAITING_FOR_LIVE_JOINT40_WORKFLOW",
+        "pid": 1651319,
+        "session_id": 71241,
+        "parent_pid": 1638238,
+        "source": "reports/G07_full_racket_v4/live_tangent_trial_20261025/queue.py",
+        "state_file": "reports/G07_full_racket_v4/live_tangent_trial_20261025/state.json",
+        "plan": "reports/G07_full_racket_v4/live_tangent_trial_20261025/PREDECLARED_PLAN.json",
+        "preparation": "reports/G07_full_racket_v4/live_tangent_trial_20261025/PREPARATION.json",
+        "proposal_native_execution": false,
+        "gains": [
+          0.35,
+          0.7
+        ],
+        "actual_CPU_public_rows": 1600,
+        "full_controller_replay_ticks": 800,
+        "each_original_TRAIN_cases": 128,
+        "each_native_job_seconds_cap": 2700,
+        "each_native_control_env_steps_cap": 102400,
+        "source_files_pinned": 372,
+        "formal_cases_read": false,
+        "formal_acceptance": false,
+        "goal_complete": false
+      },
+      "joint8_delivery": {
+        "archive": "reports/G07_full_racket_v4/joint8_delivery_20261025/ARCHIVE.json",
+        "manifest": "reports/G07_full_racket_v4/joint8_delivery_20261025/MANIFEST.json",
+        "upload_receipt": "reports/G07_full_racket_v4/joint8_delivery_20261025/UPLOAD_RECEIPT.json",
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_joint_reward_probe8_native_evidence_and_next_trial_20261025.zip",
+        "bytes": 190699651,
+        "sha256": "3f90e2796dac59fd00d45a0d0f3acef0be9f36401b5a063d275296840347955c",
+        "members": 523,
+        "uploaded": true,
+        "download_verified": true,
+        "formal_acceptance": false,
+        "goal_complete": false
       }
     },
     "G08": {

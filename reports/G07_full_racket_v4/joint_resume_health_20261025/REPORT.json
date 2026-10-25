@@ -1,0 +1,62 @@
+{
+  "checked_at": "2026-10-25T14:51:35.582226+00:00",
+  "scope": "Stable actually completed update of an ongoing native learner; all closed TRAIN records independently rescored. Not a frozen policy score or formal acceptance.",
+  "actual_iteration": 21,
+  "current_job_control_env_steps": 3407872,
+  "cumulative_new_learner_control_env_steps": 5505024,
+  "finite_model_and_Adam": true,
+  "all17_Adam_states_advanced": true,
+  "Adam_step_increment_per_parameter": [
+    260.0
+  ],
+  "normalizer_count_increments": {
+    "actor_obs_normalizer.count": 3407872,
+    "critic_obs_normalizer.count": 3407872
+  },
+  "actor_weight_max_absolute_change_from_iteration8": 0.008117372170090675,
+  "independent_all_closed_changing_policy_counts": {
+    "completed_episodes": 7001,
+    "air": 606,
+    "conditional_recovery_count": 231,
+    "complete": 0,
+    "numerical_failures": 0
+  },
+  "actual_diagnostic_checkpoint": "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/ppo/model_20.pt",
+  "diagnostic_checkpoint_sha256": "99494d5dc3f2965b2782993de477b2fad640c5ec5087c94daf2b52b914c9ecda",
+  "canonical_source_sha256": "10bf6c026a39e3ea01bf08425029ba78a906e573051e9bc3bcf26ccd37373cb0",
+  "all_closed_source_json_sha256": "05ede7a768432f80324363f99f33b5ad018022d81e19253b222989d4ae601e61",
+  "all_closed_snapshot_gzip_sha256": "6b17b2d981b424dfe2b35b89ceaaa51b23e2681120dfb8049fb197999f734dfc",
+  "source_files_verified": 372,
+  "verified_live_processes": [
+    {
+      "pid": 1638238,
+      "process_state": "S",
+      "expected_command_contains": "joint_placement_resume32_queue01/run.py",
+      "actual_command": "/home/autodrive/Isaac/env_isaaclab/bin/python reports/G07_full_racket_v4/joint_placement_resume32_queue01/run.py "
+    },
+    {
+      "pid": 1642834,
+      "process_state": "S",
+      "expected_command_contains": "run_gpu_job.py",
+      "actual_command": "/home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/scripts/run_gpu_job.py --goal G07 --budget-window g07-full-racket-unlimited-20261024 --max-seconds 14400 --env-steps-cap 8388608 --output /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01 --require-artifact completed.json -- /home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/scripts/train_full_racket_residual_ppo_v4.py --output /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01 --base-checkpoint /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/cem32_lateral_feedback_1015/best_candidate.pt --config /home/autodrive/LZQW/unitree_smash/configs/g07_full_racket_residual_ppo_joint_placement_v4.json --resume /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01/checkpoint.pt --num-envs 2048 --updates 32 --seed 748501 --headless "
+    },
+    {
+      "pid": 1642846,
+      "process_state": "R",
+      "expected_command_contains": "train_full_racket_residual_ppo_v4.py",
+      "actual_command": "/home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/scripts/train_full_racket_residual_ppo_v4.py --output /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01 --base-checkpoint /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/cem32_lateral_feedback_1015/best_candidate.pt --config /home/autodrive/LZQW/unitree_smash/configs/g07_full_racket_residual_ppo_joint_placement_v4.json --resume /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01/checkpoint.pt --num-envs 2048 --updates 32 --seed 748501 --headless "
+    },
+    {
+      "pid": 1651319,
+      "process_state": "S",
+      "expected_command_contains": "live_tangent_trial_20261025/queue.py",
+      "actual_command": "/home/autodrive/Isaac/env_isaaclab/bin/python reports/G07_full_racket_v4/live_tangent_trial_20261025/queue.py "
+    }
+  ],
+  "source_program_sha256": "671c31e044fbe9ed46e24aea5e4bdbb197eb5f0b03b009e2634cbcae63baafdd",
+  "actual_native_job_restarted": false,
+  "frozen_policy_performance": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}

@@ -1,0 +1,16 @@
+{
+  "checked_at": "2026-10-25T14:55:44.604384+00:00",
+  "command": [
+    "/home/autodrive/Isaac/env_isaaclab/bin/python",
+    "tools/verify_goal.py",
+    "--root",
+    ".",
+    "--goal",
+    "G07"
+  ],
+  "exit_code": 2,
+  "output": "{\n  \"goal_id\": \"G07\",\n  \"status\": \"FAILED\",\n  \"contract_sha256\": \"66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807\",\n  \"checks\": {\n    \"G00\": {\n      \"passed\": true,\n      \"errors\": []\n    },\n    \"G01\": {\n      \"passed\": true,\n      \"errors\": []\n    },\n    \"G02\": {\n      \"passed\": true,\n      \"errors\": []\n    },\n    \"G03\": {\n      \"passed\": true,\n      \"errors\": []\n    },\n    \"G04\": {\n      \"passed\": true,\n      \"errors\": []\n    },\n    \"G05\": {\n      \"passed\": true,\n      \"errors\": []\n    },\n    \"G06\": {\n      \"passed\": true,\n      \"errors\": []\n    },\n    \"G07\": {\n      \"passed\": false,\n      \"errors\": [\n        \"Missing or invalid evidence: [Errno 2] No such file or directory: '/home/autodrive/LZQW/unitree_smash/reports/G07/evidence.json'\"\n      ]\n    }\n  },\n  \"scope\": \"Structure, hashes, dependencies and thresholds only; not simulation authenticity or GPU budget enforcement.\"\n}\n",
+  "scope": "Legacy structural G07 registry verifier; not original full-racket policy acceptance.",
+  "formal_acceptance": false,
+  "goal_complete": false
+}

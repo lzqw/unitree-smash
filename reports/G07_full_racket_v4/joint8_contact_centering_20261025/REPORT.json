@@ -1,0 +1,268 @@
+{
+  "created_at": "2026-10-25T14:42:31.727774+00:00",
+  "scope": "All 71 actual first racket contacts of one completed frozen TRAIN128 execution. Rigid-body identities and static command-pose geometry only; no new rollout or causal policy improvement.",
+  "source_run": "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01",
+  "original_TRAIN_episodes": 128,
+  "actual_contacts": 71,
+  "unchanged_string_semiaxes_yz_m": [
+    0.0915,
+    0.1165
+  ],
+  "teacher_string_uv_m": [
+    0.0,
+    0.1
+  ],
+  "teacher_lateral_cartesian_gain": 0.8500000238418579,
+  "teacher_already_uses_live_FK_lateral_DLS": true,
+  "teacher_already_uses_velocity_lead_s": 0.06,
+  "grouped": {
+    "strings": {
+      "count": 20,
+      "point_tool_xyz_q10_q50_q90_m": [
+        [
+          0.0005267045355944653,
+          -0.057101390925175216,
+          0.016710589761207855
+        ],
+        [
+          0.0005595315409211998,
+          -0.005325745885711566,
+          0.06632032972495487
+        ],
+        [
+          0.0006310726737212858,
+          0.044430508818102094,
+          0.0918865254357184
+        ]
+      ],
+      "ball_tool_xyz_q10_q50_q90_m": [
+        [
+          0.025389484438345884,
+          -0.05708310418525368,
+          0.016612853063392195
+        ],
+        [
+          0.025557623116430173,
+          -0.005269532364189859,
+          0.06594578484112942
+        ],
+        [
+          0.02568141430044926,
+          0.04444465777849403,
+          0.09223162984878268
+        ]
+      ],
+      "absolute_tracking_error_q10_q50_q90_rad": [
+        [
+          0.129148530960083,
+          0.10252476930618286,
+          0.0046255111694335944,
+          0.17996983528137206,
+          0.02381889820098877,
+          0.00794450044631958
+        ],
+        [
+          0.1676822304725647,
+          0.14047718048095703,
+          0.03961634635925293,
+          0.2063499093055725,
+          0.07500529289245605,
+          0.03450888395309448
+        ],
+        [
+          0.2431430518627167,
+          0.20516117811203005,
+          0.08736076354980474,
+          0.23803888559341432,
+          0.1239779829978943,
+          0.06836299896240236
+        ]
+      ],
+      "snapshot_command_ball_xyz_q10_q50_q90_m": [
+        [
+          -0.2188642430672108,
+          -0.1489322214504173,
+          0.05507627565535622
+        ],
+        [
+          -0.1479941457863368,
+          0.0046208856965566335,
+          0.1216727896562939
+        ],
+        [
+          -0.1123935500574095,
+          0.05398235239014588,
+          0.15210083164413213
+        ]
+      ],
+      "snapshot_command_center_shift_xyz_q10_q50_q90_m": [
+        [
+          0.11669420336739428,
+          -0.023663601168852154,
+          -0.10152526495602933
+        ],
+        [
+          0.149110785419033,
+          0.0178010415827676,
+          -0.0811338089025494
+        ],
+        [
+          0.17555428505682386,
+          0.13637807102291005,
+          -0.05643531785906578
+        ]
+      ],
+      "actual_point_rho_min_median_max": [
+        0.22595563807683727,
+        0.7843384188742388,
+        0.9024960460540784
+      ],
+      "actual_ball_rho_median": 0.7810198351114925,
+      "snapshot_command_ball_rho_median": 1.3030224076838692
+    },
+    "frame": {
+      "count": 51,
+      "point_tool_xyz_q10_q50_q90_m": [
+        [
+          0.0023399787578086625,
+          -0.06320409760828286,
+          0.07585282878098819
+        ],
+        [
+          0.0035082913258789716,
+          0.03770223422915417,
+          0.10324157281811042
+        ],
+        [
+          0.003778399542822215,
+          0.07206821904788238,
+          0.11843337111622472
+        ]
+      ],
+      "ball_tool_xyz_q10_q50_q90_m": [
+        [
+          0.017118701301318946,
+          -0.07563409274076839,
+          0.07685503689475166
+        ],
+        [
+          0.0264312615794587,
+          0.041293939094417,
+          0.10585770885551915
+        ],
+        [
+          0.02838301693166581,
+          0.08511315073335843,
+          0.12680008687320338
+        ]
+      ],
+      "absolute_tracking_error_q10_q50_q90_rad": [
+        [
+          0.06743139028549194,
+          0.054474592208862305,
+          0.017045259475708008,
+          0.16343891620635986,
+          0.011243820190429688,
+          0.011191606521606445
+        ],
+        [
+          0.1360805630683899,
+          0.1321808099746704,
+          0.05646634101867676,
+          0.20283377170562744,
+          0.03420364856719971,
+          0.0441967248916626
+        ],
+        [
+          0.21266192197799683,
+          0.19389593601226807,
+          0.11331892013549805,
+          0.24116814136505127,
+          0.08333063125610352,
+          0.07347345352172852
+        ]
+      ],
+      "snapshot_command_ball_xyz_q10_q50_q90_m": [
+        [
+          -0.19408819532829252,
+          -0.022021719214413697,
+          0.12924820065480974
+        ],
+        [
+          -0.1590872713326403,
+          0.05868143255395397,
+          0.1716337747691819
+        ],
+        [
+          -0.11304370387917323,
+          0.09743613673099395,
+          0.1953057170505967
+        ]
+      ],
+      "snapshot_command_center_shift_xyz_q10_q50_q90_m": [
+        [
+          0.11060134371703542,
+          -0.05784115727439185,
+          -0.12215210979104713
+        ],
+        [
+          0.15085754205552498,
+          -0.012820334075112946,
+          -0.08706149469844426
+        ],
+        [
+          0.1853064458628954,
+          0.039346225185531464,
+          -0.07365005308574975
+        ]
+      ],
+      "actual_point_rho_min_median_max": [
+        1.0215886141980175,
+        1.0531726056076014,
+        1.0837082919608838
+      ],
+      "actual_ball_rho_median": 1.1453838971417445,
+      "snapshot_command_ball_rho_median": 1.6945261727569474
+    }
+  },
+  "checks": {
+    "max_source_URDF_string_center_error_m": 1.6220156717250912e-05,
+    "max_flange_to_string_center_error_m": 9.461015197749768e-06,
+    "max_post_state_rigid_contact_velocity_error_mps": 1.368361775389455e-05
+  },
+  "previous_inward_target_attempt": {
+    "run": "cem35_inner_strings_pose_train32_1150",
+    "actual_candidate_TRAIN_episodes": 512,
+    "airborne_strings_contacts": 10,
+    "complete": 0,
+    "conclusion": "Static inward retarget was executed previously and did not establish improvement; do not repeat it as an untried method."
+  },
+  "next_hypothesis": "Test bounded live ball/tool relative-state time-to-plane tangent centering, added to the existing residual actor. Preserve original geometry, all native actuators, 5rad/s target slew, and unchanged scoring. Use original TRAIN only before any formal test.",
+  "limitations": [
+    "Recorded contact poses/velocities are post PhysX contact states; incident velocity and collision impulse are not reconstructed.",
+    "The snapshot commanded pose assumes instant joint tracking; it is not the pose that executed and does not establish a future contact outcome.",
+    "The current teacher already includes FK/DLS/60ms lead. New feedback must address live interception rather than duplicate that solve.",
+    "A failed earlier static retarget and this descriptive contact distribution do not prove any alternative will succeed."
+  ],
+  "source_sha256": {
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01/completed.json": "c4a2cdc51b7afa8f30801dae79e3db905be163f9c7bc5e5a8e2f496c01538989",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01/INPUTS.json": "fa75205037c9b3233ade1673853e11e56d2093a627a07fe00e6890389a18b957",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01/contacts.json": "376e31be6abf58d977f9a97daa423408be402069d3d740b54f23249fedc0e358",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01/episodes.json": "6773f5848a4842df7980effda15d69945846c39d1f7c482a9153b3ca9b16152c",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01/geometry.json": "8afd390b7b92179ba6e2fde3774cc60162a98a5bd63ed50defd95b2e8f9d9c37",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01/policy.pt": "846656e9d02c74f4b72929253ed9196557af4f9affe39236fc55d7f4bc5d744c",
+    "reports/G07_full_racket_v4/joint8_contact_centering_20261025/build.py": "c825bcdb7e5182b1a80bf7dc6735f105cad6063227597d6aec8be8cb0939aa9f",
+    "quadsmash/control/full_racket_kinematics_v4.py": "9e7ce1df5f535a3aa48c0436e57a4478e8ef7d9a6f16419803e7d25d6cef0f4c",
+    "quadsmash/control/full_racket_geometry_v4.py": "41035f39916440d8b3c6d84af820d788b10c4e6a7cf29c8971c494f3549f5095",
+    "configs/full_racket_v4_r3.json": "14d58dd674665424dab63e67d525daf9b2239821797b97202aa45f9af1e5a26c",
+    "reports/G07_full_racket_v4/cem35_inner_strings_pose_train32_1150/metrics.json": "2dd1d91d79b477d11ee4a9180f644dfd6b3a0d789630b279658a47c313d758eb"
+  },
+  "outputs": {
+    "contacts.json": "b3ec10beeb86c1718515d31ce1266a9643d48509758058bc83f5c58c80e759a3",
+    "contacts.csv": "4a951474c36f45ace56860b1d1e4061e7aeac28b1eb9ad0724c494fa790b5ac2",
+    "contact_distribution.png": "64e696902ae5d150041537f330d4bea2de6e7995592a8f8667b6b81555329c41"
+  },
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
