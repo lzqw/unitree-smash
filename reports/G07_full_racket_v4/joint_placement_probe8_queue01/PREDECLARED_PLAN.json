@@ -1,0 +1,130 @@
+{
+  "created_at": "2026-10-25T12:42:44.916498+00:00",
+  "state_at_creation": "PREDECLARED_NATIVE_NOT_STARTED",
+  "integration_commit": "06df7fcbe6380080d43ff039a7c7a0ef75d1210c",
+  "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01",
+  "command": [
+    "/home/autodrive/Isaac/env_isaaclab/bin/python",
+    "/home/autodrive/LZQW/unitree_smash/scripts/run_gpu_job.py",
+    "--goal",
+    "G07",
+    "--budget-window",
+    "g07-full-racket-unlimited-20261024",
+    "--max-seconds",
+    "5400",
+    "--env-steps-cap",
+    "2097152",
+    "--output",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01",
+    "--require-artifact",
+    "completed.json",
+    "--",
+    "/home/autodrive/Isaac/env_isaaclab/bin/python",
+    "/home/autodrive/LZQW/unitree_smash/scripts/train_full_racket_residual_ppo_v4.py",
+    "--output",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01",
+    "--base-checkpoint",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/cem32_lateral_feedback_1015/best_candidate.pt",
+    "--config",
+    "/home/autodrive/LZQW/unitree_smash/configs/g07_full_racket_residual_ppo_joint_placement_v4.json",
+    "--initialize-actor",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_n512_resume24_01/checkpoint.pt",
+    "--num-envs",
+    "2048",
+    "--updates",
+    "8",
+    "--seed",
+    "748501",
+    "--headless"
+  ],
+  "gpu": 0,
+  "budget_window": "g07-full-racket-unlimited-20261024",
+  "resource_scope": "Existing GPU0 only, original cumulative ledger and single-owner guard, no cloud. Per-job fault protection5400s and2097152 control env steps. Unlimited cumulative authorization remains.",
+  "distinct_TRAIN_cases": 128,
+  "num_envs": 2048,
+  "lanes_per_TRAIN_case": 16,
+  "updates": 8,
+  "initial_iteration": 0,
+  "actor_warmup_updates": 2,
+  "requested_control_env_steps": 2097152,
+  "physics_dt_s": 6.25e-05,
+  "policy_dt_s": 0.01,
+  "real_ground_reset": true,
+  "actor_source": {
+    "iteration": 32,
+    "checkpoint": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_n512_resume24_01/checkpoint.pt",
+    "sha256": "2060f15dbe0ebabbb4b4657a6906fbf40ca661564025e8e06888f55b2fe1a041",
+    "selection_report": "reports/G07_full_racket_v4/residual_iter96_fixed_diagnostic_20261025/REPORT.json",
+    "tradeoff": "Frozen32:14 qualified recoveries/3 attacks/22 air contacts. Frozen96:8/1/24. Both0 complete. Descriptive TRAIN selection, no superiority proof."
+  },
+  "initialization_semantics": "Fresh critic, critic normalization, Adam, learning counters and RNG progression. Transfer only compatible public794D actor/actor normalizer/log_std. Actual native ground reset, no source physics buffers or inherited performance.",
+  "reward": {
+    "version": "native-full-chain-residual-v2-joint-placement",
+    "weight": 20.0,
+    "distance_scale_m": 0.25,
+    "semantics": "Once on actual first landing after legal airborne attacking string hit and actual net crossing without fault. Slow target hits receive zero new bonus. No physics/rule/success change."
+  },
+  "cpu_tests": {
+    "new_reward_actor": 25,
+    "preserved_compatibility": 17,
+    "total": 42,
+    "reports": [
+      "reports/G07_full_racket_v4/joint_placement_probe8_queue01/CPU_CHECKS.json",
+      "reports/G07_full_racket_v4/joint_placement_probe8_queue01/CPU_COMPATIBILITY_CHECKS.json"
+    ]
+  },
+  "original_physics_rules_cases_acceptance_sha256": {
+    "configs/full_racket_v4.json": "d5266604b7cc7a221752de60bf68ff609e66e5fbc16ff3ed1904facc0cf63d3a",
+    "configs/court_net_v4.json": "184d07dde336bf36be7dfde089373c851a2bcb855a6e44f4120442b59818b4f4",
+    "configs/shuttle_physics_v2.json": "dba0e8d45edd661185c7f0b8a379f63993d1a87269740e672688b4577e359229",
+    "configs/evaluation_protocol_v2.json": "421497aa51eecac023c70b200e8a75ecafff01527dcf215665d5d96c1e8266a8",
+    "configs/full_racket_v4_r2.json": "b625c458880f1567fe63676fe0c5209f1d5f956ef8c419eb8c84cb229cabe46d",
+    "configs/full_racket_v4_r3.json": "14d58dd674665424dab63e67d525daf9b2239821797b97202aa45f9af1e5a26c",
+    "configs/full_racket_reset_v4.json": "0d5246e0b39daabd0c0cb15f5259c7c61df455ccb191835932cc83f4886df25b",
+    "assets/quadsmash_full_racket_v4_r3.usd": "c2264fcece90b042c7c6a1cac7d516af83972729d0402947e3a519041e184cf2",
+    "configs/acceptance.json": "66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807",
+    "configs/g07_full_racket_eval_v4_r3.json": "04121cfb257ea4d2e288c69b44dd0c8dbada814e0bf95c8a16f5af7ef2390367",
+    "configs/g07_full_racket_residual_ppo_v4.json": "87e6d88f4c59c96385810791748c6efc5d97012e4f4b6646d5fa6f5ad906f0f2",
+    "scripts/residual_ground_resize_v4.py": "b1803461faba4044d3560d0c81d57ba3bebb61298c790e1dfcef46b0981efa14",
+    "quadsmash/rl/native_checkpoint.py": "eb9bb68bd33134a65818afcbab76217293b96835e770fe164f578cec80659118",
+    "quadsmash/rl/native_ppo.py": "e8dc5eb05daec2497a0b4c19e2d81ff1931e485b0fe99025ed73c5759234ff9e",
+    "quadsmash/evaluation_v4.py": "efe610b42103a45b75fa98acb2a7fe221536abb752ebd665fc926c6ffb657b38",
+    "quadsmash/control/full_racket_residual_v4.py": "3135f1fbc2a41f669ee35d40175f55cc605324da5998dabb6474fc73ca48729f",
+    "quadsmash/control/full_racket_residual_reward_v4.py": "ccaf47cea2959833c4cd6276517b22c32cdd7830bfaf4f0d7601017ede532f9c"
+  },
+  "source_sha256": {
+    "scripts/run_gpu_job.py": "b430b49f0ec8798f6f7426bb76764f19b82d75ae01410785cc4a587714c47a1a",
+    "scripts/train_full_racket_residual_ppo_v4.py": "e1aeb1b6738da2b28b4f2e44928b252181e880459c3d02f74f38db8c5774da5e",
+    "scripts/initialize_residual_actor_v4.py": "d894ba8d59ea2b94d82ed39c0da321d868d51afde3f34cb2b99e6b70e73da4e0",
+    "quadsmash/tasks/stand/full_racket_residual_env_v4.py": "6e9d01d3203044c97796631655edf154fa7f8bd47170bdd776d9c786a79b5487",
+    "quadsmash/control/measured_joint_placement_reward_v4.py": "478a234a75cd285cc64c45bb7fb1d6cfb99e4ef4b921e1e0fd81c779ba97db76",
+    "configs/g07_full_racket_residual_ppo_joint_placement_v4.json": "7f602853da25fee376c795b58c75b1d47bcf9bf76e5e3a7e04d4d25d942a00ca",
+    "configs/g07_full_racket_eval_v4_r3.json": "04121cfb257ea4d2e288c69b44dd0c8dbada814e0bf95c8a16f5af7ef2390367",
+    "assets/quadsmash_full_racket_v4_r3.usd": "c2264fcece90b042c7c6a1cac7d516af83972729d0402947e3a519041e184cf2"
+  },
+  "post_training_assessment": {
+    "scope": "Freeze new portable actor and run all original128 TRAIN cases from ground with no exploration or omitted failures. Separate guarded GPU0 job after successful canonical/export validation. Changing-policy training success is not fixed policy performance.",
+    "control_env_steps": 102400,
+    "formal_gate": {
+      "complete_success_rate": 0.5,
+      "airborne_contact_rate": 0.7,
+      "conditional_recovery_rate": 0.85,
+      "numerical_failures": 0
+    },
+    "formal_AB": "Only after fixed TRAIN reaches original joint thresholds; original A/B each200, same frozen policy/source, original thresholds."
+  },
+  "future_video_preselection": {
+    "TRAIN_indices": [
+      19,
+      23,
+      107,
+      0,
+      8,
+      58
+    ],
+    "scope": "Selected before this experiment. Preserve actual failed executions, side/top views, actual first contact and first landing."
+  },
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}

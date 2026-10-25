@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/TRAIN128_LATERAL_DIAGNOSTIC_20261025.json",
-      "notes": "iter32固定TRAIN128已独立重算：22/128合法空中、14/22条件恢复、攻击3、目标3、完整0、NF0，实际0.301015GPUh。相对iter8的18/9/0及横向基线19/12/0，仅作描述性计数对照；3次空中攻击与3次目标无同回合重叠。69.38秒v3视频和123.9MB原始程序/权重/轨迹包已上传下载SHA回验，前四预选失败保留，追加明确posthoc的TRAIN8攻击恢复但目标偏远。GPU0现运行2048环境64更新至iter96，原128来球各16副本，原生地面/Adam/归一化/RNG继承与首更新已核验；物理、规则和正式门槛不变，G07仍未通过。 本轮续训中点update64已独立核验19164训练回合/1516空中/599条件恢复/4完整/NF0，模型及Adam有限。新增TRAIN25在1.749m击球、出球8.175m/s、目标内首次落点并恢复3.069s，经历actor55..62/contact57；原始前18550条与权重谱系另存SUPPLEMENT_UPDATE63，均非冻结或正式成绩。 第67次快照已独立核验共21057训练回合/1678空中/661条件恢复/5完整/NF0。新增TRAIN35_LANE291_EP8出球8.343m/s、目标内首落、合格恢复3.060s，经历actor58..65/contact61；快照改为在63的18550行后仅追加2507行，旧数据不改，仍非冻结或正式结果。 当前已独立重算update69共22376回合/1790空中/695条件恢复/7完整/NF0；新增TRAIN98与111各一例，经历actor61..67/contact63，仍非固定策略成绩。TRAIN98的羽毛球触网标记为真，按原规则不单独判负；实际离拍、越网、首次目标落地与恢复条件独立满足，完整原动作录像不可补造。",
+      "notes": "原96续训及固定TRAIN128均已完成：固定完整0/128、空中24/128、条件恢复8/24、NF0，未达原门槛，条件队列跳过原A/B。两条真实新视频及1171962010字节完整资料包均已上传并下载验SHA。联合落点奖励与显式公共actor迁移已合并，42项CPU检查通过；已登记2048环境8更新的新学习器实验，canonical32仅作actor初始化，原物理、规则、全部来球及验收要求保持。新原生学习尚未启动，G07仍未通过。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
@@ -1625,14 +1625,14 @@
         "download_verified": true
       },
       "prepared_joint_placement_reward": {
-        "state": "CPU_CHECKED_PREREQUISITES_RESTORED_NATIVE_NOT_RUN",
+        "state": "MERGED_CPU42_VERIFIED_NATIVE_NOT_STARTED",
         "branch": "g07-joint-placement-reward-v4-20261025",
         "commit": "119b461010bee619905ad8736eb982b1fcf55160",
         "worktree": "/home/autodrive/LZQW/unitree_smash_joint_reward",
         "report_url": "https://github.com/lzqw/unitree-smash/blob/e0a8435473ea8f4259c58c4e6f5406a67ba7d857/reports/G07_full_racket_v4/joint_placement_candidate_20261025/REPORT.json",
         "checks": "42targeted CPU checks; actual iter32 actor transfer has0 output error, critic unchanged and Adam/counters fresh; old strict resume/resize reject new reward. Isolated prerequisites now restored from exact historical bytes:14 files plus the pinned walking actor; actual200-lane candidate CPU controller construction and public inference pass,10USD source hashes match.",
         "scope": "Optional TRAIN bonus for actual legal air attacks/crossing and first-landing distance. Original asset, physics, actuation, cases and acceptance unchanged. No native candidate training.",
-        "activation": "Review original iter96 fixed TRAIN128 first. Preserve its source if formal panels are warranted. Otherwise consider candidate integration only after all original native and CPU video owners (including separate TRAIN58 retest) end, in a prepared environment. A new reward learner may explicitly --initialize-actor from a compatible completed canonical source with fresh critic/Adam/counters; strict --resume remains unchanged. The subsequently registered conditional formal A/B queue1599615/session75822 also owns the original source: wait for its actual terminal state and any qualified formal panels before integration. The isolated missing historical prerequisites are now restored; actual candidate CPU loader/inference is checked. Before any isolated GPU launch, reconcile the original single GPU0 resource history/lock rather than forking its ledger, or integrate into the prepared main tree after every source owner is terminal. CPU contact-confirmation queue1603783/session86613 now also owns the unchanged original native/builder sources; require its actual terminal state before integration.",
+        "activation": "Original source owners ended. Frozen96 failed original TRAIN thresholds; original formal queue skipped. Candidate merged in prepared main environment.42 focused CPU checks passed. Predeclared fresh actor32 learner uses original GPU0 guard and ledger. Native launch pending, no candidate performance claim.",
         "formal_acceptance": false,
         "previous_commit": "e0a8435473ea8f4259c58c4e6f5406a67ba7d857",
         "actor_transfer_source": "scripts/initialize_residual_actor_v4.py",
@@ -1666,7 +1666,14 @@
           "old_readiness_missing_artifact_note_superseded": true,
           "formal_acceptance": false,
           "goal_complete": false
-        }
+        },
+        "prior_activation_conditions": "Review original iter96 fixed TRAIN128 first. Preserve its source if formal panels are warranted. Otherwise consider candidate integration only after all original native and CPU video owners (including separate TRAIN58 retest) end, in a prepared environment. A new reward learner may explicitly --initialize-actor from a compatible completed canonical source with fresh critic/Adam/counters; strict --resume remains unchanged. The subsequently registered conditional formal A/B queue1599615/session75822 also owns the original source: wait for its actual terminal state and any qualified formal panels before integration. The isolated missing historical prerequisites are now restored; actual candidate CPU loader/inference is checked. Before any isolated GPU launch, reconcile the original single GPU0 resource history/lock rather than forking its ledger, or integrate into the prepared main tree after every source owner is terminal. CPU contact-confirmation queue1603783/session86613 now also owns the unchanged original native/builder sources; require its actual terminal state before integration.",
+        "integration_commit": "06df7fcbe6380080d43ff039a7c7a0ef75d1210c",
+        "current_worktree": "/home/autodrive/LZQW/unitree_smash",
+        "cpu_recheck_reports": [
+          "reports/G07_full_racket_v4/joint_placement_probe8_queue01/CPU_CHECKS.json",
+          "reports/G07_full_racket_v4/joint_placement_probe8_queue01/CPU_COMPATIBILITY_CHECKS.json"
+        ]
       },
       "formal_residual_loader_cpu_check": {
         "report": "reports/G07_full_racket_v4/formal_residual_loader_check_20261025/REPORT.json",
@@ -3057,7 +3064,7 @@
         "download_verified": true
       },
       "pending_iter96_delivery": {
-        "state": "UPLOADED_VERIFYING_DOWNLOAD",
+        "state": "DELIVERED_DOWNLOAD_SHA_VERIFIED",
         "builder": "reports/G07_full_racket_v4/residual_iter96_delivery_20261025/build.py",
         "readiness": "reports/G07_full_racket_v4/residual_iter96_delivery_20261025/READINESS.json",
         "preparation_checks": "reports/G07_full_racket_v4/residual_iter96_delivery_20261025/PREPARATION_CHECKS_V2.json",
@@ -3069,7 +3076,9 @@
         "queued_training_contact_confirmation_state_file": "reports/G07_full_racket_v4/residual_iter96_contact_queue01/state.json",
         "wait_for_contact_queue_success_before_build": true,
         "incremental_training_snapshot_loader": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/preserve_incremental_completions.py",
-        "initial_missing_prerequisite_count": 31
+        "initial_missing_prerequisite_count": 31,
+        "download_verified": true,
+        "upload_receipt": "reports/G07_full_racket_v4/residual_iter96_delivery_20261025/UPLOAD_RECEIPT.json"
       },
       "queued_iter96_formal_AB": {
         "pid": 1599615,
@@ -3756,14 +3765,16 @@
         "manifest": "reports/G07_full_racket_v4/residual_iter96_delivery_20261025/MANIFEST.json",
         "archive_receipt": "reports/G07_full_racket_v4/residual_iter96_delivery_20261025/ARCHIVE.json",
         "uploaded": true,
-        "download_verified": false,
-        "download_verification_session_id": 31190,
+        "download_verified": true,
         "video_urls": [
           "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_residual_PPO_iter96_20261025.mp4",
           "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_residual_PPO_iter96_TRAIN58_20261025.mp4"
         ],
         "formal_acceptance": false,
-        "goal_complete": false
+        "goal_complete": false,
+        "upload_receipt": "reports/G07_full_racket_v4/residual_iter96_delivery_20261025/UPLOAD_RECEIPT.json",
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_PPO_iter96_fixed_TRAIN128_training_videos_and_raw_20261025.zip",
+        "completed_download_verification_session_id": 31190
       },
       "next_joint_placement_initialization": {
         "iteration": 32,
@@ -3773,7 +3784,8 @@
         "fresh_critic_optimizer_and_counters": true,
         "original_physics_rules_cases_and_acceptance_unchanged": true,
         "source_report": "reports/G07_full_racket_v4/residual_iter96_fixed_diagnostic_20261025/REPORT.json",
-        "native_run_started": false
+        "native_run_started": false,
+        "predeclared_plan": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/PREDECLARED_PLAN.json"
       }
     },
     "G08": {
