@@ -1,0 +1,196 @@
+{
+  "schema": "conditional-centered-placement075-train-revision-v1",
+  "created_at": "2026-10-25T22:26:13.689512+00:00",
+  "status": "PREPARED_CPU_CHECKED_NATIVE_NOT_RUN",
+  "decision_timing": "After completed frozen8/40 evidence, before pending16/24/32 outcomes. Development revision, not a blind test.",
+  "hypothesis": "Broaden bounded first-landing feedback after actual qualifying airborne attacks; the measured attacks overshoot the original target. This may help learning but does not itself solve air/recovery failures.",
+  "configuration": "configs/g07_full_racket_residual_ppo_centered_placement075_v4.json",
+  "configuration_sha256": "aee4e91dc2dd729a6f69ace7b7af626502477a0a9cc0e6fcaa8b247c1e13a41b",
+  "changed_configuration_fields": {
+    "joint_placement_reward.distance_scale_m": [
+      0.25,
+      0.75
+    ],
+    "runner.seed": [
+      748501,
+      748901
+    ]
+  },
+  "unchanged_training_settings": "Same20 maximum placement weight, actual-attack/cross/first-ground eligibility,18 joint scales, architecture, PPO settings and two critic warmups.",
+  "counterfactual_terminal_formula_replay": [
+    {
+      "TRAIN": 1,
+      "actual_first_landing_m": [
+        4.886871337890625,
+        -0.30924224853515625,
+        0.025239383801817894
+      ],
+      "original025_formula_reward": 6.84833648847416e-05,
+      "proposed075_formula_reward": 4.940356731414795,
+      "original_complete_success": false
+    },
+    {
+      "TRAIN": 12,
+      "actual_first_landing_m": [
+        4.398536682128906,
+        0.055202484130859375,
+        0.02512066252529621
+      ],
+      "original025_formula_reward": 1.5752726793289185,
+      "proposed075_formula_reward": 15.079936981201172,
+      "original_complete_success": false
+    },
+    {
+      "TRAIN": 113,
+      "actual_first_landing_m": [
+        4.411048889160156,
+        0.39932823181152344,
+        0.025057366117835045
+      ],
+      "original025_formula_reward": 1.339576244354248,
+      "proposed075_formula_reward": 14.810802459716797,
+      "original_complete_success": false
+    },
+    {
+      "TRAIN": 121,
+      "actual_first_landing_m": [
+        5.1526947021484375,
+        -0.09674072265625,
+        0.025219751521945
+      ],
+      "original025_formula_reward": 1.1701498436877955e-08,
+      "proposed075_formula_reward": 1.8843632936477661,
+      "original_complete_success": false
+    }
+  ],
+  "replay_limit": "Formula evaluations on real terminal event records, not observed historical reward payments, new trajectories or improved performance.",
+  "source_selection": "Use the actual completed original selection RESULT.json winner by its already registered rank; do not select40 merely because it is the CPU compatibility witness.",
+  "launch_conditions": [
+    "Actual1697096 source owner exit; completed selection RESULT.json and terminal state agree; no active original GPU ledger job.",
+    "If selected original TRAIN result meets50/70/85/NF0, skip this revision and proceed to original formal review.",
+    "Otherwise require CONTINUE_METHOD_FROM_BEST_MEASURED_FROZEN, matching selected policy SHA and complete native original128 zero-noise evaluation.",
+    "Root integrates the prepared initializer/trainer/test and this config into main only after owners exit; preserve the196 held sources until then.",
+    "Replace both structured argument markers from verified actual results. Never execute unresolved markers; never treat a diagnostic checkpoint as canonical."
+  ],
+  "initialization": "Transfer only the measured outer mean actor and its normalizer on the exact same old8 fixed base. Fresh critic/critic normalizer, exploration, Adam, RNG and learning counters; actual fresh ground states.",
+  "normalizer_accounting": "Actor starts at measured source countM and advances toM+new steps; critic/new learner start0. New iteration8 is this revision iteration8, not source iteration+8.",
+  "first_native_checks": [
+    "2048 actual fresh ground states, all clocks/episode IDs start0, original128 cases repeated16 times, fixed base unchanged.",
+    "First update262144 steps: copied actor remains through configured critic warmup, all tensors finite, actor normalizationM+262144 and critic262144.",
+    "Original main GPU0 guard/ledger, enabled full trajectory recorder with verified public inputs, NF0; preserve any real failed attempt."
+  ],
+  "train_command_template": [
+    "/home/autodrive/Isaac/env_isaaclab/bin/python",
+    "/home/autodrive/LZQW/unitree_smash/scripts/train_full_racket_residual_ppo_v4.py",
+    "--output",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_placement075_n2048_probe8_01",
+    "--base-checkpoint",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01/policy.pt",
+    "--config",
+    "/home/autodrive/LZQW/unitree_smash/configs/g07_full_racket_residual_ppo_centered_placement075_v4.json",
+    "--num-envs",
+    "2048",
+    "--updates",
+    "8",
+    "--initialize-centered-policy",
+    "SELECTED_MEASURED_PUBLIC_POLICY_FROM_RESULT",
+    "--centered-source-evaluation",
+    "MATCHING_COMPLETED_ORIGINAL_TRAIN128_EVALUATION",
+    "--seed",
+    "748901",
+    "--headless"
+  ],
+  "guarded_train_template": [
+    "/home/autodrive/Isaac/env_isaaclab/bin/python",
+    "/home/autodrive/LZQW/unitree_smash/scripts/run_gpu_job.py",
+    "--goal",
+    "G07",
+    "--budget-window",
+    "g07-full-racket-unlimited-20261024",
+    "--max-seconds",
+    "7200",
+    "--env-steps-cap",
+    "2097152",
+    "--output",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_placement075_n2048_probe8_01",
+    "--require-artifact",
+    "completed.json",
+    "--",
+    "/home/autodrive/Isaac/env_isaaclab/bin/python",
+    "/home/autodrive/LZQW/unitree_smash/scripts/train_full_racket_residual_ppo_v4.py",
+    "--output",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_placement075_n2048_probe8_01",
+    "--base-checkpoint",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01/policy.pt",
+    "--config",
+    "/home/autodrive/LZQW/unitree_smash/configs/g07_full_racket_residual_ppo_centered_placement075_v4.json",
+    "--num-envs",
+    "2048",
+    "--updates",
+    "8",
+    "--initialize-centered-policy",
+    "SELECTED_MEASURED_PUBLIC_POLICY_FROM_RESULT",
+    "--centered-source-evaluation",
+    "MATCHING_COMPLETED_ORIGINAL_TRAIN128_EVALUATION",
+    "--seed",
+    "748901",
+    "--headless"
+  ],
+  "fixed_evaluation_command": [
+    "/home/autodrive/Isaac/env_isaaclab/bin/python",
+    "/home/autodrive/LZQW/unitree_smash/scripts/evaluate_full_racket_train_v4.py",
+    "--output",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_placement075_n2048_probe8_fixed_train128_01",
+    "--checkpoint",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_placement075_n2048_probe8_01/policy.pt",
+    "--noise",
+    "none",
+    "--seed",
+    "724201",
+    "--headless"
+  ],
+  "fixed_evaluation_guard": {
+    "max_seconds": 2700,
+    "env_steps_cap": 102400,
+    "original_main_shared_window": true
+  },
+  "post_training": "Verify canonical new8, fresh-stage episode chains, source-offset normalizers, all selected native traces and independent changing-policy counts; then frozen original128 and the same six actual side/top cases with failures.",
+  "next_decision": "Use actual pilot8 frozen evidence before any longer continuation. If ready, lock one source and evaluate original A/B200 each; otherwise continue method work under the full goal.",
+  "original_gates": {
+    "worse_panel_complete_rate": 0.5,
+    "worse_panel_air_rate": 0.7,
+    "worse_panel_conditional_recovery_rate": 0.85,
+    "numerical_failures": 0,
+    "panel_episodes": 200,
+    "panels": 2
+  },
+  "resource": {
+    "gpu": 0,
+    "cumulative_GPU_hour_limit": null,
+    "calendar_deadline": null,
+    "original_shared_guard_and_ledger_only": true,
+    "cloud_resources": false
+  },
+  "protocol_sha256": "04121cfb257ea4d2e288c69b44dd0c8dbada814e0bf95c8a16f5af7ef2390367",
+  "asset_sha256": "c2264fcece90b042c7c6a1cac7d516af83972729d0402947e3a519041e184cf2",
+  "main_held_sources_verified": 196,
+  "CPU_witness_is_not_selected_source": true,
+  "CPU_mean_replay_inputs": 1890,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_centered_transfer/reports/G07_full_racket_v4/centered_placement075_candidate_20261026/prepare.py": "b9115025593721232fb25b151d878b2c09587032fee3133da4a3746c22eaa945",
+    "/home/autodrive/LZQW/unitree_smash_centered_transfer/configs/g07_full_racket_residual_ppo_centered_placement075_v4.json": "aee4e91dc2dd729a6f69ace7b7af626502477a0a9cc0e6fcaa8b247c1e13a41b",
+    "/home/autodrive/LZQW/unitree_smash_centered_transfer/configs/g07_full_racket_residual_ppo_centered_v4.json": "b2a411d897ebb7e52d6185f8200cf63463d600040fdb6d822c89f6f0f6341467",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/centered8_to40_fixed_diagnostic_20261026/REPORT.json": "a59be351b04419e61a48cc7a9ba96a90c75af0af4767d82f3c54213795373327",
+    "/home/autodrive/LZQW/unitree_smash_centered_transfer/reports/G07_full_racket_v4/centered_placement075_candidate_20261026/ACTUAL_FROZEN40_CPU_COMPATIBILITY.json": "af3bf7ddb016f74106cf084ed7fee8d1fad553ed99915bd4b70a0e338ee0a6b3",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/centered_intermediate_selection_queue01/PREDECLARED_PLAN.json": "7d029d6316f870261050779393f1fd07ceb3ccf6cb39a7e520b82132ccd813b9",
+    "/home/autodrive/LZQW/unitree_smash/configs/court_net_v4.json": "184d07dde336bf36be7dfde089373c851a2bcb855a6e44f4120442b59818b4f4",
+    "/home/autodrive/LZQW/unitree_smash/configs/g07_full_racket_eval_v4_r3.json": "04121cfb257ea4d2e288c69b44dd0c8dbada814e0bf95c8a16f5af7ef2390367",
+    "/home/autodrive/LZQW/unitree_smash_centered_transfer/scripts/initialize_centered_policy_v4.py": "f1891c2ba1aed199eb139b7a44f073475296257a45ab0299f6cc4d185e434abe",
+    "/home/autodrive/LZQW/unitree_smash_centered_transfer/scripts/train_full_racket_residual_ppo_v4.py": "cb8391653391851150346af4eeeff32a526bd53b3a026efe439d546b2efeb76f"
+  },
+  "new_native_execution": false,
+  "new_training": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
