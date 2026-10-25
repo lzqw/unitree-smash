@@ -50,14 +50,14 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/centered_residual_pilot8_queue02/LAUNCH_OBSERVATION.json",
-      "notes": "修复日志setter后，85项CPU与3200条真实公共输入回放通过，12次逐更新日志清空不改变指令。GPU0已通过原共享guard/ledger在新02目录启动2048环境×8次更新；源8策略固定、增量网络从零开始，不续用失败试跑的非canonical权重。此观察仅确认三个实际进程存在，尚未验证新的PPO更新或完成回合。原失败记录与费用保留，40版退化和8版基线真实视频已上传；正式目标未通过。",
+      "notes": "GPU0新02原生试跑已实核第2次更新524288步，两次critic预热结束，模型/Adam有限、NF0；实际第二更新证明已越过旧日志setter故障。新记录器首批9个完整100Hz训练回合的公共输入重建SHA、全身姿态、动作、时钟已逐例检查，仍需完成作业后与独立原始终端/接触全表严格匹配。新冻结表现未测。条件续训观察进程仍只等待，须父流程实际退出、全TRAIN128和完整轨迹审计通过且保留至少16空中/8恢复，才同契约从canonical8续训32更新；原正式50%/70%/85%与全部物理/规则不变。当前完整目标未通过，实际训练继续。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
       "active_gpu_jobs": [
         {
-          "observed_at": "2026-10-25T18:02:37.181433+00:00",
+          "observed_at": "2026-10-25T18:16:05.397369+00:00",
           "workflow_pid": 1677672,
           "workflow_session_id": 81807,
           "guard_pid": 1677676,
@@ -73,7 +73,16 @@
           "formal_cases_read": false,
           "formal_acceptance": false,
           "goal_complete": false,
-          "state": "RUNNING_NATIVE_CENTERED_PILOT8"
+          "state": "RUNNING_NATIVE_CENTERED_PILOT8",
+          "latest_finite_verified_iteration": 2,
+          "verified_current_job_control_env_steps": 524288,
+          "actual2048_ground_states_verified": true,
+          "verification": "reports/G07_full_racket_v4/centered_residual_pilot8_queue02/ACTUAL_UPDATE_0002_HEALTH_CHECK.json",
+          "trajectory_capture_enabled": true,
+          "complete_native_trajectory_audit_pending": true,
+          "logging_fix_verified_by_real_second_update": true,
+          "partial_selected_complete_traces_checked": 9,
+          "partial_trace_check": "reports/G07_full_racket_v4/centered_residual_pilot8_queue02/PARTIAL_NATIVE_TRACE_CAPTURE_CHECK.json"
         }
       ],
       "queued_native_sequence": {
@@ -5298,7 +5307,20 @@
         "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_residual_PPO_joint_placement_probe8_20261025.mp4",
         "duration_s": 86.16,
         "scope": "Actual original frozen8.20/128 airborne,12/20 conditional recovery,0/128 full; baseline only."
-      }
+      },
+      "conditional_centered_continuation": {
+        "workflow_pid": 1678986,
+        "session_id": 15135,
+        "state_file": "reports/G07_full_racket_v4/centered_residual_resume32_queue01/state.json",
+        "plan": "reports/G07_full_racket_v4/centered_residual_resume32_queue01/PREDECLARED_PLAN.json",
+        "state_at_observation": "WAITING_FOR_VERIFIED_PARENT",
+        "additional_updates_if_gate_passes": 32,
+        "minimum_frozen_air_contacts": 16,
+        "minimum_frozen_conditional_recoveries": 8,
+        "selected_training_trace_audit_required": true,
+        "original_formal_thresholds_unchanged": true
+      },
+      "current_legacy_motion_comparison": "reports/G07_full_racket_v4/current_legacy_comparison_20261026/REPORT.json"
     },
     "G08": {
       "state": "TODO",

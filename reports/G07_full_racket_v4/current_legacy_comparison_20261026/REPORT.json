@@ -1,0 +1,1007 @@
+{
+  "created_at": "2026-10-25T18:14:09.098078+00:00",
+  "scope": "Separately measured historical short-board formal panels and selected frozen full-racket TRAIN128. These differ in physical assets, rules, incoming balls and evaluation protocol; no matched/casual performance or dynamic reach ceiling is established.",
+  "geometry": {
+    "old_short_board_center_in_flange_m": [
+      0.18,
+      0.0,
+      0.0
+    ],
+    "new_strings_center_in_flange_m": [
+      0.45,
+      0,
+      0.04
+    ],
+    "old_center_distance_m": 0.18,
+    "new_center_distance_m": 0.4517742799230607,
+    "new_total_racket_length_m": 0.675,
+    "scope": "Rigid geometry only; neither a dynamic maximum height nor a guaranteed speed multiplier."
+  },
+  "historical_short_board": [
+    {
+      "panel": "a",
+      "scope": "Historical short-board formal protocol; new full-racket rules and geometry were not in effect.",
+      "recorded_metrics": {
+        "sample_count": 200,
+        "episodes": 200,
+        "ground_init_fraction": 1.0,
+        "airborne_contact_rate": 1.0,
+        "recovery_given_airborne_contact": 0.89,
+        "complete_smash_success_rate": 0.5,
+        "ordered_net": 144,
+        "ordered_landing": 100,
+        "robot_net_contact": 10,
+        "numerical_failures": 0,
+        "formal_policy_acceptance": false,
+        "formal_evaluation_eligible": true,
+        "protocol": "g07-causal-profiled-net-frozen-evaluation-v3",
+        "panel": "causal_profiled_eval_panel_a_v2",
+        "env_steps": 170000
+      },
+      "airborne_effective_face_contacts": 194,
+      "observed_contact_positions_m": {
+        "count": 194,
+        "minimum": [
+          1.3801922798156738,
+          -0.10796642303466797,
+          1.5474750995635986
+        ],
+        "median": [
+          1.4015911221504211,
+          -0.010423481464385986,
+          1.6457490921020508
+        ],
+        "maximum": [
+          1.4219293594360352,
+          0.08963584899902344,
+          1.7150293588638306
+        ]
+      },
+      "observed_contact_point_speeds_mps": {
+        "count": 194,
+        "minimum": 0.3820694440206519,
+        "median": 0.6126280484654291,
+        "maximum": 1.0780710006599044
+      },
+      "observed_outgoing_speeds_mps": {
+        "count": 194,
+        "minimum": 14.432044170960584,
+        "median": 15.088210663333507,
+        "maximum": 15.803935284948373
+      }
+    },
+    {
+      "panel": "b",
+      "scope": "Historical short-board formal protocol; new full-racket rules and geometry were not in effect.",
+      "recorded_metrics": {
+        "sample_count": 200,
+        "episodes": 200,
+        "ground_init_fraction": 1.0,
+        "airborne_contact_rate": 0.98,
+        "recovery_given_airborne_contact": 0.7448979591836735,
+        "complete_smash_success_rate": 0.355,
+        "ordered_net": 110,
+        "ordered_landing": 73,
+        "robot_net_contact": 22,
+        "numerical_failures": 0,
+        "formal_policy_acceptance": false,
+        "formal_evaluation_eligible": true,
+        "protocol": "g07-causal-profiled-net-frozen-evaluation-v3",
+        "panel": "causal_profiled_eval_panel_b_v2",
+        "env_steps": 170000
+      },
+      "airborne_effective_face_contacts": 175,
+      "observed_contact_positions_m": {
+        "count": 175,
+        "minimum": [
+          1.371260643005371,
+          -0.10969424247741699,
+          1.496058464050293
+        ],
+        "median": [
+          1.400782585144043,
+          -0.021158933639526367,
+          1.6376581192016602
+        ],
+        "maximum": [
+          1.423604965209961,
+          0.08874082565307617,
+          1.717250943183899
+        ]
+      },
+      "observed_contact_point_speeds_mps": {
+        "count": 175,
+        "minimum": 0.24175949370271846,
+        "median": 0.5876198454152233,
+        "maximum": 1.026953441721268
+      },
+      "observed_outgoing_speeds_mps": {
+        "count": 175,
+        "minimum": 13.563270356060242,
+        "median": 15.103156023523344,
+        "maximum": 15.914527586023206
+      }
+    }
+  ],
+  "current_selected_frozen_full_racket": {
+    "run": "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01",
+    "policy_sha256": "846656e9d02c74f4b72929253ed9196557af4f9affe39236fc55d7f4bc5d744c",
+    "independent_TRAIN128_summary": {
+      "episodes": 128,
+      "distinct_TRAIN_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127
+      ],
+      "distinct_cases": 128,
+      "complete": 0,
+      "complete_success_rate": 0.0,
+      "airborne_contacts": 20,
+      "airborne_contact_rate": 0.15625,
+      "conditional_recovery_count": 12,
+      "conditional_recovery_rate": 0.6,
+      "numerical_failures": 0,
+      "actual_racket_contacts": 71,
+      "attack_outgoing": 1,
+      "crossed_net": 20,
+      "landed_legal_court": 18,
+      "landed_target": 8,
+      "fault_counts": {
+        "robot_net_fault": 3,
+        "body_ball_fault": 0,
+        "wrong_side_fault": 0,
+        "double_hit_fault": 0,
+        "racket_invasion_fault": 0,
+        "body_over_net_fault": 0,
+        "under_net_obstruction_fault": 0,
+        "engineering_body_crossing": 3,
+        "bad_return_fault": 6,
+        "net_blocked_fault": 9
+      },
+      "formal_eligible": false,
+      "formal_acceptance": false,
+      "formal_cases_read": false,
+      "scope": "Frozen TRAIN cases only; diagnostic performance of one fixed policy, not an A/B panel score."
+    },
+    "observed_legal_air_strings_contact_points_m": {
+      "count": 20,
+      "minimum": [
+        0.6425766944885254,
+        -0.22356414794921875,
+        1.4997457265853882
+      ],
+      "median": [
+        0.9684658050537109,
+        -0.03931558504700661,
+        1.7187957167625427
+      ],
+      "maximum": [
+        1.0419082641601562,
+        0.10094451904296875,
+        1.7737399339675903
+      ]
+    },
+    "observed_legal_air_strings_point_speed_mps": {
+      "count": 20,
+      "minimum": 0.18525018367974444,
+      "median": 0.7583264625287875,
+      "maximum": 2.5266924986807413
+    },
+    "observed_legal_air_strings_outgoing_speed_mps": {
+      "count": 20,
+      "minimum": 4.309582963336451,
+      "median": 6.70630243852457,
+      "maximum": 8.006117071299725
+    },
+    "observed_legal_air_strings_continuous_recovery_window_s": {
+      "count": 20,
+      "minimum": 0.0,
+      "median": 3.7209126949310303,
+      "maximum": 4.322869300842285
+    },
+    "contact_position_note": "Actual legal first strings contacts in the canonical airborne subset. Observed contact height is not a maximum dynamically reachable head height."
+  },
+  "actual_rigid_contact_point_velocity_check": {
+    "formula": "v_hit = v_flange + omega_flange cross (p_hit - p_flange)",
+    "actual_contact_events": 71,
+    "reconstruction_error_mps": {
+      "count": 71,
+      "minimum": 1.0642481223061158e-07,
+      "median": 1.8091918884237644e-06,
+      "maximum": 1.368361775389455e-05
+    },
+    "rotational_term_speed_mps": {
+      "count": 71,
+      "minimum": 0.036320570271552825,
+      "median": 0.7014937438304575,
+      "maximum": 2.3680065098328287
+    },
+    "event_results": [
+      {
+        "env_id": 70,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 1.8091918884237644e-06,
+        "flange_linear_speed_mps": 0.727881644482924,
+        "rotational_term_speed_mps": 1.540645914619817,
+        "actual_point_speed_mps": 2.1883738465328437
+      },
+      {
+        "env_id": 77,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 7.576326969367281e-06,
+        "flange_linear_speed_mps": 0.32229477927405553,
+        "rotational_term_speed_mps": 1.349807423465764,
+        "actual_point_speed_mps": 1.3992367850117622
+      },
+      {
+        "env_id": 99,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 1.6985224238973993e-06,
+        "flange_linear_speed_mps": 0.4312705760260333,
+        "rotational_term_speed_mps": 2.3026287027054995,
+        "actual_point_speed_mps": 2.2029568745136574
+      },
+      {
+        "env_id": 102,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 1.1405705192150795e-06,
+        "flange_linear_speed_mps": 0.8511995444190108,
+        "rotational_term_speed_mps": 0.3708182632726942,
+        "actual_point_speed_mps": 0.6235261892483264
+      },
+      {
+        "env_id": 46,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 3.841879050432323e-06,
+        "flange_linear_speed_mps": 0.7493825550975944,
+        "rotational_term_speed_mps": 0.6589948777712286,
+        "actual_point_speed_mps": 1.176417769680853
+      },
+      {
+        "env_id": 96,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 5.548825621112574e-06,
+        "flange_linear_speed_mps": 0.5201719284384672,
+        "rotational_term_speed_mps": 1.116803923807624,
+        "actual_point_speed_mps": 1.3152561503261984
+      },
+      {
+        "env_id": 115,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 6.030453567984348e-07,
+        "flange_linear_speed_mps": 0.42582910291290094,
+        "rotational_term_speed_mps": 0.5415465614403994,
+        "actual_point_speed_mps": 0.37848201080686866
+      },
+      {
+        "env_id": 6,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 1.275766432951772e-06,
+        "flange_linear_speed_mps": 0.885889871066861,
+        "rotational_term_speed_mps": 0.9574212428756506,
+        "actual_point_speed_mps": 1.5335071655211976
+      },
+      {
+        "env_id": 85,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 5.0478872496370384e-06,
+        "flange_linear_speed_mps": 0.3788947800337334,
+        "rotational_term_speed_mps": 1.7822597797726996,
+        "actual_point_speed_mps": 1.7254674878670182
+      },
+      {
+        "env_id": 71,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 1.0642481223061158e-07,
+        "flange_linear_speed_mps": 1.3410253427074428,
+        "rotational_term_speed_mps": 1.3222207565261588,
+        "actual_point_speed_mps": 2.5266924986807413
+      },
+      {
+        "env_id": 95,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 2.433061227423105e-06,
+        "flange_linear_speed_mps": 0.6485229936066966,
+        "rotational_term_speed_mps": 1.0084730225701137,
+        "actual_point_speed_mps": 1.351710896118499
+      },
+      {
+        "env_id": 67,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 2.7251978161488227e-06,
+        "flange_linear_speed_mps": 0.5369579400692613,
+        "rotational_term_speed_mps": 0.4783479285993725,
+        "actual_point_speed_mps": 0.6725296061169597
+      },
+      {
+        "env_id": 35,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 5.03911199216941e-06,
+        "flange_linear_speed_mps": 0.5141177996913436,
+        "rotational_term_speed_mps": 1.0797232345253527,
+        "actual_point_speed_mps": 0.5900605201338701
+      },
+      {
+        "env_id": 14,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 5.771891465826686e-06,
+        "flange_linear_speed_mps": 0.316655130053382,
+        "rotational_term_speed_mps": 2.3680065098328287,
+        "actual_point_speed_mps": 2.137084390623993
+      },
+      {
+        "env_id": 91,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 5.858857641003468e-07,
+        "flange_linear_speed_mps": 0.7650130596417685,
+        "rotational_term_speed_mps": 0.45886572024364863,
+        "actual_point_speed_mps": 1.1113194232540247
+      },
+      {
+        "env_id": 52,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 1.9715863736457757e-06,
+        "flange_linear_speed_mps": 0.760954799557908,
+        "rotational_term_speed_mps": 0.7271711481419856,
+        "actual_point_speed_mps": 1.2757124448820825
+      },
+      {
+        "env_id": 57,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 1.120394401892503e-06,
+        "flange_linear_speed_mps": 0.5047335387022763,
+        "rotational_term_speed_mps": 0.6824786696416527,
+        "actual_point_speed_mps": 0.5805419838644167
+      },
+      {
+        "env_id": 9,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 2.357051380627028e-06,
+        "flange_linear_speed_mps": 0.8548460700817414,
+        "rotational_term_speed_mps": 0.3028127498668601,
+        "actual_point_speed_mps": 1.079358522132107
+      },
+      {
+        "env_id": 125,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 2.0039333803323448e-06,
+        "flange_linear_speed_mps": 0.8620648801653799,
+        "rotational_term_speed_mps": 0.8731199816449873,
+        "actual_point_speed_mps": 1.351006883260539
+      },
+      {
+        "env_id": 78,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 2.9306366925623194e-06,
+        "flange_linear_speed_mps": 0.46339584461488986,
+        "rotational_term_speed_mps": 1.0685172246205055,
+        "actual_point_speed_mps": 0.749621884003589
+      },
+      {
+        "env_id": 51,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 8.133546641223615e-07,
+        "flange_linear_speed_mps": 0.8572421897844305,
+        "rotational_term_speed_mps": 0.6146541025448458,
+        "actual_point_speed_mps": 1.2399256294808714
+      },
+      {
+        "env_id": 126,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 1.8539567103849892e-06,
+        "flange_linear_speed_mps": 0.6680709515503421,
+        "rotational_term_speed_mps": 0.5388497079619267,
+        "actual_point_speed_mps": 0.6946037073697493
+      },
+      {
+        "env_id": 59,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 9.046737333655399e-07,
+        "flange_linear_speed_mps": 1.000183167204931,
+        "rotational_term_speed_mps": 0.7014937438304575,
+        "actual_point_speed_mps": 1.5765049924552057
+      },
+      {
+        "env_id": 16,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 1.1809072718953145e-06,
+        "flange_linear_speed_mps": 0.6664048973908556,
+        "rotational_term_speed_mps": 0.22272791260604885,
+        "actual_point_speed_mps": 0.5140141124025885
+      },
+      {
+        "env_id": 31,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 2.671962353688263e-07,
+        "flange_linear_speed_mps": 0.792515115743581,
+        "rotational_term_speed_mps": 0.34683635747709934,
+        "actual_point_speed_mps": 0.5489435623809753
+      },
+      {
+        "env_id": 7,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 3.534484139652876e-06,
+        "flange_linear_speed_mps": 0.8766933795792332,
+        "rotational_term_speed_mps": 0.6820649821632847,
+        "actual_point_speed_mps": 0.7121952702584673
+      },
+      {
+        "env_id": 34,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 1.482010371029793e-06,
+        "flange_linear_speed_mps": 0.8337368905265301,
+        "rotational_term_speed_mps": 0.8590481906626057,
+        "actual_point_speed_mps": 1.503162911126804
+      },
+      {
+        "env_id": 2,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 6.627058189039735e-07,
+        "flange_linear_speed_mps": 0.8074790109150122,
+        "rotational_term_speed_mps": 0.2353636940840872,
+        "actual_point_speed_mps": 0.9857738721253684
+      },
+      {
+        "env_id": 33,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 4.3547372121543945e-06,
+        "flange_linear_speed_mps": 0.4710593425959997,
+        "rotational_term_speed_mps": 1.0030676540579209,
+        "actual_point_speed_mps": 0.6331012009754571
+      },
+      {
+        "env_id": 8,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 2.8355880631209318e-06,
+        "flange_linear_speed_mps": 0.7846664886338601,
+        "rotational_term_speed_mps": 0.3022222166587053,
+        "actual_point_speed_mps": 0.8823378913742042
+      },
+      {
+        "env_id": 87,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 2.327478616980317e-06,
+        "flange_linear_speed_mps": 0.8607604517422703,
+        "rotational_term_speed_mps": 0.2139717405754755,
+        "actual_point_speed_mps": 0.8657437765230904
+      },
+      {
+        "env_id": 47,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 1.4916102428250958e-06,
+        "flange_linear_speed_mps": 0.9464556603019164,
+        "rotational_term_speed_mps": 0.24009714112654174,
+        "actual_point_speed_mps": 1.1567794136212417
+      },
+      {
+        "env_id": 17,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 4.235734824482426e-06,
+        "flange_linear_speed_mps": 0.8611467835807111,
+        "rotational_term_speed_mps": 1.2574452392378137,
+        "actual_point_speed_mps": 1.8360587738729885
+      },
+      {
+        "env_id": 75,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 9.421043379374629e-07,
+        "flange_linear_speed_mps": 0.9025895404809336,
+        "rotational_term_speed_mps": 1.1344753298004289,
+        "actual_point_speed_mps": 1.878523960596056
+      },
+      {
+        "env_id": 11,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 3.417779436117171e-06,
+        "flange_linear_speed_mps": 0.7425931995542113,
+        "rotational_term_speed_mps": 0.036320570271552825,
+        "actual_point_speed_mps": 0.7532001483260937
+      },
+      {
+        "env_id": 121,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 6.002879184219853e-06,
+        "flange_linear_speed_mps": 0.8494696986253103,
+        "rotational_term_speed_mps": 1.3862836325034524,
+        "actual_point_speed_mps": 1.930587990027617
+      },
+      {
+        "env_id": 37,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 1.2416041314730494e-06,
+        "flange_linear_speed_mps": 0.7704967584895573,
+        "rotational_term_speed_mps": 0.2672865481888922,
+        "actual_point_speed_mps": 0.6048580962102161
+      },
+      {
+        "env_id": 18,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 2.2450477698149194e-06,
+        "flange_linear_speed_mps": 0.7497460761791829,
+        "rotational_term_speed_mps": 0.289957588126569,
+        "actual_point_speed_mps": 0.7485118534799676
+      },
+      {
+        "env_id": 15,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 9.85810250124639e-07,
+        "flange_linear_speed_mps": 0.45571469125559855,
+        "rotational_term_speed_mps": 0.6825543063059367,
+        "actual_point_speed_mps": 0.456644297493726
+      },
+      {
+        "env_id": 81,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 8.428037662067463e-07,
+        "flange_linear_speed_mps": 0.9279563151225384,
+        "rotational_term_speed_mps": 0.06813925847796429,
+        "actual_point_speed_mps": 0.9750890675063802
+      },
+      {
+        "env_id": 54,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 6.217356202870384e-06,
+        "flange_linear_speed_mps": 0.5466981948964454,
+        "rotational_term_speed_mps": 0.5514127147590968,
+        "actual_point_speed_mps": 0.49199947900160085
+      },
+      {
+        "env_id": 5,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 2.0090514386129793e-06,
+        "flange_linear_speed_mps": 0.9015108878464354,
+        "rotational_term_speed_mps": 0.6395431645737143,
+        "actual_point_speed_mps": 1.4488473636068735
+      },
+      {
+        "env_id": 1,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 1.368361775389455e-05,
+        "flange_linear_speed_mps": 0.7544047780799477,
+        "rotational_term_speed_mps": 1.2929428276334445,
+        "actual_point_speed_mps": 1.8014706664688829
+      },
+      {
+        "env_id": 27,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 2.1995444043368265e-06,
+        "flange_linear_speed_mps": 0.8435164146971992,
+        "rotational_term_speed_mps": 0.48352036702334644,
+        "actual_point_speed_mps": 1.2172521078792848
+      },
+      {
+        "env_id": 41,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 1.024569099784271e-06,
+        "flange_linear_speed_mps": 1.025607972748327,
+        "rotational_term_speed_mps": 0.6796331008234708,
+        "actual_point_speed_mps": 1.55520318808845
+      },
+      {
+        "env_id": 23,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 1.5577093911361589e-06,
+        "flange_linear_speed_mps": 0.7010794401942801,
+        "rotational_term_speed_mps": 0.5042694212636655,
+        "actual_point_speed_mps": 0.6813189951833623
+      },
+      {
+        "env_id": 28,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 5.145692223639854e-07,
+        "flange_linear_speed_mps": 0.7931070439697494,
+        "rotational_term_speed_mps": 0.8590129267917913,
+        "actual_point_speed_mps": 1.485881904444691
+      },
+      {
+        "env_id": 65,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 1.5096751813423677e-06,
+        "flange_linear_speed_mps": 0.6714522115108399,
+        "rotational_term_speed_mps": 0.7832216399992399,
+        "actual_point_speed_mps": 0.18525018367974444
+      },
+      {
+        "env_id": 13,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 4.7904087708734605e-06,
+        "flange_linear_speed_mps": 0.8627071780812905,
+        "rotational_term_speed_mps": 1.0204396301031273,
+        "actual_point_speed_mps": 1.4211536137730507
+      },
+      {
+        "env_id": 26,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 1.098032584055914e-06,
+        "flange_linear_speed_mps": 0.5803298532781461,
+        "rotational_term_speed_mps": 1.046603566263805,
+        "actual_point_speed_mps": 0.9231999409204634
+      },
+      {
+        "env_id": 25,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 1.2085506969421154e-06,
+        "flange_linear_speed_mps": 0.7884707701442113,
+        "rotational_term_speed_mps": 0.22129562711165932,
+        "actual_point_speed_mps": 0.6727279019305116
+      },
+      {
+        "env_id": 63,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 5.841705141150895e-07,
+        "flange_linear_speed_mps": 0.8405615119771869,
+        "rotational_term_speed_mps": 1.2023380947404605,
+        "actual_point_speed_mps": 1.8194914608306296
+      },
+      {
+        "env_id": 43,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 1.0114929399031797e-05,
+        "flange_linear_speed_mps": 0.7335317284260139,
+        "rotational_term_speed_mps": 1.0532861251996393,
+        "actual_point_speed_mps": 1.2565149328420322
+      },
+      {
+        "env_id": 50,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 1.0531788443837788e-06,
+        "flange_linear_speed_mps": 0.7836331086064888,
+        "rotational_term_speed_mps": 0.810418630790061,
+        "actual_point_speed_mps": 1.359795196240147
+      },
+      {
+        "env_id": 45,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 3.4959327410073378e-06,
+        "flange_linear_speed_mps": 0.461321374883914,
+        "rotational_term_speed_mps": 0.8626597149217698,
+        "actual_point_speed_mps": 0.5261616802644975
+      },
+      {
+        "env_id": 39,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 1.6983926612295946e-07,
+        "flange_linear_speed_mps": 0.8519161512683582,
+        "rotational_term_speed_mps": 0.35516255148097575,
+        "actual_point_speed_mps": 1.1225967139559092
+      },
+      {
+        "env_id": 109,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 3.220492646598278e-07,
+        "flange_linear_speed_mps": 0.8163833767448104,
+        "rotational_term_speed_mps": 0.2726352058575221,
+        "actual_point_speed_mps": 1.0495526084116427
+      },
+      {
+        "env_id": 56,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 2.6115413145456447e-06,
+        "flange_linear_speed_mps": 0.8153359423544518,
+        "rotational_term_speed_mps": 0.4234347028501651,
+        "actual_point_speed_mps": 1.1416571504768676
+      },
+      {
+        "env_id": 0,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 2.8916486349633176e-07,
+        "flange_linear_speed_mps": 0.817726486566118,
+        "rotational_term_speed_mps": 0.9633004171977135,
+        "actual_point_speed_mps": 1.6067063396448784
+      },
+      {
+        "env_id": 53,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 1.381373140533028e-06,
+        "flange_linear_speed_mps": 1.0589389696670473,
+        "rotational_term_speed_mps": 1.5394482875096072,
+        "actual_point_speed_mps": 2.2847077926010613
+      },
+      {
+        "env_id": 3,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 2.4786036199248664e-06,
+        "flange_linear_speed_mps": 0.8178594821299499,
+        "rotational_term_speed_mps": 0.6947105310344162,
+        "actual_point_speed_mps": 0.6578360956901856
+      },
+      {
+        "env_id": 61,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 2.447235235305409e-07,
+        "flange_linear_speed_mps": 0.5868007656242317,
+        "rotational_term_speed_mps": 0.31558830325909887,
+        "actual_point_speed_mps": 0.3726783593697238
+      },
+      {
+        "env_id": 118,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 9.679855237431043e-07,
+        "flange_linear_speed_mps": 0.7624357113928192,
+        "rotational_term_speed_mps": 0.1939774856853549,
+        "actual_point_speed_mps": 0.8782379327482102
+      },
+      {
+        "env_id": 113,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 6.716481470968448e-07,
+        "flange_linear_speed_mps": 0.9774106054500963,
+        "rotational_term_speed_mps": 1.2739863564179,
+        "actual_point_speed_mps": 1.8934670519141623
+      },
+      {
+        "env_id": 36,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 2.4541798265333233e-06,
+        "flange_linear_speed_mps": 0.9572371137207648,
+        "rotational_term_speed_mps": 1.5534325348159526,
+        "actual_point_speed_mps": 2.2139334425636137
+      },
+      {
+        "env_id": 107,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 1.0551732980428452e-06,
+        "flange_linear_speed_mps": 0.7949956504851963,
+        "rotational_term_speed_mps": 0.18394513652781294,
+        "actual_point_speed_mps": 0.7670310410539862
+      },
+      {
+        "env_id": 106,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 1.8835237529286463e-06,
+        "flange_linear_speed_mps": 0.4862533873279127,
+        "rotational_term_speed_mps": 0.8408375691288646,
+        "actual_point_speed_mps": 0.6316641285699218
+      },
+      {
+        "env_id": 103,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 3.452229526453121e-06,
+        "flange_linear_speed_mps": 0.8671739622655547,
+        "rotational_term_speed_mps": 0.7957709535951655,
+        "actual_point_speed_mps": 1.5002758271524888
+      },
+      {
+        "env_id": 12,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 6.0023520763668615e-06,
+        "flange_linear_speed_mps": 1.03120703605199,
+        "rotational_term_speed_mps": 1.7784146244331978,
+        "actual_point_speed_mps": 2.396184760496139
+      },
+      {
+        "env_id": 29,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 4.321132089150357e-06,
+        "flange_linear_speed_mps": 1.0372237009093965,
+        "rotational_term_speed_mps": 1.6510862121591252,
+        "actual_point_speed_mps": 2.3582814622468726
+      },
+      {
+        "env_id": 105,
+        "episode_index": 0,
+        "event_index": 1,
+        "reconstruction_error_mps": 2.1716989721544596e-07,
+        "flange_linear_speed_mps": 0.7529831337964459,
+        "rotational_term_speed_mps": 0.14968843809103935,
+        "actual_point_speed_mps": 0.8730350683777658
+      }
+    ],
+    "scope": "Read-only recomputation of actual saved native point, flange velocity and angular velocity; no threshold or physical parameter changed."
+  },
+  "limits": [
+    "Historical and full-racket rates cannot be treated as a controlled improvement/regression caused by geometry alone.",
+    "The current selected full-racket policy still has0/128 complete successes; the later centered learner is currently training and contributes no score here.",
+    "Frozen original full-racket A200/B200 acceptance and matched dynamic reach measurements remain unproven."
+  ],
+  "source_sha256": {
+    "reports/G07_full_racket_v4/current_legacy_comparison_20261026/build.py": "df24e5452ed590f107b87b135f51ef3b76252e67f02decab7ab3cae290374ab6",
+    "reports/G07_full_racket_v4/INTERIM_SHORTBOARD_FULL_RACKET_COMPARISON_0950.json": "398a6e04f9b02e8dfceb060c853d0462a9ca0e84a28b81b297d1e2b8963a8c39",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01/policy.pt": "846656e9d02c74f4b72929253ed9196557af4f9affe39236fc55d7f4bc5d744c",
+    "configs/g07_full_racket_eval_v4_r3.json": "04121cfb257ea4d2e288c69b44dd0c8dbada814e0bf95c8a16f5af7ef2390367",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01/job.json": "0f7161987d3c9632876147ae3e8f9f5b711b0f5393636adcd2fb144555b16595",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01/completed.json": "c4a2cdc51b7afa8f30801dae79e3db905be163f9c7bc5e5a8e2f496c01538989",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01/INPUTS.json": "fa75205037c9b3233ade1673853e11e56d2093a627a07fe00e6890389a18b957",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01/episodes.json": "6773f5848a4842df7980effda15d69945846c39d1f7c482a9153b3ca9b16152c",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01/contacts.json": "376e31be6abf58d977f9a97daa423408be402069d3d740b54f23249fedc0e358",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01/metrics.json": "9dde9f6ad803633fbc8827e0ee0e9ade45ac905975d3f4953d87fd5d9a782bd8"
+  },
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
