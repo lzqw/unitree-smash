@@ -1,0 +1,57 @@
+{
+  "reviewed_at": "2026-10-25T19:20:45.107116+00:00",
+  "reviewer": "Root agent actual image inspection",
+  "video": "reports/G07_full_racket_v4/video/Current_effect_centered_residual_base8_probe8_retry02_20261026.mp4",
+  "video_sha256": "725ec8a526e7bbca485cc7469b62f61896057d089e2c759d4b6616a280772861",
+  "all4276_frames_decoded_by_completed_producer_workflow": true,
+  "native_preview_images_inspected": [
+    "reports/G07_full_racket_v4/video/Current_effect_centered_residual_base8_probe8_retry02_20261026_case0_terminal.jpg",
+    "reports/G07_full_racket_v4/video/Current_effect_centered_residual_base8_probe8_retry02_20261026_case0_landing.jpg",
+    "reports/G07_full_racket_v4/video/Current_effect_centered_residual_base8_probe8_retry02_20261026_case1_terminal.jpg",
+    "reports/G07_full_racket_v4/video/Current_effect_centered_residual_base8_probe8_retry02_20261026_case1_contact.jpg",
+    "reports/G07_full_racket_v4/video/Current_effect_centered_residual_base8_probe8_retry02_20261026_case1_landing.jpg",
+    "reports/G07_full_racket_v4/video/Current_effect_centered_residual_base8_probe8_retry02_20261026_case2_terminal.jpg",
+    "reports/G07_full_racket_v4/video/Current_effect_centered_residual_base8_probe8_retry02_20261026_case2_contact.jpg",
+    "reports/G07_full_racket_v4/video/Current_effect_centered_residual_base8_probe8_retry02_20261026_case2_landing.jpg",
+    "reports/G07_full_racket_v4/video/Current_effect_centered_residual_base8_probe8_retry02_20261026_case3_terminal.jpg",
+    "reports/G07_full_racket_v4/video/Current_effect_centered_residual_base8_probe8_retry02_20261026_case3_contact.jpg",
+    "reports/G07_full_racket_v4/video/Current_effect_centered_residual_base8_probe8_retry02_20261026_case3_landing.jpg",
+    "reports/G07_full_racket_v4/video/Current_effect_centered_residual_base8_probe8_retry02_20261026_case4_terminal.jpg",
+    "reports/G07_full_racket_v4/video/Current_effect_centered_residual_base8_probe8_retry02_20261026_case4_contact.jpg",
+    "reports/G07_full_racket_v4/video/Current_effect_centered_residual_base8_probe8_retry02_20261026_case4_landing.jpg",
+    "reports/G07_full_racket_v4/video/Current_effect_centered_residual_base8_probe8_retry02_20261026_case5_terminal.jpg",
+    "reports/G07_full_racket_v4/video/Current_effect_centered_residual_base8_probe8_retry02_20261026_case5_landing.jpg"
+  ],
+  "actual_decoded_frames_inspected": [
+    25,
+    210,
+    864,
+    1589,
+    2314,
+    2932,
+    3657,
+    4251
+  ],
+  "source_hashes_rechecked": true,
+  "visual_checks": [
+    "All six predeclared comparison cases remain present, with side/top views, complete robot/arm/racket and actual incoming/landing traces.",
+    "TRAIN23 actual strings contact,8.51m/s and vz-1.43m/s, actual net crossing and4.26s recovery are shown; first landing x4.742 is beyond the original4m target bound and remains failure.",
+    "TRAIN107 target hit at6.25m/s and its unqualified recovery, TRAIN0 frame strike, TRAIN8 below-speed attack and target miss, and the two misses retain failure labels.",
+    "Exact contact substeps, last valid50Hz samples and adjacent-body-pose landing freezes are explicitly distinguished."
+  ],
+  "limitations": [
+    "A court-wide view makes the robot smaller when needed to retain the actual ball/landing marker.",
+    "The net partly occludes late fallen poses for TRAIN0/58 in side view; the synchronized top view retains their full geometry.",
+    "These are original TRAIN diagnostics, not formal A/B panels, blind sampling or a claim that full G07 passed."
+  ],
+  "independent_fixed_TRAIN128": {
+    "complete": 0,
+    "airborne_contacts": 26,
+    "conditional_recovery_count": 13,
+    "conditional_recovery_rate": 0.5,
+    "numerical_failures": 0
+  },
+  "ready_to_upload": true,
+  "formal_acceptance": false,
+  "goal_complete": false
+}

@@ -1,0 +1,11 @@
+{
+  "reviewed_at": "2026-10-25T19:08:29.285328+00:00",
+  "scope": "Correction of a new unpublished CPU comparison, not native metrics or a task/acceptance change.",
+  "issue": "The auxiliary attack selector initially checked outgoing velocity only and included frame/non-air events. The original native summary correctly counted3 qualifying attacks throughout.",
+  "correction": "Require original independent airborne-contact outcome plus release and the unchanged8m/s,+vx,-1m/s gates; assert paired attack totals match original native summaries1 and3. Cache the two compressed pose arrays once to avoid repeated decompression.",
+  "initial_unpublished_artifacts_preserved": true,
+  "initial_source_sha256": "de193eaf0f982e0f0eadf65db9994b557e5a08128bf42f2805a94c412aacbb3a",
+  "native_training_or_assessment_repeated": false,
+  "original_native_metrics_changed": false,
+  "formal_acceptance": false
+}

@@ -1,0 +1,48 @@
+{
+  "checked_at": "2026-10-25T19:25:02.847412+00:00",
+  "exit_code": 2,
+  "verifier_result": {
+    "goal_id": "G07",
+    "status": "FAILED",
+    "contract_sha256": "66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807",
+    "checks": {
+      "G00": {
+        "passed": true,
+        "errors": []
+      },
+      "G01": {
+        "passed": true,
+        "errors": []
+      },
+      "G02": {
+        "passed": true,
+        "errors": []
+      },
+      "G03": {
+        "passed": true,
+        "errors": []
+      },
+      "G04": {
+        "passed": true,
+        "errors": []
+      },
+      "G05": {
+        "passed": true,
+        "errors": []
+      },
+      "G06": {
+        "passed": true,
+        "errors": []
+      },
+      "G07": {
+        "passed": false,
+        "errors": [
+          "Missing or invalid evidence: [Errno 2] No such file or directory: '/home/autodrive/LZQW/unitree_smash/reports/G07/evidence.json'"
+        ]
+      }
+    },
+    "scope": "Structure, hashes, dependencies and thresholds only; not simulation authenticity or GPU budget enforcement."
+  },
+  "stderr": "",
+  "scope": "Required goal registry check after frozen TRAIN diagnostic. The original formal G07 goal remains unproven; no evidence or threshold was fabricated."
+}
