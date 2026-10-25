@@ -13,11 +13,18 @@ initialization_options=p.add_mutually_exclusive_group()
 initialization_options.add_argument('--resume',type=Path)
 initialization_options.add_argument('--initialize-actor',type=Path,
     help='Explicitly transfer a compatible canonical public actor into a fresh joint-reward learner; no critic/Adam/physics/RNG/counter resume')
+initialization_options.add_argument('--initialize-centered-policy',type=Path,
+    help='Transfer an independently measured outer actor on the same fixed base into a fresh learner; no critic/Adam/physics/RNG/counter resume')
+p.add_argument('--centered-source-evaluation',type=Path,
+    help='Required original TRAIN128 native evaluation of --initialize-centered-policy')
 p.add_argument('--resize-ground',action='store_true',help='Explicitly fork a canonical learner onto a larger fresh ground batch; no old physical state restoration')
 p.add_argument('--num-envs',type=int,default=128)
 p.add_argument('--updates',type=int,default=8)
 p.add_argument('--seed',type=int,default=748501)
-AppLauncher.add_app_launcher_args(p);args=p.parse_args();app=AppLauncher(args).app
+AppLauncher.add_app_launcher_args(p);args=p.parse_args()
+if (args.initialize_centered_policy is None)!=(args.centered_source_evaluation is None):
+    p.error('Supply both --initialize-centered-policy and --centered-source-evaluation')
+app=AppLauncher(args).app
 
 import numpy as np
 import torch
@@ -79,6 +86,8 @@ def main():
         raise ValueError('Use a positive multiple of all128 fixed TRAIN cases')
     configuration=json.loads(args.config.read_text());scales=configuration['joint_scale_rad']
     mode=baseline_mode(configuration.get('base_controller_mode'))
+    if args.initialize_centered_policy is not None and mode!='frozen_public_policy':
+        raise ValueError('--initialize-centered-policy requires the same fixed learned baseline')
     base=torch.load(args.base_checkpoint,map_location='cpu',weights_only=False)
     source_verification=None
     if mode=='analytic':
@@ -135,6 +144,8 @@ def main():
             episode_trace_settings=episode_trace,
             frozen_baseline_source_verification=source_verification,
             initial_actor_checkpoint_sha256=digest(args.initialize_actor) if args.initialize_actor else None,
+            initial_centered_policy_sha256=digest(args.initialize_centered_policy) if args.initialize_centered_policy else None,
+            centered_source_evaluation=str(args.centered_source_evaluation) if args.centered_source_evaluation else None,
             resize_ground_requested=args.resize_ground,
             physics_dt_s=cfg.sim.dt,policy_dt_s=env.step_dt,formal_cases_read=False,
             formal_acceptance=False,scope='Native TRAIN learning across changing weights; no frozen-policy performance.'))
@@ -158,6 +169,11 @@ def main():
         elif args.initialize_actor:
             from scripts.initialize_residual_actor_v4 import initialize_actor
             initialization=initialize_actor(runner,args.initialize_actor)
+            adapter.controller.reset();adapter.mixer.reset();adapter._sync_reference()
+        elif args.initialize_centered_policy:
+            from scripts.initialize_centered_policy_v4 import initialize_centered_policy
+            initialization=initialize_centered_policy(runner,args.initialize_centered_policy,
+                args.centered_source_evaluation,base,ROOT)
             adapter.controller.reset();adapter.mixer.reset();adapter._sync_reference()
         else:
             output_layer=[m for m in runner.alg.policy.actor.modules() if isinstance(m,torch.nn.Linear)][-1]

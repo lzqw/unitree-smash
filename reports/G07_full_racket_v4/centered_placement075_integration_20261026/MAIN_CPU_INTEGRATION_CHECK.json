@@ -1,0 +1,31 @@
+{
+  "checked_at": "2026-10-25T23:07:47.371602+00:00",
+  "actual_command": [
+    "/home/autodrive/Isaac/env_isaaclab/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_initialize_centered_policy_v4.py",
+    "tests/test_initialize_residual_actor_v4.py",
+    "tests/test_centered_residual_baseline_v4.py",
+    "tests/test_full_racket_residual_v4.py"
+  ],
+  "environment": {
+    "CUDA_VISIBLE_DEVICES": "",
+    "OMP_NUM_THREADS": "2"
+  },
+  "exit_code": 0,
+  "stdout": "50 passed in 1.45s",
+  "execution_session": 12517,
+  "integrated_source_sha256": {
+    "scripts/initialize_centered_policy_v4.py": "f1891c2ba1aed199eb139b7a44f073475296257a45ab0299f6cc4d185e434abe",
+    "scripts/train_full_racket_residual_ppo_v4.py": "cb8391653391851150346af4eeeff32a526bd53b3a026efe439d546b2efeb76f",
+    "tests/test_initialize_centered_policy_v4.py": "d1a771f67e88aa551bc631d0319a5b1d9ce5d9f0c2a545bd4ab76fb17c1fb35f",
+    "configs/g07_full_racket_residual_ppo_centered_placement075_v4.json": "aee4e91dc2dd729a6f69ace7b7af626502477a0a9cc0e6fcaa8b247c1e13a41b",
+    "reports/G07_full_racket_v4/centered_placement075_pilot8_queue01/run.py": "95d97a8e973f8bfbb1388311566878e81a4fbaeec6d42d606eb1d3812a47c6f0"
+  },
+  "prepared_main_plan_sha256": "f571194cca581118c836bd3f8dd6381dec3b8e3c58df07b26aa4c7ff9f53cfa0",
+  "cpu_tests_are_not_native_performance": true,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
