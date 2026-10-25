@@ -49,13 +49,33 @@
     },
     "G07": {
       "state": "IN_PROGRESS",
-      "evidence": "reports/G07_full_racket_v4/centered_residual_pilot8_queue02/REVIEWED_PREVIOUS_FAILURE.json",
-      "notes": "冻结40原TRAIN128实测0接触/0空中/0恢复/0完整、NF0，退化结果和80秒/30秒真实失败视频已发布。按预登记选择保留原8版为固定基线。新增18关节增量学习试跑01在首个PPO更新后因日志属性缺少setter退出：实际262144步、actor仍预热、NF0；旧失败及原账本费用保留。修复通过主工作区85项CPU检查，准备完成3200条真实输入含逐更新日志清空回放后，用新目录02重新从零增量训练8次更新，再冻结TRAIN128及生成实际视频。正式400回合目标仍未通过。",
+      "evidence": "reports/G07_full_racket_v4/centered_residual_pilot8_queue02/LAUNCH_OBSERVATION.json",
+      "notes": "修复日志setter后，85项CPU与3200条真实公共输入回放通过，12次逐更新日志清空不改变指令。GPU0已通过原共享guard/ledger在新02目录启动2048环境×8次更新；源8策略固定、增量网络从零开始，不续用失败试跑的非canonical权重。此观察仅确认三个实际进程存在，尚未验证新的PPO更新或完成回合。原失败记录与费用保留，40版退化和8版基线真实视频已上传；正式目标未通过。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
-      "active_gpu_jobs": [],
+      "active_gpu_jobs": [
+        {
+          "observed_at": "2026-10-25T18:02:37.181433+00:00",
+          "workflow_pid": 1677672,
+          "workflow_session_id": 81807,
+          "guard_pid": 1677676,
+          "native_child_pid": 1677688,
+          "gpu": 0,
+          "training_output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_base8_n2048_probe8_02",
+          "source_launch_commit": "f54c12168a22df663310b597fb0ce95aae5d681e",
+          "guard_state": "RUNNING",
+          "actual_updates_verified": 0,
+          "native_initialization_receipt_observed": false,
+          "completed_training": false,
+          "original_main_guard_and_ledger": true,
+          "formal_cases_read": false,
+          "formal_acceptance": false,
+          "goal_complete": false,
+          "state": "RUNNING_NATIVE_CENTERED_PILOT8"
+        }
+      ],
       "queued_native_sequence": {
         "state_file": "reports/G07_full_racket_v4/residual_eval_queue_1250/state.json",
         "pid": 1560842,
