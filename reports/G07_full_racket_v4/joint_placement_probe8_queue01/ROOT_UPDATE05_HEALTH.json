@@ -1,0 +1,35 @@
+{
+  "checked_at": "2026-10-25T13:12:27.164939+00:00",
+  "actual_completed_updates": 5,
+  "actual_control_env_steps": 1310720,
+  "finite_model_and_Adam": true,
+  "diagnostic_checkpoint": "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01/ppo/model_4.pt",
+  "diagnostic_checkpoint_sha256": "a42a60d1aa0f5364a3bd1f7d09e6bf8fa230e1ca185ad23128792ef4919d8956",
+  "canonical_restart": false,
+  "Adam_step_histogram": {
+    "100.0": 8,
+    "60.0": 9
+  },
+  "runtime_reported_closed_counts": {
+    "completed_episodes": 2313,
+    "air": 133,
+    "conditional_recovery_count": 0,
+    "complete": 0,
+    "numerical_failures": 0
+  },
+  "closed_counts_independently_scored_in_this_check": false,
+  "first_ground_cohort_closed": 1585,
+  "first_ground_cohort_pending": 463,
+  "later_episode_closed_count": 728,
+  "source_partial_episodes_sha256_at_observation": "79fcbd9f959029d532837439a399309794e1b0e98a14e185bd75a4cc277f9262",
+  "partial_episode_scope": "Live mutable native log, no additional full snapshot taken here. The earlier update3 snapshot is preserved; original complete raw logs and independent scoring are required after training finishes.",
+  "progress_snapshot": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/UPDATE05_HEALTH_PROGRESS.json",
+  "progress_sha256": "f1d954d02a35f6dcabbfa70778f86061729a36e0d3a76506926a59cb9aaf416f",
+  "value_loss": 27.21171655654907,
+  "post_update_kl": 0.0036578429862856865,
+  "actual_clipped_action_fraction": 0.0,
+  "scope": "Ongoing native learning health only. Censored changing-policy counts are not a full initial cohort or frozen-policy performance.",
+  "frozen_policy_performance": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
