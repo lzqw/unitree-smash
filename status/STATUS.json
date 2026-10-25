@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/centered_residual_pilot8_queue02/FIXED_TRAIN128_RESULT.json",
-      "notes": "本轮新增量严格续训在实际update17闭合记录中出现1次完整训练成功：TRAIN111/LANE1519/EP3，800条原生100Hz全身/动作/公共输入，actor10至16，出球8.00235493m/s、vz−2.27961、首落[3.994049,−0.695709]、恢复4.10289秒、无违规。余量仅0.00235m/s和目标后沿5.95mm；实际拍上接触点速度0.36269m/s，不冒充高速挥拍。37.08秒真实视频保留另两例失败，1854帧全解码、15张实际画面检查；161167119字节权重/源码/4516闭合原始回合/100Hz轨迹包及视频均上传并下载SHA回验。GPU0同作业仍正常运行，最新global21、本作业3407872控制环境步、NF0，完整轨迹记录器正常。上述训练成功不继承为冻结成绩；最近新冻结8仍为0/128完整、26空中、13条件恢复、3合格攻击、NF0。原A/B各200及50/70/85门槛仍未通过。 已登记并启动中间冻结策略比较队列1697096/session52011，当前等待真实父流程1678986退出，未启动第二个原生GPU作业；原TRAIN128依次测16/24/32并与8/40比较，若40已达原门槛则跳过额外开发评估。1890条实际公共输入上的源8重建和中间16导出误差均0，属于CPU一致性而非新冻结成绩。196项源码/输入持有至该新队列退出，期间不可修改对应运行时。",
+      "notes": "本轮新增量严格续训在实际update17闭合记录中出现1次完整训练成功：TRAIN111/LANE1519/EP3，800条原生100Hz全身/动作/公共输入，actor10至16，出球8.00235493m/s、vz−2.27961、首落[3.994049,−0.695709]、恢复4.10289秒、无违规。余量仅0.00235m/s和目标后沿5.95mm；实际拍上接触点速度0.36269m/s，不冒充高速挥拍。37.08秒真实视频保留另两例失败，1854帧全解码、15张实际画面检查；161167119字节权重/源码/4516闭合原始回合/100Hz轨迹包及视频均上传并下载SHA回验。GPU0同作业仍正常运行，最新global25、本作业4456448控制环境步、NF0，完整轨迹记录器正常。上述训练成功不继承为冻结成绩；最近新冻结8仍为0/128完整、26空中、13条件恢复、3合格攻击、NF0。原A/B各200及50/70/85门槛仍未通过。 已登记并启动中间冻结策略比较队列1697096/session52011，当前等待真实父流程1678986退出，未启动第二个原生GPU作业；原TRAIN128依次测16/24/32并与8/40比较，若40已达原门槛则跳过额外开发评估。1890条实际公共输入上的源8重建和中间16导出误差均0，属于CPU一致性而非新冻结成绩。196项源码/输入持有至该新队列退出，期间不可修改对应运行时。 另在独立a676d58分支准备已测外层增量网络迁移接口，50项CPU检查通过、1890实际输入平均输出逐位一致，保持actor归一化并使用新critic/探索/Adam/计数；未集成或原生运行，CPU内存探针的0.75核宽度不是已选训练修订。主运行时196项持有输入/源码未变。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
@@ -58,7 +58,7 @@
       "active_gpu_jobs": [
         {
           "state": "RUNNING_NATIVE_CENTERED_RESUME32",
-          "observed_at": "2026-10-25T20:11:47.687915+00:00",
+          "observed_at": "2026-10-25T20:32:44.067301+00:00",
           "workflow_pid": 1678986,
           "workflow_session_id": 15135,
           "guard_pid": 1687054,
@@ -69,17 +69,17 @@
           "initial_iteration": 8,
           "target_iteration": 40,
           "requested_additional_updates": 32,
-          "latest_runtime_update": 21,
-          "current_job_actual_control_env_steps": 3407872,
+          "latest_runtime_update": 25,
+          "current_job_actual_control_env_steps": 4456448,
           "source_new_learner_steps": 2097152,
           "latest_independently_checked_resume_iteration": 15,
           "all17_Adam_states_preserved_and_advanced": true,
           "actual2048_ground_initialization_verified": true,
           "actual_trajectory_recording_enabled": true,
           "runtime_changing_policy_counts": {
-            "completed_episodes": 6603,
-            "air": 681,
-            "conditional_recovery_count": 304,
+            "completed_episodes": 8744,
+            "air": 921,
+            "conditional_recovery_count": 417,
             "complete": 2,
             "numerical_failures": 0
           },
@@ -5924,6 +5924,23 @@
         "CPU_source8_actor_reference_error": 0.0,
         "CPU_intermediate16_actor_export_error": 0.0,
         "evaluation_original_TRAIN128_noise_none_seed724201": true,
+        "formal_acceptance": false
+      },
+      "candidate_centered_policy_transfer": {
+        "worktree": "/home/autodrive/LZQW/unitree_smash_centered_transfer",
+        "branch": "g07-centered-policy-transfer-v4-20261026",
+        "commit": "a676d58417a960670494d7c2560e211d29bd5d91",
+        "report_url": "https://github.com/lzqw/unitree-smash/blob/a676d58417a960670494d7c2560e211d29bd5d91/reports/G07_full_racket_v4/centered_policy_transfer_candidate_20261026/REPORT.md",
+        "status": "CODE_READY_NATIVE_NOT_RUN",
+        "CPU_tests_passed": 50,
+        "actual_public_inputs_checked": 1890,
+        "source_outer_actor_mean_bitwise_preserved": true,
+        "source_actor_normalizer_count_preserved": 2097152,
+        "fresh_critic_and_exploration_and_Adam_preserved": true,
+        "actual_main_held_sources_unchanged": 196,
+        "main_runtime_integrated": false,
+        "new_native_execution": false,
+        "condition": "Wait for actual parent and intermediate selection owner exit; choose whether a changed-TRAIN-reward fresh learner is needed from measured results.",
         "formal_acceptance": false
       }
     },
