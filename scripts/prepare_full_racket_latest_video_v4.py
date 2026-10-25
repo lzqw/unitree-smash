@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Freeze selected completed native TRAIN episodes for the video renderer."""
+"""Freeze selected completed native training or evaluation episodes for video."""
 import argparse
 from datetime import datetime, timezone
 import hashlib
@@ -31,11 +31,12 @@ def main():
     for index, spec in enumerate(manifest['cases']):
         run = (REPORTS / spec['run']).resolve()
         assert run.parent == REPORTS.resolve(), 'Expected a native run in the report directory'
-        generation, env_id = spec['generation'], spec['env_id']
-        suffix = f'{generation:03}'
-        episode_path = run / f'episodes_{suffix}.json'
-        contact_path = run / f'contacts_{suffix}.json'
-        pose_path = run / f'all_first_episodes_{suffix}.npz'
+        evaluation=spec.get('source_type')=='evaluation'
+        generation, env_id = spec.get('generation'), spec['env_id']
+        suffix = '' if evaluation else f'_{generation:03}'
+        episode_path = run / f'episodes{suffix}.json'
+        contact_path = run / f'contacts{suffix}.json'
+        pose_path = run / f'all_first_episodes{suffix}.npz'
         rows = json.loads(episode_path.read_text())
         matching = [row for row in rows if row['env_id'] == env_id and row['episode_index'] == 0]
         assert len(matching) == 1, 'Only a completed, independent first episode is supported'
@@ -51,14 +52,16 @@ def main():
         assert selected['valid_first_episode'].all()
         assert np.isfinite(selected['link_poses']).all()
         assert np.allclose(np.diff(selected['episode_clock_s']), .02, atol=2e-6)
-        assert selected['episode_clock_s'][-1] <= row['terminal_native_state']['time_s'] + 1e-5
+        if not evaluation:
+            assert selected['episode_clock_s'][-1] <= row['terminal_native_state']['time_s'] + 1e-5
         np.savez_compressed(output / f'case{index}.npz', **selected)
         destination = output / spec['run']
         destination.mkdir(exist_ok=True)
-        required = ['geometry.json', 'geometry.npz', f'episodes_{suffix}.json',
-                    f'contacts_{suffix}.json', f'population_{suffix}.pt',
+        required = ['geometry.json', 'geometry.npz', f'episodes{suffix}.json',
+                    f'contacts{suffix}.json',
                     'source_snapshot.zip', 'source_hashes.json', 'asset_dependencies.json',
                     'dirty.patch']
+        required += ['metrics.json','initial_states.json'] if evaluation else [f'population{suffix}.pt']
         for name in required:
             source = run / name
             assert source.is_file(), source
@@ -73,6 +76,14 @@ def main():
         case = dict(spec, id=index, episode_index=0, row=row, contact=event,
                     selected_source_frames=ids.tolist(),
                     whole_source_job_complete=(run / 'completed.json').is_file())
+        if evaluation:
+            # Evaluator rows have no exact terminal pose. Preserve the row
+            # and explicitly identify the last 50Hz native sample instead.
+            case['last_recorded_state']=dict(time_s=float(selected['episode_clock_s'][-1]),
+                body_link_positions_m=selected['link_poses'][-1,:,:3].tolist(),
+                body_link_quaternions_wxyz=selected['link_poses'][-1,:,3:].tolist(),
+                ball_position_m=selected['ball_position_m'][-1].tolist(),
+                scope='Last valid native 50Hz sample; not exact terminal substep.')
         cases.append(case)
     manifest['cases'] = cases
     manifest['original_source_hashes'][str(args.spec.resolve().relative_to(ROOT))] = sha(args.spec)

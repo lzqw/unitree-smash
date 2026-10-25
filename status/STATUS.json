@@ -49,13 +49,34 @@
     },
     "G07": {
       "state": "IN_PROGRESS",
-      "evidence": "reports/G07_full_racket_v4/formal_and_robust_20261025.json",
-      "notes": "CEM28保留两条原生TRAIN65同回合完整扣杀里程碑，但独立评测已完成且未通过：candidate39正式A/B各200回合，A完整0/200、空中接触21/200、接触后恢复7/21、数值故障0；B完整0/200、空中接触9/200、接触后恢复1/9、数值故障0；较差面板B为0%、4.5%、11.1%、NF0。candidate30 TRAIN128为完整0/128；CEM29无噪声恢复搜索和CEM30 B级重置噪声搜索均无合法候选。已加入可追溯TRAIN重置噪声支持，默认旧路径不变；291项测试通过。",
+      "evidence": "reports/G07_full_racket_v4/CEM31_EVALUATION_AND_LATERAL_NEXT_20261025.json",
+      "notes": "CEM31 candidate5正式A/B各200已完成并未通过：A完整0/200、空中接触24/200、接触后恢复10/24；B完整0/200、空中接触6/200、接触后恢复1/6；NF0。TRAIN128为空中接触17/128、恢复9/17、攻击5、完整0。基于原生轨迹测得漏拍案例横向中位偏差约9cm，新增默认关闭的连续横向臂部修正，CPU800步关闭时逐位等价、开启时腿命令不变；291测试通过。CEM32正在GPU0执行14组gain/lead提案与2条参考，尚无性能结论。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
-      "active_gpu_jobs": [],
+      "active_gpu_jobs": [
+        {
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/cem32_lateral_feedback_1015",
+          "guard_pid": 1540471,
+          "child_pid": 1540508,
+          "state": "RUNNING",
+          "source_commit": "3281a68",
+          "candidates": 16,
+          "generations": 1,
+          "training_indices": [
+            0,
+            8,
+            16,
+            24,
+            64,
+            72,
+            80,
+            88
+          ],
+          "declared_control_env_steps": 102400
+        }
+      ],
       "queued_native_sequence": {
         "state_at_last_check": "NO_QUEUED_JOBS",
         "next_jobs": [],
@@ -64,11 +85,12 @@
       "native_air_string_contact_milestone": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
       "latest_native_training_summary": "reports/G07_full_racket_v4/contact_lead_gain_normal_candidate43_cem28/GENERATION3_SUMMARY.json",
       "latest_video": {
-        "path": "reports/G07_full_racket_v4/video/Current_effect_complete_smash_20261025_2030.mp4",
-        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_complete_smash_20261025_2030.mp4",
+        "path": "reports/G07_full_racket_v4/video/Current_formal_evaluation_cem31_20261025.mp4",
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_formal_evaluation_cem31_20261025.mp4",
         "duration_s": 31.0,
-        "sha256": "8578f97057d6d41da425617f90b9275d91f43b5597df060168accad56b257119",
-        "formal_acceptance": false
+        "sha256": "7cf90e3f145ebea785d2fbead2d01f9454eb63a28ad93f6bb4208a29fc70067b",
+        "formal_acceptance": false,
+        "scope": "Actual formal candidate5 evaluation episodes; original400-case failure counts shown."
       },
       "latest_completed_generation": {
         "had_contact": 76,
@@ -686,16 +708,30 @@
       "prepared_relative_prepose_feature": "reports/G07_full_racket_v4/relative_prepose38_ready04_1615/REPORT.json",
       "relative_prepose_cpu_verification": "reports/G07_full_racket_v4/relative_prepose_feature_ready02_1615/REPORT.json",
       "formal_evaluation": {
-        "lock": "reports/G07_full_racket_v4/formal_lock_candidate39_2120/LOCK.json",
-        "panel_a": "reports/G07_full_racket_v4/formal_panel_A_candidate39_2120/metrics.json",
-        "panel_b": "reports/G07_full_racket_v4/formal_panel_B_candidate39_2120/metrics.json",
-        "aggregate": "reports/G07_full_racket_v4/formal_aggregate_candidate39_2120",
+        "lock": "reports/G07_full_racket_v4/formal_lock_cem31_candidate5_0915/LOCK.json",
+        "panel_a": "reports/G07_full_racket_v4/formal_panel_A_cem31_candidate5_0915/metrics.json",
+        "panel_b": "reports/G07_full_racket_v4/formal_panel_B_cem31_candidate5_0915/metrics.json",
+        "aggregate": "reports/G07_full_racket_v4/formal_aggregate_cem31_candidate5_1005.json",
         "formal_acceptance": false
       },
       "distribution_adaptation": {
         "cem29_resume": "reports/G07_full_racket_v4/distribution_cem29_train0_7_resume1_0610/metrics.json",
         "cem30_robust": "reports/G07_full_racket_v4/robust_cem30_bnoise_0720/metrics.json",
         "reset_noise_support_commit": "4bbe3ae"
+      },
+      "prior_formal_evaluation": {
+        "lock": "reports/G07_full_racket_v4/formal_lock_candidate39_2120/LOCK.json",
+        "panel_a": "reports/G07_full_racket_v4/formal_panel_A_candidate39_2120/metrics.json",
+        "panel_b": "reports/G07_full_racket_v4/formal_panel_B_candidate39_2120/metrics.json",
+        "aggregate": "reports/G07_full_racket_v4/formal_aggregate_candidate39_2120",
+        "formal_acceptance": false
+      },
+      "previous_milestone_video": {
+        "path": "reports/G07_full_racket_v4/video/Current_effect_complete_smash_20261025_2030.mp4",
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_complete_smash_20261025_2030.mp4",
+        "duration_s": 31.0,
+        "sha256": "8578f97057d6d41da425617f90b9275d91f43b5597df060168accad56b257119",
+        "formal_acceptance": false
       }
     },
     "G08": {

@@ -1,0 +1,42 @@
+{
+  "scope": "Two selected independent formal evaluation episodes; full400-case rates retained separately.",
+  "opening_title": "当前独立评测录像｜攻击恢复与强扰动失败",
+  "opening_lines": [
+    "同一candidate5的A/B独立回合，侧视、俯视、原生接触与首次落点。",
+    "A面板：空中接触24/200；B面板：6/200；完整扣杀0/400。",
+    "精选两个案例便于看动作；完整400回合统计不由视频替代。"
+  ],
+  "closing_title": "正式A/B未达标｜完整成功0/400",
+  "closing_lines": [
+    "A：空中接触12.0%，接触后恢复41.7%；B：3.0%和16.7%。",
+    "本视频保留目标区失败与强扰动失败，不拼接回合。",
+    "正在训练连续横向闭环修正；尚无该新控制器的性能结论。"
+  ],
+  "evaluation_footer": "固定A/B各200已完成｜完整0/400｜精选案例不能代表通过",
+  "caveats": [
+    "Actual native50Hz poses; exact contact snapshots retained.",
+    "Terminal picture uses last valid50Hz sample and is explicitly labeled; no exact terminal pose is fabricated.",
+    "Case selection is illustrative only; full400-case aggregate is formal_aggregate_cem31_candidate5_1005.json.",
+    "New lateral-feedback CEM32 is not represented in these prior candidate5 trajectories."
+  ],
+  "cases": [
+    {
+      "run": "formal_panel_A_cem31_candidate5_0915",
+      "source_type": "evaluation",
+      "env_id": 24,
+      "title": "独立评测A｜攻击越网并恢复，首落偏出目标",
+      "subtitle": "CEM31 candidate5 / A面板固定案例24 / 原生全身轨迹",
+      "terminal_status": "完整扣杀失败｜首次落点超出原目标区",
+      "limitation": "出球8.24米/秒；首落x=4.363米，目标上界4米；独立评测完整0/400"
+    },
+    {
+      "run": "formal_panel_B_cem31_candidate5_0915",
+      "source_type": "evaluation",
+      "env_id": 62,
+      "title": "独立评测B｜真实拍线触球后失败",
+      "subtitle": "CEM31 candidate5 / B面板固定案例62 / 原生全身轨迹",
+      "terminal_status": "完整扣杀失败｜触网/恢复未通过",
+      "limitation": "保留强扰动失败案例；未与A面板回合拼成成功"
+    }
+  ]
+}

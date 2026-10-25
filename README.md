@@ -1,6 +1,10 @@
 # QuadSmash：Codex /goal 实施与训练任务包
 
-最新视频：[41秒真实空中攻击回球与同回合恢复](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_attack_recovery_20261024_1400.mp4)（41.44秒、1280×720、50fps）。CEM20候选50从地面自主起跳，在己方1.763米处实际拍线击球，出球8.10米/秒、向下1.27米/秒，越网后在对方场内首落，并完成3.68秒合格恢复，身体触地记录为0；首落x=4.702米，超过原目标上界约70厘米，完整扣杀仍失败。同策略另一来球漏球；另一参数虽命中目标但速度不足且身体触地，三例保持独立。含侧视、俯视、慢放、原生接触与首次落点。[轨迹、原始事件、精确权重和源码](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_attack_recovery_20261024_1400_evidence.zip)一并上传；2072帧解码与5附件SHA256核对通过。
+当前进度（2026-10-25）：CEM31 candidate5完成固定A/B各200回合，完整成功0/400；A空中接触12.0%、接触后恢复41.7%，B为3.0%和16.7%，数值故障0。
+
+[最新真实评测视频（31秒）](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_formal_evaluation_cem31_20261025.mp4)展示同策略的攻击越网恢复、目标落点失败及强扰动触网失败；全部1550帧解码通过。当前CEM32正在GPU0测试连续横向闭环修正，尚无新性能结论。
+
+此前视频：[41秒真实空中攻击回球与同回合恢复](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_attack_recovery_20261024_1400.mp4)（41.44秒、1280×720、50fps）。CEM20候选50从地面自主起跳，在己方1.763米处实际拍线击球，出球8.10米/秒、向下1.27米/秒，越网后在对方场内首落，并完成3.68秒合格恢复，身体触地记录为0；首落x=4.702米，超过原目标上界约70厘米，完整扣杀仍失败。同策略另一来球漏球；另一参数虽命中目标但速度不足且身体触地，三例保持独立。含侧视、俯视、慢放、原生接触与首次落点。[轨迹、原始事件、精确权重和源码](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_attack_recovery_20261024_1400_evidence.zip)一并上传；2072帧解码与5附件SHA256核对通过。
 
 最新[两代攻击恢复训练记录与38坐标新方案程序](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_attacking_recovery_two_generations_and_normal38_native_20261024_1425.zip)已上传并核对SHA256（192,690,446字节，437个归档成员）：保留两次同参数攻击恢复、完整失败落点、第三代339步中断、真实资源回执，以及新方案精确源码/输入/124项CPU检查/原生前100步。恢复时检出源码d1e7a5以获取原冻结来球文件，并解压此包和运行依赖。完整成功仍0，正式400未运行。
 

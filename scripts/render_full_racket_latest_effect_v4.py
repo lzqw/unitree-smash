@@ -71,7 +71,7 @@ def main():
             poses = np.asarray(event['body_link_poses_local'])
             ball, t = np.asarray(event['ball_position_m']), event['time_s']
         elif terminal:
-            state = row['terminal_native_state']
+            state = case.get('last_recorded_state') or row['terminal_native_state']
             poses = np.column_stack((state['body_link_positions_m'], state['body_link_quaternions_wxyz']))
             t = state['time_s']
             if row['launched'] and not row['ground_seen']:
@@ -116,6 +116,8 @@ def main():
         draw.text((18, 113), '侧视｜己方 ← 网 → 对方', font=small, fill='white')
         draw.text((790, 113), '俯视｜同一时刻', font=small, fill='white')
         mode = '原生接触子步定格' if exact else ('终止前原生状态' if terminal else ('0.25倍慢放' if slow else '正常速度'))
+        if terminal and case.get('last_recorded_state'):
+            mode = '末次有效50Hz采样｜非精确终止子步'
         if landing_freeze:
             mode = '首次落点事件 + 相邻50Hz全身采样'
         draw.rectangle((16, 548, 760, 584), fill=(18, 28, 43))
@@ -150,7 +152,7 @@ def main():
         footer = ('该独立回合完整扣杀成立｜整体正式A/B各200回合尚未运行'
                   if row['complete_smash'] else
                   '独立精选训练回合｜完整扣杀仍为0｜尚未正式评测A/B各200回合')
-        draw.text((20, 681), footer,
+        draw.text((20, 681), manifest.get('evaluation_footer',footer),
                   font=small, fill=(163, 188, 204))
         return picture
 
@@ -217,7 +219,7 @@ def main():
                 still(frame(i, index, landing_freeze=True), 1.5, 'first_landing', case_id=i,
                       native_event_time_s=case['row']['first_landing_time_s'], body_pose_time_s=float(times[index]))
             still(frame(i, terminal=True), 1.5, 'native_terminal', case_id=i)
-        still(card('当前仍未完成合格扣杀', manifest['closing_lines']), 2, 'result')
+        still(card(manifest.get('closing_title','当前仍未完成合格扣杀'), manifest['closing_lines']), 2, 'result')
 
     sources = [p for p in snapshot.rglob('*') if p.is_file()]
     sources += [Path(__file__), ROOT / 'scripts/render_full_racket_r3_effect.py',
