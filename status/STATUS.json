@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/centered_residual_pilot8_queue02/FIXED_TRAIN128_RESULT.json",
-      "notes": "本轮新增量严格续训在实际update17闭合记录中出现1次完整训练成功：TRAIN111/LANE1519/EP3，800条原生100Hz全身/动作/公共输入，actor10至16，出球8.00235493m/s、vz−2.27961、首落[3.994049,−0.695709]、恢复4.10289秒、无违规。余量仅0.00235m/s和目标后沿5.95mm；实际拍上接触点速度0.36269m/s，不冒充高速挥拍。37.08秒真实视频保留另两例失败，1854帧全解码、15张实际画面检查；161167119字节权重/源码/4516闭合原始回合/100Hz轨迹包及视频均上传并下载SHA回验。GPU0同作业仍正常运行，最新global18、本作业2621440控制环境步、NF0，完整轨迹记录器正常。上述训练成功不继承为冻结成绩；最近新冻结8仍为0/128完整、26空中、13条件恢复、3合格攻击、NF0。原A/B各200及50/70/85门槛仍未通过。",
+      "notes": "本轮新增量严格续训在实际update17闭合记录中出现1次完整训练成功：TRAIN111/LANE1519/EP3，800条原生100Hz全身/动作/公共输入，actor10至16，出球8.00235493m/s、vz−2.27961、首落[3.994049,−0.695709]、恢复4.10289秒、无违规。余量仅0.00235m/s和目标后沿5.95mm；实际拍上接触点速度0.36269m/s，不冒充高速挥拍。37.08秒真实视频保留另两例失败，1854帧全解码、15张实际画面检查；161167119字节权重/源码/4516闭合原始回合/100Hz轨迹包及视频均上传并下载SHA回验。GPU0同作业仍正常运行，最新global21、本作业3407872控制环境步、NF0，完整轨迹记录器正常。上述训练成功不继承为冻结成绩；最近新冻结8仍为0/128完整、26空中、13条件恢复、3合格攻击、NF0。原A/B各200及50/70/85门槛仍未通过。 已登记并启动中间冻结策略比较队列1697096/session52011，当前等待真实父流程1678986退出，未启动第二个原生GPU作业；原TRAIN128依次测16/24/32并与8/40比较，若40已达原门槛则跳过额外开发评估。1890条实际公共输入上的源8重建和中间16导出误差均0，属于CPU一致性而非新冻结成绩。196项源码/输入持有至该新队列退出，期间不可修改对应运行时。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
@@ -58,7 +58,7 @@
       "active_gpu_jobs": [
         {
           "state": "RUNNING_NATIVE_CENTERED_RESUME32",
-          "observed_at": "2026-10-25T19:58:05.335224+00:00",
+          "observed_at": "2026-10-25T20:11:47.687915+00:00",
           "workflow_pid": 1678986,
           "workflow_session_id": 15135,
           "guard_pid": 1687054,
@@ -69,18 +69,18 @@
           "initial_iteration": 8,
           "target_iteration": 40,
           "requested_additional_updates": 32,
-          "latest_runtime_update": 18,
-          "current_job_actual_control_env_steps": 2621440,
+          "latest_runtime_update": 21,
+          "current_job_actual_control_env_steps": 3407872,
           "source_new_learner_steps": 2097152,
           "latest_independently_checked_resume_iteration": 15,
           "all17_Adam_states_preserved_and_advanced": true,
           "actual2048_ground_initialization_verified": true,
           "actual_trajectory_recording_enabled": true,
           "runtime_changing_policy_counts": {
-            "completed_episodes": 4942,
-            "air": 490,
-            "conditional_recovery_count": 193,
-            "complete": 1,
+            "completed_episodes": 6603,
+            "air": 681,
+            "conditional_recovery_count": 304,
+            "complete": 2,
             "numerical_failures": 0
           },
           "verification": "reports/G07_full_racket_v4/centered_residual_resume32_queue01/ROOT_ACTUAL_UPDATE15_FIRST_COHORT_CHECK.json",
@@ -5898,6 +5898,33 @@
         "frozen_policy_performance": false,
         "formal_acceptance": false,
         "goal_complete": false
+      },
+      "intermediate_selection_queue": {
+        "state_file": "reports/G07_full_racket_v4/centered_intermediate_selection_queue01/state.json",
+        "plan": "reports/G07_full_racket_v4/centered_intermediate_selection_queue01/PREDECLARED_PLAN.json",
+        "queue_pid": 1697096,
+        "session_id": 52011,
+        "verified_live": true,
+        "state_at_observation": "WAITING_FOR_ACTUAL_PARENT_EXIT",
+        "actual_parent_pid": 1678986,
+        "registered_intermediate_iterations": [
+          16,
+          24,
+          32
+        ],
+        "baseline_iterations": [
+          8,
+          40
+        ],
+        "skip_if_actual40_meets_original_readiness": true,
+        "source_hashes_held_until_queue_exit": 196,
+        "original_main_shared_GPU0_guard_and_ledger_only": true,
+        "new_native_job_started": false,
+        "CPU_actual_public_samples": 1890,
+        "CPU_source8_actor_reference_error": 0.0,
+        "CPU_intermediate16_actor_export_error": 0.0,
+        "evaluation_original_TRAIN128_noise_none_seed724201": true,
+        "formal_acceptance": false
       }
     },
     "G08": {
