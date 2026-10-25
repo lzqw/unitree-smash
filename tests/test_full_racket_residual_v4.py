@@ -20,6 +20,17 @@ def test_zero_residual_is_bitwise_base_after_fresh_reset():
         assert torch.equal(result,base) and torch.equal(public,before)
 
 
+def test_reward_center_override_preserves_the_actual_teacher_and_face():
+    from quadsmash.rl.full_racket_residual_ppo_v4 import reward_contact_offset
+    for face in [1.,-1.]:
+        teacher=torch.tensor([face*.0256,0.,.1]);before=teacher.clone()
+        old=reward_contact_offset(teacher,False)
+        centered=reward_contact_offset(teacher,True)
+        assert old is teacher and torch.equal(teacher,before)
+        torch.testing.assert_close(centered,torch.tensor([face*.0256,0.,0.]))
+        assert centered.data_ptr()!=teacher.data_ptr()
+
+
 def test_nonzero_residual_respects_original_bounds_and_arm_slew():
     public,default,limits=fixture();m=ResidualActionMixerV4(2,'cpu',[.2]*18);last=torch.zeros(2,6)
     for i in range(40):

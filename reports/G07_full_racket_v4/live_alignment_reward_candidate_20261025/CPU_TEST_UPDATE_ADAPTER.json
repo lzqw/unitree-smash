@@ -1,0 +1,30 @@
+{
+  "checked_at": "2026-10-25T16:14:27.403138+00:00",
+  "command": [
+    "/home/autodrive/Isaac/env_isaaclab/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_measured_string_alignment_reward_v4.py",
+    "tests/test_measured_joint_placement_reward_v4.py",
+    "tests/test_initialize_residual_actor_v4.py",
+    "tests/test_full_racket_residual_v4.py",
+    "tests/test_residual_ground_resize_v4.py",
+    "--junitxml",
+    "/home/autodrive/LZQW/unitree_smash_live_alignment/reports/G07_full_racket_v4/live_alignment_reward_candidate_20261025/CPU_TEST_UPDATE_ADAPTER.xml"
+  ],
+  "exit_code": 0,
+  "stdout": "...................................................................      [100%]\n67 passed in 1.30s\n",
+  "scope": "CPU tests after correcting the adapter reward-center reference. No native v3 run or acceptance.",
+  "source_sha256": {
+    "tests/test_measured_string_alignment_reward_v4.py": "fbde0681c5f2ada340214d367d08875e416745232e892a76d240b1e03646d517",
+    "tests/test_measured_joint_placement_reward_v4.py": "7922bbde42f96f5de4db6223b6c09781156a0b7b1006e94f568afa7c8b6b641c",
+    "tests/test_initialize_residual_actor_v4.py": "6f14c4e6e4848f62d0695d7a6e93720c6c87d273dc20ea5c8b1525a059d5c779",
+    "tests/test_full_racket_residual_v4.py": "a9bb503e1b29649f7e112197007fb710b209875350b0099fe421f43869dac0d2",
+    "tests/test_residual_ground_resize_v4.py": "4de06ea964ed6c910b0fc0f5cc37fed11c01a1e93c0b44994bf3f2f61e013673",
+    "quadsmash/rl/full_racket_residual_ppo_v4.py": "5fed1b1c863bac1332e4711ec02184332f0827c7a406c3840d089ff7e16adf7c"
+  },
+  "native_execution": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}

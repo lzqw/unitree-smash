@@ -1,5 +1,7 @@
 # QuadSmash：Codex /goal 实施与训练任务包
 
+此候选分支的[最新接线与轨迹记录检查](reports/G07_full_racket_v4/live_alignment_reward_candidate_20261025/WIRING_ADAPTER_TRACE_UPDATE.json)：73项CPU检查通过，包含自动重置与记录失败时的动作/观测/奖励一致性；实际1600条公共输入可无损重建，200条实际观测上的13个actor张量迁移输出误差0。新增可选100Hz训练全身轨迹记录及原生记录审查程序，以保留今后真实训练成功和失败。旧两例公共输入没有发生重置，真实重置记录仍待原生验证。此分支尚未执行v3原生训练，不是G07通过证据；主工作区先完成冻结40评测、两种原登记实时修正试验和CPU视频，所有源码持有进程退出后再按真实结果决定集成与训练。
+
 2026-10-25 续训实核：[新学习器第21次更新](reports/G07_full_racket_v4/joint_resume_health_20261025/REPORT.json)已完成本作业3407872控制环境步，累计新学习器5505024步；独立重算7001个闭合训练回合为606空中、231条件恢复、0完整、NF0。17项Adam状态均比canonical8增加260步，两套归一化计数各增加3407872，actor权重确实更新；这些是变化中策略的训练数据。GPU0继续原32次更新任务与随后第40次固定TRAIN128评测。
 
 [71次实际接触诊断](reports/G07_full_racket_v4/joint8_contact_centering_20261025/REPORT.json)及[接触分布图](reports/G07_full_racket_v4/joint8_contact_centering_20261025/contact_distribution.png)显示20次拍线、51次拍框集中在上缘；当前教师瞄准点为拍头中心上方0.10米，运动学拍头位置误差最大0.0163毫米。历史0.07米静态重定向原生搜索仍0完整，已保留失败结果。新的[实时来球/拍头切向修正试验](reports/G07_full_racket_v4/live_tangent_trial_20261025/PREPARATION.json)在1600条实际观测和800步完整控制器回放中通过有限性、导出一致性、腿部指令一致性和原5rad/s目标限速检查；两种强度均保持`native_execution=false`。观察队列已启动，等待当前原生训练及冻结评测真正结束，若尚未达到原正式门槛，再逐个执行全部原TRAIN128；尚无新试验的PhysX成绩。

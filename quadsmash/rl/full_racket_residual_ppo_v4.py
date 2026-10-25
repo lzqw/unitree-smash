@@ -14,6 +14,13 @@ class ResidualTrainingInterrupted(Exception):
     pass
 
 
+def reward_contact_offset(teacher_offset,live_alignment_enabled):
+    """Keep the new reward at the real strings center without editing teacher commands."""
+    if not live_alignment_enabled:return teacher_offset
+    result=teacher_offset.clone();result[1:]=0.
+    return result
+
+
 class ResidualRslAdapterV4:
     def __init__(self,wrapped,base_checkpoint,joint_scale_rad,stop_requested=lambda:False):
         self.wrapped=wrapped;self.base_checkpoint=base_checkpoint
@@ -24,7 +31,9 @@ class ResidualRslAdapterV4:
         self.limits=env.robot.data.joint_pos_limits[0,env.joint_ids]
         self.stop_requested=stop_requested;self.total_control_env_steps=0
         self.last_record_count=len(env.rally_records)
-        env.reward_offset.copy_(self.controller.teacher.contact_offset)
+        self.trace_recorder=None;self.trace_iteration=0;self.trace_contact_cursor=len(env.contact_records)
+        env.reward_offset.copy_(reward_contact_offset(self.controller.teacher.contact_offset,
+            getattr(env,'live_alignment_reward',None) is not None))
         env.reward_velocity.copy_(self.controller.teacher.velocity_world)
         axes=torch.eye(3,device=self.device)
         n=contact_normal_body(self.controller.parameters,self.controller.teacher.normal_world,
@@ -47,6 +56,9 @@ class ResidualRslAdapterV4:
         env.reward_plan_valid.copy_(self.controller.planned)
 
     def reset(self):
+        if self.trace_recorder is not None:
+            try:self.trace_recorder.reset()
+            except Exception as error:self.trace_recorder.disable(error)
         observation,extras=self.wrapped.reset()
         self.controller.reset();self.mixer.reset();self._sync_reference()
         self.last_observation=observation
@@ -62,6 +74,16 @@ class ResidualRslAdapterV4:
         self._sync_reference()
         self.unwrapped.residual_raw.copy_(residual.detach().clamp(-1,1))
         actual=self.mixer.action(base,residual,self.last_observation['policy'],self.default,self.limits)
+        if self.trace_recorder is not None and self.trace_recorder.disabled_error is None:
+            try:
+                env=self.unwrapped;data=env.robot.data
+                array=lambda tensor:tensor.detach().cpu().numpy()
+                poses=torch.cat((data.body_link_pos_w-env.scene.env_origins[:,None],data.body_link_quat_w),-1)
+                self.trace_recorder.append(public=array(self.last_observation['policy']),
+                    episode_ids=array(env.episode_index),residual=array(residual),base=array(base),actual=array(actual),
+                    poses=array(poses),ball=array(env.shuttle.data.root_pos_w-env.scene.env_origins),
+                    iteration=self.trace_iteration)
+            except Exception as error:self.trace_recorder.disable(error)
         observation,reward,dones,extras=self.wrapped.step(actual)
         self.total_control_env_steps+=self.num_envs
         self.last_observation=observation
@@ -72,10 +94,26 @@ class ResidualRslAdapterV4:
             raise RuntimeError('Nonfinite native residual rollout')
         if bool(((self.unwrapped.sweep_misses+self.unwrapped.sweep_unresolved)>0).any()):
             raise RuntimeError('Native numerical contact audit failure; no performance accepted')
-        new_records=self.unwrapped.rally_records[self.last_record_count:]
+        record_start=self.last_record_count
+        new_records=self.unwrapped.rally_records[record_start:]
         self.last_record_count=len(self.unwrapped.rally_records)
         if any(row['numerical_failures'] for row in new_records):
             raise RuntimeError('Numerical audit failed in an automatically reset native episode')
+        if self.trace_recorder is not None and self.trace_recorder.disabled_error is None:
+            try:
+                env=self.unwrapped
+                self.trace_recorder.record_contacts(env.contact_records[self.trace_contact_cursor:])
+                self.trace_contact_cursor=len(env.contact_records)
+                assert len(env.rally_records)==len(env.episode_records)
+                indices=self.trace_recorder.provenance['training_indices'];joined=[]
+                for offset,row in enumerate(new_records):
+                    jump=env.episode_records[record_start+offset];lane=row['env_id']
+                    assert jump['env_id']==lane
+                    index=indices[lane%len(indices)]
+                    joined.append(dict(row,jump=jump,source_training_index=index,ground_init=True,
+                        case_id=f'TRAIN{index}_LANE{lane}_EP{row["episode_index"]}'))
+                self.trace_recorder.finish(joined)
+            except Exception as error:self.trace_recorder.disable(error)
         return observation,reward,dones,extras
 
 
