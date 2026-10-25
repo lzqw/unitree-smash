@@ -1,0 +1,102 @@
+{
+  "created_at": "2026-10-25T15:30:37.177456+00:00",
+  "status": "CODE_READY",
+  "scope": "Isolated opt-in TRAIN reward candidate.66 CPU tests and actual canonical actor-transfer/event replay checks completed; no v3 native training or frozen evaluation.",
+  "worktree": "/home/autodrive/LZQW/unitree_smash_live_alignment",
+  "branch": "g07-live-string-attack-reward-v4-20261025",
+  "base_commit": "d4f35a1ea7bbd0e4c58119f0152b9d0f1c6e7834",
+  "hypothesis": "Current teacher/static position shaping favors string_uv_z0.10m, and v1/v2 still pay a20-point target event for slow air returns. Replace upper-UV position shaping with a potential from present measured strings-center geometry, couple target events to the original attack predicate, and add bounded measured release progress plus a research frame penalty.",
+  "changes": {
+    "physical_geometry_mass_actuator_rules_protocol_thresholds": false,
+    "legacy_v1_v2_configs_and_contracts_unchanged": true,
+    "new_mode_requires_explicit_config": true,
+    "actor_inputs_still794_public_values": true,
+    "live_potential": "discount*phi(current)-phi(previous), actual native ball/tool geometry, no forecast; phi zero at contact/fault/ground/terminal.",
+    "continuous_release_progress": "At most15 TRAIN points, actual released legal air return with positive vx; speed/8 and downward/1 progress. This is shaping, not an attack label.",
+    "target_event": "Original20-point target bonus additionally requires unchanged actual attack norm>=8,vx>0,vz<=-1.",
+    "frame_penalty": "One5-point TRAIN penalty per actual frame-hit episode; never called a BWF fault.",
+    "native_telemetry": "Actual paid new-component sums in each native job; the old logs are not retrospectively claimed as such."
+  },
+  "CPU_tests": {
+    "executed_completed_session_id": 39036,
+    "command": [
+      "/home/autodrive/Isaac/env_isaaclab/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_measured_string_alignment_reward_v4.py",
+      "tests/test_measured_joint_placement_reward_v4.py",
+      "tests/test_initialize_residual_actor_v4.py",
+      "tests/test_full_racket_residual_v4.py",
+      "tests/test_residual_ground_resize_v4.py"
+    ],
+    "exit_code": 0,
+    "stdout": "..................................................................       [100%]\n66 passed in 1.42s\n",
+    "passed_tests": 66,
+    "scope": "Actual completed CPU tests; no native simulation or policy-performance acceptance.",
+    "test_source_sha256": {
+      "tests/test_measured_string_alignment_reward_v4.py": "fbde0681c5f2ada340214d367d08875e416745232e892a76d240b1e03646d517",
+      "tests/test_measured_joint_placement_reward_v4.py": "7922bbde42f96f5de4db6223b6c09781156a0b7b1006e94f568afa7c8b6b641c",
+      "tests/test_initialize_residual_actor_v4.py": "6f14c4e6e4848f62d0695d7a6e93720c6c87d273dc20ea5c8b1525a059d5c779",
+      "tests/test_full_racket_residual_v4.py": "2fcdbf7baf44564cf46d4f7e4291df7044b3be51ca3a02d4ea3fa33a662af905",
+      "tests/test_residual_ground_resize_v4.py": "4de06ea964ed6c910b0fc0f5cc37fed11c01a1e93c0b44994bf3f2f61e013673"
+    },
+    "formal_acceptance": false
+  },
+  "actual_canonical_actor_check": {
+    "source_iteration": 8,
+    "observations": 200,
+    "transferred_tensors": 13,
+    "actor_output_max_error": 0.0,
+    "critic_and_critic_normalizer_fresh": true,
+    "Adam_empty": true,
+    "no_physics_or_counter_restore": true
+  },
+  "terminal_replays": [
+    {
+      "source_run": "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01",
+      "episodes": 4039,
+      "original_independent_counts": {
+        "air": 303,
+        "conditional_recovery": 82,
+        "complete": 0
+      },
+      "terminal_flag_old_target_eligible": 21,
+      "terminal_flag_new_attack_target_eligible": 0,
+      "terminal_flag_soft_targets_removed": 21,
+      "retrospective_release_progress_positive": 185,
+      "retrospective_release_progress_sum": 1906.8878173828125,
+      "retrospective_frame_penalty_sum": -1865.0,
+      "actual_per_control_paid_rewards_reconstructed": false
+    },
+    {
+      "source_run": "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01",
+      "episodes": 128,
+      "original_independent_counts": {
+        "air": 20,
+        "conditional_recovery": 12,
+        "complete": 0
+      },
+      "terminal_flag_old_target_eligible": 8,
+      "terminal_flag_new_attack_target_eligible": 0,
+      "terminal_flag_soft_targets_removed": 8,
+      "retrospective_release_progress_positive": 17,
+      "retrospective_release_progress_sum": 211.245849609375,
+      "retrospective_frame_penalty_sum": -255.0,
+      "actual_per_control_paid_rewards_reconstructed": false
+    }
+  ],
+  "next_action": "Wait until all existing main native/trial/video source owners have actually exited. Review their real fixed results; if original formal readiness remains unmet, integrate this candidate into the main worktree, then launch a bounded new learner with the existing main GPU0 guard and original shared ledger. Never start a second ledger/guard from this isolated worktree. Choose an actually canonical neural checkpoint; an analytic exported trial is not a substitute canonical source.",
+  "source_sha256": {
+    "quadsmash/control/measured_string_alignment_reward_v4.py": "ee76cd0676b9751d0417af1fecfedcce53f409b5021308dcd69fc76ac54d1b79",
+    "quadsmash/tasks/stand/full_racket_residual_env_v4.py": "b4ddf1a5c96aba39c8cf486b40f67c643fdd4292b499024ea7a5e8bb6112d913",
+    "scripts/train_full_racket_residual_ppo_v4.py": "14f0278ab5509fafc286f30dd43f73357c4223e0f259a9f45065a41104c14e0e",
+    "scripts/initialize_residual_actor_v4.py": "6637a00b28866862573958bbb029430ce2e03c6c8b33bef5b3a2d1e0e0741aca",
+    "scripts/check_live_alignment_training_cpu_v4.py": "f6799f922268df69b588b92ac741c6bc56b7177b9e2df7209cb1db3064379ebc",
+    "configs/g07_full_racket_residual_ppo_live_alignment_v4.json": "bccf267d5c3ddf5b0b33e5b1b456d3440a811c97f84ae938cb7e1f3d0547382d"
+  },
+  "native_execution": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}

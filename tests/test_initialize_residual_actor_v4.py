@@ -87,3 +87,43 @@ def test_existing_learner_counters_cannot_be_discarded_by_actor_initialization()
         alg=SimpleNamespace(optimizer=SimpleNamespace(state={})))
     with pytest.raises(ValueError, match='fresh learner'):
         transfer.initialize_actor(runner, 'must-not-be-read.pt')
+
+
+def alignment_contract(contract):
+    from quadsmash.control.measured_string_alignment_reward_v4 import REWARD_VERSION as VERSION
+    return dict(copy.deepcopy(contract), reward_version=VERSION,
+        live_alignment_reward=dict(contact_potential_weight=5., normal_distance_scale_m=.2,
+            attack_progress_weight=15., frame_penalty=5., discount=.997),
+        target_event_requires_actual_attack=True, fixed_upper_uv_position_shaping=False)
+
+
+def test_v3_explicit_transfer_still_selects_only_public_actor_not_old_critic():
+    _, _, target, state, old_contract, interface = example()
+    contract = alignment_contract(old_contract)
+    before = {key:value.clone() for key,value in target.state_dict().items()}
+    selected = transfer.select_actor_state(state, interface, contract, target.state_dict())
+    assert selected and all(transfer.actor_key(key) for key in selected)
+    assert not any('critic' in key for key in selected)
+    merged = target.state_dict(); merged.update(selected); target.load_state_dict(merged)
+    for key,value in target.state_dict().items():
+        assert torch.equal(value, state['model_state_dict'][key] if transfer.actor_key(key) else before[key])
+
+
+@pytest.mark.parametrize('change', ['missing_settings', 'missing_attack_gate', 'old_position_enabled', 'wrong_version'])
+def test_v3_cannot_be_enabled_with_an_incomplete_or_v2_labeled_contract(change):
+    _, _, target, state, old_contract, interface = example()
+    contract = alignment_contract(old_contract)
+    if change == 'missing_settings': del contract['live_alignment_reward']
+    elif change == 'missing_attack_gate': del contract['target_event_requires_actual_attack']
+    elif change == 'old_position_enabled': contract['fixed_upper_uv_position_shaping'] = True
+    elif change == 'wrong_version': contract['reward_version'] = REWARD_VERSION
+    with pytest.raises(ValueError):
+        transfer.select_actor_state(state, interface, contract, target.state_dict())
+
+
+def test_v3_reward_and_actor_initialization_do_not_authorize_cross_reward_resume():
+    _, _, _, _, v2, _ = example()
+    v3 = alignment_contract(v2)
+    assert training_signature({'residual_contract':v2}) != training_signature({'residual_contract':v3})
+    changed = copy.deepcopy(v3); changed['live_alignment_reward']['frame_penalty'] = 6.
+    assert training_signature({'residual_contract':changed}) != training_signature({'residual_contract':v3})

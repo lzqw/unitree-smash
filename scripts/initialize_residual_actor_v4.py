@@ -10,6 +10,7 @@ from pathlib import Path
 import torch
 
 from quadsmash.control.measured_joint_placement_reward_v4 import REWARD_VERSION, placement_settings
+from quadsmash.control.measured_string_alignment_reward_v4 import REWARD_VERSION as ALIGNMENT_REWARD_VERSION,alignment_settings
 from quadsmash.rl.native_checkpoint import SCHEMA, interface, training_signature
 
 
@@ -33,9 +34,17 @@ def select_actor_state(state, current_interface, target_contract, current_model)
     for key in ['base_policy_sha256', 'protocol_sha256', 'joint_scale_rad', 'event_weights']:
         if key not in source_contract or source_contract[key] != target_contract.get(key):
             raise ValueError('Actor transfer changes a compatible-task constraint: ' + key)
-    if (target_contract.get('reward_version') != REWARD_VERSION
+    version=target_contract.get('reward_version')
+    if (version not in [REWARD_VERSION,ALIGNMENT_REWARD_VERSION]
             or placement_settings(target_contract.get('joint_placement_reward')) is None):
         raise ValueError('Use the explicit opt-in joint-placement reward contract')
+    alignment=alignment_settings(target_contract.get('live_alignment_reward'))
+    if version==ALIGNMENT_REWARD_VERSION:
+        if (alignment is None or target_contract.get('target_event_requires_actual_attack') is not True
+                or target_contract.get('fixed_upper_uv_position_shaping') is not False):
+            raise ValueError('Use the complete opt-in measured strings/attack contract')
+    elif alignment is not None:
+        raise ValueError('Measured strings/attack settings require their own reward version')
     environment = native.get('environment', {})
     clock = environment.get('tensors', {}).get('episode_length_buf')
     count = environment.get('num_envs', 0)

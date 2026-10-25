@@ -27,6 +27,7 @@ from quadsmash.tasks.stand.full_racket_residual_env_v4 import FullRacketResidual
 from quadsmash.control.full_racket_train_evaluation_v4 import training_cases
 from quadsmash.control.full_racket_residual_reward_v4 import EVENT_WEIGHTS
 from quadsmash.control.measured_joint_placement_reward_v4 import placement_settings,REWARD_VERSION
+from quadsmash.control.measured_string_alignment_reward_v4 import alignment_settings,REWARD_VERSION as ALIGNMENT_REWARD_VERSION
 from quadsmash.rl.native_ppo import NativeRunner
 from quadsmash.rl.full_racket_residual_ppo_v4 import (
     ResidualRslAdapterV4,ResidualTrainingInterrupted,export_residual_policy)
@@ -85,6 +86,12 @@ def main():
         if digest(ROOT/name)!=expected:raise ValueError('Physical config changed: '+name)
     configuration=json.loads(args.config.read_text());scales=configuration['joint_scale_rad']
     joint_placement=placement_settings(configuration.get('joint_placement_reward'))
+    live_alignment=alignment_settings(configuration.get('live_alignment_reward'))
+    if live_alignment is not None:
+        if joint_placement is None:
+            raise ValueError('Measured strings/attack shaping requires explicit joint placement')
+        if live_alignment['discount']!=configuration['runner']['algorithm']['gamma']:
+            raise ValueError('Potential discount must equal the actual learner gamma')
     if args.initialize_actor is not None and joint_placement is None:
         raise ValueError('--initialize-actor requires the explicit joint-placement reward config')
     contract=dict(base_policy_sha256=digest(args.base_checkpoint),protocol_sha256=digest(protocol_path),
@@ -92,13 +99,16 @@ def main():
         actor_warmup_updates=configuration['actor_warmup_updates'],seed=args.seed)
     if joint_placement is not None:
         contract.update(reward_version=REWARD_VERSION,joint_placement_reward=joint_placement)
+    if live_alignment is not None:
+        contract.update(reward_version=ALIGNMENT_REWARD_VERSION,live_alignment_reward=live_alignment,
+            target_event_requires_actual_attack=True,fixed_upper_uv_position_shaping=False)
     train_cfg=copy.deepcopy(configuration['runner']);train_cfg['seed']=args.seed;train_cfg['residual_contract']=contract
     if train_cfg['obs_groups']['policy']!=['policy'] or train_cfg['policy']['class_name']!='ActorCritic' or train_cfg['policy']['noise_std_type']!='log':
         raise ValueError('This adapter requires the declared public-only feedforward log-std actor')
     cfg=full_racket_cfg(args.num_envs,protocol['physics_dt_s']);cfg.seed=args.seed
     cfg.episode_length_s=protocol['episode_seconds']
     env=FullRacketResidualTrainingEnvV4(cfg,cases=cases*(args.num_envs//len(cases)),
-        continue_after_miss=True,joint_placement_reward=joint_placement)
+        continue_after_miss=True,joint_placement_reward=joint_placement,live_alignment_reward=live_alignment)
     wrapped=RslRlVecEnvWrapper(env,clip_actions=None)
     adapter=ResidualRslAdapterV4(wrapped,base,scales,lambda:stopping)
     try:
@@ -157,6 +167,8 @@ def main():
             entry=dict(update=runner.current_learning_iteration,actor_warmup=not train_actor,
                 actual_control_env_steps=adapter.total_control_env_steps,**counts,
                 losses=runner.alg.last_update_stats,formal_acceptance=False)
+            if env.live_alignment_reward is not None:
+                entry['actual_paid_alignment_rewards']=env.live_alignment_reward.statistics()
             history.append(entry);atomic_json(args.output/'progress.json',entry)
             atomic_json(args.output/'episodes.partial.json',rows)
             print(json.dumps(entry),flush=True)
