@@ -1,0 +1,24 @@
+--- reports/G07_full_racket_v4/joint_placement_resume32_queue01/run.py
++++ reports/G07_full_racket_v4/joint_placement_iter40_recovery_20261026/run.py
+@@ -46,8 +46,19 @@
+     assert np.max(abs(np.asarray(ground['joint_velocity_rad_s']))) <= 1e-5
+     rows = core.read(TRAIN / 'episodes.json')
+     assert core.sha(TRAIN / 'episodes.json') == core.sha(TRAIN / 'episodes.partial.json')
+-    assert {r['env_id'] for r in rows if r['episode_index'] == 0} == set(range(NUM_ENVS))
+-    assert sum(r['episode_index'] == 0 for r in rows) == NUM_ENVS
++    # A strict resume preserves actual per-lane episode identifiers. Derive
++    # each first expected identifier from the real source canonical checkpoint.
++    source = torch.load(probe.TRAIN / 'checkpoint.pt', map_location='cpu', weights_only=False)
++    initial_ids = source['native']['environment']['tensors']['episode_index'].cpu().numpy()
++    final_ids = native['native']['environment']['tensors']['episode_index'].cpu().numpy()
++    assert initial_ids.shape == final_ids.shape == (NUM_ENVS,)
++    seen = [[] for _ in range(NUM_ENVS)]
++    for row in rows:
++        assert type(row['env_id']) is int and 0 <= row['env_id'] < NUM_ENVS
++        seen[row['env_id']].append(row['episode_index'])
++    assert all(seen), 'Every actual native lane must have closed an episode'
++    assert all(ids == list(range(int(initial_ids[lane]), int(final_ids[lane])))
++               for lane, ids in enumerate(seen)), 'Missing, duplicated or reordered native episodes'
+     assert all(r['ground_init'] and r['source_training_index'] == r['env_id'] % 128 for r in rows)
+     outcomes = [independent_episode(row, protocol) for row in rows]
+     counts = dict(completed_episodes=len(rows), air=sum(r['airborne_contact'] for r in outcomes),

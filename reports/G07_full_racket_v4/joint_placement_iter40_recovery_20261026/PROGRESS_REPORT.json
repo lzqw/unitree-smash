@@ -1,0 +1,107 @@
+{
+  "created_at": "2026-10-25T16:37:56.391155+00:00",
+  "scope": "Current independently checked training and live frozen-assessment recovery; not full G07 acceptance.",
+  "training": {
+    "checked_at": "2026-10-25T16:29:47.045069+00:00",
+    "iteration": 40,
+    "source_checkpoint_sha256": "10bf6c026a39e3ea01bf08425029ba78a906e573051e9bc3bcf26ccd37373cb0",
+    "checkpoint_sha256": "62f4e50fb72d8c9c3c9583220aad54761a0482044febd07750e1cb95c20ccca2",
+    "policy_sha256": "99be44acef2b84dd836023d47bfb1d141d913bb31a0ec8ebbaad5db0d9775b45",
+    "actual_control_env_steps": 8388608,
+    "cumulative_new_learner_control_env_steps": 10485760,
+    "actual_gpu_hours": 2.753516433197203,
+    "num_envs": 2048,
+    "initialization": {
+      "mode": "strict_canonical_ground_resume",
+      "num_envs": 2048,
+      "initial_iteration": 8
+    },
+    "independent_changing_policy_counts": {
+      "completed_episodes": 18591,
+      "air": 1659,
+      "conditional_recovery_count": 690,
+      "complete": 2,
+      "numerical_failures": 0
+    },
+    "frozen_policy_performance": false,
+    "formal_acceptance": false,
+    "goal_complete": false
+  },
+  "exact_native_complete_contact_matches": 2,
+  "full_training_motion_available": false,
+  "historical_verifier_bug": "Strict resume preserves per-lane episode IDs1..3 from canonical8; old postprocessor incorrectly required ID0. Replacement verifier now requires each lane every ID exactly once from its actual source through final checkpoint.",
+  "original_failed_and_skipped_states_preserved": true,
+  "native_training_repeated": false,
+  "frozen40_evaluation_live_progress": {
+    "control_ticks": 300,
+    "requested_ticks": 800,
+    "first_episodes_complete": 0,
+    "formal_eligible": false,
+    "formal_acceptance": false
+  },
+  "live_source_owners": [
+    {
+      "state": {
+        "state": "RUNNING_FROZEN40_ORIGINAL_TRAIN128",
+        "queue_pid": 1663670,
+        "updated_at": "2026-10-25T16:30:04.652281+00:00",
+        "historical_queue_state_preserved": true,
+        "formal_cases_read": false,
+        "formal_acceptance": false,
+        "goal_complete": false,
+        "guard_pid": 1663680,
+        "evaluation_output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_iter40_fixed_train128_01"
+      },
+      "actual_pid_identity_confirmed": true
+    },
+    {
+      "state": {
+        "state": "WAITING_FOR_RECOVERED_NATIVE_FROZEN40",
+        "queue_pid": 1663986,
+        "updated_at": "2026-10-25T16:30:35.171748+00:00",
+        "renderer_uses_gpu": false,
+        "formal_cases_read": false,
+        "formal_acceptance": false,
+        "goal_complete": false,
+        "verified_parent_pid": 1663670
+      },
+      "actual_pid_identity_confirmed": true
+    },
+    {
+      "state": {
+        "state": "WAITING_FOR_RECOVERED_FROZEN40",
+        "queue_pid": 1664491,
+        "updated_at": "2026-10-25T16:35:36.056699+00:00",
+        "historical_skipped_state_preserved": true,
+        "formal_cases_read": false,
+        "formal_acceptance": false,
+        "goal_complete": false,
+        "verified_parent_pid": 1663670
+      },
+      "actual_pid_identity_confirmed": true
+    }
+  ],
+  "separate_candidate": {
+    "branch": "g07-live-string-attack-reward-v4-20261025",
+    "commit": "e24e1c0",
+    "report": "https://github.com/lzqw/unitree-smash/blob/g07-live-string-attack-reward-v4-20261025/reports/G07_full_racket_v4/live_alignment_reward_candidate_20261025/WIRING_ADAPTER_TRACE_UPDATE.json",
+    "CPU_tests_passed": 73,
+    "native_v3_execution": false,
+    "integration_into_current_main_sources": false
+  },
+  "next_steps": [
+    "Complete the unchanged frozen40 originalTRAIN128 assessment and both actual CPU videos, retaining all selected failures.",
+    "Unless original formal readiness is reached, execute both unchanged registered public tangent proposals sequentially through the original GPU0 guard.",
+    "Inspect real outcomes; after all source owners exit, integrate the chosen next training method and continue native learning. No new ledger/cloud."
+  ],
+  "original_formal_criteria": {
+    "two_panels_episodes_each": 200,
+    "worse_panel_complete_success_rate": 0.5,
+    "airborne_contact_rate": 0.7,
+    "conditional_recovery_rate": 0.85,
+    "numerical_failures": 0
+  },
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}

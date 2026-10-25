@@ -1,5 +1,7 @@
 # QuadSmash：Codex /goal 实施与训练任务包
 
+2026-10-26进展：[新学习器40训练与评测恢复报告](reports/G07_full_racket_v4/joint_placement_iter40_recovery_20261026/PROGRESS_REPORT.json)。续训实际完成8388608控制环境步、2.753516 GPU小时；18591个闭合训练回合独立重算为1659空中、690条件恢复、2完整、NF0。[两次完整训练回合的原生拍线接触记录已逐一匹配](reports/G07_full_racket_v4/joint_placement_first_training_complete_20261026/FINAL_CONTACT_CONFIRMATION.json)，但没有保存原训练全程动作，不能伪造成功视频，也不能把变化中策略成绩算成冻结表现。原后处理错误要求续训回合编号从0开始，实际canonical8保留1至3；新校验改为逐lane严格核对源检查点至末检查点的全部编号连续性，其余检查保持。历史失败/跳过状态未改写、未重跑训练；原seed724201全128冻结40评测已启动，随后CPU导出原六例与TRAIN65/6复测视频。两种原登记实时拍面修正也已恢复条件队列。另一个[奖励/轨迹记录候选分支](https://github.com/lzqw/unitree-smash/tree/g07-live-string-attack-reward-v4-20261025)有73项CPU检查通过，尚未进行v3原生训练；主源码保持至现有全部持有进程退出。完整G07目标仍未通过。
+
 2026-10-25 后续准备：[真实轨迹上的预测误差](reports/G07_full_racket_v4/joint8_prediction_error_20261025/REPORT.json)包含两例35条精确100Hz公共观测，以及71个接触回合的610条50Hz向后差分估算，两类不混称。精确子集中，提前80至120毫秒的局部拍面残差中位数约21.9厘米，40毫秒内约1.3厘米；局部坐标随球拍转动，不能把它当作孤立球预测误差或新策略成绩。原200毫秒两组原生修正试验继续保留，等待实测。
 
 [第40次冻结评测视频队列](reports/G07_full_racket_v4/joint_placement_iter40_video_queue01/PREDECLARED_PLAN.json)已启动：在当前续训期间、固定评测产生前登记沿用19/23/107/0/8/58六例；待实际全128评测完成，再以Mesa/llvmpipe CPU渲染侧视/俯视并逐帧解码，最后留待真实画面审核。现在还没有第40版视频。

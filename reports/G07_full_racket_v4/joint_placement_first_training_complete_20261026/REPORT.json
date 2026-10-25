@@ -1,0 +1,171 @@
+{
+  "created_at": "2026-10-25T16:09:27.977726+00:00",
+  "scope": "Two complete episodes in actual changing-policy joint-reward TRAIN, independently rescored. The first appeared in update34; the first preserved all-rows snapshot is update35. No frozen-policy or formal A/B performance claim.",
+  "source_run": "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01",
+  "snapshot_update": 35,
+  "first_complete_counter_update": 34,
+  "first_preserved_snapshot_update": 35,
+  "all_closed_training_counts": {
+    "completed_episodes": 15549,
+    "air": 1363,
+    "conditional_recovery_count": 554,
+    "complete": 2,
+    "numerical_failures": 0
+  },
+  "historical_prefix_checks": [
+    {
+      "update": 33,
+      "independent_counts": {
+        "completed_episodes": 14355,
+        "air": 1266,
+        "conditional_recovery_count": 512,
+        "complete": 0,
+        "numerical_failures": 0
+      },
+      "source": "Reconstructed append-only prefix of preserved update35 rows, checked against the actual historical stdout progress line; not a captured old JSON file.",
+      "source_stdout_line_sha256": "473f5d0e80dabd38e640c0734cdfc369f2ccd0107826926b23a504176097008f"
+    },
+    {
+      "update": 34,
+      "independent_counts": {
+        "completed_episodes": 14939,
+        "air": 1311,
+        "conditional_recovery_count": 530,
+        "complete": 1,
+        "numerical_failures": 0
+      },
+      "source": "Reconstructed append-only prefix of preserved update35 rows, checked against the actual historical stdout progress line; not a captured old JSON file.",
+      "source_stdout_line_sha256": "0892d908eaea2e45862f6ccbdd535168c88d3cf86ca4bed7ae2e3661945c7a9d"
+    },
+    {
+      "update": 35,
+      "independent_counts": {
+        "completed_episodes": 15549,
+        "air": 1363,
+        "conditional_recovery_count": 554,
+        "complete": 2,
+        "numerical_failures": 0
+      },
+      "source": "Reconstructed append-only prefix of preserved update35 rows, checked against the actual historical stdout progress line; not a captured old JSON file.",
+      "source_stdout_line_sha256": "a8c77eb4d6a0b67c4adcd3d95bc1eb11eaf1b837ac411f77182f8029d987ca00"
+    }
+  ],
+  "complete_episodes": [
+    {
+      "case_id": "TRAIN65_LANE1857_EP11",
+      "env_id": 1857,
+      "episode_index": 11,
+      "source_training_index": 65,
+      "job_control_ticks": {
+        "start": 2461,
+        "end": 3261
+      },
+      "local_episode_duration_s": 8.0,
+      "actor_iterations_encountered": [
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33
+      ],
+      "contact_rollout_actor_iteration": 29,
+      "source_row_index": 14627,
+      "contact_point_m": [
+        0.971649169921875,
+        -0.14990234375,
+        1.7552391290664673
+      ],
+      "outgoing_velocity_mps": [
+        7.69210958480835,
+        -0.8810968995094299,
+        -2.628082275390625
+      ],
+      "outgoing_speed_mps": 8.17628877041705,
+      "first_landing_m": [
+        3.909454345703125,
+        -0.4734039306640625,
+        0.025107135996222496
+      ],
+      "crossing_point_m": [
+        1.524999976158142,
+        -0.21570663154125214,
+        1.5567258596420288
+      ],
+      "net_margin_m": 0.007567167282104492,
+      "shuttle_net_contact": false,
+      "recovery_s": 4.2738728523254395,
+      "maximum_body_ground_force_n": 0.0,
+      "fault_flags": [],
+      "full_training_motion_trajectory_available": false
+    },
+    {
+      "case_id": "TRAIN6_LANE262_EP10",
+      "env_id": 262,
+      "episode_index": 10,
+      "source_training_index": 6,
+      "job_control_ticks": {
+        "start": 2649,
+        "end": 3449
+      },
+      "local_episode_duration_s": 8.0,
+      "actor_iterations_encountered": [
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34
+      ],
+      "contact_rollout_actor_iteration": 30,
+      "source_row_index": 15519,
+      "contact_point_m": [
+        0.961273193359375,
+        -0.0004119873046875,
+        1.7529851198196411
+      ],
+      "outgoing_velocity_mps": [
+        7.8737945556640625,
+        0.7535235285758972,
+        -2.5633323192596436
+      ],
+      "outgoing_speed_mps": 8.31475261158644,
+      "first_landing_m": [
+        3.986083984375,
+        0.2923431396484375,
+        0.025026652961969376
+      ],
+      "crossing_point_m": [
+        1.524999976158142,
+        0.05181751027703285,
+        1.5541127920150757
+      ],
+      "net_margin_m": 0.005112767219543457,
+      "shuttle_net_contact": false,
+      "recovery_s": 4.146882057189941,
+      "maximum_body_ground_force_n": 0.0,
+      "fault_flags": [],
+      "full_training_motion_trajectory_available": false
+    }
+  ],
+  "source_control_start": "Actual canonical ground restart at iteration8; each per-lane completed local duration is summed to recover its exact job control ticks.",
+  "lineage_note": "Each episode crosses several actor updates and continuously evolving normalization/exploration. The contact actor and final actor are not interchangeable. No single saved diagnostic checkpoint is credited with a frozen complete success.",
+  "net_margin_note": "Recorded signed center-minus-radius/top diagnostic at trailing-plane crossing, not minimum sphere/net clearance. Actual physical shuttle-net flags and original rules govern legality.",
+  "original_criteria_unchanged": true,
+  "final_contact_record_confirmation_pending": true,
+  "full_training_motion_recorded": false,
+  "video_note": "No full training motion was saved; do not reconstruct a success video from endpoints. Prospectively retest original TRAIN65/6 in the already planned fixed40 assessment, retaining both actual outcomes.",
+  "source_sha256": {
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/INPUTS.json": "b162b22428af9cae65f13b5ba27851fb2ecb58fa737246197b80dc559723e7c9",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/source_snapshot.zip": "c74cf1707ff55358b40a04243cf6d5f412d6190ddbe7cadd3e0fe9500b9e4dc3",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/initial_ground_states.json": "c6ebe4408e931cc489b999beb332c90eddb56e3aa7ce3c77ef30d0607d748109",
+    "reports/G07_full_racket_v4/joint_placement_first_training_complete_20261026/complete_episodes.json": "d876dd640ed913f9abd533a6a531dfc415950175e23a68bdef879e2370f0ca32",
+    "reports/G07_full_racket_v4/joint_placement_first_training_complete_20261026/all_closed_training_episodes.json.gz": "4bf3b6f4b59699068dd5ae5faa32193cae4eadef4d973838908a56b03760df88",
+    "reports/G07_full_racket_v4/joint_placement_first_training_complete_20261026/build_lineage.py": "03d9163bb13b0fb1af77a3925337e5f5218664241fa65ca3a4e994ff731d81df"
+  },
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
