@@ -1,5 +1,7 @@
 当前唯一GPU0作业：residual_ppo_pilot_train128_1230，guard1559746 / child1559760，session35701。源码提交5b978ac。先查真实进程、INPUTS/progress、error和completed/job；禁止重复启动。
 
+固定策略评测CPU队列已启动：PID1560842，session79173，状态reports/G07_full_racket_v4/residual_eval_queue_1250/state.json。必须同时检查此真实进程和状态：它只在上述PPO guard/child都退出、job SUCCEEDED、8更新/131072步/NF0/canonical checkpoint与导出SHA一致且源码未变后，才接续唯一GPU0固定TRAIN128评测。若state为RUNNING_FIXED_TRAIN_EVALUATION，使用其真实guard PID检查，不要因旧PPO PID消失重启旧训练。队列不会读取正式A/B，也不会把TRAIN结果标为正式通过。当前已核对PPO update2仍critic热身、32768步，所有loss/grad有限；后续actor从update3开始学习。
+
 继续前重读目标：/home/autodrive/.codex/attachments/55e175f0-9444-4a09-ad37-681e6586ca51/pasted-text-1.txt。只用现有GPU0，无累计GPU/工作窗上限；保留每job故障保护和真实资源计费。原物理/规则/验收门槛不变。GPU0实测RTX5080 16GB，无云资源。
 
 当前已启动stock RSL-RL原生残差PPO：全部128个固定TRAIN案例、128并行环境、8个更新，每更新128控制步，总131072控制环境步；62.5us物理/10ms控制/8秒回合。固定基线为CEM32横向candidate12，SHA51a8b19b17e19e60bd7482c7bcb7ed1d4e8b7f50b9317cac3c49007089e8b62d。源仍为UV[0,.10]、航向增益0、无高度自适应；本次不继承任何基线成绩。网络均值初始0，log_std0.1；前两次更新冻结actor和log_std，critic热身；之后学习18维全身残差。腿/臂目标增量上限.12/.15rad，经过原关节范围与5rad/s臂目标速率限制，再进入原生执行器；力矩/速度/资产没有改。
