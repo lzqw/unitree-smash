@@ -12,6 +12,8 @@
 
 固定iter8评测+视频完整原始包：G07_PPO_iter8_fixed_TRAIN128_video_and_raw_20261025.zip，69723001字节、75成员，SHA a1a4220cdc49ff51ae50f175f6c39aea69a8f84ceedc20e327cb8ee8cfd58535，已GitHub上传下载回验；residual_fixed_delivery_20261025含MANIFEST/ARCHIVE/UPLOAD_RECEIPT。包含原始128回合/全身轨迹/几何/精确运行源码、iter8策略与canonical检查点、10USD依赖和实际walking actor，以及此前baseline128原始回合供描述对比；不包含正在运行的512训练成绩。原19.57MB训练包及此前62.5MB横向基线包均保留。全部链接在STATUS/README；lzqw/unitree-smash是私有仓库。
 
+新旧球拍对照补充：model_task_comparison_20261025/REPORT.json及build.py已独立核验原matched_flange报告的全部来源SHA和刚性速度差公式，并复核CEM28 generation1/candidate30和generation3/candidate39的完整事件链与原生初始地面/零时钟。两次成功都是同一个TRAIN65，不是两个不同案例或分布通过。约25.1cm中心高度差来自同一已记录法兰姿态的几何重构；相关拍速读数是接触步后状态，不当作撞击前速度/旧模型动态能力。旧短拍板正式400与新版真实球场/完整拍/规则/来球、策略均不同，恢复比例不能作球拍变更的因果效果。原MODEL_RULES.json是创建时状态，未改写历史；补充报告注明新版正式400后来已执行但未通过，以及当前PPO8完整0。
+
 正式目标仍需新的冻结策略/源码锁与A/B各200：较差面板完整≥.50、空中≥.70、条件恢复≥.85、数值0，并满足地面自主、己方合法真实拍线空中接触、出球norm≥8/vx>0/vz≤-1、真实越网及首次落入X[2,4]/Y±1、连续稳定恢复≥.8s、无失效违规。旧CEM31正式400完整0，不能复用于新策略/新锁。单TRAIN65完整成功与旧短板资产成绩只作历史，不当作广分布或新版通过。接触point_velocity_mps是PhysX接触步后的读数，不当作独立入射拍速标定。
 
 不要手工编辑或stage受保护的reports/G07_full_racket_v4/contact_recovery_queue01/state.json、status/G07_RESOURCE_STOP.json、status/GPU_LEDGER.json、status/RUNS.jsonl；其他实时队列状态也先查真实进程。继续正常训练与固定评测，依据新实测迭代，保持完整目标活跃，不重新询问普通方法/预算权限。
