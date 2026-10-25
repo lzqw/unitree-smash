@@ -1,0 +1,29 @@
+{
+  "created_at": "2026-10-25T07:52:11.774388+00:00",
+  "state": "PREPARED_WAITING_FOR_ACTUAL_COMPLETION_AND_VISUAL_REVIEWS",
+  "builder": "reports/G07_full_racket_v4/residual_iter96_delivery_20261025/build.py",
+  "contact_checker": "reports/G07_full_racket_v4/residual_iter96_delivery_20261025/contact_checks.py",
+  "prerequisite_check": "python3 reports/G07_full_racket_v4/residual_iter96_delivery_20261025/build.py --check-prerequisites",
+  "contact_only_after_training_guard_exits": "env CUDA_VISIBLE_DEVICES='' OMP_NUM_THREADS=2 /home/autodrive/Isaac/env_isaaclab/bin/python reports/G07_full_racket_v4/residual_iter96_delivery_20261025/build.py --confirm-training-contacts-only",
+  "archive_after_both_visual_reviews": "env CUDA_VISIBLE_DEVICES='' OMP_NUM_THREADS=2 /home/autodrive/Isaac/env_isaaclab/bin/python reports/G07_full_racket_v4/residual_iter96_delivery_20261025/build.py",
+  "planned_archive": "reports/G07_full_racket_v4/G07_PPO_iter96_fixed_TRAIN128_training_videos_and_raw_20261025.zip",
+  "required_videos": [
+    "Current_effect_residual_PPO_iter96_20261025.mp4",
+    "Current_effect_residual_PPO_iter96_TRAIN58_20261025.mp4"
+  ],
+  "contact_confirmation_file": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/FINAL_CONTACT_CONFIRMATION.json",
+  "historical_snapshot_pending_fields_retained": true,
+  "prepared_checks": "Syntax,actual prior completed contact matcher,missing-data refusal and no archive/manifest/current-contact-confirmation creation. Actual iter96 bundle path is still unrun.",
+  "static_prior_run_source_files_present": true,
+  "preparation_checks": [
+    "PREPARATION_CHECKS.json",
+    "PREPARATION_CHECKS_V2.json"
+  ],
+  "missing_prerequisite_count": 31,
+  "archive_created": false,
+  "current2048_contacts_confirmed": false,
+  "original_native_and_CPU_video_workflows_untouched": true,
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}

@@ -66,23 +66,23 @@
           "parent_queue_session_id": 81975,
           "scope": "Native residual PPO learner fork on2048 fresh ground environments,128 TRAIN cases replicated16 times;64additional updates from32 to96, no frozen performance yet.",
           "declared_control_env_steps": 16777216,
-          "independently_verified_update": 48,
-          "verified_current_job_steps": 4194304,
+          "independently_verified_update": 52,
+          "verified_current_job_steps": 5242880,
           "progress_file": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/progress.json",
-          "verified_cumulative_learner_steps": 5898240,
+          "verified_cumulative_learner_steps": 6946816,
           "model_optimizer_tensors_finite": true,
           "last_verified_training_counts": {
-            "completed_episodes": 9015,
-            "air": 768,
-            "conditional_recovery_count": 307,
+            "completed_episodes": 11530,
+            "air": 952,
+            "conditional_recovery_count": 390,
             "complete": 3,
             "numerical_failures": 0
           },
-          "diagnostic_checkpoint_sha256": "949f003ac3d1d86ebe654af3001adfdded18b1dbaf279ff786655ba594e39916",
+          "diagnostic_checkpoint_sha256": "83fde92c0b55581b707672bb3b93d10c78e9740af50a918f8fd014b12dbc943f",
           "diagnostic_checkpoint_canonical_restart": false,
-          "verified_progress_sha256": "5d49798105ed05f06cd1b0ed5c7426c9a66c23f3cacd65109a2d6ee31919db52",
-          "verified_episode_snapshot_sha256": "af5a1300a4e905bc92a5b8be3c208315dcebe3ea9d9076e7d2992fb678a8fc45",
-          "verified_at": "2026-10-25T07:33:20.210241+00:00"
+          "verified_progress_sha256": "54e9500ab785c57018d1954babc241f3d53ade388360b2095c584812e677f35b",
+          "verified_episode_snapshot_sha256": "1b71ebaccac588520c952d889f38d02fe0f07dc1da2e718516e6d741b9b3d1ef",
+          "verified_at": "2026-10-25T07:53:05.600398+00:00"
         }
       ],
       "queued_native_sequence": {
@@ -1766,6 +1766,17 @@
         ],
         "reason": "Targeted prospective frozen retest after TRAIN58_LANE1338_EP2 completed during changing-policy training; success not inherited.",
         "renderer_uses_gpu": false,
+        "formal_acceptance": false
+      },
+      "pending_iter96_delivery": {
+        "state": "PREPARED_WAITING_FOR_ACTUAL_COMPLETION_AND_VISUAL_REVIEWS",
+        "builder": "reports/G07_full_racket_v4/residual_iter96_delivery_20261025/build.py",
+        "readiness": "reports/G07_full_racket_v4/residual_iter96_delivery_20261025/READINESS.json",
+        "preparation_checks": "reports/G07_full_racket_v4/residual_iter96_delivery_20261025/PREPARATION_CHECKS_V2.json",
+        "builder_sha256": "27d0613e6d8e65eacc835850488310aa7ecb642e166ff02d33cd7ff47eff1eef",
+        "missing_prerequisite_count": 31,
+        "archive_created": false,
+        "current2048_contacts_confirmed": false,
         "formal_acceptance": false
       }
     },
