@@ -17,3 +17,5 @@ CEM35已SUCCEEDED但无明显改善：16候选x32来球=512执行，不是512种
 当前较好的广分布固定策略实测仍是横向candidate12 TRAIN128：空中19/128、条件恢复12/19、攻击7、目标1、完整0/NF0。原正式candidate5 A/B各200仍未通过：A空中24/200、恢复10/24；B空中6/200、恢复1/6；完整0/NF0。所有阈值保持完整≥.50、空中≥.70、条件恢复≥.85、数值0，最终仍需新锁与两面板各200。
 
 最新视频Current_effect_lateral_train128_20261025.mp4，42.66秒/2133帧解码与GitHub下载SHA回验，展示TRAIN23攻击恢复但目标偏远、TRAIN107目标中但速度不足、TRAIN0拍框失败。不是当前PPO效果。62.5MB全TRAIN128轨迹/程序/策略包G07_lateral_TRAIN128_native_and_video_20261025.zip也已上传回验。接触point_velocity_mps是接触步后读数，不当作撞击前速度标定。
+
+原生PPO第1次critic热身更新已实际完成并独立核对：16384控制环境步，model_0.pt iter1；权重/归一化张量、损失、梯度均有限，value loss .00189918、grad norm .0538005，actor均值仍0符合热身设置。还没有完成整回合；不能把这视为触球/策略通过。RESIDUAL_PPO_NATIVE_UPDATE1_20261025.json保留精确checkpoint哈希和接口。model_0.pt不是canonical resume，仍等待8次完整训练及checkpoint.pt。
