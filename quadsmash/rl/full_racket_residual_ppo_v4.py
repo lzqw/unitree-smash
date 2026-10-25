@@ -2,6 +2,8 @@
 import copy
 import hashlib
 import io
+import json
+from pathlib import Path
 import torch
 from tensordict import TensorDict
 
@@ -13,6 +15,22 @@ from quadsmash.control.full_racket_contact_normal_search_v4 import contact_norma
 
 class ResidualTrainingInterrupted(Exception):
     pass
+
+
+def save_completed_update_error_checkpoint(runner,output,contract,initialization,error,steps,update_completed):
+    """Keep a safe learned update without converting a failed job to success."""
+    output=Path(output)
+    if runner is None or not update_completed or (output/'checkpoint.pt').exists():return None
+    checkpoint=output/'checkpoint_after_error.pt'
+    if checkpoint.exists():raise ValueError('Preserve previous error recovery checkpoint')
+    runner.save_restart(checkpoint,infos=dict(residual_contract=contract,
+        learner_initialization=initialization,error_after_completed_update=repr(error)))
+    receipt=dict(checkpoint=checkpoint.name,sha256=hashlib.sha256(checkpoint.read_bytes()).hexdigest(),
+        completed_iteration=runner.current_learning_iteration,actual_control_env_steps=steps,
+        canonical_ground_restart=True,job_succeeded=False,formal_acceptance=False)
+    path=output/'error_recovery_checkpoint.json';temporary=path.with_suffix('.json.tmp')
+    temporary.write_text(json.dumps(receipt,indent=2)+'\n');temporary.replace(path)
+    return receipt
 
 
 def reward_contact_offset(teacher_offset,live_alignment_enabled):
