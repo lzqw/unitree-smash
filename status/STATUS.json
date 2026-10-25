@@ -50,25 +50,24 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/TRAIN128_LATERAL_DIAGNOSTIC_20261025.json",
-      "notes": "GPU0的512环境PPO已独立检查到update23、新增983040控制环境步、NF0。同批1894条变动权重训练记录含247合法空中、118条件恢复、1完整；TRAIN19_LANE275_EP1完整链经原判据重算，出球8.015m/s、首落[3.935,-.168]、恢复1.387s，经历actor14..20，不能当作冻结策略能力。当前训练继续至iter32，原队列随后固定评估TRAIN128；CPU视频队列已预选19/23/107/0。原iter8固定成绩18空中/9恢复/0完整，正式门槛及全模型不变，G07仍未通过。",
+      "notes": "512环境PPO已完成24次续训至iter32：1572864新步、1.407381GPUh、3171变动权重训练回合，417合法空中/210条件恢复/1完整/NF0；canonical检查点、有限模型/Adam与导出一致性已核验。TRAIN19训练完整回合的最终原生接触已匹配，不能当作actor32成绩。GPU0当前固定TRAIN128评估iter32，guard1580158/child1580169；128真实地面初态与新权重SHA匹配，固定成绩待完成。新视频/CSV/条件2048续训队列仍等待原父工作流成功；G07门槛不变，尚未通过。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
       "active_gpu_jobs": [
         {
-          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_n512_resume24_01",
-          "guard_pid": 1567872,
-          "child_pid": 1567883,
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_fixed_train128_iter32_n512_01",
+          "guard_pid": 1580158,
+          "child_pid": 1580169,
           "state": "RUNNING",
-          "source_commit": "844417dba3910f72fc34353fa33f5254ecf652a1",
+          "source_commit": "39c0586d031c75110531207f7a4d89aae7cf210a",
           "parent_queue_pid": 1566225,
           "parent_queue_session_id": 47168,
-          "scope": "Actual native residual PPO learner fork on512 ground environments,128 distinct TRAIN cases replicated4times;24additionalupdates to iter32. No frozen-policy performance yet.",
-          "declared_control_env_steps": 1572864,
-          "independently_verified_update": 29,
-          "verified_current_job_steps": 1376256,
-          "progress_file": "reports/G07_full_racket_v4/residual_ppo_n512_resume24_01/progress.json"
+          "scope": "One fixed residual PPO iter32 over the original128 TRAIN cases, no reset noise; diagnostic assessment, not formal A/B.",
+          "declared_control_env_steps": 102400,
+          "policy_sha256": "772608a1c42ec78c09cdf3bd8b7bfe3fed1738d1273cde9d09610022553aa21b",
+          "progress_file": "reports/G07_full_racket_v4/residual_ppo_fixed_train128_iter32_n512_01/progress.json"
         }
       ],
       "queued_native_sequence": {
@@ -1262,7 +1261,8 @@
           "numerical_failures": 0
         },
         "fixed_policy_performance": false,
-        "contact_record_match_pending": true
+        "contact_record_match_pending": false,
+        "final_contact_confirmation": "reports/G07_full_racket_v4/residual_n512_first_complete_20261025/FINAL_CONTACT_CONFIRMATION.json"
       },
       "queued_iter32_video": {
         "pid": 1575992,
@@ -1301,6 +1301,28 @@
         "state": "WAITING_FOR_REAL_COMPLETION_AND_VIDEO_REVIEW",
         "archive_created": false,
         "formal_acceptance": false
+      },
+      "latest_completed_residual_training": {
+        "report": "reports/G07_full_racket_v4/residual_iter32_training_completion_20261025/REPORT.json",
+        "csv": "reports/G07_full_racket_v4/residual_iter32_training_completion_20261025/training_episodes.csv",
+        "iteration": 32,
+        "policy_sha256": "772608a1c42ec78c09cdf3bd8b7bfe3fed1738d1273cde9d09610022553aa21b",
+        "checkpoint_sha256": "2060f15dbe0ebabbb4b4657a6906fbf40ca661564025e8e06888f55b2fe1a041",
+        "changing_policy_counts": {
+          "completed_episodes": 3171,
+          "air": 417,
+          "conditional_recovery_count": 210,
+          "complete": 1,
+          "numerical_failures": 0
+        },
+        "actual_gpu_hours": 1.4073810205116752,
+        "frozen_policy_performance": false
+      },
+      "current_native_workflow_state": {
+        "pid": 1566225,
+        "session_id": 47168,
+        "state": "RUNNING_FIXED_TRAIN128_ITER32",
+        "state_file": "reports/G07_full_racket_v4/residual_resize512_queue01/state.json"
       }
     },
     "G08": {

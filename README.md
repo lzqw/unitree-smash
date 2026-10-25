@@ -1,6 +1,8 @@
 # QuadSmash：Codex /goal 实施与训练任务包
 
-当前进度（2026-10-25）：512环境PPO已续训至全局update23（新增15/24更新）、新增983040控制环境步，数值故障0。首次出现并独立重算通过1次完整扣杀：TRAIN19、lane275第1回合，击球高1.742米、出球8.015米/秒且向下2.539米/秒、首次落点[3.935,-0.168]米、稳定恢复1.387秒。这条回合经历actor14至20及归一化更新，属于带随机探索的训练记录，不是固定策略成绩；正式G07仍未通过。
+当前进度（2026-10-25）：512环境PPO本轮24次续训已完成，达到全局iter32，新增1572864控制环境步，实际1.407381 GPU小时，数值故障0；原生canonical检查点、有限模型/优化器和导出一致性已核验。3171个变动权重训练回合含417合法空中、210条件恢复、1完整；该完整回合仍是经历actor14..20的TRAIN19，不是固定actor32成绩。GPU0现已启动同一iter32策略的固定TRAIN128评估，正式G07仍未通过。
+
+[训练完成报告](reports/G07_full_racket_v4/residual_iter32_training_completion_20261025/REPORT.json)与[3171行训练CSV](reports/G07_full_racket_v4/residual_iter32_training_completion_20261025/training_episodes.csv)保留完整训练计数、更新日志、实际资源用量和来源；[原生接触确认](reports/G07_full_racket_v4/residual_n512_first_complete_20261025/FINAL_CONTACT_CONFIRMATION.json)已与训练结束后的contacts.json匹配。新固定评估的128个地面初态已核验，结果和四例新视频仍在等待；当前已发布视频仍是iter8。
 
 [完整训练回合与全部同批原始记录](reports/G07_full_racket_v4/residual_n512_first_complete_20261025/REPORT.json)保留1894回合快照、原生索引、同lane前一失败及权重谱系。PPO训练没有保存这条回合的完整运动轨迹，不能将事件/终态记录补成真实动作视频。第32次更新完成后，既定队列将冻结策略评估TRAIN128，再由CPU生成TRAIN19/23/107/0的实际视频；案例在本次固定评估开始前已选定。此前首批512地面训练回合为70合法空中、33条件恢复、0完整；原PPO iter8固定TRAIN128为18/128空中、9/18条件恢复、完整0。
 
