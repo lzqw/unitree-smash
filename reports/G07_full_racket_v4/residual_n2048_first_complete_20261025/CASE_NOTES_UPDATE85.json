@@ -1,0 +1,99 @@
+{
+  "created_at": "2026-10-25T10:48:11.540893+00:00",
+  "snapshot_update": 85,
+  "source_report": "SUPPLEMENT_UPDATE85.json",
+  "source_report_sha256": "494436847411913d20504b61f0f6d86f7826e5f66287b1dcec27417a964dfb9c",
+  "all_closed_training_counts": {
+    "completed_episodes": 32369,
+    "air": 2605,
+    "conditional_recovery_count": 977,
+    "complete": 8,
+    "numerical_failures": 0
+  },
+  "new_cases_since_prefix": [
+    {
+      "native_case_id": "TRAIN61_LANE957_EP13",
+      "source_TRAIN_case": 61,
+      "first_string_contact_m": [
+        0.97705078125,
+        -0.095001220703125,
+        1.7361228466033936
+      ],
+      "outgoing_velocity_mps": [
+        7.899484634399414,
+        1.065348505973816,
+        -2.587151527404785
+      ],
+      "outgoing_speed_mps": 8.380344739570443,
+      "first_landing_m": [
+        3.977487564086914,
+        0.2912445068359375,
+        0.02500702440738678
+      ],
+      "recovery_s": 2.107029676437378,
+      "net_margin_m": -0.005915164947509766,
+      "crossing_point_m": [
+        1.524999976158142,
+        -0.027627039700746536,
+        1.5430848598480225
+      ],
+      "contact_time_s": 2.777325391769409,
+      "release_time_s": 2.777700185775757,
+      "crossing_time_s": 2.843951940536499,
+      "first_landing_time_s": 3.1702969074249268,
+      "shuttle_net_contact": false,
+      "frame_hit": false,
+      "fault_flags": {
+        "robot_net_fault": false,
+        "body_ball_fault": false,
+        "wrong_side_fault": false,
+        "double_hit_fault": false,
+        "racket_invasion_fault": false,
+        "body_over_net_fault": false,
+        "under_net_obstruction_fault": false,
+        "engineering_body_crossing": false,
+        "bad_return_fault": false,
+        "net_blocked_fault": false
+      },
+      "body_landing": false,
+      "maximum_body_ground_force_n": 0.0,
+      "ground_init": true,
+      "terminal_time_s": 8.0,
+      "actor_lineage": {
+        "case_id": "TRAIN61_LANE957_EP13",
+        "source_TRAIN_case": 61,
+        "env_id": 957,
+        "episode_index": 13,
+        "job_ticks": [
+          5909,
+          6709
+        ],
+        "actor_iterations_encountered": [
+          78,
+          79,
+          80,
+          81,
+          82,
+          83,
+          84
+        ],
+        "contact_rollout_actor_iteration": 80,
+        "first_string_rollout_actor_iteration": 80
+      },
+      "scope": "Independently scored whole-chain native TRAIN completion under changing actors, normalizers and exploration; no frozen-policy performance."
+    }
+  ],
+  "negative_margin_case_ids": [
+    "TRAIN61_LANE957_EP13"
+  ],
+  "net_margin_definition": "At the trailing-surface crossing, the recorded center is x=net_plane_x+radius. net_margin=center_z-radius-strip_top. This diagnostic is not the minimum geometric clearance of the moving sphere from the finite net band.",
+  "crossing_rule": "The unchanged rule requires the measured trailing crossing center above the actual strip top, within net width, after legal racket contact and without invalidating faults. Native solid-band collision governs response; shuttle/net touch itself is allowed.",
+  "clearance_limit": "No full training trajectory was saved. A negative recorded margin alone neither measures minimum clearance nor proves net contact. Preserve its sign; do not describe it as positive clearance.",
+  "rule_source": "quadsmash/physics/rally_rules_v4.py",
+  "rule_source_sha256": "80960adcc3cc6ebc0bbf58060aea6e208e74a9f28a62bb2f4a66140db4a98bed",
+  "native_final_contact_match_pending": true,
+  "full_training_motion_saved": false,
+  "frozen_policy_assessment_pending": true,
+  "formal_acceptance": false,
+  "goal_complete": false
+}

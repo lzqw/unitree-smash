@@ -1699,14 +1699,14 @@
         "scope": "One independently rechecked complete TRAIN58 native episode during changing-policy stochastic PPO learning. No frozen-policy performance or formal A/B claim.",
         "formal_acceptance": false,
         "latest_supplement": {
-          "report": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/SUPPLEMENT_UPDATE69.json",
-          "report_sha256": "2024b64b961b1ded9f424cfc83f0cdfd972f50ca94d97022d5f8018e2b991ef0",
-          "snapshot_update": 69,
+          "report": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/SUPPLEMENT_UPDATE85.json",
+          "report_sha256": "494436847411913d20504b61f0f6d86f7826e5f66287b1dcec27417a964dfb9c",
+          "snapshot_update": 85,
           "counts": {
-            "completed_episodes": 22376,
-            "air": 1790,
-            "conditional_recovery_count": 695,
-            "complete": 7,
+            "completed_episodes": 32369,
+            "air": 2605,
+            "conditional_recovery_count": 977,
+            "complete": 8,
             "numerical_failures": 0
           },
           "complete_case_ids": [
@@ -1716,7 +1716,8 @@
             "TRAIN25_LANE25_EP8",
             "TRAIN35_LANE291_EP8",
             "TRAIN98_LANE226_EP12",
-            "TRAIN111_LANE2031_EP12"
+            "TRAIN111_LANE2031_EP12",
+            "TRAIN61_LANE957_EP13"
           ],
           "distinct_TRAIN_cases": [
             23,
@@ -1724,6 +1725,7 @@
             35,
             36,
             58,
+            61,
             98,
             111
           ],
@@ -1876,15 +1878,38 @@
               ],
               "contact_rollout_actor_iteration": 63,
               "first_string_rollout_actor_iteration": 63
+            },
+            {
+              "case_id": "TRAIN61_LANE957_EP13",
+              "source_TRAIN_case": 61,
+              "env_id": 957,
+              "episode_index": 13,
+              "job_ticks": [
+                5909,
+                6709
+              ],
+              "actor_iterations_encountered": [
+                78,
+                79,
+                80,
+                81,
+                82,
+                83,
+                84
+              ],
+              "contact_rollout_actor_iteration": 80,
+              "first_string_rollout_actor_iteration": 80
             }
           ],
-          "prefix_report": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/SUPPLEMENT_UPDATE67.json",
-          "preserved_prefix_rows": 21057,
-          "appended_rows": 1319,
-          "appended_gzip_bytes": 2503551,
-          "storage_checks": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/INCREMENTAL_STORAGE_CHECKS_UPDATE69.json",
+          "prefix_report": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/SUPPLEMENT_UPDATE69.json",
+          "preserved_prefix_rows": 22376,
+          "appended_rows": 9993,
+          "appended_gzip_bytes": 18936771,
+          "storage_checks": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/INCREMENTAL_STORAGE_CHECKS_UPDATE85.json",
+          "case_notes": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/CASE_NOTES_UPDATE85.json",
           "native_contact_record_match_pending": true,
-          "formal_acceptance": false
+          "formal_acceptance": false,
+          "goal_complete": false
         },
         "previous_supplement": {
           "report": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/SUPPLEMENT_UPDATE48.json",
@@ -1973,55 +1998,75 @@
           "formal_acceptance": false
         },
         "latest_additional_case": {
-          "native_case_id": "TRAIN111_LANE2031_EP12",
-          "source_TRAIN_case": 111,
+          "native_case_id": "TRAIN61_LANE957_EP13",
+          "source_TRAIN_case": 61,
           "first_string_contact_m": [
-            0.9613037109375,
-            0.0010986328125,
-            1.7598730325698853
+            0.97705078125,
+            -0.095001220703125,
+            1.7361228466033936
           ],
           "outgoing_velocity_mps": [
-            7.728212833404541,
-            -0.03282025456428528,
-            -2.7055716514587402
+            7.899484634399414,
+            1.065348505973816,
+            -2.587151527404785
           ],
-          "outgoing_speed_mps": 8.188190809249958,
+          "outgoing_speed_mps": 8.380344739570443,
           "first_landing_m": [
-            3.88641357421875,
-            0.0010223388671875,
-            0.025218339636921883
+            3.977487564086914,
+            0.2912445068359375,
+            0.02500702440738678
           ],
-          "recovery_s": 2.4160072803497314,
-          "net_margin_m": 0.0007151365280151367,
+          "recovery_s": 2.107029676437378,
+          "net_margin_m": -0.005915164947509766,
+          "crossing_point_m": [
+            1.524999976158142,
+            -0.027627039700746536,
+            1.5430848598480225
+          ],
+          "contact_time_s": 2.777325391769409,
+          "release_time_s": 2.777700185775757,
+          "crossing_time_s": 2.843951940536499,
+          "first_landing_time_s": 3.1702969074249268,
+          "shuttle_net_contact": false,
+          "frame_hit": false,
+          "fault_flags": {
+            "robot_net_fault": false,
+            "body_ball_fault": false,
+            "wrong_side_fault": false,
+            "double_hit_fault": false,
+            "racket_invasion_fault": false,
+            "body_over_net_fault": false,
+            "under_net_obstruction_fault": false,
+            "engineering_body_crossing": false,
+            "bad_return_fault": false,
+            "net_blocked_fault": false
+          },
           "body_landing": false,
           "maximum_body_ground_force_n": 0.0,
-          "shuttle_net_contact": false,
-          "contact_time_s": 2.6871249675750732,
-          "release_time_s": 2.687499761581421,
-          "crossing_time_s": 2.7560527324676514,
-          "first_landing_time_s": 3.0762860774993896,
+          "ground_init": true,
+          "terminal_time_s": 8.0,
           "actor_lineage": {
-            "case_id": "TRAIN111_LANE2031_EP12",
-            "source_TRAIN_case": 111,
-            "env_id": 2031,
-            "episode_index": 12,
+            "case_id": "TRAIN61_LANE957_EP13",
+            "source_TRAIN_case": 61,
+            "env_id": 957,
+            "episode_index": 13,
             "job_ticks": [
-              3745,
-              4545
+              5909,
+              6709
             ],
             "actor_iterations_encountered": [
-              61,
-              62,
-              63,
-              64,
-              65,
-              66,
-              67
+              78,
+              79,
+              80,
+              81,
+              82,
+              83,
+              84
             ],
-            "contact_rollout_actor_iteration": 63,
-            "first_string_rollout_actor_iteration": 63
+            "contact_rollout_actor_iteration": 80,
+            "first_string_rollout_actor_iteration": 80
           },
-          "scope": "Independent whole-chain TRAIN completion under changing actors61..67 and exploration; not frozen actor63/68/69 performance. Final contact matching pending; no full training motion saved."
+          "scope": "Independently scored whole-chain native TRAIN completion under changing actors, normalizers and exploration; no frozen-policy performance."
         },
         "historical_supplements": [
           {
@@ -2274,6 +2319,194 @@
             "storage_checks": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/INCREMENTAL_STORAGE_CHECKS_UPDATE67.json",
             "native_contact_record_match_pending": true,
             "formal_acceptance": false
+          },
+          {
+            "report": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/SUPPLEMENT_UPDATE69.json",
+            "report_sha256": "2024b64b961b1ded9f424cfc83f0cdfd972f50ca94d97022d5f8018e2b991ef0",
+            "snapshot_update": 69,
+            "counts": {
+              "completed_episodes": 22376,
+              "air": 1790,
+              "conditional_recovery_count": 695,
+              "complete": 7,
+              "numerical_failures": 0
+            },
+            "complete_case_ids": [
+              "TRAIN58_LANE1338_EP2",
+              "TRAIN23_LANE1687_EP2",
+              "TRAIN36_LANE1828_EP2",
+              "TRAIN25_LANE25_EP8",
+              "TRAIN35_LANE291_EP8",
+              "TRAIN98_LANE226_EP12",
+              "TRAIN111_LANE2031_EP12"
+            ],
+            "distinct_TRAIN_cases": [
+              23,
+              25,
+              35,
+              36,
+              58,
+              98,
+              111
+            ],
+            "actor_lineage": [
+              {
+                "case_id": "TRAIN58_LANE1338_EP2",
+                "source_TRAIN_case": 58,
+                "env_id": 1338,
+                "episode_index": 2,
+                "job_ticks": [
+                  948,
+                  1748
+                ],
+                "actor_iterations_encountered": [
+                  39,
+                  40,
+                  41,
+                  42,
+                  43,
+                  44,
+                  45
+                ],
+                "contact_rollout_actor_iteration": 41,
+                "first_string_rollout_actor_iteration": 41
+              },
+              {
+                "case_id": "TRAIN23_LANE1687_EP2",
+                "source_TRAIN_case": 23,
+                "env_id": 1687,
+                "episode_index": 2,
+                "job_ticks": [
+                  1112,
+                  1912
+                ],
+                "actor_iterations_encountered": [
+                  40,
+                  41,
+                  42,
+                  43,
+                  44,
+                  45,
+                  46
+                ],
+                "contact_rollout_actor_iteration": 42,
+                "first_string_rollout_actor_iteration": 42
+              },
+              {
+                "case_id": "TRAIN36_LANE1828_EP2",
+                "source_TRAIN_case": 36,
+                "env_id": 1828,
+                "episode_index": 2,
+                "job_ticks": [
+                  1117,
+                  1917
+                ],
+                "actor_iterations_encountered": [
+                  40,
+                  41,
+                  42,
+                  43,
+                  44,
+                  45,
+                  46
+                ],
+                "contact_rollout_actor_iteration": 42,
+                "first_string_rollout_actor_iteration": 42
+              },
+              {
+                "case_id": "TRAIN25_LANE25_EP8",
+                "source_TRAIN_case": 25,
+                "env_id": 25,
+                "episode_index": 8,
+                "job_ticks": [
+                  3047,
+                  3847
+                ],
+                "actor_iterations_encountered": [
+                  55,
+                  56,
+                  57,
+                  58,
+                  59,
+                  60,
+                  61,
+                  62
+                ],
+                "contact_rollout_actor_iteration": 57,
+                "first_string_rollout_actor_iteration": 57
+              },
+              {
+                "case_id": "TRAIN35_LANE291_EP8",
+                "source_TRAIN_case": 35,
+                "env_id": 291,
+                "episode_index": 8,
+                "job_ticks": [
+                  3443,
+                  4243
+                ],
+                "actor_iterations_encountered": [
+                  58,
+                  59,
+                  60,
+                  61,
+                  62,
+                  63,
+                  64,
+                  65
+                ],
+                "contact_rollout_actor_iteration": 61,
+                "first_string_rollout_actor_iteration": 61
+              },
+              {
+                "case_id": "TRAIN98_LANE226_EP12",
+                "source_TRAIN_case": 98,
+                "env_id": 226,
+                "episode_index": 12,
+                "job_ticks": [
+                  3731,
+                  4531
+                ],
+                "actor_iterations_encountered": [
+                  61,
+                  62,
+                  63,
+                  64,
+                  65,
+                  66,
+                  67
+                ],
+                "contact_rollout_actor_iteration": 63,
+                "first_string_rollout_actor_iteration": 63
+              },
+              {
+                "case_id": "TRAIN111_LANE2031_EP12",
+                "source_TRAIN_case": 111,
+                "env_id": 2031,
+                "episode_index": 12,
+                "job_ticks": [
+                  3745,
+                  4545
+                ],
+                "actor_iterations_encountered": [
+                  61,
+                  62,
+                  63,
+                  64,
+                  65,
+                  66,
+                  67
+                ],
+                "contact_rollout_actor_iteration": 63,
+                "first_string_rollout_actor_iteration": 63
+              }
+            ],
+            "prefix_report": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/SUPPLEMENT_UPDATE67.json",
+            "preserved_prefix_rows": 21057,
+            "appended_rows": 1319,
+            "appended_gzip_bytes": 2503551,
+            "storage_checks": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/INCREMENTAL_STORAGE_CHECKS_UPDATE69.json",
+            "native_contact_record_match_pending": true,
+            "formal_acceptance": false
           }
         ],
         "earlier_additional_cases": [
@@ -2369,9 +2602,7 @@
               "first_string_rollout_actor_iteration": 61
             },
             "scope": "Independent native TRAIN completion under changing actors58..65 and exploration; not frozen actor61/66/67 performance. Final native contacts and fixed assessment remain pending."
-          }
-        ],
-        "latest_additional_cases": [
+          },
           {
             "native_case_id": "TRAIN98_LANE226_EP12",
             "source_TRAIN_case": 98,
@@ -2473,6 +2704,79 @@
               "first_string_rollout_actor_iteration": 63
             },
             "scope": "Independent whole-chain TRAIN completion under changing actors61..67 and exploration; not frozen actor63/68/69 performance. Final contact matching pending; no full training motion saved."
+          }
+        ],
+        "latest_additional_cases": [
+          {
+            "native_case_id": "TRAIN61_LANE957_EP13",
+            "source_TRAIN_case": 61,
+            "first_string_contact_m": [
+              0.97705078125,
+              -0.095001220703125,
+              1.7361228466033936
+            ],
+            "outgoing_velocity_mps": [
+              7.899484634399414,
+              1.065348505973816,
+              -2.587151527404785
+            ],
+            "outgoing_speed_mps": 8.380344739570443,
+            "first_landing_m": [
+              3.977487564086914,
+              0.2912445068359375,
+              0.02500702440738678
+            ],
+            "recovery_s": 2.107029676437378,
+            "net_margin_m": -0.005915164947509766,
+            "crossing_point_m": [
+              1.524999976158142,
+              -0.027627039700746536,
+              1.5430848598480225
+            ],
+            "contact_time_s": 2.777325391769409,
+            "release_time_s": 2.777700185775757,
+            "crossing_time_s": 2.843951940536499,
+            "first_landing_time_s": 3.1702969074249268,
+            "shuttle_net_contact": false,
+            "frame_hit": false,
+            "fault_flags": {
+              "robot_net_fault": false,
+              "body_ball_fault": false,
+              "wrong_side_fault": false,
+              "double_hit_fault": false,
+              "racket_invasion_fault": false,
+              "body_over_net_fault": false,
+              "under_net_obstruction_fault": false,
+              "engineering_body_crossing": false,
+              "bad_return_fault": false,
+              "net_blocked_fault": false
+            },
+            "body_landing": false,
+            "maximum_body_ground_force_n": 0.0,
+            "ground_init": true,
+            "terminal_time_s": 8.0,
+            "actor_lineage": {
+              "case_id": "TRAIN61_LANE957_EP13",
+              "source_TRAIN_case": 61,
+              "env_id": 957,
+              "episode_index": 13,
+              "job_ticks": [
+                5909,
+                6709
+              ],
+              "actor_iterations_encountered": [
+                78,
+                79,
+                80,
+                81,
+                82,
+                83,
+                84
+              ],
+              "contact_rollout_actor_iteration": 80,
+              "first_string_rollout_actor_iteration": 80
+            },
+            "scope": "Independently scored whole-chain native TRAIN completion under changing actors, normalizers and exploration; no frozen-policy performance."
           }
         ]
       },
