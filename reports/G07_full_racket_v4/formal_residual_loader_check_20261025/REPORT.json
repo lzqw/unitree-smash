@@ -1,0 +1,52 @@
+{
+  "recorded_at": "2026-10-25T07:07:03.504305+00:00",
+  "scope": "Actual CPU loader/batch-shape integration probe on the completed iter32 native policy; no new simulation or formal rollout.",
+  "loaded_policy_iteration": 32,
+  "loaded_policy_path": "reports/G07_full_racket_v4/residual_ppo_n512_resume24_01/policy.pt",
+  "policy_sha256": "772608a1c42ec78c09cdf3bd8b7bfe3fed1738d1273cde9d09610022553aa21b",
+  "canonical_checkpoint_path": "reports/G07_full_racket_v4/residual_ppo_n512_resume24_01/checkpoint.pt",
+  "canonical_checkpoint_sha256": "2060f15dbe0ebabbb4b4657a6906fbf40ca661564025e8e06888f55b2fe1a041",
+  "formal_factory": "quadsmash.control.full_racket_residual_v4.make_rally_controller",
+  "actual_dispatched_class": "FullRacketResidualControllerV4",
+  "controller_lanes": 200,
+  "controller_base_parameter_lanes": 200,
+  "mixer_state_lanes": 200,
+  "public_observation_source": "native.environment.tensors.final_observation[:200] from the actual canonical iter32 checkpoint",
+  "public_observation_shape": [
+    200,
+    794
+  ],
+  "actor_output_shape": [
+    200,
+    18
+  ],
+  "all_probe_inputs_and_outputs_finite": true,
+  "batch_split": [
+    128,
+    72
+  ],
+  "batch_split_max_difference": 2.9802322387695312e-08,
+  "comparison_atol": 2e-05,
+  "comparison_rtol": 2e-05,
+  "checks_executed": true,
+  "existing_scripts_modified": false,
+  "formal_cases_read": false,
+  "new_native_execution": false,
+  "formal_eligible": false,
+  "formal_acceptance": false,
+  "goal_complete": false,
+  "source_sha256": {
+    "scripts/evaluate_full_racket_v4.py": "e082d329f7b2e3291bf2cc9b8795c1e7dbee4e2debe51b27c6e46b4d107d7324",
+    "scripts/lock_full_racket_policy_v4.py": "a960a3a8b8fe10a0e62b3f608619adea000eaca7a073ff460712ce1e6c008893",
+    "scripts/aggregate_full_racket_eval_v4.py": "19317560b1bb270f6d6e346d5fc5da55474defdd4d82e4cf567f385c5cd56a33",
+    "quadsmash/control/full_racket_residual_v4.py": "3135f1fbc2a41f669ee35d40175f55cc605324da5998dabb6474fc73ca48729f",
+    "quadsmash/control/full_racket_rally_controller_v4.py": "069d42642ab91e86969f939fc90ca872c8a6f91f48d0c7ecf655e29e2d0ef96c",
+    "configs/g07_full_racket_eval_v4_r3.json": "04121cfb257ea4d2e288c69b44dd0c8dbada814e0bf95c8a16f5af7ef2390367"
+  },
+  "limitations": [
+    "The observed policy is completed iter32, not an export of the currently running learner. Iter96 must be checked after canonical completion/export.",
+    "The 200 input rows are saved TRAIN observations, not either formal panel. This checks CPU loading and actor batch behavior, not physical execution or scoring.",
+    "The formal evaluator already calls the same factory; no source modification was necessary.",
+    "Formal acceptance still requires the original same-lock A/B200 native episodes, independent aggregation and complete deliverables."
+  ]
+}

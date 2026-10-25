@@ -1604,6 +1604,26 @@
         "scope": "Optional TRAIN bonus for actual legal air attacks/crossing and first-landing distance. Original asset, physics, actuation, cases and acceptance unchanged. No native candidate training.",
         "activation": "Review existing iter96 frozen TRAIN128 first; preserve original source for formal panels if warranted. Otherwise consider merging only after both original source-fingerprinted native and CPU video workflows end, then run a fresh opt-in learner. Old-reward strict resume is still rejected.",
         "formal_acceptance": false
+      },
+      "formal_residual_loader_cpu_check": {
+        "report": "reports/G07_full_racket_v4/formal_residual_loader_check_20261025/REPORT.json",
+        "report_sha256": "a63107c3eb556a2b5942c3a8ae9801e3e830e2174a7f663b3e49b8b8357cdc24",
+        "policy_iteration": 32,
+        "policy_sha256": "772608a1c42ec78c09cdf3bd8b7bfe3fed1738d1273cde9d09610022553aa21b",
+        "controller_lanes": 200,
+        "actual_saved_TRAIN_observation_shape": [
+          200,
+          794
+        ],
+        "actor_output_shape": [
+          200,
+          18
+        ],
+        "batch_split_max_difference": 2.9802322387695312e-08,
+        "new_native_execution": false,
+        "formal_cases_read": false,
+        "formal_acceptance": false,
+        "scope": "Actual CPU loader/batch-shape integration probe on the completed iter32 native policy; no new simulation or formal rollout."
       }
     },
     "G08": {

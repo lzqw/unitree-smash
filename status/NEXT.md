@@ -1,5 +1,7 @@
 继续前重读完整目标：/home/autodrive/.codex/attachments/55e175f0-9444-4a09-ad37-681e6586ca51/pasted-text-1.txt。G07仍IN_PROGRESS，不得因代码/训练/上传完成而标记目标完成。只用现有GPU0（RTX5080 16GB），无累计GPU/工作窗上限，无云资源；原全模型、物理/规则与正式门槛保持。
 
+正式PPO入口CPU加载/批量检查已实际完成：formal_residual_loader_check_20261025/REPORT.json。现有evaluate_full_racket_v4已调用同一make_rally_controller；用已完成iter32真实policy772608..创建200路FullRacketResidualControllerV4，输入canonical真实final_observation[:200]的200×794 TRAIN观测，实际输出200×18且有限，128+72分批与整批最大差2.98e-8。没有读取正式案例或运行新PhysX回合，也未修改正式入口。该检查只证明CPU加载与批量形状，不能继承为iter96或400回合成绩；iter96实际完成后仍需冻结新权重/source并执行原A/B。
+
 当前进一步核验到update41，本job2359296步、累计learner4063232步，全部4830闭合训练记录独立重算386空中/145条件恢复/0完整/NF0，模型及Adam有限；诊断checkpoint和原始进度SHA记入STATUS.active_gpu_jobs。现有guard1582969/child1582980继续运行，父1576853/session81975和CPU视频1588259/session3284均真实存活，原源码指纹未变。
 
 已另建候选工作树/home/autodrive/LZQW/unitree_smash_joint_reward，分支g07-joint-placement-reward-v4-20261025，GitHub commit e0a8435473ea8f4259c58c4e6f5406a67ba7d857。其reports/G07_full_racket_v4/joint_placement_candidate_20261025含build/REPORT/CPU_CHECKS/READINESS/SHARED_ASSETS；28项CPU检查通过，首批2048实测事件静态回放通过。26目标全部低于8m/s，16攻击中15实际落点、14超过X4；最近攻击+合格恢复为TRAIN102_LANE2022_EP0，首落X4.018158仍失败。可选weight20/scale.25m奖励只奖励合法空中攻击且实际越网后的首次落点接近度，低速目标不获此项，不改原成功判定；目前没有候选原生训练。该分支修改env/trainer并新增config，不得合入或改写当前主工作树捕获的源码。先等原iter96固定结果；达到门槛则保持原source做正式A/B，未达到再考虑候选。若启用候选，等当前CPU视频也完成后再合入已准备的主环境，或补齐隔离checkout所缺历史大文件；新奖励不可用旧reward canonical严格--resume，当前仅支持明确fresh learner。资产通过6个SHA核验软链共享原文件，10层SHA已核验，候选原生composition仍未运行。不得把CPU回放或候选代码当成策略改进/验收通过。
