@@ -15,6 +15,8 @@ initialization_options.add_argument('--initialize-actor',type=Path,
     help='Explicitly transfer a compatible canonical public actor into a fresh joint-reward learner; no critic/Adam/physics/RNG/counter resume')
 initialization_options.add_argument('--initialize-centered-policy',type=Path,
     help='Transfer an independently measured outer actor on the same fixed base into a fresh learner; no critic/Adam/physics/RNG/counter resume')
+initialization_options.add_argument('--initialize-centered-action-units',type=Path,
+    help='Explicit fresh measured-actor transfer to leg0.06 units with witnessed physical mean checks; not strict resume')
 p.add_argument('--centered-source-evaluation',type=Path,
     help='Required original TRAIN128 native evaluation of --initialize-centered-policy')
 p.add_argument('--resize-ground',action='store_true',help='Explicitly fork a canonical learner onto a larger fresh ground batch; no old physical state restoration')
@@ -22,8 +24,9 @@ p.add_argument('--num-envs',type=int,default=128)
 p.add_argument('--updates',type=int,default=8)
 p.add_argument('--seed',type=int,default=748501)
 AppLauncher.add_app_launcher_args(p);args=p.parse_args()
-if (args.initialize_centered_policy is None)!=(args.centered_source_evaluation is None):
-    p.error('Supply both --initialize-centered-policy and --centered-source-evaluation')
+centered_initialization=(args.initialize_centered_policy is not None or args.initialize_centered_action_units is not None)
+if centered_initialization!=(args.centered_source_evaluation is not None):
+    p.error('Supply a centered initialization option together with --centered-source-evaluation')
 app=AppLauncher(args).app
 
 import numpy as np
@@ -86,8 +89,8 @@ def main():
         raise ValueError('Use a positive multiple of all128 fixed TRAIN cases')
     configuration=json.loads(args.config.read_text());scales=configuration['joint_scale_rad']
     mode=baseline_mode(configuration.get('base_controller_mode'))
-    if args.initialize_centered_policy is not None and mode!='frozen_public_policy':
-        raise ValueError('--initialize-centered-policy requires the same fixed learned baseline')
+    if centered_initialization and mode!='frozen_public_policy':
+        raise ValueError('Centered initialization requires the same fixed learned baseline')
     base=torch.load(args.base_checkpoint,map_location='cpu',weights_only=False)
     source_verification=None
     if mode=='analytic':
@@ -145,6 +148,7 @@ def main():
             frozen_baseline_source_verification=source_verification,
             initial_actor_checkpoint_sha256=digest(args.initialize_actor) if args.initialize_actor else None,
             initial_centered_policy_sha256=digest(args.initialize_centered_policy) if args.initialize_centered_policy else None,
+            initial_centered_action_units_policy_sha256=digest(args.initialize_centered_action_units) if args.initialize_centered_action_units else None,
             centered_source_evaluation=str(args.centered_source_evaluation) if args.centered_source_evaluation else None,
             resize_ground_requested=args.resize_ground,
             physics_dt_s=cfg.sim.dt,policy_dt_s=env.step_dt,formal_cases_read=False,
@@ -173,6 +177,11 @@ def main():
         elif args.initialize_centered_policy:
             from scripts.initialize_centered_policy_v4 import initialize_centered_policy
             initialization=initialize_centered_policy(runner,args.initialize_centered_policy,
+                args.centered_source_evaluation,base,ROOT)
+            adapter.controller.reset();adapter.mixer.reset();adapter._sync_reference()
+        elif args.initialize_centered_action_units:
+            from scripts.initialize_centered_action_units_v4 import initialize_centered_action_units
+            initialization=initialize_centered_action_units(runner,args.initialize_centered_action_units,
                 args.centered_source_evaluation,base,ROOT)
             adapter.controller.reset();adapter.mixer.reset();adapter._sync_reference()
         else:
