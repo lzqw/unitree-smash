@@ -18,8 +18,10 @@ def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source-root',type=Path,required=True);parser.add_argument('--output',type=Path,required=True)
+    parser.add_argument('--run',default='residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01')
     args=parser.parse_args();assert not args.output.exists()
-    run=args.source_root.resolve()/'reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01'
+    assert Path(args.run).name==args.run, 'Require one native run name'
+    run=args.source_root.resolve()/'reports/G07_full_racket_v4'/args.run
     assert json.loads((run/'job.json').read_text())['status']=='SUCCEEDED'
     path=run/'public_and_actions_first2.npz';data=np.load(path);observations=data['observations']
     assert observations.shape==(800,2,794) and observations.dtype==np.float32
@@ -54,7 +56,8 @@ def main():
         recorder_selection='First24 complete episodes, first6 failures and first episodes of lanes0/8/19/23/58/107; all raw episode outcomes remain in normal native logs.',
         native_recorder_integrated_in_candidate=True,new_native_recording_executed=False,
         limitations=['Only public input packing was checked on real native observations here. Body/ball/action capture integration still needs a real native candidate run.',
-            'This fixed-assessment source has no observed clock reset. Selective reset handling is covered separately by controlled CPU fixtures, and still requires live native confirmation. The live producer uses actual native episode indices.',
+            ('No real clock reset occurs in this source; controlled fixtures cover selective resets.' if detected_resets==0 else
+             'Actual saved clock resets are included in this lossless public-input check. Complete live body/ball/action producer hooks have still not run in a native candidate job.'),
             'Memory estimate covers main NumPy buffers and history, excluding transient copies and mesh-export data.'],
         source_sha256={str(path):sha(path),str(ROOT/'quadsmash/rl/episode_trace_v4.py'):sha(ROOT/'quadsmash/rl/episode_trace_v4.py'),
             str(Path(__file__).resolve()):sha(Path(__file__).resolve())},

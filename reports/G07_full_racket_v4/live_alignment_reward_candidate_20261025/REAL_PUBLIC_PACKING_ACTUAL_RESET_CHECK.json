@@ -1,0 +1,60 @@
+{
+  "checked_at": "2026-10-25T17:06:41.832943+00:00",
+  "scope": "Lossless CPU encoding/reconstruction of actual saved native public inputs. Not a new policy execution or physical trajectory generated from these inputs.",
+  "actual_observation_rows": 1600,
+  "source_observation_shape": [
+    800,
+    2,
+    794
+  ],
+  "stored_per_control_values": 104,
+  "reconstructed_public_values": 794,
+  "all_full_public_values_bitwise_equal": true,
+  "per_inferred_episode": [
+    {
+      "lane": 0,
+      "inferred_local_episode_index": 0,
+      "rows": 601,
+      "full_public_sha256": "011b0efc725c27434e95199c3a4cc4027f3a84d6b5a18af1ab461b32f2564fa5",
+      "reconstructed_sha256": "011b0efc725c27434e95199c3a4cc4027f3a84d6b5a18af1ab461b32f2564fa5",
+      "bitwise_equal": true
+    },
+    {
+      "lane": 0,
+      "inferred_local_episode_index": 1,
+      "rows": 199,
+      "full_public_sha256": "37fb22bc394bb5762056d7f3ce22c335e820c36b83bd4ac7260e6a9860536dca",
+      "reconstructed_sha256": "37fb22bc394bb5762056d7f3ce22c335e820c36b83bd4ac7260e6a9860536dca",
+      "bitwise_equal": true
+    },
+    {
+      "lane": 1,
+      "inferred_local_episode_index": 0,
+      "rows": 800,
+      "full_public_sha256": "93e90e7024e9d9afbd0563059da95ba67c15958577ec90e6ce917b4ebf55f780",
+      "reconstructed_sha256": "93e90e7024e9d9afbd0563059da95ba67c15958577ec90e6ce917b4ebf55f780",
+      "bitwise_equal": true
+    }
+  ],
+  "actual_clock_resets_observed": 1,
+  "automatic_reset_checked_on_real_rows": true,
+  "nominal2048_lane801_step28_body_ring_buffer_bytes": 2354774016,
+  "nominal_buffer_GiB": 2.19305419921875,
+  "recorder_selection": "First24 complete episodes, first6 failures and first episodes of lanes0/8/19/23/58/107; all raw episode outcomes remain in normal native logs.",
+  "native_recorder_integrated_in_candidate": true,
+  "new_native_recording_executed": false,
+  "limitations": [
+    "Only public input packing was checked on real native observations here. Body/ball/action capture integration still needs a real native candidate run.",
+    "Actual saved clock resets are included in this lossless public-input check. Complete live body/ball/action producer hooks have still not run in a native candidate job.",
+    "Memory estimate covers main NumPy buffers and history, excluding transient copies and mesh-export data."
+  ],
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_iter40_fixed_train128_01/public_and_actions_first2.npz": "de3ac8936d180581f0e035bbabfff0c296afdb42ec94150fc1d4e48ae829ceb7",
+    "/home/autodrive/LZQW/unitree_smash_live_alignment/quadsmash/rl/episode_trace_v4.py": "c4610aefb3845dcab78202103a461e3adff2e305917f758f830c829941f717ce",
+    "/home/autodrive/LZQW/unitree_smash_live_alignment/scripts/check_episode_trace_public_cpu_v4.py": "69f057ae09df9a89a3aa1683d07a889adaf60d06dabfb890faea764f25df5d0e"
+  },
+  "native_execution": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
