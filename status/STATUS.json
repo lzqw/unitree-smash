@@ -1810,6 +1810,67 @@
         "formal_cases_read": false,
         "formal_acceptance": false,
         "goal_complete": false
+      },
+      "native2048_event_diagnostic": {
+        "report": "reports/G07_full_racket_v4/residual_n2048_event_diagnostic_20261025/REPORT.json",
+        "builder": "reports/G07_full_racket_v4/residual_n2048_event_diagnostic_20261025/build.py",
+        "per_case_csv": "reports/G07_full_racket_v4/residual_n2048_event_diagnostic_20261025/COMPLETE_COHORTS_PER_TRAIN_CASE.csv",
+        "selected_native_episodes": "reports/G07_full_racket_v4/residual_n2048_event_diagnostic_20261025/SELECTED_NATIVE_EPISODES.json",
+        "snapshot_update": 56,
+        "source_prefix_episodes": 14048,
+        "exact_original_prefix_sha256": "c8c1db4fa09119a2d255f5e1a329eb7c0d677e24ecb5005c1ca910a8b7015664",
+        "fully_closed_cohort_indices": [
+          0,
+          1,
+          2
+        ],
+        "fully_closed_executions": 6144,
+        "findings": {
+          "air_attacks": 129,
+          "targets": 127,
+          "attack_target_overlap": 5,
+          "target_hits_below_attack_speed": 122,
+          "attack_target_without_qualified_recovery": 2,
+          "body_landings": 11055,
+          "body_landing_before_rally_preparation_ends": 84,
+          "fully_closed_cohort_indices": [
+            0,
+            1,
+            2
+          ],
+          "fully_closed_cohort_executions": 6144,
+          "fully_closed_cohort_TRAIN_cases_without_any_air": 16,
+          "per_case_air_count_distribution": {
+            "0": 16,
+            "1": 11,
+            "2": 8,
+            "3": 14,
+            "4": 12,
+            "5": 18,
+            "6": 13,
+            "7": 11,
+            "8": 9,
+            "9": 9,
+            "10": 5,
+            "12": 2
+          },
+          "fault_counts": {
+            "robot_net_fault": 142,
+            "body_ball_fault": 0,
+            "wrong_side_fault": 0,
+            "double_hit_fault": 3,
+            "racket_invasion_fault": 124,
+            "body_over_net_fault": 0,
+            "under_net_obstruction_fault": 0,
+            "engineering_body_crossing": 123,
+            "bad_return_fault": 347,
+            "net_blocked_fault": 394
+          }
+        },
+        "near_complete_failures": "TRAIN38_LANE550_EP1 and TRAIN72_LANE712_EP5 meet attack and target with no rally faults, but have actual body landings and no stable recovery; remain complete=false.",
+        "scope": "Changing-policy TRAIN diagnosis only; later incomplete cohorts explicitly censored. Neither frozen performance nor candidate-reward benefit is established.",
+        "formal_acceptance": false,
+        "goal_complete": false
       }
     },
     "G08": {

@@ -1,0 +1,386 @@
+{
+  "created_at": "2026-10-25T08:16:59.522810+00:00",
+  "scope": "Real recorded changing-policy TRAIN event prefix, independently rescored. No new robot execution, candidate reward application, frozen-policy result or formal acceptance.",
+  "snapshot_update": 56,
+  "snapshot_control_env_steps": 6291456,
+  "original_snapshot_rows": 14048,
+  "original_snapshot_sha256": "c8c1db4fa09119a2d255f5e1a329eb7c0d677e24ecb5005c1ca910a8b7015664",
+  "exact_prefix_reconstructed_from": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/episodes.partial.json",
+  "reproduction": "Read the first original_snapshot_rows from the same run episodes.partial.json or final episodes.json; json.dumps(indent=2)+newline must exactly match the recorded SHA before analysis.",
+  "independently_recomputed_original_counts": {
+    "completed_episodes": 14048,
+    "air": 1142,
+    "conditional_recovery_count": 460,
+    "complete": 3,
+    "numerical_failures": 0
+  },
+  "findings": {
+    "air_attacks": 129,
+    "targets": 127,
+    "attack_target_overlap": 5,
+    "target_hits_below_attack_speed": 122,
+    "attack_target_without_qualified_recovery": 2,
+    "body_landings": 11055,
+    "body_landing_before_rally_preparation_ends": 84,
+    "fully_closed_cohort_indices": [
+      0,
+      1,
+      2
+    ],
+    "fully_closed_cohort_executions": 6144,
+    "fully_closed_cohort_TRAIN_cases_without_any_air": 16,
+    "per_case_air_count_distribution": {
+      "0": 16,
+      "1": 11,
+      "2": 8,
+      "3": 14,
+      "4": 12,
+      "5": 18,
+      "6": 13,
+      "7": 11,
+      "8": 9,
+      "9": 9,
+      "10": 5,
+      "12": 2
+    },
+    "fault_counts": {
+      "robot_net_fault": 142,
+      "body_ball_fault": 0,
+      "wrong_side_fault": 0,
+      "double_hit_fault": 3,
+      "racket_invasion_fault": 124,
+      "body_over_net_fault": 0,
+      "under_net_obstruction_fault": 0,
+      "engineering_body_crossing": 123,
+      "bad_return_fault": 347,
+      "net_blocked_fault": 394
+    }
+  },
+  "cohorts": [
+    {
+      "episode_index": 0,
+      "closed": 2048,
+      "all2048_lanes_closed": true,
+      "air": 197,
+      "conditional_recovery": 97,
+      "air_attacks": 16,
+      "targets": 26,
+      "complete": 0
+    },
+    {
+      "episode_index": 1,
+      "closed": 2048,
+      "all2048_lanes_closed": true,
+      "air": 192,
+      "conditional_recovery": 88,
+      "air_attacks": 23,
+      "targets": 24,
+      "complete": 0
+    },
+    {
+      "episode_index": 2,
+      "closed": 2048,
+      "all2048_lanes_closed": true,
+      "air": 200,
+      "conditional_recovery": 92,
+      "air_attacks": 22,
+      "targets": 25,
+      "complete": 3
+    },
+    {
+      "episode_index": 3,
+      "closed": 2033,
+      "all2048_lanes_closed": false,
+      "air": 185,
+      "conditional_recovery": 83,
+      "air_attacks": 22,
+      "targets": 21,
+      "complete": 0
+    },
+    {
+      "episode_index": 4,
+      "closed": 1948,
+      "all2048_lanes_closed": false,
+      "air": 143,
+      "conditional_recovery": 44,
+      "air_attacks": 19,
+      "targets": 16,
+      "complete": 0
+    },
+    {
+      "episode_index": 5,
+      "closed": 1692,
+      "all2048_lanes_closed": false,
+      "air": 114,
+      "conditional_recovery": 38,
+      "air_attacks": 16,
+      "targets": 9,
+      "complete": 0
+    },
+    {
+      "episode_index": 6,
+      "closed": 1152,
+      "all2048_lanes_closed": false,
+      "air": 65,
+      "conditional_recovery": 13,
+      "air_attacks": 6,
+      "targets": 4,
+      "complete": 0
+    },
+    {
+      "episode_index": 7,
+      "closed": 689,
+      "all2048_lanes_closed": false,
+      "air": 24,
+      "conditional_recovery": 5,
+      "air_attacks": 2,
+      "targets": 1,
+      "complete": 0
+    },
+    {
+      "episode_index": 8,
+      "closed": 300,
+      "all2048_lanes_closed": false,
+      "air": 17,
+      "conditional_recovery": 0,
+      "air_attacks": 3,
+      "targets": 1,
+      "complete": 0
+    },
+    {
+      "episode_index": 9,
+      "closed": 85,
+      "all2048_lanes_closed": false,
+      "air": 5,
+      "conditional_recovery": 0,
+      "air_attacks": 0,
+      "targets": 0,
+      "complete": 0
+    },
+    {
+      "episode_index": 10,
+      "closed": 5,
+      "all2048_lanes_closed": false,
+      "air": 0,
+      "conditional_recovery": 0,
+      "air_attacks": 0,
+      "targets": 0,
+      "complete": 0
+    }
+  ],
+  "selected_native_cases": [
+    {
+      "case_id": "TRAIN38_LANE550_EP1",
+      "source_TRAIN_index": 38,
+      "env_id": 550,
+      "episode_index": 1,
+      "selection": "attack_target_overlap",
+      "outgoing_speed_mps": 8.080774475068916,
+      "first_landing_m": [
+        3.950714111328125,
+        0.53204345703125,
+        0.025182880461215973
+      ],
+      "target_distance_m": 0.0,
+      "conditional_recovery": false,
+      "recovery_s": 0.0,
+      "complete": false,
+      "fault_flags": []
+    },
+    {
+      "case_id": "TRAIN102_LANE2022_EP0",
+      "source_TRAIN_index": 102,
+      "env_id": 2022,
+      "episode_index": 0,
+      "selection": "nearest_attack_recovery_target_miss",
+      "outgoing_speed_mps": 8.494514315662146,
+      "first_landing_m": [
+        4.018157958984375,
+        -0.03118896484375,
+        0.02519838511943817
+      ],
+      "target_distance_m": 0.018157958984375,
+      "conditional_recovery": true,
+      "recovery_s": 3.642918348312378,
+      "complete": false,
+      "fault_flags": []
+    },
+    {
+      "case_id": "TRAIN8_LANE1160_EP2",
+      "source_TRAIN_index": 8,
+      "env_id": 1160,
+      "episode_index": 2,
+      "selection": "nearest_attack_recovery_target_miss",
+      "outgoing_speed_mps": 8.552344441933286,
+      "first_landing_m": [
+        4.223320007324219,
+        -0.2589569091796875,
+        0.02506360597908497
+      ],
+      "target_distance_m": 0.22332000732421875,
+      "conditional_recovery": true,
+      "recovery_s": 2.297015905380249,
+      "complete": false,
+      "fault_flags": []
+    },
+    {
+      "case_id": "TRAIN58_LANE1338_EP2",
+      "source_TRAIN_index": 58,
+      "env_id": 1338,
+      "episode_index": 2,
+      "selection": "attack_target_overlap",
+      "outgoing_speed_mps": 8.003044846178387,
+      "first_landing_m": [
+        3.7938079833984375,
+        0.138824462890625,
+        0.025042880326509476
+      ],
+      "target_distance_m": 0.0,
+      "conditional_recovery": true,
+      "recovery_s": 2.939969301223755,
+      "complete": true,
+      "fault_flags": []
+    },
+    {
+      "case_id": "TRAIN39_LANE1191_EP3",
+      "source_TRAIN_index": 39,
+      "env_id": 1191,
+      "episode_index": 3,
+      "selection": "nearest_attack_recovery_target_miss",
+      "outgoing_speed_mps": 8.141949051204874,
+      "first_landing_m": [
+        4.149906158447266,
+        -0.3136768341064453,
+        0.025067465379834175
+      ],
+      "target_distance_m": 0.14990615844726562,
+      "conditional_recovery": true,
+      "recovery_s": 3.1349551677703857,
+      "complete": false,
+      "fault_flags": []
+    },
+    {
+      "case_id": "TRAIN35_LANE291_EP2",
+      "source_TRAIN_index": 35,
+      "env_id": 291,
+      "episode_index": 2,
+      "selection": "nearest_attack_recovery_target_miss",
+      "outgoing_speed_mps": 8.133110384903194,
+      "first_landing_m": [
+        4.041473388671875,
+        -0.5717124938964844,
+        0.02512957900762558
+      ],
+      "target_distance_m": 0.041473388671875,
+      "conditional_recovery": true,
+      "recovery_s": 4.085886478424072,
+      "complete": false,
+      "fault_flags": []
+    },
+    {
+      "case_id": "TRAIN23_LANE1687_EP2",
+      "source_TRAIN_index": 23,
+      "env_id": 1687,
+      "episode_index": 2,
+      "selection": "attack_target_overlap",
+      "outgoing_speed_mps": 8.469615536417747,
+      "first_landing_m": [
+        3.935394287109375,
+        -0.614642858505249,
+        0.025085551664233208
+      ],
+      "target_distance_m": 0.0,
+      "conditional_recovery": true,
+      "recovery_s": 4.220876693725586,
+      "complete": true,
+      "fault_flags": []
+    },
+    {
+      "case_id": "TRAIN36_LANE1828_EP2",
+      "source_TRAIN_index": 36,
+      "env_id": 1828,
+      "episode_index": 2,
+      "selection": "attack_target_overlap",
+      "outgoing_speed_mps": 8.238126906826732,
+      "first_landing_m": [
+        3.9073486328125,
+        -0.13565826416015625,
+        0.02522982470691204
+      ],
+      "target_distance_m": 0.0,
+      "conditional_recovery": true,
+      "recovery_s": 3.5889222621917725,
+      "complete": true,
+      "fault_flags": []
+    },
+    {
+      "case_id": "TRAIN96_LANE2016_EP3",
+      "source_TRAIN_index": 96,
+      "env_id": 2016,
+      "episode_index": 3,
+      "selection": "nearest_attack_recovery_target_miss",
+      "outgoing_speed_mps": 8.239931325883852,
+      "first_landing_m": [
+        4.22296142578125,
+        -0.4777984619140625,
+        0.025245077908039093
+      ],
+      "target_distance_m": 0.22296142578125,
+      "conditional_recovery": true,
+      "recovery_s": 3.6699163913726807,
+      "complete": false,
+      "fault_flags": []
+    },
+    {
+      "case_id": "TRAIN72_LANE712_EP5",
+      "source_TRAIN_index": 72,
+      "env_id": 712,
+      "episode_index": 5,
+      "selection": "attack_target_overlap",
+      "outgoing_speed_mps": 8.073348563546485,
+      "first_landing_m": [
+        3.977081298828125,
+        0.3057098388671875,
+        0.025206727907061577
+      ],
+      "target_distance_m": 0.0,
+      "conditional_recovery": false,
+      "recovery_s": 0.0,
+      "complete": false,
+      "fault_flags": []
+    }
+  ],
+  "sources": {
+    "configs/g07_full_racket_eval_v4_r3.json": "04121cfb257ea4d2e288c69b44dd0c8dbada814e0bf95c8a16f5af7ef2390367",
+    "configs/court_net_v4.json": "184d07dde336bf36be7dfde089373c851a2bcb855a6e44f4120442b59818b4f4",
+    "quadsmash/evaluation_v4.py": "efe610b42103a45b75fa98acb2a7fe221536abb752ebd665fc926c6ffb657b38",
+    "quadsmash/physics/rally_rules_v4.py": "80960adcc3cc6ebc0bbf58060aea6e208e74a9f28a62bb2f4a66140db4a98bed",
+    "quadsmash/control/full_racket_residual_reward_v4.py": "ccaf47cea2959833c4cd6276517b22c32cdd7830bfaf4f0d7601017ede532f9c",
+    "quadsmash/tasks/stand/full_racket_residual_env_v4.py": "2790592cfd54113152fb43b26cf52f9256e333e48393bc56e17c786054e55ba2",
+    "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/INPUTS.json": "6c44a47d2ce7f6e0c03c95d9e601a1d538dbf330187a7b07a681e2124a802bd0",
+    "reports/G07_full_racket_v4/residual_iter96_formal_queue01/NATIVE_PROGRESS_AT_REGISTRATION.json": "22cb04ec9d7f1d506fb7913d1115b909f7913f0b4c76676e9f8b30a294b14e31",
+    "reports/G07_full_racket_v4/residual_n2048_event_diagnostic_20261025/build.py": "8b04873c279839ce8e4bd92713b0cfd0493ea20fc7c8f1ae791d20f08d4d38c0"
+  },
+  "artifacts": {
+    "SELECTED_NATIVE_EPISODES.json": {
+      "sha256": "31619eb506f88853d867c8a29688e039e704628781c06d063ff10d4f8e429d93",
+      "bytes": 109467
+    },
+    "COMPLETE_COHORTS_PER_TRAIN_CASE.csv": {
+      "sha256": "ba49cd2e362c3df896f6ffb1d7707d6eb5b011530412b1522ec60a2048b5e38e",
+      "bytes": 2287
+    }
+  },
+  "next_action": "Keep the real original native workflow and source owners intact. Reassess frozen iter96 independently before promoting a changed-reward learner. The attack/target gap supports testing the prepared joint placement hypothesis if the fixed result remains below original thresholds; it does not prove candidate benefit or solve low contact/recovery coverage.",
+  "limitations": [
+    "All cohorts use changing actors, normalizers and exploration; their counts are not frozen-policy or distribution acceptance rates.",
+    "Only cohorts explicitly marked all2048_lanes_closed contain every lane; incomplete later cohorts are censored and must not be interpreted as performance collapse.",
+    "Targets and attacks overlap in five observed TRAIN episodes at this snapshot; three meet every complete gate and two lack qualified recovery. Keep these separate.",
+    "A terminal body landing count does not by itself locate the physical cause or prove that any proposed reward change will improve recovery.",
+    "Selected native episodes are posthoc diagnostic cases, not preselected video cases or a replay of missing full motion.",
+    "No formal A/B cases were opened. All original model, physics, actuation, target bounds and acceptance thresholds are unchanged."
+  ],
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
