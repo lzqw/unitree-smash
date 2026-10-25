@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/centered_residual_pilot8_queue02/FIXED_TRAIN128_RESULT.json",
-      "notes": "本轮新增量严格续训在实际update17闭合记录中出现1次完整训练成功：TRAIN111/LANE1519/EP3，800条原生100Hz全身/动作/公共输入，actor10至16，出球8.00235493m/s、vz−2.27961、首落[3.994049,−0.695709]、恢复4.10289秒、无违规。余量仅0.00235m/s和目标后沿5.95mm；实际拍上接触点速度0.36269m/s，不冒充高速挥拍。37.08秒真实视频保留另两例失败，1854帧全解码、15张实际画面检查；161167119字节权重/源码/4516闭合原始回合/100Hz轨迹包及视频均上传并下载SHA回验。GPU0同作业仍正常运行，最新global28、本作业5242880控制环境步、NF0，完整轨迹记录器正常。上述训练成功不继承为冻结成绩；最近新冻结8仍为0/128完整、26空中、13条件恢复、3合格攻击、NF0。原A/B各200及50/70/85门槛仍未通过。 已登记并启动中间冻结策略比较队列1697096/session52011，当前等待真实父流程1678986退出，未启动第二个原生GPU作业；原TRAIN128依次测16/24/32并与8/40比较，若40已达原门槛则跳过额外开发评估。1890条实际公共输入上的源8重建和中间16导出误差均0，属于CPU一致性而非新冻结成绩。196项源码/输入持有至该新队列退出，期间不可修改对应运行时。 另在独立a676d58分支准备已测外层增量网络迁移接口，50项CPU检查通过、1890实际输入平均输出逐位一致，保持actor归一化并使用新critic/探索/Adam/计数；未集成或原生运行，CPU内存探针的0.75核宽度不是已选训练修订。主运行时196项持有输入/源码未变。 已实核实际24次更新：17项Adam相对源8均推进320步，两套归一化增加4194304步；中间24公共策略在1890条实际输入上导出误差0，非canonical诊断仅用于推理，尚无该24版原生冻结成绩。待原父流程退出后由现有比较队列调用，未启动额外GPU作业。",
+      "notes": "本轮新增量严格续训在实际update17闭合记录中出现1次完整训练成功：TRAIN111/LANE1519/EP3，800条原生100Hz全身/动作/公共输入，actor10至16，出球8.00235493m/s、vz−2.27961、首落[3.994049,−0.695709]、恢复4.10289秒、无违规。余量仅0.00235m/s和目标后沿5.95mm；实际拍上接触点速度0.36269m/s，不冒充高速挥拍。37.08秒真实视频保留另两例失败，1854帧全解码、15张实际画面检查；161167119字节权重/源码/4516闭合原始回合/100Hz轨迹包及视频均上传并下载SHA回验。GPU0同作业仍正常运行，最新global33、本作业6553600控制环境步、NF0，完整轨迹记录器正常。上述训练成功不继承为冻结成绩；最近新冻结8仍为0/128完整、26空中、13条件恢复、3合格攻击、NF0。原A/B各200及50/70/85门槛仍未通过。 已登记并启动中间冻结策略比较队列1697096/session52011，当前等待真实父流程1678986退出，未启动第二个原生GPU作业；原TRAIN128依次测16/24/32并与8/40比较，若40已达原门槛则跳过额外开发评估。1890条实际公共输入上的源8重建和中间16导出误差均0，属于CPU一致性而非新冻结成绩。196项源码/输入持有至该新队列退出，期间不可修改对应运行时。 另在独立a676d58分支准备已测外层增量网络迁移接口，50项CPU检查通过、1890实际输入平均输出逐位一致，保持actor归一化并使用新critic/探索/Adam/计数；未集成或原生运行，CPU内存探针的0.75核宽度不是已选训练修订。主运行时196项持有输入/源码未变。 已实核实际24次更新：17项Adam相对源8均推进320步，两套归一化增加4194304步；中间24公共策略在1890条实际输入上导出误差0，非canonical诊断仅用于推理，尚无该24版原生冻结成绩。待原父流程退出后由现有比较队列调用，未启动额外GPU作业。 已实核实际32次权重：17项Adam相对源8均推进480步，两套归一化增加6291456步，累计新增量学习器8388608步；1890条真实公共输入上导出误差0，已登记16/24/32三份公共策略均准备完成，仍待后续原生评估，未继承冻结成绩。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
@@ -58,7 +58,7 @@
       "active_gpu_jobs": [
         {
           "state": "RUNNING_NATIVE_CENTERED_RESUME32",
-          "observed_at": "2026-10-25T20:47:42.013762+00:00",
+          "observed_at": "2026-10-25T21:13:30.620901+00:00",
           "workflow_pid": 1678986,
           "workflow_session_id": 15135,
           "guard_pid": 1687054,
@@ -69,21 +69,21 @@
           "initial_iteration": 8,
           "target_iteration": 40,
           "requested_additional_updates": 32,
-          "latest_runtime_update": 28,
-          "current_job_actual_control_env_steps": 5242880,
+          "latest_runtime_update": 33,
+          "current_job_actual_control_env_steps": 6553600,
           "source_new_learner_steps": 2097152,
-          "latest_independently_checked_resume_iteration": 24,
+          "latest_independently_checked_resume_iteration": 32,
           "all17_Adam_states_preserved_and_advanced": true,
           "actual2048_ground_initialization_verified": true,
           "actual_trajectory_recording_enabled": true,
           "runtime_changing_policy_counts": {
-            "completed_episodes": 10464,
-            "air": 1141,
-            "conditional_recovery_count": 524,
+            "completed_episodes": 13297,
+            "air": 1476,
+            "conditional_recovery_count": 686,
             "complete": 2,
             "numerical_failures": 0
           },
-          "verification": "reports/G07_full_racket_v4/centered_intermediate_selection_queue01/ACTUAL_UPDATE24_HEALTH_AND_EXPORT_CHECK.json",
+          "verification": "reports/G07_full_racket_v4/centered_intermediate_selection_queue01/ACTUAL_UPDATE32_HEALTH_AND_EXPORT_CHECK.json",
           "formal_acceptance": false,
           "initial_ground_verification": "reports/G07_full_racket_v4/centered_residual_resume32_queue01/ROOT_STRICT_RESUME_FIRST_UPDATE_CHECK.json",
           "first_cohort_verification": "reports/G07_full_racket_v4/centered_residual_resume32_queue01/ROOT_ACTUAL_UPDATE15_FIRST_COHORT_CHECK.json"
@@ -5929,7 +5929,8 @@
         "formal_acceptance": false,
         "prepared_public_iterations": [
           16,
-          24
+          24,
+          32
         ],
         "actual_intermediate24_health_and_export": {
           "checked_at": "2026-10-25T20:45:55.339083+00:00",
@@ -5949,6 +5950,39 @@
           "CPU_actor_export_max_error": 0.0,
           "latest_runtime_update": 28,
           "latest_runtime_current_job_steps": 5242880,
+          "actual_main_native_pid": 1687066,
+          "actual_intermediate_observer_pid": 1697096,
+          "main_held_sources_unchanged": 196,
+          "source_diagnostic_is_canonical_restart": false,
+          "new_native_job_started": false,
+          "new_frozen_performance": false,
+          "formal_cases_read": false,
+          "formal_acceptance": false,
+          "goal_complete": false
+        },
+        "actual_intermediate32_health_and_export": {
+          "checked_at": "2026-10-25T21:12:46.797996+00:00",
+          "previous_goal_turn_classification": "Verified wait: confirmed native1687066 and original owner/selection observer live, without restart.",
+          "actual_source_iteration": 8,
+          "actual_checked_iteration": 32,
+          "diagnostic_file": "reports/G07_full_racket_v4/residual_ppo_centered_base8_n2048_resume32_01/ppo/model_31.pt",
+          "source_canonical8_sha256": "6f82a40cac28b1ecba4993ef2f7fb8f332b0668a58406327a8adc09f7b36eb9b",
+          "diagnostic32_sha256": "bad2732742b16efac6fb55b0e3c4abdace65bfcc7bce91b887f7de9c9091e812",
+          "all17_Adam_states_preserved_and_advanced480_steps": true,
+          "both_normalizers_preserved_and_advanced": 6291456,
+          "actual_job_steps_at_update32": 6291456,
+          "cumulative_new_learner_steps_at_update32": 8388608,
+          "intermediate_policy": "reports/G07_full_racket_v4/centered_intermediate_selection_queue01/exports/iter32/policy.pt",
+          "intermediate_policy_sha256": "5d8766d88e07b307d57043ca429a348758981aa00f260e58c5ee5e823cc390dd",
+          "CPU_actual_public_samples": 1890,
+          "CPU_actor_export_max_error": 0.0,
+          "all_registered_intermediate_public_policies_ready": [
+            16,
+            24,
+            32
+          ],
+          "latest_runtime_update": 33,
+          "latest_runtime_current_job_steps": 6553600,
           "actual_main_native_pid": 1687066,
           "actual_intermediate_observer_pid": 1697096,
           "main_held_sources_unchanged": 196,
