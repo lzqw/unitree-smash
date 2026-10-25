@@ -50,19 +50,20 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/TRAIN128_LATERAL_DIAGNOSTIC_20261025.json",
-      "notes": "横向修正candidate12的固定TRAIN128复测已完成并独立重算一致：合法空中接触19/128、条件恢复12/19、攻击7、目标1、完整0、NF0；这不是新策略的形式A/B通过。现有candidate5形式A/B400完整0结果保留。高度规划已在GPU0启动CEM33：4候选x32种均匀抽取来球、1代，不修改原物理或门槛；尚无新原生成绩。",
+      "notes": "高度规划CEM33已完成并逐候选重算，最佳5/32合法空中接触、条件恢复2/5、攻击2、目标0、完整0、NF0；同参数参考另一批3/32，未显示分布改善。已回到此前实测的横向candidate12，启用gain1.5行走航向反馈，在GPU0运行CEM34四候选x32来球；新效果尚未测完。原形式A/B400完整0的失败结论保留。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
       "active_gpu_jobs": [
         {
-          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/cem33_height_mix50_train32_1050",
-          "guard_pid": 1547320,
-          "child_pid": 1547331,
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/cem34_walk_heading_train32_1120",
+          "guard_pid": 1551980,
+          "child_pid": 1551994,
           "state": "RUNNING",
-          "source_commit": "daad9eff10e7673bd873d6f66ad02e3d7ebdfc5a",
-          "scope": "Native TRAIN32 height-planning adaptation;4candidates,1generation",
+          "session_id": 5222,
+          "source_commit": "c92342a",
+          "scope": "Native walking-heading adaptation, gain1.5;4candidates x32 distinct TRAIN cases,1generation",
           "declared_control_env_steps": 102400
         }
       ],
@@ -70,9 +71,9 @@
         "state_file": "reports/G07_full_racket_v4/height_native_queue_1050/state.json",
         "pid": 1546233,
         "session_id": 61744,
-        "state_at_last_check": "RUNNING_FOLLOWUP",
+        "state_at_last_check": "SUCCEEDED",
         "next_jobs": [],
-        "still_running": true,
+        "still_running": false,
         "note": "Requires verified prior guard/child exit, successful TRAIN128 receipt, NF0, below original TRAIN thresholds, and unchanged source/initializer hashes; never duplicate manually.",
         "current_job": "cem33_height_mix50_train32_1050",
         "guard_pid": 1547320,
@@ -206,6 +207,18 @@
           "resource_receipt": "reports/G07_full_racket_v4/ball_native_reference_interception32_cem07/job.json",
           "actual_gpu_hours": 0.6005444276922208,
           "actual_control_env_steps": 204800
+        },
+        {
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/cem33_height_mix50_train32_1050",
+          "guard_pid": 1547320,
+          "child_pid": 1547331,
+          "state": "SUCCEEDED",
+          "source_commit": "daad9eff10e7673bd873d6f66ad02e3d7ebdfc5a",
+          "scope": "Native TRAIN32 height-planning adaptation;4candidates,1generation",
+          "declared_control_env_steps": 102400,
+          "resource_receipt": "reports/G07_full_racket_v4/cem33_height_mix50_train32_1050/job.json",
+          "actual_gpu_hours": 0.30592633404583064,
+          "actual_control_env_steps": 102400
         }
       ],
       "prepared_controller_branch": {
@@ -734,7 +747,7 @@
         "formal_acceptance": false
       },
       "lateral_feedback_result": "reports/G07_full_racket_v4/CEM32_LATERAL_RESULT_20261025.json",
-      "active_train_diagnostic": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/train128_lateral_c12_1025",
+      "active_train_diagnostic": null,
       "prepared_height_interception": {
         "scope": "CPU-ready only; no native performance inherited.",
         "code_commit": "7d5fb02",
@@ -744,7 +757,9 @@
         "native_execution": false,
         "formal_acceptance": false,
         "tests_passed": 298,
-        "native_execution_started": true
+        "native_execution_started": true,
+        "native_execution_completed": true,
+        "native_result": "reports/G07_full_racket_v4/CEM33_HEIGHT_RESULT_20261025.json"
       },
       "latest_native_train_diagnostic": "reports/G07_full_racket_v4/train128_lateral_c12_1025/metrics.json",
       "previous_formal_evaluation_video": {
@@ -764,8 +779,11 @@
         "formal_acceptance": false,
         "module": "quadsmash/control/full_racket_walk_heading_v4.py",
         "policy": "reports/G07_full_racket_v4/walk_heading_ready_1115/policy.pt",
-        "tests_passed": 310
-      }
+        "tests_passed": 310,
+        "native_execution_started": true,
+        "active_output": "reports/G07_full_racket_v4/cem34_walk_heading_train32_1120"
+      },
+      "height_feedback_result": "reports/G07_full_racket_v4/CEM33_HEIGHT_RESULT_20261025.json"
     },
     "G08": {
       "state": "TODO",
