@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/TRAIN128_LATERAL_DIAGNOSTIC_20261025.json",
-      "notes": "原96续训及固定TRAIN128均已完成：固定完整0/128、空中24/128、条件恢复8/24、NF0，未达原门槛，条件队列跳过原A/B。两条真实新视频及1171962010字节完整资料包均已上传并下载验SHA。联合落点奖励与显式公共actor迁移已合并，42项CPU检查通过；已登记2048环境8更新的新学习器实验，canonical32仅作actor初始化，原物理、规则、全部来球及验收要求保持。新实验已在GPU0启动，实际2048地面状态、零时钟/初速、128来球各16副本和353源文件SHA已核验；首个PPO更新及262144控制环境步已实际完成，模型/Adam有限，尚无完整8秒回合；纠正后的独立TRAIN128后续评估观察进程已运行等待，新策略尚无成绩，G07仍未通过。 联合奖励新学习器的六案例CPU视频观察进程现已启动等待固定评估；TRAIN19/23/107/0/8/58均在本轮训练前登记，保留全部结果，尚无新视频或新策略成绩。",
+      "notes": "原96续训及固定TRAIN128均已完成：固定完整0/128、空中24/128、条件恢复8/24、NF0，未达原门槛，条件队列跳过原A/B。两条真实新视频及1171962010字节完整资料包均已上传并下载验SHA。联合落点奖励与显式公共actor迁移已合并，42项CPU检查通过；已登记2048环境8更新的新学习器实验，canonical32仅作actor初始化，原物理、规则、全部来球及验收要求保持。新实验已在GPU0启动，实际2048地面状态、零时钟/初速、128来球各16副本和353源文件SHA已核验；首个PPO更新及262144控制环境步已实际完成，模型/Adam有限，尚无完整8秒回合；纠正后的独立TRAIN128后续评估观察进程已运行等待，新策略尚无成绩，G07仍未通过。 联合奖励新学习器的六案例CPU视频观察进程现已启动等待固定评估；TRAIN19/23/107/0/8/58均在本轮训练前登记，保留全部结果，尚无新视频或新策略成绩。 第3次更新实际786432控制环境步，actor已开始更新且模型/Adam有限；原1429条闭合回合已独立重算88空中/0条件恢复/0完整/NF0，另619路初始回合未闭合，不将截尾子集当作策略退化或冻结策略成绩。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
@@ -58,14 +58,14 @@
       "active_gpu_jobs": [
         {
           "state": "RUNNING_NATIVE_JOINT_PLACEMENT_PROBE8",
-          "observed_at": "2026-10-25T12:50:29.303424+00:00",
+          "observed_at": "2026-10-25T12:59:21.915278+00:00",
           "wrapper_pid": 1634321,
           "guard_pid": 1634322,
           "native_child_pid": 1634334,
           "session_id": 67232,
           "gpu": 0,
           "training_output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01",
-          "state_evidence": "First actual PPO update and262144 control env steps checked; model/Adam finite. Actor weights/log_std equal source32 during warmup, actor normalization evolves; no full ground episode closed yet.",
+          "state_evidence": "First actor-learning update3 verified with finite model/Adam and positive actor-weight changes. All1429 available closed episodes independently rescored;619 initial lanes remain pending. No frozen-policy score.",
           "launch_git_sha": "d8664770fe92c36455ab799d8bd183f0d70051c7",
           "requested_updates": 8,
           "num_envs": 2048,
@@ -76,10 +76,12 @@
           "native_ground_initialization_verified": true,
           "first_PPO_update_verified": true,
           "startup_check": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_NATIVE_STARTUP_CHECK.json",
-          "latest_verified_update": 1,
-          "actual_control_env_steps": 262144,
-          "closed_episodes": 0,
-          "first_update_check": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_FIRST_UPDATE_CHECK.json"
+          "latest_verified_update": 3,
+          "actual_control_env_steps": 786432,
+          "closed_episodes": 1429,
+          "first_update_check": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_FIRST_UPDATE_CHECK.json",
+          "first_actual_actor_learning_update": true,
+          "latest_finite_and_episode_check": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_UPDATE03_CHECK.json"
         }
       ],
       "queued_native_sequence": {
@@ -1401,14 +1403,14 @@
       },
       "current_native_workflow_state": {
         "state": "RUNNING_NATIVE_JOINT_PLACEMENT_PROBE8",
-        "observed_at": "2026-10-25T12:50:29.303424+00:00",
+        "observed_at": "2026-10-25T12:59:21.915278+00:00",
         "wrapper_pid": 1634321,
         "guard_pid": 1634322,
         "native_child_pid": 1634334,
         "session_id": 67232,
         "gpu": 0,
         "training_output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01",
-        "state_evidence": "First actual PPO update and262144 control env steps checked; model/Adam finite. Actor weights/log_std equal source32 during warmup, actor normalization evolves; no full ground episode closed yet.",
+        "state_evidence": "First actor-learning update3 verified with finite model/Adam and positive actor-weight changes. All1429 available closed episodes independently rescored;619 initial lanes remain pending. No frozen-policy score.",
         "launch_git_sha": "d8664770fe92c36455ab799d8bd183f0d70051c7",
         "requested_updates": 8,
         "num_envs": 2048,
@@ -1419,10 +1421,12 @@
         "native_ground_initialization_verified": true,
         "first_PPO_update_verified": true,
         "startup_check": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_NATIVE_STARTUP_CHECK.json",
-        "latest_verified_update": 1,
-        "actual_control_env_steps": 262144,
-        "closed_episodes": 0,
-        "first_update_check": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_FIRST_UPDATE_CHECK.json"
+        "latest_verified_update": 3,
+        "actual_control_env_steps": 786432,
+        "closed_episodes": 1429,
+        "first_update_check": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_FIRST_UPDATE_CHECK.json",
+        "first_actual_actor_learning_update": true,
+        "latest_finite_and_episode_check": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_UPDATE03_CHECK.json"
       },
       "latest_completed_fixed_TRAIN128": {
         "report": "reports/G07_full_racket_v4/residual_iter96_fixed_diagnostic_20261025/REPORT.json",
@@ -3894,6 +3898,23 @@
         "formal_cases_read": false,
         "formal_acceptance": false,
         "note": "Wait for corrected frozen TRAIN128 observer to actually succeed, independently verify all128, render all six original preselected first episodes, decode every frame, and leave for visual review. No new video exists or has been uploaded yet."
+      },
+      "native_joint_placement_update03": {
+        "report": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_UPDATE03_CHECK.json",
+        "actual_control_env_steps": 786432,
+        "all_closed_native_counts_independently_recomputed": true,
+        "counts": {
+          "completed_episodes": 1429,
+          "air": 88,
+          "conditional_recovery_count": 0,
+          "complete": 0,
+          "numerical_failures": 0
+        },
+        "first_ground_cohort_pending": 619,
+        "model_and_Adam_finite": true,
+        "actor_weights_actually_updated": true,
+        "scope": "Censored changing-policy TRAIN prefix; neither whole ground cohort nor frozen policy performance.",
+        "formal_acceptance": false
       }
     },
     "G08": {
