@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/TRAIN128_LATERAL_DIAGNOSTIC_20261025.json",
-      "notes": "原96续训及固定TRAIN128均已完成：固定完整0/128、空中24/128、条件恢复8/24、NF0，未达原门槛，条件队列跳过原A/B。两条真实新视频及1171962010字节完整资料包均已上传并下载验SHA。联合落点奖励与显式公共actor迁移已合并，42项CPU检查通过；已登记2048环境8更新的新学习器实验，canonical32仅作actor初始化，原物理、规则、全部来球及验收要求保持。新实验已在GPU0启动，实际2048地面状态、零时钟/初速、128来球各16副本和353源文件SHA已核验；首个PPO更新及262144控制环境步已实际完成，模型/Adam有限，尚无完整8秒回合；纠正后的独立TRAIN128后续评估观察进程已运行等待，新策略尚无成绩，G07仍未通过。",
+      "notes": "原96续训及固定TRAIN128均已完成：固定完整0/128、空中24/128、条件恢复8/24、NF0，未达原门槛，条件队列跳过原A/B。两条真实新视频及1171962010字节完整资料包均已上传并下载验SHA。联合落点奖励与显式公共actor迁移已合并，42项CPU检查通过；已登记2048环境8更新的新学习器实验，canonical32仅作actor初始化，原物理、规则、全部来球及验收要求保持。新实验已在GPU0启动，实际2048地面状态、零时钟/初速、128来球各16副本和353源文件SHA已核验；首个PPO更新及262144控制环境步已实际完成，模型/Adam有限，尚无完整8秒回合；纠正后的独立TRAIN128后续评估观察进程已运行等待，新策略尚无成绩，G07仍未通过。 联合奖励新学习器的六案例CPU视频观察进程现已启动等待固定评估；TRAIN19/23/107/0/8/58均在本轮训练前登记，保留全部结果，尚无新视频或新策略成绩。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
@@ -3871,6 +3871,29 @@
         "formal_cases_read": false,
         "formal_acceptance": false,
         "note": "Only after existing training truly exits successfully and finite canonical/export/new learner counters and all2048 first ground episodes validate; original GPU0 guard and cumulative ledger. Independent original TRAIN scoring and separate CSVs. Old observer cancelled before any assessment, no training interruption."
+      },
+      "queued_joint_placement_probe_video": {
+        "state": "WAITING_FOR_FROZEN_JOINT_REWARD_TRAIN128",
+        "pid": 1636394,
+        "session_id": 23531,
+        "state_file": "reports/G07_full_racket_v4/joint_placement_probe8_video_queue01/state.json",
+        "source": "reports/G07_full_racket_v4/joint_placement_probe8_video_queue01/run.py",
+        "plan": "reports/G07_full_racket_v4/joint_placement_probe8_video_queue01/PREDECLARED_PLAN.json",
+        "preparation_checks": "reports/G07_full_racket_v4/joint_placement_probe8_video_queue01/PREPARATION_CHECKS.json",
+        "preselected_TRAIN_indices": [
+          19,
+          23,
+          107,
+          0,
+          8,
+          58
+        ],
+        "selection_declared_before_this_training": true,
+        "video": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/video/Current_effect_residual_PPO_joint_placement_probe8_20261025.mp4",
+        "renderer_uses_gpu": false,
+        "formal_cases_read": false,
+        "formal_acceptance": false,
+        "note": "Wait for corrected frozen TRAIN128 observer to actually succeed, independently verify all128, render all six original preselected first episodes, decode every frame, and leave for visual review. No new video exists or has been uploaded yet."
       }
     },
     "G08": {
