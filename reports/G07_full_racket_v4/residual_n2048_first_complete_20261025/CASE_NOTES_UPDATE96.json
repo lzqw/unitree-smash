@@ -1,0 +1,46 @@
+{
+  "created_at": "2026-10-25T11:46:07.625804+00:00",
+  "snapshot_update": 96,
+  "source_report": "SUPPLEMENT_UPDATE96.json",
+  "source_report_sha256": "44924cfd7e2df19bd275f83525071970038bad0883f0dcf908cf59ad9927f61d",
+  "all_closed_training_counts": {
+    "completed_episodes": 39077,
+    "air": 3332,
+    "conditional_recovery_count": 1244,
+    "complete": 8,
+    "numerical_failures": 0
+  },
+  "new_cases_since_prefix": [],
+  "negative_margin_case_ids": [],
+  "net_margin_definition": "At the trailing-surface crossing, the recorded center is x=net_plane_x+radius. net_margin=center_z-radius-strip_top. This diagnostic is not the minimum geometric clearance of the moving sphere from the finite net band.",
+  "crossing_rule": "The unchanged rule requires the measured trailing crossing center above the actual strip top, within net width, after legal racket contact and without invalidating faults. Native solid-band collision governs response; shuttle/net touch itself is allowed.",
+  "clearance_limit": "No full training trajectory was saved. A negative recorded margin alone neither measures minimum clearance nor proves net contact. Preserve its sign; do not describe it as positive clearance.",
+  "rule_source": "quadsmash/physics/rally_rules_v4.py",
+  "rule_source_sha256": "80960adcc3cc6ebc0bbf58060aea6e208e74a9f28a62bb2f4a66140db4a98bed",
+  "native_contact_matching_performed_by_this_program": false,
+  "full_training_motion_saved": false,
+  "frozen_policy_assessment_performed_by_this_program": false,
+  "observed_receipts": {
+    "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/job.json": {
+      "observed_at": "2026-10-25T11:46:07.625717+00:00",
+      "exists": true,
+      "bytes": 1404,
+      "sha256": "77186e48b6e15137ff0990953910f77b49604a189ac49093d27e8e8cd78a6336"
+    },
+    "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/FINAL_CONTACT_CONFIRMATION.json": {
+      "observed_at": "2026-10-25T11:46:07.625752+00:00",
+      "exists": true,
+      "bytes": 93275,
+      "sha256": "8fc9f96e63141b149d69b430ccfd4c636caefa9966733bff14745d0c87e1381e"
+    },
+    "reports/G07_full_racket_v4/residual_ppo_fixed_train128_iter96_n2048_01/job.json": {
+      "observed_at": "2026-10-25T11:46:07.625800+00:00",
+      "exists": false,
+      "bytes": null,
+      "sha256": null
+    }
+  },
+  "receipt_scope": "File observations only. This storage verifier does not validate contact or fixed-policy receipts; use the separate native queue and delivery checks.",
+  "formal_acceptance": false,
+  "goal_complete": false
+}

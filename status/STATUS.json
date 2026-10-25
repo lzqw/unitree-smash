@@ -57,33 +57,20 @@
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
       "active_gpu_jobs": [
         {
-          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01",
-          "guard_pid": 1582969,
-          "child_pid": 1582980,
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_fixed_train128_iter96_n2048_01",
+          "guard_pid": 1625828,
+          "child_pid": 1625839,
           "state": "RUNNING",
-          "source_commit": "a5716750e2f996dd7ddf10e001fa898d02c525cc",
           "parent_queue_pid": 1576853,
           "parent_queue_session_id": 81975,
-          "scope": "Native residual PPO learner fork on2048 fresh ground environments,128 TRAIN cases replicated16 times;64additional updates from32 to96, no frozen performance yet.",
-          "declared_control_env_steps": 16777216,
-          "independently_verified_update": 69,
-          "verified_current_job_steps": 9699328,
-          "progress_file": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/progress.json",
-          "verified_cumulative_learner_steps": 11403264,
-          "model_optimizer_tensors_finite": true,
-          "last_verified_training_counts": {
-            "completed_episodes": 22376,
-            "air": 1790,
-            "conditional_recovery_count": 695,
-            "complete": 7,
-            "numerical_failures": 0
-          },
-          "diagnostic_checkpoint_sha256": "eef3cc2cbef0f2c7958313bf1d80b65b2a637a9bba6543845ab3206b1f43ce1e",
-          "diagnostic_checkpoint_canonical_restart": false,
-          "verified_progress_sha256": "9a683d2081b75732991cd666160fe646e3fa24e8bb6f09bcb88d9557e72139c4",
-          "verified_episode_snapshot_sha256": "b27d766c3649ece7455fb1a570df7a5b1f6015cfa18dfa6bfa99d26c79979fbf",
-          "verified_at": "2026-10-25T09:22:23.474267+00:00",
-          "midpoint_report": "reports/G07_full_racket_v4/residual_n2048_midpoint_20261025/REPORT.json"
+          "scope": "Actual fixed policy96 on all128 original TRAIN cases from ground, noise none. No formal performance yet.",
+          "declared_control_env_steps": 102400,
+          "per_job_timeout_s": 2700,
+          "policy_sha256": "f4467fce12b1ab36065447f8156fbab5814d05fde6b9fb7409cb8ca24ac7e73e",
+          "progress_file": "reports/G07_full_racket_v4/residual_ppo_fixed_train128_iter96_n2048_01/progress.json",
+          "last_observed_control_ticks": 300,
+          "requested_control_ticks": 800,
+          "formal_acceptance": false
         }
       ],
       "queued_native_sequence": {
@@ -291,6 +278,18 @@
           "resource_receipt": "reports/G07_full_racket_v4/cem35_inner_strings_pose_train32_1150/job.json",
           "actual_gpu_hours": 0.35704061675111815,
           "actual_control_env_steps": 409600
+        },
+        {
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01",
+          "guard_pid": 1582969,
+          "child_pid": 1582980,
+          "state": "SUCCEEDED",
+          "source_commit": "a5716750e2f996dd7ddf10e001fa898d02c525cc",
+          "resource_receipt": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/job.json",
+          "actual_gpu_hours": 5.586887019077193,
+          "actual_control_env_steps": 16777216,
+          "finished_at": "2026-10-25T11:43:01.451109+00:00",
+          "final_training_review": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/FINAL_TRAINING_REVIEW.json"
         }
       ],
       "prepared_controller_branch": {
@@ -1312,7 +1311,7 @@
         "pid": 1576853,
         "session_id": 81975,
         "state_file": "reports/G07_full_racket_v4/residual_resize2048_queue01/state.json",
-        "state_at_last_check": "RUNNING_NATIVE_N2048_LEARNER_FORK",
+        "state_at_last_check": "RUNNING_FIXED_TRAIN128_ITER96",
         "plan": "reports/G07_full_racket_v4/residual_resize2048_queue01/PREDECLARED_PLAN.json",
         "num_envs": 2048,
         "distinct_TRAIN_cases": 128,
@@ -1325,7 +1324,13 @@
         "formal_acceptance": false,
         "guard_pid": 1582969,
         "child_pid": 1582980,
-        "still_running": true
+        "still_running": true,
+        "training_status": "SUCCEEDED",
+        "training_guard_exited": true,
+        "training_child_exited": true,
+        "guard_pid_scope": "Original completed training job; current fixed job is recorded in active_gpu_jobs",
+        "current_fixed_guard_pid": 1625828,
+        "current_fixed_child_pid": 1625839
       },
       "pending_iter32_delivery": {
         "builder": "reports/G07_full_racket_v4/residual_iter32_delivery_20261025/build.py",
@@ -1336,25 +1341,28 @@
         "archive_receipt": "reports/G07_full_racket_v4/residual_iter32_delivery_20261025/UPLOAD_RECEIPT.json"
       },
       "latest_completed_residual_training": {
-        "report": "reports/G07_full_racket_v4/residual_iter32_training_completion_20261025/REPORT.json",
-        "csv": "reports/G07_full_racket_v4/residual_iter32_training_completion_20261025/training_episodes.csv",
-        "iteration": 32,
-        "policy_sha256": "772608a1c42ec78c09cdf3bd8b7bfe3fed1738d1273cde9d09610022553aa21b",
-        "checkpoint_sha256": "2060f15dbe0ebabbb4b4657a6906fbf40ca661564025e8e06888f55b2fe1a041",
+        "report": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/FINAL_TRAINING_REVIEW.json",
+        "iteration": 96,
+        "policy_sha256": "f4467fce12b1ab36065447f8156fbab5814d05fde6b9fb7409cb8ca24ac7e73e",
+        "checkpoint_sha256": "cf9bf35566124d91bfbf86b999f8a46834254d28669a0512a5df61ed8c8f3b33",
         "changing_policy_counts": {
-          "completed_episodes": 3171,
-          "air": 417,
-          "conditional_recovery_count": 210,
-          "complete": 1,
+          "completed_episodes": 39077,
+          "air": 3332,
+          "conditional_recovery_count": 1244,
+          "complete": 8,
           "numerical_failures": 0
         },
-        "actual_gpu_hours": 1.4073810205116752,
+        "actual_gpu_hours": 5.586887019077193,
+        "actual_new_control_env_steps": 16777216,
+        "cumulative_learner_control_env_steps": 18481152,
+        "final_native_contact_confirmation": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/FINAL_CONTACT_CONFIRMATION.json",
+        "csv_export_pending_parent_completion": true,
         "frozen_policy_performance": false
       },
       "current_native_workflow_state": {
         "pid": 1576853,
         "session_id": 81975,
-        "state": "RUNNING_NATIVE_N2048_LEARNER_FORK",
+        "state": "RUNNING_FIXED_TRAIN128_ITER96",
         "state_file": "reports/G07_full_racket_v4/residual_resize2048_queue01/state.json"
       },
       "latest_completed_fixed_TRAIN128": {
@@ -1699,13 +1707,13 @@
         "scope": "One independently rechecked complete TRAIN58 native episode during changing-policy stochastic PPO learning. No frozen-policy performance or formal A/B claim.",
         "formal_acceptance": false,
         "latest_supplement": {
-          "report": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/SUPPLEMENT_UPDATE85.json",
-          "report_sha256": "494436847411913d20504b61f0f6d86f7826e5f66287b1dcec27417a964dfb9c",
-          "snapshot_update": 85,
+          "report": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/SUPPLEMENT_UPDATE96.json",
+          "report_sha256": "44924cfd7e2df19bd275f83525071970038bad0883f0dcf908cf59ad9927f61d",
+          "snapshot_update": 96,
           "counts": {
-            "completed_episodes": 32369,
-            "air": 2605,
-            "conditional_recovery_count": 977,
+            "completed_episodes": 39077,
+            "air": 3332,
+            "conditional_recovery_count": 1244,
             "complete": 8,
             "numerical_failures": 0
           },
@@ -1901,13 +1909,13 @@
               "first_string_rollout_actor_iteration": 80
             }
           ],
-          "prefix_report": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/SUPPLEMENT_UPDATE69.json",
-          "preserved_prefix_rows": 22376,
-          "appended_rows": 9993,
-          "appended_gzip_bytes": 18936771,
-          "storage_checks": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/INCREMENTAL_STORAGE_CHECKS_UPDATE85.json",
-          "case_notes": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/CASE_NOTES_UPDATE85.json",
-          "native_contact_record_match_pending": true,
+          "prefix_report": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/SUPPLEMENT_UPDATE85.json",
+          "preserved_prefix_rows": 32369,
+          "appended_rows": 6708,
+          "appended_gzip_bytes": 12735935,
+          "storage_checks": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/INCREMENTAL_STORAGE_CHECKS_UPDATE96.json",
+          "case_notes": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/CASE_NOTES_UPDATE96.json",
+          "native_contact_record_match_pending": false,
           "formal_acceptance": false,
           "goal_complete": false
         },
@@ -2507,6 +2515,219 @@
             "storage_checks": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/INCREMENTAL_STORAGE_CHECKS_UPDATE69.json",
             "native_contact_record_match_pending": true,
             "formal_acceptance": false
+          },
+          {
+            "report": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/SUPPLEMENT_UPDATE85.json",
+            "report_sha256": "494436847411913d20504b61f0f6d86f7826e5f66287b1dcec27417a964dfb9c",
+            "snapshot_update": 85,
+            "counts": {
+              "completed_episodes": 32369,
+              "air": 2605,
+              "conditional_recovery_count": 977,
+              "complete": 8,
+              "numerical_failures": 0
+            },
+            "complete_case_ids": [
+              "TRAIN58_LANE1338_EP2",
+              "TRAIN23_LANE1687_EP2",
+              "TRAIN36_LANE1828_EP2",
+              "TRAIN25_LANE25_EP8",
+              "TRAIN35_LANE291_EP8",
+              "TRAIN98_LANE226_EP12",
+              "TRAIN111_LANE2031_EP12",
+              "TRAIN61_LANE957_EP13"
+            ],
+            "distinct_TRAIN_cases": [
+              23,
+              25,
+              35,
+              36,
+              58,
+              61,
+              98,
+              111
+            ],
+            "actor_lineage": [
+              {
+                "case_id": "TRAIN58_LANE1338_EP2",
+                "source_TRAIN_case": 58,
+                "env_id": 1338,
+                "episode_index": 2,
+                "job_ticks": [
+                  948,
+                  1748
+                ],
+                "actor_iterations_encountered": [
+                  39,
+                  40,
+                  41,
+                  42,
+                  43,
+                  44,
+                  45
+                ],
+                "contact_rollout_actor_iteration": 41,
+                "first_string_rollout_actor_iteration": 41
+              },
+              {
+                "case_id": "TRAIN23_LANE1687_EP2",
+                "source_TRAIN_case": 23,
+                "env_id": 1687,
+                "episode_index": 2,
+                "job_ticks": [
+                  1112,
+                  1912
+                ],
+                "actor_iterations_encountered": [
+                  40,
+                  41,
+                  42,
+                  43,
+                  44,
+                  45,
+                  46
+                ],
+                "contact_rollout_actor_iteration": 42,
+                "first_string_rollout_actor_iteration": 42
+              },
+              {
+                "case_id": "TRAIN36_LANE1828_EP2",
+                "source_TRAIN_case": 36,
+                "env_id": 1828,
+                "episode_index": 2,
+                "job_ticks": [
+                  1117,
+                  1917
+                ],
+                "actor_iterations_encountered": [
+                  40,
+                  41,
+                  42,
+                  43,
+                  44,
+                  45,
+                  46
+                ],
+                "contact_rollout_actor_iteration": 42,
+                "first_string_rollout_actor_iteration": 42
+              },
+              {
+                "case_id": "TRAIN25_LANE25_EP8",
+                "source_TRAIN_case": 25,
+                "env_id": 25,
+                "episode_index": 8,
+                "job_ticks": [
+                  3047,
+                  3847
+                ],
+                "actor_iterations_encountered": [
+                  55,
+                  56,
+                  57,
+                  58,
+                  59,
+                  60,
+                  61,
+                  62
+                ],
+                "contact_rollout_actor_iteration": 57,
+                "first_string_rollout_actor_iteration": 57
+              },
+              {
+                "case_id": "TRAIN35_LANE291_EP8",
+                "source_TRAIN_case": 35,
+                "env_id": 291,
+                "episode_index": 8,
+                "job_ticks": [
+                  3443,
+                  4243
+                ],
+                "actor_iterations_encountered": [
+                  58,
+                  59,
+                  60,
+                  61,
+                  62,
+                  63,
+                  64,
+                  65
+                ],
+                "contact_rollout_actor_iteration": 61,
+                "first_string_rollout_actor_iteration": 61
+              },
+              {
+                "case_id": "TRAIN98_LANE226_EP12",
+                "source_TRAIN_case": 98,
+                "env_id": 226,
+                "episode_index": 12,
+                "job_ticks": [
+                  3731,
+                  4531
+                ],
+                "actor_iterations_encountered": [
+                  61,
+                  62,
+                  63,
+                  64,
+                  65,
+                  66,
+                  67
+                ],
+                "contact_rollout_actor_iteration": 63,
+                "first_string_rollout_actor_iteration": 63
+              },
+              {
+                "case_id": "TRAIN111_LANE2031_EP12",
+                "source_TRAIN_case": 111,
+                "env_id": 2031,
+                "episode_index": 12,
+                "job_ticks": [
+                  3745,
+                  4545
+                ],
+                "actor_iterations_encountered": [
+                  61,
+                  62,
+                  63,
+                  64,
+                  65,
+                  66,
+                  67
+                ],
+                "contact_rollout_actor_iteration": 63,
+                "first_string_rollout_actor_iteration": 63
+              },
+              {
+                "case_id": "TRAIN61_LANE957_EP13",
+                "source_TRAIN_case": 61,
+                "env_id": 957,
+                "episode_index": 13,
+                "job_ticks": [
+                  5909,
+                  6709
+                ],
+                "actor_iterations_encountered": [
+                  78,
+                  79,
+                  80,
+                  81,
+                  82,
+                  83,
+                  84
+                ],
+                "contact_rollout_actor_iteration": 80,
+                "first_string_rollout_actor_iteration": 80
+              }
+            ],
+            "prefix_report": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/SUPPLEMENT_UPDATE69.json",
+            "preserved_prefix_rows": 22376,
+            "appended_rows": 9993,
+            "appended_gzip_bytes": 18936771,
+            "storage_checks": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/INCREMENTAL_STORAGE_CHECKS_UPDATE85.json",
+            "case_notes": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/CASE_NOTES_UPDATE85.json",
+            "native_contact_record_match_pending": true,
+            "formal_acceptance": false,
+            "goal_complete": false
           }
         ],
         "earlier_additional_cases": [
@@ -2778,7 +2999,21 @@
             },
             "scope": "Independently scored whole-chain native TRAIN completion under changing actors, normalizers and exploration; no frozen-policy performance."
           }
-        ]
+        ],
+        "final_training_review": {
+          "report": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/FINAL_TRAINING_REVIEW.json",
+          "sha256": "e8ec5df4d5623f1d50c8e58b66e7b91867dc14d345db1defd1bcb4029947bc9a"
+        },
+        "final_native_contact_confirmation": {
+          "report": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/FINAL_CONTACT_CONFIRMATION.json",
+          "sha256": "8fc9f96e63141b149d69b430ccfd4c636caefa9966733bff14745d0c87e1381e",
+          "state": "CONFIRMED",
+          "matched_complete_episodes": 8,
+          "body_poses_per_event": 28,
+          "max_independently_recomputed_point_velocity_error_mps": 2.0237356139187822e-05,
+          "velocity_scope": "Recorded post-PhysX contact integration state; not independently measured incident impact velocity."
+        },
+        "original_pending_fields_scope": "Original REPORT and earlier supplements remain unchanged creation history; the final confirmation and final training review supersede their pending fields."
       },
       "queued_iter96_TRAIN58_video": {
         "pid": 1594357,
@@ -2904,7 +3139,7 @@
       "queued_iter96_training_contact_confirmation": {
         "pid": 1603783,
         "session_id": 86613,
-        "state": "WAITING_FOR_ACTUAL_TRAINING_GUARD_EXIT",
+        "state": "SUCCEEDED",
         "state_file": "reports/G07_full_racket_v4/residual_iter96_contact_queue01/state.json",
         "source": "reports/G07_full_racket_v4/residual_iter96_contact_queue01/run.py",
         "source_sha256": "957f0d0193be0f46be802f78616f74d26974e9cfeafe4c8d2d8569df6a3d1cd9",
@@ -2924,7 +3159,11 @@
         "automatic_retries": false,
         "GPU_jobs_started": false,
         "formal_acceptance": false,
-        "goal_complete": false
+        "goal_complete": false,
+        "process_exited": true,
+        "completed_at": "2026-10-25T11:43:10.750927+00:00",
+        "finalized_confirmation_sha256": "8fc9f96e63141b149d69b430ccfd4c636caefa9966733bff14745d0c87e1381e",
+        "matched_complete_episodes": 8
       },
       "native2048_verified_midpoint": {
         "report": "reports/G07_full_racket_v4/residual_n2048_midpoint_20261025/REPORT.json",
@@ -3069,7 +3308,61 @@
         "source_fingerprints_unchanged": true,
         "formal_acceptance": false,
         "goal_complete": false
-      }
+      },
+      "historical_completed_residual_training": [
+        {
+          "report": "reports/G07_full_racket_v4/residual_iter32_training_completion_20261025/REPORT.json",
+          "csv": "reports/G07_full_racket_v4/residual_iter32_training_completion_20261025/training_episodes.csv",
+          "iteration": 32,
+          "policy_sha256": "772608a1c42ec78c09cdf3bd8b7bfe3fed1738d1273cde9d09610022553aa21b",
+          "checkpoint_sha256": "2060f15dbe0ebabbb4b4657a6906fbf40ca661564025e8e06888f55b2fe1a041",
+          "changing_policy_counts": {
+            "completed_episodes": 3171,
+            "air": 417,
+            "conditional_recovery_count": 210,
+            "complete": 1,
+            "numerical_failures": 0
+          },
+          "actual_gpu_hours": 1.4073810205116752,
+          "frozen_policy_performance": false
+        }
+      ],
+      "historical_active_gpu_job_observations": [
+        {
+          "scope": "Previous training progress observation retained unchanged",
+          "jobs": [
+            {
+              "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01",
+              "guard_pid": 1582969,
+              "child_pid": 1582980,
+              "state": "RUNNING",
+              "source_commit": "a5716750e2f996dd7ddf10e001fa898d02c525cc",
+              "parent_queue_pid": 1576853,
+              "parent_queue_session_id": 81975,
+              "scope": "Native residual PPO learner fork on2048 fresh ground environments,128 TRAIN cases replicated16 times;64additional updates from32 to96, no frozen performance yet.",
+              "declared_control_env_steps": 16777216,
+              "independently_verified_update": 69,
+              "verified_current_job_steps": 9699328,
+              "progress_file": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/progress.json",
+              "verified_cumulative_learner_steps": 11403264,
+              "model_optimizer_tensors_finite": true,
+              "last_verified_training_counts": {
+                "completed_episodes": 22376,
+                "air": 1790,
+                "conditional_recovery_count": 695,
+                "complete": 7,
+                "numerical_failures": 0
+              },
+              "diagnostic_checkpoint_sha256": "eef3cc2cbef0f2c7958313bf1d80b65b2a637a9bba6543845ab3206b1f43ce1e",
+              "diagnostic_checkpoint_canonical_restart": false,
+              "verified_progress_sha256": "9a683d2081b75732991cd666160fe646e3fa24e8bb6f09bcb88d9557e72139c4",
+              "verified_episode_snapshot_sha256": "b27d766c3649ece7455fb1a570df7a5b1f6015cfa18dfa6bfa99d26c79979fbf",
+              "verified_at": "2026-10-25T09:22:23.474267+00:00",
+              "midpoint_report": "reports/G07_full_racket_v4/residual_n2048_midpoint_20261025/REPORT.json"
+            }
+          ]
+        }
+      ]
     },
     "G08": {
       "state": "TODO",

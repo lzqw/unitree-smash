@@ -4,7 +4,7 @@
 
 第96次更新后的[正式A/B后续队列](reports/G07_full_racket_v4/residual_iter96_formal_queue01/PREDECLARED_PLAN.json)已实际登记等待，28项CPU门槛检查通过。它只在真实新固定TRAIN128达到原全部比例且数值故障0后，锁定同一权重与源码、依次执行原A/B各200回合；未达则跳过并继续改进策略。队列登记时第56次更新的14048回合独立重算为1142空中/460条件恢复/3完整/NF0；后续进度见下方中点记录，均不是冻结策略或正式成绩。
 
-[本轮完整训练回合已独立核验8例](reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/SUPPLEMENT_UPDATE85.json)，来自8种TRAIN来球。新增TRAIN61出球8.380米/秒，首次落点[3.97749,0.29124]在原目标内，合格恢复2.107秒、机身触地力0；该回合经历actor78..84，contact rollout actor80，normalizer与探索在变，不能算固定actor成绩。其net_margin=-0.005915米是在球整体越网时记录的诊断值，并非运动全过程最小几何间隙；实际越网事件为真、球触网标记为false，原值与限制见[案例说明](reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/CASE_NOTES_UPDATE85.json)。第85次更新全部32369闭合回合已独立重算为2605空中/977条件恢复/8完整/NF0；69→85追加9993行、18.94MB，原生前缀重构与CRC/SHA验证通过。最终原生接触确认、固定策略复测和新视频仍待，没有完整训练动作录像可补作。
+[第96次更新的最终训练证据](reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/FINAL_TRAINING_REVIEW.json)已保存：64次续训实际新增16777216个控制环境步，训练守护正常退出；39077个闭合回合已独立重算为3332空中/1244条件恢复/8完整/NF0，仍是变动策略训练数据。全部8例现已匹配[真实原生拍线接触](reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/FINAL_CONTACT_CONFIRMATION.json)、28体姿态和刚体点速度，独立重算最大误差0.00002024米/秒，低于原0.0001容差；这是post-PhysX状态一致性，不是独立测得的入射拍速。最终canonical96与导出权重已核对；固定TRAIN128正在GPU0执行，两个新版视频和原A/B仍待。旧快照的pending字段保持创建历史，以最终确认为准。TRAIN61的负net_margin诊断值及限制仍在[原案例说明](reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/CASE_NOTES_UPDATE85.json)，不声称有正的最小净空，也没有完整训练动作录像可补作。
 
 [续训中点独立核验](reports/G07_full_racket_v4/residual_n2048_midpoint_20261025/REPORT.json)：全局update64、本轮新增32/64更新，8388608新增控制环境步；全部19164训练回合为1516空中/599条件恢复/4完整/NF0，模型与Adam有限。首五批各2048均已闭合，后续未闭合批次单独标记。原GPU0继续至iter96，原门槛、模型和规则保持；这些计数仍非冻结策略或正式A/B成绩。
 

@@ -1,0 +1,465 @@
+{
+  "created_at": "2026-10-25T11:44:34.122703+00:00",
+  "snapshot_update": 96,
+  "scope": "Independently rescored changing-policy native TRAIN snapshot, incrementally preserved. No frozen-policy performance or formal acceptance.",
+  "preservation_program_sha256": "c3b48fc990c06f9e1d3aa394e9d488fca8809313394d77a237684863ed72fdca",
+  "prefix_report": "SUPPLEMENT_UPDATE85.json",
+  "prefix_report_sha256": "494436847411913d20504b61f0f6d86f7826e5f66287b1dcec27417a964dfb9c",
+  "preserved_prefix_episodes": 32369,
+  "additional_closed_episodes": 6708,
+  "all_closed_training_counts": {
+    "completed_episodes": 39077,
+    "air": 3332,
+    "conditional_recovery_count": 1244,
+    "complete": 8,
+    "numerical_failures": 0
+  },
+  "complete_case_ids": [
+    "TRAIN58_LANE1338_EP2",
+    "TRAIN23_LANE1687_EP2",
+    "TRAIN36_LANE1828_EP2",
+    "TRAIN25_LANE25_EP8",
+    "TRAIN35_LANE291_EP8",
+    "TRAIN98_LANE226_EP12",
+    "TRAIN111_LANE2031_EP12",
+    "TRAIN61_LANE957_EP13"
+  ],
+  "distinct_completed_TRAIN_cases": [
+    23,
+    25,
+    35,
+    36,
+    58,
+    61,
+    98,
+    111
+  ],
+  "complete_episode_file": "complete_episodes_update96.json",
+  "delta_file": "additional_closed_training_episodes_update96.json.gz",
+  "actor_lineage": [
+    {
+      "case_id": "TRAIN58_LANE1338_EP2",
+      "source_TRAIN_case": 58,
+      "env_id": 1338,
+      "episode_index": 2,
+      "job_ticks": [
+        948,
+        1748
+      ],
+      "actor_iterations_encountered": [
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45
+      ],
+      "contact_rollout_actor_iteration": 41,
+      "first_string_rollout_actor_iteration": 41
+    },
+    {
+      "case_id": "TRAIN23_LANE1687_EP2",
+      "source_TRAIN_case": 23,
+      "env_id": 1687,
+      "episode_index": 2,
+      "job_ticks": [
+        1112,
+        1912
+      ],
+      "actor_iterations_encountered": [
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "contact_rollout_actor_iteration": 42,
+      "first_string_rollout_actor_iteration": 42
+    },
+    {
+      "case_id": "TRAIN36_LANE1828_EP2",
+      "source_TRAIN_case": 36,
+      "env_id": 1828,
+      "episode_index": 2,
+      "job_ticks": [
+        1117,
+        1917
+      ],
+      "actor_iterations_encountered": [
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "contact_rollout_actor_iteration": 42,
+      "first_string_rollout_actor_iteration": 42
+    },
+    {
+      "case_id": "TRAIN25_LANE25_EP8",
+      "source_TRAIN_case": 25,
+      "env_id": 25,
+      "episode_index": 8,
+      "job_ticks": [
+        3047,
+        3847
+      ],
+      "actor_iterations_encountered": [
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62
+      ],
+      "contact_rollout_actor_iteration": 57,
+      "first_string_rollout_actor_iteration": 57
+    },
+    {
+      "case_id": "TRAIN35_LANE291_EP8",
+      "source_TRAIN_case": 35,
+      "env_id": 291,
+      "episode_index": 8,
+      "job_ticks": [
+        3443,
+        4243
+      ],
+      "actor_iterations_encountered": [
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65
+      ],
+      "contact_rollout_actor_iteration": 61,
+      "first_string_rollout_actor_iteration": 61
+    },
+    {
+      "case_id": "TRAIN98_LANE226_EP12",
+      "source_TRAIN_case": 98,
+      "env_id": 226,
+      "episode_index": 12,
+      "job_ticks": [
+        3731,
+        4531
+      ],
+      "actor_iterations_encountered": [
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67
+      ],
+      "contact_rollout_actor_iteration": 63,
+      "first_string_rollout_actor_iteration": 63
+    },
+    {
+      "case_id": "TRAIN111_LANE2031_EP12",
+      "source_TRAIN_case": 111,
+      "env_id": 2031,
+      "episode_index": 12,
+      "job_ticks": [
+        3745,
+        4545
+      ],
+      "actor_iterations_encountered": [
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67
+      ],
+      "contact_rollout_actor_iteration": 63,
+      "first_string_rollout_actor_iteration": 63
+    },
+    {
+      "case_id": "TRAIN61_LANE957_EP13",
+      "source_TRAIN_case": 61,
+      "env_id": 957,
+      "episode_index": 13,
+      "job_ticks": [
+        5909,
+        6709
+      ],
+      "actor_iterations_encountered": [
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84
+      ],
+      "contact_rollout_actor_iteration": 80,
+      "first_string_rollout_actor_iteration": 80
+    }
+  ],
+  "diagnostic_model_checks": [
+    {
+      "iteration": 39,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_38.pt",
+      "sha256": "c6839614fceee3a5b43c1d1f7ff3a26400beee93c24df9f515d4431cbc60c730",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 40,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_39.pt",
+      "sha256": "76806637d12ea3381dcc299bf366eae70fc2d46c2e080559059b2e8cb3943225",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 41,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_40.pt",
+      "sha256": "0e639ba6cbe412ac641e81995971d1979962ed0f7f3de0503a2089cfec001f90",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 42,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_41.pt",
+      "sha256": "b7fc6aa9396383b9cba0618a5855bcca1b41d2df3503cef86715389659937350",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 43,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_42.pt",
+      "sha256": "2842a8397e56bd0e768387f074751e792a23f2e0c5f745e5ecadcef9d989135d",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 44,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_43.pt",
+      "sha256": "cbddd52258183b9ea19de1ac2ecd190be7fccd621e06df32e0c9a7768ef29e58",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 45,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_44.pt",
+      "sha256": "545007907cba2c46e7d9dcfd86fd54c3d82306045bf332772e4e97084b7b32f2",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 46,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_45.pt",
+      "sha256": "f1daedb511363e71e3f261ae62e792c5b2abe7d9716b20bf9c008a1fbf568a66",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 47,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_46.pt",
+      "sha256": "fab494282d279fc013440cfef1b2d816e69f2583c362ee6e2514799d92e6576f",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 55,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_54.pt",
+      "sha256": "1ab891c757a098dd52ec933723255cb046ee38b10353b589e02c1a1d82d60c1e",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 56,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_55.pt",
+      "sha256": "05974af84614056b2f6640951c4ba7b4f9c710d88bafff410a2674d65aa826c7",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 57,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_56.pt",
+      "sha256": "3c3554e58dafff8c048c73bae0d7b91ed19222dd8465e87a41aff7bbd6f94e1e",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 58,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_57.pt",
+      "sha256": "aaaf28bcb11c7d324b2a825b97356ce5a5c14d8c300dd81037c1ff9f5739224e",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 59,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_58.pt",
+      "sha256": "6acccdcaf77b5b11ba1fc935c2a1e62bbb4febcbcbc5b7f60301ea4ccda8bb58",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 60,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_59.pt",
+      "sha256": "77edd823a8d011673f3956a3a2e78f529aa4632bc4f6cc9ca975050d1fce17d3",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 61,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_60.pt",
+      "sha256": "2badca54d26f601f610e7dc8f536fe41aa6a7526fad7af40cf81b608a947d5fc",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 62,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_61.pt",
+      "sha256": "bb908d2b9dde6d038b48afc9e3f6697091f850df75167299759667a12cc9d9ca",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 63,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_62.pt",
+      "sha256": "8ff309994db7ce9e9068fcba0ce86de619eeeef4ed09a56bc19d843c99b4a327",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 64,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_63.pt",
+      "sha256": "4b959b1c872c8bfa8a614673e6204abf12acf34a5a6ced8117351867d34d0902",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 65,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_64.pt",
+      "sha256": "1c7062fd7046b14d7a7310ed00a423f1ef2bb1ba2e2a748a337e93bce4daaea8",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 66,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_65.pt",
+      "sha256": "d85854d775d0a7b51e753cb62262ca4b4f9ba1a97427409b47381937e5f810d5",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 67,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_66.pt",
+      "sha256": "637c5c9a67b12030f5d565127521e30794f35a51cd3e34136d6d3b89a3759a36",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 68,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_67.pt",
+      "sha256": "5a568ab8139dfbd156e5e938039642e3d6f0dd59a677d97e75b09ab80f09177e",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 78,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_77.pt",
+      "sha256": "51241283188e2a6bcf9f0efc006ffcd64ffb08bf5a25130be3036e93cbe7889a",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 79,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_78.pt",
+      "sha256": "7865b3a0287a9815aced193e23041b7f40b7f54ceaf383afe11396a38953b273",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 80,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_79.pt",
+      "sha256": "02f8fddadf9f8a9db30e4d09de4e5c8854f8f1acd970ed1f6e5e1ddd09f36c0a",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 81,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_80.pt",
+      "sha256": "da23c6087139b00ae20ca37a7904dcb87898a49ae3adf3b9a86892d2bc061717",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 82,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_81.pt",
+      "sha256": "9e267bb48af784fe909473560ca413d552b6ff2d645afc1aefbded7cf416f10b",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 83,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_82.pt",
+      "sha256": "71a2a94552f0aa18f98c25fbd353588ee3a0d9f5357f64f10ce9a068eb01c14f",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 84,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_83.pt",
+      "sha256": "76a26b93eed58a2d80954f0592b52016107f74569c18947de758fe57ab1b816a",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 85,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_84.pt",
+      "sha256": "a38e745ce8b9ed827a6cd6b6bae9b4f1b240e7c1ac2a38e3264353c683307211",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 96,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_95.pt",
+      "sha256": "39cd4e647292a4e7ca7b1e79a12cf59132c8174594663e7b510230e0ae7052da",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    }
+  ],
+  "original_prefix_unchanged": true,
+  "exact_reconstructed_episode_bytes_match": true,
+  "reconstructed_original_partial_sha256": "76063f78a9ac4eb6fbd83c047a5ebf5e5ff04d60c485d9b32e9b98f5e93f0591",
+  "preserved_files": {
+    "additional_closed_training_episodes_update96.json.gz": {
+      "bytes": 12735935,
+      "sha256": "b3310c88c70ae74822d8759055c7c1d368df4700edd4c84937fe3087194d8a28"
+    },
+    "complete_episodes_update96.json": {
+      "bytes": 87614,
+      "sha256": "3d83f56fd11836dfac9266e45418f3229e7988d97db51c8e5f0f12513ab4a166"
+    },
+    "progress_update96.json": {
+      "bytes": 8494,
+      "sha256": "ad6df560c590a7475ed682351ac79dab7d89434d9661ad98bb4ba129911c2440"
+    }
+  },
+  "native_contact_record_match_pending": true,
+  "full50Hz_training_motion_saved": false,
+  "limitations": [
+    "Recursively reconstruct prefix_report, append the decoded delta and serialize json.dumps(indent=2)+newline to match the original native partial SHA.",
+    "Actors, normalizers and exploration change within episodes; no completion belongs to a single frozen actor.",
+    "Finalized native contacts remain pending. Later episode initial frames and full motion were not separately saved; the unchanged native ground-reset contract is not a reconstructed trajectory.",
+    "This changes storage only; actual raw rows, original scoring, physical configuration and all thresholds are unchanged."
+  ],
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
