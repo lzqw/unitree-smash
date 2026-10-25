@@ -50,12 +50,31 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/TRAIN128_LATERAL_DIAGNOSTIC_20261025.json",
-      "notes": "原96续训及固定TRAIN128均已完成：固定完整0/128、空中24/128、条件恢复8/24、NF0，未达原门槛，条件队列跳过原A/B。两条真实新视频及1171962010字节完整资料包均已上传并下载验SHA。联合落点奖励与显式公共actor迁移已合并，42项CPU检查通过；已登记2048环境8更新的新学习器实验，canonical32仅作actor初始化，原物理、规则、全部来球及验收要求保持。新原生学习尚未启动，G07仍未通过。",
+      "notes": "原96续训及固定TRAIN128均已完成：固定完整0/128、空中24/128、条件恢复8/24、NF0，未达原门槛，条件队列跳过原A/B。两条真实新视频及1171962010字节完整资料包均已上传并下载验SHA。联合落点奖励与显式公共actor迁移已合并，42项CPU检查通过；已登记2048环境8更新的新学习器实验，canonical32仅作actor初始化，原物理、规则、全部来球及验收要求保持。新实验守护与子进程已在GPU0启动，原生地面状态及首轮执行仍待核对；新策略尚无成绩，G07仍未通过。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
-      "active_gpu_jobs": [],
+      "active_gpu_jobs": [
+        {
+          "state": "STARTING_NATIVE_JOINT_PLACEMENT_PROBE",
+          "observed_at": "2026-10-25T12:44:27.251348+00:00",
+          "wrapper_pid": 1634321,
+          "guard_pid": 1634322,
+          "native_child_pid": 1634334,
+          "session_id": 67232,
+          "gpu": 0,
+          "training_output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01",
+          "state_evidence": "Guard ledger RUNNING and both PIDs alive; actual ground initialization and first control rollout not yet recorded.",
+          "launch_git_sha": "d8664770fe92c36455ab799d8bd183f0d70051c7",
+          "requested_updates": 8,
+          "num_envs": 2048,
+          "requested_control_env_steps": 2097152,
+          "per_job_fault_timeout_s": 5400,
+          "formal_acceptance": false,
+          "goal_complete": false
+        }
+      ],
       "queued_native_sequence": {
         "state_file": "reports/G07_full_racket_v4/residual_eval_queue_1250/state.json",
         "pid": 1560842,
@@ -1374,11 +1393,22 @@
         "frozen_policy_performance": false
       },
       "current_native_workflow_state": {
-        "pid": 1576853,
-        "session_id": 81975,
-        "state": "SUCCEEDED",
-        "state_file": "reports/G07_full_racket_v4/residual_resize2048_queue01/state.json",
-        "process_exited": true
+        "state": "STARTING_NATIVE_JOINT_PLACEMENT_PROBE",
+        "observed_at": "2026-10-25T12:44:27.251348+00:00",
+        "wrapper_pid": 1634321,
+        "guard_pid": 1634322,
+        "native_child_pid": 1634334,
+        "session_id": 67232,
+        "gpu": 0,
+        "training_output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01",
+        "state_evidence": "Guard ledger RUNNING and both PIDs alive; actual ground initialization and first control rollout not yet recorded.",
+        "launch_git_sha": "d8664770fe92c36455ab799d8bd183f0d70051c7",
+        "requested_updates": 8,
+        "num_envs": 2048,
+        "requested_control_env_steps": 2097152,
+        "per_job_fault_timeout_s": 5400,
+        "formal_acceptance": false,
+        "goal_complete": false
       },
       "latest_completed_fixed_TRAIN128": {
         "report": "reports/G07_full_racket_v4/residual_iter96_fixed_diagnostic_20261025/REPORT.json",
@@ -1625,7 +1655,7 @@
         "download_verified": true
       },
       "prepared_joint_placement_reward": {
-        "state": "MERGED_CPU42_VERIFIED_NATIVE_NOT_STARTED",
+        "state": "MERGED_CPU42_VERIFIED_NATIVE_STARTUP",
         "branch": "g07-joint-placement-reward-v4-20261025",
         "commit": "119b461010bee619905ad8736eb982b1fcf55160",
         "worktree": "/home/autodrive/LZQW/unitree_smash_joint_reward",
@@ -1673,7 +1703,9 @@
         "cpu_recheck_reports": [
           "reports/G07_full_racket_v4/joint_placement_probe8_queue01/CPU_CHECKS.json",
           "reports/G07_full_racket_v4/joint_placement_probe8_queue01/CPU_COMPATIBILITY_CHECKS.json"
-        ]
+        ],
+        "native_run_started": true,
+        "native_execution_verified": false
       },
       "formal_residual_loader_cpu_check": {
         "report": "reports/G07_full_racket_v4/formal_residual_loader_check_20261025/REPORT.json",
@@ -3784,9 +3816,20 @@
         "fresh_critic_optimizer_and_counters": true,
         "original_physics_rules_cases_and_acceptance_unchanged": true,
         "source_report": "reports/G07_full_racket_v4/residual_iter96_fixed_diagnostic_20261025/REPORT.json",
-        "native_run_started": false,
-        "predeclared_plan": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/PREDECLARED_PLAN.json"
-      }
+        "native_run_started": true,
+        "predeclared_plan": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/PREDECLARED_PLAN.json",
+        "native_execution_verified": false,
+        "launch_receipt": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/LAUNCH_RECEIPT.json"
+      },
+      "historical_completed_native_workflow_states": [
+        {
+          "pid": 1576853,
+          "session_id": 81975,
+          "state": "SUCCEEDED",
+          "state_file": "reports/G07_full_racket_v4/residual_resize2048_queue01/state.json",
+          "process_exited": true
+        }
+      ]
     },
     "G08": {
       "state": "TODO",
