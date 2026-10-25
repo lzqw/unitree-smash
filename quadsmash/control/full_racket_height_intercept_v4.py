@@ -47,6 +47,9 @@ def predict_height_intercept(public,command_position,command_normal,reference_x,
     if config is None or config['adaptation_fraction']==0.:
         return predict_initial_intercept(public,command_position,command_normal,reference,
                                          physics,dt=dt,max_seconds=max_seconds)
+    if ((reference<config['plane_bounds_m'][0]).any() or
+            (reference>config['plane_bounds_m'][1]).any()):
+        raise ValueError('Reference planes must lie inside the configured candidate range')
     count=config['plane_count']
     grid=np.linspace(*config['plane_bounds_m'],count)
     # All inputs are the same current observation; only the proposed plane

@@ -8,6 +8,7 @@ from .full_racket_geometry_v4 import FullRacketGeometryV4
 from .initial_intercept import predict_initial_intercept
 from .full_racket_arm_search_v4 import causal_prepose_delta
 from .full_racket_relative_prepose_v4 import validate_relative_prepose,relative_prepose_delta
+from .full_racket_height_intercept_v4 import validate_height_intercept,predict_height_intercept
 
 ROOT=Path(__file__).resolve().parents[2]
 
@@ -30,6 +31,7 @@ class FullRacketRallyControllerV4:
         self.prepose_gain=float(checkpoint['seed'].get('causal_arm_prepose_gain',0.))
         if not 0.<=self.prepose_gain<=1.:raise ValueError('Causal preparation gain must be in[0,1]')
         self.relative_prepose=validate_relative_prepose(checkpoint['seed'].get('relative_contact_prepose'))
+        self.height_intercept=validate_height_intercept(checkpoint['seed'].get('height_intercept'))
         self.target_offset_world=torch.zeros((count,3),device=device)
 
     def reset(self):
@@ -47,8 +49,12 @@ class FullRacketRallyControllerV4:
             # and a timing residual. Both are fixed policy parameters, never
             # case labels or future simulator states.
             intercept=self.parameters[ids,24].cpu().numpy() if self.parameters.shape[1]>=25 else self.nominal_target[0]
-            plan=predict_initial_intercept(public,[1.10,0,1.80],[1.,0,0],intercept,self.physics,
-                                           dt=.001,max_seconds=1.5)
+            if self.height_intercept is None:
+                plan=predict_initial_intercept(public,[1.10,0,1.80],[1.,0,0],intercept,self.physics,
+                                               dt=.001,max_seconds=1.5)
+            else:
+                plan=predict_height_intercept(public,[1.10,0,1.80],[1.,0,0],intercept,self.physics,
+                    self.height_intercept,dt=.001,max_seconds=1.5)
             arrival=public[:,775]+plan['arrival_time_s']
             # Correct the measured no-ball event offset, learned before this
             # episode, using only the current observation's ball prediction.
@@ -96,6 +102,7 @@ class FullRacketRallyControllerV4:
                 used_public_observations=public.tolist(),calibrated_event_time_s=calibrated.tolist(),
                 arm_joint_correction_rad=correction.tolist(),causal_prepose_gain=self.prepose_gain,
                 relative_contact_prepose=self.relative_prepose,
+                height_intercept=self.height_intercept,
                 causal_prepose_joint_delta_rad=applied_prepose.tolist(),**{k:v.tolist() for k,v in plan.items()}))
         return self.teacher.action(observation,self.parameters,default,limits,event_time=self.event_time,
                                    target_offset_world=self.target_offset_world)

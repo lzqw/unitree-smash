@@ -81,6 +81,8 @@ class HeightInterceptTest(unittest.TestCase):
                        dict(plane_count=4.5),dict(adaptation_fraction=1.1)]:
             with self.assertRaises(ValueError):
                 validate_height_intercept(dict(self.config,**change))
+        with self.assertRaises(ValueError):
+            self.predict(config=dict(self.config,plane_bounds_m=[1.2,1.45],adaptation_fraction=.5))
 
 
 if __name__=='__main__': unittest.main()

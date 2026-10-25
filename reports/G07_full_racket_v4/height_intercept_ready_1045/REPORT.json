@@ -1,0 +1,27 @@
+{
+  "scope": "CPU command replay only; no dynamics/success guarantee.",
+  "native_execution": false,
+  "formal_acceptance": false,
+  "config": {
+    "target_height_m": 1.76,
+    "plane_bounds_m": [
+      0.8,
+      1.45
+    ],
+    "plane_count": 33,
+    "adaptation_fraction": 0.5
+  },
+  "replay_ticks": 800,
+  "default_and_zero_fraction_bitwise_legacy": true,
+  "changed_arm_ticks": 137,
+  "changed_leg_ticks": 27,
+  "legacy_commit": "bce4748",
+  "policy_sha256": "dfa4feed0e61641f729c88836bf47976544040a0319cc980a5476a53221406e4",
+  "source_sha256": {
+    "reports/G07_full_racket_v4/cem32_lateral_feedback_1015/best_candidate.pt": "51a8b19b17e19e60bd7482c7bcb7ed1d4e8b7f50b9317cac3c49007089e8b62d",
+    "reports/G07_full_racket_v4/cem31_candidate5_diag_0900/run/public_and_actions_first2.npz": "30e305dbdd2a67bb2edfc3afdf0b55177ad200c060f042a1b0e6d0edbc539039",
+    "/home/autodrive/LZQW/unitree_smash/quadsmash/control/full_racket_rally_controller_v4.py": "20639ef2f0636e1f940deae2c3af26841aa9dcb3f1c5c8798335bc68fc45babc",
+    "/home/autodrive/LZQW/unitree_smash/scripts/prepare_full_racket_height_intercept_v4.py": "2bca2d2fd0af8b1a64cd3265f73e9fe8b20ffce1fa8f288daa8becdedecf724c",
+    "/home/autodrive/LZQW/unitree_smash/quadsmash/control/full_racket_height_intercept_v4.py": "a19867ceda122314ffb030cc7ed87f9388896b99b15192ebb334b83f54c23a48"
+  }
+}
