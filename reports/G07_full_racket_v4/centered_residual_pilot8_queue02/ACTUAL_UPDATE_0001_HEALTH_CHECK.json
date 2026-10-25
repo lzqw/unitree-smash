@@ -1,0 +1,55 @@
+{
+  "checked_at": "2026-10-25T18:09:56.067324+00:00",
+  "actual_diagnostic_checkpoint": "reports/G07_full_racket_v4/residual_ppo_centered_base8_n2048_probe8_02/ppo/model_0.pt",
+  "actual_diagnostic_sha256": "e9552de0838e45d983b047828af977cda4a9eeb465c7c937911c86eb02700bb6",
+  "iteration": 1,
+  "actual_checkpoint_control_env_steps": 262144,
+  "canonical_restart": false,
+  "model_and_Adam_finite": true,
+  "actor_output_parameters_exact_zero": {
+    "actor.6.weight": true,
+    "actor.6.bias": true
+  },
+  "actor_normalizer_count": 262144,
+  "critic_normalizer_count": 262144,
+  "Adam_state_steps": {
+    "9": 20.0,
+    "10": 20.0,
+    "11": 20.0,
+    "12": 20.0,
+    "13": 20.0,
+    "14": 20.0,
+    "15": 20.0,
+    "16": 20.0
+  },
+  "runtime_progress": {
+    "update": 1,
+    "actor_warmup": true,
+    "actual_control_env_steps": 262144,
+    "completed_episodes": 0,
+    "air": 0,
+    "conditional_recovery_count": 0,
+    "complete": 0,
+    "numerical_failures": 0,
+    "trajectory_recording": {
+      "schema": "native-training-episode-trace-v1",
+      "enabled": true,
+      "disabled_error": null,
+      "allocated_host_buffer_bytes": 2354774016,
+      "verified_full_public_rows": 262144,
+      "closed_episodes_observed": 0,
+      "censored_open_episodes": 0,
+      "saved_episode_count": 0,
+      "success_selected": 0,
+      "failure_selected": 0,
+      "native_execution": false,
+      "frozen_policy_performance": false,
+      "formal_acceptance": false
+    }
+  },
+  "native_process_alive": true,
+  "last_plan_file": true,
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
