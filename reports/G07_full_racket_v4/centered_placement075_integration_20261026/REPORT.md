@@ -21,3 +21,7 @@
 下一步通过 `reports/G07_full_racket_v4/centered_placement075_pilot8_queue01/run.py` 实际运行2048环境×8更新。流程核对首个真实更新、canonical新8及全训练轨迹，接着执行原全TRAIN128、零扰动、seed724201和同六例实际侧视/俯视视频。没有自动加长训练或继承来源成绩；新冻结证据出来后再决定后续方法。
 
 最新已交付固定策略视频仍为[40版84.66秒六例失败](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_centered_residual_base8_iter40_20261026.mp4)。另有[24秒实际训练完整回合与失败](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_training_centered_second_complete_and_failure_20261026.mp4)，不是冻结成功率或正式验收。
+
+2026-10-25 23:10:10 UTC实际观测：新流程1722226、原guard1722232、原生训练1722244均在运行。2048个真实初态有限，根位置最大误差1.38e−8米，方向/根速度/关节速度误差均零，全部回合时钟零；原TRAIN128恰好重复16次。actor归一化来源10485760，初态元数据明确为新阶段迁移，212项源码及计划保持。首个PPO更新当时尚未结束，不能将地面检查称为性能通过。见 `../centered_placement075_pilot8_queue01/ACTUAL_GROUND_INITIALIZATION_CHECK.json`。
+
+2026-10-25 23:13:33 UTC首个真实更新检查通过：262144控制环境步，非canonical `model_0.pt` 为阶段iteration1；actor归一化10747904、critic归一化262144，实际8个新critic Adam状态各20步，探索标准差0.1。来源平均actor权重在预热期间保持，参数/Adam有限，实际轨迹记录器启用并核对262144条公共输入，NF0。此时尚无闭合回合，不能报告新成功率；诊断权重不能当canonical重启。见 `../centered_placement075_pilot8_queue01/FIRST_NATIVE_UPDATE_CHECK.json`。
