@@ -1,0 +1,169 @@
+{
+  "verified_at": "2026-10-25T08:54:22.280436+00:00",
+  "scope": "Actual changing-policy native TRAIN midpoint. Exactly32of64 additional updates completed; canonical96/frozen assessment and all formal gates remain unmeasured.",
+  "update": 64,
+  "additional_updates_completed": 32,
+  "additional_updates_planned": 64,
+  "current_job_control_env_steps": 8388608,
+  "cumulative_learner_control_env_steps": 10092544,
+  "independently_recomputed_counts": {
+    "completed_episodes": 19164,
+    "air": 1516,
+    "conditional_recovery_count": 599,
+    "complete": 4,
+    "numerical_failures": 0
+  },
+  "cohorts": [
+    {
+      "episode_index": 0,
+      "closed_episodes": 2048,
+      "all2048_lanes_closed": true,
+      "air": 197,
+      "conditional_recovery": 97,
+      "complete": 0
+    },
+    {
+      "episode_index": 1,
+      "closed_episodes": 2048,
+      "all2048_lanes_closed": true,
+      "air": 192,
+      "conditional_recovery": 88,
+      "complete": 0
+    },
+    {
+      "episode_index": 2,
+      "closed_episodes": 2048,
+      "all2048_lanes_closed": true,
+      "air": 200,
+      "conditional_recovery": 92,
+      "complete": 3
+    },
+    {
+      "episode_index": 3,
+      "closed_episodes": 2048,
+      "all2048_lanes_closed": true,
+      "air": 186,
+      "conditional_recovery": 84,
+      "complete": 0
+    },
+    {
+      "episode_index": 4,
+      "closed_episodes": 2048,
+      "all2048_lanes_closed": true,
+      "air": 150,
+      "conditional_recovery": 49,
+      "complete": 0
+    },
+    {
+      "episode_index": 5,
+      "closed_episodes": 2029,
+      "all2048_lanes_closed": false,
+      "air": 155,
+      "conditional_recovery": 65,
+      "complete": 0
+    },
+    {
+      "episode_index": 6,
+      "closed_episodes": 1930,
+      "all2048_lanes_closed": false,
+      "air": 149,
+      "conditional_recovery": 58,
+      "complete": 0
+    },
+    {
+      "episode_index": 7,
+      "closed_episodes": 1735,
+      "all2048_lanes_closed": false,
+      "air": 112,
+      "conditional_recovery": 41,
+      "complete": 0
+    },
+    {
+      "episode_index": 8,
+      "closed_episodes": 1370,
+      "all2048_lanes_closed": false,
+      "air": 81,
+      "conditional_recovery": 12,
+      "complete": 1
+    },
+    {
+      "episode_index": 9,
+      "closed_episodes": 930,
+      "all2048_lanes_closed": false,
+      "air": 50,
+      "conditional_recovery": 8,
+      "complete": 0
+    },
+    {
+      "episode_index": 10,
+      "closed_episodes": 575,
+      "all2048_lanes_closed": false,
+      "air": 31,
+      "conditional_recovery": 4,
+      "complete": 0
+    },
+    {
+      "episode_index": 11,
+      "closed_episodes": 253,
+      "all2048_lanes_closed": false,
+      "air": 11,
+      "conditional_recovery": 1,
+      "complete": 0
+    },
+    {
+      "episode_index": 12,
+      "closed_episodes": 90,
+      "all2048_lanes_closed": false,
+      "air": 2,
+      "conditional_recovery": 0,
+      "complete": 0
+    },
+    {
+      "episode_index": 13,
+      "closed_episodes": 11,
+      "all2048_lanes_closed": false,
+      "air": 0,
+      "conditional_recovery": 0,
+      "complete": 0
+    },
+    {
+      "episode_index": 14,
+      "closed_episodes": 1,
+      "all2048_lanes_closed": false,
+      "air": 0,
+      "conditional_recovery": 0,
+      "complete": 0
+    }
+  ],
+  "complete_case_ids": [
+    "TRAIN58_LANE1338_EP2",
+    "TRAIN23_LANE1687_EP2",
+    "TRAIN36_LANE1828_EP2",
+    "TRAIN25_LANE25_EP8"
+  ],
+  "raw_episode_prefix_length": 19164,
+  "raw_episode_prefix_sha256": "d965c43c5c991eaaf1758be666ff0ff1aa9664aaa1fa32fc96460bf280344c79",
+  "reproduction": "Take the first raw_episode_prefix_length rows from this same run final episodes.json and serialize json.dumps(indent=2)+newline; verify its SHA before rescoring with the pinned evaluation source. Later incomplete cohorts are censored.",
+  "preserved_progress_sha256": "9b11bfbbc7fd4bb804f27a0709eb1ccf612015fc2f3a288ea6cc15c8dea5f171",
+  "diagnostic_model": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_63.pt",
+  "diagnostic_model_sha256": "4b959b1c872c8bfa8a614673e6204abf12acf34a5a6ced8117351867d34d0902",
+  "model_optimizer_tensors_finite": true,
+  "diagnostic_model_is_canonical_restart": false,
+  "all_seven_original_source_owners_actually_live": true,
+  "source_fingerprints_unchanged": true,
+  "source_sha256": {
+    "configs/g07_full_racket_eval_v4_r3.json": "04121cfb257ea4d2e288c69b44dd0c8dbada814e0bf95c8a16f5af7ef2390367",
+    "quadsmash/evaluation_v4.py": "efe610b42103a45b75fa98acb2a7fe221536abb752ebd665fc926c6ffb657b38",
+    "configs/court_net_v4.json": "184d07dde336bf36be7dfde089373c851a2bcb855a6e44f4120442b59818b4f4",
+    "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/INPUTS.json": "6c44a47d2ce7f6e0c03c95d9e601a1d538dbf330187a7b07a681e2124a802bd0",
+    "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/source_snapshot.zip": "e36959ca2ec8f0fed184f51526bbff18124e91796a444e7038a210f9e861197d",
+    "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/source_hashes.json": "9cab96b1e61da5f84225e96c8dae2cf0f0882731729b33be367d4708623e464f",
+    "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/SUPPLEMENT_UPDATE63.json": "776ac92f93cf126589b3e4b5f05aa9018359cd67115b2255a63a0e1c0a7285d0",
+    "reports/G07_full_racket_v4/residual_n2048_midpoint_20261025/build.py": "65cac6522244411aaf0f30449aebf894f7f5ca06f2593764cc8a09380bf11916"
+  },
+  "finalized_native_contact_matching_pending": true,
+  "full_training_motion_saved": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
