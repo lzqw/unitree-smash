@@ -1,0 +1,1586 @@
+{
+  "created_at": "2026-10-25T18:38:46.482535+00:00",
+  "video": "reports/G07_full_racket_v4/video/Current_training_centered_initial_exploration_20261026.mp4",
+  "sha256": "4601665c5d6326729c0ce14834a5f5f6cf24fa65feb026a262415c4d7ad4af89",
+  "bytes": 1792054,
+  "fps": 50,
+  "frames": 1109,
+  "duration_s": 22.18,
+  "resolution": [
+    1280,
+    720
+  ],
+  "segments": [
+    {
+      "name": "opening",
+      "start_frame": 0,
+      "frames": 75
+    },
+    {
+      "name": "whole_episode",
+      "case_id": 0,
+      "start_frame": 75,
+      "frames": 400,
+      "interpolated": false
+    },
+    {
+      "name": "slow",
+      "case_id": 0,
+      "start_frame": 475,
+      "frames": 104,
+      "interpolated": false
+    },
+    {
+      "name": "first_landing",
+      "start_frame": 579,
+      "frames": 75,
+      "case_id": 0,
+      "native_event_time_s": 3.1146399974823,
+      "body_pose_time_s": 3.119999885559082
+    },
+    {
+      "name": "native_terminal",
+      "start_frame": 654,
+      "frames": 75,
+      "case_id": 0
+    },
+    {
+      "name": "whole_episode",
+      "case_id": 1,
+      "start_frame": 729,
+      "frames": 141,
+      "interpolated": false
+    },
+    {
+      "name": "slow",
+      "case_id": 1,
+      "start_frame": 870,
+      "frames": 64,
+      "interpolated": false
+    },
+    {
+      "name": "native_terminal",
+      "start_frame": 934,
+      "frames": 75,
+      "case_id": 1
+    },
+    {
+      "name": "result",
+      "start_frame": 1009,
+      "frames": 100
+    }
+  ],
+  "previews": [
+    "reports/G07_full_racket_v4/video/Current_training_centered_initial_exploration_20261026_case0_terminal.jpg",
+    "reports/G07_full_racket_v4/video/Current_training_centered_initial_exploration_20261026_case0_landing.jpg",
+    "reports/G07_full_racket_v4/video/Current_training_centered_initial_exploration_20261026_case1_terminal.jpg"
+  ],
+  "native_recorded_motion": true,
+  "interpolated_or_generated_motion": false,
+  "renderer_uses_gpu": false,
+  "renderer": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "formal_acceptance": false,
+  "complete_smash": false,
+  "complete_smash_scope": "Any selected independent episode; no population or formal acceptance claim",
+  "cases_are_independent": true,
+  "cases": [
+    {
+      "id": 0,
+      "run": "residual_ppo_centered_base8_n2048_probe8_02",
+      "source_type": "actual_saved_changing_policy_training_trace",
+      "env_id": 107,
+      "episode_index": 0,
+      "source_training_index": 107,
+      "title": "起跳后稳定恢复｜本回合漏球",
+      "subtitle": "预登记TRAIN107首回合｜实际训练探索动作｜含完整机械臂和球拍",
+      "terminal_status": "任务失败｜起跳后稳定恢复｜本回合漏球",
+      "limitation": "实测稳定窗口3.96秒；首次落点在己方，未触球",
+      "row": {
+        "launched": true,
+        "in_play": false,
+        "had_contact": false,
+        "legal_initial_contact": false,
+        "string_hit": false,
+        "airborne_string_hit": false,
+        "frame_hit": false,
+        "released": false,
+        "crossed_net": false,
+        "landed_legal_court": false,
+        "landed_target": false,
+        "ground_seen": true,
+        "robot_net_fault": false,
+        "body_ball_fault": false,
+        "wrong_side_fault": false,
+        "double_hit_fault": false,
+        "racket_invasion_fault": false,
+        "body_over_net_fault": false,
+        "under_net_obstruction_fault": false,
+        "engineering_body_crossing": false,
+        "bad_return_fault": false,
+        "net_blocked_fault": false,
+        "shuttle_net_contact": false,
+        "followthrough_crossed": false,
+        "followthrough_finished": false,
+        "env_id": 107,
+        "episode_index": 0,
+        "complete_smash": false,
+        "recovery_success": true,
+        "contact_count": 0,
+        "contact_point_m": [
+          NaN,
+          NaN,
+          NaN
+        ],
+        "outgoing_velocity_mps": [
+          NaN,
+          NaN,
+          NaN
+        ],
+        "first_landing_m": [
+          -0.94122314453125,
+          -0.5777130126953125,
+          0.025067592039704323
+        ],
+        "first_landing_time_s": 3.1146399974823,
+        "crossing_point_m": [
+          NaN,
+          NaN,
+          NaN
+        ],
+        "crossing_time_s": NaN,
+        "release_time_s": NaN,
+        "first_string_contact_point_m": [
+          NaN,
+          NaN,
+          NaN
+        ],
+        "first_string_time_s": NaN,
+        "contact_time_s": NaN,
+        "net_margin_m": NaN,
+        "numerical_failures": 0,
+        "racket_plane_native_events": [],
+        "active_rally_launch_count": 1,
+        "hit_velocity_error_mps": 0.0,
+        "training_terminal_reasons": {
+          "rally_fault": false,
+          "robot_rule_fault": false,
+          "shuttle_only_fault": false,
+          "first_ground_without_target": true,
+          "body_ground": false,
+          "root_fallen": false
+        },
+        "training_early_termination": false,
+        "training_continue_after_miss": true,
+        "terminal_native_state": {
+          "scope": "Actual native state at terminal control step, before automatic reset; not exact first-collision substep",
+          "time_s": 8.0,
+          "body_link_positions_m": [
+            [
+              1.11322021484375,
+              -0.19055938720703125,
+              0.16328716278076172
+            ],
+            [
+              1.280853271484375,
+              -0.29703521728515625,
+              0.15207286179065704
+            ],
+            [
+              1.213897705078125,
+              -0.36148834228515625,
+              0.14863131940364838
+            ],
+            [
+              1.31109619140625,
+              -0.39569091796875,
+              0.15419639647006989
+            ],
+            [
+              1.012542724609375,
+              -0.01963043212890625,
+              0.17794299125671387
+            ],
+            [
+              0.945587158203125,
+              -0.084075927734375,
+              0.1745014637708664
+            ],
+            [
+              1.149169921875,
+              -0.23114013671875,
+              0.22375577688217163
+            ],
+            [
+              1.34490966796875,
+              -0.2388763427734375,
+              0.19254161417484283
+            ],
+            [
+              1.149688720703125,
+              -0.42624664306640625,
+              0.17695294320583344
+            ],
+            [
+              1.31524658203125,
+              -0.39626312255859375,
+              0.08386614918708801
+            ],
+            [
+              1.079803466796875,
+              0.0430145263671875,
+              0.2038441300392151
+            ],
+            [
+              0.877960205078125,
+              -0.150543212890625,
+              0.18576806783676147
+            ],
+            [
+              1.1492919921875,
+              -0.2315826416015625,
+              0.22973820567131042
+            ],
+            [
+              1.211822509765625,
+              -0.07454681396484375,
+              0.1669345200061798
+            ],
+            [
+              0.99530029296875,
+              -0.31491851806640625,
+              0.08136545866727829
+            ],
+            [
+              0.93603515625,
+              0.20003509521484375,
+              0.1974758803844452
+            ],
+            [
+              0.734161376953125,
+              0.00209808349609375,
+              0.22303514182567596
+            ],
+            [
+              1.1517333984375,
+              -0.24066925048828125,
+              0.35237833857536316
+            ],
+            [
+              1.357147216796875,
+              -0.134521484375,
+              0.02320908010005951
+            ],
+            [
+              1.127777099609375,
+              -0.471466064453125,
+              0.02383260801434517
+            ],
+            [
+              1.048248291015625,
+              0.15167999267578125,
+              0.023010380566120148
+            ],
+            [
+              0.764923095703125,
+              -0.06317901611328125,
+              0.022634141147136688
+            ],
+            [
+              1.151702880859375,
+              -0.24066925048828125,
+              0.3523782789707184
+            ],
+            [
+              1.069793701171875,
+              -0.18285369873046875,
+              0.6191877722740173
+            ],
+            [
+              1.019134521484375,
+              -0.151580810546875,
+              0.8637569546699524
+            ],
+            [
+              1.019134521484375,
+              -0.151580810546875,
+              0.8637569546699524
+            ],
+            [
+              0.962799072265625,
+              -0.085662841796875,
+              0.8913294672966003
+            ],
+            [
+              1.026123046875,
+              -0.16017913818359375,
+              1.332390308380127
+            ]
+          ],
+          "body_link_quaternions_wxyz": [
+            [
+              0.9197421073913574,
+              0.03012596070766449,
+              0.02356351725757122,
+              -0.3906555473804474
+            ],
+            [
+              0.8952594995498657,
+              0.21294014155864716,
+              -0.05481617525219917,
+              -0.3875075876712799
+            ],
+            [
+              0.911650538444519,
+              -0.12540404498577118,
+              0.0891033485531807,
+              -0.3810873329639435
+            ],
+            [
+              0.9197419881820679,
+              0.03012595884501934,
+              0.02356351912021637,
+              -0.3906554877758026
+            ],
+            [
+              0.9096476435661316,
+              0.13919121026992798,
+              -0.023018915206193924,
+              -0.3906880021095276
+            ],
+            [
+              0.9193010330200195,
+              -0.0414554737508297,
+              0.05385734513401985,
+              -0.3876420259475708
+            ],
+            [
+              0.9197419881820679,
+              0.03012595698237419,
+              0.023563513532280922,
+              -0.3906554877758026
+            ],
+            [
+              0.7296155095100403,
+              0.4095533490180969,
+              0.5216851830482483,
+              -0.16664855182170868
+            ],
+            [
+              0.7543497085571289,
+              0.07492218166589737,
+              0.5196179747581482,
+              -0.39413243532180786
+            ],
+            [
+              0.9197420477867126,
+              0.03012595698237419,
+              0.02356351539492607,
+              -0.390655517578125
+            ],
+            [
+              0.6901854872703552,
+              0.3652649223804474,
+              0.592985987663269,
+              -0.19645056128501892
+            ],
+            [
+              0.5733109712600708,
+              0.2610589563846588,
+              0.7206453084945679,
+              -0.2895395755767822
+            ],
+            [
+              0.9197419285774231,
+              0.030125955119729042,
+              0.023563509806990623,
+              -0.3906554877758026
+            ],
+            [
+              0.8023966550827026,
+              0.04429832473397255,
+              -0.40081655979156494,
+              -0.4399356245994568
+            ],
+            [
+              0.7663748860359192,
+              -0.33649754524230957,
+              -0.5017127990722656,
+              -0.21845635771751404
+            ],
+            [
+              0.8588932752609253,
+              0.012858604080975056,
+              -0.30048486590385437,
+              -0.4145430624485016
+            ],
+            [
+              0.9121262431144714,
+              -0.11633650958538055,
+              -0.12665249407291412,
+              -0.3720896244049072
+            ],
+            [
+              0.9342260956764221,
+              0.031018760055303574,
+              0.022375212982296944,
+              -0.35462474822998047
+            ],
+            [
+              0.8023966550827026,
+              0.04429833963513374,
+              -0.4008164703845978,
+              -0.439935564994812
+            ],
+            [
+              0.7663748860359192,
+              -0.3364974856376648,
+              -0.5017126798629761,
+              -0.21845634281635284
+            ],
+            [
+              0.8588931560516357,
+              0.012858621776103973,
+              -0.3004848062992096,
+              -0.4145430326461792
+            ],
+            [
+              0.9121262431144714,
+              -0.11633649468421936,
+              -0.12665244936943054,
+              -0.37208959460258484
+            ],
+            [
+              0.17394164204597473,
+              -0.5709947943687439,
+              -0.3910541236400604,
+              -0.7005611658096313
+            ],
+            [
+              -0.6539052128791809,
+              0.6632435917854309,
+              -0.19765210151672363,
+              0.3056950271129608
+            ],
+            [
+              -0.9002718925476074,
+              0.0005339630297385156,
+              0.07668134570121765,
+              0.4285210072994232
+            ],
+            [
+              -0.34799447655677795,
+              0.6715705990791321,
+              0.12890267372131348,
+              0.641308605670929
+            ],
+            [
+              -0.7327370643615723,
+              0.24701648950576782,
+              0.5366063714027405,
+              0.3378353714942932
+            ],
+            [
+              -0.4135526716709137,
+              -0.13868528604507446,
+              0.06421860307455063,
+              -0.8975613117218018
+            ]
+          ],
+          "ball_position_m": [
+            -15.690155029296875,
+            -3.2814102172851562,
+            0.02500000037252903
+          ],
+          "ball_velocity_mps": [
+            -2.2357378005981445,
+            -0.4152069389820099,
+            2.181388056299305e-11
+          ],
+          "root_com_velocity_mps": [
+            -0.0032898823264986277,
+            -0.0015807067975401878,
+            0.004647552035748959
+          ],
+          "root_angular_velocity_rad_s": [
+            0.024781152606010437,
+            0.03956732153892517,
+            -0.001322212046943605
+          ]
+        },
+        "jump": {
+          "env_id": 107,
+          "max_height_m": 0.5776156783103943,
+          "total_com_rise_m": 0.18311607837677002,
+          "airborne_s": 0.38199862837791443,
+          "recovery_s": 3.956895589828491,
+          "takeoff_time_s": 2.5909945964813232,
+          "landing_time_s": 2.9869658946990967,
+          "maximum_body_ground_force_n": 0.0,
+          "max_leg_torque_nm": 23.5,
+          "max_arm_torque_nm": 23.199155807495117,
+          "max_joint_speed_rad_s": 30.00006866455078,
+          "clipped_action_values": 0.0,
+          "limited_joint_targets": 0.0,
+          "saturated_leg_joint_substeps": 538.0,
+          "qualified_jump_landed": true,
+          "qualified_flight_seen": true,
+          "body_landing": false,
+          "stable_recovery": true,
+          "success": true,
+          "terminated": false
+        },
+        "source_training_index": 107,
+        "ground_init": true,
+        "case_id": "TRAIN107_LANE107_EP0"
+      },
+      "contact": null,
+      "selected_source_frames": [
+        0,
+        2,
+        4,
+        6,
+        8,
+        10,
+        12,
+        14,
+        16,
+        18,
+        20,
+        22,
+        24,
+        26,
+        28,
+        30,
+        32,
+        34,
+        36,
+        38,
+        40,
+        42,
+        44,
+        46,
+        48,
+        50,
+        52,
+        54,
+        56,
+        58,
+        60,
+        62,
+        64,
+        66,
+        68,
+        70,
+        72,
+        74,
+        76,
+        78,
+        80,
+        82,
+        84,
+        86,
+        88,
+        90,
+        92,
+        94,
+        96,
+        98,
+        100,
+        102,
+        104,
+        106,
+        108,
+        110,
+        112,
+        114,
+        116,
+        118,
+        120,
+        122,
+        124,
+        126,
+        128,
+        130,
+        132,
+        134,
+        136,
+        138,
+        140,
+        142,
+        144,
+        146,
+        148,
+        150,
+        152,
+        154,
+        156,
+        158,
+        160,
+        162,
+        164,
+        166,
+        168,
+        170,
+        172,
+        174,
+        176,
+        178,
+        180,
+        182,
+        184,
+        186,
+        188,
+        190,
+        192,
+        194,
+        196,
+        198,
+        200,
+        202,
+        204,
+        206,
+        208,
+        210,
+        212,
+        214,
+        216,
+        218,
+        220,
+        222,
+        224,
+        226,
+        228,
+        230,
+        232,
+        234,
+        236,
+        238,
+        240,
+        242,
+        244,
+        246,
+        248,
+        250,
+        252,
+        254,
+        256,
+        258,
+        260,
+        262,
+        264,
+        266,
+        268,
+        270,
+        272,
+        274,
+        276,
+        278,
+        280,
+        282,
+        284,
+        286,
+        288,
+        290,
+        292,
+        294,
+        296,
+        298,
+        300,
+        302,
+        304,
+        306,
+        308,
+        310,
+        312,
+        314,
+        316,
+        318,
+        320,
+        322,
+        324,
+        326,
+        328,
+        330,
+        332,
+        334,
+        336,
+        338,
+        340,
+        342,
+        344,
+        346,
+        348,
+        350,
+        352,
+        354,
+        356,
+        358,
+        360,
+        362,
+        364,
+        366,
+        368,
+        370,
+        372,
+        374,
+        376,
+        378,
+        380,
+        382,
+        384,
+        386,
+        388,
+        390,
+        392,
+        394,
+        396,
+        398,
+        400,
+        402,
+        404,
+        406,
+        408,
+        410,
+        412,
+        414,
+        416,
+        418,
+        420,
+        422,
+        424,
+        426,
+        428,
+        430,
+        432,
+        434,
+        436,
+        438,
+        440,
+        442,
+        444,
+        446,
+        448,
+        450,
+        452,
+        454,
+        456,
+        458,
+        460,
+        462,
+        464,
+        466,
+        468,
+        470,
+        472,
+        474,
+        476,
+        478,
+        480,
+        482,
+        484,
+        486,
+        488,
+        490,
+        492,
+        494,
+        496,
+        498,
+        500,
+        502,
+        504,
+        506,
+        508,
+        510,
+        512,
+        514,
+        516,
+        518,
+        520,
+        522,
+        524,
+        526,
+        528,
+        530,
+        532,
+        534,
+        536,
+        538,
+        540,
+        542,
+        544,
+        546,
+        548,
+        550,
+        552,
+        554,
+        556,
+        558,
+        560,
+        562,
+        564,
+        566,
+        568,
+        570,
+        572,
+        574,
+        576,
+        578,
+        580,
+        582,
+        584,
+        586,
+        588,
+        590,
+        592,
+        594,
+        596,
+        598,
+        600,
+        602,
+        604,
+        606,
+        608,
+        610,
+        612,
+        614,
+        616,
+        618,
+        620,
+        622,
+        624,
+        626,
+        628,
+        630,
+        632,
+        634,
+        636,
+        638,
+        640,
+        642,
+        644,
+        646,
+        648,
+        650,
+        652,
+        654,
+        656,
+        658,
+        660,
+        662,
+        664,
+        666,
+        668,
+        670,
+        672,
+        674,
+        676,
+        678,
+        680,
+        682,
+        684,
+        686,
+        688,
+        690,
+        692,
+        694,
+        696,
+        698,
+        700,
+        702,
+        704,
+        706,
+        708,
+        710,
+        712,
+        714,
+        716,
+        718,
+        720,
+        722,
+        724,
+        726,
+        728,
+        730,
+        732,
+        734,
+        736,
+        738,
+        740,
+        742,
+        744,
+        746,
+        748,
+        750,
+        752,
+        754,
+        756,
+        758,
+        760,
+        762,
+        764,
+        766,
+        768,
+        770,
+        772,
+        774,
+        776,
+        778,
+        780,
+        782,
+        784,
+        786,
+        788,
+        790,
+        792,
+        794,
+        796,
+        798
+      ],
+      "source_sampling_hz": 100,
+      "display_sampling_hz": 50,
+      "actor_iterations_encountered": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "whole_source_job_complete": false,
+      "scope": "One complete saved native ground-start episode across changing weights/normalization and exploration; no frozen actor performance."
+    },
+    {
+      "id": 1,
+      "run": "residual_ppo_centered_base8_n2048_probe8_02",
+      "source_type": "actual_saved_changing_policy_training_trace",
+      "env_id": 8,
+      "episode_index": 0,
+      "source_training_index": 8,
+      "title": "身体触地终止｜本回合漏球",
+      "subtitle": "预登记TRAIN8首回合｜实际训练探索动作｜含完整机械臂和球拍",
+      "terminal_status": "任务失败｜身体触地终止｜本回合漏球",
+      "limitation": "实测稳定窗口0.00秒；终止前未观察到首次落点",
+      "row": {
+        "launched": true,
+        "in_play": true,
+        "had_contact": false,
+        "legal_initial_contact": false,
+        "string_hit": false,
+        "airborne_string_hit": false,
+        "frame_hit": false,
+        "released": false,
+        "crossed_net": false,
+        "landed_legal_court": false,
+        "landed_target": false,
+        "ground_seen": false,
+        "robot_net_fault": false,
+        "body_ball_fault": false,
+        "wrong_side_fault": false,
+        "double_hit_fault": false,
+        "racket_invasion_fault": false,
+        "body_over_net_fault": false,
+        "under_net_obstruction_fault": false,
+        "engineering_body_crossing": false,
+        "bad_return_fault": false,
+        "net_blocked_fault": false,
+        "shuttle_net_contact": false,
+        "followthrough_crossed": false,
+        "followthrough_finished": false,
+        "env_id": 8,
+        "episode_index": 0,
+        "complete_smash": false,
+        "recovery_success": false,
+        "contact_count": 0,
+        "contact_point_m": [
+          NaN,
+          NaN,
+          NaN
+        ],
+        "outgoing_velocity_mps": [
+          NaN,
+          NaN,
+          NaN
+        ],
+        "first_landing_m": [
+          NaN,
+          NaN,
+          NaN
+        ],
+        "first_landing_time_s": NaN,
+        "crossing_point_m": [
+          NaN,
+          NaN,
+          NaN
+        ],
+        "crossing_time_s": NaN,
+        "release_time_s": NaN,
+        "first_string_contact_point_m": [
+          NaN,
+          NaN,
+          NaN
+        ],
+        "first_string_time_s": NaN,
+        "contact_time_s": NaN,
+        "net_margin_m": NaN,
+        "numerical_failures": 0,
+        "racket_plane_native_events": [],
+        "active_rally_launch_count": 1,
+        "hit_velocity_error_mps": 0.0,
+        "training_terminal_reasons": {
+          "rally_fault": false,
+          "robot_rule_fault": false,
+          "shuttle_only_fault": false,
+          "first_ground_without_target": false,
+          "body_ground": true,
+          "root_fallen": false
+        },
+        "training_early_termination": true,
+        "training_continue_after_miss": true,
+        "terminal_native_state": {
+          "scope": "Actual native state at terminal control step, before automatic reset; not exact first-collision substep",
+          "time_s": 2.819999933242798,
+          "body_link_positions_m": [
+            [
+              0.9163818359375,
+              -0.092132568359375,
+              0.4062383770942688
+            ],
+            [
+              0.9859619140625,
+              -0.0984649658203125,
+              0.5924714207649231
+            ],
+            [
+              0.93084716796875,
+              -0.173187255859375,
+              0.587302565574646
+            ],
+            [
+              0.9705810546875,
+              -0.1510162353515625,
+              0.6799541711807251
+            ],
+            [
+              0.901885986328125,
+              -0.01104736328125,
+              0.2251742035150528
+            ],
+            [
+              0.8468017578125,
+              -0.0858001708984375,
+              0.22000524401664734
+            ],
+            [
+              0.87762451171875,
+              -0.0681915283203125,
+              0.4734652638435364
+            ],
+            [
+              1.052215576171875,
+              -0.0296783447265625,
+              0.5936751961708069
+            ],
+            [
+              0.879425048828125,
+              -0.2533416748046875,
+              0.5800056457519531
+            ],
+            [
+              1.026611328125,
+              -0.1913604736328125,
+              0.6659514904022217
+            ],
+            [
+              0.97369384765625,
+              0.0518951416015625,
+              0.22371351718902588
+            ],
+            [
+              0.793975830078125,
+              -0.165069580078125,
+              0.2132393717765808
+            ],
+            [
+              0.87298583984375,
+              -0.06488037109375,
+              0.4753166437149048
+            ],
+            [
+              1.03955078125,
+              -0.0137786865234375,
+              0.3816482424736023
+            ],
+            [
+              0.87005615234375,
+              -0.2280731201171875,
+              0.3687184453010559
+            ],
+            [
+              0.99639892578125,
+              0.0211029052734375,
+              0.014176614582538605
+            ],
+            [
+              0.831268310546875,
+              -0.1720428466796875,
+              0.0036467984318733215
+            ],
+            [
+              0.777587890625,
+              0.002838134765625,
+              0.5132696032524109
+            ],
+            [
+              1.1204833984375,
+              -0.0948486328125,
+              0.5612252950668335
+            ],
+            [
+              0.96124267578125,
+              -0.3027496337890625,
+              0.5461286306381226
+            ],
+            [
+              1.08038330078125,
+              -0.0706787109375,
+              0.18707260489463806
+            ],
+            [
+              0.935943603515625,
+              -0.255950927734375,
+              0.1690787822008133
+            ],
+            [
+              0.777587890625,
+              0.002838134765625,
+              0.5132696032524109
+            ],
+            [
+              0.6849365234375,
+              0.0367431640625,
+              0.7806762456893921
+            ],
+            [
+              0.695953369140625,
+              -0.005950927734375,
+              1.0284953117370605
+            ],
+            [
+              0.695953369140625,
+              -0.005950927734375,
+              1.02849543094635
+            ],
+            [
+              0.72265625,
+              -0.028900146484375,
+              1.112413763999939
+            ],
+            [
+              0.614898681640625,
+              0.368438720703125,
+              1.298462986946106
+            ]
+          ],
+          "body_link_quaternions_wxyz": [
+            [
+              0.7631426453590393,
+              -0.1621590554714203,
+              -0.5651760101318359,
+              -0.2681300938129425
+            ],
+            [
+              0.7501462697982788,
+              -0.21438951790332794,
+              -0.5453442931175232,
+              -0.3064591586589813
+            ],
+            [
+              0.7682114839553833,
+              -0.1361369490623474,
+              -0.5739596486091614,
+              -0.24877288937568665
+            ],
+            [
+              0.7631427049636841,
+              -0.1621590405702591,
+              -0.5651759505271912,
+              -0.2681300938129425
+            ],
+            [
+              0.7398642301559448,
+              -0.24755413830280304,
+              -0.5311686992645264,
+              -0.33042019605636597
+            ],
+            [
+              0.7669376134872437,
+              -0.1431395709514618,
+              -0.5716663002967834,
+              -0.2539987564086914
+            ],
+            [
+              0.7631427049636841,
+              -0.1621590405702591,
+              -0.5651760101318359,
+              -0.2681300938129425
+            ],
+            [
+              0.9264936447143555,
+              0.02355603501200676,
+              0.04158513620495796,
+              -0.3732629418373108
+            ],
+            [
+              0.9581999778747559,
+              0.0508853904902935,
+              0.037832800298929214,
+              -0.2789836525917053
+            ],
+            [
+              0.7631426453590393,
+              -0.1621590256690979,
+              -0.5651759505271912,
+              -0.2681300640106201
+            ],
+            [
+              0.9073854684829712,
+              -0.04402569308876991,
+              -0.07868336141109467,
+              -0.4105146527290344
+            ],
+            [
+              0.9524164795875549,
+              0.010003074072301388,
+              -0.08887380361557007,
+              -0.291383296251297
+            ],
+            [
+              0.7631427049636841,
+              -0.1621590256690979,
+              -0.5651760697364807,
+              -0.2681300640106201
+            ],
+            [
+              0.25745606422424316,
+              -0.35735994577407837,
+              -0.8909748792648315,
+              -0.11033620685338974
+            ],
+            [
+              0.264817476272583,
+              -0.2588540315628052,
+              -0.9216563105583191,
+              -0.11582698673009872
+            ],
+            [
+              0.2823850214481354,
+              -0.395045667886734,
+              -0.8659087419509888,
+              -0.11999806016683578
+            ],
+            [
+              0.30853357911109924,
+              -0.2617925703525543,
+              -0.9054295420646667,
+              -0.12833161652088165
+            ],
+            [
+              0.755254864692688,
+              -0.14611123502254486,
+              -0.5695357918739319,
+              -0.28960421681404114
+            ],
+            [
+              0.25745609402656555,
+              -0.357359915971756,
+              -0.890974760055542,
+              -0.11033620685338974
+            ],
+            [
+              0.2648175060749054,
+              -0.2588540315628052,
+              -0.9216563105583191,
+              -0.11582699418067932
+            ],
+            [
+              0.28238505125045776,
+              -0.3950456976890564,
+              -0.8659087419509888,
+              -0.11999807506799698
+            ],
+            [
+              0.30853360891342163,
+              -0.2617925703525543,
+              -0.9054295420646667,
+              -0.12833161652088165
+            ],
+            [
+              0.21332626044750214,
+              -0.5403133630752563,
+              -0.39175301790237427,
+              -0.7135005593299866
+            ],
+            [
+              -0.7277837991714478,
+              0.6040132641792297,
+              -0.28386062383651733,
+              0.1578662395477295
+            ],
+            [
+              -0.986791729927063,
+              -0.10458682477474213,
+              -0.06825427711009979,
+              0.10317493230104446
+            ],
+            [
+              -0.7706291675567627,
+              0.6096768379211426,
+              -0.1792554408311844,
+              -0.0478762611746788
+            ],
+            [
+              -0.5734445452690125,
+              -0.19610555469989777,
+              0.017036153003573418,
+              -0.7952443957328796
+            ],
+            [
+              0.7009902000427246,
+              -0.3934401273727417,
+              -0.42365512251853943,
+              -0.41753286123275757
+            ]
+          ],
+          "ball_position_m": [
+            0.438385009765625,
+            -0.1337890625,
+            1.4165083169937134
+          ],
+          "ball_velocity_mps": [
+            -7.499267578125,
+            -1.0325429439544678,
+            -4.490118980407715
+          ],
+          "root_com_velocity_mps": [
+            0.21977123618125916,
+            0.13142696022987366,
+            0.06856916099786758
+          ],
+          "root_angular_velocity_rad_s": [
+            -0.13439229130744934,
+            -2.8585243225097656,
+            -1.2516597509384155
+          ]
+        },
+        "jump": {
+          "env_id": 8,
+          "max_height_m": 0.4632253050804138,
+          "total_com_rise_m": 0.10182049870491028,
+          "airborne_s": 0.26300016045570374,
+          "recovery_s": 0.0,
+          "takeoff_time_s": 2.550997495651245,
+          "landing_time_s": 2.35901141166687,
+          "maximum_body_ground_force_n": 15612.7177734375,
+          "max_leg_torque_nm": 23.5,
+          "max_arm_torque_nm": 23.88631248474121,
+          "max_joint_speed_rad_s": 30.000106811523438,
+          "clipped_action_values": 0.0,
+          "limited_joint_targets": 0.0,
+          "saturated_leg_joint_substeps": 491.0,
+          "qualified_jump_landed": false,
+          "qualified_flight_seen": true,
+          "body_landing": true,
+          "stable_recovery": false,
+          "success": false,
+          "terminated": true
+        },
+        "source_training_index": 8,
+        "ground_init": true,
+        "case_id": "TRAIN8_LANE8_EP0"
+      },
+      "contact": null,
+      "selected_source_frames": [
+        0,
+        2,
+        4,
+        6,
+        8,
+        10,
+        12,
+        14,
+        16,
+        18,
+        20,
+        22,
+        24,
+        26,
+        28,
+        30,
+        32,
+        34,
+        36,
+        38,
+        40,
+        42,
+        44,
+        46,
+        48,
+        50,
+        52,
+        54,
+        56,
+        58,
+        60,
+        62,
+        64,
+        66,
+        68,
+        70,
+        72,
+        74,
+        76,
+        78,
+        80,
+        82,
+        84,
+        86,
+        88,
+        90,
+        92,
+        94,
+        96,
+        98,
+        100,
+        102,
+        104,
+        106,
+        108,
+        110,
+        112,
+        114,
+        116,
+        118,
+        120,
+        122,
+        124,
+        126,
+        128,
+        130,
+        132,
+        134,
+        136,
+        138,
+        140,
+        142,
+        144,
+        146,
+        148,
+        150,
+        152,
+        154,
+        156,
+        158,
+        160,
+        162,
+        164,
+        166,
+        168,
+        170,
+        172,
+        174,
+        176,
+        178,
+        180,
+        182,
+        184,
+        186,
+        188,
+        190,
+        192,
+        194,
+        196,
+        198,
+        200,
+        202,
+        204,
+        206,
+        208,
+        210,
+        212,
+        214,
+        216,
+        218,
+        220,
+        222,
+        224,
+        226,
+        228,
+        230,
+        232,
+        234,
+        236,
+        238,
+        240,
+        242,
+        244,
+        246,
+        248,
+        250,
+        252,
+        254,
+        256,
+        258,
+        260,
+        262,
+        264,
+        266,
+        268,
+        270,
+        272,
+        274,
+        276,
+        278,
+        280
+      ],
+      "source_sampling_hz": 100,
+      "display_sampling_hz": 50,
+      "actor_iterations_encountered": [
+        0,
+        1,
+        2
+      ],
+      "whole_source_job_complete": false,
+      "scope": "One complete saved native ground-start episode across changing weights/normalization and exploration; no frozen actor performance."
+    }
+  ],
+  "caveats": [
+    "Actual100Hz full-body poses/actions reduced to every second recorded frame for50Hz; no interpolated or generated motion.",
+    "Both lanes were registered before training; their selection for this short two-case diagnostic occurs after inspecting outcomes.",
+    "Actor iteration indices denote actual weights used during collection. TRAIN8 uses iterations0..2 before the first actor update; TRAIN107 spans0..6.",
+    "The producer job is still running; the later8-update frozen actor performance is not shown or inherited.",
+    "Exact terminal-state poses and exact first-landing events come from saved native metadata, not reconstructed success motion."
+  ],
+  "sources": {
+    "reports/G07_full_racket_v4/video_snapshot_centered_training_capture_20261026_v2/cases.json": "6e6f02d995f167792cc72f1001184a682309cb399b0ed2ab19b95d9ccca1d32d",
+    "reports/G07_full_racket_v4/video_snapshot_centered_training_capture_20261026_v2/case1.npz": "92123aaad5accc2fc3d072add8c7f4eeb8714de6a717a46ffa4eaac7fd0b57e4",
+    "reports/G07_full_racket_v4/video_snapshot_centered_training_capture_20261026_v2/case0.npz": "2123dc895a1b233c3795c8678fa7d0bacb5cdb99e374e1a614aec054cdefa990",
+    "reports/G07_full_racket_v4/video_snapshot_centered_training_capture_20261026_v2/residual_ppo_centered_base8_n2048_probe8_02/source_snapshot.zip": "cf47ac23565f9ef4bc7483726ec43bac35e8d1e069cb4d98a4fa7c9fd5b55eb3",
+    "reports/G07_full_racket_v4/video_snapshot_centered_training_capture_20261026_v2/residual_ppo_centered_base8_n2048_probe8_02/geometry.json": "8afd390b7b92179ba6e2fde3774cc60162a98a5bd63ed50defd95b2e8f9d9c37",
+    "reports/G07_full_racket_v4/video_snapshot_centered_training_capture_20261026_v2/residual_ppo_centered_base8_n2048_probe8_02/lane0107_episode000000.json": "fb3f593612867c316fb910c755e58bbc2fb22c6faf4df90e818182b10b3de947",
+    "reports/G07_full_racket_v4/video_snapshot_centered_training_capture_20261026_v2/residual_ppo_centered_base8_n2048_probe8_02/lane0107_episode000000.npz": "c0ea14e7e21ab1bbfdf353c3f144dbd957c354122d88c4bee45c67172bb5d64e",
+    "reports/G07_full_racket_v4/video_snapshot_centered_training_capture_20261026_v2/residual_ppo_centered_base8_n2048_probe8_02/source_hashes.json": "375c92f9cf302f94a7d09fdef40224f2ea3d5f8ef2a8bf3b29313ed19393b349",
+    "reports/G07_full_racket_v4/video_snapshot_centered_training_capture_20261026_v2/residual_ppo_centered_base8_n2048_probe8_02/dirty.patch": "02c34453cd8c827f52b9f4e4c9ba7abf3d2c4db2ddb770cd6b96b3dd0138ed27",
+    "reports/G07_full_racket_v4/video_snapshot_centered_training_capture_20261026_v2/residual_ppo_centered_base8_n2048_probe8_02/geometry.npz": "fec7f6ab9ea2a84992c5df7a1ca4a9bb8cf9234efa1707dc29f08ed3ca82a73e",
+    "reports/G07_full_racket_v4/video_snapshot_centered_training_capture_20261026_v2/residual_ppo_centered_base8_n2048_probe8_02/initial_ground_states.json": "4ffeabd8cfb6d5256a8b908e470c364ee7ad8545400143e26d0884bf649d34a1",
+    "reports/G07_full_racket_v4/video_snapshot_centered_training_capture_20261026_v2/residual_ppo_centered_base8_n2048_probe8_02/lane0008_episode000000.json": "592401d5d9058491e78d699830d7eb7c960d8c9be2c4765e06dbe159adfa66a6",
+    "reports/G07_full_racket_v4/video_snapshot_centered_training_capture_20261026_v2/residual_ppo_centered_base8_n2048_probe8_02/lane0008_episode000000.npz": "d636c272d5197b7ce6d0cdaff374364a73ad73ee12c4fb9f4bc35cef28512a1e",
+    "reports/G07_full_racket_v4/video_snapshot_centered_training_capture_20261026_v2/residual_ppo_centered_base8_n2048_probe8_02/asset_dependencies.json": "6591b33978bccc9f6f68aa781fb396a85475f54cc774840ffec700222d1649c0",
+    "reports/G07_full_racket_v4/video_snapshot_centered_training_capture_20261026_v2/residual_ppo_centered_base8_n2048_probe8_02/INPUTS.json": "a1b242e8db3d41a1d6caecae4ebbb4863c8ccfae0ca13ddecf2103a90c776caf",
+    "scripts/render_full_racket_latest_effect_v4.py": "621799f84ff6aa824625c79906149bcf4c9d63fee30f01a296e68b438d4c5b3b",
+    "scripts/render_full_racket_r3_effect.py": "406fdf3eea5d6fe12873499360fd590a22bfbf34b8b5075d1633e873d99bb76d",
+    "scripts/render_current_v4_progress.py": "5e9fce04a077c9f5b2eb79c829819874e9607c00231e15e36c904d2e75af8edd",
+    "configs/court_net_v4.json": "184d07dde336bf36be7dfde089373c851a2bcb855a6e44f4120442b59818b4f4",
+    "configs/g07_full_racket_eval_v4_r3.json": "04121cfb257ea4d2e288c69b44dd0c8dbada814e0bf95c8a16f5af7ef2390367"
+  }
+}

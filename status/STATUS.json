@@ -49,48 +49,28 @@
     },
     "G07": {
       "state": "IN_PROGRESS",
-      "evidence": "reports/G07_full_racket_v4/centered_residual_pilot8_queue02/LAUNCH_OBSERVATION.json",
-      "notes": "新02试跑第3更新实际786432步，已开始动作学习：18个动作输出行均非零，9项actor Adam各20步、8项critic Adam各60步，两套归一化786432；模型/Adam有限、NF0。1278个已闭合训练回合独立重算85空中、0条件恢复、0完整；仍在执行的长回合不计入此早期闭合子集，不将其视为冻结策略成功率。记录器启用，11个完整训练轨迹已与外部逐回合原始记录逐字段一致；最终完成作业/接触全表审计尚待。当前保持原GPU0训练与条件续训观察进程，原物理/球场/球拍/执行器/来球/50%/70%/85%门槛不变。新冻结表现尚未测，完整目标仍未通过。",
+      "evidence": "reports/G07_full_racket_v4/centered_residual_pilot8_queue02/ROOT_COMPLETED_TRAINING_CHECK.json",
+      "notes": "新02新增量学习器已实际完成8更新2097152步，0.670711 GPU小时；独立复算3703闭合训练回合311空中、112条件恢复、0完整、NF0。canonical8和公共策略已保存；18关节actor及critic/17项Adam有限，两套归一化2097152，所有2048条回合ID链精确。全部12条真实100Hz轨迹通过最终原始回合/接触/公共SHA/姿态审计。22.18秒初始探索失败视频和214767506字节完整训练资料包已上传GitHub并重新下载SHA回验。GPU0已自动接上同一新冻结8策略的原TRAIN128，seed724201、无扰动；此评测仍在运行，尚无新冻结成绩。后续32更新观察队列继续按原登记16空中/8恢复及轨迹审计条件等待。完整原目标未通过。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
       "active_gpu_jobs": [
         {
-          "observed_at": "2026-10-25T18:22:03.852761+00:00",
+          "state": "RUNNING_FIXED_CENTERED_TRAIN128",
+          "observed_at": "2026-10-25T18:58:28.718267+00:00",
           "workflow_pid": 1677672,
           "workflow_session_id": 81807,
-          "guard_pid": 1677676,
-          "native_child_pid": 1677688,
+          "guard_pid": 1683429,
+          "native_child_pid": 1683441,
           "gpu": 0,
-          "training_output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_base8_n2048_probe8_02",
-          "source_launch_commit": "f54c12168a22df663310b597fb0ce95aae5d681e",
-          "guard_state": "RUNNING",
-          "actual_updates_verified": 0,
-          "native_initialization_receipt_observed": false,
-          "completed_training": false,
-          "original_main_guard_and_ledger": true,
+          "evaluation_output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_base8_n2048_probe8_fixed_train128_02",
+          "policy_sha256": "14d3f521131d49f2a7b38d3ac4bf87497e6bfa1da2c59ecdca122299357265a6",
+          "seed": 724201,
+          "noise": "none",
+          "original_TRAIN_cases": 128,
           "formal_cases_read": false,
-          "formal_acceptance": false,
-          "goal_complete": false,
-          "state": "RUNNING_NATIVE_CENTERED_PILOT8",
-          "latest_finite_verified_iteration": 3,
-          "verified_current_job_control_env_steps": 786432,
-          "actual2048_ground_states_verified": true,
-          "verification": "reports/G07_full_racket_v4/centered_residual_pilot8_queue02/ACTUAL_UPDATE_0003_LEARNING_CHECK.json",
-          "trajectory_capture_enabled": true,
-          "complete_native_trajectory_audit_pending": true,
-          "logging_fix_verified_by_real_second_update": true,
-          "partial_selected_complete_traces_checked": 9,
-          "partial_trace_check": "reports/G07_full_racket_v4/centered_residual_pilot8_queue02/PARTIAL_NATIVE_TRACE_CAPTURE_CHECK.json",
-          "actor_Adam_states_advanced": true,
-          "all18_action_output_rows_updated": true,
-          "independently_recomputed_closed_training_episodes": 1278,
-          "closed_training_air": 85,
-          "closed_training_conditional_recovery": 0,
-          "closed_training_complete": 0,
-          "numerical_failures": 0,
-          "selected_closed_traces_linked_to_external_raw_rows": 11
+          "formal_acceptance": false
         }
       ],
       "queued_native_sequence": {
@@ -111,15 +91,17 @@
       "native_air_string_contact_milestone": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
       "latest_native_training_summary": "reports/G07_full_racket_v4/cem32_lateral_feedback_1015/GENERATION0_SUMMARY.json",
       "latest_video": {
-        "path": "reports/G07_full_racket_v4/video/Current_effect_residual_PPO_joint_placement_iter40_20261025.mp4",
-        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_residual_PPO_joint_placement_iter40_20261025.mp4",
-        "duration_s": 80.0,
-        "frames": 4000,
-        "sha256": "05c8fc61647bdbf8d0833c7cf1b7958d6cee0673e18406ae47084a2dcffb23f5",
-        "all_frames_decoded": true,
+        "verified_at": "2026-10-25T18:46:11.172600+00:00",
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_training_centered_initial_exploration_20261026.mp4",
+        "bytes": 1792054,
+        "sha256": "4601665c5d6326729c0ce14834a5f5f6cf24fa65feb026a262415c4d7ad4af89",
+        "fresh_downloaded_sha256": "4601665c5d6326729c0ce14834a5f5f6cf24fa65feb026a262415c4d7ad4af89",
         "download_verified": true,
+        "duration_s": 22.18,
+        "frames": 1109,
+        "scope": "Actual initial centered TRAIN exploration; two failed ground-start episodes across actor versions0..6. Not the newly exported frozen8 policy.",
         "formal_acceptance": false,
-        "scope": "Actual failed frozen40 TRAIN execution. 0/128 complete and0/128 airborne contacts. Not new centered learner footage."
+        "goal_complete": false
       },
       "latest_completed_generation": {
         "had_contact": 63,
@@ -312,6 +294,26 @@
           "actual_gpu_hours": 0.30196851919388995,
           "actual_control_env_steps": 102400,
           "finished_at": "2026-10-25T12:01:08.884493+00:00"
+        },
+        {
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_base8_n2048_probe8_02",
+          "guard_pid": 1677676,
+          "child_pid": 1677688,
+          "state": "SUCCEEDED",
+          "source_launch_commit": "f54c12168a22df663310b597fb0ce95aae5d681e",
+          "actual_GPU_hours": 0.6707108824566886,
+          "actual_control_env_steps": 2097152,
+          "finished_at": "2026-10-25T18:42:21.576059+00:00",
+          "canonical_checkpoint_sha256": "6f82a40cac28b1ecba4993ef2f7fb8f332b0668a58406327a8adc09f7b36eb9b",
+          "policy_sha256": "14d3f521131d49f2a7b38d3ac4bf87497e6bfa1da2c59ecdca122299357265a6",
+          "changing_policy_training_counts": {
+            "completed_episodes": 3703,
+            "air": 311,
+            "conditional_recovery_count": 112,
+            "complete": 0,
+            "numerical_failures": 0
+          },
+          "frozen_policy_performance": false
         }
       ],
       "prepared_controller_branch": {
@@ -5328,7 +5330,78 @@
         "selected_training_trace_audit_required": true,
         "original_formal_thresholds_unchanged": true
       },
-      "current_legacy_motion_comparison": "reports/G07_full_racket_v4/current_legacy_comparison_20261026/REPORT.json"
+      "current_legacy_motion_comparison": "reports/G07_full_racket_v4/current_legacy_comparison_20261026/REPORT.json",
+      "latest_completed_centered_training": {
+        "checked_at": "2026-10-25T18:43:43.310222+00:00",
+        "scope": "Actual completed native changing-policy TRAIN pilot8; no frozen score or formal acceptance.",
+        "actual_control_env_steps": 2097152,
+        "actual_GPU_hours": 0.6707108824566886,
+        "canonical_iteration": 8,
+        "canonical_actual_ground_restart": true,
+        "all2048_episode_ID_chains_exact": true,
+        "actor_Adam_states": 9,
+        "actor_Adam_step": 120,
+        "critic_Adam_states": 8,
+        "critic_Adam_step": 160,
+        "both_normalizer_counts": 2097152,
+        "all_model_and_Adam_states_finite": true,
+        "independent_complete_training_counts": {
+          "completed_episodes": 3703,
+          "air": 311,
+          "conditional_recovery_count": 112,
+          "complete": 0,
+          "numerical_failures": 0
+        },
+        "checkpoint_sha256": "6f82a40cac28b1ecba4993ef2f7fb8f332b0668a58406327a8adc09f7b36eb9b",
+        "policy_sha256": "14d3f521131d49f2a7b38d3ac4bf87497e6bfa1da2c59ecdca122299357265a6",
+        "original_failed_trial_charges_preserved": true,
+        "formal_cases_read": false,
+        "formal_acceptance": false,
+        "goal_complete": false
+      },
+      "latest_training_delivery": {
+        "video": {
+          "verified_at": "2026-10-25T18:46:11.172600+00:00",
+          "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_training_centered_initial_exploration_20261026.mp4",
+          "bytes": 1792054,
+          "sha256": "4601665c5d6326729c0ce14834a5f5f6cf24fa65feb026a262415c4d7ad4af89",
+          "fresh_downloaded_sha256": "4601665c5d6326729c0ce14834a5f5f6cf24fa65feb026a262415c4d7ad4af89",
+          "download_verified": true,
+          "duration_s": 22.18,
+          "frames": 1109,
+          "scope": "Actual initial exploratory training episodes107 and8; both fail. Not the final centered8 frozen-policy score.",
+          "formal_acceptance": false,
+          "goal_complete": false
+        },
+        "archive": {
+          "verified_at": "2026-10-25T18:55:59.699639+00:00",
+          "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_centered_residual_probe8_native_training_and_initial_video_20261026_v2.zip",
+          "bytes": 214767506,
+          "sha256": "d672edf51ec90649b1b0381fe9ff861e0c2433c98de944e0a07937e52954c4e4",
+          "fresh_downloaded_sha256": "d672edf51ec90649b1b0381fe9ff861e0c2433c98de944e0a07937e52954c4e4",
+          "download_verified": true,
+          "scope": "Completed native centered pilot8 training/raw/policies/actual initial exploration video and runtime dependencies. New frozen TRAIN128 assessment is excluded.",
+          "formal_acceptance": false,
+          "goal_complete": false,
+          "source_payload_members": 163,
+          "total_archive_members": 165,
+          "all165_member_CRC_verified_locally": true,
+          "all163_source_payload_SHA_verified_locally": true
+        },
+        "source_launch_commit": "f54c12168a22df663310b597fb0ce95aae5d681e",
+        "formal_acceptance": false
+      },
+      "latest_frozen_diagnostic_video": {
+        "path": "reports/G07_full_racket_v4/video/Current_effect_residual_PPO_joint_placement_iter40_20261025.mp4",
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_residual_PPO_joint_placement_iter40_20261025.mp4",
+        "duration_s": 80.0,
+        "frames": 4000,
+        "sha256": "05c8fc61647bdbf8d0833c7cf1b7958d6cee0673e18406ae47084a2dcffb23f5",
+        "all_frames_decoded": true,
+        "download_verified": true,
+        "formal_acceptance": false,
+        "scope": "Actual failed frozen40 TRAIN execution. 0/128 complete and0/128 airborne contacts. Not new centered learner footage."
+      }
     },
     "G08": {
       "state": "TODO",

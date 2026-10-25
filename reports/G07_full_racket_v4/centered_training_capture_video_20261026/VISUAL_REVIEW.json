@@ -1,0 +1,38 @@
+{
+  "reviewed_at": "2026-10-25T18:42:29.264838+00:00",
+  "reviewer": "Root agent actual image inspection",
+  "video": "reports/G07_full_racket_v4/video/Current_training_centered_initial_exploration_20261026.mp4",
+  "video_sha256": "4601665c5d6326729c0ce14834a5f5f6cf24fa65feb026a262415c4d7ad4af89",
+  "all1109_frames_decoded": true,
+  "actual_decoded_frames_inspected": [
+    25,
+    75,
+    180,
+    265,
+    450,
+    600,
+    775,
+    900,
+    1050
+  ],
+  "native_preview_images_inspected": [
+    "case0_terminal",
+    "case0_landing",
+    "case1_terminal"
+  ],
+  "visible_checks": [
+    "Chinese scope/failure labels are readable and do not claim a frozen result.",
+    "Both side/top views show actual complete robot/standardPiPER/racket geometry.",
+    "TRAIN107 begins on ground, misses the ball, shows its real own-side first landing and later recovery; TRAIN8 terminates after body ground contact.",
+    "Normal/slow segments use recorded poses; landing freeze explicitly labels an adjacent50Hz body sample plus exact landing event."
+  ],
+  "limitations": [
+    "When cameras widen to include the incoming ball/full court the robot is smaller; close preparation and dual views retain the full hardware geometry.",
+    "These two lanes were registered before training, but selecting these two failure modes for the short clip is posthoc.",
+    "No actual contact occurred in either selected episode. This is initial exploration across actor iterations0..6, not an evaluation of the final8-update frozen actor."
+  ],
+  "held_source_hashes_verified": true,
+  "ready_to_upload": true,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
