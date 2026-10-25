@@ -1,0 +1,52 @@
+{
+  "scope": "CPU kinematic fit and frozen-input command replay only; no execution or performance inherited.",
+  "native_execution": false,
+  "formal_acceptance": false,
+  "old_string_uv_m": [
+    0.0,
+    0.1
+  ],
+  "new_string_uv_m": [
+    0.0,
+    0.07
+  ],
+  "unchanged_asset_sha256": "c2264fcece90b042c7c6a1cac7d516af83972729d0402947e3a519041e184cf2",
+  "unchanged_physical_geometry": true,
+  "measured_TRAIN_configurations": 19,
+  "joint_offset_delta_rad": [
+    0.03203250594242072,
+    -0.08950707275718182,
+    0.09724776461111806,
+    -0.022800666782356052,
+    -0.05143166227649013,
+    0.022540391840209763
+  ],
+  "position_error_before_quantiles_m": [
+    0.02999999999999989,
+    0.030000000000000044,
+    0.030000000000000214
+  ],
+  "position_error_after_quantiles_m": [
+    0.013580092533873944,
+    0.01936431608943086,
+    0.026386939307588956
+  ],
+  "face_change_quantiles_deg": [
+    1.3054860470734815,
+    1.48099555581734,
+    1.6138187170846767
+  ],
+  "retarget_exact": false,
+  "replay_ticks": 800,
+  "legs_bitwise_identical_on_frozen_input": true,
+  "changed_arm_ticks": 317,
+  "caveat": "Approximate retarget leaves nonzero position error. Coupled ground-start dynamics must measure string contact, outgoing ball, landing and recovery anew.",
+  "policy_sha256": "99b5e8caa63c6cf7c939414b958e654d096cdec6dafb102522b96b52507c65aa",
+  "source_sha256": {
+    "reports/G07_full_racket_v4/cem32_lateral_feedback_1015/best_candidate.pt": "51a8b19b17e19e60bd7482c7bcb7ed1d4e8b7f50b9317cac3c49007089e8b62d",
+    "reports/G07_full_racket_v4/train128_lateral_c12_1025/contacts.json": "023d7f4f9b4fbbecec1b765cd4b8134bca7cde3560d817a69a44f041b4b367be",
+    "reports/G07_full_racket_v4/cem31_candidate5_diag_0900/run/public_and_actions_first2.npz": "30e305dbdd2a67bb2edfc3afdf0b55177ad200c060f042a1b0e6d0edbc539039",
+    "/home/autodrive/LZQW/unitree_smash/scripts/prepare_full_racket_inner_strings_v4.py": "562bc2dfe7ad9d969c1bf64dbc47d3deb76e03f16c98da7b5cfdf6b40aea31d9",
+    "/home/autodrive/LZQW/unitree_smash/quadsmash/control/full_racket_contact_uv_retarget_v4.py": "3f5f1dfbb8663e305746ef41356ecf4f6c45f9d1905b85cb99040f1096644de1"
+  }
+}

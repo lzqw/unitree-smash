@@ -1,0 +1,170 @@
+{
+  "created_at": "2026-10-25T03:14:22.620311+00:00",
+  "scope": "Native first-contact geometry at the recorded detection step; current heading run is an unfinished prefix. No pre-impact velocity inference.",
+  "formal_acceptance": false,
+  "current_run_complete": false,
+  "rows": [
+    {
+      "source": "reports/G07_full_racket_v4/train128_lateral_c12_1025/contacts.json",
+      "classification": "string_contact",
+      "first_contacts": 19,
+      "ball_center_in_racket_quantiles_m": [
+        [
+          0.02533614633541593,
+          -0.060463391625609986,
+          0.019272210899278133
+        ],
+        [
+          0.025584921114150665,
+          -0.013725629872032914,
+          0.07967126161924681
+        ],
+        [
+          0.02572982432210509,
+          0.03498506921036476,
+          0.10001004916991955
+        ]
+      ],
+      "native_contact_point_in_racket_quantiles_m": [
+        [
+          0.0005155741940810725,
+          -0.06047045990856246,
+          0.019286416377034227
+        ],
+        [
+          0.0005333118960452681,
+          -0.013799786313580163,
+          0.08004604722613076
+        ],
+        [
+          0.000566083148422486,
+          0.03499323535580752,
+          0.10064934537428187
+        ]
+      ]
+    },
+    {
+      "source": "reports/G07_full_racket_v4/train128_lateral_c12_1025/contacts.json",
+      "classification": "frame_contact",
+      "first_contacts": 54,
+      "ball_center_in_racket_quantiles_m": [
+        [
+          0.014082870852881754,
+          -0.08877098735103992,
+          0.07845640870308908
+        ],
+        [
+          0.026761314332226952,
+          -0.030104885162414857,
+          0.11058272616109292
+        ],
+        [
+          0.028869375146129174,
+          0.0320001662022134,
+          0.13637548423589424
+        ]
+      ],
+      "native_contact_point_in_racket_quantiles_m": [
+        [
+          0.0018148792263607094,
+          -0.07999455432064362,
+          0.0698607524098896
+        ],
+        [
+          0.003547863958606478,
+          -0.029233406027843394,
+          0.10988979274952855
+        ],
+        [
+          0.003944849392726155,
+          0.029385033371979105,
+          0.12117132311069223
+        ]
+      ]
+    },
+    {
+      "source": "reports/G07_full_racket_v4/cem34_walk_heading_train32_1120/contacts.partial.json",
+      "classification": "string_contact",
+      "first_contacts": 1,
+      "ball_center_in_racket_quantiles_m": [
+        [
+          0.025588378274839774,
+          -0.012694417517818028,
+          0.09591955746577535
+        ],
+        [
+          0.025588378274839774,
+          -0.012694417517818028,
+          0.09591955746577535
+        ],
+        [
+          0.025588378274839774,
+          -0.012694417517818028,
+          0.09591955746577535
+        ]
+      ],
+      "native_contact_point_in_racket_quantiles_m": [
+        [
+          0.0005313786973063038,
+          -0.01269350697058827,
+          0.09636101242532914
+        ],
+        [
+          0.0005313786973063038,
+          -0.01269350697058827,
+          0.09636101242532914
+        ],
+        [
+          0.0005313786973063038,
+          -0.01269350697058827,
+          0.09636101242532914
+        ]
+      ]
+    },
+    {
+      "source": "reports/G07_full_racket_v4/cem34_walk_heading_train32_1120/contacts.partial.json",
+      "classification": "frame_contact",
+      "first_contacts": 18,
+      "ball_center_in_racket_quantiles_m": [
+        [
+          0.0018820254109801482,
+          -0.08468573217915054,
+          0.10192392003686312
+        ],
+        [
+          0.024511876232681508,
+          -0.04998656013715687,
+          0.11627892781917246
+        ],
+        [
+          0.028712119525847735,
+          0.030131264327676474,
+          0.1303276033123874
+        ]
+      ],
+      "native_contact_point_in_racket_quantiles_m": [
+        [
+          0.00018631964112476998,
+          -0.06748217814379509,
+          0.08920731675908763
+        ],
+        [
+          0.003392832381200672,
+          -0.0459360171847189,
+          0.10350781023713937
+        ],
+        [
+          0.003794471475477018,
+          0.025271533449712617,
+          0.12038789376674564
+        ]
+      ]
+    }
+  ],
+  "next_control_hypothesis": "Move the algorithm target from string_uv_z0.10m toward0.07m and retarget bounded arm commands, preserving the actual racket geometry/mass and every native acceptance gate.",
+  "caveat": "A lower selected UV does not prove that the robot can reach the corresponding physical pose. New ground-start dynamics and complete episode results are required.",
+  "source_sha256": {
+    "reports/G07_full_racket_v4/heading_frame_diagnosis_1145/contacts_source1.json": "6354debab438831892c2734e26e508a3cb99c7d204763c947aa0f57334ceadff",
+    "reports/G07_full_racket_v4/heading_frame_diagnosis_1145/contacts_source0.json": "023d7f4f9b4fbbecec1b765cd4b8134bca7cde3560d817a69a44f041b4b367be"
+  }
+}
