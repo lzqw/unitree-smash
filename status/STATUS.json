@@ -66,23 +66,23 @@
           "parent_queue_session_id": 81975,
           "scope": "Native residual PPO learner fork on2048 fresh ground environments,128 TRAIN cases replicated16 times;64additional updates from32 to96, no frozen performance yet.",
           "declared_control_env_steps": 16777216,
-          "independently_verified_update": 46,
-          "verified_current_job_steps": 3670016,
+          "independently_verified_update": 48,
+          "verified_current_job_steps": 4194304,
           "progress_file": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/progress.json",
-          "verified_cumulative_learner_steps": 5373952,
+          "verified_cumulative_learner_steps": 5898240,
           "model_optimizer_tensors_finite": true,
           "last_verified_training_counts": {
-            "completed_episodes": 7766,
-            "air": 648,
-            "conditional_recovery_count": 263,
-            "complete": 1,
+            "completed_episodes": 9015,
+            "air": 768,
+            "conditional_recovery_count": 307,
+            "complete": 3,
             "numerical_failures": 0
           },
-          "diagnostic_checkpoint_sha256": "f1daedb511363e71e3f261ae62e792c5b2abe7d9716b20bf9c008a1fbf568a66",
+          "diagnostic_checkpoint_sha256": "949f003ac3d1d86ebe654af3001adfdded18b1dbaf279ff786655ba594e39916",
           "diagnostic_checkpoint_canonical_restart": false,
-          "verified_progress_sha256": "3e7406112cbe48456779092bc6a7cfcb4dafe1905581917d593ef328414a1ba1",
-          "verified_episode_snapshot_sha256": "7dc20bb5e5533ff12b5d9b9674f6b619ba48f082918105b82c01636e136deb1e",
-          "verified_at": "2026-10-25T07:23:28.299442+00:00"
+          "verified_progress_sha256": "5d49798105ed05f06cd1b0ed5c7426c9a66c23f3cacd65109a2d6ee31919db52",
+          "verified_episode_snapshot_sha256": "af5a1300a4e905bc92a5b8be3c208315dcebe3ea9d9076e7d2992fb678a8fc45",
+          "verified_at": "2026-10-25T07:33:20.210241+00:00"
         }
       ],
       "queued_native_sequence": {
@@ -1666,7 +1666,93 @@
         "native_contact_record_match_pending": true,
         "complete_training_motion_saved": false,
         "scope": "One independently rechecked complete TRAIN58 native episode during changing-policy stochastic PPO learning. No frozen-policy performance or formal A/B claim.",
-        "formal_acceptance": false
+        "formal_acceptance": false,
+        "latest_supplement": {
+          "report": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/SUPPLEMENT_UPDATE48.json",
+          "report_sha256": "6b37ac4f63c291be92ee409695e95277ca2e4a4360f25e1fa366cccef8ff979c",
+          "snapshot_update": 48,
+          "counts": {
+            "completed_episodes": 9015,
+            "air": 768,
+            "conditional_recovery_count": 307,
+            "complete": 3,
+            "numerical_failures": 0
+          },
+          "complete_case_ids": [
+            "TRAIN58_LANE1338_EP2",
+            "TRAIN23_LANE1687_EP2",
+            "TRAIN36_LANE1828_EP2"
+          ],
+          "distinct_TRAIN_cases": [
+            23,
+            36,
+            58
+          ],
+          "actor_lineage": [
+            {
+              "case_id": "TRAIN58_LANE1338_EP2",
+              "source_TRAIN_case": 58,
+              "env_id": 1338,
+              "episode_index": 2,
+              "job_ticks": [
+                948,
+                1748
+              ],
+              "actor_iterations_encountered": [
+                39,
+                40,
+                41,
+                42,
+                43,
+                44,
+                45
+              ],
+              "contact_rollout_actor_iteration": 41
+            },
+            {
+              "case_id": "TRAIN23_LANE1687_EP2",
+              "source_TRAIN_case": 23,
+              "env_id": 1687,
+              "episode_index": 2,
+              "job_ticks": [
+                1112,
+                1912
+              ],
+              "actor_iterations_encountered": [
+                40,
+                41,
+                42,
+                43,
+                44,
+                45,
+                46
+              ],
+              "contact_rollout_actor_iteration": 42
+            },
+            {
+              "case_id": "TRAIN36_LANE1828_EP2",
+              "source_TRAIN_case": 36,
+              "env_id": 1828,
+              "episode_index": 2,
+              "job_ticks": [
+                1117,
+                1917
+              ],
+              "actor_iterations_encountered": [
+                40,
+                41,
+                42,
+                43,
+                44,
+                45,
+                46
+              ],
+              "contact_rollout_actor_iteration": 42
+            }
+          ],
+          "native_contact_record_match_pending": true,
+          "formal_acceptance": false
+        }
       },
       "queued_iter96_TRAIN58_video": {
         "pid": 1594357,

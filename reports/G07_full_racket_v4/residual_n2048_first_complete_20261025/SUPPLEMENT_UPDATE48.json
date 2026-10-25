@@ -1,0 +1,192 @@
+{
+  "created_at": "2026-10-25T07:33:20.210241+00:00",
+  "snapshot_update": 48,
+  "scope": "Additional changing-policy TRAIN completions; original complete gates independently recomputed. No frozen-policy or formal acceptance.",
+  "first_report": "REPORT.json",
+  "first_report_sha256": "6bf20d5df6f1e8742c94c555a6a55de1576c6ee264c57336b8d55cfbdf95e384",
+  "all_closed_training_counts": {
+    "completed_episodes": 9015,
+    "air": 768,
+    "conditional_recovery_count": 307,
+    "complete": 3,
+    "numerical_failures": 0
+  },
+  "complete_case_ids": [
+    "TRAIN58_LANE1338_EP2",
+    "TRAIN23_LANE1687_EP2",
+    "TRAIN36_LANE1828_EP2"
+  ],
+  "distinct_completed_TRAIN_cases": [
+    23,
+    36,
+    58
+  ],
+  "original_prefix_episodes": 7766,
+  "additional_closed_episodes": 1249,
+  "original_prefix_unchanged": true,
+  "exact_reconstructed_episode_bytes_match": true,
+  "reconstructed_original_partial_sha256": "af5a1300a4e905bc92a5b8be3c208315dcebe3ea9d9076e7d2992fb678a8fc45",
+  "reconstructed_canonical_rows_sha256": "2468ef6857bf18dded9b86414fc3fee0f89f10aca522149cedaa7d3e9bd53dfb",
+  "complete_episode_file": "complete_episodes_update48.json",
+  "delta_file": "additional_closed_training_episodes_update48.json.gz",
+  "actor_lineage": [
+    {
+      "case_id": "TRAIN58_LANE1338_EP2",
+      "source_TRAIN_case": 58,
+      "env_id": 1338,
+      "episode_index": 2,
+      "job_ticks": [
+        948,
+        1748
+      ],
+      "actor_iterations_encountered": [
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45
+      ],
+      "contact_rollout_actor_iteration": 41
+    },
+    {
+      "case_id": "TRAIN23_LANE1687_EP2",
+      "source_TRAIN_case": 23,
+      "env_id": 1687,
+      "episode_index": 2,
+      "job_ticks": [
+        1112,
+        1912
+      ],
+      "actor_iterations_encountered": [
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "contact_rollout_actor_iteration": 42
+    },
+    {
+      "case_id": "TRAIN36_LANE1828_EP2",
+      "source_TRAIN_case": 36,
+      "env_id": 1828,
+      "episode_index": 2,
+      "job_ticks": [
+        1117,
+        1917
+      ],
+      "actor_iterations_encountered": [
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "contact_rollout_actor_iteration": 42
+    }
+  ],
+  "diagnostic_model_checks": [
+    {
+      "iteration": 39,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_38.pt",
+      "sha256": "c6839614fceee3a5b43c1d1f7ff3a26400beee93c24df9f515d4431cbc60c730",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 40,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_39.pt",
+      "sha256": "76806637d12ea3381dcc299bf366eae70fc2d46c2e080559059b2e8cb3943225",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 41,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_40.pt",
+      "sha256": "0e639ba6cbe412ac641e81995971d1979962ed0f7f3de0503a2089cfec001f90",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 42,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_41.pt",
+      "sha256": "b7fc6aa9396383b9cba0618a5855bcca1b41d2df3503cef86715389659937350",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 43,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_42.pt",
+      "sha256": "2842a8397e56bd0e768387f074751e792a23f2e0c5f745e5ecadcef9d989135d",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 44,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_43.pt",
+      "sha256": "cbddd52258183b9ea19de1ac2ecd190be7fccd621e06df32e0c9a7768ef29e58",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 45,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_44.pt",
+      "sha256": "545007907cba2c46e7d9dcfd86fd54c3d82306045bf332772e4e97084b7b32f2",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 46,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_45.pt",
+      "sha256": "f1daedb511363e71e3f261ae62e792c5b2abe7d9716b20bf9c008a1fbf568a66",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 47,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_46.pt",
+      "sha256": "fab494282d279fc013440cfef1b2d816e69f2583c362ee6e2514799d92e6576f",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    },
+    {
+      "iteration": 48,
+      "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_47.pt",
+      "sha256": "949f003ac3d1d86ebe654af3001adfdded18b1dbaf279ff786655ba594e39916",
+      "model_optimizer_tensors_finite": true,
+      "canonical_native_resume": false
+    }
+  ],
+  "preserved_files": {
+    "additional_closed_training_episodes_update48.json.gz": {
+      "bytes": 2363561,
+      "sha256": "bbcd60f9ec3177759d9faff69fe32601c961be49c25140692ad067aec7ce4409"
+    },
+    "complete_episodes_update48.json": {
+      "bytes": 32957,
+      "sha256": "dced0ebf6b16ca0efea53eeb1ce44819bc18fb6a4f302be921183c550c840f9a"
+    },
+    "progress_update48.json": {
+      "bytes": 8502,
+      "sha256": "5d49798105ed05f06cd1b0ed5c7426c9a66c23f3cacd65109a2d6ee31919db52"
+    }
+  },
+  "native_contact_record_match_pending": true,
+  "full50Hz_training_motion_saved": false,
+  "limitations": [
+    "Actors, normalizers and exploration changed during these episodes. Do not attribute each success to a single frozen actor.",
+    "The first7766-record snapshot is retained; append the decoded delta and serialize with json.dumps(indent=2)+newline to recover the exact9015-record partial snapshot when snapshot_update48.",
+    "Match all completed env/episode pairs against contacts.json after the existing native guard actually ends.",
+    "Later-episode ground starts follow the unchanged real reset path; their individual initial frames and full motion were not separately saved.",
+    "Distinct successful TRAIN cases do not establish distribution-level rates or formal A/B acceptance."
+  ],
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
