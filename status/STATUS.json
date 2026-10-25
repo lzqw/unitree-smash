@@ -6868,7 +6868,7 @@
         }
       },
       "centered_placement075_live_training": {
-        "checked_at": "2026-10-25T23:13:33.297877+00:00",
+        "checked_at": "2026-10-25T23:24:53.200101+00:00",
         "actual_queue_pid": 1722226,
         "actual_guard_pid": 1722232,
         "actual_native_pid": 1722244,
@@ -6884,13 +6884,23 @@
         "full_original_TRAIN128_then_actual_six_case_video": true,
         "formal_acceptance": false,
         "goal_complete": false,
-        "actual_completed_iteration": 1,
-        "actual_control_env_steps": 262144,
-        "actor_normalizer_count": 10747904,
-        "critic_normalizer_count": 262144,
+        "actual_completed_iteration": 3,
+        "actual_control_env_steps": 786432,
+        "actor_normalizer_count": 11272192,
+        "critic_normalizer_count": 786432,
         "copied_mean_actor_unchanged_through_warmup": true,
         "numerical_failures_at_observation": 0,
-        "first_native_check": "reports/G07_full_racket_v4/centered_placement075_pilot8_queue01/FIRST_NATIVE_UPDATE_CHECK.json"
+        "first_native_check": "reports/G07_full_racket_v4/centered_placement075_pilot8_queue01/FIRST_NATIVE_UPDATE_CHECK.json",
+        "first_actual_actor_check": "reports/G07_full_racket_v4/centered_placement075_health_20261026/ACTUAL_UPDATE3_POST_WARMUP_CHECK.json",
+        "closed_changing_policy_counts": {
+          "completed_episodes": 1292,
+          "air": 91,
+          "conditional_recovery_count": 0,
+          "complete": 0,
+          "numerical_failures": 0
+        },
+        "original_first_episode_lanes_still_open": 756,
+        "partial_counts_are_not_frozen_policy_performance": true
       }
     },
     "G08": {
