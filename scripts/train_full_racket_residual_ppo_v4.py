@@ -26,8 +26,11 @@ from quadsmash.tasks.stand.full_racket_env_v4 import full_racket_cfg
 from quadsmash.tasks.stand.full_racket_residual_env_v4 import FullRacketResidualTrainingEnvV4
 from quadsmash.control.full_racket_train_evaluation_v4 import training_cases
 from quadsmash.control.full_racket_residual_reward_v4 import EVENT_WEIGHTS
+from quadsmash.control.full_racket_residual_v4 import baseline_mode,validate_frozen_baseline
 from quadsmash.control.measured_joint_placement_reward_v4 import placement_settings,REWARD_VERSION
+from quadsmash.control.measured_string_alignment_reward_v4 import alignment_settings,REWARD_VERSION as ALIGNMENT_REWARD_VERSION
 from quadsmash.rl.native_ppo import NativeRunner
+from quadsmash.rl.episode_trace_v4 import EpisodeTraceRecorderV4,trace_settings,SCHEMA as TRACE_SCHEMA
 from quadsmash.rl.full_racket_residual_ppo_v4 import (
     ResidualRslAdapterV4,ResidualTrainingInterrupted,export_residual_policy)
 from quadsmash.evaluation_v4 import independent_episode
@@ -74,45 +77,71 @@ def main():
     cases,indices=training_cases(ROOT,protocol,None)
     if args.num_envs<len(cases) or args.num_envs%len(cases):
         raise ValueError('Use a positive multiple of all128 fixed TRAIN cases')
+    configuration=json.loads(args.config.read_text());scales=configuration['joint_scale_rad']
+    mode=baseline_mode(configuration.get('base_controller_mode'))
     base=torch.load(args.base_checkpoint,map_location='cpu',weights_only=False)
-    if not base.get('native_execution') or base['schema']!='full-racket-ball-cem-v4':
-        raise ValueError('Require one actually measured baseline controller, no inherited residual actor')
+    source_verification=None
+    if mode=='analytic':
+        if not base.get('native_execution') or base['schema']!='full-racket-ball-cem-v4':
+            raise ValueError('Require one actually measured baseline controller, no inherited residual actor')
+    else:
+        if args.initialize_actor is not None:
+            raise ValueError('A centered residual starts fresh; do not add the old actor twice')
+        validate_frozen_baseline(base)
+        from quadsmash.rl.frozen_baseline_source_v4 import verify_frozen_baseline_source
+        source_verification=verify_frozen_baseline_source(args.base_checkpoint,base,digest(protocol_path))
     if base['seed'].get('arm_target_rate_limit_rad_s')!=5.:
         raise ValueError('Use a measured baseline with the same5rad/s arm target limiter')
     if base['asset_sha256']!=protocol['asset']['sha256'] or digest(ROOT/protocol['asset']['path'])!=protocol['asset']['sha256']:
         raise ValueError('Baseline/full-model asset mismatch')
     for name,expected in protocol['physical_configs'].items():
         if digest(ROOT/name)!=expected:raise ValueError('Physical config changed: '+name)
-    configuration=json.loads(args.config.read_text());scales=configuration['joint_scale_rad']
     joint_placement=placement_settings(configuration.get('joint_placement_reward'))
+    live_alignment=alignment_settings(configuration.get('live_alignment_reward'))
+    episode_trace=trace_settings(configuration.get('episode_trace'))
+    if live_alignment is not None:
+        if joint_placement is None:
+            raise ValueError('Measured strings/attack shaping requires explicit joint placement')
+        if live_alignment['discount']!=configuration['runner']['algorithm']['gamma']:
+            raise ValueError('Potential discount must equal the actual learner gamma')
     if args.initialize_actor is not None and joint_placement is None:
         raise ValueError('--initialize-actor requires the explicit joint-placement reward config')
     contract=dict(base_policy_sha256=digest(args.base_checkpoint),protocol_sha256=digest(protocol_path),
         joint_scale_rad=scales,reward_version='native-full-chain-residual-v1',event_weights=EVENT_WEIGHTS,
         actor_warmup_updates=configuration['actor_warmup_updates'],seed=args.seed)
+    if mode=='frozen_public_policy':contract['base_controller_mode']=mode
     if joint_placement is not None:
         contract.update(reward_version=REWARD_VERSION,joint_placement_reward=joint_placement)
+    if live_alignment is not None:
+        contract.update(reward_version=ALIGNMENT_REWARD_VERSION,live_alignment_reward=live_alignment,
+            target_event_requires_actual_attack=True,fixed_upper_uv_position_shaping=False)
     train_cfg=copy.deepcopy(configuration['runner']);train_cfg['seed']=args.seed;train_cfg['residual_contract']=contract
+    if episode_trace is not None:train_cfg['episode_trace']=dict(schema=TRACE_SCHEMA,**episode_trace)
     if train_cfg['obs_groups']['policy']!=['policy'] or train_cfg['policy']['class_name']!='ActorCritic' or train_cfg['policy']['noise_std_type']!='log':
         raise ValueError('This adapter requires the declared public-only feedforward log-std actor')
     cfg=full_racket_cfg(args.num_envs,protocol['physics_dt_s']);cfg.seed=args.seed
     cfg.episode_length_s=protocol['episode_seconds']
     env=FullRacketResidualTrainingEnvV4(cfg,cases=cases*(args.num_envs//len(cases)),
-        continue_after_miss=True,joint_placement_reward=joint_placement)
+        continue_after_miss=True,joint_placement_reward=joint_placement,live_alignment_reward=live_alignment)
     wrapped=RslRlVecEnvWrapper(env,clip_actions=None)
-    adapter=ResidualRslAdapterV4(wrapped,base,scales,lambda:stopping)
+    adapter=ResidualRslAdapterV4(wrapped,base,scales,lambda:stopping,base_mode=mode)
     try:
         if env.robot.is_fixed_base:raise ValueError('Actual floating ground-start robot required')
         atomic_json(args.output/'asset_dependencies.json',audit_composed_asset(ROOT,cfg.robot.spawn.usd_path))
         atomic_json(args.output/'INPUTS.json',dict(contract=contract,training_indices=indices,
             num_envs=args.num_envs,requested_updates=args.updates,runner=train_cfg,
             configuration_sha256=digest(args.config),resume_checkpoint_sha256=digest(args.resume) if args.resume else None,
+            episode_trace_settings=episode_trace,
+            frozen_baseline_source_verification=source_verification,
             initial_actor_checkpoint_sha256=digest(args.initialize_actor) if args.initialize_actor else None,
             resize_ground_requested=args.resize_ground,
             physics_dt_s=cfg.sim.dt,policy_dt_s=env.step_dt,formal_cases_read=False,
             formal_acceptance=False,scope='Native TRAIN learning across changing weights; no frozen-policy performance.'))
         runner=NativeRunner(adapter,train_cfg,log_dir=str(args.output/'ppo'),device=env.device)
         initialization=dict(mode='fresh_zero_mean_actor',num_envs=args.num_envs,initial_iteration=0)
+        if mode=='frozen_public_policy':
+            initialization.update(mode='fresh_zero_mean_actor_over_frozen_public_base',
+                fixed_base_policy_sha256=digest(args.base_checkpoint),trainable_action_joints=18)
         if args.resume:
             previous=torch.load(args.resume,map_location='cpu',weights_only=False)
             if previous.get('infos',{}).get('residual_contract')!=contract:
@@ -145,8 +174,22 @@ def main():
             initialization=initialization,source_training_indices=[indices[i%len(indices)] for i in range(args.num_envs)],
             root_state_local=ground_root.tolist(),joint_position_rad=data.joint_pos[:,env.joint_ids].cpu().tolist(),
             joint_velocity_rad_s=data.joint_vel[:,env.joint_ids].cpu().tolist(),all_episode_clocks_zero=True))
+        if episode_trace is not None:
+            from isaacsim.core.utils.stage import get_current_stage
+            from quadsmash.tasks.stand.visual_geometry import export_robot_geometry
+            export_robot_geometry(get_current_stage(),env.robot,args.output)
+            adapter.trace_recorder=EpisodeTraceRecorderV4(args.output/'trajectory_traces',args.num_envs,
+                round(protocol['episode_seconds']/protocol['policy_dt_s'])+1,env.robot.body_names,
+                episode_trace,dict(native_source_confirmed=True,source_kind='Actual native changing-policy TRAIN',
+                    training_indices=indices,initialization=initialization,
+                    protocol_sha256=contract['protocol_sha256'],asset_sha256=protocol['asset']['sha256'],
+                    body_names=env.robot.body_names,joint_names=[env.robot.joint_names[j]for j in env.joint_ids],
+                    default_joint_position_rad=adapter.default.cpu().tolist(),joint_limits_rad=adapter.limits.cpu().tolist(),
+                    source_job_output=str(args.output),formal_acceptance=False))
+            adapter.trace_contact_cursor=len(env.contact_records)
         initial_update=runner.current_learning_iteration;history=[];interrupted=False
         for _ in range(args.updates):
+            adapter.trace_iteration=runner.current_learning_iteration
             train_actor=runner.current_learning_iteration>=configuration['actor_warmup_updates']
             for parameter in runner.alg.policy.actor.parameters():parameter.requires_grad_(train_actor)
             runner.alg.policy.log_std.requires_grad_(train_actor)
@@ -157,6 +200,12 @@ def main():
             entry=dict(update=runner.current_learning_iteration,actor_warmup=not train_actor,
                 actual_control_env_steps=adapter.total_control_env_steps,**counts,
                 losses=runner.alg.last_update_stats,formal_acceptance=False)
+            if env.live_alignment_reward is not None:
+                entry['actual_paid_alignment_rewards']=env.live_alignment_reward.statistics()
+            if adapter.trace_recorder is not None:
+                try:adapter.trace_recorder.flush()
+                except Exception as error:adapter.trace_recorder.disable(error)
+                entry['trajectory_recording']=adapter.trace_recorder.statistics()
             history.append(entry);atomic_json(args.output/'progress.json',entry)
             atomic_json(args.output/'episodes.partial.json',rows)
             print(json.dumps(entry),flush=True)
@@ -169,9 +218,13 @@ def main():
         public_sample=adapter.last_observation['policy'][:16].detach().clone()
         runner.save_restart(args.output/'checkpoint.pt',infos=dict(residual_contract=contract,
             learner_initialization=initialization))
+        if adapter.trace_recorder is not None:
+            try:adapter.trace_recorder.flush()
+            except Exception as error:adapter.trace_recorder.disable(error)
         policy=export_residual_policy(base,runner.alg.policy,scales,public_sample,
             dict(native_execution=adapter.total_control_env_steps>0,completed_updates=runner.current_learning_iteration,
                  base_policy_sha256=contract['base_policy_sha256'],actual_control_env_steps=adapter.total_control_env_steps,
+                 **({'base_controller_mode':mode} if mode=='frozen_public_policy' else {}),
                  num_envs=args.num_envs,initialization=initialization))
         atomic_torch(args.output/'policy.pt',policy)
         atomic_json(args.output/'episodes.json',rows)

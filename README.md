@@ -1,5 +1,7 @@
 # QuadSmash：Codex /goal 实施与训练任务包
 
+2026-10-26下一轮：[固定已测基线上的增量学习计划](reports/G07_full_racket_v4/centered_residual_pilot8_queue01/PREDECLARED_PLAN_V2.json)已完成准备并集成。第二组gain0.70实测为22空中、13条件恢复、0合格攻击、0完整、NF0；按结果产生前登记的完整/攻击/恢复/空中顺序，选择仍有1次合格攻击的原8版作为固定基线。[源码退出和基线选择证据](reports/G07_full_racket_v4/centered_residual_pilot8_queue01/BASELINE_DECISION_AND_SOURCE_EXIT.json)确认旧原生/视频持有进程已结束，才修改主源码。新18关节网络从零均值增量、全新价值网络/归一化/Adam/计数起步，腿增量先限±0.03rad、臂±0.15rad，旧公共策略固定，原硬件、球拍、球场、规则和验收保持。主工作区83项检查通过，3200条实际公共输入（含一次真实重置）上零增量逐步复现原指令；这仍是CPU一致性证据，不继承原策略成绩。接下来仅通过原GPU0 guard/ledger执行2048环境×8更新，并记录完整训练轨迹，再独立冻结TRAIN128和生成真实视频；本段发布时新方法尚未完成原生训练，完整目标未通过。
+
 [实时拍面修正第一组gain0.35原生结果](reports/G07_full_racket_v4/live_tangent_trial_launch_v2_20261026/gain035_RESULT.json)已完成并独立重算全部原TRAIN128：71次球拍接触、21次合法空中拍线、11次条件恢复、0次合格攻击出球、0完整、NF0；19次越网、16次合法场内、8次目标命中仍不能组成完整扣杀。真实消耗0.311335 GPU小时、102400控制环境步，全部128个公共观测/动作流保留，原未执行提案不改写；另存的新执行权重才取得`native_execution=true`。第二组gain0.70已经由同一主GPU0 guard顺序接上，尚无完整结果。后续训练还需同时处理攻击出球和全身动作漂移。
 
 [冻结40失败复测、视频与诊断完整包（108MB）](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_joint40_frozen_TRAIN128_failed_videos_and_diagnostics_20261026.zip)已上传并下载回验：107664472字节，SHA256 `c06ea95fc519d8cdeff0f2332c110c8cae322b19ff1b9f750ce3ef59c5c8281f`，81成员全部CRC/SHA验证。包含8/40两版全部128例记录与实际全身轨迹、canonical40与导出、两段真实失败视频、完整对照表及导出/运动诊断程序；完整球拍USD等运行时依赖复用下方已验证483MB训练包。此包明确记录40版失败，不是正式A/B或完整目标通过证据，见[下载回执](reports/G07_full_racket_v4/joint40_fixed_delivery_20261026/UPLOAD_RECEIPT.json)。

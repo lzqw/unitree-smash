@@ -1,0 +1,146 @@
+{
+  "checked_at": "2026-10-25T16:36:20.543277+00:00",
+  "status": "CODE_READY_NOT_NATIVE_TRAINED",
+  "scope": "Candidate CPU wiring, portable actor transfer and optional native producer code. No v3 native execution or performance demonstrated.",
+  "cpu_test_result": {
+    "tests": 73,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 1.329,
+    "junit": "reports/G07_full_racket_v4/live_alignment_reward_candidate_20261025/CPU_TRACE_ADAPTER_TEST_RESULT.xml"
+  },
+  "adapter_reward_center_correction": "V3 reward reference keeps the actual contact face X and sets tangent Y/Z to zero; original teacher contact_offset and commands remain unchanged. The measured potential already used the real strings center before this consistency correction.",
+  "optional_episode_trace": {
+    "schema": "native-training-episode-trace-v1",
+    "all_lane_ring": true,
+    "nominal_host_ring_bytes": 2354774016,
+    "explicit_host_buffer_limit_bytes": 3000000000,
+    "full_public_values": 794,
+    "stored_per_step_values": 104,
+    "current_public_observation_rows_reconstructed_bitwise": 1600,
+    "actual_clock_resets_in_old_real_data": 0,
+    "controlled_adapter_reset_and_noninterference_checked": true,
+    "native_reset_recording_checked": false,
+    "geometry_pose_action_and_full_public_native_capture_executed": false,
+    "selection": "First24 runtime complete episodes, first6 failures and first episodes of lanes0/8/19/23/58/107; all normal raw outcomes preserved.",
+    "errors": "Recorder contract or I/O errors disable recording visibly in progress/manifest without changing the underlying learning step; no resulting video may be claimed if recording is disabled.",
+    "auditing_script": "scripts/check_full_racket_training_traces_v4.py",
+    "auditing_script_executed_on_native_v3": false
+  },
+  "real_actor_recheck": {
+    "source_iteration": 8,
+    "selected_actor_tensors": 13,
+    "actual_public_observations": 200,
+    "max_error": 0.0,
+    "fresh_critic_and_Adam": true
+  },
+  "corrections": [
+    "The first CPU target-only fixture left other lanes in precontact position shaping; isolate those lanes after contact. Production behavior and numerical tolerances were not relaxed.",
+    "Earlier REAL_PUBLIC_PACKING_CHECK scope said including automatic resets; the actual two saved episodes contain zero clock resets. REAL_PUBLIC_PACKING_RECHECK reports this explicitly. Actual reset handling remains unproven until a native producer runs."
+  ],
+  "physical_asset_protocol_rules_cases_and_acceptance_thresholds_unchanged": true,
+  "runtime_assets": "Only six ignored compiled runtime USD assets were copied unchanged for source/physical SHA checks; old legacy goal assets were not populated in this candidate worktree.",
+  "legacy_verification": {
+    "command": [
+      "/home/autodrive/Isaac/env_isaaclab/bin/python",
+      "tools/verify_goal.py",
+      "--root",
+      ".",
+      "--goal",
+      "G07"
+    ],
+    "exit_code": 2,
+    "result": {
+      "goal_id": "G07",
+      "status": "FAILED",
+      "contract_sha256": "66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807",
+      "checks": {
+        "G00": {
+          "passed": false,
+          "errors": [
+            "Missing or empty artifact: reports/G00/native_train/checkpoint.pt"
+          ]
+        },
+        "G01": {
+          "passed": false,
+          "errors": [
+            "Dependency did not pass: G00",
+            "Missing or empty artifact: assets/quadsmash_standard_v2.usd",
+            "Missing or empty artifact: assets/vendor/piper_isaac_sim/piper_description/urdf/piper_no_gripper_description.urdf"
+          ]
+        },
+        "G02": {
+          "passed": false,
+          "errors": [
+            "Dependency did not pass: G01"
+          ]
+        },
+        "G03": {
+          "passed": false,
+          "errors": [
+            "Dependency did not pass: G02",
+            "Missing or empty artifact: reports/G03/native_20261022T041355_436993/train/checkpoint.pt",
+            "Missing or empty artifact: reports/G03/native_20261022T041355_436993/train/continuation_reference.pt",
+            "Missing or empty artifact: reports/G03/native_20261022T041355_436993/reload/checkpoint.pt",
+            "Missing or empty artifact: reports/G03/native_20261022T041355_436993/reload/continuation_reference.pt",
+            "Missing or empty artifact: reports/G03/native_20261022T041355_436993/interrupt/checkpoint.pt",
+            "Missing or empty artifact: reports/G03/native_20261022T041355_436993/interrupt/continuation_reference.pt",
+            "Missing or empty artifact: reports/G03/native_20261022T041355_436993/resume_interrupt/checkpoint.pt",
+            "Missing or empty artifact: reports/G03/native_20261022T041355_436993/resume_interrupt/continuation_reference.pt"
+          ]
+        },
+        "G04": {
+          "passed": false,
+          "errors": [
+            "Dependency did not pass: G03",
+            "Missing or empty artifact: artifacts/G04/policy.pt",
+            "Missing or empty artifact: artifacts/G04/autonomous_actor/actor.pt",
+            "Missing or empty artifact: artifacts/G04/autonomous_actor/interface.json"
+          ]
+        },
+        "G05": {
+          "passed": false,
+          "errors": [
+            "Dependency did not pass: G04"
+          ]
+        },
+        "G06": {
+          "passed": false,
+          "errors": [
+            "Dependency did not pass: G05"
+          ]
+        },
+        "G07": {
+          "passed": false,
+          "errors": [
+            "Dependency did not pass: G06",
+            "Missing or invalid evidence: [Errno 2] No such file or directory: '/home/autodrive/LZQW/unitree_smash_live_alignment/reports/G07/evidence.json'"
+          ]
+        }
+      },
+      "scope": "Structure, hashes, dependencies and thresholds only; not simulation authenticity or GPU budget enforcement."
+    },
+    "interpretation": "Candidate worktree lacks historical runtime artifacts and G07 evidence.json. This is a failed legacy registry check, not a new physical or learned-policy acceptance."
+  },
+  "rollout_next_action": "After all current main source-owner native/CPU observers exit, inspect frozen40 and both original feedback probes. Select the next training method from actual TRAIN diagnostics, then integrate the reviewed candidate only into the original main GPU0 guard/ledger. Do not run an independent candidate ledger.",
+  "source_sha256": {
+    "configs/g07_full_racket_residual_ppo_live_alignment_v4.json": "997f6f799c6797a725e4a69a4794c1c97994ba6a25e6000f6d381bbd8a57e661",
+    "quadsmash/rl/full_racket_residual_ppo_v4.py": "04c6aa5356f81110bc76ffcfc1c087c31c2aea545566fd78f9c8351101dfb4ff",
+    "quadsmash/rl/episode_trace_v4.py": "c4610aefb3845dcab78202103a461e3adff2e305917f758f830c829941f717ce",
+    "scripts/train_full_racket_residual_ppo_v4.py": "97952814defaa49900fee38b02e8a104a98ef514703dd88c2e8d164f257d394c",
+    "scripts/check_episode_trace_public_cpu_v4.py": "7521982ebebc7b0a5c89a34c9271d805df8878723ec9661c564498473a9da070",
+    "scripts/check_live_alignment_wiring_cpu_v4.py": "eb46c528ca68eb954bdc7ae7e9b59525497843680ddb76d924e1748a2d040ed4",
+    "scripts/check_full_racket_training_traces_v4.py": "8a09ce4f5042d1c95466d5d2925cfa5e877e5a43dbe66973d06e12e048fcf17c",
+    "tests/test_full_racket_residual_v4.py": "a9bb503e1b29649f7e112197007fb710b209875350b0099fe421f43869dac0d2",
+    "tests/test_episode_trace_v4.py": "a0aaf0afbff1a3912a31b6cc247ebe15d7c26afc09a16da2034cc0c31cf85930",
+    "tests/test_episode_trace_adapter_v4.py": "11a756bacc1054b6cbc707097d236ed82399b9cfc8777a5f38dd73a38680a3d5",
+    "reports/G07_full_racket_v4/live_alignment_reward_candidate_20261025/CPU_TRACE_ADAPTER_TEST_RESULT.xml": "117eb905e92c73e450cb523ae57998109d0b04e23e9e39c8672f6c36336fa41e",
+    "reports/G07_full_racket_v4/live_alignment_reward_candidate_20261025/ENVIRONMENT_WIRING_CPU_CHECK.json": "9f58084aff3a4cdb9f4b131881afd73dc7f6ede84626e65b4b346bf7e3063345",
+    "reports/G07_full_racket_v4/live_alignment_reward_candidate_20261025/REAL_PUBLIC_PACKING_RECHECK.json": "c90e8bcb8daae4d01f1e9bca5fc5e62b4fd11a67caa945fcc1a019ee6d9b83b6",
+    "reports/G07_full_racket_v4/live_alignment_reward_candidate_20261025/REAL_DATA_RECHECK_WITH_TRACE_CONFIG.json": "83dd3e97ef9e362bd3ba72c33ee46a4813a50c281040591917b8669813de91be"
+  },
+  "native_execution": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}

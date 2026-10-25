@@ -1,0 +1,50 @@
+{
+  "checked_at": "2026-10-25T16:24:28.610024+00:00",
+  "scope": "Lossless CPU encoding/reconstruction of actual saved native public inputs, including automatic resets. Not a new policy execution or physical trajectory generated from these inputs.",
+  "actual_observation_rows": 1600,
+  "source_observation_shape": [
+    800,
+    2,
+    794
+  ],
+  "stored_per_control_values": 104,
+  "reconstructed_public_values": 794,
+  "all_full_public_values_bitwise_equal": true,
+  "per_inferred_episode": [
+    {
+      "lane": 0,
+      "inferred_local_episode_index": 0,
+      "rows": 800,
+      "full_public_sha256": "b00d25ea2d3a2b4d1eeb7af62919d63aa48dedcefed507815cc697bbfd25b06a",
+      "reconstructed_sha256": "b00d25ea2d3a2b4d1eeb7af62919d63aa48dedcefed507815cc697bbfd25b06a",
+      "bitwise_equal": true
+    },
+    {
+      "lane": 1,
+      "inferred_local_episode_index": 0,
+      "rows": 800,
+      "full_public_sha256": "52453711a29a93a837a634edc7b7e112d345cc354c95b8d6bd6239fef55e2fea",
+      "reconstructed_sha256": "52453711a29a93a837a634edc7b7e112d345cc354c95b8d6bd6239fef55e2fea",
+      "bitwise_equal": true
+    }
+  ],
+  "nominal2048_lane801_step28_body_ring_buffer_bytes": 2354774016,
+  "nominal_buffer_GiB": 2.19305419921875,
+  "recorder_selection": "First24 complete episodes, first6 failures and first episodes of lanes0/8/19/23/58/107; all raw episode outcomes remain in normal native logs.",
+  "native_recorder_integrated_in_candidate": true,
+  "new_native_recording_executed": false,
+  "limitations": [
+    "Only public input packing was checked on real native observations here. Body/ball/action capture integration still needs a real native candidate run.",
+    "Automatic episode boundaries in this old two-lane file are inferred from the actual clock reset. The live producer uses actual native episode indices.",
+    "Memory estimate covers main NumPy buffers and history, excluding transient copies and mesh-export data."
+  ],
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01/public_and_actions_first2.npz": "58810fce894aa1bf2ae8262c0b629494edbd106a875b80b01790a665cbcbed57",
+    "/home/autodrive/LZQW/unitree_smash_live_alignment/quadsmash/rl/episode_trace_v4.py": "c4610aefb3845dcab78202103a461e3adff2e305917f758f830c829941f717ce",
+    "/home/autodrive/LZQW/unitree_smash_live_alignment/scripts/check_episode_trace_public_cpu_v4.py": "e1eca3eac07e479104a255506c0a22cfbcc9728e5ae428de61d28d225ed316ee"
+  },
+  "native_execution": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}

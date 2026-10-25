@@ -1,0 +1,62 @@
+{
+  "created_at": "2026-10-25T17:28:37.921393+00:00",
+  "registered_while_gain070_live": {
+    "state": "RUNNING_NATIVE_PUBLIC_TANGENT_PROBE",
+    "queue_pid": 1666828,
+    "updated_at": "2026-10-25T17:10:38.318706+00:00",
+    "historical_skipped_state_preserved": true,
+    "formal_cases_read": false,
+    "formal_acceptance": false,
+    "goal_complete": false,
+    "variant": "gain070",
+    "guard_pid": 1670199,
+    "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/live_tangent_trial_20261025/gain070_native_train128_v2"
+  },
+  "verified_current_source_owner_pid": 1666828,
+  "gain070_result_absent_at_registration": true,
+  "baseline_candidates": [
+    "completed frozen new learner8",
+    "completed gain035 public-feedback policy",
+    "gain070 after actual completion"
+  ],
+  "baseline_selection_score_descending": [
+    "complete",
+    "attack_outgoing",
+    "conditional_recovery_count",
+    "airborne_contacts"
+  ],
+  "tie_order": [
+    "frozen8",
+    "gain035",
+    "gain070"
+  ],
+  "original_formal_gate": {
+    "complete_success_rate": 0.5,
+    "airborne_contact_rate": 0.7,
+    "conditional_recovery_rate": 0.85,
+    "numerical_failures": 0
+  },
+  "if_chosen_baseline_reaches_original_formal_gate": "Do not extend training; preserve the actual frozen policy/source for original formal A/B review.",
+  "training_config": "configs/g07_full_racket_residual_ppo_centered_v4.json",
+  "fresh_actor_initialization": true,
+  "initial_actor_transfer_forbidden": true,
+  "native_pilot": {
+    "num_envs": 2048,
+    "all_original_TRAIN_cases": 128,
+    "copies_per_case": 16,
+    "updates": 8,
+    "critic_warmup_updates": 2,
+    "num_steps_per_env": 128,
+    "control_env_steps_cap": 2097152,
+    "job_seconds_cap": 7200,
+    "seed": 748701
+  },
+  "after_pilot": "Require actual finite optimizer/model updates and ground-start/recording audit, then independently assess the frozen original TRAIN128 before deciding continuation. No reward rise or changing-policy success may stand in for frozen performance.",
+  "continuation_intent": "If actual fixed behavior is retained and formal readiness remains unmet, allow sustained same-contract learning in finite32-update jobs, with checkpoints and repeated TRAIN128 diagnostic checks; retain all failures.",
+  "resource_authorization": "Only original main GPU0 guard, original cumulative ledger and existing unlimited authorization; never a candidate-local ledger, concurrent native job or new cloud.",
+  "source_custody": "Do not alter main pinned sources until every live owner exits. Candidate changes are CPU-only until reviewed integration.",
+  "native_execution": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}

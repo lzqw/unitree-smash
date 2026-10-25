@@ -1,0 +1,64 @@
+{
+  "checked_at": "2026-10-25T15:49:54.847190+00:00",
+  "scope": "CPU numerical integration fixture executing actual reward method bodies.57 recorded precontact geometries/velocities with controlled flags, costs and a stub parent reset. No Isaac constructor, PhysX step, historical payment reconstruction or policy-performance result.",
+  "actual_precontact_recording_rows": 57,
+  "actual_source_cases": [
+    0,
+    1
+  ],
+  "legacy_compatibility": [
+    {
+      "mode": "v1",
+      "fixture_rows_per_phase": 57,
+      "controlled_phases": 6,
+      "all_reward_values_bitwise_equal": true
+    },
+    {
+      "mode": "v2",
+      "fixture_rows_per_phase": 57,
+      "controlled_phases": 6,
+      "all_reward_values_bitwise_equal": true
+    }
+  ],
+  "maximum_local_coordinate_error_m": 2.3171088026074926e-07,
+  "maximum_plane_distance_rate_error_mps": 1.6132479085939622e-06,
+  "maximum_independent_potential_error": 2.394997866694837e-07,
+  "maximum_translated_origin_reward_error": 0.00036728382110595703,
+  "original_target_gate_soft_and_attack": [
+    true,
+    true
+  ],
+  "candidate_target_gate_soft_and_attack": [
+    false,
+    true
+  ],
+  "new_components_not_paid_twice": true,
+  "selective_reset_hook_observed": true,
+  "other_lane_release_state_preserved": true,
+  "job_totals_preserved": true,
+  "tolerances": {
+    "local_position_m": 5e-05,
+    "plane_rate_mps": 0.002,
+    "independent_potential": 0.002,
+    "translated_reward": 0.01,
+    "payment_difference": 3e-05
+  },
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_live_alignment/quadsmash/tasks/stand/full_racket_residual_env_v4.py": "b4ddf1a5c96aba39c8cf486b40f67c643fdd4292b499024ea7a5e8bb6112d913",
+    "actual_native8_source_snapshot_reward_module": "6e9d01d3203044c97796631655edf154fa7f8bd47170bdd776d9c786a79b5487",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01/source_snapshot.zip": "c74cf1707ff55358b40a04243cf6d5f412d6190ddbe7cadd3e0fe9500b9e4dc3",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01/public_and_actions_first2.npz": "58810fce894aa1bf2ae8262c0b629494edbd106a875b80b01790a665cbcbed57",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01/all_first_episodes.npz": "14de9f4ae30d78734d19498b201efb8f30a8ab99a68d098a4dc60ff30a019648",
+    "/home/autodrive/LZQW/unitree_smash_live_alignment/scripts/check_live_alignment_wiring_cpu_v4.py": "eb46c528ca68eb954bdc7ae7e9b59525497843680ddb76d924e1748a2d040ed4"
+  },
+  "limitations": [
+    "Rally flags, torque costs and parent reset in this check are controlled CPU fixtures, not recorded engine events.",
+    "Other body velocities are unused zeros; only actual public root/tool/ball velocities are reconstructed.",
+    "The check does not establish native hook timing, physical ground reset, actuator response or improved policy performance.",
+    "Translation error includes expected float32 quantization at512m environment offsets; test tolerances do not change the original acceptance protocol."
+  ],
+  "native_execution": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
