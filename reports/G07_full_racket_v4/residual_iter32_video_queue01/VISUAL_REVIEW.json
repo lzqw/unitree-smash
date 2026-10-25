@@ -1,0 +1,74 @@
+{
+  "status": "APPROVED_FOR_UPLOAD",
+  "verification": {
+    "verified_at": "2026-10-25T06:26:32.074421+00:00",
+    "video": "reports/G07_full_racket_v4/video/Current_effect_residual_PPO_iter32_20261025_v3.mp4",
+    "sha256": "42bf5a68b6bb3efbae2afd76259ac141d3eb211604d5a1d039465bb2df50fb29",
+    "bytes": 5954163,
+    "frames_decoded": 3469,
+    "all_frames_decoded": true,
+    "fps": 50.0,
+    "duration_s": 69.38,
+    "resolution": [
+      1280,
+      720
+    ],
+    "native_recorded_motion": true,
+    "renderer_uses_gpu": false,
+    "formal_acceptance": false,
+    "visual_review": "All12 native contact/landing/terminal previews inspected: far TRAIN0 first landing is visible in both court-wide panels; recovery views keep the full robot/arm/racket close; TRAIN8 attack and stable recovery still miss target. Earlier rejected versions are preserved.",
+    "reviewed_previews_sha256": {
+      "reports/G07_full_racket_v4/video/Current_effect_residual_PPO_iter32_20261025_v3_case0_terminal.jpg": "9d5e8ae04f9cbf9850306d2f0eae32c563717d665ce90595adabb39f1146731a",
+      "reports/G07_full_racket_v4/video/Current_effect_residual_PPO_iter32_20261025_v3_case0_landing.jpg": "8c4a70420dae390699df498558df37485e8cbf9d631d535ab97953da0eb0569b",
+      "reports/G07_full_racket_v4/video/Current_effect_residual_PPO_iter32_20261025_v3_case1_terminal.jpg": "106ed20e55fef163b144c51287658ee25292c3c5eb1ae4a7834c98bb8d337295",
+      "reports/G07_full_racket_v4/video/Current_effect_residual_PPO_iter32_20261025_v3_case1_contact.jpg": "398c41237b7fec38e4e623a7fd2ca905961635a6046f32274f666b4411469492",
+      "reports/G07_full_racket_v4/video/Current_effect_residual_PPO_iter32_20261025_v3_case2_terminal.jpg": "cbdf86298ac20287701f397d2188e561c901c1cac6893817336acbe39bef7c2f",
+      "reports/G07_full_racket_v4/video/Current_effect_residual_PPO_iter32_20261025_v3_case2_contact.jpg": "8840eb619599b839b5b8e7f7ade4494387abef76265f9c80f9127eec51d3edfb",
+      "reports/G07_full_racket_v4/video/Current_effect_residual_PPO_iter32_20261025_v3_case3_terminal.jpg": "40193ba9c6df56ddc9bce64ed59f69b3c8413ae748efc44f4e34e40dda9e8362",
+      "reports/G07_full_racket_v4/video/Current_effect_residual_PPO_iter32_20261025_v3_case3_contact.jpg": "e4fd9eb77fbb4339c985ad2687a903bc49b3b54509a454a51141aac6d9d5ec79",
+      "reports/G07_full_racket_v4/video/Current_effect_residual_PPO_iter32_20261025_v3_case3_landing.jpg": "1daf930e0e98bcac3722707ca88d01b79bce2493cef7250feb3400f184b44d99",
+      "reports/G07_full_racket_v4/video/Current_effect_residual_PPO_iter32_20261025_v3_case4_terminal.jpg": "ae52aa490296ddffdadd93f8a06c4703bb5c0d12ae9002fab0b0aadb65f992a2",
+      "reports/G07_full_racket_v4/video/Current_effect_residual_PPO_iter32_20261025_v3_case4_contact.jpg": "30deb4011203c2a8b4c8840d0a860f34a9a46bcaec55ceeb6dd31efcde56a378",
+      "reports/G07_full_racket_v4/video/Current_effect_residual_PPO_iter32_20261025_v3_case4_landing.jpg": "a6a005ce3ec53dbcf71a9367a174bd9abbef1bc140a53f74cfae66433153587c"
+    },
+    "cases": [
+      {
+        "run": "residual_ppo_fixed_train128_iter32_n512_01",
+        "env_id": 19,
+        "source_type": "evaluation"
+      },
+      {
+        "run": "residual_ppo_fixed_train128_iter32_n512_01",
+        "env_id": 23,
+        "source_type": "evaluation"
+      },
+      {
+        "run": "residual_ppo_fixed_train128_iter32_n512_01",
+        "env_id": 107,
+        "source_type": "evaluation"
+      },
+      {
+        "run": "residual_ppo_fixed_train128_iter32_n512_01",
+        "env_id": 0,
+        "source_type": "evaluation"
+      },
+      {
+        "run": "residual_ppo_fixed_train128_iter32_n512_01",
+        "env_id": 8,
+        "source_type": "evaluation"
+      }
+    ]
+  },
+  "preselected_TRAIN_indices": [
+    19,
+    23,
+    107,
+    0
+  ],
+  "posthoc_TRAIN_indices": [
+    8
+  ],
+  "posthoc_rule": "Choose the nearest target miss among actual no-frame air-attack-and-qualified-recovery cases8/42; not a predeclared/random case.",
+  "first_and_second_exports_preserved": true,
+  "formal_acceptance": false
+}

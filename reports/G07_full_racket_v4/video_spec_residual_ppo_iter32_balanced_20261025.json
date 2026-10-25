@@ -1,0 +1,95 @@
+{
+  "scope": "One fixed residual PPO iter32 on original TRAIN128. Four cases selected before evaluation are all retained; a fifth independently recorded case is selected posthoc under the declared rule. Not formal A/B.",
+  "policy_sha256": "772608a1c42ec78c09cdf3bd8b7bfe3fed1738d1273cde9d09610022553aa21b",
+  "selection_reason": "Retain all four original preselected failures and add a labelled actual air-attack-and-recovery example that still misses the target.",
+  "opening_title": "PPO第32次更新｜真实动作与失败对照",
+  "opening_lines": [
+    "前四例在评估前预选；TRAIN8为评估后选取的对照。",
+    "完整TRAIN128：空中22、条件恢复14、完整0；数值故障0。",
+    "保留四例失败，并展示真实空中攻击与恢复的未达标回合。"
+  ],
+  "closing_title": "固定策略完整成功仍为0｜继续联合优化",
+  "closing_lines": [
+    "TRAIN8出球8.04米/秒并合格恢复，首落超目标0.54米。",
+    "原预选四例全部失败，训练中的完整回合未在本次复测重现。",
+    "按原规则继续学习；正式验收仍需A/B各200回合。"
+  ],
+  "evaluation_footer": "PPO iter32固定TRAIN128｜空中22/128、条件恢复14/22、完整0",
+  "caveats": [
+    "Actual native50Hz body poses and exact contact events. No generated or interpolated motion.",
+    "Cases19,23,107,0 were fixed before this assessment. TRAIN19 was motivated by a training success; it is not a blind/random selection.",
+    "These are fixed-policy evaluation episodes, distinct from the earlier changing-policy TRAIN19_LANE275_EP1 success.",
+    "The terminal image uses the last valid50Hz sample, not an invented exact terminal pose.",
+    "The original formal A/B acceptance thresholds remain unchanged.",
+    "The fifth caseTRAIN8 is explicitly posthoc, chosen from candidates8/42 by target miss distance among actual air-attack-and-recovery episodes; it is not a predeclared or randomly sampled case.",
+    "Court-wide cameras keep actual incoming/outgoing balls and first-landing markers visible, including court-end misses. Recorded geometry and dynamics are unchanged."
+  ],
+  "cases": [
+    {
+      "run": "residual_ppo_fixed_train128_iter32_n512_01",
+      "source_type": "evaluation",
+      "env_id": 19,
+      "title": "固定TRAIN19｜没有球拍接触",
+      "subtitle": "同一PPO第32次更新策略｜原生全身轨迹",
+      "terminal_status": "本回合完整扣杀失败｜接触与恢复联合条件未通过",
+      "limitation": "未记录有效出球；首落[-1.05,0.14]米；稳定窗口4.11秒"
+    },
+    {
+      "run": "residual_ppo_fixed_train128_iter32_n512_01",
+      "source_type": "evaluation",
+      "env_id": 23,
+      "title": "固定TRAIN23｜拍框接触",
+      "subtitle": "同一PPO第32次更新策略｜原生全身轨迹",
+      "terminal_status": "本回合完整扣杀失败｜接触与恢复联合条件未通过",
+      "limitation": "出球8.30米/秒；未观察到首次落点；稳定窗口4.13秒"
+    },
+    {
+      "run": "residual_ppo_fixed_train128_iter32_n512_01",
+      "source_type": "evaluation",
+      "env_id": 107,
+      "title": "固定TRAIN107｜拍框接触",
+      "subtitle": "同一PPO第32次更新策略｜原生全身轨迹",
+      "terminal_status": "本回合完整扣杀失败｜接触与恢复联合条件未通过",
+      "limitation": "出球6.27米/秒；未观察到首次落点；稳定窗口0.00秒"
+    },
+    {
+      "run": "residual_ppo_fixed_train128_iter32_n512_01",
+      "source_type": "evaluation",
+      "env_id": 0,
+      "title": "固定TRAIN0｜拍框接触",
+      "subtitle": "同一PPO第32次更新策略｜原生全身轨迹",
+      "terminal_status": "本回合完整扣杀失败｜接触与恢复联合条件未通过",
+      "limitation": "出球8.49米/秒；首落[8.22,-0.81]米；稳定窗口0.38秒"
+    },
+    {
+      "run": "residual_ppo_fixed_train128_iter32_n512_01",
+      "source_type": "evaluation",
+      "env_id": 8,
+      "title": "固定TRAIN8｜空中攻击与合格恢复",
+      "subtitle": "评估后按公开条件选取｜同一固定策略的另一独立回合",
+      "terminal_status": "本回合完整扣杀失败｜合格恢复成立",
+      "limitation": "出球8.04米/秒；首落[4.54,-0.45]米；超目标上界0.54米"
+    }
+  ],
+  "all_cases_preselected_before_fixed_evaluation": false,
+  "preselected_TRAIN_indices_before_fixed_evaluation": [
+    19,
+    23,
+    107,
+    0
+  ],
+  "posthoc_demonstration_TRAIN_indices": [
+    8
+  ],
+  "posthoc_rule": "Among no-frame episodes with independent legal airborne attack and qualified recovery, choose the smallest Euclidean first-landing distance outside the original target rectangle. Complete success is still false.",
+  "posthoc_candidates": [
+    {
+      "index": 8,
+      "target_distance_m": 0.5365447998046875
+    },
+    {
+      "index": 42,
+      "target_distance_m": 0.8814163208007812
+    }
+  ]
+}

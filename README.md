@@ -1,14 +1,20 @@
 # QuadSmash：Codex /goal 实施与训练任务包
 
-当前进度（2026-10-25）：512环境PPO本轮24次续训已完成，达到全局iter32，新增1572864控制环境步，实际1.407381 GPU小时，数值故障0；原生canonical检查点、有限模型/优化器和导出一致性已核验。3171个变动权重训练回合含417合法空中、210条件恢复、1完整；该完整回合仍是经历actor14..20的TRAIN19，不是固定actor32成绩。GPU0现已启动同一iter32策略的固定TRAIN128评估，正式G07仍未通过。
+[最新69.38秒实测视频](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_residual_PPO_iter32_20261025_v3.mp4)已上传并下载SHA回验：同一iter32固定策略，保留评估前预选的TRAIN19/23/107/0四个失败回合，另加明确标为评估后选择的TRAIN8。TRAIN8在己方1.748米处真实空中拍线攻击，出球8.04米/秒、向下1.55米/秒，实际越网并合格恢复4.329秒；首次落点x4.537米超过原目标上界0.537米，完整仍失败。侧视/俯视、慢放、真实接触与首次落点，全部3469帧解码；v3补全远落点并保持恢复近景，前两版及拒绝原因保留。
 
-[训练完成报告](reports/G07_full_racket_v4/residual_iter32_training_completion_20261025/REPORT.json)与[3171行训练CSV](reports/G07_full_racket_v4/residual_iter32_training_completion_20261025/training_episodes.csv)保留完整训练计数、更新日志、实际资源用量和来源；[原生接触确认](reports/G07_full_racket_v4/residual_n512_first_complete_20261025/FINAL_CONTACT_CONFIRMATION.json)已与训练结束后的contacts.json匹配。新固定评估的128个地面初态已核验，结果和四例新视频仍在等待；当前已发布视频仍是iter8。
+[iter32完整训练、固定128回合原始轨迹、源码、权重与视频包（123.9 MB）](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_PPO_iter32_fixed_TRAIN128_video_training_and_raw_20261025.zip)已上传回验：151成员全部CRC/SHA通过，ZIP SHA256为`db25f79073218916780c766bc783ba613ee0e73d8f62c8d8a955f8a3da338c45`。其中的2048信息仅为另行标注的启动检查摘要，不含其进行中的原始训练数据或策略成绩。
 
-[完整训练回合与全部同批原始记录](reports/G07_full_racket_v4/residual_n512_first_complete_20261025/REPORT.json)保留1894回合快照、原生索引、同lane前一失败及权重谱系。PPO训练没有保存这条回合的完整运动轨迹，不能将事件/终态记录补成真实动作视频。第32次更新完成后，既定队列将冻结策略评估TRAIN128，再由CPU生成TRAIN19/23/107/0的实际视频；案例在本次固定评估开始前已选定。此前首批512地面训练回合为70合法空中、33条件恢复、0完整；原PPO iter8固定TRAIN128为18/128空中、9/18条件恢复、完整0。
+[固定iter32诊断报告](reports/G07_full_racket_v4/residual_iter32_fixed_diagnostic_20261025/REPORT.json)与[128行固定评估CSV](reports/G07_full_racket_v4/residual_csv_queue01/iter32_fixed_episodes.csv)可逐回合核对；训练中3171回合的417空中/210恢复/1完整不作为固定actor32成绩。
 
-已登记[有条件后续训练](reports/G07_full_racket_v4/residual_resize2048_queue01/PREDECLARED_PLAN.json)：第32次更新的固定评估成功核验且未明显崩溃后，将在2048个真实地面环境（128来球各16副本）再学64次更新至iter96，再次固定评估TRAIN128。现有GPU0训练未被打断；新作业尚未开始，吞吐与效果均待实测。原模型、执行器、规则和正式验收条件保持不变。
+当前进度（2026-10-25）：PPO iter32固定TRAIN128已完成并独立重算：合法空中22/128（17.19%）、条件恢复14/22（63.64%）、攻击3、目标3、完整0、数值故障0。第8次更新为18空中/9恢复/0完整，横向基线为19/12/0；这是不同原生执行的描述性对照，不作统计或因果结论。本轮3次空中攻击与3次目标命中没有同回合重叠，完整任务仍未解决。GPU0现已在2048个真实地面环境（128来球各16副本）从iter32继续学习64更新至iter96；正式G07仍未通过。
 
-[最新PPO实际效果视频（41.36秒）](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_residual_PPO_iter8_20261025_v2.mp4)：同一iter8固定策略、预选TRAIN23/107/0。第一例8.42米/秒空中攻击并稳定恢复4.27秒，但首落x=4.793米超出目标；另两例为漏球和拍框失败。侧视/俯视包含完整机器人、机械臂与球拍；2068帧解码和GitHub附件下载SHA回验通过。相同编号可与此前基线视频比较，当前512环境新权重不在视频中。
+[训练完成报告](reports/G07_full_racket_v4/residual_iter32_training_completion_20261025/REPORT.json)与[3171行训练CSV](reports/G07_full_racket_v4/residual_iter32_training_completion_20261025/training_episodes.csv)保留完整训练计数、更新日志、实际资源用量和来源；[原生接触确认](reports/G07_full_racket_v4/residual_n512_first_complete_20261025/FINAL_CONTACT_CONFIRMATION.json)已与训练结束后的contacts.json匹配。固定评估的128个地面初态与新权重已核验，最新成绩与视频见上方；旧iter8视频保留为历史对照。
+
+[完整训练回合与全部同批原始记录](reports/G07_full_racket_v4/residual_n512_first_complete_20261025/REPORT.json)保留1894回合快照、原生索引、同lane前一失败及权重谱系。PPO训练没有保存这条回合的完整运动轨迹，不能将事件/终态记录补成真实动作视频。第32次更新后的固定TRAIN128评估与实际视频现已完成；TRAIN19/23/107/0四例在该次固定评估开始前已选定，追加TRAIN8的选择时间与依据已单独说明。此前首批512地面训练回合为70合法空中、33条件恢复、0完整；原PPO iter8固定TRAIN128为18/128空中、9/18条件恢复、完整0。
+
+已登记[有条件后续训练](reports/G07_full_racket_v4/residual_resize2048_queue01/PREDECLARED_PLAN.json)：第32次更新的固定评估成功核验且未明显崩溃后，将在2048个真实地面环境（128来球各16副本）再学64次更新至iter96，再次固定评估TRAIN128。本次后继作业现已实际启动，2048原生地面初态、学习器继承及首个更新已核验；冻结策略效果仍待后续复测。原模型、执行器、规则和正式验收条件保持不变。
+
+[此前PPO第8次更新视频（41.36秒）](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_residual_PPO_iter8_20261025_v2.mp4)：同一iter8固定策略、预选TRAIN23/107/0。第一例8.42米/秒空中攻击并稳定恢复4.27秒，但首落x=4.793米超出目标；另两例为漏球和拍框失败。侧视/俯视包含完整机器人、机械臂与球拍；2068帧解码和GitHub附件下载SHA回验通过。相同编号可与此前基线视频比较，该历史视频不代表iter32或之后的权重。
 
 [固定TRAIN128全部原始轨迹、源码、权重与视频（69.7 MB）](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_PPO_iter8_fixed_TRAIN128_video_and_raw_20261025.zip)已上传回验，75成员均核验SHA256。
 

@@ -12,7 +12,7 @@ REPORTS = ROOT / 'reports/G07_full_racket_v4'
 HERE = Path(__file__).resolve().parent
 TRAIN = REPORTS / 'residual_ppo_n512_resume24_01'
 EVALUATION = REPORTS / 'residual_ppo_fixed_train128_iter32_n512_01'
-SNAPSHOT = REPORTS / 'video_snapshot_residual_ppo_iter32_20261025'
+SNAPSHOT = REPORTS / 'video_snapshot_residual_ppo_iter32_balanced_20261025'
 CSV = REPORTS / 'residual_csv_queue01'
 
 
@@ -27,7 +27,7 @@ def read(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--video', type=Path,
-        default=REPORTS / 'video/Current_effect_residual_PPO_iter32_20261025.mp4')
+        default=REPORTS / 'video/Current_effect_residual_PPO_iter32_20261025_v3.mp4')
     parser.add_argument('--review', type=Path,
         default=REPORTS / 'residual_iter32_video_queue01/VISUAL_REVIEW.json')
     parser.add_argument('--output', type=Path,
@@ -69,7 +69,10 @@ def main():
     assert metadata['native_recorded_motion'] and not metadata['interpolated_or_generated_motion']
     assert not metadata['renderer_uses_gpu'] and 'llvmpipe' in metadata['renderer']
     assert snapshot['policy_sha256'] == policy_sha
-    expected_cases = [19, 23, 107, 0]
+    expected_cases = [19, 23, 107, 0, 8]
+    assert snapshot['preselected_TRAIN_indices_before_fixed_evaluation'] == expected_cases[:4]
+    assert snapshot['posthoc_demonstration_TRAIN_indices'] == [8]
+    assert snapshot['all_cases_preselected_before_fixed_evaluation'] is False
     assert [c['env_id'] for c in snapshot['cases']] == expected_cases
     assert [c['env_id'] for c in metadata['cases']] == expected_cases
     assert all(c['run'] == EVALUATION.name for c in metadata['cases'])
@@ -94,6 +97,15 @@ def main():
              if p.is_file() and 'partial' not in p.name and p.suffix != '.tmp']
     paths += [p for p in SNAPSHOT.rglob('*') if p.is_file()]
     paths += list(video.parent.glob(video.stem + '*'))
+    paths += [REPORTS / 'video' / ('Current_effect_residual_PPO_iter32_20261025' + suffix)
+              for suffix in ['.mp4', '.json', '_verification.json']]
+    paths += [REPORTS / 'video' / ('Current_effect_residual_PPO_iter32_20261025_v2' + suffix)
+              for suffix in ['.mp4', '.json']]
+    paths += [REPORTS / 'residual_iter32_video_review_20261025' / name
+              for name in ['FIRST_EXPORT_REVIEW.json', 'renderer_first_export.py',
+                           'SECOND_EXPORT_REVIEW.json', 'renderer_second_export.py']]
+    for directory in ['residual_iter32_training_completion_20261025', 'residual_iter32_fixed_diagnostic_20261025']:
+        paths += [p for p in (REPORTS / directory).iterdir() if p.is_file()]
     paths += [CSV / (stem + suffix) for stem in ['iter32_training_episodes', 'iter32_fixed_episodes']
               for suffix in ['.csv', '.json']]
     paths += [REPORTS / 'residual_ppo_fixed_train128_1250' / name
@@ -109,6 +121,7 @@ def main():
     paths += [review_path, core.BASE, REPORTS / 'MODEL_RULES.json',
         REPORTS / 'model_task_comparison_20261025/REPORT.json',
         REPORTS / 'video_spec_residual_ppo_iter32_20261025.json',
+        REPORTS / 'video_spec_residual_ppo_iter32_balanced_20261025.json',
         REPORTS / 'residual_resize512_queue01/run.py',
         ROOT / 'scripts/export_full_racket_train_csv_v4.py',
         ROOT / 'scripts/render_full_racket_latest_effect_v4.py',
@@ -128,13 +141,14 @@ def main():
         name = str(path.relative_to(ROOT)) if path.is_relative_to(ROOT) else 'external_dependencies/' + str(path.relative_to('/'))
         entries[name] = path
     manifest = dict(created_at=datetime.now(timezone.utc).isoformat(),
-        scope='Actual iter32 fixed TRAIN128 assessment, reviewed four-case video, and separately scoped changing-policy512-env training. Not formal A/B.',
+        scope='Actual iter32 fixed TRAIN128 assessment, reviewed five-case video, and separately scoped changing-policy512-env training. Not formal A/B.',
         canonical_fixed_TRAIN128_metrics=metrics, changing_policy_training=training,
         csv_summaries=[m['canonical_summary'] for m in csv_manifests],
         policy_sha256=policy_sha, video_sha256=sha(video),
         formal_cases_read=False, formal_acceptance=False, goal_complete=False,
-        excluded='Any subsequent2048-env training or evaluation is excluded; no pending result is inherited.',
-        selection_note='TRAIN19 was chosen after a changing-policy training success, before frozen assessment;23/107/0 preserve the previous video cases. The video is not random population sampling.',
+        excluded='Subsequent2048-env raw rollouts/checkpoints and policy performance are excluded. A separately labelled diagnostic may mention its startup/ground checks; no pending result is inherited.',
+        selection_note='The four preselected cases19/23/107/0 all failed and are retained. TRAIN8 was selected posthoc by target miss distance among actual no-frame air-attack-and-recovery episodes. The five-case video is not random population sampling.',
+        retained_initial_exports='The original four-case clip and v2 are retained with rejected framing reviews and their renderer sources. V3 is the reviewed primary video: court-end landing visible, robot recovery kept close.',
         training_note='The TRAIN19_LANE275_EP1 success spans changing actors/normalizers. Event and contact/terminal poses do not supply its unsaved full motion trajectory or one frozen successful policy.',
         runtime_note='Use each native run source_snapshot.zip for its exact runtime. Later renderer/exporter source is separately included. Isaac runtime and pinned libraries are separately required.',
         dependency_note='All10 pinned USD layers and the actual walking actor are included. Restore external_dependencies to their recorded absolute layout or explicitly remap references.',

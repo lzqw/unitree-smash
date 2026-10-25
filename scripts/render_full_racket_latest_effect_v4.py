@@ -12,6 +12,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 from render_full_racket_r3_effect import ROOT, Scene, sha
 from render_current_v4_progress import camera
+from quadsmash.evaluation_v4 import FAULTS
 
 
 def main():
@@ -49,6 +50,8 @@ def main():
         for name, w, h, eye, target, fov in [
             ('wide_side', 760, 480, [1.3, -6., 3.], [1.3, 0., 1.], 49),
             ('wide_top', 504, 480, [2., -.001, 6.2], [2., 0., 0.], 60),
+            ('court_side', 760, 480, [1.525, -12., 6.], [1.525, 0., .6], 58),
+            ('court_top', 504, 480, [1.525, -.001, 12.5], [1.525, 0., 0.], 65),
         ]:
             scene.views[name] = (scene.ctx.simple_framebuffer((w, h), components=3),
                                  camera(eye, target, w / h, fov))
@@ -91,6 +94,17 @@ def main():
         wide = terminal or t >= 3.5 or landing_freeze or (row['crossed_net'] and t >= row['crossing_time_s']
                                  and (not row['ground_seen'] or t <= row['first_landing_time_s'] + .35))
         views = ['wide_side', 'wide_top'] if wide else ['side', 'top']
+        # Keep actual incoming/outgoing balls and first-landing markers in
+        # both panels, including court-end misses outside the earlier view.
+        faulted = any(row[name] for name in FAULTS)
+        follow_ball = (not terminal and (not faulted or not row['had_contact']
+                       or t <= row['release_time_s']))
+        reference = landing if landing_freeze else (ball if follow_ball else None)
+        if reference is not None:
+            if any(scene.project(reference, view) is None for view in views):
+                wide, views = True, ['wide_side', 'wide_top']
+            if any(scene.project(reference, view) is None for view in views):
+                views = ['court_side', 'court_top']
         picture = Image.new('RGB', (1280, 720), (18, 28, 43))
         for view, left in zip(views, [0, 776]):
             pane = scene.render(poses, view, ball=ball, trail=trail, landing=landing)
