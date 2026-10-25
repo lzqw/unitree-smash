@@ -1,0 +1,24 @@
+{
+  "scope": "CPU command replay only. Physical contact/recovery performance is unmeasured.",
+  "native_execution": false,
+  "formal_acceptance": false,
+  "performance_inherited": false,
+  "walk_heading_gain": 1.5,
+  "source_height_intercept": null,
+  "replay_ticks": 800,
+  "default_and_zero_gain_bitwise_legacy": true,
+  "changed_leg_ticks": 175,
+  "changed_arm_ticks": 0,
+  "changed_tick_min": 38,
+  "changed_tick_max": 212,
+  "caveat": "Unchanged arm commands apply to frozen-input replay only; walking changes the physical body and arm state in closed loop.",
+  "legacy_commit": "d8cce78",
+  "policy_sha256": "76a96f7146d9f996f762a1ffa8882019f758893ed3f2fd6c7682763375a2de25",
+  "source_sha256": {
+    "reports/G07_full_racket_v4/cem32_lateral_feedback_1015/best_candidate.pt": "51a8b19b17e19e60bd7482c7bcb7ed1d4e8b7f50b9317cac3c49007089e8b62d",
+    "reports/G07_full_racket_v4/cem31_candidate5_diag_0900/run/public_and_actions_first2.npz": "30e305dbdd2a67bb2edfc3afdf0b55177ad200c060f042a1b0e6d0edbc539039",
+    "/home/autodrive/LZQW/unitree_smash/quadsmash/control/full_racket_teacher_v4.py": "348fbe4c87b43a1c99ac68b612a29f67d4a5a93837c50fb4f9ab4cef81373dc3",
+    "/home/autodrive/LZQW/unitree_smash/scripts/prepare_full_racket_walk_heading_v4.py": "6f15c7c350e283e2abe613ffa47feaa25b986e6e93133b6d78528c1f650d23cf",
+    "/home/autodrive/LZQW/unitree_smash/quadsmash/control/full_racket_walk_heading_v4.py": "26010279f175715065441995784328c6e4cc7709c0d8093821433687aa9a5872"
+  }
+}

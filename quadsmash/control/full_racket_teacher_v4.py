@@ -12,6 +12,7 @@ from .full_racket_face_feedback_v4 import FullRacketFaceFeedback
 from .full_racket_recovery_search_v4 import recovery_parameters
 from .full_racket_contact_normal_search_v4 import contact_normal_body
 from .full_racket_arm_target_rate_v4 import ArmTargetRateV4
+from .full_racket_walk_heading_v4 import validate_walk_heading_gain,walk_heading_arguments
 
 LOW=[.35,.45,1.10,1.55,.85,-.15,-.15,.30]+[-.25]*6+[-.10,0.,.8,.7,0.,.04,-.20,-.15,-.15,-.15]
 HIGH=[1.,1.20,1.60,2.,1.15,.15,.15,1.50]+[.25]*6+[.12,1.5,1.7,1.2,1.,.15,.10,.15,.15,.15]
@@ -33,6 +34,7 @@ class FullRacketTeacherV4:
         self.arm_velocity=torch.tensor(seed['joint_velocity_seed_rad_s'],dtype=torch.float32,device=device)
         self.pitch_basis=torch.tensor(seed['pitch_compensation_basis_rad_per_rad'],dtype=torch.float32,device=device)
         self.smooth_recovery_arm=seed.get('smooth_recovery_arm',False)
+        self.walk_heading_gain=validate_walk_heading_gain(seed.get('walk_heading_gain',0.))
         self.lateral_residual_feedback=seed.get('lateral_residual_feedback',False)
         if type(self.lateral_residual_feedback) is not bool:
             raise ValueError('Lateral residual feedback switch must be boolean')
@@ -82,7 +84,8 @@ class FullRacketTeacherV4:
         walk_parameters[:,7]*=parameters[:,17]
         if parameters.shape[1]>=22:
             walk_parameters[:,3]+=parameters[:,20];walk_parameters[:,5]+=parameters[:,21]
-        walk=self.walk.action({'policy':walk_obs},walk_parameters,default,limits,maximum_time=3.)
+        walk=self.walk.action({'policy':walk_obs},walk_parameters,default,limits,
+            maximum_time=3.,**walk_heading_arguments(obs,self.walk_heading_gain))
         strike_obs=obs.clone();strike_obs[:,775]=local.clamp_min(0.)
         strike=self.strike(strike_obs)
         q=limits[:,0]+.5*(strike+1)*(limits[:,1]-limits[:,0])

@@ -7,3 +7,5 @@ CEM33控制器选择当前公开来球预测的己方拦截平面，目标1.76m�
 形式A/B400最后证据仍是candidate5未通过：A空中24/200、条件恢复10/24；B空中6/200、恢复1/6；完整0/NF0。最新视频 Current_formal_evaluation_cem31_20261025.mp4，完整轨迹包 G07_CEM31_formal400_native_trajectories_20261025.zip 已上传回验。
 
 接触日志的point_velocity_mps是在PhysX接触步后读取，不能用作独立的撞击前速度来标定因果出球控制；范围说明见 CEM32_CONTACT_VELOCITY_SCOPE_20261025.json。
+
+航向反馈已接入但默认关闭：walk_heading_ready_1115/policy.pt 是尚未原生执行的gain1.5初始化，CPU800步默认/零增益逐位一致，310检查通过。当前CEM33运行的是启动时旧源码；先等其真实进程退出并重算完整4x32结果，再决定TRAIN128复测还是这项新训练，不能重复启动GPU。最新横向修正视频与62.5MB完整TRAIN128原始证据已上传并下载SHA回验。

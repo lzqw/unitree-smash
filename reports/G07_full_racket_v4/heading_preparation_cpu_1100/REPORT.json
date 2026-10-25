@@ -1,0 +1,25 @@
+{
+  "scope": "Isolated CPU draft replay only; not installed in live training sources and not physically executed.",
+  "native_execution": false,
+  "formal_acceptance": false,
+  "performance_inherited": false,
+  "gain": 1.5,
+  "replay_ticks": 800,
+  "default_and_zero_bitwise_legacy": true,
+  "changed_leg_ticks": 175,
+  "changed_arm_ticks": 0,
+  "changed_commands_only_before_control_tick": 230,
+  "heading_public_vs_native_max_error_rad": 8.940696716308594e-08,
+  "observation_immutable": true,
+  "new_dynamics_or_asset_changes": false,
+  "caveat": "Identical arm commands apply only to frozen-input replay; changing walking can change arm/body motion in closed-loop dynamics.",
+  "source_sha256": {
+    "quadsmash/control/full_racket_teacher_v4.py": "9b110f44540b47a9ea6f31ea1725c50d6dbdbf7b4f5df636d42e9ae81aa555bf",
+    "reports/G07_full_racket_v4/heading_preparation_cpu_1100/proposed_teacher.py": "f9c59c1790349f470aec99823a3ef66a97977a904bab9a4fa82d52467ff5aa29",
+    "reports/G07_full_racket_v4/cem32_lateral_feedback_1015/best_candidate.pt": "51a8b19b17e19e60bd7482c7bcb7ed1d4e8b7f50b9317cac3c49007089e8b62d",
+    "reports/G07_full_racket_v4/cem31_candidate5_diag_0900/run/public_and_actions_first2.npz": "30e305dbdd2a67bb2edfc3afdf0b55177ad200c060f042a1b0e6d0edbc539039",
+    "reports/G07_full_racket_v4/cem31_candidate5_diag_0900/run/all_first_episodes.npz": "fa4550ed033c162d5a44f3bbd355c7e539b911a6a7556b1c2cb8b4d3e346f48f",
+    "reports/G07_full_racket_v4/CPU_REPLAY_AUTHORED_JOINTS_0724.json": "c91545fe9a1069586436c040338c5bc9dafd6ccbb6dad5f3df50c6506e31dd42",
+    "reports/G07_full_racket_v4/heading_preparation_cpu_1100/probe.py": "f23d86aa893da3671a82c64175abf8539ea2832ceaa8c79ac5a289af4f8767d1"
+  }
+}

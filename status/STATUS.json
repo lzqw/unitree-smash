@@ -466,12 +466,16 @@
       ],
       "latest_stopped_generation_summary": "reports/G07_full_racket_v4/cem28_terminal_2030/REPORT.json",
       "latest_program_evidence_bundle": {
-        "name": "G07_CEM28_complete_milestones_and_distribution_diagnostic_20261025_2045.zip",
-        "bytes": 369153360,
-        "sha256": "4fd1bb7ae81dafa07cae5f92c16189b8b338caf44e9d7b047d53c1cf4fb5dff8",
-        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_CEM28_complete_milestones_and_distribution_diagnostic_20261025_2045.zip",
-        "scope": "CEM28 four generations, two complete native TRAIN milestones, latest complete videos and fixed TRAIN128 diagnostic; formal A/B unrun.",
-        "upload_receipt": "reports/G07_full_racket_v4/cem28_delivery_upload_receipt_2045.json"
+        "archive": "reports/G07_full_racket_v4/G07_lateral_TRAIN128_native_and_video_20261025.zip",
+        "sha256": "64cfa0cc757374b95f27354490963ba62f2996d60d40a2d76b0b789e2598f19f",
+        "bytes": 62467590,
+        "file_count": 72,
+        "all_archive_members_rehashed": true,
+        "formal_acceptance": false,
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_lateral_TRAIN128_native_and_video_20261025.zip",
+        "id": 673919204,
+        "download_verified": true,
+        "verified_at": "2026-10-25T02:51:30.512204+00:00"
       },
       "latest_partial_native_contacts": "reports/G07_full_racket_v4/slew50_contact_prefix_1530/REPORT.json",
       "latest_airborne_strings_power_milestone": {
@@ -752,12 +756,15 @@
         "scope": "Actual formal candidate5 evaluation episodes; original400-case failure counts shown."
       },
       "prepared_walk_heading_draft": {
-        "scope": "Isolated CPU draft only; not yet installed in the live teacher.",
-        "report": "reports/G07_full_racket_v4/heading_preparation_cpu_1100/REPORT.json",
+        "scope": "Installed opt-in heading channel, CPU-ready only; live CEM33 uses its already-loaded prior code and frozen source snapshot.",
+        "report": "reports/G07_full_racket_v4/walk_heading_ready_1115/REPORT.json",
         "gain": 1.5,
         "native_execution": false,
-        "installed": false,
-        "formal_acceptance": false
+        "installed": true,
+        "formal_acceptance": false,
+        "module": "quadsmash/control/full_racket_walk_heading_v4.py",
+        "policy": "reports/G07_full_racket_v4/walk_heading_ready_1115/policy.pt",
+        "tests_passed": 310
       }
     },
     "G08": {
