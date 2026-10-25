@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/TRAIN128_LATERAL_DIAGNOSTIC_20261025.json",
-      "notes": "新联合奖励学习器8已完成2097152步；固定原TRAIN128为完整0/128、空中20/128、条件恢复12/20、NF0。86.16秒真实视频已逐帧解码、画面审核、上传并下载验SHA。GPU0继续同契约canonical8→40训练；实核global21本作业3407872步、累计新学习器5505024步，7001闭合变化中策略训练回合独立重算606空中、231条件恢复、0完整、NF0，模型/17项Adam有限，参数确实更新。71次固定8实际接触诊断发现51次拍框集中上缘；历史内移静态目标失败已保留。两种实时公共来球切向修正完成CPU回放并保持native_execution=false，观察队列等待当前训练和第40次冻结TRAIN128完成后再按原门槛决定是否顺序试验。原物理、球拍、规则、来球、50%/70%/85%门槛不变，未新增正式A/B，本轮完整目标未通过。",
+      "notes": "GPU0继续同契约canonical8→40训练，最新已实核活进程global30，本作业5767168步；原生运行计数12539闭合回合、1110空中、446条件恢复、0完整、NF0（此处未独立重算）。最近独立有限性/Adam及全7001行复算仍是global21。最新完成的固定新8评测仍0/128完整、20/128空中、12/20条件恢复、NF0。第40版CPU视频观察队列已启动，继承六例并在固定评测前登记。旧200ms实时修正原生试验仍等待主流程；新预测诊断揭示长预测局部误差，未据此提前宣判试验。新的实测拍线/攻击奖励在独立分支通过66项CPU及真实canonical8 actor迁移/终端公式回放，未合入、未原生训练。现有运行源码373项联合持有指纹均一致；原球拍、物理、规则、全部来球及50%/70%/85%门槛不变，完整目标仍未通过。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
@@ -58,7 +58,7 @@
       "active_gpu_jobs": [
         {
           "state": "RUNNING_SAME_REWARD_RESUME32",
-          "observed_at": "2026-10-25T14:51:35.582226+00:00",
+          "observed_at": "2026-10-25T15:34:24.428662+00:00",
           "workflow_pid": 1638238,
           "workflow_session_id": 34609,
           "guard_pid": 1642834,
@@ -75,7 +75,18 @@
           "actual2048_ground_states_verified": true,
           "verification": "reports/G07_full_racket_v4/joint_resume_health_20261025/REPORT.json",
           "formal_acceptance": false,
-          "goal_complete": false
+          "goal_complete": false,
+          "latest_runtime_update": 30,
+          "runtime_counts": {
+            "update": 30,
+            "actual_control_env_steps": 5767168,
+            "completed_episodes": 12539,
+            "air": 1110,
+            "conditional_recovery_count": 446,
+            "complete": 0,
+            "numerical_failures": 0,
+            "formal_acceptance": false
+          }
         }
       ],
       "queued_native_sequence": {
@@ -1387,7 +1398,7 @@
       },
       "current_native_workflow_state": {
         "state": "RUNNING_SAME_REWARD_RESUME32",
-        "observed_at": "2026-10-25T14:51:35.582226+00:00",
+        "observed_at": "2026-10-25T15:34:24.428662+00:00",
         "workflow_pid": 1638238,
         "workflow_session_id": 34609,
         "guard_pid": 1642834,
@@ -1404,7 +1415,18 @@
         "actual2048_ground_states_verified": true,
         "verification": "reports/G07_full_racket_v4/joint_resume_health_20261025/REPORT.json",
         "formal_acceptance": false,
-        "goal_complete": false
+        "goal_complete": false,
+        "latest_runtime_update": 30,
+        "runtime_counts": {
+          "update": 30,
+          "actual_control_env_steps": 5767168,
+          "completed_episodes": 12539,
+          "air": 1110,
+          "conditional_recovery_count": 446,
+          "complete": 0,
+          "numerical_failures": 0,
+          "formal_acceptance": false
+        }
       },
       "latest_completed_fixed_TRAIN128": {
         "report": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/FIXED_TRAIN128_RESULT.json",
@@ -4489,6 +4511,76 @@
         "members": 523,
         "uploaded": true,
         "download_verified": true,
+        "formal_acceptance": false,
+        "goal_complete": false
+      },
+      "latest_observed_joint_training_progress": {
+        "observation": "reports/G07_full_racket_v4/joint8_prediction_error_20261025/CURRENT_NATIVE_OBSERVATION.json",
+        "observed_at": "2026-10-25T15:34:24.428662+00:00",
+        "runtime_counts_independently_rescored_here": false,
+        "progress": {
+          "update": 30,
+          "actor_warmup": false,
+          "actual_control_env_steps": 5767168,
+          "completed_episodes": 12539,
+          "air": 1110,
+          "conditional_recovery_count": 446,
+          "complete": 0,
+          "numerical_failures": 0,
+          "formal_acceptance": false
+        },
+        "verified_source_owners": 373,
+        "frozen_policy_performance": false,
+        "formal_acceptance": false
+      },
+      "latest_forecast_error_diagnostic": {
+        "report": "reports/G07_full_racket_v4/joint8_prediction_error_20261025/REPORT.json",
+        "exact_native_public_rows": 35,
+        "exact_case_count": 2,
+        "both_exact_cases_are_frame_contacts": true,
+        "approximate_backward_difference_rows": 610,
+        "contacted_cases_in_approximate_subset": 71,
+        "no_contact_cases_without_contact_time_label": 57,
+        "native_policy_execution_performed": false,
+        "formal_acceptance": false
+      },
+      "queued_joint40_video": {
+        "state": "WAITING_FOR_FROZEN_JOINT_REWARD_TRAIN128",
+        "pid": 1653610,
+        "session_id": 11501,
+        "parent_pid": 1638238,
+        "source": "reports/G07_full_racket_v4/joint_placement_iter40_video_queue01/run.py",
+        "state_file": "reports/G07_full_racket_v4/joint_placement_iter40_video_queue01/state.json",
+        "plan": "reports/G07_full_racket_v4/joint_placement_iter40_video_queue01/PREDECLARED_PLAN.json",
+        "registration": "reports/G07_full_racket_v4/joint_placement_iter40_video_queue01/REGISTRATION_RECEIPT.json",
+        "preselected_TRAIN_indices": [
+          19,
+          23,
+          107,
+          0,
+          8,
+          58
+        ],
+        "current_reuse_registered_during_learning_before_frozen40_assessment": true,
+        "renderer_uses_gpu": false,
+        "new_video_generated": false,
+        "formal_acceptance": false
+      },
+      "prepared_live_alignment_reward_branch": {
+        "state": "CODE_READY",
+        "worktree": "/home/autodrive/LZQW/unitree_smash_live_alignment",
+        "branch": "g07-live-string-attack-reward-v4-20261025",
+        "commit": "ae8cc5bed2aba5254aa0f7395ca60387fd09cde0",
+        "report": "https://github.com/lzqw/unitree-smash/blob/ae8cc5bed2aba5254aa0f7395ca60387fd09cde0/reports/G07_full_racket_v4/live_alignment_reward_candidate_20261025/REPORT.json",
+        "CPU_tests_passed": 66,
+        "actual_canonical_source_iteration": 8,
+        "actual_native_public_observations_for_actor_check": 200,
+        "public_actor_max_error": 0.0,
+        "critic_and_Adam_fresh": true,
+        "retrospective_event_replay_not_actual_paid_rewards": true,
+        "main_running_source_changed": false,
+        "new_native_training_started": false,
+        "resource_note": "Only integrate after all current native/trial/video source owners have actually ended; then use main original GPU0 guard/ledger, never a second isolated-worktree ledger.",
         "formal_acceptance": false,
         "goal_complete": false
       }

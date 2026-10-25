@@ -1,5 +1,11 @@
 # QuadSmash：Codex /goal 实施与训练任务包
 
+2026-10-25 后续准备：[真实轨迹上的预测误差](reports/G07_full_racket_v4/joint8_prediction_error_20261025/REPORT.json)包含两例35条精确100Hz公共观测，以及71个接触回合的610条50Hz向后差分估算，两类不混称。精确子集中，提前80至120毫秒的局部拍面残差中位数约21.9厘米，40毫秒内约1.3厘米；局部坐标随球拍转动，不能把它当作孤立球预测误差或新策略成绩。原200毫秒两组原生修正试验继续保留，等待实测。
+
+[第40次冻结评测视频队列](reports/G07_full_racket_v4/joint_placement_iter40_video_queue01/PREDECLARED_PLAN.json)已启动：在当前续训期间、固定评测产生前登记沿用19/23/107/0/8/58六例；待实际全128评测完成，再以Mesa/llvmpipe CPU渲染侧视/俯视并逐帧解码，最后留待真实画面审核。现在还没有第40版视频。
+
+[独立的新奖励候选分支](https://github.com/lzqw/unitree-smash/tree/g07-live-string-attack-reward-v4-20261025)已上传：66项CPU检查通过，实际canonical8的13个公共actor/归一化/探索张量迁移在200条真实观测上与原导出输出误差0，价值网络和Adam保持新建。新模式用当前实测拍线中心势函数替代旧上缘位置引导、提供有界实际出球进度反馈，并令20分目标奖励同时要求原攻击门槛；回放显示原4039训练记录的21个软目标、固定128的8个软目标均不再满足该奖励门槛。这是终端公式回放，不是历史支付重建或改善证据。该分支尚未合入正在运行的源码、未进行v3原生训练；下一步需等待现有源码持有进程结束并审查真实结果，仍只使用主工作区原GPU0 guard/ledger。
+
 2026-10-25 续训实核：[新学习器第21次更新](reports/G07_full_racket_v4/joint_resume_health_20261025/REPORT.json)已完成本作业3407872控制环境步，累计新学习器5505024步；独立重算7001个闭合训练回合为606空中、231条件恢复、0完整、NF0。17项Adam状态均比canonical8增加260步，两套归一化计数各增加3407872，actor权重确实更新；这些是变化中策略的训练数据。GPU0继续原32次更新任务与随后第40次固定TRAIN128评测。
 
 [71次实际接触诊断](reports/G07_full_racket_v4/joint8_contact_centering_20261025/REPORT.json)及[接触分布图](reports/G07_full_racket_v4/joint8_contact_centering_20261025/contact_distribution.png)显示20次拍线、51次拍框集中在上缘；当前教师瞄准点为拍头中心上方0.10米，运动学拍头位置误差最大0.0163毫米。历史0.07米静态重定向原生搜索仍0完整，已保留失败结果。新的[实时来球/拍头切向修正试验](reports/G07_full_racket_v4/live_tangent_trial_20261025/PREPARATION.json)在1600条实际观测和800步完整控制器回放中通过有限性、导出一致性、腿部指令一致性和原5rad/s目标限速检查；两种强度均保持`native_execution=false`。观察队列已启动，等待当前原生训练及冻结评测真正结束，若尚未达到原正式门槛，再逐个执行全部原TRAIN128；尚无新试验的PhysX成绩。

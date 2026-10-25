@@ -1,0 +1,51 @@
+{
+  "observed_at": "2026-10-25T15:34:24.428662+00:00",
+  "scope": "Verified live native training and CPU observers, plus an actual runtime-progress snapshot. These counts are native telemetry, not a newly independently rescored or frozen evaluation.",
+  "live_processes": [
+    {
+      "pid": 1638238,
+      "state": "S",
+      "command": "/home/autodrive/Isaac/env_isaaclab/bin/python reports/G07_full_racket_v4/joint_placement_resume32_queue01/run.py "
+    },
+    {
+      "pid": 1642834,
+      "state": "S",
+      "command": "/home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/scripts/run_gpu_job.py --goal G07 --budget-window g07-full-racket-unlimited-20261024 --max-seconds 14400 --env-steps-cap 8388608 --output /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01 --require-artifact completed.json -- /home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/scripts/train_full_racket_residual_ppo_v4.py --output /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01 --base-checkpoint /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/cem32_lateral_feedback_1015/best_candidate.pt --config /home/autodrive/LZQW/unitree_smash/configs/g07_full_racket_residual_ppo_joint_placement_v4.json --resume /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01/checkpoint.pt --num-envs 2048 --updates 32 --seed 748501 --headless "
+    },
+    {
+      "pid": 1642846,
+      "state": "R",
+      "command": "/home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/scripts/train_full_racket_residual_ppo_v4.py --output /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01 --base-checkpoint /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/cem32_lateral_feedback_1015/best_candidate.pt --config /home/autodrive/LZQW/unitree_smash/configs/g07_full_racket_residual_ppo_joint_placement_v4.json --resume /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01/checkpoint.pt --num-envs 2048 --updates 32 --seed 748501 --headless "
+    },
+    {
+      "pid": 1651319,
+      "state": "S",
+      "command": "/home/autodrive/Isaac/env_isaaclab/bin/python reports/G07_full_racket_v4/live_tangent_trial_20261025/queue.py "
+    },
+    {
+      "pid": 1653610,
+      "state": "S",
+      "command": "/home/autodrive/Isaac/env_isaaclab/bin/python reports/G07_full_racket_v4/joint_placement_iter40_video_queue01/run.py "
+    }
+  ],
+  "source_files_verified": 373,
+  "progress": {
+    "update": 30,
+    "actor_warmup": false,
+    "actual_control_env_steps": 5767168,
+    "completed_episodes": 12539,
+    "air": 1110,
+    "conditional_recovery_count": 446,
+    "complete": 0,
+    "numerical_failures": 0,
+    "formal_acceptance": false
+  },
+  "source_progress_sha256": "3394bd1784992c135788f74230c188ab172fe6d3fb339f98c95cf13f0e034bcf",
+  "source_progress": "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/progress.json",
+  "last_independent_finite_model_check": "reports/G07_full_racket_v4/joint_resume_health_20261025/REPORT.json",
+  "video40_not_yet_generated": true,
+  "live_tangent_proposals_not_yet_executed": true,
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}

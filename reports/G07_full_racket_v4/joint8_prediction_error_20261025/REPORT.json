@@ -1,0 +1,418 @@
+{
+  "created_at": "2026-10-25T15:06:59.981528+00:00",
+  "scope": "Offline forecast residuals on a completed frozen TRAIN128 execution. The 71 contacted cases condition this analysis;57 no-contact cases have no physical contact-time label and are not counted as accurate predictions.",
+  "source_full_TRAIN_episodes": 128,
+  "actual_first_contacts": 71,
+  "exact_public_subset": {
+    "episodes": [
+      0,
+      1
+    ],
+    "both_contacts_are_frames": true,
+    "rows": 35,
+    "statistics": {
+      "0.00..0.04s": {
+        "samples": 8,
+        "distinct_episodes": 2,
+        "timing_absolute_error_q10_q50_q90_ms": [
+          0.1447811722755432,
+          0.44257938861846924,
+          2.334729954600334
+        ],
+        "local_plane_error_q10_q50_q90_m": [
+          0.0011975559394217011,
+          0.013012027065962672,
+          0.04234474086961636
+        ],
+        "negative_local_direction_dot": 0
+      },
+      "0.04..0.08s": {
+        "samples": 8,
+        "distinct_episodes": 2,
+        "timing_absolute_error_q10_q50_q90_ms": [
+          6.077669560909271,
+          13.003289699554443,
+          15.251006931066513
+        ],
+        "local_plane_error_q10_q50_q90_m": [
+          0.08173161601393274,
+          0.14149369274122064,
+          0.17991362252646764
+        ],
+        "negative_local_direction_dot": 4
+      },
+      "0.08..0.12s": {
+        "samples": 8,
+        "distinct_episodes": 2,
+        "timing_absolute_error_q10_q50_q90_ms": [
+          16.887788474559784,
+          18.563956022262573,
+          20.79339176416397
+        ],
+        "local_plane_error_q10_q50_q90_m": [
+          0.20404966983922665,
+          0.21948807846569124,
+          0.22657597639289834
+        ],
+        "negative_local_direction_dot": 8
+      },
+      "0.12..0.16s": {
+        "samples": 8,
+        "distinct_episodes": 2,
+        "timing_absolute_error_q10_q50_q90_ms": [
+          22.897520661354065,
+          26.57492458820343,
+          27.853447198867798
+        ],
+        "local_plane_error_q10_q50_q90_m": [
+          0.1880890615873949,
+          0.19988055644059072,
+          0.22536945078598644
+        ],
+        "negative_local_direction_dot": 8
+      },
+      "0.16..0.20s": {
+        "samples": 3,
+        "distinct_episodes": 2,
+        "timing_absolute_error_q10_q50_q90_ms": [
+          23.37455153465271,
+          25.433391332626343,
+          25.999659299850464
+        ],
+        "local_plane_error_q10_q50_q90_m": [
+          0.22974718680733483,
+          0.2337293902618648,
+          0.23897190067478108
+        ],
+        "negative_local_direction_dot": 3
+      }
+    }
+  },
+  "approximate_50Hz_contact_subset": {
+    "rows": 610,
+    "distinct_episodes": 71,
+    "contacted_episodes_without_eligible_forecast": [],
+    "statistics": {
+      "strings": {
+        "0.00..0.04s": {
+          "samples": 40,
+          "distinct_episodes": 20,
+          "timing_absolute_error_q10_q50_q90_ms": [
+            0.21484015419065053,
+            0.633247247583065,
+            1.9271167603566015
+          ],
+          "local_plane_error_q10_q50_q90_m": [
+            0.001954563524749085,
+            0.012972956313126945,
+            0.0447358507778195
+          ],
+          "negative_local_direction_dot": 1
+        },
+        "0.04..0.08s": {
+          "samples": 40,
+          "distinct_episodes": 20,
+          "timing_absolute_error_q10_q50_q90_ms": [
+            0.6338315590236899,
+            5.161022292883743,
+            12.339402866385935
+          ],
+          "local_plane_error_q10_q50_q90_m": [
+            0.0689668182252549,
+            0.12471905949745897,
+            0.1840810828082712
+          ],
+          "negative_local_direction_dot": 20
+        },
+        "0.08..0.12s": {
+          "samples": 40,
+          "distinct_episodes": 20,
+          "timing_absolute_error_q10_q50_q90_ms": [
+            10.260923179133277,
+            19.596507932928095,
+            26.057687988068576
+          ],
+          "local_plane_error_q10_q50_q90_m": [
+            0.1459150558923907,
+            0.19173034266115524,
+            0.23117899750574997
+          ],
+          "negative_local_direction_dot": 34
+        },
+        "0.12..0.16s": {
+          "samples": 40,
+          "distinct_episodes": 20,
+          "timing_absolute_error_q10_q50_q90_ms": [
+            22.872060684457715,
+            29.509563723114542,
+            35.10003665305611
+          ],
+          "local_plane_error_q10_q50_q90_m": [
+            0.15323706374421756,
+            0.20654620134430823,
+            0.23411317667590847
+          ],
+          "negative_local_direction_dot": 37
+        },
+        "0.16..0.20s": {
+          "samples": 11,
+          "distinct_episodes": 11,
+          "timing_absolute_error_q10_q50_q90_ms": [
+            22.61670861905482,
+            29.786819372950134,
+            31.46770443108826
+          ],
+          "local_plane_error_q10_q50_q90_m": [
+            0.15397001876572175,
+            0.21685129694825295,
+            0.23447333299308745
+          ],
+          "negative_local_direction_dot": 10
+        }
+      },
+      "frame": {
+        "0.00..0.04s": {
+          "samples": 102,
+          "distinct_episodes": 51,
+          "timing_absolute_error_q10_q50_q90_ms": [
+            0.168564039528237,
+            1.0301945895466909,
+            4.3858214490145135
+          ],
+          "local_plane_error_q10_q50_q90_m": [
+            0.002020734710079469,
+            0.018271463992990344,
+            0.056818006514378544
+          ],
+          "negative_local_direction_dot": 0
+        },
+        "0.04..0.08s": {
+          "samples": 102,
+          "distinct_episodes": 51,
+          "timing_absolute_error_q10_q50_q90_ms": [
+            4.36173097039814,
+            11.776673848974365,
+            18.155872442964608
+          ],
+          "local_plane_error_q10_q50_q90_m": [
+            0.07973876209694439,
+            0.14573718359346977,
+            0.20361865822992442
+          ],
+          "negative_local_direction_dot": 47
+        },
+        "0.08..0.12s": {
+          "samples": 102,
+          "distinct_episodes": 51,
+          "timing_absolute_error_q10_q50_q90_ms": [
+            14.274563500320372,
+            21.152141376696896,
+            27.624890067627458
+          ],
+          "local_plane_error_q10_q50_q90_m": [
+            0.16996584912039595,
+            0.21850014000203943,
+            0.25164978783602404
+          ],
+          "negative_local_direction_dot": 89
+        },
+        "0.12..0.16s": {
+          "samples": 101,
+          "distinct_episodes": 51,
+          "timing_absolute_error_q10_q50_q90_ms": [
+            20.274268430339664,
+            27.70391365453509,
+            36.463370127719216
+          ],
+          "local_plane_error_q10_q50_q90_m": [
+            0.16743022397538193,
+            0.21902135207307438,
+            0.2508664433960091
+          ],
+          "negative_local_direction_dot": 97
+        },
+        "0.16..0.20s": {
+          "samples": 32,
+          "distinct_episodes": 32,
+          "timing_absolute_error_q10_q50_q90_ms": [
+            16.054151259761717,
+            22.46463851104162,
+            29.6042465325828
+          ],
+          "local_plane_error_q10_q50_q90_m": [
+            0.15801173163888968,
+            0.21884936531392063,
+            0.2444977034308049
+          ],
+          "negative_local_direction_dot": 30
+        }
+      }
+    }
+  },
+  "derivative_validation_on_exact_public_subset": {
+    "rows": 18,
+    "absolute_closing_rate_error_q10_q50_q90_mps": [
+      0.06957959991635951,
+      0.12849885392444715,
+      0.5026235890369283
+    ],
+    "absolute_TTC_error_q10_q50_q90_ms": [
+      0.41178940106843587,
+      1.5937545184103312,
+      3.1765762644355546
+    ],
+    "raw_checks": [
+      {
+        "env_id": 0,
+        "clock_s": 2.5999999046325684,
+        "distance_error_m": -7.214484298856405e-08,
+        "closing_rate_error_mps": -0.13140605603703825,
+        "TTC_error_s": -0.003123363424783504
+      },
+      {
+        "env_id": 0,
+        "clock_s": 2.619999885559082,
+        "distance_error_m": -4.066907544064691e-08,
+        "closing_rate_error_mps": -0.1470013649575037,
+        "TTC_error_s": -0.0033007395569570053
+      },
+      {
+        "env_id": 0,
+        "clock_s": 2.6399998664855957,
+        "distance_error_m": -3.122137970379413e-08,
+        "closing_rate_error_mps": 0.024534059131863017,
+        "TTC_error_s": 0.00048596672470882507
+      },
+      {
+        "env_id": 0,
+        "clock_s": 2.6599998474121094,
+        "distance_error_m": -5.428909011229166e-08,
+        "closing_rate_error_mps": 0.0888848316811437,
+        "TTC_error_s": 0.0014509915751863
+      },
+      {
+        "env_id": 0,
+        "clock_s": 2.679999828338623,
+        "distance_error_m": -7.993351314183883e-09,
+        "closing_rate_error_mps": 0.12559165181185605,
+        "TTC_error_s": 0.001652989610544317
+      },
+      {
+        "env_id": 0,
+        "clock_s": 2.700000047683716,
+        "distance_error_m": -3.52052074159559e-08,
+        "closing_rate_error_mps": 0.12550708882133144,
+        "TTC_error_s": 0.0012884002845736792
+      },
+      {
+        "env_id": 0,
+        "clock_s": 2.7200000286102295,
+        "distance_error_m": -8.562750841711875e-09,
+        "closing_rate_error_mps": 0.1843034619508792,
+        "TTC_error_s": 0.0013477013646189112
+      },
+      {
+        "env_id": 0,
+        "clock_s": 2.740000009536743,
+        "distance_error_m": -4.952158105808735e-08,
+        "closing_rate_error_mps": 0.5247153774201792,
+        "TTC_error_s": 0.001814946761803382
+      },
+      {
+        "env_id": 0,
+        "clock_s": 2.759999990463257,
+        "distance_error_m": 3.836759548958568e-09,
+        "closing_rate_error_mps": -0.008993067812538058,
+        "TTC_error_s": -1.0867401503947619e-05
+      },
+      {
+        "env_id": 1,
+        "clock_s": 2.5799999237060547,
+        "distance_error_m": -1.5182918944312007e-07,
+        "closing_rate_error_mps": -0.12203584721656835,
+        "TTC_error_s": -0.003001637040382671
+      },
+      {
+        "env_id": 1,
+        "clock_s": 2.5999999046325684,
+        "distance_error_m": -2.4550605526307834e-07,
+        "closing_rate_error_mps": -0.10415883449054064,
+        "TTC_error_s": -0.002346989072651351
+      },
+      {
+        "env_id": 1,
+        "clock_s": 2.619999885559082,
+        "distance_error_m": 5.314049933424769e-08,
+        "closing_rate_error_mps": 0.0911091300010316,
+        "TTC_error_s": 0.0017560944452843785
+      },
+      {
+        "env_id": 1,
+        "clock_s": 2.6399998664855957,
+        "distance_error_m": -2.7601266383570078e-08,
+        "closing_rate_error_mps": 0.1507074163150781,
+        "TTC_error_s": 0.002420401091298041
+      },
+      {
+        "env_id": 1,
+        "clock_s": 2.6599998474121094,
+        "distance_error_m": 3.60619110129079e-08,
+        "closing_rate_error_mps": 0.1193337753094319,
+        "TTC_error_s": 0.0015345194262763456
+      },
+      {
+        "env_id": 1,
+        "clock_s": 2.679999828338623,
+        "distance_error_m": 1.0674104711227983e-08,
+        "closing_rate_error_mps": 0.14588374687167516,
+        "TTC_error_s": 0.0014226706628638064
+      },
+      {
+        "env_id": 1,
+        "clock_s": 2.700000047683716,
+        "distance_error_m": -3.4872582599376756e-09,
+        "closing_rate_error_mps": 0.6578506158144037,
+        "TTC_error_s": 0.003948875458026517
+      },
+      {
+        "env_id": 1,
+        "clock_s": 2.7200000286102295,
+        "distance_error_m": -8.15898230088763e-08,
+        "closing_rate_error_mps": 0.49315567972982066,
+        "TTC_error_s": 0.0013087765014554269
+      },
+      {
+        "env_id": 1,
+        "clock_s": 2.740000009536743,
+        "distance_error_m": 2.2787378137212322e-08,
+        "closing_rate_error_mps": -0.31811281143984793,
+        "TTC_error_s": -0.00023870897924086094
+      }
+    ]
+  },
+  "next_action": "Keep both already predeclared200ms native trials and all their failures. Use their exact128-case100Hz public/action logs to assess prediction and tracking after actual execution. If long-horizon error persists, test a separately versioned shorter horizon or observed-acceleration forecast; do not silently modify pinned proposals.",
+  "limitations": [
+    "Exact public diagnostic contains only two frame contacts; it is not representative of128 cases.",
+    "50Hz backward differences are causal numerical estimates, not recorded native instantaneous velocities. Their measured errors are reported separately.",
+    "Forecast predicts a nominal flat strings plane; actual frame contacts have different collision surfaces.",
+    "Local Y/Z residual compares a current frozen racket basis with the actual future racket basis. Racket rotation and trajectory curvature contribute; it is not an isolated ball-prediction error.",
+    "Actual contact samples are post PhysX states; no incident collision velocity is inferred.",
+    "Offline prediction error does not prove any corrective controller succeeds, fails, or improves physical performance. Original scoring is unchanged."
+  ],
+  "source_sha256": {
+    "reports/G07_full_racket_v4/joint8_prediction_error_20261025/build.py": "8a6169ead75b19a465790c818e13801bed0349f7821d2773f1c593687fa02d77",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01/contacts.json": "376e31be6abf58d977f9a97daa423408be402069d3d740b54f23249fedc0e358",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01/all_first_episodes.npz": "14de9f4ae30d78734d19498b201efb8f30a8ab99a68d098a4dc60ff30a019648",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01/public_and_actions_first2.npz": "58810fce894aa1bf2ae8262c0b629494edbd106a875b80b01790a665cbcbed57",
+    "reports/G07_full_racket_v4/live_tangent_trial_20261025/reactive.py": "5412dcbbe0836c5aff2b5e710af8b436e01da967292a31fde3887b9dc742d3bd"
+  },
+  "outputs": {
+    "predictions.json": "7b654389c36200ae1b7d19b8ccd01c234c904e763852da144a8e619b9934689b",
+    "predictions.csv": "791ccebb0b3b440ebf7a2dfb4063e5614f26cbaa9a7f8723c72dd3606aec5cdb",
+    "forecast_error.png": "2084ee4ae3db5ef7a7a010a87426b5da48f2f3a0234faaa724e9d5fa7b3a16d6"
+  },
+  "native_job_started": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
