@@ -1220,6 +1220,35 @@
         },
         "scope": "First512 actual native ground episodes with changing actor/normalizer states and stochastic exploration. Not one frozen policy or formal A/B.",
         "snapshot_update": 16
+      },
+      "episode_csv_exports": [
+        {
+          "csv": "reports/G07_full_racket_v4/residual_csv_export_20261025/iter8_fixed_episodes.csv",
+          "manifest": "reports/G07_full_racket_v4/residual_csv_export_20261025/iter8_fixed_episodes.json",
+          "rows": 128,
+          "scope": "fixed_policy_TRAIN_assessment",
+          "sha256": "723085f90f924a18f14afa24be1ca7fe0b6b4f3fc6bfb0f3f10c0684266a38d5"
+        },
+        {
+          "csv": "reports/G07_full_racket_v4/residual_csv_export_20261025/iter8_training_episodes.csv",
+          "manifest": "reports/G07_full_racket_v4/residual_csv_export_20261025/iter8_training_episodes.json",
+          "rows": 215,
+          "scope": "changing_policy_native_training",
+          "sha256": "934723ea93683e0276daf68728b9cb7cc6ec0f52dc12e459a543e82f22fd44f1"
+        }
+      ],
+      "queued_episode_csv_export": {
+        "state_file": "reports/G07_full_racket_v4/residual_csv_queue01/state.json",
+        "pid": 1574082,
+        "session_id": 14465,
+        "state_at_last_check": "WAITING_FOR_NATIVE_WORKFLOW",
+        "still_running": true,
+        "gpu_used": false,
+        "note": "Wait for the existing512-env train+fixed128 workflow to finish successfully; export final training and frozen assessment rows separately, validate canonical counts, never launch GPU jobs.",
+        "outputs": [
+          "reports/G07_full_racket_v4/residual_csv_queue01/iter32_training_episodes.csv",
+          "reports/G07_full_racket_v4/residual_csv_queue01/iter32_fixed_episodes.csv"
+        ]
       }
     },
     "G08": {

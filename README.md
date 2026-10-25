@@ -6,6 +6,8 @@
 
 [固定TRAIN128全部原始轨迹、源码、权重与视频（69.7 MB）](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_PPO_iter8_fixed_TRAIN128_video_and_raw_20261025.zip)已上传回验，75成员均核验SHA256。
 
+逐回合表另附：[固定策略128行CSV](reports/G07_full_racket_v4/residual_csv_export_20261025/iter8_fixed_episodes.csv)与[变动权重训练215行CSV](reports/G07_full_racket_v4/residual_csv_export_20261025/iter8_training_episodes.csv)。它们分别重算为空中18/恢复9/完整0和22/13/0，不混作一种策略的成功率；原始JSON与物理轨迹保持不变。
+
 [原生PPO训练包：检查点、策略与原始记录](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_native_residual_PPO_iter8_checkpoint_and_records_20261025.zip)已上传并下载校验（19.57 MB、38成员）。它记录8次更新的真实训练，不代表固定策略或正式A/B验收通过。
 
 此前进度（2026-10-25）：航向修正CEM34已完成，最佳候选仅1/32合法空中拍线，0攻击/目标/完整，数值故障0；两个相同参考均0/32，没有带来任务改善。拍线内移随后完成，结果见上方当前进度。
