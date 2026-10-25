@@ -1,17 +1,19 @@
-当前唯一GPU0作业：cem34_walk_heading_train32_1120，guard1551980 / child1551994，session5222。源码提交c92342a。先查真实进程、progress、completed/job；不要重复启动。
+当前唯一GPU0作业：cem35_inner_strings_pose_train32_1150，guard1556243 / child1556257，session98486。源码提交2c7b78a。先核对真实进程、progress和completed/job；禁止重复启动。
 
-继续前重读目标：/home/autodrive/.codex/attachments/55e175f0-9444-4a09-ad37-681e6586ca51/pasted-text-1.txt。无总GPU/工作窗上限，仅GPU0；每个job保留故障保护和真实计费。原物理、规则与成功门槛保持。
+继续前重读目标：/home/autodrive/.codex/attachments/55e175f0-9444-4a09-ad37-681e6586ca51/pasted-text-1.txt。只用现有GPU0，无累计GPU/工作窗上限；保留单job故障保护和真实资源计费。原资产、规则、出球/落点/恢复门槛保持。显卡实测RTX5080 16GB；512环境作业初始化后约3.9GB显存，不要误用其他GPU。
 
-CEM34：以此前实际横向candidate12为初始化，关闭高度自适应，启用当前公开重力/已知+X方向恢复出的航向反馈gain1.5。4候选x32个均匀TRAIN索引[0,4,...124]，1代，最多102400控制环境步。准备策略walk_heading_ready_1115/policy.pt（未执行初始化文件），SHA76a96f7146d9f996f762a1ffa8882019f758893ed3f2fd6c7682763375a2de25。310检查通过，CPU800步默认/零增益逐位旧版一致，启用只在准备期改变冻结输入上的腿指令；闭环物理表现需实测。
+CEM35已实际启动：16候选x32个固定TRAIN索引[0,4,...124]=512次执行，不是512种来球。物理62.5us、控制10ms、1代、最多409600控制环境步，guard最长7200秒。回到实际横向candidate12的初始化，航向增益0、高度自适应关闭，算法控制点从UV[0,.10]内移到[0,.07]，不改真实球拍尺寸/质量/碰撞体。打开2,3,7,8,9,10,11,12,13,14,18,25,37坐标搜索，其中8..13是六个臂姿态参数。两个精确参考、八个结构化重定向/挥拍时机候选、六个Gaussian候选。
 
-CEM33高度规划已SUCCEEDED：4候选x32种来球=128次执行，不是128种。最佳candidate0空中5/32、条件恢复2/5、攻击2、目标0、完整0、NF0；同参数candidate1空中3/32、条件恢复2/3。实际0.305926334GPUh /102400步。GENERATION0_SUMMARY逐候选重算一致，CEM33_HEIGHT_RESULT_20261025.json记录失败。无证据说明分布改善，不重跑正式A/B。旧queue1546233已退出并SUCCEEDED。
+初始化inner_strings_ready_1145/policy.pt，SHA9f8ceca0089094081126b43a688c449452c4e463d7a5b864b96ce8269bfc7403；candidate_bank.json SHAbf1e6f9742a113094d9d796bac5ed182b12719b1d2926937683f88eefb95a1c5。19个历史TRAIN拍线姿态的离线拟合仍有中位2.23cm、最大2.93cm误差，不能称重定向精确或动态可行。316检查通过；800步冻结输入腿指令逐位一致，臂317步改变。1140是未计名义关节饱和的废弃拟合，不启动它；源代码已按原SHA恢复保存，REJECTED.json保留原因。
 
-当前最佳广分布实测仍是横向candidate12的TRAIN128：空中19/128、条件恢复12/19、攻击7、目标1、完整0、NF0。原始行独立重算一致。相同CEM33/CEM34的32种TRAIN索引在此历史执行中为空中4、条件恢复2、接触20、完整0；这是描述性比较，不能称因果提升。
+CEM34航向方案已SUCCEEDED但效果失败：4x32=128执行，19次接触/18拍框/1空中拍线，条件恢复1，攻击0/目标0/完整0/NF0。最佳candidate3为1/32空中和1/1恢复；两条相同参考均0/32，不将1/1恢复称为覆盖率提升。0.311382262GPUh /102400步。GENERATION0_SUMMARY和CEM34_HEADING_RESULT_20261025.json已用原始行重算。它在同一1.98s前缀的yaw中位-.0636，对照-.1027；姿态变化未转化为任务改善。
 
-正式A/B最后证据为candidate5未通过：A空中24/200、条件恢复10/24；B空中6/200、恢复1/6；完整0/NF0。旧形式锁不可用于新策略或新源码。
+CEM33高度方案也未改善：最佳5/32空中、2/5恢复、攻击2、目标0/完整0/NF0；同参数另一批3/32和2/3恢复。0.305926334GPUh /102400步。CEM33_HEIGHT_RESULT_20261025.json保留。
 
-最新视频：Current_effect_lateral_train128_20261025.mp4（42.66秒、2133帧，完整解码与GitHub下载SHA回验）。同一candidate12的TRAIN23攻击恢复但目标偏远、TRAIN107目标命中但速度不足、TRAIN0拍框失败。真实侧视/俯视/接触/首落，不代表CEM34效果。62.5MB全TRAIN128原始轨迹/程序/精确策略包G07_lateral_TRAIN128_native_and_video_20261025.zip也上传下载回验，SHA64cfa0cc757374b95f27354490963ba62f2996d60d40a2d76b0b789e2598f19f。
+当前较好的广分布实测仍是横向candidate12 TRAIN128：空中19/128、条件恢复12/19、攻击7、目标1、完整0/NF0。同一32种TRAIN索引的历史子集为空中4、条件恢复2、接触20、完整0；只是描述性比较，不是配对因果估计。
 
-完成CEM34后运行：/home/autodrive/Isaac/env_isaaclab/bin/python scripts/summarize_full_racket_train_generation_v4.py --run reports/G07_full_racket_v4/cem34_walk_heading_train32_1120 --generation 0 --output reports/G07_full_racket_v4/cem34_walk_heading_train32_1120/GENERATION0_SUMMARY.json。先看每候选32案例的canonical_air_contacts/conditional_recovery/target/full。若有明显候选，再做完整TRAIN128或扰动诊断；未达到原门槛不称正式通过。接触point_velocity_mps是接触步后读数，不能当作独立撞击前速度标定。
+正式A/B最后证据仍是candidate5未通过：A空中24/200、条件恢复10/24；B空中6/200、恢复1/6；完整0/NF0。新源码/策略不能复用旧形式锁。
 
-已准备下一假设：inner_strings_ready_1145/policy.pt（SHA9f8ceca0089094081126b43a688c449452c4e463d7a5b864b96ce8269bfc7403），以此前横向candidate12为基线，航向增益0、高度自适应关闭，把控制点UV[0,.10]内移到[0,.07]；只改算法目标/有界关节初始化，不改物理几何质量。19个历史TRAIN实际拍线姿态拟合后仍中位2.23cm误差，不能称重定向精确或原生通过。316检查通过、800步冻结输入腿指令逐位一致。1140是未计名义关节饱和的废弃拟合，不能启动它。CEM34完成后若实测无改善，考虑16候选x32来球（512环境）在原62.5us物理下实际搜索臂8..13及2,3,7,14,18,25,37坐标；这是未执行准备。现有GPU0是16GB RTX5080，128环境已实测约3.6GB，不能假定有A6000或其他GPU。
+最新视频Current_effect_lateral_train128_20261025.mp4：42.66秒、2133帧，完整解码/GitHub下载SHA回验。展示同一candidate12的TRAIN23攻击恢复但目标偏远、TRAIN107目标命中但速度不足、TRAIN0拍框失败。视频不代表当前CEM35。62.5MB全TRAIN128原始轨迹、程序、策略包G07_lateral_TRAIN128_native_and_video_20261025.zip已上传下载回验。
+
+CEM35完整后运行：/home/autodrive/Isaac/env_isaaclab/bin/python scripts/summarize_full_racket_train_generation_v4.py --run reports/G07_full_racket_v4/cem35_inner_strings_pose_train32_1150 --generation 0 --output reports/G07_full_racket_v4/cem35_inner_strings_pose_train32_1150/GENERATION0_SUMMARY.json。先比较每候选32案例的canonical_air_contacts/conditional_recovery/attack/target/full；若有明显候选，再做TRAIN128或继续同分布优化。没有达到原门槛不称正式通过。接触point_velocity_mps是接触步后读数，不是独立撞击前速度。

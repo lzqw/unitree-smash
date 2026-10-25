@@ -50,21 +50,21 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/TRAIN128_LATERAL_DIAGNOSTIC_20261025.json",
-      "notes": "高度规划CEM33已完成并逐候选重算，最佳5/32合法空中接触、条件恢复2/5、攻击2、目标0、完整0、NF0；同参数参考另一批3/32，未显示分布改善。已回到此前实测的横向candidate12，启用gain1.5行走航向反馈，在GPU0运行CEM34四候选x32来球；新效果尚未测完。原形式A/B400完整0的失败结论保留。",
+      "notes": "航向CEM34已完成并重算，4候选x32来球的128执行仅1空中拍线/1条件恢复、0攻击/目标/完整、NF0；最佳candidate3为1/32空中，两个参考均0/32，不推广该配置。已回到此前横向candidate12，以内侧拍线UV[0,.07]和近似重定向为初始化，在GPU0运行CEM35的16候选x32训练来球、512执行。316检查通过但新物理表现待完成；原正式A/B400完整0结论保留。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
       "active_gpu_jobs": [
         {
-          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/cem34_walk_heading_train32_1120",
-          "guard_pid": 1551980,
-          "child_pid": 1551994,
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/cem35_inner_strings_pose_train32_1150",
+          "guard_pid": 1556243,
+          "child_pid": 1556257,
+          "session_id": 98486,
           "state": "RUNNING",
-          "session_id": 5222,
-          "source_commit": "c92342a",
-          "scope": "Native walking-heading adaptation, gain1.5;4candidates x32 distinct TRAIN cases,1generation",
-          "declared_control_env_steps": 102400
+          "source_commit": "2c7b78a",
+          "scope": "16candidate x32TRAIN inner-string pose/timing optimization,512executions; no performance yet",
+          "declared_control_env_steps": 409600
         }
       ],
       "queued_native_sequence": {
@@ -218,6 +218,19 @@
           "declared_control_env_steps": 102400,
           "resource_receipt": "reports/G07_full_racket_v4/cem33_height_mix50_train32_1050/job.json",
           "actual_gpu_hours": 0.30592633404583064,
+          "actual_control_env_steps": 102400
+        },
+        {
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/cem34_walk_heading_train32_1120",
+          "guard_pid": 1551980,
+          "child_pid": 1551994,
+          "state": "SUCCEEDED",
+          "session_id": 5222,
+          "source_commit": "c92342a",
+          "scope": "Native walking-heading adaptation, gain1.5;4candidates x32 distinct TRAIN cases,1generation",
+          "declared_control_env_steps": 102400,
+          "resource_receipt": "reports/G07_full_racket_v4/cem34_walk_heading_train32_1120/job.json",
+          "actual_gpu_hours": 0.3113822616375142,
           "actual_control_env_steps": 102400
         }
       ],
@@ -781,7 +794,10 @@
         "policy": "reports/G07_full_racket_v4/walk_heading_ready_1115/policy.pt",
         "tests_passed": 310,
         "native_execution_started": true,
-        "active_output": "reports/G07_full_racket_v4/cem34_walk_heading_train32_1120"
+        "active_output": "reports/G07_full_racket_v4/cem34_walk_heading_train32_1120",
+        "native_execution_completed": true,
+        "native_result": "reports/G07_full_racket_v4/CEM34_HEADING_RESULT_20261025.json",
+        "promoted": false
       },
       "height_feedback_result": "reports/G07_full_racket_v4/CEM33_HEIGHT_RESULT_20261025.json",
       "next_prepared_inner_string_control": {
@@ -797,9 +813,13 @@
         "position_fit_median_error_m": 0.02233224967455476,
         "native_execution": false,
         "formal_acceptance": false,
-        "prior_unpromoted_fit": "reports/G07_full_racket_v4/inner_strings_ready_1140/REJECTED.json"
+        "prior_unpromoted_fit": "reports/G07_full_racket_v4/inner_strings_ready_1140/REJECTED.json",
+        "native_execution_started": true,
+        "active_output": "reports/G07_full_racket_v4/cem35_inner_strings_pose_train32_1150",
+        "candidate_bank": "reports/G07_full_racket_v4/inner_strings_ready_1145/candidate_bank.json"
       },
-      "heading_prefix_geometry_report": "reports/G07_full_racket_v4/heading_frame_diagnosis_1145/REPORT.json"
+      "heading_prefix_geometry_report": "reports/G07_full_racket_v4/heading_frame_diagnosis_1145/REPORT.json",
+      "heading_feedback_result": "reports/G07_full_racket_v4/CEM34_HEADING_RESULT_20261025.json"
     },
     "G08": {
       "state": "TODO",
