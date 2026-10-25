@@ -106,6 +106,9 @@ class FullRacketResidualControllerV4:
     @property
     def logs(self):return self.base.logs
 
+    @logs.setter
+    def logs(self,value):self.base.logs=value
+
     @property
     def reference_controller(self):
         return self.base.reference_controller if isinstance(self.base,FullRacketResidualControllerV4) else self.base

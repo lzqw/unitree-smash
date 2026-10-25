@@ -59,6 +59,10 @@ def test_nested_zero_action_preserves_existing_commands_and_reference(monkeypatc
         assert torch.equal(old.action({'policy':public},default,limits),new.action({'policy':public},default,limits))
     assert new.reference_controller is new.base.base
     assert new.logs is new.reference_controller.logs
+    target=new.base.mixer.arm_rate.target.clone()
+    new.reference_controller.logs=['planning diagnostic fixture']
+    new.logs=[]
+    assert new.reference_controller.logs==[] and torch.equal(new.base.mixer.arm_rate.target,target)
     new.reset(torch.tensor([1]));assert new.reference_controller.resets[-1].tolist()==[1]
     assert not new.mixer.nonzero_seen.any()
     assert source['residual_actor_jit']==before['residual_actor_jit']
@@ -123,3 +127,28 @@ def test_centered_export_keeps_base_and_starts_without_native_claim():
     assert exported['base_controller']['residual_actor_jit']==source['residual_actor_jit']
     actor=torch.jit.load(io.BytesIO(exported['residual_actor_jit']))
     assert actor(public).eq(0).all() and exported['residual_base_mode']=='frozen_public_policy'
+
+
+def test_error_checkpoint_preserves_completed_update_without_success_receipt(tmp_path):
+    from quadsmash.rl.full_racket_residual_ppo_v4 import save_completed_update_error_checkpoint
+    calls=[]
+    def save(path,infos):
+        calls.append(infos);path.write_bytes(b'Controlled CPU checkpoint fixture, not native evidence')
+    runner=SimpleNamespace(current_learning_iteration=3,save_restart=save)
+    result=save_completed_update_error_checkpoint(runner,tmp_path,{'version':'fixture'},{'mode':'fixture'},
+        RuntimeError('Controlled diagnostic failure'),42,True)
+    assert len(calls)==1 and result['completed_iteration']==3 and result['actual_control_env_steps']==42
+    assert result['canonical_ground_restart'] and not result['job_succeeded']
+    assert not (tmp_path/'completed.json').exists()
+    assert json.loads((tmp_path/'error_recovery_checkpoint.json').read_text())==result
+
+
+def test_incomplete_update_or_existing_checkpoint_is_not_relabelled(tmp_path):
+    from quadsmash.rl.full_racket_residual_ppo_v4 import save_completed_update_error_checkpoint
+    def forbidden(*args,**kwargs):raise AssertionError('Do not save an incomplete update')
+    runner=SimpleNamespace(current_learning_iteration=1,save_restart=forbidden)
+    assert save_completed_update_error_checkpoint(runner,tmp_path,{}, {},RuntimeError(),1,False)is None
+    assert not list(tmp_path.iterdir())
+    (tmp_path/'checkpoint.pt').write_bytes(b'Existing completed checkpoint fixture')
+    assert save_completed_update_error_checkpoint(runner,tmp_path,{}, {},RuntimeError(),1,True)is None
+    assert (tmp_path/'checkpoint.pt').read_bytes()==b'Existing completed checkpoint fixture'

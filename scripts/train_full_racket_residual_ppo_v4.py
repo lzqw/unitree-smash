@@ -32,7 +32,7 @@ from quadsmash.control.measured_string_alignment_reward_v4 import alignment_sett
 from quadsmash.rl.native_ppo import NativeRunner
 from quadsmash.rl.episode_trace_v4 import EpisodeTraceRecorderV4,trace_settings,SCHEMA as TRACE_SCHEMA
 from quadsmash.rl.full_racket_residual_ppo_v4 import (
-    ResidualRslAdapterV4,ResidualTrainingInterrupted,export_residual_policy)
+    ResidualRslAdapterV4,ResidualTrainingInterrupted,export_residual_policy,save_completed_update_error_checkpoint)
 from quadsmash.evaluation_v4 import independent_episode
 from quadsmash.usd_dependencies_v4 import audit_composed_asset
 
@@ -125,6 +125,7 @@ def main():
         continue_after_miss=True,joint_placement_reward=joint_placement,live_alignment_reward=live_alignment)
     wrapped=RslRlVecEnvWrapper(env,clip_actions=None)
     adapter=ResidualRslAdapterV4(wrapped,base,scales,lambda:stopping,base_mode=mode)
+    runner=None;completed_update_safe=False
     try:
         if env.robot.is_fixed_base:raise ValueError('Actual floating ground-start robot required')
         atomic_json(args.output/'asset_dependencies.json',audit_composed_asset(ROOT,cfg.robot.spawn.usd_path))
@@ -193,9 +194,11 @@ def main():
             train_actor=runner.current_learning_iteration>=configuration['actor_warmup_updates']
             for parameter in runner.alg.policy.actor.parameters():parameter.requires_grad_(train_actor)
             runner.alg.policy.log_std.requires_grad_(train_actor)
+            completed_update_safe=False
             try:runner.learn(1,init_at_random_ep_len=False)
             except ResidualTrainingInterrupted:
                 interrupted=True;break
+            completed_update_safe=True
             rows,counts=joined_episodes(env,cases,indices,protocol)
             entry=dict(update=runner.current_learning_iteration,actor_warmup=not train_actor,
                 actual_control_env_steps=adapter.total_control_env_steps,**counts,
@@ -239,6 +242,15 @@ def main():
             raise SystemExit(2)
         assert runner.current_learning_iteration-initial_update==args.updates
         atomic_json(args.output/'completed.json',dict(env_steps=adapter.total_control_env_steps))
+    except BaseException as error:
+        if runner is not None and completed_update_safe:
+            try:
+                save_completed_update_error_checkpoint(runner,args.output,contract,initialization,
+                    error,adapter.total_control_env_steps,completed_update_safe)
+            except BaseException as save_error:
+                atomic_json(args.output/'error_recovery_checkpoint_failed.json',dict(
+                    original_error=repr(error),save_error=repr(save_error),job_succeeded=False))
+        raise
     finally:
         adapter.close()
 

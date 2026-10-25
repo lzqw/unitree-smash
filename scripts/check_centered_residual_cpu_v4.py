@@ -72,7 +72,7 @@ def main():
         original=FullRacketResidualControllerV4(base,2,'cpu')
         centered=FullRacketResidualControllerV4(exported,2,'cpu')
         assert all(not p.requires_grad for p in centered.base.actor.parameters())
-        last=None;resets=0;maximum_native_error=0.
+        last=None;resets=0;maximum_native_error=0.;flushes=0
         compare_native=(name==run_names[0] and base_path.name=='policy.pt' and 'probe8_01'in str(base_path))
         for tick,row in enumerate(stream['observations']):
             observed=torch.tensor(row);before=observed.clone()
@@ -87,8 +87,18 @@ def main():
                 valid=stream['valid_first_episode'][tick]
                 if valid.any():maximum_native_error=max(maximum_native_error,float(np.abs(actual.numpy()-stream['actions'][tick])[valid].max()))
             last=observed[:,775].clone()
+            if (tick+1)%128==0:
+                before_plan=centered.reference_controller.parameters.clone()
+                before_time=centered.reference_controller.event_time.clone()
+                before_slew=centered.base.mixer.arm_rate.target.clone()
+                original.logs=[];centered.logs=[];flushes+=1
+                assert centered.reference_controller.logs==[]
+                assert torch.equal(centered.reference_controller.parameters,before_plan)
+                assert torch.equal(centered.reference_controller.event_time,before_time)
+                assert torch.equal(centered.base.mixer.arm_rate.target,before_slew)
         checks.append(dict(actual_source_run=name,controls=len(stream['observations']),public_rows=int(np.prod(stream['observations'].shape[:2])),
             zero_new_residual_vs_fixed_base_bitwise_equal=True,actual_reset_events_replayed=resets,
+            production_per_update_diagnostic_log_flushes=flushes,
             CPU_vs_original_native_command_comparison_performed=compare_native,
             CPU_vs_original_native_command_max_error=maximum_native_error if compare_native else None))
     assert sum(v['public_rows']for v in checks)==3200 and sum(v['actual_reset_events_replayed']for v in checks)>=1

@@ -1,0 +1,66 @@
+{
+  "checked_at": "2026-10-25T18:01:23.171938+00:00",
+  "scope": "CPU composition/export on3200 actual native public inputs, source execution receipt checks and fresh outer learner construction. Not a new native execution or policy-performance result.",
+  "baseline_source": {
+    "source_policy_sha256": "846656e9d02c74f4b72929253ed9196557af4f9affe39236fc55d7f4bc5d744c",
+    "source_run": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01",
+    "source_job_sha256": "b34ee73d016ccd1766cfffe71b047a0b781a5bd17ebfec6e8b76f1ae95089dae",
+    "source_metrics_sha256": "29058b5f302aa392ed6ec4f87cd8911e2029e93d1e2593a06aca3cd8578f071d",
+    "source_completed_control_env_steps": 2097152,
+    "protocol_sha256": "04121cfb257ea4d2e288c69b44dd0c8dbada814e0bf95c8a16f5af7ef2390367",
+    "scope": "Completed native source provenance only; new centered learner inherits no performance."
+  },
+  "config_sha256": "b2a411d897ebb7e52d6185f8200cf63463d600040fdb6d822c89f6f0f6341467",
+  "actual_saved_input_checks": [
+    {
+      "actual_source_run": "residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01",
+      "controls": 800,
+      "public_rows": 1600,
+      "zero_new_residual_vs_fixed_base_bitwise_equal": true,
+      "actual_reset_events_replayed": 0,
+      "production_per_update_diagnostic_log_flushes": 6,
+      "CPU_vs_original_native_command_comparison_performed": true,
+      "CPU_vs_original_native_command_max_error": 1.7881393432617188e-06
+    },
+    {
+      "actual_source_run": "residual_ppo_joint_placement_actor32_n2048_iter40_fixed_train128_01",
+      "controls": 800,
+      "public_rows": 1600,
+      "zero_new_residual_vs_fixed_base_bitwise_equal": true,
+      "actual_reset_events_replayed": 1,
+      "production_per_update_diagnostic_log_flushes": 6,
+      "CPU_vs_original_native_command_comparison_performed": false,
+      "CPU_vs_original_native_command_max_error": null
+    }
+  ],
+  "source_base_actor_and_normalization_fixed": true,
+  "outer_actor_critic_and_normalizers_fresh": true,
+  "outer_Adam_empty": true,
+  "outer_mean_residual_exactly_zero": true,
+  "outer_trainable_action_joints": 18,
+  "leg_increment_bound_rad": 0.03,
+  "arm_increment_bound_rad": 0.15,
+  "original_native_actuator_limits_changed": false,
+  "outer_export_native_execution": false,
+  "new_native_training_run": false,
+  "previous_goal_turn_classification": "progress: actual frozen40 collapse and first real feedback outcomes were independently checked and published; latest video/raw delivery completed.",
+  "next_native_action": "After current original-source owners finish, select the measured base from complete TRAIN diagnostics; integrate and run real centered training with the full trajectory recorder under the main original GPU0 guard.",
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash/scripts/check_centered_residual_cpu_v4.py": "fd771cb69bfdc743740e4c8aba679eb7e811054de61e6aa085d264feadfb5892",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01/policy.pt": "846656e9d02c74f4b72929253ed9196557af4f9affe39236fc55d7f4bc5d744c",
+    "/home/autodrive/LZQW/unitree_smash/configs/g07_full_racket_eval_v4_r3.json": "04121cfb257ea4d2e288c69b44dd0c8dbada814e0bf95c8a16f5af7ef2390367",
+    "/home/autodrive/LZQW/unitree_smash/configs/g07_full_racket_residual_ppo_centered_v4.json": "b2a411d897ebb7e52d6185f8200cf63463d600040fdb6d822c89f6f0f6341467",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01/job.json": "0f7161987d3c9632876147ae3e8f9f5b711b0f5393636adcd2fb144555b16595",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01/public_and_actions_first2.npz": "58810fce894aa1bf2ae8262c0b629494edbd106a875b80b01790a665cbcbed57",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_iter40_fixed_train128_01/job.json": "fcb0fd418def5a721711109721ef25de116a0472cc926feeac9aa76e7086df43",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_iter40_fixed_train128_01/public_and_actions_first2.npz": "de3ac8936d180581f0e035bbabfff0c296afdb42ec94150fc1d4e48ae829ceb7",
+    "/home/autodrive/LZQW/unitree_smash/quadsmash/control/full_racket_residual_v4.py": "ce8ce850ec24a7566a27131d6d47919a9d7e818cdbccbfd30583ed147aa9198f",
+    "/home/autodrive/LZQW/unitree_smash/quadsmash/rl/full_racket_residual_ppo_v4.py": "bc49d94fdd15258adec9e439ab3cedd9202564f994f90d165ae61ab4a2009471",
+    "/home/autodrive/LZQW/unitree_smash/quadsmash/rl/frozen_baseline_source_v4.py": "9b74de59152c661ed0504a755a0b0d58d6b65495f577939dbed62d0e343d0d49",
+    "/home/autodrive/LZQW/unitree_smash/scripts/train_full_racket_residual_ppo_v4.py": "cb51487831894fe2bccf24e87ab987dfc326b56ed11fd492c7bf875f255fd662"
+  },
+  "working_directory": "/home/autodrive/LZQW/unitree_smash",
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
