@@ -50,41 +50,31 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/TRAIN128_LATERAL_DIAGNOSTIC_20261025.json",
-      "notes": "原96固定TRAIN128完整0/128、空中24/128、条件恢复8/24、NF0，未达原门槛，条件正式队列已跳过；两条视频与1.17GB完整资料包均已上传下载验SHA。新联合落点奖励学习器从canonical32仅迁移公共actor，GPU0当前已实际完成5/8更新、1310720步，模型/Adam有限。运行时2313条闭合记录含728条后续回合，初始2048路尚有463路未结束；当前无新冻结成绩。完整128例固定评估、六案例CPU视频及有条件32更新续训观察进程均已启动等待，原模型、规则、来球及正式门槛保持，完整G07仍未通过。",
+      "notes": "原96固定TRAIN128完整0/128、空中24/128、条件恢复8/24、NF0，未达原门槛，原条件正式队列已跳过；旧视频与1.17GB资料包已上传下载验SHA。新联合落点奖励学习器已正常完成8更新、2097152实际控制环境步、0.661211GPUh；独立重算4039训练回合为303空中/82条件恢复/0完整/NF0。完整首批2048路为209空中/82恢复/12攻击/18目标/0完整，攻击目标仍无同回合重叠，且209次空中触球均早于首次actor梯度更新，不据此宣称新奖励改善第一拍。新公共actor在200条真实保存观测上导出误差0、12张量完全一致。GPU0现在执行同一新权重的完整固定TRAIN128，128地面初态与353源文件一致性已核验，完整结果待定；六案例视频和有条件32更新续训继续等待，原规则及正式门槛不变，G07未通过。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
       "active_gpu_jobs": [
         {
-          "state": "RUNNING_NATIVE_JOINT_PLACEMENT_PROBE8",
-          "observed_at": "2026-10-25T13:12:27.164939+00:00",
-          "wrapper_pid": 1634321,
-          "guard_pid": 1634322,
-          "native_child_pid": 1634334,
-          "session_id": 67232,
+          "state": "RUNNING_FIXED_TRAIN128_JOINT_REWARD_ITER8",
+          "observed_at": "2026-10-25T13:29:24.368464+00:00",
+          "workflow_pid": 1635640,
+          "workflow_session_id": 58190,
+          "guard_pid": 1640151,
+          "native_child_pid": 1640163,
           "gpu": 0,
-          "training_output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01",
-          "state_evidence": "Actual update5 and1310720 control env steps; model/Adam finite. Runtime reports2313 closed episodes, including728 later episodes;463 first-cohort lanes still pending. Counts not independently rescored in this health check; no frozen-policy score.",
-          "launch_git_sha": "d8664770fe92c36455ab799d8bd183f0d70051c7",
-          "requested_updates": 8,
-          "num_envs": 2048,
-          "requested_control_env_steps": 2097152,
-          "per_job_fault_timeout_s": 5400,
+          "evaluation_output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01",
+          "frozen_policy_sha256": "846656e9d02c74f4b72929253ed9196557af4f9affe39236fc55d7f4bc5d744c",
+          "num_envs": 128,
+          "control_ticks_at_observation": 200,
+          "requested_control_ticks": 800,
+          "first_episodes_complete_at_observation": 0,
+          "initial_ground_check": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_FIXED_INITIAL_CHECK.json",
+          "full_fixed_metrics_pending": true,
+          "formal_cases_read": false,
           "formal_acceptance": false,
-          "goal_complete": false,
-          "native_ground_initialization_verified": true,
-          "first_PPO_update_verified": true,
-          "startup_check": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_NATIVE_STARTUP_CHECK.json",
-          "latest_verified_update": 5,
-          "actual_control_env_steps": 1310720,
-          "closed_episodes": 2313,
-          "first_update_check": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_FIRST_UPDATE_CHECK.json",
-          "first_actual_actor_learning_update": true,
-          "latest_finite_and_episode_check": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_UPDATE03_CHECK.json",
-          "latest_health_check": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_UPDATE05_HEALTH.json",
-          "first_ground_cohort_pending": 463,
-          "later_episode_closed_count": 728
+          "goal_complete": false
         }
       ],
       "queued_native_sequence": {
@@ -1405,34 +1395,24 @@
         "frozen_policy_performance": false
       },
       "current_native_workflow_state": {
-        "state": "RUNNING_NATIVE_JOINT_PLACEMENT_PROBE8",
-        "observed_at": "2026-10-25T13:12:27.164939+00:00",
-        "wrapper_pid": 1634321,
-        "guard_pid": 1634322,
-        "native_child_pid": 1634334,
-        "session_id": 67232,
+        "state": "RUNNING_FIXED_TRAIN128_JOINT_REWARD_ITER8",
+        "observed_at": "2026-10-25T13:29:24.368464+00:00",
+        "workflow_pid": 1635640,
+        "workflow_session_id": 58190,
+        "guard_pid": 1640151,
+        "native_child_pid": 1640163,
         "gpu": 0,
-        "training_output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01",
-        "state_evidence": "Actual update5 and1310720 control env steps; model/Adam finite. Runtime reports2313 closed episodes, including728 later episodes;463 first-cohort lanes still pending. Counts not independently rescored in this health check; no frozen-policy score.",
-        "launch_git_sha": "d8664770fe92c36455ab799d8bd183f0d70051c7",
-        "requested_updates": 8,
-        "num_envs": 2048,
-        "requested_control_env_steps": 2097152,
-        "per_job_fault_timeout_s": 5400,
+        "evaluation_output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_fixed_train128_01",
+        "frozen_policy_sha256": "846656e9d02c74f4b72929253ed9196557af4f9affe39236fc55d7f4bc5d744c",
+        "num_envs": 128,
+        "control_ticks_at_observation": 200,
+        "requested_control_ticks": 800,
+        "first_episodes_complete_at_observation": 0,
+        "initial_ground_check": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_FIXED_INITIAL_CHECK.json",
+        "full_fixed_metrics_pending": true,
+        "formal_cases_read": false,
         "formal_acceptance": false,
-        "goal_complete": false,
-        "native_ground_initialization_verified": true,
-        "first_PPO_update_verified": true,
-        "startup_check": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_NATIVE_STARTUP_CHECK.json",
-        "latest_verified_update": 5,
-        "actual_control_env_steps": 1310720,
-        "closed_episodes": 2313,
-        "first_update_check": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_FIRST_UPDATE_CHECK.json",
-        "first_actual_actor_learning_update": true,
-        "latest_finite_and_episode_check": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_UPDATE03_CHECK.json",
-        "latest_health_check": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_UPDATE05_HEALTH.json",
-        "first_ground_cohort_pending": 463,
-        "later_episode_closed_count": 728
+        "goal_complete": false
       },
       "latest_completed_fixed_TRAIN128": {
         "report": "reports/G07_full_racket_v4/residual_iter96_fixed_diagnostic_20261025/REPORT.json",
@@ -1679,7 +1659,7 @@
         "download_verified": true
       },
       "prepared_joint_placement_reward": {
-        "state": "MERGED_CPU42_NATIVE_FIRST_UPDATE_VERIFIED",
+        "state": "NATIVE_TRAINING8_SUCCEEDED_FIXED_TRAIN128_RUNNING",
         "branch": "g07-joint-placement-reward-v4-20261025",
         "commit": "119b461010bee619905ad8736eb982b1fcf55160",
         "worktree": "/home/autodrive/LZQW/unitree_smash_joint_reward",
@@ -1730,7 +1710,9 @@
         ],
         "native_run_started": true,
         "native_execution_verified": true,
-        "native_ground_initialization_verified": true
+        "native_ground_initialization_verified": true,
+        "native_run_succeeded": true,
+        "completed_new_learner_updates": 8
       },
       "formal_residual_loader_cpu_check": {
         "report": "reports/G07_full_racket_v4/formal_residual_loader_check_20261025/REPORT.json",
@@ -3639,6 +3621,36 @@
               "formal_acceptance": false
             }
           ]
+        },
+        {
+          "state": "RUNNING_NATIVE_JOINT_PLACEMENT_PROBE8",
+          "observed_at": "2026-10-25T13:12:27.164939+00:00",
+          "wrapper_pid": 1634321,
+          "guard_pid": 1634322,
+          "native_child_pid": 1634334,
+          "session_id": 67232,
+          "gpu": 0,
+          "training_output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01",
+          "state_evidence": "Actual update5 and1310720 control env steps; model/Adam finite. Runtime reports2313 closed episodes, including728 later episodes;463 first-cohort lanes still pending. Counts not independently rescored in this health check; no frozen-policy score.",
+          "launch_git_sha": "d8664770fe92c36455ab799d8bd183f0d70051c7",
+          "requested_updates": 8,
+          "num_envs": 2048,
+          "requested_control_env_steps": 2097152,
+          "per_job_fault_timeout_s": 5400,
+          "formal_acceptance": false,
+          "goal_complete": false,
+          "native_ground_initialization_verified": true,
+          "first_PPO_update_verified": true,
+          "startup_check": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_NATIVE_STARTUP_CHECK.json",
+          "latest_verified_update": 5,
+          "actual_control_env_steps": 1310720,
+          "closed_episodes": 2313,
+          "first_update_check": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_FIRST_UPDATE_CHECK.json",
+          "first_actual_actor_learning_update": true,
+          "latest_finite_and_episode_check": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_UPDATE03_CHECK.json",
+          "latest_health_check": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_UPDATE05_HEALTH.json",
+          "first_ground_cohort_pending": 463,
+          "later_episode_closed_count": 728
         }
       ],
       "historical_completed_fixed_TRAIN128": [
@@ -3843,11 +3855,13 @@
         "source_report": "reports/G07_full_racket_v4/residual_iter96_fixed_diagnostic_20261025/REPORT.json",
         "native_run_started": true,
         "predeclared_plan": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/PREDECLARED_PLAN.json",
-        "native_execution_verified": false,
+        "native_execution_verified": true,
         "launch_receipt": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/LAUNCH_RECEIPT.json",
         "native_ground_initialization_verified": true,
         "first_PPO_update_verified": true,
-        "startup_check": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_NATIVE_STARTUP_CHECK.json"
+        "startup_check": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/ROOT_NATIVE_STARTUP_CHECK.json",
+        "native_run_succeeded": true,
+        "completed_new_learner_updates": 8
       },
       "historical_completed_native_workflow_states": [
         {
@@ -3868,7 +3882,7 @@
         "formal_acceptance": false
       },
       "queued_joint_placement_probe_assessment": {
-        "state": "WAITING_FOR_EXISTING_NATIVE_JOINT_REWARD_TRAINING",
+        "state": "RUNNING_FIXED_TRAIN128_JOINT_REWARD_ITER8",
         "pid": 1635640,
         "session_id": 58190,
         "state_file": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/state_v2.json",
@@ -3880,7 +3894,10 @@
         "TRAIN_cases": 128,
         "formal_cases_read": false,
         "formal_acceptance": false,
-        "note": "Only after existing training truly exits successfully and finite canonical/export/new learner counters and all2048 first ground episodes validate; original GPU0 guard and cumulative ledger. Independent original TRAIN scoring and separate CSVs. Old observer cancelled before any assessment, no training interruption."
+        "note": "Only after existing training truly exits successfully and finite canonical/export/new learner counters and all2048 first ground episodes validate; original GPU0 guard and cumulative ledger. Independent original TRAIN scoring and separate CSVs. Old observer cancelled before any assessment, no training interruption.",
+        "guard_pid": 1640151,
+        "native_child_pid": 1640163,
+        "actual128_ground_states_verified": true
       },
       "queued_joint_placement_probe_video": {
         "state": "WAITING_FOR_FROZEN_JOINT_REWARD_TRAIN128",
@@ -3965,6 +3982,76 @@
         "first_ground_cohort_pending": 463,
         "later_episode_closed_count": 728,
         "frozen_policy_performance": false,
+        "formal_acceptance": false
+      },
+      "latest_completed_joint_placement_training": {
+        "lineage": "fresh-joint-placement-reward-public-actor32-initialization",
+        "state": "SUCCEEDED",
+        "output": "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01",
+        "receipt": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/TRAINING_RECEIPT.json",
+        "iteration": 8,
+        "actual_control_env_steps": 2097152,
+        "cumulative_new_learner_steps": 2097152,
+        "actual_gpu_hours": 0.6612111970419452,
+        "finished_at": "2026-10-25T13:23:06.267556+00:00",
+        "checkpoint_sha256": "10bf6c026a39e3ea01bf08425029ba78a906e573051e9bc3bcf26ccd37373cb0",
+        "policy_sha256": "846656e9d02c74f4b72929253ed9196557af4f9affe39236fc55d7f4bc5d744c",
+        "independent_changing_policy_counts": {
+          "completed_episodes": 4039,
+          "air": 303,
+          "conditional_recovery_count": 82,
+          "complete": 0,
+          "numerical_failures": 0
+        },
+        "frozen_policy_performance": false,
+        "formal_acceptance": false
+      },
+      "native_joint_placement_first_ground_cohort": {
+        "report": "reports/G07_full_racket_v4/joint_placement_first_ground_cohort_20261025/REPORT.json",
+        "temporal_scope": "reports/G07_full_racket_v4/joint_placement_first_ground_cohort_20261025/TEMPORAL_SCOPE.json",
+        "counts": {
+          "episodes": 2048,
+          "distinct_TRAIN_cases": 128,
+          "lanes_per_case": 16,
+          "air": 209,
+          "conditional_recovery": 82,
+          "complete": 0,
+          "numerical_failures": 0,
+          "racket_contacts": 464,
+          "frame_contacts": 256,
+          "attack_outgoing": 12,
+          "target": 18,
+          "air_attack_and_target": 0,
+          "air_attack_and_recovery": 6,
+          "body_landing": 1505,
+          "early_terminated": 1586,
+          "timeout": 462,
+          "fault_counts": {
+            "robot_net_fault": 26,
+            "body_ball_fault": 0,
+            "wrong_side_fault": 0,
+            "double_hit_fault": 1,
+            "racket_invasion_fault": 13,
+            "body_over_net_fault": 0,
+            "under_net_obstruction_fault": 0,
+            "engineering_body_crossing": 22,
+            "bad_return_fault": 42,
+            "net_blocked_fault": 73
+          }
+        },
+        "all2048_first_ground_episodes_closed": true,
+        "all_closed_snapshot_rows": 3558,
+        "first_air_contacts_before_actor_parameter_learning": 209,
+        "frozen_policy_performance": false,
+        "formal_acceptance": false
+      },
+      "native_joint_placement_export_check": {
+        "report": "reports/G07_full_racket_v4/joint_placement_export_check_20261025/REPORT.json",
+        "actual_public_observations": 200,
+        "actor_export_max_error": 0.0,
+        "all12_actor_and_normalizer_tensors_exact": true,
+        "split_batch_max_error": 2.9802322387695312e-08,
+        "new_native_rollout_performed": false,
         "formal_acceptance": false
       }
     },

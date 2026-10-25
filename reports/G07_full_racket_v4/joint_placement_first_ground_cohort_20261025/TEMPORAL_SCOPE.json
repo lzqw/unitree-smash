@@ -1,0 +1,16 @@
+{
+  "created_at": "2026-10-25T13:23:22.310449+00:00",
+  "first_actor_parameter_learning_update": 3,
+  "first_actor_parameter_update_after_control_time_s": 3.84,
+  "actual_first_ground_airborne_string_contacts": 209,
+  "contact_time_min_s": 2.658703088760376,
+  "contact_time_max_s": 2.8559072017669678,
+  "airborne_first_contacts_before_first_actor_parameter_update": 209,
+  "airborne_first_contacts_after_or_at_first_actor_parameter_update": 0,
+  "interpretation": "All first-cohort airborne string contacts precede the first actor parameter gradient update. They cannot demonstrate improved first-shot behavior caused by learning the new reward. Normalizers and exploration already evolve, and recovery continues across later actor parameter updates, so these episodes are not a frozen source32 policy assessment. Judge the new exported actor with the queued fixed TRAIN128 assessment, then follow the predeclared continuation decision.",
+  "cohort_report_sha256": "f52ebfb5690c8d636de9c447e1918f91cbacf3597bfc360db33297c1b4123c01",
+  "first_actor_learning_report_sha256": "5424bad45bfc0fc31a4b12cdaf44da40c2461fe9b2479bcd2eef8797260d04bf",
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}

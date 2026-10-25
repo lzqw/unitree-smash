@@ -1,0 +1,152 @@
+{
+  "created_at": "2026-10-25T13:20:41.680947+00:00",
+  "scope": "Actual first2048 ground episodes of the fresh joint-placement-reward learner, initialized only from public actor32. All128 original TRAIN cases repeated16 times. Changing actor/normalizers and exploration, not frozen or formal performance.",
+  "snapshot_update": 7,
+  "current_job_control_env_steps": 1835008,
+  "fresh_learner_initialization": {
+    "mode": "fresh_learner_with_transferred_public_actor",
+    "num_envs": 2048,
+    "initial_iteration": 0,
+    "current_job_steps_start_at_zero": true,
+    "source_checkpoint_sha256": "2060f15dbe0ebabbb4b4657a6906fbf40ca661564025e8e06888f55b2fe1a041",
+    "source_iteration": 32,
+    "source_num_envs": 512,
+    "source_learner_control_env_steps": 1703936,
+    "public_actor_and_actor_normalizer_transferred": true,
+    "exploration_log_std_transferred": true,
+    "critic_transferred": false,
+    "optimizer_transferred": false,
+    "source_rng_restored": false,
+    "old_physical_state_restored": false,
+    "old_environment_counters_restored": false,
+    "previous_learning_counters_restored": false,
+    "performance_inherited": false
+  },
+  "cumulative_learner_control_env_steps": 1835008,
+  "all_closed_training_counts_at_snapshot": {
+    "completed_episodes": 3558,
+    "air": 283,
+    "conditional_recovery_count": 82,
+    "complete": 0,
+    "numerical_failures": 0
+  },
+  "first_ground_cohort_counts": {
+    "episodes": 2048,
+    "distinct_TRAIN_cases": 128,
+    "lanes_per_case": 16,
+    "air": 209,
+    "conditional_recovery": 82,
+    "complete": 0,
+    "numerical_failures": 0,
+    "racket_contacts": 464,
+    "frame_contacts": 256,
+    "attack_outgoing": 12,
+    "target": 18,
+    "air_attack_and_target": 0,
+    "air_attack_and_recovery": 6,
+    "body_landing": 1505,
+    "early_terminated": 1586,
+    "timeout": 462,
+    "fault_counts": {
+      "robot_net_fault": 26,
+      "body_ball_fault": 0,
+      "wrong_side_fault": 0,
+      "double_hit_fault": 1,
+      "racket_invasion_fault": 13,
+      "body_over_net_fault": 0,
+      "under_net_obstruction_fault": 0,
+      "engineering_body_crossing": 22,
+      "bad_return_fault": 42,
+      "net_blocked_fault": 73
+    }
+  },
+  "TRAIN_cases_by_air_contacts_in16_lanes": {
+    "2": 31,
+    "1": 25,
+    "0": 37,
+    "3": 21,
+    "4": 11,
+    "5": 3
+  },
+  "training_terminal_reason_counts": {
+    "rally_fault": 177,
+    "shuttle_only_fault": 115,
+    "body_ground": 1505,
+    "first_ground_without_target": 925,
+    "robot_rule_fault": 62,
+    "root_fallen": 19
+  },
+  "all2048_actual_ground_states_verified": true,
+  "all_model_optimizer_tensors_finite": true,
+  "all_first_episode_terminal_robot_poses_finite": true,
+  "diagnostic_checkpoint_canonical_restart": false,
+  "diagnostic_checkpoint_sha256": "48d5d019ee2c1c002d1f9530b15a88915a5d0cb0d05c6813a091eafdeaa586ac",
+  "earlier2048_ground_cohort_descriptive_only": {
+    "episodes": 2048,
+    "distinct_TRAIN_cases": 128,
+    "lanes_per_case": 16,
+    "air": 197,
+    "conditional_recovery": 97,
+    "complete": 0,
+    "numerical_failures": 0,
+    "racket_contacts": 438,
+    "frame_contacts": 243,
+    "attack_outgoing": 16,
+    "target": 26,
+    "air_attack_and_target": 0,
+    "air_attack_and_recovery": 8,
+    "body_landing": 1526,
+    "early_terminated": 1604,
+    "timeout": 444,
+    "fault_counts": {
+      "robot_net_fault": 18,
+      "body_ball_fault": 0,
+      "wrong_side_fault": 0,
+      "double_hit_fault": 2,
+      "racket_invasion_fault": 12,
+      "body_over_net_fault": 0,
+      "under_net_obstruction_fault": 0,
+      "engineering_body_crossing": 25,
+      "bad_return_fault": 54,
+      "net_blocked_fault": 63
+    }
+  },
+  "earlier2048_report_sha256": "dc99ab64f20aa9b33d164f81c6eeb2454b4a5aab9342c290b3de986b0eb05a30",
+  "raw_files": {
+    "all_closed_training_episodes.json.gz": {
+      "bytes": 7129802,
+      "sha256": "d418524675ed33590bcf9d53de106605c94fa65bb5bd8281f0a8905ad450c96d"
+    },
+    "first_ground_episodes.json.gz": {
+      "bytes": 3838658,
+      "sha256": "2982e6d41fd6edb98f7ce820e067397fdc8cdfd765e940f861d65bcfc4664041"
+    },
+    "progress.json": {
+      "bytes": 8498,
+      "sha256": "abe47386f490ff379c6e15d4b4a4dd55848c965432b59fef5fc93f22a6cd464e"
+    }
+  },
+  "sources": {
+    "configs/g07_full_racket_eval_v4_r3.json": "04121cfb257ea4d2e288c69b44dd0c8dbada814e0bf95c8a16f5af7ef2390367",
+    "configs/court_net_v4.json": "184d07dde336bf36be7dfde089373c851a2bcb855a6e44f4120442b59818b4f4",
+    "configs/evaluation_protocol_v2.json": "421497aa51eecac023c70b200e8a75ecafff01527dcf215665d5d96c1e8266a8",
+    "quadsmash/evaluation_v4.py": "efe610b42103a45b75fa98acb2a7fe221536abb752ebd665fc926c6ffb657b38",
+    "reports/G07_full_racket_v4/joint_placement_first_ground_cohort_20261025/build.py": "b761017ba2cc3dd8078fa8f8fa016868707a467e19dc33b461ac3124e9eeb56e",
+    "reports/G07_full_racket_v4/residual_n2048_first_ground_cohort_20261025/build.py": "814a64367a497eb65feb44cb18721f85b19e9168bfd0310ef01d679a2dc4b502",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01/initial_ground_states.json": "7b4511f8df142e97da799fdf18a876632013d625043013d7eedca242b48adc6a",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01/INPUTS.json": "4acd269189af539b3a1743357659d7fbb2073ffabafe81983a2b9e429feef38e",
+    "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01/source_hashes.json": "c86f58c91318ab9e2b4b26291043d3498262f31e40b835bb95877e5d8480c027"
+  },
+  "partial_episode_snapshot_sha256": "3d854bde96baca17b89c0014255546d20256a31af807802ace2c9df27de13754",
+  "limitations": [
+    "Native first episodes include changing actors/normalizers and exploration. No fixed-policy rate, statistical gain or causal batch-size comparison is inferred.",
+    "Both2048 cohorts use128 original cases each16 times and source actor32, but the earlier run preserved its critic/Adam/RNG/counters while this learner starts them fresh with a changed TRAIN reward and2 actor-warmup updates. RNG and normalization/actor trajectories differ; no causal reward comparison or statistical gain is inferred.",
+    "Later episodes from early-reset lanes are excluded from the2048 first-ground cohort but included in the separately scoped all-closed snapshot.",
+    "Legal-air, frame and fault flags may overlap; count them using their original definitions.",
+    "Diagnostic PPO model files are not canonical environment restarts. Do not resume them directly or start another GPU owner.",
+    "Original task thresholds and all400 formal cases remain unchanged and unproven."
+  ],
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
