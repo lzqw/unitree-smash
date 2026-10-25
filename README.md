@@ -1,5 +1,7 @@
 # QuadSmash：Codex /goal 实施与训练任务包
 
+2026-10-26流程准备：[0.75条件试跑的完整执行流程](reports/G07_full_racket_v4/centered_placement075_pilot8_queue01/REPORT.md)已写好并完成真实源进程/旧检查点上的CPU边界检查：等待原比较持有进程实际退出，绑定真实赢家，通过原主GPU0账本执行新8更新、首个真实更新自动核验、完整轨迹审计、原全TRAIN128与六例视频。尚未集成main或原生运行；旧检查点仅验证字段与布局，没有改名成新方法。
+
 2026-10-26候选准备：[训练落点距离尺度0.75的条件修订](reports/G07_full_racket_v4/centered_placement075_candidate_20261026/REPORT.md)已写入独立配置并预登记：seed748901、2048环境×8更新。真实冻结40上的1890条实际观测迁移后平均动作逐位一致，actor归一化10485760保留，critic/Adam新建；40仅是兼容性样本，未来来源仍由实际16/24/32比较结果决定。当前GPU0继续原中间版本评估，主运行时未改动；本候选未原生训练，不是新成绩。
 
 本分支为**已测增量策略迁移的CPU候选实现，尚未原生训练或集成到当前GPU0作业**。见[候选说明与真实权重/输入检查](reports/G07_full_racket_v4/centered_policy_transfer_candidate_20261026/REPORT.md)。主工作区继续原训练和中间冻结策略比较，完整G07仍未通过。

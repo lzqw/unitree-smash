@@ -1,0 +1,55 @@
+{
+  "checked_at": "2026-10-25T22:45:03.410603+00:00",
+  "scope": "CPU workflow boundary checks using real existing native metadata; no new native execution.",
+  "actual_original_owner_observation": {
+    "observed_at": "2026-10-25T22:45:03.364226+00:00",
+    "actual_original_owner_live": true,
+    "original_selector_state": "RUNNING_FIXED_INTERMEDIATE_TRAIN128",
+    "original_selector_iteration": 24,
+    "original_result_exists": false,
+    "active_project_jobs": [
+      {
+        "pid": 1716828,
+        "child_pid": 1716840,
+        "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_base8_diag_iter24_fixed_train128_01",
+        "status": "RUNNING"
+      }
+    ],
+    "main_worktree": false,
+    "source_owner_and_ledger_clear": false,
+    "new_native_execution": false
+  },
+  "actual_guard_and_native_process_identities": [
+    {
+      "pid": 1716828,
+      "command": "/home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/scripts/run_gpu_job.py --goal G07 --budget-window g07-full-racket-unlimited-20261024 --max-seconds 2700 --env-steps-cap 102400 --output /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_base8_diag_iter24_fixed_train128_01 --require-artifact completed.json -- /home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/scripts/evaluate_full_racket_train_v4.py --output /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_base8_diag_iter24_fixed_train128_01 --checkpoint /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/centered_intermediate_selection_queue01/exports/iter24/policy.pt --noise none --seed 724201 --headless "
+    },
+    {
+      "pid": 1716840,
+      "command": "/home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/scripts/evaluate_full_racket_train_v4.py --output /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_base8_diag_iter24_fixed_train128_01 --checkpoint /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/centered_intermediate_selection_queue01/exports/iter24/policy.pt --noise none --seed 724201 --headless "
+    }
+  ],
+  "live_source_owner_prevents_new_launch": true,
+  "candidate_local_ledger_execution_rejected": true,
+  "no_plan_or_state_or_lock_created_by_rejected_candidate_preparation": true,
+  "real_old_first_update_critic_Adam_states": 8,
+  "real_old_first_update_critic_Adam_steps": 20,
+  "real_old_pilot8_actor_Adam_states": 9,
+  "real_old_pilot8_actor_Adam_steps": 120,
+  "real_old_pilot8_critic_Adam_states": 8,
+  "real_old_pilot8_critic_Adam_steps": 160,
+  "old_strict_resume_job_rejected_as_new075_training": true,
+  "native_pipeline_status": "PREPARED_NOT_INTEGRATED_NOT_RUN",
+  "limitations": "Old checkpoint data validate field/layout parsing only; they are not relabelled as a075 run or proof of the future native transfer.",
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_centered_transfer/reports/G07_full_racket_v4/centered_placement075_pilot8_queue01/check.py": "c5566f5147b75d7ff673afa8a52ef3f2819d6c474722b5be883a488ef1f923d4",
+    "/home/autodrive/LZQW/unitree_smash_centered_transfer/reports/G07_full_racket_v4/centered_placement075_pilot8_queue01/run.py": "95d97a8e973f8bfbb1388311566878e81a4fbaeec6d42d606eb1d3812a47c6f0",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_base8_n2048_probe8_02/ppo/model_0.pt": "e9552de0838e45d983b047828af977cda4a9eeb465c7c937911c86eb02700bb6",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_base8_n2048_probe8_02/checkpoint.pt": "6f82a40cac28b1ecba4993ef2f7fb8f332b0668a58406327a8adc09f7b36eb9b",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_base8_n2048_resume32_01/INPUTS.json": "1f52502ed2b81926f371c14499618ded6b423d28b6fcc19e3e9745b67cb51ded"
+  },
+  "new_native_execution": false,
+  "new_training": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
