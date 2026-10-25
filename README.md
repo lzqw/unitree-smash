@@ -2,6 +2,8 @@
 
 当前进度（2026-10-25）：横向修正candidate12的TRAIN128复测完成，空中接触19/128、接触后恢复12/19、攻击7、完整0、数值故障0，原始回合重算一致。GPU0已接续运行4候选×32种来球的高度规划原生训练，尚无新成绩。
 
+[最新横向修正策略视频（42.66秒）](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_lateral_train128_20261025.mp4)展示同一candidate12在TRAIN128中的攻击恢复但落点偏远、目标命中但速度不足，以及拍框失败；全部2133帧解码通过，GitHub下载SHA256一致。三个独立回合不代表正式A/B通过。
+
 此前进度（2026-10-25）：CEM31 candidate5完成固定A/B各200回合，完整成功0/400；A空中接触12.0%、接触后恢复41.7%，B为3.0%和16.7%，数值故障0。
 
 [最新真实评测视频（31秒）](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_formal_evaluation_cem31_20261025.mp4)展示同策略的攻击越网恢复、目标落点失败及强扰动触网失败；全部1550帧解码通过。CEM32的TRAIN128结果见上方当前进度。

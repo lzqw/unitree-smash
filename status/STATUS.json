@@ -81,12 +81,12 @@
       "native_air_string_contact_milestone": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
       "latest_native_training_summary": "reports/G07_full_racket_v4/cem32_lateral_feedback_1015/GENERATION0_SUMMARY.json",
       "latest_video": {
-        "path": "reports/G07_full_racket_v4/video/Current_formal_evaluation_cem31_20261025.mp4",
-        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_formal_evaluation_cem31_20261025.mp4",
-        "duration_s": 31.0,
-        "sha256": "7cf90e3f145ebea785d2fbead2d01f9454eb63a28ad93f6bb4208a29fc70067b",
+        "path": "reports/G07_full_racket_v4/video/Current_effect_lateral_train128_20261025.mp4",
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_lateral_train128_20261025.mp4",
+        "duration_s": 42.66,
+        "sha256": "8b6ad51ed9334d6e10b7a5f36b11c4c95136225b7252a9f69ebc45e8ce8684d0",
         "formal_acceptance": false,
-        "scope": "Actual formal candidate5 evaluation episodes; original400-case failure counts shown."
+        "scope": "Three independent CEM32 candidate12 TRAIN128 diagnostic episodes; fullTRAIN128 counts shown. Not formal A/B and not the concurrently running CEM33 policy."
       },
       "latest_completed_generation": {
         "had_contact": 63,
@@ -742,7 +742,23 @@
         "tests_passed": 298,
         "native_execution_started": true
       },
-      "latest_native_train_diagnostic": "reports/G07_full_racket_v4/train128_lateral_c12_1025/metrics.json"
+      "latest_native_train_diagnostic": "reports/G07_full_racket_v4/train128_lateral_c12_1025/metrics.json",
+      "previous_formal_evaluation_video": {
+        "path": "reports/G07_full_racket_v4/video/Current_formal_evaluation_cem31_20261025.mp4",
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_formal_evaluation_cem31_20261025.mp4",
+        "duration_s": 31.0,
+        "sha256": "7cf90e3f145ebea785d2fbead2d01f9454eb63a28ad93f6bb4208a29fc70067b",
+        "formal_acceptance": false,
+        "scope": "Actual formal candidate5 evaluation episodes; original400-case failure counts shown."
+      },
+      "prepared_walk_heading_draft": {
+        "scope": "Isolated CPU draft only; not yet installed in the live teacher.",
+        "report": "reports/G07_full_racket_v4/heading_preparation_cpu_1100/REPORT.json",
+        "gain": 1.5,
+        "native_execution": false,
+        "installed": false,
+        "formal_acceptance": false
+      }
     },
     "G08": {
       "state": "TODO",

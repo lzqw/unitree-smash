@@ -1,0 +1,53 @@
+{
+  "scope": "Three illustrative independent episodes of the same fixed CEM32 candidate12 policy on TRAIN128. These are not formal-panel results.",
+  "opening_title": "最新横向修正策略｜攻击、目标与失败对照",
+  "opening_lines": [
+    "同一固定策略、三个独立来球；完整Go2、PiPER与羽毛球拍。",
+    "TRAIN128：空中拍线19次、接触后恢复12次、攻击7次、完整0。",
+    "侧视与俯视显示原生全身动作、接触点和真实首次落点。"
+  ],
+  "closing_title": "TRAIN128完整成功0｜仍需联合改进",
+  "closing_lines": [
+    "攻击并恢复的案例落点偏远；目标命中案例速度不足。",
+    "拍框失败按实际记录保留，三个回合没有拼成一次成功。",
+    "高度规划训练正在运行，本视频未声称其已有性能结果。"
+  ],
+  "evaluation_footer": "同一固定策略TRAIN128｜空中19、条件恢复12、完整0｜非正式A/B",
+  "caveats": [
+    "Actual native50Hz whole-body poses and exact contact snapshots; no generated or interpolated motion.",
+    "The source evaluator reads only the frozen TRAIN cases, with zero reset noise. Formal A/B cases are not represented here.",
+    "All cases use policy SHA256 51a8b19b17e19e60bd7482c7bcb7ed1d4e8b7f50b9317cac3c49007089e8b62d. Case selection illustrates failures, not an independent performance claim.",
+    "Terminal pictures use the last valid50Hz sample, not a fabricated exact terminal pose.",
+    "Full TRAIN128 aggregate: air19/128, conditional recovery12/19, attack7, target1, complete0, numerical failures0.",
+    "The concurrently running CEM33 height-planning policy is not represented in these completed CEM32 trajectories."
+  ],
+  "cases": [
+    {
+      "run": "train128_lateral_c12_1025",
+      "source_type": "evaluation",
+      "env_id": 23,
+      "title": "攻击并稳定恢复｜首次落点超出目标",
+      "subtitle": "CEM32 candidate12 / TRAIN23 / 同回合原生全身轨迹",
+      "terminal_status": "完整扣杀失败｜攻击与恢复成立，目标落点失败",
+      "limitation": "出球8.26米/秒；首落x=4.465米，目标上界4米；恢复4.247秒"
+    },
+    {
+      "run": "train128_lateral_c12_1025",
+      "source_type": "evaluation",
+      "env_id": 107,
+      "title": "目标区命中并恢复｜实际出球速度不足",
+      "subtitle": "同一candidate12 / TRAIN107 / 与前一回合独立",
+      "terminal_status": "完整扣杀失败｜命中目标与恢复成立，攻击速度不足",
+      "limitation": "出球7.05米/秒，小于8；首落[3.809,-0.698]米；恢复3.633秒"
+    },
+    {
+      "run": "train128_lateral_c12_1025",
+      "source_type": "evaluation",
+      "env_id": 0,
+      "title": "同策略失败案例｜没有合法空中拍线击球",
+      "subtitle": "同一candidate12 / 固定TRAIN0 / 保留失败原始动作",
+      "terminal_status": "完整扣杀失败｜拍线接触与合格恢复均未通过",
+      "limitation": "原生拍框接触单独记录；没有将拍框或机身碰球计为拍线成功"
+    }
+  ]
+}
