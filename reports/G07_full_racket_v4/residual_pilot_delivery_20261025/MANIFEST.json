@@ -1,0 +1,224 @@
+{
+  "scope": "Completed actual native residual PPO pilot. Changing-policy TRAIN counts only; frozen-policy performance remains unproven.",
+  "formal_acceptance": false,
+  "learner_formal_cases_read": false,
+  "policy_sha256": "f5615013c5adfa2254339ae21e36ae892fdc0a5564bfc125795703f00130f3fd",
+  "checkpoint_sha256": "f1f58f6bbc6026d8066e1af9aa6d63b2237ab4a8a44da0b7f3ed18ec8bba4443",
+  "actual_GPU_hours": 0.3910375013008403,
+  "actual_control_env_steps": 131072,
+  "runtime_note": "Use the original source_snapshot.zip from this native run. checkpoint.pt is the canonical optimizer/normalizer/RNG ground restart; policy.pt is portable actor plus embedded baseline. Diagnostic model_i checkpoints are intentionally excluded.",
+  "dependency_note": "Restore external_dependencies paths to the original recorded layout or explicitly remap them. The separately pinned Isaac runtime is required and is not bundled.",
+  "all_USD_layers": [
+    {
+      "path": "/home/autodrive/Isaac/unitree_model/Go2/usd/configuration/go2_description_base.usd",
+      "bytes": 18806122,
+      "sha256": "eeed42fb9e41395c47bc3fac7ff5d58625ac62f44bfa5a09cacebff83229c7a0",
+      "archive_path": "external_dependencies/home/autodrive/Isaac/unitree_model/Go2/usd/configuration/go2_description_base.usd"
+    },
+    {
+      "path": "/home/autodrive/Isaac/unitree_model/Go2/usd/configuration/go2_description_physics.usd",
+      "bytes": 6829,
+      "sha256": "43800f436b3533c869f0b7774e5c70bc4291579df70a62263f808fb1a8f05505",
+      "archive_path": "external_dependencies/home/autodrive/Isaac/unitree_model/Go2/usd/configuration/go2_description_physics.usd"
+    },
+    {
+      "path": "/home/autodrive/Isaac/unitree_model/Go2/usd/configuration/go2_description_sensor.usd",
+      "bytes": 655,
+      "sha256": "d63cfa5964eb5a72b8e2a02dc89448881497717f21d76b1ec9683a92cb765a16",
+      "archive_path": "external_dependencies/home/autodrive/Isaac/unitree_model/Go2/usd/configuration/go2_description_sensor.usd"
+    },
+    {
+      "path": "/home/autodrive/Isaac/unitree_model/Go2/usd/go2.usd",
+      "bytes": 1601,
+      "sha256": "fd3c8c23c97cea3208fae1ab5eeacba4ffa616fe5f1397be6c7edf4feb93f180",
+      "archive_path": "external_dependencies/home/autodrive/Isaac/unitree_model/Go2/usd/go2.usd"
+    },
+    {
+      "path": "assets/quadsmash_full_racket_v4_r3.usd",
+      "bytes": 11508,
+      "sha256": "c2264fcece90b042c7c6a1cac7d516af83972729d0402947e3a519041e184cf2",
+      "archive_path": "assets/quadsmash_full_racket_v4_r3.usd"
+    },
+    {
+      "path": "assets/robots/piper_standard/configuration/piper_standard_base.usd",
+      "bytes": 12002740,
+      "sha256": "8e86fc86de1ce24a86308724d485302ac427e772b0a3b7bd5c33fed9e0d6f2a6",
+      "archive_path": "assets/robots/piper_standard/configuration/piper_standard_base.usd"
+    },
+    {
+      "path": "assets/robots/piper_standard/configuration/piper_standard_physics.usd",
+      "bytes": 4341,
+      "sha256": "5e338bc65fdb9ac8fced1def9e17fefe5a70d7f6d464c0d9b04bf5075ebce10f",
+      "archive_path": "assets/robots/piper_standard/configuration/piper_standard_physics.usd"
+    },
+    {
+      "path": "assets/robots/piper_standard/configuration/piper_standard_robot.usd",
+      "bytes": 1679,
+      "sha256": "59482e1947f48a93df4ec6a8061d7159f617c1cffa5e9f3d9695008cea16bea3",
+      "archive_path": "assets/robots/piper_standard/configuration/piper_standard_robot.usd"
+    },
+    {
+      "path": "assets/robots/piper_standard/configuration/piper_standard_sensor.usd",
+      "bytes": 645,
+      "sha256": "c747ff27a6695ee3dd35fe61fab7490a17f12ecaadedaecc640bed54f906cf80",
+      "archive_path": "assets/robots/piper_standard/configuration/piper_standard_sensor.usd"
+    },
+    {
+      "path": "assets/robots/piper_standard/piper_standard.usd",
+      "bytes": 1463,
+      "sha256": "f9139c750a1db093fea37b2fe174f41993fd5c977b8c9fa3aab78c033825a1ce",
+      "archive_path": "assets/robots/piper_standard/piper_standard.usd"
+    }
+  ],
+  "baseline_walk_actor_sha256": "b051375e83bd19d23a3e9cd5fe3be1dfb47b87dfe64b2755510134d70205aeb4",
+  "files": {
+    "assets/quadsmash_full_racket_v4_r3.usd": {
+      "bytes": 11508,
+      "sha256": "c2264fcece90b042c7c6a1cac7d516af83972729d0402947e3a519041e184cf2"
+    },
+    "assets/robots/piper_standard/configuration/piper_standard_base.usd": {
+      "bytes": 12002740,
+      "sha256": "8e86fc86de1ce24a86308724d485302ac427e772b0a3b7bd5c33fed9e0d6f2a6"
+    },
+    "assets/robots/piper_standard/configuration/piper_standard_physics.usd": {
+      "bytes": 4341,
+      "sha256": "5e338bc65fdb9ac8fced1def9e17fefe5a70d7f6d464c0d9b04bf5075ebce10f"
+    },
+    "assets/robots/piper_standard/configuration/piper_standard_robot.usd": {
+      "bytes": 1679,
+      "sha256": "59482e1947f48a93df4ec6a8061d7159f617c1cffa5e9f3d9695008cea16bea3"
+    },
+    "assets/robots/piper_standard/configuration/piper_standard_sensor.usd": {
+      "bytes": 645,
+      "sha256": "c747ff27a6695ee3dd35fe61fab7490a17f12ecaadedaecc640bed54f906cf80"
+    },
+    "assets/robots/piper_standard/piper_standard.usd": {
+      "bytes": 1463,
+      "sha256": "f9139c750a1db093fea37b2fe174f41993fd5c977b8c9fa3aab78c033825a1ce"
+    },
+    "assets/vendor/go2_flat_baryn20251217/policy.pt": {
+      "bytes": 174376,
+      "sha256": "b051375e83bd19d23a3e9cd5fe3be1dfb47b87dfe64b2755510134d70205aeb4"
+    },
+    "external_dependencies/home/autodrive/Isaac/unitree_model/Go2/usd/configuration/go2_description_base.usd": {
+      "bytes": 18806122,
+      "sha256": "eeed42fb9e41395c47bc3fac7ff5d58625ac62f44bfa5a09cacebff83229c7a0"
+    },
+    "external_dependencies/home/autodrive/Isaac/unitree_model/Go2/usd/configuration/go2_description_physics.usd": {
+      "bytes": 6829,
+      "sha256": "43800f436b3533c869f0b7774e5c70bc4291579df70a62263f808fb1a8f05505"
+    },
+    "external_dependencies/home/autodrive/Isaac/unitree_model/Go2/usd/configuration/go2_description_sensor.usd": {
+      "bytes": 655,
+      "sha256": "d63cfa5964eb5a72b8e2a02dc89448881497717f21d76b1ec9683a92cb765a16"
+    },
+    "external_dependencies/home/autodrive/Isaac/unitree_model/Go2/usd/go2.usd": {
+      "bytes": 1601,
+      "sha256": "fd3c8c23c97cea3208fae1ab5eeacba4ffa616fe5f1397be6c7edf4feb93f180"
+    },
+    "reports/G07_full_racket_v4/cem32_lateral_feedback_1015/best_candidate.pt": {
+      "bytes": 90707,
+      "sha256": "51a8b19b17e19e60bd7482c7bcb7ed1d4e8b7f50b9317cac3c49007089e8b62d"
+    },
+    "reports/G07_full_racket_v4/residual_pilot_delivery_20261025/ACTOR_CPU_FIDELITY.json": {
+      "bytes": 1446,
+      "sha256": "936cd7d295ccb36adf531919a3ca62db65bdffe4e4b8ecc6f67e21506ce6cf62"
+    },
+    "reports/G07_full_racket_v4/residual_pilot_delivery_20261025/REPORT.json": {
+      "bytes": 2889,
+      "sha256": "6bb8711da13aa231372519da4e8c30d186f31205e7fea89fb0f3ef279dc81a47"
+    },
+    "reports/G07_full_racket_v4/residual_pilot_delivery_20261025/build.py": {
+      "bytes": 8044,
+      "sha256": "3b0c7b73d755cf29f2e5d2bcbc4c596645ce1c6e339570e16698ba382ef0cc74"
+    },
+    "reports/G07_full_racket_v4/residual_ppo_pilot_train128_1230/INPUTS.json": {
+      "bytes": 4142,
+      "sha256": "85c8e04bddd0a7711cf792858ed2b9d89b42524cb008ee0cf8cc0ffc3ecd318a"
+    },
+    "reports/G07_full_racket_v4/residual_ppo_pilot_train128_1230/asset_dependencies.json": {
+      "bytes": 1555,
+      "sha256": "6591b33978bccc9f6f68aa781fb396a85475f54cc774840ffec700222d1649c0"
+    },
+    "reports/G07_full_racket_v4/residual_ppo_pilot_train128_1230/checkpoint.pt": {
+      "bytes": 6950379,
+      "sha256": "f1f58f6bbc6026d8066e1af9aa6d63b2237ab4a8a44da0b7f3ed18ec8bba4443"
+    },
+    "reports/G07_full_racket_v4/residual_ppo_pilot_train128_1230/completed.json": {
+      "bytes": 26,
+      "sha256": "757eb8573d3c66483b89082a61daf6d53202a956a3eedb4d11f32823e7007cf5"
+    },
+    "reports/G07_full_racket_v4/residual_ppo_pilot_train128_1230/contacts.json": {
+      "bytes": 808859,
+      "sha256": "3a35ddbeadf6ec2c9e677e44d350cb92c1dd5b078944d425f9bd64880ec7bc0d"
+    },
+    "reports/G07_full_racket_v4/residual_ppo_pilot_train128_1230/dirty.patch": {
+      "bytes": 214563,
+      "sha256": "ef8e1a834a4cc07ad996267243810d5b7eb1af8306826d8c7f1805d6ed4a3153"
+    },
+    "reports/G07_full_racket_v4/residual_ppo_pilot_train128_1230/episodes.json": {
+      "bytes": 2313574,
+      "sha256": "cf0d609add1113a8e271052d4fbd00255a7059614d0d5c2bf680061343f809ec"
+    },
+    "reports/G07_full_racket_v4/residual_ppo_pilot_train128_1230/job.json": {
+      "bytes": 1183,
+      "sha256": "3c23ab9e3e98aab60ae0a3438605624c97630e23a658da29f0ecd839b65e1396"
+    },
+    "reports/G07_full_racket_v4/residual_ppo_pilot_train128_1230/metrics.json": {
+      "bytes": 76758,
+      "sha256": "4950a6b41ed2b0d1aa6f5bc0680b547ede2a27cece1bf25a3dfd1a2896a212fb"
+    },
+    "reports/G07_full_racket_v4/residual_ppo_pilot_train128_1230/plans_update_0001.json": {
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    "reports/G07_full_racket_v4/residual_ppo_pilot_train128_1230/plans_update_0002.json": {
+      "bytes": 2766182,
+      "sha256": "e2dd2b7714a85e7bf082a9628a3bd083e7ff8df6dcc79850686c941461eb3eb0"
+    },
+    "reports/G07_full_racket_v4/residual_ppo_pilot_train128_1230/plans_update_0003.json": {
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    "reports/G07_full_racket_v4/residual_ppo_pilot_train128_1230/plans_update_0004.json": {
+      "bytes": 941528,
+      "sha256": "313384435f43439187c4868b0c2e8555192591dd6defebf64fd5eb45afdd5e35"
+    },
+    "reports/G07_full_racket_v4/residual_ppo_pilot_train128_1230/plans_update_0005.json": {
+      "bytes": 812012,
+      "sha256": "f01235dcdc15aa7ae3561452d6efc2809b93bdde6f856f5394f973a0fa4c821b"
+    },
+    "reports/G07_full_racket_v4/residual_ppo_pilot_train128_1230/plans_update_0006.json": {
+      "bytes": 181679,
+      "sha256": "6b0a83ff82e446651394002d8c488bbe65fd6fc305e08d27e78be192ffb34281"
+    },
+    "reports/G07_full_racket_v4/residual_ppo_pilot_train128_1230/plans_update_0007.json": {
+      "bytes": 929008,
+      "sha256": "4dbf966894f3388ebc469881e0d99bf49aee9b4f507a81276d44a9514bc77cc9"
+    },
+    "reports/G07_full_racket_v4/residual_ppo_pilot_train128_1230/plans_update_0008.json": {
+      "bytes": 1249263,
+      "sha256": "2d4e665fdd6670f18a7306a313d498f0686a359b877c894373e512c150c874be"
+    },
+    "reports/G07_full_racket_v4/residual_ppo_pilot_train128_1230/policy.pt": {
+      "bytes": 1658913,
+      "sha256": "f5615013c5adfa2254339ae21e36ae892fdc0a5564bfc125795703f00130f3fd"
+    },
+    "reports/G07_full_racket_v4/residual_ppo_pilot_train128_1230/progress.json": {
+      "bytes": 8500,
+      "sha256": "34e4d3422c0ee72b12591485995f284d1efad6d0f45d123cc8e2b1ee82f62fc2"
+    },
+    "reports/G07_full_racket_v4/residual_ppo_pilot_train128_1230/source_hashes.json": {
+      "bytes": 38514,
+      "sha256": "a9efb033dc79164511351ace992aad9357b0d132691047795e73edc841f1983a"
+    },
+    "reports/G07_full_racket_v4/residual_ppo_pilot_train128_1230/source_snapshot.zip": {
+      "bytes": 762692,
+      "sha256": "5e878980458edaeb087b45ce6a12a85201ddfaecaa26c587640ff1d7f7ecd91f"
+    },
+    "reports/G07_full_racket_v4/residual_ppo_pilot_train128_1230/stdout.log": {
+      "bytes": 54757,
+      "sha256": "91807fa8a52d984935b98e8ec3812f234104227214b3d5cfab732dc8e60d1a17"
+    }
+  }
+}

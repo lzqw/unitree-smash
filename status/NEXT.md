@@ -1,18 +1,20 @@
-当前唯一GPU0作业：residual_ppo_pilot_train128_1230，guard1559746 / child1559760，session35701。源码提交5b978ac。先查真实进程、INPUTS/progress、error和completed/job；禁止重复启动。
+PPO新视频CPU队列：PID1563885、session21465，reports/G07_full_racket_v4/residual_video_queue01/state.json。它与续训互不争GPU，等待固定TRAIN128评测真实结束并独立重算后，仅用CPU回放预先固定的TRAIN23、TRAIN107、TRAIN0（与此前基线视频同编号）。输出video/Current_effect_residual_PPO_iter8_20261025.mp4；READY_FOR_VISUAL_REVIEW后必须用view_image检查真实新策略预览，再上传原GitHub release并下载回验SHA。现有renderer_preflight_reference图片明确来自旧CEM32基线，不能当成PPO效果。新视频队列源码/渲染源码也已捕获哈希，必要修改须先取消该CPU队列。
 
-固定策略评测CPU队列已启动：PID1560842，session79173，状态reports/G07_full_racket_v4/residual_eval_queue_1250/state.json。必须同时检查此真实进程和状态：它只在上述PPO guard/child都退出、job SUCCEEDED、8更新/131072步/NF0/canonical checkpoint与导出SHA一致且源码未变后，才接续唯一GPU0固定TRAIN128评测。若state为RUNNING_FIXED_TRAIN_EVALUATION，使用其真实guard PID检查，不要因旧PPO PID消失重启旧训练。队列不会读取正式A/B，也不会把TRAIN结果标为正式通过。当前已独立核对PPO update5、81920步，损失和模型张量有限、actor继续有非零更新、NF0；闭合训练回合带早终止偏倚，不当作固定策略成功率。
+当前唯一GPU0作业：residual_ppo_fixed_train128_1250，guard1564206 / child1564217（由CPU队列1560842、session79173启动）。源提交2e707ac，精确运行源码在该目录source_snapshot.zip。固定新PPO iter8策略SHA f5615013c5adfa2254339ae21e36ae892fdc0a5564bfc125795703f00130f3fd，全部128原TRAIN来球、零reset扰动、上限102400步。先查真实PID、progress、error/completed/job，禁止重启旧PPO或另起并行GPU作业。
+
+原PPO guard1559746/child1559760已正常退出，job SUCCEEDED，8更新/131072步/NF0。原固定评测队列1560842当前RUNNING_FIXED_TRAIN_EVALUATION，保持运行；它会等待当前guard终止并写真实回执。下一段条件续训队列1563040和视频队列1563885仍在等它真实退出，不要因旧PPO PID已消失重启训练。训练与评测原始数据/源资产各自留存。
 
 条件续训CPU队列已启动：PID1563040，session61138，reports/G07_full_racket_v4/residual_resume24_queue01/state.json。它等待上面的PID1560842真实退出且SUCCEEDED，独立重算pilot固定TRAIN128与checkpoint/源码/导出SHA，只有空中触球≥10、条件恢复数≥3、NF0才接续24更新（总迭代32、393216步），随后再固定TRAIN128评测；这些是训练保护条件，不是新的验收标准。续训目录residual_ppo_resume24_train128_01、评测目录residual_ppo_fixed_train128_iter32_01。若旧PPO和旧评测PID已消失，先查此队列真实PID与其state里的新guard PID，禁止重启旧作业。保护条件未满足或验证失败就停下诊断，不自动重试。不得修改已捕获的quadsmash、训练/评测/guard、configs或assets源码；必要修复前先取消本队列，再处理真实问题。docs/reports可正常更新。PREFLIGHT.json已用历史固定TRAIN128实测独立重算19空中/12恢复/0完整/NF0，但不代表新PPO成绩。
 
 继续前重读目标：/home/autodrive/.codex/attachments/55e175f0-9444-4a09-ad37-681e6586ca51/pasted-text-1.txt。只用现有GPU0，无累计GPU/工作窗上限；保留每job故障保护和真实资源计费。原物理/规则/验收门槛不变。GPU0实测RTX5080 16GB，无云资源。
 
-当前已启动stock RSL-RL原生残差PPO：全部128个固定TRAIN案例、128并行环境、8个更新，每更新128控制步，总131072控制环境步；62.5us物理/10ms控制/8秒回合。固定基线为CEM32横向candidate12，SHA51a8b19b17e19e60bd7482c7bcb7ed1d4e8b7f50b9317cac3c49007089e8b62d。源仍为UV[0,.10]、航向增益0、无高度自适应；本次不继承任何基线成绩。网络均值初始0，log_std0.1；前两次更新冻结actor和log_std，critic热身；之后学习18维全身残差。腿/臂目标增量上限.12/.15rad，经过原关节范围与5rad/s臂目标速率限制，再进入原生执行器；力矩/速度/资产没有改。
+已完成stock RSL-RL原生残差PPO8更新：全部128个固定TRAIN案例、128并行环境、8个更新，每更新128控制步，总131072控制环境步；62.5us物理/10ms控制/8秒回合。固定基线为CEM32横向candidate12，SHA51a8b19b17e19e60bd7482c7bcb7ed1d4e8b7f50b9317cac3c49007089e8b62d。源仍为UV[0,.10]、航向增益0、无高度自适应；本次不继承任何基线成绩。网络均值初始0，log_std0.1；前两次更新冻结actor和log_std，critic热身；之后学习18维全身残差。腿/臂目标增量上限.12/.15rad，经过原关节范围与5rad/s臂目标速率限制，再进入原生执行器；力矩/速度/资产没有改。
 
 PPO脚本scripts/train_full_racket_residual_ppo_v4.py；配置configs/g07_full_racket_residual_ppo_v4.json。训练奖励只来自真实事件和当前因果预测的接近程度；完整链奖励只在实际回合终点发放，原complete标志不变。恢复截断使用既有FinalObservationPPO的真实reset前观测。每lane独立重置规划/行走/恢复/限速缓存，不重置其他lane；行走actor保留世界50Hz节拍。变动权重的训练回合计数不能当作固定策略成绩。
 
 322检查通过；residual_ppo_ready_1220/REPORT.json证明800步、2lane、18维零残差动作与2c7b78a旧控制器逐位一致。TRAINING_READY.json和CPU用zero_residual_cpu_check.pt明确native_execution=False，不能用它冒充已训练策略。可导出的实际策略应在当前作业结束后产生policy.pt（新schema full-racket-residual-ppo-v4），checkpoint.pt是保留优化器/归一化/RNG的canonical地面重启点。中间ppo/model_*.pt是非canonical诊断权重，不用作完整resume。CEM入口会拒绝residual actor，防止悄悄丢弃网络。
 
-本次完成后：先核对job SUCCEEDED、8更新、131072实际步、所有loss/梯度有限、数值故障0，以及actor导出同设备对照误差。再经run_gpu_job.py启动scripts/evaluate_full_racket_train_v4.py --checkpoint 当前run/policy.pt --noise none --output 新目录 --headless，固定策略覆盖全部TRAIN128、cap102400，不能直接用训练回合比例称通过。评价入口已用make_rally_controller识别新schema，仍调用原independent_episode与门槛；旧形式锁不得复用于新源码/权重。若作业报错，保留原目录/回执，修具体问题后用新目录；不要因观测延迟重复启动。
+原PPO已完成且独立复验：8更新、131072实际控制环境步、215闭合训练回合（22空中、13条件恢复、0完整、NF0；变动权重，不能作为固定成功率）、最终模型和优化器有限；实际GPU导出对照误差0，另用50个历史公开观测重建RSL模型后CPU对照误差0。完整canonical checkpoint SHA f1f58f6bbc6026d8066e1af9aa6d63b2237ab4a8a44da0b7f3ed18ec8bba4443。报告residual_pilot_delivery_20261025/REPORT.json。19570062字节、38成员的G07_native_residual_PPO_iter8_checkpoint_and_records_20261025.zip已上传原GitHub release并下载SHA回验6fb4f8c8ef1ef469e6e64f914a37846cddecca7ab4bb83ae9dacc8cfd6485eaf，包含精确训练源码、策略、checkpoint、原始回合、10USD依赖与走路actor。它不含新固定策略评测结果。当前只需继续现有固定评测，再检查条件续训和新视频队列，不手工并行发起。
 
 CEM35已SUCCEEDED但无明显改善：16候选x32来球=512执行，不是512种。64接触（54框/10空中拍线）、canonical条件恢复3、攻击1、目标1、完整0、NF0。最佳candidate2为5/32空中、3/5条件恢复、1攻击、0目标/完整；它是结构化retarget_fraction0/lead-.01的提案，两条真正拟合参考0/1均未触球。离线拟合2.23cm误差不能视为动态可行。实际.357040617GPUh/409600步，报告CEM35_INNER_STRINGS_RESULT_20261025.json和GENERATION0_SUMMARY已逐回合重算。当前PPO回到已有广分布证据的横向candidate12。
 

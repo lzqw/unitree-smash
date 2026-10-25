@@ -131,7 +131,8 @@ def main():
             note = case['limitation']
         elif exact:
             speed = float(np.linalg.norm(row['outgoing_velocity_mps']))
-            status = f"{'空中拍线' if row['airborne_string_hit'] else '拍框'}接触｜高 {event['point_m'][2]:.3f} m｜实际出球 {speed:.2f} m/s"
+            contact_kind = ('空中拍线' if row['airborne_string_hit'] else '拍线（非合格空中）') if event['string_contact'] else '拍框'
+            status = f"{contact_kind}接触｜高 {event['point_m'][2]:.3f} m｜实际出球 {speed:.2f} m/s"
             note = f"实际出球 vz={row['outgoing_velocity_mps'][2]:+.2f} m/s；原攻击要求速度≥8、vz≤-1"
         elif t < 2:
             status, note = '从地面自主准备与走位', '完整Go2、标准PiPER和675毫米球拍｜实际动力学执行记录'
@@ -230,7 +231,10 @@ def main():
                     duration_s=frames/fps, resolution=[1280, 720], segments=segments, previews=previews,
                     native_recorded_motion=True, interpolated_or_generated_motion=False,
                     renderer_uses_gpu=False, renderer=next(iter(scenes.values())).ctx.info['GL_RENDERER'],
-                    formal_acceptance=False, complete_smash=False, cases_are_independent=True,
+                    formal_acceptance=False,
+                    complete_smash=any(case['row']['complete_smash'] for case in cases),
+                    complete_smash_scope='Any selected independent episode; no population or formal acceptance claim',
+                    cases_are_independent=True,
                     cases=cases, caveats=manifest['caveats'],
                     sources={str(p.relative_to(ROOT)): sha(p) for p in sources})
     output.with_suffix('.json').write_text(json.dumps(metadata, ensure_ascii=False, indent=2) + '\n')

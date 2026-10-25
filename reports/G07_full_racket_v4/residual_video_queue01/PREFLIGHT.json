@@ -1,0 +1,29 @@
+{
+  "scope": "CPU preflight using actual completed baseline records only; not a PPO video or new-policy performance.",
+  "queue_source_sha256": "bef51d97095f264e908c676a859f6f2baca0e6f52dc783f6f2e6c4878837dd86",
+  "renderer_source_sha256": "80374fd209d1efa88ac40d4a7793188dfa56cd4fd4abc4e11e5361aa45b4afa0",
+  "preselected_TRAIN_indices": [
+    23,
+    107,
+    0
+  ],
+  "verified_previous_queue_pid": 1560842,
+  "baseline_canonical_counts": {
+    "air": 19,
+    "conditional_recovery": 12,
+    "complete": 0
+  },
+  "no_new_simulation": true,
+  "no_new_policy_performance": true,
+  "formal_acceptance": false,
+  "visual_preview_checked": true,
+  "preview_scope": "Existing CEM32 baseline; new PPO motion is not yet available.",
+  "preview": "reports/G07_full_racket_v4/residual_video_queue01/renderer_preflight_reference_case0_contact.jpg",
+  "preview_sha256": "09fa87094fc268aa8485fcd708a13065908b3ede73685410cdf132de46c44095",
+  "visual_checks": [
+    "Whole robot, full PiPER and racket visible in synchronized side and top views",
+    "Native contact marker and outgoing vector labels match baseline raw record",
+    "No PPO performance claimed by the reference preview"
+  ],
+  "decode_script_compiles": true
+}
