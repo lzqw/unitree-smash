@@ -50,14 +50,14 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/centered_residual_pilot8_queue02/LAUNCH_OBSERVATION.json",
-      "notes": "GPU0新02原生试跑已实核第2次更新524288步，两次critic预热结束，模型/Adam有限、NF0；实际第二更新证明已越过旧日志setter故障。新记录器首批9个完整100Hz训练回合的公共输入重建SHA、全身姿态、动作、时钟已逐例检查，仍需完成作业后与独立原始终端/接触全表严格匹配。新冻结表现未测。条件续训观察进程仍只等待，须父流程实际退出、全TRAIN128和完整轨迹审计通过且保留至少16空中/8恢复，才同契约从canonical8续训32更新；原正式50%/70%/85%与全部物理/规则不变。当前完整目标未通过，实际训练继续。",
+      "notes": "新02试跑第3更新实际786432步，已开始动作学习：18个动作输出行均非零，9项actor Adam各20步、8项critic Adam各60步，两套归一化786432；模型/Adam有限、NF0。1278个已闭合训练回合独立重算85空中、0条件恢复、0完整；仍在执行的长回合不计入此早期闭合子集，不将其视为冻结策略成功率。记录器启用，11个完整训练轨迹已与外部逐回合原始记录逐字段一致；最终完成作业/接触全表审计尚待。当前保持原GPU0训练与条件续训观察进程，原物理/球场/球拍/执行器/来球/50%/70%/85%门槛不变。新冻结表现尚未测，完整目标仍未通过。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
       "active_gpu_jobs": [
         {
-          "observed_at": "2026-10-25T18:16:05.397369+00:00",
+          "observed_at": "2026-10-25T18:22:03.852761+00:00",
           "workflow_pid": 1677672,
           "workflow_session_id": 81807,
           "guard_pid": 1677676,
@@ -74,15 +74,23 @@
           "formal_acceptance": false,
           "goal_complete": false,
           "state": "RUNNING_NATIVE_CENTERED_PILOT8",
-          "latest_finite_verified_iteration": 2,
-          "verified_current_job_control_env_steps": 524288,
+          "latest_finite_verified_iteration": 3,
+          "verified_current_job_control_env_steps": 786432,
           "actual2048_ground_states_verified": true,
-          "verification": "reports/G07_full_racket_v4/centered_residual_pilot8_queue02/ACTUAL_UPDATE_0002_HEALTH_CHECK.json",
+          "verification": "reports/G07_full_racket_v4/centered_residual_pilot8_queue02/ACTUAL_UPDATE_0003_LEARNING_CHECK.json",
           "trajectory_capture_enabled": true,
           "complete_native_trajectory_audit_pending": true,
           "logging_fix_verified_by_real_second_update": true,
           "partial_selected_complete_traces_checked": 9,
-          "partial_trace_check": "reports/G07_full_racket_v4/centered_residual_pilot8_queue02/PARTIAL_NATIVE_TRACE_CAPTURE_CHECK.json"
+          "partial_trace_check": "reports/G07_full_racket_v4/centered_residual_pilot8_queue02/PARTIAL_NATIVE_TRACE_CAPTURE_CHECK.json",
+          "actor_Adam_states_advanced": true,
+          "all18_action_output_rows_updated": true,
+          "independently_recomputed_closed_training_episodes": 1278,
+          "closed_training_air": 85,
+          "closed_training_conditional_recovery": 0,
+          "closed_training_complete": 0,
+          "numerical_failures": 0,
+          "selected_closed_traces_linked_to_external_raw_rows": 11
         }
       ],
       "queued_native_sequence": {
