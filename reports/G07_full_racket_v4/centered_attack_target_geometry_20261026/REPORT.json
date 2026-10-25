@@ -1,0 +1,339 @@
+{
+  "created_at": "2026-10-25T19:40:43.527390+00:00",
+  "scope": "Completed frozen centered8 original TRAIN128 diagnosis, with separately labelled CPU free-flight counterfactuals. No policy, source contract, cases, physics or acceptance changed.",
+  "actual_frozen_funnel": {
+    "episodes": 128,
+    "had_contact": 78,
+    "legal_air": 26,
+    "attack": 3,
+    "air_and_cross": 25,
+    "air_and_target": 6,
+    "air_and_recovery": 13,
+    "attack_and_cross": 3,
+    "attack_and_target": 0,
+    "attack_and_recovery": 3,
+    "full": 0
+  },
+  "actual_attack_diagnostics": [
+    {
+      "TRAIN": 6,
+      "actual_start": "Native first string-contact event, post-contact ball center/velocity; not a restored robot state.",
+      "actual_event_time_s": 2.7039906978607178,
+      "actual_ball_center_m": [
+        1.040374755859375,
+        0.038707733154296875,
+        1.773621678352356
+      ],
+      "actual_contact_point_m": [
+        1.0160140991210938,
+        0.04104804992675781,
+        1.7754101753234863
+      ],
+      "actual_outgoing_velocity_mps": [
+        8.186617851257324,
+        -0.9612807035446167,
+        -1.5524029731750488
+      ],
+      "actual_first_landing_m": [
+        4.708526611328125,
+        -0.3914165496826172,
+        0.025172516703605652
+      ],
+      "actual_net_margin_m": 0.11541879177093506,
+      "actual_qualified_recovery": true,
+      "model_baseline_first_landing_m": [
+        4.708063132846393,
+        -0.39195583603514755,
+        0.025
+      ],
+      "model_baseline_landing_error_m": 0.0007317131173331383,
+      "rk4_dt_halving_difference_m": 9.355046025211682e-08,
+      "calculated_existing_placement_bonus": 0.006496919939754671,
+      "calculated_bonus_scope": "Recomputed from the actual first landing and unchanged configured kernel; not an observed paid reward log.",
+      "measured_release_to_landing_control_steps": 47,
+      "gae_direct_kernel_decay_to_landing": 0.3359680651012476,
+      "counterfactual_same_speed_solutions": [
+        {
+          "target_landing_x_m": 4.0,
+          "unchanged_speed_mps": 8.387772494807846,
+          "counterfactual_outgoing_velocity_mps": [
+            7.883970509092521,
+            -0.9257435555687393,
+            -2.709379136580449
+          ],
+          "downward_angle_degrees": 18.8453778955265,
+          "downward_angle_change_degrees": 8.1796227180437,
+          "first_landing_m": [
+            4.00000031189283,
+            -0.30881440461050996,
+            0.025
+          ],
+          "conservative_no_touch_net_margin_m": 0.03853644210479601,
+          "robot_execution": false,
+          "achievable_racket_contact_not_verified": true
+        },
+        {
+          "target_landing_x_m": 3.9,
+          "unchanged_speed_mps": 8.387772494807846,
+          "counterfactual_outgoing_velocity_mps": [
+            7.821353318444356,
+            -0.9183909835818828,
+            -2.887510639632346
+          ],
+          "downward_angle_degrees": 20.136164917361487,
+          "downward_angle_change_degrees": 9.470409739878686,
+          "first_landing_m": [
+            3.9000003826353824,
+            -0.2970723147636924,
+            0.025
+          ],
+          "conservative_no_touch_net_margin_m": 0.025810175901371357,
+          "robot_execution": false,
+          "achievable_racket_contact_not_verified": true
+        },
+        {
+          "target_landing_x_m": 3.5,
+          "unchanged_speed_mps": 8.387772494807846,
+          "counterfactual_outgoing_velocity_mps": [
+            7.50306184405658,
+            -0.8810168862451244,
+            -3.6445300979781003
+          ],
+          "downward_angle_degrees": 25.753808105118058,
+          "downward_angle_change_degrees": 15.088052927635257,
+          "first_landing_m": [
+            3.50000015698358,
+            -0.2501038956535335,
+            0.025
+          ],
+          "conservative_no_touch_net_margin_m": -0.03257708440092122,
+          "robot_execution": false,
+          "achievable_racket_contact_not_verified": true
+        }
+      ]
+    },
+    {
+      "TRAIN": 7,
+      "actual_start": "Native first string-contact event, post-contact ball center/velocity; not a restored robot state.",
+      "actual_event_time_s": 2.7361605167388916,
+      "actual_ball_center_m": [
+        1.0449447631835938,
+        -0.07944107055664062,
+        1.788959264755249
+      ],
+      "actual_contact_point_m": [
+        1.0204849243164062,
+        -0.079986572265625,
+        1.7903329133987427
+      ],
+      "actual_outgoing_velocity_mps": [
+        7.9066691398620605,
+        0.15559019148349762,
+        -1.7106919288635254
+      ],
+      "actual_first_landing_m": [
+        4.522834777832031,
+        -0.009000778198242188,
+        0.02514479123055935
+      ],
+      "actual_net_margin_m": 0.11777293682098389,
+      "actual_qualified_recovery": true,
+      "model_baseline_first_landing_m": [
+        4.52244999867402,
+        -0.01100951032516487,
+        0.025
+      ],
+      "model_baseline_landing_error_m": 0.002050371736690244,
+      "rk4_dt_halving_difference_m": 2.7366176583083866e-07,
+      "calculated_existing_placement_bonus": 0.25209053124423125,
+      "calculated_bonus_scope": "Recomputed from the actual first landing and unchanged configured kernel; not an observed paid reward log.",
+      "measured_release_to_landing_control_steps": 46,
+      "gae_direct_kernel_decay_to_landing": 0.34385612459956155,
+      "counterfactual_same_speed_solutions": [
+        {
+          "target_landing_x_m": 4.0,
+          "unchanged_speed_mps": 8.09111191805006,
+          "counterfactual_outgoing_velocity_mps": [
+            7.668057872899371,
+            0.15089471579580588,
+            -2.577636769023635
+          ],
+          "downward_angle_degrees": 18.576849403491348,
+          "downward_angle_change_degrees": 6.37076829233621,
+          "first_landing_m": [
+            4.000000118917155,
+            -0.021290461177412075,
+            0.025
+          ],
+          "conservative_no_touch_net_margin_m": 0.05836093009537735,
+          "robot_execution": false,
+          "achievable_racket_contact_not_verified": true
+        },
+        {
+          "target_landing_x_m": 3.9,
+          "unchanged_speed_mps": 8.09111191805006,
+          "counterfactual_outgoing_velocity_mps": [
+            7.606307724241759,
+            0.14967957484532216,
+            -2.754590876959045
+          ],
+          "downward_angle_degrees": 19.904080669210668,
+          "downward_angle_change_degrees": 7.69799955805553,
+          "first_landing_m": [
+            3.9000002905725513,
+            -0.023258292658055416,
+            0.025
+          ],
+          "conservative_no_touch_net_margin_m": 0.045510529899967844,
+          "robot_execution": false,
+          "achievable_racket_contact_not_verified": true
+        },
+        {
+          "target_landing_x_m": 3.5,
+          "unchanged_speed_mps": 8.09111191805006,
+          "counterfactual_outgoing_velocity_mps": [
+            7.291553102689229,
+            0.14348572368355111,
+            -3.504105772971731
+          ],
+          "downward_angle_degrees": 25.66323926301297,
+          "downward_angle_change_degrees": 13.457158151857831,
+          "first_landing_m": [
+            3.500000065288371,
+            -0.031129636525429438,
+            0.025
+          ],
+          "conservative_no_touch_net_margin_m": -0.013338378959115493,
+          "robot_execution": false,
+          "achievable_racket_contact_not_verified": true
+        }
+      ]
+    },
+    {
+      "TRAIN": 23,
+      "actual_start": "Native first string-contact event, post-contact ball center/velocity; not a restored robot state.",
+      "actual_event_time_s": 2.755150079727173,
+      "actual_ball_center_m": [
+        1.0144500732421875,
+        0.011730194091796875,
+        1.7283254861831665
+      ],
+      "actual_contact_point_m": [
+        0.9894180297851562,
+        0.012500762939453125,
+        1.7263174057006836
+      ],
+      "actual_outgoing_velocity_mps": [
+        8.293874740600586,
+        -1.243696689605713,
+        -1.429627537727356
+      ],
+      "actual_first_landing_m": [
+        4.741680145263672,
+        -0.5469818115234375,
+        0.0251954086124897
+      ],
+      "actual_net_margin_m": 0.07254576683044434,
+      "actual_qualified_recovery": true,
+      "model_baseline_first_landing_m": [
+        4.741855531591438,
+        -0.5472078143005915,
+        0.025
+      ],
+      "model_baseline_landing_error_m": 0.00034644212371426824,
+      "rk4_dt_halving_difference_m": 3.9043438785800013e-07,
+      "calculated_existing_placement_bonus": 0.003010350588258573,
+      "calculated_bonus_scope": "Recomputed from the actual first landing and unchanged configured kernel; not an observed paid reward log.",
+      "measured_release_to_landing_control_steps": 47,
+      "gae_direct_kernel_decay_to_landing": 0.3359680651012476,
+      "counterfactual_same_speed_solutions": [
+        {
+          "target_landing_x_m": 4.0,
+          "unchanged_speed_mps": 8.50758335634374,
+          "counterfactual_outgoing_velocity_mps": [
+            8.002047312631746,
+            -1.1999361051439905,
+            -2.6279967113967175
+          ],
+          "downward_angle_degrees": 17.992981720477452,
+          "downward_angle_change_degrees": 8.319011307150406,
+          "first_landing_m": [
+            4.000000142050356,
+            -0.43596389984624895,
+            0.025
+          ],
+          "conservative_no_touch_net_margin_m": -0.009316068313494963,
+          "robot_execution": false,
+          "achievable_racket_contact_not_verified": true
+        },
+        {
+          "target_landing_x_m": 3.9,
+          "unchanged_speed_mps": 8.50758335634374,
+          "counterfactual_outgoing_velocity_mps": [
+            7.9430170999762675,
+            -1.1910843100105348,
+            -2.805133166369893
+          ],
+          "downward_angle_degrees": 19.251872700516117,
+          "downward_angle_change_degrees": 9.57790228718907,
+          "first_landing_m": [
+            3.900000101675459,
+            -0.420968530002298,
+            0.025
+          ],
+          "conservative_no_touch_net_margin_m": -0.022301930015190985,
+          "robot_execution": false,
+          "achievable_racket_contact_not_verified": true
+        },
+        {
+          "target_landing_x_m": 3.5,
+          "unchanged_speed_mps": 8.50758335634374,
+          "counterfactual_outgoing_velocity_mps": [
+            7.641547563830365,
+            -1.1458778563506768,
+            -3.559872095059095
+          ],
+          "downward_angle_degrees": 24.735832639864153,
+          "downward_angle_change_degrees": 15.061862226537107,
+          "first_landing_m": [
+            3.500000344789635,
+            -0.36098711129980915,
+            0.025
+          ],
+          "conservative_no_touch_net_margin_m": -0.08173403751905206,
+          "robot_execution": false,
+          "achievable_racket_contact_not_verified": true
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Outgoing velocity rotations are hypothetical ball-flight calculations; they do not show PiPER can produce them or preserve real contact and recovery.",
+    "Positive conservative far-face sphere clearance is a no-touch free-flight check. Negative clearance is not a native fault verdict; legal tape touches are allowed by the actual rules.",
+    "Baseline RK4 is checked against measured native first landings. Error includes native contact duration, sphere contact offset and collision detection; it is not a new native assessment.",
+    "The GAE kernel is direct residual propagation only; a learned value function can bridge long delays. This is not proof of a training failure cause.",
+    "All128 cases are retained; three attacks are a complete event subgroup, not a filtered assessment or formal A/B result."
+  ],
+  "table_sha256": "58a7dee705be60fb1a349265d4184f0276b7ba8cd81baffa632dda327f6b7487",
+  "source_sha256": {
+    "reports/G07_full_racket_v4/centered_attack_target_geometry_20261026/build.py": "d80375ad3f35e4b4e446262673cfc0f76c38b32034577d855192d9311d35ed1b",
+    "reports/G07_full_racket_v4/residual_ppo_centered_base8_n2048_probe8_02/policy.pt": "14d3f521131d49f2a7b38d3ac4bf87497e6bfa1da2c59ecdca122299357265a6",
+    "configs/g07_full_racket_eval_v4_r3.json": "04121cfb257ea4d2e288c69b44dd0c8dbada814e0bf95c8a16f5af7ef2390367",
+    "configs/court_net_v4.json": "184d07dde336bf36be7dfde089373c851a2bcb855a6e44f4120442b59818b4f4",
+    "configs/shuttle_physics_v2.json": "dba0e8d45edd661185c7f0b8a379f63993d1a87269740e672688b4577e359229",
+    "configs/g07_full_racket_residual_ppo_centered_v4.json": "b2a411d897ebb7e52d6185f8200cf63463d600040fdb6d822c89f6f0f6341467",
+    "quadsmash/physics/shuttlecock.py": "14f81ae4174d6aa1fe423fff1ad7621c93190c75ac0b562506ee26ca5dc61319",
+    "quadsmash/physics/court_v4.py": "d00cd68d9e5264933b81ec6c8190dfb12e4f3157b735f0dd3cd9c224e1e058ce",
+    "quadsmash/evaluation_v4.py": "efe610b42103a45b75fa98acb2a7fe221536abb752ebd665fc926c6ffb657b38",
+    "quadsmash/control/measured_joint_placement_reward_v4.py": "478a234a75cd285cc64c45bb7fb1d6cfb99e4ef4b921e1e0fd81c779ba97db76",
+    "reports/G07_full_racket_v4/residual_ppo_centered_base8_n2048_probe8_fixed_train128_02/job.json": "cbd14290635f082176868451f29ad03bc128b6833f177b4190a0b55b2eb6a9bb",
+    "reports/G07_full_racket_v4/residual_ppo_centered_base8_n2048_probe8_fixed_train128_02/INPUTS.json": "b4d9d94d9ca89ba0159b08b17e302d5dac65f12894c3cbc9f43b7b8a3d81871c",
+    "reports/G07_full_racket_v4/residual_ppo_centered_base8_n2048_probe8_fixed_train128_02/episodes.json": "b121e53b7a33dfbcbff603a32e7030a4b91e0b43fa27cef9a3419f193372bcf1",
+    "reports/G07_full_racket_v4/residual_ppo_centered_base8_n2048_probe8_fixed_train128_02/contacts.json": "2cf369b96c45b4658602b5ec522cc38bc76ab2d8bef1c7472fc287b9d78f06cb",
+    "reports/G07_full_racket_v4/residual_ppo_centered_base8_n2048_probe8_fixed_train128_02/metrics.json": "b6cc6e874500b62a02103fb26f348405f697353472664c16d5315352939f5964"
+  },
+  "native_job_started": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}

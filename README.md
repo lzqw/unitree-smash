@@ -4,7 +4,9 @@
 
 [最新85秒新冻结8实际效果视频](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_centered_residual_base8_probe8_retry02_20261026.mp4)及[112MB完整冻结128、配对诊断与视频包](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_centered_probe8_frozen_TRAIN128_video_and_diagnostics_20261026.zip)已上传并下载SHA回验。视频4276帧、85.52秒、50fps，保留训练前登记19/23/107/0/8/58全部六例；16张事件预览和8张实际解码画面已检查，侧视/俯视显示完整机械臂和球拍、实际接触点与首次落点。包为111769964字节、SHA256 `b08ace400ad9044da80839273b00174ce49d1bdce04d363e2d4d6299364a0533`，110成员CRC及109源文件SHA通过，运行时资产复用下方215MB训练包。[上传回执](reports/G07_full_racket_v4/centered_probe8_fixed_video_review_20261026/ARCHIVE_UPLOAD_RECEIPT.json)。
 
-GPU0已按[预登记条件](reports/G07_full_racket_v4/centered_residual_resume32_queue01/PARENT_VERIFIED_DECISION.json)从真实canonical8严格继续32更新至40，原16空中/8恢复保留条件及12条完整训练轨迹审计已通过。[实际续训首个更新9](reports/G07_full_racket_v4/centered_residual_resume32_queue01/ROOT_STRICT_RESUME_FIRST_UPDATE_CHECK.json)确认17项Adam和两套归一化完整保留推进、同2048环境从真实地面零时钟重新执行，记录器正常；不声称连续恢复旧PhysX接触状态。最新日志global14、本作业1572864控制环境步、NF0，属于变化中策略训练。原完整成功50%、空中70%、条件恢复85%、A/B各200与全部物理/规则不变；完整目标仍未通过。
+GPU0已按[预登记条件](reports/G07_full_racket_v4/centered_residual_resume32_queue01/PARENT_VERIFIED_DECISION.json)从真实canonical8严格继续32更新至40。[实际update15与首批完整地面回合检查](reports/G07_full_racket_v4/centered_residual_resume32_queue01/ROOT_ACTUAL_UPDATE15_FIRST_COHORT_CHECK.json)确认17项Adam保留推进140步、两套归一化增加1835008步、所有2048条实际源episode ID前缀精确；首批2048回合247空中、113条件恢复、0完整、NF0。完整动作记录正常。这是变化中策略训练，不能当冻结成绩；最新日志global15、本作业1835008步。原完整成功50%、空中70%、条件恢复85%、A/B各200与全部物理/规则不变，完整目标仍未通过。
+
+[新落点/网余量诊断](reports/G07_full_racket_v4/centered_attack_target_geometry_20261026/REPORT.json)保留全部128例事件链；三次真实合格攻击都已越网和恢复，但深出目标0.52–0.74米。使用同一已声明气动参数的CPU自由飞行，原首落误差0.35–2.06毫米；同速瞄准x3.9米的假设需要出球再向下7.7–9.6度，其中TRAIN6/7保守网余量约2.6/4.6厘米、TRAIN23约−2.2厘米。不是机器人已执行或接触/恢复可行性证明。原窄落点奖励核在三次实际落点上计算仅约0.003–0.252，提供后续方法诊断，不修改当前续训契约或原目标区。
 
 此前新02原生试跑实际完成2097152步、0.670711 GPU小时，独立重算3703回合311空中、112条件恢复、0完整、NF0；canonical8和公共策略已保存，[全部12条完整100Hz轨迹](reports/G07_full_racket_v4/centered_residual_pilot8_queue02/TRAINING_TRACE_AUDIT.json)通过实际原始回合/接触/公共输入SHA/姿态审计。
 
