@@ -155,3 +155,5 @@ CEM28 的两个原生 TRAIN65 同回合完整扣杀里程碑已保留并上传�
 随后完成 candidate8 的 TRAIN128 诊断（完整 0/128、空中接触 16/128、接触后恢复 8/16、数值故障 0），并将固定地面重置扰动 A/B 支持加入 TRAIN 搜索，默认无噪声路径保持不变。CEM29 无噪声恢复两代和 CEM30 B 级扰动两代均保存了负结果；291 项测试通过。详细锁、面板、原始事件哈希和搜索收据见 [`formal_and_robust_20261025.json`](reports/G07_full_racket_v4/formal_and_robust_20261025.json)。
 
 交付包：[G07_formal_and_robust_delivery_20261025.zip](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_formal_and_robust_delivery_20261025.zip)，包含策略锁、A/B 400 回合事件、TRAIN128 诊断、分布搜索终端结果和扰动训练代码快照；SHA256 为 `736ea5f05e3128986f07c63c37c5b53fba5461547f1eb0a0b31755aa4475f46d`。
+
+[Candidate5完整评测与原生轨迹证据包](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_CEM31_formal400_native_trajectories_20261025.zip)（272,629,446字节，SHA256 `85b9b6cb1b59948e96332a29c2ba6052f00c1b9b4c2f679ee25ed9e95962697a`）。包含A/B全部400回合全身姿态、事件、锁定源码、TRAIN128、CEM31群体与新评测视频；GitHub下载回验一致。
