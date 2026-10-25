@@ -1,0 +1,73 @@
+{
+  "scope": "Fixed residual PPO iteration96, original TRAIN128; not changing-policy training or formal A/B.",
+  "policy_sha256": "f4467fce12b1ab36065447f8156fbab5814d05fde6b9fb7409cb8ca24ac7e73e",
+  "preselected_before_fixed_evaluation": true,
+  "selection_reason": "Cases19/23/107/0/8 retain the preceding reviewed iter32 video and are registered before this iter96 frozen assessment starts. TRAIN8 was posthoc in iter32, but is prospective for this separate iter96 run. This is a case comparison, not random population sampling.",
+  "opening_title": "\u6b8b\u5deePPO\u7b2c96\u6b21\u66f4\u65b0\uff5c\u56fa\u5b9a\u7b56\u7565\u5b9e\u6d4b",
+  "opening_lines": [
+    "\u540c\u4e00\u56fa\u5b9a\u7b56\u7565\uff1aTRAIN19\u300123\u3001107\u30010\u30018\uff0c\u7ed3\u679c\u5206\u522b\u4fdd\u7559\u3002",
+    "\u5b8c\u6574TRAIN128\uff1a\u7a7a\u4e2d24\u3001\u6761\u4ef6\u6062\u590d8\u3001\u5b8c\u65740\uff1b\u6570\u503c\u6545\u969c0\u3002",
+    "\u4e94\u4f8b\u5728\u7b2c96\u6b21\u66f4\u65b0\u7684\u56fa\u5b9a\u8bc4\u4f30\u5f00\u59cb\u524d\u767b\u8bb0\uff0c\u4fdd\u7559\u5168\u90e8\u5b9e\u9645\u7ed3\u679c\u3002"
+  ],
+  "closing_title": "\u56fa\u5b9aTRAIN128\u7ed3\u679c\uff5c\u539f\u95e8\u69db\u4e0d\u53d8",
+  "closing_lines": [
+    "\u7a7a\u4e2d24\u3001\u6761\u4ef6\u6062\u590d8\u3001\u5b8c\u65740\uff1b\u4e0d\u5c06\u4e94\u4e2a\u56de\u5408\u62fc\u6210\u4e00\u4e2a\u6210\u529f\u3002",
+    "\u5b8c\u6574\u7403\u62cd\u3001\u539f\u7403\u573a\u548c\u89c4\u5219\uff1b\u9996\u6b21\u843d\u70b9\u4e0e\u6062\u590d\u5206\u522b\u663e\u793a\u3002",
+    "\u6b63\u5f0f\u8fbe\u6807\u4ecd\u9700\u540c\u4e00\u51bb\u7ed3\u7b56\u7565\u5b8c\u6210A/B\u5404200\u56de\u5408\u3002"
+  ],
+  "evaluation_footer": "PPO iter96\u56fa\u5b9aTRAIN128\uff5c\u7a7a\u4e2d24\u3001\u6761\u4ef6\u6062\u590d8\u3001\u5b8c\u65740\uff5c\u975e\u6b63\u5f0fA/B",
+  "caveats": [
+    "Actual native50Hz body poses and exact contact events. No generated or interpolated motion.",
+    "Cases19,23,107,0,8 were fixed before this iter96 assessment. All five outcomes are retained. Prior iter32 outcomes motivated selection; this is not blind/random population sampling.",
+    "These are fixed-policy evaluation episodes, distinct from the earlier changing-policy TRAIN19_LANE275_EP1 success.",
+    "The terminal image uses the last valid50Hz sample, not an invented exact terminal pose.",
+    "The original formal A/B acceptance thresholds remain unchanged."
+  ],
+  "cases": [
+    {
+      "run": "residual_ppo_fixed_train128_iter96_n2048_01",
+      "source_type": "evaluation",
+      "env_id": 19,
+      "title": "\u56fa\u5b9aTRAIN19\uff5c\u6ca1\u6709\u7403\u62cd\u63a5\u89e6",
+      "subtitle": "\u540c\u4e00PPO\u7b2c96\u6b21\u66f4\u65b0\u7b56\u7565\uff5c\u539f\u751f\u5168\u8eab\u8f68\u8ff9",
+      "terminal_status": "\u672c\u56de\u5408\u5b8c\u6574\u6263\u6740\u5931\u8d25\uff5c\u63a5\u89e6\u4e0e\u6062\u590d\u8054\u5408\u6761\u4ef6\u672a\u901a\u8fc7",
+      "limitation": "\u672a\u8bb0\u5f55\u6709\u6548\u51fa\u7403\uff1b\u9996\u843d[-1.05,0.14]\u7c73\uff1b\u7a33\u5b9a\u7a97\u53e30.00\u79d2"
+    },
+    {
+      "run": "residual_ppo_fixed_train128_iter96_n2048_01",
+      "source_type": "evaluation",
+      "env_id": 23,
+      "title": "\u56fa\u5b9aTRAIN23\uff5c\u6ca1\u6709\u7403\u62cd\u63a5\u89e6",
+      "subtitle": "\u540c\u4e00PPO\u7b2c96\u6b21\u66f4\u65b0\u7b56\u7565\uff5c\u539f\u751f\u5168\u8eab\u8f68\u8ff9",
+      "terminal_status": "\u672c\u56de\u5408\u5b8c\u6574\u6263\u6740\u5931\u8d25\uff5c\u63a5\u89e6\u4e0e\u6062\u590d\u8054\u5408\u6761\u4ef6\u672a\u901a\u8fc7",
+      "limitation": "\u672a\u8bb0\u5f55\u6709\u6548\u51fa\u7403\uff1b\u9996\u843d[-1.57,-0.27]\u7c73\uff1b\u7a33\u5b9a\u7a97\u53e30.00\u79d2"
+    },
+    {
+      "run": "residual_ppo_fixed_train128_iter96_n2048_01",
+      "source_type": "evaluation",
+      "env_id": 107,
+      "title": "\u56fa\u5b9aTRAIN107\uff5c\u5408\u6cd5\u7a7a\u4e2d\u62cd\u7ebf\u51fb\u7403",
+      "subtitle": "\u540c\u4e00PPO\u7b2c96\u6b21\u66f4\u65b0\u7b56\u7565\uff5c\u539f\u751f\u5168\u8eab\u8f68\u8ff9",
+      "terminal_status": "\u672c\u56de\u5408\u5b8c\u6574\u6263\u6740\u5931\u8d25\uff5c\u63a5\u89e6\u4e0e\u6062\u590d\u8054\u5408\u6761\u4ef6\u672a\u901a\u8fc7",
+      "limitation": "\u51fa\u74036.98\u7c73/\u79d2\uff1b\u672a\u89c2\u5bdf\u5230\u9996\u6b21\u843d\u70b9\uff1b\u7a33\u5b9a\u7a97\u53e30.00\u79d2"
+    },
+    {
+      "run": "residual_ppo_fixed_train128_iter96_n2048_01",
+      "source_type": "evaluation",
+      "env_id": 0,
+      "title": "\u56fa\u5b9aTRAIN0\uff5c\u6ca1\u6709\u7403\u62cd\u63a5\u89e6",
+      "subtitle": "\u540c\u4e00PPO\u7b2c96\u6b21\u66f4\u65b0\u7b56\u7565\uff5c\u539f\u751f\u5168\u8eab\u8f68\u8ff9",
+      "terminal_status": "\u672c\u56de\u5408\u5b8c\u6574\u6263\u6740\u5931\u8d25\uff5c\u63a5\u89e6\u4e0e\u6062\u590d\u8054\u5408\u6761\u4ef6\u672a\u901a\u8fc7",
+      "limitation": "\u672a\u8bb0\u5f55\u6709\u6548\u51fa\u7403\uff1b\u9996\u843d[-1.61,-0.14]\u7c73\uff1b\u7a33\u5b9a\u7a97\u53e30.00\u79d2"
+    },
+    {
+      "run": "residual_ppo_fixed_train128_iter96_n2048_01",
+      "source_type": "evaluation",
+      "env_id": 8,
+      "title": "\u56fa\u5b9aTRAIN8\uff5c\u62cd\u6846\u63a5\u89e6",
+      "subtitle": "\u540c\u4e00PPO\u7b2c96\u6b21\u66f4\u65b0\u7b56\u7565\uff5c\u539f\u751f\u5168\u8eab\u8f68\u8ff9",
+      "terminal_status": "\u672c\u56de\u5408\u5b8c\u6574\u6263\u6740\u5931\u8d25\uff5c\u63a5\u89e6\u4e0e\u6062\u590d\u8054\u5408\u6761\u4ef6\u672a\u901a\u8fc7",
+      "limitation": "\u51fa\u74036.10\u7c73/\u79d2\uff1b\u672a\u89c2\u5bdf\u5230\u9996\u6b21\u843d\u70b9\uff1b\u7a33\u5b9a\u7a97\u53e33.54\u79d2"
+    }
+  ]
+}

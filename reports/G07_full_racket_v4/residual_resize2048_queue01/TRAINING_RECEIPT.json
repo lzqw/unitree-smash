@@ -1,0 +1,29 @@
+{
+  "policy_sha256": "f4467fce12b1ab36065447f8156fbab5814d05fde6b9fb7409cb8ca24ac7e73e",
+  "checkpoint_sha256": "cf9bf35566124d91bfbf86b999f8a46834254d28669a0512a5df61ed8c8f3b33",
+  "iteration": 96,
+  "num_envs": 2048,
+  "distinct_TRAIN_cases": 128,
+  "repeated_lanes_per_case": 16,
+  "actual_control_env_steps": 16777216,
+  "cumulative_learner_control_env_steps": 18481152,
+  "initialization": {
+    "mode": "canonical_learner_fork_on_fresh_ground",
+    "previous_num_envs": 512,
+    "num_envs": 2048,
+    "initial_iteration": 32,
+    "previous_learner_control_env_steps": 1703936,
+    "policy_optimizer_normalizers_rng_preserved": true,
+    "old_physical_state_restored": false,
+    "old_environment_counters_restored": false,
+    "current_job_steps_start_at_zero": true
+  },
+  "changing_policy_counts": {
+    "completed_episodes": 39077,
+    "air": 3332,
+    "conditional_recovery_count": 1244,
+    "complete": 8,
+    "numerical_failures": 0
+  },
+  "frozen_performance": false
+}

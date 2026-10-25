@@ -1,0 +1,108 @@
+{
+  "created_at": "2026-10-25T12:24:30.156969+00:00",
+  "scope": "Two fixed policies on all original128 TRAIN cases, zero reset noise. Descriptive training diagnostics, not formal A/B or a causal method comparison.",
+  "results": {
+    "iter32": {
+      "summary": {
+        "episodes": 128,
+        "distinct_cases": 128,
+        "complete": 0,
+        "complete_success_rate": 0.0,
+        "airborne_contacts": 22,
+        "airborne_contact_rate": 0.171875,
+        "conditional_recovery_count": 14,
+        "conditional_recovery_rate": 0.6363636363636364,
+        "numerical_failures": 0,
+        "actual_racket_contacts": 73,
+        "attack_outgoing": 3,
+        "crossed_net": 18,
+        "landed_legal_court": 17,
+        "landed_target": 3,
+        "fault_counts": {
+          "robot_net_fault": 2,
+          "body_ball_fault": 0,
+          "wrong_side_fault": 0,
+          "double_hit_fault": 0,
+          "racket_invasion_fault": 0,
+          "body_over_net_fault": 0,
+          "under_net_obstruction_fault": 0,
+          "engineering_body_crossing": 3,
+          "bad_return_fault": 8,
+          "net_blocked_fault": 18
+        },
+        "formal_eligible": false,
+        "formal_acceptance": false,
+        "formal_cases_read": false,
+        "scope": "Frozen TRAIN cases only; diagnostic performance of one fixed policy, not an A/B panel score."
+      },
+      "policy_sha256": "772608a1c42ec78c09cdf3bd8b7bfe3fed1738d1273cde9d09610022553aa21b",
+      "actual_gpu_hours": 0.30101492375112787,
+      "reset_noise_seed": 724201,
+      "attack_target_overlap": 0,
+      "attack_and_recovery": 2
+    },
+    "iter96": {
+      "summary": {
+        "episodes": 128,
+        "distinct_cases": 128,
+        "complete": 0,
+        "complete_success_rate": 0.0,
+        "airborne_contacts": 24,
+        "airborne_contact_rate": 0.1875,
+        "conditional_recovery_count": 8,
+        "conditional_recovery_rate": 0.3333333333333333,
+        "numerical_failures": 0,
+        "actual_racket_contacts": 57,
+        "attack_outgoing": 1,
+        "crossed_net": 17,
+        "landed_legal_court": 13,
+        "landed_target": 3,
+        "fault_counts": {
+          "robot_net_fault": 5,
+          "body_ball_fault": 0,
+          "wrong_side_fault": 0,
+          "double_hit_fault": 0,
+          "racket_invasion_fault": 0,
+          "body_over_net_fault": 0,
+          "under_net_obstruction_fault": 0,
+          "engineering_body_crossing": 0,
+          "bad_return_fault": 5,
+          "net_blocked_fault": 17
+        },
+        "formal_eligible": false,
+        "formal_acceptance": false,
+        "formal_cases_read": false,
+        "scope": "Frozen TRAIN cases only; diagnostic performance of one fixed policy, not an A/B panel score."
+      },
+      "policy_sha256": "f4467fce12b1ab36065447f8156fbab5814d05fde6b9fb7409cb8ca24ac7e73e",
+      "actual_gpu_hours": 0.30196851919388995,
+      "reset_noise_seed": 724201,
+      "attack_target_overlap": 0,
+      "attack_and_recovery": 1
+    }
+  },
+  "source_files": {
+    "reports/G07_full_racket_v4/residual_ppo_fixed_train128_iter32_n512_01/job.json": "c65e4644d9ad666aab67c07cd295c76c8ae4be2f0c0220cc39a1a4fcbedbbf5e",
+    "reports/G07_full_racket_v4/residual_ppo_fixed_train128_iter32_n512_01/INPUTS.json": "33787bc030290b363c3e30ceafca5d8a2e4a7980c377180138fd564ff79ca4bd",
+    "reports/G07_full_racket_v4/residual_ppo_fixed_train128_iter32_n512_01/episodes.json": "286b130c2d6c835a7ef4b3948d78619500de3b9a9cf51becd50ded5987032d2f",
+    "reports/G07_full_racket_v4/residual_ppo_fixed_train128_iter32_n512_01/initial_states.json": "e4d0098b7cf3d4aa4933713392366caff61569e3d58dcac6d19ca40434f73fac",
+    "reports/G07_full_racket_v4/residual_ppo_fixed_train128_iter96_n2048_01/job.json": "60b60effe07545b37eb47cab608410f15278560c9f1ad13b11a136c671a4e6dc",
+    "reports/G07_full_racket_v4/residual_ppo_fixed_train128_iter96_n2048_01/INPUTS.json": "7803e486eb6086bfb280ae159e5c2ea713ae659ba6595f4f49eb84a52b1fc2d8",
+    "reports/G07_full_racket_v4/residual_ppo_fixed_train128_iter96_n2048_01/episodes.json": "df3337af5e1bc18fe608e7563692b2eaa750ab76af1b2f8ffef5e16ae5f76cc2",
+    "reports/G07_full_racket_v4/residual_ppo_fixed_train128_iter96_n2048_01/initial_states.json": "e4d0098b7cf3d4aa4933713392366caff61569e3d58dcac6d19ca40434f73fac"
+  },
+  "paired_outcomes_file": "PAIRED_TRAIN128_OUTCOMES.csv",
+  "paired_outcomes_sha256": "c63e99c9217426e6ef7ab06aa955c90c8e07de3fcfd0daa0cc35ec365a10f020",
+  "next_actor_initialization": {
+    "iteration": 32,
+    "canonical_checkpoint": "reports/G07_full_racket_v4/residual_ppo_n512_resume24_01/checkpoint.pt",
+    "sha256": "2060f15dbe0ebabbb4b4657a6906fbf40ca661564025e8e06888f55b2fe1a041",
+    "reason": "Both policies have zero complete outcomes. Actor32 has14 qualified recoveries and3 attacking returns, versus8 and1 for actor96. Actor32 has fewer air contacts22 versus24. Choose actor32 for the next fresh joint-placement reward experiment based on this TRAIN trade-off; no statistical superiority claim.",
+    "fresh_critic_optimizer_and_counters": true,
+    "original_physics_rules_cases_and_acceptance_unchanged": true
+  },
+  "formal_queue_state": "SKIPPED_TRAIN_BELOW_ORIGINAL_THRESHOLDS",
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
