@@ -11,3 +11,11 @@
 检查程序和结果见 `check_update3.py`、`ACTUAL_UPDATE3_POST_WARMUP_CHECK.json`。当时进度的不可变快照 `UPDATE3_PROGRESS_SNAPSHOT.json` 随报告保存；13753614字节的原始闭合回合快照 `UPDATE3_RAW_EPISODES_SNAPSHOT.json` 保留本机，SHA256为 `a7a9f508b8a00dfe1b146f237874c28788b7cc4769b7e922e44cbea5c08b4e0b`，后续完整训练归档应纳入。实际边界权重仍在源训练的 `ppo/model_2.pt`，SHA256为 `8ac9b62d906cc7370c65484d8908218b2729130ba1392f913662bd4116a2c6de`。
 
 下一步由现有流程继续到新8，核对canonical、全部选定轨迹、原全128和同六例视频。完整目标未通过，原硬件、球拍、球场、规则与50/70/85、A/B各200要求保持。
+
+2026-10-25 23:45:17 UTC，阶段第7次更新的1835008步边界已证实全部2048个首次地面回合结束，原128例各重复16次，全部episode ID链精确。首批2048独立统计为570次球拍接触、236次空中、118次条件恢复、17次合格攻击、204次越网、25次目标命中、0完整、NF0；1391个回合身体触地。每例16次的表格见 `FIRST2048_BY_TRAIN_CASE.csv`，独立核验见 `ACTUAL_ALL2048_FIRST_COHORT_CHECK.json` 和 `check_first_cohort.py`。14399582字节首批回合快照保留本机，SHA256 `f1f6f75b85bc834eaca70428b6b547490a3462b4e75d1472ef7cfbb381ebe3a8`。这仍是变化中策略及探索下的训练，不是固定策略的成绩。
+
+23:47:54 UTC训练成功结束：2097152实际步、0.6648850924 GPU小时，3696个闭合训练回合独立重算331空中、118条件恢复、0完整、NF0；全部12条选定原生轨迹审计通过。canonical新8 SHA256 `bb0f2c1162f3be7fe59be41cc6ffac9b1eb08c2e12685ba68958483d88a1b217`，公共策略SHA256 `66c93b9f2bfd1f65812ca230312a45cda1d11f59e4a6f076ebdd98ae3c88a3b5`。actor归一化12582912、critic2097152，新actor/logstd Adam120、critic160；全部2048条新阶段回合链精确。完整回执与轨迹审计见 `../centered_placement075_pilot8_queue01/TRAINING_RECEIPT.json`、`TRAINING_TRACE_AUDIT.json`。
+
+23:47:57 UTC原主GPU0 guard已接上固定新8的原全TRAIN128、零扰动、seed724201评测，guard1727774、原生1727786；没有重用训练中的成功率。当前1722226仍持有212项源码、资产及输入，须等原评测与实际视频流程结束并实际退出，才能改主运行时代码。
+
+恢复方法备选已在独立分支[准备显式腿部单位迁移](https://github.com/lzqw/unitree-smash/blob/b4a8ccbb784f248c77e19df2648a4d5d7194050a/reports/G07_full_racket_v4/centered_leg06_candidate_20261026/REPORT.md)：60项CPU检查、3490条实际输入的初始物理残差逐位一致，裁剪前物理探索幅度保持。没有集成main或原生执行，也不代表会改善；是否采用及实际来源依据本轮完整评测后决定，原物理和原门槛保持。
