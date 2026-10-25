@@ -66,8 +66,8 @@
           "parent_queue_session_id": 47168,
           "scope": "Actual native residual PPO learner fork on512 ground environments,128 distinct TRAIN cases replicated4times;24additionalupdates to iter32. No frozen-policy performance yet.",
           "declared_control_env_steps": 1572864,
-          "independently_verified_update": 25,
-          "verified_current_job_steps": 1114112,
+          "independently_verified_update": 29,
+          "verified_current_job_steps": 1376256,
           "progress_file": "reports/G07_full_racket_v4/residual_ppo_n512_resume24_01/progress.json"
         }
       ],
@@ -1293,6 +1293,13 @@
         "planned_control_env_steps": 16777216,
         "per_job_timeout_s": 28800,
         "source": "Actual iter32 canonical checkpoint only after prior fixed evaluation validates",
+        "formal_acceptance": false
+      },
+      "pending_iter32_delivery": {
+        "builder": "reports/G07_full_racket_v4/residual_iter32_delivery_20261025/build.py",
+        "preparation_checks": "reports/G07_full_racket_v4/residual_iter32_delivery_20261025/PREPARATION_CHECKS.json",
+        "state": "WAITING_FOR_REAL_COMPLETION_AND_VIDEO_REVIEW",
+        "archive_created": false,
         "formal_acceptance": false
       }
     },
