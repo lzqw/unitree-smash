@@ -3,16 +3,21 @@ import torch
 from .full_racket_train_env_v4 import RallyTrainingEnvV4
 from quadsmash.physics.native import quat_rotate
 from quadsmash.control.full_racket_residual_reward_v4 import ResidualEventRewardV4
+from quadsmash.control.measured_joint_placement_reward_v4 import MeasuredJointPlacementRewardV4
 
 
 class FullRacketResidualTrainingEnvV4(RallyTrainingEnvV4):
     action_family='bounded-residual-joint-targets-full-racket-v4'
 
-    def __init__(self,*args,**kwargs):
+    def __init__(self,*args,joint_placement_reward=None,**kwargs):
         self.residual_rewards=None
+        self.joint_placement_reward=None
         super().__init__(*args,**kwargs)
         n,device=self.num_envs,self.device
         self.residual_rewards=ResidualEventRewardV4(n,device)
+        if joint_placement_reward is not None:
+            self.joint_placement_reward=MeasuredJointPlacementRewardV4(
+                n,device,self.rally.court,joint_placement_reward)
         self.reward_target=torch.zeros((n,3),device=device)
         self.reward_event_time=torch.full((n,),2.75,device=device)
         self.reward_plan_valid=torch.zeros(n,dtype=torch.bool,device=device)
@@ -55,9 +60,14 @@ class FullRacketResidualTrainingEnvV4(RallyTrainingEnvV4):
         dense=(position_term+normal_term)*active
         cost=.00002*d.applied_torque.square().sum(1)+.005*self.action_delta+.02*self.residual_raw.square().sum(1)
         reward=self.residual_rewards.step(flags,dense,cost,self.step_dt)
+        if self.joint_placement_reward is not None:
+            reward=reward+self.joint_placement_reward.step(ground_seen=rally.ground_seen,
+                legal_air=air,attack=attack,crossed=rally.crossed_net,
+                faulted=rally.faulted(),first_landing=rally.landing_point)
         self.last_residual_reward=reward.detach().clone()
         return reward
 
     def _reset_idx(self,ids):
         super()._reset_idx(ids)
         if self.residual_rewards is not None:self.residual_rewards.reset(ids)
+        if self.joint_placement_reward is not None:self.joint_placement_reward.reset(ids)

@@ -23,6 +23,7 @@ from quadsmash.tasks.stand.full_racket_env_v4 import full_racket_cfg
 from quadsmash.tasks.stand.full_racket_residual_env_v4 import FullRacketResidualTrainingEnvV4
 from quadsmash.control.full_racket_train_evaluation_v4 import training_cases
 from quadsmash.control.full_racket_residual_reward_v4 import EVENT_WEIGHTS
+from quadsmash.control.measured_joint_placement_reward_v4 import placement_settings,REWARD_VERSION
 from quadsmash.rl.native_ppo import NativeRunner
 from quadsmash.rl.full_racket_residual_ppo_v4 import (
     ResidualRslAdapterV4,ResidualTrainingInterrupted,export_residual_policy)
@@ -80,15 +81,19 @@ def main():
     for name,expected in protocol['physical_configs'].items():
         if digest(ROOT/name)!=expected:raise ValueError('Physical config changed: '+name)
     configuration=json.loads(args.config.read_text());scales=configuration['joint_scale_rad']
+    joint_placement=placement_settings(configuration.get('joint_placement_reward'))
     contract=dict(base_policy_sha256=digest(args.base_checkpoint),protocol_sha256=digest(protocol_path),
         joint_scale_rad=scales,reward_version='native-full-chain-residual-v1',event_weights=EVENT_WEIGHTS,
         actor_warmup_updates=configuration['actor_warmup_updates'],seed=args.seed)
+    if joint_placement is not None:
+        contract.update(reward_version=REWARD_VERSION,joint_placement_reward=joint_placement)
     train_cfg=copy.deepcopy(configuration['runner']);train_cfg['seed']=args.seed;train_cfg['residual_contract']=contract
     if train_cfg['obs_groups']['policy']!=['policy'] or train_cfg['policy']['class_name']!='ActorCritic' or train_cfg['policy']['noise_std_type']!='log':
         raise ValueError('This adapter requires the declared public-only feedforward log-std actor')
     cfg=full_racket_cfg(args.num_envs,protocol['physics_dt_s']);cfg.seed=args.seed
     cfg.episode_length_s=protocol['episode_seconds']
-    env=FullRacketResidualTrainingEnvV4(cfg,cases=cases*(args.num_envs//len(cases)),continue_after_miss=True)
+    env=FullRacketResidualTrainingEnvV4(cfg,cases=cases*(args.num_envs//len(cases)),
+        continue_after_miss=True,joint_placement_reward=joint_placement)
     wrapped=RslRlVecEnvWrapper(env,clip_actions=None)
     adapter=ResidualRslAdapterV4(wrapped,base,scales,lambda:stopping)
     try:

@@ -1,0 +1,35 @@
+{
+  "created_at": "2026-10-25T06:52:38.062391+00:00",
+  "state": "CPU_VERIFIED_CANDIDATE_NATIVE_NOT_RUN",
+  "worktree": "/home/autodrive/LZQW/unitree_smash_joint_reward",
+  "branch": "g07-joint-placement-reward-v4-20261025",
+  "baseline_commit": "ae7b31a543ddbe8b378d5ce3ddeed4f87b3fadc6",
+  "reason": "In the real first2048 cohort,26 target hits were all below8m/s;14 of15 observed airborne attacks landed beyondX4. The closest attack with qualified recovery missedX4 by.018158m. Joint shaping is a hypothesis for the placement/attack tradeoff, not a demonstrated improvement.",
+  "code": {
+    "module": "quadsmash/control/measured_joint_placement_reward_v4.py",
+    "training_environment": "quadsmash/tasks/stand/full_racket_residual_env_v4.py",
+    "trainer": "scripts/train_full_racket_residual_ppo_v4.py",
+    "opt_in_config": "configs/g07_full_racket_residual_ppo_joint_placement_v4.json",
+    "weight": 20.0,
+    "distance_scale_m": 0.25
+  },
+  "activation": "First inspect the original canonical iter96 and independent frozen TRAIN128. If its rates justify formal A/B, keep the original locked source and run those panels before considering this candidate. If the candidate is justified, wait for both the existing native workflow and CPU video workflow to finish, then review/merge this branch into the original prepared environment (or fully restore the isolated checkout prerequisites) before starting one fresh GPU0 learner with the opt-in config. Do not pass an old-reward checkpoint as strict --resume. Keep all original evidence and thresholds.",
+  "no_gpu_job_or_retry_started": true,
+  "old_resume_and_ground_resize_guards_unchanged": true,
+  "original_asset_rules_cases_metrics_and_actuation_unchanged": true,
+  "current_live_native_workflow": {
+    "parent_pid": 1576853,
+    "session_id": 81975,
+    "guard_pid": 1582969,
+    "child_pid": 1582980
+  },
+  "current_live_cpu_video_workflow": {
+    "pid": 1588259,
+    "session_id": 3284
+  },
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false,
+  "isolated_checkout_legacy_verifier": "The required verifier was run here and fails because the new checkout omits historical ignored large G00..G06 artifacts, plus G07/evidence.json remains absent. This is not a pass or a blocker for the live original job. Do not launch native work in an unprepared checkout or inherit old scores as new performance.",
+  "candidate_native_composition_audit_pending": true
+}
