@@ -1,0 +1,34 @@
+{
+  "verified_at": "2026-10-25T04:30:24.840492+00:00",
+  "video": "reports/G07_full_racket_v4/video/Current_effect_residual_PPO_iter8_20261025_v2.mp4",
+  "sha256": "344af875d70e50b54efee981c5f01e34f5ae2436c4caa563f03708949f60c6a3",
+  "bytes": 3651153,
+  "frames_decoded": 2068,
+  "all_frames_decoded": true,
+  "fps": 50.0,
+  "duration_s": 41.36,
+  "resolution": [
+    1280,
+    720
+  ],
+  "native_recorded_motion": true,
+  "formal_acceptance": false,
+  "visual_review": "Native contact, landing and frame-hit previews checked. TRAIN107 terminal now uses wide side/top views with the full robot, arm and racket visible.",
+  "cases": [
+    {
+      "run": "residual_ppo_fixed_train128_1250",
+      "env_id": 23,
+      "source_type": "evaluation"
+    },
+    {
+      "run": "residual_ppo_fixed_train128_1250",
+      "env_id": 107,
+      "source_type": "evaluation"
+    },
+    {
+      "run": "residual_ppo_fixed_train128_1250",
+      "env_id": 0,
+      "source_type": "evaluation"
+    }
+  ]
+}

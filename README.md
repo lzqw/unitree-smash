@@ -1,6 +1,10 @@
 # QuadSmash：Codex /goal 实施与训练任务包
 
-当前进度（2026-10-25）：原生全身残差PPO8更新已完成，实际131072控制环境步、0.391037501 GPU小时，数值故障0；最终actor与训练模型对照误差0。GPU0继续固定TRAIN128评测。后续24更新已准备扩至512环境（仍为原128种来球各4副本），保留PPO状态、从真实地面开始；17项CPU检查通过，尚待实际GPU执行。相同TRAIN23/107/0的新视频队列保持运行。
+当前进度（2026-10-25）：PPO iter8固定TRAIN128已完成并独立重算：空中18/128、条件恢复9/18、攻击3、目标1、完整0、数值故障0，未优于此前横向基线。GPU0正在512环境继续PPO（仍是原128来球各4副本），已实际完成首个新增update9、65536控制环境步，模型/优化器有限。后续24更新结束再固定评测，正式目标仍未通过。
+
+[最新PPO实际效果视频（41.36秒）](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_residual_PPO_iter8_20261025_v2.mp4)：同一iter8固定策略、预选TRAIN23/107/0。第一例8.42米/秒空中攻击并稳定恢复4.27秒，但首落x=4.793米超出目标；另两例为漏球和拍框失败。侧视/俯视包含完整机器人、机械臂与球拍；2068帧解码和GitHub附件下载SHA回验通过。相同编号可与此前基线视频比较，当前512环境新权重不在视频中。
+
+[固定TRAIN128全部原始轨迹、源码、权重与视频（69.7 MB）](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_PPO_iter8_fixed_TRAIN128_video_and_raw_20261025.zip)已上传回验，75成员均核验SHA256。
 
 [原生PPO训练包：检查点、策略与原始记录](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_native_residual_PPO_iter8_checkpoint_and_records_20261025.zip)已上传并下载校验（19.57 MB、38成员）。它记录8次更新的真实训练，不代表固定策略或正式A/B验收通过。
 
@@ -10,7 +14,7 @@
 
 此前进度（2026-10-25）：横向修正candidate12的TRAIN128复测完成，空中接触19/128、接触后恢复12/19、攻击7、完整0、数值故障0，原始回合重算一致。该轮高度规划训练随后完成，结果见上方当前进度。
 
-[最新横向修正策略视频（42.66秒）](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_lateral_train128_20261025.mp4)展示同一candidate12在TRAIN128中的攻击恢复但落点偏远、目标命中但速度不足，以及拍框失败；全部2133帧解码通过，GitHub下载SHA256一致。三个独立回合不代表正式A/B通过。
+[此前横向修正策略视频（42.66秒）](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_lateral_train128_20261025.mp4)展示同一candidate12在TRAIN128中的攻击恢复但落点偏远、目标命中但速度不足，以及拍框失败；全部2133帧解码通过，GitHub下载SHA256一致。三个独立回合不代表正式A/B通过。
 
 此前进度（2026-10-25）：CEM31 candidate5完成固定A/B各200回合，完整成功0/400；A空中接触12.0%、接触后恢复41.7%，B为3.0%和16.7%，数值故障0。
 

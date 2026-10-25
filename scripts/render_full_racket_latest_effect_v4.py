@@ -88,7 +88,7 @@ def main():
                 trail = recorded['ball_position_m'][ids[mask]]
         if row['ground_seen'] and (t >= row['first_landing_time_s'] or landing_freeze):
             ball, landing = None, np.asarray(row['first_landing_m'])
-        wide = landing_freeze or (row['crossed_net'] and t >= row['crossing_time_s']
+        wide = terminal or t >= 3.5 or landing_freeze or (row['crossed_net'] and t >= row['crossing_time_s']
                                  and (not row['ground_seen'] or t <= row['first_landing_time_s'] + .35))
         views = ['wide_side', 'wide_top'] if wide else ['side', 'top']
         picture = Image.new('RGB', (1280, 720), (18, 28, 43))
