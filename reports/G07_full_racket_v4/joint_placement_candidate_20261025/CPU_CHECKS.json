@@ -1,0 +1,60 @@
+{
+  "checked_at": "2026-10-25T06:52:38.062237+00:00",
+  "scope": "CPU candidate implementation and preserved-event replay only; no native candidate execution.",
+  "targeted_pytest": {
+    "command": "env CUDA_VISIBLE_DEVICES='' OMP_NUM_THREADS=2 /home/autodrive/Isaac/env_isaaclab/bin/python -m pytest -q tests/test_measured_joint_placement_reward_v4.py tests/test_full_racket_residual_v4.py tests/test_residual_ground_resize_v4.py",
+    "exit_code": 0,
+    "result": "28 passed in1.28s",
+    "session_id": 4292
+  },
+  "static_replay": {
+    "exit_code": 0,
+    "report_sha256": "0f7a64b73a186ca9aaba3d04ea13ece51920cdf679a687438d688317df1d15f4",
+    "counts": {
+      "episodes": 2048,
+      "air": 197,
+      "conditional_recovery": 97,
+      "complete": 0,
+      "numerical_failures": 0,
+      "air_attacks": 16,
+      "targets": 26,
+      "attacks_with_observed_first_landing": 15,
+      "attacks_past_target_x": 14,
+      "attacks_outside_target_y": 3,
+      "target_hits_below_attack_speed": 26,
+      "targets_with_conditional_recovery": 21,
+      "positive_candidate_bonuses": 15
+    },
+    "all_bonus_values_finite": true,
+    "all26_slow_target_hits_receive_zero_joint_bonus": true,
+    "same_first_landing_not_paid_twice": true,
+    "original_episode_scores_unchanged": true
+  },
+  "unchanged_physics_protocol_actuation_and_strict_resume_sha256": {
+    "configs/full_racket_v4.json": "d5266604b7cc7a221752de60bf68ff609e66e5fbc16ff3ed1904facc0cf63d3a",
+    "configs/court_net_v4.json": "184d07dde336bf36be7dfde089373c851a2bcb855a6e44f4120442b59818b4f4",
+    "configs/shuttle_physics_v2.json": "dba0e8d45edd661185c7f0b8a379f63993d1a87269740e672688b4577e359229",
+    "configs/evaluation_protocol_v2.json": "421497aa51eecac023c70b200e8a75ecafff01527dcf215665d5d96c1e8266a8",
+    "configs/full_racket_v4_r2.json": "b625c458880f1567fe63676fe0c5209f1d5f956ef8c419eb8c84cb229cabe46d",
+    "configs/full_racket_v4_r3.json": "14d58dd674665424dab63e67d525daf9b2239821797b97202aa45f9af1e5a26c",
+    "configs/full_racket_reset_v4.json": "0d5246e0b39daabd0c0cb15f5259c7c61df455ccb191835932cc83f4886df25b",
+    "assets/quadsmash_full_racket_v4_r3.usd": "c2264fcece90b042c7c6a1cac7d516af83972729d0402947e3a519041e184cf2",
+    "configs/acceptance.json": "66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807",
+    "configs/g07_full_racket_eval_v4_r3.json": "04121cfb257ea4d2e288c69b44dd0c8dbada814e0bf95c8a16f5af7ef2390367",
+    "configs/g07_full_racket_residual_ppo_v4.json": "87e6d88f4c59c96385810791748c6efc5d97012e4f4b6646d5fa6f5ad906f0f2",
+    "scripts/residual_ground_resize_v4.py": "b1803461faba4044d3560d0c81d57ba3bebb61298c790e1dfcef46b0981efa14",
+    "quadsmash/rl/native_checkpoint.py": "eb9bb68bd33134a65818afcbab76217293b96835e770fe164f578cec80659118",
+    "quadsmash/rl/native_ppo.py": "e8dc5eb05daec2497a0b4c19e2d81ff1931e485b0fe99025ed73c5759234ff9e",
+    "quadsmash/evaluation_v4.py": "efe610b42103a45b75fa98acb2a7fe221536abb752ebd665fc926c6ffb657b38",
+    "quadsmash/control/full_racket_residual_v4.py": "3135f1fbc2a41f669ee35d40175f55cc605324da5998dabb6474fc73ca48729f",
+    "quadsmash/control/full_racket_residual_reward_v4.py": "ccaf47cea2959833c4cd6276517b22c32cdd7830bfaf4f0d7601017ede532f9c"
+  },
+  "shared_asset_receipt": "SHARED_ASSETS.json",
+  "native_composition_not_launched": true,
+  "existing_native_child_pid": 1582980,
+  "existing_cpu_video_queue_pid": 1588259,
+  "both_original_workflow_source_fingerprints_unchanged": true,
+  "native_candidate_training_run": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}

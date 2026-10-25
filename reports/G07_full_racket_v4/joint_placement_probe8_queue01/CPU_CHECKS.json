@@ -1,0 +1,26 @@
+{
+  "checked_at": "2026-10-25T12:36:26.392220+00:00",
+  "scope": "CPU tests of merged opt-in reward and public actor initialization; no native or policy-performance claim.",
+  "command": [
+    "/home/autodrive/Isaac/env_isaaclab/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_measured_joint_placement_reward_v4.py",
+    "tests/test_initialize_residual_actor_v4.py"
+  ],
+  "exit_code": 0,
+  "passed": 25,
+  "source_sha256": {
+    "quadsmash/control/measured_joint_placement_reward_v4.py": "478a234a75cd285cc64c45bb7fb1d6cfb99e4ef4b921e1e0fd81c779ba97db76",
+    "quadsmash/tasks/stand/full_racket_residual_env_v4.py": "6e9d01d3203044c97796631655edf154fa7f8bd47170bdd776d9c786a79b5487",
+    "scripts/initialize_residual_actor_v4.py": "d894ba8d59ea2b94d82ed39c0da321d868d51afde3f34cb2b99e6b70e73da4e0",
+    "scripts/train_full_racket_residual_ppo_v4.py": "e1aeb1b6738da2b28b4f2e44928b252181e880459c3d02f74f38db8c5774da5e",
+    "configs/g07_full_racket_residual_ppo_joint_placement_v4.json": "7f602853da25fee376c795b58c75b1d47bcf9bf76e5e3a7e04d4d25d942a00ca",
+    "tests/test_measured_joint_placement_reward_v4.py": "7922bbde42f96f5de4db6223b6c09781156a0b7b1006e94f568afa7c8b6b641c",
+    "tests/test_initialize_residual_actor_v4.py": "76ddb45648f6cbca8952bedde29b4662be2914abdbe574763fe3efcf369261e4"
+  },
+  "log_sha256": "e79f28e95d9a6912c65df8672307289deaa9bfe551856fa45a65e7ca3cd3aac1",
+  "formal_acceptance": false,
+  "goal_complete": false
+}

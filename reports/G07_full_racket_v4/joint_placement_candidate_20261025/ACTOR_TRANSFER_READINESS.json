@@ -1,0 +1,33 @@
+{
+  "created_at": "2026-10-25T07:26:50.198305+00:00",
+  "state": "ACTOR_TRANSFER_CPU_VERIFIED_NATIVE_NOT_RUN",
+  "supersedes": "The fresh-zero-actor-only limitation in the original e0a8435 READINESS.json. Original28-check and event-replay reports remain historical; their trainer hash belongs to e0a8435.",
+  "option": "--initialize-actor PATH, mutually exclusive with --resume; requires opt-in joint-placement config",
+  "actual_cpu_checks": {
+    "pytest": "42 passed in1.27s",
+    "log_sha256": "3dd39767f750f30941b511968af4e32c7c981773ee82a49b63178c5a043d0659",
+    "actual_native_source_report": "reports/G07_full_racket_v4/actor_transfer_native_source_check_20261025/REPORT.json",
+    "actual_native_source_report_sha256": "5c0e4b0c63c8433e4973242a688c6b6435e8325a7c048611e981729e78fe618b",
+    "source_iteration": 32,
+    "source_steps": 1703936,
+    "actor_inference_max_error": 0.0,
+    "all_actor_normalizer_log_std_tensors_exact": true,
+    "all_fresh_critic_and_critic_normalizer_tensors_unchanged": true,
+    "optimizer_states": 0,
+    "fresh_counters_zero": true,
+    "strict_full_resume_and_resize_reject_changed_reward": true
+  },
+  "semantics": "New learner/reward lineage at iteration0, carrying only compatible public actor, actor normalizer and exploration log_std. New critic, critic normalization, Adam, RNG progression and counters; source physical buffers unused. Current real ground reset path is invoked on a future native run.",
+  "activation": "Keep all current main-tree native and CPU-video fingerprint owners running unchanged. First inspect iter96 frozen TRAIN128; if it warrants original formal A/B, do those with the original locked source. Otherwise consider this candidate only after every original native and CPU-video owner ends, in a fully prepared environment. Select and independently verify an actually completed canonical source; source32 is tested here, source96 remains pending. Record all source/init hashes and resources, and verify actual ground states before one new GPU0 run.",
+  "remaining_native_checks": [
+    "Actual PhysX composition and ground reset on the candidate branch have not run.",
+    "The isolated checkout still omits historical ignored predecessor artifacts; prefer integrating into the original prepared environment after every live source owner ends, or restore those prerequisites.",
+    "Then run native learning and independent fixed assessment; no CPU result or isolated training completion implies formal acceptance."
+  ],
+  "new_native_training_run": false,
+  "source_rng_restored": false,
+  "old_physical_state_restored": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}

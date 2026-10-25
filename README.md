@@ -2,6 +2,10 @@
 
 [最新第96次权重视频](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_residual_PPO_iter96_20261025.mp4)已上传并下载验SHA，约69秒，包含侧视/俯视和全部预选失败；[TRAIN58单例复测](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_residual_PPO_iter96_TRAIN58_20261025.mp4)约17秒。完整固定TRAIN128结果为0/128完整、24/128空中、8/24条件恢复、NF0，未达原门槛，条件队列已跳过原A/B，未产生新正式成绩。[32与96版完整TRAIN对照](reports/G07_full_racket_v4/residual_iter96_fixed_diagnostic_20261025/REPORT.json)保留全部128例：两版完整均0；32版恢复14/22、攻击3次，96版恢复8/24、攻击1次，空中分别22/24次。下一轮选择32版actor初始化新的联合落点奖励实验，记录该TRAIN取舍，不作统计或因果优势主张。完整资料包已构建并通过287成员CRC/SHA，1171962010字节、SHA703dd32706e9f82498623147b1f0b4bbe9ff6a51a87e1d20558fa92e53c9382c，上传完成、下载字节验证正在进行。完整G07目标仍未通过，继续训练改进。
 
+已从候选分支集成可选联合落点奖励与显式 --initialize-actor 入口，供新的真实训练实验使用。它在合法空中攻击、实际越网后的首次落点提供平滑反馈（weight20、distance scale0.25米），低速目标命中不获得该项奖励；原物理、完整球拍、执行器限制、规则、全部来球及验收门槛保持。新奖励使用新建价值网络、其归一化、Adam、RNG和学习计数，只从已完成canonical32复制公共actor、actor归一化与探索尺度，不恢复旧物理状态。旧严格续训和扩批仍拒绝跨奖励恢复。
+
+[候选原有42项CPU检查](reports/G07_full_racket_v4/joint_placement_candidate_20261025/ACTOR_TRANSFER_READINESS.json)、[真实iter32权重迁移检查](reports/G07_full_racket_v4/actor_transfer_native_source_check_20261025/REPORT.json)和[历史依赖恢复](reports/G07_full_racket_v4/joint_placement_prerequisites_20261025/READINESS.json)保留原记录：200条真实TRAIN公共观测的actor动作迁移误差0。合并后的针对性CPU检查已全部通过：新增奖励与actor迁移25项、原残差/严格扩批兼容契约17项，共42项，见[本轮检查](reports/G07_full_racket_v4/joint_placement_probe8_queue01/CPU_CHECKS.json)及[兼容检查](reports/G07_full_racket_v4/joint_placement_probe8_queue01/CPU_COMPATIBILITY_CHECKS.json)。新的原生学习尚未启动，CPU通过不代表策略有效。
+
 [本轮事件短板诊断](reports/G07_full_racket_v4/residual_n2048_event_diagnostic_20261025/REPORT.json)已重算第56次更新的原14048条训练记录：129次空中攻击仅5次同时命中目标，127次目标中122次出球速度低于8米/秒；其中2次攻击与目标均满足的回合因实际机身着地、恢复0而失败。前三批各2048回合均已闭合，空中197/192/200；后续尚未闭合的批次单独标明，不能将截尾统计当作冻结策略退化。报告含每TRAIN案例计数和所选原始回合，可用最终原始数据的相同前缀SHA复算；当前原生训练继续，未证明新奖励有效或正式通过。
 
 第96次更新后的正式条件队列已按原计划实际核对固定TRAIN128，因未达原50%完整、70%空中、85%条件恢复且NF0的联合要求，状态为SKIPPED_TRAIN_BELOW_ORIGINAL_THRESHOLDS；未读取或执行新正式面板。其预登记和CPU检查保留，后续策略仍需在原门槛下重新验证。
@@ -18,7 +22,7 @@
 
 [固定iter32诊断报告](reports/G07_full_racket_v4/residual_iter32_fixed_diagnostic_20261025/REPORT.json)与[128行固定评估CSV](reports/G07_full_racket_v4/residual_csv_queue01/iter32_fixed_episodes.csv)可逐回合核对；训练中3171回合的417空中/210恢复/1完整不作为固定actor32成绩。
 
-当前进度（2026-10-25）：PPO iter32固定TRAIN128已完成并独立重算：合法空中22/128（17.19%）、条件恢复14/22（63.64%）、攻击3、目标3、完整0、数值故障0。第8次更新为18空中/9恢复/0完整，横向基线为19/12/0；这是不同原生执行的描述性对照，不作统计或因果结论。本轮3次空中攻击与3次目标命中没有同回合重叠，完整任务仍未解决。GPU0现已在2048个真实地面环境（128来球各16副本）从iter32继续学习64更新至iter96；正式G07仍未通过。
+当前进度（2026-10-25）：原PPO96续训和完整固定TRAIN128均已结束，固定完整0/128、空中24/128、条件恢复8/24、NF0；正式门槛未达。两条新视频已审核、上传并下载验SHA。新联合落点奖励实验将按完整TRAIN对照选择canonical32的公共actor初始化，使用新学习器和真实地面重置，继续验证全部完整条件；此前训练和成绩均保留。
 
 [联合落点奖励候选分支](https://github.com/lzqw/unitree-smash/tree/g07-joint-placement-reward-v4-20261025)已通过42项CPU功能检查和真实iter32 actor迁移检查。[隔离运行依赖恢复](https://github.com/lzqw/unitree-smash/blob/119b461010bee619905ad8736eb982b1fcf55160/reports/G07_full_racket_v4/joint_placement_prerequisites_20261025/READINESS.json)现已完成：14个历史文件按原SHA复制，另补固定步态权重；实际候选200路CPU控制器加载、200×794公开TRAIN观测推理及10层USD文件SHA检查通过。它提供实际空中攻击、越网后的首次落点反馈，原门槛不变；仍未原生训练、未证明策略改进。当前2048主训练及原视频/正式后续队列继续保持原源码，先看第96次更新固定评估。
 

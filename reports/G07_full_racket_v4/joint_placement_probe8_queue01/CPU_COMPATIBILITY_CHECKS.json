@@ -1,0 +1,22 @@
+{
+  "checked_at": "2026-10-25T12:41:10.757588+00:00",
+  "scope": "CPU preservation of original residual policy and canonical ground resize/reward compatibility contracts; no native success claim",
+  "command": [
+    "/home/autodrive/Isaac/env_isaaclab/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_full_racket_residual_v4.py",
+    "tests/test_residual_ground_resize_v4.py"
+  ],
+  "exit_code": 0,
+  "passed": 17,
+  "log_sha256": "165202be5da1214d88b891e43a10f424ed77fb93b19eefe05d6b5e18230cb5a9",
+  "source_sha256": {
+    "scripts/residual_ground_resize_v4.py": "b1803461faba4044d3560d0c81d57ba3bebb61298c790e1dfcef46b0981efa14",
+    "quadsmash/control/full_racket_residual_v4.py": "3135f1fbc2a41f669ee35d40175f55cc605324da5998dabb6474fc73ca48729f",
+    "quadsmash/rl/native_checkpoint.py": "eb9bb68bd33134a65818afcbab76217293b96835e770fe164f578cec80659118",
+    "scripts/train_full_racket_residual_ppo_v4.py": "e1aeb1b6738da2b28b4f2e44928b252181e880459c3d02f74f38db8c5774da5e"
+  },
+  "formal_acceptance": false
+}

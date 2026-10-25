@@ -9,7 +9,10 @@ p=argparse.ArgumentParser(description=__doc__)
 p.add_argument('--output',type=Path,required=True)
 p.add_argument('--base-checkpoint',type=Path,required=True)
 p.add_argument('--config',type=Path,default=ROOT/'configs/g07_full_racket_residual_ppo_v4.json')
-p.add_argument('--resume',type=Path)
+initialization_options=p.add_mutually_exclusive_group()
+initialization_options.add_argument('--resume',type=Path)
+initialization_options.add_argument('--initialize-actor',type=Path,
+    help='Explicitly transfer a compatible canonical public actor into a fresh joint-reward learner; no critic/Adam/physics/RNG/counter resume')
 p.add_argument('--resize-ground',action='store_true',help='Explicitly fork a canonical learner onto a larger fresh ground batch; no old physical state restoration')
 p.add_argument('--num-envs',type=int,default=128)
 p.add_argument('--updates',type=int,default=8)
@@ -23,6 +26,7 @@ from quadsmash.tasks.stand.full_racket_env_v4 import full_racket_cfg
 from quadsmash.tasks.stand.full_racket_residual_env_v4 import FullRacketResidualTrainingEnvV4
 from quadsmash.control.full_racket_train_evaluation_v4 import training_cases
 from quadsmash.control.full_racket_residual_reward_v4 import EVENT_WEIGHTS
+from quadsmash.control.measured_joint_placement_reward_v4 import placement_settings,REWARD_VERSION
 from quadsmash.rl.native_ppo import NativeRunner
 from quadsmash.rl.full_racket_residual_ppo_v4 import (
     ResidualRslAdapterV4,ResidualTrainingInterrupted,export_residual_policy)
@@ -80,15 +84,21 @@ def main():
     for name,expected in protocol['physical_configs'].items():
         if digest(ROOT/name)!=expected:raise ValueError('Physical config changed: '+name)
     configuration=json.loads(args.config.read_text());scales=configuration['joint_scale_rad']
+    joint_placement=placement_settings(configuration.get('joint_placement_reward'))
+    if args.initialize_actor is not None and joint_placement is None:
+        raise ValueError('--initialize-actor requires the explicit joint-placement reward config')
     contract=dict(base_policy_sha256=digest(args.base_checkpoint),protocol_sha256=digest(protocol_path),
         joint_scale_rad=scales,reward_version='native-full-chain-residual-v1',event_weights=EVENT_WEIGHTS,
         actor_warmup_updates=configuration['actor_warmup_updates'],seed=args.seed)
+    if joint_placement is not None:
+        contract.update(reward_version=REWARD_VERSION,joint_placement_reward=joint_placement)
     train_cfg=copy.deepcopy(configuration['runner']);train_cfg['seed']=args.seed;train_cfg['residual_contract']=contract
     if train_cfg['obs_groups']['policy']!=['policy'] or train_cfg['policy']['class_name']!='ActorCritic' or train_cfg['policy']['noise_std_type']!='log':
         raise ValueError('This adapter requires the declared public-only feedforward log-std actor')
     cfg=full_racket_cfg(args.num_envs,protocol['physics_dt_s']);cfg.seed=args.seed
     cfg.episode_length_s=protocol['episode_seconds']
-    env=FullRacketResidualTrainingEnvV4(cfg,cases=cases*(args.num_envs//len(cases)),continue_after_miss=True)
+    env=FullRacketResidualTrainingEnvV4(cfg,cases=cases*(args.num_envs//len(cases)),
+        continue_after_miss=True,joint_placement_reward=joint_placement)
     wrapped=RslRlVecEnvWrapper(env,clip_actions=None)
     adapter=ResidualRslAdapterV4(wrapped,base,scales,lambda:stopping)
     try:
@@ -97,6 +107,7 @@ def main():
         atomic_json(args.output/'INPUTS.json',dict(contract=contract,training_indices=indices,
             num_envs=args.num_envs,requested_updates=args.updates,runner=train_cfg,
             configuration_sha256=digest(args.config),resume_checkpoint_sha256=digest(args.resume) if args.resume else None,
+            initial_actor_checkpoint_sha256=digest(args.initialize_actor) if args.initialize_actor else None,
             resize_ground_requested=args.resize_ground,
             physics_dt_s=cfg.sim.dt,policy_dt_s=env.step_dt,formal_cases_read=False,
             formal_acceptance=False,scope='Native TRAIN learning across changing weights; no frozen-policy performance.'))
@@ -113,6 +124,10 @@ def main():
                 runner.load(str(args.resume),load_optimizer=True)
                 initialization=dict(mode='strict_canonical_ground_resume',num_envs=args.num_envs,
                                     initial_iteration=runner.current_learning_iteration)
+            adapter.controller.reset();adapter.mixer.reset();adapter._sync_reference()
+        elif args.initialize_actor:
+            from scripts.initialize_residual_actor_v4 import initialize_actor
+            initialization=initialize_actor(runner,args.initialize_actor)
             adapter.controller.reset();adapter.mixer.reset();adapter._sync_reference()
         else:
             output_layer=[m for m in runner.alg.policy.actor.modules() if isinstance(m,torch.nn.Linear)][-1]
@@ -152,7 +167,8 @@ def main():
             if stopping:interrupted=True;break
         rows,counts=joined_episodes(env,cases,indices,protocol)
         public_sample=adapter.last_observation['policy'][:16].detach().clone()
-        runner.save_restart(args.output/'checkpoint.pt',infos=dict(residual_contract=contract))
+        runner.save_restart(args.output/'checkpoint.pt',infos=dict(residual_contract=contract,
+            learner_initialization=initialization))
         policy=export_residual_policy(base,runner.alg.policy,scales,public_sample,
             dict(native_execution=adapter.total_control_env_steps>0,completed_updates=runner.current_learning_iteration,
                  base_policy_sha256=contract['base_policy_sha256'],actual_control_env_steps=adapter.total_control_env_steps,

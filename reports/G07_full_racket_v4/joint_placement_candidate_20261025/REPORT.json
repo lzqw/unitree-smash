@@ -1,0 +1,1510 @@
+{
+  "created_at": "2026-10-25T06:50:30.204215+00:00",
+  "scope": "CPU static replay of preserved first-ground native event fields for a proposed TRAIN shaping term. No new robot execution or learning.",
+  "observed_original_counts": {
+    "episodes": 2048,
+    "air": 197,
+    "conditional_recovery": 97,
+    "complete": 0,
+    "numerical_failures": 0,
+    "air_attacks": 16,
+    "targets": 26,
+    "attacks_with_observed_first_landing": 15,
+    "attacks_past_target_x": 14,
+    "attacks_outside_target_y": 3,
+    "target_hits_below_attack_speed": 26,
+    "targets_with_conditional_recovery": 21,
+    "positive_candidate_bonuses": 15
+  },
+  "candidate_settings": {
+    "weight": 20.0,
+    "distance_scale_m": 0.25
+  },
+  "measured_closest_recovered_attack_miss": {
+    "native_env_id": 2022,
+    "source_TRAIN_case": 102,
+    "case_id": "TRAIN102_LANE2022_EP0",
+    "air": true,
+    "attack": true,
+    "crossed_net": true,
+    "shuttle_net_contact": false,
+    "first_landing_m": [
+      4.018157958984375,
+      -0.03118896484375,
+      0.02519838511943817
+    ],
+    "target_distance_m": 0.018157958984375,
+    "target": false,
+    "conditional_recovery": true,
+    "complete": false,
+    "first_contact_m": [
+      0.955596923828125,
+      -0.03204345703125,
+      1.7933924198150635
+    ],
+    "outgoing_velocity_mps": [
+      8.057950019836426,
+      0.022405050694942474,
+      -2.6880686283111572
+    ],
+    "outgoing_speed_mps": 8.494514315662146,
+    "net_margin_m": 0.03230547904968262,
+    "recovery_s": 3.642918348312378,
+    "qualified_jump_landed": true,
+    "fault_flags": [],
+    "replayed_candidate_bonus": 19.8947696685791
+  },
+  "all_selected_native_records": [
+    {
+      "native_env_id": 249,
+      "source_TRAIN_case": 121,
+      "case_id": "TRAIN121_LANE249_EP0",
+      "air": true,
+      "attack": true,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.545257568359375,
+        -0.7637786865234375,
+        0.02522733248770237
+      ],
+      "target_distance_m": 0.545257568359375,
+      "target": false,
+      "conditional_recovery": true,
+      "complete": false,
+      "first_contact_m": [
+        0.9803466796875,
+        0.09238815307617188,
+        1.7156693935394287
+      ],
+      "outgoing_velocity_mps": [
+        7.874128818511963,
+        -1.9059391021728516,
+        -1.4320764541625977
+      ],
+      "outgoing_speed_mps": 8.227110761517617,
+      "net_margin_m": 0.05231070518493652,
+      "recovery_s": 3.878901243209839,
+      "qualified_jump_landed": true,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 0.17184525728225708
+    },
+    {
+      "native_env_id": 370,
+      "source_TRAIN_case": 114,
+      "case_id": "TRAIN114_LANE370_EP0",
+      "air": true,
+      "attack": false,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.9237823486328125,
+        -0.509521484375,
+        0.025033805519342422
+      ],
+      "target_distance_m": 0.0,
+      "target": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "first_contact_m": [
+        1.00054931640625,
+        -0.158416748046875,
+        1.758278250694275
+      ],
+      "outgoing_velocity_mps": [
+        6.294536590576172,
+        -0.8433516025543213,
+        -1.388616681098938
+      ],
+      "outgoing_speed_mps": 6.500822186666812,
+      "net_margin_m": 0.07144701480865479,
+      "recovery_s": 3.55692458152771,
+      "qualified_jump_landed": true,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 0.0
+    },
+    {
+      "native_env_id": 395,
+      "source_TRAIN_case": 11,
+      "case_id": "TRAIN11_LANE395_EP0",
+      "air": true,
+      "attack": false,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.7023773193359375,
+        0.2375030517578125,
+        0.025222022086381912
+      ],
+      "target_distance_m": 0.0,
+      "target": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "first_contact_m": [
+        0.947906494140625,
+        0.011383056640625,
+        1.733607292175293
+      ],
+      "outgoing_velocity_mps": [
+        6.130188465118408,
+        0.5253013372421265,
+        -1.5435289144515991
+      ],
+      "outgoing_speed_mps": 6.343314088276513,
+      "net_margin_m": 0.008592367172241211,
+      "recovery_s": 4.150881767272949,
+      "qualified_jump_landed": true,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 0.0
+    },
+    {
+      "native_env_id": 434,
+      "source_TRAIN_case": 50,
+      "case_id": "TRAIN50_LANE434_EP0",
+      "air": true,
+      "attack": false,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.9468231201171875,
+        0.00209808349609375,
+        0.02513843961060047
+      ],
+      "target_distance_m": 0.0,
+      "target": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "first_contact_m": [
+        1.0263214111328125,
+        0.001220703125,
+        1.7410298585891724
+      ],
+      "outgoing_velocity_mps": [
+        6.853926658630371,
+        0.026312030851840973,
+        -1.8782716989517212
+      ],
+      "outgoing_speed_mps": 7.106680486692406,
+      "net_margin_m": 0.03996014595031738,
+      "recovery_s": 3.6099207401275635,
+      "qualified_jump_landed": true,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 0.0
+    },
+    {
+      "native_env_id": 459,
+      "source_TRAIN_case": 75,
+      "case_id": "TRAIN75_LANE459_EP0",
+      "air": true,
+      "attack": false,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.6165924072265625,
+        -0.613800048828125,
+        0.02500748261809349
+      ],
+      "target_distance_m": 0.0,
+      "target": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "first_contact_m": [
+        0.9146728515625,
+        -0.00152587890625,
+        1.7756716012954712
+      ],
+      "outgoing_velocity_mps": [
+        5.563896656036377,
+        -1.2808176279067993,
+        -1.1570359468460083
+      ],
+      "outgoing_speed_mps": 5.825476115932792,
+      "net_margin_m": 0.05517840385437012,
+      "recovery_s": 4.234875679016113,
+      "qualified_jump_landed": true,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 0.0
+    },
+    {
+      "native_env_id": 470,
+      "source_TRAIN_case": 86,
+      "case_id": "TRAIN86_LANE470_EP0",
+      "air": true,
+      "attack": false,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.979766845703125,
+        -0.4276313781738281,
+        0.025097789242863655
+      ],
+      "target_distance_m": 0.0,
+      "target": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "first_contact_m": [
+        0.984130859375,
+        -0.062191009521484375,
+        1.7108796834945679
+      ],
+      "outgoing_velocity_mps": [
+        6.572863578796387,
+        -0.8089073896408081,
+        -1.4003487825393677
+      ],
+      "outgoing_speed_mps": 6.768887907421945,
+      "net_margin_m": 0.026455044746398926,
+      "recovery_s": 0.0010000000474974513,
+      "qualified_jump_landed": false,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 0.0
+    },
+    {
+      "native_env_id": 524,
+      "source_TRAIN_case": 12,
+      "case_id": "TRAIN12_LANE524_EP0",
+      "air": true,
+      "attack": true,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.193634033203125,
+        0.39675140380859375,
+        0.025238441303372383
+      ],
+      "target_distance_m": 0.193634033203125,
+      "target": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "first_contact_m": [
+        0.999481201171875,
+        -0.0563507080078125,
+        1.744040608406067
+      ],
+      "outgoing_velocity_mps": [
+        8.343448638916016,
+        1.1873068809509277,
+        -2.5476417541503906
+      ],
+      "outgoing_speed_mps": 8.804164430953877,
+      "net_margin_m": 0.02509784698486328,
+      "recovery_s": 0.0,
+      "qualified_jump_landed": false,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 10.977262496948242
+    },
+    {
+      "native_env_id": 528,
+      "source_TRAIN_case": 16,
+      "case_id": "TRAIN16_LANE528_EP0",
+      "air": true,
+      "attack": false,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.7218017578125,
+        -0.2544097900390625,
+        0.02519618719816208
+      ],
+      "target_distance_m": 0.0,
+      "target": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "first_contact_m": [
+        0.924102783203125,
+        -0.01177978515625,
+        1.71641206741333
+      ],
+      "outgoing_velocity_mps": [
+        5.812561988830566,
+        -0.5338049530982971,
+        -1.0854294300079346
+      ],
+      "outgoing_speed_mps": 5.937085282314679,
+      "net_margin_m": 0.01600503921508789,
+      "recovery_s": 4.155881404876709,
+      "qualified_jump_landed": true,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 0.0
+    },
+    {
+      "native_env_id": 607,
+      "source_TRAIN_case": 95,
+      "case_id": "TRAIN95_LANE607_EP0",
+      "air": true,
+      "attack": true,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.9435577392578125,
+        -1.1451702117919922,
+        0.025133797898888588
+      ],
+      "target_distance_m": 0.954659938252908,
+      "target": false,
+      "conditional_recovery": true,
+      "complete": false,
+      "first_contact_m": [
+        1.000335693359375,
+        0.03200864791870117,
+        1.7131216526031494
+      ],
+      "outgoing_velocity_mps": [
+        8.294905662536621,
+        -2.486841917037964,
+        -1.0871284008026123
+      ],
+      "outgoing_speed_mps": 8.727639476430657,
+      "net_margin_m": 0.08358347415924072,
+      "recovery_s": 4.264873504638672,
+      "qualified_jump_landed": true,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 9.292732102039736e-06
+    },
+    {
+      "native_env_id": 630,
+      "source_TRAIN_case": 118,
+      "case_id": "TRAIN118_LANE630_EP0",
+      "air": true,
+      "attack": true,
+      "crossed_net": true,
+      "shuttle_net_contact": true,
+      "first_landing_m": [
+        6.0712127685546875,
+        -1.278778076171875,
+        0.025083528831601143
+      ],
+      "target_distance_m": 2.0898898412064844,
+      "target": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "first_contact_m": [
+        1.02288818359375,
+        -0.03302001953125,
+        1.7080432176589966
+      ],
+      "outgoing_velocity_mps": [
+        7.443732738494873,
+        -1.8458223342895508,
+        -2.2777748107910156
+      ],
+      "outgoing_speed_mps": 8.000279698896568,
+      "net_margin_m": 0.007798433303833008,
+      "recovery_s": 1.6750222444534302,
+      "qualified_jump_landed": false,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 8.944621267158329e-30
+    },
+    {
+      "native_env_id": 666,
+      "source_TRAIN_case": 26,
+      "case_id": "TRAIN26_LANE666_EP0",
+      "air": true,
+      "attack": false,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.8918304443359375,
+        0.364654541015625,
+        0.02510119043290615
+      ],
+      "target_distance_m": 0.0,
+      "target": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "first_contact_m": [
+        1.007720947265625,
+        -0.0029296875,
+        1.7353674173355103
+      ],
+      "outgoing_velocity_mps": [
+        5.95041561126709,
+        0.7940397262573242,
+        -1.0770618915557861
+      ],
+      "outgoing_speed_mps": 6.099016916842224,
+      "net_margin_m": 0.06479084491729736,
+      "recovery_s": 0.5749961733818054,
+      "qualified_jump_landed": true,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 0.0
+    },
+    {
+      "native_env_id": 676,
+      "source_TRAIN_case": 36,
+      "case_id": "TRAIN36_LANE676_EP0",
+      "air": true,
+      "attack": true,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        5.245941162109375,
+        -0.329864501953125,
+        0.025091370567679405
+      ],
+      "target_distance_m": 1.245941162109375,
+      "target": false,
+      "conditional_recovery": true,
+      "complete": false,
+      "first_contact_m": [
+        1.0139007568359375,
+        -0.08154296875,
+        1.794912338256836
+      ],
+      "outgoing_velocity_mps": [
+        8.708300590515137,
+        -0.29711467027664185,
+        -1.1132811307907104
+      ],
+      "outgoing_speed_mps": 8.784200087556892,
+      "net_margin_m": 0.17115771770477295,
+      "recovery_s": 3.2269484996795654,
+      "qualified_jump_landed": true,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 3.2663510785013727e-10
+    },
+    {
+      "native_env_id": 743,
+      "source_TRAIN_case": 103,
+      "case_id": "TRAIN103_LANE743_EP0",
+      "air": true,
+      "attack": false,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.7982711791992188,
+        -0.6299581527709961,
+        0.025223350152373314
+      ],
+      "target_distance_m": 0.0,
+      "target": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "first_contact_m": [
+        0.87274169921875,
+        0.01912689208984375,
+        1.7928866147994995
+      ],
+      "outgoing_velocity_mps": [
+        5.9066996574401855,
+        -1.3163549900054932,
+        -1.0584465265274048
+      ],
+      "outgoing_speed_mps": 6.143468104616015,
+      "net_margin_m": 0.07853496074676514,
+      "recovery_s": 3.8819010257720947,
+      "qualified_jump_landed": true,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 0.0
+    },
+    {
+      "native_env_id": 771,
+      "source_TRAIN_case": 3,
+      "case_id": "TRAIN3_LANE771_EP0",
+      "air": true,
+      "attack": false,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.8494415283203125,
+        0.1322479248046875,
+        0.02523967996239662
+      ],
+      "target_distance_m": 0.0,
+      "target": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "first_contact_m": [
+        0.98187255859375,
+        -0.101318359375,
+        1.7461767196655273
+      ],
+      "outgoing_velocity_mps": [
+        6.19202995300293,
+        0.4505874514579773,
+        -1.3827661275863647
+      ],
+      "outgoing_speed_mps": 6.360527191506773,
+      "net_margin_m": 0.05012965202331543,
+      "recovery_s": 4.231875896453857,
+      "qualified_jump_landed": true,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 0.0
+    },
+    {
+      "native_env_id": 773,
+      "source_TRAIN_case": 5,
+      "case_id": "TRAIN5_LANE773_EP0",
+      "air": true,
+      "attack": true,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.1455078125,
+        -0.244140625,
+        0.025224383920431137
+      ],
+      "target_distance_m": 0.1455078125,
+      "target": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "first_contact_m": [
+        0.986053466796875,
+        -0.037445068359375,
+        1.7793333530426025
+      ],
+      "outgoing_velocity_mps": [
+        7.698323726654053,
+        -0.5796211957931519,
+        -2.193380832672119
+      ],
+      "outgoing_speed_mps": 8.02565065325615,
+      "net_margin_m": 0.06234443187713623,
+      "recovery_s": 0.01600000075995922,
+      "qualified_jump_landed": false,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 14.253064155578613
+    },
+    {
+      "native_env_id": 835,
+      "source_TRAIN_case": 67,
+      "case_id": "TRAIN67_LANE835_EP0",
+      "air": true,
+      "attack": true,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.7814483642578125,
+        -0.6226234436035156,
+        0.025236262008547783
+      ],
+      "target_distance_m": 0.7814483642578125,
+      "target": false,
+      "conditional_recovery": true,
+      "complete": false,
+      "first_contact_m": [
+        1.0265731811523438,
+        0.09346389770507812,
+        1.745453953742981
+      ],
+      "outgoing_velocity_mps": [
+        7.818838119506836,
+        -1.4996240139007568,
+        -1.1073650121688843
+      ],
+      "outgoing_speed_mps": 8.037994712134166,
+      "net_margin_m": 0.11434543132781982,
+      "recovery_s": 3.2419474124908447,
+      "qualified_jump_landed": true,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 0.0011421386152505875
+    },
+    {
+      "native_env_id": 880,
+      "source_TRAIN_case": 112,
+      "case_id": "TRAIN112_LANE880_EP0",
+      "air": true,
+      "attack": true,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.577003479003906,
+        -0.7707939147949219,
+        0.025179807096719742
+      ],
+      "target_distance_m": 0.5770034790039062,
+      "target": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "first_contact_m": [
+        1.0278434753417969,
+        0.197021484375,
+        1.6907552480697632
+      ],
+      "outgoing_velocity_mps": [
+        7.643202781677246,
+        -2.0918989181518555,
+        -1.1969306468963623
+      ],
+      "outgoing_speed_mps": 8.014189467381179,
+      "net_margin_m": 0.04973554611206055,
+      "recovery_s": 0.01900000125169754,
+      "qualified_jump_landed": false,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 0.09717947244644165
+    },
+    {
+      "native_env_id": 1004,
+      "source_TRAIN_case": 108,
+      "case_id": "TRAIN108_LANE1004_EP0",
+      "air": true,
+      "attack": false,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.956423759460449,
+        0.0555877685546875,
+        0.025243379175662994
+      ],
+      "target_distance_m": 0.0,
+      "target": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "first_contact_m": [
+        1.0138111114501953,
+        0.05570220947265625,
+        1.7062883377075195
+      ],
+      "outgoing_velocity_mps": [
+        6.510431289672852,
+        0.05283321812748909,
+        -1.4343775510787964
+      ],
+      "outgoing_speed_mps": 6.666779273796893,
+      "net_margin_m": 0.024367809295654297,
+      "recovery_s": 4.206877708435059,
+      "qualified_jump_landed": true,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 0.0
+    },
+    {
+      "native_env_id": 1040,
+      "source_TRAIN_case": 16,
+      "case_id": "TRAIN16_LANE1040_EP0",
+      "air": true,
+      "attack": false,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.6850876808166504,
+        -0.63848876953125,
+        0.025242924690246582
+      ],
+      "target_distance_m": 0.0,
+      "target": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "first_contact_m": [
+        0.9190726280212402,
+        -0.159759521484375,
+        1.713818907737732
+      ],
+      "outgoing_velocity_mps": [
+        5.84319543838501,
+        -1.09801185131073,
+        -1.1787729263305664
+      ],
+      "outgoing_speed_mps": 6.061193658730278,
+      "net_margin_m": -8.702278137207031e-06,
+      "recovery_s": 4.283872127532959,
+      "qualified_jump_landed": true,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 0.0
+    },
+    {
+      "native_env_id": 1053,
+      "source_TRAIN_case": 29,
+      "case_id": "TRAIN29_LANE1053_EP0",
+      "air": true,
+      "attack": true,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.235857963562012,
+        -0.11167144775390625,
+        0.025123540312051773
+      ],
+      "target_distance_m": 0.23585796356201172,
+      "target": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "first_contact_m": [
+        0.986351490020752,
+        -0.11336517333984375,
+        1.789580225944519
+      ],
+      "outgoing_velocity_mps": [
+        8.211933135986328,
+        -0.03497018292546272,
+        -2.4493637084960938
+      ],
+      "outgoing_speed_mps": 8.569507064009098,
+      "net_margin_m": 0.06854856014251709,
+      "recovery_s": 0.0,
+      "qualified_jump_landed": false,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 8.212593078613281
+    },
+    {
+      "native_env_id": 1151,
+      "source_TRAIN_case": 127,
+      "case_id": "TRAIN127_LANE1151_EP0",
+      "air": true,
+      "attack": false,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.6041488647460938,
+        -0.9809379577636719,
+        0.0252034030854702
+      ],
+      "target_distance_m": 0.0,
+      "target": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "first_contact_m": [
+        0.9553413391113281,
+        -0.22904586791992188,
+        1.7852245569229126
+      ],
+      "outgoing_velocity_mps": [
+        6.5580315589904785,
+        -1.875179648399353,
+        -2.331484317779541
+      ],
+      "outgoing_speed_mps": 7.208321286300864,
+      "net_margin_m": 0.008271336555480957,
+      "recovery_s": 0.0,
+      "qualified_jump_landed": false,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 0.0
+    },
+    {
+      "native_env_id": 1155,
+      "source_TRAIN_case": 3,
+      "case_id": "TRAIN3_LANE1155_EP0",
+      "air": true,
+      "attack": true,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.860591888427734,
+        0.4435272216796875,
+        0.025102727115154266
+      ],
+      "target_distance_m": 0.8605918884277344,
+      "target": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "first_contact_m": [
+        1.0069618225097656,
+        -0.0592041015625,
+        1.759497046470642
+      ],
+      "outgoing_velocity_mps": [
+        7.971304416656494,
+        1.0819076299667358,
+        -1.0905442237854004
+      ],
+      "outgoing_speed_mps": 8.117974188602675,
+      "net_margin_m": 0.1270148754119873,
+      "recovery_s": 0.030000003054738045,
+      "qualified_jump_landed": false,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 0.0001427861861884594
+    },
+    {
+      "native_env_id": 1168,
+      "source_TRAIN_case": 16,
+      "case_id": "TRAIN16_LANE1168_EP0",
+      "air": true,
+      "attack": false,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.9492645263671875,
+        -0.635650634765625,
+        0.02503005415201187
+      ],
+      "target_distance_m": 0.0,
+      "target": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "first_contact_m": [
+        0.9666481018066406,
+        -0.157867431640625,
+        1.7351080179214478
+      ],
+      "outgoing_velocity_mps": [
+        6.311960697174072,
+        -0.8387065529823303,
+        -1.2263065576553345
+      ],
+      "outgoing_speed_mps": 6.484450963499853,
+      "net_margin_m": 0.05001652240753174,
+      "recovery_s": 4.330868721008301,
+      "qualified_jump_landed": true,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 0.0
+    },
+    {
+      "native_env_id": 1183,
+      "source_TRAIN_case": 31,
+      "case_id": "TRAIN31_LANE1183_EP0",
+      "air": true,
+      "attack": false,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.853973388671875,
+        -0.119598388671875,
+        0.02503800392150879
+      ],
+      "target_distance_m": 0.0,
+      "target": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "first_contact_m": [
+        0.9283256530761719,
+        -0.0070648193359375,
+        1.765890121459961
+      ],
+      "outgoing_velocity_mps": [
+        6.660645961761475,
+        -0.22886434197425842,
+        -1.7469505071640015
+      ],
+      "outgoing_speed_mps": 6.889732911328081,
+      "net_margin_m": 0.032918691635131836,
+      "recovery_s": 4.182879447937012,
+      "qualified_jump_landed": true,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 0.0
+    },
+    {
+      "native_env_id": 1184,
+      "source_TRAIN_case": 32,
+      "case_id": "TRAIN32_LANE1184_EP0",
+      "air": true,
+      "attack": true,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": null,
+      "target_distance_m": null,
+      "target": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "first_contact_m": [
+        1.0363578796386719,
+        -0.107330322265625,
+        1.7780579328536987
+      ],
+      "outgoing_velocity_mps": [
+        8.046615600585938,
+        1.551621437072754,
+        -1.0263603925704956
+      ],
+      "outgoing_speed_mps": 8.258872039389772,
+      "net_margin_m": 0.1552588939666748,
+      "recovery_s": 0.0,
+      "qualified_jump_landed": true,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 0.0
+    },
+    {
+      "native_env_id": 1190,
+      "source_TRAIN_case": 38,
+      "case_id": "TRAIN38_LANE1190_EP0",
+      "air": true,
+      "attack": false,
+      "crossed_net": true,
+      "shuttle_net_contact": true,
+      "first_landing_m": [
+        3.1235580444335938,
+        -0.363983154296875,
+        0.02507859468460083
+      ],
+      "target_distance_m": 0.0,
+      "target": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "first_contact_m": [
+        0.9929237365722656,
+        0.03448677062988281,
+        1.7356427907943726
+      ],
+      "outgoing_velocity_mps": [
+        6.624189376831055,
+        -0.25195595622062683,
+        -2.3408350944519043
+      ],
+      "outgoing_speed_mps": 7.030140513774536,
+      "net_margin_m": 0.15862679481506348,
+      "recovery_s": 3.6679165363311768,
+      "qualified_jump_landed": true,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 0.0
+    },
+    {
+      "native_env_id": 1206,
+      "source_TRAIN_case": 54,
+      "case_id": "TRAIN54_LANE1206_EP0",
+      "air": true,
+      "attack": false,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.9609375,
+        -0.4705963134765625,
+        0.025153305381536484
+      ],
+      "target_distance_m": 0.0,
+      "target": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "first_contact_m": [
+        0.9690628051757812,
+        -0.12237548828125,
+        1.712491750717163
+      ],
+      "outgoing_velocity_mps": [
+        6.515623569488525,
+        -0.8474106192588806,
+        -1.3498094081878662
+      ],
+      "outgoing_speed_mps": 6.707715012978681,
+      "net_margin_m": 0.022851943969726562,
+      "recovery_s": 0.0060000005178153515,
+      "qualified_jump_landed": false,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 0.0
+    },
+    {
+      "native_env_id": 1214,
+      "source_TRAIN_case": 62,
+      "case_id": "TRAIN62_LANE1214_EP0",
+      "air": true,
+      "attack": true,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        5.024707794189453,
+        0.49957275390625,
+        0.02522074058651924
+      ],
+      "target_distance_m": 1.0247077941894531,
+      "target": false,
+      "conditional_recovery": true,
+      "complete": false,
+      "first_contact_m": [
+        0.9894561767578125,
+        0.016876220703125,
+        1.7405887842178345
+      ],
+      "outgoing_velocity_mps": [
+        8.588325500488281,
+        1.1012111902236938,
+        -1.2163468599319458
+      ],
+      "outgoing_speed_mps": 8.743654880625005,
+      "net_margin_m": 0.10468852519989014,
+      "recovery_s": 3.0729596614837646,
+      "qualified_jump_landed": true,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 1.0108847163792234e-06
+    },
+    {
+      "native_env_id": 1279,
+      "source_TRAIN_case": 127,
+      "case_id": "TRAIN127_LANE1279_EP0",
+      "air": true,
+      "attack": false,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.66180419921875,
+        -0.8150291442871094,
+        0.025235343724489212
+      ],
+      "target_distance_m": 0.0,
+      "target": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "first_contact_m": [
+        0.9594192504882812,
+        -0.22254562377929688,
+        1.7864794731140137
+      ],
+      "outgoing_velocity_mps": [
+        6.131429195404053,
+        -1.35308039188385,
+        -1.7816705703735352
+      ],
+      "outgoing_speed_mps": 6.526836948054464,
+      "net_margin_m": 0.04435765743255615,
+      "recovery_s": 1.7430254220962524,
+      "qualified_jump_landed": true,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 0.0
+    },
+    {
+      "native_env_id": 1305,
+      "source_TRAIN_case": 25,
+      "case_id": "TRAIN25_LANE1305_EP0",
+      "air": true,
+      "attack": false,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.8898239135742188,
+        -0.678985595703125,
+        0.02507947012782097
+      ],
+      "target_distance_m": 0.0,
+      "target": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "first_contact_m": [
+        1.02081298828125,
+        -0.0457763671875,
+        1.7818965911865234
+      ],
+      "outgoing_velocity_mps": [
+        6.874072551727295,
+        -1.4302659034729004,
+        -2.095024585723877
+      ],
+      "outgoing_speed_mps": 7.3271865006860075,
+      "net_margin_m": 0.05995023250579834,
+      "recovery_s": 2.1110293865203857,
+      "qualified_jump_landed": true,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 0.0
+    },
+    {
+      "native_env_id": 1325,
+      "source_TRAIN_case": 45,
+      "case_id": "TRAIN45_LANE1325_EP0",
+      "air": true,
+      "attack": false,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.594329833984375,
+        -0.8715171813964844,
+        0.02512413077056408
+      ],
+      "target_distance_m": 0.0,
+      "target": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "first_contact_m": [
+        0.8752822875976562,
+        -0.009868621826171875,
+        1.745707392692566
+      ],
+      "outgoing_velocity_mps": [
+        5.779861927032471,
+        -1.8399986028671265,
+        -1.2870099544525146
+      ],
+      "outgoing_speed_mps": 6.20070910275368,
+      "net_margin_m": 0.0022079944610595703,
+      "recovery_s": 4.22787618637085,
+      "qualified_jump_landed": true,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 0.0
+    },
+    {
+      "native_env_id": 1330,
+      "source_TRAIN_case": 50,
+      "case_id": "TRAIN50_LANE1330_EP0",
+      "air": true,
+      "attack": false,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.9428634643554688,
+        -0.06049346923828125,
+        0.02523527853190899
+      ],
+      "target_distance_m": 0.0,
+      "target": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "first_contact_m": [
+        1.0184326171875,
+        0.002704620361328125,
+        1.735526442527771
+      ],
+      "outgoing_velocity_mps": [
+        5.8927106857299805,
+        -0.11912863701581955,
+        -0.933121383190155
+      ],
+      "outgoing_speed_mps": 5.967323216789941,
+      "net_margin_m": 0.07943463325500488,
+      "recovery_s": 4.290871620178223,
+      "qualified_jump_landed": true,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 0.0
+    },
+    {
+      "native_env_id": 1334,
+      "source_TRAIN_case": 54,
+      "case_id": "TRAIN54_LANE1334_EP0",
+      "air": true,
+      "attack": false,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.8374557495117188,
+        -0.3046112060546875,
+        0.025088714435696602
+      ],
+      "target_distance_m": 0.0,
+      "target": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "first_contact_m": [
+        0.960723876953125,
+        -0.08226776123046875,
+        1.7084051370620728
+      ],
+      "outgoing_velocity_mps": [
+        6.513147830963135,
+        -0.5052298307418823,
+        -1.5823538303375244
+      ],
+      "outgoing_speed_mps": 6.721621492931233,
+      "net_margin_m": -0.0033452510833740234,
+      "recovery_s": 2.000037431716919,
+      "qualified_jump_landed": true,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 0.0
+    },
+    {
+      "native_env_id": 1360,
+      "source_TRAIN_case": 80,
+      "case_id": "TRAIN80_LANE1360_EP0",
+      "air": true,
+      "attack": false,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.8713226318359375,
+        -0.0896453857421875,
+        0.02511676214635372
+      ],
+      "target_distance_m": 0.0,
+      "target": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "first_contact_m": [
+        0.8991470336914062,
+        -0.0900115966796875,
+        1.7751785516738892
+      ],
+      "outgoing_velocity_mps": [
+        6.306078910827637,
+        -0.05825212970376015,
+        -1.3262537717819214
+      ],
+      "outgoing_speed_mps": 6.444297759055355,
+      "net_margin_m": 0.056697964668273926,
+      "recovery_s": 3.514927625656128,
+      "qualified_jump_landed": true,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 0.0
+    },
+    {
+      "native_env_id": 1410,
+      "source_TRAIN_case": 2,
+      "case_id": "TRAIN2_LANE1410_EP0",
+      "air": true,
+      "attack": false,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.9886016845703125,
+        -0.16692352294921875,
+        0.025072095915675163
+      ],
+      "target_distance_m": 0.0,
+      "target": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "first_contact_m": [
+        0.963043212890625,
+        -0.0184326171875,
+        1.77752685546875
+      ],
+      "outgoing_velocity_mps": [
+        6.33007287979126,
+        -0.31645357608795166,
+        -1.2467494010925293
+      ],
+      "outgoing_speed_mps": 6.459438799029854,
+      "net_margin_m": 0.09058773517608643,
+      "recovery_s": 3.828904867172241,
+      "qualified_jump_landed": true,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 0.0
+    },
+    {
+      "native_env_id": 1451,
+      "source_TRAIN_case": 43,
+      "case_id": "TRAIN43_LANE1451_EP0",
+      "air": true,
+      "attack": false,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.858489990234375,
+        -0.592254638671875,
+        0.025115301832556725
+      ],
+      "target_distance_m": 0.0,
+      "target": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "first_contact_m": [
+        0.9510955810546875,
+        -0.01605224609375,
+        1.708488941192627
+      ],
+      "outgoing_velocity_mps": [
+        6.389138221740723,
+        -1.2565631866455078,
+        -1.3990451097488403
+      ],
+      "outgoing_speed_mps": 6.660132542048474,
+      "net_margin_m": 0.005567193031311035,
+      "recovery_s": 1.262002944946289,
+      "qualified_jump_landed": true,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 0.0
+    },
+    {
+      "native_env_id": 1461,
+      "source_TRAIN_case": 53,
+      "case_id": "TRAIN53_LANE1461_EP0",
+      "air": true,
+      "attack": false,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.78363037109375,
+        -0.46346282958984375,
+        0.025050491094589233
+      ],
+      "target_distance_m": 0.0,
+      "target": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "first_contact_m": [
+        0.9533233642578125,
+        -0.06397056579589844,
+        1.7419880628585815
+      ],
+      "outgoing_velocity_mps": [
+        6.285764694213867,
+        -0.8910325169563293,
+        -1.5465644598007202
+      ],
+      "outgoing_speed_mps": 6.534266474947113,
+      "net_margin_m": 0.023900151252746582,
+      "recovery_s": 3.76690936088562,
+      "qualified_jump_landed": true,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 0.0
+    },
+    {
+      "native_env_id": 1587,
+      "source_TRAIN_case": 51,
+      "case_id": "TRAIN51_LANE1587_EP0",
+      "air": true,
+      "attack": true,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.008544921875,
+        0.1141357421875,
+        0.02525077387690544
+      ],
+      "target_distance_m": 0.008544921875,
+      "target": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "first_contact_m": [
+        0.9954833984375,
+        0.0173797607421875,
+        1.7452895641326904
+      ],
+      "outgoing_velocity_mps": [
+        7.91738748550415,
+        0.32508963346481323,
+        -2.589674472808838
+      ],
+      "outgoing_speed_mps": 8.336493371947329,
+      "net_margin_m": 0.00795900821685791,
+      "recovery_s": 3.4829299449920654,
+      "qualified_jump_landed": false,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 19.976648330688477
+    },
+    {
+      "native_env_id": 1700,
+      "source_TRAIN_case": 36,
+      "case_id": "TRAIN36_LANE1700_EP0",
+      "air": true,
+      "attack": true,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.920989990234375,
+        -0.1898956298828125,
+        0.025247419252991676
+      ],
+      "target_distance_m": 0.920989990234375,
+      "target": false,
+      "conditional_recovery": true,
+      "complete": false,
+      "first_contact_m": [
+        0.9630279541015625,
+        -0.071441650390625,
+        1.7704633474349976
+      ],
+      "outgoing_velocity_mps": [
+        8.497625350952148,
+        -0.3174463212490082,
+        -1.3360766172409058
+      ],
+      "outgoing_speed_mps": 8.607874853827573,
+      "net_margin_m": 0.11921513080596924,
+      "recovery_s": 2.7399837970733643,
+      "qualified_jump_landed": true,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 2.552560363255907e-05
+    },
+    {
+      "native_env_id": 1762,
+      "source_TRAIN_case": 98,
+      "case_id": "TRAIN98_LANE1762_EP0",
+      "air": true,
+      "attack": true,
+      "crossed_net": true,
+      "shuttle_net_contact": true,
+      "first_landing_m": [
+        3.096221923828125,
+        -1.622283935546875,
+        0.025170745328068733
+      ],
+      "target_distance_m": 0.622283935546875,
+      "target": false,
+      "conditional_recovery": true,
+      "complete": false,
+      "first_contact_m": [
+        0.989959716796875,
+        -0.08868408203125,
+        1.7095638513565063
+      ],
+      "outgoing_velocity_mps": [
+        7.828901767730713,
+        -1.5560415983200073,
+        -2.4268405437469482
+      ],
+      "outgoing_speed_mps": 8.342812677344096,
+      "net_margin_m": 0.16092002391815186,
+      "recovery_s": 3.449932336807251,
+      "qualified_jump_landed": true,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 0.04075956344604492
+    },
+    {
+      "native_env_id": 2011,
+      "source_TRAIN_case": 91,
+      "case_id": "TRAIN91_LANE2011_EP0",
+      "air": true,
+      "attack": false,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.45562744140625,
+        -0.3847503662109375,
+        0.02507971227169037
+      ],
+      "target_distance_m": 0.0,
+      "target": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "first_contact_m": [
+        0.985137939453125,
+        0.0946807861328125,
+        1.7768421173095703
+      ],
+      "outgoing_velocity_mps": [
+        5.9895429611206055,
+        -1.151686191558838,
+        -2.1996893882751465
+      ],
+      "outgoing_speed_mps": 6.483798221091321,
+      "net_margin_m": -0.002701401710510254,
+      "recovery_s": 0.1750001758337021,
+      "qualified_jump_landed": false,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 0.0
+    },
+    {
+      "native_env_id": 2022,
+      "source_TRAIN_case": 102,
+      "case_id": "TRAIN102_LANE2022_EP0",
+      "air": true,
+      "attack": true,
+      "crossed_net": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.018157958984375,
+        -0.03118896484375,
+        0.02519838511943817
+      ],
+      "target_distance_m": 0.018157958984375,
+      "target": false,
+      "conditional_recovery": true,
+      "complete": false,
+      "first_contact_m": [
+        0.955596923828125,
+        -0.03204345703125,
+        1.7933924198150635
+      ],
+      "outgoing_velocity_mps": [
+        8.057950019836426,
+        0.022405050694942474,
+        -2.6880686283111572
+      ],
+      "outgoing_speed_mps": 8.494514315662146,
+      "net_margin_m": 0.03230547904968262,
+      "recovery_s": 3.642918348312378,
+      "qualified_jump_landed": true,
+      "fault_flags": [],
+      "replayed_candidate_bonus": 19.8947696685791
+    }
+  ],
+  "source_cohort_report_sha256": "dc99ab64f20aa9b33d164f81c6eeb2454b4a5aab9342c290b3de986b0eb05a30",
+  "source_first_ground_episodes_sha256": "42b4fbb9f11c8b8c98962fbb441e0c523f47a34a047d9bffd6c27bbb0910f0b5",
+  "candidate_sources": {
+    "quadsmash/control/measured_joint_placement_reward_v4.py": "478a234a75cd285cc64c45bb7fb1d6cfb99e4ef4b921e1e0fd81c779ba97db76",
+    "quadsmash/tasks/stand/full_racket_residual_env_v4.py": "6e9d01d3203044c97796631655edf154fa7f8bd47170bdd776d9c786a79b5487",
+    "scripts/train_full_racket_residual_ppo_v4.py": "40c96f7c5a5ca98237d9f2866756cf17400e6bd4b8d5ba63c587a7ddbebaa93c",
+    "configs/g07_full_racket_residual_ppo_joint_placement_v4.json": "7f602853da25fee376c795b58c75b1d47bcf9bf76e5e3a7e04d4d25d942a00ca",
+    "tests/test_measured_joint_placement_reward_v4.py": "7922bbde42f96f5de4db6223b6c09781156a0b7b1006e94f568afa7c8b6b641c"
+  },
+  "original_episode_scores_unchanged": true,
+  "existing_config_and_PPO_settings_unchanged": true,
+  "term_is_opt_in": true,
+  "old_reward_resume_contract_remains_strict": true,
+  "native_candidate_training_run": false,
+  "candidate_frozen_policy_performance": null,
+  "hypothesis": "A bonus conditioned jointly on a measured legal air attack, actual crossing and first-landing distance may give useful feedback where separate attack/target rewards have zero overlap. Only native learning and independent frozen assessment can test this.",
+  "limitations": [
+    "These terminal event fields are used for static bonus replay; this is not a reconstruction of historical per-control rewards.",
+    "The cohort used changing weights and exploration. The reported near miss is a training episode, not a frozen successful policy.",
+    "The new bonus is partial TRAIN feedback, not a completion label. Recovery and subsequent failures remain enforced by the original full-chain scoring.",
+    "No trajectory, state, collision, physical parameter, case, success threshold or formal acceptance protocol is changed.",
+    "The live original2048 job and its CPU video queue continue from another worktree with unchanged source fingerprints.",
+    "Reward contracts differ: an old-reward canonical checkpoint cannot be passed as strict --resume with the new config. Use a clearly declared fresh candidate run or a separately reviewed transfer path."
+  ],
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
