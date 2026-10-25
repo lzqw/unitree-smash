@@ -1,0 +1,695 @@
+{
+  "created_at": "2026-10-25T16:39:43.180902+00:00",
+  "scope": "Completed changing-policy joint-placement learner40 training, actual contact confirmations, weights, raw episodes and source. Frozen40 assessment and videos are still running and excluded.",
+  "original_training_job_git_sha": "f9180d6d28974cc3ed582d96c2841e87f8f9e962",
+  "report_code_commit": "26a06ee696d91598300a613fd53ce3b9e29b4396",
+  "actual_control_env_steps": 8388608,
+  "actual_GPU_hours": 2.753516433197203,
+  "native_training_counts": {
+    "completed_episodes": 18591,
+    "air": 1659,
+    "conditional_recovery_count": 690,
+    "complete": 2,
+    "numerical_failures": 0
+  },
+  "original_training_motion_trajectory_available": false,
+  "complete_episodes_crossed_actor_updates": true,
+  "no_single_frozen_winning_checkpoint_claimed": true,
+  "asset_layer_path_mapping": "Workspace assets are under unitree_smash; four original absolute Go2 dependency paths are preserved under external_layers. Restore or explicitly remap their original absolute USD references before native replay.",
+  "previous_complete_initialization_archive": {
+    "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_joint_reward_probe8_native_evidence_and_next_trial_20261025.zip",
+    "sha256": "3f90e2796dac59fd00d45a0d0f3acef0be9f36401b5a063d275296840347955c"
+  },
+  "separate_unexecuted_v3_candidate": "https://github.com/lzqw/unitree-smash/tree/e24e1c0",
+  "members": [
+    {
+      "source_path": "/home/autodrive/Isaac/unitree_model/Go2/usd/configuration/go2_description_base.usd",
+      "member": "external_layers/home/autodrive/Isaac/unitree_model/Go2/usd/configuration/go2_description_base.usd",
+      "bytes": 18806122,
+      "sha256": "eeed42fb9e41395c47bc3fac7ff5d58625ac62f44bfa5a09cacebff83229c7a0"
+    },
+    {
+      "source_path": "/home/autodrive/Isaac/unitree_model/Go2/usd/configuration/go2_description_physics.usd",
+      "member": "external_layers/home/autodrive/Isaac/unitree_model/Go2/usd/configuration/go2_description_physics.usd",
+      "bytes": 6829,
+      "sha256": "43800f436b3533c869f0b7774e5c70bc4291579df70a62263f808fb1a8f05505"
+    },
+    {
+      "source_path": "/home/autodrive/Isaac/unitree_model/Go2/usd/configuration/go2_description_sensor.usd",
+      "member": "external_layers/home/autodrive/Isaac/unitree_model/Go2/usd/configuration/go2_description_sensor.usd",
+      "bytes": 655,
+      "sha256": "d63cfa5964eb5a72b8e2a02dc89448881497717f21d76b1ec9683a92cb765a16"
+    },
+    {
+      "source_path": "/home/autodrive/Isaac/unitree_model/Go2/usd/go2.usd",
+      "member": "external_layers/home/autodrive/Isaac/unitree_model/Go2/usd/go2.usd",
+      "bytes": 1601,
+      "sha256": "fd3c8c23c97cea3208fae1ab5eeacba4ffa616fe5f1397be6c7edf4feb93f180"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/assets/quadsmash_full_racket_v4_r3.usd",
+      "member": "unitree_smash/assets/quadsmash_full_racket_v4_r3.usd",
+      "bytes": 11508,
+      "sha256": "c2264fcece90b042c7c6a1cac7d516af83972729d0402947e3a519041e184cf2"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/assets/robots/piper_standard/configuration/piper_standard_base.usd",
+      "member": "unitree_smash/assets/robots/piper_standard/configuration/piper_standard_base.usd",
+      "bytes": 12002740,
+      "sha256": "8e86fc86de1ce24a86308724d485302ac427e772b0a3b7bd5c33fed9e0d6f2a6"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/assets/robots/piper_standard/configuration/piper_standard_physics.usd",
+      "member": "unitree_smash/assets/robots/piper_standard/configuration/piper_standard_physics.usd",
+      "bytes": 4341,
+      "sha256": "5e338bc65fdb9ac8fced1def9e17fefe5a70d7f6d464c0d9b04bf5075ebce10f"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/assets/robots/piper_standard/configuration/piper_standard_robot.usd",
+      "member": "unitree_smash/assets/robots/piper_standard/configuration/piper_standard_robot.usd",
+      "bytes": 1679,
+      "sha256": "59482e1947f48a93df4ec6a8061d7159f617c1cffa5e9f3d9695008cea16bea3"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/assets/robots/piper_standard/configuration/piper_standard_sensor.usd",
+      "member": "unitree_smash/assets/robots/piper_standard/configuration/piper_standard_sensor.usd",
+      "bytes": 645,
+      "sha256": "c747ff27a6695ee3dd35fe61fab7490a17f12ecaadedaecc640bed54f906cf80"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/assets/robots/piper_standard/piper_standard.usd",
+      "member": "unitree_smash/assets/robots/piper_standard/piper_standard.usd",
+      "bytes": 1463,
+      "sha256": "f9139c750a1db093fea37b2fe174f41993fd5c977b8c9fa3aab78c033825a1ce"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/configs/court_net_v4.json",
+      "member": "unitree_smash/configs/court_net_v4.json",
+      "bytes": 2008,
+      "sha256": "184d07dde336bf36be7dfde089373c851a2bcb855a6e44f4120442b59818b4f4"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/configs/evaluation_protocol_v2.json",
+      "member": "unitree_smash/configs/evaluation_protocol_v2.json",
+      "bytes": 2259,
+      "sha256": "421497aa51eecac023c70b200e8a75ecafff01527dcf215665d5d96c1e8266a8"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/configs/full_racket_reset_v4.json",
+      "member": "unitree_smash/configs/full_racket_reset_v4.json",
+      "bytes": 558,
+      "sha256": "0d5246e0b39daabd0c0cb15f5259c7c61df455ccb191835932cc83f4886df25b"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/configs/full_racket_v4.json",
+      "member": "unitree_smash/configs/full_racket_v4.json",
+      "bytes": 2110,
+      "sha256": "d5266604b7cc7a221752de60bf68ff609e66e5fbc16ff3ed1904facc0cf63d3a"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/configs/full_racket_v4_r2.json",
+      "member": "unitree_smash/configs/full_racket_v4_r2.json",
+      "bytes": 2517,
+      "sha256": "b625c458880f1567fe63676fe0c5209f1d5f956ef8c419eb8c84cb229cabe46d"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/configs/full_racket_v4_r3.json",
+      "member": "unitree_smash/configs/full_racket_v4_r3.json",
+      "bytes": 2765,
+      "sha256": "14d58dd674665424dab63e67d525daf9b2239821797b97202aa45f9af1e5a26c"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/configs/g07_full_racket_eval_v4_r3.json",
+      "member": "unitree_smash/configs/g07_full_racket_eval_v4_r3.json",
+      "bytes": 6288,
+      "sha256": "04121cfb257ea4d2e288c69b44dd0c8dbada814e0bf95c8a16f5af7ef2390367"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/configs/g07_full_racket_residual_ppo_joint_placement_v4.json",
+      "member": "unitree_smash/configs/g07_full_racket_residual_ppo_joint_placement_v4.json",
+      "bytes": 1320,
+      "sha256": "7f602853da25fee376c795b58c75b1d47bcf9bf76e5e3a7e04d4d25d942a00ca"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/configs/shuttle_physics_v2.json",
+      "member": "unitree_smash/configs/shuttle_physics_v2.json",
+      "bytes": 1109,
+      "sha256": "dba0e8d45edd661185c7f0b8a379f63993d1a87269740e672688b4577e359229"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/cem32_lateral_feedback_1015/best_candidate.pt",
+      "member": "unitree_smash/reports/G07_full_racket_v4/cem32_lateral_feedback_1015/best_candidate.pt",
+      "bytes": 90707,
+      "sha256": "51a8b19b17e19e60bd7482c7bcb7ed1d4e8b7f50b9317cac3c49007089e8b62d"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/joint40_training_delivery_20261026/build.py",
+      "member": "unitree_smash/reports/G07_full_racket_v4/joint40_training_delivery_20261026/build.py",
+      "bytes": 6995,
+      "sha256": "c93eba32f203dbcaf5417208576872f8f461e99e0b9e2e5c86e019bc78a54335"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/joint40_training_delivery_20261026/joint40_training_episodes.csv",
+      "member": "unitree_smash/reports/G07_full_racket_v4/joint40_training_delivery_20261026/joint40_training_episodes.csv",
+      "bytes": 6858520,
+      "sha256": "4901698c71286f49bbb782a2663ded184565915850a5262b78c817d5167c95f2"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/joint40_training_delivery_20261026/joint40_training_episodes.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/joint40_training_delivery_20261026/joint40_training_episodes.json",
+      "bytes": 1446,
+      "sha256": "b4f2af3b378dbf0be0f3948a8a1e06cb4fcfbcff45aab61b498796288112f484"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/joint_placement_contact_confirmation_queue01/PREDECLARED_PLAN.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/joint_placement_contact_confirmation_queue01/PREDECLARED_PLAN.json",
+      "bytes": 43048,
+      "sha256": "9732e56a3e91245af0c4f6c38c891776de8b313d53118f3911804aa7caf562c9"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/joint_placement_contact_confirmation_queue01/run.py",
+      "member": "unitree_smash/reports/G07_full_racket_v4/joint_placement_contact_confirmation_queue01/run.py",
+      "bytes": 6622,
+      "sha256": "215b440827f61fa3c7001d433c04c0a058014cdb81c2e67da2598a6f9c763cb5"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/joint_placement_first_training_complete_20261026/FINAL_CONTACT_CONFIRMATION.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/joint_placement_first_training_complete_20261026/FINAL_CONTACT_CONFIRMATION.json",
+      "bytes": 24086,
+      "sha256": "ac88a40a7434737ef32ab1ff1d3e989422122864aa14d086d7c9afd7b80f5c2f"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/joint_placement_first_training_complete_20261026/INITIAL_INDEPENDENT_CHECK.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/joint_placement_first_training_complete_20261026/INITIAL_INDEPENDENT_CHECK.json",
+      "bytes": 993,
+      "sha256": "dd8317cd88e28c8e0cb5725fed963bcafd06a42b6cc95f408595569f41a1a13c"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/joint_placement_first_training_complete_20261026/REPORT.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/joint_placement_first_training_complete_20261026/REPORT.json",
+      "bytes": 6870,
+      "sha256": "0acfe80bce3f48a3263044e5aa57095cf97549d0b9cd769a35c45ea7435776b9"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/joint_placement_first_training_complete_20261026/all_closed_training_episodes.json.gz",
+      "member": "unitree_smash/reports/G07_full_racket_v4/joint_placement_first_training_complete_20261026/all_closed_training_episodes.json.gz",
+      "bytes": 40603238,
+      "sha256": "4bf3b6f4b59699068dd5ae5faa32193cae4eadef4d973838908a56b03760df88"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/joint_placement_first_training_complete_20261026/build_lineage.py",
+      "member": "unitree_smash/reports/G07_full_racket_v4/joint_placement_first_training_complete_20261026/build_lineage.py",
+      "bytes": 8356,
+      "sha256": "03d9163bb13b0fb1af77a3925337e5f5218664241fa65ca3a4e994ff731d81df"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/joint_placement_first_training_complete_20261026/complete_episodes.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/joint_placement_first_training_complete_20261026/complete_episodes.json",
+      "bytes": 21807,
+      "sha256": "d876dd640ed913f9abd533a6a531dfc415950175e23a68bdef879e2370f0ca32"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/joint_placement_first_training_complete_20261026/historical_progress_lines.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/joint_placement_first_training_complete_20261026/historical_progress_lines.json",
+      "bytes": 47844,
+      "sha256": "e727b67cd56063ec58b7f11bd686238dbe31e496e494703bb81800045d789237"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/joint_placement_first_training_complete_20261026/progress.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/joint_placement_first_training_complete_20261026/progress.json",
+      "bytes": 8482,
+      "sha256": "bb791c0cd0da6818082820f584dfab420db00b83ca681234c1a04ae060409862"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/joint_placement_first_training_complete_20261026/weight_lineage.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/joint_placement_first_training_complete_20261026/weight_lineage.json",
+      "bytes": 4557,
+      "sha256": "ecbed3551bbe617e1c39079591f4a0cad14b2c0b6e46b3801c0ba521a3392074"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/joint_placement_iter40_recovery_20261026/LEGACY_REGISTRY_CHECK.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/joint_placement_iter40_recovery_20261026/LEGACY_REGISTRY_CHECK.json",
+      "bytes": 558,
+      "sha256": "a908656811d544d19f6a326234df7cde185f00a6286c6897a38a06f4e2e85e14"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/joint_placement_iter40_recovery_20261026/PROGRESS_REPORT.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/joint_placement_iter40_recovery_20261026/PROGRESS_REPORT.json",
+      "bytes": 4398,
+      "sha256": "2c84a36660e391cf072999db01de1740d783e717e9e3de19ebd7da84bebec64b"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/joint_placement_iter40_recovery_20261026/RECOVERY_PLAN.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/joint_placement_iter40_recovery_20261026/RECOVERY_PLAN.json",
+      "bytes": 43757,
+      "sha256": "db65bc99fc0cdf87fa3e33a27d4bb2a8e38b2dee143947d8dfdc8d210beae236"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/joint_placement_iter40_recovery_20261026/TRAINING_RECEIPT.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/joint_placement_iter40_recovery_20261026/TRAINING_RECEIPT.json",
+      "bytes": 905,
+      "sha256": "5cb6eefefe1e39a4eddd7650468b1229bc0093140f5af2a6eff226297b395956"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/joint_placement_iter40_recovery_20261026/VERIFIER_DIFF.txt",
+      "member": "unitree_smash/reports/G07_full_racket_v4/joint_placement_iter40_recovery_20261026/VERIFIER_DIFF.txt",
+      "bytes": 1771,
+      "sha256": "b8381e66044f5aa2911d1fe35b07774bfe1e7c0350f4e24954be20791fc3f6b2"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/joint_placement_iter40_recovery_20261026/run.py",
+      "member": "unitree_smash/reports/G07_full_racket_v4/joint_placement_iter40_recovery_20261026/run.py",
+      "bytes": 12135,
+      "sha256": "cc49a7e2182ee2bce95bd8073235095bf2f5c0cf1dbfb8652c2769c0f85df63d"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/joint_placement_iter40_video_recovery_20261026/RECOVERY_PLAN.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/joint_placement_iter40_video_recovery_20261026/RECOVERY_PLAN.json",
+      "bytes": 43873,
+      "sha256": "11879526b25dbb72eb82aa94383a2ac93d18e71189793e2188487c6a21488082"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/joint_placement_iter40_video_recovery_20261026/run.py",
+      "member": "unitree_smash/reports/G07_full_racket_v4/joint_placement_iter40_video_recovery_20261026/run.py",
+      "bytes": 6257,
+      "sha256": "9077d9c049df5faded014e183e42f265786a05ac84486bd22e353338eefc3cbe"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/joint_placement_resume32_queue01/DECISION.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/joint_placement_resume32_queue01/DECISION.json",
+      "bytes": 4193,
+      "sha256": "b2bf32146390a3a7b43df53c29369b8e495e4ec9026fc61df08aa5ccb6d8d87c"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/joint_placement_resume32_queue01/PREDECLARED_PLAN.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/joint_placement_resume32_queue01/PREDECLARED_PLAN.json",
+      "bytes": 45798,
+      "sha256": "8c6a7b1cc7ede45a0ad6006f3fea34fed488337527f87c543ba39803f8c61f5d"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/joint_placement_resume32_queue01/PREPARATION_CHECKS.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/joint_placement_resume32_queue01/PREPARATION_CHECKS.json",
+      "bytes": 396,
+      "sha256": "0e17ff920f32636df46c2dbf83527a2ff5d0b4adb8b3555380e06f38741e9e3d"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/joint_placement_resume32_queue01/ROOT_NATIVE_RESUME_CHECK.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/joint_placement_resume32_queue01/ROOT_NATIVE_RESUME_CHECK.json",
+      "bytes": 1377,
+      "sha256": "ece14d5d8fc91ea96b5a46099f3702640449bfa4ec5a53979a18b35c320cad9a"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/joint_placement_resume32_queue01/error.txt",
+      "member": "unitree_smash/reports/G07_full_racket_v4/joint_placement_resume32_queue01/error.txt",
+      "bytes": 732,
+      "sha256": "18b5637802d11e786f295e7a504d204178ec972ad27139096ddae96c47f56562"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/joint_placement_resume32_queue01/run.py",
+      "member": "unitree_smash/reports/G07_full_racket_v4/joint_placement_resume32_queue01/run.py",
+      "bytes": 17000,
+      "sha256": "c81cf2136415fa9242c04d59d9b2e3d0921c308f9b50c7150a67fb957a7f9485"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/joint_placement_resume32_queue01/state.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/joint_placement_resume32_queue01/state.json",
+      "bytes": 532,
+      "sha256": "fd9c3dc1f388a62d49776527cdb8a0e0c07d25f2c7068e8814a93a0179b71134"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/live_tangent_trial_recovery_20261026/RECOVERY_PLAN.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/live_tangent_trial_recovery_20261026/RECOVERY_PLAN.json",
+      "bytes": 51524,
+      "sha256": "45647e9e626bc484171f4e23cd7e36673943677570d058dd8f38de860d7c82b9"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/live_tangent_trial_recovery_20261026/run.py",
+      "member": "unitree_smash/reports/G07_full_racket_v4/live_tangent_trial_recovery_20261026/run.py",
+      "bytes": 6592,
+      "sha256": "b5a83ce7c8e8136bb65f374b6af9e5cde900269d0e84d61716c4192425c61cd9"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/reach_cem_r3_01/best_candidate.pt",
+      "member": "unitree_smash/reports/G07_full_racket_v4/reach_cem_r3_01/best_candidate.pt",
+      "bytes": 69561,
+      "sha256": "2fb6f603b6c5e6fea576bd0ff3b5d8199e4aec3d2a7ba401e3ba36496053336c"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01/checkpoint.pt",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01/checkpoint.pt",
+      "bytes": 21366827,
+      "sha256": "10bf6c026a39e3ea01bf08425029ba78a906e573051e9bc3bcf26ccd37373cb0"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01/policy.pt",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01/policy.pt",
+      "bytes": 1659553,
+      "sha256": "846656e9d02c74f4b72929253ed9196557af4f9affe39236fc55d7f4bc5d744c"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/INPUTS.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/INPUTS.json",
+      "bytes": 4631,
+      "sha256": "b162b22428af9cae65f13b5ba27851fb2ecb58fa737246197b80dc559723e7c9"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/asset_dependencies.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/asset_dependencies.json",
+      "bytes": 1555,
+      "sha256": "6591b33978bccc9f6f68aa781fb396a85475f54cc774840ffec700222d1649c0"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/checkpoint.pt",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/checkpoint.pt",
+      "bytes": 21366443,
+      "sha256": "62f4e50fb72d8c9c3c9583220aad54761a0482044febd07750e1cb95c20ccca2"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/completed.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/completed.json",
+      "bytes": 27,
+      "sha256": "6b103db935c0158f324c76ce1bc583c8bdbefe72366b098d63ed1794c87a81b4"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/contacts.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/contacts.json",
+      "bytes": 39299270,
+      "sha256": "63718a7ff4b31c35ebc6650e634da859d58dbf9277970c4e456dc56c8a139f7c"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/dirty.patch",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/dirty.patch",
+      "bytes": 252799,
+      "sha256": "369dcddab4ee06f8195a9112505a1303e2c387e6b8cac638e460f678b4b36b24"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/episodes.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/episodes.json",
+      "bytes": 198583157,
+      "sha256": "7fb970972e903d27166e9d5b2c715469eddf285badde2bb936239ee44a15e649"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/episodes.partial.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/episodes.partial.json",
+      "bytes": 198583157,
+      "sha256": "7fb970972e903d27166e9d5b2c715469eddf285badde2bb936239ee44a15e649"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/initial_ground_states.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/initial_ground_states.json",
+      "bytes": 1620652,
+      "sha256": "c6ebe4408e931cc489b999beb332c90eddb56e3aa7ce3c77ef30d0607d748109"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/job.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/job.json",
+      "bytes": 1603,
+      "sha256": "032ff787871dfa1ceffe08e88d0d703ca2974a01952b4da5f3c375f2ade7e4d3"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/metrics.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/metrics.json",
+      "bytes": 318204,
+      "sha256": "ba93f39e9b03fbc6bfc693f12e4460e49e25ff8dc0ffd6571e534bd1d966efcc"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0009.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0009.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0010.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0010.json",
+      "bytes": 44266622,
+      "sha256": "e4656388130e61f9d20996c623d9c0d0257e2aab13e16a9a19b5519dfd1d7dcf"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0011.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0011.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0012.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0012.json",
+      "bytes": 20286130,
+      "sha256": "4e474f6ceff260d7cf7abe946f0cc021e6b95f12a784bf50c9406d3900539bf9"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0013.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0013.json",
+      "bytes": 12508822,
+      "sha256": "88939d4821ece986d872a7a24f72327a52ab84c96e1339dec3990b742855eb36"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0014.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0014.json",
+      "bytes": 4694304,
+      "sha256": "79e88f359ec12aa8c9ebc7a2104f03a1004a3bb3dcb0379001cae5b001d8aa8a"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0015.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0015.json",
+      "bytes": 17973841,
+      "sha256": "c99910f38ce2ff6845e4dba286ed8c6be50758107ce96ffbfbc44d570bebd030"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0016.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0016.json",
+      "bytes": 15439717,
+      "sha256": "53f302d40f482edb573fdaaf6185cff61888129515eb168a46b58934bf99a502"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0017.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0017.json",
+      "bytes": 10533728,
+      "sha256": "8d1681c9acd9f2c385c397fbe10f03aa64688852e2fc23d6f8bad34ec619b083"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0018.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0018.json",
+      "bytes": 8585428,
+      "sha256": "94d81602717e785dfddbc4c1428c654a53cf249561be6e439067b03676b68a60"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0019.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0019.json",
+      "bytes": 18295207,
+      "sha256": "5c7c1c5d1dfa96b34c1174cb85841df2101f23593c347deea29744c90137ca4e"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0020.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0020.json",
+      "bytes": 8782353,
+      "sha256": "83f448eef995120d0bdaee63228dc6a7137ccf6b62719b1b6735d9376ff54cbd"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0021.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0021.json",
+      "bytes": 16393019,
+      "sha256": "dd69bb0761dd7fe3d03bed005dd8d55ed29d1725efff61961e7f5b20b2ce36d5"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0022.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0022.json",
+      "bytes": 11161979,
+      "sha256": "c5c7676122ed7a8daf13a058f538468a90b613e7cb1f2b2640b4142c87c945e1"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0023.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0023.json",
+      "bytes": 14118852,
+      "sha256": "cb99cbd319e7aab3f92677466f1729d7ecb269d5ad094f46c1db2fcc7d6ee351"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0024.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0024.json",
+      "bytes": 12962112,
+      "sha256": "5a9d8a4627bd66214243d535db19cae126495d718ebdd568b50e873cc918d1f6"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0025.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0025.json",
+      "bytes": 14296333,
+      "sha256": "ff84d9f2cafadf17b97542bab510a3828b8e3f6a04582ac8a4b0a7ee400e35f3"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0026.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0026.json",
+      "bytes": 13285650,
+      "sha256": "28f25c1010917fb2dc3448a4671318ad74ce2bff5c458d6597b68bf6f277bcf3"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0027.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0027.json",
+      "bytes": 13263930,
+      "sha256": "9fdafe204f083222522aac00299c7b0d06e6f7676954c6cb55135da6c0735856"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0028.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0028.json",
+      "bytes": 12871965,
+      "sha256": "0248430d1b877a17dfd68ee067849619e4bdd0647cd2d55c5d9edf9fe646a442"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0029.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0029.json",
+      "bytes": 13046193,
+      "sha256": "ad8def4f0956a3768f4cc61043766775d20e90dc475e631feaa1325fbc3116ca"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0030.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0030.json",
+      "bytes": 13150836,
+      "sha256": "0d52a02eb28a60d5e9e460c725a23e1965211c299bf179bdc81755d8be5dd5f8"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0031.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0031.json",
+      "bytes": 13606400,
+      "sha256": "e16325fde0e187642f8ccf521ea746793e7c87f2dccabfce5301bf7de1500f64"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0032.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0032.json",
+      "bytes": 13219742,
+      "sha256": "69bcd2fd5c9c63fa58da3e9901821fd2312098daeecb16d509097a4644b1a688"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0033.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0033.json",
+      "bytes": 12961037,
+      "sha256": "51ebe67358526883c505369db8e2e3430d6e1aade416c6aef695aea6a3ea7b32"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0034.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0034.json",
+      "bytes": 13438885,
+      "sha256": "3d0eb2e1f804f8c40e30a81152a3c9617800cac25e097ac72dc7c0520e879277"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0035.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0035.json",
+      "bytes": 12676964,
+      "sha256": "c044388571efea36699df68e69fc74d4a188317ee913756ea17a138f20d8561a"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0036.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0036.json",
+      "bytes": 13866614,
+      "sha256": "059d7cf35d97236a125ce84884bb9900d4365269a0f0a841adb03db1e60761f2"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0037.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0037.json",
+      "bytes": 12355479,
+      "sha256": "89c0ae0055bb4a0522e7fcacfe296187b04bf46243849f26f94f125246adb2c2"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0038.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0038.json",
+      "bytes": 13416199,
+      "sha256": "27351ee20059a799fe1aebe6efc3726fa14989756c22372007abe0f09dd5f39e"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0039.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0039.json",
+      "bytes": 13458391,
+      "sha256": "1e621c57b2997313adf502a5532541397318eb4820125c08a75410d2290b9cb9"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0040.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/plans_update_0040.json",
+      "bytes": 12767014,
+      "sha256": "083552fd4ce594b28f750e9b3bdaf191df234d0487bd6d69c5d22db4b6ee5785"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/policy.pt",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/policy.pt",
+      "bytes": 1658209,
+      "sha256": "99be44acef2b84dd836023d47bfb1d141d913bb31a0ec8ebbaad5db0d9775b45"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/ppo/model_26.pt",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/ppo/model_26.pt",
+      "bytes": 21365467,
+      "sha256": "a879efba8a54341fc0a0076e269a61719923382fd60e1eb02949c514bcdcc1da"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/ppo/model_27.pt",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/ppo/model_27.pt",
+      "bytes": 21365467,
+      "sha256": "1ffcf3845d5b4d879a961bd1570d21a0fdcf2a4ab29aa627287bf7bf6076377b"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/ppo/model_28.pt",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/ppo/model_28.pt",
+      "bytes": 21365467,
+      "sha256": "9089e7c4c5f097074cde63b1069af4a996592b430b89e5500e557f6d296b0d39"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/ppo/model_29.pt",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/ppo/model_29.pt",
+      "bytes": 21365467,
+      "sha256": "3424b44fc0cbac689ae3bc34a35c894a417067f0fbe09cab8b77cc88af5f1408"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/ppo/model_30.pt",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/ppo/model_30.pt",
+      "bytes": 21365467,
+      "sha256": "fb1ec686824d7a6f3acc2d74f7a208c89ee7eebd49c625f484b7d75e7fb6df46"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/ppo/model_31.pt",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/ppo/model_31.pt",
+      "bytes": 21365467,
+      "sha256": "4e0ac57be4a192fe679047b6fb4ab360db8df3f724c9e7411f7dcf11ec942bbb"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/ppo/model_32.pt",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/ppo/model_32.pt",
+      "bytes": 21365467,
+      "sha256": "1ffd716b31a74221160e5cb893de68953a01724ad2bcecc624b4cd4e13310710"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/ppo/model_33.pt",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/ppo/model_33.pt",
+      "bytes": 21365467,
+      "sha256": "99c25636323b5b8228555e143392a091ff7e246efad3e1e28ae52aac77483d2f"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/ppo/model_34.pt",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/ppo/model_34.pt",
+      "bytes": 21365467,
+      "sha256": "07bfd83bbd67a3a09ddc1c768b316c7a8a9763b69aaef7d955445fc6c7b52723"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/progress.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/progress.json",
+      "bytes": 8482,
+      "sha256": "4273fe01dc7d12ba9f1fc97d1db1f9851ab0ee042da3b2aead2cf980bf86cd5c"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/source_hashes.json",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/source_hashes.json",
+      "bytes": 39116,
+      "sha256": "c86f58c91318ab9e2b4b26291043d3498262f31e40b835bb95877e5d8480c027"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/source_snapshot.zip",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/source_snapshot.zip",
+      "bytes": 772969,
+      "sha256": "c74cf1707ff55358b40a04243cf6d5f412d6190ddbe7cadd3e0fe9500b9e4dc3"
+    },
+    {
+      "source_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/stdout.log",
+      "member": "unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01/stdout.log",
+      "bytes": 215879,
+      "sha256": "f08ca046a6d9b6e032bd6f80e02b8937d7f38d86981ae00008b2f3f634af2f3c"
+    }
+  ],
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}

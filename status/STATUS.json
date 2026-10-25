@@ -4365,26 +4365,34 @@
         "formal_acceptance": false
       },
       "latest_completed_joint_placement_training": {
-        "lineage": "fresh-joint-placement-reward-public-actor32-initialization",
-        "state": "SUCCEEDED",
-        "output": "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01",
-        "receipt": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/TRAINING_RECEIPT.json",
-        "iteration": 8,
-        "actual_control_env_steps": 2097152,
-        "cumulative_new_learner_steps": 2097152,
-        "actual_gpu_hours": 0.6612111970419452,
-        "finished_at": "2026-10-25T13:23:06.267556+00:00",
-        "checkpoint_sha256": "10bf6c026a39e3ea01bf08425029ba78a906e573051e9bc3bcf26ccd37373cb0",
-        "policy_sha256": "846656e9d02c74f4b72929253ed9196557af4f9affe39236fc55d7f4bc5d744c",
+        "checked_at": "2026-10-25T16:29:47.045069+00:00",
+        "iteration": 40,
+        "source_checkpoint_sha256": "10bf6c026a39e3ea01bf08425029ba78a906e573051e9bc3bcf26ccd37373cb0",
+        "checkpoint_sha256": "62f4e50fb72d8c9c3c9583220aad54761a0482044febd07750e1cb95c20ccca2",
+        "policy_sha256": "99be44acef2b84dd836023d47bfb1d141d913bb31a0ec8ebbaad5db0d9775b45",
+        "actual_control_env_steps": 8388608,
+        "cumulative_new_learner_control_env_steps": 10485760,
+        "actual_gpu_hours": 2.753516433197203,
+        "num_envs": 2048,
+        "initialization": {
+          "mode": "strict_canonical_ground_resume",
+          "num_envs": 2048,
+          "initial_iteration": 8
+        },
         "independent_changing_policy_counts": {
-          "completed_episodes": 4039,
-          "air": 303,
-          "conditional_recovery_count": 82,
-          "complete": 0,
+          "completed_episodes": 18591,
+          "air": 1659,
+          "conditional_recovery_count": 690,
+          "complete": 2,
           "numerical_failures": 0
         },
         "frozen_policy_performance": false,
-        "formal_acceptance": false
+        "formal_acceptance": false,
+        "goal_complete": false,
+        "contact_confirmation": "reports/G07_full_racket_v4/joint_placement_first_training_complete_20261026/FINAL_CONTACT_CONFIRMATION.json",
+        "state": "SUCCEEDED",
+        "native_guard_succeeded": true,
+        "postprocessor_recovery_separate": true
       },
       "native_joint_placement_first_ground_cohort": {
         "report": "reports/G07_full_racket_v4/joint_placement_first_ground_cohort_20261025/REPORT.json",
@@ -4665,7 +4673,50 @@
         "CPU_tests_passed": 73,
         "native_v3_execution": false,
         "integration_into_current_main_sources": false
-      }
+      },
+      "joint40_training_delivery": {
+        "verified_at": "2026-10-25T16:45:51.605215+00:00",
+        "repo": "lzqw/unitree-smash",
+        "tag": "g07-full-racket-v4-progress-20261024",
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_joint40_training_raw_and_contact_evidence_20261026.zip",
+        "release_asset_id": 675559981,
+        "bytes": 483123295,
+        "sha256": "a5b3c8bc661e80efb2ba649a96a095e94a4fb81698a03b7823cd5de9860fe19f",
+        "downloaded_sha256": "a5b3c8bc661e80efb2ba649a96a095e94a4fb81698a03b7823cd5de9860fe19f",
+        "download_verified": true,
+        "independent_download": "/tmp/g07_joint40_delivery_verify_o3_8cms9/G07_joint40_training_raw_and_contact_evidence_20261026.zip",
+        "members": 112,
+        "scope": "Completed changing-policy training evidence only. Frozen40 assessment and new videos were not included while live.",
+        "formal_acceptance": false,
+        "goal_complete": false,
+        "archive": "reports/G07_full_racket_v4/joint40_training_delivery_20261026/ARCHIVE.json",
+        "manifest": "reports/G07_full_racket_v4/joint40_training_delivery_20261026/MANIFEST.json",
+        "upload_receipt": "reports/G07_full_racket_v4/joint40_training_delivery_20261026/UPLOAD_RECEIPT.json"
+      },
+      "historical_completed_joint_placement_training": [
+        {
+          "lineage": "fresh-joint-placement-reward-public-actor32-initialization",
+          "state": "SUCCEEDED",
+          "output": "reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_probe8_01",
+          "receipt": "reports/G07_full_racket_v4/joint_placement_probe8_queue01/TRAINING_RECEIPT.json",
+          "iteration": 8,
+          "actual_control_env_steps": 2097152,
+          "cumulative_new_learner_steps": 2097152,
+          "actual_gpu_hours": 0.6612111970419452,
+          "finished_at": "2026-10-25T13:23:06.267556+00:00",
+          "checkpoint_sha256": "10bf6c026a39e3ea01bf08425029ba78a906e573051e9bc3bcf26ccd37373cb0",
+          "policy_sha256": "846656e9d02c74f4b72929253ed9196557af4f9affe39236fc55d7f4bc5d744c",
+          "independent_changing_policy_counts": {
+            "completed_episodes": 4039,
+            "air": 303,
+            "conditional_recovery_count": 82,
+            "complete": 0,
+            "numerical_failures": 0
+          },
+          "frozen_policy_performance": false,
+          "formal_acceptance": false
+        }
+      ]
     },
     "G08": {
       "state": "TODO",

@@ -1,5 +1,7 @@
 # QuadSmash：Codex /goal 实施与训练任务包
 
+[新学习器40原始训练与接触证据包（483MB）](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_joint40_training_raw_and_contact_evidence_20261026.zip)已上传并独立下载回验：483123295字节，SHA256 `a5b3c8bc661e80efb2ba649a96a095e94a4fb81698a03b7823cd5de9860fe19f`，112成员全部CRC/SHA一致。包含18591个原始训练回合、实际接触状态、源canonical8与末canonical40、27至35更新的诊断权重、10层真实USD依赖、CSV和源码。变化中策略两次完整成功不归因于某个冻结权重；原训练完整动作未记录。打包时仍在运行的冻结40评测与新视频均未混入，见[下载回执](reports/G07_full_racket_v4/joint40_training_delivery_20261026/UPLOAD_RECEIPT.json)。
+
 2026-10-26进展：[新学习器40训练与评测恢复报告](reports/G07_full_racket_v4/joint_placement_iter40_recovery_20261026/PROGRESS_REPORT.json)。续训实际完成8388608控制环境步、2.753516 GPU小时；18591个闭合训练回合独立重算为1659空中、690条件恢复、2完整、NF0。[两次完整训练回合的原生拍线接触记录已逐一匹配](reports/G07_full_racket_v4/joint_placement_first_training_complete_20261026/FINAL_CONTACT_CONFIRMATION.json)，但没有保存原训练全程动作，不能伪造成功视频，也不能把变化中策略成绩算成冻结表现。原后处理错误要求续训回合编号从0开始，实际canonical8保留1至3；新校验改为逐lane严格核对源检查点至末检查点的全部编号连续性，其余检查保持。历史失败/跳过状态未改写、未重跑训练；原seed724201全128冻结40评测已启动，随后CPU导出原六例与TRAIN65/6复测视频。两种原登记实时拍面修正也已恢复条件队列。另一个[奖励/轨迹记录候选分支](https://github.com/lzqw/unitree-smash/tree/g07-live-string-attack-reward-v4-20261025)有73项CPU检查通过，尚未进行v3原生训练；主源码保持至现有全部持有进程退出。完整G07目标仍未通过。
 
 2026-10-25 后续准备：[真实轨迹上的预测误差](reports/G07_full_racket_v4/joint8_prediction_error_20261025/REPORT.json)包含两例35条精确100Hz公共观测，以及71个接触回合的610条50Hz向后差分估算，两类不混称。精确子集中，提前80至120毫秒的局部拍面残差中位数约21.9厘米，40毫秒内约1.3厘米；局部坐标随球拍转动，不能把它当作孤立球预测误差或新策略成绩。原200毫秒两组原生修正试验继续保留，等待实测。

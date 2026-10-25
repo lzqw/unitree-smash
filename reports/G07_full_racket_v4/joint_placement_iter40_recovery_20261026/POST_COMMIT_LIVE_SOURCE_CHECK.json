@@ -1,0 +1,40 @@
+{
+  "checked_at": "2026-10-25T16:43:32.786903+00:00",
+  "queue_observations": [
+    {
+      "queue": "joint_placement_iter40_recovery_20261026",
+      "pid": 1663670,
+      "state": "RUNNING_FROZEN40_ORIGINAL_TRAIN128",
+      "actual_process_identity_confirmed": true,
+      "source_hashes_verified": 363
+    },
+    {
+      "queue": "joint_placement_iter40_video_recovery_20261026",
+      "pid": 1663986,
+      "state": "WAITING_FOR_RECOVERED_NATIVE_FROZEN40",
+      "actual_process_identity_confirmed": true,
+      "source_hashes_verified": 370
+    },
+    {
+      "queue": "live_tangent_trial_recovery_20261026",
+      "pid": 1664491,
+      "state": "WAITING_FOR_RECOVERED_FROZEN40",
+      "actual_process_identity_confirmed": true,
+      "source_hashes_verified": 377
+    }
+  ],
+  "unique_source_files_verified": 383,
+  "all_current_sources_unchanged": true,
+  "actual_frozen40_progress": {
+    "control_ticks": 500,
+    "requested_ticks": 800,
+    "first_episodes_complete": 5,
+    "formal_eligible": false,
+    "formal_acceptance": false
+  },
+  "observation": "Guard job.json is produced at completion, so its absence while the confirmed native child is live does not mean failure.",
+  "candidate_integration_not_performed": true,
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
