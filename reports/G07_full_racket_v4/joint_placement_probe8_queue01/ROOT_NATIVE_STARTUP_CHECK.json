@@ -1,0 +1,50 @@
+{
+  "checked_at": "2026-10-25T12:45:10.239720+00:00",
+  "scope": "Actual native initial states and recorded learner initialization; no first completed PPO update or strategy-performance claim yet.",
+  "source_plan_sha256": "0d12f7817df57b3cff6f93c4582842b86a5eebb64cd6fdc51d6ed79cff570572",
+  "initialization": {
+    "mode": "fresh_learner_with_transferred_public_actor",
+    "num_envs": 2048,
+    "initial_iteration": 0,
+    "current_job_steps_start_at_zero": true,
+    "source_checkpoint_sha256": "2060f15dbe0ebabbb4b4657a6906fbf40ca661564025e8e06888f55b2fe1a041",
+    "source_iteration": 32,
+    "source_num_envs": 512,
+    "source_learner_control_env_steps": 1703936,
+    "public_actor_and_actor_normalizer_transferred": true,
+    "exploration_log_std_transferred": true,
+    "critic_transferred": false,
+    "optimizer_transferred": false,
+    "source_rng_restored": false,
+    "old_physical_state_restored": false,
+    "old_environment_counters_restored": false,
+    "previous_learning_counters_restored": false,
+    "performance_inherited": false
+  },
+  "num_envs": 2048,
+  "all_original_TRAIN_cases": 128,
+  "lanes_per_case": 16,
+  "ground_root_position_expected_m": [
+    0.0,
+    0.0,
+    0.323
+  ],
+  "ground_root_position_max_error_m": 1.3828277578564752e-08,
+  "all_episode_clocks_zero": true,
+  "all_ground_root_joints_velocities_finite": true,
+  "initial_root_velocity_max_abs": 0.0,
+  "actual_composed_asset_audit_present": true,
+  "source_fingerprints_unchanged_count": 353,
+  "source_artifacts_sha256": {
+    "INPUTS.json": "4acd269189af539b3a1743357659d7fbb2073ffabafe81983a2b9e429feef38e",
+    "initial_ground_states.json": "7b4511f8df142e97da799fdf18a876632013d625043013d7eedca242b48adc6a",
+    "asset_dependencies.json": "6591b33978bccc9f6f68aa781fb396a85475f54cc774840ffec700222d1649c0",
+    "source_hashes.json": "c86f58c91318ab9e2b4b26291043d3498262f31e40b835bb95877e5d8480c027"
+  },
+  "native_ground_initialization_verified": true,
+  "first_PPO_update_verified": false,
+  "frozen_policy_performance": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
