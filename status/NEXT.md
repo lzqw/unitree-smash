@@ -1,19 +1,19 @@
-当前唯一GPU0作业：cem35_inner_strings_pose_train32_1150，guard1556243 / child1556257，session98486。源码提交2c7b78a。先核对真实进程、progress和completed/job；禁止重复启动。
+当前唯一GPU0作业：residual_ppo_pilot_train128_1230，guard1559746 / child1559760，session35701。源码提交5b978ac。先查真实进程、INPUTS/progress、error和completed/job；禁止重复启动。
 
-继续前重读目标：/home/autodrive/.codex/attachments/55e175f0-9444-4a09-ad37-681e6586ca51/pasted-text-1.txt。只用现有GPU0，无累计GPU/工作窗上限；保留单job故障保护和真实资源计费。原资产、规则、出球/落点/恢复门槛保持。显卡实测RTX5080 16GB；512环境作业初始化后约3.9GB显存，不要误用其他GPU。
+继续前重读目标：/home/autodrive/.codex/attachments/55e175f0-9444-4a09-ad37-681e6586ca51/pasted-text-1.txt。只用现有GPU0，无累计GPU/工作窗上限；保留每job故障保护和真实资源计费。原物理/规则/验收门槛不变。GPU0实测RTX5080 16GB，无云资源。
 
-CEM35已实际启动：16候选x32个固定TRAIN索引[0,4,...124]=512次执行，不是512种来球。物理62.5us、控制10ms、1代、最多409600控制环境步，guard最长7200秒。回到实际横向candidate12的初始化，航向增益0、高度自适应关闭，算法控制点从UV[0,.10]内移到[0,.07]，不改真实球拍尺寸/质量/碰撞体。打开2,3,7,8,9,10,11,12,13,14,18,25,37坐标搜索，其中8..13是六个臂姿态参数。两个精确参考、八个结构化重定向/挥拍时机候选、六个Gaussian候选。
+当前已启动stock RSL-RL原生残差PPO：全部128个固定TRAIN案例、128并行环境、8个更新，每更新128控制步，总131072控制环境步；62.5us物理/10ms控制/8秒回合。固定基线为CEM32横向candidate12，SHA51a8b19b17e19e60bd7482c7bcb7ed1d4e8b7f50b9317cac3c49007089e8b62d。源仍为UV[0,.10]、航向增益0、无高度自适应；本次不继承任何基线成绩。网络均值初始0，log_std0.1；前两次更新冻结actor和log_std，critic热身；之后学习18维全身残差。腿/臂目标增量上限.12/.15rad，经过原关节范围与5rad/s臂目标速率限制，再进入原生执行器；力矩/速度/资产没有改。
 
-初始化inner_strings_ready_1145/policy.pt，SHA9f8ceca0089094081126b43a688c449452c4e463d7a5b864b96ce8269bfc7403；candidate_bank.json SHAbf1e6f9742a113094d9d796bac5ed182b12719b1d2926937683f88eefb95a1c5。19个历史TRAIN拍线姿态的离线拟合仍有中位2.23cm、最大2.93cm误差，不能称重定向精确或动态可行。316检查通过；800步冻结输入腿指令逐位一致，臂317步改变。1140是未计名义关节饱和的废弃拟合，不启动它；源代码已按原SHA恢复保存，REJECTED.json保留原因。
+PPO脚本scripts/train_full_racket_residual_ppo_v4.py；配置configs/g07_full_racket_residual_ppo_v4.json。训练奖励只来自真实事件和当前因果预测的接近程度；完整链奖励只在实际回合终点发放，原complete标志不变。恢复截断使用既有FinalObservationPPO的真实reset前观测。每lane独立重置规划/行走/恢复/限速缓存，不重置其他lane；行走actor保留世界50Hz节拍。变动权重的训练回合计数不能当作固定策略成绩。
 
-CEM34航向方案已SUCCEEDED但效果失败：4x32=128执行，19次接触/18拍框/1空中拍线，条件恢复1，攻击0/目标0/完整0/NF0。最佳candidate3为1/32空中和1/1恢复；两条相同参考均0/32，不将1/1恢复称为覆盖率提升。0.311382262GPUh /102400步。GENERATION0_SUMMARY和CEM34_HEADING_RESULT_20261025.json已用原始行重算。它在同一1.98s前缀的yaw中位-.0636，对照-.1027；姿态变化未转化为任务改善。
+322检查通过；residual_ppo_ready_1220/REPORT.json证明800步、2lane、18维零残差动作与2c7b78a旧控制器逐位一致。TRAINING_READY.json和CPU用zero_residual_cpu_check.pt明确native_execution=False，不能用它冒充已训练策略。可导出的实际策略应在当前作业结束后产生policy.pt（新schema full-racket-residual-ppo-v4），checkpoint.pt是保留优化器/归一化/RNG的canonical地面重启点。中间ppo/model_*.pt是非canonical诊断权重，不用作完整resume。CEM入口会拒绝residual actor，防止悄悄丢弃网络。
 
-CEM33高度方案也未改善：最佳5/32空中、2/5恢复、攻击2、目标0/完整0/NF0；同参数另一批3/32和2/3恢复。0.305926334GPUh /102400步。CEM33_HEIGHT_RESULT_20261025.json保留。
+本次完成后：先核对job SUCCEEDED、8更新、131072实际步、所有loss/梯度有限、数值故障0，以及actor导出同设备对照误差。再经run_gpu_job.py启动scripts/evaluate_full_racket_train_v4.py --checkpoint 当前run/policy.pt --noise none --output 新目录 --headless，固定策略覆盖全部TRAIN128、cap102400，不能直接用训练回合比例称通过。评价入口已用make_rally_controller识别新schema，仍调用原independent_episode与门槛；旧形式锁不得复用于新源码/权重。若作业报错，保留原目录/回执，修具体问题后用新目录；不要因观测延迟重复启动。
 
-当前较好的广分布实测仍是横向candidate12 TRAIN128：空中19/128、条件恢复12/19、攻击7、目标1、完整0/NF0。同一32种TRAIN索引的历史子集为空中4、条件恢复2、接触20、完整0；只是描述性比较，不是配对因果估计。
+CEM35已SUCCEEDED但无明显改善：16候选x32来球=512执行，不是512种。64接触（54框/10空中拍线）、canonical条件恢复3、攻击1、目标1、完整0、NF0。最佳candidate2为5/32空中、3/5条件恢复、1攻击、0目标/完整；它是结构化retarget_fraction0/lead-.01的提案，两条真正拟合参考0/1均未触球。离线拟合2.23cm误差不能视为动态可行。实际.357040617GPUh/409600步，报告CEM35_INNER_STRINGS_RESULT_20261025.json和GENERATION0_SUMMARY已逐回合重算。当前PPO回到已有广分布证据的横向candidate12。
 
-正式A/B最后证据仍是candidate5未通过：A空中24/200、条件恢复10/24；B空中6/200、恢复1/6；完整0/NF0。新源码/策略不能复用旧形式锁。
+此前失败保留：CEM34航向最佳1/32空中（1/1恢复，不能称覆盖率改善）、0攻击/目标/完整/NF0；CEM33高度最佳5/32、2/5恢复、攻击2、0目标/完整/NF0。报告均已上传。
 
-最新视频Current_effect_lateral_train128_20261025.mp4：42.66秒、2133帧，完整解码/GitHub下载SHA回验。展示同一candidate12的TRAIN23攻击恢复但目标偏远、TRAIN107目标命中但速度不足、TRAIN0拍框失败。视频不代表当前CEM35。62.5MB全TRAIN128原始轨迹、程序、策略包G07_lateral_TRAIN128_native_and_video_20261025.zip已上传下载回验。
+当前较好的广分布固定策略实测仍是横向candidate12 TRAIN128：空中19/128、条件恢复12/19、攻击7、目标1、完整0/NF0。原正式candidate5 A/B各200仍未通过：A空中24/200、恢复10/24；B空中6/200、恢复1/6；完整0/NF0。所有阈值保持完整≥.50、空中≥.70、条件恢复≥.85、数值0，最终仍需新锁与两面板各200。
 
-CEM35完整后运行：/home/autodrive/Isaac/env_isaaclab/bin/python scripts/summarize_full_racket_train_generation_v4.py --run reports/G07_full_racket_v4/cem35_inner_strings_pose_train32_1150 --generation 0 --output reports/G07_full_racket_v4/cem35_inner_strings_pose_train32_1150/GENERATION0_SUMMARY.json。先比较每候选32案例的canonical_air_contacts/conditional_recovery/attack/target/full；若有明显候选，再做TRAIN128或继续同分布优化。没有达到原门槛不称正式通过。接触point_velocity_mps是接触步后读数，不是独立撞击前速度。
+最新视频Current_effect_lateral_train128_20261025.mp4，42.66秒/2133帧解码与GitHub下载SHA回验，展示TRAIN23攻击恢复但目标偏远、TRAIN107目标中但速度不足、TRAIN0拍框失败。不是当前PPO效果。62.5MB全TRAIN128轨迹/程序/策略包G07_lateral_TRAIN128_native_and_video_20261025.zip也已上传回验。接触point_velocity_mps是接触步后读数，不当作撞击前速度标定。

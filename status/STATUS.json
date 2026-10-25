@@ -50,21 +50,21 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/TRAIN128_LATERAL_DIAGNOSTIC_20261025.json",
-      "notes": "航向CEM34已完成并重算，4候选x32来球的128执行仅1空中拍线/1条件恢复、0攻击/目标/完整、NF0；最佳candidate3为1/32空中，两个参考均0/32，不推广该配置。已回到此前横向candidate12，以内侧拍线UV[0,.07]和近似重定向为初始化，在GPU0运行CEM35的16候选x32训练来球、512执行。316检查通过但新物理表现待完成；原正式A/B400完整0结论保留。",
+      "notes": "CEM35拍线内移16x32已完成并重算：最佳candidate2空中5/32、条件恢复3/5、攻击1、目标0/完整0；拟合参考0/1均未触球，NF0。已回到较好的横向candidate12（TRAIN128空中19/128）作为固定基线，GPU0运行原生全身残差PPO，覆盖全部128种TRAIN来球、8更新；先两次critic热身再学习actor，小幅目标增量仍受原关节/力矩/速度及5rad/s臂目标速率限制。PPO进行中的混合策略回合不能当冻结策略成绩；完成后必须单独复测。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
       "active_gpu_jobs": [
         {
-          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/cem35_inner_strings_pose_train32_1150",
-          "guard_pid": 1556243,
-          "child_pid": 1556257,
-          "session_id": 98486,
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_pilot_train128_1230",
+          "guard_pid": 1559746,
+          "child_pid": 1559760,
+          "session_id": 35701,
           "state": "RUNNING",
-          "source_commit": "2c7b78a",
-          "scope": "16candidate x32TRAIN inner-string pose/timing optimization,512executions; no performance yet",
-          "declared_control_env_steps": 409600
+          "source_commit": "5b978ac",
+          "scope": "Stock native residual PPO, all128TRAINcases,8updates; no frozen-policy performance yet",
+          "declared_control_env_steps": 131072
         }
       ],
       "queued_native_sequence": {
@@ -232,6 +232,19 @@
           "resource_receipt": "reports/G07_full_racket_v4/cem34_walk_heading_train32_1120/job.json",
           "actual_gpu_hours": 0.3113822616375142,
           "actual_control_env_steps": 102400
+        },
+        {
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/cem35_inner_strings_pose_train32_1150",
+          "guard_pid": 1556243,
+          "child_pid": 1556257,
+          "session_id": 98486,
+          "state": "SUCCEEDED",
+          "source_commit": "2c7b78a",
+          "scope": "16candidate x32TRAIN inner-string pose/timing optimization,512executions; no performance yet",
+          "declared_control_env_steps": 409600,
+          "resource_receipt": "reports/G07_full_racket_v4/cem35_inner_strings_pose_train32_1150/job.json",
+          "actual_gpu_hours": 0.35704061675111815,
+          "actual_control_env_steps": 409600
         }
       ],
       "prepared_controller_branch": {
@@ -816,10 +829,22 @@
         "prior_unpromoted_fit": "reports/G07_full_racket_v4/inner_strings_ready_1140/REJECTED.json",
         "native_execution_started": true,
         "active_output": "reports/G07_full_racket_v4/cem35_inner_strings_pose_train32_1150",
-        "candidate_bank": "reports/G07_full_racket_v4/inner_strings_ready_1145/candidate_bank.json"
+        "candidate_bank": "reports/G07_full_racket_v4/inner_strings_ready_1145/candidate_bank.json",
+        "native_execution_completed": true,
+        "native_result": "reports/G07_full_racket_v4/CEM35_INNER_STRINGS_RESULT_20261025.json",
+        "promoted": false
       },
       "heading_prefix_geometry_report": "reports/G07_full_racket_v4/heading_frame_diagnosis_1145/REPORT.json",
-      "heading_feedback_result": "reports/G07_full_racket_v4/CEM34_HEADING_RESULT_20261025.json"
+      "heading_feedback_result": "reports/G07_full_racket_v4/CEM34_HEADING_RESULT_20261025.json",
+      "inner_string_search_result": "reports/G07_full_racket_v4/CEM35_INNER_STRINGS_RESULT_20261025.json",
+      "residual_ppo_branch": {
+        "readiness": "reports/G07_full_racket_v4/residual_ppo_ready_1220/TRAINING_READY.json",
+        "launch": "reports/G07_full_racket_v4/RESIDUAL_PPO_PILOT_LAUNCH_20261025.json",
+        "tests_passed": 322,
+        "native_execution_started": true,
+        "native_performance_complete": false,
+        "formal_acceptance": false
+      }
     },
     "G08": {
       "state": "TODO",
