@@ -64,7 +64,13 @@
           "state": "RUNNING",
           "source_commit": "5b978ac",
           "scope": "Stock native residual PPO, all128TRAINcases,8updates; no frozen-policy performance yet",
-          "declared_control_env_steps": 131072
+          "declared_control_env_steps": 131072,
+          "verified_progress": {
+            "update": 5,
+            "actual_control_env_steps": 81920,
+            "all_model_tensors_finite": true,
+            "numerical_failures": 0
+          }
         }
       ],
       "queued_native_sequence": {
@@ -861,6 +867,33 @@
         "actual_control_env_steps_at_check": 49152,
         "first_native_update_report": "reports/G07_full_racket_v4/RESIDUAL_PPO_NATIVE_UPDATE1_20261025.json",
         "first_actor_update_report": "reports/G07_full_racket_v4/RESIDUAL_PPO_NATIVE_UPDATE3_20261025.json"
+      },
+      "latest_native_ppo_progress_report": "reports/G07_full_racket_v4/residual_ppo_update5_check01/REPORT.json",
+      "queued_residual_continuation": {
+        "state_file": "reports/G07_full_racket_v4/residual_resume24_queue01/state.json",
+        "pid": 1563040,
+        "session_id": 61138,
+        "state_at_last_check": "WAITING_FOR_PILOT_AND_FIXED_TRAIN_EVALUATION",
+        "still_running": true,
+        "predecessor_queue_pid": 1560842,
+        "protection": {
+          "minimum_fixed_TRAIN128_air_contacts": 10,
+          "minimum_fixed_TRAIN128_conditional_recoveries": 3,
+          "numerical_failures": 0
+        },
+        "scope": "Internal TRAIN continuation decision only; original formal acceptance gates unchanged.",
+        "next_jobs": [
+          "residual_ppo_resume24_train128_01",
+          "residual_ppo_fixed_train128_iter32_01"
+        ],
+        "next_training": {
+          "additional_updates": 24,
+          "total_iteration_if_completed": 32,
+          "actual_control_env_steps_if_completed": 393216,
+          "resume": "residual_ppo_pilot_train128_1230/checkpoint.pt",
+          "same_config_and_seed": true
+        },
+        "note": "Wait for the existing fixed TRAIN128 queue to exit successfully, independently recompute all128 rows, verify canonical checkpoint/finite export/source fingerprints, then sequentially resume and evaluate. On validation/performance failure, stop for review; never duplicate jobs."
       }
     },
     "G08": {

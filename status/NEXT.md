@@ -1,6 +1,8 @@
 当前唯一GPU0作业：residual_ppo_pilot_train128_1230，guard1559746 / child1559760，session35701。源码提交5b978ac。先查真实进程、INPUTS/progress、error和completed/job；禁止重复启动。
 
-固定策略评测CPU队列已启动：PID1560842，session79173，状态reports/G07_full_racket_v4/residual_eval_queue_1250/state.json。必须同时检查此真实进程和状态：它只在上述PPO guard/child都退出、job SUCCEEDED、8更新/131072步/NF0/canonical checkpoint与导出SHA一致且源码未变后，才接续唯一GPU0固定TRAIN128评测。若state为RUNNING_FIXED_TRAIN_EVALUATION，使用其真实guard PID检查，不要因旧PPO PID消失重启旧训练。队列不会读取正式A/B，也不会把TRAIN结果标为正式通过。当前已核对PPO update2仍critic热身、32768步，所有loss/grad有限；后续actor从update3开始学习。
+固定策略评测CPU队列已启动：PID1560842，session79173，状态reports/G07_full_racket_v4/residual_eval_queue_1250/state.json。必须同时检查此真实进程和状态：它只在上述PPO guard/child都退出、job SUCCEEDED、8更新/131072步/NF0/canonical checkpoint与导出SHA一致且源码未变后，才接续唯一GPU0固定TRAIN128评测。若state为RUNNING_FIXED_TRAIN_EVALUATION，使用其真实guard PID检查，不要因旧PPO PID消失重启旧训练。队列不会读取正式A/B，也不会把TRAIN结果标为正式通过。当前已独立核对PPO update5、81920步，损失和模型张量有限、actor继续有非零更新、NF0；闭合训练回合带早终止偏倚，不当作固定策略成功率。
+
+条件续训CPU队列已启动：PID1563040，session61138，reports/G07_full_racket_v4/residual_resume24_queue01/state.json。它等待上面的PID1560842真实退出且SUCCEEDED，独立重算pilot固定TRAIN128与checkpoint/源码/导出SHA，只有空中触球≥10、条件恢复数≥3、NF0才接续24更新（总迭代32、393216步），随后再固定TRAIN128评测；这些是训练保护条件，不是新的验收标准。续训目录residual_ppo_resume24_train128_01、评测目录residual_ppo_fixed_train128_iter32_01。若旧PPO和旧评测PID已消失，先查此队列真实PID与其state里的新guard PID，禁止重启旧作业。保护条件未满足或验证失败就停下诊断，不自动重试。不得修改已捕获的quadsmash、训练/评测/guard、configs或assets源码；必要修复前先取消本队列，再处理真实问题。docs/reports可正常更新。PREFLIGHT.json已用历史固定TRAIN128实测独立重算19空中/12恢复/0完整/NF0，但不代表新PPO成绩。
 
 继续前重读目标：/home/autodrive/.codex/attachments/55e175f0-9444-4a09-ad37-681e6586ca51/pasted-text-1.txt。只用现有GPU0，无累计GPU/工作窗上限；保留每job故障保护和真实资源计费。原物理/规则/验收门槛不变。GPU0实测RTX5080 16GB，无云资源。
 

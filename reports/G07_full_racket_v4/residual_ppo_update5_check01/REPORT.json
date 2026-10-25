@@ -1,0 +1,41 @@
+{
+  "created_at": "2026-10-25T03:59:26.037628+00:00",
+  "scope": "Native actor update verification only. Closed TRAIN episodes across changing policies and early-termination bias; no fixed-policy rate.",
+  "source_run": "reports/G07_full_racket_v4/residual_ppo_pilot_train128_1230",
+  "verified_live_guard_pid": 1559746,
+  "verified_live_child_pid": 1559760,
+  "update": 5,
+  "actual_control_env_steps": 81920,
+  "recomputed_closed_counts": {
+    "completed_episodes": 119,
+    "air": 4,
+    "conditional_recovery_count": 0,
+    "complete": 0,
+    "numerical_failures": 0
+  },
+  "closed_distinct_TRAIN_indices": 84,
+  "closed_episodes_by_index": {
+    "0": 84,
+    "1": 35
+  },
+  "actor_delta_l2_from_update4": 0.2746593694131632,
+  "all_model_tensors_finite": true,
+  "losses": {
+    "value_function": 33.597898197174075,
+    "surrogate": -0.003964037704281509,
+    "entropy": -15.9111656665802,
+    "gradient_norm_after_clip": 0.9999994039535522,
+    "post_update_kl": 0.004807068966329098,
+    "post_update_clip_fraction": 0.059814453125,
+    "action_std_mean": 0.09996708482503891,
+    "learning_rate": 0.0001
+  },
+  "checkpoint_sha256": {
+    "reports/G07_full_racket_v4/residual_ppo_pilot_train128_1230/ppo/model_3.pt": "9abf709599edd713f166c8ef64cb3d5035ad5bacd8e9f878b7299ad950180d82",
+    "reports/G07_full_racket_v4/residual_ppo_pilot_train128_1230/ppo/model_4.pt": "ba81f617779b96b4fd017142c76ae41d8c8cfaf314b27eba28b38fbbde2ddc08"
+  },
+  "raw_closed_episodes": "reports/G07_full_racket_v4/residual_ppo_update5_check01/closed_episodes.json",
+  "raw_closed_episodes_sha256": "ef592dacbf326a2fc13c66be17084ddd19fa0e6a595fc9b2ac88fac1a0f7f10d",
+  "formal_cases_read": false,
+  "formal_acceptance": false
+}
