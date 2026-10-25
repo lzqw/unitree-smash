@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/TRAIN128_LATERAL_DIAGNOSTIC_20261025.json",
-      "notes": "原96续训及固定TRAIN128均已完成：固定完整0/128、空中24/128、条件恢复8/24、NF0，未达原门槛，条件队列跳过原A/B。两条真实新视频及1171962010字节完整资料包均已上传并下载验SHA。联合落点奖励与显式公共actor迁移已合并，42项CPU检查通过；已登记2048环境8更新的新学习器实验，canonical32仅作actor初始化，原物理、规则、全部来球及验收要求保持。新实验已在GPU0启动，实际2048地面状态、零时钟/初速、128来球各16副本和353源文件SHA已核验；首个PPO更新及262144控制环境步已实际完成，模型/Adam有限，尚无完整8秒回合；纠正后的独立TRAIN128后续评估观察进程已运行等待，新策略尚无成绩，G07仍未通过。 联合奖励新学习器的六案例CPU视频观察进程现已启动等待固定评估；TRAIN19/23/107/0/8/58均在本轮训练前登记，保留全部结果，尚无新视频或新策略成绩。 第3次更新实际786432控制环境步，actor已开始更新且模型/Adam有限；原1429条闭合回合已独立重算88空中/0条件恢复/0完整/NF0，另619路初始回合未闭合，不将截尾子集当作策略退化或冻结策略成绩。",
+      "notes": "原96续训及固定TRAIN128均已完成：固定完整0/128、空中24/128、条件恢复8/24、NF0，未达原门槛，条件队列跳过原A/B。两条真实新视频及1171962010字节完整资料包均已上传并下载验SHA。联合落点奖励与显式公共actor迁移已合并，42项CPU检查通过；已登记2048环境8更新的新学习器实验，canonical32仅作actor初始化，原物理、规则、全部来球及验收要求保持。新实验已在GPU0启动，实际2048地面状态、零时钟/初速、128来球各16副本和353源文件SHA已核验；首个PPO更新及262144控制环境步已实际完成，模型/Adam有限，尚无完整8秒回合；纠正后的独立TRAIN128后续评估观察进程已运行等待，新策略尚无成绩，G07仍未通过。 联合奖励新学习器的六案例CPU视频观察进程现已启动等待固定评估；TRAIN19/23/107/0/8/58均在本轮训练前登记，保留全部结果，尚无新视频或新策略成绩。 第3次更新实际786432控制环境步，actor已开始更新且模型/Adam有限；原1429条闭合回合已独立重算88空中/0条件恢复/0完整/NF0，另619路初始回合未闭合，不将截尾子集当作策略退化或冻结策略成绩。 同奖励续训32更新的观察队列已启动等待本轮固定TRAIN128完整结果：原完整50%/空中70%/条件恢复85%且NF0若达标则转正式准备；未达标时，仅在内部空中至少10、条件恢复至少3且NF0的防崩检查通过后，按原守护严格续训至新学习器iter40，再独立固定复测全部128例。该后继GPU作业尚未启动。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
@@ -3915,6 +3915,34 @@
         "actor_weights_actually_updated": true,
         "scope": "Censored changing-policy TRAIN prefix; neither whole ground cohort nor frozen policy performance.",
         "formal_acceptance": false
+      },
+      "queued_joint_placement_resume32": {
+        "state": "WAITING_FOR_FROZEN_JOINT_REWARD_PROBE8",
+        "pid": 1638238,
+        "session_id": 34609,
+        "state_file": "reports/G07_full_racket_v4/joint_placement_resume32_queue01/state.json",
+        "source": "reports/G07_full_racket_v4/joint_placement_resume32_queue01/run.py",
+        "plan": "reports/G07_full_racket_v4/joint_placement_resume32_queue01/PREDECLARED_PLAN.json",
+        "preparation_checks": "reports/G07_full_racket_v4/joint_placement_resume32_queue01/PREPARATION_CHECKS.json",
+        "num_envs": 2048,
+        "additional_updates": 32,
+        "target_iteration": 40,
+        "additional_control_env_steps": 8388608,
+        "expected_new_learner_cumulative_steps": 10485760,
+        "training_output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_resume32_01",
+        "fixed_assessment_output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_joint_placement_actor32_n2048_iter40_fixed_train128_01",
+        "original_formal_gate_unchanged": true,
+        "decision_order": "Verify actual probe completion and every fixed TRAIN128 episode. If original formal gate is reached, do not extend learning; leave frozen actor for formal review. Otherwise continue only if the declared internal collapse check passes.",
+        "continuation_protection": {
+          "minimum_airborne_contacts": 10,
+          "minimum_conditional_recoveries": 3,
+          "numerical_failures": 0,
+          "scope": "Internal collapse review only; never formal acceptance."
+        },
+        "future_native_job_started": false,
+        "formal_cases_read": false,
+        "formal_acceptance": false,
+        "goal_complete": false
       }
     },
     "G08": {
