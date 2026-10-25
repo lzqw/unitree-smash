@@ -10,6 +10,7 @@ p.add_argument('--output',type=Path,required=True)
 p.add_argument('--base-checkpoint',type=Path,required=True)
 p.add_argument('--config',type=Path,default=ROOT/'configs/g07_full_racket_residual_ppo_v4.json')
 p.add_argument('--resume',type=Path)
+p.add_argument('--resize-ground',action='store_true',help='Explicitly fork a canonical learner onto a larger fresh ground batch; no old physical state restoration')
 p.add_argument('--num-envs',type=int,default=128)
 p.add_argument('--updates',type=int,default=8)
 p.add_argument('--seed',type=int,default=748501)
@@ -63,6 +64,7 @@ def main():
     args.output.mkdir(parents=True,exist_ok=True)
     if (args.output/'INPUTS.json').exists():raise ValueError('Use a new native output directory')
     if args.updates<1:raise ValueError('At least one actual PPO update required')
+    if args.resize_ground and args.resume is None:raise ValueError('--resize-ground requires an actual canonical --resume checkpoint')
     protocol_path=ROOT/'configs/g07_full_racket_eval_v4_r3.json'
     protocol=json.loads(protocol_path.read_text());protocol['_root']=str(ROOT)
     cases,indices=training_cases(ROOT,protocol,None)
@@ -95,18 +97,39 @@ def main():
         atomic_json(args.output/'INPUTS.json',dict(contract=contract,training_indices=indices,
             num_envs=args.num_envs,requested_updates=args.updates,runner=train_cfg,
             configuration_sha256=digest(args.config),resume_checkpoint_sha256=digest(args.resume) if args.resume else None,
+            resize_ground_requested=args.resize_ground,
             physics_dt_s=cfg.sim.dt,policy_dt_s=env.step_dt,formal_cases_read=False,
             formal_acceptance=False,scope='Native TRAIN learning across changing weights; no frozen-policy performance.'))
         runner=NativeRunner(adapter,train_cfg,log_dir=str(args.output/'ppo'),device=env.device)
+        initialization=dict(mode='fresh_zero_mean_actor',num_envs=args.num_envs,initial_iteration=0)
         if args.resume:
             previous=torch.load(args.resume,map_location='cpu',weights_only=False)
             if previous.get('infos',{}).get('residual_contract')!=contract:
                 raise ValueError('Residual baseline/scales/rewards changed across resume')
-            runner.load(str(args.resume),load_optimizer=True)
+            if args.resize_ground:
+                from scripts.residual_ground_resize_v4 import load_resized_ground
+                initialization=load_resized_ground(runner,args.resume)
+            else:
+                runner.load(str(args.resume),load_optimizer=True)
+                initialization=dict(mode='strict_canonical_ground_resume',num_envs=args.num_envs,
+                                    initial_iteration=runner.current_learning_iteration)
             adapter.controller.reset();adapter.mixer.reset();adapter._sync_reference()
         else:
             output_layer=[m for m in runner.alg.policy.actor.modules() if isinstance(m,torch.nn.Linear)][-1]
             with torch.no_grad():output_layer.weight.zero_();output_layer.bias.zero_()
+        input_record=json.loads((args.output/'INPUTS.json').read_text())
+        input_record['initialization']=initialization
+        atomic_json(args.output/'INPUTS.json',input_record)
+        data=env.robot.data;ground_root=data.root_state_w.detach().cpu().clone()
+        ground_root[:,:3]-=env.scene.env_origins.cpu()
+        expected_root=torch.tensor(protocol['initialization']['root_position_m'],dtype=ground_root.dtype)
+        if not torch.allclose(ground_root[:,:3],expected_root[None].expand(args.num_envs,-1),atol=1e-5,rtol=0):
+            raise ValueError('Fresh native ground positions differ from the original protocol')
+        if env.episode_length_buf.any():raise ValueError('Training must begin at actual episode clock zero')
+        atomic_json(args.output/'initial_ground_states.json',dict(scope='Actual native state before this job steps; no physical continuation claim across batch resizing.',
+            initialization=initialization,source_training_indices=[indices[i%len(indices)] for i in range(args.num_envs)],
+            root_state_local=ground_root.tolist(),joint_position_rad=data.joint_pos[:,env.joint_ids].cpu().tolist(),
+            joint_velocity_rad_s=data.joint_vel[:,env.joint_ids].cpu().tolist(),all_episode_clocks_zero=True))
         initial_update=runner.current_learning_iteration;history=[];interrupted=False
         for _ in range(args.updates):
             train_actor=runner.current_learning_iteration>=configuration['actor_warmup_updates']
@@ -132,12 +155,13 @@ def main():
         runner.save_restart(args.output/'checkpoint.pt',infos=dict(residual_contract=contract))
         policy=export_residual_policy(base,runner.alg.policy,scales,public_sample,
             dict(native_execution=adapter.total_control_env_steps>0,completed_updates=runner.current_learning_iteration,
-                 base_policy_sha256=contract['base_policy_sha256'],actual_control_env_steps=adapter.total_control_env_steps))
+                 base_policy_sha256=contract['base_policy_sha256'],actual_control_env_steps=adapter.total_control_env_steps,
+                 num_envs=args.num_envs,initialization=initialization))
         atomic_torch(args.output/'policy.pt',policy)
         atomic_json(args.output/'episodes.json',rows)
         atomic_json(args.output/'contacts.json',env.contact_records)
         atomic_json(args.output/'metrics.json',dict(scope='Changing-policy native TRAIN rollouts only; evaluate exported policy separately.',
-            completed_updates=runner.current_learning_iteration-initial_update,history=history,counts=counts,
+            completed_updates=runner.current_learning_iteration-initial_update,history=history,counts=counts,initialization=initialization,
             checkpoint_aborted_episodes=env.checkpoint_aborted_episodes,
             policy_sha256=digest(args.output/'policy.pt'),formal_acceptance=False))
         if interrupted:

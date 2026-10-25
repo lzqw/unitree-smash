@@ -1,6 +1,6 @@
 # QuadSmash：Codex /goal 实施与训练任务包
 
-当前进度（2026-10-25）：原生全身残差PPO8更新已完成，实际131072控制环境步、0.391037501 GPU小时，数值故障0；最终actor导出与训练模型GPU/CPU对照误差均为0。GPU0已接续导出策略的固定TRAIN128评测，尚无新固定成功率。随后根据实测触球/恢复决定24更新续训；相同TRAIN23/107/0的新视频CPU队列等待评测轨迹。
+当前进度（2026-10-25）：原生全身残差PPO8更新已完成，实际131072控制环境步、0.391037501 GPU小时，数值故障0；最终actor与训练模型对照误差0。GPU0继续固定TRAIN128评测。后续24更新已准备扩至512环境（仍为原128种来球各4副本），保留PPO状态、从真实地面开始；17项CPU检查通过，尚待实际GPU执行。相同TRAIN23/107/0的新视频队列保持运行。
 
 [原生PPO训练包：检查点、策略与原始记录](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_native_residual_PPO_iter8_checkpoint_and_records_20261025.zip)已上传并下载校验（19.57 MB、38成员）。它记录8次更新的真实训练，不代表固定策略或正式A/B验收通过。
 

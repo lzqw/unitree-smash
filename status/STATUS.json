@@ -865,10 +865,10 @@
       },
       "latest_native_ppo_progress_report": "reports/G07_full_racket_v4/residual_pilot_delivery_20261025/REPORT.json",
       "queued_residual_continuation": {
-        "state_file": "reports/G07_full_racket_v4/residual_resume24_queue01/state.json",
-        "pid": 1563040,
-        "session_id": 61138,
-        "state_at_last_check": "WAITING_FOR_PILOT_AND_FIXED_TRAIN_EVALUATION",
+        "state_file": "reports/G07_full_racket_v4/residual_resize512_queue01/state.json",
+        "pid": 1566225,
+        "session_id": 47168,
+        "state_at_last_check": "WAITING_FOR_FIXED_TRAIN128_ITER8",
         "still_running": true,
         "predecessor_queue_pid": 1560842,
         "protection": {
@@ -876,19 +876,22 @@
           "minimum_fixed_TRAIN128_conditional_recoveries": 3,
           "numerical_failures": 0
         },
-        "scope": "Internal TRAIN continuation decision only; original formal acceptance gates unchanged.",
+        "scope": "TRAIN continuation control only; original formal acceptance gates unchanged.",
         "next_jobs": [
-          "residual_ppo_resume24_train128_01",
-          "residual_ppo_fixed_train128_iter32_01"
+          "residual_ppo_n512_resume24_01",
+          "residual_ppo_fixed_train128_iter32_n512_01"
         ],
         "next_training": {
           "additional_updates": 24,
           "total_iteration_if_completed": 32,
-          "actual_control_env_steps_if_completed": 393216,
-          "resume": "residual_ppo_pilot_train128_1230/checkpoint.pt",
-          "same_config_and_seed": true
+          "num_envs": 512,
+          "distinct_TRAIN_cases": 128,
+          "lanes_per_case": 4,
+          "control_env_steps_if_completed": 1572864,
+          "initialization": "canonical learner fork on fresh ground; old physical state not restored",
+          "source_checkpoint": "residual_ppo_pilot_train128_1230/checkpoint.pt"
         },
-        "note": "Wait for the existing fixed TRAIN128 queue to exit successfully, independently recompute all128 rows, verify canonical checkpoint/finite export/source fingerprints, then sequentially resume and evaluate. On validation/performance failure, stop for review; never duplicate jobs."
+        "note": "Wait for successful existing fixed TRAIN128 evaluation, recompute raw metrics and verify source/checkpoint. Then load learner/Adam/normalizers/RNG, reset all512 actual native environments to ground and train. Validate ground logs and output before fixed TRAIN128 iter32 evaluation. 512-env PPO has not executed yet."
       },
       "queued_residual_video": {
         "state_file": "reports/G07_full_racket_v4/residual_video_queue01/state.json",
@@ -929,7 +932,37 @@
           "sha256": "6fb4f8c8ef1ef469e6e64f914a37846cddecca7ab4bb83ae9dacc8cfd6485eaf",
           "download_verified": true
         }
-      }
+      },
+      "historical_queued_residual_continuations": [
+        {
+          "state_file": "reports/G07_full_racket_v4/residual_resume24_queue01/state.json",
+          "pid": 1563040,
+          "session_id": 61138,
+          "state_at_last_check": "CANCELLED",
+          "still_running": false,
+          "predecessor_queue_pid": 1560842,
+          "protection": {
+            "minimum_fixed_TRAIN128_air_contacts": 10,
+            "minimum_fixed_TRAIN128_conditional_recoveries": 3,
+            "numerical_failures": 0
+          },
+          "scope": "Internal TRAIN continuation decision only; original formal acceptance gates unchanged.",
+          "next_jobs": [
+            "residual_ppo_resume24_train128_01",
+            "residual_ppo_fixed_train128_iter32_01"
+          ],
+          "next_training": {
+            "additional_updates": 24,
+            "total_iteration_if_completed": 32,
+            "actual_control_env_steps_if_completed": 393216,
+            "resume": "residual_ppo_pilot_train128_1230/checkpoint.pt",
+            "same_config_and_seed": true
+          },
+          "note": "Wait for the existing fixed TRAIN128 queue to exit successfully, independently recompute all128 rows, verify canonical checkpoint/finite export/source fingerprints, then sequentially resume and evaluate. On validation/performance failure, stop for review; never duplicate jobs.",
+          "superseded_reason": "Replace128-env continuation with explicit512-env learner fork from fresh ground; current fixed evaluation and video queue untouched"
+        }
+      ],
+      "residual_ground_resize_readiness": "reports/G07_full_racket_v4/residual_resize512_queue01/PREFLIGHT.json"
     },
     "G08": {
       "state": "TODO",

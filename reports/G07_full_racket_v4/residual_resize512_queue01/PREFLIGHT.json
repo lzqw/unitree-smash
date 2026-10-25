@@ -1,0 +1,58 @@
+{
+  "created_at": "2026-10-25T04:19:02.415206+00:00",
+  "scope": "CPU readiness and observational native throughput evidence only;512-env PPO itself has not yet run.",
+  "canonical_source_sha256": "f1f58f6bbc6026d8066e1af9aa6d63b2237ab4a8a44da0b7f3ed18ec8bba4443",
+  "source_num_envs": 128,
+  "target_num_envs": 512,
+  "distinct_TRAIN_cases": 128,
+  "lanes_per_case": 4,
+  "planned_additional_updates": 24,
+  "planned_control_env_steps": 1572864,
+  "old_physical_buffers_not_restored": true,
+  "policy_optimizer_normalizers_rng_preserved": true,
+  "strict_NativeRunner_resume_unchanged": true,
+  "checks": "17 focused CPU tests passed, including Adam continuation equality, real ground reset invocation, observation-buffer restoration, RNG restoration and rejection of incompatible/noncanonical/nonfinite sources.",
+  "source_sha256": {
+    "scripts/residual_ground_resize_v4.py": "b1803461faba4044d3560d0c81d57ba3bebb61298c790e1dfcef46b0981efa14",
+    "scripts/train_full_racket_residual_ppo_v4.py": "24cb659d7a78152549d8b3c2052663b933b215569b3d4cd802586c56d4e56633",
+    "reports/G07_full_racket_v4/residual_resize512_queue01/run.py": "268f0794e36b957b5ee673a035026f2a721bc2857bc356210735a2bfe162d2c1"
+  },
+  "historical_native_throughput": [
+    {
+      "run": "cem35_inner_strings_pose_train32_1150",
+      "num_envs": 512,
+      "actual_control_env_steps": 409600,
+      "elapsed_s": 1285.3462203040253,
+      "env_steps_per_second": 318.66900414046927,
+      "job_sha256": "68ae9743f483242616deb63a4d0e8f398e787506b4b06023b95d1d1578cd6641"
+    },
+    {
+      "run": "cem34_walk_heading_train32_1120",
+      "num_envs": 128,
+      "actual_control_env_steps": 102400,
+      "elapsed_s": 1120.9761418950511,
+      "env_steps_per_second": 91.34895576536451,
+      "job_sha256": "16f8a66545bca13c5f41cb7e353a5c98811109ecd6efdad6d91202f6690e69a5"
+    },
+    {
+      "run": "train128_lateral_c12_1025",
+      "num_envs": 128,
+      "actual_control_env_steps": 102400,
+      "elapsed_s": 1091.436246723053,
+      "env_steps_per_second": 93.82132974550508,
+      "job_sha256": "aca6c31bd3dfe2d2290c80e70c9b348e900dcee3e2e7d601068c566ddf676a84"
+    },
+    {
+      "run": "residual_ppo_pilot_train128_1230",
+      "num_envs": 128,
+      "actual_control_env_steps": 131072,
+      "elapsed_s": 1407.7350046830252,
+      "env_steps_per_second": 93.1084327405164,
+      "job_sha256": "3c23ab9e3e98aab60ae0a3438605624c97630e23a658da29f0ecd839b65e1396"
+    }
+  ],
+  "throughput_limit": "Different native algorithms/controllers and initializations; these records motivate a512-env PPO trial but do not establish its speedup or policy improvement.",
+  "native512_PPO_executed": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false
+}
