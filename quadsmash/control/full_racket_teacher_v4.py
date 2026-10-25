@@ -33,6 +33,9 @@ class FullRacketTeacherV4:
         self.arm_velocity=torch.tensor(seed['joint_velocity_seed_rad_s'],dtype=torch.float32,device=device)
         self.pitch_basis=torch.tensor(seed['pitch_compensation_basis_rad_per_rad'],dtype=torch.float32,device=device)
         self.smooth_recovery_arm=seed.get('smooth_recovery_arm',False)
+        self.lateral_residual_feedback=seed.get('lateral_residual_feedback',False)
+        if type(self.lateral_residual_feedback) is not bool:
+            raise ValueError('Lateral residual feedback switch must be boolean')
         self.nominal_pitch=float(seed.get('nominal_projected_pitch_rad',0.))
         self.leg_event_time_gain=float(seed.get('leg_event_time_gain',1.))
         self.leg_recovery_blend=LegRecoveryBlend(count,device,seed.get('leg_recovery_blend_s',0.))
@@ -135,6 +138,14 @@ class FullRacketTeacherV4:
                     obs[:,773]>.5,self.preparation['unhit_reference_max_x_m'])
                 error_position=guided-point
             error_normal=.3*(normal_target-obs[:,48:51])
+            if self.lateral_residual_feedback:
+                # Correct measured in-plane position error continuously,
+                # preserving the feedforward strike and its normal motion.
+                # The independently configured face controller sets attack
+                # orientation; this solve holds that orientation instead.
+                unit=normal_target/normal_target.norm(dim=1,keepdim=True).clamp_min(1e-6)
+                error_position-=unit*(error_position*unit).sum(1,keepdim=True)
+                error_normal=torch.zeros_like(error_normal)
             jacobian=torch.cat((jp,.3*jn),1)
             error=torch.cat((error_position,error_normal),1)
             solved=torch.linalg.solve(jacobian@jacobian.transpose(1,2)+.04**2*self.task_eye,error[:,:,None])
@@ -150,10 +161,15 @@ class FullRacketTeacherV4:
             airborne=(obs[:,772]+obs[:,773])>.5
             correction=((time-event_time+.25)/.12).clamp(0,1)*((event_time+.12-time)/.12).clamp(0,1)
             gain=parameters[:,18]*correction*airborne
+            if self.lateral_residual_feedback:
+                # Public ball-presence/clock gates permit correction before
+                # takeoff, while the same slew and actuator limits still act.
+                gain=parameters[:,18]*correction*(obs[:,67]>.5)*(time<=event_time+.03)
             if self.preparation is not None:
                 preparation_gain=self.preparation['servo_gain']*((time-.20)/.50).clamp(0,1)
                 gain=torch.maximum(gain,preparation_gain)
-            arm=torch.lerp(arm,servo,gain[:,None])
+            arm=(arm+gain[:,None]*delta if self.lateral_residual_feedback
+                 else torch.lerp(arm,servo,gain[:,None]))
         fold=((time-(center+half_window))/.50).clamp(0,1)
         arm=torch.lerp(arm,default[12:][None],fold[:,None])
         if self.joint_preparation is not None:
