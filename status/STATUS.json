@@ -66,23 +66,23 @@
           "parent_queue_session_id": 81975,
           "scope": "Native residual PPO learner fork on2048 fresh ground environments,128 TRAIN cases replicated16 times;64additional updates from32 to96, no frozen performance yet.",
           "declared_control_env_steps": 16777216,
-          "independently_verified_update": 41,
-          "verified_current_job_steps": 2359296,
+          "independently_verified_update": 46,
+          "verified_current_job_steps": 3670016,
           "progress_file": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/progress.json",
-          "verified_cumulative_learner_steps": 4063232,
+          "verified_cumulative_learner_steps": 5373952,
           "model_optimizer_tensors_finite": true,
           "last_verified_training_counts": {
-            "completed_episodes": 4830,
-            "air": 386,
-            "conditional_recovery_count": 145,
-            "complete": 0,
+            "completed_episodes": 7766,
+            "air": 648,
+            "conditional_recovery_count": 263,
+            "complete": 1,
             "numerical_failures": 0
           },
-          "diagnostic_checkpoint_sha256": "0e639ba6cbe412ac641e81995971d1979962ed0f7f3de0503a2089cfec001f90",
+          "diagnostic_checkpoint_sha256": "f1daedb511363e71e3f261ae62e792c5b2abe7d9716b20bf9c008a1fbf568a66",
           "diagnostic_checkpoint_canonical_restart": false,
-          "verified_progress_sha256": "cdae2dddaed29a92814f07231dcd52ef3f89067a63b2af2d9ebf9e7a9ade6a52",
-          "verified_episode_snapshot_sha256": "ce9ec8d623f1f456e53a97a35423631d51f5cf5691ae28572f8a8501637fdc07",
-          "verified_at": "2026-10-25T06:54:44.769261+00:00"
+          "verified_progress_sha256": "3e7406112cbe48456779092bc6a7cfcb4dafe1905581917d593ef328414a1ba1",
+          "verified_episode_snapshot_sha256": "7dc20bb5e5533ff12b5d9b9674f6b619ba48f082918105b82c01636e136deb1e",
+          "verified_at": "2026-10-25T07:23:28.299442+00:00"
         }
       ],
       "queued_native_sequence": {
@@ -1597,13 +1597,16 @@
       "prepared_joint_placement_reward": {
         "state": "CPU_VERIFIED_CANDIDATE_NATIVE_NOT_RUN",
         "branch": "g07-joint-placement-reward-v4-20261025",
-        "commit": "e0a8435473ea8f4259c58c4e6f5406a67ba7d857",
+        "commit": "8314950813332cf7d1d47b12d81dc503e07a0872",
         "worktree": "/home/autodrive/LZQW/unitree_smash_joint_reward",
         "report_url": "https://github.com/lzqw/unitree-smash/blob/e0a8435473ea8f4259c58c4e6f5406a67ba7d857/reports/G07_full_racket_v4/joint_placement_candidate_20261025/REPORT.json",
-        "checks": "28targeted CPU checks and static replay of actual2048 first-ground rows",
+        "checks": "42targeted CPU checks; actual iter32 actor transfer has0 output error, critic unchanged and Adam/counters fresh; old strict resume/resize reject new reward.",
         "scope": "Optional TRAIN bonus for actual legal air attacks/crossing and first-landing distance. Original asset, physics, actuation, cases and acceptance unchanged. No native candidate training.",
-        "activation": "Review existing iter96 frozen TRAIN128 first; preserve original source for formal panels if warranted. Otherwise consider merging only after both original source-fingerprinted native and CPU video workflows end, then run a fresh opt-in learner. Old-reward strict resume is still rejected.",
-        "formal_acceptance": false
+        "activation": "Review original iter96 fixed TRAIN128 first. Preserve its source if formal panels are warranted. Otherwise consider candidate integration only after all original native and CPU video owners (including separate TRAIN58 retest) end, in a prepared environment. A new reward learner may explicitly --initialize-actor from a compatible completed canonical source with fresh critic/Adam/counters; strict --resume remains unchanged.",
+        "formal_acceptance": false,
+        "previous_commit": "e0a8435473ea8f4259c58c4e6f5406a67ba7d857",
+        "actor_transfer_source": "scripts/initialize_residual_actor_v4.py",
+        "actor_transfer_report_url": "https://github.com/lzqw/unitree-smash/blob/8314950813332cf7d1d47b12d81dc503e07a0872/reports/G07_full_racket_v4/actor_transfer_native_source_check_20261025/REPORT.json"
       },
       "formal_residual_loader_cpu_check": {
         "report": "reports/G07_full_racket_v4/formal_residual_loader_check_20261025/REPORT.json",
@@ -1624,6 +1627,60 @@
         "formal_cases_read": false,
         "formal_acceptance": false,
         "scope": "Actual CPU loader/batch-shape integration probe on the completed iter32 native policy; no new simulation or formal rollout."
+      },
+      "native2048_training_complete_milestone": {
+        "report": "reports/G07_full_racket_v4/residual_n2048_first_complete_20261025/REPORT.json",
+        "report_sha256": "6bf20d5df6f1e8742c94c555a6a55de1576c6ee264c57336b8d55cfbdf95e384",
+        "native_case_id": "TRAIN58_LANE1338_EP2",
+        "source_TRAIN_case": 58,
+        "snapshot_update": 46,
+        "job_control_ticks": {
+          "start": 948,
+          "end": 1748
+        },
+        "actor_iterations_encountered": [
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45
+        ],
+        "contact_rollout_actor_iteration": 41,
+        "outgoing_speed_mps": 8.003044846178387,
+        "first_landing_m": [
+          3.7938079833984375,
+          0.138824462890625,
+          0.025042880326509476
+        ],
+        "recovery_s": 2.939969301223755,
+        "net_margin_m": 0.0050858259201049805,
+        "counts": {
+          "completed_episodes": 7766,
+          "air": 648,
+          "conditional_recovery_count": 263,
+          "complete": 1,
+          "numerical_failures": 0
+        },
+        "native_contact_record_match_pending": true,
+        "complete_training_motion_saved": false,
+        "scope": "One independently rechecked complete TRAIN58 native episode during changing-policy stochastic PPO learning. No frozen-policy performance or formal A/B claim.",
+        "formal_acceptance": false
+      },
+      "queued_iter96_TRAIN58_video": {
+        "pid": 1594357,
+        "session_id": 96095,
+        "state": "WAITING_FOR_NATIVE_WORKFLOW",
+        "state_file": "reports/G07_full_racket_v4/residual_iter96_train58_video_queue01/state.json",
+        "source": "reports/G07_full_racket_v4/residual_iter96_train58_video_queue01/run.py",
+        "predeclared_plan": "reports/G07_full_racket_v4/residual_iter96_train58_video_queue01/PREDECLARED_PLAN.json",
+        "preselected_TRAIN_indices": [
+          58
+        ],
+        "reason": "Targeted prospective frozen retest after TRAIN58_LANE1338_EP2 completed during changing-policy training; success not inherited.",
+        "renderer_uses_gpu": false,
+        "formal_acceptance": false
       }
     },
     "G08": {

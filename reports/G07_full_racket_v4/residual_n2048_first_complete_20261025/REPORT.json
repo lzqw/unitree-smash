@@ -1,0 +1,138 @@
+{
+  "created_at": "2026-10-25T07:23:28.299442+00:00",
+  "scope": "One independently rechecked complete TRAIN58 native episode during changing-policy stochastic PPO learning. No frozen-policy performance or formal A/B claim.",
+  "native_case_id": "TRAIN58_LANE1338_EP2",
+  "env_id": 1338,
+  "episode_index": 2,
+  "source_training_index": 58,
+  "first_independently_observed_complete_counter_update": 46,
+  "job_initial_ground_states_sha256": "5c20c908bd06594562a642b50d1fbb26bda30d4fe83e3bede87a25b3ae5de890",
+  "source_run": "residual_ppo_n2048_resume64_01",
+  "source_commit": "a5716750e2f996dd7ddf10e001fa898d02c525cc",
+  "source_snapshot_sha256": "e36959ca2ec8f0fed184f51526bbff18124e91796a444e7038a210f9e861197d",
+  "runtime_inputs_sha256": "6c44a47d2ce7f6e0c03c95d9e601a1d538dbf330187a7b07a681e2124a802bd0",
+  "independent_original_gates": {
+    "airborne_contact": true,
+    "conditional_recovery": true,
+    "complete": true,
+    "fault": false
+  },
+  "contact_point_m": [
+    1.0242919921875,
+    0.0443267822265625,
+    1.753450632095337
+  ],
+  "outgoing_velocity_mps": [
+    7.486155986785889,
+    0.2514101266860962,
+    -2.818330764770508
+  ],
+  "outgoing_speed_mps": 8.003044846178387,
+  "crossing_point_m": [
+    1.524999976158142,
+    0.06125573068857193,
+    1.5540858507156372
+  ],
+  "net_margin_m": 0.0050858259201049805,
+  "first_landing_m": [
+    3.7938079833984375,
+    0.138824462890625,
+    0.025042880326509476
+  ],
+  "recovery_s": 2.939969301223755,
+  "total_com_rise_m": 0.25134941935539246,
+  "airborne_s": 0.4509977400302887,
+  "event_times_s": {
+    "contact_time_s": 2.8149921894073486,
+    "release_time_s": 2.815429449081421,
+    "crossing_time_s": 2.8788604736328125,
+    "first_landing_time_s": 3.1964075565338135
+  },
+  "jump": {
+    "env_id": 1338,
+    "max_height_m": 0.6758633852005005,
+    "total_com_rise_m": 0.25134941935539246,
+    "airborne_s": 0.4509977400302887,
+    "recovery_s": 2.939969301223755,
+    "takeoff_time_s": 2.6309916973114014,
+    "landing_time_s": 3.0909583568573,
+    "maximum_body_ground_force_n": 0.0,
+    "max_leg_torque_nm": 23.5,
+    "max_arm_torque_nm": 16.412418365478516,
+    "max_joint_speed_rad_s": 30.000032424926758,
+    "clipped_action_values": 0.0,
+    "limited_joint_targets": 0.0,
+    "saturated_leg_joint_substeps": 1766.0,
+    "qualified_jump_landed": true,
+    "qualified_flight_seen": true,
+    "body_landing": false,
+    "stable_recovery": true,
+    "success": true,
+    "terminated": false
+  },
+  "all_closed_training_counts_at_snapshot": {
+    "completed_episodes": 7766,
+    "air": 648,
+    "conditional_recovery_count": 263,
+    "complete": 1,
+    "numerical_failures": 0
+  },
+  "snapshot_update": 46,
+  "current_job_control_env_steps": 3670016,
+  "cumulative_learner_control_env_steps": 5373952,
+  "job_control_ticks": {
+    "start": 948,
+    "end": 1748
+  },
+  "actor_iterations_encountered": [
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45
+  ],
+  "contact_rollout_actor_iteration": 41,
+  "diagnostic_checkpoint_at_snapshot": {
+    "path": "reports/G07_full_racket_v4/residual_ppo_n2048_resume64_01/ppo/model_45.pt",
+    "sha256": "f1daedb511363e71e3f261ae62e792c5b2abe7d9716b20bf9c008a1fbf568a66",
+    "canonical_native_resume": false
+  },
+  "current_source_matches_native_snapshot": true,
+  "runtime_source_hashes": {
+    "configs/g07_full_racket_eval_v4_r3.json": "04121cfb257ea4d2e288c69b44dd0c8dbada814e0bf95c8a16f5af7ef2390367",
+    "scripts/train_full_racket_residual_ppo_v4.py": "24cb659d7a78152549d8b3c2052663b933b215569b3d4cd802586c56d4e56633",
+    "quadsmash/evaluation_v4.py": "efe610b42103a45b75fa98acb2a7fe221536abb752ebd665fc926c6ffb657b38",
+    "quadsmash/tasks/stand/full_racket_train_env_v4.py": "c4bd3e2f06721ce0a20c20864aef47e462dc303caae361a161733a97f00d2a55",
+    "quadsmash/tasks/stand/full_racket_env_v4.py": "56909143cd4aef306f5cc5d3e547fe881a34aa9af9c571ea7edb9bafb2a50d8a",
+    "quadsmash/tasks/stand/coupled_env.py": "97c3997f703a9cf62fa9bc642ca3605da26b7507982d07ef525dff007300961c",
+    "quadsmash/tasks/stand/jump_env.py": "03c728433d3699899609b8a483d52ee74c798fa04cad560ceb98c16765a1415d"
+  },
+  "protocol_sha256": "04121cfb257ea4d2e288c69b44dd0c8dbada814e0bf95c8a16f5af7ef2390367",
+  "asset_sha256": "c2264fcece90b042c7c6a1cac7d516af83972729d0402947e3a519041e184cf2",
+  "physical_configs": {
+    "configs/full_racket_v4.json": "d5266604b7cc7a221752de60bf68ff609e66e5fbc16ff3ed1904facc0cf63d3a",
+    "configs/court_net_v4.json": "184d07dde336bf36be7dfde089373c851a2bcb855a6e44f4120442b59818b4f4",
+    "configs/shuttle_physics_v2.json": "dba0e8d45edd661185c7f0b8a379f63993d1a87269740e672688b4577e359229",
+    "configs/evaluation_protocol_v2.json": "421497aa51eecac023c70b200e8a75ecafff01527dcf215665d5d96c1e8266a8",
+    "configs/full_racket_v4_r2.json": "b625c458880f1567fe63676fe0c5209f1d5f956ef8c419eb8c84cb229cabe46d",
+    "configs/full_racket_v4_r3.json": "14d58dd674665424dab63e67d525daf9b2239821797b97202aa45f9af1e5a26c",
+    "configs/full_racket_reset_v4.json": "0d5246e0b39daabd0c0cb15f5259c7c61df455ccb191835932cc83f4886df25b"
+  },
+  "full_closed_snapshot_sha256": "ca871a05de248b51c9aa659912a96f4611139300d679d4f5cab39a79115a2d1a",
+  "full_closed_uncompressed_sha256": "7dc20bb5e5533ff12b5d9b9674f6b619ba48f082918105b82c01636e136deb1e",
+  "native_contact_record_match_pending": true,
+  "limitations": [
+    "Actor and observation normalizers changed during this episode; it does not demonstrate a single frozen actor can reproduce it.",
+    "The exact contact records are flushed at the end of the active native training job; match them after that existing job exits.",
+    "No full50Hz body trajectory was saved by this PPO trainer, so an exact-motion video of this episode cannot be reconstructed from these event and terminal records.",
+    "Ground initialization of this later episode is backed by the unchanged native reset implementation and its ground flag; an actual episode2 initial frame was not separately logged.",
+    "The terminal ball position is after first ground and dead-ball rolling. Use first_landing_m for the scored landing and hide the dead ball in terminal illustrations.",
+    "Peak arm torque and speed are aggregate episode metrics; no per-joint time history or real-hardware calibration is inferred.",
+    "Earlier full-racket CEM completions were TRAIN65 and the previous512-env PPO completion was TRAIN19. This is another isolated TRAIN case, not broad-distribution or fixed-policy acceptance."
+  ],
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
