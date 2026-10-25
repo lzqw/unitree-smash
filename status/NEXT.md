@@ -21,3 +21,5 @@ CEM35已SUCCEEDED但无明显改善：16候选x32来球=512执行，不是512种
 最新视频Current_effect_lateral_train128_20261025.mp4，42.66秒/2133帧解码与GitHub下载SHA回验，展示TRAIN23攻击恢复但目标偏远、TRAIN107目标中但速度不足、TRAIN0拍框失败。不是当前PPO效果。62.5MB全TRAIN128轨迹/程序/策略包G07_lateral_TRAIN128_native_and_video_20261025.zip也已上传回验。接触point_velocity_mps是接触步后读数，不当作撞击前速度标定。
 
 原生PPO第1次critic热身更新已实际完成并独立核对：16384控制环境步，model_0.pt iter1；权重/归一化张量、损失、梯度均有限，value loss .00189918、grad norm .0538005，actor均值仍0符合热身设置。还没有完成整回合；不能把这视为触球/策略通过。RESIDUAL_PPO_NATIVE_UPDATE1_20261025.json保留精确checkpoint哈希和接口。model_0.pt不是canonical resume，仍等待8次完整训练及checkpoint.pt。
+
+原生PPO update3已完成且actor确实更新：49152步，model_1(iter2)与model_2(iter3)的actor权重L2差非零，所有模型张量有限；value loss43.6535、grad norm.9999996、KL.00580247、clip fraction.0712891、std约.0999893。已闭合72回合中2空中、0条件恢复、0完整；这是早终止偏倚子集，不能换算固定策略成功率，仍有回合待观察。报告RESIDUAL_PPO_NATIVE_UPDATE3_20261025.json与检查点SHA已保存。保持当前8更新作业与条件评测队列运行。
