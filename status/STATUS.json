@@ -50,31 +50,19 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/CEM31_EVALUATION_AND_LATERAL_NEXT_20261025.json",
-      "notes": "CEM31 candidate5正式A/B各200已完成并未通过：A完整0/200、空中接触24/200、接触后恢复10/24；B完整0/200、空中接触6/200、接触后恢复1/6；NF0。TRAIN128为空中接触17/128、恢复9/17、攻击5、完整0。基于原生轨迹测得漏拍案例横向中位偏差约9cm，新增默认关闭的连续横向臂部修正，CPU800步关闭时逐位等价、开启时腿命令不变；291测试通过。CEM32正在GPU0执行14组gain/lead提案与2条参考，尚无性能结论。",
+      "notes": "CEM31 candidate5固定A/B400未通过：A空中24/200、恢复10/24；B空中6/200、恢复1/6；完整0/NF0。CEM32连续横向修正完成16候选x8来球原生测量，candidate12为4/8空中拍线、其中3次恢复、2次目标区落点、完整0、NF0。当前GPU0执行该固定权重TRAIN128分布诊断，尚无泛化结论。新31秒正式评测视频和272MB完整原生轨迹证据包已上传并下载回验。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
       "active_gpu_jobs": [
         {
-          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/cem32_lateral_feedback_1015",
-          "guard_pid": 1540471,
-          "child_pid": 1540508,
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/train128_lateral_c12_1025",
+          "guard_pid": 1544539,
+          "child_pid": 1544553,
           "state": "RUNNING",
-          "source_commit": "3281a68",
-          "candidates": 16,
-          "generations": 1,
-          "training_indices": [
-            0,
-            8,
-            16,
-            24,
-            64,
-            72,
-            80,
-            88
-          ],
-          "declared_control_env_steps": 102400
+          "source_commit": "5e72b78a0e57454934bd4fcf06e67b95498ef3e5",
+          "scope": "TRAIN128 fixed-policy diagnostic; no formal-panel claim"
         }
       ],
       "queued_native_sequence": {
@@ -83,7 +71,7 @@
         "still_running": false
       },
       "native_air_string_contact_milestone": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
-      "latest_native_training_summary": "reports/G07_full_racket_v4/contact_lead_gain_normal_candidate43_cem28/GENERATION3_SUMMARY.json",
+      "latest_native_training_summary": "reports/G07_full_racket_v4/cem32_lateral_feedback_1015/GENERATION0_SUMMARY.json",
       "latest_video": {
         "path": "reports/G07_full_racket_v4/video/Current_formal_evaluation_cem31_20261025.mp4",
         "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_formal_evaluation_cem31_20261025.mp4",
@@ -93,26 +81,26 @@
         "scope": "Actual formal candidate5 evaluation episodes; original400-case failure counts shown."
       },
       "latest_completed_generation": {
-        "had_contact": 76,
-        "frame_hit": 34,
-        "airborne_string_hit": 42,
-        "attack_outgoing": 0,
-        "recovery_success": 56,
-        "crossed_net": 37,
-        "landed_legal_court": 28,
-        "landed_target": 18,
+        "had_contact": 63,
+        "frame_hit": 47,
+        "airborne_string_hit": 16,
+        "attack_outgoing": 4,
+        "recovery_success": 54,
+        "crossed_net": 16,
+        "landed_legal_court": 15,
+        "landed_target": 5,
         "complete_smash": 0,
         "robot_net_fault": 0,
         "racket_invasion_fault": 0,
         "executions": 128,
-        "usable_air_strings": 41,
-        "air_strings_and_recovery": 15,
-        "attack_outgoing_and_recovery": 0,
-        "canonical_air_contacts": 42,
-        "canonical_conditional_recovery_count": 15,
+        "usable_air_strings": 16,
+        "air_strings_and_recovery": 11,
+        "attack_outgoing_and_recovery": 4,
+        "canonical_air_contacts": 16,
+        "canonical_conditional_recovery_count": 11,
         "canonical_complete": 0,
-        "robot_rule_terminal": 2,
-        "body_ground_terminal": 67,
+        "robot_rule_terminal": 0,
+        "body_ground_terminal": 57,
         "numerical_failures": 0
       },
       "pending_rule_regression": {
@@ -732,7 +720,9 @@
         "duration_s": 31.0,
         "sha256": "8578f97057d6d41da425617f90b9275d91f43b5597df060168accad56b257119",
         "formal_acceptance": false
-      }
+      },
+      "lateral_feedback_result": "reports/G07_full_racket_v4/CEM32_LATERAL_RESULT_20261025.json",
+      "active_train_diagnostic": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/train128_lateral_c12_1025"
     },
     "G08": {
       "state": "TODO",
