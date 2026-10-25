@@ -1,5 +1,7 @@
 # QuadSmash：Codex /goal 实施与训练任务包
 
+本候选分支的[历史依赖恢复和CPU运行检查](reports/G07_full_racket_v4/joint_placement_prerequisites_20261025/READINESS.json)已完成：14个缺失历史文件按原SHA复制，另补固定步态权重，G00–G06旧模型结构检查恢复；实际候选控制器可加载iter32并对200条真实TRAIN观测输出200×18，10层资产SHA一致。上述只证明本地依赖和CPU加载，候选原生训练仍未运行。当前主训练及其队列继续在原工作区；待真实iter96结果、视频与原始数据交付后再选择后继，并沿用原单GPU0资源管理。旧READINESS中的缺件说明保留为历史，由本补充替代。
+
 [最新69.38秒实测视频](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_residual_PPO_iter32_20261025_v3.mp4)已上传并下载SHA回验：同一iter32固定策略，保留评估前预选的TRAIN19/23/107/0四个失败回合，另加明确标为评估后选择的TRAIN8。TRAIN8在己方1.748米处真实空中拍线攻击，出球8.04米/秒、向下1.55米/秒，实际越网并合格恢复4.329秒；首次落点x4.537米超过原目标上界0.537米，完整仍失败。侧视/俯视、慢放、真实接触与首次落点，全部3469帧解码；v3补全远落点并保持恢复近景，前两版及拒绝原因保留。
 
 [iter32完整训练、固定128回合原始轨迹、源码、权重与视频包（123.9 MB）](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_PPO_iter32_fixed_TRAIN128_video_training_and_raw_20261025.zip)已上传回验：151成员全部CRC/SHA通过，ZIP SHA256为`db25f79073218916780c766bc783ba613ee0e73d8f62c8d8a955f8a3da338c45`。其中的2048信息仅为另行标注的启动检查摘要，不含其进行中的原始训练数据或策略成绩。
