@@ -1,0 +1,86 @@
+{
+  "scope": "Measured fixed body candidate4 original TRAIN128. One posthoc complete example added to the same six failure/diagnostic cases; not a random sample or formal A/B.",
+  "cases": [
+    {
+      "run": "fixed_actor_body_gen1_candidate4_fixed_train128_01",
+      "source_type": "evaluation",
+      "env_id": 36,
+      "title": "固定TRAIN36｜完整扣杀成立",
+      "subtitle": "已测候选4｜完整球拍｜原128固定策略评估",
+      "terminal_status": "合法空中击球、越网、目标首落与恢复全部成立",
+      "limitation": "出球8.03米/秒；首落[3.87,-0.59]米；稳定窗口3.46秒"
+    },
+    {
+      "run": "fixed_actor_body_gen1_candidate4_fixed_train128_01",
+      "source_type": "evaluation",
+      "env_id": 19,
+      "title": "固定TRAIN19｜实际失败对照",
+      "subtitle": "已测候选4｜完整球拍｜原128固定策略评估",
+      "terminal_status": "完整任务条件未全部通过",
+      "limitation": "出球7.28米/秒；回合失效前未记录首次落点；稳定窗口4.23秒"
+    },
+    {
+      "run": "fixed_actor_body_gen1_candidate4_fixed_train128_01",
+      "source_type": "evaluation",
+      "env_id": 23,
+      "title": "固定TRAIN23｜实际失败对照",
+      "subtitle": "已测候选4｜完整球拍｜原128固定策略评估",
+      "terminal_status": "完整任务条件未全部通过",
+      "limitation": "出球7.26米/秒；回合失效前未记录首次落点；稳定窗口0.00秒"
+    },
+    {
+      "run": "fixed_actor_body_gen1_candidate4_fixed_train128_01",
+      "source_type": "evaluation",
+      "env_id": 107,
+      "title": "固定TRAIN107｜实际失败对照",
+      "subtitle": "已测候选4｜完整球拍｜原128固定策略评估",
+      "terminal_status": "完整任务条件未全部通过",
+      "limitation": "出球7.16米/秒；回合失效前未记录首次落点；稳定窗口0.00秒"
+    },
+    {
+      "run": "fixed_actor_body_gen1_candidate4_fixed_train128_01",
+      "source_type": "evaluation",
+      "env_id": 0,
+      "title": "固定TRAIN0｜实际失败对照",
+      "subtitle": "已测候选4｜完整球拍｜原128固定策略评估",
+      "terminal_status": "完整任务条件未全部通过",
+      "limitation": "出球8.25米/秒；首落[4.80,-0.74]米；稳定窗口4.26秒"
+    },
+    {
+      "run": "fixed_actor_body_gen1_candidate4_fixed_train128_01",
+      "source_type": "evaluation",
+      "env_id": 8,
+      "title": "固定TRAIN8｜实际失败对照",
+      "subtitle": "已测候选4｜完整球拍｜原128固定策略评估",
+      "terminal_status": "完整任务条件未全部通过",
+      "limitation": "出球7.57米/秒；回合失效前未记录首次落点；稳定窗口4.11秒"
+    },
+    {
+      "run": "fixed_actor_body_gen1_candidate4_fixed_train128_01",
+      "source_type": "evaluation",
+      "env_id": 58,
+      "title": "固定TRAIN58｜实际失败对照",
+      "subtitle": "已测候选4｜完整球拍｜原128固定策略评估",
+      "terminal_status": "完整任务条件未全部通过",
+      "limitation": "出球7.22米/秒；回合失效前未记录首次落点；稳定窗口0.00秒"
+    }
+  ],
+  "opening_title": "最新固定策略｜1次完整扣杀与实际失败",
+  "opening_lines": [
+    "原128固定评估：完整1、空中59、合格恢复30。",
+    "先看TRAIN36完整回合，再看此前固定六例。",
+    "全片来自真实仿真记录；一例成功尚不稳定。"
+  ],
+  "closing_title": "完整1/128｜尚未达到正式目标",
+  "closing_lines": [
+    "空中59/128；合格恢复30/59；数值故障0。",
+    "原正式A/B各200和50/70/85门槛仍未通过。"
+  ],
+  "evaluation_footer": "候选4原128固定评估：完整1、空中59、恢复30｜后选成功例＋原六例｜非正式A/B",
+  "caveats": [
+    "Actual native50Hz body poses and exact contact and first-landing events. No generated motion.",
+    "TRAIN36 is a posthoc successful example; all six previous diagnostic indices19/23/107/0/8/58 retained.",
+    "A TRAIN development comparison, not the separate formal A/B panels."
+  ],
+  "caption_revision": "Replace technical missing-number text by the actual missing-event status; native rows and trajectories unchanged."
+}

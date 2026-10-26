@@ -1,0 +1,7 @@
+本包交付两个实际执行的body公共权重与原128固定评估标量记录、原始精确触球记录、初态、各两条100Hz实际输入/动作及冻结源码。body4为1完整/59空中/30恢复/8攻击/NF0；body6为0/41/29/17/NF0。两者均含原两层残差网络和全部嵌套公共模型，不将参数表当作已交付权重。
+
+这不是完整训练或全部50Hz全身轨迹包，也不包含正式A/B结果。完整USD/STL/Go2基础策略和标准PiPER URDF等资产请配合既有G07_placement075_stage8_to40_completed_native_and_frozen_TRAIN128_20261026.zip，SHA256 44528da938ad422ed6a5515a32c65df3b763421288d2b4ff6f9236ab36c517bb。Isaac/Kit/Torch原锁定环境另需已安装；绝对Go2外层依赖恢复要求见该伴随包说明。
+
+请按原scripts/run_gpu_job.py guard和已授权GPU0运行scripts/evaluate_full_racket_fixed_actor_body_train_v4.py，参数--checkpoint指向相应公共.pt，--noise none --seed724201 --headless；用新output，勿覆盖旧证据。本包不授权绕过共享GPU调度。
+
+正式A/B各200和原50/70/85门槛尚未通过，TRAIN开发成功不等于正式成功。所有成员内容SHA见MANIFEST.json。
