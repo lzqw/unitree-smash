@@ -1,0 +1,5 @@
+实际选中来源的CPU绑定检查器已参数化，支持显式权重、原始公共输入、关节元数据、冷评估目录与全新输出目录；原固定CPU样本检查器及其历史证据未修改。新的输出目录必须不存在，避免重复导出覆盖前次CPU策略。
+
+当前兼容性检查实际使用已执行origin0原样候选0：658条有效公共输入，新零残差对源指令差0、actor导出差0，CPU对GPU最大3.09944e-6，保持原5e-4容差。未执行/旧布局来源及旧16米冷评估仍拒绝。当前没有完成的新冷源，actual_cold_source_admission明确为null，positive_completed_origin0_cold_source_verification_pending为true；不把该兼容性检查当作实际来源已准入。
+
+Main新origin0_residual_after_gain_body_queue01会等待全身比较owner1895642真实退出并完成独立原128冷评估，再绑定真实胜出权重，传入--cold-evaluation重新执行这个检查。必须得到非空的完整实际冷源准入、权重/资产/源程序/案例/原点一致和NF0，才会启动GPU0新15更新。随后独立冷128和公共输入动作复算；CPU零策略不是Native训练结果。
