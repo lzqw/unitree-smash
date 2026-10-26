@@ -1,0 +1,40 @@
+{
+  "created_at": "2026-10-26T10:10:27.382333+00:00",
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_landing_targets/reports/G07_full_racket_v4/body4_release_envelope_20261026/analyze.py": "c2ce2d987eebd3dfc62fc124e4c6814e64c7ec9ded5e50b53b50912ebdaf4f32",
+    "/home/autodrive/LZQW/unitree_smash_landing_targets/quadsmash/control/release_flight_envelope_v4.py": "0f87e14b802ec8551de3ff7b703f63bfe73556a590fb6485206bc8dd96cefc6d",
+    "/home/autodrive/LZQW/unitree_smash_landing_targets/quadsmash/physics/court_v4.py": "d00cd68d9e5264933b81ec6c8190dfb12e4f3157b735f0dd3cd9c224e1e058ce",
+    "/home/autodrive/LZQW/unitree_smash_landing_targets/configs/shuttle_physics_v2.json": "dba0e8d45edd661185c7f0b8a379f63993d1a87269740e672688b4577e359229",
+    "/home/autodrive/LZQW/unitree_smash_landing_targets/configs/court_net_v4.json": "184d07dde336bf36be7dfde089373c851a2bcb855a6e44f4120442b59818b4f4",
+    "/home/autodrive/LZQW/unitree_smash_landing_targets/configs/g07_full_racket_eval_v4_r3.json": "04121cfb257ea4d2e288c69b44dd0c8dbada814e0bf95c8a16f5af7ef2390367",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/fixed_actor_body_gen1_candidate4_fixed_train128_01/episodes.json": "a527fb26692c53a18cbd022645a05d1920a9ffe446c87ce9a7526f9155267261",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/fixed_actor_body_gen1_candidate4_fixed_train128_01/contacts.json": "4c0fb5a6a61f73cdeb439bfb6e780f45d7914c4e3361865a4b320885b9e666e5",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/fixed_actor_body_gen1_candidate4_fixed_train128_01/job.json": "688f7eb6d78e4ade03946d00fbace845e2b640743cf841e1bf7a9629dd8a75b5",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/fixed_actor_body_gen1_candidate4_fixed_train128_01/INPUTS.json": "6c8c7a3cbdee24447e4f72f11f230cef14b84fa0b0df72d76e74019da7321a54",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/fixed_actor_body_gen1_candidate4_fixed_train128_01/metrics.json": "1bfabfaf535f19959892e8dfa0d103606847fcee2514f35321b6c70c7e8b69c9"
+  },
+  "source_all128_native_complete": 1,
+  "actual_air_releases": 59,
+  "actual_first_event_and_last_touch_velocity_equal": true,
+  "coarse_dt_s": 0.0005,
+  "refined_dt_s": 6.25e-05,
+  "native_free_landing_validation_max_error_m": 0.02,
+  "minimum_native_free_landings_for_validation": 5,
+  "refined_selected_landing_max_difference_m": 0.0001,
+  "pitch_grid_degrees": [
+    -45.0,
+    -5.0,
+    0.1
+  ],
+  "yaw": "Aim horizontally at original target center(3,0)",
+  "speed": "Keep actual norm if>=8m/s; otherwise hypothetical8m/s. Not proof this output can be generated.",
+  "selection": "Middle feasible grid pitch per point after finite-radius net/target/attack planning screen; no case deletion or changed acceptance.",
+  "native_reference_filter": "Free-flight comparison only: one contact, recorded first ground, no shuttle-net/body-ball interaction. All cases remain in original evaluation.",
+  "net_screen": "Actual64 suspended boxes and posts, sphere distance with half-step speed buffer; avoids net touch as a conservative planning subset. Does not forbid legal tape-touch returns in native rules.",
+  "scope": "CPU release flight/geometry diagnostic; no racket impact solution, reachable robot trajectory, policy performance, or recovery proof.",
+  "main397_sources_unchanged": true,
+  "new_native_execution": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
