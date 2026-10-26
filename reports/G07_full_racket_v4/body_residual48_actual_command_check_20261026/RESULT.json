@@ -1,0 +1,31 @@
+{
+  "checked_at": "2026-10-26T11:12:59.354306+00:00",
+  "actual_selected_episodes": 13,
+  "actual_public_rows": 5197,
+  "source_base_public_policy_sha256": "cb6dfa04d91e98a6ec54659f44fbf7f4e7733d96338f14b626140d4d26fd906a",
+  "frozen_two_actor_base_max_normalized_action_error": 9.000301361083984e-06,
+  "complete_base_plus_recorded_residual_max_normalized_action_error": 9.000301361083984e-06,
+  "mixer_only_max_normalized_action_error": 0.0,
+  "tolerance": 0.0005,
+  "all_actual_frozen_base_and_outer_commands_reproduced": true,
+  "selected_joint_delta_statistics": [
+    {
+      "joints": "legs",
+      "requested_joint_delta_RMS_rad": 0.030121274292469025,
+      "realized_native_minus_base_joint_target_delta_RMS_rad": 0.03006679005920887,
+      "requested_vs_realized_RMS_rad": 0.00165758456569165,
+      "maximum_absolute_realized_delta_rad": 0.1227187067270279
+    },
+    {
+      "joints": "arm",
+      "requested_joint_delta_RMS_rad": 0.015016532503068447,
+      "realized_native_minus_base_joint_target_delta_RMS_rad": 0.014839938841760159,
+      "requested_vs_realized_RMS_rad": 0.006071217358112335,
+      "maximum_absolute_realized_delta_rad": 0.060172535479068756
+    }
+  ],
+  "selection": "Existing recorder first failures, fixed lanes and complete traces only; not all TRAIN lanes.",
+  "scope": "Selected closed TRAIN trajectories from active native job. Replay actual public inputs and sampled residuals; no new robot rollout or performance score.",
+  "new_native_execution": false,
+  "formal_acceptance": false
+}
