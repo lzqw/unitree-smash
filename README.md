@@ -1,6 +1,10 @@
 # QuadSmash：Codex /goal 实施与训练任务包
 
-当前进展（2026-10-26 10:49UTC）：新冻结教师grid8原全TRAIN128实测**2完整、55空中、30合格恢复、19攻击、NF0**，原正式A/B及50/70/85未通过。[最新98秒真实视频](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_body_grid8_cold128_complete_and_failures_20261026.mp4)已上传并新下载SHA核验，保留TRAIN13完整例和此前固定六例失败对照；这是固定教师，不是新学习器的成绩。[完整128、权重与43MB数据包](reports/G07_full_racket_v4/body_grid16_best_fixed128_delivery_20261026/REPORT.md)已交付。GPU0已用此实测教师接上[新48更新课程](reports/G07_full_racket_v4/body_residual48_after_grid16_queue01/REPORT.md)，原guard1818795/native1818808；首个真实更新检查通过，目前仍在critic预热，407来源保持到父1814619实际退出。
+当前进展（2026-10-26 11:53UTC）：冻结教师grid8原全TRAIN128实测**2完整、55空中、30合格恢复、19攻击、NF0**，原正式A/B及50/70/85未通过。[最新98秒真实视频](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_body_grid8_cold128_complete_and_failures_20261026.mp4)保留TRAIN13完整例和此前固定六例失败对照，已上传并新下载SHA核验；这是固定教师。[完整128、权重与43MB数据包](reports/G07_full_racket_v4/body_grid16_best_fixed128_delivery_20261026/REPORT.md)已交付。
+
+GPU0的新[48更新课程](reports/G07_full_racket_v4/body_residual48_after_grid16_queue01/REPORT.md)已完成**15/48更新、3932160控制环境步、NF0**，actor从第8更新开始学习；原guard1818795/native1818808仍在运行，407来源保持到父1814619实际退出。新学习器尚无固定128成绩。[真实记录阶段核对](https://github.com/lzqw/unitree-smash/blob/ef8fabe/reports/G07_full_racket_v4/body48_first_three_success_phases_20261026/RESULT.json)确认早期三个完整训练回合的击球均发生在actor权重首次更新前，其中两个恢复阶段跨入学习期，不能据此宣称学习改善。后续[7个拍线瞄准点比较](reports/G07_full_racket_v4/contact_aim_after_body48_queue01/PLAN.json)等待本课程和固定比较全部结束，再经同一GPU0 guard接续；若已有策略达到原准备门槛则跳过搜索。
+
+[落点范围离线对比](https://github.com/lzqw/unitree-smash/blob/ca0b3d7/reports/G07_full_racket_v4/target_scope_comparison_20261026/RESULT.json)在同一教师128例上得到原2×2米区2完整、4×4米区12完整、整个合法单打半场13完整，保留其余全部条件。用户范围选择待答复，当前训练与原成绩未改写。
 
 以下为历史进展记录，其中运行中措辞只代表当时观察；当前状态以上段与status/STATUS.json为准。
 
