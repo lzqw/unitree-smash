@@ -11,7 +11,7 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
 from render_full_racket_r3_effect import ROOT, Scene, sha
-from render_current_v4_progress import camera
+from native_video_framing_v4 import PANE_HEIGHT, PANE_TOP, case_views
 from quadsmash.evaluation_v4 import FAULTS
 
 
@@ -47,14 +47,9 @@ def main():
                                                          meshes[item['key'] + '_faces']),
                                           item['body'], item['color'] or color))
             scene.views = dict(scene.views)
-        for name, w, h, eye, target, fov in [
-            ('wide_side', 760, 480, [1.3, -6., 3.], [1.3, 0., 1.], 49),
-            ('wide_top', 504, 480, [2., -.001, 6.2], [2., 0., 0.], 60),
-            ('court_side', 760, 480, [1.525, -12., 6.], [1.525, 0., .6], 58),
-            ('court_top', 504, 480, [1.525, -.001, 12.5], [1.525, 0., 0.], 65),
-        ]:
-            scene.views[name] = (scene.ctx.simple_framebuffer((w, h), components=3),
-                                 camera(eye, target, w / h, fov))
+        for prefix in ['', 'wide_', 'court_', 'contact_']:
+            for name, width in [('side', 760), ('top', 504)]:
+                scene.views[prefix + name] = (scene.ctx.simple_framebuffer((width, PANE_HEIGHT), components=3), np.eye(4))
         scenes[case['run']] = scene
     data = [np.load(snapshot / f'case{i}.npz') for i in range(len(cases))]
     for case, recorded in zip(cases, data):
@@ -62,6 +57,11 @@ def main():
         assert np.isfinite(recorded['link_poses']).all()
         assert np.allclose(np.diff(recorded['episode_clock_s']), .02, atol=2e-6)
         assert isinstance(case['row']['complete_smash'], bool)
+    cameras, framing_checks = [], []
+    for case, recorded in zip(cases, data):
+        fitted, checked = case_views(snapshot / case['run'], case, recorded, court)
+        cameras.append(fitted)
+        framing_checks.append(checked)
     font = '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc'
     title, text, small = [ImageFont.truetype(font, n) for n in [29, 23, 20]]
     fps, frames, segments, previews = 50, 0, [], []
@@ -69,6 +69,9 @@ def main():
     def frame(case_id, index=None, *, slow=False, exact=False, terminal=False, landing_freeze=False):
         case, recorded = cases[case_id], data[case_id]
         row, event, scene = case['row'], case.get('contact'), scenes[case['run']]
+        for name, matrix in cameras[case_id].items():
+            framebuffer, _ = scene.views[name]
+            scene.views[name] = (framebuffer, matrix)
         ball = trail = landing = None
         if exact:
             poses = np.asarray(event['body_link_poses_local'])
@@ -94,6 +97,8 @@ def main():
         wide = terminal or t >= 3.5 or landing_freeze or (row['crossed_net'] and t >= row['crossing_time_s']
                                  and (not row['ground_seen'] or t <= row['first_landing_time_s'] + .35))
         views = ['wide_side', 'wide_top'] if wide else ['side', 'top']
+        if exact:
+            wide, views = False, ['contact_side', 'contact_top']
         # Keep actual incoming/outgoing balls and first-landing markers in
         # both panels, including court-end misses outside the earlier view.
         faulted = any(row[name] for name in FAULTS)
@@ -121,14 +126,13 @@ def main():
                 if point:
                     x, y = point
                     draw.ellipse((x - 12, y - 12, x + 12, y + 12), outline=(255, 245, 80), width=3)
-                    label = '实际拍线接触' if event['string_contact'] else '实际拍框接触'
-                    draw.text((max(8, x - 90), max(35, y - 40)), label, font=small, fill=(255, 245, 80))
-            picture.paste(pane, (left, 106))
+            picture.paste(pane, (left, PANE_TOP))
         draw = ImageDraw.Draw(picture)
         draw.text((20, 10), case['title'], font=title, fill='white')
         draw.text((20, 57), case['subtitle'], font=text, fill=(187, 214, 231))
-        draw.text((18, 113), '侧视｜己方 ← 网 → 对方', font=small, fill='white')
-        draw.text((790, 113), '俯视｜同一时刻', font=small, fill='white')
+        side_label = '接触斜侧｜30°正交' if exact else '侧视｜正交投影'
+        draw.text((18, 98), side_label + '｜己方 ← 网 → 对方', font=small, fill='white')
+        draw.text((790, 98), '俯视｜正交投影｜同一时刻', font=small, fill='white')
         mode = '原生接触子步定格' if exact else ('终止前原生状态' if terminal else ('0.25倍慢放' if slow else '正常速度'))
         if terminal and case.get('last_recorded_state'):
             mode = '末次有效50Hz采样｜非精确终止子步'
@@ -146,8 +150,14 @@ def main():
         elif exact:
             speed = float(np.linalg.norm(row['outgoing_velocity_mps']))
             contact_kind = ('空中拍线' if row['airborne_string_hit'] else '拍线（非合格空中）') if event['string_contact'] else '拍框'
-            status = f"{contact_kind}接触｜高 {event['point_m'][2]:.3f} m｜实际出球 {speed:.2f} m/s"
-            note = f"实际出球 vz={row['outgoing_velocity_mps'][2]:+.2f} m/s；原攻击要求速度≥8、vz≤-1"
+            status = f"{contact_kind}接触｜高 {event['point_m'][2]:.3f} m｜实际出球 {speed:.5f} m/s"
+            velocity = np.asarray(row['outgoing_velocity_mps'])
+            attack = (row['airborne_string_hit'] and row['string_hit'] and row['legal_initial_contact']
+                      and np.isfinite(row['contact_point_m']).all()
+                      and row['contact_point_m'][0] < court['net_plane_x_m'] and row['released']
+                      and np.isfinite(velocity).all() and speed >= 8 and velocity[0] > 0 and velocity[2] <= -1)
+            qualified = '通过' if attack else '未过'
+            note = f"实际vz={velocity[2]:+.5f} m/s；出球攻击条件{qualified}（速度≥8、vx>0、vz≤-1）"
         elif t < 2:
             status, note = '从地面自主准备与走位', '完整Go2、标准PiPER和675毫米球拍｜实际动力学执行记录'
         elif row['ground_seen'] and t >= row['first_landing_time_s'] and not row['had_contact']:
@@ -183,6 +193,12 @@ def main():
             picture.save(path, quality=94)
             previews.append(str(path.relative_to(ROOT)))
     if args.preview_only:
+        check = dict(previews=previews, native_cases=len(cases), camera_framing_checks=framing_checks,
+                     snapshot_manifest_sha256=sha(snapshot / 'cases.json'),
+                     renderer_sha256=sha(Path(__file__)), framing_helper_sha256=sha(ROOT / 'scripts/native_video_framing_v4.py'),
+                     pane_layout=dict(top=PANE_TOP, height=PANE_HEIGHT, time_band_top=548, labels_outside_panes=True),
+                     native_motion_unchanged=True, new_native_execution=False, formal_acceptance=False)
+        output.with_suffix('.preview.json').write_text(json.dumps(check, indent=2) + '\n')
         print(json.dumps(dict(previews=previews), ensure_ascii=False), flush=True)
         return
 
@@ -239,7 +255,7 @@ def main():
     sources = [p for p in snapshot.rglob('*') if p.is_file()]
     sources += [Path(__file__), ROOT / 'scripts/render_full_racket_r3_effect.py',
                 ROOT / 'scripts/render_current_v4_progress.py', ROOT / 'configs/court_net_v4.json',
-                ROOT / 'configs/g07_full_racket_eval_v4_r3.json']
+                ROOT / 'configs/g07_full_racket_eval_v4_r3.json', ROOT / 'scripts/native_video_framing_v4.py']
     metadata = dict(created_at=datetime.now(timezone.utc).isoformat(), video=str(output.relative_to(ROOT)),
                     sha256=sha(output), bytes=output.stat().st_size, fps=fps, frames=frames,
                     duration_s=frames/fps, resolution=[1280, 720], segments=segments, previews=previews,
@@ -249,8 +265,13 @@ def main():
                     complete_smash=any(case['row']['complete_smash'] for case in cases),
                     complete_smash_scope='Any selected independent episode; no population or formal acceptance claim',
                     cases_are_independent=True,
-                    cases=cases, caveats=manifest['caveats'],
-                    sources={str(p.relative_to(ROOT)): sha(p) for p in sources})
+                    cases=cases, caveats=manifest['caveats'] + [
+                        'Fixed per-case orthographic cameras fit the actual recorded mesh bounds; exact contact has a separate fitted camera. This is a visual replay update, not a new experiment.',
+                        'View labels and time labels sit outside the420px image panes; viewport coverage does not assert that every mesh surface is unoccluded.'],
+                    camera_projection='orthographic, side12-degree elevation, exact-contact30-degree oblique and vertical top',
+                    pane_layout=dict(top=PANE_TOP, height=PANE_HEIGHT, time_band_top=548, labels_outside_panes=True),
+                    camera_framing_checks=framing_checks,
+                    sources={str(p.relative_to(ROOT)) if p.is_relative_to(ROOT) else str(p): sha(p) for p in sources})
     output.with_suffix('.json').write_text(json.dumps(metadata, ensure_ascii=False, indent=2) + '\n')
     print(json.dumps({k: metadata[k] for k in ['video', 'bytes', 'sha256', 'frames', 'duration_s']},
                      ensure_ascii=False), flush=True)

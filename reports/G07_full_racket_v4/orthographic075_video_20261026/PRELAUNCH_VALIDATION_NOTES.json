@@ -1,0 +1,32 @@
+{
+  "issue": "Preflight assumed all28 physics bodies have rendered meshes; geometry records a smaller set of mesh-bearing bodies.",
+  "actual_counts": [
+    [
+      123,
+      26
+    ],
+    [
+      123,
+      26
+    ],
+    [
+      123,
+      26
+    ],
+    [
+      123,
+      26
+    ],
+    [
+      123,
+      26
+    ],
+    [
+      123,
+      26
+    ]
+  ],
+  "correction": "Compare mesh and mesh-bearing body counts directly with the original geometry metadata. No geometry, source data, camera code, training or published artifact changed.",
+  "native_job_affected": false,
+  "full_video_render_started_before_correction": false
+}
