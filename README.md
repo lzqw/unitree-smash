@@ -12,6 +12,8 @@
 
 [前三项origin0迁移与准备动态诊断](reports/G07_full_racket_v4/origin0_transfer_diagnostic_20261027/REPORT.md)已独立核对384行，均0完整/0合格空中拍线，NF0；来球释放时原样机身倾角19.14度，腿残差请求很小，不能认定它是主因。[下一轮8项全身起跳/接近/恢复适配](reports/G07_full_racket_v4/gain_body_after_prepose_queue01/REPORT.md)已完成1600真实输入CPU复算和规划后局部reset检查，等待owner1891402实际存活且无子进程，471输入SHA保持。当前1884350/1884474/1884488继续原比较；新作业尚未运行，未声称性能改善或正式达标。
 
+[最新30.22秒origin0真实失败视频与37.01MB两候选原128完整证据包](reports/G07_full_racket_v4/origin0_current_video_delivery_20261027/REPORT.md)已上传并新下载SHA/CRC回验；保留拍框后摔落、站稳漏球、更换引拍触网三例。1511帧全解码，5张事件与8张成片抽样已查，1203有效公共输入CPU复算通过。当前前四候选均0完整/0合格空中拍线，GPU0继续第5项；该片只覆盖已结束的前两个候选，不继承旧成功录像或成绩，原正式门槛仍未通过。
+
 以下为历史进展记录，其中运行中措辞只代表当时观察；当前状态以上段与status/STATUS.json为准。
 
 2026-10-26 GPU0已启动[保留两层策略的全身拦截与起跳搜索](reports/G07_full_racket_v4/fixed_actor_body_cem_gen2_queue01/REPORT.md)：10候选各跑原128来球、2代，随后单一冻结策略做原128冷评估。1280真实地面初态已核对，380来源文件加PLAN保持；新方法尚无终端成绩。最新85秒视频新下载SHA核验已通过，原正式50/70/85目标仍未通过。

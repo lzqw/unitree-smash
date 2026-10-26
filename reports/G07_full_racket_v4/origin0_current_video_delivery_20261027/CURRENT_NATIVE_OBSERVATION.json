@@ -1,0 +1,192 @@
+{
+  "checked_at": "2026-10-26T19:50:12.490604+00:00",
+  "actual_current_native_pid": 1884488,
+  "actual_current_owner_pid": 1884350,
+  "actual_waiting_owner_pid": 1891402,
+  "all471_held_inputs_unchanged": true,
+  "video_and_evidence_fresh_downloads_verified": true,
+  "current_progress": {
+    "candidate_id": 4,
+    "candidate_name": "wrist_branch_vz-1.2_walk0.0",
+    "control_ticks": 200,
+    "first_episodes_complete": 0,
+    "actual_control_env_steps": 306304,
+    "formal_acceptance": false
+  },
+  "completed_candidate_history": [
+    {
+      "candidate_id": 0,
+      "candidate": {
+        "name": "unchanged_measured_source",
+        "overrides": {},
+        "candidate_id": 0
+      },
+      "summary": {
+        "episodes": 128,
+        "complete": 0,
+        "airborne_contacts": 0,
+        "conditional_recovery_count": 0,
+        "attack_outgoing": 0,
+        "actual_attack_cross_target_chains": 0,
+        "numerical_failures": 0,
+        "mean_TRAIN_partial_score": -0.4481060759280808,
+        "formal_acceptance": false,
+        "rank": [
+          1,
+          0,
+          0,
+          -0.44810608,
+          0,
+          0
+        ]
+      },
+      "control_ticks": 800,
+      "env_steps": 102400
+    },
+    {
+      "candidate_id": 1,
+      "candidate": {
+        "name": "measured_complete_contact_pose",
+        "overrides": {
+          "hit_joint_position_rad": [
+            -1.0203907489776611,
+            1.4589738845825195,
+            -2.191816568374634,
+            1.3709583282470703,
+            1.1518988609313965,
+            2.061375617980957
+          ]
+        },
+        "candidate_id": 1
+      },
+      "summary": {
+        "episodes": 128,
+        "complete": 0,
+        "airborne_contacts": 0,
+        "conditional_recovery_count": 0,
+        "attack_outgoing": 0,
+        "actual_attack_cross_target_chains": 0,
+        "numerical_failures": 0,
+        "mean_TRAIN_partial_score": -2.0,
+        "formal_acceptance": false,
+        "rank": [
+          1,
+          0,
+          0,
+          -2.0,
+          0,
+          0
+        ]
+      },
+      "control_ticks": 283,
+      "env_steps": 36224
+    },
+    {
+      "candidate_id": 2,
+      "candidate": {
+        "name": "bounded_near_equivalent_wrist_branch",
+        "overrides": {
+          "hit_joint_position_rad": [
+            -1.057183904542244,
+            1.4579617581122493,
+            -2.1885441059630533,
+            -1.7449999999999999,
+            -1.183630237164737,
+            -1.089626622794979
+          ],
+          "swing_joint_velocity_rad_s": [
+            2.6052660942077637,
+            3.197381019592285,
+            2.418071985244751,
+            -3.743168354034424,
+            1.5348803997039795,
+            -0.22015462815761566
+          ]
+        },
+        "candidate_id": 2
+      },
+      "summary": {
+        "episodes": 128,
+        "complete": 0,
+        "airborne_contacts": 0,
+        "conditional_recovery_count": 0,
+        "attack_outgoing": 0,
+        "actual_attack_cross_target_chains": 0,
+        "numerical_failures": 0,
+        "mean_TRAIN_partial_score": -2.0,
+        "formal_acceptance": false,
+        "rank": [
+          1,
+          0,
+          0,
+          -2.0,
+          0,
+          0
+        ]
+      },
+      "control_ticks": 310,
+      "env_steps": 39680
+    },
+    {
+      "candidate_id": 3,
+      "candidate": {
+        "name": "wrist_branch_vz-0.3_walk0.0",
+        "overrides": {
+          "hit_joint_position_rad": [
+            -1.057183904542244,
+            1.4579617581122493,
+            -2.1885441059630533,
+            -1.7449999999999999,
+            -1.183630237164737,
+            -1.089626622794979
+          ],
+          "swing_joint_velocity_rad_s": [
+            -0.2879778646885933,
+            2.451083628010538,
+            1.7524626097817217,
+            -0.552264395295855,
+            -0.49552283179108525,
+            -2.3570221656497488
+          ],
+          "walk_waypoint_delta_m": 0.0,
+          "desired_normal_world": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "desired_point_velocity_world_mps": [
+            0.8,
+            0.0,
+            -0.3
+          ],
+          "nominal_projected_pitch_rad": 0.20725145290511404
+        },
+        "candidate_id": 3
+      },
+      "summary": {
+        "episodes": 128,
+        "complete": 0,
+        "airborne_contacts": 0,
+        "conditional_recovery_count": 0,
+        "attack_outgoing": 0,
+        "actual_attack_cross_target_chains": 0,
+        "numerical_failures": 0,
+        "mean_TRAIN_partial_score": -1.8617233591309439,
+        "formal_acceptance": false,
+        "rank": [
+          1,
+          0,
+          0,
+          -1.86172336,
+          0,
+          0
+        ]
+      },
+      "control_ticks": 800,
+      "env_steps": 102400
+    }
+  ],
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
