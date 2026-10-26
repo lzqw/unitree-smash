@@ -1,0 +1,31 @@
+{
+  "created_at": "2026-10-26T14:51:39.137576+00:00",
+  "scope": "Tabular export of changing-policy native TRAIN learning; no frozen performance.",
+  "source_run": "reports/G07_full_racket_v4/body_residual_leg15_fresh_n2048_updates48_01",
+  "source_episode_sha256": "f38c1b239d4beddcecbe512e0962d68f52a59e9eaa55124af94c2b01863c9967",
+  "protocol_sha256": "04121cfb257ea4d2e288c69b44dd0c8dbada814e0bf95c8a16f5af7ef2390367",
+  "csv": "reports/G07_full_racket_v4/body48_completed_training_delivery_20261026/NATIVE48_EPISODES.csv",
+  "csv_sha256": "bdb553caf153c48a7d2ed7f0920b63422a1d8b63e045a5b1c18107fa77a63c89",
+  "rows": 32094,
+  "columns": 63,
+  "canonical_summary": {
+    "episodes": 32094,
+    "airborne_contacts": 2957,
+    "conditional_recovery_count": 660,
+    "complete": 12,
+    "numerical_failures": 0,
+    "scope": "Changing-policy training counts only; no frozen performance"
+  },
+  "original_runtime_metrics_match": true,
+  "source_exporter_sha256": "ab9455a028468ee85840ccac0e2487f9d5dbada576e25649095850ad8de99132",
+  "vector_units": {
+    "contact": "m",
+    "outgoing_velocity": "m/s",
+    "crossing": "m",
+    "first_landing": "m"
+  },
+  "missing_numeric_event_fields": "Empty CSV cells preserve unobserved native events; they are not zero-valued events.",
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "final_exported_policy_sha256": "3c072d6642f7ec9486a9ab284ca2e517da0f714b7377d1ea8eaee4fb438db04b"
+}

@@ -1,12 +1,12 @@
 # 已启动的新body残差48更新课程
 
-当前GPU0实际运行原guard1818795/native1818808，父1814619。最新核对43/48更新、11272192控制环境步，28684个闭合变化中训练回合为2600空中、597合格恢复、10完整、NF0；这些不是固定策略成绩。第7更新actor保持/critic Adam140和第8更新actor首次更新/Adam20、critic160已经核对，新学习器已进入actor学习阶段。下述课程与门槛在新原生启动前登记；原固定教师仍是2/128完整、55空中、30合格恢复、19攻击、NF0。
+原GPU0的48更新作业已实际成功结束：12582912控制环境步、4.3264006084 GPU小时、NF0。32094个闭合变化中训练回合独立重算为2957空中、660合格恢复、12完整；这些不是固定策略成绩。第7更新actor保持/critic Adam140和第8更新actor首次更新/Adam20、critic160均已核对，最终actor/log_std Adam820、critic960，两路RMS均12582912。原所有者1814619现用guard1852236/native1852249运行第13版固定全128，后续比较24/36/48。下述课程与门槛在新原生启动前登记；原固定教师仍是2/128完整、55空中、30合格恢复、19攻击、NF0。
 
-[第36版权重检查](ROOT_ACTUAL_UPDATE36_CHECK.json)实际读取model_35.pt，确认其内部iter36、9437184控制步、actor/critic RMS计数均9437184，17项Adam状态分别为actor及log_std580、critic720，全部保存模型张量有限。文件SHA为a0e1daf1ab8c708e681c25d5777db0ce35ea51971dac8a83b4eadba39a19687d。它是供后续推理导出的非canonical诊断，不能据此恢复完整PhysX物理状态或继承固定成绩。当前课程仍继续至48，随后按预登记流程比较13/24/36/48四版原全128。
+[第36版权重检查](ROOT_ACTUAL_UPDATE36_CHECK.json)实际读取model_35.pt，确认其内部iter36、9437184控制步、actor/critic RMS计数均9437184，17项Adam状态分别为actor及log_std580、critic720，全部保存模型张量有限。文件SHA为a0e1daf1ab8c708e681c25d5777db0ce35ea51971dac8a83b4eadba39a19687d。它是供后续推理导出的非canonical诊断，不能据此恢复完整PhysX物理状态或继承固定成绩。48课程已完成，现按预登记流程比较13/24/36/48四版原全128。
 
 [新37.76秒训练视频及精选证据包](../body48_learned_training_delivery_20261026/REPORT.md)已上传并重新下载SHA核验。第4个完整记录TRAIN32、lane1824、episode3全程跨采集iteration11..17，击球在iteration13；原目标首落与约2秒稳定恢复成立，且独立800步命令回放通过原5e−4容差。离线回放正确恢复了真实全局步行时钟相位1439，没有修改本课程源码或物理。视频另保留两段明确标为预热期的失败，不作同策略比较，冻结评估仍待完成。
 
-本次[实际阶段核对](https://github.com/lzqw/unitree-smash/blob/ef8fabe/reports/G07_full_racket_v4/body48_first_three_success_phases_20261026/RESULT.json)读取三个完整回合的无损公共输入和逐步learner_iteration，击球分别发生于零起始采集iteration2/4/6，即新actor权重开始执行前；后两个回合的恢复延续至iteration8/10。不能把三次训练成功归因为学习改善，继续完成48课程与13/24/36/48四版固定128比较。后续瞄准点实验父1827656已实际存活等待本父退出，未启动第二个GPU作业。目标区仍为原配置，范围选择待用户答复。
+本次[实际阶段核对](https://github.com/lzqw/unitree-smash/blob/ef8fabe/reports/G07_full_racket_v4/body48_first_three_success_phases_20261026/RESULT.json)读取三个完整回合的无损公共输入和逐步learner_iteration，击球分别发生于零起始采集iteration2/4/6，即新actor权重开始执行前；后两个回合的恢复延续至iteration8/10。不能把三次训练成功归因为学习改善，48课程已完成，继续13/24/36/48四版固定128比较。后续瞄准点实验父1827656已实际存活等待本父退出，未启动第二个GPU作业。目标区仍为原配置，范围选择待用户答复。
 
 启动前将重新核对全部14个已有冻结策略及本轮grid16的独立固定128结果，按完整数、合格恢复数、空中数、攻击数、同分较早来源选择；混合16候选的搜索统计不参与固定成绩。如果已有策略满足原50/70/85和NF0，跳过额外学习，留待冻结及正式A/B审查。正式A/B内容未用于本次选择。
 
@@ -26,4 +26,6 @@ CPU在现有body4的1600条真实公共输入上，新零残差与原指令误�
 
 ROOT_ACTUAL_INITIAL_STATE_CHECK读取了真实2048地面状态与fresh_initial_model_state，确认新RMS0、新Adam空、末层均值0、sigma.2/.1及原seed/物理契约。ACTUAL_UPDATE1_CHECK确认真实262144步后actor与std保持、critic八项Adam均20、两套RMS262144，NF0。第1个更新还在1.28秒准备阶段，不能用尚无闭合回合评价成功率。新学习器完整固定128结果仍未产生；目前可展示的是已完成的固定教师2/128视频与权重。
 
-[完成48训练后的CPU资料归档](../body48_completed_training_delivery_20261026/REPORT.md)父1848825已实际等待原生48成功和原所有者两份训练凭据；不控制GPU、不等待后续固定比较才开始封存不可变训练数据。现阶段尚无48完成包或新固定成绩，407及后续414来源在登记时均一致。
+[完成48训练后的CPU资料归档](../body48_completed_training_delivery_20261026/REPORT.md)进程1848825已实际完成并退出，资料包633份内容SHA和全部CRC通过，新目录使用包内RSL复核通过。新公共actor在13997条真实历史公共输入上与canonical48推理误差0，24条轨迹均已核对；固定13仍在运行，归档不会延长Main来源占有。
+
+[新正式评估入口代码准备](https://github.com/lzqw/unitree-smash/blob/550f8f5/reports/G07_full_racket_v4/current_formal_entrypoints_20261026/REPORT.md)保留在隔离分支，补齐新策略族的锁定和面板工厂；实际未达准备门槛教师已被拒绝且未打开正式案例。正向准入与新入口原生A/B尚未运行，Main源码与原协议未改。
