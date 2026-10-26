@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/centered_residual_pilot8_queue02/FIXED_TRAIN128_RESULT.json",
-      "notes": "075阶段8冻结原全TRAIN128：0完整、26空中、19条件恢复、5攻击、NF0，87.66秒视频已上传。中断尝试01未完成PPO更新，96256采样步与0.0448123 GPU小时保留计费；尝试02从原canonical8启动独立会话继续32次。实际原生1734680仍运行，真实更新9已完成262144步，17项Adam各加20、actor和critic参数确实更新、归一化偏移和2048地面/回合ID链核验通过、NF0。269项持有源码/输入未变。新增293MB完整075阶段8训练/冻结/视频/原始资产包已完成全成员核验和新目录CPU恢复，已上传并新下载SHA回验。原正式A/B及50/70/85仍未通过。",
+      "notes": "同一GPU0严格075续训仍在运行，阶段11已实核3次新增更新/786432步、17项Adam各加60、actor/critic归一化13369344/2883584、源ID链精确/NF0。首批1251闭合回合94空中、0恢复、0完整；797条初始回合仍开放，早闭合偏置不能当冻结率。原全TRAIN128冻结8仍0完整/26空中/19恢复/5攻击，原正式A/B及50/70/85未通过。隔离目录补齐七来源腿部范围候选，须纳入本次待测40并等待当前流程全部结束，尚未选择/集成/原生运行。当前269持有源码和输入未改，无第二GPU作业。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
@@ -58,7 +58,7 @@
       "active_gpu_jobs": [
         {
           "state": "RUNNING_NATIVE_PLACEMENT075_RESUME32",
-          "observed_at": "2026-10-26T00:31:09.399811+00:00",
+          "observed_at": "2026-10-26T00:43:42.208916+00:00",
           "workflow_pid": 1734658,
           "guard_pid": 1734667,
           "native_child_pid": 1734680,
@@ -70,9 +70,9 @@
           "detached_observer": true,
           "verified_live_processes": true,
           "formal_acceptance": false,
-          "actual_stage_update": 9,
-          "actual_current_job_control_env_steps": 262144,
-          "actual_stage_total_env_steps": 2359296,
+          "actual_stage_update": 12,
+          "actual_current_job_control_env_steps": 1048576,
+          "actual_stage_total_env_steps": 3145728,
           "numerical_failures": 0,
           "first_resumed_update_proof": "reports/G07_full_racket_v4/centered_placement075_resume32_queue02/FIRST_ACTUAL_RESUMED_UPDATE_CHECK.json",
           "all17_Adam_states_advanced20": true,
@@ -5045,7 +5045,7 @@
       },
       "current_native_workflow": {
         "state": "RUNNING_NATIVE_PLACEMENT075_RESUME32",
-        "observed_at": "2026-10-26T00:31:09.399811+00:00",
+        "observed_at": "2026-10-26T00:43:42.208916+00:00",
         "workflow_pid": 1734658,
         "guard_pid": 1734667,
         "native_child_pid": 1734680,
@@ -5059,9 +5059,9 @@
         "formal_acceptance": false,
         "state_file": "reports/G07_full_racket_v4/centered_placement075_resume32_queue02/state.json",
         "launch_receipt": "reports/G07_full_racket_v4/centered_placement075_resume32_queue02/DETACHED_LAUNCH_RECEIPT.json",
-        "actual_stage_update": 9,
-        "actual_current_job_control_env_steps": 262144,
-        "actual_stage_total_env_steps": 2359296,
+        "actual_stage_update": 12,
+        "actual_current_job_control_env_steps": 1048576,
+        "actual_stage_total_env_steps": 3145728,
         "numerical_failures": 0,
         "first_resumed_update_proof": "reports/G07_full_racket_v4/centered_placement075_resume32_queue02/FIRST_ACTUAL_RESUMED_UPDATE_CHECK.json",
         "all17_Adam_states_advanced20": true,
@@ -5601,20 +5601,17 @@
         "required_training_companion_sha256": "d672edf51ec90649b1b0381fe9ff861e0c2433c98de944e0a07937e52954c4e4"
       },
       "latest_training_health": {
-        "path": "reports/G07_full_racket_v4/centered_residual_resume32_queue01/TRAINING_RECEIPT.json",
-        "scope": "Completed actual canonical8-to40 strict continuation; changing-policy training only.",
-        "actual_control_env_steps": 8388608,
-        "cumulative_new_learner_steps": 10485760,
-        "all17_Adam_states_advanced640_steps": true,
-        "both_normalizer_counts_preserved_and_advanced": 8388608,
-        "all14_selected_training_traces_checked": true,
-        "independent_changing_policy_counts": {
-          "completed_episodes": 17156,
-          "air": 1945,
-          "conditional_recovery_count": 916,
-          "complete": 2,
+        "report": "reports/G07_full_racket_v4/centered_placement075_resume_health_20261026/REPORT.md",
+        "evidence": "reports/G07_full_racket_v4/centered_placement075_resume_health_20261026/ACTUAL_UPDATE11_CHECK.json",
+        "verified_update": 11,
+        "closed_prefix": {
+          "episodes": 1251,
+          "air": 94,
+          "conditional_recovery": 0,
+          "complete": 0,
           "numerical_failures": 0
         },
+        "initial_lanes_still_open": 797,
         "frozen_policy_performance": false
       },
       "attack_target_geometry_diagnostic": {
@@ -6555,7 +6552,7 @@
       },
       "centered_placement075_live_training": {
         "state": "RUNNING_NATIVE_PLACEMENT075_RESUME32",
-        "observed_at": "2026-10-26T00:31:09.399811+00:00",
+        "observed_at": "2026-10-26T00:43:42.208916+00:00",
         "workflow_pid": 1734658,
         "guard_pid": 1734667,
         "native_child_pid": 1734680,
@@ -6567,9 +6564,9 @@
         "detached_observer": true,
         "verified_live_processes": true,
         "formal_acceptance": false,
-        "actual_stage_update": 9,
-        "actual_current_job_control_env_steps": 262144,
-        "actual_stage_total_env_steps": 2359296,
+        "actual_stage_update": 12,
+        "actual_current_job_control_env_steps": 1048576,
+        "actual_stage_total_env_steps": 3145728,
         "numerical_failures": 0,
         "first_resumed_update_proof": "reports/G07_full_racket_v4/centered_placement075_resume32_queue02/FIRST_ACTUAL_RESUMED_UPDATE_CHECK.json",
         "all17_Adam_states_advanced20": true,
@@ -6596,6 +6593,13 @@
         "report": "reports/G07_full_racket_v4/placement075_delivery_20261026/DELIVERY_UPDATE.md",
         "fresh_extraction_CPU_check": "reports/G07_full_racket_v4/placement075_delivery_20261026/RESTORE_CHECK.json",
         "native_replay_in_fresh_extraction": false
+      },
+      "optional_leg06_after07540_candidate": {
+        "state": "CPU_PREPARED_NOT_SELECTED_NOT_MAIN_INTEGRATED_NOT_NATIVE_RUN",
+        "report": "https://github.com/lzqw/unitree-smash/blob/6c68051/reports/G07_full_racket_v4/centered_leg06_after07540_pilot8_queue01/REPORT.md",
+        "source_count": 7,
+        "pending_source": "placement075_stage40",
+        "current_main_run_keeps_critic_Adam_and_RNG": true
       }
     },
     "G08": {
