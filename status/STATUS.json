@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/centered_residual_pilot8_queue02/FIXED_TRAIN128_RESULT.json",
-      "notes": "同一GPU0严格075续训仍在运行，阶段11已实核3次新增更新/786432步、17项Adam各加60、actor/critic归一化13369344/2883584、源ID链精确/NF0。首批1251闭合回合94空中、0恢复、0完整；797条初始回合仍开放，早闭合偏置不能当冻结率。原全TRAIN128冻结8仍0完整/26空中/19恢复/5攻击，原正式A/B及50/70/85未通过。隔离目录补齐七来源腿部范围候选，须纳入本次待测40并等待当前流程全部结束，尚未选择/集成/原生运行。当前269持有源码和输入未改，无第二GPU作业。",
+      "notes": "GPU0同一严格075续训仍运行，最新阶段13、累计新增1310720步/NF0。只读CPU监视1737803已启动，逐更新扫描源ID链，完整首批2048将自动重算并留证。阶段13累计1996闭合回合，但只有1431个初始回合已结束、617个仍开放，不能用累计回合数冒充首批覆盖。真实阶段11的17项Adam+60及独立1251回合94空中已核验；恢复统计仍有早结束偏置。最佳已测冻结8仍0完整/26空中/19恢复/5攻击。原A/B各200和50/70/85未通过。269持有源码和输入未改，无第二GPU作业。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
@@ -58,7 +58,7 @@
       "active_gpu_jobs": [
         {
           "state": "RUNNING_NATIVE_PLACEMENT075_RESUME32",
-          "observed_at": "2026-10-26T00:43:42.208916+00:00",
+          "observed_at": "2026-10-26T00:49:25.231065+00:00",
           "workflow_pid": 1734658,
           "guard_pid": 1734667,
           "native_child_pid": 1734680,
@@ -70,14 +70,14 @@
           "detached_observer": true,
           "verified_live_processes": true,
           "formal_acceptance": false,
-          "actual_stage_update": 12,
-          "actual_current_job_control_env_steps": 1048576,
-          "actual_stage_total_env_steps": 3145728,
+          "actual_stage_update": 13,
+          "actual_current_job_control_env_steps": 1310720,
+          "actual_stage_total_env_steps": 3407872,
           "numerical_failures": 0,
           "first_resumed_update_proof": "reports/G07_full_racket_v4/centered_placement075_resume32_queue02/FIRST_ACTUAL_RESUMED_UPDATE_CHECK.json",
-          "all17_Adam_states_advanced20": true,
           "source_actor_normalizer_offset_preserved": true,
-          "actual_ground_2048_verified": true
+          "actual_ground_2048_verified": true,
+          "first_resumed_update_all17_Adam_states_advanced20": true
         }
       ],
       "queued_native_sequence": {
@@ -5045,7 +5045,7 @@
       },
       "current_native_workflow": {
         "state": "RUNNING_NATIVE_PLACEMENT075_RESUME32",
-        "observed_at": "2026-10-26T00:43:42.208916+00:00",
+        "observed_at": "2026-10-26T00:49:25.231065+00:00",
         "workflow_pid": 1734658,
         "guard_pid": 1734667,
         "native_child_pid": 1734680,
@@ -5059,14 +5059,14 @@
         "formal_acceptance": false,
         "state_file": "reports/G07_full_racket_v4/centered_placement075_resume32_queue02/state.json",
         "launch_receipt": "reports/G07_full_racket_v4/centered_placement075_resume32_queue02/DETACHED_LAUNCH_RECEIPT.json",
-        "actual_stage_update": 12,
-        "actual_current_job_control_env_steps": 1048576,
-        "actual_stage_total_env_steps": 3145728,
+        "actual_stage_update": 13,
+        "actual_current_job_control_env_steps": 1310720,
+        "actual_stage_total_env_steps": 3407872,
         "numerical_failures": 0,
         "first_resumed_update_proof": "reports/G07_full_racket_v4/centered_placement075_resume32_queue02/FIRST_ACTUAL_RESUMED_UPDATE_CHECK.json",
-        "all17_Adam_states_advanced20": true,
         "source_actor_normalizer_offset_preserved": true,
-        "actual_ground_2048_verified": true
+        "actual_ground_2048_verified": true,
+        "first_resumed_update_all17_Adam_states_advanced20": true
       },
       "completed_causal_tangent_probes": {
         "state": "SUCCEEDED",
@@ -6552,7 +6552,7 @@
       },
       "centered_placement075_live_training": {
         "state": "RUNNING_NATIVE_PLACEMENT075_RESUME32",
-        "observed_at": "2026-10-26T00:43:42.208916+00:00",
+        "observed_at": "2026-10-26T00:49:25.231065+00:00",
         "workflow_pid": 1734658,
         "guard_pid": 1734667,
         "native_child_pid": 1734680,
@@ -6564,14 +6564,14 @@
         "detached_observer": true,
         "verified_live_processes": true,
         "formal_acceptance": false,
-        "actual_stage_update": 12,
-        "actual_current_job_control_env_steps": 1048576,
-        "actual_stage_total_env_steps": 3145728,
+        "actual_stage_update": 13,
+        "actual_current_job_control_env_steps": 1310720,
+        "actual_stage_total_env_steps": 3407872,
         "numerical_failures": 0,
         "first_resumed_update_proof": "reports/G07_full_racket_v4/centered_placement075_resume32_queue02/FIRST_ACTUAL_RESUMED_UPDATE_CHECK.json",
-        "all17_Adam_states_advanced20": true,
         "source_actor_normalizer_offset_preserved": true,
-        "actual_ground_2048_verified": true
+        "actual_ground_2048_verified": true,
+        "first_resumed_update_all17_Adam_states_advanced20": true
       },
       "latest_placement075_delivery": {
         "checked_at": "2026-10-26T00:31:47.701193+00:00",
@@ -6600,6 +6600,18 @@
         "source_count": 7,
         "pending_source": "placement075_stage40",
         "current_main_run_keeps_critic_Adam_and_RNG": true
+      },
+      "cpu_first_cohort_monitor": {
+        "state": "WAITING_FOR_ALL2048_FIRST_RESUMED_EPISODES",
+        "monitor_pid": 1737803,
+        "source_native_pid": 1734680,
+        "CUDA_VISIBLE_DEVICES": "",
+        "registered_plan": "reports/G07_full_racket_v4/centered_placement075_resume_health_20261026/FIRST_COHORT_MONITOR_PLAN.json",
+        "launch_receipt": "reports/G07_full_racket_v4/centered_placement075_resume_health_20261026/FIRST_COHORT_MONITOR_LAUNCH.json",
+        "update13_first_initial_episodes_closed": 1431,
+        "update13_first_initial_episodes_still_open": 617,
+        "new_GPU_job_started": false,
+        "formal_acceptance": false
       }
     },
     "G08": {
