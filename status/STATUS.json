@@ -63,22 +63,23 @@
           "native_child_pid": 1903046,
           "gpu": 0,
           "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_sequential_n128_01",
-          "observed_at": "2026-10-26T22:35:37.493904+00:00",
+          "observed_at": "2026-10-26T22:56:00.407117+00:00",
           "verified_live_processes": true,
           "actual_start_check": "reports/G07_full_racket_v4/origin0_prepose_completed_delivery_20261027/GAIN_BODY_ACTUAL_NATIVE_START_CHECK.json",
           "formal_acceptance": false,
           "actual_native_progress": {
-            "candidate_id": 6,
-            "candidate_name": "walk_plus010_jump_earlier",
+            "candidate_id": 7,
+            "candidate_name": "walk_plus010_jump_later",
             "control_ticks": 100,
             "first_episodes_complete": 0,
-            "actual_control_env_steps": 523136,
+            "actual_control_env_steps": 625536,
             "formal_acceptance": false
           },
           "next_candidate2_ground_states_saved": true,
           "next_candidate3_ground_states_saved": true,
           "next_candidate4_ground_states_saved": true,
-          "next_candidate6_ground_states_saved": true
+          "next_candidate6_ground_states_saved": true,
+          "next_candidate7_ground_states_saved": true
         }
       ],
       "queued_native_sequence": {
@@ -9082,9 +9083,9 @@
       },
       "last_goal_turn_classification": {
         "classification": "progress",
-        "observed_at": "2026-10-26T22:35:37.493904+00:00",
-        "evidence": "Recovery-phase-0.15 candidate5 finished original128;669 real command rows independently replayed,4 air contacts all below8m/s and all body-landed. Unobserved TRAIN69 landing kept distinct from target miss. Next walk/jump candidate6 ground initialized.",
-        "previous_turn": "progress: candidate4 independently checked and actual terminal geometry/pose-prefix diagnosis executed and published; CSV CRLF preserved and format check documented."
+        "observed_at": "2026-10-26T22:56:00.407117+00:00",
+        "evidence": "Walk+0.10/earlier-jump candidate6 completed original128 and independently verified;1141 actual command rows replayed. One frame contact,0 air and0 qualified recovery;13 stable flags not recast as task success. Last candidate7 actually initialized and running.",
+        "previous_turn": "verified_wait: same native1903046 advanced300 to500,114 first episodes completed; CPU ticks grew, no restart."
       },
       "completed_leg06_warmup13_frozen_TRAIN128": {
         "episodes": 128,
@@ -11261,6 +11262,25 @@
               0,
               4
             ]
+          },
+          "6": {
+            "episodes": 128,
+            "complete": 0,
+            "airborne_contacts": 0,
+            "conditional_recovery_count": 0,
+            "attack_outgoing": 0,
+            "actual_attack_cross_target_chains": 0,
+            "numerical_failures": 0,
+            "mean_TRAIN_partial_score": -0.7549091357698974,
+            "formal_acceptance": false,
+            "rank": [
+              1,
+              0,
+              0,
+              -0.75490914,
+              0,
+              0
+            ]
           }
         },
         "candidate2_observed_counts": {
@@ -11278,7 +11298,7 @@
         "candidate2_CPU_vs_actual_GPU_max_action_error": 2.86102294921875e-06,
         "next_candidate3_ground_states_saved": true,
         "whole_job_completed": false,
-        "observed_at": "2026-10-26T22:35:37.493904+00:00",
+        "observed_at": "2026-10-26T22:56:00.407117+00:00",
         "candidate3_observed_counts": {
           "had_contact": 8,
           "frame_hit": 6,
@@ -11321,7 +11341,21 @@
         "candidate5_public_rows": 669,
         "candidate5_CPU_vs_actual_GPU_max_action_error": 4.589557647705078e-06,
         "candidate5_contact_diagnosis": "reports/G07_full_racket_v4/gain_body_timing_results_20261027/candidate_005/CONTACT_FAILURES.json",
-        "next_candidate6_ground_states_saved": true
+        "next_candidate6_ground_states_saved": true,
+        "candidate6_observed_counts": {
+          "had_contact": 1,
+          "frame_hit": 1,
+          "crossed_net": 0,
+          "landed_legal_court": 0,
+          "landed_target": 0,
+          "body_landing": 114,
+          "stable_recovery": 13,
+          "qualified_flight_seen": 128,
+          "qualified_jump_landed": 0
+        },
+        "candidate6_public_rows": 1141,
+        "candidate6_CPU_vs_actual_GPU_max_action_error": 4.649162292480469e-06,
+        "next_candidate7_ground_states_saved": true
       },
       "first_ground_geometry_diagnostic": {
         "report": "reports/G07_full_racket_v4/first_ground_geometry_diagnostic_20261027/REPORT.md",
