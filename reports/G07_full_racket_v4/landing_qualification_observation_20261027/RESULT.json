@@ -1,0 +1,114 @@
+{
+  "checked_at": "2026-10-26T20:33:49.270257+00:00",
+  "actual_completed_rows_examined": 384,
+  "observations": [
+    {
+      "label": "origin0_reference",
+      "source": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_sequential_n128_01/episodes_000.json",
+      "source_sha256": "27a206af1ac44a56cf948d76846b285191925a5a4fda78333c4a01ddb5ec3cd3",
+      "selected": [
+        {
+          "case_id": "B-720402-008",
+          "env_id": 72,
+          "episode_index": 0,
+          "airborne_contact": false,
+          "rally_fault": false,
+          "takeoff_time_s": 3.152953863143921,
+          "landing_time_s": 3.153953790664673,
+          "recovery_s": 3.365938425064087,
+          "maximum_body_ground_force_n": 0.0
+        },
+        {
+          "case_id": "B-720402-009",
+          "env_id": 73,
+          "episode_index": 0,
+          "airborne_contact": false,
+          "rally_fault": false,
+          "takeoff_time_s": 3.385936975479126,
+          "landing_time_s": 3.386936902999878,
+          "recovery_s": 3.171952486038208,
+          "maximum_body_ground_force_n": 0.0
+        },
+        {
+          "case_id": "B-720402-026",
+          "env_id": 90,
+          "episode_index": 0,
+          "airborne_contact": false,
+          "rally_fault": true,
+          "takeoff_time_s": 3.1669528484344482,
+          "landing_time_s": 3.1679527759552,
+          "recovery_s": 3.6779158115386963,
+          "maximum_body_ground_force_n": 0.0
+        }
+      ],
+      "selected_count": 3,
+      "any_G07_rate_change_justified": false
+    },
+    {
+      "label": "origin16_aim_cold",
+      "source": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/contact_aim7_best_fixed_train128_01/episodes.json",
+      "source_sha256": "ebb97c3487f603ef2495ce12b1f103971d2b87ba36856eef1d2bb26ecb3fb2ae",
+      "selected": [
+        {
+          "case_id": "A-720401-049",
+          "env_id": 49,
+          "episode_index": 0,
+          "airborne_contact": false,
+          "rally_fault": false,
+          "takeoff_time_s": 3.1449544429779053,
+          "landing_time_s": 3.1459543704986572,
+          "recovery_s": 4.270873069763184,
+          "maximum_body_ground_force_n": 0.0
+        },
+        {
+          "case_id": "B-720402-001",
+          "env_id": 65,
+          "episode_index": 0,
+          "airborne_contact": false,
+          "rally_fault": true,
+          "takeoff_time_s": 3.149954080581665,
+          "landing_time_s": 3.150954008102417,
+          "recovery_s": 4.039889812469482,
+          "maximum_body_ground_force_n": 0.0
+        },
+        {
+          "case_id": "B-720402-016",
+          "env_id": 80,
+          "episode_index": 0,
+          "airborne_contact": false,
+          "rally_fault": false,
+          "takeoff_time_s": 3.1669528484344482,
+          "landing_time_s": 3.1679527759552,
+          "recovery_s": 3.640918493270874,
+          "maximum_body_ground_force_n": 0.0
+        },
+        {
+          "case_id": "B-720402-055",
+          "env_id": 119,
+          "episode_index": 0,
+          "airborne_contact": false,
+          "rally_fault": false,
+          "takeoff_time_s": 3.0349624156951904,
+          "landing_time_s": 3.0359623432159424,
+          "recovery_s": 4.331868648529053,
+          "maximum_body_ground_force_n": 0.0
+        }
+      ],
+      "selected_count": 4,
+      "any_G07_rate_change_justified": false
+    },
+    {
+      "label": "origin16_body_cold",
+      "source": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/body_strike_grid16_fixed_train128_01/episodes.json",
+      "source_sha256": "7f27f6109ca062a6b0dee72a251deff12405528767d5f7a20c64e4090e226b1d",
+      "selected": [],
+      "selected_count": 0,
+      "any_G07_rate_change_justified": false
+    }
+  ],
+  "metric_source_sha256": "96102348a875e297b0ae230a99ba02249663a06bb5d0c10e7f5ae1026c5abe7d",
+  "finding": "A new unsupported contact transition clears valid_jump_landed in existing code. Actual terminal-only records cannot prove every earlier landing transition. All selected actual samples lacked airborne strings, so they do not justify increasing any current G07 complete/contact-conditioned recovery rate.",
+  "actual_scoring_code_modified": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false
+}

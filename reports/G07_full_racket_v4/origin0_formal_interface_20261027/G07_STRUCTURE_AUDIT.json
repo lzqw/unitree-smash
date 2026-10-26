@@ -1,0 +1,15 @@
+{
+  "checked_at": "2026-10-26T20:33:49.504165+00:00",
+  "command": [
+    "/home/autodrive/Isaac/env_isaaclab/bin/python",
+    "tools/verify_goal.py",
+    "--root",
+    ".",
+    "--goal",
+    "G07"
+  ],
+  "actual_exit_code": 2,
+  "stdout": "{\n  \"goal_id\": \"G07\",\n  \"status\": \"FAILED\",\n  \"contract_sha256\": \"66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807\",\n  \"checks\": {\n    \"G00\": {\n      \"passed\": true,\n      \"errors\": []\n    },\n    \"G01\": {\n      \"passed\": true,\n      \"errors\": []\n    },\n    \"G02\": {\n      \"passed\": true,\n      \"errors\": []\n    },\n    \"G03\": {\n      \"passed\": true,\n      \"errors\": []\n    },\n    \"G04\": {\n      \"passed\": true,\n      \"errors\": []\n    },\n    \"G05\": {\n      \"passed\": true,\n      \"errors\": []\n    },\n    \"G06\": {\n      \"passed\": true,\n      \"errors\": []\n    },\n    \"G07\": {\n      \"passed\": false,\n      \"errors\": [\n        \"Missing or invalid evidence: [Errno 2] No such file or directory: '/home/autodrive/LZQW/unitree_smash/reports/G07/evidence.json'\"\n      ]\n    }\n  },\n  \"scope\": \"Structure, hashes, dependencies and thresholds only; not simulation authenticity or GPU budget enforcement.\"\n}\n",
+  "stderr": "",
+  "scope": "Actual original structure/threshold audit; G07 remains unproven, older structural passes do not validate new full-racket task."
+}
