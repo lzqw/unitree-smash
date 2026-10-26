@@ -1,8 +1,12 @@
 # 48更新完成后的训练资料归档
 
+[下载完整48更新训练包（1.21GB）](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_body_residual48_completed_native_training_and_all_weights_20261026.zip)。GitHub服务器摘要、本地封包与独立新下载的SHA完全一致；全部48个诊断权重、634成员CRC、633份内容SHA均已核对。完整仿真还需清单中的[运行资产伴随包](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_placement075_stage8_to40_completed_native_and_frozen_TRAIN128_20261026.zip)，恢复USD/STL、Go2外部层和步行actor到记录路径。
+
+[实际上传及新下载凭据](UPLOAD_RECEIPT.json)保存asset678484954、下载路径、字节数与SHA。此包是完整训练和原源教师证据；新13/24/36/48固定比较另行封包，当前[第13版逐例分析](../body48_fixed_case_comparison_20261026/REPORT.md)已完成，原目标与正式门槛保留。
+
 2026-10-26 14:58UTC：48更新原生作业已实际成功完成，12582912控制环境步、4.3264 GPU小时、NF0。32094个变化中训练回合独立重算为2957空中、660合格恢复、12完整，不作为固定策略成绩。全部48个诊断、canonical/public48、两路RMS和Adam、回合链、13997条公共输入actor一致性以及24条原始轨迹均已检查。新目录解包使用包内RSL复核通过。
 
-封包1209002755字节、633份内容、全部CRC/SHA通过；SHA为8dbe30b677522e86176f040520d5ced9ccc6acc507b2b02bbfd101681ade40ee，当前正在上传，尚待新下载校验。原所有者已开始第13版固定128；新冻结评估与正式A/B仍未完成。下载校验脚本只完成语法检查，实际网络校验将在上传后执行。
+封包1209002755字节、633份内容、全部CRC/SHA通过；SHA为8dbe30b677522e86176f040520d5ced9ccc6acc507b2b02bbfd101681ade40ee，已上传并新下载校验通过，634成员CRC及633份内容SHA一致。第13版固定128已完成：1完整、58空中、32合格恢复、NF0；第24版正在执行，36/48随后，正式A/B尚未运行。下载校验脚本已实际下载并验证相同字节及全部内容。
 
 以下保留14:25登记阶段说明；封包内登记报告是历史快照，完成凭据位于MANIFEST、REPRODUCE及TRAINING_RECEIPT。
 

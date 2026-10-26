@@ -1,6 +1,6 @@
 # 已启动的新body残差48更新课程
 
-原GPU0的48更新作业已实际成功结束：12582912控制环境步、4.3264006084 GPU小时、NF0。32094个闭合变化中训练回合独立重算为2957空中、660合格恢复、12完整；这些不是固定策略成绩。第7更新actor保持/critic Adam140和第8更新actor首次更新/Adam20、critic160均已核对，最终actor/log_std Adam820、critic960，两路RMS均12582912。原所有者1814619现用guard1852236/native1852249运行第13版固定全128，后续比较24/36/48。下述课程与门槛在新原生启动前登记；原固定教师仍是2/128完整、55空中、30合格恢复、19攻击、NF0。
+原GPU0的48更新作业已实际成功结束：12582912控制环境步、4.3264006084 GPU小时、NF0。32094个闭合变化中训练回合独立重算为2957空中、660合格恢复、12完整；这些不是固定策略成绩。第7更新actor保持/critic Adam140和第8更新actor首次更新/Adam20、critic160均已核对，最终actor/log_std Adam820、critic960，两路RMS均12582912。原所有者1814619已完成第13版固定全128，现用guard1854686/native1854699运行第24版，后续比较36/48。下述课程与门槛在新原生启动前登记；原固定教师仍是2/128完整、55空中、30合格恢复、19攻击、NF0。
 
 [第36版权重检查](ROOT_ACTUAL_UPDATE36_CHECK.json)实际读取model_35.pt，确认其内部iter36、9437184控制步、actor/critic RMS计数均9437184，17项Adam状态分别为actor及log_std580、critic720，全部保存模型张量有限。文件SHA为a0e1daf1ab8c708e681c25d5777db0ce35ea51971dac8a83b4eadba39a19687d。它是供后续推理导出的非canonical诊断，不能据此恢复完整PhysX物理状态或继承固定成绩。48课程已完成，现按预登记流程比较13/24/36/48四版原全128。
 
@@ -29,3 +29,5 @@ ROOT_ACTUAL_INITIAL_STATE_CHECK读取了真实2048地面状态与fresh_initial_m
 [完成48训练后的CPU资料归档](../body48_completed_training_delivery_20261026/REPORT.md)进程1848825已实际完成并退出，资料包633份内容SHA和全部CRC通过，新目录使用包内RSL复核通过。新公共actor在13997条真实历史公共输入上与canonical48推理误差0，24条轨迹均已核对；固定13仍在运行，归档不会延长Main来源占有。
 
 [新正式评估入口代码准备](https://github.com/lzqw/unitree-smash/blob/550f8f5/reports/G07_full_racket_v4/current_formal_entrypoints_20261026/REPORT.md)保留在隔离分支，补齐新策略族的锁定和面板工厂；实际未达准备门槛教师已被拒绝且未打开正式案例。正向准入与新入口原生A/B尚未运行，Main源码与原协议未改。
+
+[第13版固定128逐例比较](../body48_fixed_case_comparison_20261026/REPORT.md)已实测完成：1完整、58空中、32合格恢复、27攻击、NF0；原教师仍为2完整。有效攻击越网16→26，但进原目标4→2，其中仅1条同时合格恢复。完整案例TRAIN29保留、TRAIN13失去，来源选择仍待全部四版结果。1.21GB完整训练包已上传并新下载验证634成员CRC/633内容SHA，见[资料交付报告](../body48_completed_training_delivery_20261026/REPORT.md)。
