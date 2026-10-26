@@ -15,3 +15,5 @@
 2026-10-26 07:38:26UTC实际启动：父1794481、原GPU0 guard1794483/native1794497，执行Git319bc1f6fa9525d078c1a9f572c4a2adb78d18cf，PLAN SHA404e49c2e67473787643eb58b4a22d60af1b16ba8f78e92c9150bfed06f7f10b。07:39:01UTC实际1280地面初态检查通过，原EP0、时钟0、根位置/四元数/速度和关节速度符合原协议。当前仍在第一代，未有新终端成功率；380来源文件加PLAN共381项持续保持。
 
 [固定机身实际PiPER检查与原始来源修正](https://github.com/lzqw/unitree-smash/blob/c5fd3e3/reports/G07_full_racket_v4/release_target_envelope_20261026_v2/REPORT.md)已发布。CPU视频观察1795557在新固定评估前声明原六例，等待实际父退出与数据接纳后才渲染，不自动上传。后续main运行时代码还须等其ACTUAL_NATIVE_INPUT_CHECK，观察者自身来源直到真实退出保持。
+
+终端结果：2048000步搜索及原128冷评估实际完成，源actor与18744条真实有效输入指令核对通过；内部候选6有1完整，冷评估为0完整/41空中/29恢复/17攻击/NF0。[最终报告、CSV和两段真实视频](../body_search_completed2_delivery_20261026/REPORT.md)明确区分搜索与冷评估。父1794481和CPU观察1795557已真实退出，原381项持有已释放；候选4另父1803326实际运行，384项持有来源仍受保护。
