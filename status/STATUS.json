@@ -63,18 +63,19 @@
           "native_child_pid": 1903046,
           "gpu": 0,
           "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_sequential_n128_01",
-          "observed_at": "2026-10-26T21:24:07.306465+00:00",
+          "observed_at": "2026-10-26T21:39:24.061307+00:00",
           "verified_live_processes": true,
           "actual_start_check": "reports/G07_full_racket_v4/origin0_prepose_completed_delivery_20261027/GAIN_BODY_ACTUAL_NATIVE_START_CHECK.json",
           "formal_acceptance": false,
           "actual_native_progress": {
-            "candidate_id": 1,
-            "candidate_name": "both_residual_layers_off",
-            "control_ticks": 200,
+            "candidate_id": 2,
+            "candidate_name": "jump_40ms_earlier_keep_handover",
+            "control_ticks": 100,
             "first_episodes_complete": 0,
-            "actual_control_env_steps": 128000,
+            "actual_control_env_steps": 217600,
             "formal_acceptance": false
-          }
+          },
+          "next_candidate2_ground_states_saved": true
         }
       ],
       "queued_native_sequence": {
@@ -9078,9 +9079,9 @@
       },
       "last_goal_turn_classification": {
         "classification": "progress",
-        "observed_at": "2026-10-26T21:24:07.306465+00:00",
-        "evidence": "First actual gain/body reference128 independently checked; native cold/search shared traces compared, four exact contacts matched and later divergence localized; actual next candidate1 live.",
-        "previous_turn": "progress: cold evaluation, video/program delivery and actual next native startup verified."
+        "observed_at": "2026-10-26T21:39:24.061307+00:00",
+        "evidence": "Residual-off candidate1 actually completed and all original256 reference/ablation rows verified;673 real public-input command rows replayed. No airborne contacts versus4 reference; candidate2 ground initialization actually saved.",
+        "previous_turn": "verified_wait: same live native1903046, progress300 to500 and first episodes0 to126; no restart."
       },
       "completed_leg06_warmup13_frozen_TRAIN128": {
         "episodes": 128,
@@ -11130,6 +11131,53 @@
           "formal_acceptance": false
         },
         "observed_at": "2026-10-26T21:24:07.306465+00:00",
+        "whole_job_completed": false
+      },
+      "gain_body_residual_off_actual_result": {
+        "report": "reports/G07_full_racket_v4/gain_body_residual_off_20261027/REPORT.md",
+        "original256_rows_checked": true,
+        "candidate0": {
+          "episodes": 128,
+          "complete": 0,
+          "airborne_contacts": 4,
+          "conditional_recovery_count": 0,
+          "attack_outgoing": 0,
+          "actual_attack_cross_target_chains": 0,
+          "numerical_failures": 0,
+          "mean_TRAIN_partial_score": 0.4386009067264634,
+          "formal_acceptance": false,
+          "rank": [
+            1,
+            0,
+            0,
+            0.43860091,
+            0,
+            4
+          ]
+        },
+        "candidate1": {
+          "episodes": 128,
+          "complete": 0,
+          "airborne_contacts": 0,
+          "conditional_recovery_count": 0,
+          "attack_outgoing": 0,
+          "actual_attack_cross_target_chains": 0,
+          "numerical_failures": 0,
+          "mean_TRAIN_partial_score": -0.7293895842158236,
+          "formal_acceptance": false,
+          "rank": [
+            1,
+            0,
+            0,
+            -0.72938958,
+            0,
+            0
+          ]
+        },
+        "candidate1_actual_public_rows": 673,
+        "CPU_vs_actual_GPU_max_action_error": 8.106231689453125e-06,
+        "next_candidate2_ground_states_saved": true,
+        "observed_at": "2026-10-26T21:39:24.061307+00:00",
         "whole_job_completed": false
       }
     },
