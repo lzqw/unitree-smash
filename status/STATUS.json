@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/centered_residual_pilot8_queue02/FIXED_TRAIN128_RESULT.json",
-      "notes": "GPU0同一严格075续训继续，实际阶段24、新增4194304步、完整训练计数3、NF0；本轮已独立核验3个完整回合。新增5836条实际动作经生产混合器CPU逐步重算为零误差；第22次更新腿均值修正约0.000344rad、探索std约0.003rad，原始残差未截断，不支持“已经撞上.03rad上限”的判断。当前训练和原冻结16/24/32队列保持；十来源leg06后续条件流程仅CPU准备，未选择/集成/运行。原正式A/B及50/70/85未通过。",
+      "notes": "GPU0原075严格续训仍运行，实际阶段28、新增5242880步、完整训练计数4、NF0；本轮已独立核验4条完整TRAIN回合。新增TRAIN58/LANE1466/EP6出球8.221m/s、首落x3.95631、原生连续恢复3.219秒。保留旧附加“正的较晚球底余量/必须最后.8s”拒绝，按原有限球体过网及任一连续.8s定义核验，未修改物理/原阈值。57MB实际16/24推理权重包已上传和新下载SHA回验，新目录151数据及包内RSL重建误差均0；不是冻结成绩或native重放。原冻结8仍0/128完整，A/B各200与50/70/85未通过。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
@@ -58,7 +58,7 @@
       "active_gpu_jobs": [
         {
           "state": "RUNNING_NATIVE_PLACEMENT075_RESUME32",
-          "observed_at": "2026-10-26T01:47:47.000358+00:00",
+          "observed_at": "2026-10-26T02:10:06.578318+00:00",
           "workflow_pid": 1734658,
           "guard_pid": 1734667,
           "native_child_pid": 1734680,
@@ -70,15 +70,15 @@
           "detached_observer": true,
           "verified_live_processes": true,
           "formal_acceptance": false,
-          "actual_stage_update": 24,
-          "actual_current_job_control_env_steps": 4194304,
-          "actual_stage_total_env_steps": 6291456,
+          "actual_stage_update": 28,
+          "actual_current_job_control_env_steps": 5242880,
+          "actual_stage_total_env_steps": 7340032,
           "numerical_failures": 0,
           "first_resumed_update_proof": "reports/G07_full_racket_v4/centered_placement075_resume32_queue02/FIRST_ACTUAL_RESUMED_UPDATE_CHECK.json",
           "source_actor_normalizer_offset_preserved": true,
           "actual_ground_2048_verified": true,
           "first_resumed_update_all17_Adam_states_advanced20": true,
-          "native_changing_policy_complete_counter": 3
+          "native_changing_policy_complete_counter": 4
         }
       ],
       "queued_native_sequence": {
@@ -5047,7 +5047,7 @@
       },
       "current_native_workflow": {
         "state": "RUNNING_NATIVE_PLACEMENT075_RESUME32",
-        "observed_at": "2026-10-26T01:47:47.000358+00:00",
+        "observed_at": "2026-10-26T02:10:06.578318+00:00",
         "workflow_pid": 1734658,
         "guard_pid": 1734667,
         "native_child_pid": 1734680,
@@ -5061,15 +5061,15 @@
         "formal_acceptance": false,
         "state_file": "reports/G07_full_racket_v4/centered_placement075_resume32_queue02/state.json",
         "launch_receipt": "reports/G07_full_racket_v4/centered_placement075_resume32_queue02/DETACHED_LAUNCH_RECEIPT.json",
-        "actual_stage_update": 24,
-        "actual_current_job_control_env_steps": 4194304,
-        "actual_stage_total_env_steps": 6291456,
+        "actual_stage_update": 28,
+        "actual_current_job_control_env_steps": 5242880,
+        "actual_stage_total_env_steps": 7340032,
         "numerical_failures": 0,
         "first_resumed_update_proof": "reports/G07_full_racket_v4/centered_placement075_resume32_queue02/FIRST_ACTUAL_RESUMED_UPDATE_CHECK.json",
         "source_actor_normalizer_offset_preserved": true,
         "actual_ground_2048_verified": true,
         "first_resumed_update_all17_Adam_states_advanced20": true,
-        "native_changing_policy_complete_counter": 3
+        "native_changing_policy_complete_counter": 4
       },
       "completed_causal_tangent_probes": {
         "state": "SUCCEEDED",
@@ -6568,7 +6568,7 @@
       },
       "centered_placement075_live_training": {
         "state": "RUNNING_NATIVE_PLACEMENT075_RESUME32",
-        "observed_at": "2026-10-26T01:47:47.000358+00:00",
+        "observed_at": "2026-10-26T02:10:06.578318+00:00",
         "workflow_pid": 1734658,
         "guard_pid": 1734667,
         "native_child_pid": 1734680,
@@ -6580,15 +6580,15 @@
         "detached_observer": true,
         "verified_live_processes": true,
         "formal_acceptance": false,
-        "actual_stage_update": 24,
-        "actual_current_job_control_env_steps": 4194304,
-        "actual_stage_total_env_steps": 6291456,
+        "actual_stage_update": 28,
+        "actual_current_job_control_env_steps": 5242880,
+        "actual_stage_total_env_steps": 7340032,
         "numerical_failures": 0,
         "first_resumed_update_proof": "reports/G07_full_racket_v4/centered_placement075_resume32_queue02/FIRST_ACTUAL_RESUMED_UPDATE_CHECK.json",
         "source_actor_normalizer_offset_preserved": true,
         "actual_ground_2048_verified": true,
         "first_resumed_update_all17_Adam_states_advanced20": true,
-        "native_changing_policy_complete_counter": 3
+        "native_changing_policy_complete_counter": 4
       },
       "latest_placement075_delivery": {
         "checked_at": "2026-10-26T00:31:47.701193+00:00",
@@ -6753,6 +6753,64 @@
         "current_main_runtime_unchanged": true,
         "prior_six_and_seven_source_declarations_preserved": true,
         "new_native_execution": false,
+        "formal_acceptance": false
+      },
+      "placement075_intermediate_CPU_delivery": {
+        "checked_at": "2026-10-26T01:59:47.200921+00:00",
+        "repo": "lzqw/unitree-smash",
+        "release": "g07-full-racket-v4-progress-20261024",
+        "asset": "G07_placement075_native_intermediate16_24_CPU_export_evidence_20261026.zip",
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_placement075_native_intermediate16_24_CPU_export_evidence_20261026.zip",
+        "upload_succeeded": true,
+        "bytes": 57374471,
+        "sha256": "18f53e0d36fb8ed8a9d9ea2f42a7952b8908e8631813079ffb07f4f65a3a9770",
+        "fresh_download": "/tmp/g07_placement075_intermediate_cpu_download_20261026_4bhmtq05/G07_placement075_native_intermediate16_24_CPU_export_evidence_20261026.zip",
+        "fresh_downloaded_sha256": "18f53e0d36fb8ed8a9d9ea2f42a7952b8908e8631813079ffb07f4f65a3a9770",
+        "download_verified": true,
+        "fresh_download_all_CRC_and_151_payload_SHA_verified": true,
+        "fresh_extraction_CPU_check": "reports/G07_full_racket_v4/placement075_intermediate_CPU_delivery_20261026/FRESH_RESTORE_CHECK.json",
+        "scope": "Actual native intermediate16/24 inference weights and standalone CPU-data checks. Training job ongoing; no native physics replay or frozen performance.",
+        "new_native_execution": false,
+        "formal_acceptance": false,
+        "goal_complete": false,
+        "standalone_CPU_data_only_not_full_native_assets": true,
+        "actual_intermediate_iterations": [
+          16,
+          24
+        ],
+        "fresh_restore_uses_bundled_RSL_sources": true
+      },
+      "placement075_fourth_complete_episode_audit": {
+        "evidence": "reports/G07_full_racket_v4/placement075_fourth_complete_training_20261026/FOURTH_COMPLETE_NATIVE_EPISODE_CHECK.json",
+        "TRAIN": 58,
+        "env_id": 1466,
+        "episode_index": 6,
+        "actual100Hz_samples": 800,
+        "actual_outgoing_speed_mps": 8.220762731883072,
+        "actual_first_landing_m": [
+          3.9563140869140625,
+          0.06024169921875,
+          0.0250172670930624
+        ],
+        "actual_native_recovery_s": 3.21894907951355,
+        "actual_point_speed_mps": 1.8934934822005112,
+        "actual_100Hz_contiguous_recovery_interval_s": [
+          4.02,
+          7.23
+        ],
+        "original_net_margin_m": -0.003572225570678711,
+        "prior_extra_diagnostic_rejections_preserved": true,
+        "original_native_rules_and_acceptance_unchanged": true,
+        "actual_actor_iterations": [
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25
+        ],
+        "frozen_policy_performance": false,
         "formal_acceptance": false
       }
     },

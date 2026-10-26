@@ -1,0 +1,12 @@
+{
+  "actual_case": "TRAIN58_LANE1466_EP6",
+  "original_native_complete": true,
+  "original_net_margin_m": -0.003572225570678711,
+  "actual_recovery_s": 3.21894907951355,
+  "rejected_predicate": "row.net_margin_m > 0 and row.jump.recovery_s >= .8",
+  "preserved_auditor": "reports/G07_full_racket_v4/placement075_additional_complete_training_20261026/audit.py",
+  "preserved_auditor_sha256": "bfdbbd3f187890ea22a142efd574fa1a8f5a5a3ce9ae81e505b540eb62965d29",
+  "original_acceptance_modified": false,
+  "prior_auditor_left_unchanged": true,
+  "reason_for_separate_check": "The original native rule records the sphere trailing-surface crossing. Bottom clearance at that later point is a diagnostic, not the original legal passage predicate. Recheck native rules, actual first events and finite net geometry without altering raw data."
+}
