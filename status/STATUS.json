@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/centered_residual_pilot8_queue02/FIXED_TRAIN128_RESULT.json",
-      "notes": "当前81秒leg06新8实测视频已上传并新下载核验，15事件画面/8实际解码帧已审查、4068帧全部解码。原128固定结果0完整/27空中/14恢复/6攻击/NF0，较来源恢复下降，攻击越网命中目标链0。13更新完整首批预热对照已于05:34UTC通过原GPU0 guard1777458/native1777471实际运行；2048地面状态和原生映射2.79e-9rad已核对，302持有输入保持，尚无该对照冻结结果。253MB完整leg06数据包已通过540payload/CRC和新目录RSL、12实际轨迹核验，尚未上传。原A/B各200及50/70/85仍未通过。",
+      "notes": "253MB完整leg06新8数据包已发布、新下载全SHA/541CRC/540payload核验通过，新目录包内RSL/12实际轨迹与资产伴随包合并来源初始化检查通过。GPU0预热7/13更新对照继续原guard1777458/native1777471运行；真实第3更新786432步仍仅critic学习60步，actor权重与探索未改，NF0。相同seed两版前3批实际root/joints逐位相同，旧2预热版此时actor已学20步，确认方法差异实际执行；不代表任务改善。CPU观察1780693等待实际13父退出后核对新数据并渲染原六例，不新增GPU。主302及CPU自身12项绑定保持；原A/B各200及50/70/85仍未通过。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
@@ -72,7 +72,12 @@
           "critic_warmup_updates": 7,
           "actor_updates_planned": 6,
           "total_updates_planned": 13,
-          "formal_acceptance": false
+          "formal_acceptance": false,
+          "actual_completed_updates": 3,
+          "actual_control_env_steps": 786432,
+          "actual_actor_weights_still_unchanged": true,
+          "actual_critic_Adam_steps": 60,
+          "actual_numerical_failures": 0
         }
       ],
       "queued_native_sequence": {
@@ -5116,7 +5121,12 @@
         "critic_warmup_updates": 7,
         "actor_updates_planned": 6,
         "total_updates_planned": 13,
-        "formal_acceptance": false
+        "formal_acceptance": false,
+        "actual_completed_updates": 3,
+        "actual_control_env_steps": 786432,
+        "actual_actor_weights_still_unchanged": true,
+        "actual_critic_Adam_steps": 60,
+        "actual_numerical_failures": 0
       },
       "completed_causal_tangent_probes": {
         "state": "SUCCEEDED",
@@ -8482,8 +8492,145 @@
         "bytes": 253118980,
         "sha256": "83ab00c15730d104f4baa2026cea513c773e3b1a73e1d3cb610da64596f85090",
         "fresh_extraction_CPU_data_and_trace_checks_passed": true,
-        "uploaded": false,
-        "report": "reports/G07_full_racket_v4/leg06_completed8_delivery_20261026/REPORT.md"
+        "uploaded": true,
+        "report": "reports/G07_full_racket_v4/leg06_completed8_delivery_20261026/REPORT.md",
+        "download_verified": true,
+        "delivery_url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_leg06_pilot8_native_training_and_frozen_TRAIN128_20261026.zip",
+        "combined_source_initialization_checked": true
+      },
+      "leg06_pilot8_data_delivery": {
+        "checked_at": "2026-10-26T05:47:34.316720+00:00",
+        "repo": "lzqw/unitree-smash",
+        "release": "g07-full-racket-v4-progress-20261024",
+        "asset": "G07_leg06_pilot8_native_training_and_frozen_TRAIN128_20261026.zip",
+        "GitHub_asset_id": 677150841,
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_leg06_pilot8_native_training_and_frozen_TRAIN128_20261026.zip",
+        "bytes": 253118980,
+        "sha256": "83ab00c15730d104f4baa2026cea513c773e3b1a73e1d3cb610da64596f85090",
+        "server_digest": "sha256:83ab00c15730d104f4baa2026cea513c773e3b1a73e1d3cb610da64596f85090",
+        "fresh_download": "/tmp/g07_leg06_pilot8_range_download_20261026_l43keoqt/G07_leg06_pilot8_native_training_and_frozen_TRAIN128_20261026.zip",
+        "fresh_downloaded_sha256": "83ab00c15730d104f4baa2026cea513c773e3b1a73e1d3cb610da64596f85090",
+        "upload_succeeded": true,
+        "download_verified": true,
+        "all541_members_CRC_and_540_payload_SHA_verified": true,
+        "transport": "Independent bounded32MiB ranges, four connections; final whole-file SHA verified",
+        "mandatory_CPU_data_dependencies_included": true,
+        "required_native_runtime_companion": {
+          "name": "G07_placement075_stage8_to40_completed_native_and_frozen_TRAIN128_20261026.zip",
+          "sha256": "44528da938ad422ed6a5515a32c65df3b763421288d2b4ff6f9236ab36c517bb",
+          "bytes": 1213533493,
+          "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_placement075_stage8_to40_completed_native_and_frozen_TRAIN128_20261026.zip"
+        },
+        "fresh_extraction_CPU_check": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/leg06_completed8_delivery_20261026/FRESH_RESTORE_CHECK.json",
+        "fresh_canonical_actor_and_original128_results_checked": true,
+        "actual_valid_public_samples": 1115,
+        "native_replay_in_fresh_extraction": false,
+        "new_native_execution": false,
+        "formal_acceptance": false,
+        "goal_complete": false,
+        "combined_source_initialization_check": "reports/G07_full_racket_v4/leg06_completed8_delivery_20261026/COMBINED_NATIVE_SOURCE_CHECK.json",
+        "report": "reports/G07_full_racket_v4/leg06_completed8_delivery_20261026/DELIVERY_REPORT.md"
+      },
+      "warmup13_actual_first_update": {
+        "checked_at": "2026-10-26T05:41:09.974533+00:00",
+        "actual_native_live": 1777471,
+        "actual_completed_iteration": 1,
+        "actual_control_env_steps": 262144,
+        "all8_mapped_actor_weight_tensors_unchanged": true,
+        "fresh_log_std_unchanged": true,
+        "only8_critic_Adam_states_each20": true,
+        "actor_RMS_count": 12845056,
+        "critic_RMS_count": 262144,
+        "actual_source_actor_RMS_count": 12582912,
+        "source_sha256": {
+          "reports/G07_full_racket_v4/centered_leg06_full_cohort_warmup13_queue01/audit_first_update.py": "d81a4f97726ed2fe341c4a000fe378dd95c96c50e516a6ab7d3ce94b48ae19fd",
+          "reports/G07_full_racket_v4/residual_ppo_centered_leg06_full_cohort_warmup7_n2048_probe13_01/ppo/model_0.pt": "3e6f1635c2afa1e55360c97f00c7cfbb0b4b1786a524b739b5e3a3653012ee33",
+          "reports/G07_full_racket_v4/residual_ppo_centered_placement075_n2048_probe8_01/policy.pt": "66c93b9f2bfd1f65812ca230312a45cda1d11f59e4a6f076ebdd98ae3c88a3b5",
+          "reports/G07_full_racket_v4/residual_ppo_centered_leg06_full_cohort_warmup7_n2048_probe13_01/INPUTS.json": "2c4ef7fe6a5db5b46820e9cea1b31e483f3f8fc054e8f1880279754bbe3363ac"
+        },
+        "previous_goal_turn_classification": "progress: independently measured completed leg06 TRAIN128, delivered newly reviewed actual video and started declared native warmup13 after real prior exit",
+        "scope": "Actual first critic-only native update; not policy improvement or frozen performance.",
+        "new_native_execution": false,
+        "formal_cases_read": false,
+        "formal_acceptance": false,
+        "goal_complete": false
+      },
+      "warmup13_actual_update3_comparison": {
+        "checked_at": "2026-10-26T05:51:23.361084+00:00",
+        "actual_live_native": 1777471,
+        "actual_current_job_steps_at_diagnostic": 786432,
+        "new_critic_only_update3": {
+          "checked_at": "2026-10-26T05:51:23.333448+00:00",
+          "actual_iteration": 3,
+          "diagnostic_sha256": "e3456f00a7767fe0bc66665c42be19c975af8b243b5c9ab99e3d3672aa1dc134",
+          "mapped_actor_weights_unchanged": true,
+          "actual_Adam_steps": {
+            "critic.0.weight": 60,
+            "critic.0.bias": 60,
+            "critic.2.weight": 60,
+            "critic.2.bias": 60,
+            "critic.4.weight": 60,
+            "critic.4.bias": 60,
+            "critic.6.weight": 60,
+            "critic.6.bias": 60
+          },
+          "all2048_first_ground_episodes_completed_by_update7": false,
+          "actor_RMS_count": 13369344,
+          "critic_RMS_count": 786432,
+          "actual_fresh_ground2048_checked": false,
+          "native_restart_checkpoint": false,
+          "formal_acceptance": false,
+          "goal_complete": false
+        },
+        "old_actor_Adam_steps20": true,
+        "old_critic_Adam_steps60": true,
+        "old_vs_new_actor_weight_tensors_different": [
+          "actor.0.weight",
+          "actor.0.bias",
+          "actor.2.weight",
+          "actor.2.bias",
+          "actor.4.weight",
+          "actor.4.bias",
+          "actor.6.weight",
+          "actor.6.bias"
+        ],
+        "same_seed_first3_rollouts_terminal_physical_comparison": {
+          "root": {
+            "bitwise_equal": true,
+            "max_abs_difference": 0.0
+          },
+          "joint_position": {
+            "bitwise_equal": true,
+            "max_abs_difference": 0.0
+          },
+          "joint_velocity": {
+            "bitwise_equal": true,
+            "max_abs_difference": 0.0
+          }
+        },
+        "source_sha256": {
+          "reports/G07_full_racket_v4/centered_leg06_full_cohort_warmup13_queue01/audit_actual_update3.py": "00c479e62c20cb766577b72fed83a081c5eaeb2ea48e90c2eaabe858d65a2308",
+          "reports/G07_full_racket_v4/centered_leg06_full_cohort_warmup13_queue01/run.py": "5611d3ce46126c66c1c07f878fff7308b3a6300bddd178d5c6adacb7e512d10f",
+          "reports/G07_full_racket_v4/residual_ppo_centered_leg06_after075_intermediates_n2048_probe8_01/ppo/model_2.pt": "e7741bf0302202e71c2f0529032c0e2546936d691be004f94d65e29ddd635ac2",
+          "reports/G07_full_racket_v4/residual_ppo_centered_leg06_full_cohort_warmup7_n2048_probe13_01/ppo/model_2.pt": "e3456f00a7767fe0bc66665c42be19c975af8b243b5c9ab99e3d3672aa1dc134"
+        },
+        "scope": "Actual two completed diagnostic3 states. Validates executed warmup difference, not improved task performance or a general bitwise GPU reproducibility guarantee.",
+        "new_native_execution": false,
+        "formal_cases_read": false,
+        "formal_acceptance": false,
+        "goal_complete": false
+      },
+      "warmup13_CPU_video_observer": {
+        "pid": 1780693,
+        "state": "WAITING_FOR_ACTUAL_WARMUP13_PARENT_EXIT",
+        "verified_live": true,
+        "report": "https://github.com/lzqw/unitree-smash/blob/8656666d146d89295b72591e4747dffc3d29de20/reports/G07_full_racket_v4/orthographic_leg06_warmup13_after_native_queue01/REPORT.md",
+        "main302_inputs_checked_at_registration_and_admission": true,
+        "wait_for_main_runtime_revision": "ACTUAL_NATIVE_INPUT_CHECK.json after actual1777456 exit",
+        "own11_inputs_plus_PLAN_held_until_actual_CPU_exit": true,
+        "automatic_upload": false,
+        "new_GPU_job_started": false,
+        "formal_acceptance": false
       }
     },
     "G08": {

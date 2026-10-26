@@ -1,0 +1,11 @@
+# leg06新8训练与原全128评估的完整数据交付
+
+[253MB训练、权重和原128数据包](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_leg06_pilot8_native_training_and_frozen_TRAIN128_20261026.zip)已上传并重新下载核验：253118980字节，SHA256 `83ab00c15730d104f4baa2026cea513c773e3b1a73e1d3cb610da64596f85090`，GitHub asset677150841，541成员CRC及540份内容SHA全部通过。
+
+包括全部8次诊断、canonical8/public8、SOURCE0758 canonical/public与BASE846、3625变化中回合/接触/规划、12条100Hz训练轨迹、全部128固定回合的50Hz全身/球轨迹，以及前2案例1115条有效794维公共输入/18维动作。实际训练2097152步、0.6702120821GPUh，固定128评估102400步、0.3047815845GPUh；固定结果0完整/27空中/14条件恢复/6攻击/NF0。原始规则、目标和难例保持。
+
+此包包含精确原生源码快照、原TRAIN数据、RSL源码及许可。原生运行还需[1.213GB资产和来源凭据伴随包](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_placement075_stage8_to40_completed_native_and_frozen_TRAIN128_20261026.zip)，SHA256 `44528da938ad422ed6a5515a32c65df3b763421288d2b4ff6f9236ab36c517bb`。在一个新目录先解包伴随包，再覆盖解包253MB新包，使新包的实际执行源码优先；原始两个归档分别保留。外部Go2 USD按runtime_external清单还原到原路径或等效链接，Isaac/Kit/Torch等仍是外部软件依赖。
+
+新目录检查已实际完成：包内RSL加载成功、全部2048回合ID链和fresh Adam120/160核对、原128重新计分、1115有效输入上的canonical/JIT误差0、12原生训练轨迹全部通过。另在一个全新目录按上述顺序合并两个归档，实际通过BASE846来源凭据、SOURCE0758原128凭据及1600实际源观测上的leg单位映射初始化检查。此项是来源/初始化完整性检查，尚未在解包目录重新运行GPU训练。canonical8可用于原leg06同配置严格续训，8个model_i诊断不能冒充canonical重启点；当前另跑的预热7/13更新不是从该canonical严格续训。
+
+[81秒当前真实视频](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_centered_leg06_pilot8_orthographic_v3_20261026.mp4)单独发布，不把未审查视频混入数据包。首次打包TRAIN路径错误及首次tag上传未找到release的失败记录保留；最终按真实发布ID上传及8个32MiB有界分块重新下载成功。原正式A/B各200及50/70/85仍未通过。

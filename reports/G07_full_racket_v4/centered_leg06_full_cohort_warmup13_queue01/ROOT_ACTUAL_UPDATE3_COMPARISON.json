@@ -1,0 +1,65 @@
+{
+  "checked_at": "2026-10-26T05:51:23.361084+00:00",
+  "actual_live_native": 1777471,
+  "actual_current_job_steps_at_diagnostic": 786432,
+  "new_critic_only_update3": {
+    "checked_at": "2026-10-26T05:51:23.333448+00:00",
+    "actual_iteration": 3,
+    "diagnostic_sha256": "e3456f00a7767fe0bc66665c42be19c975af8b243b5c9ab99e3d3672aa1dc134",
+    "mapped_actor_weights_unchanged": true,
+    "actual_Adam_steps": {
+      "critic.0.weight": 60,
+      "critic.0.bias": 60,
+      "critic.2.weight": 60,
+      "critic.2.bias": 60,
+      "critic.4.weight": 60,
+      "critic.4.bias": 60,
+      "critic.6.weight": 60,
+      "critic.6.bias": 60
+    },
+    "all2048_first_ground_episodes_completed_by_update7": false,
+    "actor_RMS_count": 13369344,
+    "critic_RMS_count": 786432,
+    "actual_fresh_ground2048_checked": false,
+    "native_restart_checkpoint": false,
+    "formal_acceptance": false,
+    "goal_complete": false
+  },
+  "old_actor_Adam_steps20": true,
+  "old_critic_Adam_steps60": true,
+  "old_vs_new_actor_weight_tensors_different": [
+    "actor.0.weight",
+    "actor.0.bias",
+    "actor.2.weight",
+    "actor.2.bias",
+    "actor.4.weight",
+    "actor.4.bias",
+    "actor.6.weight",
+    "actor.6.bias"
+  ],
+  "same_seed_first3_rollouts_terminal_physical_comparison": {
+    "root": {
+      "bitwise_equal": true,
+      "max_abs_difference": 0.0
+    },
+    "joint_position": {
+      "bitwise_equal": true,
+      "max_abs_difference": 0.0
+    },
+    "joint_velocity": {
+      "bitwise_equal": true,
+      "max_abs_difference": 0.0
+    }
+  },
+  "source_sha256": {
+    "reports/G07_full_racket_v4/centered_leg06_full_cohort_warmup13_queue01/audit_actual_update3.py": "00c479e62c20cb766577b72fed83a081c5eaeb2ea48e90c2eaabe858d65a2308",
+    "reports/G07_full_racket_v4/centered_leg06_full_cohort_warmup13_queue01/run.py": "5611d3ce46126c66c1c07f878fff7308b3a6300bddd178d5c6adacb7e512d10f",
+    "reports/G07_full_racket_v4/residual_ppo_centered_leg06_after075_intermediates_n2048_probe8_01/ppo/model_2.pt": "e7741bf0302202e71c2f0529032c0e2546936d691be004f94d65e29ddd635ac2",
+    "reports/G07_full_racket_v4/residual_ppo_centered_leg06_full_cohort_warmup7_n2048_probe13_01/ppo/model_2.pt": "e3456f00a7767fe0bc66665c42be19c975af8b243b5c9ab99e3d3672aa1dc134"
+  },
+  "scope": "Actual two completed diagnostic3 states. Validates executed warmup difference, not improved task performance or a general bitwise GPU reproducibility guarantee.",
+  "new_native_execution": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
