@@ -1,0 +1,807 @@
+{
+  "created_at": "2026-10-26T18:44:12.344255+00:00",
+  "protocol_sha256": "04121cfb257ea4d2e288c69b44dd0c8dbada814e0bf95c8a16f5af7ef2390367",
+  "asset_sha256": "c2264fcece90b042c7c6a1cac7d516af83972729d0402947e3a519041e184cf2",
+  "source_hashes": {
+    "quadsmash/__init__.py": "bd0e05d5a7d196c7669bf030578635774ea2fff40cfd835b7f120a42d190dcde",
+    "quadsmash/control/__init__.py": "4ef0ee015b281b8f6d010db5ab2ca413d4e204d455a2c4afc52ad131e1293e10",
+    "quadsmash/control/candidate_batch.py": "07812883a4402973ceaa987f670e557aa878c60874afbd6b1be0bc1ebcf86cd3",
+    "quadsmash/control/causal_parameter_selector.py": "8a34e29511fe0f802c84a7cacabb2d76bfdb21c0d22aa8726bd74b8da0794c14",
+    "quadsmash/control/composed_reach_teacher.py": "dc45a145e701e9bacdb967294bdc2f4eb1dc14efc29a782b1ad91a488c7db3a0",
+    "quadsmash/control/dynamic_reach_teacher.py": "69d8917911f77a7570b38060277208876fd1edc24782c8fc7d1753856fc1204c",
+    "quadsmash/control/full_racket_arm_search_v4.py": "7f755abb820635fbb4b963fa7d12fddc41029d4b70693a6468f4cf7057271ee2",
+    "quadsmash/control/full_racket_arm_target_rate_v4.py": "f3da0f03d1d7cb7ebec701b096a4b870446be18b127bb43b5b5ae533c7325743",
+    "quadsmash/control/full_racket_body_residual_v4.py": "8caf5dfe603b592ff3e075043d4e7e0bb760607087d92f63382ad581c6f41b8f",
+    "quadsmash/control/full_racket_body_search_v4.py": "0377dc4b23f35f36c3d5a17562ec99e7a93fd6bcc1add1ec1ae0fb4f208c9b3c",
+    "quadsmash/control/full_racket_body_strike_grid_v4.py": "794357b83040fb17851350834bef0c5315656be215f907511cfe710b37e84337",
+    "quadsmash/control/full_racket_candidate_bank_v4.py": "5290a057a962317b433e5e0839796e8b0df8af60997a4ccebd4283df1bce3f65",
+    "quadsmash/control/full_racket_contact_aim_v4.py": "f3c4b9ba4d62b11aaa913ce36292dd587790b61705828a943cb6d886e29ba91d",
+    "quadsmash/control/full_racket_contact_curriculum_v4.py": "eab74660116397d8a33c983c9c5a5613fb1a998418934bfac5877e5079ff9c86",
+    "quadsmash/control/full_racket_contact_normal_search_v4.py": "1c24453dfb79e5fea638ac47f0a31add11f48903fb55b51eda4f4c95530ca92f",
+    "quadsmash/control/full_racket_contact_uv_retarget_v4.py": "3f5f1dfbb8663e305746ef41356ecf4f6c45f9d1905b85cb99040f1096644de1",
+    "quadsmash/control/full_racket_face_feedback_v4.py": "ff06d998baf0c4b856697fbc00be2b7e567f817e7462e0db23b81af1f7e598a1",
+    "quadsmash/control/full_racket_fixed_actor_body_v4.py": "6fbfcf9446145c0aaf8000683818a9a29617c2942819ca9fe488f026b99537d6",
+    "quadsmash/control/full_racket_geometry_v4.py": "41035f39916440d8b3c6d84af820d788b10c4e6a7cf29c8971c494f3549f5095",
+    "quadsmash/control/full_racket_height_intercept_v4.py": "a19867ceda122314ffb030cc7ed87f9388896b99b15192ebb334b83f54c23a48",
+    "quadsmash/control/full_racket_joint_preparation_v4.py": "a2ccfaf09fa13348b808fac6d0531cd3b6b39804ac8e751757125b116703df1b",
+    "quadsmash/control/full_racket_kinematics_v4.py": "9e7ce1df5f535a3aa48c0436e57a4478e8ef7d9a6f16419803e7d25d6cef0f4c",
+    "quadsmash/control/full_racket_parameter_layout_v4.py": "9bac2323b1b05187da0e17b13d291136bbb18cac2355431d0a40bf6cecd3d86c",
+    "quadsmash/control/full_racket_preparation_v4.py": "064487ee33e446745824535d6f7d4624cf21093e77d3a7f2db4904962f8b51da",
+    "quadsmash/control/full_racket_rally_controller_v4.py": "069d42642ab91e86969f939fc90ca872c8a6f91f48d0c7ecf655e29e2d0ef96c",
+    "quadsmash/control/full_racket_recovery_blend_v4.py": "ff30e461c63612b23f8ee001528661f261a0b5242627d72950e6c55f75dddcd1",
+    "quadsmash/control/full_racket_recovery_search_v4.py": "811ec557e3506a5640d0a8a800a9c26b12bb1cc9320996114818a17adc97258b",
+    "quadsmash/control/full_racket_relative_prepose_v4.py": "0eec1acf2a29e42df8da1bd650a6cd41fe371286fefa869d0cbe1686a9f4394e",
+    "quadsmash/control/full_racket_residual_reward_v4.py": "ccaf47cea2959833c4cd6276517b22c32cdd7830bfaf4f0d7601017ede532f9c",
+    "quadsmash/control/full_racket_residual_v4.py": "ce8ce850ec24a7566a27131d6d47919a9d7e818cdbccbfd30583ed147aa9198f",
+    "quadsmash/control/full_racket_search_mask_v4.py": "1df303f3eb2e1d6eec924a4ac5a9e441f79bf8499bd7836b52592f25f9b16807",
+    "quadsmash/control/full_racket_target_landing_curriculum_v4.py": "1ab8ef571c76ad9bae28aeb7f078512e8ab0b002eb658f912131147b96c20282",
+    "quadsmash/control/full_racket_teacher_v4.py": "fb8a04372cbc46930871220dbe444a30d57944a2bf03d673f1b576cea8f81ed5",
+    "quadsmash/control/full_racket_train_evaluation_v4.py": "2d5d102ffd8eb7328efc47ad2675d6c73ada98f7f3a3ae8da524002d22ded109",
+    "quadsmash/control/full_racket_walk_heading_v4.py": "26010279f175715065441995784328c6e4cc7709c0d8093821433687aa9a5872",
+    "quadsmash/control/go2_standing_transfer.py": "7d0ace76dcd52239f9588071eb84ed50481692c3ed19fd9a44de57cf4945847c",
+    "quadsmash/control/go2_walk_transfer.py": "84c1cfa556992a43f3f38e90b56234bcff4c7589cf7c194925ff8de74feaad78",
+    "quadsmash/control/initial_intercept.py": "85628aa4b0d9f802ea4d9e14c722b90348e4897c7ad396ec3b7ecd6112db92c7",
+    "quadsmash/control/interfaces.py": "c253ccf21c79ee227cd9779bf0aa54b98c8cfa980de3313ec94ccf4cc8dc14aa",
+    "quadsmash/control/jump_teacher.py": "27a232d497601a2862e5a79ee8d5e7a257eff3311124520763bb4b090f54bc63",
+    "quadsmash/control/learned_hybrid.py": "905df222f053928737255fd676bd2c229a75e5ba1229fb896ceab96f6b580035",
+    "quadsmash/control/loaded_walk_teacher.py": "638e84807976813d378034313a9b95d8c66a2b3f2ad7dd12b5c11906d4d1e9e4",
+    "quadsmash/control/measured_joint_placement_reward_v4.py": "478a234a75cd285cc64c45bb7fb1d6cfb99e4ef4b921e1e0fd81c779ba97db76",
+    "quadsmash/control/measured_string_alignment_reward_v4.py": "ee76cd0676b9751d0417af1fecfedcce53f409b5021308dcd69fc76ac54d1b79",
+    "quadsmash/control/piecewise_affine.py": "386ad6edc715e387417a3a99563c55f051548dca8b7971bfcc8d8565527eae78",
+    "quadsmash/control/piper_geometry.py": "dbce4d631302d52f2d702794340a433937dbf1f6e613bdde0ddd60dccdbf1f6e",
+    "quadsmash/control/skills.py": "989eef362d8ecafca249102bd78a4d3398c14cbe96e37773a421feb0957881c9",
+    "quadsmash/control/smash_search.py": "011a90248520fa67034b9b8e382524fc348e47d552072cd02e60105b4466b5bd",
+    "quadsmash/evaluation_v4.py": "efe610b42103a45b75fa98acb2a7fe221536abb752ebd665fc926c6ffb657b38",
+    "quadsmash/physics/__init__.py": "ed0ad1bfece1ebb91d969c4fa68c64b17a623ec54ee68ddf1e22cc923a0d2923",
+    "quadsmash/physics/collision.py": "1ca12ab29955537d8ebf62aa02c14a1b8d54c131ef9bcb7b306a91f3f58bc57d",
+    "quadsmash/physics/court_v4.py": "d00cd68d9e5264933b81ec6c8190dfb12e4f3157b735f0dd3cd9c224e1e058ce",
+    "quadsmash/physics/full_racket_v4.py": "3bc1a6e4829165f0db710cc68bb29982b811a6a81813750bd98319a6435a6b87",
+    "quadsmash/physics/initial_launch.py": "c16a0232607ecbb26310f4211cf2a281a772e70419955fdff788f435131e0ebe",
+    "quadsmash/physics/native.py": "99d8cf53942ec535650b9c9848b5195b381f31c7f0ab3b1d232d59f4ad2e7340",
+    "quadsmash/physics/net_geometry.py": "93f040abfa56a8c36561c54b97e29b9626b275e947e3535e8d42d512c62cac22",
+    "quadsmash/physics/racket_plane_geometry_v4.py": "809a25379504ae4d55b73a5b6c7cb5bca46a316e75fdf3bae9216b3f4c2177b5",
+    "quadsmash/physics/rally_rules_v4.py": "80960adcc3cc6ebc0bbf58060aea6e208e74a9f28a62bb2f4a66140db4a98bed",
+    "quadsmash/physics/shuttlecock.py": "14f81ae4174d6aa1fe423fff1ad7621c93190c75ac0b562506ee26ca5dc61319",
+    "quadsmash/physics/smash_events.py": "707f2f42dfad8f2f9eeaab9fee9bc3653d3d3ac67c7d1f98a94dae644f966686",
+    "quadsmash/physics/smash_feasibility.py": "fa853c11524d18ba680b26de0e5a320408da78cb0b507296866257997a6d28e8",
+    "quadsmash/physics/sweep_reference.py": "0206f88568c34855cbbea5734c80f6dc3b4921965a41d7a7b7b4a6a834b75fb0",
+    "quadsmash/process_identity.py": "b130e985fef9fbd5ff4d63e5470625e366822773f3cf0772cc2add15779bf3e4",
+    "quadsmash/rl/__init__.py": "abdd84e8bb6b543fcbd1ae08646f937820bf74739c8e771f78d9ac6e808715ab",
+    "quadsmash/rl/action_diagnostics.py": "5df9e27f3696c72df386fbaedaab7784c15e7dcef5151a745ec679a734e35bd7",
+    "quadsmash/rl/episode_trace_v4.py": "c4610aefb3845dcab78202103a461e3adff2e305917f758f830c829941f717ce",
+    "quadsmash/rl/event_selector.py": "561c83c12f3ccabe4b7a873b72fde1a560533c1cfeba4c655dd48e349367c315",
+    "quadsmash/rl/frozen_baseline_source_v4.py": "9b74de59152c661ed0504a755a0b0d58d6b65495f577939dbed62d0e343d0d49",
+    "quadsmash/rl/frozen_body_source_v4.py": "a9869c44d5cc0cd1e32404d1d3af73ae176aded0f8143aec841de7a7ab77e861",
+    "quadsmash/rl/full_racket_body_residual_ppo_v4.py": "8b0fb6d23ec3c8cf152dd77ea011ea429b97716be6b0c48b0459a970827a868a",
+    "quadsmash/rl/full_racket_residual_ppo_v4.py": "bc49d94fdd15258adec9e439ab3cedd9202564f994f90d165ae61ab4a2009471",
+    "quadsmash/rl/native_checkpoint.py": "eb9bb68bd33134a65818afcbab76217293b96835e770fe164f578cec80659118",
+    "quadsmash/rl/native_ppo.py": "e8dc5eb05daec2497a0b4c19e2d81ff1931e485b0fe99025ed73c5759234ff9e",
+    "quadsmash/rl/ppo.py": "aa01ce1df688d8cfc36d74fba422bf92f17bca16b0eb16d49e5ab64ad784568c",
+    "quadsmash/rl/reset_bank.py": "94a026d09a14f64b5f2cf412f10d73ef30bd7a3dee02eddd00d9faa8f234436c",
+    "quadsmash/tasks/__init__.py": "d568e9e852d04f9ee90c3ab54fe492b93f4813090c9f97066b6f395a8926ac0d",
+    "quadsmash/tasks/config/__init__.py": "6dea9da764118fb24784d531b15b645ac97017be1dbc57d64c5ea9dbfc1110ae",
+    "quadsmash/tasks/events.py": "1044313c3e0c9b35d1f4408ad91eadff1fb16fff2cb6316cb9328fd1bcb1ff6c",
+    "quadsmash/tasks/goals.py": "ec2786ce0a00b73d308f84ec1dd2449b2f06df92403b027663bb7f8f9c36db1b",
+    "quadsmash/tasks/observations.py": "eeb3785b205b7a15ae8ad275e8111b6bfff72b9a5837cc8d54e05be73365eb52",
+    "quadsmash/tasks/quadsmash_env.py": "c6a4853138237c7bc0234bc74eb84d1701232b428ba92d0689ab0bb61dcd1228",
+    "quadsmash/tasks/rewards.py": "ab62f2272d478ae40879259ceb7a1eb8eafb35493640381a74133b22dcd7345b",
+    "quadsmash/tasks/stand/__init__.py": "961918be24016b3ab4bb0e137ec5847bca363cd8024f815621f5498437bbf42d",
+    "quadsmash/tasks/stand/ball_env.py": "1f58c625a026f0555b6c1603dd273ced03923084da9cc643b1f3b5a7cf40fcde",
+    "quadsmash/tasks/stand/coupled_env.py": "97c3997f703a9cf62fa9bc642ca3605da26b7507982d07ef525dff007300961c",
+    "quadsmash/tasks/stand/full_racket_env_v4.py": "56909143cd4aef306f5cc5d3e547fe881a34aa9af9c571ea7edb9bafb2a50d8a",
+    "quadsmash/tasks/stand/full_racket_eval_env_v4.py": "612d878e3b9efc9d8324d5dbc62ce24ae8b470b0c0e28f9d15bbd9b2a7714199",
+    "quadsmash/tasks/stand/full_racket_reach_env_v4.py": "9d803f556e782dd776dc41ec04f5fbae55c46de9641a2edfc45b430a2a869244",
+    "quadsmash/tasks/stand/full_racket_residual_env_v4.py": "b4ddf1a5c96aba39c8cf486b40f67c643fdd4292b499024ea7a5e8bb6112d913",
+    "quadsmash/tasks/stand/full_racket_train_env_v4.py": "c4bd3e2f06721ce0a20c20864aef47e462dc303caae361a161733a97f00d2a55",
+    "quadsmash/tasks/stand/go2_env.py": "7879fbce716e5597f45dbd5ebff05faadc4607d36c39ab0587b458703a019122",
+    "quadsmash/tasks/stand/jump_diagnostics.py": "b05f5adf24ef6944fc9aebec222a5ff2d8757f98f2656dbd9eae3988e3ac9ebc",
+    "quadsmash/tasks/stand/jump_env.py": "03c728433d3699899609b8a483d52ee74c798fa04cad560ceb98c16765a1415d",
+    "quadsmash/tasks/stand/jump_metrics.py": "96102348a875e297b0ae230a99ba02249663a06bb5d0c10e7f5ae1026c5abe7d",
+    "quadsmash/tasks/stand/jump_reward_audit.py": "d2ab7dd1f177a4d773f1db914282a4f6bfe52c6ecf65b1f5d156c5f33a55874e",
+    "quadsmash/tasks/stand/loaded_walk_env.py": "2383d1ed42145c127d543249f4f65a55881ad8b79ce41b3f9611214ef270362b",
+    "quadsmash/tasks/stand/net_contact_monitor.py": "d76885261a8293af643d6765618e760ea87543a8c452ce506ed8fe2c447d1dd2",
+    "quadsmash/tasks/stand/observation_contract.py": "3e884b4c5d72a2f86aff74114ebf0d9ece0264ea4b9e59880375a1fcc23a5772",
+    "quadsmash/tasks/stand/smash_env_v3.py": "5b1821391a141f3a5bd816f28d375771275c407330d07ed32169253bfb58f2ca",
+    "quadsmash/tasks/stand/virtual_env.py": "ac75769647fda5f5466f00fab74fa50fa268a4a9999e1621873555935549445a",
+    "quadsmash/tasks/stand/visual_geometry.py": "3284d80a70dd7a1af0b886958eae1884e5dd78857a4667fa0817b019cf37fe6b",
+    "quadsmash/usd_dependencies_v4.py": "7f97bd2a27eac913fb6f498c748a0846cbd9c5b3cf87fb9cca5474eb6ada8bd7",
+    "scripts/probe_full_racket_origin_precision_v4.py": "21a54e9006ae25437128426ea30ad9c194055ee2a7a875a50b2eb4a1b44a6215"
+  },
+  "original_TRAIN_case_index": 29,
+  "case": {
+    "case_id": "A-720401-029",
+    "panel": "A",
+    "launch": {
+      "position_m": [
+        7.689860945244597,
+        0.7196878244364426,
+        1.9222715738820724
+      ],
+      "velocity_mps": [
+        -8.964684150699817,
+        -1.1085811640904724,
+        3.9515685858000307
+      ]
+    },
+    "prediction_only": {
+      "intercept_plane_x_m": 1.1,
+      "intercept_position_m": [
+        1.1,
+        -0.09522049749291094,
+        1.8375917574234553
+      ],
+      "flight_time_s": 0.8031324286638248,
+      "incoming_velocity_mps": [
+        -7.5243082169576345,
+        -0.9304629390070884,
+        -3.926222478424736
+      ],
+      "incoming_net_margin_m": 0.48355694442224184,
+      "inverse_flight_error_m": 1.5240596427281036e-13
+    },
+    "actor_information": "No case ID or predicted future label. Only current/history proprioception, ball observations after active launch, generic known command and clock."
+  },
+  "num_envs": 128,
+  "seed": 750601,
+  "original_court_spacing_m": 16.0,
+  "runtime_origin_spacing_m": 16.0,
+  "actual_environment_origins_m": [
+    [
+      88.0,
+      -80.0,
+      0.0
+    ],
+    [
+      88.0,
+      -64.0,
+      0.0
+    ],
+    [
+      88.0,
+      -48.0,
+      0.0
+    ],
+    [
+      88.0,
+      -32.0,
+      0.0
+    ],
+    [
+      88.0,
+      -16.0,
+      0.0
+    ],
+    [
+      88.0,
+      0.0,
+      0.0
+    ],
+    [
+      88.0,
+      16.0,
+      0.0
+    ],
+    [
+      88.0,
+      32.0,
+      0.0
+    ],
+    [
+      88.0,
+      48.0,
+      0.0
+    ],
+    [
+      88.0,
+      64.0,
+      0.0
+    ],
+    [
+      88.0,
+      80.0,
+      0.0
+    ],
+    [
+      72.0,
+      -80.0,
+      0.0
+    ],
+    [
+      72.0,
+      -64.0,
+      0.0
+    ],
+    [
+      72.0,
+      -48.0,
+      0.0
+    ],
+    [
+      72.0,
+      -32.0,
+      0.0
+    ],
+    [
+      72.0,
+      -16.0,
+      0.0
+    ],
+    [
+      72.0,
+      0.0,
+      0.0
+    ],
+    [
+      72.0,
+      16.0,
+      0.0
+    ],
+    [
+      72.0,
+      32.0,
+      0.0
+    ],
+    [
+      72.0,
+      48.0,
+      0.0
+    ],
+    [
+      72.0,
+      64.0,
+      0.0
+    ],
+    [
+      72.0,
+      80.0,
+      0.0
+    ],
+    [
+      56.0,
+      -80.0,
+      0.0
+    ],
+    [
+      56.0,
+      -64.0,
+      0.0
+    ],
+    [
+      56.0,
+      -48.0,
+      0.0
+    ],
+    [
+      56.0,
+      -32.0,
+      0.0
+    ],
+    [
+      56.0,
+      -16.0,
+      0.0
+    ],
+    [
+      56.0,
+      0.0,
+      0.0
+    ],
+    [
+      56.0,
+      16.0,
+      0.0
+    ],
+    [
+      56.0,
+      32.0,
+      0.0
+    ],
+    [
+      56.0,
+      48.0,
+      0.0
+    ],
+    [
+      56.0,
+      64.0,
+      0.0
+    ],
+    [
+      56.0,
+      80.0,
+      0.0
+    ],
+    [
+      40.0,
+      -80.0,
+      0.0
+    ],
+    [
+      40.0,
+      -64.0,
+      0.0
+    ],
+    [
+      40.0,
+      -48.0,
+      0.0
+    ],
+    [
+      40.0,
+      -32.0,
+      0.0
+    ],
+    [
+      40.0,
+      -16.0,
+      0.0
+    ],
+    [
+      40.0,
+      0.0,
+      0.0
+    ],
+    [
+      40.0,
+      16.0,
+      0.0
+    ],
+    [
+      40.0,
+      32.0,
+      0.0
+    ],
+    [
+      40.0,
+      48.0,
+      0.0
+    ],
+    [
+      40.0,
+      64.0,
+      0.0
+    ],
+    [
+      40.0,
+      80.0,
+      0.0
+    ],
+    [
+      24.0,
+      -80.0,
+      0.0
+    ],
+    [
+      24.0,
+      -64.0,
+      0.0
+    ],
+    [
+      24.0,
+      -48.0,
+      0.0
+    ],
+    [
+      24.0,
+      -32.0,
+      0.0
+    ],
+    [
+      24.0,
+      -16.0,
+      0.0
+    ],
+    [
+      24.0,
+      0.0,
+      0.0
+    ],
+    [
+      24.0,
+      16.0,
+      0.0
+    ],
+    [
+      24.0,
+      32.0,
+      0.0
+    ],
+    [
+      24.0,
+      48.0,
+      0.0
+    ],
+    [
+      24.0,
+      64.0,
+      0.0
+    ],
+    [
+      24.0,
+      80.0,
+      0.0
+    ],
+    [
+      8.0,
+      -80.0,
+      0.0
+    ],
+    [
+      8.0,
+      -64.0,
+      0.0
+    ],
+    [
+      8.0,
+      -48.0,
+      0.0
+    ],
+    [
+      8.0,
+      -32.0,
+      0.0
+    ],
+    [
+      8.0,
+      -16.0,
+      0.0
+    ],
+    [
+      8.0,
+      0.0,
+      0.0
+    ],
+    [
+      8.0,
+      16.0,
+      0.0
+    ],
+    [
+      8.0,
+      32.0,
+      0.0
+    ],
+    [
+      8.0,
+      48.0,
+      0.0
+    ],
+    [
+      8.0,
+      64.0,
+      0.0
+    ],
+    [
+      8.0,
+      80.0,
+      0.0
+    ],
+    [
+      -8.0,
+      -80.0,
+      0.0
+    ],
+    [
+      -8.0,
+      -64.0,
+      0.0
+    ],
+    [
+      -8.0,
+      -48.0,
+      0.0
+    ],
+    [
+      -8.0,
+      -32.0,
+      0.0
+    ],
+    [
+      -8.0,
+      -16.0,
+      0.0
+    ],
+    [
+      -8.0,
+      0.0,
+      0.0
+    ],
+    [
+      -8.0,
+      16.0,
+      0.0
+    ],
+    [
+      -8.0,
+      32.0,
+      0.0
+    ],
+    [
+      -8.0,
+      48.0,
+      0.0
+    ],
+    [
+      -8.0,
+      64.0,
+      0.0
+    ],
+    [
+      -8.0,
+      80.0,
+      0.0
+    ],
+    [
+      -24.0,
+      -80.0,
+      0.0
+    ],
+    [
+      -24.0,
+      -64.0,
+      0.0
+    ],
+    [
+      -24.0,
+      -48.0,
+      0.0
+    ],
+    [
+      -24.0,
+      -32.0,
+      0.0
+    ],
+    [
+      -24.0,
+      -16.0,
+      0.0
+    ],
+    [
+      -24.0,
+      0.0,
+      0.0
+    ],
+    [
+      -24.0,
+      16.0,
+      0.0
+    ],
+    [
+      -24.0,
+      32.0,
+      0.0
+    ],
+    [
+      -24.0,
+      48.0,
+      0.0
+    ],
+    [
+      -24.0,
+      64.0,
+      0.0
+    ],
+    [
+      -24.0,
+      80.0,
+      0.0
+    ],
+    [
+      -40.0,
+      -80.0,
+      0.0
+    ],
+    [
+      -40.0,
+      -64.0,
+      0.0
+    ],
+    [
+      -40.0,
+      -48.0,
+      0.0
+    ],
+    [
+      -40.0,
+      -32.0,
+      0.0
+    ],
+    [
+      -40.0,
+      -16.0,
+      0.0
+    ],
+    [
+      -40.0,
+      0.0,
+      0.0
+    ],
+    [
+      -40.0,
+      16.0,
+      0.0
+    ],
+    [
+      -40.0,
+      32.0,
+      0.0
+    ],
+    [
+      -40.0,
+      48.0,
+      0.0
+    ],
+    [
+      -40.0,
+      64.0,
+      0.0
+    ],
+    [
+      -40.0,
+      80.0,
+      0.0
+    ],
+    [
+      -56.0,
+      -80.0,
+      0.0
+    ],
+    [
+      -56.0,
+      -64.0,
+      0.0
+    ],
+    [
+      -56.0,
+      -48.0,
+      0.0
+    ],
+    [
+      -56.0,
+      -32.0,
+      0.0
+    ],
+    [
+      -56.0,
+      -16.0,
+      0.0
+    ],
+    [
+      -56.0,
+      0.0,
+      0.0
+    ],
+    [
+      -56.0,
+      16.0,
+      0.0
+    ],
+    [
+      -56.0,
+      32.0,
+      0.0
+    ],
+    [
+      -56.0,
+      48.0,
+      0.0
+    ],
+    [
+      -56.0,
+      64.0,
+      0.0
+    ],
+    [
+      -56.0,
+      80.0,
+      0.0
+    ],
+    [
+      -72.0,
+      -80.0,
+      0.0
+    ],
+    [
+      -72.0,
+      -64.0,
+      0.0
+    ],
+    [
+      -72.0,
+      -48.0,
+      0.0
+    ],
+    [
+      -72.0,
+      -32.0,
+      0.0
+    ],
+    [
+      -72.0,
+      -16.0,
+      0.0
+    ],
+    [
+      -72.0,
+      0.0,
+      0.0
+    ],
+    [
+      -72.0,
+      16.0,
+      0.0
+    ],
+    [
+      -72.0,
+      32.0,
+      0.0
+    ],
+    [
+      -72.0,
+      48.0,
+      0.0
+    ],
+    [
+      -72.0,
+      64.0,
+      0.0
+    ],
+    [
+      -72.0,
+      80.0,
+      0.0
+    ],
+    [
+      -88.0,
+      -80.0,
+      0.0
+    ],
+    [
+      -88.0,
+      -64.0,
+      0.0
+    ],
+    [
+      -88.0,
+      -48.0,
+      0.0
+    ],
+    [
+      -88.0,
+      -32.0,
+      0.0
+    ],
+    [
+      -88.0,
+      -16.0,
+      0.0
+    ],
+    [
+      -88.0,
+      0.0,
+      0.0
+    ],
+    [
+      -88.0,
+      16.0,
+      0.0
+    ]
+  ],
+  "direct_initial_launch": true,
+  "scope": "0.5second free-flight/isolation engineering diagnostic; no task success measurement.",
+  "filter_collisions": true,
+  "replicate_physics": true,
+  "physics_dt_s": 6.25e-05,
+  "policy_dt_s": 0.01,
+  "original_physical_configs_sha256": {
+    "configs/full_racket_v4.json": "d5266604b7cc7a221752de60bf68ff609e66e5fbc16ff3ed1904facc0cf63d3a",
+    "configs/court_net_v4.json": "184d07dde336bf36be7dfde089373c851a2bcb855a6e44f4120442b59818b4f4",
+    "configs/shuttle_physics_v2.json": "dba0e8d45edd661185c7f0b8a379f63993d1a87269740e672688b4577e359229",
+    "configs/evaluation_protocol_v2.json": "421497aa51eecac023c70b200e8a75ecafff01527dcf215665d5d96c1e8266a8",
+    "configs/full_racket_v4_r2.json": "b625c458880f1567fe63676fe0c5209f1d5f956ef8c419eb8c84cb229cabe46d",
+    "configs/full_racket_v4_r3.json": "14d58dd674665424dab63e67d525daf9b2239821797b97202aa45f9af1e5a26c",
+    "configs/full_racket_reset_v4.json": "0d5246e0b39daabd0c0cb15f5259c7c61df455ccb191835932cc83f4886df25b"
+  },
+  "formal_cases_read": false,
+  "formal_acceptance": false
+}

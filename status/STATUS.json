@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/body_strike_grid16_queue01/COLD_TRAIN128_RESULT.json",
-      "notes": "当前GPU0继续选中Aim[0,.06]的独立冷128；7点搜索完整为2/2/5/3/1/2/2，NF0。新诊断定位16米多环境float32世界位置漂移，已停止仅等待的旧引拍协调器1873882，改由1881338在当前父1827656实际退出后测原生精度/碰撞隔离。仅在准入后1881847执行新数值布局8×128和冷128；物理资产、硬件、目标与原评分保持，历史成绩不继承。正式A/B及50/70/85未通过。",
+      "notes": "原布局Aim7及冷128实际完成：确认来源3完整/60空中/26合格恢复/24攻击、NF0，搜索5次未全复现。304.6MB完整包已上传新下载验证。原生origin16与origin0精度/隔离探针完成，最大球路误差7.396→0.173毫米，origin0副本球/根差0、球力0、提前done0、NF0，准入通过。旧严格腕部分支源准备拒绝，限位内近等效种子与Main动作核验通过。GPU0新origin0 8×128原生比较正由1884350/1884474/1884488运行，460输入保持；不继承旧成绩，正式A/B和50/70/85尚未通过。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
@@ -10375,11 +10375,11 @@
         "formal_acceptance": false
       },
       "current_full_racket_progress_20261027": {
-        "observed_at": "2026-10-26T18:41:33.836417+00:00",
-        "actual_live_owner_pid": 1827656,
-        "actual_live_native_pid": 1879891,
-        "actual_live_waiter_pid": 1881338,
-        "measured_source_still_confirmed_complete": 2,
+        "observed_at": "2026-10-26T19:08:11.702486+00:00",
+        "actual_live_owner_pid": 1884350,
+        "actual_live_native_pid": 1884488,
+        "actual_live_waiter_pid": null,
+        "measured_source_still_confirmed_complete": 3,
         "search_candidate_aim_uv_m": [
           0.0,
           0.06
@@ -10391,7 +10391,7 @@
           "attack_outgoing": 21,
           "numerical_failures": 0
         },
-        "cold_confirmation_pending": true,
+        "cold_confirmation_pending": false,
         "video": {
           "browser_download_url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_contact_aim006_search_complete_and_failures_20261027.mp4",
           "digest": "sha256:bbe4560f72336f548858fe304db40f21484d9edf0ac9b41675d79f7870ef1d73",
@@ -10417,13 +10417,50 @@
           "members": 49,
           "payloads_SHA_verified": 48
         },
-        "next_queue": "reports/G07_full_racket_v4/origin_precision_after_aim_queue01",
+        "next_queue": null,
         "formal_cases_read": false,
         "formal_acceptance": false,
-        "secondary_actual_live_waiter_pid": 1881847,
+        "secondary_actual_live_waiter_pid": null,
         "stopped_old_waiter_pid": 1873882,
-        "after_precision_queue": "reports/G07_full_racket_v4/prepose_origin0_after_precision_queue01",
-        "origin0_native_admission_pending": true
+        "after_precision_queue": "reports/G07_full_racket_v4/prepose_origin0_after_precision_queue02",
+        "origin0_native_admission_pending": false,
+        "actual_live_guard_pid": 1884474,
+        "cold_summary": {
+          "complete": 3,
+          "airborne_contacts": 60,
+          "conditional_recovery_count": 26,
+          "attack_outgoing": 24,
+          "numerical_failures": 0
+        },
+        "origin0_native_admitted": true,
+        "current_run": "reports/G07_full_racket_v4/prepose_origin0_8_sequential_n128_01",
+        "original_layout_full_data_delivery": {
+          "checked_at": "2026-10-26T19:01:25.984794+00:00",
+          "repo": "lzqw/unitree-smash",
+          "release": "g07-full-racket-v4-progress-20261024",
+          "asset": "G07_contact_aim7_completed_search_cold_TRAIN128_origin16_20261027.zip",
+          "GitHub_asset_id": 679137545,
+          "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_contact_aim7_completed_search_cold_TRAIN128_origin16_20261027.zip",
+          "bytes": 304597428,
+          "sha256": "046cfd38132326f354384f960d1a6adc0710d4fb69097da9b781166618c6c840",
+          "server_digest": "sha256:046cfd38132326f354384f960d1a6adc0710d4fb69097da9b781166618c6c840",
+          "fresh_download": "/tmp/g07_contact_aim7_range_download_20261027_xz0z8c_2/G07_contact_aim7_completed_search_cold_TRAIN128_origin16_20261027.zip",
+          "fresh_downloaded_sha256": "046cfd38132326f354384f960d1a6adc0710d4fb69097da9b781166618c6c840",
+          "upload_succeeded": true,
+          "download_verified": true,
+          "members_CRC_verified": 131,
+          "payload_SHA_verified": 130,
+          "actual896_search_and128_cold_records_delivered": true,
+          "actual_best_policy_sha256": "a7953fb80d0ea647cbd6d525d8ddbf8a0a0986f1bcecfbe8831db2c1384473a3",
+          "transport": "Independent bounded32MiB ranges, four connections; final whole-file SHA verified",
+          "downloaded_bytes_match_CPU_checked_sealed_archive": true,
+          "original_origin_spacing_m": 16.0,
+          "new_origin0_performance_not_inherited": true,
+          "native_replay_in_fresh_extraction": false,
+          "new_native_execution": false,
+          "formal_acceptance": false,
+          "goal_complete": false
+        }
       }
     },
     "G08": {
