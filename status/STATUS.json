@@ -63,20 +63,21 @@
           "native_child_pid": 1903046,
           "gpu": 0,
           "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_sequential_n128_01",
-          "observed_at": "2026-10-26T21:47:17.803388+00:00",
+          "observed_at": "2026-10-26T22:08:15.267345+00:00",
           "verified_live_processes": true,
           "actual_start_check": "reports/G07_full_racket_v4/origin0_prepose_completed_delivery_20261027/GAIN_BODY_ACTUAL_NATIVE_START_CHECK.json",
           "formal_acceptance": false,
           "actual_native_progress": {
-            "candidate_id": 2,
-            "candidate_name": "jump_40ms_earlier_keep_handover",
-            "control_ticks": 365,
-            "first_episodes_complete": 128,
-            "actual_control_env_steps": 251520,
+            "candidate_id": 4,
+            "candidate_name": "recovery_handover_phase_plus015",
+            "control_ticks": 100,
+            "first_episodes_complete": 0,
+            "actual_control_env_steps": 366720,
             "formal_acceptance": false
           },
           "next_candidate2_ground_states_saved": true,
-          "next_candidate3_ground_states_saved": true
+          "next_candidate3_ground_states_saved": true,
+          "next_candidate4_ground_states_saved": true
         }
       ],
       "queued_native_sequence": {
@@ -9080,9 +9081,9 @@
       },
       "last_goal_turn_classification": {
         "classification": "progress",
-        "observed_at": "2026-10-26T21:47:17.803388+00:00",
-        "evidence": "Earlier-jump candidate2 completed original128; all body landed,7 frame contacts and0 airborne strings. Original rows/actual IDs/682 real public-input commands independently checked; next candidate3 ground initialization saved.",
-        "previous_turn": "verified_wait: live native1903046 advanced100 to300, first episodes0 to1; no restart."
+        "observed_at": "2026-10-26T22:08:15.267345+00:00",
+        "evidence": "Later-jump candidate3 finished original128 and independently checked,658 actual public rows replayed;2 target hits both fail speed and recovery. Four original search candidates now complete, next recovery-phase candidate4 initialized.",
+        "previous_turn": "verified_wait: same native1903046 advanced300 to400;124 first episodes complete, CPU ticks grew; no restart."
       },
       "completed_leg06_warmup13_frozen_TRAIN128": {
         "episodes": 128,
@@ -11202,6 +11203,25 @@
               0,
               0
             ]
+          },
+          "3": {
+            "episodes": 128,
+            "complete": 0,
+            "airborne_contacts": 2,
+            "conditional_recovery_count": 0,
+            "attack_outgoing": 0,
+            "actual_attack_cross_target_chains": 0,
+            "numerical_failures": 0,
+            "mean_TRAIN_partial_score": 0.02219030604087041,
+            "formal_acceptance": false,
+            "rank": [
+              1,
+              0,
+              0,
+              0.02219031,
+              0,
+              2
+            ]
           }
         },
         "candidate2_observed_counts": {
@@ -11219,7 +11239,22 @@
         "candidate2_CPU_vs_actual_GPU_max_action_error": 2.86102294921875e-06,
         "next_candidate3_ground_states_saved": true,
         "whole_job_completed": false,
-        "observed_at": "2026-10-26T21:47:17.803388+00:00"
+        "observed_at": "2026-10-26T22:08:15.267345+00:00",
+        "candidate3_observed_counts": {
+          "had_contact": 8,
+          "frame_hit": 6,
+          "crossed_net": 2,
+          "landed_legal_court": 2,
+          "landed_target": 2,
+          "body_landing": 126,
+          "stable_recovery": 2,
+          "qualified_flight_seen": 127,
+          "qualified_jump_landed": 5
+        },
+        "candidate3_public_rows": 658,
+        "candidate3_CPU_vs_actual_GPU_max_action_error": 4.76837158203125e-06,
+        "candidate3_contact_diagnosis": "reports/G07_full_racket_v4/gain_body_timing_results_20261027/candidate_003/CONTACT_FAILURES.json",
+        "next_candidate4_ground_states_saved": true
       }
     },
     "G08": {

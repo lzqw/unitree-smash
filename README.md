@@ -1,6 +1,6 @@
 # QuadSmash：Codex /goal 实施与训练任务包
 
-当前进展（2026-10-26T21:14:04.410909+00:00）：[最新73.08秒独立冷评估视频](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_origin0_cold128_four_air_contacts_and_miss_20261027.mp4)已上传并独立新下载SHA核验，保留全部4次空中拍线和原TRAIN0漏球对照。原128例为**0完整、4空中、0合格恢复、0攻击、数值故障0**；四次出球4.23至5.98m/s且均身体触地，两次首落原目标。[162.58MB完整8项搜索＋冷128、权重与新视频](reports/G07_full_racket_v4/origin0_prepose_completed_delivery_20261027/REPORT.md)已新下载验证203成员CRC/202payload SHA。原父1884350和冷评估已实际退出，GPU0现由1895642/1903032/1903046执行全身增益、起跳、走位和恢复八项比较，128真实地面初态及400项实际源码已核对；后续15更新残差owner1896271等待。482输入保持，原正式A/B与50/70/85尚未通过。
+当前进展（2026-10-26T22:09:06.571782+00:00）：GPU0全身增益/起跳/走位/恢复八项比较已结束前四项，原128例的空中拍线数为4、0、0、2，完整/合格恢复/攻击均0、NF0；正在运行恢复交接相位+0.15候选4。[提前与推迟40ms实测对比](reports/G07_full_racket_v4/gain_body_timing_results_20261027/REPORT.md)已核验，推迟时序两例均命中原目标，但速度低于8m/s且身体触地，未超过原样参照。最近已完成的独立冷128仍为0完整、4空中、0合格恢复，见[73.08秒真实视频与上一轮引拍8项完整162.58MB包](reports/G07_full_racket_v4/origin0_prepose_completed_delivery_20261027/REPORT.md)，均已独立新下载验证。当前482持有输入保持，后续独立冷128、新15更新残差及冷128队列仍在，原正式A/B与50/70/85尚未通过。
 
 当前进展（2026-10-26T18:01UTC）：[最新42.28秒瞄准点实际视频](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_contact_aim006_search_complete_and_failures_20261027.mp4)保留新成功TRAIN12、原成功例TRAIN13的恢复退化，以及TRAIN0拍框误击。参考点[0,.06]原128搜索为**5完整、60空中、28合格恢复、21攻击、NF0**；独立冷128现已完成为3完整、60空中、26合格恢复，NF0，仍未达标。2114帧全部解码、原生数据逐项一致、事件及成片抽样检查、新下载SHA验证均通过。[视频、46.49MB完整候选原128记录与权重](reports/G07_full_racket_v4/contact_aim_search_video_delivery_20261027/REPORT.md)已交付。此前[37.76秒48更新训练录像](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_training_body48_learned_complete_and_early_failures_20261026.mp4)继续保留。
 
@@ -31,6 +31,8 @@
 [关闭两层既有残差的原128例已完成](reports/G07_full_racket_v4/gain_body_residual_off_20261027/REPORT.md)：0完整/空中/恢复/攻击、NF0，仅2拍框；参照为4空中。256条案例与实际回合编号、673条新公共输入复算通过，最大动作误差8.106232e-6。稳定标志2次不能替代接触后的恢复；该项未改善，继续保留残差做时序适配。GPU0已保存提前40ms起跳候选2的128真实地面初态，整轮及新冷128未完成，原门槛保持。
 
 [提前40ms起跳的原128例已完成](reports/G07_full_racket_v4/gain_body_timing_results_20261027/REPORT.md)：0完整/空中/恢复/攻击、NF0；7次接触全为拍框，128身体触地。原128案例和实际回合编号4至7、682条实际公共输入已独立核对，最大动作误差2.861023e-6，400实际源码及482持有输入保持。该项未改善，GPU0继续推迟40ms起跳候选3；整轮、最佳冷128及后续残差课程尚未完成，原门槛保持。
+
+[推迟40ms起跳的原128例也已结束](reports/G07_full_racket_v4/gain_body_timing_results_20261027/REPORT.md)：2空中、0完整/恢复/攻击、NF0；TRAIN69与112均首落原目标，但速度5.878/5.846m/s且身体触地。658条实际公共输入复算最大4.768372e-6，原案例/实际编号和400源码及482持有输入保持。提前/推迟均未超过原样4空中，GPU0继续恢复交接相位+0.15候选4；整轮及冷评估尚未完成，原正式门槛保持。
 
 以下为历史进展记录，其中运行中措辞只代表当时观察；当前状态以上段与status/STATUS.json为准。
 
