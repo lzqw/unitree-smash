@@ -1,0 +1,103 @@
+{
+  "checked_at": "2026-10-26T22:35:37.493904+00:00",
+  "actual_airborne_episodes": [
+    {
+      "TRAIN_index": 69,
+      "actual_episode_index": 14,
+      "case_id": "B-720402-005",
+      "outgoing_velocity_mps": [
+        4.443760871887207,
+        0.46022918820381165,
+        -2.9096298217773438
+      ],
+      "outgoing_speed_mps": 5.331488281143132,
+      "body_landing": true,
+      "stable_recovery": false,
+      "qualified_jump_landed": false,
+      "crossed_net": true,
+      "first_landing_observed": false,
+      "first_landing_m": null,
+      "observed_target_hit": false,
+      "rally_faults": [],
+      "complete": false
+    },
+    {
+      "TRAIN_index": 100,
+      "actual_episode_index": 13,
+      "case_id": "B-720402-036",
+      "outgoing_velocity_mps": [
+        3.4807982444763184,
+        1.432671308517456,
+        -1.8092617988586426
+      ],
+      "outgoing_speed_mps": 4.176353882731653,
+      "body_landing": true,
+      "stable_recovery": false,
+      "qualified_jump_landed": false,
+      "crossed_net": false,
+      "first_landing_observed": false,
+      "first_landing_m": null,
+      "observed_target_hit": false,
+      "rally_faults": [
+        "net_blocked_fault"
+      ],
+      "complete": false
+    },
+    {
+      "TRAIN_index": 112,
+      "actual_episode_index": 14,
+      "case_id": "B-720402-048",
+      "outgoing_velocity_mps": [
+        4.8183512687683105,
+        0.5215186476707458,
+        -2.7082693576812744
+      ],
+      "outgoing_speed_mps": 5.551865773131124,
+      "body_landing": true,
+      "stable_recovery": false,
+      "qualified_jump_landed": false,
+      "crossed_net": true,
+      "first_landing_observed": true,
+      "first_landing_m": [
+        3.037092685699463,
+        0.39681723713874817,
+        0.02513563074171543
+      ],
+      "observed_target_hit": true,
+      "rally_faults": [],
+      "complete": false
+    },
+    {
+      "TRAIN_index": 123,
+      "actual_episode_index": 13,
+      "case_id": "B-720402-059",
+      "outgoing_velocity_mps": [
+        5.646523475646973,
+        1.7030692100524902,
+        -1.5044194459915161
+      ],
+      "outgoing_speed_mps": 6.086620570130735,
+      "body_landing": true,
+      "stable_recovery": false,
+      "qualified_jump_landed": false,
+      "crossed_net": true,
+      "first_landing_observed": true,
+      "first_landing_m": [
+        3.602536678314209,
+        0.94362473487854,
+        0.025187186896800995
+      ],
+      "observed_target_hit": true,
+      "rally_faults": [],
+      "complete": false
+    }
+  ],
+  "all128_rows_checked_for_selection": true,
+  "interpretation": "All four fail original speed8 and recovery. TRAIN69 landing is unobserved at early search termination, not a proven target miss; no success count or criterion changed.",
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_sequential_n128_01/episodes_005.json": "769370225d8e164515f603985acb89f904081e96d2d88ee39ca58e8976642c70",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_sequential_n128_01/contacts_005.json": "19b28e8e1365e358df8c1950a81bc7f414dd192be8865e6e0771bf52ca6d4f8c"
+  },
+  "formal_cases_read": false,
+  "formal_acceptance": false
+}
