@@ -63,16 +63,16 @@
           "native_child_pid": 1903046,
           "gpu": 0,
           "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_sequential_n128_01",
-          "observed_at": "2026-10-26T22:08:15.267345+00:00",
+          "observed_at": "2026-10-26T22:25:11.199717+00:00",
           "verified_live_processes": true,
           "actual_start_check": "reports/G07_full_racket_v4/origin0_prepose_completed_delivery_20261027/GAIN_BODY_ACTUAL_NATIVE_START_CHECK.json",
           "formal_acceptance": false,
           "actual_native_progress": {
-            "candidate_id": 4,
-            "candidate_name": "recovery_handover_phase_plus015",
-            "control_ticks": 100,
-            "first_episodes_complete": 0,
-            "actual_control_env_steps": 366720,
+            "candidate_id": 5,
+            "candidate_name": "recovery_handover_phase_minus015",
+            "control_ticks": 400,
+            "first_episodes_complete": 126,
+            "actual_control_env_steps": 459136,
             "formal_acceptance": false
           },
           "next_candidate2_ground_states_saved": true,
@@ -9081,9 +9081,9 @@
       },
       "last_goal_turn_classification": {
         "classification": "progress",
-        "observed_at": "2026-10-26T22:08:15.267345+00:00",
-        "evidence": "Later-jump candidate3 finished original128 and independently checked,658 actual public rows replayed;2 target hits both fail speed and recovery. Four original search candidates now complete, next recovery-phase candidate4 initialized.",
-        "previous_turn": "verified_wait: same native1903046 advanced300 to400;124 first episodes complete, CPU ticks grew; no restart."
+        "observed_at": "2026-10-26T22:25:11.199717+00:00",
+        "evidence": "Recovery phase+0.15 candidate4 completed and original128/669 actual public rows independently checked;3 airborne strings0 qualified recovery. A separate128-terminal geometry and4 actual pose-prefix diagnosis found pre-contact inversion in TRAIN123, rejecting a universal racket-ground-first explanation; original scores retained.",
+        "previous_turn": "verified_wait: live native1903046 advanced200 to400,125 first episodes complete; no restart."
       },
       "completed_leg06_warmup13_frozen_TRAIN128": {
         "episodes": 128,
@@ -11222,6 +11222,25 @@
               0,
               2
             ]
+          },
+          "4": {
+            "episodes": 128,
+            "complete": 0,
+            "airborne_contacts": 3,
+            "conditional_recovery_count": 0,
+            "attack_outgoing": 0,
+            "actual_attack_cross_target_chains": 0,
+            "numerical_failures": 0,
+            "mean_TRAIN_partial_score": -0.10808864540838994,
+            "formal_acceptance": false,
+            "rank": [
+              1,
+              0,
+              0,
+              -0.10808865,
+              0,
+              3
+            ]
           }
         },
         "candidate2_observed_counts": {
@@ -11239,7 +11258,7 @@
         "candidate2_CPU_vs_actual_GPU_max_action_error": 2.86102294921875e-06,
         "next_candidate3_ground_states_saved": true,
         "whole_job_completed": false,
-        "observed_at": "2026-10-26T22:08:15.267345+00:00",
+        "observed_at": "2026-10-26T22:25:11.199717+00:00",
         "candidate3_observed_counts": {
           "had_contact": 8,
           "frame_hit": 6,
@@ -11254,7 +11273,39 @@
         "candidate3_public_rows": 658,
         "candidate3_CPU_vs_actual_GPU_max_action_error": 4.76837158203125e-06,
         "candidate3_contact_diagnosis": "reports/G07_full_racket_v4/gain_body_timing_results_20261027/candidate_003/CONTACT_FAILURES.json",
-        "next_candidate4_ground_states_saved": true
+        "next_candidate4_ground_states_saved": true,
+        "candidate4_observed_counts": {
+          "had_contact": 10,
+          "frame_hit": 7,
+          "crossed_net": 2,
+          "landed_legal_court": 1,
+          "landed_target": 1,
+          "body_landing": 127,
+          "stable_recovery": 0,
+          "qualified_flight_seen": 128,
+          "qualified_jump_landed": 2
+        },
+        "candidate4_public_rows": 669,
+        "candidate4_CPU_vs_actual_GPU_max_action_error": 3.516674041748047e-06
+      },
+      "first_ground_geometry_diagnostic": {
+        "report": "reports/G07_full_racket_v4/first_ground_geometry_diagnostic_20261027/REPORT.md",
+        "actual_original_reference_rows": 128,
+        "body_ground_flag_count": 127,
+        "nearest_visual_leg_or_base": 124,
+        "nearest_visual_racket": 3,
+        "TRAIN123_before_terminal": {
+          "TRAIN_index": 123,
+          "actual_episode_index": 0,
+          "last_actual50Hz_time_s": 3.559999942779541,
+          "root_tilt_at_last_sample_deg": 121.10405471949386,
+          "racket_collision_clearance_at_last_sample_m": 0.07032342158729993,
+          "first_90deg_tilt_sample_s": 3.4600000381469727,
+          "terminal_control_step_time_s": 3.5799999237060547
+        },
+        "exact_sensor_force_attribution_proven": false,
+        "scoring_changed": false,
+        "held482_unchanged": true
       }
     },
     "G08": {
