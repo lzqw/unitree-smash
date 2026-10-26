@@ -1,0 +1,28 @@
+{
+  "checked_at": "2026-10-26T14:34:37.253027+00:00",
+  "previous_goal_turn_classification": "progress: implemented and actually registered/launched CPU-only completed48 archival, verified407/414 hashes and pushed e13fc10; observed live43/48.",
+  "current_goal_turn_classification": "progress: actual trained36 actor/all7 aim factory commands checked on1600 real inputs, with all3 actor tiers and exact reference preserved; same live native observed43->45/48.",
+  "actual_native_progress": {
+    "update": 45,
+    "actual_control_env_steps": 11796480,
+    "completed_episodes": 30034,
+    "air": 2732,
+    "conditional_recovery_count": 623,
+    "complete": 11,
+    "numerical_failures": 0
+  },
+  "actual_live_processes": {
+    "1814619": "/home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/body_residual48_after_grid16_queue01/run.py",
+    "1818795": "/home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/scripts/run_gpu_job.py --goal G07 --budget-window g07-full-racket-unlimited-20261024 --max-seconds 21600 --env-steps-cap 12582912 --output /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/body_residual_leg15_fresh_n2048_updates48_01 --require-artifact completed.json -- /home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/scripts/train_full_racket_body_residual_ppo_v4.py --output /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/body_residual_leg15_fresh_n2048_updates48_01 --base-checkpoint /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/body_strike_grid16_n2048_01/best_candidate.pt --body-source-evaluation /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/body_strike_grid16_fixed_train128_01 --config /home/autodrive/LZQW/unitree_smash/configs/g07_full_racket_body_residual_leg15_v4.json --num-envs 2048 --updates 48 --seed 750301 --headless",
+    "1818808": "/home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/scripts/train_full_racket_body_residual_ppo_v4.py --output /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/body_residual_leg15_fresh_n2048_updates48_01 --base-checkpoint /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/body_strike_grid16_n2048_01/best_candidate.pt --body-source-evaluation /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/body_strike_grid16_fixed_train128_01 --config /home/autodrive/LZQW/unitree_smash/configs/g07_full_racket_body_residual_leg15_v4.json --num-envs 2048 --updates 48 --seed 750301 --headless",
+    "1827656": "/home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/contact_aim_after_body48_queue01/run.py",
+    "1848825": "/home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/body48_completed_training_delivery_20261026/run.py"
+  },
+  "held_sources_verified": {
+    "parent": 407,
+    "next_aim": 414
+  },
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
