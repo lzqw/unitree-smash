@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/origin0_transfer_diagnostic_20261027/RESULT.json",
-      "notes": "原布局Aim7及冷128实际完成：确认来源3完整/60空中/26合格恢复/24攻击、NF0，搜索5次未全复现。304.6MB完整包已上传新下载验证。原生origin16与origin0精度/隔离探针完成，最大球路误差7.396→0.173毫米，origin0副本球/根差0、球力0、提前done0、NF0，准入通过。旧严格腕部分支源准备拒绝，限位内近等效种子与Main动作核验通过。GPU0新origin0 8×128原生比较正由1884350/1884474/1884488运行，460输入保持；不继承旧成绩，正式A/B和50/70/85尚未通过。 新origin0第一原样候选已完成0/128完整、0空中拍线、11拍框、123身体触地、NF0；实际128均腾空，原样迁移失效，其余候选继续。 当前前三项origin0候选均0完整/0合格空中拍线，384行独立核对；实际准备阶段根倾角19.14度而旧腿残差请求很小，不能确定其为主因。新471输入的全身时序/恢复八项队列1891402等待当前所有者真实退出，已完成1600输入CPU与局部reset检查；尚无新原生成绩。 新30.22秒origin0真实失败视频及37.01MB两候选完整原128记录包已上传并新下载SHA/CRC核验；保留拍框摔落、站稳漏球、实际触网三例，不继承旧成功录像。当前前四候选均0完整/0合格空中拍线，继续第5项。",
+      "notes": "原布局Aim7及冷128实际完成：确认来源3完整/60空中/26合格恢复/24攻击、NF0，搜索5次未全复现。304.6MB完整包已上传新下载验证。原生origin16与origin0精度/隔离探针完成，最大球路误差7.396→0.173毫米，origin0副本球/根差0、球力0、提前done0、NF0，准入通过。旧严格腕部分支源准备拒绝，限位内近等效种子与Main动作核验通过。GPU0新origin0 8×128原生比较正由1884350/1884474/1884488运行，460输入保持；不继承旧成绩，正式A/B和50/70/85尚未通过。 新origin0第一原样候选已完成0/128完整、0空中拍线、11拍框、123身体触地、NF0；实际128均腾空，原样迁移失效，其余候选继续。 当前前三项origin0候选均0完整/0合格空中拍线，384行独立核对；实际准备阶段根倾角19.14度而旧腿残差请求很小，不能确定其为主因。新471输入的全身时序/恢复八项队列1891402等待当前所有者真实退出，已完成1600输入CPU与局部reset检查；尚无新原生成绩。 新30.22秒origin0真实失败视频及37.01MB两候选完整原128记录包已上传并新下载SHA/CRC核验；保留拍框摔落、站稳漏球、实际触网三例，不继承旧成功录像。当前前四候选均0完整/0合格空中拍线，继续第5项。 新origin0残差训练/独立评估接口已通过658真实输入CPU兼容性和4项CLI核验并上传；尚未安装或启动新训练，真实完整冷源正向准入待后续结果。当前前五候选均0完整/0合格空中拍线，继续第6项。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
@@ -9058,8 +9058,8 @@
       },
       "last_goal_turn_classification": {
         "classification": "progress",
-        "observed_at": "2026-10-26T19:50:12.490604+00:00",
-        "reason": "Produced actual current-layout failure film, independently replayed1203 valid public rows, decoded1511frames and reviewed native/video samples, uploaded both assets and freshly verified SHA/CRC while current native job continued."
+        "observed_at": "2026-10-26T20:01:14.957965+00:00",
+        "reason": "Implemented origin0 residual learning/export/cold-source validation and independent assessment entrypoints; actually checked658 public inputs and four CLI paths; current native comparison and471source custody continued unchanged."
       },
       "completed_leg06_warmup13_frozen_TRAIN128": {
         "episodes": 128,
@@ -10368,7 +10368,7 @@
         "formal_acceptance": false
       },
       "current_full_racket_progress_20261027": {
-        "observed_at": "2026-10-26T19:50:12.490604+00:00",
+        "observed_at": "2026-10-26T20:01:14.957965+00:00",
         "actual_live_owner_pid": 1884350,
         "actual_live_native_pid": 1884488,
         "actual_live_waiter_pid": 1891402,
@@ -10658,14 +10658,36 @@
                 0
               ]
             }
+          },
+          {
+            "candidate_id": 4,
+            "summary": {
+              "episodes": 128,
+              "complete": 0,
+              "airborne_contacts": 0,
+              "conditional_recovery_count": 0,
+              "attack_outgoing": 0,
+              "actual_attack_cross_target_chains": 0,
+              "numerical_failures": 0,
+              "mean_TRAIN_partial_score": -0.7581182555489554,
+              "formal_acceptance": false,
+              "rank": [
+                1,
+                0,
+                0,
+                -0.75811826,
+                0,
+                0
+              ]
+            }
           }
         ],
         "actual_origin0_progress": {
-          "candidate_id": 4,
-          "candidate_name": "wrist_branch_vz-1.2_walk0.0",
-          "control_ticks": 200,
-          "first_episodes_complete": 0,
-          "actual_control_env_steps": 306304,
+          "candidate_id": 5,
+          "candidate_name": "wrist_branch_vz-0.3_walk0.1",
+          "control_ticks": 300,
+          "first_episodes_complete": 83,
+          "actual_control_env_steps": 369408,
           "formal_acceptance": false
         }
       },
@@ -10722,6 +10744,16 @@
         },
         "all_frames_decoded": true,
         "actual_valid_public_rows": 1203
+      },
+      "prepared_origin0_fresh_residual_interface": {
+        "state": "CPU_COMPATIBILITY_CHECKED_NOT_NATIVE_TRAINED",
+        "report": "reports/G07_full_racket_v4/origin0_fresh_residual_interface_20261027/REPORT.md",
+        "source_commit": "11b0fc3",
+        "actual_valid_public_rows": 658,
+        "zero_residual_vs_source_max_error": 0.0,
+        "CPU_vs_native_max_error": 3.0994415283203125e-06,
+        "positive_cold_source_admission_pending": true,
+        "new_native_training_started": false
       }
     },
     "G08": {
