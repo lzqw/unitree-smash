@@ -2,6 +2,8 @@
 
 本分支仅准备[腿部残差范围0.06的条件候选](reports/G07_full_racket_v4/centered_leg06_candidate_20261026/REPORT.md)，未集成main、未原生运行。60项CPU检查通过，3490条实际公共输入上的初始物理残差逐位一致，裁剪前物理探索幅度保持；未知裁剪状态下行为不保证一致，不是严格续训。未来来源与是否采用须依据原075完整评测，当前主GPU0原流程和212项持有源码保持，原完整目标未通过。
 
+[原主GPU0完整试跑流程](reports/G07_full_racket_v4/centered_leg06_placement075_pilot8_queue01/REPORT.md)也已准备，实际持有进程/旧边界CPU检查通过；先核对六组真实完整128结果再绑定来源，自动检查首更新、canonical新8、全部选定轨迹、固定原128和同六例实际视频。本目录仍为CPU候选，没有原生运行。
+
 2026-10-26实核运行：8/16/24/32/40五版原全TRAIN128比较全部完成且各0完整；[139MB完整中间评测与最终选择包V2](reports/G07_full_racket_v4/centered_intermediate_delivery_20261026/REPORT.md)已上传并重新下载SHA/CRC核验。原128例姿态/球轨迹50Hz，完整观测/动作仅前2例100Hz，初版范围说明已更正并保留更正记录。按原排序选择4次合格攻击的40版，空中22/恢复10，不能称整体提升。[新落点反馈0.75试跑](reports/G07_full_racket_v4/centered_placement075_integration_20261026/REPORT.md)已在原GPU0 guard运行，原生PID1722244；50项CPU检查、2048个真实地面初态及[第3次实际actor更新786432步](reports/G07_full_racket_v4/centered_placement075_health_20261026/REPORT.md)已核对，NF0；1292个早闭合训练回合91空中/0恢复/0完整，756个首回合仍在运行，不能当冻结成功率，212项源码与计划保持。正在执行新8更新，随后独立原全128及六例实际视频；原物理和50/70/85、A/B各200保持，完整目标尚未通过。另已补充[同一实际运动下工具中心的几何对照](reports/G07_full_racket_v4/centered40_same_motion_tool_geometry_20261026/REPORT.md)：同姿态高度中位增益约24厘米，速度增益有正有负；不是旧质量机器人重跑或动态可达极限。
 
 2026-10-26中间24版已完成：原全TRAIN128为0完整、21空中、9条件恢复（42.86%）、NF0；原GPU0队列已接上最后32版。另已准备[0.75条件试跑的完整执行流程](https://github.com/lzqw/unitree-smash/blob/2523bf5df1d3e08d3af532e1bc7d8f0060f17bef/reports/G07_full_racket_v4/centered_placement075_pilot8_queue01/REPORT.md)：真实源持有进程/旧检查点CPU边界检查通过，包括禁止候选本地GPU账本启动、拒绝旧严格续训冒充新075、解析首更新/8更新优化器布局；尚未集成main或原生执行。等待全部比较及实际持有进程退出后绑定赢家，再按原主guard运行新8、首个真实更新自动核验、完整轨迹审计、全128及六例视频。原物理与50/70/85、A/B各200门槛保持，完整目标仍未通过。
