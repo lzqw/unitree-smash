@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/centered_residual_pilot8_queue02/FIXED_TRAIN128_RESULT.json",
-      "notes": "253MB完整leg06新8数据包已发布、新下载全SHA/541CRC/540payload核验通过，新目录包内RSL/12实际轨迹与资产伴随包合并来源初始化检查通过。GPU0预热7/13更新对照继续原guard1777458/native1777471运行；真实第3更新786432步仍仅critic学习60步，actor权重与探索未改，NF0。相同seed两版前3批实际root/joints逐位相同，旧2预热版此时actor已学20步，确认方法差异实际执行；不代表任务改善。CPU观察1780693等待实际13父退出后核对新数据并渲染原六例，不新增GPU。主302及CPU自身12项绑定保持；原A/B各200及50/70/85仍未通过。",
+      "notes": "预热7及真实全首批2048回合已完成核对(242空中/126恢复/0完整/NF0)，第8次才开始actor学习。现已独立核对11/13更新、2883584步、actor80/critic220、NF0；尚无最终13和新冻结128结果。隔离CPU分支已对27实际出球做飞行/提前位置分析，5项测试通过、23实际自由首落最大误差17.18mm；该分支没有新增机器人执行，几何候选不能代替完整扣杀。GPU0原guard1777458/native1777471及CPU观察1780693继续，主302持有至实际退出，下一main运行时改动先等实际CPU数据接纳。原A/B各200和50/70/85仍未通过。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
@@ -58,7 +58,7 @@
       "active_gpu_jobs": [
         {
           "state": "RUNNING_FULL_COHORT_WARMUP13",
-          "observed_at": "2026-10-26T05:39:21.131926+00:00",
+          "observed_at": "2026-10-26T06:31:39.623723+00:00",
           "workflow_pid": 1777456,
           "guard_pid": 1777458,
           "native_child_pid": 1777471,
@@ -73,11 +73,13 @@
           "actor_updates_planned": 6,
           "total_updates_planned": 13,
           "formal_acceptance": false,
-          "actual_completed_updates": 3,
-          "actual_control_env_steps": 786432,
-          "actual_actor_weights_still_unchanged": true,
-          "actual_critic_Adam_steps": 60,
-          "actual_numerical_failures": 0
+          "actual_completed_updates": 11,
+          "actual_control_env_steps": 2883584,
+          "actual_actor_weights_still_unchanged": false,
+          "actual_critic_Adam_steps": 220,
+          "actual_numerical_failures": 0,
+          "actual_actor_Adam_steps": 80,
+          "all2048_initial_episodes_closed_before_actor_learning": true
         }
       ],
       "queued_native_sequence": {
@@ -5107,7 +5109,7 @@
       },
       "current_native_workflow": {
         "state": "RUNNING_FULL_COHORT_WARMUP13",
-        "observed_at": "2026-10-26T05:39:21.131926+00:00",
+        "observed_at": "2026-10-26T06:31:39.623723+00:00",
         "workflow_pid": 1777456,
         "guard_pid": 1777458,
         "native_child_pid": 1777471,
@@ -5122,11 +5124,13 @@
         "actor_updates_planned": 6,
         "total_updates_planned": 13,
         "formal_acceptance": false,
-        "actual_completed_updates": 3,
-        "actual_control_env_steps": 786432,
-        "actual_actor_weights_still_unchanged": true,
-        "actual_critic_Adam_steps": 60,
-        "actual_numerical_failures": 0
+        "actual_completed_updates": 11,
+        "actual_control_env_steps": 2883584,
+        "actual_actor_weights_still_unchanged": false,
+        "actual_critic_Adam_steps": 220,
+        "actual_numerical_failures": 0,
+        "actual_actor_Adam_steps": 80,
+        "all2048_initial_episodes_closed_before_actor_learning": true
       },
       "completed_causal_tangent_probes": {
         "state": "SUCCEEDED",
@@ -8631,7 +8635,200 @@
         "automatic_upload": false,
         "new_GPU_job_started": false,
         "formal_acceptance": false
-      }
+      },
+      "warmup13_actual_full_cohort_transition": {
+        "checked_at": "2026-10-26T06:19:28.627390+00:00",
+        "actual_live_native": 1777471,
+        "actual_update7": {
+          "checked_at": "2026-10-26T06:19:28.481685+00:00",
+          "actual_iteration": 7,
+          "diagnostic_sha256": "dceeae23a4036452e4bb1368162ddf3c6b36e9daf27c0c1c7760ec3cc272e068",
+          "mapped_actor_weights_unchanged": true,
+          "actual_Adam_steps": {
+            "critic.0.weight": 140,
+            "critic.0.bias": 140,
+            "critic.2.weight": 140,
+            "critic.2.bias": 140,
+            "critic.4.weight": 140,
+            "critic.4.bias": 140,
+            "critic.6.weight": 140,
+            "critic.6.bias": 140
+          },
+          "all2048_first_ground_episodes_completed_by_update7": true,
+          "actor_RMS_count": 14417920,
+          "critic_RMS_count": 1835008,
+          "actual_fresh_ground2048_checked": false,
+          "native_restart_checkpoint": false,
+          "formal_acceptance": false,
+          "goal_complete": false
+        },
+        "actual_update8": {
+          "checked_at": "2026-10-26T06:19:28.514760+00:00",
+          "actual_iteration": 8,
+          "diagnostic_sha256": "f51e45f363c167c262dc28728a5d549e5121b894ad00fb879d4077ad5cce6913",
+          "mapped_actor_weights_unchanged": false,
+          "actual_Adam_steps": {
+            "log_std": 20,
+            "actor.0.weight": 20,
+            "actor.0.bias": 20,
+            "actor.2.weight": 20,
+            "actor.2.bias": 20,
+            "actor.4.weight": 20,
+            "actor.4.bias": 20,
+            "actor.6.weight": 20,
+            "actor.6.bias": 20,
+            "critic.0.weight": 160,
+            "critic.0.bias": 160,
+            "critic.2.weight": 160,
+            "critic.2.bias": 160,
+            "critic.4.weight": 160,
+            "critic.4.bias": 160,
+            "critic.6.weight": 160,
+            "critic.6.bias": 160
+          },
+          "all2048_first_ground_episodes_completed_by_update7": false,
+          "actor_RMS_count": 14680064,
+          "critic_RMS_count": 2097152,
+          "actual_fresh_ground2048_checked": false,
+          "native_restart_checkpoint": false,
+          "formal_acceptance": false,
+          "goal_complete": false
+        },
+        "first_ground_cohort": {
+          "completed_episodes": 2048,
+          "air": 242,
+          "conditional_recovery_count": 126,
+          "complete": 0,
+          "numerical_failures": 0
+        },
+        "actual_changed_actor_weight_tensors_at_first_actor_update": [
+          "actor.0.weight",
+          "actor.0.bias",
+          "actor.2.weight",
+          "actor.2.bias",
+          "actor.4.weight",
+          "actor.4.bias",
+          "actor.6.weight",
+          "actor.6.bias"
+        ],
+        "actor_learning_began_after_all2048_initial_episodes_closed": true,
+        "main301_inputs_and_PLAN_unchanged": true,
+        "source_sha256": {
+          "reports/G07_full_racket_v4/centered_leg06_full_cohort_warmup13_queue01/audit_warmup_to_actor.py": "0dc3d3aec50fa62d25730760c22241a2d4a342f7e9503dbc3104df296bd5038f",
+          "reports/G07_full_racket_v4/centered_leg06_full_cohort_warmup13_queue01/FIRST_COHORT_CHECK.json": "c1d9f05d996c04c6328b6d431446eaeada34cde16649457a0738bc19489e042a",
+          "reports/G07_full_racket_v4/residual_ppo_centered_leg06_full_cohort_warmup7_n2048_probe13_01/ppo/model_6.pt": "dceeae23a4036452e4bb1368162ddf3c6b36e9daf27c0c1c7760ec3cc272e068",
+          "reports/G07_full_racket_v4/residual_ppo_centered_leg06_full_cohort_warmup7_n2048_probe13_01/ppo/model_7.pt": "f51e45f363c167c262dc28728a5d549e5121b894ad00fb879d4077ad5cce6913",
+          "reports/G07_full_racket_v4/centered_leg06_full_cohort_warmup13_queue01/PLAN.json": "feac0f1550ba27a8d690617f8c498de31981eb9d22a680993f7b5673354a4a14"
+        },
+        "scope": "Actual learning transition. Normalization/exploration continue; first cohort is not frozen performance and no improvement is inferred.",
+        "new_native_execution": false,
+        "formal_cases_read": false,
+        "formal_acceptance": false,
+        "goal_complete": false
+      },
+      "warmup13_actual_first_ground_cohort": {
+        "checked_at": "2026-10-26T06:10:41.139753+00:00",
+        "actual_live_native_pid": 1777471,
+        "actual_completed_update": 7,
+        "actual_current_job_control_env_steps": 1835008,
+        "first_episode_lanes": 2048,
+        "first_episode_index": 0,
+        "every_initial_case_repeated16": true,
+        "all_actual_source_inclusive_episode_chains_exact": true,
+        "independently_recomputed_first_cohort": {
+          "completed_episodes": 2048,
+          "air": 242,
+          "conditional_recovery_count": 126,
+          "complete": 0,
+          "numerical_failures": 0
+        },
+        "independently_recomputed_all_closed_at_capture": {
+          "completed_episodes": 3315,
+          "air": 317,
+          "conditional_recovery_count": 126,
+          "complete": 0,
+          "numerical_failures": 0
+        },
+        "actor_RMS_count": 14417920,
+        "critic_RMS_count": 1835008,
+        "sources": {
+          "reports/G07_full_racket_v4/centered_leg06_full_cohort_warmup13_queue01/audit_full_first_cohort.py": "9b69f9a118235839d21c1b6153880b7a86d21842337f94ff2b83c06dd54645b1",
+          "reports/G07_full_racket_v4/residual_ppo_centered_leg06_full_cohort_warmup7_n2048_probe13_01/ppo/model_6.pt": "dceeae23a4036452e4bb1368162ddf3c6b36e9daf27c0c1c7760ec3cc272e068",
+          "reports/G07_full_racket_v4/residual_ppo_centered_leg06_full_cohort_warmup7_n2048_probe13_01/INPUTS.json": "2c4ef7fe6a5db5b46820e9cea1b31e483f3f8fc054e8f1880279754bbe3363ac",
+          "reports/G07_full_racket_v4/residual_ppo_centered_leg06_full_cohort_warmup7_n2048_probe13_01/initial_ground_states.json": "bdea7397b21095b3561bbc770adbbbc62a287c930329c51c58602b056eb413b9",
+          "reports/G07_full_racket_v4/centered_leg06_full_cohort_warmup13_queue01/ACTUAL_CLOSED_AT_UPDATE7.json": "34c3473d8f50f866551783f54f6cefee0bcb1d9afc94f4be4a1750a4da4b6d83",
+          "reports/G07_full_racket_v4/centered_leg06_full_cohort_warmup13_queue01/ACTUAL_PROGRESS_AT_UPDATE7.json": "338dd89b71643d49ccda14ec77d2e9b61354fb8d5dc2a151d9dfb9dc7762a548",
+          "configs/g07_full_racket_eval_v4_r3.json": "04121cfb257ea4d2e288c69b44dd0c8dbada814e0bf95c8a16f5af7ef2390367"
+        },
+        "scope": "All2048 actual fresh first ground episodes. Changing actor, normalization and exploration; not frozen performance.",
+        "new_native_execution": false,
+        "formal_cases_read": false,
+        "formal_acceptance": false,
+        "goal_complete": false
+      },
+      "warmup13_latest_actual_learning_check": {
+        "checked_at": "2026-10-26T06:31:39.623723+00:00",
+        "actual_live_native": 1777471,
+        "actual_completed_iteration": 11,
+        "actual_control_env_steps": 2883584,
+        "actual_numerical_failures": 0,
+        "learning_check": {
+          "checked_at": "2026-10-26T06:31:39.609667+00:00",
+          "actual_iteration": 11,
+          "diagnostic_sha256": "35df28a33fa11276d810c58acb76d62a9a63c51e32cb89e5abf453c6166e2e10",
+          "mapped_actor_weights_unchanged": false,
+          "actual_Adam_steps": {
+            "log_std": 80,
+            "actor.0.weight": 80,
+            "actor.0.bias": 80,
+            "actor.2.weight": 80,
+            "actor.2.bias": 80,
+            "actor.4.weight": 80,
+            "actor.4.bias": 80,
+            "actor.6.weight": 80,
+            "actor.6.bias": 80,
+            "critic.0.weight": 220,
+            "critic.0.bias": 220,
+            "critic.2.weight": 220,
+            "critic.2.bias": 220,
+            "critic.4.weight": 220,
+            "critic.4.bias": 220,
+            "critic.6.weight": 220,
+            "critic.6.bias": 220
+          },
+          "all2048_first_ground_episodes_completed_by_update7": false,
+          "actor_RMS_count": 15466496,
+          "critic_RMS_count": 2883584,
+          "actual_fresh_ground2048_checked": false,
+          "native_restart_checkpoint": false,
+          "formal_acceptance": false,
+          "goal_complete": false
+        },
+        "changing_policy_counts": {
+          "completed_episodes": 5414,
+          "air": 541,
+          "conditional_recovery_count": 227,
+          "complete": 0
+        },
+        "frozen_policy_performance": false,
+        "formal_acceptance": false,
+        "goal_complete": false
+      },
+      "isolated_release_target_analysis": {
+        "branch": "g07-release-target-envelope-v4-20261026",
+        "commit": "29189cd2afffc801b4b0818e867ae50674528bbb",
+        "report": "https://github.com/lzqw/unitree-smash/blob/29189cd2afffc801b4b0818e867ae50674528bbb/reports/G07_full_racket_v4/release_target_envelope_20261026_v2/REPORT.md",
+        "CPU_tests_passed": 5,
+        "actual_air_releases": 27,
+        "native_free_landing_validation_cases": 23,
+        "maximum_native_landing_error_m": 0.017183888178933286,
+        "original_complete_still0_of128": true,
+        "new_native_execution": false,
+        "robot_reachability_impact_recovery_unproven": true,
+        "main_runtime_changed": false,
+        "formal_acceptance": false
+      },
+      "last_goal_turn_classification": "progress: prior turn delivered and fresh-download-verified253MB native data, validated real update3 divergence and registered CPU video observer; current turn verifies warmup7->actor8 and executes isolated native-calibrated release planning."
     },
     "G08": {
       "state": "TODO",

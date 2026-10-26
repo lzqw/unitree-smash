@@ -1,0 +1,90 @@
+{
+  "checked_at": "2026-10-26T06:19:28.627390+00:00",
+  "actual_live_native": 1777471,
+  "actual_update7": {
+    "checked_at": "2026-10-26T06:19:28.481685+00:00",
+    "actual_iteration": 7,
+    "diagnostic_sha256": "dceeae23a4036452e4bb1368162ddf3c6b36e9daf27c0c1c7760ec3cc272e068",
+    "mapped_actor_weights_unchanged": true,
+    "actual_Adam_steps": {
+      "critic.0.weight": 140,
+      "critic.0.bias": 140,
+      "critic.2.weight": 140,
+      "critic.2.bias": 140,
+      "critic.4.weight": 140,
+      "critic.4.bias": 140,
+      "critic.6.weight": 140,
+      "critic.6.bias": 140
+    },
+    "all2048_first_ground_episodes_completed_by_update7": true,
+    "actor_RMS_count": 14417920,
+    "critic_RMS_count": 1835008,
+    "actual_fresh_ground2048_checked": false,
+    "native_restart_checkpoint": false,
+    "formal_acceptance": false,
+    "goal_complete": false
+  },
+  "actual_update8": {
+    "checked_at": "2026-10-26T06:19:28.514760+00:00",
+    "actual_iteration": 8,
+    "diagnostic_sha256": "f51e45f363c167c262dc28728a5d549e5121b894ad00fb879d4077ad5cce6913",
+    "mapped_actor_weights_unchanged": false,
+    "actual_Adam_steps": {
+      "log_std": 20,
+      "actor.0.weight": 20,
+      "actor.0.bias": 20,
+      "actor.2.weight": 20,
+      "actor.2.bias": 20,
+      "actor.4.weight": 20,
+      "actor.4.bias": 20,
+      "actor.6.weight": 20,
+      "actor.6.bias": 20,
+      "critic.0.weight": 160,
+      "critic.0.bias": 160,
+      "critic.2.weight": 160,
+      "critic.2.bias": 160,
+      "critic.4.weight": 160,
+      "critic.4.bias": 160,
+      "critic.6.weight": 160,
+      "critic.6.bias": 160
+    },
+    "all2048_first_ground_episodes_completed_by_update7": false,
+    "actor_RMS_count": 14680064,
+    "critic_RMS_count": 2097152,
+    "actual_fresh_ground2048_checked": false,
+    "native_restart_checkpoint": false,
+    "formal_acceptance": false,
+    "goal_complete": false
+  },
+  "first_ground_cohort": {
+    "completed_episodes": 2048,
+    "air": 242,
+    "conditional_recovery_count": 126,
+    "complete": 0,
+    "numerical_failures": 0
+  },
+  "actual_changed_actor_weight_tensors_at_first_actor_update": [
+    "actor.0.weight",
+    "actor.0.bias",
+    "actor.2.weight",
+    "actor.2.bias",
+    "actor.4.weight",
+    "actor.4.bias",
+    "actor.6.weight",
+    "actor.6.bias"
+  ],
+  "actor_learning_began_after_all2048_initial_episodes_closed": true,
+  "main301_inputs_and_PLAN_unchanged": true,
+  "source_sha256": {
+    "reports/G07_full_racket_v4/centered_leg06_full_cohort_warmup13_queue01/audit_warmup_to_actor.py": "0dc3d3aec50fa62d25730760c22241a2d4a342f7e9503dbc3104df296bd5038f",
+    "reports/G07_full_racket_v4/centered_leg06_full_cohort_warmup13_queue01/FIRST_COHORT_CHECK.json": "c1d9f05d996c04c6328b6d431446eaeada34cde16649457a0738bc19489e042a",
+    "reports/G07_full_racket_v4/residual_ppo_centered_leg06_full_cohort_warmup7_n2048_probe13_01/ppo/model_6.pt": "dceeae23a4036452e4bb1368162ddf3c6b36e9daf27c0c1c7760ec3cc272e068",
+    "reports/G07_full_racket_v4/residual_ppo_centered_leg06_full_cohort_warmup7_n2048_probe13_01/ppo/model_7.pt": "f51e45f363c167c262dc28728a5d549e5121b894ad00fb879d4077ad5cce6913",
+    "reports/G07_full_racket_v4/centered_leg06_full_cohort_warmup13_queue01/PLAN.json": "feac0f1550ba27a8d690617f8c498de31981eb9d22a680993f7b5673354a4a14"
+  },
+  "scope": "Actual learning transition. Normalization/exploration continue; first cohort is not frozen performance and no improvement is inferred.",
+  "new_native_execution": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
