@@ -1,0 +1,80 @@
+{
+  "checked_at": "2026-10-26T21:19:36.512025+00:00",
+  "completed_candidate_entry": {
+    "candidate_id": 0,
+    "candidate": {
+      "candidate_id": 0,
+      "name": "unchanged_source",
+      "gains": [
+        [
+          1.0,
+          1.0
+        ],
+        [
+          1.0,
+          1.0
+        ]
+      ],
+      "body_deltas": {}
+    },
+    "summary": {
+      "episodes": 128,
+      "complete": 0,
+      "airborne_contacts": 4,
+      "conditional_recovery_count": 0,
+      "attack_outgoing": 0,
+      "actual_attack_cross_target_chains": 0,
+      "numerical_failures": 0,
+      "mean_TRAIN_partial_score": 0.4386009067264634,
+      "formal_acceptance": false,
+      "rank": [
+        1,
+        0,
+        0,
+        0.43860091,
+        0,
+        4
+      ]
+    },
+    "control_ticks": 800,
+    "env_steps": 102400
+  },
+  "original128_rows_and_actual_episode_ids_checked": true,
+  "actual_airborne_TRAIN_indices": [
+    69,
+    100,
+    112,
+    123
+  ],
+  "actual_valid_public_rows": 668,
+  "CPU_vs_actual_GPU_max_action_error": 3.516674041748047e-06,
+  "original_action_tolerance": 0.0005,
+  "actual_native_shared_prefix_comparison": {
+    "common_valid_native50Hz_rows": 21841,
+    "maximum_link_position_difference_m": 1.9569833278656006,
+    "maximum_ball_position_difference_m": 0.0,
+    "poses_bitwise_identical": false,
+    "balls_bitwise_identical": true,
+    "scope": "Shared valid first-episode samples only. Search ends body-ground episodes earlier than cold evaluation, so later cold recovery and whole-episode metrics are not compared as identical."
+  },
+  "held482_unchanged": true,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_sequential_n128_01/best_candidate.pt": "8a3aab4ab96fdbcdad7d9d33fc2f6de057f6178cb8fc6c8508b7dcb90fc5fc15",
+    "/home/autodrive/LZQW/unitree_smash/configs/g07_full_racket_eval_v4_r3_origin0.json": "b9fbfbcbe6ba4ff5f8ac4a944e3bcc0d4f2f0db4adf37182e30750a0562ec196",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/protocol_frozen01/training_cases.json": "2f9bf380d938a87418c4fa7da087e86d0da43f27a2ee6492bff7d7f1c3ff7c30",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_sequential_n128_01/INPUTS.json": "30273f50f082e6f3d1436417c7c4dda5af4f2451cc9bacdf6119d1fbf69084f1",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_sequential_n128_01/episodes_000.json": "980204938b6b69be1aff8ed974fc158b8dd9ad60b105a35b6f66bdf9e5821e2e",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_sequential_n128_01/initial_ground_states_000.json": "b5802efdfd026f96728aba9013c04bb6cafec9995d1fdb97fb2176b6107d76d1",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_sequential_n128_01/contacts_000.json": "820d313babd5994bc60ffdad65cdc58736398cf8f0a5215d4a3bd5eee77cfa15",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_sequential_n128_01/public_and_actions_000.npz": "8173bab6dd021bdebe5354387a73830cfa0ff05f6a0c6378f2089002ea9e12de",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_sequential_n128_01/all_first_episodes_000.npz": "46095fc513ae82f9537fa881ab7ec2a09a1e1b3b069a39f90b0dea79a4cdf85b",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_best_fixed_train128_01/INPUTS.json": "fe70fd22dc79462a6af28c4385248bb9e73f8075fcfae072bda580c32859d0be",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_best_fixed_train128_01/episodes.json": "4f0b5e476ee2a7fcc0e5c1c8b2eb0603812eedd1e525ff9537775b55c8ee2f74",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_best_fixed_train128_01/all_first_episodes.npz": "be7db9c6e97b2c4c0344c68553d7758d0753d95cb1fecbdbb1124e718073d95c",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body_first_reference_20261027/check.py": "6004617317ad0fd6491ff69b261b30f57a74e183a72b9413893a1fd500bdc235"
+  },
+  "caveat": "One completed reference candidate inside an ongoing8-way job. No whole-job completion or modified-candidate improvement inferred.",
+  "new_native_execution": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false
+}

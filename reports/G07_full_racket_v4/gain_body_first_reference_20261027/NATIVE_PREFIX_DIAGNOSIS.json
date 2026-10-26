@@ -1,0 +1,109 @@
+{
+  "checked_at": "2026-10-26T21:22:52.002984+00:00",
+  "comparison": {
+    "shared_valid_pose_rows": 21841,
+    "differing_pose_rows": 339,
+    "differing_TRAIN_indices": [
+      2,
+      5,
+      7,
+      8,
+      12,
+      16,
+      17,
+      21,
+      26,
+      31,
+      37,
+      47,
+      48,
+      49,
+      54,
+      59,
+      61,
+      66,
+      86,
+      93,
+      115,
+      118,
+      120,
+      121
+    ],
+    "earliest_search_terminal_control_step_time_s": 3.169999837875366,
+    "earliest_search_terminal_TRAIN_index": 110,
+    "all_shared_poses_before_first_search_terminal_bitwise_identical": true,
+    "earliest_differing_pose_time_s": 3.240000009536743,
+    "earliest_differing_TRAIN_index": 21,
+    "maximum_link_position_difference_m": 1.9569833278656006,
+    "maximum_difference_time_s": 4.059999942779541,
+    "maximum_difference_TRAIN_index": 118,
+    "all_shared_balls_bitwise_identical": true
+  },
+  "actual_four_contact_matches": [
+    {
+      "TRAIN_index": 69,
+      "original_episode_index": 0,
+      "actual_contact_fields": {
+        "time_s": true,
+        "point_m": true,
+        "body_link_poses_local": true,
+        "point_velocity_mps": true,
+        "ball_velocity_mps": true
+      },
+      "all_shared_first_episode_body_poses_bitwise_identical": true
+    },
+    {
+      "TRAIN_index": 100,
+      "original_episode_index": 0,
+      "actual_contact_fields": {
+        "time_s": true,
+        "point_m": true,
+        "body_link_poses_local": true,
+        "point_velocity_mps": true,
+        "ball_velocity_mps": true
+      },
+      "all_shared_first_episode_body_poses_bitwise_identical": true
+    },
+    {
+      "TRAIN_index": 112,
+      "original_episode_index": 0,
+      "actual_contact_fields": {
+        "time_s": true,
+        "point_m": true,
+        "body_link_poses_local": true,
+        "point_velocity_mps": true,
+        "ball_velocity_mps": true
+      },
+      "all_shared_first_episode_body_poses_bitwise_identical": true
+    },
+    {
+      "TRAIN_index": 123,
+      "original_episode_index": 0,
+      "actual_contact_fields": {
+        "time_s": true,
+        "point_m": true,
+        "body_link_poses_local": true,
+        "point_velocity_mps": true,
+        "ball_velocity_mps": true
+      },
+      "all_shared_first_episode_body_poses_bitwise_identical": true
+    }
+  ],
+  "all_four_contacts_match_before_first_early_reset": true,
+  "interpretation": "The identity controller reproduces every actual contact and all shared poses before the first search termination. Later shared poses diverge in24 non-airborne-contact lanes. The search and cold environments have different termination/reset schedules; this observation alone does not identify the causal mechanism.",
+  "unresolved": "No controlled same-environment asynchronous-reset experiment has been run. Do not claim full-episode native identity or identify a logger/controller/PhysX bug from these two traces alone.",
+  "scoring_impact": "No current success count changed. All four contacts still fail speed and recovery. Modified candidates require separate frozen cold128 and original formal gates.",
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_sequential_n128_01/episodes_000.json": "980204938b6b69be1aff8ed974fc158b8dd9ad60b105a35b6f66bdf9e5821e2e",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_sequential_n128_01/all_first_episodes_000.npz": "46095fc513ae82f9537fa881ab7ec2a09a1e1b3b069a39f90b0dea79a4cdf85b",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_sequential_n128_01/contacts_000.json": "820d313babd5994bc60ffdad65cdc58736398cf8f0a5215d4a3bd5eee77cfa15",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_best_fixed_train128_01/episodes.json": "4f0b5e476ee2a7fcc0e5c1c8b2eb0603812eedd1e525ff9537775b55c8ee2f74",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_best_fixed_train128_01/all_first_episodes.npz": "be7db9c6e97b2c4c0344c68553d7758d0753d95cb1fecbdbb1124e718073d95c",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_best_fixed_train128_01/contacts.json": "19d985712ce345b6686d8c9000b1b0893a464ec55efc74a6cdc0151fa2e7c93d",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body_first_reference_20261027/compare_shared_prefix.py": "4a0532f643b85a3458b402b4f69d282cb5eea22b7dca07711f7c1cb3498a2fbe",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body_first_reference_20261027/RESULT.json": "894e79fbc89effc73a0feed83647944e199f872e9abaacb883106c8eae5814bc"
+  },
+  "new_native_execution": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false
+}
