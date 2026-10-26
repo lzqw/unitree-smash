@@ -1,0 +1,630 @@
+{
+  "created_at": "2026-10-26T18:47:39.701316+00:00",
+  "source_policy": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/contact_aim7_sequential_n128_01/best_candidate.pt",
+  "source_policy_sha256": "a7953fb80d0ea647cbd6d525d8ddbf8a0a0986f1bcecfbe8831db2c1384473a3",
+  "source_evaluation": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/contact_aim7_best_fixed_train128_01",
+  "source_evaluation_sha256": {
+    "INPUTS.json": "93f32b7e2ba9685702e1db643b1a7f5d0d1d02d8bcec25105463adddb54bab48",
+    "metrics.json": "dca5bc8bc02a4ae9fbbe4e667a8bea2b6ad70e8966362e41fbbc467c8530232f",
+    "episodes.json": "ebb97c3487f603ef2495ce12b1f103971d2b87ba36856eef1d2bb26ecb3fb2ae",
+    "contacts.json": "94615be40d371ccac41dd95748862941012562eef7b31ae50eda8c39fde3b550",
+    "job.json": "a9fe219b0e04a1f3cc559c6d2f8d8460fbef240a3dadc0632623b0165786143e",
+    "completed.json": "c4a2cdc51b7afa8f30801dae79e3db905be163f9c7bc5e5a8e2f496c01538989",
+    "public_and_actions_first2.npz": "dd903335e2a79cfa2d44dbadfd6014f0954471e7a91ca24ddaf9e28653503d42"
+  },
+  "source_original128_summary": {
+    "episodes": 128,
+    "distinct_TRAIN_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99,
+      100,
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+      110,
+      111,
+      112,
+      113,
+      114,
+      115,
+      116,
+      117,
+      118,
+      119,
+      120,
+      121,
+      122,
+      123,
+      124,
+      125,
+      126,
+      127
+    ],
+    "distinct_cases": 128,
+    "complete": 3,
+    "complete_success_rate": 0.0234375,
+    "airborne_contacts": 60,
+    "airborne_contact_rate": 0.46875,
+    "conditional_recovery_count": 26,
+    "conditional_recovery_rate": 0.43333333333333335,
+    "numerical_failures": 0,
+    "actual_racket_contacts": 97,
+    "attack_outgoing": 24,
+    "crossed_net": 41,
+    "landed_legal_court": 40,
+    "landed_target": 13,
+    "fault_counts": {
+      "robot_net_fault": 2,
+      "body_ball_fault": 0,
+      "wrong_side_fault": 0,
+      "double_hit_fault": 1,
+      "racket_invasion_fault": 0,
+      "body_over_net_fault": 0,
+      "under_net_obstruction_fault": 0,
+      "engineering_body_crossing": 1,
+      "bad_return_fault": 3,
+      "net_blocked_fault": 33
+    },
+    "formal_eligible": false,
+    "formal_acceptance": false,
+    "formal_cases_read": false,
+    "scope": "Frozen TRAIN cases only; diagnostic performance of one fixed policy, not an A/B panel score."
+  },
+  "source_aim_uv_m": [
+    0.0,
+    0.05999999865889549
+  ],
+  "selected_TRAIN_contact": {
+    "env_id": 29,
+    "episode_index": 0,
+    "event_index": 1,
+    "time_s": 2.8130557537078857,
+    "choice": "Longest measured stable recovery among complete TRAIN contacts with a bounded near-equivalent wrist seed.",
+    "shared_constants_for_all_cases": true,
+    "runtime_case_lookup": false
+  },
+  "native_source_fk_center_error_m": 2.870150130451226e-06,
+  "bounded_branch_center_error_m": 0.0025864829599295345,
+  "bounded_branch_rotation_max_error": 0.008118436062635077,
+  "bounded_branch_seed_check": {
+    "raw_mirror_joint_position_rad": [
+      -1.0203907489776611,
+      1.4589738845825195,
+      -2.191816568374634,
+      -1.7706343253427228,
+      -1.1518988609313965,
+      -1.080217035608836
+    ],
+    "minimum_raw_mirror_joint_bound_margin_rad": -0.025634325342722697,
+    "bounded_pose_solver_success": true,
+    "position_error_m": 0.0025864829599294985,
+    "rotation_error_deg": 0.5219851017986894,
+    "original_physical_joint_bounds_retained": true,
+    "exact_equivalence_claimed": false,
+    "diagnostic_seed_position_bound_m": 0.005,
+    "diagnostic_seed_rotation_bound_deg": 3.0,
+    "native_execution": false
+  },
+  "velocity_initializers": [
+    {
+      "hit_joint_position_rad": [
+        -1.057183904542244,
+        1.4579617581122493,
+        -2.1885441059630533,
+        -1.7449999999999999,
+        -1.183630237164737,
+        -1.089626622794979
+      ],
+      "desired_point_velocity_world_mps": [
+        0.8,
+        0.0,
+        -0.3
+      ],
+      "hypothetical_walk_advance_m": 0.0,
+      "joint_velocity_seed_rad_s": [
+        -0.2879778646885933,
+        2.451083628010538,
+        1.7524626097817217,
+        -0.552264395295855,
+        -0.49552283179108525,
+        -2.3570221656497488
+      ],
+      "native_source_body_twist_contribution_mps": [
+        -0.7422764860722911,
+        2.24613486607487,
+        0.6123837742688807
+      ],
+      "predicted_point_velocity_mps": [
+        0.8112129904342523,
+        0.004925393513771414,
+        -0.26488040865319795
+      ],
+      "new_native_execution": false,
+      "physical_velocity_tracking_proven": false
+    },
+    {
+      "hit_joint_position_rad": [
+        -1.057183904542244,
+        1.4579617581122493,
+        -2.1885441059630533,
+        -1.7449999999999999,
+        -1.183630237164737,
+        -1.089626622794979
+      ],
+      "desired_point_velocity_world_mps": [
+        0.8,
+        0.0,
+        -1.2
+      ],
+      "hypothetical_walk_advance_m": 0.0,
+      "joint_velocity_seed_rad_s": [
+        -0.8471868056032709,
+        3.234056999033993,
+        2.4798926868209343,
+        1.2348305596645512,
+        -2.4187377504562204,
+        -4.999999999999897
+      ],
+      "native_source_body_twist_contribution_mps": [
+        -0.7422764860722911,
+        2.24613486607487,
+        0.6123837742688807
+      ],
+      "predicted_point_velocity_mps": [
+        0.9790701020313687,
+        0.027029764024932845,
+        -0.7566847833799224
+      ],
+      "new_native_execution": false,
+      "physical_velocity_tracking_proven": false
+    },
+    {
+      "hit_joint_position_rad": [
+        -1.057183904542244,
+        1.4579617581122493,
+        -2.1885441059630533,
+        -1.7449999999999999,
+        -1.183630237164737,
+        -1.089626622794979
+      ],
+      "desired_point_velocity_world_mps": [
+        0.8,
+        0.0,
+        -0.3
+      ],
+      "hypothetical_walk_advance_m": 0.1,
+      "joint_velocity_seed_rad_s": [
+        -0.2879778652636468,
+        2.451083628421923,
+        1.7524626098566218,
+        -0.5522643940606149,
+        -0.4955228308622341,
+        -2.3570221670214018
+      ],
+      "native_source_body_twist_contribution_mps": [
+        -0.7422764860722911,
+        2.24613486607487,
+        0.6123837742688807
+      ],
+      "predicted_point_velocity_mps": [
+        0.8112129904445183,
+        0.004925393517317467,
+        -0.26488040863063844
+      ],
+      "new_native_execution": false,
+      "physical_velocity_tracking_proven": false
+    },
+    {
+      "hit_joint_position_rad": [
+        -1.057183904542244,
+        1.4579617581122493,
+        -2.1885441059630533,
+        -1.7449999999999999,
+        -1.183630237164737,
+        -1.089626622794979
+      ],
+      "desired_point_velocity_world_mps": [
+        0.8,
+        0.0,
+        -1.2
+      ],
+      "hypothetical_walk_advance_m": 0.1,
+      "joint_velocity_seed_rad_s": [
+        -0.8471868128908953,
+        3.234056999951625,
+        2.479892683972258,
+        1.2348305589503579,
+        -2.418737747466776,
+        -4.999999999999897
+      ],
+      "native_source_body_twist_contribution_mps": [
+        -0.7422764860722911,
+        2.24613486607487,
+        0.6123837742688807
+      ],
+      "predicted_point_velocity_mps": [
+        0.9790701020930613,
+        0.02702976404341273,
+        -0.7566847830938435
+      ],
+      "new_native_execution": false,
+      "physical_velocity_tracking_proven": false
+    },
+    {
+      "hit_joint_position_rad": [
+        -1.6967983906379824,
+        1.031684166366567,
+        -2.966999769210815,
+        -1.408415632542438,
+        -1.2199999094009397,
+        0.7420428152804848
+      ],
+      "desired_point_velocity_world_mps": [
+        0.8,
+        0.0,
+        -0.3
+      ],
+      "hypothetical_walk_advance_m": 0.1,
+      "joint_velocity_seed_rad_s": [
+        -0.7374218817886876,
+        0.3584104547881579,
+        0.6890546460808217,
+        2.2497602119005036,
+        -2.574177568193024,
+        2.2651514158010917
+      ],
+      "native_source_body_twist_contribution_mps": [
+        -0.7633418295850503,
+        2.2694787352580734,
+        0.4128017023746904
+      ],
+      "predicted_point_velocity_mps": [
+        0.7925930197958795,
+        0.004518875664296651,
+        -0.2900615412298073
+      ],
+      "new_native_execution": false,
+      "physical_velocity_tracking_proven": false
+    }
+  ],
+  "optional_static_pose_seed": {
+    "path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/near_net_full_pose_bank_20261027/RESULT.json",
+    "sha256": "e62e38375d8dad097ae9ef9ca927774bf79e9150c99e4043d7a6fb4de09007f9",
+    "candidate_id": 4,
+    "static_search_aim_uv_m": [
+      0.0,
+      0.06
+    ],
+    "current_source_aim_uv_m": [
+      0.0,
+      0.05999999865889549
+    ],
+    "exact_pose_not_claimed_for_changed_source_or_body_state": true
+  },
+  "candidates": [
+    {
+      "name": "unchanged_measured_source",
+      "overrides": {},
+      "candidate_id": 0
+    },
+    {
+      "name": "measured_complete_contact_pose",
+      "overrides": {
+        "hit_joint_position_rad": [
+          -1.0203907489776611,
+          1.4589738845825195,
+          -2.191816568374634,
+          1.3709583282470703,
+          1.1518988609313965,
+          2.061375617980957
+        ]
+      },
+      "candidate_id": 1
+    },
+    {
+      "name": "bounded_near_equivalent_wrist_branch",
+      "overrides": {
+        "hit_joint_position_rad": [
+          -1.057183904542244,
+          1.4579617581122493,
+          -2.1885441059630533,
+          -1.7449999999999999,
+          -1.183630237164737,
+          -1.089626622794979
+        ],
+        "swing_joint_velocity_rad_s": [
+          2.6052660942077637,
+          3.197381019592285,
+          2.418071985244751,
+          -3.743168354034424,
+          1.5348803997039795,
+          -0.22015462815761566
+        ]
+      },
+      "candidate_id": 2
+    },
+    {
+      "name": "wrist_branch_vz-0.3_walk0.0",
+      "overrides": {
+        "hit_joint_position_rad": [
+          -1.057183904542244,
+          1.4579617581122493,
+          -2.1885441059630533,
+          -1.7449999999999999,
+          -1.183630237164737,
+          -1.089626622794979
+        ],
+        "swing_joint_velocity_rad_s": [
+          -0.2879778646885933,
+          2.451083628010538,
+          1.7524626097817217,
+          -0.552264395295855,
+          -0.49552283179108525,
+          -2.3570221656497488
+        ],
+        "walk_waypoint_delta_m": 0.0,
+        "desired_normal_world": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "desired_point_velocity_world_mps": [
+          0.8,
+          0.0,
+          -0.3
+        ],
+        "nominal_projected_pitch_rad": 0.20725145290511404
+      },
+      "candidate_id": 3
+    },
+    {
+      "name": "wrist_branch_vz-1.2_walk0.0",
+      "overrides": {
+        "hit_joint_position_rad": [
+          -1.057183904542244,
+          1.4579617581122493,
+          -2.1885441059630533,
+          -1.7449999999999999,
+          -1.183630237164737,
+          -1.089626622794979
+        ],
+        "swing_joint_velocity_rad_s": [
+          -0.8471868056032709,
+          3.234056999033993,
+          2.4798926868209343,
+          1.2348305596645512,
+          -2.4187377504562204,
+          -4.999999999999897
+        ],
+        "walk_waypoint_delta_m": 0.0,
+        "desired_normal_world": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "desired_point_velocity_world_mps": [
+          0.8,
+          0.0,
+          -1.2
+        ],
+        "nominal_projected_pitch_rad": 0.20725145290511404
+      },
+      "candidate_id": 4
+    },
+    {
+      "name": "wrist_branch_vz-0.3_walk0.1",
+      "overrides": {
+        "hit_joint_position_rad": [
+          -1.057183904542244,
+          1.4579617581122493,
+          -2.1885441059630533,
+          -1.7449999999999999,
+          -1.183630237164737,
+          -1.089626622794979
+        ],
+        "swing_joint_velocity_rad_s": [
+          -0.2879778652636468,
+          2.451083628421923,
+          1.7524626098566218,
+          -0.5522643940606149,
+          -0.4955228308622341,
+          -2.3570221670214018
+        ],
+        "walk_waypoint_delta_m": 0.1,
+        "desired_normal_world": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "desired_point_velocity_world_mps": [
+          0.8,
+          0.0,
+          -0.3
+        ],
+        "nominal_projected_pitch_rad": 0.20725145290511404
+      },
+      "candidate_id": 5
+    },
+    {
+      "name": "wrist_branch_vz-1.2_walk0.1",
+      "overrides": {
+        "hit_joint_position_rad": [
+          -1.057183904542244,
+          1.4579617581122493,
+          -2.1885441059630533,
+          -1.7449999999999999,
+          -1.183630237164737,
+          -1.089626622794979
+        ],
+        "swing_joint_velocity_rad_s": [
+          -0.8471868128908953,
+          3.234056999951625,
+          2.479892683972258,
+          1.2348305589503579,
+          -2.418737747466776,
+          -4.999999999999897
+        ],
+        "walk_waypoint_delta_m": 0.1,
+        "desired_normal_world": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "desired_point_velocity_world_mps": [
+          0.8,
+          0.0,
+          -1.2
+        ],
+        "nominal_projected_pitch_rad": 0.20725145290511404
+      },
+      "candidate_id": 6
+    },
+    {
+      "name": "static_full_pose_seed_shared_all_cases",
+      "overrides": {
+        "hit_joint_position_rad": [
+          -1.6967983906379824,
+          1.031684166366567,
+          -2.966999769210815,
+          -1.408415632542438,
+          -1.2199999094009397,
+          0.7420428152804848
+        ],
+        "swing_joint_velocity_rad_s": [
+          -0.7374218817886876,
+          0.3584104547881579,
+          0.6890546460808217,
+          2.2497602119005036,
+          -2.574177568193024,
+          2.2651514158010917
+        ],
+        "walk_waypoint_delta_m": 0.1,
+        "intercept_plane_x_m": 1.08,
+        "desired_normal_world": [
+          1.0,
+          0.0,
+          -0.0
+        ],
+        "desired_point_velocity_world_mps": [
+          0.8,
+          0.0,
+          -0.3
+        ],
+        "nominal_projected_pitch_rad": 0.20725145290511404
+      },
+      "candidate_id": 7
+    }
+  ],
+  "hypothesis": "Shorter wrist preparation path and measured high contact pose may improve legal hits and recovery.",
+  "planned_native_comparison": "Each shared candidate gets all original128 normal ground cases, zero reset perturbation.",
+  "all_source_actors_and_normalizers_retained": true,
+  "original_physics_hardware_scores_and_ground_init_retained": true,
+  "native_execution": false,
+  "performance_inherited": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false
+}
