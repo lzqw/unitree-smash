@@ -1,0 +1,34 @@
+{
+  "observed_at": "2026-10-26T21:47:17.803388+00:00",
+  "actual_live_processes": {
+    "1895642": {
+      "cmdline": "/home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body_after_prepose_queue02/run.py ",
+      "stat": "1895642 (python) S 2481 1895642 1895642 0 -1 4194304 73326 170506 0 0 64 21 9985 97 20 0 2 0 67124433 4607139840 118997 18446744073709551615 98920736649216 98920738990309 140727996360864 0 0 0 0 16781312 16386 0 0 0 17 17 0 0 0 0 0 98920739960400 98920741401088 98920769630208 140727996365594 140727996365741 140727996365741 140727996370890 0\n"
+    },
+    "1903032": {
+      "cmdline": "/home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/scripts/run_gpu_job.py --goal G07 --budget-window g07-full-racket-unlimited-20261024 --max-seconds 14400 --env-steps-cap 819200 --output /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_sequential_n128_01 --require-artifact completed.json -- /home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/scripts/search_full_racket_gain_body_origin0_v4.py --output /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_sequential_n128_01 --source /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_sequential_n128_01/best_candidate.pt --source-evaluation /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_best_fixed_train128_01 --proposals /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body_after_prepose_queue02/ACTUAL_PROPOSALS.json --precision-receipt /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin_precision_after_aim_queue01/PRECISION_ADMISSION.json --seed 750901 --headless ",
+      "stat": "1903032 (python) S 1895642 1903032 1903032 0 -1 4194304 4672 5700 0 0 92 24 0 3 20 0 1 0 67454610 34390016 5580 18446744073709551615 104760608714752 104760611055845 140730787446496 0 0 0 0 16781312 16386 1 0 0 17 12 0 0 0 0 0 104760612025936 104760613466624 104760637960192 140730787448648 140730787449772 140730787449772 140730787454922 0\n"
+    },
+    "1903046": {
+      "cmdline": "/home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/scripts/search_full_racket_gain_body_origin0_v4.py --output /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_sequential_n128_01 --source /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_sequential_n128_01/best_candidate.pt --source-evaluation /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_best_fixed_train128_01 --proposals /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body_after_prepose_queue02/ACTUAL_PROPOSALS.json --precision-receipt /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin_precision_after_aim_queue01/PRECISION_ADMISSION.json --seed 750901 --headless ",
+      "stat": "1903046 (python) S 1903032 1903046 1903046 0 -1 4194304 999512 5588 7 0 375167 33351 0 7 20 0 129 0 67454621 72589926400 1090183 18446744073709551615 94527585746944 94527588088037 140733889677744 0 0 0 0 16781312 17658 0 0 0 17 10 0 0 0 0 0 94527589058128 94527590498816 94528483672064 140733889681571 140733889682348 140733889682348 140733889687498 0\n"
+    },
+    "1896271": {
+      "cmdline": "/home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin0_residual_after_gain_body_queue01/run.py ",
+      "stat": "1896271 (python) S 2481 1896271 1896271 0 -1 4194304 4130 0 0 0 10 6 0 0 20 0 1 0 67169234 35315712 5635 18446744073709551615 98205153181696 98205155522789 140737465805952 0 0 0 0 16781312 16386 1 0 0 17 4 0 0 0 0 0 98205156492880 98205157933568 98205942632448 140737465809681 140737465809837 140737465809837 140737465814986 0\n"
+    }
+  },
+  "actual_native_progress": {
+    "candidate_id": 2,
+    "candidate_name": "jump_40ms_earlier_keep_handover",
+    "control_ticks": 365,
+    "first_episodes_complete": 128,
+    "actual_control_env_steps": 251520,
+    "formal_acceptance": false
+  },
+  "next_candidate3_ground_states_saved": true,
+  "held482_unchanged": true,
+  "whole_job_completed": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
