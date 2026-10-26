@@ -1,0 +1,7 @@
+{
+  "observed_at": "2026-10-26T12:11:13.018398+00:00",
+  "status": "CPU_PREPARATION_FAILED",
+  "reason": "Existing Go2WalkTransfer resolves its policy path from process cwd. The first CPU replay was launched from the video worktree, which lacks the walking actor. Partial snapshot and pinned sources preserved.",
+  "native_job_failed": false,
+  "remedy": "New preparation directory; launch from actual main root where the already pinned walking actor exists. No runtime/config/asset mutation."
+}

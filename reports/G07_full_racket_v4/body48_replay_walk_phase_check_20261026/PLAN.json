@@ -1,0 +1,20 @@
+{
+  "created_at": "2026-10-26T12:14:38.554344+00:00",
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_video_framing/reports/G07_full_racket_v4/body48_replay_walk_phase_check_20261026/check.py": "a4ff78ec6fe9a61aaa267585c6b1de122ab0d1b0a504356b50b454aed0d4d03d",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/body_residual_leg15_fresh_n2048_updates48_01/trajectory_traces/lane1824_episode000003.npz": "63efc22b3adc05a83aea2782e97a859763665e5c91137a210dabe53a03e9746b",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/body_residual_leg15_fresh_n2048_updates48_01/trajectory_traces/lane1824_episode000003.json": "87447f7087312488934340f370e3da73627ae0dcea74a65341784c8addb3439d",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/body_strike_grid16_n2048_01/best_candidate.pt": "cb6dfa04d91e98a6ec54659f44fbf7f4e7733d96338f14b626140d4d26fd906a",
+    "/home/autodrive/LZQW/unitree_smash_video_framing/reports/G07_full_racket_v4/body48_replay_walk_phase_check_20261026/ACTUAL_JOINT_PROVENANCE.json": "172da899be5b295b5fbc533e9099d7902310c7e5f970d3b666a3609b8956e505",
+    "/home/autodrive/LZQW/unitree_smash/quadsmash/control/go2_walk_transfer.py": "84c1cfa556992a43f3f38e90b56234bcff4c7589cf7c194925ff8de74feaad78",
+    "/home/autodrive/LZQW/unitree_smash/quadsmash/control/go2_standing_transfer.py": "7d0ace76dcd52239f9588071eb84ed50481692c3ed19fd9a44de57cf4945847c"
+  },
+  "hypothesis": "Asynchronous lane resets clear lane history but preserve the walking actor global two-step hold clock. A later episode may start on an odd control tick.",
+  "paired_replay_phases": [
+    "fresh_global_zero",
+    "actual_native_global_tick"
+  ],
+  "original_replay_tolerance": 0.0005,
+  "new_native_execution": false,
+  "formal_acceptance": false
+}

@@ -1,0 +1,22 @@
+{
+  "reviewed_at": "2026-10-26T12:26:36.530128+00:00",
+  "reviewer": "root",
+  "video": "/home/autodrive/LZQW/unitree_smash_video_framing/reports/G07_full_racket_v4/video/Current_training_body48_learned_complete_and_early_failures_20261026.mp4",
+  "sha256": "2f481194be5a259d2803481f7eb894998acf995b912af3d7de735627987cabb1",
+  "native_event_previews_reviewed": 7,
+  "corrected_caption_preview_also_reviewed": true,
+  "decoded_frames_reviewed": 8,
+  "all_frames_decoded": true,
+  "all_frames_visually_watched": false,
+  "approved_for_authorized_GitHub_upload": true,
+  "findings": [
+    "The learned-phase TRAIN32 lane1824 EP3 is shown from ground preparation through exact contact, first landing and stable recovery, without motion interpolation.",
+    "The same8s episode satisfies the original independent full-smash gate: outgoing8.152518m/s, target first landing[3.933655,-.419493]m and stable recovery1.999037s.",
+    "Two other displayed failures are explicitly earlier warmup episodes, not matched learned-policy controls: frame-only upward out-of-court return and miss/body landing.",
+    "Both side and top show the full robot/racket and actual regulation court/net geometry. All selected body/ball arrays match raw100Hz data after50Hz subsampling.",
+    "The later-episode walking hold-phase mismatch was identified by a paired CPU replay and corrected in replay initialization only. Original5e-4 command tolerance remains; native code and outcomes are unchanged.",
+    "Captions identify stochastic changing-policy training and pending frozen evaluation; no learned-policy success rate or formal result is asserted."
+  ],
+  "formal_acceptance": false,
+  "goal_complete": false
+}

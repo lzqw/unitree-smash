@@ -1,0 +1,30 @@
+{
+  "checked_at": "2026-10-26T12:14:48.215289+00:00",
+  "actual_native_start_global_control_tick": 1439,
+  "actual_first_walk_hold_phase": 1,
+  "actual_recorded_rows": 800,
+  "paired_replays": [
+    {
+      "phase": "fresh_global_zero",
+      "initial_global_walk_tick": 0,
+      "max_base_action_error": 0.30535888671875,
+      "max_full_action_error": 0.3053588569164276,
+      "first_difference_over_original_tolerance": {
+        "row": 0,
+        "episode_clock_s": 0.0,
+        "error": 0.20645594596862793
+      }
+    },
+    {
+      "phase": "actual_native_global_tick",
+      "initial_global_walk_tick": 1439,
+      "max_base_action_error": 3.5762786865234375e-06,
+      "max_full_action_error": 3.5762786865234375e-06,
+      "first_difference_over_original_tolerance": null
+    }
+  ],
+  "interpretation": "The mismatch came from assuming global walking phase0 when extracting a later episode. Restoring the independently recovered native phase reproduces commands within the unchanged tolerance. No native/controller code, hardware, physics, outcome or motion was changed.",
+  "original_tolerance_retained": true,
+  "new_native_execution": false,
+  "formal_acceptance": false
+}

@@ -1,0 +1,699 @@
+{
+  "schema": "native-training-episode-trace-v1",
+  "enabled": true,
+  "disabled_error": null,
+  "allocated_host_buffer_bytes": 2354774016,
+  "verified_full_public_rows": 4980736,
+  "closed_episodes_observed": 12312,
+  "censored_open_episodes": 0,
+  "saved_episode_count": 16,
+  "success_selected": 4,
+  "failure_selected": 6,
+  "native_execution": true,
+  "frozen_policy_performance": false,
+  "formal_acceptance": false,
+  "selection_settings": {
+    "max_success_traces": 24,
+    "max_failure_traces": 6,
+    "first_episode_lanes": [
+      0,
+      8,
+      19,
+      23,
+      58,
+      107
+    ],
+    "max_buffer_bytes": 3000000000
+  },
+  "provenance": {
+    "native_source_confirmed": true,
+    "source_kind": "Actual native changing-policy TRAIN",
+    "training_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99,
+      100,
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+      110,
+      111,
+      112,
+      113,
+      114,
+      115,
+      116,
+      117,
+      118,
+      119,
+      120,
+      121,
+      122,
+      123,
+      124,
+      125,
+      126,
+      127
+    ],
+    "initialization": {
+      "mode": "fresh_zero_mean_residual_over_measured_two_actor_body_teacher",
+      "num_envs": 2048,
+      "initial_iteration": 0,
+      "fixed_base_policy_sha256": "cb6dfa04d91e98a6ec54659f44fbf7f4e7733d96338f14b626140d4d26fd906a",
+      "trainable_action_joints": 18,
+      "source_actor_and_normalizers_remain_inside_fixed_base": true,
+      "new_actor_mean_initially_zero": true,
+      "new_actor_normalizer_count": 0,
+      "new_critic_normalizer_count": 0,
+      "fresh_exploration_std": [
+        0.20000000298023224,
+        0.20000000298023224,
+        0.20000000298023224,
+        0.20000000298023224,
+        0.20000000298023224,
+        0.20000000298023224,
+        0.20000000298023224,
+        0.20000000298023224,
+        0.20000000298023224,
+        0.20000000298023224,
+        0.20000000298023224,
+        0.20000000298023224,
+        0.10000000149011612,
+        0.10000000149011612,
+        0.10000000149011612,
+        0.10000000149011612,
+        0.10000000149011612,
+        0.10000000149011612
+      ],
+      "requested_physical_exploration_std_rad": [
+        0.030000001192092896,
+        0.030000001192092896,
+        0.030000001192092896,
+        0.030000001192092896,
+        0.030000001192092896,
+        0.030000001192092896,
+        0.030000001192092896,
+        0.030000001192092896,
+        0.030000001192092896,
+        0.030000001192092896,
+        0.030000001192092896,
+        0.030000001192092896,
+        0.015000000596046448,
+        0.015000000596046448,
+        0.015000000596046448,
+        0.015000000596046448,
+        0.015000000596046448,
+        0.015000000596046448
+      ],
+      "actor_transferred": false,
+      "critic_transferred": false,
+      "critic_normalizer_transferred": false,
+      "optimizer_transferred": false,
+      "old_physical_state_restored": false,
+      "source_rng_restored": false,
+      "previous_learning_counters_restored": false,
+      "performance_inherited": false
+    },
+    "protocol_sha256": "04121cfb257ea4d2e288c69b44dd0c8dbada814e0bf95c8a16f5af7ef2390367",
+    "asset_sha256": "c2264fcece90b042c7c6a1cac7d516af83972729d0402947e3a519041e184cf2",
+    "body_names": [
+      "base",
+      "FL_hip",
+      "FR_hip",
+      "Head_upper",
+      "RL_hip",
+      "RR_hip",
+      "MountPlate",
+      "FL_thigh",
+      "FR_thigh",
+      "Head_lower",
+      "RL_thigh",
+      "RR_thigh",
+      "base_link",
+      "FL_calf",
+      "FR_calf",
+      "RL_calf",
+      "RR_calf",
+      "link1",
+      "FL_foot",
+      "FR_foot",
+      "RL_foot",
+      "RR_foot",
+      "link2",
+      "link3",
+      "link4",
+      "link5",
+      "link6",
+      "Racket"
+    ],
+    "joint_names": [
+      "FL_hip_joint",
+      "FR_hip_joint",
+      "RL_hip_joint",
+      "RR_hip_joint",
+      "FL_thigh_joint",
+      "FR_thigh_joint",
+      "RL_thigh_joint",
+      "RR_thigh_joint",
+      "FL_calf_joint",
+      "FR_calf_joint",
+      "RL_calf_joint",
+      "RR_calf_joint",
+      "joint1",
+      "joint2",
+      "joint3",
+      "joint4",
+      "joint5",
+      "joint6"
+    ],
+    "default_joint_position_rad": [
+      0.10000000149011612,
+      -0.10000000149011612,
+      0.10000000149011612,
+      -0.10000000149011612,
+      0.800000011920929,
+      0.800000011920929,
+      1.0,
+      1.0,
+      -1.5,
+      -1.5,
+      -1.5,
+      -1.5,
+      0.07868610322475433,
+      1.2010233402252197,
+      -2.5853559970855713,
+      -0.15646959841251373,
+      -1.056915283203125,
+      0.13533028960227966
+    ],
+    "joint_limits_rad": [
+      [
+        -1.0471998453140259,
+        1.0471998453140259
+      ],
+      [
+        -1.0471998453140259,
+        1.0471998453140259
+      ],
+      [
+        -1.0471998453140259,
+        1.0471998453140259
+      ],
+      [
+        -1.0471998453140259,
+        1.0471998453140259
+      ],
+      [
+        -1.5707999467849731,
+        3.4906997680664062
+      ],
+      [
+        -1.5707999467849731,
+        3.4906997680664062
+      ],
+      [
+        -0.5235999226570129,
+        4.537899494171143
+      ],
+      [
+        -0.5235999226570129,
+        4.537899494171143
+      ],
+      [
+        -2.7227001190185547,
+        -0.8377599120140076
+      ],
+      [
+        -2.7227001190185547,
+        -0.8377599120140076
+      ],
+      [
+        -2.7227001190185547,
+        -0.8377599120140076
+      ],
+      [
+        -2.7227001190185547,
+        -0.8377599120140076
+      ],
+      [
+        -2.618000030517578,
+        2.167999744415283
+      ],
+      [
+        0.0,
+        3.1399998664855957
+      ],
+      [
+        -2.9669997692108154,
+        0.0
+      ],
+      [
+        -1.744999885559082,
+        1.744999885559082
+      ],
+      [
+        -1.21999990940094,
+        1.21999990940094
+      ],
+      [
+        -2.0943996906280518,
+        2.0943996906280518
+      ]
+    ],
+    "source_job_output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/body_residual_leg15_fresh_n2048_updates48_01",
+    "formal_acceptance": false
+  },
+  "body_names": [
+    "base",
+    "FL_hip",
+    "FR_hip",
+    "Head_upper",
+    "RL_hip",
+    "RR_hip",
+    "MountPlate",
+    "FL_thigh",
+    "FR_thigh",
+    "Head_lower",
+    "RL_thigh",
+    "RR_thigh",
+    "base_link",
+    "FL_calf",
+    "FR_calf",
+    "RL_calf",
+    "RR_calf",
+    "link1",
+    "FL_foot",
+    "FR_foot",
+    "RL_foot",
+    "RR_foot",
+    "link2",
+    "link3",
+    "link4",
+    "link5",
+    "link6",
+    "Racket"
+  ],
+  "saved_episodes": [
+    {
+      "data_file": "lane0081_episode000000.npz",
+      "env_id": 81,
+      "episode_index": 0,
+      "source_training_index": 81,
+      "samples": 147,
+      "data_sha256": "23313def97e768248221b12e6edb04cc6f741a55d3172aa5b6fa7fc0bc0b5b28",
+      "full_public794_sha256": "37b7db5e0b38cce1dcb3ccab52c38a53834b4f0531c4574485fe29c4a38f2bb2",
+      "selection_reasons": [
+        "first_failure_until_declared_limit"
+      ],
+      "actor_iterations_encountered": [
+        0,
+        1
+      ]
+    },
+    {
+      "data_file": "lane0699_episode000000.npz",
+      "env_id": 699,
+      "episode_index": 0,
+      "source_training_index": 59,
+      "samples": 173,
+      "data_sha256": "a34041638f1ac314ac6830cf9a713f6f773001605cdc70490722ac03b76c86ee",
+      "full_public794_sha256": "680890224a04195ddb07d4e7d5f98939134e52db6628ccb198180387f88916fb",
+      "selection_reasons": [
+        "first_failure_until_declared_limit"
+      ],
+      "actor_iterations_encountered": [
+        0,
+        1
+      ]
+    },
+    {
+      "data_file": "lane1532_episode000000.npz",
+      "env_id": 1532,
+      "episode_index": 0,
+      "source_training_index": 124,
+      "samples": 174,
+      "data_sha256": "7014fb2ccb40cf7cebe3bddc34cffb3b011909fa7556b711f931832203ec40e0",
+      "full_public794_sha256": "8926eadbf76facf4735775d3b35118913574d9ad422dd1f36f8d34bb398424c2",
+      "selection_reasons": [
+        "first_failure_until_declared_limit"
+      ],
+      "actor_iterations_encountered": [
+        0,
+        1
+      ]
+    },
+    {
+      "data_file": "lane1066_episode000000.npz",
+      "env_id": 1066,
+      "episode_index": 0,
+      "source_training_index": 42,
+      "samples": 182,
+      "data_sha256": "976589476e1cb84ea6ec0d61a809474fc59adbbf7b6b752efe965a826a83507f",
+      "full_public794_sha256": "56bdde837252555887aaec65da6ea352bc2562c7043192ba6310961ab069bdac",
+      "selection_reasons": [
+        "first_failure_until_declared_limit"
+      ],
+      "actor_iterations_encountered": [
+        0,
+        1
+      ]
+    },
+    {
+      "data_file": "lane0806_episode000000.npz",
+      "env_id": 806,
+      "episode_index": 0,
+      "source_training_index": 38,
+      "samples": 188,
+      "data_sha256": "9693ca97cf368982e4775ac57d7b08993ce8a1295455d5906783b3b7eacd8926",
+      "full_public794_sha256": "0b55c7ab486e059d56a5243fd4e6f422b8d8f67cb98b91844a48f028926c100c",
+      "selection_reasons": [
+        "first_failure_until_declared_limit"
+      ],
+      "actor_iterations_encountered": [
+        0,
+        1
+      ]
+    },
+    {
+      "data_file": "lane0994_episode000000.npz",
+      "env_id": 994,
+      "episode_index": 0,
+      "source_training_index": 98,
+      "samples": 190,
+      "data_sha256": "49c0407e868dbd302ab37600a62cb53c8dfb2c11e83731f4ab6b871fcdb70bb5",
+      "full_public794_sha256": "8b818647e80faad6e05b734952ea4be1e7d7ef09b79f55609ea849fee464c150",
+      "selection_reasons": [
+        "first_failure_until_declared_limit"
+      ],
+      "actor_iterations_encountered": [
+        0,
+        1
+      ]
+    },
+    {
+      "data_file": "lane0058_episode000000.npz",
+      "env_id": 58,
+      "episode_index": 0,
+      "source_training_index": 58,
+      "samples": 272,
+      "data_sha256": "5b1f5555bb719582b739b4516df13fb6d991075e6a56985c846cec7173b02992",
+      "full_public794_sha256": "a4b0082860477ee533093249758d9db8a68abc1e8d3baf61d69e1df13c806e67",
+      "selection_reasons": [
+        "first_episode_of_predeclared_lane"
+      ],
+      "actor_iterations_encountered": [
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "data_file": "lane0000_episode000000.npz",
+      "env_id": 0,
+      "episode_index": 0,
+      "source_training_index": 0,
+      "samples": 283,
+      "data_sha256": "2b0e354c11433fc9e8e883919afcda4c4405572b10d18f68f06354f7f910b11b",
+      "full_public794_sha256": "df5d81828adbe7b8eac2c149ac23e89f871d37ef9582241c34176796cd2a53b9",
+      "selection_reasons": [
+        "first_episode_of_predeclared_lane"
+      ],
+      "actor_iterations_encountered": [
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "data_file": "lane0107_episode000000.npz",
+      "env_id": 107,
+      "episode_index": 0,
+      "source_training_index": 107,
+      "samples": 388,
+      "data_sha256": "4140bcd4d98e49d8e03aefdf287cc31aed98b2ae7f35efe6b9502661abeffc37",
+      "full_public794_sha256": "2649df0d5388a212fa2d4695328ba97c99f03243711277c39baec919da2b470b",
+      "selection_reasons": [
+        "first_episode_of_predeclared_lane"
+      ],
+      "actor_iterations_encountered": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "data_file": "lane0008_episode000000.npz",
+      "env_id": 8,
+      "episode_index": 0,
+      "source_training_index": 8,
+      "samples": 800,
+      "data_sha256": "1096942ebd8f141ab3b0839f78b6cb7378e64780231370043cb07efd8ebee66b",
+      "full_public794_sha256": "e19bdede82224ca1cb8d19361acac6495a72852d27817d0533623f785f196bce",
+      "selection_reasons": [
+        "first_episode_of_predeclared_lane"
+      ],
+      "actor_iterations_encountered": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "data_file": "lane0019_episode000000.npz",
+      "env_id": 19,
+      "episode_index": 0,
+      "source_training_index": 19,
+      "samples": 800,
+      "data_sha256": "b94599c1a65fccb9dbc1b239710ca7c44c3e366d22ebaf5797f9b1237d7a8f5b",
+      "full_public794_sha256": "a0c19e7f7c3997918eb839bafb35a1d025f1b2ad33db60a26f6de5682e0ff7c5",
+      "selection_reasons": [
+        "first_episode_of_predeclared_lane"
+      ],
+      "actor_iterations_encountered": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "data_file": "lane0023_episode000000.npz",
+      "env_id": 23,
+      "episode_index": 0,
+      "source_training_index": 23,
+      "samples": 800,
+      "data_sha256": "9ba27865a30b12d0b338115533e1888bad1e1123470f4e30eedb75d1a7b49217",
+      "full_public794_sha256": "9e45e703bf4d07c013b7730b400e0bcb03cee5faf3aa1d14a8b105a7e4263bea",
+      "selection_reasons": [
+        "first_episode_of_predeclared_lane"
+      ],
+      "actor_iterations_encountered": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "data_file": "lane0650_episode000000.npz",
+      "env_id": 650,
+      "episode_index": 0,
+      "source_training_index": 10,
+      "samples": 800,
+      "data_sha256": "e78e0b6b83e8483286beab33fc8706573be421a4490a1df73387212a62f8c9ce",
+      "full_public794_sha256": "e19785b0f59145424070419845220088f3358e751165da12f28f8be1e5fb475f",
+      "selection_reasons": [
+        "first_complete_until_declared_limit"
+      ],
+      "actor_iterations_encountered": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "data_file": "lane1305_episode000001.npz",
+      "env_id": 1305,
+      "episode_index": 1,
+      "source_training_index": 25,
+      "samples": 800,
+      "data_sha256": "bd1c4ffee7741b62a19f3566d9f45f16620f286a50ebcec7c00eda07e205b97e",
+      "full_public794_sha256": "71561c3715e20ba19caa0c8325fb0d8f805a9b2b3b9551b7ea7d9a0c6a68fd87",
+      "selection_reasons": [
+        "first_complete_until_declared_limit"
+      ],
+      "actor_iterations_encountered": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    {
+      "data_file": "lane1358_episode000002.npz",
+      "env_id": 1358,
+      "episode_index": 2,
+      "source_training_index": 78,
+      "samples": 800,
+      "data_sha256": "20da6e4aa576a3631a32b0e1dfd30bece9f1e5ed9dd09fc88cc9ba461bb9c67c",
+      "full_public794_sha256": "7a7dc788395da8a50cc86a056f063e2cb79e73e2580ea8c4fabae1f2ae8dae0d",
+      "selection_reasons": [
+        "first_complete_until_declared_limit"
+      ],
+      "actor_iterations_encountered": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    },
+    {
+      "data_file": "lane1824_episode000003.npz",
+      "env_id": 1824,
+      "episode_index": 3,
+      "source_training_index": 32,
+      "samples": 800,
+      "data_sha256": "63efc22b3adc05a83aea2782e97a859763665e5c91137a210dabe53a03e9746b",
+      "full_public794_sha256": "1754d78ca56ebdf1736701723778427223e90b15206cc64010cb1337d6779188",
+      "selection_reasons": [
+        "first_complete_until_declared_limit"
+      ],
+      "actor_iterations_encountered": [
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ]
+    }
+  ],
+  "motion": "Actual100Hz poses and actions; no interpolation. Select every second stored sample for50Hz video.",
+  "policy_scope": "Changing weights, normalization and exploration; never a frozen-policy or formal score.",
+  "goal_complete": false
+}
