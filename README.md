@@ -1,10 +1,12 @@
 # QuadSmash：Codex /goal 实施与训练任务包
 
-当前进展（2026-10-26 17:32UTC）：[已交付的37.76秒原生训练视频](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_training_body48_learned_complete_and_early_failures_20261026.mp4)保留一个学习阶段完整回合及两段明确标为预热期的失败。TRAIN32实际出球8.15米/秒、原目标首落[3.93,-.42]米、稳定恢复2.00秒；这是含探索的变化中训练回合，不是固定成功率。[视频与32.97MB精选实录、诊断和核验报告](reports/G07_full_racket_v4/body48_learned_training_delivery_20261026/REPORT.md)均已上传并新下载SHA核对。
+当前进展（2026-10-26T18:01UTC）：[最新42.28秒瞄准点实际视频](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_contact_aim006_search_complete_and_failures_20261027.mp4)保留新成功TRAIN12、原成功例TRAIN13的恢复退化，以及TRAIN0拍框误击。参考点[0,.06]原128搜索为**5完整、60空中、28合格恢复、21攻击、NF0**；整体7点搜索与单独冷128尚未结束。2114帧全部解码、原生数据逐项一致、事件及成片抽样检查、新下载SHA验证均通过。[视频、46.49MB完整候选原128记录与权重](reports/G07_full_racket_v4/contact_aim_search_video_delivery_20261027/REPORT.md)已交付。此前[37.76秒48更新训练录像](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_training_body48_learned_complete_and_early_failures_20261026.mp4)继续保留。
 
 冻结教师grid8原全TRAIN128仍为**2完整、55空中、30合格恢复、19攻击、NF0**，原正式A/B及50/70/85未通过。[教师98秒视频](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_body_grid8_cold128_complete_and_failures_20261026.mp4)保留TRAIN13完整例和此前固定六例失败对照；[完整128、教师权重与43MB数据包](reports/G07_full_racket_v4/body_grid16_best_fixed128_delivery_20261026/REPORT.md)继续保留。
 
 GPU0的新[48更新课程](reports/G07_full_racket_v4/body_residual48_after_grid16_queue01/REPORT.md)及13/24/36/48四版固定原128均已完成：完整成功**1/0/1/0**、空中58/45/42/7、合格恢复32/24/21/0，NF0。原教师2/128仍被保留。[180MB完整固定比较包](reports/G07_full_racket_v4/body48_frozen_four_delivery_20261027/REPORT.md)及[1.21GB完整训练包](reports/G07_full_racket_v4/body48_completed_training_delivery_20261026/REPORT.md)均已上传并新下载校验。原父1814619已真实退出；后续[7点瞄准实验](reports/G07_full_racket_v4/contact_aim_partial_20261027/REPORT.md)由父1827656/guard1862429/native1862443实际运行，419来源保持至该父退出。[0,.06]已得到5/128搜索完整、60空中、28合格恢复、NF0，尚待全部候选与冷128确认，原目标及正式门槛保留。
+
+[下一轮引拍与腕部分支比较](reports/G07_full_racket_v4/prepose_branch_after_aim_queue01/REPORT.md)已实现且通过实际公共输入CPU回放，协调器1873882经ps确认等待当前父1827656真实退出。429项输入SHA一致，尚未安装5份新Main程序或启动下一原生作业；将从当前最终冷128来源重新生成8候选，测1024地面回合并单独冷128。
 
 [落点范围离线对比](https://github.com/lzqw/unitree-smash/blob/ca0b3d7/reports/G07_full_racket_v4/target_scope_comparison_20261026/RESULT.json)在同一教师128例上得到原2×2米区2完整、4×4米区12完整、整个合法单打半场13完整，保留其余全部条件。用户范围选择待答复，当前训练与原成绩未改写。
 
