@@ -11,3 +11,5 @@
 捕获时原始闭合前缀4440回合为486空中、189条件恢复、1完整、NF0；它是变化策略训练前缀，不是固定模型成绩。完整首批2048仍为257空中、120条件恢复、0完整，所以上述成功发生于后续回合。已测冻结8仍0/128完整、26空中、19恢复。原32新增更新至40、完整原TRAIN128及原正式A/B各200继续；50/70/85未通过。
 
 CPU已从这条完整回合及同源2条失败准备实际动作视频，选择明确发生在观察结果之后。视频在独立取景工作区渲染；不新增GPU任务、不停止原训练。此前[冻结8取景改进视频](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_centered_placement075_pilot8_orthographic_v2_20261026.mp4)已经发布，沿用同一冻结记录。
+
+[29.3秒真实完整训练回合与2例失败对照](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_training_placement075_first_complete_and_failures_20261026.mp4)已上传并新下载SHA核验：2736459字节、1465帧，SHA `e78d2e40371b688bf02643149b1d4eed64f3dce19283e6a91a79e8f1b7117f89`，5张事件图和6张成品抽帧已审阅；所有帧机器解码通过。视频明确事后选例与非冻结成绩。[完整视频源码与审查](https://github.com/lzqw/unitree-smash/blob/1211474ebfb786793af8c5fb8349b94ecbdd094a/reports/G07_full_racket_v4/placement075_first_complete_video_20261026/REPORT.md)。
