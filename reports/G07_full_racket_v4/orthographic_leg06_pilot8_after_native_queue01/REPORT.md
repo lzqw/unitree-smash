@@ -7,3 +7,8 @@
 原main296份输入在登记和准入时验证；数据绑定后只持有自身renderer及已完成数据，不延长main运行时持有。下一次main运行时集成须等本队列ACTUAL_FROZEN8_INPUT_CHECK.json完成准入，以免与准入校验竞争。自身run.py、PLAN、renderer/config及绑定文件在观察进程实际退出前保持。
 
 结果按实际元数据帧数全解码，抽取实际成品帧供root独立审阅；没有自动上传，旧视频批准不继承。真实失败在原128存在时须保留。正式A/B各200与原50/70/85尚未通过，没有新GPU或原生执行。
+
+
+2026-10-26实际完成交付：父1768388已在05:33UTC真实退出READY，main296输入在视频接纳时全部一致，原全128为0完整/27空中/14恢复/6攻击/NF0。视频81.36秒、4068帧、7009511字节，SHA e98b94d44cd56891dfe96b82fa96b655bb6c61824fd600ad79bce4efe24c7624；全部帧解码，root审查15个实际事件画面及8个真实解码帧。原六例及失败保留，TRAIN23/0/8真实8米每秒以上攻击首落x4.89/4.91/4.73，仍超出原目标上限4米，没有完整成功。
+
+[当前实际视频](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_centered_leg06_pilot8_orthographic_v3_20261026.mp4)已上传并新下载全SHA回验，GitHub asset677142824，服务端digest相同。原13更新新训练不在此视频内。自然遮挡保留，TRAIN107远球全景中机器人较小；全部帧机器解码不等于root逐帧观看。
