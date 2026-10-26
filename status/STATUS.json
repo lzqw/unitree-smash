@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/origin0_transfer_diagnostic_20261027/RESULT.json",
-      "notes": "原布局Aim7及冷128实际完成：确认来源3完整/60空中/26合格恢复/24攻击、NF0，搜索5次未全复现。304.6MB完整包已上传新下载验证。原生origin16与origin0精度/隔离探针完成，最大球路误差7.396→0.173毫米，origin0副本球/根差0、球力0、提前done0、NF0，准入通过。旧严格腕部分支源准备拒绝，限位内近等效种子与Main动作核验通过。GPU0新origin0 8×128原生比较正由1884350/1884474/1884488运行，460输入保持；不继承旧成绩，正式A/B和50/70/85尚未通过。 新origin0第一原样候选已完成0/128完整、0空中拍线、11拍框、123身体触地、NF0；实际128均腾空，原样迁移失效，其余候选继续。 当前前三项origin0候选均0完整/0合格空中拍线，384行独立核对；实际准备阶段根倾角19.14度而旧腿残差请求很小，不能确定其为主因。新471输入的全身时序/恢复八项队列1891402等待当前所有者真实退出，已完成1600输入CPU与局部reset检查；尚无新原生成绩。 新30.22秒origin0真实失败视频及37.01MB两候选完整原128记录包已上传并新下载SHA/CRC核验；保留拍框摔落、站稳漏球、实际触网三例，不继承旧成功录像。当前前四候选均0完整/0合格空中拍线，继续第5项。 新origin0残差训练/独立评估接口已通过658真实输入CPU兼容性和4项CLI核验并上传；尚未安装或启动新训练，真实完整冷源正向准入待后续结果。当前前五候选均0完整/0合格空中拍线，继续第6项。 已在GPU启动前发现并保留等待队列run_cpu四参问题，只停止无子进程的1891402，修正后1895642等待当前1884350。新参数化源绑定CPU658行通过，15更新训练/独立冷128等待1896271已实际启动为观察进程，482输入保持；尚未开训或产生新冻结成绩。 新origin0正式三入口已实现并上传，实际负向准备准入及6项CLI核对通过，正式文件打开0，尚无正向准入或正式400。384条落地记录中的7个资格差异样本均无空中拍线，不支持上调任何当前G07成绩，原判定不改。",
+      "notes": "原布局Aim7及冷128实际完成：确认来源3完整/60空中/26合格恢复/24攻击、NF0，搜索5次未全复现。304.6MB完整包已上传新下载验证。原生origin16与origin0精度/隔离探针完成，最大球路误差7.396→0.173毫米，origin0副本球/根差0、球力0、提前done0、NF0，准入通过。旧严格腕部分支源准备拒绝，限位内近等效种子与Main动作核验通过。GPU0新origin0 8×128原生比较正由1884350/1884474/1884488运行，460输入保持；不继承旧成绩，正式A/B和50/70/85尚未通过。 新origin0第一原样候选已完成0/128完整、0空中拍线、11拍框、123身体触地、NF0；实际128均腾空，原样迁移失效，其余候选继续。 当前前三项origin0候选均0完整/0合格空中拍线，384行独立核对；实际准备阶段根倾角19.14度而旧腿残差请求很小，不能确定其为主因。新471输入的全身时序/恢复八项队列1891402等待当前所有者真实退出，已完成1600输入CPU与局部reset检查；尚无新原生成绩。 新30.22秒origin0真实失败视频及37.01MB两候选完整原128记录包已上传并新下载SHA/CRC核验；保留拍框摔落、站稳漏球、实际触网三例，不继承旧成功录像。当前前四候选均0完整/0合格空中拍线，继续第5项。 新origin0残差训练/独立评估接口已通过658真实输入CPU兼容性和4项CLI核验并上传；尚未安装或启动新训练，真实完整冷源正向准入待后续结果。当前前五候选均0完整/0合格空中拍线，继续第6项。 已在GPU启动前发现并保留等待队列run_cpu四参问题，只停止无子进程的1891402，修正后1895642等待当前1884350。新参数化源绑定CPU658行通过，15更新训练/独立冷128等待1896271已实际启动为观察进程，482输入保持；尚未开训或产生新冻结成绩。 新origin0正式三入口已实现并上传，实际负向准备准入及6项CLI核对通过，正式文件打开0，尚无正向准入或正式400。384条落地记录中的7个资格差异样本均无空中拍线，不支持上调任何当前G07成绩，原判定不改。 新origin0候选6完整原128已独立核对4合格空中拍线，0完整/0恢复/0攻击、NF0；速度4.23至6.10m/s全部低于8，3例身体触地、1例球被网挡，2例已首落目标但仍失败。搜索及独立冷128未结束，不继承搜索成绩。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
@@ -9059,7 +9059,8 @@
       "last_goal_turn_classification": {
         "classification": "progress",
         "observed_at": "2026-10-26T20:33:49.504296+00:00",
-        "reason": "Implemented compatible origin0 formal lock/evaluator/aggregator retaining original400-case contract, tested actual negative admission and six CLI paths without formal-file reads; audited384 native landing records without changing scores."
+        "reason": "Implemented compatible origin0 formal lock/evaluator/aggregator retaining original400-case contract, tested actual negative admission and six CLI paths without formal-file reads; audited384 native landing records without changing scores.",
+        "additional_actual_progress": "Independently checked completed candidate6 all128 actual identities and four real air-string contact events; identified low outgoing speed and body landings rather than relabelling target hits as success."
       },
       "completed_leg06_warmup13_frozen_TRAIN128": {
         "episodes": 128,
@@ -10368,7 +10369,7 @@
         "formal_acceptance": false
       },
       "current_full_racket_progress_20261027": {
-        "observed_at": "2026-10-26T20:33:49.504296+00:00",
+        "observed_at": "2026-10-26T20:42:13.683193+00:00",
         "actual_live_owner_pid": 1884350,
         "actual_live_native_pid": 1884488,
         "actual_live_waiter_pid": 1895642,
@@ -10734,7 +10735,38 @@
           "actual_control_env_steps": 535808,
           "formal_acceptance": false
         },
-        "queued_fresh_training": "reports/G07_full_racket_v4/origin0_residual_after_gain_body_queue01"
+        "queued_fresh_training": "reports/G07_full_racket_v4/origin0_residual_after_gain_body_queue01",
+        "first_origin0_air_strings": {
+          "report": "reports/G07_full_racket_v4/origin0_first_air_contacts_20261027/REPORT.md",
+          "candidate_id": 6,
+          "summary": {
+            "episodes": 128,
+            "complete": 0,
+            "airborne_contacts": 4,
+            "conditional_recovery_count": 0,
+            "attack_outgoing": 0,
+            "actual_attack_cross_target_chains": 0,
+            "numerical_failures": 0,
+            "mean_TRAIN_partial_score": 0.454764358929332,
+            "formal_acceptance": false,
+            "rank": [
+              1,
+              0,
+              0,
+              0.45476436,
+              0,
+              4
+            ]
+          },
+          "actual_contact_TRAIN_indices": [
+            69,
+            100,
+            112,
+            123
+          ],
+          "source_control_replay_pending": true,
+          "cold_confirmation_pending": true
+        }
       },
       "previous_video_before_origin0_failures_20261027": {
         "checked_at": "2026-10-26T09:01:21.484802+00:00",
@@ -10840,7 +10872,38 @@
         "positive_readiness_pending": true,
         "native400_pending": true
       },
-      "landing_qualification_observation": "reports/G07_full_racket_v4/landing_qualification_observation_20261027/RESULT.json"
+      "landing_qualification_observation": "reports/G07_full_racket_v4/landing_qualification_observation_20261027/RESULT.json",
+      "origin0_first_actual_air_strings": {
+        "report": "reports/G07_full_racket_v4/origin0_first_air_contacts_20261027/REPORT.md",
+        "candidate_id": 6,
+        "summary": {
+          "episodes": 128,
+          "complete": 0,
+          "airborne_contacts": 4,
+          "conditional_recovery_count": 0,
+          "attack_outgoing": 0,
+          "actual_attack_cross_target_chains": 0,
+          "numerical_failures": 0,
+          "mean_TRAIN_partial_score": 0.454764358929332,
+          "formal_acceptance": false,
+          "rank": [
+            1,
+            0,
+            0,
+            0.45476436,
+            0,
+            4
+          ]
+        },
+        "actual_contact_TRAIN_indices": [
+          69,
+          100,
+          112,
+          123
+        ],
+        "source_control_replay_pending": true,
+        "cold_confirmation_pending": true
+      }
     },
     "G08": {
       "state": "TODO",

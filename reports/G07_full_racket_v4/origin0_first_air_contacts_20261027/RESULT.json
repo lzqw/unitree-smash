@@ -1,0 +1,167 @@
+{
+  "checked_at": "2026-10-26T20:39:28.496555+00:00",
+  "actual_completed_candidate_id": 6,
+  "candidate": {
+    "name": "wrist_branch_vz-1.2_walk0.1",
+    "overrides": {
+      "hit_joint_position_rad": [
+        -1.057183904542244,
+        1.4579617581122493,
+        -2.1885441059630533,
+        -1.7449999999999999,
+        -1.183630237164737,
+        -1.089626622794979
+      ],
+      "swing_joint_velocity_rad_s": [
+        -0.8471868128908953,
+        3.234056999951625,
+        2.479892683972258,
+        1.2348305589503579,
+        -2.418737747466776,
+        -4.999999999999897
+      ],
+      "walk_waypoint_delta_m": 0.1,
+      "desired_normal_world": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "desired_point_velocity_world_mps": [
+        0.8,
+        0.0,
+        -1.2
+      ],
+      "nominal_projected_pitch_rad": 0.20725145290511404
+    },
+    "candidate_id": 6
+  },
+  "original128_summary": {
+    "episodes": 128,
+    "complete": 0,
+    "airborne_contacts": 4,
+    "conditional_recovery_count": 0,
+    "attack_outgoing": 0,
+    "actual_attack_cross_target_chains": 0,
+    "numerical_failures": 0,
+    "mean_TRAIN_partial_score": 0.454764358929332,
+    "formal_acceptance": false,
+    "rank": [
+      1,
+      0,
+      0,
+      0.45476436,
+      0,
+      4
+    ]
+  },
+  "all128_case_and_native_episode_ids_checked": true,
+  "actual_air_contact_cases": [
+    {
+      "case_id": "B-720402-005",
+      "env_id": 69,
+      "episode_index": 15,
+      "contact_time_s": 2.7245419025421143,
+      "outgoing_velocity_mps": [
+        4.9660563468933105,
+        0.8125531077384949,
+        -2.896718740463257
+      ],
+      "actual_outgoing_speed_mps": 5.806284324313257,
+      "original_attack_speed_pass": false,
+      "actual_string_contact_events": 1,
+      "crossed_net": true,
+      "landed_legal_court": true,
+      "landed_target": true,
+      "body_landing": true,
+      "stable_recovery": false,
+      "qualified_jump_landed": false,
+      "actual_faults": [],
+      "independently_complete": false
+    },
+    {
+      "case_id": "B-720402-036",
+      "env_id": 100,
+      "episode_index": 15,
+      "contact_time_s": 2.8159291744232178,
+      "outgoing_velocity_mps": [
+        3.68868350982666,
+        1.104801058769226,
+        -1.742704153060913
+      ],
+      "actual_outgoing_speed_mps": 4.226581263884617,
+      "original_attack_speed_pass": false,
+      "actual_string_contact_events": 1,
+      "crossed_net": false,
+      "landed_legal_court": false,
+      "landed_target": false,
+      "body_landing": false,
+      "stable_recovery": true,
+      "qualified_jump_landed": false,
+      "actual_faults": [
+        "net_blocked_fault"
+      ],
+      "independently_complete": false
+    },
+    {
+      "case_id": "B-720402-048",
+      "env_id": 112,
+      "episode_index": 15,
+      "contact_time_s": 2.696244955062866,
+      "outgoing_velocity_mps": [
+        5.310432434082031,
+        0.7764192819595337,
+        -2.4662182331085205
+      ],
+      "actual_outgoing_speed_mps": 5.9064161647877365,
+      "original_attack_speed_pass": false,
+      "actual_string_contact_events": 1,
+      "crossed_net": true,
+      "landed_legal_court": true,
+      "landed_target": true,
+      "body_landing": true,
+      "stable_recovery": false,
+      "qualified_jump_landed": false,
+      "actual_faults": [],
+      "independently_complete": false
+    },
+    {
+      "case_id": "B-720402-059",
+      "env_id": 123,
+      "episode_index": 15,
+      "contact_time_s": 2.8473494052886963,
+      "outgoing_velocity_mps": [
+        5.43900728225708,
+        2.0508618354797363,
+        -1.8652966022491455
+      ],
+      "actual_outgoing_speed_mps": 6.104765834905961,
+      "original_attack_speed_pass": false,
+      "actual_string_contact_events": 1,
+      "crossed_net": true,
+      "landed_legal_court": true,
+      "landed_target": false,
+      "body_landing": true,
+      "stable_recovery": false,
+      "qualified_jump_landed": false,
+      "actual_faults": [],
+      "independently_complete": false
+    }
+  ],
+  "actual_crossed_and_legal_court": 3,
+  "actual_target_first_landings": 2,
+  "body_landing_among_air_contacts": 3,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_sequential_n128_01/episodes_006.json": "1d8ba59f7b6b0d82e11d951ee302bc7b5b33e077f05220e5a8f25cbe8c9c770d",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_sequential_n128_01/initial_ground_states_006.json": "670aebdf285a14ccc31ad81e83cf418187c04ada1074ed5bc5f755750f4c4e69",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_sequential_n128_01/contacts_006.json": "f7b9a678bc665f2dacc36cb3b36a1fd81aec214bfe5c7c648deab0955b9c085b",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_sequential_n128_01/all_first_episodes_006.npz": "10bc72dabffa71f069faa5a180a6a887280454a6deb18eb4047e2db49dd729d3",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_sequential_n128_01/public_and_actions_006.npz": "a4119640b52a70485542300aec2274419ccadd891f99c67472c2bc57ad214c1c",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_sequential_n128_01/INPUTS.json": "5f34550f47a7a55acd907277c3f4a1d854356da6dcab080f6e87f59d212e8fe1",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin0_first_air_contacts_20261027/check.py": "f8b47e0cdbdd0b02d1d90e64238a33abeb95593ba5a12cb572ce49c7debf8076"
+  },
+  "source_control_replay_pending_overall_owner_check": true,
+  "scope": "Completed search candidate6 only. Four real legal air strings are not attacks or full successes. Whole search, selected policy cold128 and formal panels remain pending.",
+  "new_native_execution": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false
+}
