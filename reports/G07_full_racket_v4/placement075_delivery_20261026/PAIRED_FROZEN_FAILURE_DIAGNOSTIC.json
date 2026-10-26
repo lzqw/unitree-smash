@@ -1,0 +1,2997 @@
+{
+  "checked_at": "2026-10-26T00:29:25.200430+00:00",
+  "source_sha256": {
+    "reports/G07_full_racket_v4/residual_ppo_centered_base8_n2048_iter40_fixed_train128_01/episodes.json": "6916240782c9feb762d05c0b8311bac491c1e0973c34ab2779f9de494e54299e",
+    "reports/G07_full_racket_v4/residual_ppo_centered_placement075_n2048_probe8_fixed_train128_01/episodes.json": "bd60d7e99ee77594a8c02ae606efb1a66928b413fde4353c6e91605bc3e052cc"
+  },
+  "matched_case_scope": "Same originalTRAIN128, zero reset noise and seed724201. Training seed, critic initialization and reward differ; this does not isolate a causal reward effect.",
+  "paired_changes": {
+    "airborne_contact": {
+      "gained": [
+        0,
+        7,
+        9,
+        18,
+        23,
+        26,
+        41,
+        42,
+        43,
+        46,
+        50,
+        71,
+        109
+      ],
+      "lost": [
+        1,
+        12,
+        16,
+        61,
+        77,
+        78,
+        98,
+        121,
+        126
+      ],
+      "retained": [
+        8,
+        25,
+        35,
+        37,
+        47,
+        54,
+        65,
+        81,
+        85,
+        87,
+        95,
+        107,
+        113
+      ]
+    },
+    "conditional_recovery": {
+      "gained": [
+        0,
+        7,
+        9,
+        18,
+        23,
+        41,
+        42,
+        43,
+        46,
+        50,
+        65,
+        85,
+        109
+      ],
+      "lost": [
+        1,
+        16,
+        121,
+        126
+      ],
+      "retained": [
+        8,
+        25,
+        35,
+        47,
+        54,
+        87
+      ]
+    },
+    "attack": {
+      "gained": [
+        23,
+        37,
+        42,
+        85
+      ],
+      "lost": [
+        1,
+        12,
+        121
+      ],
+      "retained": [
+        113
+      ]
+    },
+    "complete": {
+      "gained": [],
+      "lost": [],
+      "retained": []
+    }
+  },
+  "all_current_airborne_attacks": [
+    {
+      "TRAIN": 23,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": false,
+      "attack": true,
+      "crossed_net": true,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 8.028058319535297,
+      "outgoing_velocity_mps": [
+        7.79339075088501,
+        -1.0434532165527344,
+        -1.6198723316192627
+      ],
+      "first_landing_m": [
+        4.414043426513672,
+        -0.43824005126953125,
+        0.025226779282093048
+      ]
+    },
+    {
+      "TRAIN": 37,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": false,
+      "attack": true,
+      "crossed_net": true,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": 8.114351814380484,
+      "outgoing_velocity_mps": [
+        8.014826774597168,
+        -0.762256383895874,
+        -1.0120387077331543
+      ],
+      "first_landing_m": [
+        4.8939971923828125,
+        -0.443572998046875,
+        0.025036152452230453
+      ]
+    },
+    {
+      "TRAIN": 42,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": false,
+      "attack": true,
+      "crossed_net": true,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 8.165157017012193,
+      "outgoing_velocity_mps": [
+        7.979164123535156,
+        -1.1186131238937378,
+        -1.3234174251556396
+      ],
+      "first_landing_m": [
+        4.672740936279297,
+        -0.489288330078125,
+        0.02503305673599243
+      ]
+    },
+    {
+      "TRAIN": 85,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": false,
+      "attack": true,
+      "crossed_net": true,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 8.075182230238175,
+      "outgoing_velocity_mps": [
+        7.744510650634766,
+        -1.8666235208511353,
+        -1.3216805458068848
+      ],
+      "first_landing_m": [
+        4.59147834777832,
+        -0.85491943359375,
+        0.025073232129216194
+      ]
+    },
+    {
+      "TRAIN": 113,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": false,
+      "attack": true,
+      "crossed_net": true,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": 8.287446301315924,
+      "outgoing_velocity_mps": [
+        7.999542236328125,
+        1.174460768699646,
+        -1.81926691532135
+      ],
+      "first_landing_m": [
+        4.390083312988281,
+        0.4947528839111328,
+        0.025218265131115913
+      ]
+    }
+  ],
+  "current_airborne_contact_cases_with_target": [
+    9,
+    26,
+    41,
+    54,
+    109
+  ],
+  "current_airborne_contact_cases_without_recovery": [
+    26,
+    37,
+    71,
+    81,
+    95,
+    107,
+    113
+  ],
+  "current_all128": [
+    {
+      "TRAIN": 0,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": true,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 8.281054200331493,
+      "outgoing_velocity_mps": [
+        8.213977813720703,
+        -0.3408399820327759,
+        -0.9951156973838806
+      ],
+      "first_landing_m": [
+        5.06768798828125,
+        -0.1564178466796875,
+        0.025072479620575905
+      ]
+    },
+    {
+      "TRAIN": 1,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 8.22272055006563,
+      "outgoing_velocity_mps": [
+        7.59472131729126,
+        -2.4325449466705322,
+        -2.0040125846862793
+      ],
+      "first_landing_m": [
+        4.183769226074219,
+        -0.9381484985351562,
+        0.02525249682366848
+      ]
+    },
+    {
+      "TRAIN": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": true,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 8.32342723649843,
+      "outgoing_velocity_mps": [
+        6.433329105377197,
+        -2.514934778213501,
+        -4.644009113311768
+      ],
+      "first_landing_m": null
+    },
+    {
+      "TRAIN": 3,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": true,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 8.143653380288338,
+      "outgoing_velocity_mps": [
+        6.4695024490356445,
+        -1.2788366079330444,
+        -4.777991771697998
+      ],
+      "first_landing_m": null
+    },
+    {
+      "TRAIN": 4,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.0189971923828125,
+        0.045032501220703125,
+        0.025096824392676353
+      ]
+    },
+    {
+      "TRAIN": 5,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 8.218248331427922,
+      "outgoing_velocity_mps": [
+        7.711796283721924,
+        -1.1732453107833862,
+        -2.586754560470581
+      ],
+      "first_landing_m": [
+        4.035301208496094,
+        -0.5072689652442932,
+        0.025185560807585716
+      ]
+    },
+    {
+      "TRAIN": 6,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 8.352410147744738,
+      "outgoing_velocity_mps": [
+        8.174798965454102,
+        -0.46136730909347534,
+        -1.6500173807144165
+      ],
+      "first_landing_m": [
+        4.6827239990234375,
+        -0.16693115234375,
+        0.02516845241189003
+      ]
+    },
+    {
+      "TRAIN": 7,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": true,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 7.375402515731658,
+      "outgoing_velocity_mps": [
+        7.212808609008789,
+        -0.4858880341053009,
+        -1.4614605903625488
+      ],
+      "first_landing_m": [
+        4.301612854003906,
+        -0.3010101318359375,
+        0.025146877393126488
+      ]
+    },
+    {
+      "TRAIN": 8,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": true,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 7.4792194240712675,
+      "outgoing_velocity_mps": [
+        7.327322959899902,
+        -0.9799084067344666,
+        -1.1352713108062744
+      ],
+      "first_landing_m": [
+        4.508544921875,
+        -0.5147247314453125,
+        0.025112617760896683
+      ]
+    },
+    {
+      "TRAIN": 9,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": true,
+      "landed_target": true,
+      "body_landing": false,
+      "speed_mps": 7.096578144401627,
+      "outgoing_velocity_mps": [
+        6.886946201324463,
+        -0.612873911857605,
+        -1.5986803770065308
+      ],
+      "first_landing_m": [
+        3.999176025390625,
+        -0.2795562744140625,
+        0.025224637240171432
+      ]
+    },
+    {
+      "TRAIN": 10,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.4160614013671875,
+        -0.077545166015625,
+        0.02526734583079815
+      ]
+    },
+    {
+      "TRAIN": 11,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": true,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 5.146311065345911,
+      "outgoing_velocity_mps": [
+        -2.87168288230896,
+        -2.23468279838562,
+        3.6392509937286377
+      ],
+      "first_landing_m": null
+    },
+    {
+      "TRAIN": 12,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.2872467041015625,
+        -0.0917510986328125,
+        0.025199588388204575
+      ]
+    },
+    {
+      "TRAIN": 13,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 8.023372798822932,
+      "outgoing_velocity_mps": [
+        7.280452728271484,
+        0.17090561985969543,
+        3.3675377368927
+      ],
+      "first_landing_m": [
+        7.949127197265625,
+        0.16785430908203125,
+        0.0250463355332613
+      ]
+    },
+    {
+      "TRAIN": 14,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": true,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 7.919145136528842,
+      "outgoing_velocity_mps": [
+        4.963406085968018,
+        -0.4121561646461487,
+        -6.156913757324219
+      ],
+      "first_landing_m": null
+    },
+    {
+      "TRAIN": 15,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": true,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 5.6942303042825815,
+      "outgoing_velocity_mps": [
+        -2.4453330039978027,
+        3.8511154651641846,
+        3.40786075592041
+      ],
+      "first_landing_m": null
+    },
+    {
+      "TRAIN": 16,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": true,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 7.271787154157172,
+      "outgoing_velocity_mps": [
+        5.786431312561035,
+        -0.2771631181240082,
+        -4.3953704833984375
+      ],
+      "first_landing_m": null
+    },
+    {
+      "TRAIN": 17,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 8.477990846721443,
+      "outgoing_velocity_mps": [
+        7.533933162689209,
+        2.848268508911133,
+        2.646421432495117
+      ],
+      "first_landing_m": [
+        7.4835205078125,
+        2.4679813385009766,
+        0.025059908628463745
+      ]
+    },
+    {
+      "TRAIN": 18,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": true,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 7.485344440971991,
+      "outgoing_velocity_mps": [
+        7.238527297973633,
+        0.37415164709091187,
+        -1.8692550659179688
+      ],
+      "first_landing_m": [
+        4.151161193847656,
+        0.174774169921875,
+        0.025139987468719482
+      ]
+    },
+    {
+      "TRAIN": 19,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.0474624633789062,
+        0.141876220703125,
+        0.025270560756325722
+      ]
+    },
+    {
+      "TRAIN": 20,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.113189697265625,
+        -0.07656478881835938,
+        0.0250609889626503
+      ]
+    },
+    {
+      "TRAIN": 21,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.6684417724609375,
+        0.2210845947265625,
+        0.025103706866502762
+      ]
+    },
+    {
+      "TRAIN": 22,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -0.9419097900390625,
+        0.2304840087890625,
+        0.025290820747613907
+      ]
+    },
+    {
+      "TRAIN": 23,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": false,
+      "attack": true,
+      "crossed_net": true,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 8.028058319535297,
+      "outgoing_velocity_mps": [
+        7.79339075088501,
+        -1.0434532165527344,
+        -1.6198723316192627
+      ],
+      "first_landing_m": [
+        4.414043426513672,
+        -0.43824005126953125,
+        0.025226779282093048
+      ]
+    },
+    {
+      "TRAIN": 24,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.075714111328125,
+        0.2505226135253906,
+        0.0250383410602808
+      ]
+    },
+    {
+      "TRAIN": 25,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": true,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 7.102392432935761,
+      "outgoing_velocity_mps": [
+        6.860838413238525,
+        -1.3380528688430786,
+        -1.2579702138900757
+      ],
+      "first_landing_m": [
+        4.130832672119141,
+        -0.7305374145507812,
+        0.025118669494986534
+      ]
+    },
+    {
+      "TRAIN": 26,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": true,
+      "landed_target": true,
+      "body_landing": true,
+      "speed_mps": 6.310701573308965,
+      "outgoing_velocity_mps": [
+        6.104595184326172,
+        0.05093958228826523,
+        -1.5988361835479736
+      ],
+      "first_landing_m": [
+        3.6752471923828125,
+        -0.014711380004882812,
+        0.025119207799434662
+      ]
+    },
+    {
+      "TRAIN": 27,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.2191200256347656,
+        0.2281893491744995,
+        0.02518266625702381
+      ]
+    },
+    {
+      "TRAIN": 28,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.3432693481445312,
+        -0.18897056579589844,
+        0.025204401463270187
+      ]
+    },
+    {
+      "TRAIN": 29,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.3368148803710938,
+        -0.3978290557861328,
+        0.025116948410868645
+      ]
+    },
+    {
+      "TRAIN": 30,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.0774154663085938,
+        0.17759323120117188,
+        0.025254009291529655
+      ]
+    },
+    {
+      "TRAIN": 31,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": true,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 5.161390058674561,
+      "outgoing_velocity_mps": [
+        -2.8605902194976807,
+        4.215718746185303,
+        0.8274577856063843
+      ],
+      "first_landing_m": null
+    },
+    {
+      "TRAIN": 32,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.4892616271972656,
+        0.067352294921875,
+        0.02504088543355465
+      ]
+    },
+    {
+      "TRAIN": 33,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 7.595158461607368,
+      "outgoing_velocity_mps": [
+        7.175955772399902,
+        -2.316246747970581,
+        -0.9094458818435669
+      ],
+      "first_landing_m": [
+        4.550601959228516,
+        -1.0782241821289062,
+        0.025211380794644356
+      ]
+    },
+    {
+      "TRAIN": 34,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": true,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 6.979430119675736,
+      "outgoing_velocity_mps": [
+        5.646938800811768,
+        -3.5437355041503906,
+        -2.065542459487915
+      ],
+      "first_landing_m": null
+    },
+    {
+      "TRAIN": 35,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": true,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 7.94459201241204,
+      "outgoing_velocity_mps": [
+        7.747176647186279,
+        -0.3721250891685486,
+        -1.7202671766281128
+      ],
+      "first_landing_m": [
+        4.415264129638672,
+        -0.2565155029296875,
+        0.0251146350055933
+      ]
+    },
+    {
+      "TRAIN": 36,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": true,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": 5.851160648969637,
+      "outgoing_velocity_mps": [
+        -0.2323453426361084,
+        5.417954444885254,
+        2.1972405910491943
+      ],
+      "first_landing_m": null
+    },
+    {
+      "TRAIN": 37,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": false,
+      "attack": true,
+      "crossed_net": true,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": 8.114351814380484,
+      "outgoing_velocity_mps": [
+        8.014826774597168,
+        -0.762256383895874,
+        -1.0120387077331543
+      ],
+      "first_landing_m": [
+        4.8939971923828125,
+        -0.443572998046875,
+        0.025036152452230453
+      ]
+    },
+    {
+      "TRAIN": 38,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.1681671142578125,
+        0.25260475277900696,
+        0.025067633017897606
+      ]
+    },
+    {
+      "TRAIN": 39,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": 7.336564215897317,
+      "outgoing_velocity_mps": [
+        6.201392650604248,
+        3.7646076679229736,
+        1.0934499502182007
+      ],
+      "first_landing_m": [
+        5.237819671630859,
+        2.5160465240478516,
+        0.025131555274128914
+      ]
+    },
+    {
+      "TRAIN": 40,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.0076370239257812,
+        -0.3315238952636719,
+        0.02504575252532959
+      ]
+    },
+    {
+      "TRAIN": 41,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": true,
+      "landed_target": true,
+      "body_landing": false,
+      "speed_mps": 7.425756280395975,
+      "outgoing_velocity_mps": [
+        6.87090539932251,
+        -1.794816493988037,
+        -2.170518159866333
+      ],
+      "first_landing_m": [
+        3.7759170532226562,
+        -0.8103446960449219,
+        0.02521713823080063
+      ]
+    },
+    {
+      "TRAIN": 42,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": false,
+      "attack": true,
+      "crossed_net": true,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 8.165157017012193,
+      "outgoing_velocity_mps": [
+        7.979164123535156,
+        -1.1186131238937378,
+        -1.3234174251556396
+      ],
+      "first_landing_m": [
+        4.672740936279297,
+        -0.489288330078125,
+        0.02503305673599243
+      ]
+    },
+    {
+      "TRAIN": 43,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": true,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 7.644714457427183,
+      "outgoing_velocity_mps": [
+        7.511606693267822,
+        -0.5390043258666992,
+        -1.314115047454834
+      ],
+      "first_landing_m": [
+        4.518817901611328,
+        -0.25206756591796875,
+        0.025013595819473267
+      ]
+    },
+    {
+      "TRAIN": 44,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.4161853790283203,
+        0.28481292724609375,
+        0.025041401386260986
+      ]
+    },
+    {
+      "TRAIN": 45,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 7.283741502512411,
+      "outgoing_velocity_mps": [
+        4.992225170135498,
+        4.033010482788086,
+        3.444619655609131
+      ],
+      "first_landing_m": [
+        5.833637237548828,
+        3.8787879943847656,
+        0.02505584992468357
+      ]
+    },
+    {
+      "TRAIN": 46,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": true,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 7.715962140984503,
+      "outgoing_velocity_mps": [
+        7.501438140869141,
+        -1.564618706703186,
+        -0.9035850167274475
+      ],
+      "first_landing_m": [
+        4.724296569824219,
+        -0.7654647827148438,
+        0.025186369195580482
+      ]
+    },
+    {
+      "TRAIN": 47,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": true,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 6.878874632442651,
+      "outgoing_velocity_mps": [
+        6.627771377563477,
+        -1.450786828994751,
+        -1.1343634128570557
+      ],
+      "first_landing_m": [
+        4.139009475708008,
+        -0.8049964904785156,
+        0.025047119706869125
+      ]
+    },
+    {
+      "TRAIN": 48,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.1522598266601562,
+        0.09282207489013672,
+        0.02522944286465645
+      ]
+    },
+    {
+      "TRAIN": 49,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.4622325897216797,
+        -0.126322939991951,
+        0.02501671016216278
+      ]
+    },
+    {
+      "TRAIN": 50,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": true,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 7.477989119466198,
+      "outgoing_velocity_mps": [
+        7.341922760009766,
+        -0.2486211210489273,
+        -1.398098349571228
+      ],
+      "first_landing_m": [
+        4.365329742431641,
+        -0.12325000762939453,
+        0.025095580145716667
+      ]
+    },
+    {
+      "TRAIN": 51,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": true,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 5.406640879354477,
+      "outgoing_velocity_mps": [
+        -1.2930243015289307,
+        5.1392927169799805,
+        -1.0712255239486694
+      ],
+      "first_landing_m": null
+    },
+    {
+      "TRAIN": 52,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": true,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 5.8302489968294395,
+      "outgoing_velocity_mps": [
+        -1.383548617362976,
+        5.639732837677002,
+        -0.5205863118171692
+      ],
+      "first_landing_m": null
+    },
+    {
+      "TRAIN": 53,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 6.195093878947676,
+      "outgoing_velocity_mps": [
+        4.330532550811768,
+        4.409927845001221,
+        0.4221521019935608
+      ],
+      "first_landing_m": [
+        3.671398162841797,
+        2.6546249389648438,
+        0.025177577510476112
+      ]
+    },
+    {
+      "TRAIN": 54,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": true,
+      "landed_target": true,
+      "body_landing": false,
+      "speed_mps": 6.680352257705564,
+      "outgoing_velocity_mps": [
+        6.480436325073242,
+        -0.9221895337104797,
+        -1.3343979120254517
+      ],
+      "first_landing_m": [
+        3.927572250366211,
+        -0.49376678466796875,
+        0.025171777233481407
+      ]
+    },
+    {
+      "TRAIN": 55,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.1872096061706543,
+        0.19080352783203125,
+        0.02511134184896946
+      ]
+    },
+    {
+      "TRAIN": 56,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": 6.412645552426007,
+      "outgoing_velocity_mps": [
+        1.1483354568481445,
+        5.231921672821045,
+        3.5256693363189697
+      ],
+      "first_landing_m": [
+        2.15380859375,
+        5.158596038818359,
+        0.02516191080212593
+      ]
+    },
+    {
+      "TRAIN": 57,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 7.817882037981357,
+      "outgoing_velocity_mps": [
+        7.369396209716797,
+        2.592353343963623,
+        0.3016342222690582
+      ],
+      "first_landing_m": [
+        5.409829139709473,
+        1.6123619079589844,
+        0.025047825649380684
+      ]
+    },
+    {
+      "TRAIN": 58,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -0.9904451370239258,
+        0.011735916137695312,
+        0.02516922354698181
+      ]
+    },
+    {
+      "TRAIN": 59,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 6.3663362844584315,
+      "outgoing_velocity_mps": [
+        6.167344093322754,
+        -0.39644569158554077,
+        -1.5287038087844849
+      ],
+      "first_landing_m": [
+        3.761357307434082,
+        -0.12263107299804688,
+        0.025070900097489357
+      ]
+    },
+    {
+      "TRAIN": 60,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.3414320945739746,
+        0.09681987017393112,
+        0.025010092183947563
+      ]
+    },
+    {
+      "TRAIN": 61,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": true,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": 6.179081503742518,
+      "outgoing_velocity_mps": [
+        3.166922092437744,
+        0.982872486114502,
+        -5.213982582092285
+      ],
+      "first_landing_m": null
+    },
+    {
+      "TRAIN": 62,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.332418441772461,
+        0.4117240905761719,
+        0.025115234777331352
+      ]
+    },
+    {
+      "TRAIN": 63,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.354811668395996,
+        -0.07180023193359375,
+        0.025052698329091072
+      ]
+    },
+    {
+      "TRAIN": 64,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.1920347213745117,
+        0.409149169921875,
+        0.025214694440364838
+      ]
+    },
+    {
+      "TRAIN": 65,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": true,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 7.835837465310631,
+      "outgoing_velocity_mps": [
+        7.6299872398376465,
+        -0.5035610198974609,
+        -1.7117446660995483
+      ],
+      "first_landing_m": [
+        4.368592262268066,
+        -0.37158966064453125,
+        0.025045422837138176
+      ]
+    },
+    {
+      "TRAIN": 66,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.5621709823608398,
+        -0.27387237548828125,
+        0.025206604972481728
+      ]
+    },
+    {
+      "TRAIN": 67,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 6.452661029997345,
+      "outgoing_velocity_mps": [
+        4.93487548828125,
+        4.149070739746094,
+        0.26277419924736023
+      ],
+      "first_landing_m": [
+        3.9211578369140625,
+        2.5543975830078125,
+        0.025184934958815575
+      ]
+    },
+    {
+      "TRAIN": 68,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -0.6347036361694336,
+        -0.37847900390625,
+        0.02526264637708664
+      ]
+    },
+    {
+      "TRAIN": 69,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.4342317581176758,
+        0.09877395629882812,
+        0.02502741850912571
+      ]
+    },
+    {
+      "TRAIN": 70,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": 5.151784583264031,
+      "outgoing_velocity_mps": [
+        4.816107273101807,
+        -1.3529562950134277,
+        1.2310582399368286
+      ],
+      "first_landing_m": [
+        4.067935466766357,
+        -0.8785991668701172,
+        0.025231128558516502
+      ]
+    },
+    {
+      "TRAIN": 71,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": true,
+      "actual_racket_contact": true,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": 3.3136024923145637,
+      "outgoing_velocity_mps": [
+        3.0020337104797363,
+        0.49901124835014343,
+        1.311008334159851
+      ],
+      "first_landing_m": null
+    },
+    {
+      "TRAIN": 72,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": 6.2530099334901985,
+      "outgoing_velocity_mps": [
+        4.1235432624816895,
+        4.695686340332031,
+        0.21691930294036865
+      ],
+      "first_landing_m": [
+        3.4926819801330566,
+        2.7328014373779297,
+        0.025013362988829613
+      ]
+    },
+    {
+      "TRAIN": 73,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.0495014190673828,
+        -0.08294105529785156,
+        0.025173991918563843
+      ]
+    },
+    {
+      "TRAIN": 74,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.4481735229492188,
+        0.4968719482421875,
+        0.02505580149590969
+      ]
+    },
+    {
+      "TRAIN": 75,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 7.342311192704604,
+      "outgoing_velocity_mps": [
+        5.2557373046875,
+        3.3324782848358154,
+        3.896324872970581
+      ],
+      "first_landing_m": [
+        6.36669397354126,
+        3.4023666381835938,
+        0.025144170969724655
+      ]
+    },
+    {
+      "TRAIN": 76,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -2.0088605880737305,
+        -0.43853759765625,
+        0.025226334109902382
+      ]
+    },
+    {
+      "TRAIN": 77,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": true,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": 6.102813703773358,
+      "outgoing_velocity_mps": [
+        5.913410663604736,
+        1.0356365442276,
+        -1.0969805717468262
+      ],
+      "first_landing_m": null
+    },
+    {
+      "TRAIN": 78,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 7.139829097257438,
+      "outgoing_velocity_mps": [
+        4.791191577911377,
+        2.7211172580718994,
+        4.540612697601318
+      ],
+      "first_landing_m": [
+        6.362825393676758,
+        3.0797462463378906,
+        0.025262843817472458
+      ]
+    },
+    {
+      "TRAIN": 79,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.0048637390136719,
+        0.01326751708984375,
+        0.025048259645700455
+      ]
+    },
+    {
+      "TRAIN": 80,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": true,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 4.902995463342362,
+      "outgoing_velocity_mps": [
+        -3.4682934284210205,
+        3.2301082611083984,
+        1.2556694746017456
+      ],
+      "first_landing_m": null
+    },
+    {
+      "TRAIN": 81,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": true,
+      "actual_racket_contact": true,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 5.896560380844138,
+      "outgoing_velocity_mps": [
+        5.764660835266113,
+        0.13668493926525116,
+        -1.2326503992080688
+      ],
+      "first_landing_m": null
+    },
+    {
+      "TRAIN": 82,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.3669910430908203,
+        -0.0970606654882431,
+        0.02509060502052307
+      ]
+    },
+    {
+      "TRAIN": 83,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.2605609893798828,
+        0.5107669830322266,
+        0.025270257145166397
+      ]
+    },
+    {
+      "TRAIN": 84,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.3148441314697266,
+        -0.2219066619873047,
+        0.025274910032749176
+      ]
+    },
+    {
+      "TRAIN": 85,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": false,
+      "attack": true,
+      "crossed_net": true,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 8.075182230238175,
+      "outgoing_velocity_mps": [
+        7.744510650634766,
+        -1.8666235208511353,
+        -1.3216805458068848
+      ],
+      "first_landing_m": [
+        4.59147834777832,
+        -0.85491943359375,
+        0.025073232129216194
+      ]
+    },
+    {
+      "TRAIN": 86,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -0.7453594207763672,
+        -0.22574615478515625,
+        0.025120608508586884
+      ]
+    },
+    {
+      "TRAIN": 87,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": true,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 7.691766103853768,
+      "outgoing_velocity_mps": [
+        7.395267963409424,
+        -0.16429395973682404,
+        -2.108621597290039
+      ],
+      "first_landing_m": [
+        4.038082122802734,
+        -0.16179656982421875,
+        0.025238413363695145
+      ]
+    },
+    {
+      "TRAIN": 88,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 7.682523398239346,
+      "outgoing_velocity_mps": [
+        7.588425636291504,
+        -0.8732647895812988,
+        -0.8212007880210876
+      ],
+      "first_landing_m": [
+        4.867992401123047,
+        -0.56134033203125,
+        0.025158146396279335
+      ]
+    },
+    {
+      "TRAIN": 89,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -2.3237266540527344,
+        0.04503631591796875,
+        0.025066860020160675
+      ]
+    },
+    {
+      "TRAIN": 90,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.2523078918457031,
+        0.15140533447265625,
+        0.02527485229074955
+      ]
+    },
+    {
+      "TRAIN": 91,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": true,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 5.648616741154841,
+      "outgoing_velocity_mps": [
+        -0.7823359370231628,
+        5.379424571990967,
+        1.5351263284683228
+      ],
+      "first_landing_m": null
+    },
+    {
+      "TRAIN": 92,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 5.720166131294113,
+      "outgoing_velocity_mps": [
+        4.771600246429443,
+        1.026578664779663,
+        2.9829964637756348
+      ],
+      "first_landing_m": [
+        5.3184814453125,
+        0.9866056442260742,
+        0.025086121633648872
+      ]
+    },
+    {
+      "TRAIN": 93,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -0.9164199829101562,
+        0.5819080471992493,
+        0.02511954866349697
+      ]
+    },
+    {
+      "TRAIN": 94,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.635040283203125,
+        0.4780235290527344,
+        0.025232696905732155
+      ]
+    },
+    {
+      "TRAIN": 95,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": true,
+      "actual_racket_contact": true,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 6.54835107041596,
+      "outgoing_velocity_mps": [
+        6.189554691314697,
+        -2.0181970596313477,
+        -0.7051206231117249
+      ],
+      "first_landing_m": null
+    },
+    {
+      "TRAIN": 96,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": 7.103915906315727,
+      "outgoing_velocity_mps": [
+        6.482305526733398,
+        -2.8850631713867188,
+        0.3489222824573517
+      ],
+      "first_landing_m": [
+        4.7344970703125,
+        -1.685272216796875,
+        0.025000933557748795
+      ]
+    },
+    {
+      "TRAIN": 97,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.6512031555175781,
+        0.40032196044921875,
+        0.02518833801150322
+      ]
+    },
+    {
+      "TRAIN": 98,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 5.602609739545177,
+      "outgoing_velocity_mps": [
+        5.349185466766357,
+        -1.6242855787277222,
+        0.3703337609767914
+      ],
+      "first_landing_m": [
+        3.970508575439453,
+        -1.0732650756835938,
+        0.025114241987466812
+      ]
+    },
+    {
+      "TRAIN": 99,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": 6.696699361943401,
+      "outgoing_velocity_mps": [
+        6.424241542816162,
+        -1.866426944732666,
+        0.3022472560405731
+      ],
+      "first_landing_m": [
+        4.838809967041016,
+        -1.0670318603515625,
+        0.025205744430422783
+      ]
+    },
+    {
+      "TRAIN": 100,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.0008506774902344,
+        0.5952835083007812,
+        0.02519921585917473
+      ]
+    },
+    {
+      "TRAIN": 101,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -2.0769920349121094,
+        0.18415069580078125,
+        0.02523396909236908
+      ]
+    },
+    {
+      "TRAIN": 102,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": true,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 8.996988234519021,
+      "outgoing_velocity_mps": [
+        6.1222243309021,
+        -2.8287646770477295,
+        -5.955019474029541
+      ],
+      "first_landing_m": null
+    },
+    {
+      "TRAIN": 103,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": true,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 5.161778148953869,
+      "outgoing_velocity_mps": [
+        -0.12064991146326065,
+        5.157533645629883,
+        0.1710086315870285
+      ],
+      "first_landing_m": null
+    },
+    {
+      "TRAIN": 104,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.7486763000488281,
+        -0.10047417879104614,
+        0.025106461718678474
+      ]
+    },
+    {
+      "TRAIN": 105,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": 6.067398071035201,
+      "outgoing_velocity_mps": [
+        2.189896583557129,
+        5.640610694885254,
+        0.44853460788726807
+      ],
+      "first_landing_m": [
+        2.3652687072753906,
+        3.3525009155273438,
+        0.025099188089370728
+      ]
+    },
+    {
+      "TRAIN": 106,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": 4.662217707386501,
+      "outgoing_velocity_mps": [
+        0.3650090992450714,
+        4.331193447113037,
+        1.6863586902618408
+      ],
+      "first_landing_m": [
+        1.2527046203613281,
+        3.3009490966796875,
+        0.025165248662233353
+      ]
+    },
+    {
+      "TRAIN": 107,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": true,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": 6.691798871247276,
+      "outgoing_velocity_mps": [
+        6.519660472869873,
+        -0.951332151889801,
+        -1.1701139211654663
+      ],
+      "first_landing_m": [
+        4.577625274658203,
+        -0.7983322143554688,
+        0.025048181414604187
+      ]
+    },
+    {
+      "TRAIN": 108,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.0012664794921875,
+        0.0555877685546875,
+        0.025284241884946823
+      ]
+    },
+    {
+      "TRAIN": 109,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": true,
+      "landed_target": true,
+      "body_landing": false,
+      "speed_mps": 6.49945626377092,
+      "outgoing_velocity_mps": [
+        5.973820686340332,
+        -1.3859925270080566,
+        -2.153003215789795
+      ],
+      "first_landing_m": [
+        3.431507110595703,
+        -0.6287689208984375,
+        0.025059768930077553
+      ]
+    },
+    {
+      "TRAIN": 110,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.8809356689453125,
+        0.06217193603515625,
+        0.025102242827415466
+      ]
+    },
+    {
+      "TRAIN": 111,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.8464126586914062,
+        0.00102996826171875,
+        0.025029361248016357
+      ]
+    },
+    {
+      "TRAIN": 112,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.7526473999023438,
+        0.06925201416015625,
+        0.02523120492696762
+      ]
+    },
+    {
+      "TRAIN": 113,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": false,
+      "attack": true,
+      "crossed_net": true,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": 8.287446301315924,
+      "outgoing_velocity_mps": [
+        7.999542236328125,
+        1.174460768699646,
+        -1.81926691532135
+      ],
+      "first_landing_m": [
+        4.390083312988281,
+        0.4947528839111328,
+        0.025218265131115913
+      ]
+    },
+    {
+      "TRAIN": 114,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.145751953125,
+        -0.5691509246826172,
+        0.02510220557451248
+      ]
+    },
+    {
+      "TRAIN": 115,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.2441787719726562,
+        0.4179365932941437,
+        0.025165628641843796
+      ]
+    },
+    {
+      "TRAIN": 116,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": true,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": null
+    },
+    {
+      "TRAIN": 117,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.1320266723632812,
+        0.44751739501953125,
+        0.02525235153734684
+      ]
+    },
+    {
+      "TRAIN": 118,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 6.988461306198343,
+      "outgoing_velocity_mps": [
+        6.719676971435547,
+        1.15266752243042,
+        -1.5348910093307495
+      ],
+      "first_landing_m": [
+        3.9550018310546875,
+        0.46950531005859375,
+        0.025179065763950348
+      ]
+    },
+    {
+      "TRAIN": 119,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -2.1894760131835938,
+        -0.32238006591796875,
+        0.025070741772651672
+      ]
+    },
+    {
+      "TRAIN": 120,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -0.6925048828125,
+        0.29742431640625,
+        0.025246446952223778
+      ]
+    },
+    {
+      "TRAIN": 121,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": true,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": 8.28684306067689,
+      "outgoing_velocity_mps": [
+        7.189082622528076,
+        -1.2183197736740112,
+        -3.937582492828369
+      ],
+      "first_landing_m": null
+    },
+    {
+      "TRAIN": 122,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.586212158203125,
+        -0.6436386108398438,
+        0.025060223415493965
+      ]
+    },
+    {
+      "TRAIN": 123,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.03369140625,
+        0.2712898254394531,
+        0.025104088708758354
+      ]
+    },
+    {
+      "TRAIN": 124,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.1339111328125,
+        0.46126556396484375,
+        0.025278359651565552
+      ]
+    },
+    {
+      "TRAIN": 125,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": true,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": 7.3949984918575895,
+      "outgoing_velocity_mps": [
+        6.127599239349365,
+        -0.09990307688713074,
+        -4.138665199279785
+      ],
+      "first_landing_m": null
+    },
+    {
+      "TRAIN": 126,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": true,
+      "actual_racket_contact": true,
+      "frame_hit": true,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": true,
+      "speed_mps": 5.336121577521214,
+      "outgoing_velocity_mps": [
+        -0.32697591185569763,
+        5.111135959625244,
+        -1.4978549480438232
+      ],
+      "first_landing_m": null
+    },
+    {
+      "TRAIN": 127,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "fault": false,
+      "actual_racket_contact": false,
+      "frame_hit": false,
+      "attack": false,
+      "crossed_net": false,
+      "landed_target": false,
+      "body_landing": false,
+      "speed_mps": null,
+      "outgoing_velocity_mps": null,
+      "first_landing_m": [
+        -1.1840667724609375,
+        -0.6944217681884766,
+        0.025047030299901962
+      ]
+    }
+  ],
+  "implication": "All five qualifying airborne attacks cross legally but first land beyond the original4m target boundary; three recover. Recovery improved, while both contact coverage and target placement remain unresolved. Wait for the already running strict continuation frozen assessment before selecting another method.",
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
