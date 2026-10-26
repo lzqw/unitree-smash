@@ -1,0 +1,35 @@
+{
+  "reviewed_at": "2026-10-26T00:13:08.165021+00:00",
+  "reason": "First-update lineage check must permit legitimately closed early episodes and wait for the atomically written episode file. Final complete chain check still requires all lanes. No task/physical/acceptance change.",
+  "actual_old_partial_boundaries_checked": [
+    {
+      "actual_old_boundary": 9,
+      "lanes": 2048,
+      "closed_episodes": 0,
+      "initial_episode_id_min": 1,
+      "initial_episode_id_max": 3,
+      "every_source_inclusive_to_final_exclusive_chain_exact": true
+    },
+    {
+      "actual_old_boundary": 11,
+      "lanes": 2048,
+      "closed_episodes": 1271,
+      "initial_episode_id_min": 1,
+      "initial_episode_id_max": 3,
+      "every_source_inclusive_to_final_exclusive_chain_exact": true
+    }
+  ],
+  "actual_old_complete_resume_chain_check": {
+    "lanes": 2048,
+    "closed_episodes": 17156,
+    "initial_episode_id_min": 1,
+    "initial_episode_id_max": 3,
+    "every_source_inclusive_to_final_exclusive_chain_exact": true
+  },
+  "new_native_job_started": false,
+  "preserved_plan_v1_sha256": "18912baeec2481c26e02b649e199de0815fcd098eedb0e1c93d006f7a0bf408e",
+  "reviewed_observer_sha256": "69e81df8dff6744cc2a95f9640f5d180e6f46a8e9b0023474147f3a5113ed146",
+  "formal_acceptance": false,
+  "goal_complete": false,
+  "observer_startup_pins_actual_plan_bytes": true
+}
