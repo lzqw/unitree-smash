@@ -50,26 +50,12 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/centered_residual_pilot8_queue02/FIXED_TRAIN128_RESULT.json",
-      "notes": "075中间16版原128已独立重算0完整/25空中/15条件恢复(60%)/0攻击；24版为0/22/12(54.55%)/2攻击，均NF0。原GPU0当前比较32版，待实际退出后完成十来源选版和下一候选；主285输入保持。5个真实成功回合的闭环模仿CPU实试，拟合动作MSE降10.21%，但整回合留一5折均退化、均值误差升9.45%，已保存代码/权重/负结果并暂不选为原生候选。固定7436实际输入的actor/归一化分解显示归一化替换函数变化RMS约为总变化1.7%至2.6%，未做混合actor原生因果实验。完整1.213GB训练/权重/资产/最终40冻结数据包已上传、独立分段新下载SHA/CRC/964payload全部通过，新目录CPU恢复与17轨迹审计通过；86秒第40版视频已交付。原A/B各200及50/70/85仍未通过。",
+      "notes": "075五版原128比较已全部完成：8版0完整/26空中/19恢复/5攻击；16版0/25/15/0；24版0/22/12/2；32版0/30/18/4；40版0/22/10/0，均NF0。既定恢复优先排序选择8版，再与旧025五版共十来源独立复算仍选择0758。原实际源码持有进程已退出且账本空，已仅集成两项声明运行时变更并通过33项CPU检查，1600条选源公共输入初始物理均值误差0；新leg06阶段保留actor/RMS，fresh critic/Adam/RNG/地面状态，预登记2048×8更新+全128及视频，目前尚未原生启动。原A/B各200及50/70/85仍未通过。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
-      "active_gpu_jobs": [
-        {
-          "state": "RUNNING_FIXED_INTERMEDIATE_TRAIN128",
-          "observed_at": "2026-10-26T04:10:01.032602+00:00",
-          "workflow_pid": 1744903,
-          "guard_pid": 1764820,
-          "native_child_pid": 1764833,
-          "gpu": 0,
-          "iteration": 32,
-          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_placement075_diag_iter32_fixed_train128_01",
-          "source_policy_sha256": "0fa2b918c284b9663bc304f1b9c3db1e973504a677e121fa23352d12a017941f",
-          "verified_live_processes": true,
-          "formal_acceptance": false
-        }
-      ],
+      "active_gpu_jobs": [],
       "queued_native_sequence": {
         "state_file": "reports/G07_full_racket_v4/residual_eval_queue_1250/state.json",
         "pid": 1560842,
@@ -1573,7 +1559,7 @@
         "csv_export_pending_parent_completion": true,
         "frozen_policy_performance": false
       },
-      "current_native_workflow_state": "RUNNING_FIXED_INTERMEDIATE_TRAIN128",
+      "current_native_workflow_state": "PREPARED_LEG06_PLACEMENT075_PILOT8",
       "latest_completed_fixed_TRAIN128": {
         "run": "residual_ppo_centered_placement075_diag_iter24_fixed_train128_01",
         "complete": 0,
@@ -4185,6 +4171,19 @@
           "state_file": "reports/G07_full_racket_v4/centered_placement075_resume32_queue02/state.json",
           "source_policy_sha256": "bf8ff2a1789f7aba528446b65e90c13d6b219317632dfe667be6b7452662b828",
           "formal_acceptance": false
+        },
+        {
+          "state": "RUNNING_FIXED_INTERMEDIATE_TRAIN128",
+          "observed_at": "2026-10-26T04:10:01.032602+00:00",
+          "workflow_pid": 1744903,
+          "guard_pid": 1764820,
+          "native_child_pid": 1764833,
+          "gpu": 0,
+          "iteration": 32,
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_placement075_diag_iter32_fixed_train128_01",
+          "source_policy_sha256": "0fa2b918c284b9663bc304f1b9c3db1e973504a677e121fa23352d12a017941f",
+          "verified_live_processes": true,
+          "formal_acceptance": false
         }
       ],
       "native_joint_placement_first_update": {
@@ -5056,16 +5055,15 @@
         "archive_proof": "reports/G07_full_racket_v4/joint40_fixed_delivery_20261026/ARCHIVE.json"
       },
       "current_native_workflow": {
-        "state": "RUNNING_FIXED_INTERMEDIATE_TRAIN128",
-        "observed_at": "2026-10-26T04:10:01.032602+00:00",
-        "workflow_pid": 1744903,
-        "guard_pid": 1764820,
-        "native_child_pid": 1764833,
-        "gpu": 0,
-        "iteration": 32,
-        "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_placement075_diag_iter32_fixed_train128_01",
-        "source_policy_sha256": "0fa2b918c284b9663bc304f1b9c3db1e973504a677e121fa23352d12a017941f",
-        "verified_live_processes": true,
+        "state": "PREPARED_LEG06_PLACEMENT075_PILOT8",
+        "observed_at": "2026-10-26T04:29:24.238546+00:00",
+        "selected_source": "placement075_stage8",
+        "source_policy_sha256": "66c93b9f2bfd1f65812ca230312a45cda1d11f59e4a6f076ebdd98ae3c88a3b5",
+        "source_actor_RMS_count": 12582912,
+        "actual_CPU_source_witness_rows": 1600,
+        "physical_mean_max_error_rad": 0.0,
+        "CPU_tests_passed": 33,
+        "new_native_execution": false,
         "formal_acceptance": false
       },
       "completed_causal_tangent_probes": {
@@ -6864,7 +6862,7 @@
         "formal_acceptance": false
       },
       "queued_placement075_intermediate_selection": {
-        "state": "RUNNING_FIXED_INTERMEDIATE_TRAIN128",
+        "state": "COMPLETED_INTERMEDIATE_SELECTION",
         "observer_pid": 1744903,
         "verified_live_now": true,
         "observed_at": "2026-10-26T04:10:01.032602+00:00",
@@ -6883,7 +6881,10 @@
         "new_GPU_job_started": true,
         "formal_acceptance": false,
         "iteration": 32,
-        "actual_parent_exited": true
+        "actual_parent_exited": true,
+        "actual_observer_exited": true,
+        "selected_iteration": 8,
+        "all_five_original128_completed": true
       },
       "latest_placement075_action_authority": {
         "report": "reports/G07_full_racket_v4/placement075_action_authority_20261026/REPORT.md",
@@ -6898,7 +6899,7 @@
         "formal_acceptance": false
       },
       "optional_leg06_after075_intermediates_candidate": {
-        "state": "CPU_PREPARED_NOT_SELECTED_NOT_MAIN_INTEGRATED_NOT_NATIVE_RUN",
+        "state": "MAIN_INTEGRATED_CPU_CHECKED_PREDECLARED_NOT_YET_NATIVE_RUN",
         "branch": "g07-centered-legscale-transfer-v4-20261026",
         "commit": "a4513b6",
         "report": "https://github.com/lzqw/unitree-smash/blob/a4513b6/reports/G07_full_racket_v4/centered_leg06_after075_intermediates_pilot8_queue01/REPORT.md",
@@ -6915,9 +6916,12 @@
         "prior_six_and_seven_source_declarations_preserved": true,
         "new_native_execution": false,
         "formal_acceptance": false,
-        "actual_known_measured_sources_now": 9,
-        "actual_pending_source_now": "placement075_stage32",
-        "selected": false
+        "actual_known_measured_sources_now": 10,
+        "actual_pending_source_now": null,
+        "selected": true,
+        "selected_source": "placement075_stage8",
+        "main_runtime_integrated": true,
+        "plan": "reports/G07_full_racket_v4/centered_leg06_after075_intermediates_pilot8_queue01/PREDECLARED_PLAN.json"
       },
       "placement075_intermediate_CPU_delivery": {
         "checked_at": "2026-10-26T01:59:47.200921+00:00",
@@ -7323,7 +7327,8 @@
         "source_policy_sha256": "66c93b9f2bfd1f65812ca230312a45cda1d11f59e4a6f076ebdd98ae3c88a3b5"
       },
       "latest_completed_placement075_intermediate": {
-        "iteration": 24,
+        "checked_at": "2026-10-26T04:26:18.741486+00:00",
+        "iteration": 32,
         "summary": {
           "episodes": 128,
           "distinct_TRAIN_indices": [
@@ -7459,16 +7464,16 @@
           "distinct_cases": 128,
           "complete": 0,
           "complete_success_rate": 0.0,
-          "airborne_contacts": 22,
-          "airborne_contact_rate": 0.171875,
-          "conditional_recovery_count": 12,
-          "conditional_recovery_rate": 0.5454545454545454,
+          "airborne_contacts": 30,
+          "airborne_contact_rate": 0.234375,
+          "conditional_recovery_count": 18,
+          "conditional_recovery_rate": 0.6,
           "numerical_failures": 0,
-          "actual_racket_contacts": 70,
-          "attack_outgoing": 2,
-          "crossed_net": 17,
-          "landed_legal_court": 16,
-          "landed_target": 4,
+          "actual_racket_contacts": 71,
+          "attack_outgoing": 4,
+          "crossed_net": 25,
+          "landed_legal_court": 24,
+          "landed_target": 3,
           "fault_counts": {
             "robot_net_fault": 0,
             "body_ball_fault": 0,
@@ -7478,16 +7483,55 @@
             "body_over_net_fault": 0,
             "under_net_obstruction_fault": 0,
             "engineering_body_crossing": 1,
-            "bad_return_fault": 3,
-            "net_blocked_fault": 19
+            "bad_return_fault": 2,
+            "net_blocked_fault": 17
           },
           "formal_eligible": false,
           "formal_acceptance": false,
           "formal_cases_read": false,
           "scope": "Frozen TRAIN cases only; diagnostic performance of one fixed policy, not an A/B panel score."
         },
-        "evidence": "reports/G07_full_racket_v4/placement075_intermediate_actual_results_20261026/ACTUAL24_INDEPENDENT_CHECK.json",
-        "formal_acceptance": false
+        "policy_sha256": "0fa2b918c284b9663bc304f1b9c3db1e973504a677e121fa23352d12a017941f",
+        "job": {
+          "goal": "G07",
+          "budget_window": "g07-full-racket-unlimited-20261024",
+          "git_sha": "96140e248356a028b88447b14d42d96c908b33d1",
+          "command": [
+            "/home/autodrive/Isaac/env_isaaclab/bin/python",
+            "/home/autodrive/LZQW/unitree_smash/scripts/evaluate_full_racket_train_v4.py",
+            "--output",
+            "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_placement075_diag_iter32_fixed_train128_01",
+            "--checkpoint",
+            "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/centered_placement075_intermediate_selection_queue01/exports/iter32/policy.pt",
+            "--noise",
+            "none",
+            "--seed",
+            "724201",
+            "--headless"
+          ],
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_placement075_diag_iter32_fixed_train128_01",
+          "gpu": 0,
+          "status": "SUCCEEDED",
+          "charged_gpu_hours": 0.3028044134619348,
+          "charged_env_steps": 102400,
+          "started_at": "2026-10-26T04:06:55.819376+00:00",
+          "pid": 1764820,
+          "original_authorization": "g07-full-racket-unlimited-20261024",
+          "authorization_started_at": "2026-10-24T01:53:52.256487+00:00",
+          "authorization_deadline": null,
+          "child_pid": 1764833,
+          "exit_code": 0,
+          "timed_out": false,
+          "receipt_present": true,
+          "elapsed_s": 1090.0958884629654,
+          "finished_at": "2026-10-26T04:25:05.922910+00:00"
+        },
+        "full_original128_recomputed": true,
+        "zero_noise": true,
+        "seed": 724201,
+        "formal_cases_read": false,
+        "formal_acceptance": false,
+        "goal_complete": false
       },
       "successful_episode_imitation_CPU_diagnostic": {
         "state": "CPU_CANDIDATE_NOT_SELECTED_FOR_NATIVE_PILOT",
