@@ -16,6 +16,8 @@
 
 [新origin0全身残差训练/独立评估接口](reports/G07_full_racket_v4/origin0_fresh_residual_interface_20261027/REPORT.md)已实现并上传；658真实公共输入上新零残差对源指令差0，CPU对原GPU最大3.09944e-6，原5e-4容差保持，4项CLI检查通过。尚未安装或启动新Native训练，完整冷源正向准入与真实训练/冻结评估待后续执行。GPU0前五项均0完整/0合格空中拍线、NF0，继续第6项；当前471输入与已登记全身时序/恢复后续队列保持。
 
+[全身比较等待队列已在GPU启动前修正参数拼接问题](reports/G07_full_racket_v4/gain_body_after_prepose_queue02/REPORT.md)，原1891402与原程序/PLAN保留，替代owner1895642实际等待且无子进程，当前原生1884488继续。[新15更新全身残差训练＋冻结原128后续流程](reports/G07_full_racket_v4/origin0_residual_after_gain_body_queue01/REPORT.md)已由owner1896271实际等待；482输入保持，真实源绑定和正向冷源CPU核验通过后才会用GPU0启动，尚无新训练成绩。原物理、所有案例及正式50/70/85门槛保持。
+
 以下为历史进展记录，其中运行中措辞只代表当时观察；当前状态以上段与status/STATUS.json为准。
 
 2026-10-26 GPU0已启动[保留两层策略的全身拦截与起跳搜索](reports/G07_full_racket_v4/fixed_actor_body_cem_gen2_queue01/REPORT.md)：10候选各跑原128来球、2代，随后单一冻结策略做原128冷评估。1280真实地面初态已核对，380来源文件加PLAN保持；新方法尚无终端成绩。最新85秒视频新下载SHA核验已通过，原正式50/70/85目标仍未通过。

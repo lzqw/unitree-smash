@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/origin0_transfer_diagnostic_20261027/RESULT.json",
-      "notes": "原布局Aim7及冷128实际完成：确认来源3完整/60空中/26合格恢复/24攻击、NF0，搜索5次未全复现。304.6MB完整包已上传新下载验证。原生origin16与origin0精度/隔离探针完成，最大球路误差7.396→0.173毫米，origin0副本球/根差0、球力0、提前done0、NF0，准入通过。旧严格腕部分支源准备拒绝，限位内近等效种子与Main动作核验通过。GPU0新origin0 8×128原生比较正由1884350/1884474/1884488运行，460输入保持；不继承旧成绩，正式A/B和50/70/85尚未通过。 新origin0第一原样候选已完成0/128完整、0空中拍线、11拍框、123身体触地、NF0；实际128均腾空，原样迁移失效，其余候选继续。 当前前三项origin0候选均0完整/0合格空中拍线，384行独立核对；实际准备阶段根倾角19.14度而旧腿残差请求很小，不能确定其为主因。新471输入的全身时序/恢复八项队列1891402等待当前所有者真实退出，已完成1600输入CPU与局部reset检查；尚无新原生成绩。 新30.22秒origin0真实失败视频及37.01MB两候选完整原128记录包已上传并新下载SHA/CRC核验；保留拍框摔落、站稳漏球、实际触网三例，不继承旧成功录像。当前前四候选均0完整/0合格空中拍线，继续第5项。 新origin0残差训练/独立评估接口已通过658真实输入CPU兼容性和4项CLI核验并上传；尚未安装或启动新训练，真实完整冷源正向准入待后续结果。当前前五候选均0完整/0合格空中拍线，继续第6项。",
+      "notes": "原布局Aim7及冷128实际完成：确认来源3完整/60空中/26合格恢复/24攻击、NF0，搜索5次未全复现。304.6MB完整包已上传新下载验证。原生origin16与origin0精度/隔离探针完成，最大球路误差7.396→0.173毫米，origin0副本球/根差0、球力0、提前done0、NF0，准入通过。旧严格腕部分支源准备拒绝，限位内近等效种子与Main动作核验通过。GPU0新origin0 8×128原生比较正由1884350/1884474/1884488运行，460输入保持；不继承旧成绩，正式A/B和50/70/85尚未通过。 新origin0第一原样候选已完成0/128完整、0空中拍线、11拍框、123身体触地、NF0；实际128均腾空，原样迁移失效，其余候选继续。 当前前三项origin0候选均0完整/0合格空中拍线，384行独立核对；实际准备阶段根倾角19.14度而旧腿残差请求很小，不能确定其为主因。新471输入的全身时序/恢复八项队列1891402等待当前所有者真实退出，已完成1600输入CPU与局部reset检查；尚无新原生成绩。 新30.22秒origin0真实失败视频及37.01MB两候选完整原128记录包已上传并新下载SHA/CRC核验；保留拍框摔落、站稳漏球、实际触网三例，不继承旧成功录像。当前前四候选均0完整/0合格空中拍线，继续第5项。 新origin0残差训练/独立评估接口已通过658真实输入CPU兼容性和4项CLI核验并上传；尚未安装或启动新训练，真实完整冷源正向准入待后续结果。当前前五候选均0完整/0合格空中拍线，继续第6项。 已在GPU启动前发现并保留等待队列run_cpu四参问题，只停止无子进程的1891402，修正后1895642等待当前1884350。新参数化源绑定CPU658行通过，15更新训练/独立冷128等待1896271已实际启动为观察进程，482输入保持；尚未开训或产生新冻结成绩。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
@@ -69,13 +69,13 @@
         }
       ],
       "queued_native_sequence": {
-        "owner_pid": 1891402,
+        "owner_pid": 1895642,
         "state": "WAITING_FOR_ACTUAL_PREPOSE_OWNER_EXIT",
-        "queue": "reports/G07_full_racket_v4/gain_body_after_prepose_queue01",
+        "queue": "reports/G07_full_racket_v4/gain_body_after_prepose_queue02",
         "wait_actual_parent_pid": 1884350,
-        "actual_child_pids": [],
         "bound_input_count": 471,
-        "observed_at": "2026-10-26T19:39:05.870362+00:00"
+        "actual_child_pids": [],
+        "observed_at": "2026-10-26T20:17:19.838192+00:00"
       },
       "native_air_string_contact_milestone": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
       "latest_native_training_summary": "reports/G07_full_racket_v4/cem32_lateral_feedback_1015/GENERATION0_SUMMARY.json",
@@ -9058,8 +9058,8 @@
       },
       "last_goal_turn_classification": {
         "classification": "progress",
-        "observed_at": "2026-10-26T20:01:14.957965+00:00",
-        "reason": "Implemented origin0 residual learning/export/cold-source validation and independent assessment entrypoints; actually checked658 public inputs and four CLI paths; current native comparison and471source custody continued unchanged."
+        "observed_at": "2026-10-26T20:17:19.838192+00:00",
+        "reason": "Found and repaired a genuine future queue arity fault before any GPU launch; executed parameterized selected-source CPU checks; registered actual-live corrected body and fresh-training successors with complete source custody."
       },
       "completed_leg06_warmup13_frozen_TRAIN128": {
         "episodes": 128,
@@ -9752,7 +9752,7 @@
         "formal_cases_read": false,
         "formal_acceptance": false
       },
-      "current_next_action": "Finish current native prepose comparison and independent cold128; after actual owner exit, bind the measured winner and run admitted eight-candidate gain/body timing and recovery adaptation, then cold128. Original formal gates remain unmet.",
+      "current_next_action": "Finish actual prepose course/cold128; corrected gain/body owner1895642 then runs8x128/cold128. New owner1896271 binds its actual cold source and repeats positive CPU admission, then guarded fresh15 updates and independent frozen128.",
       "latest_current_video_candidate4": {
         "checked_at": "2026-10-26T09:49:37.125036+00:00",
         "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_body_candidate4_cold128_complete_and_failures_v2_20261026.mp4",
@@ -10368,10 +10368,10 @@
         "formal_acceptance": false
       },
       "current_full_racket_progress_20261027": {
-        "observed_at": "2026-10-26T20:01:14.957965+00:00",
+        "observed_at": "2026-10-26T20:17:19.838192+00:00",
         "actual_live_owner_pid": 1884350,
         "actual_live_native_pid": 1884488,
-        "actual_live_waiter_pid": 1891402,
+        "actual_live_waiter_pid": 1895642,
         "measured_source_still_confirmed_complete": 3,
         "search_candidate_aim_uv_m": [
           0.0,
@@ -10410,10 +10410,10 @@
           "members": 67,
           "payloads_SHA_verified": 66
         },
-        "next_queue": "reports/G07_full_racket_v4/gain_body_after_prepose_queue01",
+        "next_queue": "reports/G07_full_racket_v4/gain_body_after_prepose_queue02",
         "formal_cases_read": false,
         "formal_acceptance": false,
-        "secondary_actual_live_waiter_pid": null,
+        "secondary_actual_live_waiter_pid": 1896271,
         "stopped_old_waiter_pid": 1873882,
         "after_precision_queue": "reports/G07_full_racket_v4/prepose_origin0_after_precision_queue02",
         "origin0_native_admission_pending": false,
@@ -10680,16 +10680,39 @@
                 0
               ]
             }
+          },
+          {
+            "candidate_id": 5,
+            "summary": {
+              "episodes": 128,
+              "complete": 0,
+              "airborne_contacts": 0,
+              "conditional_recovery_count": 0,
+              "attack_outgoing": 0,
+              "actual_attack_cross_target_chains": 0,
+              "numerical_failures": 0,
+              "mean_TRAIN_partial_score": -1.7737947270118943,
+              "formal_acceptance": false,
+              "rank": [
+                1,
+                0,
+                0,
+                -1.77379473,
+                0,
+                0
+              ]
+            }
           }
         ],
         "actual_origin0_progress": {
-          "candidate_id": 5,
-          "candidate_name": "wrist_branch_vz-0.3_walk0.1",
-          "control_ticks": 300,
-          "first_episodes_complete": 83,
-          "actual_control_env_steps": 369408,
+          "candidate_id": 6,
+          "candidate_name": "wrist_branch_vz-1.2_walk0.1",
+          "control_ticks": 200,
+          "first_episodes_complete": 0,
+          "actual_control_env_steps": 459008,
           "formal_acceptance": false
-        }
+        },
+        "queued_fresh_training": "reports/G07_full_racket_v4/origin0_residual_after_gain_body_queue01"
       },
       "previous_video_before_origin0_failures_20261027": {
         "checked_at": "2026-10-26T09:01:21.484802+00:00",
@@ -10754,6 +10777,28 @@
         "CPU_vs_native_max_error": 3.0994415283203125e-06,
         "positive_cold_source_admission_pending": true,
         "new_native_training_started": false
+      },
+      "previous_queued_native_sequence_before_arity_fix": {
+        "owner_pid": 1891402,
+        "state": "WAITING_FOR_ACTUAL_PREPOSE_OWNER_EXIT",
+        "queue": "reports/G07_full_racket_v4/gain_body_after_prepose_queue01",
+        "wait_actual_parent_pid": 1884350,
+        "actual_child_pids": [],
+        "bound_input_count": 471,
+        "observed_at": "2026-10-26T19:39:05.870362+00:00"
+      },
+      "queued_origin0_residual_training": {
+        "owner_pid": 1896271,
+        "state": "WAITING_FOR_ACTUAL_GAIN_BODY_OWNER_EXIT",
+        "queue": "reports/G07_full_racket_v4/origin0_residual_after_gain_body_queue01",
+        "wait_actual_parent_pid": 1895642,
+        "bound_input_count": 482,
+        "actual_child_pids": [],
+        "updates": 15,
+        "num_envs": 128,
+        "train_env_steps_cap": 245760,
+        "new_native_training_started": false,
+        "observed_at": "2026-10-26T20:17:19.838192+00:00"
       }
     },
     "G08": {
