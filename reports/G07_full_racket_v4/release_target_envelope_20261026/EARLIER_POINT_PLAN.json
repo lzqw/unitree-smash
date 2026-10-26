@@ -1,0 +1,29 @@
+{
+  "created_at": "2026-10-26T06:13:03.224812+00:00",
+  "declared_after_original_release_grid": true,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_landing_targets/reports/G07_full_racket_v4/release_target_envelope_20261026/analyze_earlier_points.py": "ac62b43f47518dcd68e8ff2b8359b4f5f087253723cd36cca0fd8fc83c0bf73c",
+    "/home/autodrive/LZQW/unitree_smash_landing_targets/quadsmash/control/release_flight_envelope_v4.py": "4da648d7bea6bd6a470e9b6c020c93f1a10251cd51cc36e4916ab8935a757905",
+    "/home/autodrive/LZQW/unitree_smash_landing_targets/reports/G07_full_racket_v4/release_target_envelope_20261026/RESULT.json": "808658a036049e45f5a713d63dcf8a335812a2f830cfcfda8991dd9447a563e6",
+    "/home/autodrive/LZQW/unitree_smash_landing_targets/reports/G07_full_racket_v4/release_target_envelope_20261026/ACTUAL_NATIVE_FLIGHT_VALIDATION.json": "6185085cab336e1a4f6b4ca1a43e89b078cfb5dcda1d3775d41179f66275e9ba",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_leg06_after075_intermediates_n2048_probe8_fixed_train128_01/all_first_episodes.npz": "56218f4c2cf8c26f8dfbf5fb55b88e9535bf9180966011d50853ff600f9d7bdf",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_leg06_after075_intermediates_n2048_probe8_fixed_train128_01/geometry.json": "8afd390b7b92179ba6e2fde3774cc60162a98a5bd63ed50defd95b2e8f9d9c37",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_leg06_after075_intermediates_n2048_probe8_fixed_train128_01/episodes.json": "2d57ecf15971e13b95a0e49c6d6aa39ef7fd58845530c93baefd1bef0cdf36fa",
+    "/home/autodrive/LZQW/unitree_smash_landing_targets/configs/court_net_v4.json": "184d07dde336bf36be7dfde089373c851a2bcb855a6e44f4120442b59818b4f4",
+    "/home/autodrive/LZQW/unitree_smash_landing_targets/configs/shuttle_physics_v2.json": "dba0e8d45edd661185c7f0b8a379f63993d1a87269740e672688b4577e359229"
+  },
+  "fixed_hypothetical_speed_mps": 8.01,
+  "pitch_grid_degrees": [
+    -45.0,
+    -5.0,
+    0.1
+  ],
+  "dt_s": 0.0005,
+  "actual_earlier_point_selection": "Last valid actual50Hz ball sample at least5ms before first contact; then the preceding50Hz sample. No interpolation or shifted ball coordinates.",
+  "pose_comparison": "Distance from recorded earlier ball to recorded earlier racket front center only; no inverse kinematics or robot reachability claim.",
+  "scope": "Counterfactual outgoing-flight planning at actually recorded earlier ball positions. These were NOT earlier robot contacts or new native trials.",
+  "new_native_execution": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}

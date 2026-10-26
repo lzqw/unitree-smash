@@ -3,7 +3,7 @@ from pathlib import Path
 
 import numpy as np
 
-from quadsmash.control.release_flight_envelope_v4 import free_flight,net_gap
+from quadsmash.control.release_flight_envelope_v4 import free_flight,net_gap,target_screen
 from quadsmash.physics.shuttlecock import ShuttlecockModel
 from quadsmash.control.release_flight_envelope_v4 import rk4
 
@@ -37,3 +37,18 @@ def test_net_screen_uses_finite_radius_depth_and_original_posts():
     gap = net_gap(p,COURT,.025)
     assert abs(gap[0]-(1.6-1.524-.025)) < 1e-12
     assert gap[1] < 0. and gap[2] > 0. and gap[3] < 0.
+
+
+def test_collision_free_under_net_flight_cannot_satisfy_original_crossing_gate():
+    p,v = np.array([[1.,0.,.6]]),np.array([[8.,0.,-1.]])
+    result = free_flight(p,v,PHYSICS,COURT)
+    assert 2. < result.landing_m[0,0] < 4. and result.buffered_net_gap_m[0] > 0.
+    assert not target_screen(result,v,COURT)[0]
+
+
+def test_collision_free_around_post_flight_cannot_satisfy_original_net_span_gate():
+    p,v = np.array([[1.,5.5,2.1]]),np.array([[3.5,-10.,-1.]])
+    result = free_flight(p,v,PHYSICS,COURT)
+    assert 2. < result.landing_m[0,0] < 4. and abs(result.landing_m[0,1]) < 1.
+    assert result.buffered_net_gap_m[0] > 0. and result.trailing_crossing_m[0,2] > 1.55
+    assert not target_screen(result,v,COURT)[0]

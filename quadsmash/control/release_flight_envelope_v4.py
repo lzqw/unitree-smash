@@ -11,7 +11,7 @@ import math
 
 import numpy as np
 
-from quadsmash.physics.court_v4 import net_band_segments
+from quadsmash.physics.court_v4 import net_band_segments,top_height
 
 
 @dataclass(frozen=True)
@@ -105,7 +105,10 @@ def free_flight(position, velocity, physics, court, *, dt=.0005, horizon_s=2., g
 def target_screen(flight, velocity, court):
     """Planning conditions only; never substitutes native complete/legality flags."""
     p,v = flight.landing_m,np.asarray(velocity)
+    crossing = flight.trailing_crossing_m
+    height = top_height(np.nan_to_num(crossing[:,1],nan=0.),court)
     return (np.isfinite(p).all(1) & np.isfinite(flight.trailing_crossing_m).all(1)
+        & (crossing[:,2] >= height) & (np.abs(crossing[:,1]) <= court['net_width_m']/2)
         & (v[:,0] > 0.) & (np.linalg.norm(v,axis=1) >= 8.-1e-12) & (v[:,2] <= -1.)
         & (p[:,0] >= court['target_x_limits_m'][0]) & (p[:,0] <= court['target_x_limits_m'][1])
         & (np.abs(p[:,1]) <= court['target_y_half_width_m']) & (flight.buffered_net_gap_m > 0.))
