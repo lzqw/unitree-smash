@@ -7,3 +7,9 @@
 原记录包含28刚体状态，原渲染几何为123网格、分布于26个有网格刚体。相机边界检查覆盖全部原渲染网格、每个有效50Hz姿态、实际触球姿态及末次记录状态；这只证明处于视窗内，不宣称所有表面都不被自然遮挡。预启动检查最初误以为28刚体都有网格，已在渲染前捕获并改为与原几何元数据逐项匹配；原始错误和说明保留。
 
 草稿02预览已生成并在真实数据上通过边界、布局和源文件一致性检查。完整87.66秒4383帧视频随后用CPU/Mesa重渲染和全帧解码，再由根代理视觉审查后发布。当前代码在独立工作区，主训练269项持有源码/输入保持；不修改主训练中的渲染器。原正式A/B及50/70/85尚未通过。
+
+[87.66秒新版视频](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_centered_placement075_pilot8_orthographic_v2_20261026.mp4)已上传并重新下载SHA回验，7651232字节、4383帧，SHA256 `12712bff37a6bd4dc011635bed39ec89709c6b05931dd16943dbabd091bb020d`。全部帧解码通过；六例原始字段含NaN逐项一致，24项渲染元数据来源及31项执行输入哈希保持，16张最终事件预览与已审查草稿逐字节相同。根代理检查16张事件图和8张实际成品抽帧，共24张，经6张联系表审阅；没有宣称观看每一帧或所有表面均无自然遮挡。
+
+复现可使用已发布293MB阶段8数据包中的 `video_snapshot_centered_placement075_pilot8_20261026`，配合本分支的 `scripts/render_full_racket_latest_effect_v4.py`、`scripts/native_video_framing_v4.py` 及其原渲染依赖。实际CPU包版本、Python、Mesa与字体SHA见 `CPU_RENDER_ENVIRONMENT.json`；版本清单为 `requirements-render.txt`。渲染CLI使用CPU/Mesa，无需启动Isaac Sim应用。原训练物理重跑仍需原锁定Isaac/RSL-RL环境，不能把CPU重放当作物理复现实验。
+
+当前新32次续训与后续独立评估仍在原主工作区运行；本视频保持原冻结075阶段8结果，摄像机修订不继承为新策略性能。主269项持有源码/输入保持，原主渲染器尚未合并本修订。
