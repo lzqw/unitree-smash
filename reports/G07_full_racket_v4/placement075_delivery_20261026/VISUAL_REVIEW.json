@@ -1,0 +1,76 @@
+{
+  "reviewed_at": "2026-10-26T00:20:34.358730+00:00",
+  "video": "reports/G07_full_racket_v4/video/Current_effect_centered_placement075_pilot8_20261026.mp4",
+  "video_sha256": "5de78967b3b4b1907f1dbfe21aade2839354b68a0d1bf792a786582f82718f5d",
+  "bytes": 7268041,
+  "frames": 4383,
+  "fps": 50,
+  "duration_s": 87.66,
+  "resolution": [
+    1280,
+    720
+  ],
+  "approved_for_authorized_GitHub_video_upload": true,
+  "visual_review_scope": {
+    "native_event_preview_images": 16,
+    "actual_decoded_video_frames": 8,
+    "contact_sheets": 6,
+    "review_sheets": [
+      "reports/G07_full_racket_v4/placement075_delivery_20261026/native_review_sheet_1.jpg",
+      "reports/G07_full_racket_v4/placement075_delivery_20261026/native_review_sheet_2.jpg",
+      "reports/G07_full_racket_v4/placement075_delivery_20261026/native_review_sheet_3.jpg",
+      "reports/G07_full_racket_v4/placement075_delivery_20261026/native_review_sheet_4.jpg",
+      "reports/G07_full_racket_v4/placement075_delivery_20261026/decoded_review_sheet_1.jpg",
+      "reports/G07_full_racket_v4/placement075_delivery_20261026/decoded_review_sheet_2.jpg"
+    ],
+    "all_4383_frames_machine_decoded": true,
+    "all_frames_visually_watched": false
+  },
+  "custody_checks": {
+    "metadata_source_sha256_verified": 23,
+    "review_input_image_sha256_verified": 24,
+    "selected_native_rows_deep_verified": [
+      {
+        "TRAIN": 19,
+        "all_native_row_fields_match_including_nan": true
+      },
+      {
+        "TRAIN": 23,
+        "all_native_row_fields_match_including_nan": true
+      },
+      {
+        "TRAIN": 107,
+        "all_native_row_fields_match_including_nan": true
+      },
+      {
+        "TRAIN": 0,
+        "all_native_row_fields_match_including_nan": true
+      },
+      {
+        "TRAIN": 8,
+        "all_native_row_fields_match_including_nan": true
+      },
+      {
+        "TRAIN": 58,
+        "all_native_row_fields_match_including_nan": true
+      }
+    ]
+  },
+  "visual_findings": [
+    "Actual side and overhead views show full robot, PiPER and complete racket at the reviewed contact closeups; contact point and actual first landing are marked.",
+    "Misses, body-fall failures and unsuccessful target landings remain visible. Each case is an independent native execution.",
+    "Late TRAIN107 failure has robot cropped at the bottom of the side panel; overhead view complements it. Wide views make the racket small and the net occludes some angles. This interim video does not establish complete framing in every frame.",
+    "TRAIN0 displayed vz rounds to -1.00 m/s; actual -0.9951156973838806 m/s fails the <=-1 threshold. It is not a qualifying attack or complete success."
+  ],
+  "original_frozen_TRAIN128": {
+    "complete": 0,
+    "legal_air_contact": 26,
+    "qualified_contact_then_recovery": 19,
+    "qualifying_attacks": 5,
+    "numerical_failures": 0
+  },
+  "formal_acceptance": false,
+  "goal_complete": false,
+  "native_motion": true,
+  "generated_or_interpolated_motion": false
+}
