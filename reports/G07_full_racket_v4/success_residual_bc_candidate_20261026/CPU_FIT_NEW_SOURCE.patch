@@ -1,0 +1,204 @@
+diff --git a/scripts/fit_success_residual_bc_v4.py b/scripts/fit_success_residual_bc_v4.py
+new file mode 100644
+index 0000000..d707639
+--- /dev/null
++++ b/scripts/fit_success_residual_bc_v4.py
+@@ -0,0 +1,198 @@
++"""CPU-only closed-loop imitation of verified real successful TRAIN episodes.
++
++The fitted actor remains an unexecuted proposal. No native restart, GPU job,
++acceptance claim, future observation, or case identifier is manufactured.
++"""
++import argparse
++import copy
++import hashlib
++import importlib.util
++import io
++import json
++import os
++from pathlib import Path
++import sys
++from datetime import datetime, timezone
++
++import numpy as np
++import torch
++
++ROOT = Path(__file__).resolve().parents[1]
++MAIN = ROOT.parent / 'unitree_smash'
++REPORTS = MAIN / 'reports/G07_full_racket_v4'
++TRAIN = REPORTS / 'residual_ppo_centered_placement075_n2048_resume32_02'
++PARENT = REPORTS / 'centered_placement075_resume32_queue02'
++SELECTOR = REPORTS / 'centered_placement075_intermediate_selection_queue01'
++BASE = REPORTS / 'residual_ppo_joint_placement_actor32_n2048_probe8_01/policy.pt'
++SUCCESS_KEYS = {(208, 4), (1544, 2), (1420, 4), (1466, 6), (1746, 8)}
++CONFIG = dict(seed=856203, epochs=80, learning_rate=0.0003, batch_size=512,
++              source_anchor_weight=0.05, max_anchor_residual_RMS=0.1,
++              target='Actual sampled outer residual_actions, all800 steps of each success equally weighted',
++              anchor='Frozen source mean on all17 actual saved success/failure public observation streams',
++              normalization='Keep the measured source actor normalizer exactly; no fitting update',
++              checkpoint_selection='Largest completed CPU epoch satisfying the predeclared anchor RMS bound; no native scores')
++
++
++def sha(path):
++    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
++
++
++def read(path):
++    return json.loads(Path(path).read_text())
++
++
++def atomic(path, value):
++    temporary = path.with_suffix(path.suffix + '.tmp')
++    temporary.write_text(json.dumps(value, ensure_ascii=False, indent=2) + '\n')
++    temporary.replace(path)
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--source-policy', type=Path, required=True)
++    parser.add_argument('--source-evaluation', type=Path, required=True)
++    parser.add_argument('--output', type=Path, required=True)
++    args = parser.parse_args()
++    assert ROOT != MAIN and ROOT.name == 'unitree_smash_success_bc'
++    assert os.environ.get('CUDA_VISIBLE_DEVICES') == '', 'Explicitly hide all GPUs'
++    assert not args.output.exists(), 'Never overwrite a fit or failed attempt'
++    sys.path.insert(0, str(MAIN))
++    from quadsmash.rl.episode_trace_v4 import unpack_public
++    from scripts.initialize_centered_policy_v4 import same_tree
++    spec = importlib.util.spec_from_file_location('preserved_native_bc_source_check',
++        REPORTS / 'residual_resume24_queue01/run.py')
++    core = importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(core)
++    summary = core.verify_evaluation(args.source_evaluation, args.source_policy)
++    assert read(args.source_evaluation / 'INPUTS.json')['reset_noise_seed'] == 724201
++    assert read(PARENT / 'TRACE_AUDIT_ATTEMPT.json')['passed']
++    audit = read(PARENT / 'TRAINING_TRACE_AUDIT.json')
++    assert audit['all_selected_trajectories_checked'] and audit['selected_episodes_checked'] == 17
++    held = {MAIN / name: digest for name, digest in read(SELECTOR / 'PREDECLARED_PLAN.json')['source_hashes'].items()}
++    held[SELECTOR / 'PREDECLARED_PLAN.json'] = sha(SELECTOR / 'PREDECLARED_PLAN.json')
++    assert all(sha(path) == digest for path, digest in held.items())
++    sources = {str(path): sha(path) for path in [Path(__file__), args.source_policy,
++        PARENT / 'TRACE_AUDIT_ATTEMPT.json', PARENT / 'TRAINING_TRACE_AUDIT.json',
++        TRAIN / 'episodes.json', TRAIN / 'trajectory_traces/manifest.json', BASE]}
++    sources.update({str(args.source_evaluation / name): sha(args.source_evaluation / name)
++        for name in ['INPUTS.json', 'metrics.json', 'episodes.json', 'job.json', 'completed.json']})
++    raw = {(row['env_id'], row['episode_index']): row for row in read(TRAIN / 'episodes.json')}
++    assert {key for key, row in raw.items() if row['complete_smash']} == SUCCESS_KEYS
++    manifest = read(TRAIN / 'trajectory_traces/manifest.json')
++    assert manifest['success_selected'] == 5 and len(manifest['saved_episodes']) == 17
++    public_rows, target_rows, all_public, details, found = [], [], [], [], set()
++    for entry in manifest['saved_episodes']:
++        path = TRAIN / 'trajectory_traces' / entry['data_file']
++        meta = read(path.with_suffix('.json'))
++        assert sha(path) == entry['data_sha256'] == meta['data_sha256']
++        key = meta['env_id'], meta['episode_index']
++        assert meta['native_execution'] and same_tree(meta['raw_episode'], raw[key])
++        with np.load(path) as data:
++            public = unpack_public(data['packed_public'])
++            target = data['residual_actions'].copy()
++        assert public.shape == (meta['samples'], 794) and target.shape == (len(public), 18)
++        assert np.isfinite(public).all() and np.isfinite(target).all()
++        assert hashlib.sha256(public.tobytes()).hexdigest() == meta['full_public794_sha256']
++        assert np.abs(target).max() < 1, 'Do not fit an ambiguously clipped residual draw'
++        all_public.append(torch.from_numpy(public))
++        if key in SUCCESS_KEYS:
++            assert len(public) == 800 and raw[key]['complete_smash']
++            public_rows.append(torch.from_numpy(public)); target_rows.append(torch.from_numpy(target))
++            found.add(key)
++        details.append(dict(key=list(key), TRAIN=meta['source_training_index'], samples=len(public),
++            complete=raw[key]['complete_smash'], full_public794_sha256=meta['full_public794_sha256']))
++        sources.update({str(path): sha(path), str(path.with_suffix('.json')): sha(path.with_suffix('.json'))})
++    assert found == SUCCESS_KEYS
++    inputs, targets, anchors = torch.cat(public_rows), torch.cat(target_rows), torch.cat(all_public)
++    assert inputs.shape == (4000, 794)
++    torch.set_num_threads(2); torch.use_deterministic_algorithms(True); torch.manual_seed(CONFIG['seed'])
++    source = torch.load(args.source_policy, map_location='cpu', weights_only=False)
++    assert source['native_execution'] and source['schema'] == 'full-racket-residual-ppo-v4'
++    assert source['residual_joint_scale_rad'] == [.03] * 12 + [.15] * 6
++    assert same_tree(source['base_controller'], torch.load(BASE, map_location='cpu', weights_only=False))
++    blob = source['residual_actor_jit']
++    assert hashlib.sha256(blob).hexdigest() == source['residual_training_metadata']['actor_jit_sha256']
++    actor = torch.jit.load(io.BytesIO(blob), map_location='cpu').eval()
++    initial = {key: value.clone() for key, value in actor.state_dict().items()}
++    normalizer = {key: value.clone() for key, value in initial.items() if key.startswith('0.')}
++    assert normalizer and all(p.device.type == 'cpu' for p in actor.parameters())
++    with torch.no_grad():
++        source_anchor = actor(anchors).clone()
++        source_fit = actor(inputs).clone()
++    args.output.mkdir(parents=True)
++    atomic(args.output / 'PREDECLARED_CPU_FIT.json', dict(created_at=datetime.now(timezone.utc).isoformat(),
++        config=CONFIG, source_policy=str(args.source_policy), source_summary=summary,
++        successes=5, success_samples=len(inputs), anchor_samples=len(anchors), data=details,
++        source_hashes=sources, main285_inputs_checked=len(held),
++        source8_is_actual_CPU_witness_not_future_selected_winner=True,
++        data_selection_after_observed_TRAIN_outcomes=True,
++        all_native_actions_saved_before_any_fitting=True,
++        new_native_execution=False, formal_cases_read=False, formal_acceptance=False))
++    optimizer = torch.optim.Adam(actor.parameters(), lr=CONFIG['learning_rate'])
++    history = []
++    selected = None
++    for epoch in range(1, CONFIG['epochs'] + 1):
++        order = torch.randperm(len(inputs))
++        for start in range(0, len(inputs), CONFIG['batch_size']):
++            batch = order[start:start + CONFIG['batch_size']]
++            anchor_batch = torch.randint(len(anchors), (len(batch),))
++            optimizer.zero_grad(set_to_none=True)
++            fit = torch.square(actor(inputs[batch]) - targets[batch]).mean()
++            anchor = torch.square(actor(anchors[anchor_batch]) - source_anchor[anchor_batch]).mean()
++            loss = fit + CONFIG['source_anchor_weight'] * anchor
++            assert torch.isfinite(loss)
++            loss.backward(); torch.nn.utils.clip_grad_norm_(actor.parameters(), 1.)
++            optimizer.step()
++        assert all(torch.equal(actor.state_dict()[key], value) for key, value in normalizer.items())
++        assert all(torch.isfinite(value).all() for value in actor.state_dict().values())
++        with torch.no_grad():
++            prediction, anchor_prediction = actor(inputs), actor(anchors)
++            fit_mse = float(torch.square(prediction - targets).mean())
++            per_joint_rms = torch.square(anchor_prediction - source_anchor).mean(0).sqrt()
++        row = dict(epoch=epoch, success_action_fit_MSE=fit_mse,
++            max_anchor_residual_RMS=float(per_joint_rms.max()),
++            max_leg_anchor_RMS_rad=float(per_joint_rms[:12].max()) * .03,
++            max_arm_anchor_RMS_rad=float(per_joint_rms[12:].max()) * .15)
++        history.append(row)
++        if row['max_anchor_residual_RMS'] <= CONFIG['max_anchor_residual_RMS']:
++            selected = dict(epoch=epoch, model=copy.deepcopy(actor.state_dict()),
++                optimizer=copy.deepcopy(optimizer.state_dict()), rng=torch.get_rng_state().clone(), metrics=row)
++        if epoch % 10 == 0:print(json.dumps(row), flush=True)
++    assert selected is not None
++    actor.load_state_dict(selected['model']); actor.eval()
++    with torch.no_grad():expected = actor(anchors)
++    stream = io.BytesIO(); torch.jit.save(actor, stream); fitted_blob = stream.getvalue()
++    restored = torch.jit.load(io.BytesIO(fitted_blob), map_location='cpu').eval()
++    with torch.no_grad():error = float((restored(anchors) - expected).abs().max())
++    assert error == 0.
++    candidate = copy.deepcopy(source)
++    candidate['bc_source_native_metadata'] = candidate.pop('residual_training_metadata')
++    candidate.update(native_execution=False, performance_inherited=False, formal_acceptance=False,
++        kind='CPU success-imitation proposal; original full TRAIN128 native measurement required',
++        method='Closed-loop outer residual imitation from five actual complete TRAIN episodes with fixed-source anchors',
++        residual_actor_jit=fitted_blob,
++        residual_training_metadata=dict(native_execution=False, completed_updates=0, actual_control_env_steps=0,
++            CPU_BC_epochs=selected['epoch'], base_controller_mode='frozen_public_policy', base_policy_sha256=sha(BASE),
++            actor_jit_sha256=hashlib.sha256(fitted_blob).hexdigest(), actor_input='Unchanged current public794; no future values or case IDs',
++            CPU_BC_source_policy_sha256=sha(args.source_policy)))
++    torch.save(candidate, args.output / 'policy.pt')
++    torch.save(dict(schema='success-residual-BC-CPU-only', **selected, config=CONFIG,
++        source_hashes=sources, native_restart=False), args.output / 'bc_state.pt')
++    assert all(sha(Path(path)) == digest for path, digest in sources.items())
++    assert all(sha(path) == digest for path, digest in held.items())
++    record = dict(completed_at=datetime.now(timezone.utc).isoformat(), config=CONFIG,
++        history=history, selected_epoch=selected['epoch'], selected_metrics=selected['metrics'],
++        initial_success_action_fit_MSE=float(torch.square(source_fit - targets).mean()),
++        policy_sha256=sha(args.output / 'policy.pt'), CPU_state_sha256=sha(args.output / 'bc_state.pt'),
++        restored_actor_max_error=error, frozen_source_normalizer_exact=True,
++        base_controller_exactly_preserved=same_tree(candidate['base_controller'], source['base_controller']),
++        actual_success_samples=len(inputs), actual_anchor_samples=len(anchors),
++        main285_held_inputs_unchanged=True, CPU_only=True,
++        new_native_execution=False, frozen_policy_performance=False,
++        formal_cases_read=False, formal_acceptance=False, goal_complete=False)
++    atomic(args.output / 'ACTUAL_CPU_FIT_CHECK.json', record)
++    print(json.dumps({key: value for key, value in record.items() if key not in ['history', 'config']}), flush=True)
++
++
++if __name__ == '__main__':
++    main()

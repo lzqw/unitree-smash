@@ -1,0 +1,61 @@
+{
+  "created_at": "2026-10-26T03:54:47.579513+00:00",
+  "folds": [
+    {
+      "key": [
+        208,
+        4
+      ],
+      "TRAIN": 80
+    },
+    {
+      "key": [
+        1544,
+        2
+      ],
+      "TRAIN": 8
+    },
+    {
+      "key": [
+        1420,
+        4
+      ],
+      "TRAIN": 12
+    },
+    {
+      "key": [
+        1466,
+        6
+      ],
+      "TRAIN": 58
+    },
+    {
+      "key": [
+        1746,
+        8
+      ],
+      "TRAIN": 82
+    }
+  ],
+  "training_configuration": {
+    "seed": 856203,
+    "epochs": 80,
+    "learning_rate": 0.0003,
+    "batch_size": 512,
+    "source_anchor_weight": 0.05,
+    "max_anchor_residual_RMS": 0.1,
+    "target": "Actual sampled outer residual_actions, all800 steps of each success equally weighted",
+    "anchor": "Frozen source mean on all17 actual saved success/failure public observation streams",
+    "normalization": "Keep the measured source actor normalizer exactly; no fitting update",
+    "checkpoint_selection": "Largest completed CPU epoch satisfying the predeclared anchor RMS bound; no native scores"
+  },
+  "CPU_fit_witness_declaration_sha256": "278a0ca87a1df9c3e5a087edac83a613e3a6401aec882cc6ea0d7fb06bf940f1",
+  "script_sha256": "52eedea758cc3b5f5208018ced6dce98aac7cf638b7adbcc153ad9f6e6b3eb5c",
+  "epoch_selection": "Largest epoch satisfying TRAIN anchor RMS; held-out labels scored only afterward",
+  "heldout_episode_features_and_targets_excluded_from_fitting_and_anchors": true,
+  "primary_comparison": "Mean held-out episode raw18 residual-action MSE versus unmodified measured source",
+  "interpretation": "Action-regression generalization diagnostic on already observed TRAIN episodes; no native performance claim",
+  "formal_cases_read": false,
+  "new_native_execution": false,
+  "formal_acceptance": false
+}

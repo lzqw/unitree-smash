@@ -1,0 +1,42 @@
+{
+  "recorded_at": "2026-10-26T03:59:58.959200+00:00",
+  "actual_base_git_SHA": "96140e248356a028b88447b14d42d96c908b33d1",
+  "source_capture_after_CPU_execution": true,
+  "tracked_runtime_diff_empty": true,
+  "new_source_patches": [
+    "CPU_FIT_NEW_SOURCE.patch",
+    "CPU_CV_NEW_SOURCE.patch"
+  ],
+  "python": "3.11.17 (main, Oct  1 2026, 20:17:42) [GCC 14.3.0]",
+  "torch": "2.7.0+cu128",
+  "numpy": "1.26.0",
+  "environment": {
+    "CUDA_VISIBLE_DEVICES": "",
+    "OMP_NUM_THREADS": "2"
+  },
+  "CPU_only": true,
+  "charged_GPU_hours": 0,
+  "new_native_execution": false,
+  "commands": [
+    [
+      "/home/autodrive/Isaac/env_isaaclab/bin/python",
+      "scripts/fit_success_residual_bc_v4.py",
+      "--source-policy",
+      "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_placement075_n2048_probe8_01/policy.pt",
+      "--source-evaluation",
+      "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_placement075_n2048_probe8_fixed_train128_01",
+      "--output",
+      "reports/G07_full_racket_v4/success_residual_bc_candidate_20261026/actual_stage8_fit01"
+    ],
+    [
+      "/home/autodrive/Isaac/env_isaaclab/bin/python",
+      "scripts/validate_success_bc_episode_cv_v4.py",
+      "--fitted-witness",
+      "reports/G07_full_racket_v4/success_residual_bc_candidate_20261026/actual_stage8_fit01",
+      "--output",
+      "reports/G07_full_racket_v4/success_residual_bc_candidate_20261026/actual_stage8_episode_cv01"
+    ]
+  ],
+  "formal_acceptance": false,
+  "goal_complete": false
+}

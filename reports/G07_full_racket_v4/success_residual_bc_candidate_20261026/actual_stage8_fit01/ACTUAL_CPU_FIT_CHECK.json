@@ -1,0 +1,600 @@
+{
+  "completed_at": "2026-10-26T03:51:17.672051+00:00",
+  "config": {
+    "seed": 856203,
+    "epochs": 80,
+    "learning_rate": 0.0003,
+    "batch_size": 512,
+    "source_anchor_weight": 0.05,
+    "max_anchor_residual_RMS": 0.1,
+    "target": "Actual sampled outer residual_actions, all800 steps of each success equally weighted",
+    "anchor": "Frozen source mean on all17 actual saved success/failure public observation streams",
+    "normalization": "Keep the measured source actor normalizer exactly; no fitting update",
+    "checkpoint_selection": "Largest completed CPU epoch satisfying the predeclared anchor RMS bound; no native scores"
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "success_action_fit_MSE": 0.00995190441608429,
+      "max_anchor_residual_RMS": 0.010308975353837013,
+      "max_leg_anchor_RMS_rad": 0.0003064044937491417,
+      "max_arm_anchor_RMS_rad": 0.001546346303075552
+    },
+    {
+      "epoch": 2,
+      "success_action_fit_MSE": 0.00993202906101942,
+      "max_anchor_residual_RMS": 0.01209274586290121,
+      "max_leg_anchor_RMS_rad": 0.0003162399865686893,
+      "max_arm_anchor_RMS_rad": 0.0018139118794351814
+    },
+    {
+      "epoch": 3,
+      "success_action_fit_MSE": 0.009915970265865326,
+      "max_anchor_residual_RMS": 0.011823378503322601,
+      "max_leg_anchor_RMS_rad": 0.00035470135509967803,
+      "max_arm_anchor_RMS_rad": 0.001681435341015458
+    },
+    {
+      "epoch": 4,
+      "success_action_fit_MSE": 0.009901123121380806,
+      "max_anchor_residual_RMS": 0.01319337822496891,
+      "max_leg_anchor_RMS_rad": 0.00039580134674906727,
+      "max_arm_anchor_RMS_rad": 0.001969765266403556
+    },
+    {
+      "epoch": 5,
+      "success_action_fit_MSE": 0.009888362139463425,
+      "max_anchor_residual_RMS": 0.012879493646323681,
+      "max_leg_anchor_RMS_rad": 0.00033978760242462156,
+      "max_arm_anchor_RMS_rad": 0.001931924046948552
+    },
+    {
+      "epoch": 6,
+      "success_action_fit_MSE": 0.009877507574856281,
+      "max_anchor_residual_RMS": 0.012163301929831505,
+      "max_leg_anchor_RMS_rad": 0.00036489905789494515,
+      "max_arm_anchor_RMS_rad": 0.0017954888753592968
+    },
+    {
+      "epoch": 7,
+      "success_action_fit_MSE": 0.009863625280559063,
+      "max_anchor_residual_RMS": 0.012677762657403946,
+      "max_leg_anchor_RMS_rad": 0.000371860284358263,
+      "max_arm_anchor_RMS_rad": 0.0019016643986105918
+    },
+    {
+      "epoch": 8,
+      "success_action_fit_MSE": 0.009851925075054169,
+      "max_anchor_residual_RMS": 0.013641851022839546,
+      "max_leg_anchor_RMS_rad": 0.00040925553068518636,
+      "max_arm_anchor_RMS_rad": 0.0018536587245762347
+    },
+    {
+      "epoch": 9,
+      "success_action_fit_MSE": 0.009840276092290878,
+      "max_anchor_residual_RMS": 0.01528248842805624,
+      "max_leg_anchor_RMS_rad": 0.0004584746528416872,
+      "max_arm_anchor_RMS_rad": 0.0022710494231432676
+    },
+    {
+      "epoch": 10,
+      "success_action_fit_MSE": 0.009825709275901318,
+      "max_anchor_residual_RMS": 0.01360680814832449,
+      "max_leg_anchor_RMS_rad": 0.000398820536211133,
+      "max_arm_anchor_RMS_rad": 0.0020410212222486735
+    },
+    {
+      "epoch": 11,
+      "success_action_fit_MSE": 0.0098151545971632,
+      "max_anchor_residual_RMS": 0.014049569144845009,
+      "max_leg_anchor_RMS_rad": 0.00042148707434535025,
+      "max_arm_anchor_RMS_rad": 0.0019777407869696617
+    },
+    {
+      "epoch": 12,
+      "success_action_fit_MSE": 0.009802546352148056,
+      "max_anchor_residual_RMS": 0.015462744049727917,
+      "max_leg_anchor_RMS_rad": 0.0004638823214918375,
+      "max_arm_anchor_RMS_rad": 0.0022588115651160476
+    },
+    {
+      "epoch": 13,
+      "success_action_fit_MSE": 0.009785227477550507,
+      "max_anchor_residual_RMS": 0.015573441982269287,
+      "max_leg_anchor_RMS_rad": 0.0004453280288726091,
+      "max_arm_anchor_RMS_rad": 0.002336016297340393
+    },
+    {
+      "epoch": 14,
+      "success_action_fit_MSE": 0.009776889346539974,
+      "max_anchor_residual_RMS": 0.015581704676151276,
+      "max_leg_anchor_RMS_rad": 0.00044652940705418586,
+      "max_arm_anchor_RMS_rad": 0.002337255701422691
+    },
+    {
+      "epoch": 15,
+      "success_action_fit_MSE": 0.00976335909217596,
+      "max_anchor_residual_RMS": 0.01725461333990097,
+      "max_leg_anchor_RMS_rad": 0.0005176384001970291,
+      "max_arm_anchor_RMS_rad": 0.0021903036162257195
+    },
+    {
+      "epoch": 16,
+      "success_action_fit_MSE": 0.009749475866556168,
+      "max_anchor_residual_RMS": 0.01710079237818718,
+      "max_leg_anchor_RMS_rad": 0.0005130237713456153,
+      "max_arm_anchor_RMS_rad": 0.0025650191120803354
+    },
+    {
+      "epoch": 17,
+      "success_action_fit_MSE": 0.00973779521882534,
+      "max_anchor_residual_RMS": 0.01791197620332241,
+      "max_leg_anchor_RMS_rad": 0.0005373592860996723,
+      "max_arm_anchor_RMS_rad": 0.002481707464903593
+    },
+    {
+      "epoch": 18,
+      "success_action_fit_MSE": 0.009716898202896118,
+      "max_anchor_residual_RMS": 0.018491309136152267,
+      "max_leg_anchor_RMS_rad": 0.000554739274084568,
+      "max_arm_anchor_RMS_rad": 0.0023590743541717528
+    },
+    {
+      "epoch": 19,
+      "success_action_fit_MSE": 0.009712700732052326,
+      "max_anchor_residual_RMS": 0.016729965806007385,
+      "max_leg_anchor_RMS_rad": 0.0005007009208202362,
+      "max_arm_anchor_RMS_rad": 0.002509494870901108
+    },
+    {
+      "epoch": 20,
+      "success_action_fit_MSE": 0.009688708931207657,
+      "max_anchor_residual_RMS": 0.018967891111969948,
+      "max_leg_anchor_RMS_rad": 0.0005690367333590984,
+      "max_arm_anchor_RMS_rad": 0.0026710342615842817
+    },
+    {
+      "epoch": 21,
+      "success_action_fit_MSE": 0.009671001695096493,
+      "max_anchor_residual_RMS": 0.018226569518446922,
+      "max_leg_anchor_RMS_rad": 0.0005371918715536594,
+      "max_arm_anchor_RMS_rad": 0.0027339854277670383
+    },
+    {
+      "epoch": 22,
+      "success_action_fit_MSE": 0.00965623278170824,
+      "max_anchor_residual_RMS": 0.02000446617603302,
+      "max_leg_anchor_RMS_rad": 0.0006001339852809906,
+      "max_arm_anchor_RMS_rad": 0.0026916436851024627
+    },
+    {
+      "epoch": 23,
+      "success_action_fit_MSE": 0.009646772406995296,
+      "max_anchor_residual_RMS": 0.02073589153587818,
+      "max_leg_anchor_RMS_rad": 0.0006220767460763454,
+      "max_arm_anchor_RMS_rad": 0.0028546283952891826
+    },
+    {
+      "epoch": 24,
+      "success_action_fit_MSE": 0.009642527438700199,
+      "max_anchor_residual_RMS": 0.021518999710679054,
+      "max_leg_anchor_RMS_rad": 0.0006258241832256317,
+      "max_arm_anchor_RMS_rad": 0.003227849956601858
+    },
+    {
+      "epoch": 25,
+      "success_action_fit_MSE": 0.009618796408176422,
+      "max_anchor_residual_RMS": 0.020922845229506493,
+      "max_leg_anchor_RMS_rad": 0.0006276853568851948,
+      "max_arm_anchor_RMS_rad": 0.0031065305694937704
+    },
+    {
+      "epoch": 26,
+      "success_action_fit_MSE": 0.009603074751794338,
+      "max_anchor_residual_RMS": 0.021239731460809708,
+      "max_leg_anchor_RMS_rad": 0.0006371919438242912,
+      "max_arm_anchor_RMS_rad": 0.0030635121278464795
+    },
+    {
+      "epoch": 27,
+      "success_action_fit_MSE": 0.009591219015419483,
+      "max_anchor_residual_RMS": 0.02065107598900795,
+      "max_leg_anchor_RMS_rad": 0.0006195322796702385,
+      "max_arm_anchor_RMS_rad": 0.0029687373898923397
+    },
+    {
+      "epoch": 28,
+      "success_action_fit_MSE": 0.00957914162427187,
+      "max_anchor_residual_RMS": 0.021799135953187943,
+      "max_leg_anchor_RMS_rad": 0.0006539740785956382,
+      "max_arm_anchor_RMS_rad": 0.003159263357520103
+    },
+    {
+      "epoch": 29,
+      "success_action_fit_MSE": 0.009558531455695629,
+      "max_anchor_residual_RMS": 0.02066378854215145,
+      "max_leg_anchor_RMS_rad": 0.0006199136562645435,
+      "max_arm_anchor_RMS_rad": 0.0029615353792905807
+    },
+    {
+      "epoch": 30,
+      "success_action_fit_MSE": 0.009543010964989662,
+      "max_anchor_residual_RMS": 0.02165534347295761,
+      "max_leg_anchor_RMS_rad": 0.0006281979382038117,
+      "max_arm_anchor_RMS_rad": 0.0032483015209436414
+    },
+    {
+      "epoch": 31,
+      "success_action_fit_MSE": 0.009529105387628078,
+      "max_anchor_residual_RMS": 0.02229725755751133,
+      "max_leg_anchor_RMS_rad": 0.0006689177267253398,
+      "max_arm_anchor_RMS_rad": 0.00323632238432765
+    },
+    {
+      "epoch": 32,
+      "success_action_fit_MSE": 0.009522859007120132,
+      "max_anchor_residual_RMS": 0.024900656193494797,
+      "max_leg_anchor_RMS_rad": 0.0007470196858048439,
+      "max_arm_anchor_RMS_rad": 0.003421224933117628
+    },
+    {
+      "epoch": 33,
+      "success_action_fit_MSE": 0.009502151049673557,
+      "max_anchor_residual_RMS": 0.02335176430642605,
+      "max_leg_anchor_RMS_rad": 0.0007005529291927814,
+      "max_arm_anchor_RMS_rad": 0.0034130411222577095
+    },
+    {
+      "epoch": 34,
+      "success_action_fit_MSE": 0.009494870901107788,
+      "max_anchor_residual_RMS": 0.02375645563006401,
+      "max_leg_anchor_RMS_rad": 0.0007126936689019203,
+      "max_arm_anchor_RMS_rad": 0.003437433857470751
+    },
+    {
+      "epoch": 35,
+      "success_action_fit_MSE": 0.009478778578341007,
+      "max_anchor_residual_RMS": 0.0239127017557621,
+      "max_leg_anchor_RMS_rad": 0.0007173810526728629,
+      "max_arm_anchor_RMS_rad": 0.003473531361669302
+    },
+    {
+      "epoch": 36,
+      "success_action_fit_MSE": 0.009465823881328106,
+      "max_anchor_residual_RMS": 0.025736277922987938,
+      "max_leg_anchor_RMS_rad": 0.0007720883376896381,
+      "max_arm_anchor_RMS_rad": 0.003515478316694498
+    },
+    {
+      "epoch": 37,
+      "success_action_fit_MSE": 0.009448857046663761,
+      "max_anchor_residual_RMS": 0.02519497461616993,
+      "max_leg_anchor_RMS_rad": 0.0007558492384850978,
+      "max_arm_anchor_RMS_rad": 0.0035775362513959406
+    },
+    {
+      "epoch": 38,
+      "success_action_fit_MSE": 0.009439888410270214,
+      "max_anchor_residual_RMS": 0.02451278269290924,
+      "max_leg_anchor_RMS_rad": 0.0007353834807872772,
+      "max_arm_anchor_RMS_rad": 0.003578713908791542
+    },
+    {
+      "epoch": 39,
+      "success_action_fit_MSE": 0.00945245660841465,
+      "max_anchor_residual_RMS": 0.025210054591298103,
+      "max_leg_anchor_RMS_rad": 0.0007503455132246017,
+      "max_arm_anchor_RMS_rad": 0.0037815081886947155
+    },
+    {
+      "epoch": 40,
+      "success_action_fit_MSE": 0.009416216984391212,
+      "max_anchor_residual_RMS": 0.025494473055005074,
+      "max_leg_anchor_RMS_rad": 0.0007648341916501522,
+      "max_arm_anchor_RMS_rad": 0.0036940226331353184
+    },
+    {
+      "epoch": 41,
+      "success_action_fit_MSE": 0.00941416434943676,
+      "max_anchor_residual_RMS": 0.027279971167445183,
+      "max_leg_anchor_RMS_rad": 0.0008183991350233555,
+      "max_arm_anchor_RMS_rad": 0.0035986941307783126
+    },
+    {
+      "epoch": 42,
+      "success_action_fit_MSE": 0.009413901716470718,
+      "max_anchor_residual_RMS": 0.026978325098752975,
+      "max_leg_anchor_RMS_rad": 0.0008093497529625892,
+      "max_arm_anchor_RMS_rad": 0.003986280038952827
+    },
+    {
+      "epoch": 43,
+      "success_action_fit_MSE": 0.009392962791025639,
+      "max_anchor_residual_RMS": 0.02576519176363945,
+      "max_leg_anchor_RMS_rad": 0.0007729557529091834,
+      "max_arm_anchor_RMS_rad": 0.0037863124161958694
+    },
+    {
+      "epoch": 44,
+      "success_action_fit_MSE": 0.009373263455927372,
+      "max_anchor_residual_RMS": 0.027196992188692093,
+      "max_leg_anchor_RMS_rad": 0.0008159097656607627,
+      "max_arm_anchor_RMS_rad": 0.003738583065569401
+    },
+    {
+      "epoch": 45,
+      "success_action_fit_MSE": 0.009374958463013172,
+      "max_anchor_residual_RMS": 0.027782389894127846,
+      "max_leg_anchor_RMS_rad": 0.0008334716968238353,
+      "max_arm_anchor_RMS_rad": 0.003977562300860882
+    },
+    {
+      "epoch": 46,
+      "success_action_fit_MSE": 0.009344009682536125,
+      "max_anchor_residual_RMS": 0.027480285614728928,
+      "max_leg_anchor_RMS_rad": 0.0008244085684418678,
+      "max_arm_anchor_RMS_rad": 0.004093534592539072
+    },
+    {
+      "epoch": 47,
+      "success_action_fit_MSE": 0.009337383322417736,
+      "max_anchor_residual_RMS": 0.026546098291873932,
+      "max_leg_anchor_RMS_rad": 0.0007963829487562179,
+      "max_arm_anchor_RMS_rad": 0.003870013542473316
+    },
+    {
+      "epoch": 48,
+      "success_action_fit_MSE": 0.009339170530438423,
+      "max_anchor_residual_RMS": 0.028260141611099243,
+      "max_leg_anchor_RMS_rad": 0.0008233433961868286,
+      "max_arm_anchor_RMS_rad": 0.004239021241664886
+    },
+    {
+      "epoch": 49,
+      "success_action_fit_MSE": 0.00930802058428526,
+      "max_anchor_residual_RMS": 0.027951758354902267,
+      "max_leg_anchor_RMS_rad": 0.0008385527506470679,
+      "max_arm_anchor_RMS_rad": 0.004049864318221808
+    },
+    {
+      "epoch": 50,
+      "success_action_fit_MSE": 0.009298072196543217,
+      "max_anchor_residual_RMS": 0.02722085639834404,
+      "max_leg_anchor_RMS_rad": 0.0008166256919503211,
+      "max_arm_anchor_RMS_rad": 0.004079406056553125
+    },
+    {
+      "epoch": 51,
+      "success_action_fit_MSE": 0.009280248545110226,
+      "max_anchor_residual_RMS": 0.028217066079378128,
+      "max_leg_anchor_RMS_rad": 0.0008465119823813438,
+      "max_arm_anchor_RMS_rad": 0.004089323524385691
+    },
+    {
+      "epoch": 52,
+      "success_action_fit_MSE": 0.009274032898247242,
+      "max_anchor_residual_RMS": 0.027988411486148834,
+      "max_leg_anchor_RMS_rad": 0.0008368735760450362,
+      "max_arm_anchor_RMS_rad": 0.004198261722922325
+    },
+    {
+      "epoch": 53,
+      "success_action_fit_MSE": 0.0092765549197793,
+      "max_anchor_residual_RMS": 0.03071559965610504,
+      "max_leg_anchor_RMS_rad": 0.0009214679896831512,
+      "max_arm_anchor_RMS_rad": 0.00403442932292819
+    },
+    {
+      "epoch": 54,
+      "success_action_fit_MSE": 0.009286114014685154,
+      "max_anchor_residual_RMS": 0.03490839898586273,
+      "max_leg_anchor_RMS_rad": 0.001047251969575882,
+      "max_arm_anchor_RMS_rad": 0.0042289822362363335
+    },
+    {
+      "epoch": 55,
+      "success_action_fit_MSE": 0.009251508861780167,
+      "max_anchor_residual_RMS": 0.028799451887607574,
+      "max_leg_anchor_RMS_rad": 0.0008639835566282272,
+      "max_arm_anchor_RMS_rad": 0.004164417274296284
+    },
+    {
+      "epoch": 56,
+      "success_action_fit_MSE": 0.009237715974450111,
+      "max_anchor_residual_RMS": 0.030245911329984665,
+      "max_leg_anchor_RMS_rad": 0.00090737733989954,
+      "max_arm_anchor_RMS_rad": 0.0042042494751513
+    },
+    {
+      "epoch": 57,
+      "success_action_fit_MSE": 0.009225906804203987,
+      "max_anchor_residual_RMS": 0.029542692005634308,
+      "max_leg_anchor_RMS_rad": 0.0008862807601690292,
+      "max_arm_anchor_RMS_rad": 0.004333396442234516
+    },
+    {
+      "epoch": 58,
+      "success_action_fit_MSE": 0.009215069003403187,
+      "max_anchor_residual_RMS": 0.03363070636987686,
+      "max_leg_anchor_RMS_rad": 0.0010089211910963057,
+      "max_arm_anchor_RMS_rad": 0.004226631950587034
+    },
+    {
+      "epoch": 59,
+      "success_action_fit_MSE": 0.009203100576996803,
+      "max_anchor_residual_RMS": 0.02954951860010624,
+      "max_leg_anchor_RMS_rad": 0.0008864855580031872,
+      "max_arm_anchor_RMS_rad": 0.00437275031581521
+    },
+    {
+      "epoch": 60,
+      "success_action_fit_MSE": 0.009222389198839664,
+      "max_anchor_residual_RMS": 0.03168315812945366,
+      "max_leg_anchor_RMS_rad": 0.0009504947438836097,
+      "max_arm_anchor_RMS_rad": 0.004278094042092562
+    },
+    {
+      "epoch": 61,
+      "success_action_fit_MSE": 0.009184037335216999,
+      "max_anchor_residual_RMS": 0.030283750966191292,
+      "max_leg_anchor_RMS_rad": 0.0009085125289857387,
+      "max_arm_anchor_RMS_rad": 0.004375894088298082
+    },
+    {
+      "epoch": 62,
+      "success_action_fit_MSE": 0.00917163584381342,
+      "max_anchor_residual_RMS": 0.03133539482951164,
+      "max_leg_anchor_RMS_rad": 0.0009400618448853492,
+      "max_arm_anchor_RMS_rad": 0.004391408711671829
+    },
+    {
+      "epoch": 63,
+      "success_action_fit_MSE": 0.00916382111608982,
+      "max_anchor_residual_RMS": 0.03158806636929512,
+      "max_leg_anchor_RMS_rad": 0.0009476419910788536,
+      "max_arm_anchor_RMS_rad": 0.0044265794567763805
+    },
+    {
+      "epoch": 64,
+      "success_action_fit_MSE": 0.009163270704448223,
+      "max_anchor_residual_RMS": 0.03193176910281181,
+      "max_leg_anchor_RMS_rad": 0.0009579530730843543,
+      "max_arm_anchor_RMS_rad": 0.004572995379567146
+    },
+    {
+      "epoch": 65,
+      "success_action_fit_MSE": 0.009158654138445854,
+      "max_anchor_residual_RMS": 0.031073369085788727,
+      "max_leg_anchor_RMS_rad": 0.0009322010725736617,
+      "max_arm_anchor_RMS_rad": 0.0044130516238510605
+    },
+    {
+      "epoch": 66,
+      "success_action_fit_MSE": 0.009140696376562119,
+      "max_anchor_residual_RMS": 0.03319960832595825,
+      "max_leg_anchor_RMS_rad": 0.0009959882497787475,
+      "max_arm_anchor_RMS_rad": 0.004676243662834167
+    },
+    {
+      "epoch": 67,
+      "success_action_fit_MSE": 0.009141088463366032,
+      "max_anchor_residual_RMS": 0.03182466700673103,
+      "max_leg_anchor_RMS_rad": 0.0009547400102019309,
+      "max_arm_anchor_RMS_rad": 0.004706980101764202
+    },
+    {
+      "epoch": 68,
+      "success_action_fit_MSE": 0.009148635901510715,
+      "max_anchor_residual_RMS": 0.03342130407691002,
+      "max_leg_anchor_RMS_rad": 0.0010026391223073006,
+      "max_arm_anchor_RMS_rad": 0.004527920577675104
+    },
+    {
+      "epoch": 69,
+      "success_action_fit_MSE": 0.009114425629377365,
+      "max_anchor_residual_RMS": 0.03295646235346794,
+      "max_leg_anchor_RMS_rad": 0.0009886938706040382,
+      "max_arm_anchor_RMS_rad": 0.0045139074325561525
+    },
+    {
+      "epoch": 70,
+      "success_action_fit_MSE": 0.009097839705646038,
+      "max_anchor_residual_RMS": 0.03154804930090904,
+      "max_leg_anchor_RMS_rad": 0.0009464414790272712,
+      "max_arm_anchor_RMS_rad": 0.004563853796571493
+    },
+    {
+      "epoch": 71,
+      "success_action_fit_MSE": 0.009084345772862434,
+      "max_anchor_residual_RMS": 0.03449482470750809,
+      "max_leg_anchor_RMS_rad": 0.0010348447412252427,
+      "max_arm_anchor_RMS_rad": 0.004609709791839123
+    },
+    {
+      "epoch": 72,
+      "success_action_fit_MSE": 0.009096821770071983,
+      "max_anchor_residual_RMS": 0.036599308252334595,
+      "max_leg_anchor_RMS_rad": 0.0010979792475700378,
+      "max_arm_anchor_RMS_rad": 0.004672285448759794
+    },
+    {
+      "epoch": 73,
+      "success_action_fit_MSE": 0.009075399488210678,
+      "max_anchor_residual_RMS": 0.03565589338541031,
+      "max_leg_anchor_RMS_rad": 0.0010696768015623092,
+      "max_arm_anchor_RMS_rad": 0.004652878548949957
+    },
+    {
+      "epoch": 74,
+      "success_action_fit_MSE": 0.009070750325918198,
+      "max_anchor_residual_RMS": 0.033268969506025314,
+      "max_leg_anchor_RMS_rad": 0.0009980690851807594,
+      "max_arm_anchor_RMS_rad": 0.004792759381234646
+    },
+    {
+      "epoch": 75,
+      "success_action_fit_MSE": 0.009052220731973648,
+      "max_anchor_residual_RMS": 0.033365003764629364,
+      "max_leg_anchor_RMS_rad": 0.001000950112938881,
+      "max_arm_anchor_RMS_rad": 0.0047481821849942206
+    },
+    {
+      "epoch": 76,
+      "success_action_fit_MSE": 0.009026734158396721,
+      "max_anchor_residual_RMS": 0.03285196051001549,
+      "max_leg_anchor_RMS_rad": 0.0009855588153004646,
+      "max_arm_anchor_RMS_rad": 0.004889515601098537
+    },
+    {
+      "epoch": 77,
+      "success_action_fit_MSE": 0.00904882699251175,
+      "max_anchor_residual_RMS": 0.03484852984547615,
+      "max_leg_anchor_RMS_rad": 0.0010454558953642845,
+      "max_arm_anchor_RMS_rad": 0.00476220566779375
+    },
+    {
+      "epoch": 78,
+      "success_action_fit_MSE": 0.00902702659368515,
+      "max_anchor_residual_RMS": 0.03453421965241432,
+      "max_leg_anchor_RMS_rad": 0.0010360265895724297,
+      "max_arm_anchor_RMS_rad": 0.004862258769571781
+    },
+    {
+      "epoch": 79,
+      "success_action_fit_MSE": 0.00901813618838787,
+      "max_anchor_residual_RMS": 0.03369821608066559,
+      "max_leg_anchor_RMS_rad": 0.0010109464824199677,
+      "max_arm_anchor_RMS_rad": 0.0047648163512349125
+    },
+    {
+      "epoch": 80,
+      "success_action_fit_MSE": 0.008998312056064606,
+      "max_anchor_residual_RMS": 0.03388723358511925,
+      "max_leg_anchor_RMS_rad": 0.0010166170075535774,
+      "max_arm_anchor_RMS_rad": 0.004952892847359181
+    }
+  ],
+  "selected_epoch": 80,
+  "selected_metrics": {
+    "epoch": 80,
+    "success_action_fit_MSE": 0.008998312056064606,
+    "max_anchor_residual_RMS": 0.03388723358511925,
+    "max_leg_anchor_RMS_rad": 0.0010166170075535774,
+    "max_arm_anchor_RMS_rad": 0.004952892847359181
+  },
+  "initial_success_action_fit_MSE": 0.010021272115409374,
+  "policy_sha256": "3e1a3599004cfda5404e44781c1b70f315f19897fbf039060328f4a554d559e8",
+  "CPU_state_sha256": "58ba1d03c6bee6ded243a8741bcae6e32a355e01903e5af08fe34fdeae348eee",
+  "restored_actor_max_error": 0.0,
+  "frozen_source_normalizer_exact": true,
+  "base_controller_exactly_preserved": true,
+  "actual_success_samples": 4000,
+  "actual_anchor_samples": 7436,
+  "main285_held_inputs_unchanged": true,
+  "CPU_only": true,
+  "new_native_execution": false,
+  "frozen_policy_performance": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
