@@ -1,0 +1,198 @@
+{
+  "checked_at": "2026-10-26T23:17:01.795748+00:00",
+  "original_first_episode_rows_checked": 1024,
+  "original_case_and_actual_episode_ids_retained": true,
+  "candidate_summaries": [
+    {
+      "episodes": 128,
+      "complete": 0,
+      "airborne_contacts": 4,
+      "conditional_recovery_count": 0,
+      "attack_outgoing": 0,
+      "actual_attack_cross_target_chains": 0,
+      "numerical_failures": 0,
+      "mean_TRAIN_partial_score": 0.4386009067264634,
+      "formal_acceptance": false,
+      "rank": [
+        1,
+        0,
+        0,
+        0.43860091,
+        0,
+        4
+      ]
+    },
+    {
+      "episodes": 128,
+      "complete": 0,
+      "airborne_contacts": 0,
+      "conditional_recovery_count": 0,
+      "attack_outgoing": 0,
+      "actual_attack_cross_target_chains": 0,
+      "numerical_failures": 0,
+      "mean_TRAIN_partial_score": -0.7293895842158236,
+      "formal_acceptance": false,
+      "rank": [
+        1,
+        0,
+        0,
+        -0.72938958,
+        0,
+        0
+      ]
+    },
+    {
+      "episodes": 128,
+      "complete": 0,
+      "airborne_contacts": 0,
+      "conditional_recovery_count": 0,
+      "attack_outgoing": 0,
+      "actual_attack_cross_target_chains": 0,
+      "numerical_failures": 0,
+      "mean_TRAIN_partial_score": -0.8295738000694352,
+      "formal_acceptance": false,
+      "rank": [
+        1,
+        0,
+        0,
+        -0.8295738,
+        0,
+        0
+      ]
+    },
+    {
+      "episodes": 128,
+      "complete": 0,
+      "airborne_contacts": 2,
+      "conditional_recovery_count": 0,
+      "attack_outgoing": 0,
+      "actual_attack_cross_target_chains": 0,
+      "numerical_failures": 0,
+      "mean_TRAIN_partial_score": 0.02219030604087041,
+      "formal_acceptance": false,
+      "rank": [
+        1,
+        0,
+        0,
+        0.02219031,
+        0,
+        2
+      ]
+    },
+    {
+      "episodes": 128,
+      "complete": 0,
+      "airborne_contacts": 3,
+      "conditional_recovery_count": 0,
+      "attack_outgoing": 0,
+      "actual_attack_cross_target_chains": 0,
+      "numerical_failures": 0,
+      "mean_TRAIN_partial_score": -0.10808864540838994,
+      "formal_acceptance": false,
+      "rank": [
+        1,
+        0,
+        0,
+        -0.10808865,
+        0,
+        3
+      ]
+    },
+    {
+      "episodes": 128,
+      "complete": 0,
+      "airborne_contacts": 4,
+      "conditional_recovery_count": 0,
+      "attack_outgoing": 0,
+      "actual_attack_cross_target_chains": 0,
+      "numerical_failures": 0,
+      "mean_TRAIN_partial_score": 0.32182778866536105,
+      "formal_acceptance": false,
+      "rank": [
+        1,
+        0,
+        0,
+        0.32182779,
+        0,
+        4
+      ]
+    },
+    {
+      "episodes": 128,
+      "complete": 0,
+      "airborne_contacts": 0,
+      "conditional_recovery_count": 0,
+      "attack_outgoing": 0,
+      "actual_attack_cross_target_chains": 0,
+      "numerical_failures": 0,
+      "mean_TRAIN_partial_score": -0.7549091357698974,
+      "formal_acceptance": false,
+      "rank": [
+        1,
+        0,
+        0,
+        -0.75490914,
+        0,
+        0
+      ]
+    },
+    {
+      "episodes": 128,
+      "complete": 0,
+      "airborne_contacts": 2,
+      "conditional_recovery_count": 0,
+      "attack_outgoing": 0,
+      "actual_attack_cross_target_chains": 0,
+      "numerical_failures": 0,
+      "mean_TRAIN_partial_score": -0.11705105129597296,
+      "formal_acceptance": false,
+      "rank": [
+        1,
+        0,
+        0,
+        -0.11705105,
+        0,
+        2
+      ]
+    }
+  ],
+  "actual_control_env_steps": 715136,
+  "conservatively_charged_env_steps": 819200,
+  "charged_gpu_hours": 2.215392097204458,
+  "source_snapshot_CRC_and_SHA_members_checked": 400,
+  "actual_valid_public_rows": 5816,
+  "maximum_CPU_vs_actual_GPU_action_error": 9.894371032714844e-06,
+  "selected_candidate_id": 0,
+  "selected_policy_sha256": "204ff76f21625d49cd1dc29ec3b6256447a5fa8b2fec935dda986842fc330034",
+  "embedded_source_checkpoint_tree_unchanged": true,
+  "actual_cold_initial_states_checked": 128,
+  "actual_cold_processes": {
+    "1920441": {
+      "command": "/home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/scripts/run_gpu_job.py --goal G07 --budget-window g07-full-racket-unlimited-20261024 --max-seconds 2700 --env-steps-cap 102400 --output /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_best_fixed_train128_01 --require-artifact completed.json -- /home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/scripts/evaluate_full_racket_gain_body_origin0_train_v4.py --output /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_best_fixed_train128_01 --checkpoint /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_sequential_n128_01/best_candidate.pt --noise none --seed 724201 --precision-receipt /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin_precision_after_aim_queue01/PRECISION_ADMISSION.json --headless ",
+      "actual_GPU_visible": "0",
+      "stat": "1920441 (python) S 1895642 1920441 1920441 0 -1 4194304 4664 5724 0 1 17 3 0 3 20 0 1 0 68256418 34377728 5399 18446744073709551615 99841640939520 99841643280613 140727334424576 0 0 0 0 16781312 16386 1 0 0 17 28 0 0 0 0 0 99841644250704 99841645691392 99841670029312 140727334426666 140727334427564 140727334427564 140727334432714 0\n"
+    },
+    "1920455": {
+      "command": "/home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/scripts/evaluate_full_racket_gain_body_origin0_train_v4.py --output /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_best_fixed_train128_01 --checkpoint /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_sequential_n128_01/best_candidate.pt --noise none --seed 724201 --precision-receipt /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin_precision_after_aim_queue01/PRECISION_ADMISSION.json --headless ",
+      "actual_GPU_visible": "0",
+      "stat": "1920455 (python) S 1920441 1920455 1920455 0 -1 4194304 907186 5577 2 0 40555 5117 0 7 20 0 129 0 68256429 72453611520 1056669 18446744073709551615 98971241361408 98971243702501 140723167336560 0 0 0 0 16781312 17658 0 0 0 17 11 0 0 0 0 0 98971244672592 98971246113280 98972072349696 140723167345032 140723167345580 140723167345580 140723167350730 0\n"
+    }
+  },
+  "old_search_guard_and_native_actually_exited": true,
+  "held482_unchanged": true,
+  "cold_performance_pending": true,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body_search_completed_20261027/check_completed.py": "4508324d957835f5082e1b7acbdc93b171bf0dffc43df80922ed8ceb07e60408",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_sequential_n128_01/best_candidate.pt": "204ff76f21625d49cd1dc29ec3b6256447a5fa8b2fec935dda986842fc330034",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_sequential_n128_01/best_candidate.pt": "8a3aab4ab96fdbcdad7d9d33fc2f6de057f6178cb8fc6c8508b7dcb90fc5fc15",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_sequential_n128_01/INPUTS.json": "30273f50f082e6f3d1436417c7c4dda5af4f2451cc9bacdf6119d1fbf69084f1",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_sequential_n128_01/source_hashes.json": "43fdb295a85639cc33f68318135188bd75b7e1c6977c8c9cac428254c3c31976",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_sequential_n128_01/source_snapshot.zip": "816a2387e662ea06f542df36952d2c054ee816b573e80138496526c34c8079e8",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_best_fixed_train128_01/INPUTS.json": "9668d6b5fa28974100862927ddfd0d035036880c120acaedfe93a79eb978904b",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_best_fixed_train128_01/origin_layout.json": "72786e30d23c78bfddc9785931759520e4b4d58a137e396503cc1c0be82a274d",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_best_fixed_train128_01/initial_states.json": "e4d0098b7cf3d4aa4933713392366caff61569e3d58dcac6d19ca40434f73fac"
+  },
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}

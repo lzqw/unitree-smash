@@ -1,0 +1,346 @@
+{
+  "history": [
+    {
+      "candidate_id": 0,
+      "candidate": {
+        "candidate_id": 0,
+        "name": "unchanged_source",
+        "gains": [
+          [
+            1.0,
+            1.0
+          ],
+          [
+            1.0,
+            1.0
+          ]
+        ],
+        "body_deltas": {}
+      },
+      "summary": {
+        "episodes": 128,
+        "complete": 0,
+        "airborne_contacts": 4,
+        "conditional_recovery_count": 0,
+        "attack_outgoing": 0,
+        "actual_attack_cross_target_chains": 0,
+        "numerical_failures": 0,
+        "mean_TRAIN_partial_score": 0.4386009067264634,
+        "formal_acceptance": false,
+        "rank": [
+          1,
+          0,
+          0,
+          0.43860091,
+          0,
+          4
+        ]
+      },
+      "control_ticks": 800,
+      "env_steps": 102400
+    },
+    {
+      "candidate_id": 1,
+      "candidate": {
+        "candidate_id": 1,
+        "name": "both_residual_layers_off",
+        "gains": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0
+          ]
+        ],
+        "body_deltas": {}
+      },
+      "summary": {
+        "episodes": 128,
+        "complete": 0,
+        "airborne_contacts": 0,
+        "conditional_recovery_count": 0,
+        "attack_outgoing": 0,
+        "actual_attack_cross_target_chains": 0,
+        "numerical_failures": 0,
+        "mean_TRAIN_partial_score": -0.7293895842158236,
+        "formal_acceptance": false,
+        "rank": [
+          1,
+          0,
+          0,
+          -0.72938958,
+          0,
+          0
+        ]
+      },
+      "control_ticks": 800,
+      "env_steps": 102400
+    },
+    {
+      "candidate_id": 2,
+      "candidate": {
+        "candidate_id": 2,
+        "name": "jump_40ms_earlier_keep_handover",
+        "gains": [
+          [
+            1.0,
+            1.0
+          ],
+          [
+            1.0,
+            1.0
+          ]
+        ],
+        "body_deltas": {
+          "2": -0.04,
+          "3": 0.03810732841491699
+        }
+      },
+      "summary": {
+        "episodes": 128,
+        "complete": 0,
+        "airborne_contacts": 0,
+        "conditional_recovery_count": 0,
+        "attack_outgoing": 0,
+        "actual_attack_cross_target_chains": 0,
+        "numerical_failures": 0,
+        "mean_TRAIN_partial_score": -0.8295738000694352,
+        "formal_acceptance": false,
+        "rank": [
+          1,
+          0,
+          0,
+          -0.8295738,
+          0,
+          0
+        ]
+      },
+      "control_ticks": 365,
+      "env_steps": 46720
+    },
+    {
+      "candidate_id": 3,
+      "candidate": {
+        "candidate_id": 3,
+        "name": "jump_40ms_later_keep_handover",
+        "gains": [
+          [
+            1.0,
+            1.0
+          ],
+          [
+            1.0,
+            1.0
+          ]
+        ],
+        "body_deltas": {
+          "2": 0.04,
+          "3": -0.03810732841491699
+        }
+      },
+      "summary": {
+        "episodes": 128,
+        "complete": 0,
+        "airborne_contacts": 2,
+        "conditional_recovery_count": 0,
+        "attack_outgoing": 0,
+        "actual_attack_cross_target_chains": 0,
+        "numerical_failures": 0,
+        "mean_TRAIN_partial_score": 0.02219030604087041,
+        "formal_acceptance": false,
+        "rank": [
+          1,
+          0,
+          0,
+          0.02219031,
+          0,
+          2
+        ]
+      },
+      "control_ticks": 800,
+      "env_steps": 102400
+    },
+    {
+      "candidate_id": 4,
+      "candidate": {
+        "candidate_id": 4,
+        "name": "recovery_handover_phase_plus015",
+        "gains": [
+          [
+            1.0,
+            1.0
+          ],
+          [
+            1.0,
+            1.0
+          ]
+        ],
+        "body_deltas": {
+          "3": 0.15
+        }
+      },
+      "summary": {
+        "episodes": 128,
+        "complete": 0,
+        "airborne_contacts": 3,
+        "conditional_recovery_count": 0,
+        "attack_outgoing": 0,
+        "actual_attack_cross_target_chains": 0,
+        "numerical_failures": 0,
+        "mean_TRAIN_partial_score": -0.10808864540838994,
+        "formal_acceptance": false,
+        "rank": [
+          1,
+          0,
+          0,
+          -0.10808865,
+          0,
+          3
+        ]
+      },
+      "control_ticks": 422,
+      "env_steps": 54016
+    },
+    {
+      "candidate_id": 5,
+      "candidate": {
+        "candidate_id": 5,
+        "name": "recovery_handover_phase_minus015",
+        "gains": [
+          [
+            1.0,
+            1.0
+          ],
+          [
+            1.0,
+            1.0
+          ]
+        ],
+        "body_deltas": {
+          "3": -0.15
+        }
+      },
+      "summary": {
+        "episodes": 128,
+        "complete": 0,
+        "airborne_contacts": 4,
+        "conditional_recovery_count": 0,
+        "attack_outgoing": 0,
+        "actual_attack_cross_target_chains": 0,
+        "numerical_failures": 0,
+        "mean_TRAIN_partial_score": 0.32182778866536105,
+        "formal_acceptance": false,
+        "rank": [
+          1,
+          0,
+          0,
+          0.32182779,
+          0,
+          4
+        ]
+      },
+      "control_ticks": 800,
+      "env_steps": 102400
+    },
+    {
+      "candidate_id": 6,
+      "candidate": {
+        "candidate_id": 6,
+        "name": "walk_plus010_jump_earlier",
+        "gains": [
+          [
+            1.0,
+            1.0
+          ],
+          [
+            1.0,
+            1.0
+          ]
+        ],
+        "body_deltas": {
+          "1": 0.1,
+          "2": -0.04,
+          "3": 0.03810732841491699
+        }
+      },
+      "summary": {
+        "episodes": 128,
+        "complete": 0,
+        "airborne_contacts": 0,
+        "conditional_recovery_count": 0,
+        "attack_outgoing": 0,
+        "actual_attack_cross_target_chains": 0,
+        "numerical_failures": 0,
+        "mean_TRAIN_partial_score": -0.7549091357698974,
+        "formal_acceptance": false,
+        "rank": [
+          1,
+          0,
+          0,
+          -0.75490914,
+          0,
+          0
+        ]
+      },
+      "control_ticks": 800,
+      "env_steps": 102400
+    },
+    {
+      "candidate_id": 7,
+      "candidate": {
+        "candidate_id": 7,
+        "name": "walk_plus010_jump_later",
+        "gains": [
+          [
+            1.0,
+            1.0
+          ],
+          [
+            1.0,
+            1.0
+          ]
+        ],
+        "body_deltas": {
+          "1": 0.1,
+          "2": 0.04,
+          "3": -0.03810732841491699
+        }
+      },
+      "summary": {
+        "episodes": 128,
+        "complete": 0,
+        "airborne_contacts": 2,
+        "conditional_recovery_count": 0,
+        "attack_outgoing": 0,
+        "actual_attack_cross_target_chains": 0,
+        "numerical_failures": 0,
+        "mean_TRAIN_partial_score": -0.11705105129597296,
+        "formal_acceptance": false,
+        "rank": [
+          1,
+          0,
+          0,
+          -0.11705105,
+          0,
+          2
+        ]
+      },
+      "control_ticks": 800,
+      "env_steps": 102400
+    }
+  ],
+  "best_rank": [
+    1,
+    0,
+    0,
+    0.43860091,
+    0,
+    4
+  ],
+  "actual_control_env_steps": 715136,
+  "source_actor_weights_and_normalizers_unchanged": true,
+  "formal_cases_read": false,
+  "formal_acceptance": false
+}
