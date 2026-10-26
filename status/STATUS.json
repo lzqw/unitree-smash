@@ -49,39 +49,33 @@
     },
     "G07": {
       "state": "IN_PROGRESS",
-      "evidence": "reports/G07_full_racket_v4/body_strike_grid16_queue01/COLD_TRAIN128_RESULT.json",
-      "notes": "原布局Aim7及冷128实际完成：确认来源3完整/60空中/26合格恢复/24攻击、NF0，搜索5次未全复现。304.6MB完整包已上传新下载验证。原生origin16与origin0精度/隔离探针完成，最大球路误差7.396→0.173毫米，origin0副本球/根差0、球力0、提前done0、NF0，准入通过。旧严格腕部分支源准备拒绝，限位内近等效种子与Main动作核验通过。GPU0新origin0 8×128原生比较正由1884350/1884474/1884488运行，460输入保持；不继承旧成绩，正式A/B和50/70/85尚未通过。 新origin0第一原样候选已完成0/128完整、0空中拍线、11拍框、123身体触地、NF0；实际128均腾空，原样迁移失效，其余候选继续。",
+      "evidence": "reports/G07_full_racket_v4/origin0_transfer_diagnostic_20261027/RESULT.json",
+      "notes": "原布局Aim7及冷128实际完成：确认来源3完整/60空中/26合格恢复/24攻击、NF0，搜索5次未全复现。304.6MB完整包已上传新下载验证。原生origin16与origin0精度/隔离探针完成，最大球路误差7.396→0.173毫米，origin0副本球/根差0、球力0、提前done0、NF0，准入通过。旧严格腕部分支源准备拒绝，限位内近等效种子与Main动作核验通过。GPU0新origin0 8×128原生比较正由1884350/1884474/1884488运行，460输入保持；不继承旧成绩，正式A/B和50/70/85尚未通过。 新origin0第一原样候选已完成0/128完整、0空中拍线、11拍框、123身体触地、NF0；实际128均腾空，原样迁移失效，其余候选继续。 当前前三项origin0候选均0完整/0合格空中拍线，384行独立核对；实际准备阶段根倾角19.14度而旧腿残差请求很小，不能确定其为主因。新471输入的全身时序/恢复八项队列1891402等待当前所有者真实退出，已完成1600输入CPU与局部reset检查；尚无新原生成绩。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
       "active_gpu_jobs": [
         {
-          "state": "RUNNING_FRESH_BODY_RESIDUAL48",
-          "workflow_pid": 1814619,
-          "guard_pid": 1818795,
-          "native_child_pid": 1818808,
+          "state": "RUNNING_NATIVE_PREPOSE_ORIGIN0_8",
+          "workflow_pid": 1884350,
+          "guard_pid": 1884474,
+          "native_child_pid": 1884488,
           "gpu": 0,
-          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/body_residual_leg15_fresh_n2048_updates48_01",
-          "observed_at": "2026-10-26T10:49:35.962792+00:00",
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_sequential_n128_01",
+          "observed_at": "2026-10-26T19:39:05.870362+00:00",
           "verified_live_processes": true,
           "formal_acceptance": false
         }
       ],
       "queued_native_sequence": {
-        "state_file": "reports/G07_full_racket_v4/residual_eval_queue_1250/state.json",
-        "pid": 1560842,
-        "session_id": 79173,
-        "state_at_last_check": "SUCCEEDED",
-        "still_running": false,
-        "prior_guard_pid": 1559746,
-        "prior_child_pid": 1559760,
-        "next_jobs": [
-          "residual_ppo_fixed_train128_1250"
-        ],
-        "note": "Only after verified prior exit, SUCCEEDED receipt,8finite updates/131072steps/NF0,canonical checkpoint,matching export SHA/fidelity and unchanged inference source. Fixed TRAIN128 only; never duplicate manually.",
-        "current_guard_pid": 1564206,
-        "current_child_pid": 1564217
+        "owner_pid": 1891402,
+        "state": "WAITING_FOR_ACTUAL_PREPOSE_OWNER_EXIT",
+        "queue": "reports/G07_full_racket_v4/gain_body_after_prepose_queue01",
+        "wait_actual_parent_pid": 1884350,
+        "actual_child_pids": [],
+        "bound_input_count": 471,
+        "observed_at": "2026-10-26T19:39:05.870362+00:00"
       },
       "native_air_string_contact_milestone": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
       "latest_native_training_summary": "reports/G07_full_racket_v4/cem32_lateral_feedback_1015/GENERATION0_SUMMARY.json",
@@ -3978,6 +3972,17 @@
           "actual_numerical_failures": 0,
           "actual_actor_Adam_steps": 80,
           "all2048_initial_episodes_closed_before_actor_learning": true
+        },
+        {
+          "state": "RUNNING_FRESH_BODY_RESIDUAL48",
+          "workflow_pid": 1814619,
+          "guard_pid": 1818795,
+          "native_child_pid": 1818808,
+          "gpu": 0,
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/body_residual_leg15_fresh_n2048_updates48_01",
+          "observed_at": "2026-10-26T10:49:35.962792+00:00",
+          "verified_live_processes": true,
+          "formal_acceptance": false
         }
       ],
       "historical_completed_fixed_TRAIN128": [
@@ -9067,7 +9072,11 @@
         "main_runtime_changed": false,
         "formal_acceptance": false
       },
-      "last_goal_turn_classification": "progress: completed real2048000-step body search and cold128, verified all2560 episodes and18744 real action samples; found1 internal complete and measured cold41air/29recovery/17attack/0complete; delivered two fresh-download-verified real videos; serial alternative cold4 is live. Formal target remains unproven.",
+      "last_goal_turn_classification": {
+        "classification": "progress",
+        "reason": "Implemented and actually CPU-tested gain/body adaptation; independently assessed384 completed native rows and preparation dynamics; registered verified-live successor without changing current native inputs.",
+        "observed_at": "2026-10-26T19:39:05.870362+00:00"
+      },
       "completed_leg06_warmup13_frozen_TRAIN128": {
         "episodes": 128,
         "distinct_TRAIN_indices": [
@@ -9759,7 +9768,7 @@
         "formal_cases_read": false,
         "formal_acceptance": false
       },
-      "current_next_action": "Complete actual grid16, independently replay every candidate, then guarded fixed TRAIN128; prepare actual candidate4 video without changing held runtime sources.",
+      "current_next_action": "Finish current native prepose comparison and independent cold128; after actual owner exit, bind the measured winner and run admitted eight-candidate gain/body timing and recovery adaptation, then cold128. Original formal gates remain unmet.",
       "latest_current_video_candidate4": {
         "checked_at": "2026-10-26T09:49:37.125036+00:00",
         "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_body_candidate4_cold128_complete_and_failures_v2_20261026.mp4",
@@ -10375,10 +10384,10 @@
         "formal_acceptance": false
       },
       "current_full_racket_progress_20261027": {
-        "observed_at": "2026-10-26T19:08:11.702486+00:00",
+        "observed_at": "2026-10-26T19:39:05.870362+00:00",
         "actual_live_owner_pid": 1884350,
         "actual_live_native_pid": 1884488,
-        "actual_live_waiter_pid": null,
+        "actual_live_waiter_pid": 1891402,
         "measured_source_still_confirmed_complete": 3,
         "search_candidate_aim_uv_m": [
           0.0,
@@ -10417,7 +10426,7 @@
           "members": 49,
           "payloads_SHA_verified": 48
         },
-        "next_queue": null,
+        "next_queue": "reports/G07_full_racket_v4/gain_body_after_prepose_queue01",
         "formal_cases_read": false,
         "formal_acceptance": false,
         "secondary_actual_live_waiter_pid": null,
@@ -10506,6 +10515,63 @@
           "source_weights_and_commands_matched": true,
           "source_old_layout_performance_not_inherited": true,
           "scope": "Completed reference candidate only; overall eight-candidate job remains running. No new cold or formal score inferred.",
+          "formal_cases_read": false,
+          "formal_acceptance": false
+        },
+        "next_queue_bound_inputs": 471,
+        "first_three_origin0_completed_counts": {
+          "episodes_each": 128,
+          "complete": [
+            0,
+            0,
+            0
+          ],
+          "airborne": [
+            0,
+            0,
+            0
+          ],
+          "numerical_failures": [
+            0,
+            0,
+            0
+          ]
+        },
+        "actual_preparation_diagnostic": "reports/G07_full_racket_v4/origin0_transfer_diagnostic_20261027/RESULT.json",
+        "next_method_CPU_check": {
+          "checked_at": "2026-10-26T19:36:41.103815+00:00",
+          "proposal_sha256": "afdeb7a31ab7f5a42f5b5f82e4204a245d4347b6408d144ae20da468880cfac4",
+          "source_policy_sha256": "a7953fb80d0ea647cbd6d525d8ddbf8a0a0986f1bcecfbe8831db2c1384473a3",
+          "actual_valid_source_public_rows": 1600,
+          "exact_reference_max_action_error": 0.0,
+          "zero_layers_vs_analytic_max_action_error": 0.0,
+          "CPU_vs_recorded_source_GPU_max_action_error": 1.0311603546142578e-05,
+          "original_action_tolerance": 0.0005,
+          "maximum_final_command_slew_excess_rad": 2.384185791015625e-07,
+          "normalized_roundtrip_tolerance_rad": 2e-06,
+          "changed_public_rows_by_candidate": [
+            0,
+            1600,
+            68,
+            60,
+            572,
+            122,
+            406,
+            406
+          ],
+          "source_checkpoint_tree_unchanged": true,
+          "exact_two_layer_order_checked": true,
+          "actual_saturation_then_gain_checked": true,
+          "partial_reset_checked": true,
+          "invalid_gain_rejections": 5,
+          "source_sha256": {
+            "/home/autodrive/LZQW/unitree_smash_landing_targets/quadsmash/control/full_racket_residual_gain_v4.py": "53b29b97f27541b33e3c0e67c722bace1226c7a9134569007ea404aea269f6bb",
+            "/home/autodrive/LZQW/unitree_smash_landing_targets/quadsmash/control/full_racket_gain_body_adaptation_v4.py": "a158d8755c027b2527a1e1d2f9fe4676be0f7dcf787f483696ea3b49367a989a",
+            "/home/autodrive/LZQW/unitree_smash_landing_targets/scripts/prepare_full_racket_gain_body_v4.py": "0980569cbc9f8f829fd3cf87e03e74989357df254e0ec6b44bc0315864c1b70d",
+            "/home/autodrive/LZQW/unitree_smash_landing_targets/scripts/check_full_racket_gain_body_cpu_v4.py": "a87df1d598c573cd2ba07d28ef3cf0127b2dbe92adf32c16d0ce893d627e628c"
+          },
+          "scope": "Full actual public-input replay and software command checks; no new physical performance inferred.",
+          "new_native_execution": false,
           "formal_cases_read": false,
           "formal_acceptance": false
         }
