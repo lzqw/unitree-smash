@@ -1,6 +1,6 @@
 # QuadSmash：Codex /goal 实施与训练任务包
 
-当前进展（2026-10-26 09:02UTC）：[最新81.58秒冷评估视频](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_fixed_actor_body_cem_gen2_orthographic_v3_20261026.mp4)和[40.74秒搜索完整例与失败视频](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_training_body_search_complete_and_failures_20261026.mp4)均已上传并新下载核验。新body教师原全128冷评估为0完整、41空中、29恢复、17攻击、NF0；搜索中出现1次完整，不能当作冷评估通过。[完整报告与逐回合CSV](reports/G07_full_racket_v4/body_search_completed2_delivery_20261026/REPORT.md)已保存。GPU0正串行补测候选4；当前384持有输入保持。正式A/B及50/70/85目标仍未通过。
+当前进展（2026-10-26 09:42UTC）：最新候选4在原全TRAIN128固定评估首次做到**1完整、59空中、30合格恢复、8攻击、NF0**，尚未通过原50/70/85及正式A/B各200。[原始结果与首个完整回合](reports/G07_full_racket_v4/body_candidate4_cold_queue01/REPORT.md)保留。最新候选4真实视频正在CPU生成，保留完整例与此前六个诊断回合。GPU0已实际接上[16候选拦截/拍面/挥拍增益网格](reports/G07_full_racket_v4/body_strike_grid16_queue01/REPORT.md)，父1810743/guard1810750/native1810764；390来源加PLAN保持，之后独立动作复算和原128固定评估。
 
 以下为历史进展记录，其中运行中措辞只代表当时观察；当前状态以上段与status/STATUS.json为准。
 
