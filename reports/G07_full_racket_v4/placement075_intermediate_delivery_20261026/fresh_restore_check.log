@@ -1,0 +1,17 @@
+Traceback (most recent call last):
+  File "/tmp/g07_075_intermediate_restore_20261026_nrrzb2cd/reports/G07_full_racket_v4/placement075_intermediate_delivery_20261026/bundle.py", line 164, in <module>
+    result=validate(args.check_root,args.iterations,args.require_bundled)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/g07_075_intermediate_restore_20261026_nrrzb2cd/reports/G07_full_racket_v4/placement075_intermediate_delivery_20261026/bundle.py", line 48, in validate
+    cases, indices = training_cases(root, protocol);assert indices == list(range(128))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/g07_075_intermediate_restore_20261026_nrrzb2cd/quadsmash/control/full_racket_train_evaluation_v4.py", line 16, in training_cases
+    payload = source.read_bytes()
+              ^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/pathlib.py", line 1050, in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/pathlib.py", line 1044, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/g07_075_intermediate_restore_20261026_nrrzb2cd/reports/G07_full_racket_v4/protocol_frozen01/training_cases.json'
