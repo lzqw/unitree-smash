@@ -21,3 +21,7 @@
 [离线对照图](Release_target_geometry_20261026.png)左侧4个没有原生首落点的案例保留为空项；右图数量是27个既有空中触球上的CPU几何候选，不是新触球率或完整成功率。原A/B各200及50/70/85仍未通过。
 
 复现入口为analyze.py、analyze_earlier_points.py和plot.py；数据取自已发布253MB leg06包的episodes/contacts/all_first_episodes/geometry。原执行使用相邻main工作树保存的数据及当前302项持有源码核对，具体绝对路径、全部输入SHA和预先检查门槛记录在两个PLAN中。该分支尚未集成主控制器。
+
+固定机身的标准PiPER补充检查已运行：81个实际原生姿态重建，FK最大位置误差2.1781e-5米。当前/提前一次/提前两次球位置，匹配原实际拍面方向的局部种子为25/27、4/27、0/27，匹配原教师目标法向为1/27、3/27、0/27。原关节界限保留，5rad/s仅用于必要关节行程时间下界；不证明碰撞、跟踪、冲击或恢复，更不能以局部IK失败证明不可达。ARM_REACH_RESULT保留全部162个拟合结果。
+
+来源清单修正：原执行稿误列未被加载的legacy full_racket_v4.json，并漏列实际r3配置和加载器。arm_reach_v1_provenance目录保留原稿、PLAN和结果；补齐实际full_racket_v4_r3.json、physics/full_racket_v4.py与piper_geometry.py后重新执行，FK误差和全部计数相同。原主分支运行时没有因此改动。
