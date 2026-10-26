@@ -176,14 +176,24 @@ def run_job(output,command,seconds,steps,label,expected,training=False):
             stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
         write(label,guard_pid=child.pid,output=str(output))
         checked = set()
-        while child.poll() is None:
-            assert not stopping
-            if training:
-                for iteration in [1,7,8]:
-                    if iteration not in checked and (TRAIN/f'ppo/model_{iteration-1}.pt').exists():
-                        result = verify_update(iteration)
-                        save(HERE/f'ACTUAL_UPDATE{iteration}_CHECK.json',result); checked.add(iteration)
-            time.sleep(5)
+        try:
+            while child.poll() is None:
+                assert not stopping
+                if training:
+                    for iteration in [1,7,8]:
+                        if iteration not in checked and (TRAIN/f'ppo/model_{iteration-1}.pt').exists():
+                            result = verify_update(iteration)
+                            save(HERE/f'ACTUAL_UPDATE{iteration}_CHECK.json',result); checked.add(iteration)
+                time.sleep(5)
+        except BaseException:
+            # A semantic validation failure interrupts only this workflow's
+            # guard, allowing its existing checkpoint/receipt shutdown path.
+            # A slow observation never enters this branch: polling has no
+            # observation timeout, and it never restarts a native job.
+            if child.poll() is None:
+                if not stopping: child.send_signal(signal.SIGTERM)
+                child.wait(timeout=30)
+            raise
         assert child.returncode == 0 and not stopping, 'Preserve actual failure; no automatic retry'
         if training:
             for iteration in [1,7,8]:
