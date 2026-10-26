@@ -1,0 +1,4917 @@
+{
+  "checked_at": "2026-10-26T18:14:23.175578+00:00",
+  "candidate_original128_summary": {
+    "episodes": 128,
+    "complete": 5,
+    "airborne_contacts": 60,
+    "conditional_recovery_count": 28,
+    "attack_outgoing": 21,
+    "actual_attack_cross_target_chains": 7,
+    "numerical_failures": 0,
+    "mean_TRAIN_partial_score": 13.562548517683481,
+    "formal_acceptance": false,
+    "rank": [
+      1,
+      5,
+      7,
+      13.56254852,
+      28,
+      60
+    ]
+  },
+  "funnel": {
+    "all_original_cases": 128,
+    "air": 60,
+    "attack": 21,
+    "attack_legal_cross": 19,
+    "attack_legal_cross_target": 7,
+    "complete": 5
+  },
+  "attack_legal_cross_outside_target_TRAIN_indices": [
+    1,
+    3,
+    6,
+    8,
+    15,
+    17,
+    33,
+    34,
+    37,
+    42,
+    91,
+    96
+  ],
+  "target_chain_recovery_failure_TRAIN_indices": [
+    13,
+    36
+  ],
+  "source_requested_normal_world": [
+    0.9801003399493873,
+    0.0,
+    -0.1985027043420204
+  ],
+  "attack_contacts_face_angle_error_median_deg": 15.035932731405385,
+  "attack_contacts_face_yaw_median_deg": -7.1733483272531675,
+  "attack_contacts_face_pitch_median_deg": 1.0995577514759132,
+  "attack_contacts_post_point_vy_median_mps": -1.0973261594772339,
+  "precontact_flight_calibration_cases": 60,
+  "precontact_flight_calibration_within_2mm": 24,
+  "maximum_precontact_forecast_position_error_m": 0.033282464846946073,
+  "diagnostic_apparent_normal_mass_median_kg": 0.049506575264175325,
+  "measurements": [
+    {
+      "TRAIN_index": 0,
+      "actual_native_episode_index": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        4.491444110870361,
+        -6.6806511878967285,
+        -1.6627641916275024
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9889273764183334,
+        -0.13246752483384808,
+        0.06689543358665076
+      ],
+      "actual_face_pitch_deg": 3.835690433981103,
+      "actual_face_yaw_deg": -7.629395796137645,
+      "desired_vs_actual_face_angle_deg": 17.065648616489852,
+      "actual_post_contact_point_velocity_mps": [
+        0.5692498087882996,
+        -0.34775426983833313,
+        -0.5627779364585876
+      ]
+    },
+    {
+      "TRAIN_index": 1,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": true,
+      "attack_legal_cross": true,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.5207672119140625,
+        -1.0320968627929688,
+        0.02512911707162857
+      ],
+      "actual_outgoing_velocity_mps": [
+        7.906617164611816,
+        -2.4655749797821045,
+        -1.489227294921875
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9891864052611183,
+        -0.13646085548258668,
+        0.05374654005187046
+      ],
+      "actual_face_pitch_deg": 3.0809344352835324,
+      "actual_face_yaw_deg": -7.854526922458609,
+      "desired_vs_actual_face_angle_deg": 16.497303872103384,
+      "actual_post_contact_point_velocity_mps": [
+        0.587040364742279,
+        -1.286515712738037,
+        -0.058347225189208984
+      ],
+      "precontact_position_samples": 37,
+      "maximum_precontact_forecast_position_error_m": 0.0034611830138353227,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -7.757801662992364,
+        -0.3915031703072361,
+        -3.117605744800208
+      ],
+      "post_contact_ball_velocity_mps": [
+        7.906617164611816,
+        -2.4655749797821045,
+        -1.489227294921875
+      ],
+      "apparent_normal_effective_mass_kg": 0.05056331967869724,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.1747790674974192
+    },
+    {
+      "TRAIN_index": 2,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.7178726196289062,
+        -0.9365692138671875,
+        0.02521725744009018
+      ],
+      "actual_outgoing_velocity_mps": [
+        6.458169460296631,
+        -2.1938059329986572,
+        -1.906180500984192
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9755410331362603,
+        -0.217527846541999,
+        0.03164377736994306
+      ],
+      "actual_face_pitch_deg": 1.8133576048712852,
+      "actual_face_yaw_deg": -12.570270863047694,
+      "desired_vs_actual_face_angle_deg": 18.222976710488975,
+      "actual_post_contact_point_velocity_mps": [
+        0.18741805851459503,
+        0.12946519255638123,
+        -0.46326860785484314
+      ],
+      "precontact_position_samples": 37,
+      "maximum_precontact_forecast_position_error_m": 0.0038930178286424116,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -7.450884813140251,
+        0.4682388148579133,
+        -3.1295303045235543
+      ],
+      "post_contact_ball_velocity_mps": [
+        6.458169460296631,
+        -2.1938059329986572,
+        -1.906180500984192
+      ],
+      "apparent_normal_effective_mass_kg": 0.04836428735045246,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.0982226459219548
+    },
+    {
+      "TRAIN_index": 3,
+      "actual_native_episode_index": 4,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": true,
+      "attack_legal_cross": true,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": true,
+      "first_landing_m": [
+        5.85919189453125,
+        -0.8728256225585938,
+        0.02504155784845352
+      ],
+      "actual_outgoing_velocity_mps": [
+        7.44051456451416,
+        -1.4316036701202393,
+        -3.321247100830078
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9923804995827555,
+        -0.10953779515767244,
+        -0.05641290171473435
+      ],
+      "actual_face_pitch_deg": -3.2339380165925484,
+      "actual_face_yaw_deg": -6.298743282527361,
+      "desired_vs_actual_face_angle_deg": 10.317436486688187,
+      "actual_post_contact_point_velocity_mps": [
+        0.6213275194168091,
+        -1.830868124961853,
+        0.04806976765394211
+      ],
+      "precontact_position_samples": 38,
+      "maximum_precontact_forecast_position_error_m": 0.002146343334289005,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -7.374144515684143,
+        0.6611853785235438,
+        -3.705824486527522
+      ],
+      "post_contact_ball_velocity_mps": [
+        7.44051456451416,
+        -1.4316036701202393,
+        -3.321247100830078
+      ],
+      "apparent_normal_effective_mass_kg": 0.048261669070541406,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.1566219517978658
+    },
+    {
+      "TRAIN_index": 4,
+      "actual_native_episode_index": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        5.037195205688477,
+        2.8344340324401855,
+        -4.102148056030273
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9878205287391211,
+        -0.1303979635326691,
+        0.0848938991217623
+      ],
+      "actual_face_pitch_deg": 4.869923684200139,
+      "actual_face_yaw_deg": -7.519892638357178,
+      "desired_vs_actual_face_angle_deg": 17.9526499659072,
+      "actual_post_contact_point_velocity_mps": [
+        0.8191907405853271,
+        -0.7746341228485107,
+        -0.27048471570014954
+      ]
+    },
+    {
+      "TRAIN_index": 5,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.277618408203125,
+        -1.2000067234039307,
+        0.02509762905538082
+      ],
+      "actual_outgoing_velocity_mps": [
+        6.914261817932129,
+        -2.3366448879241943,
+        -0.9973489046096802
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9789307364147457,
+        -0.1504828818810391,
+        0.13801998247812114
+      ],
+      "actual_face_pitch_deg": 7.933287324904884,
+      "actual_face_yaw_deg": -8.739195459836328,
+      "desired_vs_actual_face_angle_deg": 21.242863168557452,
+      "actual_post_contact_point_velocity_mps": [
+        0.5197769999504089,
+        -0.01983821950852871,
+        -0.5616856813430786
+      ],
+      "precontact_position_samples": 38,
+      "maximum_precontact_forecast_position_error_m": 0.0006440258237831391,
+      "precontact_forecast_within_diagnostic_bound": true,
+      "predicted_incoming_velocity_mps": [
+        -7.146338888855643,
+        -0.7627808237667435,
+        -3.6478694625349855
+      ],
+      "post_contact_ball_velocity_mps": [
+        6.914261817932129,
+        -2.3366448879241943,
+        -0.9973489046096802
+      ],
+      "apparent_normal_effective_mass_kg": 0.05854603027017108,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 0.9187662666491194
+    },
+    {
+      "TRAIN_index": 6,
+      "actual_native_episode_index": 4,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": true,
+      "attack_legal_cross": true,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.356651306152344,
+        -1.0129156112670898,
+        0.025216413661837578
+      ],
+      "actual_outgoing_velocity_mps": [
+        7.986882209777832,
+        -2.531376600265503,
+        -2.035315752029419
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9860462171284072,
+        -0.16536206377595247,
+        0.019189725128721996
+      ],
+      "actual_face_pitch_deg": 1.0995577514759132,
+      "actual_face_yaw_deg": -9.520037453773908,
+      "desired_vs_actual_face_angle_deg": 15.716237480464686,
+      "actual_post_contact_point_velocity_mps": [
+        0.20970851182937622,
+        -1.6177352666854858,
+        0.04138506203889847
+      ],
+      "precontact_position_samples": 35,
+      "maximum_precontact_forecast_position_error_m": 0.0009410719193571768,
+      "precontact_forecast_within_diagnostic_bound": true,
+      "predicted_incoming_velocity_mps": [
+        -8.399022614148326,
+        0.5252617499988477,
+        -2.94099975417077
+      ],
+      "post_contact_ball_velocity_mps": [
+        7.986882209777832,
+        -2.531376600265503,
+        -2.035315752029419
+      ],
+      "apparent_normal_effective_mass_kg": 0.04552654280789618,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.371733016513871
+    },
+    {
+      "TRAIN_index": 7,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.174263000488281,
+        -1.0201549530029297,
+        0.025158975273370743
+      ],
+      "actual_outgoing_velocity_mps": [
+        7.008886814117432,
+        -2.048590898513794,
+        -1.3373769521713257
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9799777743353469,
+        -0.18861937287962466,
+        0.0637674994275041
+      ],
+      "actual_face_pitch_deg": 3.6560892369271043,
+      "actual_face_yaw_deg": -10.894666666909934,
+      "desired_vs_actual_face_angle_deg": 18.590994904017403,
+      "actual_post_contact_point_velocity_mps": [
+        0.2795209288597107,
+        0.046509429812431335,
+        -0.5230870246887207
+      ],
+      "precontact_position_samples": 37,
+      "maximum_precontact_forecast_position_error_m": 0.001704387805172575,
+      "precontact_forecast_within_diagnostic_bound": true,
+      "predicted_incoming_velocity_mps": [
+        -7.804408579923422,
+        0.22969175127514158,
+        -3.267071562518825
+      ],
+      "post_contact_ball_velocity_mps": [
+        7.008886814117432,
+        -2.048590898513794,
+        -1.3373769521713257
+      ],
+      "apparent_normal_effective_mass_kg": 0.052089983987077745,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.0831282697281743
+    },
+    {
+      "TRAIN_index": 8,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "attack": true,
+      "attack_legal_cross": true,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.147003173828125,
+        -1.2926788330078125,
+        0.025114405900239944
+      ],
+      "actual_outgoing_velocity_mps": [
+        7.395565509796143,
+        -2.8710179328918457,
+        -1.6616630554199219
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9808918179780407,
+        -0.17501413718856615,
+        0.08497819254300411
+      ],
+      "actual_face_pitch_deg": 4.874770857199478,
+      "actual_face_yaw_deg": -10.116456882876877,
+      "desired_vs_actual_face_angle_deg": 19.177751130367582,
+      "actual_post_contact_point_velocity_mps": [
+        0.8062212467193604,
+        0.04767345264554024,
+        -0.6443268060684204
+      ],
+      "precontact_position_samples": 37,
+      "maximum_precontact_forecast_position_error_m": 0.0015701966997154425,
+      "precontact_forecast_within_diagnostic_bound": true,
+      "predicted_incoming_velocity_mps": [
+        -7.616935724788774,
+        -1.0487227487868946,
+        -3.8650543559216124
+      ],
+      "post_contact_ball_velocity_mps": [
+        7.395565509796143,
+        -2.8710179328918457,
+        -1.6616630554199219
+      ],
+      "apparent_normal_effective_mass_kg": 0.06479663234516084,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 0.8801057139802451
+    },
+    {
+      "TRAIN_index": 9,
+      "actual_native_episode_index": 3,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        6.7370171546936035,
+        -2.031158447265625,
+        -2.448911666870117
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9901822703078683,
+        -0.1362067744961335,
+        0.031413152489286195
+      ],
+      "actual_face_pitch_deg": 1.8001372000630962,
+      "actual_face_yaw_deg": -7.832297188636479,
+      "desired_vs_actual_face_angle_deg": 15.368256051449745,
+      "actual_post_contact_point_velocity_mps": [
+        0.6969316005706787,
+        -0.5989161729812622,
+        -0.401255339384079
+      ],
+      "precontact_position_samples": 36,
+      "maximum_precontact_forecast_position_error_m": 0.007359626061212298,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -6.568486793764589,
+        -0.46066990044172573,
+        -3.831764982362594
+      ],
+      "post_contact_ball_velocity_mps": [
+        6.7370171546936035,
+        -2.031158447265625,
+        -2.448911666870117
+      ],
+      "apparent_normal_effective_mass_kg": 0.05982287106144504,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 0.8406525759274137
+    },
+    {
+      "TRAIN_index": 10,
+      "actual_native_episode_index": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.039512634277344,
+        0.6285476684570312,
+        0.025074828416109085
+      ],
+      "actual_outgoing_velocity_mps": [
+        7.569746494293213,
+        1.3599510192871094,
+        -2.182377576828003
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9953624456847167,
+        -0.0703400064885982,
+        0.0656192441873837
+      ],
+      "actual_face_pitch_deg": 3.7624091318279502,
+      "actual_face_yaw_deg": -4.042242834815858,
+      "desired_vs_actual_face_angle_deg": 15.734322306183808,
+      "actual_post_contact_point_velocity_mps": [
+        0.6183470487594604,
+        -1.42923903465271,
+        0.21958579123020172
+      ]
+    },
+    {
+      "TRAIN_index": 11,
+      "actual_native_episode_index": 6,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        6.218843460083008,
+        -1.7228281497955322,
+        -1.5836262702941895
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9666419965662417,
+        -0.21914170102824249,
+        0.13259021587160405
+      ],
+      "actual_face_pitch_deg": 7.619296740369695,
+      "actual_face_yaw_deg": -12.77328235238317,
+      "desired_vs_actual_face_angle_deg": 22.914539198893504,
+      "actual_post_contact_point_velocity_mps": [
+        0.4952195882797241,
+        0.6980363726615906,
+        -0.9866102933883667
+      ],
+      "precontact_position_samples": 37,
+      "maximum_precontact_forecast_position_error_m": 0.010913160878210091,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -6.472017064915274,
+        0.7311307002659863,
+        -3.824118064910276
+      ],
+      "post_contact_ball_velocity_mps": [
+        6.218843460083008,
+        -1.7228281497955322,
+        -1.5836262702941895
+      ],
+      "apparent_normal_effective_mass_kg": 0.05711585301978244,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 0.8588719009614296
+    },
+    {
+      "TRAIN_index": 12,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": true,
+      "attack": true,
+      "attack_legal_cross": true,
+      "attack_legal_cross_target": true,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.9573822021484375,
+        -0.589385986328125,
+        0.025133172050118446
+      ],
+      "actual_outgoing_velocity_mps": [
+        7.712463855743408,
+        -1.4003641605377197,
+        -2.4832520484924316
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9956353580189928,
+        -0.09325947868631547,
+        0.0035921438652288256
+      ],
+      "actual_face_pitch_deg": 0.2058151255055349,
+      "actual_face_yaw_deg": -5.3511851415135085,
+      "desired_vs_actual_face_angle_deg": 12.810302177858249,
+      "actual_post_contact_point_velocity_mps": [
+        0.708325207233429,
+        -1.0256088972091675,
+        -0.2726481854915619
+      ],
+      "precontact_position_samples": 40,
+      "maximum_precontact_forecast_position_error_m": 0.002871975770667378,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -7.489329674065001,
+        -0.1133880065580025,
+        -4.001493232148653
+      ],
+      "post_contact_ball_velocity_mps": [
+        7.712463855743408,
+        -1.4003641605377197,
+        -2.4832520484924316
+      ],
+      "apparent_normal_effective_mass_kg": 0.05425435377308901,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.0531299157496985
+    },
+    {
+      "TRAIN_index": 13,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": true,
+      "attack_legal_cross": true,
+      "attack_legal_cross_target": true,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.9905014038085938,
+        -0.41698455810546875,
+        0.02511850744485855
+      ],
+      "actual_outgoing_velocity_mps": [
+        7.808075428009033,
+        -1.1087480783462524,
+        -2.691157817840576
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9965158157920257,
+        -0.08340221687825447,
+        0.000546896833111138
+      ],
+      "actual_face_pitch_deg": 0.031334881928362604,
+      "actual_face_yaw_deg": -4.7841530879154766,
+      "desired_vs_actual_face_angle_deg": 12.425415430152047,
+      "actual_post_contact_point_velocity_mps": [
+        0.9401060938835144,
+        -1.095800757408142,
+        -0.28464171290397644
+      ],
+      "precontact_position_samples": 38,
+      "maximum_precontact_forecast_position_error_m": 0.004037181561451333,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -6.770468375573436,
+        0.3994488256895344,
+        -3.8308754295354825
+      ],
+      "post_contact_ball_velocity_mps": [
+        7.808075428009033,
+        -1.1087480783462524,
+        -2.691157817840576
+      ],
+      "apparent_normal_effective_mass_kg": 0.044958648666770934,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.2203474906664722
+    },
+    {
+      "TRAIN_index": 14,
+      "actual_native_episode_index": 4,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        -1.459228515625,
+        0.1402301788330078,
+        0.02500736340880394
+      ],
+      "actual_outgoing_velocity_mps": null
+    },
+    {
+      "TRAIN_index": 15,
+      "actual_native_episode_index": 5,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": true,
+      "attack_legal_cross": true,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.4523773193359375,
+        -0.8028984069824219,
+        0.025090238079428673
+      ],
+      "actual_outgoing_velocity_mps": [
+        7.646086692810059,
+        -1.9674088954925537,
+        -1.6395988464355469
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.987383215746793,
+        -0.1580372201016455,
+        0.009930877305962241
+      ],
+      "actual_face_pitch_deg": 0.5690067095492614,
+      "actual_face_yaw_deg": -9.09344000112288,
+      "desired_vs_actual_face_angle_deg": 15.035932731405385,
+      "actual_post_contact_point_velocity_mps": [
+        0.13874757289886475,
+        -1.7417404651641846,
+        0.22857095301151276
+      ],
+      "precontact_position_samples": 36,
+      "maximum_precontact_forecast_position_error_m": 0.00087031705328763,
+      "precontact_forecast_within_diagnostic_bound": true,
+      "predicted_incoming_velocity_mps": [
+        -7.883895660433441,
+        0.8256892740117091,
+        -2.876352772498338
+      ],
+      "post_contact_ball_velocity_mps": [
+        7.646086692810059,
+        -1.9674088954925537,
+        -1.6395988464355469
+      ],
+      "apparent_normal_effective_mass_kg": 0.041863092396563335,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.4119667963456246
+    },
+    {
+      "TRAIN_index": 16,
+      "actual_native_episode_index": 5,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.0201568603515625,
+        -0.9107946753501892,
+        0.02505071647465229
+      ],
+      "actual_outgoing_velocity_mps": [
+        7.011959075927734,
+        -2.024299144744873,
+        -1.749282956123352
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9908623186635577,
+        -0.12399223556100085,
+        0.05308286892457302
+      ],
+      "actual_face_pitch_deg": 3.042854517705352,
+      "actual_face_yaw_deg": -7.1326708288357,
+      "desired_vs_actual_face_angle_deg": 16.135447532913478,
+      "actual_post_contact_point_velocity_mps": [
+        0.6274471879005432,
+        -0.2549173831939697,
+        -0.46285346150398254
+      ],
+      "precontact_position_samples": 36,
+      "maximum_precontact_forecast_position_error_m": 0.0009515959381892402,
+      "precontact_forecast_within_diagnostic_bound": true,
+      "predicted_incoming_velocity_mps": [
+        -6.719007304325559,
+        -0.7245218755947681,
+        -3.195060487077315
+      ],
+      "post_contact_ball_velocity_mps": [
+        7.011959075927734,
+        -2.024299144744873,
+        -1.749282956123352
+      ],
+      "apparent_normal_effective_mass_kg": 0.04416074771644169,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.1736601585776008
+    },
+    {
+      "TRAIN_index": 17,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "attack": true,
+      "attack_legal_cross": true,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        5.00799560546875,
+        -0.9073600769042969,
+        0.025046026334166527
+      ],
+      "actual_outgoing_velocity_mps": [
+        9.148334503173828,
+        -2.1742255687713623,
+        -1.665385127067566
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9862791702270727,
+        -0.1536044299253984,
+        0.06049030900475045
+      ],
+      "actual_face_pitch_deg": 3.4679565244393937,
+      "actual_face_yaw_deg": -8.852206894325704,
+      "desired_vs_actual_face_angle_deg": 17.32228581474656,
+      "actual_post_contact_point_velocity_mps": [
+        0.9680590033531189,
+        -0.6977680921554565,
+        -0.48326072096824646
+      ],
+      "precontact_position_samples": 36,
+      "maximum_precontact_forecast_position_error_m": 0.0009345032383927016,
+      "precontact_forecast_within_diagnostic_bound": true,
+      "predicted_incoming_velocity_mps": [
+        -8.33045032006936,
+        0.3668072687068497,
+        -3.6410749176452293
+      ],
+      "post_contact_ball_velocity_mps": [
+        9.148334503173828,
+        -2.1742255687713623,
+        -1.665385127067566
+      ],
+      "apparent_normal_effective_mass_kg": 0.048683001865584025,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.3649826409677344
+    },
+    {
+      "TRAIN_index": 18,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.0372314453125,
+        -0.7794685363769531,
+        0.025187231600284576
+      ],
+      "actual_outgoing_velocity_mps": [
+        6.932993412017822,
+        -1.7994558811187744,
+        -1.498905062675476
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9815094328433814,
+        -0.17046855142501513,
+        0.08706150822562457
+      ],
+      "actual_face_pitch_deg": 4.994580157800851,
+      "actual_face_yaw_deg": -9.852845633610471,
+      "desired_vs_actual_face_angle_deg": 19.14427329575714,
+      "actual_post_contact_point_velocity_mps": [
+        0.45620599389076233,
+        0.060158662497997284,
+        -0.6225370168685913
+      ],
+      "precontact_position_samples": 37,
+      "maximum_precontact_forecast_position_error_m": 0.001035549740627913,
+      "precontact_forecast_within_diagnostic_bound": true,
+      "predicted_incoming_velocity_mps": [
+        -7.206918908694079,
+        0.4127308611773028,
+        -3.227463699030227
+      ],
+      "post_contact_ball_velocity_mps": [
+        6.932993412017822,
+        -1.7994558811187744,
+        -1.498905062675476
+      ],
+      "apparent_normal_effective_mass_kg": 0.05527702429661359,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 0.9757449188654963
+    },
+    {
+      "TRAIN_index": 19,
+      "actual_native_episode_index": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        4.422037601470947,
+        3.4476728439331055,
+        -2.957141160964966
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9921072203695691,
+        -0.12445730814166255,
+        0.01528534398364604
+      ],
+      "actual_face_pitch_deg": 0.8758198056038723,
+      "actual_face_yaw_deg": -7.150256811781972,
+      "desired_vs_actual_face_angle_deg": 14.226813968783103,
+      "actual_post_contact_point_velocity_mps": [
+        0.5206846594810486,
+        -1.1472649574279785,
+        0.1633472740650177
+      ]
+    },
+    {
+      "TRAIN_index": 20,
+      "actual_native_episode_index": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        -1.113189697265625,
+        -0.07656478881835938,
+        0.0250609889626503
+      ],
+      "actual_outgoing_velocity_mps": null
+    },
+    {
+      "TRAIN_index": 21,
+      "actual_native_episode_index": 5,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        6.793040752410889,
+        -1.199918270111084,
+        -1.1219969987869263
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9810408370804007,
+        -0.14511171008457976,
+        0.1284580381950291
+      ],
+      "actual_face_pitch_deg": 7.380497321829271,
+      "actual_face_yaw_deg": -8.413957343939373,
+      "desired_vs_actual_face_angle_deg": 20.60656912252483,
+      "actual_post_contact_point_velocity_mps": [
+        0.02027067542076111,
+        0.8994246125221252,
+        -0.8575726747512817
+      ],
+      "precontact_position_samples": 36,
+      "maximum_precontact_forecast_position_error_m": 0.009681855165991692,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -7.939784552610585,
+        0.4787483169586692,
+        -3.5972644528488504
+      ],
+      "post_contact_ball_velocity_mps": [
+        6.793040752410889,
+        -1.199918270111084,
+        -1.1219969987869263
+      ],
+      "apparent_normal_effective_mass_kg": 0.05190734263019707,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.08301450616628
+    },
+    {
+      "TRAIN_index": 22,
+      "actual_native_episode_index": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        4.746798515319824,
+        3.1727404594421387,
+        -2.999753475189209
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.993708139069387,
+        -0.07196509877007792,
+        0.08582050399682274
+      ],
+      "actual_face_pitch_deg": 4.923208703013637,
+      "actual_face_yaw_deg": -4.142172428720725,
+      "desired_vs_actual_face_angle_deg": 16.88333779882196,
+      "actual_post_contact_point_velocity_mps": [
+        0.8548096418380737,
+        -1.0166001319885254,
+        -0.16364505887031555
+      ]
+    },
+    {
+      "TRAIN_index": 23,
+      "actual_native_episode_index": 4,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        6.112061023712158,
+        -2.8097004890441895,
+        -2.9223804473876953
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9872170620074133,
+        -0.15704983366798728,
+        -0.02716288324734098
+      ],
+      "actual_face_pitch_deg": -1.5565100141214738,
+      "actual_face_yaw_deg": -9.039062442966957,
+      "desired_vs_actual_face_angle_deg": 13.353488957787771,
+      "actual_post_contact_point_velocity_mps": [
+        -0.32824862003326416,
+        -0.8706784248352051,
+        0.4512588679790497
+      ],
+      "precontact_position_samples": 37,
+      "maximum_precontact_forecast_position_error_m": 0.0019120524308026002,
+      "precontact_forecast_within_diagnostic_bound": true,
+      "predicted_incoming_velocity_mps": [
+        -8.123023916722934,
+        -0.9183347558423325,
+        -3.6696222853172196
+      ],
+      "post_contact_ball_velocity_mps": [
+        6.112061023712158,
+        -2.8097004890441895,
+        -2.9223804473876953
+      ],
+      "apparent_normal_effective_mass_kg": 0.041281775300989886,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.2996290992893718
+    },
+    {
+      "TRAIN_index": 24,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.8431129455566406,
+        -0.54620361328125,
+        0.025073474273085594
+      ],
+      "actual_outgoing_velocity_mps": [
+        6.821808338165283,
+        -1.398372769355774,
+        -1.910737156867981
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9880643962016754,
+        -0.1468961369882613,
+        0.04637104588581723
+      ],
+      "actual_face_pitch_deg": 2.657818308037616,
+      "actual_face_yaw_deg": -8.456258790860442,
+      "desired_vs_actual_face_angle_deg": 16.423625284186038,
+      "actual_post_contact_point_velocity_mps": [
+        0.7708820700645447,
+        -0.734840452671051,
+        -0.42657095193862915
+      ],
+      "precontact_position_samples": 38,
+      "maximum_precontact_forecast_position_error_m": 0.0024994537688564854,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -6.020172473354697,
+        0.6091778140957463,
+        -3.2681532705326393
+      ],
+      "post_contact_ball_velocity_mps": [
+        6.821808338165283,
+        -1.398372769355774,
+        -1.910737156867981
+      ],
+      "apparent_normal_effective_mass_kg": 0.05201223529624796,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 0.9391306458273085
+    },
+    {
+      "TRAIN_index": 25,
+      "actual_native_episode_index": 5,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.452526092529297,
+        -1.7132911682128906,
+        0.0251508429646492
+      ],
+      "actual_outgoing_velocity_mps": [
+        5.593124866485596,
+        -3.7457919120788574,
+        -1.8183714151382446
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9858447290545634,
+        -0.16437216065123525,
+        -0.0330448634159501
+      ],
+      "actual_face_pitch_deg": -1.8936759523523523,
+      "actual_face_yaw_deg": -9.465981133278666,
+      "desired_vs_actual_face_angle_deg": 13.397435795688038,
+      "actual_post_contact_point_velocity_mps": [
+        0.0007534921169281006,
+        -0.7709018588066101,
+        0.09353771805763245
+      ]
+    },
+    {
+      "TRAIN_index": 26,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.9541854858398438,
+        -0.6697235107421875,
+        0.025127271190285683
+      ],
+      "actual_outgoing_velocity_mps": [
+        7.352446556091309,
+        -1.564691185951233,
+        -2.2242469787597656
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9883694536194638,
+        -0.15207138484402494,
+        0.0003421455582758412
+      ],
+      "actual_face_pitch_deg": 0.019603496850829,
+      "actual_face_yaw_deg": -8.746985985827648,
+      "desired_vs_actual_face_angle_deg": 14.388439177246596,
+      "actual_post_contact_point_velocity_mps": [
+        0.8709188103675842,
+        -1.584898591041565,
+        -0.29737645387649536
+      ],
+      "precontact_position_samples": 37,
+      "maximum_precontact_forecast_position_error_m": 0.0006030827202747143,
+      "precontact_forecast_within_diagnostic_bound": true,
+      "predicted_incoming_velocity_mps": [
+        -6.350535552028413,
+        0.8569072891900863,
+        -3.2167084953779828
+      ],
+      "post_contact_ball_velocity_mps": [
+        7.352446556091309,
+        -1.564691185951233,
+        -2.2242469787597656
+      ],
+      "apparent_normal_effective_mass_kg": 0.05233004326859063,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 0.9953611690761228
+    },
+    {
+      "TRAIN_index": 27,
+      "actual_native_episode_index": 4,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        1.4033889770507812,
+        1.6012400388717651,
+        0.02502436935901642
+      ],
+      "actual_outgoing_velocity_mps": [
+        1.3275432586669922,
+        4.586771488189697,
+        -3.198232412338257
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9896861128815145,
+        -0.08478455086187761,
+        0.1154685147762276
+      ],
+      "actual_face_pitch_deg": 6.630648992523833,
+      "actual_face_yaw_deg": -4.896466759902081,
+      "desired_vs_actual_face_angle_deg": 18.724894795787012,
+      "actual_post_contact_point_velocity_mps": [
+        1.1160471439361572,
+        -1.4281578063964844,
+        0.029912516474723816
+      ]
+    },
+    {
+      "TRAIN_index": 28,
+      "actual_native_episode_index": 6,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.999584197998047,
+        -0.9185752868652344,
+        0.025217168033123016
+      ],
+      "actual_outgoing_velocity_mps": [
+        6.956514835357666,
+        -2.2280988693237305,
+        -1.7671711444854736
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9918196977799646,
+        -0.12466320622253069,
+        0.027436692766776054
+      ],
+      "actual_face_pitch_deg": 1.5722039933068475,
+      "actual_face_yaw_deg": -7.164017867278049,
+      "desired_vs_actual_face_angle_deg": 14.841846130113053,
+      "actual_post_contact_point_velocity_mps": [
+        0.5427243113517761,
+        -1.2981245517730713,
+        0.046651434153318405
+      ],
+      "precontact_position_samples": 37,
+      "maximum_precontact_forecast_position_error_m": 0.0008232757428511423,
+      "precontact_forecast_within_diagnostic_bound": true,
+      "predicted_incoming_velocity_mps": [
+        -6.87433845465436,
+        -0.6540220774009563,
+        -3.192815266079473
+      ],
+      "post_contact_ball_velocity_mps": [
+        6.956514835357666,
+        -2.2280988693237305,
+        -1.7671711444854736
+      ],
+      "apparent_normal_effective_mass_kg": 0.05176990568101022,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.0090852065688969
+    },
+    {
+      "TRAIN_index": 29,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": true,
+      "attack": true,
+      "attack_legal_cross": true,
+      "attack_legal_cross_target": true,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.892974853515625,
+        -0.7257289886474609,
+        0.025226721540093422
+      ],
+      "actual_outgoing_velocity_mps": [
+        8.267321586608887,
+        -1.7805073261260986,
+        -3.287538528442383
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9980963906544024,
+        -0.04956100802617116,
+        -0.03670560510445744
+      ],
+      "actual_face_pitch_deg": -2.103548789785603,
+      "actual_face_yaw_deg": -2.842717588001368,
+      "desired_vs_actual_face_angle_deg": 9.76193082994285,
+      "actual_post_contact_point_velocity_mps": [
+        0.953464150428772,
+        -1.9605424404144287,
+        -0.037419915199279785
+      ],
+      "precontact_position_samples": 40,
+      "maximum_precontact_forecast_position_error_m": 0.0018279943140961708,
+      "precontact_forecast_within_diagnostic_bound": true,
+      "predicted_incoming_velocity_mps": [
+        -7.508086950887977,
+        -0.9284546482925755,
+        -4.014998461094442
+      ],
+      "post_contact_ball_velocity_mps": [
+        8.267321586608887,
+        -1.7805073261260986,
+        -3.287538528442383
+      ],
+      "apparent_normal_effective_mass_kg": 0.042213061771339495,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.39788079920422
+    },
+    {
+      "TRAIN_index": 30,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        6.419018268585205,
+        -1.0877420902252197,
+        -2.730109691619873
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9913860498324587,
+        -0.12775637130627907,
+        0.02884457987639822
+      ],
+      "actual_face_pitch_deg": 1.6529019479005849,
+      "actual_face_yaw_deg": -7.3430329630705256,
+      "desired_vs_actual_face_angle_deg": 14.99861611575859,
+      "actual_post_contact_point_velocity_mps": [
+        0.3762158453464508,
+        0.027759971097111702,
+        -0.5143015384674072
+      ],
+      "precontact_position_samples": 40,
+      "maximum_precontact_forecast_position_error_m": 0.0033005452738235535,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -6.703065474974469,
+        0.5001186607884784,
+        -3.974782527260803
+      ],
+      "post_contact_ball_velocity_mps": [
+        6.419018268585205,
+        -1.0877420902252197,
+        -2.730109691619873
+      ],
+      "apparent_normal_effective_mass_kg": 0.0550586171731748,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 0.900854603269214
+    },
+    {
+      "TRAIN_index": 31,
+      "actual_native_episode_index": 4,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        5.901232719421387,
+        -0.7376143336296082,
+        -1.5021964311599731
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9825239689495854,
+        -0.1586899743160979,
+        0.09728382440627253
+      ],
+      "actual_face_pitch_deg": 5.582782323630285,
+      "actual_face_yaw_deg": -9.174757755717499,
+      "desired_vs_actual_face_angle_deg": 19.324250973978916,
+      "actual_post_contact_point_velocity_mps": [
+        -0.07216057181358337,
+        0.750688910484314,
+        -0.6600391864776611
+      ],
+      "precontact_position_samples": 37,
+      "maximum_precontact_forecast_position_error_m": 0.0019908593973046876,
+      "precontact_forecast_within_diagnostic_bound": true,
+      "predicted_incoming_velocity_mps": [
+        -6.989933086375592,
+        0.9999659544333276,
+        -3.555997579475665
+      ],
+      "post_contact_ball_velocity_mps": [
+        5.901232719421387,
+        -0.7376143336296082,
+        -1.5021964311599731
+      ],
+      "apparent_normal_effective_mass_kg": 0.0547794493746378,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 0.8981738230596523
+    },
+    {
+      "TRAIN_index": 32,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        6.809049129486084,
+        -1.3306206464767456,
+        -2.5437889099121094
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9934485174831328,
+        -0.11395530650636579,
+        0.008615754732220931
+      ],
+      "actual_face_pitch_deg": 0.49365249100981734,
+      "actual_face_yaw_deg": -6.543616342593436,
+      "desired_vs_actual_face_angle_deg": 13.598055783080769,
+      "actual_post_contact_point_velocity_mps": [
+        0.2684808075428009,
+        -0.4080408215522766,
+        -0.24718327820301056
+      ],
+      "precontact_position_samples": 40,
+      "maximum_precontact_forecast_position_error_m": 0.011903459442303302,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -7.338300082550274,
+        0.3231887471143546,
+        -3.363536461525403
+      ],
+      "post_contact_ball_velocity_mps": [
+        6.809049129486084,
+        -1.3306206464767456,
+        -2.5437889099121094
+      ],
+      "apparent_normal_effective_mass_kg": 0.05020316943885549,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.0627356346955859
+    },
+    {
+      "TRAIN_index": 33,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "attack": true,
+      "attack_legal_cross": true,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.197959899902344,
+        -0.9534149169921875,
+        0.02514953725039959
+      ],
+      "actual_outgoing_velocity_mps": [
+        7.757536888122559,
+        -2.482154607772827,
+        -2.0921878814697266
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9822875196592968,
+        -0.18518073734832222,
+        0.028623822887910825
+      ],
+      "actual_face_pitch_deg": 1.6402482792796287,
+      "actual_face_yaw_deg": -10.676095749298222,
+      "desired_vs_actual_face_angle_deg": 16.851676000839568,
+      "actual_post_contact_point_velocity_mps": [
+        0.34513917565345764,
+        -0.7435910701751709,
+        -0.29481247067451477
+      ],
+      "precontact_position_samples": 36,
+      "maximum_precontact_forecast_position_error_m": 0.013477366858344986,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -8.138953748445374,
+        0.3530844512176307,
+        -3.462774362895218
+      ],
+      "post_contact_ball_velocity_mps": [
+        7.757536888122559,
+        -2.482154607772827,
+        -2.0921878814697266
+      ],
+      "apparent_normal_effective_mass_kg": 0.04521362888294773,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.339748197229805
+    },
+    {
+      "TRAIN_index": 34,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "attack": true,
+      "attack_legal_cross": true,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.131450653076172,
+        -0.8372268676757812,
+        0.02505211904644966
+      ],
+      "actual_outgoing_velocity_mps": [
+        7.972984313964844,
+        -2.228823661804199,
+        -2.4016265869140625
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9892862707798457,
+        -0.14314304680910112,
+        0.028683489967458425
+      ],
+      "actual_face_pitch_deg": 1.6436683553984,
+      "actual_face_yaw_deg": -8.23317297730602,
+      "desired_vs_actual_face_angle_deg": 15.44079974977121,
+      "actual_post_contact_point_velocity_mps": [
+        1.056131362915039,
+        -1.391065239906311,
+        -0.362459272146225
+      ],
+      "precontact_position_samples": 36,
+      "maximum_precontact_forecast_position_error_m": 0.00796428151354329,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -6.716023372191073,
+        -0.046483740860563984,
+        -3.7174810790102595
+      ],
+      "post_contact_ball_velocity_mps": [
+        7.972984313964844,
+        -2.228823661804199,
+        -2.4016265869140625
+      ],
+      "apparent_normal_effective_mass_kg": 0.0480191879963952,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.1603137348217665
+    },
+    {
+      "TRAIN_index": 35,
+      "actual_native_episode_index": 6,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        6.364723205566406,
+        -4.881557464599609,
+        0.025038698688149452
+      ],
+      "actual_outgoing_velocity_mps": [
+        6.452815055847168,
+        -5.832639217376709,
+        2.4233484268188477
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9920828905321287,
+        -0.12228745181213971,
+        -0.028588764273922516
+      ],
+      "actual_face_pitch_deg": -1.638238746273581,
+      "actual_face_yaw_deg": -7.027023096902362,
+      "desired_vs_actual_face_angle_deg": 12.03628784214688,
+      "actual_post_contact_point_velocity_mps": [
+        1.4523236751556396,
+        -0.4901168644428253,
+        -0.7692548632621765
+      ]
+    },
+    {
+      "TRAIN_index": 36,
+      "actual_native_episode_index": 5,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": true,
+      "attack_legal_cross": true,
+      "attack_legal_cross_target": true,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.8907852172851562,
+        -0.8002738952636719,
+        0.025182463228702545
+      ],
+      "actual_outgoing_velocity_mps": [
+        7.7591094970703125,
+        -2.0565292835235596,
+        -2.820505380630493
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9958755518442222,
+        -0.08797282108150639,
+        -0.022196125561168203
+      ],
+      "actual_face_pitch_deg": -1.2718487639745029,
+      "actual_face_yaw_deg": -5.048242591916546,
+      "desired_vs_actual_face_angle_deg": 11.3439812737236,
+      "actual_post_contact_point_velocity_mps": [
+        0.6534757018089294,
+        -1.4835506677627563,
+        -0.09647586941719055
+      ],
+      "precontact_position_samples": 39,
+      "maximum_precontact_forecast_position_error_m": 0.0005176495442966807,
+      "precontact_forecast_within_diagnostic_bound": true,
+      "predicted_incoming_velocity_mps": [
+        -7.634146625877525,
+        -0.8431888473436921,
+        -3.80821786225515
+      ],
+      "post_contact_ball_velocity_mps": [
+        7.7591094970703125,
+        -2.0565292835235596,
+        -2.820505380630493
+      ],
+      "apparent_normal_effective_mass_kg": 0.0456773042145845,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.2634766287832075
+    },
+    {
+      "TRAIN_index": 37,
+      "actual_native_episode_index": 4,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "attack": true,
+      "attack_legal_cross": true,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.648609161376953,
+        -1.0419502258300781,
+        0.025038346648216248
+      ],
+      "actual_outgoing_velocity_mps": [
+        8.920886039733887,
+        -2.3990061283111572,
+        -2.2188374996185303
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9925161012882808,
+        -0.12160005431247908,
+        0.011189972060427844
+      ],
+      "actual_face_pitch_deg": 0.6411515527559004,
+      "actual_face_yaw_deg": -6.984894761561778,
+      "desired_vs_actual_face_angle_deg": 13.941047781130408,
+      "actual_post_contact_point_velocity_mps": [
+        0.9423636794090271,
+        -1.8552215099334717,
+        -0.24173155426979065
+      ],
+      "precontact_position_samples": 36,
+      "maximum_precontact_forecast_position_error_m": 0.002797647091442975,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -8.0795915553431,
+        -0.18229593569684477,
+        -3.2233795209685323
+      ],
+      "post_contact_ball_velocity_mps": [
+        8.920886039733887,
+        -2.3990061283111572,
+        -2.2188374996185303
+      ],
+      "apparent_normal_effective_mass_kg": 0.04774618127532013,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.345128057670589
+    },
+    {
+      "TRAIN_index": 38,
+      "actual_native_episode_index": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        6.399104118347168,
+        -1.8902575969696045,
+        -2.4252307415008545
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9974944412407555,
+        -0.07052326075757787,
+        -0.005595479060072277
+      ],
+      "actual_face_pitch_deg": -0.3205990074704859,
+      "actual_face_yaw_deg": -4.044105544243599,
+      "desired_vs_actual_face_angle_deg": 11.83134758220273,
+      "actual_post_contact_point_velocity_mps": [
+        0.2960944175720215,
+        -0.6496396064758301,
+        -0.18600010871887207
+      ]
+    },
+    {
+      "TRAIN_index": 39,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": true,
+      "attack": true,
+      "attack_legal_cross": true,
+      "attack_legal_cross_target": true,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.9732208251953125,
+        -0.9095516204833984,
+        0.025069084018468857
+      ],
+      "actual_outgoing_velocity_mps": [
+        7.444918155670166,
+        -2.1340112686157227,
+        -2.340350866317749
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9926265191908298,
+        -0.12117488332859831,
+        -0.0030399094390493406
+      ],
+      "actual_face_pitch_deg": -0.174174249219018,
+      "actual_face_yaw_deg": -6.959945591743811,
+      "desired_vs_actual_face_angle_deg": 13.225539495592058,
+      "actual_post_contact_point_velocity_mps": [
+        0.7413046360015869,
+        -0.9372501969337463,
+        -0.3371812105178833
+      ],
+      "precontact_position_samples": 38,
+      "maximum_precontact_forecast_position_error_m": 0.0005915828897372474,
+      "precontact_forecast_within_diagnostic_bound": true,
+      "predicted_incoming_velocity_mps": [
+        -7.176691988460082,
+        -0.7384671256715588,
+        -3.630716087067944
+      ],
+      "post_contact_ball_velocity_mps": [
+        7.444918155670166,
+        -2.1340112686157227,
+        -2.340350866317749
+      ],
+      "apparent_normal_effective_mass_kg": 0.048368588807299814,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.1362353864778338
+    },
+    {
+      "TRAIN_index": 40,
+      "actual_native_episode_index": 3,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        7.0955376625061035,
+        -1.6360763311386108,
+        -3.0205421447753906
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9972558575118903,
+        -0.06786331505482812,
+        -0.02958589407121976
+      ],
+      "actual_face_pitch_deg": -1.6953942616378586,
+      "actual_face_yaw_deg": -3.8929790829622677,
+      "desired_vs_actual_face_angle_deg": 10.49094838595372,
+      "actual_post_contact_point_velocity_mps": [
+        1.0570143461227417,
+        -1.350264072418213,
+        -0.30468401312828064
+      ],
+      "precontact_position_samples": 40,
+      "maximum_precontact_forecast_position_error_m": 0.0025471129838741577,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -6.252171166014816,
+        -0.7656925781244077,
+        -3.719252102283735
+      ],
+      "post_contact_ball_velocity_mps": [
+        7.0955376625061035,
+        -1.6360763311386108,
+        -3.0205421447753906
+      ],
+      "apparent_normal_effective_mass_kg": 0.05446264253050361,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 0.9177013041069984
+    },
+    {
+      "TRAIN_index": 41,
+      "actual_native_episode_index": 4,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        7.791628837585449,
+        -3.91652512550354,
+        -1.184269666671753
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9935827021181399,
+        -0.10327657813914479,
+        -0.04612333963932784
+      ],
+      "actual_face_pitch_deg": -2.6436105836246853,
+      "actual_face_yaw_deg": -5.9342200428820835,
+      "desired_vs_actual_face_angle_deg": 10.59033918684786,
+      "actual_post_contact_point_velocity_mps": [
+        0.38191670179367065,
+        -1.5622767210006714,
+        -0.05713518708944321
+      ]
+    },
+    {
+      "TRAIN_index": 42,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "attack": true,
+      "attack_legal_cross": true,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.294158935546875,
+        -1.0832443237304688,
+        0.025205183774232864
+      ],
+      "actual_outgoing_velocity_mps": [
+        7.668354034423828,
+        -2.565793514251709,
+        -1.6860545873641968
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9904121029844596,
+        -0.1330928337896792,
+        0.037015724438847715
+      ],
+      "actual_face_pitch_deg": 2.121329402304665,
+      "actual_face_yaw_deg": -7.653628685291405,
+      "desired_vs_actual_face_angle_deg": 15.558837177434993,
+      "actual_post_contact_point_velocity_mps": [
+        0.22010420262813568,
+        -0.8478908538818359,
+        -0.11485067009925842
+      ],
+      "precontact_position_samples": 35,
+      "maximum_precontact_forecast_position_error_m": 0.007037895781156664,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -8.563678585387628,
+        -0.8365336165850322,
+        -3.3311638859872903
+      ],
+      "post_contact_ball_velocity_mps": [
+        7.668354034423828,
+        -2.565793514251709,
+        -1.6860545873641968
+      ],
+      "apparent_normal_effective_mass_kg": 0.05120195014548094,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.1968240915012185
+    },
+    {
+      "TRAIN_index": 43,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.9469070434570312,
+        -0.8668670654296875,
+        0.025112835690379143
+      ],
+      "actual_outgoing_velocity_mps": [
+        6.998117446899414,
+        -2.0130279064178467,
+        -1.7798113822937012
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9858606547969131,
+        -0.15025165814631072,
+        0.07418361374108089
+      ],
+      "actual_face_pitch_deg": 4.254316142755126,
+      "actual_face_yaw_deg": -8.665570880501098,
+      "desired_vs_actual_face_angle_deg": 17.914476690660834,
+      "actual_post_contact_point_velocity_mps": [
+        0.7917850613594055,
+        -0.5714391469955444,
+        -0.5124382376670837
+      ],
+      "precontact_position_samples": 38,
+      "maximum_precontact_forecast_position_error_m": 0.033282464846946073,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -6.347998524250572,
+        -0.18654908177328658,
+        -3.4595070270947437
+      ],
+      "post_contact_ball_velocity_mps": [
+        6.998117446899414,
+        -2.0130279064178467,
+        -1.7798113822937012
+      ],
+      "apparent_normal_effective_mass_kg": 0.05210188576029353,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 0.9741555522106706
+    },
+    {
+      "TRAIN_index": 44,
+      "actual_native_episode_index": 3,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        6.280581474304199,
+        2.6444461345672607,
+        -2.333336353302002
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9922554539110867,
+        -0.11762086356760068,
+        0.03993052262762364
+      ],
+      "actual_face_pitch_deg": 2.2884588328537947,
+      "actual_face_yaw_deg": -6.760232353293345,
+      "desired_vs_actual_face_angle_deg": 15.294316030786794,
+      "actual_post_contact_point_velocity_mps": [
+        0.6820371747016907,
+        -1.668974757194519,
+        0.20344293117523193
+      ]
+    },
+    {
+      "TRAIN_index": 45,
+      "actual_native_episode_index": 5,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.917520523071289,
+        -0.9383468627929688,
+        0.025048768147826195
+      ],
+      "actual_outgoing_velocity_mps": [
+        6.772744655609131,
+        -2.1886777877807617,
+        -1.9876539707183838
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9950527893727149,
+        -0.09090117880783738,
+        -0.04008643227982308
+      ],
+      "actual_face_pitch_deg": -2.2973989559151904,
+      "actual_face_yaw_deg": -5.219660466549564,
+      "desired_vs_actual_face_angle_deg": 10.514473276485242,
+      "actual_post_contact_point_velocity_mps": [
+        0.19778278470039368,
+        -0.2305065244436264,
+        -0.08838749676942825
+      ]
+    },
+    {
+      "TRAIN_index": 46,
+      "actual_native_episode_index": 6,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        -6.309471130371094,
+        -3.989706039428711,
+        0.43339747190475464
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9931739195302032,
+        -0.10866362100050012,
+        -0.04240027165093458
+      ],
+      "actual_face_pitch_deg": -2.430085114670147,
+      "actual_face_yaw_deg": -6.243922349786468,
+      "desired_vs_actual_face_angle_deg": 10.939938151182606,
+      "actual_post_contact_point_velocity_mps": [
+        0.8512104749679565,
+        -0.2949497699737549,
+        -0.10342986136674881
+      ]
+    },
+    {
+      "TRAIN_index": 47,
+      "actual_native_episode_index": 6,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        -1.5376110076904297,
+        -0.4661140441894531,
+        0.025117341428995132
+      ],
+      "actual_outgoing_velocity_mps": null
+    },
+    {
+      "TRAIN_index": 48,
+      "actual_native_episode_index": 6,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        -1.1522598266601562,
+        0.09282207489013672,
+        0.02522944286465645
+      ],
+      "actual_outgoing_velocity_mps": null
+    },
+    {
+      "TRAIN_index": 49,
+      "actual_native_episode_index": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.693990707397461,
+        -1.5392441749572754,
+        0.025233009830117226
+      ],
+      "actual_outgoing_velocity_mps": [
+        8.006157875061035,
+        -3.4363391399383545,
+        -1.1879345178604126
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9888498826651129,
+        -0.11522213420340809,
+        0.09433858883195392
+      ],
+      "actual_face_pitch_deg": 5.413252775691684,
+      "actual_face_yaw_deg": -6.646211306434914,
+      "desired_vs_actual_face_angle_deg": 18.11292181537733,
+      "actual_post_contact_point_velocity_mps": [
+        0.7275303602218628,
+        -0.8666011095046997,
+        -0.30584287643432617
+      ]
+    },
+    {
+      "TRAIN_index": 50,
+      "actual_native_episode_index": 6,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        2.6925296783447266,
+        -4.960956573486328,
+        0.02522912248969078
+      ],
+      "actual_outgoing_velocity_mps": [
+        1.9037164449691772,
+        -5.909022331237793,
+        2.437847852706909
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9863094513971464,
+        -0.13492919267304013,
+        -0.09480389785900939
+      ],
+      "actual_face_pitch_deg": -5.440033045954663,
+      "actual_face_yaw_deg": -7.789827408983295,
+      "desired_vs_actual_face_angle_deg": 9.768590636179702,
+      "actual_post_contact_point_velocity_mps": [
+        0.45726969838142395,
+        -0.36717721819877625,
+        -0.08861549198627472
+      ]
+    },
+    {
+      "TRAIN_index": 51,
+      "actual_native_episode_index": 6,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        3.779237985610962,
+        -0.16062338650226593,
+        -4.892343521118164
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9886834897883013,
+        -0.14857975063931178,
+        -0.020712670517966
+      ],
+      "actual_face_pitch_deg": -1.1868334749471998,
+      "actual_face_yaw_deg": -8.546477193242056,
+      "desired_vs_actual_face_angle_deg": 13.314519092323366,
+      "actual_post_contact_point_velocity_mps": [
+        0.2915942072868347,
+        -1.964565396308899,
+        0.46054479479789734
+      ]
+    },
+    {
+      "TRAIN_index": 52,
+      "actual_native_episode_index": 4,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.9098663330078125,
+        -0.8899040222167969,
+        0.025246042758226395
+      ],
+      "actual_outgoing_velocity_mps": [
+        6.756467819213867,
+        -2.2440898418426514,
+        -1.886665940284729
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9877103694531858,
+        -0.15573778949404252,
+        0.013189654967453878
+      ],
+      "actual_face_pitch_deg": 0.7557334760630673,
+      "actual_face_yaw_deg": -8.960373975173086,
+      "desired_vs_actual_face_angle_deg": 15.107815669905525,
+      "actual_post_contact_point_velocity_mps": [
+        0.0647982731461525,
+        -1.3475059270858765,
+        0.2322399765253067
+      ],
+      "precontact_position_samples": 35,
+      "maximum_precontact_forecast_position_error_m": 0.0061002788054064705,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -7.534512529781531,
+        0.19513798614040248,
+        -2.8321277399781266
+      ],
+      "post_contact_ball_velocity_mps": [
+        6.756467819213867,
+        -2.2440898418426514,
+        -1.886665940284729
+      ],
+      "apparent_normal_effective_mass_kg": 0.04872446350298456,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.114775288249204
+    },
+    {
+      "TRAIN_index": 53,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.739225387573242,
+        -0.5791435241699219,
+        0.025240013375878334
+      ],
+      "actual_outgoing_velocity_mps": [
+        6.862034320831299,
+        -1.2835309505462646,
+        -2.276560068130493
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9945066414700804,
+        -0.10153002877168098,
+        0.025459641189980963
+      ],
+      "actual_face_pitch_deg": 1.4588876239292996,
+      "actual_face_yaw_deg": -5.829179215494636,
+      "desired_vs_actual_face_angle_deg": 14.149194205627001,
+      "actual_post_contact_point_velocity_mps": [
+        0.8165757656097412,
+        -0.5439093112945557,
+        -0.40728551149368286
+      ],
+      "precontact_position_samples": 38,
+      "maximum_precontact_forecast_position_error_m": 0.003173775107928119,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -6.081309974122039,
+        -0.053123715086335316,
+        -3.522863345535688
+      ],
+      "post_contact_ball_velocity_mps": [
+        6.862034320831299,
+        -1.2835309505462646,
+        -2.276560068130493
+      ],
+      "apparent_normal_effective_mass_kg": 0.04841380665224814,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.0075676429152978
+    },
+    {
+      "TRAIN_index": 54,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.895170211791992,
+        -1.2767715454101562,
+        0.0252228956669569
+      ],
+      "actual_outgoing_velocity_mps": [
+        7.038400650024414,
+        -2.940709114074707,
+        -2.0563011169433594
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9865273990816783,
+        -0.16279636583427093,
+        0.01615655075482613
+      ],
+      "actual_face_pitch_deg": 0.9257424477823359,
+      "actual_face_yaw_deg": -9.370478838633845,
+      "desired_vs_actual_face_angle_deg": 15.487502672055179,
+      "actual_post_contact_point_velocity_mps": [
+        0.728143036365509,
+        -1.75753915309906,
+        -0.2819504737854004
+      ],
+      "precontact_position_samples": 36,
+      "maximum_precontact_forecast_position_error_m": 0.009961709405683333,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -6.748037507174547,
+        -0.859901917226704,
+        -3.3060886206588638
+      ],
+      "post_contact_ball_velocity_mps": [
+        7.038400650024414,
+        -2.940709114074707,
+        -2.0563011169433594
+      ],
+      "apparent_normal_effective_mass_kg": 0.05569174825452675,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 0.9384673737802274
+    },
+    {
+      "TRAIN_index": 55,
+      "actual_native_episode_index": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        5.360105037689209,
+        -5.366458892822266,
+        -1.5195602178573608
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9907895405079986,
+        -0.13154199823603738,
+        0.032137036578056714
+      ],
+      "actual_face_pitch_deg": 1.8416336579929276,
+      "actual_face_yaw_deg": -7.562636725167131,
+      "desired_vs_actual_face_angle_deg": 15.270342211136525,
+      "actual_post_contact_point_velocity_mps": [
+        0.8172422647476196,
+        -0.3842083811759949,
+        -0.6538820862770081
+      ]
+    },
+    {
+      "TRAIN_index": 56,
+      "actual_native_episode_index": 6,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        3.527261734008789,
+        -5.104833602905273,
+        3.4278671741485596
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9856495757908281,
+        -0.15280477548626073,
+        -0.07173293756674164
+      ],
+      "actual_face_pitch_deg": -4.113527502531571,
+      "actual_face_yaw_deg": -8.812384376580114,
+      "desired_vs_actual_face_angle_deg": 11.398987778659983,
+      "actual_post_contact_point_velocity_mps": [
+        0.26325443387031555,
+        0.05669074505567551,
+        -0.14100010693073273
+      ]
+    },
+    {
+      "TRAIN_index": 57,
+      "actual_native_episode_index": 5,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": null
+    },
+    {
+      "TRAIN_index": 58,
+      "actual_native_episode_index": 4,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        5.65620756149292,
+        -1.4890673160552979,
+        -3.0817930698394775
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9932000415739062,
+        -0.10771999268109343,
+        -0.044159716873823966
+      ],
+      "actual_face_pitch_deg": -2.5309884615743337,
+      "actual_face_yaw_deg": -6.189961726350536,
+      "desired_vs_actual_face_angle_deg": 10.82618212419958,
+      "actual_post_contact_point_velocity_mps": [
+        0.165639266371727,
+        -1.3081862926483154,
+        0.4857092499732971
+      ],
+      "precontact_position_samples": 40,
+      "maximum_precontact_forecast_position_error_m": 0.00246115650505298,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -6.513481991888093,
+        -0.19707726314526258,
+        -3.923574528369281
+      ],
+      "post_contact_ball_velocity_mps": [
+        5.65620756149292,
+        -1.4890673160552979,
+        -3.0817930698394775
+      ],
+      "apparent_normal_effective_mass_kg": 0.05025879243467826,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 0.9080078537459757
+    },
+    {
+      "TRAIN_index": 59,
+      "actual_native_episode_index": 6,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        -1.49168062210083,
+        0.39758968353271484,
+        0.025228533893823624
+      ],
+      "actual_outgoing_velocity_mps": null
+    },
+    {
+      "TRAIN_index": 60,
+      "actual_native_episode_index": 3,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        6.061730861663818,
+        -0.6403627395629883,
+        -4.146656036376953
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9932010794677658,
+        -0.10043838645299065,
+        -0.058853600321343805
+      ],
+      "actual_face_pitch_deg": -3.3740126097875898,
+      "actual_face_yaw_deg": -5.774458511780006,
+      "desired_vs_actual_face_angle_deg": 9.896670823289117,
+      "actual_post_contact_point_velocity_mps": [
+        0.41659975051879883,
+        -2.073960542678833,
+        0.3860301077365875
+      ]
+    },
+    {
+      "TRAIN_index": 61,
+      "actual_native_episode_index": 6,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        -1.07794189453125,
+        0.17038536071777344,
+        0.02516605518758297
+      ],
+      "actual_outgoing_velocity_mps": null
+    },
+    {
+      "TRAIN_index": 62,
+      "actual_native_episode_index": 5,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        6.340029239654541,
+        -0.550787627696991,
+        -2.9268877506256104
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9927090985158195,
+        -0.11325927058979188,
+        -0.0412429793950154
+      ],
+      "actual_face_pitch_deg": -2.3637190849183702,
+      "actual_face_yaw_deg": -6.5087945563951095,
+      "desired_vs_actual_face_angle_deg": 11.144936886783494,
+      "actual_post_contact_point_velocity_mps": [
+        -0.0647706687450409,
+        -1.1404410600662231,
+        0.4760873019695282
+      ],
+      "precontact_position_samples": 39,
+      "maximum_precontact_forecast_position_error_m": 0.0006999637151252648,
+      "precontact_forecast_within_diagnostic_bound": true,
+      "predicted_incoming_velocity_mps": [
+        -7.502135433734916,
+        0.9944108830566781,
+        -3.8515703549586946
+      ],
+      "post_contact_ball_velocity_mps": [
+        6.340029239654541,
+        -0.550787627696991,
+        -2.9268877506256104
+      ],
+      "apparent_normal_effective_mass_kg": 0.04855012183119657,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.0702271719205676
+    },
+    {
+      "TRAIN_index": 63,
+      "actual_native_episode_index": 5,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        6.813869476318359,
+        -2.1484153270721436,
+        -1.6759071350097656
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9844048555164295,
+        -0.1610622097494005,
+        0.07075340999780716
+      ],
+      "actual_face_pitch_deg": 4.057261731991056,
+      "actual_face_yaw_deg": -9.292048975270621,
+      "desired_vs_actual_face_angle_deg": 18.052902164183497,
+      "actual_post_contact_point_velocity_mps": [
+        0.24590253829956055,
+        -0.3260006904602051,
+        -0.3384058177471161
+      ],
+      "precontact_position_samples": 38,
+      "maximum_precontact_forecast_position_error_m": 0.00497956477413068,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -7.59466485222446,
+        -0.3628843938820184,
+        -3.9387017918890304
+      ],
+      "post_contact_ball_velocity_mps": [
+        6.813869476318359,
+        -2.1484153270721436,
+        -1.6759071350097656
+      ],
+      "apparent_normal_effective_mass_kg": 0.05902254126260124,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 0.9281265099824658
+    },
+    {
+      "TRAIN_index": 64,
+      "actual_native_episode_index": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        5.930122375488281,
+        -4.738122940063477,
+        -2.386104106903076
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9963501776268413,
+        -0.063623183014834,
+        0.056907065695068225
+      ],
+      "actual_face_pitch_deg": 3.2622970852597923,
+      "actual_face_yaw_deg": -3.653732657560643,
+      "desired_vs_actual_face_angle_deg": 15.15394324180372,
+      "actual_post_contact_point_velocity_mps": [
+        0.6881598830223083,
+        -0.6591319441795349,
+        -0.3876307010650635
+      ]
+    },
+    {
+      "TRAIN_index": 65,
+      "actual_native_episode_index": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        6.738783836364746,
+        1.9360989332199097,
+        -4.5342841148376465
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9820787896260261,
+        -0.18524646739441533,
+        0.03471307080293093
+      ],
+      "actual_face_pitch_deg": 1.9893121067146537,
+      "actual_face_yaw_deg": -10.682015730700247,
+      "desired_vs_actual_face_angle_deg": 17.128795356562442,
+      "actual_post_contact_point_velocity_mps": [
+        0.9143401384353638,
+        -0.6811992526054382,
+        -0.48376333713531494
+      ]
+    },
+    {
+      "TRAIN_index": 66,
+      "actual_native_episode_index": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        -1.5621709823608398,
+        -0.27387237548828125,
+        0.025206604972481728
+      ],
+      "actual_outgoing_velocity_mps": null
+    },
+    {
+      "TRAIN_index": 67,
+      "actual_native_episode_index": 4,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.729992389678955,
+        -0.8173599243164062,
+        0.02503652684390545
+      ],
+      "actual_outgoing_velocity_mps": [
+        6.204066276550293,
+        -2.0989184379577637,
+        -1.734579086303711
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9851611863317934,
+        -0.17090463656819432,
+        0.015781069191504238
+      ],
+      "actual_face_pitch_deg": 0.9042261952642874,
+      "actual_face_yaw_deg": -9.841658457491471,
+      "desired_vs_actual_face_angle_deg": 15.756543802889055,
+      "actual_post_contact_point_velocity_mps": [
+        0.14537258446216583,
+        -0.9693375825881958,
+        0.01337436679750681
+      ],
+      "precontact_position_samples": 34,
+      "maximum_precontact_forecast_position_error_m": 0.008236015542550087,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -6.87297276303307,
+        -0.045577345259384075,
+        -3.245596155336057
+      ],
+      "post_contact_ball_velocity_mps": [
+        6.204066276550293,
+        -2.0989184379577637,
+        -1.734579086303711
+      ],
+      "apparent_normal_effective_mass_kg": 0.049373834919955284,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.005331306086588
+    },
+    {
+      "TRAIN_index": 68,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        5.927143096923828,
+        -1.9353296756744385,
+        -3.5397112369537354
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9943816820784509,
+        -0.09357665628763487,
+        -0.04948211540401725
+      ],
+      "actual_face_pitch_deg": -2.8362746048102614,
+      "actual_face_yaw_deg": -5.37600818986721,
+      "desired_vs_actual_face_angle_deg": 10.128392189141438,
+      "actual_post_contact_point_velocity_mps": [
+        0.871648907661438,
+        -0.9329041242599487,
+        -0.1643247902393341
+      ],
+      "precontact_position_samples": 41,
+      "maximum_precontact_forecast_position_error_m": 0.0022424548383526955,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -5.747093313613033,
+        -0.9993132542016495,
+        -4.120954868286626
+      ],
+      "post_contact_ball_velocity_mps": [
+        5.927143096923828,
+        -1.9353296756744385,
+        -3.5397112369537354
+      ],
+      "apparent_normal_effective_mass_kg": 0.06288647864883642,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 0.6946330466269108
+    },
+    {
+      "TRAIN_index": 69,
+      "actual_native_episode_index": 6,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        7.171331405639648,
+        -2.2520697116851807,
+        -2.439382314682007
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9914376976020577,
+        -0.13050383645744393,
+        0.004476655383147703
+      ],
+      "actual_face_pitch_deg": 0.25649431650372134,
+      "actual_face_yaw_deg": -7.4987836301480115,
+      "desired_vs_actual_face_angle_deg": 13.875337401262644,
+      "actual_post_contact_point_velocity_mps": [
+        0.09615541994571686,
+        -1.3749380111694336,
+        0.6892753839492798
+      ],
+      "precontact_position_samples": 37,
+      "maximum_precontact_forecast_position_error_m": 0.002066357650480709,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -8.066495371757329,
+        -0.20715010459336347,
+        -3.791098190897114
+      ],
+      "post_contact_ball_velocity_mps": [
+        7.171331405639648,
+        -2.2520697116851807,
+        -2.439382314682007
+      ],
+      "apparent_normal_effective_mass_kg": 0.04946621918674574,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.164102648698238
+    },
+    {
+      "TRAIN_index": 70,
+      "actual_native_episode_index": 6,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        -2.178469657897949,
+        0.17598819732666016,
+        0.02526266872882843
+      ],
+      "actual_outgoing_velocity_mps": null
+    },
+    {
+      "TRAIN_index": 71,
+      "actual_native_episode_index": 6,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        -1.3230808973312378,
+        -5.463400840759277,
+        3.3321218490600586
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9860702388376024,
+        -0.150838661752648,
+        -0.07009409532495542
+      ],
+      "actual_face_pitch_deg": -4.019391758282756,
+      "actual_face_yaw_deg": -8.69708804992734,
+      "desired_vs_actual_face_angle_deg": 11.373745484656565,
+      "actual_post_contact_point_velocity_mps": [
+        0.6200829744338989,
+        0.05780235305428505,
+        -0.16087229549884796
+      ]
+    },
+    {
+      "TRAIN_index": 72,
+      "actual_native_episode_index": 5,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        2.524789810180664,
+        -4.473335266113281,
+        0.025052309036254883
+      ],
+      "actual_outgoing_velocity_mps": [
+        2.1309335231781006,
+        -6.411970615386963,
+        1.0838345289230347
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9877410558476039,
+        -0.12822483515587887,
+        -0.08902807558466314
+      ],
+      "actual_face_pitch_deg": -5.107695467759341,
+      "actual_face_yaw_deg": -7.396558486564414,
+      "desired_vs_actual_face_angle_deg": 9.681555250470318,
+      "actual_post_contact_point_velocity_mps": [
+        0.5027496814727783,
+        -0.5812276601791382,
+        0.012155148200690746
+      ]
+    },
+    {
+      "TRAIN_index": 73,
+      "actual_native_episode_index": 4,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": true,
+      "attack": true,
+      "attack_legal_cross": true,
+      "attack_legal_cross_target": true,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.7747678756713867,
+        -0.454498291015625,
+        0.025173647329211235
+      ],
+      "actual_outgoing_velocity_mps": [
+        7.422250270843506,
+        -1.4264445304870605,
+        -2.809877872467041
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9991014813025457,
+        -0.042377454201783994,
+        -0.000617603784569252
+      ],
+      "actual_face_pitch_deg": -0.03538609251670433,
+      "actual_face_yaw_deg": -2.428777058508956,
+      "desired_vs_actual_face_angle_deg": 11.666191861907155,
+      "actual_post_contact_point_velocity_mps": [
+        0.8514732718467712,
+        -1.8906837701797485,
+        0.3062949776649475
+      ],
+      "precontact_position_samples": 42,
+      "maximum_precontact_forecast_position_error_m": 0.003863375964735143,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -6.567613667671247,
+        -0.5114603669964476,
+        -3.9992075785806502
+      ],
+      "post_contact_ball_velocity_mps": [
+        7.422250270843506,
+        -1.4264445304870605,
+        -2.809877872467041
+      ],
+      "apparent_normal_effective_mass_kg": 0.044848555746462654,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.1700133801910892
+    },
+    {
+      "TRAIN_index": 74,
+      "actual_native_episode_index": 4,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.699403762817383,
+        -0.2963409423828125,
+        0.02507707290351391
+      ],
+      "actual_outgoing_velocity_mps": [
+        7.4146318435668945,
+        -0.9916278719902039,
+        -0.8485358953475952
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9892416059888893,
+        -0.09974995315489837,
+        0.1070093071939011
+      ],
+      "actual_face_pitch_deg": 6.1429437333482975,
+      "actual_face_yaw_deg": -5.7579446500535125,
+      "desired_vs_actual_face_angle_deg": 18.501671601698657,
+      "actual_post_contact_point_velocity_mps": [
+        0.13700710237026215,
+        -1.4126242399215698,
+        0.4910022020339966
+      ],
+      "precontact_position_samples": 41,
+      "maximum_precontact_forecast_position_error_m": 0.002236847029408613,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -7.183959040618777,
+        0.8718210941916771,
+        -3.5558310176410357
+      ],
+      "post_contact_ball_velocity_mps": [
+        7.4146318435668945,
+        -0.9916278719902039,
+        -0.8485358953475952
+      ],
+      "apparent_normal_effective_mass_kg": 0.04219080741953345,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.3237407390103302
+    },
+    {
+      "TRAIN_index": 75,
+      "actual_native_episode_index": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        6.6075849533081055,
+        -0.9866312146186829,
+        -3.8022947311401367
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9943270416828041,
+        -0.09838204567239962,
+        0.04043151329887553
+      ],
+      "actual_face_pitch_deg": 2.3171866843242417,
+      "actual_face_yaw_deg": -5.650644562520476,
+      "desired_vs_actual_face_angle_deg": 14.86912352969648,
+      "actual_post_contact_point_velocity_mps": [
+        0.4900999665260315,
+        -0.4040062129497528,
+        -0.2476002424955368
+      ]
+    },
+    {
+      "TRAIN_index": 76,
+      "actual_native_episode_index": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        -2.0088605880737305,
+        -0.43853759765625,
+        0.025226334109902382
+      ],
+      "actual_outgoing_velocity_mps": null
+    },
+    {
+      "TRAIN_index": 77,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.5010986328125,
+        -1.485260009765625,
+        0.02520950324833393
+      ],
+      "actual_outgoing_velocity_mps": [
+        7.17219877243042,
+        -3.2359535694122314,
+        -0.8677622079849243
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9623269818101466,
+        -0.2505595925655868,
+        0.10557779432030595
+      ],
+      "actual_face_pitch_deg": 6.0604567743697855,
+      "actual_face_yaw_deg": -14.593988778017485,
+      "desired_vs_actual_face_angle_deg": 22.74725104886743,
+      "actual_post_contact_point_velocity_mps": [
+        0.39958542585372925,
+        -0.9416679739952087,
+        -0.23949897289276123
+      ],
+      "precontact_position_samples": 33,
+      "maximum_precontact_forecast_position_error_m": 0.015129856308711886,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -7.4734310532930985,
+        0.13535011921362194,
+        -3.3721278377022874
+      ],
+      "post_contact_ball_velocity_mps": [
+        7.17219877243042,
+        -3.2359535694122314,
+        -0.8677622079849243
+      ],
+      "apparent_normal_effective_mass_kg": 0.04999360851689659,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.1385463765504218
+    },
+    {
+      "TRAIN_index": 78,
+      "actual_native_episode_index": 5,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        -1.4478530883789062,
+        -0.16133880615234375,
+        0.025026682764291763
+      ],
+      "actual_outgoing_velocity_mps": null
+    },
+    {
+      "TRAIN_index": 79,
+      "actual_native_episode_index": 5,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        7.4942450523376465,
+        -0.7269653081893921,
+        -2.6902737617492676
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.999012229950077,
+        -0.04312171778922867,
+        -0.010727621594780523
+      ],
+      "actual_face_pitch_deg": -0.6146592313338799,
+      "actual_face_yaw_deg": -2.4716010882767416,
+      "desired_vs_actual_face_angle_deg": 11.109214852836395,
+      "actual_post_contact_point_velocity_mps": [
+        1.0447652339935303,
+        -1.6352126598358154,
+        0.0018181279301643372
+      ],
+      "precontact_position_samples": 42,
+      "maximum_precontact_forecast_position_error_m": 0.01203741474267446,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -6.501481150608309,
+        0.08074732786592524,
+        -3.9353397737682716
+      ],
+      "post_contact_ball_velocity_mps": [
+        7.4942450523376465,
+        -0.7269653081893921,
+        -2.6902737617492676
+      ],
+      "apparent_normal_effective_mass_kg": 0.05338818797917236,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 0.9820268863967403
+    },
+    {
+      "TRAIN_index": 80,
+      "actual_native_episode_index": 3,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        5.443262100219727,
+        -4.313560485839844,
+        0.025134099647402763
+      ],
+      "actual_outgoing_velocity_mps": [
+        5.130707263946533,
+        -4.972201824188232,
+        2.597454071044922
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9942346823727073,
+        -0.09038383524991188,
+        -0.0576901958114086
+      ],
+      "actual_face_pitch_deg": -3.3072409759403683,
+      "actual_face_yaw_deg": -5.194363986046825,
+      "desired_vs_actual_face_angle_deg": 9.632456107645872,
+      "actual_post_contact_point_velocity_mps": [
+        0.6179131269454956,
+        -0.4530664384365082,
+        -0.27169269323349
+      ]
+    },
+    {
+      "TRAIN_index": 81,
+      "actual_native_episode_index": 4,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        -4.986751079559326,
+        -3.6277098655700684,
+        -1.491291880607605
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.984565046831536,
+        -0.16532433490124193,
+        -0.05744156027718299
+      ],
+      "actual_face_pitch_deg": -3.2929715463008793,
+      "actual_face_yaw_deg": -9.53196121180698,
+      "desired_vs_actual_face_angle_deg": 12.479113658200173,
+      "actual_post_contact_point_velocity_mps": [
+        0.7106229662895203,
+        -0.6816402077674866,
+        -0.07972772419452667
+      ]
+    },
+    {
+      "TRAIN_index": 82,
+      "actual_native_episode_index": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        -1.3669910430908203,
+        -0.0970606654882431,
+        0.02509060502052307
+      ],
+      "actual_outgoing_velocity_mps": null
+    },
+    {
+      "TRAIN_index": 83,
+      "actual_native_episode_index": 3,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        3.999157667160034,
+        -2.607781410217285,
+        -6.243478298187256
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9942195755560563,
+        -0.09858652695501471,
+        0.04252213875245683
+      ],
+      "actual_face_pitch_deg": 2.4370738883140444,
+      "actual_face_yaw_deg": -5.662920919242814,
+      "desired_vs_actual_face_angle_deg": 14.984859822164415,
+      "actual_post_contact_point_velocity_mps": [
+        0.6125295162200928,
+        -2.065023183822632,
+        0.6699894070625305
+      ]
+    },
+    {
+      "TRAIN_index": 84,
+      "actual_native_episode_index": 6,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        7.295773506164551,
+        -2.5371124744415283,
+        -1.017659068107605
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.978255166424763,
+        -0.150705354539588,
+        0.14249465069382952
+      ],
+      "actual_face_pitch_deg": 8.192226753476433,
+      "actual_face_yaw_deg": -8.757865809951921,
+      "desired_vs_actual_face_angle_deg": 21.486695424189367,
+      "actual_post_contact_point_velocity_mps": [
+        0.6870934963226318,
+        -0.26149559020996094,
+        -0.7092844843864441
+      ],
+      "precontact_position_samples": 38,
+      "maximum_precontact_forecast_position_error_m": 0.0012585726742759418,
+      "precontact_forecast_within_diagnostic_bound": true,
+      "predicted_incoming_velocity_mps": [
+        -7.160629334288186,
+        -0.9574694565825121,
+        -3.8647643305320387
+      ],
+      "post_contact_ball_velocity_mps": [
+        7.295773506164551,
+        -2.5371124744415283,
+        -1.017659068107605
+      ],
+      "apparent_normal_effective_mass_kg": 0.056015377656793465,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 0.9882655456260903
+    },
+    {
+      "TRAIN_index": 85,
+      "actual_native_episode_index": 4,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.423500061035156,
+        -1.3606681823730469,
+        0.025167442858219147
+      ],
+      "actual_outgoing_velocity_mps": [
+        8.26282787322998,
+        -3.39021635055542,
+        -2.207728862762451
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9875319558341228,
+        -0.15739941530418528,
+        0.0024617612257796756
+      ],
+      "actual_face_pitch_deg": 0.14104867087183776,
+      "actual_face_yaw_deg": -9.056008756401313,
+      "desired_vs_actual_face_angle_deg": 14.67197906016178,
+      "actual_post_contact_point_velocity_mps": [
+        0.25390923023223877,
+        -1.6683359146118164,
+        -0.0707775205373764
+      ]
+    },
+    {
+      "TRAIN_index": 86,
+      "actual_native_episode_index": 5,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        1.7439708709716797,
+        0.7973098754882812,
+        0.025150233879685402
+      ],
+      "actual_outgoing_velocity_mps": [
+        2.6936819553375244,
+        3.086923360824585,
+        -4.4914326667785645
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9985223746798294,
+        -0.054063937140819626,
+        0.005491626770628017
+      ],
+      "actual_face_pitch_deg": 0.3146486181585378,
+      "actual_face_yaw_deg": -3.099193206873679,
+      "desired_vs_actual_face_angle_deg": 12.160318926579407,
+      "actual_post_contact_point_velocity_mps": [
+        1.4235543012619019,
+        -1.4930171966552734,
+        -0.2266169786453247
+      ]
+    },
+    {
+      "TRAIN_index": 87,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        6.743133068084717,
+        -1.2528457641601562,
+        -1.6612586975097656
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.988883951298257,
+        -0.13214987237510034,
+        0.06815381204299181
+      ],
+      "actual_face_pitch_deg": 3.907955149813506,
+      "actual_face_yaw_deg": -7.611645823841855,
+      "desired_vs_actual_face_angle_deg": 17.122634454832074,
+      "actual_post_contact_point_velocity_mps": [
+        0.35920289158821106,
+        0.06035248562693596,
+        -0.3895755410194397
+      ],
+      "precontact_position_samples": 37,
+      "maximum_precontact_forecast_position_error_m": 0.022250155916937107,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -7.359460015068263,
+        0.3105096802218936,
+        -3.747010886605903
+      ],
+      "post_contact_ball_velocity_mps": [
+        6.743133068084717,
+        -1.2528457641601562,
+        -1.6612586975097656
+      ],
+      "apparent_normal_effective_mass_kg": 0.0747866820172231,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 0.7156206884869327
+    },
+    {
+      "TRAIN_index": 88,
+      "actual_native_episode_index": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        -1.1914520263671875,
+        -0.06385040283203125,
+        0.02521817572414875
+      ],
+      "actual_outgoing_velocity_mps": null
+    },
+    {
+      "TRAIN_index": 89,
+      "actual_native_episode_index": 5,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        -2.3237266540527344,
+        0.04503631591796875,
+        0.025066860020160675
+      ],
+      "actual_outgoing_velocity_mps": null
+    },
+    {
+      "TRAIN_index": 90,
+      "actual_native_episode_index": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        -1.2523078918457031,
+        0.15140533447265625,
+        0.02527485229074955
+      ],
+      "actual_outgoing_velocity_mps": null
+    },
+    {
+      "TRAIN_index": 91,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "attack": true,
+      "attack_legal_cross": true,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.793788909912109,
+        -0.9058914184570312,
+        0.02503763698041439
+      ],
+      "actual_outgoing_velocity_mps": [
+        8.29350471496582,
+        -2.1170363426208496,
+        -1.377726674079895
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9891404009022836,
+        -0.12449006856503153,
+        0.07812483684170703
+      ],
+      "actual_face_pitch_deg": 4.480789409040736,
+      "actual_face_yaw_deg": -7.1733483272531675,
+      "desired_vs_actual_face_angle_deg": 17.45575994345584,
+      "actual_post_contact_point_velocity_mps": [
+        0.6485634446144104,
+        -0.3906068205833435,
+        -0.503778874874115
+      ],
+      "precontact_position_samples": 35,
+      "maximum_precontact_forecast_position_error_m": 0.0006978865866516917,
+      "precontact_forecast_within_diagnostic_bound": true,
+      "predicted_incoming_velocity_mps": [
+        -8.083305879217082,
+        -0.48605412103955997,
+        -3.4905365687690586
+      ],
+      "post_contact_ball_velocity_mps": [
+        8.29350471496582,
+        -2.1170363426208496,
+        -1.377726674079895
+      ],
+      "apparent_normal_effective_mass_kg": 0.04662132966245478,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.3304448164760432
+    },
+    {
+      "TRAIN_index": 92,
+      "actual_native_episode_index": 3,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        -1.5682830810546875,
+        0.41600513458251953,
+        0.025120414793491364
+      ],
+      "actual_outgoing_velocity_mps": null
+    },
+    {
+      "TRAIN_index": 93,
+      "actual_native_episode_index": 5,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        -0.9164199829101562,
+        0.5819080471992493,
+        0.02511954866349697
+      ],
+      "actual_outgoing_velocity_mps": null
+    },
+    {
+      "TRAIN_index": 94,
+      "actual_native_episode_index": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.056358337402344,
+        1.7034454345703125,
+        0.025066345930099487
+      ],
+      "actual_outgoing_velocity_mps": [
+        5.887720584869385,
+        2.7993645668029785,
+        -0.3514477014541626
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.961880961175601,
+        -0.12497830121367878,
+        0.24323947203043608
+      ],
+      "actual_face_pitch_deg": 14.077815838607332,
+      "actual_face_yaw_deg": -7.403032942737684,
+      "desired_vs_actual_face_angle_deg": 26.561338990337074,
+      "actual_post_contact_point_velocity_mps": [
+        -0.06549128890037537,
+        -1.366468071937561,
+        0.35611164569854736
+      ]
+    },
+    {
+      "TRAIN_index": 95,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.891582489013672,
+        -1.371490478515625,
+        0.025183899328112602
+      ],
+      "actual_outgoing_velocity_mps": [
+        8.033209800720215,
+        -2.864596128463745,
+        -0.8532336950302124
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9788558315211043,
+        -0.17103394572598393,
+        0.11219915555176307
+      ],
+      "actual_face_pitch_deg": 6.442102832158195,
+      "actual_face_yaw_deg": -9.91114753090617,
+      "desired_vs_actual_face_angle_deg": 20.429056441210463,
+      "actual_post_contact_point_velocity_mps": [
+        0.7914308309555054,
+        -0.12980054318904877,
+        -0.6711528897285461
+      ],
+      "precontact_position_samples": 34,
+      "maximum_precontact_forecast_position_error_m": 0.0012680150284578764,
+      "precontact_forecast_within_diagnostic_bound": true,
+      "predicted_incoming_velocity_mps": [
+        -8.203139856801707,
+        -0.8133756243164132,
+        -3.5179982002446892
+      ],
+      "post_contact_ball_velocity_mps": [
+        8.033209800720215,
+        -2.864596128463745,
+        -0.8532336950302124
+      ],
+      "apparent_normal_effective_mass_kg": 0.058930282761367025,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.0510124545539368
+    },
+    {
+      "TRAIN_index": 96,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "attack": true,
+      "attack_legal_cross": true,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.446590423583984,
+        -1.0035858154296875,
+        0.025027327239513397
+      ],
+      "actual_outgoing_velocity_mps": [
+        8.104141235351562,
+        -2.4093017578125,
+        -1.7208497524261475
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9895709997326673,
+        -0.13944144891217378,
+        0.036129196135022607
+      ],
+      "actual_face_pitch_deg": 2.0705010664405705,
+      "actual_face_yaw_deg": -8.020797603397986,
+      "desired_vs_actual_face_angle_deg": 15.69674239664272,
+      "actual_post_contact_point_velocity_mps": [
+        0.7420016527175903,
+        -1.1823415756225586,
+        -0.2051643431186676
+      ],
+      "precontact_position_samples": 34,
+      "maximum_precontact_forecast_position_error_m": 0.0034181987506420684,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -7.904345112608631,
+        -0.28214169463383065,
+        -3.0893434229984273
+      ],
+      "post_contact_ball_velocity_mps": [
+        8.104141235351562,
+        -2.4093017578125,
+        -1.7208497524261475
+      ],
+      "apparent_normal_effective_mass_kg": 0.05633403351129669,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.0758388099029572
+    },
+    {
+      "TRAIN_index": 97,
+      "actual_native_episode_index": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.1865158081054688,
+        2.613037109375,
+        0.02508716844022274
+      ],
+      "actual_outgoing_velocity_mps": [
+        3.987489700317383,
+        4.205042839050293,
+        0.054857101291418076
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9633118005037519,
+        -0.12175195033918132,
+        0.23917950915332423
+      ],
+      "actual_face_pitch_deg": 13.838119399986624,
+      "actual_face_yaw_deg": -7.20335858308816,
+      "desired_vs_actual_face_angle_deg": 26.276970823761136,
+      "actual_post_contact_point_velocity_mps": [
+        0.31590622663497925,
+        -1.7854686975479126,
+        0.5223461389541626
+      ]
+    },
+    {
+      "TRAIN_index": 98,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": true,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        6.99264669418335,
+        -3.4291322231292725,
+        -2.0651938915252686
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9818801962088993,
+        -0.188072861815543,
+        0.023235295162423182
+      ],
+      "actual_face_pitch_deg": 1.3314041663898524,
+      "actual_face_yaw_deg": -10.84330280665872,
+      "desired_vs_actual_face_angle_deg": 16.718662341683753,
+      "actual_post_contact_point_velocity_mps": [
+        0.1902729868888855,
+        -0.6889885067939758,
+        -0.25833413004875183
+      ],
+      "precontact_position_samples": 34,
+      "maximum_precontact_forecast_position_error_m": 0.005546666429462879,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -8.514080199535186,
+        -1.0459035652939834,
+        -3.277187241498543
+      ],
+      "post_contact_ball_velocity_mps": [
+        6.99264669418335,
+        -3.4291322231292725,
+        -2.0651938915252686
+      ],
+      "apparent_normal_effective_mass_kg": 0.05898153482779747,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 0.9967318377991496
+    },
+    {
+      "TRAIN_index": 99,
+      "actual_native_episode_index": 6,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        3.525477647781372,
+        -3.4794957637786865,
+        1.6101993322372437
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9680583312751764,
+        -0.1918918457847985,
+        0.16137096011991822
+      ],
+      "actual_face_pitch_deg": 9.286480603286106,
+      "actual_face_yaw_deg": -11.212024320919715,
+      "desired_vs_actual_face_angle_deg": 23.542832280186165,
+      "actual_post_contact_point_velocity_mps": [
+        -0.24798068404197693,
+        1.8272762298583984,
+        -1.0122206211090088
+      ]
+    },
+    {
+      "TRAIN_index": 100,
+      "actual_native_episode_index": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        -1.0008506774902344,
+        0.5952835083007812,
+        0.02519921585917473
+      ],
+      "actual_outgoing_velocity_mps": null
+    },
+    {
+      "TRAIN_index": 101,
+      "actual_native_episode_index": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        -2.0769920349121094,
+        0.18415069580078125,
+        0.02523396909236908
+      ],
+      "actual_outgoing_velocity_mps": null
+    },
+    {
+      "TRAIN_index": 102,
+      "actual_native_episode_index": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        6.096294403076172,
+        -1.8430061340332031,
+        0.025087745860219002
+      ],
+      "actual_outgoing_velocity_mps": [
+        8.528243064880371,
+        -3.0875866413116455,
+        0.281424880027771
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9864454865982708,
+        -0.15888258815660652,
+        0.04100762307863003
+      ],
+      "actual_face_pitch_deg": 2.350222743330106,
+      "actual_face_yaw_deg": -9.149806127073461,
+      "desired_vs_actual_face_angle_deg": 16.529085852028235,
+      "actual_post_contact_point_velocity_mps": [
+        0.45475074648857117,
+        -0.14728163182735443,
+        -0.5097405910491943
+      ]
+    },
+    {
+      "TRAIN_index": 103,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        5.244503021240234,
+        -1.0282745361328125,
+        0.02521231211721897
+      ],
+      "actual_outgoing_velocity_mps": [
+        7.533834934234619,
+        -1.7957285642623901,
+        0.06934072822332382
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9744536048537512,
+        -0.09204926122529954,
+        0.2048587452255965
+      ],
+      "actual_face_pitch_deg": 11.821230255711091,
+      "actual_face_yaw_deg": -5.396286289753115,
+      "desired_vs_actual_face_angle_deg": 23.879720637241864,
+      "actual_post_contact_point_velocity_mps": [
+        0.18401199579238892,
+        -1.374398946762085,
+        -0.0999489277601242
+      ],
+      "precontact_position_samples": 40,
+      "maximum_precontact_forecast_position_error_m": 0.0004396676595672654,
+      "precontact_forecast_within_diagnostic_bound": true,
+      "predicted_incoming_velocity_mps": [
+        -7.617103807165099,
+        -0.18349795579353645,
+        -3.521483534754045
+      ],
+      "post_contact_ball_velocity_mps": [
+        7.533834934234619,
+        -1.7957285642623901,
+        0.06934072822332382
+      ],
+      "apparent_normal_effective_mass_kg": 0.049707382182747666,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.1786126575795723
+    },
+    {
+      "TRAIN_index": 104,
+      "actual_native_episode_index": 6,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        -1.7486763000488281,
+        -0.10047417879104614,
+        0.025106461718678474
+      ],
+      "actual_outgoing_velocity_mps": null
+    },
+    {
+      "TRAIN_index": 105,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": true,
+      "attack": true,
+      "attack_legal_cross": true,
+      "attack_legal_cross_target": true,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.8416404724121094,
+        -0.7442083358764648,
+        0.025251707062125206
+      ],
+      "actual_outgoing_velocity_mps": [
+        7.572127342224121,
+        -1.5559937953948975,
+        -2.8190829753875732
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9958318745969291,
+        -0.09015059719231866,
+        -0.013847287194049276
+      ],
+      "actual_face_pitch_deg": -0.7934164712215631,
+      "actual_face_yaw_deg": -5.172768200900608,
+      "desired_vs_actual_face_angle_deg": 11.828965298992118,
+      "actual_post_contact_point_velocity_mps": [
+        1.0994431972503662,
+        -1.0973261594772339,
+        -0.44782984256744385
+      ],
+      "precontact_position_samples": 40,
+      "maximum_precontact_forecast_position_error_m": 0.001216039539173084,
+      "precontact_forecast_within_diagnostic_bound": true,
+      "predicted_incoming_velocity_mps": [
+        -6.341078138110096,
+        -0.30540561247511533,
+        -3.7230275024276205
+      ],
+      "post_contact_ball_velocity_mps": [
+        7.572127342224121,
+        -1.5559937953948975,
+        -2.8190829753875732
+      ],
+      "apparent_normal_effective_mass_kg": 0.044799251481929175,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.1662953419550455
+    },
+    {
+      "TRAIN_index": 106,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        4.369434356689453,
+        -0.8304882049560547,
+        0.025136325508356094
+      ],
+      "actual_outgoing_velocity_mps": [
+        6.7190423011779785,
+        -1.5206701755523682,
+        -0.5316274762153625
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9819713076723399,
+        -0.07348604381920847,
+        0.17416128235654502
+      ],
+      "actual_face_pitch_deg": 10.029853628748684,
+      "actual_face_yaw_deg": -4.2797651133766355,
+      "desired_vs_actual_face_angle_deg": 21.896516863747344,
+      "actual_post_contact_point_velocity_mps": [
+        0.3049052655696869,
+        -0.604367733001709,
+        -0.4538852870464325
+      ],
+      "precontact_position_samples": 40,
+      "maximum_precontact_forecast_position_error_m": 0.002761234742003543,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -6.904883988978955,
+        -0.727607389518105,
+        -3.525031246786637
+      ],
+      "post_contact_ball_velocity_mps": [
+        6.7190423011779785,
+        -1.5206701755523682,
+        -0.5316274762153625
+      ],
+      "apparent_normal_effective_mass_kg": 0.05963910648147059,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 0.8762446500790348
+    },
+    {
+      "TRAIN_index": 107,
+      "actual_native_episode_index": 5,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        6.410336494445801,
+        -1.6951225996017456,
+        -1.930493950843811
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9942094545738143,
+        -0.09553181992577232,
+        0.04920601404003807
+      ],
+      "actual_face_pitch_deg": 2.8204358677647394,
+      "actual_face_yaw_deg": -5.488599056630256,
+      "desired_vs_actual_face_angle_deg": 15.278254353050597,
+      "actual_post_contact_point_velocity_mps": [
+        0.7841833233833313,
+        -0.16123536229133606,
+        -0.5311554074287415
+      ],
+      "precontact_position_samples": 39,
+      "maximum_precontact_forecast_position_error_m": 0.001612779017085628,
+      "precontact_forecast_within_diagnostic_bound": true,
+      "predicted_incoming_velocity_mps": [
+        -6.1277909559187975,
+        -1.1379436883141565,
+        -3.712460189499741
+      ],
+      "post_contact_ball_velocity_mps": [
+        6.410336494445801,
+        -1.6951225996017456,
+        -1.930493950843811
+      ],
+      "apparent_normal_effective_mass_kg": 0.0696222899257921,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 0.677922239763137
+    },
+    {
+      "TRAIN_index": 108,
+      "actual_native_episode_index": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        3.7587757110595703,
+        3.3916244506835938,
+        -4.032769203186035
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9890612348713258,
+        -0.1270295826641232,
+        0.07497572142358587
+      ],
+      "actual_face_pitch_deg": 4.299827317047212,
+      "actual_face_yaw_deg": -7.318688535259847,
+      "desired_vs_actual_face_angle_deg": 17.35087579884095,
+      "actual_post_contact_point_velocity_mps": [
+        1.0145065784454346,
+        -0.8901346921920776,
+        -0.30633649230003357
+      ]
+    },
+    {
+      "TRAIN_index": 109,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": true,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.8823394775390625,
+        -1.0559539794921875,
+        0.025114914402365685
+      ],
+      "actual_outgoing_velocity_mps": [
+        6.655063152313232,
+        -2.2716357707977295,
+        -1.683214545249939
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9827996853607444,
+        -0.14604377397632898,
+        0.11303094504414576
+      ],
+      "actual_face_pitch_deg": 6.490065969242861,
+      "actual_face_yaw_deg": -8.452285766450144,
+      "desired_vs_actual_face_angle_deg": 19.81275152596036,
+      "actual_post_contact_point_velocity_mps": [
+        0.44856685400009155,
+        -0.19154119491577148,
+        -0.45284855365753174
+      ],
+      "precontact_position_samples": 38,
+      "maximum_precontact_forecast_position_error_m": 0.008367761478757025,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -6.670110517193427,
+        -0.5955036821688948,
+        -3.6704479502064435
+      ],
+      "post_contact_ball_velocity_mps": [
+        6.655063152313232,
+        -2.2716357707977295,
+        -1.683214545249939
+      ],
+      "apparent_normal_effective_mass_kg": 0.0503961443341854,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.0077913385018817
+    },
+    {
+      "TRAIN_index": 110,
+      "actual_native_episode_index": 6,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        -1.8809356689453125,
+        0.06217193603515625,
+        0.025102242827415466
+      ],
+      "actual_outgoing_velocity_mps": null
+    },
+    {
+      "TRAIN_index": 111,
+      "actual_native_episode_index": 3,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": true,
+      "first_landing_m": [
+        7.2614593505859375,
+        -0.9909896850585938,
+        0.025129545480012894
+      ],
+      "actual_outgoing_velocity_mps": [
+        8.228114128112793,
+        -0.9328687787055969,
+        -4.1254143714904785
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9859334033846071,
+        -0.1590578673359203,
+        0.05134120108640342
+      ],
+      "actual_face_pitch_deg": 2.9429279908776707,
+      "actual_face_yaw_deg": -9.164405927070387,
+      "desired_vs_actual_face_angle_deg": 17.03571996199574,
+      "actual_post_contact_point_velocity_mps": [
+        0.9003822207450867,
+        -1.0843411684036255,
+        -0.3519607484340668
+      ]
+    },
+    {
+      "TRAIN_index": 112,
+      "actual_native_episode_index": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        -1.7526473999023438,
+        0.06925201416015625,
+        0.02523120492696762
+      ],
+      "actual_outgoing_velocity_mps": null
+    },
+    {
+      "TRAIN_index": 113,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": true,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        7.8372483253479,
+        -1.3297020196914673,
+        -2.758478879928589
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9941713728895175,
+        -0.10553753289944205,
+        0.022025223641792123
+      ],
+      "actual_face_pitch_deg": 1.262054410837805,
+      "actual_face_yaw_deg": -6.05961247705084,
+      "desired_vs_actual_face_angle_deg": 14.066182582365734,
+      "actual_post_contact_point_velocity_mps": [
+        0.6083461046218872,
+        -1.036777138710022,
+        -0.13862238824367523
+      ],
+      "precontact_position_samples": 39,
+      "maximum_precontact_forecast_position_error_m": 0.003196365196288383,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -7.70992676213289,
+        0.5676094945685478,
+        -4.147519372574735
+      ],
+      "post_contact_ball_velocity_mps": [
+        7.8372483253479,
+        -1.3297020196914673,
+        -2.758478879928589
+      ],
+      "apparent_normal_effective_mass_kg": 0.057568108996177494,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.020245086054567
+    },
+    {
+      "TRAIN_index": 114,
+      "actual_native_episode_index": 4,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        3.9231338500976562,
+        -4.876848220825195,
+        0.025203226134181023
+      ],
+      "actual_outgoing_velocity_mps": [
+        4.281132221221924,
+        -7.0455241203308105,
+        1.0009337663650513
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9890815969204863,
+        -0.14130676936364917,
+        -0.04183290051179082
+      ],
+      "actual_face_pitch_deg": -2.397548272696337,
+      "actual_face_yaw_deg": -8.130635896360603,
+      "desired_vs_actual_face_angle_deg": 12.121870034935128,
+      "actual_post_contact_point_velocity_mps": [
+        1.0919009447097778,
+        -1.1842597723007202,
+        -0.48883092403411865
+      ]
+    },
+    {
+      "TRAIN_index": 115,
+      "actual_native_episode_index": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        7.589566230773926,
+        -0.6821276545524597,
+        -1.7223787307739258
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9854006207934223,
+        -0.14270621591322538,
+        0.09284693037287746
+      ],
+      "actual_face_pitch_deg": 5.3274102329674555,
+      "actual_face_yaw_deg": -8.240314463055343,
+      "desired_vs_actual_face_angle_deg": 18.673025272899643,
+      "actual_post_contact_point_velocity_mps": [
+        0.5932473540306091,
+        -0.174899160861969,
+        -0.642169713973999
+      ]
+    },
+    {
+      "TRAIN_index": 116,
+      "actual_native_episode_index": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        -2.4506149291992188,
+        0.4917411804199219,
+        0.0252233799546957
+      ],
+      "actual_outgoing_velocity_mps": null
+    },
+    {
+      "TRAIN_index": 117,
+      "actual_native_episode_index": 6,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        5.513347148895264,
+        -1.1538628339767456,
+        -3.3271443843841553
+      ],
+      "actual_string_contact": false,
+      "actual_face_normal_world": [
+        0.9836127565142266,
+        -0.16353524900659516,
+        0.07590894252218029
+      ],
+      "actual_face_pitch_deg": 4.353449764381019,
+      "actual_face_yaw_deg": -9.439638383796645,
+      "desired_vs_actual_face_angle_deg": 18.382738046839144,
+      "actual_post_contact_point_velocity_mps": [
+        -0.031229570508003235,
+        -1.5071191787719727,
+        0.4568414092063904
+      ]
+    },
+    {
+      "TRAIN_index": 118,
+      "actual_native_episode_index": 3,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        6.482284069061279,
+        -1.8694267272949219,
+        -2.215562105178833
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9927948988354607,
+        -0.10932474141211494,
+        0.049054966735912746
+      ],
+      "actual_face_pitch_deg": 2.8117710307911574,
+      "actual_face_yaw_deg": -6.28398718637937,
+      "desired_vs_actual_face_angle_deg": 15.570462466034213,
+      "actual_post_contact_point_velocity_mps": [
+        0.4952889680862427,
+        0.17049457132816315,
+        -0.5582836270332336
+      ],
+      "precontact_position_samples": 39,
+      "maximum_precontact_forecast_position_error_m": 0.0019078142366275575,
+      "precontact_forecast_within_diagnostic_bound": true,
+      "predicted_incoming_velocity_mps": [
+        -6.963430819469083,
+        -0.8975671415234264,
+        -3.5728898116344934
+      ],
+      "post_contact_ball_velocity_mps": [
+        6.482284069061279,
+        -1.8694267272949219,
+        -2.215562105178833
+      ],
+      "apparent_normal_effective_mass_kg": 0.06919914285772691,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 0.7315860728809573
+    },
+    {
+      "TRAIN_index": 119,
+      "actual_native_episode_index": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        -2.1894760131835938,
+        -0.32238006591796875,
+        0.025070741772651672
+      ],
+      "actual_outgoing_velocity_mps": null
+    },
+    {
+      "TRAIN_index": 120,
+      "actual_native_episode_index": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        -0.6925048828125,
+        0.29742431640625,
+        0.025246446952223778
+      ],
+      "actual_outgoing_velocity_mps": null
+    },
+    {
+      "TRAIN_index": 121,
+      "actual_native_episode_index": 4,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": true,
+      "shuttle_net_contact": false,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        6.753408432006836,
+        -2.9951624870300293,
+        -1.071299433708191
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9668204683027508,
+        -0.23114159460915468,
+        0.10877382641236175
+      ],
+      "actual_face_pitch_deg": 6.244636867795057,
+      "actual_face_yaw_deg": -13.445554081298184,
+      "desired_vs_actual_face_angle_deg": 22.18201067656195,
+      "actual_post_contact_point_velocity_mps": [
+        0.3268393874168396,
+        0.010692451149225235,
+        -0.6781110167503357
+      ],
+      "precontact_position_samples": 37,
+      "maximum_precontact_forecast_position_error_m": 0.004043762177807469,
+      "precontact_forecast_within_diagnostic_bound": false,
+      "predicted_incoming_velocity_mps": [
+        -7.8718329305081,
+        -0.33217218440594243,
+        -3.5380920565920886
+      ],
+      "post_contact_ball_velocity_mps": [
+        6.753408432006836,
+        -2.9951624870300293,
+        -1.071299433708191
+      ],
+      "apparent_normal_effective_mass_kg": 0.0567463984773901,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 0.9912387792674382
+    },
+    {
+      "TRAIN_index": 122,
+      "actual_native_episode_index": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        -1.586212158203125,
+        -0.6436386108398438,
+        0.025060223415493965
+      ],
+      "actual_outgoing_velocity_mps": null
+    },
+    {
+      "TRAIN_index": 123,
+      "actual_native_episode_index": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        -1.03369140625,
+        0.2712898254394531,
+        0.025104088708758354
+      ],
+      "actual_outgoing_velocity_mps": null
+    },
+    {
+      "TRAIN_index": 124,
+      "actual_native_episode_index": 2,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        -1.1339111328125,
+        0.46126556396484375,
+        0.025278359651565552
+      ],
+      "actual_outgoing_velocity_mps": null
+    },
+    {
+      "TRAIN_index": 125,
+      "actual_native_episode_index": 6,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        -2.0230484008789062,
+        -0.1336212158203125,
+        0.02518799714744091
+      ],
+      "actual_outgoing_velocity_mps": null
+    },
+    {
+      "TRAIN_index": 126,
+      "actual_native_episode_index": 2,
+      "airborne_contact": true,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": true,
+      "first_landing_m": null,
+      "actual_outgoing_velocity_mps": [
+        6.188138484954834,
+        -1.2666479349136353,
+        -2.0592591762542725
+      ],
+      "actual_string_contact": true,
+      "actual_face_normal_world": [
+        0.9895780089289729,
+        -0.1421582699220291,
+        0.022943202412595735
+      ],
+      "actual_face_pitch_deg": 1.314664021746081,
+      "actual_face_yaw_deg": -8.174921931548589,
+      "desired_vs_actual_face_angle_deg": 15.131019279999208,
+      "actual_post_contact_point_velocity_mps": [
+        -0.025646530091762543,
+        -0.06011860817670822,
+        -0.2955550253391266
+      ],
+      "precontact_position_samples": 36,
+      "maximum_precontact_forecast_position_error_m": 0.0008538322508312825,
+      "precontact_forecast_within_diagnostic_bound": true,
+      "predicted_incoming_velocity_mps": [
+        -7.239793572006919,
+        0.5590025004897045,
+        -3.0887677054725176
+      ],
+      "post_contact_ball_velocity_mps": [
+        6.188138484954834,
+        -1.2666479349136353,
+        -2.0592591762542725
+      ],
+      "apparent_normal_effective_mass_kg": 0.049305768345602984,
+      "apparent_mass_identified_physical_constant": false,
+      "infinite_mass_normal_residual_using_POST_point_velocity_mps": 1.0305151227535694
+    },
+    {
+      "TRAIN_index": 127,
+      "actual_native_episode_index": 3,
+      "airborne_contact": false,
+      "conditional_recovery": false,
+      "complete": false,
+      "attack": false,
+      "attack_legal_cross": false,
+      "attack_legal_cross_target": false,
+      "body_landing": false,
+      "shuttle_net_contact": false,
+      "first_landing_m": [
+        -1.1840667724609375,
+        -0.6944217681884766,
+        0.025047030299901962
+      ],
+      "actual_outgoing_velocity_mps": null
+    }
+  ],
+  "interpretation": "Actual face direction and lateral point motion are measured error sources. A constant post-velocity impact model is not an identified robot model; future directional targets require real native tracking and cold assessment.",
+  "unchanged_original_target_and_all128_scores": true,
+  "all429_held_inputs_unchanged": true,
+  "new_native_execution": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false
+}

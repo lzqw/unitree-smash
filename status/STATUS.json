@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/body_strike_grid16_queue01/COLD_TRAIN128_RESULT.json",
-      "notes": "原教师冷128为2完整/55空中/30合格恢复，原50/70/85及正式A/B仍未通过。48更新及13/24/36/48固定比较已全部完成，完整1/0/1/0，保留原教师。当前GPU0原生7瞄准点实验实际运行：[0,.06]搜索5完整/60空中/28合格恢复，尚待整体结束和单独冷128。新42.28秒实际搜索视频及46.49MB原128包已上传并新下载校验。接续引拍/腕部协调器1873882等待当前所有者1827656实际退出；原419项和接续429项输入保持。",
+      "notes": "当前GPU0继续选中Aim[0,.06]的独立冷128；7点搜索完整为2/2/5/3/1/2/2，NF0。新诊断定位16米多环境float32世界位置漂移，已停止仅等待的旧引拍协调器1873882，改由1881338在当前父1827656实际退出后测原生精度/碰撞隔离。仅在准入后1881847执行新数值布局8×128和冷128；物理资产、硬件、目标与原评分保持，历史成绩不继承。正式A/B及50/70/85未通过。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
@@ -10375,10 +10375,10 @@
         "formal_acceptance": false
       },
       "current_full_racket_progress_20261027": {
-        "observed_at": "2026-10-26T18:01:51.557453+00:00",
+        "observed_at": "2026-10-26T18:41:33.836417+00:00",
         "actual_live_owner_pid": 1827656,
-        "actual_live_native_pid": 1862443,
-        "actual_live_waiter_pid": 1873882,
+        "actual_live_native_pid": 1879891,
+        "actual_live_waiter_pid": 1881338,
         "measured_source_still_confirmed_complete": 2,
         "search_candidate_aim_uv_m": [
           0.0,
@@ -10417,9 +10417,13 @@
           "members": 49,
           "payloads_SHA_verified": 48
         },
-        "next_queue": "reports/G07_full_racket_v4/prepose_branch_after_aim_queue01",
+        "next_queue": "reports/G07_full_racket_v4/origin_precision_after_aim_queue01",
         "formal_cases_read": false,
-        "formal_acceptance": false
+        "formal_acceptance": false,
+        "secondary_actual_live_waiter_pid": 1881847,
+        "stopped_old_waiter_pid": 1873882,
+        "after_precision_queue": "reports/G07_full_racket_v4/prepose_origin0_after_precision_queue01",
+        "origin0_native_admission_pending": true
       }
     },
     "G08": {

@@ -6,7 +6,7 @@
 
 GPU0的新[48更新课程](reports/G07_full_racket_v4/body_residual48_after_grid16_queue01/REPORT.md)及13/24/36/48四版固定原128均已完成：完整成功**1/0/1/0**、空中58/45/42/7、合格恢复32/24/21/0，NF0。原教师2/128仍被保留。[180MB完整固定比较包](reports/G07_full_racket_v4/body48_frozen_four_delivery_20261027/REPORT.md)及[1.21GB完整训练包](reports/G07_full_racket_v4/body48_completed_training_delivery_20261026/REPORT.md)均已上传并新下载校验。原父1814619已真实退出；后续[7点瞄准实验](reports/G07_full_racket_v4/contact_aim_partial_20261027/REPORT.md)由父1827656/guard1862429/native1862443实际运行，419来源保持至该父退出。[0,.06]已得到5/128搜索完整、60空中、28合格恢复、NF0，尚待全部候选与冷128确认，原目标及正式门槛保留。
 
-[下一轮引拍与腕部分支比较](reports/G07_full_racket_v4/prepose_branch_after_aim_queue01/REPORT.md)已实现且通过实际公共输入CPU回放，协调器1873882经ps确认等待当前父1827656真实退出。429项输入SHA一致，尚未安装5份新Main程序或启动下一原生作业；将从当前最终冷128来源重新生成8候选，测1024地面回合并单独冷128。
+[新实测方向与数值诊断](reports/G07_full_racket_v4/aim006_contact_direction_diagnostic_20261027/REPORT.md)定位到16米多环境布局下float32世界位置舍入：最大33.28毫米漂移由世界float32积分在7.66微米内复现。GPU0当前继续Aim候选单独冷128；旧等待协调器1873882已安全停止，[精度/碰撞隔离协调器1881338](reports/G07_full_racket_v4/origin_precision_after_aim_queue01/REPORT.md)等待当前父实际退出。仅在两个原生探针准入通过后，[新布局引拍协调器1881847](reports/G07_full_racket_v4/prepose_origin0_after_precision_queue01/REPORT.md)才会独立重测8×128及冷128。439项输入SHA一致；新布局尚未原生证明或继承任何成绩。
 
 [落点范围离线对比](https://github.com/lzqw/unitree-smash/blob/ca0b3d7/reports/G07_full_racket_v4/target_scope_comparison_20261026/RESULT.json)在同一教师128例上得到原2×2米区2完整、4×4米区12完整、整个合法单打半场13完整，保留其余全部条件。用户范围选择待答复，当前训练与原成绩未改写。
 
