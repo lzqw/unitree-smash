@@ -1,5 +1,7 @@
 # QuadSmash：Codex /goal 实施与训练任务包
 
+2026-10-26 GPU0已启动[保留两层策略的全身拦截与起跳搜索](reports/G07_full_racket_v4/fixed_actor_body_cem_gen2_queue01/REPORT.md)：10候选各跑原128来球、2代，随后单一冻结策略做原128冷评估。1280真实地面初态已核对，380来源文件加PLAN保持；新方法尚无终端成绩。最新85秒视频新下载SHA核验已通过，原正式50/70/85目标仍未通过。
+
 2026-10-26最新视频已更新：[85秒预热13更新实际六例](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_leg06_full_cohort_warmup13_orthographic_v3_20261026.mp4)，原全TRAIN128为0完整、25空中、14条件恢复（56%）、1攻击、NF0。训练13更新和固定评估均已完成，当前本项目GPU作业已退出；[视频与核验报告](reports/G07_full_racket_v4/leg06_warmup13_video_delivery_20261026/REPORT.md)保留失败及上传证据。正式A/B和50/70/85仍未通过。
 
 2026-10-26 当前视频已更新：[81秒leg06新8更新实际六例](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_centered_leg06_pilot8_orthographic_v3_20261026.mp4)，4068帧全部解码、15事件图与8实际解码帧审查、新下载SHA核验通过。原全TRAIN128为0完整、27空中、14条件恢复（51.85%）、6攻击、NF0；来源0758为26空中/19恢复，恢复下降，[逐例对比](reports/G07_full_racket_v4/centered_leg06_after075_intermediates_pilot8_queue01/REPORT.md)保留。GPU0已实际接上[完整首批回合后再学习的13更新对照](reports/G07_full_racket_v4/centered_leg06_full_cohort_warmup13_queue01/REPORT.md)：父1777456、guard1777458/native1777471，2048真实地面状态已核对；302项持有输入保持，原正式A/B及50/70/85未通过。

@@ -55,7 +55,32 @@
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
-      "active_gpu_jobs": [],
+      "active_gpu_jobs": [
+        {
+          "state": "RUNNING_FIXED_ACTOR_BODY_SEARCH",
+          "observed_at": "2026-10-26T07:47:32.043473+00:00",
+          "workflow_pid": 1794481,
+          "guard_pid": 1794483,
+          "native_child_pid": 1794497,
+          "gpu": 0,
+          "verified_live_processes": true,
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/fixed_actor_body_cem1280_gen2_01",
+          "source_policy_sha256": "66c93b9f2bfd1f65812ca230312a45cda1d11f59e4a6f076ebdd98ae3c88a3b5",
+          "actual_ground1280_checked": true,
+          "original_cases_per_candidate": 128,
+          "candidates": 10,
+          "generations": 2,
+          "actual_progress": {
+            "generation": 0,
+            "control_ticks": 200,
+            "first_episodes_complete": 0,
+            "requested_episodes": 1280,
+            "actual_control_env_steps": 256000,
+            "formal_acceptance": false
+          },
+          "formal_acceptance": false
+        }
+      ],
       "queued_native_sequence": {
         "state_file": "reports/G07_full_racket_v4/residual_eval_queue_1250/state.json",
         "pid": 1560842,
@@ -74,7 +99,7 @@
       "native_air_string_contact_milestone": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
       "latest_native_training_summary": "reports/G07_full_racket_v4/cem32_lateral_feedback_1015/GENERATION0_SUMMARY.json",
       "latest_video": {
-        "checked_at": "2026-10-26T07:19:24.622820+00:00",
+        "checked_at": "2026-10-26T07:39:42.365989+00:00",
         "repo": "lzqw/unitree-smash",
         "release": "g07-full-racket-v4-progress-20261024",
         "GitHub_asset_id": 677327747,
@@ -84,7 +109,7 @@
         "server_digest": "sha256:43ddbd042dcfbac8e48926209deef973b026f3a676b3179a28466ebcf0ab50e4",
         "server_digest_matches_local": true,
         "upload_succeeded": true,
-        "download_verified": false,
+        "download_verified": true,
         "download_verification_status": "Fresh download attempts failed with transport errors; not claimed verified.",
         "duration_s": 84.66,
         "frames": 4233,
@@ -97,7 +122,9 @@
         "goal_complete": false,
         "report": "reports/G07_full_racket_v4/leg06_warmup13_video_delivery_20261026/REPORT.md",
         "scope": "Actual completed warmup13 fixed TRAIN128 six predeclared cases",
-        "frozen_policy_performance": true
+        "frozen_policy_performance": true,
+        "fresh_download": "/tmp/g07_leg06_warmup13_video_fresh_20261026_v5eqabv9/Current_effect_leg06_full_cohort_warmup13_orthographic_v3_20261026.mp4",
+        "fresh_downloaded_sha256": "43ddbd042dcfbac8e48926209deef973b026f3a676b3179a28466ebcf0ab50e4"
       },
       "latest_completed_generation": {
         "had_contact": 63,
@@ -1563,7 +1590,7 @@
         "csv_export_pending_parent_completion": true,
         "frozen_policy_performance": false
       },
-      "current_native_workflow_state": "COMPLETED_WARMUP13_FROZEN128_AND_VIDEO_DELIVERED",
+      "current_native_workflow_state": "RUNNING_FIXED_ACTOR_BODY_SEARCH",
       "latest_completed_fixed_TRAIN128": {
         "episodes": 128,
         "distinct_TRAIN_indices": [
@@ -5272,11 +5299,27 @@
         "archive_proof": "reports/G07_full_racket_v4/joint40_fixed_delivery_20261026/ARCHIVE.json"
       },
       "current_native_workflow": {
-        "state": "COMPLETED_WARMUP13_FROZEN128_AND_VIDEO_DELIVERED",
-        "observed_at": "2026-10-26T07:19:24.622820+00:00",
-        "native_parent_exited": true,
-        "video_observer_exited": true,
-        "new_GPU_job_started": false,
+        "state": "RUNNING_FIXED_ACTOR_BODY_SEARCH",
+        "observed_at": "2026-10-26T07:47:32.043473+00:00",
+        "workflow_pid": 1794481,
+        "guard_pid": 1794483,
+        "native_child_pid": 1794497,
+        "gpu": 0,
+        "verified_live_processes": true,
+        "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/fixed_actor_body_cem1280_gen2_01",
+        "source_policy_sha256": "66c93b9f2bfd1f65812ca230312a45cda1d11f59e4a6f076ebdd98ae3c88a3b5",
+        "actual_ground1280_checked": true,
+        "original_cases_per_candidate": 128,
+        "candidates": 10,
+        "generations": 2,
+        "actual_progress": {
+          "generation": 0,
+          "control_ticks": 200,
+          "first_episodes_complete": 0,
+          "requested_episodes": 1280,
+          "actual_control_env_steps": 256000,
+          "formal_acceptance": false
+        },
         "formal_acceptance": false
       },
       "completed_causal_tangent_probes": {
@@ -9000,7 +9043,7 @@
         "main_runtime_changed": false,
         "formal_acceptance": false
       },
-      "last_goal_turn_classification": "progress: completed native13 and fixed128, inspected14 actual event images and8 decoded frames, delivered latest84.66s video with matching GitHub server digest; full success still0 and formal acceptance unmet.",
+      "last_goal_turn_classification": "progress: latest video delivered and fresh-download verified; fixed-root IK source corrected and rerun; both actor identity checked on1600 real inputs; new381-bound-source GPU0 body search actually launched and actual1280 ground states independently checked. Formal performance remains unproven.",
       "completed_leg06_warmup13_frozen_TRAIN128": {
         "episodes": 128,
         "distinct_TRAIN_indices": [
@@ -9162,6 +9205,56 @@
         "formal_acceptance": false,
         "formal_cases_read": false,
         "scope": "Frozen TRAIN cases only; diagnostic performance of one fixed policy, not an A/B panel score."
+      },
+      "fixed_actor_body_cem_gen2": {
+        "state": "RUNNING_FIXED_ACTOR_BODY_SEARCH",
+        "observed_at": "2026-10-26T07:47:32.043473+00:00",
+        "workflow_pid": 1794481,
+        "guard_pid": 1794483,
+        "native_child_pid": 1794497,
+        "gpu": 0,
+        "verified_live_processes": true,
+        "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/fixed_actor_body_cem1280_gen2_01",
+        "source_policy_sha256": "66c93b9f2bfd1f65812ca230312a45cda1d11f59e4a6f076ebdd98ae3c88a3b5",
+        "actual_ground1280_checked": true,
+        "original_cases_per_candidate": 128,
+        "candidates": 10,
+        "generations": 2,
+        "actual_progress": {
+          "generation": 0,
+          "control_ticks": 200,
+          "first_episodes_complete": 0,
+          "requested_episodes": 1280,
+          "actual_control_env_steps": 256000,
+          "formal_acceptance": false
+        },
+        "formal_acceptance": false,
+        "plan": "reports/G07_full_racket_v4/fixed_actor_body_cem_gen2_queue01/PLAN.json",
+        "report": "reports/G07_full_racket_v4/fixed_actor_body_cem_gen2_queue01/REPORT.md",
+        "bound_source_files": 380,
+        "bound_source_files_plus_PLAN": 381,
+        "two_learned_actors_preserved": true,
+        "CPU_actual1600_source_identity_max_error": 0.0,
+        "cold_original128_evaluation_queued": true,
+        "automatic_retry": false
+      },
+      "fixed_actor_body_CPU_video_observer": {
+        "pid": 1795557,
+        "verified_live": true,
+        "state": "WAITING_FOR_ACTUAL_BODY_SEARCH_PARENT_EXIT",
+        "cases": [
+          19,
+          23,
+          107,
+          0,
+          8,
+          58
+        ],
+        "CPU_only": true,
+        "new_GPU_job_started": false,
+        "automatic_upload": false,
+        "main_runtime_revision_wait": "Actual native1794481 parent exit and new CPU observer ACTUAL_NATIVE_INPUT_CHECK.json admission",
+        "own11_sources_plus_PLAN_held_until_actual_observer_exit": true
       }
     },
     "G08": {
