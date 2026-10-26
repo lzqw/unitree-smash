@@ -6,7 +6,7 @@
 
 此前[48更新课程](reports/G07_full_racket_v4/body_residual48_after_grid16_queue01/REPORT.md)和13/24/36/48固定评估均已完成，完整成功1/0/1/0，未超过原教师；[180MB固定比较包](reports/G07_full_racket_v4/body48_frozen_four_delivery_20261027/REPORT.md)与[1.21GB训练包](reports/G07_full_racket_v4/body48_completed_training_delivery_20261026/REPORT.md)已交付。随后原16米布局Aim7和冷128完成，确认3/128。上述历史结果均保留；当前GPU0已切换到通过原生精度准入的origin0布局，重新测量策略，未继承历史成绩。
 
-[原生坐标精度与重合隔离检查已通过](reports/G07_full_racket_v4/origin_precision_after_aim_queue01/REPORT.md)：同一来球128副本的最大自由飞行误差由原16米布局7.396毫米降至origin0布局0.173毫米，后者球/根副本偏差均0、球接触力0、提前done0、NF0。完整物理资产和全部原任务/评分字段保持。新[原生8×128引拍比较](reports/G07_full_racket_v4/prepose_origin0_after_precision_queue02/REPORT.md)已由父1884350/guard1884474/native1884488在GPU0运行，460输入保持，真实128地面初态及原点均已核对；原严格镜像失败后使用原限位内近等效种子，旧成绩不继承，新布局尚无完整成绩。
+[原生坐标精度与重合隔离检查已通过](reports/G07_full_racket_v4/origin_precision_after_aim_queue01/REPORT.md)：同一来球128副本的最大自由飞行误差由原16米布局7.396毫米降至origin0布局0.173毫米，后者球/根副本偏差均0、球接触力0、提前done0、NF0。完整物理资产和全部原任务/评分字段保持。新[原生8×128引拍比较](reports/G07_full_racket_v4/prepose_origin0_after_precision_queue02/REPORT.md)已由父1884350/guard1884474/native1884488在GPU0运行，460输入保持，真实128地面初态及原点均已核对；原严格镜像失败后使用原限位内近等效种子，旧成绩不继承。新布局第一原样对照已[独立核验为0/128完整](reports/G07_full_racket_v4/origin0_first_reference_20261027/REPORT.md)、0合格空中拍线、11拍框、123身体触地；其余候选继续，不宣称精度修正已改善策略。
 
 [落点范围离线对比](https://github.com/lzqw/unitree-smash/blob/ca0b3d7/reports/G07_full_racket_v4/target_scope_comparison_20261026/RESULT.json)在同一教师128例上得到原2×2米区2完整、4×4米区12完整、整个合法单打半场13完整，保留其余全部条件。用户范围选择待答复，当前训练与原成绩未改写。
 
