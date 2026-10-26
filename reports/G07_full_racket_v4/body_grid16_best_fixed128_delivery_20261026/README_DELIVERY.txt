@@ -1,0 +1,7 @@
+本包交付实际网格候选8的公共权重cb6dfa04d91e98a6ec54659f44fbf7f4e7733d96338f14b626140d4d26fd906a，以及原全TRAIN128零扰动seed724201的全部标量/触球/初态、全部50Hz全身与球记录、几何和前两例100Hz公共输入动作流。固定评估2完整、55空中、30合格恢复、19攻击、NF0；完整例是TRAIN13与TRAIN29，不与搜索中的TRAIN40/79混淆。
+
+另附16候选内部搜索的2048行CSV、人口参数和独立核对回执；该部分没有附全16候选的50Hz姿态文件，不能称为完整搜索原始包。本包不包含当前仍在运行的新48更新残差学习权重或成绩，也无正式A/B成绩。
+
+运行依赖既有G07_placement075_stage8_to40_completed_native_and_frozen_TRAIN128_20261026.zip(完整USD/STL、Go2基础策略及标准PiPER等资产)，其SHA256为44528da938ad422ed6a5515a32c65df3b763421288d2b4ff6f9236ab36c517bb；Isaac/Kit/Torch等锁定环境须另行具备，绝对USD外部层恢复见伴随包。source_snapshot.zip与source_hashes.json是实际冻结评估时的源快照。请在原scripts/run_gpu_job.py共享GPU0 guard下调用scripts/evaluate_full_racket_fixed_actor_body_train_v4.py，以本.pt为--checkpoint，--noise none --seed724201 --headless，使用新output，不覆盖原证据。
+
+原A/B各200及完整50%、空中70%、合格恢复85%、NF0目标尚未通过。TRAIN开发比较不是正式成绩。MANIFEST逐项给出源内容SHA，权重本身包含两层原残差actor及归一化。

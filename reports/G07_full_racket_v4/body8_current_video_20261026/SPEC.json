@@ -1,0 +1,86 @@
+{
+  "scope": "Actual fixed grid8 teacher original TRAIN128. One posthoc complete example plus unchanged six diagnostic indices; not the ongoing residual48 learner.",
+  "cases": [
+    {
+      "run": "body_strike_grid16_fixed_train128_01",
+      "source_type": "evaluation",
+      "env_id": 13,
+      "title": "固定TRAIN13｜完整扣杀成立",
+      "subtitle": "实测网格候选8｜完整球拍｜原128固定策略评估",
+      "terminal_status": "合法空中击球、越网、目标首落与恢复全部成立",
+      "limitation": "出球8.47米/秒；首落[3.94,-0.44]米；稳定窗口3.77秒"
+    },
+    {
+      "run": "body_strike_grid16_fixed_train128_01",
+      "source_type": "evaluation",
+      "env_id": 19,
+      "title": "固定TRAIN19｜实际失败对照",
+      "subtitle": "实测网格候选8｜完整球拍｜原128固定策略评估",
+      "terminal_status": "完整任务条件未全部通过",
+      "limitation": "无有效出球记录；首落[-1.05,0.14]米"
+    },
+    {
+      "run": "body_strike_grid16_fixed_train128_01",
+      "source_type": "evaluation",
+      "env_id": 23,
+      "title": "固定TRAIN23｜实际失败对照",
+      "subtitle": "实测网格候选8｜完整球拍｜原128固定策略评估",
+      "terminal_status": "完整任务条件未全部通过",
+      "limitation": "出球7.74米/秒；回合失效前未记录首次落点；稳定窗口0.00秒"
+    },
+    {
+      "run": "body_strike_grid16_fixed_train128_01",
+      "source_type": "evaluation",
+      "env_id": 107,
+      "title": "固定TRAIN107｜实际失败对照",
+      "subtitle": "实测网格候选8｜完整球拍｜原128固定策略评估",
+      "terminal_status": "完整任务条件未全部通过",
+      "limitation": "出球6.96米/秒；回合失效前未记录首次落点；稳定窗口0.00秒"
+    },
+    {
+      "run": "body_strike_grid16_fixed_train128_01",
+      "source_type": "evaluation",
+      "env_id": 0,
+      "title": "固定TRAIN0｜实际失败对照",
+      "subtitle": "实测网格候选8｜完整球拍｜原128固定策略评估",
+      "terminal_status": "完整任务条件未全部通过",
+      "limitation": "出球8.82米/秒；首落[4.78,-0.35]米；稳定窗口4.21秒"
+    },
+    {
+      "run": "body_strike_grid16_fixed_train128_01",
+      "source_type": "evaluation",
+      "env_id": 8,
+      "title": "固定TRAIN8｜实际失败对照",
+      "subtitle": "实测网格候选8｜完整球拍｜原128固定策略评估",
+      "terminal_status": "完整任务条件未全部通过",
+      "limitation": "出球7.23米/秒；回合失效前未记录首次落点；稳定窗口3.83秒"
+    },
+    {
+      "run": "body_strike_grid16_fixed_train128_01",
+      "source_type": "evaluation",
+      "env_id": 58,
+      "title": "固定TRAIN58｜实际失败对照",
+      "subtitle": "实测网格候选8｜完整球拍｜原128固定策略评估",
+      "terminal_status": "完整任务条件未全部通过",
+      "limitation": "出球7.06米/秒；回合失效前未记录首次落点；稳定窗口0.00秒"
+    }
+  ],
+  "opening_title": "当前冻结教师｜2/128完整成功",
+  "opening_lines": [
+    "原128固定评估：完整2、空中55、合格恢复30。",
+    "展示实际TRAIN13完整回合和此前固定六例。",
+    "非搜索成绩、非新48更新学习器；仍未正式达标。"
+  ],
+  "closing_title": "固定原128｜2完整、55空中、30合格恢复",
+  "closing_lines": [
+    "出球与落点、身体恢复必须同回合全部成立。",
+    "原正式A/B各200和50/70/85门槛仍未通过。"
+  ],
+  "evaluation_footer": "候选8原128固定评估：完整2、空中55、恢复30｜后选成功例＋原六例｜非正式A/B",
+  "caveats": [
+    "Actual native50Hz full-body records and exact contact/first landing events.",
+    "Posthoc TRAIN13 complete case plus same six previous diagnostic indices. Not random or blind selection.",
+    "Not the new residual48 training policy, which has no new frozen evaluation yet."
+  ],
+  "caption_revision": "Replace technical missing-number text by the actual missing-event status; native rows and trajectories unchanged."
+}
