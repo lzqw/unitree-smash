@@ -1,8 +1,10 @@
 # QuadSmash：Codex /goal 实施与训练任务包
 
-当前进展（2026-10-26 11:53UTC）：冻结教师grid8原全TRAIN128实测**2完整、55空中、30合格恢复、19攻击、NF0**，原正式A/B及50/70/85未通过。[最新98秒真实视频](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_body_grid8_cold128_complete_and_failures_20261026.mp4)保留TRAIN13完整例和此前固定六例失败对照，已上传并新下载SHA核验；这是固定教师。[完整128、权重与43MB数据包](reports/G07_full_racket_v4/body_grid16_best_fixed128_delivery_20261026/REPORT.md)已交付。
+当前进展（2026-10-26 12:35UTC）：[新37.76秒原生训练视频](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_training_body48_learned_complete_and_early_failures_20261026.mp4)保留一个学习阶段完整回合及两段明确标为预热期的失败。TRAIN32实际出球8.15米/秒、原目标首落[3.93,-.42]米、稳定恢复2.00秒；这是含探索的变化中训练回合，不是固定成功率。[视频与32.97MB精选实录、诊断和核验报告](reports/G07_full_racket_v4/body48_learned_training_delivery_20261026/REPORT.md)均已上传并新下载SHA核对。
 
-GPU0的新[48更新课程](reports/G07_full_racket_v4/body_residual48_after_grid16_queue01/REPORT.md)已完成**15/48更新、3932160控制环境步、NF0**，actor从第8更新开始学习；原guard1818795/native1818808仍在运行，407来源保持到父1814619实际退出。新学习器尚无固定128成绩。[真实记录阶段核对](https://github.com/lzqw/unitree-smash/blob/ef8fabe/reports/G07_full_racket_v4/body48_first_three_success_phases_20261026/RESULT.json)确认早期三个完整训练回合的击球均发生在actor权重首次更新前，其中两个恢复阶段跨入学习期，不能据此宣称学习改善。后续[7个拍线瞄准点比较](reports/G07_full_racket_v4/contact_aim_after_body48_queue01/PLAN.json)等待本课程和固定比较全部结束，再经同一GPU0 guard接续；若已有策略达到原准备门槛则跳过搜索。
+冻结教师grid8原全TRAIN128仍为**2完整、55空中、30合格恢复、19攻击、NF0**，原正式A/B及50/70/85未通过。[教师98秒视频](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_body_grid8_cold128_complete_and_failures_20261026.mp4)保留TRAIN13完整例和此前固定六例失败对照；[完整128、教师权重与43MB数据包](reports/G07_full_racket_v4/body_grid16_best_fixed128_delivery_20261026/REPORT.md)继续保留。
+
+GPU0的新[48更新课程](reports/G07_full_racket_v4/body_residual48_after_grid16_queue01/REPORT.md)已核对**23/48更新、6029312控制环境步、NF0**，actor从第8更新开始学习；原guard1818795/native1818808仍在运行，407来源保持到父1814619实际退出。新学习器尚无固定128成绩。[早期三个完整回合](https://github.com/lzqw/unitree-smash/blob/ef8fabe/reports/G07_full_racket_v4/body48_first_three_success_phases_20261026/RESULT.json)的击球在actor首次更新前；新视频中的第四个完整回合已全程处于学习阶段，但仍不能据单例推断固定策略改善。后续[7个拍线瞄准点比较](reports/G07_full_racket_v4/contact_aim_after_body48_queue01/PLAN.json)等待本课程和固定比较全部结束，再经同一GPU0 guard接续；若已有策略达到原准备门槛则跳过搜索。
 
 [落点范围离线对比](https://github.com/lzqw/unitree-smash/blob/ca0b3d7/reports/G07_full_racket_v4/target_scope_comparison_20261026/RESULT.json)在同一教师128例上得到原2×2米区2完整、4×4米区12完整、整个合法单打半场13完整，保留其余全部条件。用户范围选择待答复，当前训练与原成绩未改写。
 
