@@ -1,0 +1,125 @@
+{
+  "checked_at": "2026-10-26T01:15:39.673867+00:00",
+  "scope": "First complete episode of this075 strict8-to40 TRAIN continuation, not the first historical project success, a completed job, a frozen-policy score or formal acceptance.",
+  "actual_case_id": "TRAIN80_LANE208_EP4",
+  "env_id": 208,
+  "episode_index": 4,
+  "TRAIN": 80,
+  "all800_actual100Hz_ground_start_samples": true,
+  "initial_root_position_max_error_m": 1.3828277578564752e-08,
+  "actor_iterations_encountered": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16
+  ],
+  "actual_independent_outcome": {
+    "airborne_contact": true,
+    "conditional_recovery": true,
+    "complete": true,
+    "fault": false
+  },
+  "actual_contact_time_s": 2.7910053730010986,
+  "actual_contact_point_m": [
+    0.94427490234375,
+    -0.04691314697265625,
+    1.8092801570892334
+  ],
+  "actual_contact_point_local_racket_m": [
+    0.0005605472740057169,
+    -0.00899370428813015,
+    0.09804843083920883
+  ],
+  "actual_contact_point_strings_rho_squared": 0.7179811898128559,
+  "actual_feet_heights_at_contact_m": {
+    "FL_foot": 0.5047680139541626,
+    "FR_foot": 0.5279074907302856,
+    "RL_foot": 0.49042418599128723,
+    "RR_foot": 0.5103343725204468
+  },
+  "actual_outgoing_velocity_mps": [
+    7.676259994506836,
+    -0.4993820786476135,
+    -2.499037981033325
+  ],
+  "actual_outgoing_speed_mps": 8.08823471434822,
+  "actual_speed_threshold_margin_mps": 0.08823471434821961,
+  "actual_net_crossing_point_m": [
+    1.524999976158142,
+    -0.08169952034950256,
+    1.6075352430343628
+  ],
+  "actual_net_margin_m": 0.058535218238830566,
+  "actual_first_landing_m": [
+    3.99005126953125,
+    -0.24729156494140625,
+    0.025002628564834595
+  ],
+  "actual_first_landing_time_s": 3.2012174129486084,
+  "actual_target_far_x_margin_m": 0.00994873046875,
+  "actual_recovery_s": 3.788907766342163,
+  "actual_body_ground_maximum_force_n": 0.0,
+  "actual_point_velocity_mps": [
+    0.6925397515296936,
+    -1.0061124563217163,
+    -0.14246033132076263
+  ],
+  "actual_point_speed_mps": 1.2297026177960868,
+  "flange_plus_rotation_point_velocity_error_mps": 2.792218953917507e-05,
+  "recorded_native_point_velocity_consistency_error_mps": 2.795687032630667e-05,
+  "diagnostic_residual_agreement_bound_from_float32_mps": 1.1727554896596062e-06,
+  "below_prior_capture_extra_diagnostic_bound_2e5": false,
+  "no_original_acceptance_tolerance_changed": true,
+  "last_080s_public_pose_and_velocity_corroboration": {
+    "samples": 80,
+    "start_time_s": 7.199999809265137,
+    "maximum_abs_roll_pitch_degrees": 6.6551438198236665,
+    "maximum_root_link_horizontal_speed_mps": 0.012996606528759003,
+    "maximum_root_angular_speed_rad_s": 0.13074760138988495,
+    "maximum_abs_joint_speed_rad_s": 0.9389834403991699,
+    "minimum_supporting_feet": 2
+  },
+  "all_observed_closed_changing_policy_counts": {
+    "closed_episodes": 4440,
+    "air": 486,
+    "conditional_recovery": 189,
+    "complete": 1,
+    "numerical_failures": 0
+  },
+  "retained_failure_keys": [
+    [
+      23,
+      2
+    ],
+    [
+      8,
+      3
+    ]
+  ],
+  "limitations": [
+    "Target-edge margin remains about1cm; this episode does not establish robust performance.",
+    "The actual racket-point speed is reported separately from outgoing ball speed; an8m/s outgoing ball is not an8m/s racket swing.",
+    "No restoring of in-contact PhysX state, no generated motion, no episode splice, and no new frozen score.",
+    "The native recovery tracker checks substeps;100Hz root-link corroboration is additional evidence, not a substitute for it."
+  ],
+  "source_sha256": {
+    "reports/G07_full_racket_v4/placement075_first_complete_training_20261026/audit.py": "1ca5d088e462f174215454453fb656ae6eb1dc5383bcdaddb844d5c972719676",
+    "reports/G07_full_racket_v4/centered_resume_training_capture_20261026/prepare.py": "a39b8298771abf09c4ab7951318bc71f02029de4d1610eb2b8dbcdbc30164bd3",
+    "reports/G07_full_racket_v4/video_snapshot_placement075_first_complete_20261026/cases.json": "0cde5ce099806938f452456feebf8a6ec3d31465106de8451d35038e735c7a83",
+    "reports/G07_full_racket_v4/video_snapshot_placement075_first_complete_20261026/residual_ppo_centered_placement075_n2048_resume32_02/observed_episodes.json": "4ff8d0ee950a7f9bd2420daab16235210acde50dda0a033ab1c5cc9a726338c4",
+    "reports/G07_full_racket_v4/video_snapshot_placement075_first_complete_20261026/residual_ppo_centered_placement075_n2048_resume32_02/observed_trace_manifest.json": "c8130414f0ff6e14d18c14c509e4b4e51b54924f9b03eecec8dacb0044789ef0",
+    "reports/G07_full_racket_v4/video_snapshot_placement075_first_complete_20261026/residual_ppo_centered_placement075_n2048_resume32_02/lane0208_episode000004.npz": "58d93530bee25e5e8b25d301b63268873dc1363f94ac5cd8f10281a6e1271944",
+    "reports/G07_full_racket_v4/video_snapshot_placement075_first_complete_20261026/residual_ppo_centered_placement075_n2048_resume32_02/lane0208_episode000004.json": "9a081d0eded43246f50dda0e591046578ff20165e1e903eb0e109641a6290941",
+    "configs/g07_full_racket_eval_v4_r3.json": "04121cfb257ea4d2e288c69b44dd0c8dbada814e0bf95c8a16f5af7ef2390367",
+    "quadsmash/tasks/stand/observation_contract.py": "3e884b4c5d72a2f86aff74114ebf0d9ece0264ea4b9e59880375a1fcc23a5772",
+    "quadsmash/evaluation_v4.py": "efe610b42103a45b75fa98acb2a7fe221536abb752ebd665fc926c6ffb657b38"
+  },
+  "native_source_job_still_running": true,
+  "frozen_policy_performance": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}

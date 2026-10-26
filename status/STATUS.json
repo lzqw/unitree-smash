@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/centered_residual_pilot8_queue02/FIXED_TRAIN128_RESULT.json",
-      "notes": "原GPU0严格075续训继续，完整首批2048地面回合已独立核验257空中/120条件恢复/0完整/8攻击/NF0，全部128场景各16次及源ID链保持；8攻击均越网但首落x4.09至5.02超过原4米上界。原冻结8仍0完整/26空中/19恢复/5攻击。87.66秒同源新版视频已经上传并新下载SHA回验，修复裁切和标签、加入明确30度触球斜侧，24张真实画面已检查，物理和策略不变；新渲染器只在独立分支，主269持有文件不改。原正式A/B及50/70/85未通过，训练继续至40及完整128评测。",
+      "notes": "原GPU0严格075续训继续，完整首批2048地面回合已独立核验257空中/120条件恢复/0完整/8攻击/NF0，全部128场景各16次及源ID链保持；8攻击均越网但首落x4.09至5.02超过原4米上界。原冻结8仍0完整/26空中/19恢复/5攻击。87.66秒同源新版视频已经上传并新下载SHA回验，修复裁切和标签、加入明确30度触球斜侧，24张真实画面已检查，物理和策略不变；新渲染器只在独立分支，主269持有文件不改。原正式A/B及50/70/85未通过，训练继续至40及完整128评测。 当前075续训新出现并独立核验1条完整训练回合TRAIN80/LANE208/EP4：出球8.088m/s、vz−2.499、首落x3.99005（后沿余量9.95毫米）、恢复3.789秒、无违规；800条100Hz实际输入/动作/28刚体轨迹核对，actor10至16变化，非固定策略成绩。实际拍点速度1.230m/s，与出球分开。原冻结8及正式门槛仍未通过，GPU0继续训练。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
@@ -5631,31 +5631,29 @@
         "formal_acceptance": false
       },
       "latest_training_complete_episode": {
-        "evidence": "reports/G07_full_racket_v4/centered_second_complete_video_20261026/SECOND_COMPLETE_NATIVE_AND_VIDEO_CHECK.json",
-        "case_id": "TRAIN25_LANE153_EP5",
-        "TRAIN": 25,
-        "env_id": 153,
-        "episode_index": 5,
-        "actual_outgoing_speed_mps": 8.010170312678008,
-        "actual_speed_threshold_margin_mps": 0.010170312678008386,
-        "first_landing_m": [
-          3.929107666015625,
-          -0.43032073974609375,
-          0.025059720501303673
-        ],
-        "target_far_x_margin_m": 0.070892333984375,
-        "actual_recovery_s": 3.6269195079803467,
-        "actual_racket_point_speed_mps": 1.8814725249114124,
-        "actual_all800_native100Hz_samples_preserved": true,
-        "actual_actor_iterations_encountered": [
+        "evidence": "reports/G07_full_racket_v4/placement075_first_complete_training_20261026/FIRST_COMPLETE_NATIVE_EPISODE_CHECK.json",
+        "report": "reports/G07_full_racket_v4/placement075_first_complete_training_20261026/REPORT.md",
+        "case_id": "TRAIN80_LANE208_EP4",
+        "TRAIN": 80,
+        "lane": 208,
+        "episode": 4,
+        "actor_iterations": [
+          10,
+          11,
+          12,
           13,
           14,
           15,
-          16,
-          17,
-          18,
-          19
+          16
         ],
+        "outgoing_speed_mps": 8.08823471434822,
+        "first_landing_m": [
+          3.99005126953125,
+          -0.24729156494140625,
+          0.025002628564834595
+        ],
+        "target_far_x_margin_m": 0.00994873046875,
+        "recovery_s": 3.788907766342163,
         "frozen_policy_performance": false,
         "formal_acceptance": false
       },
