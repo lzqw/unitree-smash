@@ -50,12 +50,31 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/centered_residual_pilot8_queue02/FIXED_TRAIN128_RESULT.json",
-      "notes": "leg06新8已实际完成2097152步、0.6702120821GPUh；原全TRAIN128固定评估也已实际成功完成102400步、0.3047815845GPUh，0完整/27空中/14条件恢复(51.85%)/6攻击/NF0。相比075来源8版26空中/19恢复/5攻击，恢复退化且两版攻击越网命中目标链均0；1115实际有效公共输入canonical/JIT误差0。父1768388仍在CPU视频流程，主295输入及PLAN继续持有，CPU观察1772888等待实际父退出；之后只改价值预热2->7、相同六次actor更新的13更新对照已CPU准备。原A/B各200和50/70/85仍未通过。",
+      "notes": "当前81秒leg06新8实测视频已上传并新下载核验，15事件画面/8实际解码帧已审查、4068帧全部解码。原128固定结果0完整/27空中/14恢复/6攻击/NF0，较来源恢复下降，攻击越网命中目标链0。13更新完整首批预热对照已于05:34UTC通过原GPU0 guard1777458/native1777471实际运行；2048地面状态和原生映射2.79e-9rad已核对，302持有输入保持，尚无该对照冻结结果。253MB完整leg06数据包已通过540payload/CRC和新目录RSL、12实际轨迹核验，尚未上传。原A/B各200及50/70/85仍未通过。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
-      "active_gpu_jobs": [],
+      "active_gpu_jobs": [
+        {
+          "state": "RUNNING_FULL_COHORT_WARMUP13",
+          "observed_at": "2026-10-26T05:39:21.131926+00:00",
+          "workflow_pid": 1777456,
+          "guard_pid": 1777458,
+          "native_child_pid": 1777471,
+          "gpu": 0,
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_leg06_full_cohort_warmup7_n2048_probe13_01",
+          "verified_live_processes": true,
+          "source_policy_sha256": "66c93b9f2bfd1f65812ca230312a45cda1d11f59e4a6f076ebdd98ae3c88a3b5",
+          "source_actor_RMS_count": 12582912,
+          "actual_initial_ground2048_checked": true,
+          "actual_physical_mean_witness_max_error_rad": 2.7939677238464355e-09,
+          "critic_warmup_updates": 7,
+          "actor_updates_planned": 6,
+          "total_updates_planned": 13,
+          "formal_acceptance": false
+        }
+      ],
       "queued_native_sequence": {
         "state_file": "reports/G07_full_racket_v4/residual_eval_queue_1250/state.json",
         "pid": 1560842,
@@ -74,26 +93,28 @@
       "native_air_string_contact_milestone": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
       "latest_native_training_summary": "reports/G07_full_racket_v4/cem32_lateral_feedback_1015/GENERATION0_SUMMARY.json",
       "latest_video": {
-        "checked_at": "2026-10-26T01:21:38.450577+00:00",
+        "checked_at": "2026-10-26T05:37:49.173900+00:00",
         "repo": "lzqw/unitree-smash",
         "release": "g07-full-racket-v4-progress-20261024",
-        "asset": "Current_training_placement075_first_complete_and_failures_20261026.mp4",
-        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_training_placement075_first_complete_and_failures_20261026.mp4",
-        "sha256": "e78d2e40371b688bf02643149b1d4eed64f3dce19283e6a91a79e8f1b7117f89",
-        "fresh_downloaded_sha256": "e78d2e40371b688bf02643149b1d4eed64f3dce19283e6a91a79e8f1b7117f89",
-        "bytes": 2736459,
-        "fresh_download": "/tmp/g07_075_first_complete_video_fresh_20261026_ank9ex07/Current_training_placement075_first_complete_and_failures_20261026.mp4",
-        "download_verified": true,
+        "GitHub_asset_id": 677142824,
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_centered_leg06_pilot8_orthographic_v3_20261026.mp4",
+        "bytes": 7009511,
+        "sha256": "e98b94d44cd56891dfe96b82fa96b655bb6c61824fd600ad79bce4efe24c7624",
+        "fresh_download": "/tmp/g07_leg06_pilot8_video_fresh_20261026_q322nodf/Current_effect_centered_leg06_pilot8_orthographic_v3_20261026.mp4",
+        "fresh_downloaded_sha256": "e98b94d44cd56891dfe96b82fa96b655bb6c61824fd600ad79bce4efe24c7624",
+        "server_digest": "sha256:e98b94d44cd56891dfe96b82fa96b655bb6c61824fd600ad79bce4efe24c7624",
         "upload_succeeded": true,
-        "duration_s": 29.3,
-        "frames": 1465,
-        "selection_after_outcomes": true,
-        "frozen_policy_performance": false,
+        "download_verified": true,
+        "duration_s": 81.36,
+        "frames": 4068,
+        "root_reviewed_native_event_images": 15,
+        "root_reviewed_decoded_frames": 8,
+        "all4068_frames_decoded": true,
         "formal_acceptance": false,
         "goal_complete": false,
-        "scope": "One actual TRAIN80 completion and two post-outcome selected failures; not a frozen-policy or population score.",
-        "root_reviewed_images": 11,
-        "report": "https://github.com/lzqw/unitree-smash/blob/1211474ebfb786793af8c5fb8349b94ecbdd094a/reports/G07_full_racket_v4/placement075_first_complete_video_20261026/REPORT.md"
+        "report": "https://github.com/lzqw/unitree-smash/blob/17e0223ea60c75f67113492bc79f0d7a1560136b/reports/G07_full_racket_v4/orthographic_leg06_pilot8_after_native_queue01/REPORT.md",
+        "scope": "Actual leg06 fixed TRAIN128 six predeclared cases; not current running warmup13",
+        "frozen_policy_performance": true
       },
       "latest_completed_generation": {
         "had_contact": 63,
@@ -1559,7 +1580,7 @@
         "csv_export_pending_parent_completion": true,
         "frozen_policy_performance": false
       },
-      "current_native_workflow_state": "RENDERING_ACTUAL_VIDEO_ON_CPU",
+      "current_native_workflow_state": "RUNNING_FULL_COHORT_WARMUP13",
       "latest_completed_fixed_TRAIN128": {
         "run": "residual_ppo_centered_placement075_diag_iter32_fixed_train128_01",
         "complete": 0,
@@ -5080,10 +5101,21 @@
         "archive_proof": "reports/G07_full_racket_v4/joint40_fixed_delivery_20261026/ARCHIVE.json"
       },
       "current_native_workflow": {
-        "state": "RENDERING_ACTUAL_VIDEO_ON_CPU",
-        "workflow_pid": 1768388,
-        "main_sources_still_held": true,
-        "GPU0_jobs_complete": true,
+        "state": "RUNNING_FULL_COHORT_WARMUP13",
+        "observed_at": "2026-10-26T05:39:21.131926+00:00",
+        "workflow_pid": 1777456,
+        "guard_pid": 1777458,
+        "native_child_pid": 1777471,
+        "gpu": 0,
+        "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_leg06_full_cohort_warmup7_n2048_probe13_01",
+        "verified_live_processes": true,
+        "source_policy_sha256": "66c93b9f2bfd1f65812ca230312a45cda1d11f59e4a6f076ebdd98ae3c88a3b5",
+        "source_actor_RMS_count": 12582912,
+        "actual_initial_ground2048_checked": true,
+        "actual_physical_mean_witness_max_error_rad": 2.7939677238464355e-09,
+        "critic_warmup_updates": 7,
+        "actor_updates_planned": 6,
+        "total_updates_planned": 13,
         "formal_acceptance": false
       },
       "completed_causal_tangent_probes": {
@@ -8234,11 +8266,13 @@
       "leg06_live_CPU_video_observer": {
         "pid": 1772888,
         "worktree": "/home/autodrive/LZQW/unitree_smash_video_framing",
-        "state": "WAITING_FOR_ACTUAL_LEG06_PARENT_EXIT",
+        "state": "COMPLETED_ACTUALLY_EXITED",
         "report": "reports/G07_full_racket_v4/orthographic_leg06_pilot8_after_native_queue01/REPORT.md",
         "automatic_upload": false,
         "formal_acceptance": false,
-        "report_url": "https://github.com/lzqw/unitree-smash/blob/9c9c5a9cb8c3f2764aaede0be00479fb35d3d01f/reports/G07_full_racket_v4/orthographic_leg06_pilot8_after_native_queue01/REPORT.md"
+        "report_url": "https://github.com/lzqw/unitree-smash/blob/9c9c5a9cb8c3f2764aaede0be00479fb35d3d01f/reports/G07_full_racket_v4/orthographic_leg06_pilot8_after_native_queue01/REPORT.md",
+        "actual_exit_confirmed": true,
+        "video_delivery": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_centered_leg06_pilot8_orthographic_v3_20261026.mp4"
       },
       "next_full_cohort_warmup_candidate": {
         "config": "configs/g07_full_racket_residual_ppo_centered_leg06_full_cohort_warmup_v4.json",
@@ -8246,8 +8280,11 @@
         "updates": 13,
         "critic_warmup_updates": 7,
         "actor_updates": 6,
-        "new_native_execution": false,
-        "formal_acceptance": false
+        "new_native_execution": true,
+        "formal_acceptance": false,
+        "actual_workflow_pid": 1777456,
+        "actual_guard_pid": 1777458,
+        "actual_native_pid": 1777471
       },
       "completed_leg06_pilot8_frozen_TRAIN128": {
         "summary": {
@@ -8415,6 +8452,38 @@
         "actual_GPU_hours": 0.3047815845344384,
         "steps": 102400,
         "independent_check": "reports/G07_full_racket_v4/leg06_completed8_delivery_20261026/ACTUAL_NATIVE_COMPLETED_DATA_CHECK.json"
+      },
+      "historical_latest_videos": [
+        {
+          "checked_at": "2026-10-26T01:21:38.450577+00:00",
+          "repo": "lzqw/unitree-smash",
+          "release": "g07-full-racket-v4-progress-20261024",
+          "asset": "Current_training_placement075_first_complete_and_failures_20261026.mp4",
+          "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_training_placement075_first_complete_and_failures_20261026.mp4",
+          "sha256": "e78d2e40371b688bf02643149b1d4eed64f3dce19283e6a91a79e8f1b7117f89",
+          "fresh_downloaded_sha256": "e78d2e40371b688bf02643149b1d4eed64f3dce19283e6a91a79e8f1b7117f89",
+          "bytes": 2736459,
+          "fresh_download": "/tmp/g07_075_first_complete_video_fresh_20261026_ank9ex07/Current_training_placement075_first_complete_and_failures_20261026.mp4",
+          "download_verified": true,
+          "upload_succeeded": true,
+          "duration_s": 29.3,
+          "frames": 1465,
+          "selection_after_outcomes": true,
+          "frozen_policy_performance": false,
+          "formal_acceptance": false,
+          "goal_complete": false,
+          "scope": "One actual TRAIN80 completion and two post-outcome selected failures; not a frozen-policy or population score.",
+          "root_reviewed_images": 11,
+          "report": "https://github.com/lzqw/unitree-smash/blob/1211474ebfb786793af8c5fb8349b94ecbdd094a/reports/G07_full_racket_v4/placement075_first_complete_video_20261026/REPORT.md"
+        }
+      ],
+      "completed_leg06_data_archive_ready": {
+        "archive": "reports/G07_full_racket_v4/G07_leg06_pilot8_native_training_and_frozen_TRAIN128_20261026.zip",
+        "bytes": 253118980,
+        "sha256": "83ab00c15730d104f4baa2026cea513c773e3b1a73e1d3cb610da64596f85090",
+        "fresh_extraction_CPU_data_and_trace_checks_passed": true,
+        "uploaded": false,
+        "report": "reports/G07_full_racket_v4/leg06_completed8_delivery_20261026/REPORT.md"
       }
     },
     "G08": {

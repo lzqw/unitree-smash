@@ -65,7 +65,9 @@ def build():
             for name,digest in read(folder/'source_hashes.json').items():
                 data = snapshot.read(name); assert hashlib.sha256(data).hexdigest() == digest
                 add(name,data)
-    suite = ROOT/'reports/protocol_frozen01/training_cases.json'
+    suite_config = read(ROOT/'configs/g07_full_racket_eval_v4_r3.json')['training_suite']
+    suite = ROOT/suite_config['path']
+    assert sha(suite) == suite_config['sha256'] and len(read(suite)['cases']) == 128
     file(suite)
     with zipfile.ZipFile(companion) as old:
         manifest = json.loads(old.read('MANIFEST.json'))
