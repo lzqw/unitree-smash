@@ -1,8 +1,10 @@
 # QuadSmash：Codex /goal 实施与训练任务包
 
-当前进展（2026-10-26T23:34:37.691662+00:00）：[全身八项比较与独立冷128报告](reports/G07_full_racket_v4/gain_body_completed_delivery_20261027/REPORT.md)。八项原1024例已结束；选中原样候选0的新冷128实测为**0完整、4空中拍线、0合格恢复、0攻击、NF0**，没有改善。新冷评估48,305个共同有效50Hz采样与上一轮冷评估逐位一致；成绩仍从本轮128行独立重算。GPU0新128环境×15更新残差已实际启动（owner1896271/guard1923496/native1923510），128地面初态、408源文件和实际冷源CPU准入已核对；前7更新仅预热critic，此后8更新学习残差actor，原两个源actor/RMS保留。尚无新训练冻结成绩，原A/B各200及50/70/85未通过。
+当前进展（2026-10-26T23:49:10.554912+00:00）：[全身八项比较与独立冷128报告](reports/G07_full_racket_v4/gain_body_completed_delivery_20261027/REPORT.md)。八项原1024例已结束；选中原样候选0的新冷128实测为**0完整、4空中拍线、0合格恢复、0攻击、NF0**，没有改善。新冷评估48,305个共同有效50Hz采样与上一轮冷评估逐位一致；成绩仍从本轮128行独立重算。GPU0新128环境×15更新残差已实际启动（owner1896271/guard1923496/native1923510），128地面初态、408源文件和实际冷源CPU准入已核对；前7更新仅预热critic，此后8更新学习残差actor，原两个源actor/RMS保留。尚无新训练冻结成绩，原A/B各200及50/70/85未通过。
 
 [最新已上传73.08秒视频：全部四次空中触球与未触球对照](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_origin0_cold128_four_air_contacts_and_miss_20261027.mp4)。该片来自上一轮冷128，当前独立冷128已核对共同有效姿态/球/时钟一致；新训练的效果视频尚未生成。
+
+[新训练早期失败诊断](reports/G07_full_racket_v4/origin0_residual_early_failures_20261027/REPORT.md)：最早6例在来球前终止；另保留原TRAIN0，976条实际公共输入复算源动作最大差3.57628e-6、混合后动作差0。七例原始轨迹及程序包已独立下载19成员CRC/SHA核验。当前训练已完成5/15更新、81920步，仍在critic预热、NF0；首批127例已闭合，来球前失败8例、待结束1例，不把最早失败选例当作整体主因或冻结成绩。
 
 当前进展（2026-10-26T18:01UTC）：[最新42.28秒瞄准点实际视频](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_contact_aim006_search_complete_and_failures_20261027.mp4)保留新成功TRAIN12、原成功例TRAIN13的恢复退化，以及TRAIN0拍框误击。参考点[0,.06]原128搜索为**5完整、60空中、28合格恢复、21攻击、NF0**；独立冷128现已完成为3完整、60空中、26合格恢复，NF0，仍未达标。2114帧全部解码、原生数据逐项一致、事件及成片抽样检查、新下载SHA验证均通过。[视频、46.49MB完整候选原128记录与权重](reports/G07_full_racket_v4/contact_aim_search_video_delivery_20261027/REPORT.md)已交付。此前[37.76秒48更新训练录像](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_training_body48_learned_complete_and_early_failures_20261026.mp4)继续保留。
 

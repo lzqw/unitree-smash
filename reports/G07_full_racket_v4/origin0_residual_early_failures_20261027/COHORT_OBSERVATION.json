@@ -1,0 +1,2314 @@
+{
+  "observed_at": "2026-10-26T23:49:10.554912+00:00",
+  "native_pid": 1923510,
+  "native_confirmed_live": true,
+  "actual_completed_updates": 5,
+  "actual_control_env_steps": 81920,
+  "all_training_closed_episodes": 204,
+  "first_cohort_closed": 127,
+  "first_cohort_pending": [
+    69
+  ],
+  "first_cohort_closed_before_launch": 8,
+  "prelaunch_termination_reason_counts": {
+    "body_ground": 6,
+    "root_fallen": 2
+  },
+  "first_cohort_status_projection": [
+    {
+      "env_id": 0,
+      "source_training_index": 0,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 2.7100000381469727,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "f7877dbe3f898b60286fafb5db51a0b8eeef2786e0ded1117b5b28afac8e057d"
+    },
+    {
+      "env_id": 1,
+      "source_training_index": 1,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": true,
+        "robot_rule_fault": true,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": false,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 2.679999828338623,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "d27a2b7cc818695b8f6a4c58acbd9dc80ea8308d4531cb24f1af4fc419cf93f7"
+    },
+    {
+      "env_id": 2,
+      "source_training_index": 2,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 2.700000047683716,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "72af6283c80386f9b1da4d767d32cb6fe8974fa9ba57759b6ee1d393500d74d4"
+    },
+    {
+      "env_id": 3,
+      "source_training_index": 3,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 2.619999885559082,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "24bc217f9d2ad7935e5021bb8b33f7388b15d0864e67c7153257dc1c940d1db7"
+    },
+    {
+      "env_id": 4,
+      "source_training_index": 4,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.679999828338623,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "98fe0272482cdc4596c304d946d199c4e5eb3dd6ca3d73a7d560a6a38cc31a94"
+    },
+    {
+      "env_id": 5,
+      "source_training_index": 5,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": false,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 1.659999966621399,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "7096ac35d6d119d8594c7c00a5435ab372b3c962d179fc13d7c0accffd4650d7"
+    },
+    {
+      "env_id": 6,
+      "source_training_index": 6,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.3299999237060547,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "970be6f8be25643d99310bccc0053a1bbdd550eb916e6785f91e5d2fd9e232dc"
+    },
+    {
+      "env_id": 7,
+      "source_training_index": 7,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.319999933242798,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "66c23aeac134c79d5e695ac8734804be0f6d0eb3f401fcb2af31d09c9b5219f6"
+    },
+    {
+      "env_id": 8,
+      "source_training_index": 8,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.3299999237060547,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "72888a6f2688f32565f08c0dbcd4633e3ee2e903e5e40e366e47237b4dfc19e0"
+    },
+    {
+      "env_id": 9,
+      "source_training_index": 9,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.1599998474121094,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "f5377569329bbf68084b6d1ccdb18fb852f7771f554c96e1cb80034bbdd7d526"
+    },
+    {
+      "env_id": 10,
+      "source_training_index": 10,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.5799999237060547,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "975cc987c2b811dbb1edd710929f99e7651596c4b1a711f6462cf55f504f5ddb"
+    },
+    {
+      "env_id": 11,
+      "source_training_index": 11,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 2.7300000190734863,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "cfcac47c7599ac4c61ce051392969344f0dc4b88646400e47bb965422b6a64c5"
+    },
+    {
+      "env_id": 12,
+      "source_training_index": 12,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.6599998474121094,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "addcad20064ae41a51f61ee96a34720b1f5506466b09ed6cc29217414ce0d93b"
+    },
+    {
+      "env_id": 13,
+      "source_training_index": 13,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 2.6499998569488525,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "aa6e4045851c8ce9ae0695c8b5b8c7bf503ea7ce8fdf397852267150492fe11f"
+    },
+    {
+      "env_id": 14,
+      "source_training_index": 14,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.2899999618530273,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "ca4f16953c5dd2669e7bc74baa490ac611f8641090a1e477edad71ba250d010a"
+    },
+    {
+      "env_id": 15,
+      "source_training_index": 15,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.3399999141693115,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "40bc27b96f29cdeea1dfa44f5562ea3202f2267adac637494b333c6ba0cba527"
+    },
+    {
+      "env_id": 16,
+      "source_training_index": 16,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.299999952316284,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "23d24bda26bf6f9695f3cacfcf1de677cd9e5fa4a09caa19a1a09466cd4d12b1"
+    },
+    {
+      "env_id": 17,
+      "source_training_index": 17,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.379999876022339,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "1508eeff6d72041d6a442d5ceb2bd88e3d1a9140436644768812a8b9f314db8e"
+    },
+    {
+      "env_id": 18,
+      "source_training_index": 18,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.549999952316284,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "db0409c21ece416b64c72e64f0854bd017a07afd0146d205fde90837d31b8227"
+    },
+    {
+      "env_id": 19,
+      "source_training_index": 19,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.3299999237060547,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "9ffd9f5f77df0b2ad400a06dc404adb69d2b4ea97b36145846791fe1c1e6c2ae"
+    },
+    {
+      "env_id": 20,
+      "source_training_index": 20,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 2.0299999713897705,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "aa124543aaba6ec55233af6648511187c41c049addd0ba181a49997522421678"
+    },
+    {
+      "env_id": 21,
+      "source_training_index": 21,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.3499999046325684,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "28d5ea7c6177a728a0a9296f16cae2bdba987a32d74fc73e7ffaddc280476992"
+    },
+    {
+      "env_id": 22,
+      "source_training_index": 22,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 4.239999771118164,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "1110ef4ca7f39df7cffbc1e30e4d8f44d23c5d7be3c01ed604eaeb4344e994fa"
+    },
+    {
+      "env_id": 23,
+      "source_training_index": 23,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.7200000286102295,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "22231c039eaca53dd10e8e2e725eb5762647074ad4857b9e0517fee57cdbc17b"
+    },
+    {
+      "env_id": 24,
+      "source_training_index": 24,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.3399999141693115,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "055e3ffccc101dc8136e05a77de262b4e5bdf8a5008f31176d4e8903ad9fd360"
+    },
+    {
+      "env_id": 25,
+      "source_training_index": 25,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.0899999141693115,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "1eb6dc0e123335ee136e06555e2b0d8b6661559c579bc50cdc888f80182c048d"
+    },
+    {
+      "env_id": 26,
+      "source_training_index": 26,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.3399999141693115,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "f180d17576f40aa44371ce949bc529ebe1dc4ee591e33ee993fb2ab9cc207d40"
+    },
+    {
+      "env_id": 27,
+      "source_training_index": 27,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.359999895095825,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "4b4791e62cf3ada833473de4d6daa3d2a2542f7267228b84b8e3e0fcb7b64d0b"
+    },
+    {
+      "env_id": 28,
+      "source_training_index": 28,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": true,
+        "robot_rule_fault": true,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": false,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 2.549999952316284,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "85e241b5b021933afc2ea15bfbe29a063704ca55600cb4af0f6e7f8f8309f825"
+    },
+    {
+      "env_id": 29,
+      "source_training_index": 29,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.2799999713897705,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "f2ca30f24e6768aad7822565da698075a3a7345d2bfe1a5e5bad4499d1e65c2e"
+    },
+    {
+      "env_id": 30,
+      "source_training_index": 30,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.559999942779541,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "ce78e1cddfce8acaae9626e3aef2dbb2d32078077dfce6e2ec6b7a0dec5fed60"
+    },
+    {
+      "env_id": 31,
+      "source_training_index": 31,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.3399999141693115,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "93fb28386a57b42476dab5bb7f1a8317b2acf9f689df31032e21f9565c63f68a"
+    },
+    {
+      "env_id": 32,
+      "source_training_index": 32,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.319999933242798,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "9477467d04640fc61163f6ae247a5a07ec2cad7051e2c7152a16bc3fd55b5fcd"
+    },
+    {
+      "env_id": 33,
+      "source_training_index": 33,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.2300000190734863,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "cfce1e682d72c173e7e8eccfe577a68851c20c963a59e46fc139e8863a27198e"
+    },
+    {
+      "env_id": 34,
+      "source_training_index": 34,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.379999876022339,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "6a468f7b44a62db5c8e4ab63efae61d978d733c07fd3c7235a2ce1a50b7da032"
+    },
+    {
+      "env_id": 35,
+      "source_training_index": 35,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 2.950000047683716,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "cc9f2a6976e423ec3731b130d9fc0633461a3f0bd362ba82a3e50e83953b14b8"
+    },
+    {
+      "env_id": 36,
+      "source_training_index": 36,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 2.7100000381469727,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "419725e8362818a680b27c5bab19d68f4d5a2acbdfb7ff8f0ca48e6e9ce65cf3"
+    },
+    {
+      "env_id": 37,
+      "source_training_index": 37,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 2.690000057220459,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "157dddd8737930585391e7b62e2a662e4da4b994b34f8477e4f7081d25ca7e52"
+    },
+    {
+      "env_id": 38,
+      "source_training_index": 38,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.169999837875366,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "44c7720a1cd31b4a59d4b9c1377b74b9d29003c23ae0edfb5cac6c743e3e6904"
+    },
+    {
+      "env_id": 39,
+      "source_training_index": 39,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": false,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": false,
+        "root_fallen": true
+      },
+      "actual_terminal_time_s": 0.8899999856948853,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "da6cd370af25e8ce7f4521f18ed6ebb76f28e8e18f6f3c6506907526ea2623fe"
+    },
+    {
+      "env_id": 40,
+      "source_training_index": 40,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 2.7200000286102295,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "0ca029aa8e6e148beb22584e55a1c8da03b8ecf1c0ad7190065cba60f8d4e698"
+    },
+    {
+      "env_id": 41,
+      "source_training_index": 41,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.3299999237060547,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "075ed5945db3d002e1e91711872e38eb8452125026b4ee4b411861a5639ec3b1"
+    },
+    {
+      "env_id": 42,
+      "source_training_index": 42,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.299999952316284,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "8c6fd76531b9475b43fefbde6ce8b03f0ef24865cb54bc0395f18601f088a333"
+    },
+    {
+      "env_id": 43,
+      "source_training_index": 43,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.059999942779541,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "f550707b8736227ff656a00be763c8e02c09047f5938635cac91038624634cdd"
+    },
+    {
+      "env_id": 44,
+      "source_training_index": 44,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.5199999809265137,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "9ceaa64f65bcf502ecb8d115ba9c331669e0616ee2205eeb978724b8c9265388"
+    },
+    {
+      "env_id": 45,
+      "source_training_index": 45,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 2.700000047683716,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "a956533d0df45184a5ccf11fbdc798c43541e2ab75fb1cb10e63ea5e99a56713"
+    },
+    {
+      "env_id": 46,
+      "source_training_index": 46,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.1999998092651367,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "6236f3eaebe88d0a43cb63dccf3dacf2747151d06ccad35988d78d910c86bb8b"
+    },
+    {
+      "env_id": 47,
+      "source_training_index": 47,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.359999895095825,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "d5b3ba534758f51c89d7ec121d6797e7305ad375e5ff1b8105b63e185535be3c"
+    },
+    {
+      "env_id": 48,
+      "source_training_index": 48,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.43999981880188,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "136ff2a357eadfa1dbf913bf1f2e90db41c8d506304de1b0207b88e381e0d27b"
+    },
+    {
+      "env_id": 49,
+      "source_training_index": 49,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": true,
+        "robot_rule_fault": true,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": false,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 2.8999998569488525,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "f6179c4d922e29be20ac7afd7e22e785e2d140f31ee24d07cc24fa18f48a65b9"
+    },
+    {
+      "env_id": 50,
+      "source_training_index": 50,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.0199999809265137,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "b4848e3960e53148fc0e8828b3a6f034904acda3cef95757504def5f616e3bc5"
+    },
+    {
+      "env_id": 51,
+      "source_training_index": 51,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.2699999809265137,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "27aaf78bd6db44b095f8f7ef933bb3caba9960c71e1aa2e54e077dd8e9208442"
+    },
+    {
+      "env_id": 52,
+      "source_training_index": 52,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.319999933242798,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "6ea5c519306c5f41a2effd8deb99ee64ea827ace9b18536f6a849a801c318aad"
+    },
+    {
+      "env_id": 53,
+      "source_training_index": 53,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": true,
+        "robot_rule_fault": true,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": false,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 2.700000047683716,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "16750c4645048daa237ebffec9dc6c835f920485c86a36546a705cb2fe49f37e"
+    },
+    {
+      "env_id": 54,
+      "source_training_index": 54,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": false,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 1.8199999332427979,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "78ee86c3a7eedd0029f2685564e6424543eeded03fcd82bf4ef20d5baecad8ae"
+    },
+    {
+      "env_id": 55,
+      "source_training_index": 55,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.359999895095825,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "300edfd95e9ff6b6028ccf94b86a6dfa45c9af2ab9497a8e75ad1fefea80030c"
+    },
+    {
+      "env_id": 56,
+      "source_training_index": 56,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.369999885559082,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "8e0b43b1398b5004995875a516e55a13949e123532f20e82189ac27dd1e41d96"
+    },
+    {
+      "env_id": 57,
+      "source_training_index": 57,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.2899999618530273,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "2fa3529fb2e31b45fee39a9647de282c47f05f0fcf01cc6aad0fd711d3df4697"
+    },
+    {
+      "env_id": 58,
+      "source_training_index": 58,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.429999828338623,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "9f7daaf3b52d9d14a3f82fb5071b9b00621c93090e81b29349484f48a6562f1f"
+    },
+    {
+      "env_id": 59,
+      "source_training_index": 59,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.4099998474121094,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "ea2ff84d6f8dc5f9488236ff0c59b4f2c9f32a5fd2c11d4fed5396a21ebad3da"
+    },
+    {
+      "env_id": 60,
+      "source_training_index": 60,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.240000009536743,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "3ddb719795420c450b412bda5bcbf30a228a9fe81fbb63f1438d8f1962165a70"
+    },
+    {
+      "env_id": 61,
+      "source_training_index": 61,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.4099998474121094,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "2f80d58b2f32ee0d86d9cb62c7ab5e1be66fd4404640cb0e49816938d8064d1e"
+    },
+    {
+      "env_id": 62,
+      "source_training_index": 62,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.299999952316284,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "0219f3975d118b424d260607449aa2864454056c575437c46a9b4e9dbd08e8f9"
+    },
+    {
+      "env_id": 63,
+      "source_training_index": 63,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.18999981880188,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "5cf790ea99ac31d81e1bc0a76424f04617fe3e3e75de8bd1fcd9a3a16c536645"
+    },
+    {
+      "env_id": 64,
+      "source_training_index": 64,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 2.1499998569488525,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "8dc3097322f09ece4749d8cbcecc83cfd9d32d040c60d41723fc68310fc8d448"
+    },
+    {
+      "env_id": 65,
+      "source_training_index": 65,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.490000009536743,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "718da6e048d84f76d4c0c9e2e0cb047765be0aef236ded1236a79f3b673ef5d3"
+    },
+    {
+      "env_id": 66,
+      "source_training_index": 66,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.319999933242798,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "2c33ccb24b127793b32863f1664af76ff335c3adf0d123e5ab9be1e7d6481598"
+    },
+    {
+      "env_id": 67,
+      "source_training_index": 67,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.3299999237060547,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "24be43c51bfd7222ecec52e5e9d2d8afe61815e09860793f13a986e7c2913ae1"
+    },
+    {
+      "env_id": 68,
+      "source_training_index": 68,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.429999828338623,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "e3fa53c35280618eb64da13653fb2b7fd4080a727ea3d4235ecb08852387889a"
+    },
+    {
+      "env_id": 70,
+      "source_training_index": 70,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.2200000286102295,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "3e81c87eebeff1ca4ccf444536f03b5054281b9a2c9819f330f1c8d1ca5a245a"
+    },
+    {
+      "env_id": 71,
+      "source_training_index": 71,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 2.9800000190734863,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "64a9a360a7a4bf2fd15afd87b06f51997097adbc5ec8a9ceaf4fe4a3d539a6c7"
+    },
+    {
+      "env_id": 72,
+      "source_training_index": 72,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 2.7899999618530273,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "780ccfcd9259ac9d2e7356085f7fc4c8b88d98f36dcd26958034cde53baa9893"
+    },
+    {
+      "env_id": 73,
+      "source_training_index": 73,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": true,
+        "robot_rule_fault": true,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": false,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.3499999046325684,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "c506d8c23cd3dbae1051ee5e97ae9512d39b10b426d66230e0a07a59c1d81073"
+    },
+    {
+      "env_id": 74,
+      "source_training_index": 74,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.6499998569488525,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "d17de6de5d47d4dd17ca6cd4ab21d3e7d01897127388a3b42253a244a14defeb"
+    },
+    {
+      "env_id": 75,
+      "source_training_index": 75,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.25,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "c5a9e03e5a71f2d1bf8f2b0789ef8eead8079477724212a974d6caf23883f216"
+    },
+    {
+      "env_id": 76,
+      "source_training_index": 76,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.369999885559082,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "13a771bf0d12595692f6511b89db7090c8a36db60c347392550913013f2bd76f"
+    },
+    {
+      "env_id": 77,
+      "source_training_index": 77,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.2699999809265137,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "93f86ca9cfa7730eb4b44c5a79d2ba7335df0b3bb8df425a1a46a1adf725a42e"
+    },
+    {
+      "env_id": 78,
+      "source_training_index": 78,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.309999942779541,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "34bb8a85b1483629374f8fe9519c2a8b7c434a86a2f357320bbdc1fc99afab58"
+    },
+    {
+      "env_id": 79,
+      "source_training_index": 79,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.419999837875366,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "92d4c9f7d3afb97d4a79465e3e0da5cf13dbf44d8d25dd720225f6d410a3c208"
+    },
+    {
+      "env_id": 80,
+      "source_training_index": 80,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.429999828338623,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "27aa3addcf7df9ebe7f4f95525d73f15247971389613d9e9d8acbddc436662c2"
+    },
+    {
+      "env_id": 81,
+      "source_training_index": 81,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.3299999237060547,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "7983d27775ac1f59ef690f72b7d051ddab72613d4d5177186f1ee9007d1a31bc"
+    },
+    {
+      "env_id": 82,
+      "source_training_index": 82,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.4600000381469727,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "4fd33c5845d76e0fb5fdb3543f03a88d3f8b6a701084b1c19bff9fd9255483d3"
+    },
+    {
+      "env_id": 83,
+      "source_training_index": 83,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.8499999046325684,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "0ee6bc13e83b5b45d469f89953ecb764ed8e09f969961dfd9e46bfd253fed945"
+    },
+    {
+      "env_id": 84,
+      "source_training_index": 84,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.3499999046325684,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "7a28797376afbc6c32219b232948948d7be1169bcc8e19a41e05dcdb6c278e30"
+    },
+    {
+      "env_id": 85,
+      "source_training_index": 85,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": false,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 0.5399999618530273,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "ee9c8cbfa0ff14c08e60ded4e20ff4a00fd6412c78604ea833a9c302a34e4846"
+    },
+    {
+      "env_id": 86,
+      "source_training_index": 86,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.1599998474121094,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "a847960bc0b0dfdce824666f0534cdc26562bc48bddcedf3adf5c99804744966"
+    },
+    {
+      "env_id": 87,
+      "source_training_index": 87,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": false,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 2.0,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "84cb5c6dc64bfe0bd7bb4da2333852927f8070299f8952380d822483112f9951"
+    },
+    {
+      "env_id": 88,
+      "source_training_index": 88,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.379999876022339,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "6750ef3e1cca79ee02ffb55aab68476d55e83739689dc8a3f0f0d561fc4b6b1e"
+    },
+    {
+      "env_id": 89,
+      "source_training_index": 89,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 4.819999694824219,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "ca7385d91b88bd4bdbd93177b7b79adb7c24c6de0338c963b02391251534e38e"
+    },
+    {
+      "env_id": 90,
+      "source_training_index": 90,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.379999876022339,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "aabf5204cdec73353dd02a8fb2ecf8be393139421be6a378378754ed84abad0b"
+    },
+    {
+      "env_id": 91,
+      "source_training_index": 91,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.319999933242798,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "b9b9311ed41333ec6208be8241fc73ce26d8164d171d8802b3ff501aae3d6509"
+    },
+    {
+      "env_id": 92,
+      "source_training_index": 92,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 2.9099998474121094,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "cbb02860974f6b0152b265fcb01a295a39114557b48582a4b495c9be4151a0cc"
+    },
+    {
+      "env_id": 93,
+      "source_training_index": 93,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.3399999141693115,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "4d4ff40e3b23530944dc0ccd8afd9f648d734da41a0454dccc865e490560bfe2"
+    },
+    {
+      "env_id": 94,
+      "source_training_index": 94,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.429999828338623,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "5c0caaf89f0c9f2ebeb56ccb630e0990a90944df8cedab39f05998f382dac28c"
+    },
+    {
+      "env_id": 95,
+      "source_training_index": 95,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": true,
+        "robot_rule_fault": true,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": false,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 2.740000009536743,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "bd57ccc86cc0779e8f3a9c06c1393b619530079c01be375bd7cc49cb2a259fe5"
+    },
+    {
+      "env_id": 96,
+      "source_training_index": 96,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.359999895095825,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "83d3eb3c1afd6d7bb387363625ebc7345f3feeee4ab73692468bc788ed18ee71"
+    },
+    {
+      "env_id": 97,
+      "source_training_index": 97,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.3399999141693115,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "a11ad33da611a1a4a51ee745517a6f5b5a8fcbb655c1c062ad2f02e8b2eed835"
+    },
+    {
+      "env_id": 98,
+      "source_training_index": 98,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.2699999809265137,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "7b6c0b625fd74fb0489fee788bb7ea999129fc525466969f1d56960f8a80f280"
+    },
+    {
+      "env_id": 99,
+      "source_training_index": 99,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.0199999809265137,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "fb2d8330b74f24141957bad54d359a9f8362e0994e3ab826e1a0ae7c0627a2bb"
+    },
+    {
+      "env_id": 100,
+      "source_training_index": 100,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.3299999237060547,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "d389c4a51cf19a3bccbfecc9544abb975ff74eb57e96ced88a9b788c085a245a"
+    },
+    {
+      "env_id": 101,
+      "source_training_index": 101,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.2100000381469727,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "de7eeb7ac6826aa77da9b9a405e3e3fdd3d8fdcd5e648b21ce52f9c5501f61eb"
+    },
+    {
+      "env_id": 102,
+      "source_training_index": 102,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": false,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": false,
+        "root_fallen": true
+      },
+      "actual_terminal_time_s": 0.7799999713897705,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "cfee459e8742c38364fcbb3e9da3d3c06b75585b62febe8bd4fc229b632e4241"
+    },
+    {
+      "env_id": 103,
+      "source_training_index": 103,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 5.230000019073486,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "b1420e17a1cbab2fea0844e10f2ad232dbf4fececbf794b10d6cd52cbb2e0d28"
+    },
+    {
+      "env_id": 104,
+      "source_training_index": 104,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.2300000190734863,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "e5822a11b0b2527b5a33da73bfdb56a4a19318ae1dc8e9c0873793143ce3dbc4"
+    },
+    {
+      "env_id": 105,
+      "source_training_index": 105,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.3899998664855957,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "04005c8a917f91976f271b14edd26bde503d51c79700af931ba21b19050af608"
+    },
+    {
+      "env_id": 106,
+      "source_training_index": 106,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 2.690000057220459,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "8742b3311d9c060211c23968e886c17f836d178e71403ca6fe7a2af7dfae9cd5"
+    },
+    {
+      "env_id": 107,
+      "source_training_index": 107,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.4099998474121094,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "927561701a851fb01bc12d5b29d657c99d335bbff0922b441fa6edadd0867b6a"
+    },
+    {
+      "env_id": 108,
+      "source_training_index": 108,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.369999885559082,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "a768a7de1626e1667f2a309ca5896609480c480253355cbefbc98b7888d6bb3e"
+    },
+    {
+      "env_id": 109,
+      "source_training_index": 109,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": true,
+        "robot_rule_fault": true,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": false,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 2.5199999809265137,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "b1a9296e5c5448b44c57f444ed9c6f5c8935a7ba07b3aac7fb2901b550bb2d16"
+    },
+    {
+      "env_id": 110,
+      "source_training_index": 110,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.2200000286102295,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "5ef36fd0c444eb294ad96068787a7ec58c3d63a53f47afd8b8cc78f911d3c18d"
+    },
+    {
+      "env_id": 111,
+      "source_training_index": 111,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.3299999237060547,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "2d5487fdf64900558cc922dc642d9ac05715631b292f0bae855dcc0ea3275d08"
+    },
+    {
+      "env_id": 112,
+      "source_training_index": 112,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.359999895095825,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "18cd48b0db03caf1f959b2bb5321758494191d6cf07e373f55c5184cc981ffb5"
+    },
+    {
+      "env_id": 113,
+      "source_training_index": 113,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.43999981880188,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "05b0bde12751b0fc10aa6313e67a27d0fbd89ffd63bdd771146536e70f01daf5"
+    },
+    {
+      "env_id": 114,
+      "source_training_index": 114,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.319999933242798,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "ec05539c6c98050061d861845a5a37869d054eec3d25becd6ee2766471867fd1"
+    },
+    {
+      "env_id": 115,
+      "source_training_index": 115,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": false,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 1.8899999856948853,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "d75b7277ffff8f1431def774a5c374a4eda6cb3b0e6c99f33bfa424c7d62311d"
+    },
+    {
+      "env_id": 116,
+      "source_training_index": 116,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.319999933242798,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "d7f816bd53eee14ea3647277ded18cf627ca1905955f81eac37bc9892775bb5f"
+    },
+    {
+      "env_id": 117,
+      "source_training_index": 117,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": false,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 1.3600000143051147,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "0a55339ecd9fb21bec47d224a81f3643fd804508b0f2fb0409bd43cf9bd3bff3"
+    },
+    {
+      "env_id": 118,
+      "source_training_index": 118,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 2.559999942779541,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "94af23636ff4c6f9532f17d00049b9e4bbcab377ef4a2c77d51915acfdcbec44"
+    },
+    {
+      "env_id": 119,
+      "source_training_index": 119,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.299999952316284,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "42e10b8d796afd28e77fc6fddc7d6474ac00f444be143122afac86f0a965931a"
+    },
+    {
+      "env_id": 120,
+      "source_training_index": 120,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.3999998569488525,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "ed50a93e4d1d403fbe2485e90a240164d78f2fc3d2619b266295a91e8246f825"
+    },
+    {
+      "env_id": 121,
+      "source_training_index": 121,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.0799999237060547,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "3d3e85c7c6768fdf666e3e25d97ddafd1faa0298030f2c12450811ac9bac4459"
+    },
+    {
+      "env_id": 122,
+      "source_training_index": 122,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.299999952316284,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "ac742a4f39b39a64c619a720bcb1a425542fb3c1e45305d9ed1e83231f9b9516"
+    },
+    {
+      "env_id": 123,
+      "source_training_index": 123,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 2.490000009536743,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "cc67e8c6409b76e0a2d8007af56e1414995cbac9993c56080c60ae7a32d3f246"
+    },
+    {
+      "env_id": 124,
+      "source_training_index": 124,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.240000009536743,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "ac38cd4c9ed40e68ac3cbcaac50db12ac12292edafede73be4c9c7be29649316"
+    },
+    {
+      "env_id": 125,
+      "source_training_index": 125,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 2.6499998569488525,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "56f5882b85ea284a33fc8b2a1d98d354ce3c03edeebd041477ffedf6230adfd3"
+    },
+    {
+      "env_id": 126,
+      "source_training_index": 126,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": false,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 2.619999885559082,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "89b067aca10891be85cd4af283e022acf2b6b606d3ccfdd5bdf24fcd79d9ba1c"
+    },
+    {
+      "env_id": 127,
+      "source_training_index": 127,
+      "episode_index": 0,
+      "ground_init": true,
+      "actual_launch_seen": true,
+      "training_terminal_reasons": {
+        "rally_fault": false,
+        "robot_rule_fault": false,
+        "shuttle_only_fault": false,
+        "first_ground_without_target": true,
+        "body_ground": true,
+        "root_fallen": false
+      },
+      "actual_terminal_time_s": 3.379999876022339,
+      "numerical_failures": 0,
+      "canonical_full_raw_row_sha256": "e4508ef8cc41bee400bd14fbeec558b1f54284862fa33af4e157bfcc6f02e5dc"
+    }
+  ],
+  "source_progress_sha256": "d12bef7571e390e266a2a853dbd42669e558d3b7e253b03a8904c2b85d033649",
+  "source_episodes_partial_sha256": "7baf42e54e7414d6a8766ac9b4190fb9dd4e630f52f0f58e8f4879f494906eac",
+  "source_files": [
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin0_residual_fresh_n128_updates15_01/progress.json",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin0_residual_fresh_n128_updates15_01/episodes.partial.json"
+  ],
+  "canonical_row_hash_method": "SHA256(json.dumps(full_original_row, sort_keys=True).encode())",
+  "scope": "Metadata projection from a bounded observation of ongoing stochastic training, with raw-row hashes for comparison to the final full training rows; no frozen-policy score.",
+  "formal_acceptance": false
+}

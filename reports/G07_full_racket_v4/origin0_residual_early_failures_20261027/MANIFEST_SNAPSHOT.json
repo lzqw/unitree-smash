@@ -1,0 +1,599 @@
+{
+  "schema": "native-training-episode-trace-v1",
+  "enabled": true,
+  "disabled_error": null,
+  "allocated_host_buffer_bytes": 147173376,
+  "verified_full_public_rows": 65536,
+  "closed_episodes_observed": 146,
+  "censored_open_episodes": 0,
+  "saved_episode_count": 12,
+  "success_selected": 0,
+  "failure_selected": 6,
+  "native_execution": true,
+  "frozen_policy_performance": false,
+  "formal_acceptance": false,
+  "selection_settings": {
+    "max_success_traces": 24,
+    "max_failure_traces": 6,
+    "first_episode_lanes": [
+      0,
+      8,
+      19,
+      23,
+      58,
+      107
+    ],
+    "max_buffer_bytes": 3000000000
+  },
+  "provenance": {
+    "native_source_confirmed": true,
+    "source_kind": "Actual native changing-policy TRAIN",
+    "training_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99,
+      100,
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+      110,
+      111,
+      112,
+      113,
+      114,
+      115,
+      116,
+      117,
+      118,
+      119,
+      120,
+      121,
+      122,
+      123,
+      124,
+      125,
+      126,
+      127
+    ],
+    "initialization": {
+      "mode": "fresh_zero_mean_residual_over_measured_two_actor_body_teacher",
+      "num_envs": 128,
+      "initial_iteration": 0,
+      "fixed_base_policy_sha256": "204ff76f21625d49cd1dc29ec3b6256447a5fa8b2fec935dda986842fc330034",
+      "trainable_action_joints": 18,
+      "source_actor_and_normalizers_remain_inside_fixed_base": true,
+      "new_actor_mean_initially_zero": true,
+      "new_actor_normalizer_count": 0,
+      "new_critic_normalizer_count": 0,
+      "fresh_exploration_std": [
+        0.20000000298023224,
+        0.20000000298023224,
+        0.20000000298023224,
+        0.20000000298023224,
+        0.20000000298023224,
+        0.20000000298023224,
+        0.20000000298023224,
+        0.20000000298023224,
+        0.20000000298023224,
+        0.20000000298023224,
+        0.20000000298023224,
+        0.20000000298023224,
+        0.10000000149011612,
+        0.10000000149011612,
+        0.10000000149011612,
+        0.10000000149011612,
+        0.10000000149011612,
+        0.10000000149011612
+      ],
+      "requested_physical_exploration_std_rad": [
+        0.030000001192092896,
+        0.030000001192092896,
+        0.030000001192092896,
+        0.030000001192092896,
+        0.030000001192092896,
+        0.030000001192092896,
+        0.030000001192092896,
+        0.030000001192092896,
+        0.030000001192092896,
+        0.030000001192092896,
+        0.030000001192092896,
+        0.030000001192092896,
+        0.015000000596046448,
+        0.015000000596046448,
+        0.015000000596046448,
+        0.015000000596046448,
+        0.015000000596046448,
+        0.015000000596046448
+      ],
+      "actor_transferred": false,
+      "critic_transferred": false,
+      "critic_normalizer_transferred": false,
+      "optimizer_transferred": false,
+      "old_physical_state_restored": false,
+      "source_rng_restored": false,
+      "previous_learning_counters_restored": false,
+      "performance_inherited": false
+    },
+    "protocol_sha256": "b9fbfbcbe6ba4ff5f8ac4a944e3bcc0d4f2f0db4adf37182e30750a0562ec196",
+    "asset_sha256": "c2264fcece90b042c7c6a1cac7d516af83972729d0402947e3a519041e184cf2",
+    "body_names": [
+      "base",
+      "FL_hip",
+      "FR_hip",
+      "Head_upper",
+      "RL_hip",
+      "RR_hip",
+      "MountPlate",
+      "FL_thigh",
+      "FR_thigh",
+      "Head_lower",
+      "RL_thigh",
+      "RR_thigh",
+      "base_link",
+      "FL_calf",
+      "FR_calf",
+      "RL_calf",
+      "RR_calf",
+      "link1",
+      "FL_foot",
+      "FR_foot",
+      "RL_foot",
+      "RR_foot",
+      "link2",
+      "link3",
+      "link4",
+      "link5",
+      "link6",
+      "Racket"
+    ],
+    "joint_names": [
+      "FL_hip_joint",
+      "FR_hip_joint",
+      "RL_hip_joint",
+      "RR_hip_joint",
+      "FL_thigh_joint",
+      "FR_thigh_joint",
+      "RL_thigh_joint",
+      "RR_thigh_joint",
+      "FL_calf_joint",
+      "FR_calf_joint",
+      "RL_calf_joint",
+      "RR_calf_joint",
+      "joint1",
+      "joint2",
+      "joint3",
+      "joint4",
+      "joint5",
+      "joint6"
+    ],
+    "default_joint_position_rad": [
+      0.10000000149011612,
+      -0.10000000149011612,
+      0.10000000149011612,
+      -0.10000000149011612,
+      0.800000011920929,
+      0.800000011920929,
+      1.0,
+      1.0,
+      -1.5,
+      -1.5,
+      -1.5,
+      -1.5,
+      0.07868610322475433,
+      1.2010233402252197,
+      -2.5853559970855713,
+      -0.15646959841251373,
+      -1.056915283203125,
+      0.13533028960227966
+    ],
+    "joint_limits_rad": [
+      [
+        -1.0471998453140259,
+        1.0471998453140259
+      ],
+      [
+        -1.0471998453140259,
+        1.0471998453140259
+      ],
+      [
+        -1.0471998453140259,
+        1.0471998453140259
+      ],
+      [
+        -1.0471998453140259,
+        1.0471998453140259
+      ],
+      [
+        -1.5707999467849731,
+        3.4906997680664062
+      ],
+      [
+        -1.5707999467849731,
+        3.4906997680664062
+      ],
+      [
+        -0.5235999226570129,
+        4.537899494171143
+      ],
+      [
+        -0.5235999226570129,
+        4.537899494171143
+      ],
+      [
+        -2.7227001190185547,
+        -0.8377599120140076
+      ],
+      [
+        -2.7227001190185547,
+        -0.8377599120140076
+      ],
+      [
+        -2.7227001190185547,
+        -0.8377599120140076
+      ],
+      [
+        -2.7227001190185547,
+        -0.8377599120140076
+      ],
+      [
+        -2.618000030517578,
+        2.167999744415283
+      ],
+      [
+        0.0,
+        3.1399998664855957
+      ],
+      [
+        -2.9669997692108154,
+        0.0
+      ],
+      [
+        -1.744999885559082,
+        1.744999885559082
+      ],
+      [
+        -1.21999990940094,
+        1.21999990940094
+      ],
+      [
+        -2.0943996906280518,
+        2.0943996906280518
+      ]
+    ],
+    "source_job_output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin0_residual_fresh_n128_updates15_01",
+    "formal_acceptance": false
+  },
+  "body_names": [
+    "base",
+    "FL_hip",
+    "FR_hip",
+    "Head_upper",
+    "RL_hip",
+    "RR_hip",
+    "MountPlate",
+    "FL_thigh",
+    "FR_thigh",
+    "Head_lower",
+    "RL_thigh",
+    "RR_thigh",
+    "base_link",
+    "FL_calf",
+    "FR_calf",
+    "RL_calf",
+    "RR_calf",
+    "link1",
+    "FL_foot",
+    "FR_foot",
+    "RL_foot",
+    "RR_foot",
+    "link2",
+    "link3",
+    "link4",
+    "link5",
+    "link6",
+    "Racket"
+  ],
+  "saved_episodes": [
+    {
+      "data_file": "lane0085_episode000000.npz",
+      "env_id": 85,
+      "episode_index": 0,
+      "source_training_index": 85,
+      "samples": 54,
+      "data_sha256": "92180b402c9449401bf57dd7f854cc97bb82238a1e6d3b2ca3c0187a7e36b159",
+      "full_public794_sha256": "6ee3e169086230a93edb6e46e90d1d974906a31a710d3a16ce5ec83bbe3a0a19",
+      "selection_reasons": [
+        "first_failure_until_declared_limit"
+      ],
+      "actor_iterations_encountered": [
+        0
+      ]
+    },
+    {
+      "data_file": "lane0102_episode000000.npz",
+      "env_id": 102,
+      "episode_index": 0,
+      "source_training_index": 102,
+      "samples": 78,
+      "data_sha256": "1d36191871bd81e1f74bd84dfe3392c81d875b51ca254ae15dad1e7939c2858b",
+      "full_public794_sha256": "18d282a020c0add97a6e8349ba6505f313b7869caa349b970491469c8d7f5165",
+      "selection_reasons": [
+        "first_failure_until_declared_limit"
+      ],
+      "actor_iterations_encountered": [
+        0
+      ]
+    },
+    {
+      "data_file": "lane0039_episode000000.npz",
+      "env_id": 39,
+      "episode_index": 0,
+      "source_training_index": 39,
+      "samples": 89,
+      "data_sha256": "a03719a5ee34f905511be870f97dccd616392a6a8073143a097dfa12a0beaced",
+      "full_public794_sha256": "f39761b458be7009f66907d449518192015ab70713466dbd6576f379810b52d0",
+      "selection_reasons": [
+        "first_failure_until_declared_limit"
+      ],
+      "actor_iterations_encountered": [
+        0
+      ]
+    },
+    {
+      "data_file": "lane0117_episode000000.npz",
+      "env_id": 117,
+      "episode_index": 0,
+      "source_training_index": 117,
+      "samples": 136,
+      "data_sha256": "096831e5bdf11a814bc306bb8d8a697071215ce8ae6f52ccd16762bcb58b88fd",
+      "full_public794_sha256": "18b414c3b188b160fc430fead86fc227b9eaf422467f200586662381e016970f",
+      "selection_reasons": [
+        "first_failure_until_declared_limit"
+      ],
+      "actor_iterations_encountered": [
+        0,
+        1
+      ]
+    },
+    {
+      "data_file": "lane0005_episode000000.npz",
+      "env_id": 5,
+      "episode_index": 0,
+      "source_training_index": 5,
+      "samples": 166,
+      "data_sha256": "b5d426cff642474402ceeb1aa8338d99a564bb8ad3bf55f47c0dc4011f0ed4d2",
+      "full_public794_sha256": "1cd48a5d70338a47f13bccc376aab4659a914f50ff2a2071f5de04fcf635770b",
+      "selection_reasons": [
+        "first_failure_until_declared_limit"
+      ],
+      "actor_iterations_encountered": [
+        0,
+        1
+      ]
+    },
+    {
+      "data_file": "lane0054_episode000000.npz",
+      "env_id": 54,
+      "episode_index": 0,
+      "source_training_index": 54,
+      "samples": 182,
+      "data_sha256": "573c8db14536e0df86f527e556a768273f401d314c0586eac26694d48e39c3cf",
+      "full_public794_sha256": "3d6e7a8d7d682d11a35ab0488906aee1d734cbd2fc1690b82a495f6d0adcc754",
+      "selection_reasons": [
+        "first_failure_until_declared_limit"
+      ],
+      "actor_iterations_encountered": [
+        0,
+        1
+      ]
+    },
+    {
+      "data_file": "lane0000_episode000000.npz",
+      "env_id": 0,
+      "episode_index": 0,
+      "source_training_index": 0,
+      "samples": 271,
+      "data_sha256": "80e217332db19d632d3cdda1894bcfd8973a01f60edd02c424f9e5c77ccb545f",
+      "full_public794_sha256": "4d6bf93335c31f00a66cf897a0f0b236ece3d1124ccbe39bd6aac70fd07a12d6",
+      "selection_reasons": [
+        "first_episode_of_predeclared_lane"
+      ],
+      "actor_iterations_encountered": [
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "data_file": "lane0008_episode000000.npz",
+      "env_id": 8,
+      "episode_index": 0,
+      "source_training_index": 8,
+      "samples": 333,
+      "data_sha256": "04a0969282bfa7bb095e512228884f85e7aa8ec16b2f0d11e8d631fb9e4c6fe0",
+      "full_public794_sha256": "799d1197dd2366192680350e724c877627a722f2fddace9d59d369461750cbbe",
+      "selection_reasons": [
+        "first_episode_of_predeclared_lane"
+      ],
+      "actor_iterations_encountered": [
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "data_file": "lane0019_episode000000.npz",
+      "env_id": 19,
+      "episode_index": 0,
+      "source_training_index": 19,
+      "samples": 333,
+      "data_sha256": "dc04aa48cbe209673454bd6b72acdfba8ecc2df573252b6d96fa9e83ad20fc63",
+      "full_public794_sha256": "aaa0c3f96155b1c8fea9c65a3a67d26ed5e58eecd34c0a76ad9fcb0d07d7ae11",
+      "selection_reasons": [
+        "first_episode_of_predeclared_lane"
+      ],
+      "actor_iterations_encountered": [
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "data_file": "lane0107_episode000000.npz",
+      "env_id": 107,
+      "episode_index": 0,
+      "source_training_index": 107,
+      "samples": 341,
+      "data_sha256": "5abe8d0bdbc31023001e9067c500458ba9b70a1717515c1463d11ca6c50473be",
+      "full_public794_sha256": "e06c20871e8582125333e39083dc7e26a00ec8ed5274d54cfe17bca332260e85",
+      "selection_reasons": [
+        "first_episode_of_predeclared_lane"
+      ],
+      "actor_iterations_encountered": [
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "data_file": "lane0058_episode000000.npz",
+      "env_id": 58,
+      "episode_index": 0,
+      "source_training_index": 58,
+      "samples": 343,
+      "data_sha256": "7de67f78ec52587b60e247cbc28fbc1b7b303eca852f6e45d7d4f1af213bca19",
+      "full_public794_sha256": "f4fe6b42016926dcaa5057678222342fb6a2be37f85124d39c0c6d257c706707",
+      "selection_reasons": [
+        "first_episode_of_predeclared_lane"
+      ],
+      "actor_iterations_encountered": [
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "data_file": "lane0023_episode000000.npz",
+      "env_id": 23,
+      "episode_index": 0,
+      "source_training_index": 23,
+      "samples": 372,
+      "data_sha256": "b3d1462c2d2d845f3ab452a49c47569d8b99067cdac3d65efecb34e2b61ca66e",
+      "full_public794_sha256": "92afffe4faacd0bbba4e58461600b34de1fa9c7eec2af7f6ba6204d6bc2c9d52",
+      "selection_reasons": [
+        "first_episode_of_predeclared_lane"
+      ],
+      "actor_iterations_encountered": [
+        0,
+        1,
+        2
+      ]
+    }
+  ],
+  "motion": "Actual100Hz poses and actions; no interpolation. Select every second stored sample for50Hz video.",
+  "policy_scope": "Changing weights, normalization and exploration; never a frozen-policy or formal score.",
+  "goal_complete": false
+}

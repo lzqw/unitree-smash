@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/gain_body_completed_delivery_20261027/ACTUAL_COMPLETED_DATA_CHECK.json",
-      "notes": "全身八项1024比较及新独立冷128已完成；冷128为0完整、4空中拍线、0合格恢复、0攻击、NF0，无改善。新128×15更新全身残差在GPU0实际运行，实际选中冷源1600输入CPU核验及128地面初态/408源码均通过。前7更新critic预热，随后8更新actor；新冻结成绩尚无。原A/B各200及50/70/85尚未通过。 新训练第1更新已完成16384步，critic Adam20步、actor未变、新RMS各16384；仅3个闭合训练回合，NF0，不作冻结成绩。218.17MB全身八项及冷128完整包已上传且独立下载180成员CRC/SHA核验。",
+      "notes": "全身八项及独立冷128已完成，0完整/4空中/0合格恢复/0攻击、NF0，未改善。GPU0新128×15残差已完成5更新、81920步，仍critic预热，记录NF0。七个早期失败976真实输入CPU复算通过；首批127/128已结束，8例来球前失败、1待结束，选例诊断不是整体主因或冻结成绩。原A/B各200及50/70/85未通过。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
@@ -63,14 +63,14 @@
           "native_child_pid": 1923510,
           "gpu": 0,
           "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin0_residual_fresh_n128_updates15_01",
-          "observed_at": "2026-10-26T23:34:37.691662+00:00",
+          "observed_at": "2026-10-26T23:49:10.554912+00:00",
           "verified_live_processes": true,
           "actual128_ground_initial_states_verified": true,
           "actual408_native_source_hashes_verified": true,
           "base_policy_sha256": "204ff76f21625d49cd1dc29ec3b6256447a5fa8b2fec935dda986842fc330034",
           "formal_acceptance": false,
-          "actual_completed_updates": 1,
-          "actual_control_env_steps": 16384,
+          "actual_completed_updates": 5,
+          "actual_control_env_steps": 81920,
           "actor_warmup": true
         }
       ],
@@ -11446,6 +11446,25 @@
         "native_replay_in_fresh_extraction": false,
         "new_native_execution": false,
         "formal_cases_read": false,
+        "formal_acceptance": false,
+        "goal_complete": false
+      },
+      "latest_failure_diagnosis": "reports/G07_full_racket_v4/origin0_residual_early_failures_20261027/RESULT.json",
+      "latest_failure_raw_delivery": {
+        "checked_at": "2026-10-26T23:44:48.610880+00:00",
+        "asset": "G07_origin0_residual_first6_failures_and_TRAIN0_20261027.zip",
+        "GitHub_asset_id": 679845317,
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_origin0_residual_first6_failures_and_TRAIN0_20261027.zip",
+        "bytes": 1226296,
+        "sha256": "8315c1140909a544e32999dfe06457c662b3c1a7caae28c332d6f300b19e7641",
+        "fresh_download": "/tmp/g07_origin0_early_failure_fresh_myjgib5n/G07_origin0_residual_first6_failures_and_TRAIN0_20261027.zip",
+        "fresh_download_verified": true,
+        "archive_members_CRC_verified": 19,
+        "archive_payload_SHA_verified": 18,
+        "actual_selected_training_episodes_delivered": 7,
+        "actual_lossless_public_rows": 976,
+        "new_native_execution": false,
+        "native_replay_in_fresh_extraction": false,
         "formal_acceptance": false,
         "goal_complete": false
       }
