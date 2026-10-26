@@ -22,3 +22,5 @@ TRAIN123在3.46秒的采样中已倾斜超过90度；3.56秒时机身已翻转�
 已在仓库根目录实际执行`CUDA_VISIBLE_DEVICES='' OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 /home/autodrive/Isaac/env_isaaclab/bin/python reports/G07_full_racket_v4/first_ground_geometry_diagnostic_20261027/analyze.py`，退出0；源数据、代码与配置SHA见`RESULT.json`，482持有输入保持。初次离线运行遇到没有视觉网格的链接，已按实际导出数据处理；最终分析保留缺失几何名称。没有修改或重跑当前GPU作业，也没有上调任何成功或恢复数。
 
 图、4份CSV及[原128终止记录](../gain_body8_sequential_n128_01/episodes_000.json)可直接审阅。复算还需源目录的`geometry.json`、`geometry.npz`及`all_first_episodes_000.npz`，全轮原始几何和50Hz轨迹将在当前八项搜索真实结束后一起归档；这里不声称已经交付当前整轮或完成新的仿真复现。
+
+CSV保留Python `csv.writer`生成的CRLF原始行尾。默认Git格式检查曾把该行尾标为尾空白，提交仍继续了；现已用`core.whitespace=trailing-space,space-before-tab,cr-at-eol`重新执行尾空白检查，退出0。4份CSV均为6列，行数与SHA见`CSV_FORMAT_CHECK.json`；原始字节和数值保留，分析源SHA仍与`RESULT.json`一致。
