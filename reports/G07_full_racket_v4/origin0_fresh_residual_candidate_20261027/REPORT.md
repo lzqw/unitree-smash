@@ -1,0 +1,11 @@
+新origin0全身残差学习接口已实现并实际完成CPU兼容性检查；尚未安装到Main或启动新的Native训练，不宣称性能改善或完成验收。
+
+新控制器保留实际执行过的prepose或gain/body来源及其两层actor/归一化器，新增一个18维残差actor；新actor和critic的归一化计数均0，新actor平均输出为0。软件残差尺度保持18关节各0.15rad，初始探索标准差对应腿0.03rad、臂0.015rad，硬件和原5rad/s命令保护不变。配置沿用已检验的真实拍线对齐/攻击/目标奖励和7更新critic预热；代码继承既有真实采样、终止/超时处理、轨迹记录及canonical ground检查点机制，未把这些继承代码称为新物理验证。
+
+CPU样本是当前origin0原样候选0的完整实际记录。658条有效公共输入上，新增零残差对源指令误差0，公共actor导出误差0，CPU对原生GPU最大3.0994415283e-6，小于原5e-4动作容差；源树和两套实际旧actor保持。未执行来源、原16米布局来源以及原16米冷128证据均被拒绝。新的完整origin0冷128正向来源准入仍待后续实际结果，不能继承旧3/128。
+
+独立TRAIN评估入口使用同一新协议、原真实FrozenPanelEnv和原128来球。训练入口会在建立环境前独立核对实际来源的全128冷评估、原点、资产、源程序、权重及NF0；随后仍须实际训练并对冻结新策略另做冷128，正式A/B各200及原50/70/85、NF0目标保持。该阶段尚未运行PPO采样或优化器更新。
+
+实际CLI检查发现锁定Isaac AppLauncher注册参数时临时移除help并提前解析required，初次两个--help均退出2；已在新入口加入局部适配，注册后恢复所有required。两次完整help退出0、两次缺失required退出2已实际核对，未启动仿真。原代码和首次CPU证明保留于SOURCE_BEFORE_LAUNCHER_HELP_FIX.zip；首个CPU零策略的旧二进制未保留（重跑时被重新导出），初次SHA及该事实保留在CLI_INITIAL_FAILURE.json。正式Native/训练检查点和实际来源权重未改写；最终CPU零策略及其当前SHA另有记录，且native_execution=False。
+
+Main当前471持有输入逐项不变，1884350/1884474/1884488继续当前8项，1891402等待执行全身时序/恢复8项。后续需在实际完成其冷128并选定来源后绑定新接口、重复真实选中源CPU检查，再经原GPU0 guard运行新训练；本候选当前未登记为已启动或已训练。实际可复核命令为`CUDA_VISIBLE_DEVICES='' OMP_NUM_THREADS=2 /home/autodrive/Isaac/env_isaaclab/bin/python scripts/train_full_racket_origin0_residual_ppo_v4.py --help`；完整已执行检查见CPU_CHECK.json与CLI_FINAL_CHECK.json。

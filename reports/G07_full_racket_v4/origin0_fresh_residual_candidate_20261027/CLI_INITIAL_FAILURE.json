@@ -1,0 +1,14 @@
+{
+  "checked_at": "2026-10-26T19:57:12.708475+00:00",
+  "commands": [
+    "train_full_racket_origin0_residual_ppo_v4.py --help",
+    "evaluate_full_racket_origin0_residual_train_v4.py --help"
+  ],
+  "actual_exit_codes": [
+    2,
+    2
+  ],
+  "reason": "Pinned AppLauncher.add_app_launcher_args temporarily removes help, then parses required user options before adding launcher flags. No simulator started.",
+  "resolution": "Temporarily suspend required flags only during launcher-option registration, restore before the real parse. Source before repair is archived.",
+  "initial_CPU_only_export_note": "The first CPU-only zero-policy export was regenerated during the repaired-source check; its old SHA is retained in the initial report but the old binary was not preserved. Final CPU export has its independently recorded current SHA. No native/training checkpoint or source policy was overwritten."
+}
