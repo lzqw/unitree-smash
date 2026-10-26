@@ -50,36 +50,22 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/centered_residual_pilot8_queue02/FIXED_TRAIN128_RESULT.json",
-      "notes": "原075五版及十来源比较已完成，均无完整冻结成功；按预登记排序选075第8版。leg06新阶段已在原GPU0通过guard1768402/native1768415运行，观察1768388；2048真实地面初态核对、1600实际输入原生物理均值映射误差2.79e-9rad，来源actor/RMS保留，critic/Adam/RNG/计数新建。首个更新262144步已独立核验；第3更新786432步已核对actor真正学习、actor/log_std Adam20/critic60、RMS13369344/786432、NF0。最近原生进度update4、1048576步、NF0；仍在变化中训练，不是冻结成绩。207.5MB比较V2包已上传并新目录包内RSL核验4050实际输入误差0、新下载SHA/490CRC/489payload全部通过，V1遗漏TRAIN数据的失败保留未发布。新296项源码/输入持有至实际训练、固定128及视频全流程退出。原A/B各200及50/70/85仍未通过。",
+      "notes": "leg06新8更新实际完成2097152步、0.6702120821GPUh，3625变化中回合331空中/126恢复/0完整/NF0，12选定100Hz轨迹通过；全部2048首回合及ID链、RMS14680064/2097152和fresh Adam120/160已独立核对。原GPU0 guard1773897/native1773920正在原全128零扰动seed724201固定评估，父1768388实际存活；CPU视频观察1772888等实际父退出后渲染。所有295输入与PLAN仍持有。已准备仅将critic预热2改7、相同六次actor学习的13更新对照，尚无候选原生运行。原正式A/B各200及50/70/85未通过。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
       "active_gpu_jobs": [
         {
-          "state": "RUNNING_NATIVE_LEG06_PLACEMENT075_PILOT8",
-          "observed_at": "2026-10-26T04:56:22.904347+00:00",
+          "state": "RUNNING_FIXED_LEG06_PLACEMENT075_TRAIN128",
+          "observed_at": "2026-10-26T05:25:24.060713+00:00",
           "workflow_pid": 1768388,
-          "guard_pid": 1768402,
-          "native_child_pid": 1768415,
+          "guard_pid": 1773897,
+          "native_child_pid": 1773920,
           "gpu": 0,
-          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_leg06_after075_intermediates_n2048_probe8_01",
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_leg06_after075_intermediates_n2048_probe8_fixed_train128_01",
           "verified_live_processes": true,
-          "source_candidate": "placement075_stage8",
-          "source_policy_sha256": "66c93b9f2bfd1f65812ca230312a45cda1d11f59e4a6f076ebdd98ae3c88a3b5",
-          "initialization_mode": "fresh_measured_centered_actor_with_explicit_action_unit_rescaling",
-          "actual_initial_ground2048_checked": true,
-          "source_actor_RMS_count": 12582912,
-          "actual_physical_mean_witness_max_error_rad": 2.7939677238464355e-09,
-          "new_native_execution": true,
-          "formal_acceptance": false,
-          "actual_completed_updates": 4,
-          "actual_control_env_steps": 1048576,
-          "first_actual_update_checked": true,
-          "first_actual_update_proof": "reports/G07_full_racket_v4/centered_leg06_after075_intermediates_pilot8_queue01/FIRST_NATIVE_UPDATE_CHECK.json",
-          "actual_numerical_failures": 0,
-          "actor_actual_learning_after_warmup_verified": true,
-          "actual_learning_proof": "reports/G07_full_racket_v4/centered_leg06_after075_intermediates_pilot8_queue01/ROOT_ACTUAL_LEARNING_UPDATE3_CHECK.json"
+          "formal_acceptance": false
         }
       ],
       "queued_native_sequence": {
@@ -1585,7 +1571,7 @@
         "csv_export_pending_parent_completion": true,
         "frozen_policy_performance": false
       },
-      "current_native_workflow_state": "RUNNING_NATIVE_LEG06_PLACEMENT075_PILOT8",
+      "current_native_workflow_state": "RUNNING_FIXED_LEG06_PLACEMENT075_TRAIN128",
       "latest_completed_fixed_TRAIN128": {
         "run": "residual_ppo_centered_placement075_diag_iter32_fixed_train128_01",
         "complete": 0,
@@ -3787,6 +3773,31 @@
               "formal_acceptance": false
             }
           ]
+        },
+        {
+          "state": "RUNNING_NATIVE_LEG06_PLACEMENT075_PILOT8",
+          "observed_at": "2026-10-26T04:56:22.904347+00:00",
+          "workflow_pid": 1768388,
+          "guard_pid": 1768402,
+          "native_child_pid": 1768415,
+          "gpu": 0,
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_leg06_after075_intermediates_n2048_probe8_01",
+          "verified_live_processes": true,
+          "source_candidate": "placement075_stage8",
+          "source_policy_sha256": "66c93b9f2bfd1f65812ca230312a45cda1d11f59e4a6f076ebdd98ae3c88a3b5",
+          "initialization_mode": "fresh_measured_centered_actor_with_explicit_action_unit_rescaling",
+          "actual_initial_ground2048_checked": true,
+          "source_actor_RMS_count": 12582912,
+          "actual_physical_mean_witness_max_error_rad": 2.7939677238464355e-09,
+          "new_native_execution": true,
+          "formal_acceptance": false,
+          "actual_completed_updates": 4,
+          "actual_control_env_steps": 1048576,
+          "first_actual_update_checked": true,
+          "first_actual_update_proof": "reports/G07_full_racket_v4/centered_leg06_after075_intermediates_pilot8_queue01/FIRST_NATIVE_UPDATE_CHECK.json",
+          "actual_numerical_failures": 0,
+          "actor_actual_learning_after_warmup_verified": true,
+          "actual_learning_proof": "reports/G07_full_racket_v4/centered_leg06_after075_intermediates_pilot8_queue01/ROOT_ACTUAL_LEARNING_UPDATE3_CHECK.json"
         }
       ],
       "historical_completed_fixed_TRAIN128": [
@@ -5081,29 +5092,15 @@
         "archive_proof": "reports/G07_full_racket_v4/joint40_fixed_delivery_20261026/ARCHIVE.json"
       },
       "current_native_workflow": {
-        "state": "RUNNING_NATIVE_LEG06_PLACEMENT075_PILOT8",
-        "observed_at": "2026-10-26T04:56:22.904347+00:00",
+        "state": "RUNNING_FIXED_LEG06_PLACEMENT075_TRAIN128",
+        "observed_at": "2026-10-26T05:25:24.060713+00:00",
         "workflow_pid": 1768388,
-        "guard_pid": 1768402,
-        "native_child_pid": 1768415,
+        "guard_pid": 1773897,
+        "native_child_pid": 1773920,
         "gpu": 0,
-        "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_leg06_after075_intermediates_n2048_probe8_01",
+        "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/residual_ppo_centered_leg06_after075_intermediates_n2048_probe8_fixed_train128_01",
         "verified_live_processes": true,
-        "source_candidate": "placement075_stage8",
-        "source_policy_sha256": "66c93b9f2bfd1f65812ca230312a45cda1d11f59e4a6f076ebdd98ae3c88a3b5",
-        "initialization_mode": "fresh_measured_centered_actor_with_explicit_action_unit_rescaling",
-        "actual_initial_ground2048_checked": true,
-        "source_actor_RMS_count": 12582912,
-        "actual_physical_mean_witness_max_error_rad": 2.7939677238464355e-09,
-        "new_native_execution": true,
-        "formal_acceptance": false,
-        "actual_completed_updates": 4,
-        "actual_control_env_steps": 1048576,
-        "first_actual_update_checked": true,
-        "first_actual_update_proof": "reports/G07_full_racket_v4/centered_leg06_after075_intermediates_pilot8_queue01/FIRST_NATIVE_UPDATE_CHECK.json",
-        "actual_numerical_failures": 0,
-        "actor_actual_learning_after_warmup_verified": true,
-        "actual_learning_proof": "reports/G07_full_racket_v4/centered_leg06_after075_intermediates_pilot8_queue01/ROOT_ACTUAL_LEARNING_UPDATE3_CHECK.json"
+        "formal_acceptance": false
       },
       "completed_causal_tangent_probes": {
         "state": "SUCCEEDED",
@@ -8225,6 +8222,48 @@
         "numerical_failures": 0,
         "formal_acceptance": false,
         "report": "reports/G07_full_racket_v4/placement075_intermediate_actual_results_20261026/REPORT.md"
+      },
+      "completed_leg06_pilot8_training": {
+        "checked_at": "2026-10-26T05:12:12.064180+00:00",
+        "actual_control_env_steps": 2097152,
+        "actual_GPU_hours": 0.6702120821235844,
+        "checkpoint_sha256": "5e9c46fbb666e7117a22fcef398f9280543b530db59fe59c37af8e34aef48d93",
+        "policy_sha256": "1038c02f761b5255838fdd7e25e154ae4d60cab57508fd9e8b9135473cd5d682",
+        "source_public_policy_sha256": "66c93b9f2bfd1f65812ca230312a45cda1d11f59e4a6f076ebdd98ae3c88a3b5",
+        "source_actor_normalizer_count": 12582912,
+        "actor_normalizer_count": 14680064,
+        "critic_normalizer_count": 2097152,
+        "fresh_actor_Adam_steps": 120,
+        "fresh_critic_Adam_steps": 160,
+        "all2048_fresh_episode_chains_exact": true,
+        "independent_changing_policy_counts": {
+          "completed_episodes": 3625,
+          "air": 331,
+          "conditional_recovery_count": 126,
+          "complete": 0,
+          "numerical_failures": 0
+        },
+        "frozen_policy_performance": false,
+        "formal_acceptance": false,
+        "goal_complete": false
+      },
+      "leg06_live_CPU_video_observer": {
+        "pid": 1772888,
+        "worktree": "/home/autodrive/LZQW/unitree_smash_video_framing",
+        "state": "WAITING_FOR_ACTUAL_LEG06_PARENT_EXIT",
+        "report": "reports/G07_full_racket_v4/orthographic_leg06_pilot8_after_native_queue01/REPORT.md",
+        "automatic_upload": false,
+        "formal_acceptance": false,
+        "report_url": "https://github.com/lzqw/unitree-smash/blob/9c9c5a9cb8c3f2764aaede0be00479fb35d3d01f/reports/G07_full_racket_v4/orthographic_leg06_pilot8_after_native_queue01/REPORT.md"
+      },
+      "next_full_cohort_warmup_candidate": {
+        "config": "configs/g07_full_racket_residual_ppo_centered_leg06_full_cohort_warmup_v4.json",
+        "report": "reports/G07_full_racket_v4/centered_leg06_full_cohort_warmup13_queue01/REPORT.md",
+        "updates": 13,
+        "critic_warmup_updates": 7,
+        "actor_updates": 6,
+        "new_native_execution": false,
+        "formal_acceptance": false
       }
     },
     "G08": {
