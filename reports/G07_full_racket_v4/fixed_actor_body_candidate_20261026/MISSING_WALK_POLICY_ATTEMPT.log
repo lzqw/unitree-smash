@@ -1,0 +1,32 @@
+Traceback (most recent call last):
+  File "/home/autodrive/LZQW/unitree_smash_landing_targets/reports/G07_full_racket_v4/fixed_actor_body_candidate_20261026/check_actual_source.py", line 80, in <module>
+    if __name__ == '__main__': main()
+                               ^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_landing_targets/reports/G07_full_racket_v4/fixed_actor_body_candidate_20261026/check_actual_source.py", line 38, in main
+    reference = make_rally_controller(checkpoint,2,'cpu')
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_landing_targets/quadsmash/control/full_racket_residual_v4.py", line 128, in make_rally_controller
+    return FullRacketResidualControllerV4(checkpoint,count,device)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_landing_targets/quadsmash/control/full_racket_residual_v4.py", line 97, in __init__
+    self.base=FullRacketResidualControllerV4(checkpoint['base_controller'],count,device)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_landing_targets/quadsmash/control/full_racket_residual_v4.py", line 102, in __init__
+    self.base=FullRacketRallyControllerV4(checkpoint['base_controller'],count,device)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_landing_targets/quadsmash/control/full_racket_rally_controller_v4.py", line 19, in __init__
+    self.teacher=FullRacketTeacherV4(checkpoint['backbone'],checkpoint['seed'],
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_landing_targets/quadsmash/control/full_racket_teacher_v4.py", line 28, in __init__
+    self.walk=Go2WalkTransfer(manifest,count,device)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_landing_targets/quadsmash/control/go2_walk_transfer.py", line 17, in __init__
+    if hashlib.sha256(path.read_bytes()).hexdigest()!=spec['policy_sha256']:
+                      ^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/pathlib.py", line 1050, in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/pathlib.py", line 1044, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'assets/vendor/go2_flat_baryn20251217/policy.pt'
