@@ -17,3 +17,5 @@
 第7次实际预热结束后，全部2048个EP0已闭合并由原生model6回合ID链复核；首批242空中/126恢复/0完整/NF0，仍是训练分布。8项critic Adam各140步，actor权重及fresh探索幅度保持，actor/critic RMS14417920/1835008。第8次才首次更新actor/log_std各20、critic160，8个actor张量实际改变，ROOT_ACTUAL_FULL_COHORT_TO_ACTOR_CHECK保存连续性。最新已独立核对11更新2883584步，actor学习80/critic220，NF0；13更新和原全128最终成绩尚未完成。
 
 [下一步出球与提前拦截的隔离CPU分析](https://github.com/lzqw/unitree-smash/blob/29189cd2afffc801b4b0818e867ae50674528bbb/reports/G07_full_racket_v4/release_target_envelope_20261026_v2/REPORT.md)已公开源码、5项必要数学/网体测试、实际飞行误差及图表。它尚未集成main，也没有新增原生机器人或通过成绩。27个既有空中触球的几何候选不等于新触球率；更早实际球位置在原动作时刻距拍头可达0.4米量级，需要重新规划全身动作并原生验证。原301输入和PLAN持续持有；下一main运行时改动须等实际父退出并等CPU观察1780693的ACTUAL_NATIVE_INPUT_CHECK。
+
+2026-10-26终端更新：训练13更新3407872步实际完成；原全128固定评估完成为0完整、25空中、14条件恢复（56%）、1攻击、NF0。父1777456和CPU观察1780693已真实退出，ACTUAL_NATIVE_INPUT_CHECK已生成，原302输入及视频持有已释放。[最新85秒视频与核验报告](../leg06_warmup13_video_delivery_20261026/REPORT.md)已交付；此前运行中段落仅为历史观察，不能作为当前状态。
