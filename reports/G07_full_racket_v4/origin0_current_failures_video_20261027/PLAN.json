@@ -1,0 +1,115 @@
+{
+  "created_at": "2026-10-26T19:43:19.146194+00:00",
+  "selected_candidates_and_TRAIN_lanes": [
+    [
+      0,
+      19
+    ],
+    [
+      0,
+      72
+    ],
+    [
+      1,
+      1
+    ]
+  ],
+  "selection": "Posthoc origin0 reference frame/fall TRAIN19, stable-recovery miss TRAIN72, and first net-fault TRAIN1 of measured-pose candidate1. Three independent actual episodes.",
+  "completed_candidate_entries": {
+    "0": {
+      "candidate_id": 0,
+      "candidate": {
+        "name": "unchanged_measured_source",
+        "overrides": {},
+        "candidate_id": 0
+      },
+      "summary": {
+        "episodes": 128,
+        "complete": 0,
+        "airborne_contacts": 0,
+        "conditional_recovery_count": 0,
+        "attack_outgoing": 0,
+        "actual_attack_cross_target_chains": 0,
+        "numerical_failures": 0,
+        "mean_TRAIN_partial_score": -0.4481060759280808,
+        "formal_acceptance": false,
+        "rank": [
+          1,
+          0,
+          0,
+          -0.44810608,
+          0,
+          0
+        ]
+      },
+      "control_ticks": 800,
+      "env_steps": 102400
+    },
+    "1": {
+      "candidate_id": 1,
+      "candidate": {
+        "name": "measured_complete_contact_pose",
+        "overrides": {
+          "hit_joint_position_rad": [
+            -1.0203907489776611,
+            1.4589738845825195,
+            -2.191816568374634,
+            1.3709583282470703,
+            1.1518988609313965,
+            2.061375617980957
+          ]
+        },
+        "candidate_id": 1
+      },
+      "summary": {
+        "episodes": 128,
+        "complete": 0,
+        "airborne_contacts": 0,
+        "conditional_recovery_count": 0,
+        "attack_outgoing": 0,
+        "actual_attack_cross_target_chains": 0,
+        "numerical_failures": 0,
+        "mean_TRAIN_partial_score": -2.0,
+        "formal_acceptance": false,
+        "rank": [
+          1,
+          0,
+          0,
+          -2.0,
+          0,
+          0
+        ]
+      },
+      "control_ticks": 283,
+      "env_steps": 36224
+    }
+  },
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/contact_aim7_sequential_n128_01/best_candidate.pt": "a7953fb80d0ea647cbd6d525d8ddbf8a0a0986f1bcecfbe8831db2c1384473a3",
+    "/home/autodrive/LZQW/unitree_smash/configs/g07_full_racket_eval_v4_r3_origin0.json": "b9fbfbcbe6ba4ff5f8ac4a944e3bcc0d4f2f0db4adf37182e30750a0562ec196",
+    "/home/autodrive/LZQW/unitree_smash/configs/court_net_v4.json": "184d07dde336bf36be7dfde089373c851a2bcb855a6e44f4120442b59818b4f4",
+    "/home/autodrive/LZQW/unitree_smash_video_framing/reports/G07_full_racket_v4/origin0_current_failures_video_20261027/prepare.py": "1af108577893c20cf8f4dd574ce5536c6d950bedb7a9af80ac1c61105c4d1f02",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_sequential_n128_01/episodes_000.json": "27a206af1ac44a56cf948d76846b285191925a5a4fda78333c4a01ddb5ec3cd3",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_sequential_n128_01/contacts_000.json": "7f2e87a003bdf0c80dfbd6e20eb1d7d514187e9e126048ed6a9374b619422122",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_sequential_n128_01/all_first_episodes_000.npz": "ff19337e935fa4c533e833e11d5d59fea531622283e1dafb1e4cec7d369ea19a",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_sequential_n128_01/public_and_actions_000.npz": "5c1dbe44da6df51c661cbb89fd28f2c132b37466fe60dacfe78cddffc7f31391",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_sequential_n128_01/initial_ground_states_000.json": "b5802efdfd026f96728aba9013c04bb6cafec9995d1fdb97fb2176b6107d76d1",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_sequential_n128_01/causal_plans_000.json": "4a4b73c3969cdbb3e514e0b95eadaeea95cecd31f32519d7c64ad3ea6528c379",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_sequential_n128_01/episodes_001.json": "efda18be8ca41b32b721ea5d2b5bfbe0bbae441cb9903bd202165c2263e146cc",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_sequential_n128_01/contacts_001.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_sequential_n128_01/all_first_episodes_001.npz": "09dcc7d8f5a97a76e61988c28abdaf85ed600e26c463d00aea211923733c4896",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_sequential_n128_01/public_and_actions_001.npz": "fdfaa19a6cf667f264901a708c656d95cb70586af31b468c35bfa822922b162f",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_sequential_n128_01/initial_ground_states_001.json": "d67fa1ff8e966d54054f96e15e02ea232dd6c6c2b593e331cf8e636dab79a608",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_sequential_n128_01/causal_plans_001.json": "20b1dbe32ffae3890d1aa1b578c1dab6209a4a1edd625adb1d7f581c42914a63",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_sequential_n128_01/geometry.json": "8afd390b7b92179ba6e2fde3774cc60162a98a5bd63ed50defd95b2e8f9d9c37",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_sequential_n128_01/geometry.npz": "eb121abab067042686dc22833a8b2c447b08e722471c1075affbf94ffe22f6a6",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_sequential_n128_01/INPUTS.json": "5f34550f47a7a55acd907277c3f4a1d854356da6dcab080f6e87f59d212e8fe1",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_sequential_n128_01/source_snapshot.zip": "9490f4048d1270708c95ae32fa1d7ac66602f3075aed729f6bacecbcb134d3e6",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_sequential_n128_01/source_hashes.json": "4aeaf39ebfac8279d250d42e3e070f293b292035bb859fbebe64cdb667adf7a2",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_sequential_n128_01/dirty.patch": "903b5a82183852bfe880ae63478c18e1bb5f3dd06990bd6135fda0da142ecd0d",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/prepose_origin0_8_sequential_n128_01/asset_dependencies.json": "6591b33978bccc9f6f68aa781fb396a85475f54cc774840ffec700222d1649c0"
+  },
+  "scope": "Two completed candidate TRAIN128 samples from the still-running eight-candidate job; no final cold score or new physical run.",
+  "formal_cases_read": false,
+  "formal_acceptance": false
+}
