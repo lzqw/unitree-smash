@@ -57,23 +57,15 @@
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
       "active_gpu_jobs": [
         {
-          "state": "RUNNING_BODY_STRIKE_GRID16",
+          "state": "RUNNING_COLD_ORIGINAL_TRAIN128",
           "workflow_pid": 1810743,
-          "guard_pid": 1810750,
-          "native_child_pid": 1810764,
+          "guard_pid": 1815817,
+          "native_child_pid": 1815830,
           "gpu": 0,
-          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/body_strike_grid16_n2048_01",
-          "observed_at": "2026-10-26T09:50:46.630977+00:00",
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/body_strike_grid16_fixed_train128_01",
+          "observed_at": "2026-10-26T10:23:34.612095+00:00",
           "verified_live_processes": true,
-          "formal_acceptance": false,
-          "progress": {
-            "generation": 0,
-            "control_ticks": 200,
-            "first_episodes_complete": 0,
-            "requested_episodes": 2048,
-            "actual_control_env_steps": 409600,
-            "formal_acceptance": false
-          }
+          "formal_acceptance": false
         }
       ],
       "queued_native_sequence": {
@@ -9812,6 +9804,383 @@
         ],
         "source_not_selected_until_actual_completed_grid_cold128": true,
         "new_native_job_started": false,
+        "formal_acceptance": false,
+        "observed_at": "2026-10-26T10:08:37.639644+00:00"
+      },
+      "latest_completed_grid16_search": {
+        "summary": {
+          "history": [
+            {
+              "generation": 0,
+              "control_ticks": 800,
+              "env_steps": 1638400,
+              "summaries": [
+                {
+                  "episodes": 128,
+                  "complete": 0,
+                  "airborne_contacts": 0,
+                  "conditional_recovery_count": 0,
+                  "attack_outgoing": 0,
+                  "actual_attack_cross_target_chains": 0,
+                  "numerical_failures": 0,
+                  "mean_TRAIN_partial_score": -1.624466852187955,
+                  "formal_acceptance": false,
+                  "rank": [
+                    1,
+                    0,
+                    0,
+                    -1.62446685,
+                    0,
+                    0
+                  ]
+                },
+                {
+                  "episodes": 128,
+                  "complete": 0,
+                  "airborne_contacts": 0,
+                  "conditional_recovery_count": 0,
+                  "attack_outgoing": 0,
+                  "actual_attack_cross_target_chains": 0,
+                  "numerical_failures": 0,
+                  "mean_TRAIN_partial_score": -1.872928784287069,
+                  "formal_acceptance": false,
+                  "rank": [
+                    1,
+                    0,
+                    0,
+                    -1.87292878,
+                    0,
+                    0
+                  ]
+                },
+                {
+                  "episodes": 128,
+                  "complete": 0,
+                  "airborne_contacts": 15,
+                  "conditional_recovery_count": 6,
+                  "attack_outgoing": 1,
+                  "actual_attack_cross_target_chains": 0,
+                  "numerical_failures": 0,
+                  "mean_TRAIN_partial_score": 1.0399750578095672,
+                  "formal_acceptance": false,
+                  "rank": [
+                    1,
+                    0,
+                    0,
+                    1.03997506,
+                    6,
+                    15
+                  ]
+                },
+                {
+                  "episodes": 128,
+                  "complete": 0,
+                  "airborne_contacts": 0,
+                  "conditional_recovery_count": 0,
+                  "attack_outgoing": 0,
+                  "actual_attack_cross_target_chains": 0,
+                  "numerical_failures": 0,
+                  "mean_TRAIN_partial_score": -1.8357790396548808,
+                  "formal_acceptance": false,
+                  "rank": [
+                    1,
+                    0,
+                    0,
+                    -1.83577904,
+                    0,
+                    0
+                  ]
+                },
+                {
+                  "episodes": 128,
+                  "complete": 0,
+                  "airborne_contacts": 38,
+                  "conditional_recovery_count": 17,
+                  "attack_outgoing": 2,
+                  "actual_attack_cross_target_chains": 0,
+                  "numerical_failures": 0,
+                  "mean_TRAIN_partial_score": 5.805347018505511,
+                  "formal_acceptance": false,
+                  "rank": [
+                    1,
+                    0,
+                    0,
+                    5.80534702,
+                    17,
+                    38
+                  ]
+                },
+                {
+                  "episodes": 128,
+                  "complete": 0,
+                  "airborne_contacts": 0,
+                  "conditional_recovery_count": 0,
+                  "attack_outgoing": 0,
+                  "actual_attack_cross_target_chains": 0,
+                  "numerical_failures": 0,
+                  "mean_TRAIN_partial_score": -1.8246953239043553,
+                  "formal_acceptance": false,
+                  "rank": [
+                    1,
+                    0,
+                    0,
+                    -1.82469532,
+                    0,
+                    0
+                  ]
+                },
+                {
+                  "episodes": 128,
+                  "complete": 0,
+                  "airborne_contacts": 45,
+                  "conditional_recovery_count": 19,
+                  "attack_outgoing": 7,
+                  "actual_attack_cross_target_chains": 0,
+                  "numerical_failures": 0,
+                  "mean_TRAIN_partial_score": 7.640479383734307,
+                  "formal_acceptance": false,
+                  "rank": [
+                    1,
+                    0,
+                    0,
+                    7.64047938,
+                    19,
+                    45
+                  ]
+                },
+                {
+                  "episodes": 128,
+                  "complete": 0,
+                  "airborne_contacts": 0,
+                  "conditional_recovery_count": 0,
+                  "attack_outgoing": 0,
+                  "actual_attack_cross_target_chains": 0,
+                  "numerical_failures": 0,
+                  "mean_TRAIN_partial_score": -1.7777152541869632,
+                  "formal_acceptance": false,
+                  "rank": [
+                    1,
+                    0,
+                    0,
+                    -1.77771525,
+                    0,
+                    0
+                  ]
+                },
+                {
+                  "episodes": 128,
+                  "complete": 2,
+                  "airborne_contacts": 34,
+                  "conditional_recovery_count": 14,
+                  "attack_outgoing": 12,
+                  "actual_attack_cross_target_chains": 3,
+                  "numerical_failures": 0,
+                  "mean_TRAIN_partial_score": 6.682791789831207,
+                  "formal_acceptance": false,
+                  "rank": [
+                    1,
+                    2,
+                    3,
+                    6.68279179,
+                    14,
+                    34
+                  ]
+                },
+                {
+                  "episodes": 128,
+                  "complete": 0,
+                  "airborne_contacts": 0,
+                  "conditional_recovery_count": 0,
+                  "attack_outgoing": 0,
+                  "actual_attack_cross_target_chains": 0,
+                  "numerical_failures": 0,
+                  "mean_TRAIN_partial_score": -1.8065167549066246,
+                  "formal_acceptance": false,
+                  "rank": [
+                    1,
+                    0,
+                    0,
+                    -1.80651675,
+                    0,
+                    0
+                  ]
+                },
+                {
+                  "episodes": 128,
+                  "complete": 0,
+                  "airborne_contacts": 47,
+                  "conditional_recovery_count": 24,
+                  "attack_outgoing": 9,
+                  "actual_attack_cross_target_chains": 2,
+                  "numerical_failures": 0,
+                  "mean_TRAIN_partial_score": 9.28560737174355,
+                  "formal_acceptance": false,
+                  "rank": [
+                    1,
+                    0,
+                    2,
+                    9.28560737,
+                    24,
+                    47
+                  ]
+                },
+                {
+                  "episodes": 128,
+                  "complete": 0,
+                  "airborne_contacts": 0,
+                  "conditional_recovery_count": 0,
+                  "attack_outgoing": 0,
+                  "actual_attack_cross_target_chains": 0,
+                  "numerical_failures": 0,
+                  "mean_TRAIN_partial_score": -1.862795304118966,
+                  "formal_acceptance": false,
+                  "rank": [
+                    1,
+                    0,
+                    0,
+                    -1.8627953,
+                    0,
+                    0
+                  ]
+                },
+                {
+                  "episodes": 128,
+                  "complete": 0,
+                  "airborne_contacts": 43,
+                  "conditional_recovery_count": 19,
+                  "attack_outgoing": 5,
+                  "actual_attack_cross_target_chains": 1,
+                  "numerical_failures": 0,
+                  "mean_TRAIN_partial_score": 6.913990995724703,
+                  "formal_acceptance": false,
+                  "rank": [
+                    1,
+                    0,
+                    1,
+                    6.913991,
+                    19,
+                    43
+                  ]
+                },
+                {
+                  "episodes": 128,
+                  "complete": 0,
+                  "airborne_contacts": 0,
+                  "conditional_recovery_count": 0,
+                  "attack_outgoing": 0,
+                  "actual_attack_cross_target_chains": 0,
+                  "numerical_failures": 0,
+                  "mean_TRAIN_partial_score": -1.9466230647328,
+                  "formal_acceptance": false,
+                  "rank": [
+                    1,
+                    0,
+                    0,
+                    -1.94662306,
+                    0,
+                    0
+                  ]
+                },
+                {
+                  "episodes": 128,
+                  "complete": 0,
+                  "airborne_contacts": 2,
+                  "conditional_recovery_count": 1,
+                  "attack_outgoing": 0,
+                  "actual_attack_cross_target_chains": 0,
+                  "numerical_failures": 0,
+                  "mean_TRAIN_partial_score": -1.200584222583994,
+                  "formal_acceptance": false,
+                  "rank": [
+                    1,
+                    0,
+                    0,
+                    -1.20058422,
+                    1,
+                    2
+                  ]
+                },
+                {
+                  "episodes": 128,
+                  "complete": 0,
+                  "airborne_contacts": 0,
+                  "conditional_recovery_count": 0,
+                  "attack_outgoing": 0,
+                  "actual_attack_cross_target_chains": 0,
+                  "numerical_failures": 0,
+                  "mean_TRAIN_partial_score": -1.9739289181306958,
+                  "formal_acceptance": false,
+                  "rank": [
+                    1,
+                    0,
+                    0,
+                    -1.97392892,
+                    0,
+                    0
+                  ]
+                }
+              ],
+              "ranked_candidate_indices": [
+                8,
+                10,
+                12,
+                6,
+                4,
+                2,
+                14,
+                0,
+                7,
+                9,
+                5,
+                3,
+                11,
+                1,
+                13,
+                15
+              ],
+              "best_this_generation": 8
+            }
+          ],
+          "best_rank": [
+            1,
+            2,
+            3,
+            6.68279179,
+            14,
+            34
+          ],
+          "actual_control_env_steps": 1638400,
+          "formal_acceptance": false,
+          "formal_cases_read": false
+        },
+        "independent_check": {
+          "checked_at": "2026-10-26T10:13:25.248336+00:00",
+          "actual_control_env_steps": 1638400,
+          "selected_generation": 0,
+          "selected_candidate": 8,
+          "selected_rank": [
+            1,
+            2,
+            3,
+            6.68279179,
+            14,
+            34
+          ],
+          "both_original_actor_exports_and_all_source_metadata_exactly_preserved": true,
+          "all2048_actual_selected_episode_rows_independently_checked": true,
+          "actual_public_replays": [
+            {
+              "generation": 0,
+              "actual_valid_public_rows": 13421,
+              "CPU_vs_actual_GPU_max_normalized_action_error": 2.4437904357910156e-05,
+              "tolerance": 0.0005
+            }
+          ],
+          "public_policy_sha256": "cb6dfa04d91e98a6ec54659f44fbf7f4e7733d96338f14b626140d4d26fd906a",
+          "formal_cases_read": false,
+          "formal_acceptance": false
+        },
+        "GPU_hours": 0.5267292551491604,
         "formal_acceptance": false
       }
     },
