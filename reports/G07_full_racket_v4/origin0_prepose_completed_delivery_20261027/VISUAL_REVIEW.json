@@ -1,0 +1,32 @@
+{
+  "checked_at": "2026-10-26T21:09:54.314126+00:00",
+  "review_completed": true,
+  "reviewer": "Codex visual inspection of actual rendered previews and decoded JPEG frames",
+  "all13_event_previews_reviewed_in_grid": true,
+  "full_resolution_event_previews_reviewed": [
+    "case0_contact",
+    "case1_contact",
+    "case3_landing"
+  ],
+  "all16_decoded_samples_reviewed_in_grid": true,
+  "full_resolution_decoded_samples_reviewed": [
+    612,
+    1412,
+    3516
+  ],
+  "material_visual_defects_found": false,
+  "findings": [
+    "Full robot, complete held racket and net appear in side and top panes at actual contact.",
+    "Target hits, legal-court target miss, net blockage/body fall and uncontacted control are kept with failure labels.",
+    "Four contact body-landings are visible at final50Hz samples; these are labelled as samples rather than exact terminal substeps.",
+    "Text bands sit outside panes; original target rectangle and actual first-landing crosses are visible.",
+    "All3654 frames decode; pose and contact fidelity are separately proven by DECODE_AND_NATIVE_INPUT_CHECK.json."
+  ],
+  "limitations": [
+    "Visual sample inspection does not prove arbitrary mesh surfaces are unoccluded.",
+    "The four contacts and one miss were selected after evaluation; population metrics come from all128 raw rows."
+  ],
+  "video_sha256": "a716aa528c37cdc6f208a23434632993d1993f6380ea313e8e39cdb384c5a110",
+  "new_native_execution": false,
+  "formal_acceptance": false
+}
