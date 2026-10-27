@@ -1,0 +1,90 @@
+{
+  "prepared_at": "2026-10-27T04:50:07.984019+00:00",
+  "candidates": [
+    {
+      "candidate_id": 0,
+      "name": "unchanged_source",
+      "joint_velocity_rad_s": null
+    },
+    {
+      "candidate_id": 1,
+      "name": "windowed_rate_tol1.5_blend0.5",
+      "joint_velocity_rad_s": [
+        0.07481538952336636,
+        3.7403631000529556,
+        1.487068815368809,
+        -0.023502641031815208,
+        -1.245855629444122,
+        -5.0
+      ]
+    },
+    {
+      "candidate_id": 2,
+      "name": "windowed_rate_tol1.5_blend1",
+      "joint_velocity_rad_s": [
+        0.9968175828644817,
+        4.246669250490433,
+        0.49424490002472726,
+        -1.2818358999682935,
+        -0.07297360897064176,
+        -5.0
+      ]
+    },
+    {
+      "candidate_id": 3,
+      "name": "windowed_rate_tol3_blend0.5",
+      "joint_velocity_rad_s": [
+        0.1347244705143088,
+        4.078709511472413,
+        1.1295267259441242,
+        -0.940196335315705,
+        -1.245855629444122,
+        -5.0
+      ]
+    },
+    {
+      "candidate_id": 4,
+      "name": "windowed_rate_tol3_blend1",
+      "joint_velocity_rad_s": [
+        1.1166357448463666,
+        4.923362073329347,
+        -0.22083927882464205,
+        -3.115223288536073,
+        -0.07297360897064176,
+        -5.0
+      ]
+    },
+    {
+      "candidate_id": 5,
+      "name": "windowed_rate_tol6_blend0.5",
+      "joint_velocity_rad_s": [
+        -1.2494315592712817,
+        4.117028474807739,
+        1.7198790933692363,
+        -0.940196335315705,
+        -1.245855629444122,
+        -4.7733231238683445
+      ]
+    },
+    {
+      "candidate_id": 6,
+      "name": "windowed_rate_tol6_blend1",
+      "joint_velocity_rad_s": [
+        -1.6516763147248146,
+        5.0,
+        0.9598654560255819,
+        -3.115223288536073,
+        -0.07297360897064176,
+        -4.546646247736689
+      ]
+    }
+  ],
+  "factory_sha256": "d156d72364f5283884544c22a73d8dfc0a4fa3dd787fa63a006848c3487636ec",
+  "CPU_check_sha256": "7555b28b6400887653eb906704b821ae6c89fd0ce7fc5a547c40ce64432dfb41",
+  "algorithm": "Quartic velocity envelope within the original public-forecast swing half-window; the feedforward hit position at the center and all pre-window preparation commands are unchanged on equal public input.",
+  "physics_rules_cases_target_and_thresholds_unchanged": true,
+  "source_policy_selection_pending_actual_early7_and_cold128": true,
+  "physical_tracking_or_contacts_or_recovery_proven": false,
+  "native_execution": false,
+  "formal_acceptance": false
+}

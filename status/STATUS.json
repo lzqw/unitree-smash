@@ -1607,7 +1607,7 @@
         "csv_export_pending_parent_completion": true,
         "frozen_policy_performance": false
       },
-      "current_native_workflow_state": "RUNNING_EXPLICIT_CONTACT_FLIGHT_RECOVERY_SOURCE_COLD128",
+      "current_native_workflow_state": "RUNNING_MEASURED_SWING9_WITH_EARLY7_THEN_WINDOWED7_WAITERS",
       "latest_completed_fixed_TRAIN128": {
         "episodes": 128,
         "distinct_TRAIN_indices": [
@@ -9345,9 +9345,9 @@
       },
       "last_goal_turn_classification": {
         "classification": "progress",
-        "observed_at": "2026-10-26T23:19:38.399250+00:00",
-        "evidence": "Actual8-way search completed and1024 original rows/source400-member snapshot/checkpoint tree independently verified;5816 public-input action rows checked. Search guard/native actually exited and separate cold128 guard1920441/native1920455 verified live onGPU0 with128 ground starts.",
-        "previous_turn": "verified_wait: live native1903046 advanced200 to400 and120 first episodes completed; no restart."
+        "observed_at": "2026-10-27T04:52:32.598658+00:00",
+        "evidence": "Implemented preparation-preserving windowed velocity wrapper; executed all7 policies on4800 actual public inputs each; checked separate native CLI and source wiring; registered and started CPU wait owner1966524.",
+        "previous_turn": "verified_wait"
       },
       "completed_leg06_warmup13_frozen_TRAIN128": {
         "episodes": 128,
@@ -10040,7 +10040,7 @@
         "formal_cases_read": false,
         "formal_acceptance": false
       },
-      "current_next_action": "Finish revised teacher cold128, independently verify all original cases and CPU commands, then execute already queued fresh15 training and final frozen128 under explicit contact-flight-recovery-v1.",
+      "current_next_action": "Finish live measured swing9 and independent cold128, then conditionally run registered early-lateral7/cold128 and windowed-swing7/cold128 using actual-source admission and GPU0 guards. Develop recovery only from real subsequent results; formal A/B and all original gates remain unmet.",
       "latest_current_video_candidate4": {
         "checked_at": "2026-10-26T09:49:37.125036+00:00",
         "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_body_candidate4_cold128_complete_and_failures_v2_20261026.mp4",
@@ -12093,63 +12093,63 @@
         "reused_transport_sha256": "ffbfffc5f642e671751e6ccc716cc50985a96f03a5d809ac1bd755ce8a80b416",
         "source_scope": "Previous-origin16 TRAIN29; explicitly historical in every frame; current-origin0 success is not claimed."
       },
-      "measured_swing_completed_candidate_observations": [
-        {
-          "candidate_id": 0,
-          "summary": {
-            "episodes": 128,
+      "measured_swing_completed_candidate_observations": {
+        "observed_at": "2026-10-27T04:52:32.598658+00:00",
+        "completed": [
+          {
+            "candidate_id": 0,
             "complete": 0,
             "airborne_contacts": 4,
             "conditional_recovery_count": 0,
-            "attack_outgoing": 0,
             "numerical_failures": 0
-          }
-        },
-        {
-          "candidate_id": 1,
-          "summary": {
-            "episodes": 128,
+          },
+          {
+            "candidate_id": 1,
             "complete": 0,
             "airborne_contacts": 0,
             "conditional_recovery_count": 0,
-            "attack_outgoing": 0,
             "numerical_failures": 0
-          }
-        },
-        {
-          "candidate_id": 2,
-          "summary": {
-            "episodes": 128,
+          },
+          {
+            "candidate_id": 2,
             "complete": 0,
             "airborne_contacts": 0,
             "conditional_recovery_count": 0,
-            "attack_outgoing": 0,
             "numerical_failures": 0
-          }
-        },
-        {
-          "candidate_id": 3,
-          "summary": {
-            "episodes": 128,
+          },
+          {
+            "candidate_id": 3,
             "complete": 0,
             "airborne_contacts": 1,
             "conditional_recovery_count": 0,
-            "attack_outgoing": 0,
             "numerical_failures": 0
-          }
-        },
-        {
-          "candidate_id": 4,
-          "summary": {
-            "episodes": 128,
+          },
+          {
+            "candidate_id": 4,
             "complete": 0,
             "airborne_contacts": 0,
             "conditional_recovery_count": 0,
-            "attack_outgoing": 0,
+            "numerical_failures": 0
+          },
+          {
+            "candidate_id": 5,
+            "complete": 0,
+            "airborne_contacts": 3,
+            "conditional_recovery_count": 0,
             "numerical_failures": 0
           }
-        }
-      ],
+        ],
+        "current": {
+          "candidate_id": 6,
+          "candidate_name": "rate_tol6_blend1",
+          "control_ticks": 300,
+          "first_episodes_complete": 0,
+          "completed_candidates": 6,
+          "actual_control_env_steps": 652800,
+          "formal_acceptance": false
+        },
+        "reference_source_not_promoted_to_passed": true
+      },
       "queued_early_lateral_intercept": {
         "state": "WAITING_FOR_CONFIRMED_SWING9_OWNER_AND_COLD128",
         "owner_pid": 1957568,
@@ -12283,6 +12283,33 @@
           0.04742974415421486
         ],
         "prospective_windowed_speed_method_implemented": false
+      },
+      "prepared_windowed_swing": {
+        "report": "reports/G07_full_racket_v5/windowed_swing_20261027/REPORT.md",
+        "CPU_check": "reports/G07_full_racket_v5/windowed_swing_20261027/CPU_CONTROLLER_CHECK.json",
+        "candidate_count": 7,
+        "actual_public_rows_per_candidate": 4800,
+        "new_native_execution": false,
+        "source_actors_and_normalizers_unchanged": true,
+        "physical_task_and_thresholds_unchanged": true
+      },
+      "queued_windowed_swing": {
+        "owner_pid": 1966524,
+        "queue_state": "WAITING_FOR_CONFIRMED_EARLY7_OWNER_AND_COLD128",
+        "parent_owner_pid": 1957568,
+        "bound_inputs": 970,
+        "report": "reports/G07_full_racket_v5/windowed_swing_queue01/REPORT.md",
+        "native_execution": false,
+        "formal_acceptance": false,
+        "observed_current_native_progress": {
+          "candidate_id": 6,
+          "candidate_name": "rate_tol6_blend1",
+          "control_ticks": 300,
+          "first_episodes_complete": 0,
+          "completed_candidates": 6,
+          "actual_control_env_steps": 652800,
+          "formal_acceptance": false
+        }
       }
     },
     "G08": {
