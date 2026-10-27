@@ -1,5 +1,7 @@
 # QuadSmash：Codex /goal 实施与训练任务包
 
+已新增[正常比例的完整扣杀成功视频（14.82秒）](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Smash_success_TRAIN29_normal_ratio_20261027.mp4)：固定透视、无拉伸，包含完整回合、触球慢放和落地恢复。**这是上一布局的真实TRAIN29成功记录，当前原点0新版尚无完整成功，不能继承为新版成绩。** [制作与核验报告](reports/G07_full_racket_v5/success_normal_scale_20261027/REPORT.md)。
+
 最新效果：[残差15独立原128例的70.16秒实际视频](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_origin0_residual15_fixed_cold128_20261027.mp4)已上传并重新下载SHA校验。包含全部3次拍框误击和2次未触球对照，原128为0完整/0合格空中拍线/0合格恢复、NF0。[视频与核验报告](reports/G07_full_racket_v4/origin0_residual15_cold_video_20261027/REPORT.md)。下方为此前记录。
 
 2026-10-26当前实核：GPU0同一严格075续训已到阶段11，本作业3次新增更新/786432步，17项Adam各加60、归一化与源回合ID链精确、NF0；1251个早闭合回合94空中，797个初始回合仍开放，不能用此前缀当完整恢复率。[真实首批回合报告](reports/G07_full_racket_v4/centered_placement075_resume_health_20261026/REPORT.md)。最佳已测冻结075阶段8仍为原全128的0完整、26空中、19条件恢复、5攻击；[87.66秒视频](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_centered_placement075_pilot8_20261026.mp4)及[293MB完整证据包](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_placement075_stage8_native_training_frozen_TRAIN128_and_video_20261026.zip)均已上传并新下载SHA回验。隔离[七来源腿部范围候选](https://github.com/lzqw/unitree-smash/blob/6c68051/reports/G07_full_racket_v4/centered_leg06_after07540_pilot8_queue01/REPORT.md)等待本次40完整结果，尚未选择、集成或原生运行。当前269项源码/输入保持，原正式A/B各200及50/70/85未通过，完整目标仍进行。
