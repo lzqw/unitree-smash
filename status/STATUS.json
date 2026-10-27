@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/origin0_residual15_completed_delivery_20261027/ACTUAL_COMPLETED_DATA_CHECK.json",
-      "notes": "GPU0继续提前横向第5组，前四组原128复算512回合空中4/13/11/7，完整/攻击/恢复均0、NF0。新增实际落地与支撑对照表明合格恢复也可从约51度倾斜落地；同TRAIN69恢复参考首秒足支撑98%，失败31–36%。已有恢复与调姿队列保持，后续优先持续支撑及减速；本轮仅本地分析，无新GPU作业或上传。",
+      "notes": "GPU0提前横向第6项运行，前五项原128复算640回合空中4/13/11/7/5，完整/攻击/恢复均0、NF0。新增触球后支撑腿反馈完成三套真实输入×四项、41600主要指令检查及工厂重放；手臂/触球前/非支撑腿原样。新控制尚未原生执行或入队，已有顺序流程和1032/969项持有输入保持。本轮只本地保存。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
@@ -67,14 +67,14 @@
           "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/early_lateral7_n128_01",
           "native_child_pid": 1975639,
           "gpu": 0,
-          "verified_live_at": "2026-10-27T07:18:58.530325+00:00",
+          "verified_live_at": "2026-10-27T07:37:20.027440+00:00",
           "actual_progress": {
-            "candidate_id": 5,
-            "candidate_name": "lateral_start2.3_gain0.5",
+            "candidate_id": 6,
+            "candidate_name": "lateral_start2.3_gain1",
             "control_ticks": 300,
             "first_episodes_complete": 0,
-            "completed_candidates": 4,
-            "actual_control_env_steps": 448000,
+            "completed_candidates": 5,
+            "actual_control_env_steps": 550400,
             "formal_acceptance": false
           }
         }
@@ -12559,6 +12559,35 @@
         ],
         "causal_attribution_proven": false,
         "new_native_execution": false,
+        "formal_acceptance": false
+      },
+      "latest_actual_early_lateral_first5": {
+        "checked_at": "2026-10-27T07:35:04.582833+00:00",
+        "episodes": 640,
+        "air_counts": [
+          4,
+          13,
+          11,
+          7,
+          5
+        ],
+        "complete": 0,
+        "recovery": 0,
+        "attack": 0,
+        "NF": 0,
+        "independent_cold_pending": true,
+        "formal_acceptance": false
+      },
+      "latest_public_stance_recovery_CPU_proposal": {
+        "report": "reports/G07_full_racket_v5/public_stance_recovery_20261027/REPORT.md",
+        "checked_at": "2026-10-27T07:32:21.479334+00:00",
+        "actual_source_streams": 3,
+        "variants": 4,
+        "primary_commands": 41600,
+        "factory_commands": 9600,
+        "stance_arm_pre_hit_and_nonstance_commands_preserved": true,
+        "new_native_execution": false,
+        "not_queued": true,
         "formal_acceptance": false
       }
     },

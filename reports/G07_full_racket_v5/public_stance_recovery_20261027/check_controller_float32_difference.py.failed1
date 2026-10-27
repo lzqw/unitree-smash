@@ -1,0 +1,178 @@
+"""Check stance corrections on actual sources and the real recovered trace."""
+import copy
+from datetime import datetime,timezone
+import hashlib
+import importlib.util
+import json
+from pathlib import Path
+import sys
+
+import numpy as np
+from scipy.spatial.transform import Rotation
+import torch
+
+HERE=Path(__file__).resolve().parent
+MAIN=HERE.parents[2]
+ROOT=MAIN.parent/'unitree_smash_contact_recovery'
+sys.path.insert(0,str(ROOT))
+from scripts.initialize_centered_policy_v4 import same_tree
+from quadsmash.rl.episode_trace_v4 import unpack_public
+
+
+def load(name,path):
+    spec=importlib.util.spec_from_file_location(name,path)
+    module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+    return module
+
+
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def read(p):return json.loads(p.read_text())
+
+
+def main():
+    factory=load('public_stance_recovery',HERE/'stance_controller.py')
+    source_path=HERE.parent/'windowed_swing_20261027/window_controller.py'
+    source_factory=load('stance_preserved_actual_source_dispatch',source_path)
+    run=HERE.parent/'early_lateral7_n128_01'
+    inputs=read(run/'INPUTS.json')
+    defaults,limits=[torch.tensor(inputs[k],dtype=torch.float32) for k in ['default_joint_position_rad','joint_limits_rad']]
+    files=[Path(__file__),HERE/'stance_controller.py',source_path,run/'INPUTS.json',
+        HERE.parent/'centroidal_recovery_model_20261027/known_model.py',
+        HERE.parent/'centroidal_recovery_model_20261027/MODEL.json',
+        HERE.parent/'centroidal_recovery_model_20261027/ACTUAL_MODEL_CHECK.json',
+        ROOT/'quadsmash/tasks/stand/coupled_env.py']
+    streams=[]
+    for suffix in ['000','001']:
+        policy_path,data_path=run/f'candidate_{suffix}.pt',run/f'public_and_actions_{suffix}.npz'
+        with np.load(data_path) as data:
+            public,native,valid=[data[k].copy() for k in ['observations','actions','valid_first_episode']]
+            assert data['training_indices'].tolist()==[0,29,69,100,112,123]
+        streams.append((f'actual_source{int(suffix)}',policy_path,public,native,valid))
+        files.extend([policy_path,data_path])
+    original_path=MAIN/'reports/G07_full_racket_v4/gain_body8_sequential_n128_01/best_candidate.pt'
+    trace=HERE.parent/'residual_contact_recovery_n128_updates15_02/trajectory_traces/lane0069_episode000000.npz'
+    meta_path=trace.with_suffix('.json');meta=read(meta_path);assert sha(trace)==meta['data_sha256']
+    with np.load(trace) as data:
+        public=unpack_public(data['packed_public'])
+        native=data['base_actions'].copy()
+    assert hashlib.sha256(public.tobytes()).hexdigest()==meta['full_public794_sha256']
+    streams.append(('recovered_trace_source_base',original_path,public[:,None],native[:,None],np.ones((800,1),dtype=bool)))
+    files.extend([original_path,trace,meta_path])
+    results=[]
+    for stream_name,policy_path,public,native,valid in streams:
+        source=torch.load(policy_path,map_location='cpu',weights_only=False);before=copy.deepcopy(source)
+        count=public.shape[1]
+        baseline=source_factory.make_source(source,count,'cpu')
+        expected=[];old_clock=None
+        for obs in public:
+            if old_clock is not None:
+                ids=torch.tensor(np.flatnonzero(obs[:,775]<old_clock-1e-6))
+                if len(ids):baseline.reset(ids)
+            expected.append(baseline.action({'policy':torch.from_numpy(obs)},defaults,limits).clone())
+            old_clock=obs[:,775].copy()
+        for candidate in factory.candidates():
+            kwargs={k:candidate[k] for k in ['gain','horizontal_damping']}
+            controller=factory.StanceRecoveryController(source_factory.make_source(source,count,'cpu'),
+                source['asset_sha256'],count,'cpu',**kwargs)
+            old_clock=None;max_native=max_delta=max_target_delta=max_velocity=max_kinematic_error=0.
+            active_rows=solved_legs=deadband_rows=0
+            before_errors=[];after_errors=[]
+            jacobian_check_count=0;max_jacobian_error=0.
+            command_digest=hashlib.sha256()
+            for obs,native_action,keep,base in zip(public,native,valid,expected):
+                if old_clock is not None:
+                    ids=torch.tensor(np.flatnonzero(obs[:,775]<old_clock-1e-6))
+                    if len(ids):controller.reset(ids)
+                values=torch.from_numpy(obs);untouched=values.clone()
+                action=controller.action({'policy':values},defaults,limits)
+                assert torch.equal(values,untouched) and torch.isfinite(action).all() and (abs(action)<=1).all()
+                assert torch.equal(action[:,12:],base[:,12:])
+                target=limits[:,0]+.5*(action+1)*(limits[:,1]-limits[:,0])
+                base_target=limits[:,0]+.5*(base+1)*(limits[:,1]-limits[:,0])
+                max_target_delta=max(max_target_delta,float(abs(target-base_target).max()))
+                max_delta=max(max_delta,float(abs(action-base).max()))
+                if keep.any():max_native=max(max_native,float(abs(action.numpy()[keep]-native_action[keep]).max()))
+                if candidate['gain']:
+                    diagnostic=controller.last_diagnostic
+                    active=diagnostic['active'];seen=diagnostic['hit_seen'].numpy()
+                    contacts=obs[:,57:61]>.5
+                    height=1.80-np.sum((-obs[:,6:9])*obs[:,760:763],axis=1)
+                    assert not np.any(active & (~seen | (~contacts.any(1)) | (height<.14) | (-obs[:,8]<=.25)))
+                    assert torch.equal(action[~active],base[~active])
+                    delta=diagnostic['requested_joint_delta_rad']
+                    assert (abs(delta)<=.15+1e-7).all()
+                    for foot,ids in enumerate(controller.requester.legs):
+                        mask=~contacts[:,foot]
+                        assert np.all(delta[mask][:,ids]==0.)
+                        assert torch.equal(action[mask][:,ids],base[mask][:,ids])
+                    active_rows+=int(active.sum())
+                    for prediction in diagnostic['model_predictions']:
+                        if prediction['settled_deadband']:
+                            deadband_rows+=1
+                            continue
+                        lane=prediction['lane']
+                        for leg in prediction['legs']:
+                            if not leg['solved']:continue
+                            solved_legs+=1
+                            assert leg['foot_kinematic_error_after_m']<=leg['foot_kinematic_error_before_m']+1e-9
+                            before_errors.append(leg['foot_kinematic_error_before_m']);after_errors.append(leg['foot_kinematic_error_after_m'])
+                            max_velocity=max(max_velocity,max(abs(x) for x in leg['hypothetical_total_joint_velocity_rad_s']))
+                        if jacobian_check_count<5 and active[lane]:
+                            q=defaults.numpy()[None]+obs[lane:lane+1,9:27]
+                            position,jacobian=controller.requester.foot_jacobians(q)
+                            for joint in range(12):
+                                difference=np.zeros_like(q);difference[:,joint]=1e-6
+                                hi=controller.requester.model.forward(q+difference)['position'][:,controller.requester.feet]
+                                lo=controller.requester.model.forward(q-difference)['position'][:,controller.requester.feet]
+                                max_jacobian_error=max(max_jacobian_error,float(abs((hi-lo)/2e-6-jacobian[:,:,:,joint]).max()))
+                            epsilon=1e-3
+                            changed=q.copy();changed[0,:12]+=epsilon*delta[lane]
+                            after=controller.requester.model.forward(changed)['position'][0,controller.requester.feet]
+                            angle=np.asarray(prediction['virtual_root_rotation_body_rad'])
+                            translation=np.asarray(prediction['virtual_root_translation_body_m'])
+                            transformed=after@Rotation.from_rotvec(epsilon*angle).as_matrix().T+epsilon*translation
+                            measured=(transformed-position[0])/epsilon
+                            predicted=np.cross(angle,position[0])+translation+np.einsum('fij,j->fi',jacobian[0],delta[lane])
+                            max_kinematic_error=max(max_kinematic_error,float(abs(measured-predicted).max()))
+                            jacobian_check_count+=1
+                command_digest.update(action.numpy().tobytes());old_clock=obs[:,775].copy()
+            assert max_target_delta<=.15+1e-5 and max_velocity<=30.+1e-6
+            assert max_jacobian_error<1e-7 and max_kinematic_error<1e-4
+            assert same_tree(source,before)
+            if candidate['gain']==0.:
+                assert max_delta==0. and max_native<=5e-4
+            else:
+                assert active_rows>0 and solved_legs>0 and max_delta>0.
+            if count>1:
+                twin=factory.StanceRecoveryController(source_factory.make_source(source,count,'cpu'),
+                    source['asset_sha256'],count,'cpu',**kwargs)
+                controller.reset()
+                for obs in public[:316]:
+                    for c in [controller,twin]:c.action({'policy':torch.from_numpy(obs)},defaults,limits)
+                controller.reset(torch.tensor([2]))
+                assert not controller.hit_seen[2]
+                changed=public[316].copy();changed[2]=public[0,2]
+                a=controller.action({'policy':torch.from_numpy(changed)},defaults,limits)
+                b=twin.action({'policy':torch.from_numpy(public[316])},defaults,limits)
+                other=torch.arange(count)!=2
+                assert torch.equal(a[other],b[other]) and torch.equal(controller.hit_seen[other],twin.hit_seen[other])
+            result=dict(stream=stream_name,candidate=candidate,actual_public_rows=int(np.prod(public.shape[:2])),
+                valid_first_episode_rows=int(valid.sum()),active_post_hit_stance_rows=active_rows,solved_stance_leg_requests=solved_legs,
+                settled_deadband_rows=deadband_rows,maximum_source_normalized_action_change=max_delta,
+                maximum_original_native_action_difference=max_native,maximum_leg_target_delta_rad=max_target_delta,
+                maximum_hypothetical_leg_velocity_rad_s=max_velocity,foot_jacobian_difference_max_error=max_jacobian_error,
+                independent_virtual_root_and_joint_kinematic_difference_max_error_m=max_kinematic_error,
+                mean_foot_kinematic_error_before_m=(float(np.mean(before_errors)) if before_errors else None),
+                mean_foot_kinematic_error_after_m=(float(np.mean(after_errors)) if after_errors else None),
+                arm_and_pre_hit_and_nonstance_leg_commands_bitwise_unchanged=True,
+                original_actors_normalizers_and_public_inputs_unchanged=True,selective_reset_preserves_other_lanes=True,
+                command_stream_sha256=command_digest.hexdigest(),native_stability_or_contact_force_improvement_proven=False)
+            results.append(result);print(json.dumps(result),flush=True)
+    record=dict(checked_at=datetime.now(timezone.utc).isoformat(),results=results,
+        source_sha256={str(p):sha(p) for p in files},original_leg_velocity_limit_rad_s=30.,
+        original_arm_commands_preserved=True,original_residual_position_bound_rad=.15,
+        new_native_execution=False,formal_cases_read=False,formal_acceptance=False,goal_complete=False)
+    with (HERE/'CPU_CONTROLLER_CHECK.json').open('x') as f:f.write(json.dumps(record,indent=2)+'\n')
+
+
+if __name__=='__main__':main()

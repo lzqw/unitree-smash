@@ -1,0 +1,48 @@
+{
+  "prepared_at": "2026-10-27T07:37:20.027440+00:00",
+  "schema": "g07-public-stance-recovery-proposal-v5",
+  "candidates": [
+    {
+      "candidate_id": 0,
+      "name": "unchanged_source",
+      "gain": 0.0,
+      "horizontal_damping": false
+    },
+    {
+      "candidate_id": 1,
+      "name": "stance_rotation_half",
+      "gain": 0.5,
+      "horizontal_damping": false
+    },
+    {
+      "candidate_id": 2,
+      "name": "stance_rotation_full",
+      "gain": 1.0,
+      "horizontal_damping": false
+    },
+    {
+      "candidate_id": 3,
+      "name": "stance_rotation_and_xy_full",
+      "gain": 1.0,
+      "horizontal_damping": true
+    }
+  ],
+  "algorithm": "Public observed-air-contact latch followed by observed stance-leg bounded kinematic root rotation/velocity feedback. Ordinary native joint positions; complete original source arms unchanged.",
+  "source_count": 3,
+  "primary_CPU_commands_checked": 41600,
+  "baseline_source_GPU_tolerance": 0.0005,
+  "core_sha256": "341198a9f1014a994cf7ff205b9a2dd4f4d7c44e2773796dea956ed91608a6f9",
+  "factory_sha256": "9ac5c43f59bf8d87db56f01f7a54ef24b8265ae1e54b771886237e5188b816f0",
+  "CPU_check_sha256": "7302b0ba4af3c16603521b081de0f1fd68c44893d5a57645af6ec2c6dffecdf4",
+  "factory_check_sha256": "dd97a2a7ef823867df1a790d93cf335360fbce03338d302c524deda88b773c6f",
+  "original_joint_delta_bound_rad": 0.15,
+  "original_leg_velocity_limit_rad_s": 30.0,
+  "position_velocity_preview_s": 0.03,
+  "original_physical_assets_rules_cases_target_and_acceptance_unchanged": true,
+  "new_native_entry_not_yet_prepared": true,
+  "proposal_not_yet_queued": true,
+  "new_native_execution": false,
+  "actual_future_momentum_source_branch_pending": true,
+  "formal_acceptance": false,
+  "goal_complete": false
+}

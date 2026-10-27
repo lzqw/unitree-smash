@@ -1,0 +1,9 @@
+{"stream": "actual_source0", "candidate": {"candidate_id": 0, "name": "unchanged_source", "gain": 0.0, "horizontal_damping": false}, "actual_public_rows": 4800, "valid_first_episode_rows": 4800, "active_post_hit_stance_rows": 0, "solved_stance_leg_requests": 0, "settled_deadband_rows": 0, "maximum_source_normalized_action_change": 0.0, "maximum_original_native_action_difference": 6.556510925292969e-06, "maximum_leg_target_delta_rad": 0.0, "maximum_hypothetical_leg_velocity_rad_s": 0.0, "foot_jacobian_difference_max_error": 0.0, "independent_virtual_root_and_joint_kinematic_difference_max_error_m": 0.0, "mean_foot_kinematic_error_before_m": null, "mean_foot_kinematic_error_after_m": null, "arm_and_pre_hit_and_nonstance_leg_commands_bitwise_unchanged": true, "original_actors_normalizers_and_public_inputs_unchanged": true, "selective_reset_preserves_other_lanes": true, "command_stream_sha256": "0bfff53b2dcb5ae16ae5c33a79e6381ce1daeaf7b828c306f782e9e3900b0a3e", "native_stability_or_contact_force_improvement_proven": false}
+Traceback (most recent call last):
+  File "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/public_stance_recovery_20261027/check_controller.py", line 178, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/public_stance_recovery_20261027/check_controller.py", line 140, in main
+    assert max_jacobian_error<1e-7 and max_kinematic_error<1e-4
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError
