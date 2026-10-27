@@ -1,0 +1,87 @@
+{
+  "prepared_at": "2026-10-27T05:04:40.117049+00:00",
+  "candidates": [
+    {
+      "candidate_id": 0,
+      "name": "unchanged_source",
+      "group": "full",
+      "table": "raw",
+      "alignment": "absolute",
+      "gain": 0.0
+    },
+    {
+      "candidate_id": 1,
+      "name": "full_actual_trace_absolute",
+      "group": "full",
+      "table": "raw",
+      "alignment": "absolute",
+      "gain": 1.0
+    },
+    {
+      "candidate_id": 2,
+      "name": "legs_actual_trace_absolute",
+      "group": "legs",
+      "table": "raw",
+      "alignment": "absolute",
+      "gain": 1.0
+    },
+    {
+      "candidate_id": 3,
+      "name": "arms_actual_trace_absolute",
+      "group": "arms",
+      "table": "raw",
+      "alignment": "absolute",
+      "gain": 1.0
+    },
+    {
+      "candidate_id": 4,
+      "name": "legs_lowpass_absolute",
+      "group": "legs",
+      "table": "ema025",
+      "alignment": "absolute",
+      "gain": 1.0
+    },
+    {
+      "candidate_id": 5,
+      "name": "legs_actual_trace_half",
+      "group": "legs",
+      "table": "raw",
+      "alignment": "absolute",
+      "gain": 0.5
+    },
+    {
+      "candidate_id": 6,
+      "name": "legs_actual_trace_planned_phase",
+      "group": "legs",
+      "table": "raw",
+      "alignment": "planned",
+      "gain": 1.0
+    },
+    {
+      "candidate_id": 7,
+      "name": "legs_actual_trace_after_observed_air_hit",
+      "group": "legs",
+      "table": "raw",
+      "alignment": "observed_hit",
+      "gain": 1.0
+    },
+    {
+      "candidate_id": 8,
+      "name": "legs_lowpass_after_observed_air_hit",
+      "group": "legs",
+      "table": "ema025",
+      "alignment": "observed_hit",
+      "gain": 1.0
+    }
+  ],
+  "factory_sha256": "4768f9eb05135c67d2035de374fdec7d6a6deb65b48cccebe09dc05c6deb4a39",
+  "CPU_check_sha256": "cc573d4105ca7f2862f864a2569ccea559d5c6d6a805361cc463bd11451f4f65",
+  "seed_metadata_sha256": "f4360b8f9df00e7dfeaf14a1d0bdc0c44f00c48e9ee03f03c55209689aaf08f7",
+  "seed_table_sha256": "e123651c0fd2e8cee1854c13c7d3e927381628688837242edaa53e71f1d16d97",
+  "algorithm": "Bounded shared18-joint residual traces, original.15rad mixer and5rad/s arm target limiter; absolute, causal planned-event or latched observed-air-hit phase alignment.",
+  "source_policy_selection_pending_actual_window7_and_cold128": true,
+  "physics_rules_cases_target_and_thresholds_unchanged": true,
+  "native_execution": false,
+  "seed_success_not_inherited": true,
+  "formal_acceptance": false
+}

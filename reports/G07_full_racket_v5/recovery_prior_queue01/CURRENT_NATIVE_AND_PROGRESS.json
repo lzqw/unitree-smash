@@ -1,0 +1,108 @@
+{
+  "observed_at": "2026-10-27T05:09:59.049800+00:00",
+  "previous_goal_turn_classification": "progress",
+  "previous_turn_evidence": "Windowed-swing wrapper implemented; all7 actual-input CPU checks and CLI/source checks passed; CPU owner1966524 registered and started; commit4e3b660 pushed and remote verified.",
+  "current_turn_classification": "progress",
+  "progress": "Integrated published recovery priors with future actual windowed-source dispatch; all9 actual4800-row output streams equal published fresh-download streams bitwise; derived and checked native9/cold128 entries; registered and started owner1968858.",
+  "observed_processes": [
+    {
+      "pid": 1951183,
+      "start_ticks": "69568587",
+      "command": "/home/autodrive/Isaac/env_isaaclab/bin/python -u /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/measured_swing_queue01/run.py"
+    },
+    {
+      "pid": 1951185,
+      "start_ticks": "69568657",
+      "command": "/home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/scripts/run_gpu_job.py --goal G07 --budget-window g07-full-racket-unlimited-20261024 --max-seconds 21600 --env-steps-cap 921600 --output /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/measured_swing9_n128_01 --require-artifact completed.json -- /home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/measured_swing_queue01/evaluate_swing.py --output /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/measured_swing9_n128_01 --mode search --source /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_sequential_n128_01/best_candidate.pt --source-evaluation /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/teacher_contact_recovery_cold128_02 --precision-receipt /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin_precision_after_aim_queue01/PRECISION_ADMISSION.json --seed 724201 --headless"
+    },
+    {
+      "pid": 1951201,
+      "start_ticks": "69568667",
+      "command": "/home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/measured_swing_queue01/evaluate_swing.py --output /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/measured_swing9_n128_01 --mode search --source /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_sequential_n128_01/best_candidate.pt --source-evaluation /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/teacher_contact_recovery_cold128_02 --precision-receipt /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin_precision_after_aim_queue01/PRECISION_ADMISSION.json --seed 724201 --headless"
+    },
+    {
+      "pid": 1957568,
+      "start_ticks": "69825890",
+      "command": "/home/autodrive/Isaac/env_isaaclab/bin/python -u /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/early_lateral_queue01/run.py"
+    },
+    {
+      "pid": 1966524,
+      "start_ticks": "70291052",
+      "command": "/home/autodrive/Isaac/env_isaaclab/bin/python -u /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing_queue01/run.py"
+    },
+    {
+      "pid": 1968858,
+      "start_ticks": "70396314",
+      "command": "/home/autodrive/Isaac/env_isaaclab/bin/python -u /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/recovery_prior_queue01/run.py"
+    }
+  ],
+  "current_native_progress": {
+    "candidate_id": 7,
+    "candidate_name": "fast_rate_with_normal_down0.2",
+    "control_ticks": 300,
+    "first_episodes_complete": 0,
+    "completed_candidates": 7,
+    "actual_control_env_steps": 755200,
+    "formal_acceptance": false
+  },
+  "completed_native_candidates": [
+    {
+      "candidate_id": 0,
+      "complete": 0,
+      "airborne_contacts": 4,
+      "conditional_recovery_count": 0,
+      "numerical_failures": 0
+    },
+    {
+      "candidate_id": 1,
+      "complete": 0,
+      "airborne_contacts": 0,
+      "conditional_recovery_count": 0,
+      "numerical_failures": 0
+    },
+    {
+      "candidate_id": 2,
+      "complete": 0,
+      "airborne_contacts": 0,
+      "conditional_recovery_count": 0,
+      "numerical_failures": 0
+    },
+    {
+      "candidate_id": 3,
+      "complete": 0,
+      "airborne_contacts": 1,
+      "conditional_recovery_count": 0,
+      "numerical_failures": 0
+    },
+    {
+      "candidate_id": 4,
+      "complete": 0,
+      "airborne_contacts": 0,
+      "conditional_recovery_count": 0,
+      "numerical_failures": 0
+    },
+    {
+      "candidate_id": 5,
+      "complete": 0,
+      "airborne_contacts": 3,
+      "conditional_recovery_count": 0,
+      "numerical_failures": 0
+    },
+    {
+      "candidate_id": 6,
+      "complete": 0,
+      "airborne_contacts": 2,
+      "conditional_recovery_count": 0,
+      "numerical_failures": 0
+    }
+  ],
+  "bound_inputs": 991,
+  "all_held_inputs_unchanged": true,
+  "new_owner_pid": 1968858,
+  "new_owner_cuda_visible_devices": "",
+  "new_owner_has_no_children": true,
+  "new_recovery_prior_native_execution": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
