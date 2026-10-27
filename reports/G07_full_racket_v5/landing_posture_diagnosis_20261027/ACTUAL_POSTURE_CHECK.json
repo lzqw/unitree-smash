@@ -1,0 +1,2280 @@
+{
+  "checked_at": "2026-10-27T07:11:41.312483+00:00",
+  "runs": [
+    {
+      "candidate_id": 0,
+      "original_case_count": 128,
+      "actual_air_contacts": 4,
+      "qualified_contact_landings": 4,
+      "native_qualified_recovery": 0,
+      "native_nonfoot_ground_flags": 4,
+      "actual_exact_contact_tilt_deg": {
+        "minimum": 17.552980596636637,
+        "median": 24.196253964020926,
+        "maximum": 31.30177447028699
+      },
+      "actual_sampled_landing_roll_deg": {
+        "minimum": -29.787377199133736,
+        "median": -23.32609177709748,
+        "maximum": -15.426402471942943
+      },
+      "actual_sampled_landing_pitch_deg": {
+        "minimum": 6.803979704209378,
+        "median": 34.1250407581128,
+        "maximum": 62.83313391566941
+      },
+      "actual_sampled_landing_tilt_deg": {
+        "minimum": 21.182576134389226,
+        "median": 40.0729274178522,
+        "maximum": 65.89221423319141
+      },
+      "actual_sampled_postlanding160ms_tilt_deg": {
+        "minimum": 25.940043388557605,
+        "median": 43.47103203302552,
+        "maximum": 59.64389907550691
+      },
+      "samples": [
+        {
+          "candidate_id": 0,
+          "source_training_index": 69,
+          "episode_index": 0,
+          "exact_contact_clock_s": 2.7245419025421143,
+          "exact_contact_posture": {
+            "root_roll_deg": 5.296557555543412,
+            "root_pitch_deg": 28.130082272388503,
+            "root_tilt_deg": 28.584308775928836,
+            "root_height_m": 0.6991374492645264,
+            "minimum_foot_center_height_m": 0.4975805878639221
+          },
+          "contact_flight_landing_clock_s": 3.060960531234741,
+          "landing_minus_contact_s": 0.33641862869262695,
+          "phase_samples": {
+            "before_landing_40ms": {
+              "requested_clock_s": 3.020960531234741,
+              "actual_sample_clock_s": 3.0199999809265137,
+              "root_roll_deg": -30.33446844817863,
+              "root_pitch_deg": 53.87431789787667,
+              "root_tilt_deg": 59.41319839151958,
+              "root_height_m": 0.4590458571910858,
+              "minimum_foot_center_height_m": 0.1403912901878357
+            },
+            "landing": {
+              "requested_clock_s": 3.060960531234741,
+              "actual_sample_clock_s": 3.059999942779541,
+              "root_roll_deg": -29.787377199133736,
+              "root_pitch_deg": 53.55091770143476,
+              "root_tilt_deg": 58.961656807080956,
+              "root_height_m": 0.36082300543785095,
+              "minimum_foot_center_height_m": 0.021873854100704193
+            },
+            "after_landing_40ms": {
+              "requested_clock_s": 3.1009605312347412,
+              "actual_sample_clock_s": 3.0999999046325684,
+              "root_roll_deg": -28.361202389481953,
+              "root_pitch_deg": 51.51240348830561,
+              "root_tilt_deg": 56.79437432424895,
+              "root_height_m": 0.3092023432254791,
+              "minimum_foot_center_height_m": 0.021234281361103058
+            },
+            "after_landing_160ms": {
+              "requested_clock_s": 3.2209605312347414,
+              "actual_sample_clock_s": 3.2200000286102295,
+              "root_roll_deg": -27.832100555931973,
+              "root_pitch_deg": 40.69373119949183,
+              "root_tilt_deg": 47.89463474262564,
+              "root_height_m": 0.2782699465751648,
+              "minimum_foot_center_height_m": 0.021332398056983948
+            }
+          },
+          "native_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 4,
+            "rally_contact_time_s": 2.7245419025421143,
+            "airborne_string_time_s": 2.7245419025421143,
+            "contact_flight_takeoff_s": 2.5439980030059814,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.060960531234741,
+            "contact_flight_com_rise_m": 0.2787152826786041,
+            "contact_flight_clear_s": 0.5009971261024475,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 37001.05078125,
+            "terminal_root_height_m": 0.1777157038450241,
+            "success": false
+          },
+          "native_terminated": false,
+          "last_valid_sample_clock_s": 7.980000019073486,
+          "raw_nonfoot_ground_flag": true,
+          "native_terminal_root_height_m": 0.1777157038450241
+        },
+        {
+          "candidate_id": 0,
+          "source_training_index": 100,
+          "episode_index": 0,
+          "exact_contact_clock_s": 2.8159291744232178,
+          "exact_contact_posture": {
+            "root_roll_deg": 1.3466885487691074,
+            "root_pitch_deg": 17.50286627500418,
+            "root_tilt_deg": 17.552980596636637,
+            "root_height_m": 0.6567109227180481,
+            "minimum_foot_center_height_m": 0.4869420528411865
+          },
+          "contact_flight_landing_clock_s": 3.08595871925354,
+          "landing_minus_contact_s": 0.27002954483032227,
+          "phase_samples": {
+            "before_landing_40ms": {
+              "requested_clock_s": 3.04595871925354,
+              "actual_sample_clock_s": 3.0399999618530273,
+              "root_roll_deg": -18.186305768672,
+              "root_pitch_deg": 13.78594204290977,
+              "root_tilt_deg": 22.6791487193244,
+              "root_height_m": 0.47604191303253174,
+              "minimum_foot_center_height_m": 0.1370602250099182
+            },
+            "landing": {
+              "requested_clock_s": 3.08595871925354,
+              "actual_sample_clock_s": 3.0799999237060547,
+              "root_roll_deg": -15.426402471942943,
+              "root_pitch_deg": 14.699163814790847,
+              "root_tilt_deg": 21.18419802862345,
+              "root_height_m": 0.3932274281978607,
+              "minimum_foot_center_height_m": 0.03782319277524948
+            },
+            "after_landing_40ms": {
+              "requested_clock_s": 3.12595871925354,
+              "actual_sample_clock_s": 3.119999885559082,
+              "root_roll_deg": -14.386144184302415,
+              "root_pitch_deg": 15.594566148090262,
+              "root_tilt_deg": 21.09488941741065,
+              "root_height_m": 0.29887768626213074,
+              "minimum_foot_center_height_m": 0.02255254238843918
+            },
+            "after_landing_160ms": {
+              "requested_clock_s": 3.24595871925354,
+              "actual_sample_clock_s": 3.240000009536743,
+              "root_roll_deg": -17.87256761784291,
+              "root_pitch_deg": 19.11742742037989,
+              "root_tilt_deg": 25.940043388557605,
+              "root_height_m": 0.20174428820610046,
+              "minimum_foot_center_height_m": 0.02147897705435753
+            }
+          },
+          "native_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 4,
+            "rally_contact_time_s": 2.8159291744232178,
+            "airborne_string_time_s": 2.8159291744232178,
+            "contact_flight_takeoff_s": 2.6259920597076416,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.08595871925354,
+            "contact_flight_com_rise_m": 0.2404041290283203,
+            "contact_flight_clear_s": 0.4449978172779083,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 26115.841796875,
+            "terminal_root_height_m": 0.1353384405374527,
+            "success": false
+          },
+          "native_terminated": false,
+          "last_valid_sample_clock_s": 7.980000019073486,
+          "raw_nonfoot_ground_flag": true,
+          "native_terminal_root_height_m": 0.1353384405374527
+        },
+        {
+          "candidate_id": 0,
+          "source_training_index": 112,
+          "episode_index": 0,
+          "exact_contact_clock_s": 2.696244955062866,
+          "exact_contact_posture": {
+            "root_roll_deg": 10.578727053449681,
+            "root_pitch_deg": 29.63230346932935,
+            "root_tilt_deg": 31.30177447028699,
+            "root_height_m": 0.7006989121437073,
+            "minimum_foot_center_height_m": 0.4893369972705841
+          },
+          "contact_flight_landing_clock_s": 3.0519611835479736,
+          "landing_minus_contact_s": 0.3557162284851074,
+          "phase_samples": {
+            "before_landing_40ms": {
+              "requested_clock_s": 3.0119611835479736,
+              "actual_sample_clock_s": 3.0199999809265137,
+              "root_roll_deg": -26.203273162479167,
+              "root_pitch_deg": 61.468638235706734,
+              "root_tilt_deg": 64.62415954075341,
+              "root_height_m": 0.42873698472976685,
+              "minimum_foot_center_height_m": 0.11358610540628433
+            },
+            "landing": {
+              "requested_clock_s": 3.0519611835479736,
+              "actual_sample_clock_s": 3.059999942779541,
+              "root_roll_deg": -26.544336119785026,
+              "root_pitch_deg": 62.83313391566941,
+              "root_tilt_deg": 65.89221423319141,
+              "root_height_m": 0.3321835994720459,
+              "minimum_foot_center_height_m": 0.02155108004808426
+            },
+            "after_landing_40ms": {
+              "requested_clock_s": 3.0919611835479737,
+              "actual_sample_clock_s": 3.0999999046325684,
+              "root_roll_deg": -26.804231197042142,
+              "root_pitch_deg": 61.54561932897367,
+              "root_tilt_deg": 64.83258831357799,
+              "root_height_m": 0.3301205337047577,
+              "minimum_foot_center_height_m": 0.02685324102640152
+            },
+            "after_landing_160ms": {
+              "requested_clock_s": 3.2119611835479738,
+              "actual_sample_clock_s": 3.2200000286102295,
+              "root_roll_deg": -23.996932712558138,
+              "root_pitch_deg": 56.4141255656386,
+              "root_tilt_deg": 59.64389907550691,
+              "root_height_m": 0.32140815258026123,
+              "minimum_foot_center_height_m": 0.033470988273620605
+            }
+          },
+          "native_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 3,
+            "rally_contact_time_s": 2.696244955062866,
+            "airborne_string_time_s": 2.696244955062866,
+            "contact_flight_takeoff_s": 2.5269992351531982,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.0519611835479736,
+            "contact_flight_com_rise_m": 0.2757143974304199,
+            "contact_flight_clear_s": 0.5129969716072083,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 445.0713806152344,
+            "terminal_root_height_m": 0.16938498616218567,
+            "success": false
+          },
+          "native_terminated": false,
+          "last_valid_sample_clock_s": 7.980000019073486,
+          "raw_nonfoot_ground_flag": true,
+          "native_terminal_root_height_m": 0.16938498616218567
+        },
+        {
+          "candidate_id": 0,
+          "source_training_index": 123,
+          "episode_index": 0,
+          "exact_contact_clock_s": 2.8473494052886963,
+          "exact_contact_posture": {
+            "root_roll_deg": -16.357122868246265,
+            "root_pitch_deg": 11.327998950760188,
+            "root_tilt_deg": 19.808199152113012,
+            "root_height_m": 0.642210841178894,
+            "minimum_foot_center_height_m": 0.4649558961391449
+          },
+          "contact_flight_landing_clock_s": 3.1139566898345947,
+          "landing_minus_contact_s": 0.26660728454589844,
+          "phase_samples": {
+            "before_landing_40ms": {
+              "requested_clock_s": 3.0739566898345947,
+              "actual_sample_clock_s": 3.0799999237060547,
+              "root_roll_deg": -21.772277362112526,
+              "root_pitch_deg": 6.087556772928649,
+              "root_tilt_deg": 22.56740947983531,
+              "root_height_m": 0.4331134855747223,
+              "minimum_foot_center_height_m": 0.1106218621134758
+            },
+            "landing": {
+              "requested_clock_s": 3.1139566898345947,
+              "actual_sample_clock_s": 3.119999885559082,
+              "root_roll_deg": -20.10784743440994,
+              "root_pitch_deg": 6.803979704209378,
+              "root_tilt_deg": 21.182576134389226,
+              "root_height_m": 0.3448065519332886,
+              "minimum_foot_center_height_m": 0.022610485553741455
+            },
+            "after_landing_40ms": {
+              "requested_clock_s": 3.1539566898345948,
+              "actual_sample_clock_s": 3.1599998474121094,
+              "root_roll_deg": -20.24346310717427,
+              "root_pitch_deg": 6.440292728279534,
+              "root_tilt_deg": 21.202200795711853,
+              "root_height_m": 0.24860793352127075,
+              "minimum_foot_center_height_m": 0.022509075701236725
+            },
+            "after_landing_160ms": {
+              "requested_clock_s": 3.273956689834595,
+              "actual_sample_clock_s": 3.2799999713897705,
+              "root_roll_deg": -38.88685006954812,
+              "root_pitch_deg": 3.856444673754734,
+              "root_tilt_deg": 39.04742932342541,
+              "root_height_m": 0.179056316614151,
+              "minimum_foot_center_height_m": 0.021866850554943085
+            }
+          },
+          "native_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 6,
+            "rally_contact_time_s": 2.8473494052886963,
+            "airborne_string_time_s": 2.8473494052886963,
+            "contact_flight_takeoff_s": 2.6509902477264404,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.1139566898345947,
+            "contact_flight_com_rise_m": 0.24228793382644653,
+            "contact_flight_clear_s": 0.45299771428108215,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 13018.697265625,
+            "terminal_root_height_m": 0.13742686808109283,
+            "success": false
+          },
+          "native_terminated": false,
+          "last_valid_sample_clock_s": 7.980000019073486,
+          "raw_nonfoot_ground_flag": true,
+          "native_terminal_root_height_m": 0.13742686808109283
+        }
+      ]
+    },
+    {
+      "candidate_id": 1,
+      "original_case_count": 128,
+      "actual_air_contacts": 13,
+      "qualified_contact_landings": 13,
+      "native_qualified_recovery": 0,
+      "native_nonfoot_ground_flags": 13,
+      "actual_exact_contact_tilt_deg": {
+        "minimum": 16.202061207181462,
+        "median": 20.140731209931094,
+        "maximum": 31.067931633365266
+      },
+      "actual_sampled_landing_roll_deg": {
+        "minimum": -27.070808249935133,
+        "median": -16.211932420713552,
+        "maximum": -9.587977695046341
+      },
+      "actual_sampled_landing_pitch_deg": {
+        "minimum": 4.719728129023264,
+        "median": 23.094599154440363,
+        "maximum": 57.094374864107856
+      },
+      "actual_sampled_landing_tilt_deg": {
+        "minimum": 16.86726547049571,
+        "median": 27.492329726183385,
+        "maximum": 60.87050407627764
+      },
+      "actual_sampled_postlanding160ms_tilt_deg": {
+        "minimum": 18.511363560595946,
+        "median": 22.42895694969546,
+        "maximum": 52.072546067317745
+      },
+      "samples": [
+        {
+          "candidate_id": 1,
+          "source_training_index": 4,
+          "episode_index": 1,
+          "exact_contact_clock_s": 2.782322645187378,
+          "exact_contact_posture": {
+            "root_roll_deg": -1.4062506959196837,
+            "root_pitch_deg": 20.155988036103512,
+            "root_tilt_deg": 20.202948635589006,
+            "root_height_m": 0.6686813235282898,
+            "minimum_foot_center_height_m": 0.49778419733047485
+          },
+          "contact_flight_landing_clock_s": 3.069959878921509,
+          "landing_minus_contact_s": 0.28763723373413086,
+          "phase_samples": {
+            "before_landing_40ms": {
+              "requested_clock_s": 3.0299598789215088,
+              "actual_sample_clock_s": 3.0199999809265137,
+              "root_roll_deg": -24.685373255611285,
+              "root_pitch_deg": 24.39061809635101,
+              "root_tilt_deg": 34.15496468717398,
+              "root_height_m": 0.486998051404953,
+              "minimum_foot_center_height_m": 0.15593396127223969
+            },
+            "landing": {
+              "requested_clock_s": 3.069959878921509,
+              "actual_sample_clock_s": 3.059999942779541,
+              "root_roll_deg": -20.679130380176954,
+              "root_pitch_deg": 23.6789308386984,
+              "root_tilt_deg": 31.040039847833476,
+              "root_height_m": 0.40092670917510986,
+              "minimum_foot_center_height_m": 0.052109263837337494
+            },
+            "after_landing_40ms": {
+              "requested_clock_s": 3.109959878921509,
+              "actual_sample_clock_s": 3.0999999046325684,
+              "root_roll_deg": -13.895030709380064,
+              "root_pitch_deg": 22.660334415911034,
+              "root_tilt_deg": 26.388462835525885,
+              "root_height_m": 0.3023613393306732,
+              "minimum_foot_center_height_m": 0.022110246121883392
+            },
+            "after_landing_160ms": {
+              "requested_clock_s": 3.229959878921509,
+              "actual_sample_clock_s": 3.2200000286102295,
+              "root_roll_deg": -20.972847501516714,
+              "root_pitch_deg": 12.556228510757213,
+              "root_tilt_deg": 24.297981908991165,
+              "root_height_m": 0.17208144068717957,
+              "minimum_foot_center_height_m": 0.021771268919110298
+            }
+          },
+          "native_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 5,
+            "rally_contact_time_s": 2.782322645187378,
+            "airborne_string_time_s": 2.782322645187378,
+            "contact_flight_takeoff_s": 2.593994379043579,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.069959878921509,
+            "contact_flight_com_rise_m": 0.2534182369709015,
+            "contact_flight_clear_s": 0.45999762415885925,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 5323.76513671875,
+            "terminal_root_height_m": 0.1364704668521881,
+            "success": false
+          },
+          "native_terminated": false,
+          "last_valid_sample_clock_s": 7.980000019073486,
+          "raw_nonfoot_ground_flag": true,
+          "native_terminal_root_height_m": 0.1364704668521881
+        },
+        {
+          "candidate_id": 1,
+          "source_training_index": 10,
+          "episode_index": 1,
+          "exact_contact_clock_s": 2.7822601795196533,
+          "exact_contact_posture": {
+            "root_roll_deg": -1.637444273730332,
+            "root_pitch_deg": 20.07681454906756,
+            "root_tilt_deg": 20.140731209931094,
+            "root_height_m": 0.6687724590301514,
+            "minimum_foot_center_height_m": 0.49741965532302856
+          },
+          "contact_flight_landing_clock_s": 3.069959878921509,
+          "landing_minus_contact_s": 0.28769969940185547,
+          "phase_samples": {
+            "before_landing_40ms": {
+              "requested_clock_s": 3.0299598789215088,
+              "actual_sample_clock_s": 3.0199999809265137,
+              "root_roll_deg": -24.49616544713518,
+              "root_pitch_deg": 23.857748773731927,
+              "root_tilt_deg": 33.67122134280932,
+              "root_height_m": 0.48710864782333374,
+              "minimum_foot_center_height_m": 0.1557137370109558
+            },
+            "landing": {
+              "requested_clock_s": 3.069959878921509,
+              "actual_sample_clock_s": 3.059999942779541,
+              "root_roll_deg": -20.336262735692426,
+              "root_pitch_deg": 23.094599154440363,
+              "root_tilt_deg": 30.398951039734815,
+              "root_height_m": 0.40118882060050964,
+              "minimum_foot_center_height_m": 0.052264295518398285
+            },
+            "after_landing_40ms": {
+              "requested_clock_s": 3.109959878921509,
+              "actual_sample_clock_s": 3.0999999046325684,
+              "root_roll_deg": -13.662143476993625,
+              "root_pitch_deg": 22.607960790582926,
+              "root_tilt_deg": 26.228784202440323,
+              "root_height_m": 0.30282720923423767,
+              "minimum_foot_center_height_m": 0.02214878797531128
+            },
+            "after_landing_160ms": {
+              "requested_clock_s": 3.229959878921509,
+              "actual_sample_clock_s": 3.2200000286102295,
+              "root_roll_deg": -21.123793396789157,
+              "root_pitch_deg": 10.98688530978473,
+              "root_tilt_deg": 23.69374940697533,
+              "root_height_m": 0.1689797043800354,
+              "minimum_foot_center_height_m": 0.02177051268517971
+            }
+          },
+          "native_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 9,
+            "rally_contact_time_s": 2.7822601795196533,
+            "airborne_string_time_s": 2.7822601795196533,
+            "contact_flight_takeoff_s": 2.593994379043579,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.069959878921509,
+            "contact_flight_com_rise_m": 0.2534489035606384,
+            "contact_flight_clear_s": 0.460997611284256,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 26128.58203125,
+            "terminal_root_height_m": 0.13565336167812347,
+            "success": false
+          },
+          "native_terminated": false,
+          "last_valid_sample_clock_s": 7.980000019073486,
+          "raw_nonfoot_ground_flag": true,
+          "native_terminal_root_height_m": 0.13565336167812347
+        },
+        {
+          "candidate_id": 1,
+          "source_training_index": 19,
+          "episode_index": 1,
+          "exact_contact_clock_s": 2.765394449234009,
+          "exact_contact_posture": {
+            "root_roll_deg": -0.8637077122627822,
+            "root_pitch_deg": 20.792640397071043,
+            "root_tilt_deg": 20.809777651785687,
+            "root_height_m": 0.6680874228477478,
+            "minimum_foot_center_height_m": 0.4955172538757324
+          },
+          "contact_flight_landing_clock_s": 3.064960241317749,
+          "landing_minus_contact_s": 0.29956579208374023,
+          "phase_samples": {
+            "before_landing_40ms": {
+              "requested_clock_s": 3.024960241317749,
+              "actual_sample_clock_s": 3.0199999809265137,
+              "root_roll_deg": -27.848113151802874,
+              "root_pitch_deg": 28.61698982424291,
+              "root_tilt_deg": 39.08810087187874,
+              "root_height_m": 0.47254446148872375,
+              "minimum_foot_center_height_m": 0.14878663420677185
+            },
+            "landing": {
+              "requested_clock_s": 3.064960241317749,
+              "actual_sample_clock_s": 3.059999942779541,
+              "root_roll_deg": -23.81058843066943,
+              "root_pitch_deg": 27.291386162495982,
+              "root_tilt_deg": 35.60541714189569,
+              "root_height_m": 0.3822808265686035,
+              "minimum_foot_center_height_m": 0.035290658473968506
+            },
+            "after_landing_40ms": {
+              "requested_clock_s": 3.104960241317749,
+              "actual_sample_clock_s": 3.0999999046325684,
+              "root_roll_deg": -17.021725943486548,
+              "root_pitch_deg": 25.537903521329188,
+              "root_tilt_deg": 30.370515589162725,
+              "root_height_m": 0.2804701328277588,
+              "minimum_foot_center_height_m": 0.02187388390302658
+            },
+            "after_landing_160ms": {
+              "requested_clock_s": 3.224960241317749,
+              "actual_sample_clock_s": 3.2200000286102295,
+              "root_roll_deg": -20.52456180093237,
+              "root_pitch_deg": 12.339895643816645,
+              "root_tilt_deg": 23.81052684745117,
+              "root_height_m": 0.17512555420398712,
+              "minimum_foot_center_height_m": 0.02176727168262005
+            }
+          },
+          "native_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 5,
+            "rally_contact_time_s": 2.765394449234009,
+            "airborne_string_time_s": 2.765394449234009,
+            "contact_flight_takeoff_s": 2.5819952487945557,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.064960241317749,
+            "contact_flight_com_rise_m": 0.2589886784553528,
+            "contact_flight_clear_s": 0.4649975597858429,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 100613.3671875,
+            "terminal_root_height_m": 0.11970310658216476,
+            "success": false
+          },
+          "native_terminated": true,
+          "last_valid_sample_clock_s": 5.839999675750732,
+          "raw_nonfoot_ground_flag": true,
+          "native_terminal_root_height_m": 0.11970310658216476
+        },
+        {
+          "candidate_id": 1,
+          "source_training_index": 44,
+          "episode_index": 1,
+          "exact_contact_clock_s": 2.794940710067749,
+          "exact_contact_posture": {
+            "root_roll_deg": 4.426144557698492,
+            "root_pitch_deg": 19.61873681237377,
+            "root_tilt_deg": 20.092625414910227,
+            "root_height_m": 0.6641331911087036,
+            "minimum_foot_center_height_m": 0.4824278950691223
+          },
+          "contact_flight_landing_clock_s": 3.0729596614837646,
+          "landing_minus_contact_s": 0.2780189514160156,
+          "phase_samples": {
+            "before_landing_40ms": {
+              "requested_clock_s": 3.0329596614837646,
+              "actual_sample_clock_s": 3.0399999618530273,
+              "root_roll_deg": -18.7008241988772,
+              "root_pitch_deg": 20.12444530031407,
+              "root_tilt_deg": 27.205005926109386,
+              "root_height_m": 0.4527883529663086,
+              "minimum_foot_center_height_m": 0.1085544154047966
+            },
+            "landing": {
+              "requested_clock_s": 3.0729596614837646,
+              "actual_sample_clock_s": 3.0799999237060547,
+              "root_roll_deg": -12.714721757961472,
+              "root_pitch_deg": 19.5191502881198,
+              "root_tilt_deg": 23.158975166317607,
+              "root_height_m": 0.36244165897369385,
+              "minimum_foot_center_height_m": 0.02238861471414566
+            },
+            "after_landing_40ms": {
+              "requested_clock_s": 3.1129596614837647,
+              "actual_sample_clock_s": 3.119999885559082,
+              "root_roll_deg": -8.770541904200748,
+              "root_pitch_deg": 19.732182745365517,
+              "root_tilt_deg": 21.52234487282794,
+              "root_height_m": 0.2651628851890564,
+              "minimum_foot_center_height_m": 0.022235170006752014
+            },
+            "after_landing_160ms": {
+              "requested_clock_s": 3.232959661483765,
+              "actual_sample_clock_s": 3.240000009536743,
+              "root_roll_deg": -19.160500568971806,
+              "root_pitch_deg": 6.510389293720829,
+              "root_tilt_deg": 20.196947734765626,
+              "root_height_m": 0.16442294418811798,
+              "minimum_foot_center_height_m": 0.02188791148364544
+            }
+          },
+          "native_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 5,
+            "rally_contact_time_s": 2.794940710067749,
+            "airborne_string_time_s": 2.794940710067749,
+            "contact_flight_takeoff_s": 2.6059935092926025,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.0729596614837646,
+            "contact_flight_com_rise_m": 0.24451836943626404,
+            "contact_flight_clear_s": 0.4519977271556854,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 135427.421875,
+            "terminal_root_height_m": 0.1320030391216278,
+            "success": false
+          },
+          "native_terminated": false,
+          "last_valid_sample_clock_s": 7.980000019073486,
+          "raw_nonfoot_ground_flag": true,
+          "native_terminal_root_height_m": 0.1320030391216278
+        },
+        {
+          "candidate_id": 1,
+          "source_training_index": 58,
+          "episode_index": 1,
+          "exact_contact_clock_s": 2.806621789932251,
+          "exact_contact_posture": {
+            "root_roll_deg": 4.585323679404584,
+            "root_pitch_deg": 18.464201473197242,
+            "root_tilt_deg": 19.00575432447095,
+            "root_height_m": 0.6579434275627136,
+            "minimum_foot_center_height_m": 0.4797701835632324
+          },
+          "contact_flight_landing_clock_s": 3.0749595165252686,
+          "landing_minus_contact_s": 0.2683377265930176,
+          "phase_samples": {
+            "before_landing_40ms": {
+              "requested_clock_s": 3.0349595165252685,
+              "actual_sample_clock_s": 3.0399999618530273,
+              "root_roll_deg": -14.177519267789739,
+              "root_pitch_deg": 15.004451932068546,
+              "root_tilt_deg": 20.530489312807205,
+              "root_height_m": 0.45790719985961914,
+              "minimum_foot_center_height_m": 0.11021788418292999
+            },
+            "landing": {
+              "requested_clock_s": 3.0749595165252686,
+              "actual_sample_clock_s": 3.0799999237060547,
+              "root_roll_deg": -9.587977695046341,
+              "root_pitch_deg": 15.850197818991695,
+              "root_tilt_deg": 18.460678077191936,
+              "root_height_m": 0.37123003602027893,
+              "minimum_foot_center_height_m": 0.022604212164878845
+            },
+            "after_landing_40ms": {
+              "requested_clock_s": 3.1149595165252686,
+              "actual_sample_clock_s": 3.119999885559082,
+              "root_roll_deg": -8.06424151892358,
+              "root_pitch_deg": 16.62172994178051,
+              "root_tilt_deg": 18.424897133532323,
+              "root_height_m": 0.27640074491500854,
+              "minimum_foot_center_height_m": 0.02256336808204651
+            },
+            "after_landing_160ms": {
+              "requested_clock_s": 3.2349595165252687,
+              "actual_sample_clock_s": 3.240000009536743,
+              "root_roll_deg": -10.371759837779186,
+              "root_pitch_deg": 19.474443113284355,
+              "root_tilt_deg": 21.969152203219103,
+              "root_height_m": 0.22851204872131348,
+              "minimum_foot_center_height_m": 0.021945036947727203
+            }
+          },
+          "native_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 7,
+            "rally_contact_time_s": 2.806621789932251,
+            "airborne_string_time_s": 2.806621789932251,
+            "contact_flight_takeoff_s": 2.61499285697937,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.0749595165252686,
+            "contact_flight_com_rise_m": 0.24220439791679382,
+            "contact_flight_clear_s": 0.4439978301525116,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 155359.390625,
+            "terminal_root_height_m": 0.13630284368991852,
+            "success": false
+          },
+          "native_terminated": false,
+          "last_valid_sample_clock_s": 7.980000019073486,
+          "raw_nonfoot_ground_flag": true,
+          "native_terminal_root_height_m": 0.13630284368991852
+        },
+        {
+          "candidate_id": 1,
+          "source_training_index": 69,
+          "episode_index": 1,
+          "exact_contact_clock_s": 2.7271029949188232,
+          "exact_contact_posture": {
+            "root_roll_deg": 8.552046956984064,
+            "root_pitch_deg": 26.86977647227765,
+            "root_tilt_deg": 28.101117120453825,
+            "root_height_m": 0.6972849369049072,
+            "minimum_foot_center_height_m": 0.492499977350235
+          },
+          "contact_flight_landing_clock_s": 3.0539610385894775,
+          "landing_minus_contact_s": 0.3268580436706543,
+          "phase_samples": {
+            "before_landing_40ms": {
+              "requested_clock_s": 3.0139610385894775,
+              "actual_sample_clock_s": 3.0199999809265137,
+              "root_roll_deg": -28.6241735160287,
+              "root_pitch_deg": 51.58348373379921,
+              "root_tilt_deg": 56.94594982846267,
+              "root_height_m": 0.44889572262763977,
+              "minimum_foot_center_height_m": 0.1244167909026146
+            },
+            "landing": {
+              "requested_clock_s": 3.0539610385894775,
+              "actual_sample_clock_s": 3.059999942779541,
+              "root_roll_deg": -27.070808249935133,
+              "root_pitch_deg": 50.443474449896776,
+              "root_tilt_deg": 55.45383263161683,
+              "root_height_m": 0.3488869071006775,
+              "minimum_foot_center_height_m": 0.021438151597976685
+            },
+            "after_landing_40ms": {
+              "requested_clock_s": 3.0939610385894776,
+              "actual_sample_clock_s": 3.0999999046325684,
+              "root_roll_deg": -24.541199877779917,
+              "root_pitch_deg": 47.72588321798009,
+              "root_tilt_deg": 52.272229049988134,
+              "root_height_m": 0.3005155920982361,
+              "minimum_foot_center_height_m": 0.021276526153087616
+            },
+            "after_landing_160ms": {
+              "requested_clock_s": 3.2139610385894777,
+              "actual_sample_clock_s": 3.2200000286102295,
+              "root_roll_deg": -21.95337601780206,
+              "root_pitch_deg": 36.533283179633855,
+              "root_tilt_deg": 41.81965597973299,
+              "root_height_m": 0.26613470911979675,
+              "minimum_foot_center_height_m": 0.021396085619926453
+            }
+          },
+          "native_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 7,
+            "rally_contact_time_s": 2.7271029949188232,
+            "airborne_string_time_s": 2.7271029949188232,
+            "contact_flight_takeoff_s": 2.5459978580474854,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.0539610385894775,
+            "contact_flight_com_rise_m": 0.27040138840675354,
+            "contact_flight_clear_s": 0.49499717354774475,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 52928.74609375,
+            "terminal_root_height_m": 0.28820276260375977,
+            "success": false
+          },
+          "native_terminated": false,
+          "last_valid_sample_clock_s": 7.980000019073486,
+          "raw_nonfoot_ground_flag": true,
+          "native_terminal_root_height_m": 0.28820276260375977
+        },
+        {
+          "candidate_id": 1,
+          "source_training_index": 82,
+          "episode_index": 1,
+          "exact_contact_clock_s": 2.8146798610687256,
+          "exact_contact_posture": {
+            "root_roll_deg": -5.268542025521032,
+            "root_pitch_deg": 16.47205741208078,
+            "root_tilt_deg": 17.271850085242736,
+            "root_height_m": 0.6536946296691895,
+            "minimum_foot_center_height_m": 0.48326966166496277
+          },
+          "contact_flight_landing_clock_s": 3.082958936691284,
+          "landing_minus_contact_s": 0.2682790756225586,
+          "phase_samples": {
+            "before_landing_40ms": {
+              "requested_clock_s": 3.042958936691284,
+              "actual_sample_clock_s": 3.0399999618530273,
+              "root_roll_deg": -14.469748758166006,
+              "root_pitch_deg": 14.643199693739797,
+              "root_tilt_deg": 20.47435329854819,
+              "root_height_m": 0.47463342547416687,
+              "minimum_foot_center_height_m": 0.12697838246822357
+            },
+            "landing": {
+              "requested_clock_s": 3.082958936691284,
+              "actual_sample_clock_s": 3.0799999237060547,
+              "root_roll_deg": -9.799046816763196,
+              "root_pitch_deg": 15.279386577346619,
+              "root_tilt_deg": 18.088380379462997,
+              "root_height_m": 0.39163947105407715,
+              "minimum_foot_center_height_m": 0.0292753204703331
+            },
+            "after_landing_40ms": {
+              "requested_clock_s": 3.122958936691284,
+              "actual_sample_clock_s": 3.119999885559082,
+              "root_roll_deg": -7.820043975131557,
+              "root_pitch_deg": 16.073781198094178,
+              "root_tilt_deg": 17.82988430986145,
+              "root_height_m": 0.2981502115726471,
+              "minimum_foot_center_height_m": 0.022670388221740723
+            },
+            "after_landing_160ms": {
+              "requested_clock_s": 3.2429589366912843,
+              "actual_sample_clock_s": 3.240000009536743,
+              "root_roll_deg": -16.8226113227893,
+              "root_pitch_deg": 10.972870258778343,
+              "root_tilt_deg": 19.99789639850315,
+              "root_height_m": 0.1968182474374771,
+              "minimum_foot_center_height_m": 0.021638505160808563
+            }
+          },
+          "native_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 5,
+            "rally_contact_time_s": 2.8146798610687256,
+            "airborne_string_time_s": 2.8146798610687256,
+            "contact_flight_takeoff_s": 2.6249921321868896,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.082958936691284,
+            "contact_flight_com_rise_m": 0.24163982272148132,
+            "contact_flight_clear_s": 0.44199785590171814,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 1917.1015625,
+            "terminal_root_height_m": 0.1368214339017868,
+            "success": false
+          },
+          "native_terminated": false,
+          "last_valid_sample_clock_s": 7.980000019073486,
+          "raw_nonfoot_ground_flag": true,
+          "native_terminal_root_height_m": 0.1368214339017868
+        },
+        {
+          "candidate_id": 1,
+          "source_training_index": 100,
+          "episode_index": 1,
+          "exact_contact_clock_s": 2.8198020458221436,
+          "exact_contact_posture": {
+            "root_roll_deg": -3.1261436897234525,
+            "root_pitch_deg": 15.90554634790365,
+            "root_tilt_deg": 16.202061207181462,
+            "root_height_m": 0.6514214277267456,
+            "minimum_foot_center_height_m": 0.4888342618942261
+          },
+          "contact_flight_landing_clock_s": 3.0819590091705322,
+          "landing_minus_contact_s": 0.26215696334838867,
+          "phase_samples": {
+            "before_landing_40ms": {
+              "requested_clock_s": 3.041959009170532,
+              "actual_sample_clock_s": 3.0399999618530273,
+              "root_roll_deg": -16.476876872738,
+              "root_pitch_deg": 10.527530602833185,
+              "root_tilt_deg": 19.47401938364417,
+              "root_height_m": 0.466786652803421,
+              "minimum_foot_center_height_m": 0.12788932025432587
+            },
+            "landing": {
+              "requested_clock_s": 3.0819590091705322,
+              "actual_sample_clock_s": 3.0799999237060547,
+              "root_roll_deg": -13.292845641380021,
+              "root_pitch_deg": 11.750100314555148,
+              "root_tilt_deg": 17.671208677528117,
+              "root_height_m": 0.38286060094833374,
+              "minimum_foot_center_height_m": 0.02663183957338333
+            },
+            "after_landing_40ms": {
+              "requested_clock_s": 3.1219590091705323,
+              "actual_sample_clock_s": 3.119999885559082,
+              "root_roll_deg": -12.089420234148955,
+              "root_pitch_deg": 12.6659335137852,
+              "root_tilt_deg": 17.440881690011974,
+              "root_height_m": 0.28868135809898376,
+              "minimum_foot_center_height_m": 0.022664867341518402
+            },
+            "after_landing_160ms": {
+              "requested_clock_s": 3.2419590091705324,
+              "actual_sample_clock_s": 3.240000009536743,
+              "root_roll_deg": -22.38702230740602,
+              "root_pitch_deg": 1.4075544716362849,
+              "root_tilt_deg": 22.42895694969546,
+              "root_height_m": 0.16209755837917328,
+              "minimum_foot_center_height_m": 0.021524392068386078
+            }
+          },
+          "native_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 5,
+            "rally_contact_time_s": 2.8198020458221436,
+            "airborne_string_time_s": 2.8198020458221436,
+            "contact_flight_takeoff_s": 2.6259920597076416,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.0819590091705322,
+            "contact_flight_com_rise_m": 0.2361103892326355,
+            "contact_flight_clear_s": 0.44199785590171814,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 1709.083984375,
+            "terminal_root_height_m": 0.13756699860095978,
+            "success": false
+          },
+          "native_terminated": false,
+          "last_valid_sample_clock_s": 7.980000019073486,
+          "raw_nonfoot_ground_flag": true,
+          "native_terminal_root_height_m": 0.13756699860095978
+        },
+        {
+          "candidate_id": 1,
+          "source_training_index": 108,
+          "episode_index": 2,
+          "exact_contact_clock_s": 2.768705129623413,
+          "exact_contact_posture": {
+            "root_roll_deg": 5.313688543975652,
+            "root_pitch_deg": 21.017992030973517,
+            "root_tilt_deg": 21.64977019246745,
+            "root_height_m": 0.6688349843025208,
+            "minimum_foot_center_height_m": 0.48223602771759033
+          },
+          "contact_flight_landing_clock_s": 3.0599606037139893,
+          "landing_minus_contact_s": 0.29125547409057617,
+          "phase_samples": {
+            "before_landing_40ms": {
+              "requested_clock_s": 3.0199606037139892,
+              "actual_sample_clock_s": 3.0199999809265137,
+              "root_roll_deg": -23.121778896598602,
+              "root_pitch_deg": 25.93015071907965,
+              "root_tilt_deg": 34.199359108463824,
+              "root_height_m": 0.46806350350379944,
+              "minimum_foot_center_height_m": 0.13226595520973206
+            },
+            "landing": {
+              "requested_clock_s": 3.0599606037139893,
+              "actual_sample_clock_s": 3.059999942779541,
+              "root_roll_deg": -18.509328821111243,
+              "root_pitch_deg": 24.80561611363814,
+              "root_tilt_deg": 30.595618171504356,
+              "root_height_m": 0.3777655065059662,
+              "minimum_foot_center_height_m": 0.02217814326286316
+            },
+            "after_landing_40ms": {
+              "requested_clock_s": 3.0999606037139893,
+              "actual_sample_clock_s": 3.0999999046325684,
+              "root_roll_deg": -11.797680926697533,
+              "root_pitch_deg": 23.814825620725845,
+              "root_tilt_deg": 26.42347518841811,
+              "root_height_m": 0.2777376174926758,
+              "minimum_foot_center_height_m": 0.022022254765033722
+            },
+            "after_landing_160ms": {
+              "requested_clock_s": 3.2199606037139894,
+              "actual_sample_clock_s": 3.2200000286102295,
+              "root_roll_deg": -17.7205461816303,
+              "root_pitch_deg": 11.79663946159807,
+              "root_tilt_deg": 21.18254937726657,
+              "root_height_m": 0.17486602067947388,
+              "minimum_foot_center_height_m": 0.021805454045534134
+            }
+          },
+          "native_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 5,
+            "rally_contact_time_s": 2.768705129623413,
+            "airborne_string_time_s": 2.768705129623413,
+            "contact_flight_takeoff_s": 2.5859949588775635,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.0599606037139893,
+            "contact_flight_com_rise_m": 0.2487654685974121,
+            "contact_flight_clear_s": 0.45999762415885925,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 11849.6455078125,
+            "terminal_root_height_m": 0.39549967646598816,
+            "success": false
+          },
+          "native_terminated": false,
+          "last_valid_sample_clock_s": 7.980000019073486,
+          "raw_nonfoot_ground_flag": true,
+          "native_terminal_root_height_m": 0.39549967646598816
+        },
+        {
+          "candidate_id": 1,
+          "source_training_index": 112,
+          "episode_index": 1,
+          "exact_contact_clock_s": 2.7009923458099365,
+          "exact_contact_posture": {
+            "root_roll_deg": 12.584018948391845,
+            "root_pitch_deg": 28.641134866685306,
+            "root_tilt_deg": 31.067931633365266,
+            "root_height_m": 0.7003371715545654,
+            "minimum_foot_center_height_m": 0.48716261982917786
+          },
+          "contact_flight_landing_clock_s": 3.042961835861206,
+          "landing_minus_contact_s": 0.34196949005126953,
+          "phase_samples": {
+            "before_landing_40ms": {
+              "requested_clock_s": 3.002961835861206,
+              "actual_sample_clock_s": 3.0,
+              "root_roll_deg": -27.630939147626442,
+              "root_pitch_deg": 57.48370641372829,
+              "root_tilt_deg": 61.560220728505826,
+              "root_height_m": 0.4636097848415375,
+              "minimum_foot_center_height_m": 0.1527632176876068
+            },
+            "landing": {
+              "requested_clock_s": 3.042961835861206,
+              "actual_sample_clock_s": 3.0399999618530273,
+              "root_roll_deg": -26.356426397072898,
+              "root_pitch_deg": 57.094374864107856,
+              "root_tilt_deg": 60.87050407627764,
+              "root_height_m": 0.36553406715393066,
+              "minimum_foot_center_height_m": 0.030480757355690002
+            },
+            "after_landing_40ms": {
+              "requested_clock_s": 3.082961835861206,
+              "actual_sample_clock_s": 3.0799999237060547,
+              "root_roll_deg": -24.598901335049582,
+              "root_pitch_deg": 55.72169587560421,
+              "root_tilt_deg": 59.19630425921952,
+              "root_height_m": 0.3198351263999939,
+              "minimum_foot_center_height_m": 0.021278053522109985
+            },
+            "after_landing_160ms": {
+              "requested_clock_s": 3.202961835861206,
+              "actual_sample_clock_s": 3.1999998092651367,
+              "root_roll_deg": -21.14306069705269,
+              "root_pitch_deg": 48.77428042415523,
+              "root_tilt_deg": 52.072546067317745,
+              "root_height_m": 0.304250568151474,
+              "minimum_foot_center_height_m": 0.021382272243499756
+            }
+          },
+          "native_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 5,
+            "rally_contact_time_s": 2.7009923458099365,
+            "airborne_string_time_s": 2.7009923458099365,
+            "contact_flight_takeoff_s": 2.5249993801116943,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.042961835861206,
+            "contact_flight_com_rise_m": 0.27606189250946045,
+            "contact_flight_clear_s": 0.5039970874786377,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 144044.265625,
+            "terminal_root_height_m": 0.13800419867038727,
+            "success": false
+          },
+          "native_terminated": false,
+          "last_valid_sample_clock_s": 7.980000019073486,
+          "raw_nonfoot_ground_flag": true,
+          "native_terminal_root_height_m": 0.13800419867038727
+        },
+        {
+          "candidate_id": 1,
+          "source_training_index": 118,
+          "episode_index": 1,
+          "exact_contact_clock_s": 2.7686426639556885,
+          "exact_contact_posture": {
+            "root_roll_deg": 8.464015010867763,
+            "root_pitch_deg": 21.54740409795701,
+            "root_tilt_deg": 23.07630294051801,
+            "root_height_m": 0.667933464050293,
+            "minimum_foot_center_height_m": 0.47431257367134094
+          },
+          "contact_flight_landing_clock_s": 3.0559608936309814,
+          "landing_minus_contact_s": 0.28731822967529297,
+          "phase_samples": {
+            "before_landing_40ms": {
+              "requested_clock_s": 3.0159608936309814,
+              "actual_sample_clock_s": 3.0199999809265137,
+              "root_roll_deg": -18.79957842176528,
+              "root_pitch_deg": 24.929824408517078,
+              "root_tilt_deg": 30.857331157324268,
+              "root_height_m": 0.4638177156448364,
+              "minimum_foot_center_height_m": 0.11648369580507278
+            },
+            "landing": {
+              "requested_clock_s": 3.0559608936309814,
+              "actual_sample_clock_s": 3.059999942779541,
+              "root_roll_deg": -13.774903326709895,
+              "root_pitch_deg": 24.028706435863104,
+              "root_tilt_deg": 27.492329726183385,
+              "root_height_m": 0.3734382688999176,
+              "minimum_foot_center_height_m": 0.02227342128753662
+            },
+            "after_landing_40ms": {
+              "requested_clock_s": 3.0959608936309815,
+              "actual_sample_clock_s": 3.0999999046325684,
+              "root_roll_deg": -7.409599207438676,
+              "root_pitch_deg": 23.783974240882486,
+              "root_tilt_deg": 24.84725070191098,
+              "root_height_m": 0.27515727281570435,
+              "minimum_foot_center_height_m": 0.02211601287126541
+            },
+            "after_landing_160ms": {
+              "requested_clock_s": 3.2159608936309816,
+              "actual_sample_clock_s": 3.2200000286102295,
+              "root_roll_deg": -14.44550834634657,
+              "root_pitch_deg": 11.701253998083786,
+              "root_tilt_deg": 18.511363560595946,
+              "root_height_m": 0.1804436892271042,
+              "minimum_foot_center_height_m": 0.021860510110855103
+            }
+          },
+          "native_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 6,
+            "rally_contact_time_s": 2.7686426639556885,
+            "airborne_string_time_s": 2.7686426639556885,
+            "contact_flight_takeoff_s": 2.5809953212738037,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.0559608936309814,
+            "contact_flight_com_rise_m": 0.25842058658599854,
+            "contact_flight_clear_s": 0.4659975469112396,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 74837.3125,
+            "terminal_root_height_m": 0.13674932718276978,
+            "success": false
+          },
+          "native_terminated": false,
+          "last_valid_sample_clock_s": 7.980000019073486,
+          "raw_nonfoot_ground_flag": true,
+          "native_terminal_root_height_m": 0.13674932718276978
+        },
+        {
+          "candidate_id": 1,
+          "source_training_index": 120,
+          "episode_index": 1,
+          "exact_contact_clock_s": 2.8167412281036377,
+          "exact_contact_posture": {
+            "root_roll_deg": -0.9115403158047668,
+            "root_pitch_deg": 16.986130249057673,
+            "root_tilt_deg": 17.009851243894627,
+            "root_height_m": 0.6538333892822266,
+            "minimum_foot_center_height_m": 0.4896082580089569
+          },
+          "contact_flight_landing_clock_s": 3.0819590091705322,
+          "landing_minus_contact_s": 0.26521778106689453,
+          "phase_samples": {
+            "before_landing_40ms": {
+              "requested_clock_s": 3.041959009170532,
+              "actual_sample_clock_s": 3.0399999618530273,
+              "root_roll_deg": -14.845102618059903,
+              "root_pitch_deg": 13.231690350469092,
+              "root_tilt_deg": 19.78649904757213,
+              "root_height_m": 0.47168201208114624,
+              "minimum_foot_center_height_m": 0.12759146094322205
+            },
+            "landing": {
+              "requested_clock_s": 3.0819590091705322,
+              "actual_sample_clock_s": 3.0799999237060547,
+              "root_roll_deg": -10.29705695309565,
+              "root_pitch_deg": 14.384903350667255,
+              "root_tilt_deg": 17.627049349515868,
+              "root_height_m": 0.3885606527328491,
+              "minimum_foot_center_height_m": 0.02705148607492447
+            },
+            "after_landing_40ms": {
+              "requested_clock_s": 3.1219590091705323,
+              "actual_sample_clock_s": 3.119999885559082,
+              "root_roll_deg": -8.56159789198709,
+              "root_pitch_deg": 15.487726449810804,
+              "root_tilt_deg": 17.645790322778108,
+              "root_height_m": 0.29514172673225403,
+              "minimum_foot_center_height_m": 0.022690556943416595
+            },
+            "after_landing_160ms": {
+              "requested_clock_s": 3.2419590091705324,
+              "actual_sample_clock_s": 3.240000009536743,
+              "root_roll_deg": -19.176668518050896,
+              "root_pitch_deg": 3.749039614040749,
+              "root_tilt_deg": 19.526161263001942,
+              "root_height_m": 0.14191153645515442,
+              "minimum_foot_center_height_m": 0.021529003977775574
+            }
+          },
+          "native_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 4,
+            "rally_contact_time_s": 2.8167412281036377,
+            "airborne_string_time_s": 2.8167412281036377,
+            "contact_flight_takeoff_s": 2.6239922046661377,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.0819590091705322,
+            "contact_flight_com_rise_m": 0.2425900101661682,
+            "contact_flight_clear_s": 0.44199785590171814,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 2514.886474609375,
+            "terminal_root_height_m": 0.11752379685640335,
+            "success": false
+          },
+          "native_terminated": true,
+          "last_valid_sample_clock_s": 4.159999847412109,
+          "raw_nonfoot_ground_flag": true,
+          "native_terminal_root_height_m": 0.11752379685640335
+        },
+        {
+          "candidate_id": 1,
+          "source_training_index": 123,
+          "episode_index": 1,
+          "exact_contact_clock_s": 2.8484113216400146,
+          "exact_contact_posture": {
+            "root_roll_deg": -13.261086012319165,
+            "root_pitch_deg": 10.79191856142452,
+            "root_tilt_deg": 17.036135580110265,
+            "root_height_m": 0.6390923261642456,
+            "minimum_foot_center_height_m": 0.4686107039451599
+          },
+          "contact_flight_landing_clock_s": 3.108957052230835,
+          "landing_minus_contact_s": 0.2605457305908203,
+          "phase_samples": {
+            "before_landing_40ms": {
+              "requested_clock_s": 3.068957052230835,
+              "actual_sample_clock_s": 3.059999942779541,
+              "root_roll_deg": -18.29826460325121,
+              "root_pitch_deg": 4.205919527395214,
+              "root_tilt_deg": 18.75927740825841,
+              "root_height_m": 0.46532854437828064,
+              "minimum_foot_center_height_m": 0.13524135947227478
+            },
+            "landing": {
+              "requested_clock_s": 3.108957052230835,
+              "actual_sample_clock_s": 3.0999999046325684,
+              "root_roll_deg": -16.211932420713552,
+              "root_pitch_deg": 4.719728129023264,
+              "root_tilt_deg": 16.86726547049571,
+              "root_height_m": 0.38359561562538147,
+              "minimum_foot_center_height_m": 0.04423508793115616
+            },
+            "after_landing_40ms": {
+              "requested_clock_s": 3.148957052230835,
+              "actual_sample_clock_s": 3.1399998664855957,
+              "root_roll_deg": -15.505540681484444,
+              "root_pitch_deg": 4.67787238277315,
+              "root_tilt_deg": 16.17922188991794,
+              "root_height_m": 0.2900294363498688,
+              "minimum_foot_center_height_m": 0.022773049771785736
+            },
+            "after_landing_160ms": {
+              "requested_clock_s": 3.268957052230835,
+              "actual_sample_clock_s": 3.259999990463257,
+              "root_roll_deg": -25.3014886398447,
+              "root_pitch_deg": 0.44537088101347905,
+              "root_tilt_deg": 25.305150035429932,
+              "root_height_m": 0.17012405395507812,
+              "minimum_foot_center_height_m": 0.02209920436143875
+            }
+          },
+          "native_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 4,
+            "rally_contact_time_s": 2.8484113216400146,
+            "airborne_string_time_s": 2.8484113216400146,
+            "contact_flight_takeoff_s": 2.6509902477264404,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.108957052230835,
+            "contact_flight_com_rise_m": 0.23945724964141846,
+            "contact_flight_clear_s": 0.4479977786540985,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 11804.0625,
+            "terminal_root_height_m": 0.1289302110671997,
+            "success": false
+          },
+          "native_terminated": false,
+          "last_valid_sample_clock_s": 7.980000019073486,
+          "raw_nonfoot_ground_flag": true,
+          "native_terminal_root_height_m": 0.1289302110671997
+        }
+      ]
+    },
+    {
+      "candidate_id": 2,
+      "original_case_count": 128,
+      "actual_air_contacts": 11,
+      "qualified_contact_landings": 11,
+      "native_qualified_recovery": 0,
+      "native_nonfoot_ground_flags": 10,
+      "actual_exact_contact_tilt_deg": {
+        "minimum": 16.187194996871543,
+        "median": 20.958261275604336,
+        "maximum": 29.161566120048377
+      },
+      "actual_sampled_landing_roll_deg": {
+        "minimum": -28.187257685389245,
+        "median": -17.872323024617142,
+        "maximum": -9.188809613167289
+      },
+      "actual_sampled_landing_pitch_deg": {
+        "minimum": 4.137552210074643,
+        "median": 25.815065251392873,
+        "maximum": 54.9606073567978
+      },
+      "actual_sampled_landing_tilt_deg": {
+        "minimum": 14.53329740527395,
+        "median": 31.04495528546211,
+        "maximum": 59.59882559836305
+      },
+      "actual_sampled_postlanding160ms_tilt_deg": {
+        "minimum": 17.421523840423607,
+        "median": 20.300625524909545,
+        "maximum": 46.95305343725463
+      },
+      "samples": [
+        {
+          "candidate_id": 2,
+          "source_training_index": 10,
+          "episode_index": 2,
+          "exact_contact_clock_s": 2.7814481258392334,
+          "exact_contact_posture": {
+            "root_roll_deg": -1.7961105321143895,
+            "root_pitch_deg": 20.884608380554297,
+            "root_tilt_deg": 20.958261275604336,
+            "root_height_m": 0.6716752052307129,
+            "minimum_foot_center_height_m": 0.49786847829818726
+          },
+          "contact_flight_landing_clock_s": 3.0749595165252686,
+          "landing_minus_contact_s": 0.29351139068603516,
+          "phase_samples": {
+            "before_landing_40ms": {
+              "requested_clock_s": 3.0349595165252685,
+              "actual_sample_clock_s": 3.0399999618530273,
+              "root_roll_deg": -26.0413872627441,
+              "root_pitch_deg": 28.042059536275065,
+              "root_tilt_deg": 37.53339488240903,
+              "root_height_m": 0.4538436233997345,
+              "minimum_foot_center_height_m": 0.12270881980657578
+            },
+            "landing": {
+              "requested_clock_s": 3.0749595165252686,
+              "actual_sample_clock_s": 3.0799999237060547,
+              "root_roll_deg": -21.648075807067283,
+              "root_pitch_deg": 26.762850746715348,
+              "root_tilt_deg": 33.911445687537054,
+              "root_height_m": 0.3602934181690216,
+              "minimum_foot_center_height_m": 0.022047363221645355
+            },
+            "after_landing_40ms": {
+              "requested_clock_s": 3.1149595165252686,
+              "actual_sample_clock_s": 3.119999885559082,
+              "root_roll_deg": -15.0742421775481,
+              "root_pitch_deg": 25.529948843988926,
+              "root_tilt_deg": 29.388818273198776,
+              "root_height_m": 0.25732430815696716,
+              "minimum_foot_center_height_m": 0.021801680326461792
+            },
+            "after_landing_160ms": {
+              "requested_clock_s": 3.2349595165252687,
+              "actual_sample_clock_s": 3.240000009536743,
+              "root_roll_deg": -22.425180554546312,
+              "root_pitch_deg": 10.56576912935189,
+              "root_tilt_deg": 24.672902600983367,
+              "root_height_m": 0.16700172424316406,
+              "minimum_foot_center_height_m": 0.021764036267995834
+            }
+          },
+          "native_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 4,
+            "rally_contact_time_s": 2.7814481258392334,
+            "airborne_string_time_s": 2.7814481258392334,
+            "contact_flight_takeoff_s": 2.592994451522827,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.0749595165252686,
+            "contact_flight_com_rise_m": 0.2582818269729614,
+            "contact_flight_clear_s": 0.4659975469112396,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": false,
+            "maximum_body_ground_force_n": 0.0,
+            "terminal_root_height_m": 0.11548902839422226,
+            "success": false
+          },
+          "native_terminated": true,
+          "last_valid_sample_clock_s": 4.119999885559082,
+          "raw_nonfoot_ground_flag": false,
+          "native_terminal_root_height_m": 0.11548902839422226
+        },
+        {
+          "candidate_id": 2,
+          "source_training_index": 19,
+          "episode_index": 3,
+          "exact_contact_clock_s": 2.7687675952911377,
+          "exact_contact_posture": {
+            "root_roll_deg": 2.869217499170997,
+            "root_pitch_deg": 21.38091272586549,
+            "root_tilt_deg": 21.563627920298856,
+            "root_height_m": 0.6709167957305908,
+            "minimum_foot_center_height_m": 0.4894690215587616
+          },
+          "contact_flight_landing_clock_s": 3.062960386276245,
+          "landing_minus_contact_s": 0.2941927909851074,
+          "phase_samples": {
+            "before_landing_40ms": {
+              "requested_clock_s": 3.022960386276245,
+              "actual_sample_clock_s": 3.0199999809265137,
+              "root_roll_deg": -24.70709557454752,
+              "root_pitch_deg": 28.416209644705035,
+              "root_tilt_deg": 36.96527325164137,
+              "root_height_m": 0.47372981905937195,
+              "minimum_foot_center_height_m": 0.14281152188777924
+            },
+            "landing": {
+              "requested_clock_s": 3.062960386276245,
+              "actual_sample_clock_s": 3.059999942779541,
+              "root_roll_deg": -20.42379360358881,
+              "root_pitch_deg": 27.21687063562775,
+              "root_tilt_deg": 33.55257990813575,
+              "root_height_m": 0.38378608226776123,
+              "minimum_foot_center_height_m": 0.029823794960975647
+            },
+            "after_landing_40ms": {
+              "requested_clock_s": 3.102960386276245,
+              "actual_sample_clock_s": 3.0999999046325684,
+              "root_roll_deg": -13.671237089458057,
+              "root_pitch_deg": 25.72031923923147,
+              "root_tilt_deg": 28.90787190076405,
+              "root_height_m": 0.28297263383865356,
+              "minimum_foot_center_height_m": 0.02193683385848999
+            },
+            "after_landing_160ms": {
+              "requested_clock_s": 3.2229603862762453,
+              "actual_sample_clock_s": 3.2200000286102295,
+              "root_roll_deg": -16.04572008267215,
+              "root_pitch_deg": 11.302589519855802,
+              "root_tilt_deg": 19.540926383129325,
+              "root_height_m": 0.17601387202739716,
+              "minimum_foot_center_height_m": 0.02179592475295067
+            }
+          },
+          "native_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 5,
+            "rally_contact_time_s": 2.7687675952911377,
+            "airborne_string_time_s": 2.7687675952911377,
+            "contact_flight_takeoff_s": 2.5839951038360596,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.062960386276245,
+            "contact_flight_com_rise_m": 0.2553213834762573,
+            "contact_flight_clear_s": 0.46399757266044617,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 1766.1785888671875,
+            "terminal_root_height_m": 0.1287132203578949,
+            "success": false
+          },
+          "native_terminated": false,
+          "last_valid_sample_clock_s": 7.980000019073486,
+          "raw_nonfoot_ground_flag": true,
+          "native_terminal_root_height_m": 0.1287132203578949
+        },
+        {
+          "candidate_id": 2,
+          "source_training_index": 44,
+          "episode_index": 2,
+          "exact_contact_clock_s": 2.7919423580169678,
+          "exact_contact_posture": {
+            "root_roll_deg": 3.145568397750755,
+            "root_pitch_deg": 21.11358198365592,
+            "root_tilt_deg": 21.336022958507247,
+            "root_height_m": 0.6687794923782349,
+            "minimum_foot_center_height_m": 0.4862663745880127
+          },
+          "contact_flight_landing_clock_s": 3.0789592266082764,
+          "landing_minus_contact_s": 0.2870168685913086,
+          "phase_samples": {
+            "before_landing_40ms": {
+              "requested_clock_s": 3.0389592266082763,
+              "actual_sample_clock_s": 3.0399999618530273,
+              "root_roll_deg": -22.394106236564042,
+              "root_pitch_deg": 26.83008348158344,
+              "root_tilt_deg": 34.40616878285668,
+              "root_height_m": 0.46654337644577026,
+              "minimum_foot_center_height_m": 0.12732425332069397
+            },
+            "landing": {
+              "requested_clock_s": 3.0789592266082764,
+              "actual_sample_clock_s": 3.0799999237060547,
+              "root_roll_deg": -17.872323024617142,
+              "root_pitch_deg": 25.815065251392873,
+              "root_tilt_deg": 31.04495528546211,
+              "root_height_m": 0.37639403343200684,
+              "minimum_foot_center_height_m": 0.022134631872177124
+            },
+            "after_landing_40ms": {
+              "requested_clock_s": 3.1189592266082764,
+              "actual_sample_clock_s": 3.119999885559082,
+              "root_roll_deg": -11.242789037780424,
+              "root_pitch_deg": 24.77434241459747,
+              "root_tilt_deg": 27.058665792781586,
+              "root_height_m": 0.2762927711009979,
+              "minimum_foot_center_height_m": 0.021932750940322876
+            },
+            "after_landing_160ms": {
+              "requested_clock_s": 3.2389592266082765,
+              "actual_sample_clock_s": 3.240000009536743,
+              "root_roll_deg": -17.953323293787584,
+              "root_pitch_deg": 10.539331330038483,
+              "root_tilt_deg": 20.72997486030245,
+              "root_height_m": 0.17218485474586487,
+              "minimum_foot_center_height_m": 0.021782631054520607
+            }
+          },
+          "native_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 3,
+            "rally_contact_time_s": 2.7919423580169678,
+            "airborne_string_time_s": 2.7919423580169678,
+            "contact_flight_takeoff_s": 2.6049935817718506,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.0789592266082764,
+            "contact_flight_com_rise_m": 0.25134333968162537,
+            "contact_flight_clear_s": 0.45999762415885925,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 146880.8125,
+            "terminal_root_height_m": 0.13238677382469177,
+            "success": false
+          },
+          "native_terminated": false,
+          "last_valid_sample_clock_s": 7.980000019073486,
+          "raw_nonfoot_ground_flag": true,
+          "native_terminal_root_height_m": 0.13238677382469177
+        },
+        {
+          "candidate_id": 2,
+          "source_training_index": 58,
+          "episode_index": 2,
+          "exact_contact_clock_s": 2.8016245365142822,
+          "exact_contact_posture": {
+            "root_roll_deg": 1.7954089647620048,
+            "root_pitch_deg": 19.187926016830446,
+            "root_tilt_deg": 19.26859028525491,
+            "root_height_m": 0.6609953045845032,
+            "minimum_foot_center_height_m": 0.486686110496521
+          },
+          "contact_flight_landing_clock_s": 3.0799591541290283,
+          "landing_minus_contact_s": 0.2783346176147461,
+          "phase_samples": {
+            "before_landing_40ms": {
+              "requested_clock_s": 3.0399591541290283,
+              "actual_sample_clock_s": 3.0399999618530273,
+              "root_roll_deg": -17.887176650419946,
+              "root_pitch_deg": 20.221179211849428,
+              "root_tilt_deg": 26.74633729305818,
+              "root_height_m": 0.4704939126968384,
+              "minimum_foot_center_height_m": 0.12346826493740082
+            },
+            "landing": {
+              "requested_clock_s": 3.0799591541290283,
+              "actual_sample_clock_s": 3.0799999237060547,
+              "root_roll_deg": -12.446821008244944,
+              "root_pitch_deg": 19.726391791124044,
+              "root_tilt_deg": 23.19191111007952,
+              "root_height_m": 0.38363322615623474,
+              "minimum_foot_center_height_m": 0.022421427071094513
+            },
+            "after_landing_40ms": {
+              "requested_clock_s": 3.1199591541290284,
+              "actual_sample_clock_s": 3.119999885559082,
+              "root_roll_deg": -7.687414660334246,
+              "root_pitch_deg": 19.906928793979244,
+              "root_tilt_deg": 21.28337516323441,
+              "root_height_m": 0.2873767912387848,
+              "minimum_foot_center_height_m": 0.022368043661117554
+            },
+            "after_landing_160ms": {
+              "requested_clock_s": 3.2399591541290285,
+              "actual_sample_clock_s": 3.240000009536743,
+              "root_roll_deg": -17.06468483958141,
+              "root_pitch_deg": 7.42726914899022,
+              "root_tilt_deg": 18.566775159374835,
+              "root_height_m": 0.16402071714401245,
+              "minimum_foot_center_height_m": 0.02185964211821556
+            }
+          },
+          "native_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 5,
+            "rally_contact_time_s": 2.8016245365142822,
+            "airborne_string_time_s": 2.8016245365142822,
+            "contact_flight_takeoff_s": 2.61499285697937,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.0799591541290283,
+            "contact_flight_com_rise_m": 0.2460269331932068,
+            "contact_flight_clear_s": 0.44999775290489197,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 44527.84375,
+            "terminal_root_height_m": 0.13769730925559998,
+            "success": false
+          },
+          "native_terminated": false,
+          "last_valid_sample_clock_s": 7.980000019073486,
+          "raw_nonfoot_ground_flag": true,
+          "native_terminal_root_height_m": 0.13769730925559998
+        },
+        {
+          "candidate_id": 2,
+          "source_training_index": 69,
+          "episode_index": 2,
+          "exact_contact_clock_s": 2.722667932510376,
+          "exact_contact_posture": {
+            "root_roll_deg": 7.083129486250773,
+            "root_pitch_deg": 27.57946727962159,
+            "root_tilt_deg": 28.40524439751847,
+            "root_height_m": 0.6915132403373718,
+            "minimum_foot_center_height_m": 0.48932015895843506
+          },
+          "contact_flight_landing_clock_s": 3.0549609661102295,
+          "landing_minus_contact_s": 0.3322930335998535,
+          "phase_samples": {
+            "before_landing_40ms": {
+              "requested_clock_s": 3.0149609661102295,
+              "actual_sample_clock_s": 3.0199999809265137,
+              "root_roll_deg": -29.417040410573794,
+              "root_pitch_deg": 55.83415965758731,
+              "root_tilt_deg": 60.71309665304263,
+              "root_height_m": 0.4380549192428589,
+              "minimum_foot_center_height_m": 0.12992236018180847
+            },
+            "landing": {
+              "requested_clock_s": 3.0549609661102295,
+              "actual_sample_clock_s": 3.059999942779541,
+              "root_roll_deg": -28.187257685389245,
+              "root_pitch_deg": 54.9606073567978,
+              "root_tilt_deg": 59.59882559836305,
+              "root_height_m": 0.33676284551620483,
+              "minimum_foot_center_height_m": 0.021303370594978333
+            },
+            "after_landing_40ms": {
+              "requested_clock_s": 3.0949609661102295,
+              "actual_sample_clock_s": 3.0999999046325684,
+              "root_roll_deg": -27.68587124495662,
+              "root_pitch_deg": 52.33681148467273,
+              "root_tilt_deg": 57.24403912271596,
+              "root_height_m": 0.3114072382450104,
+              "minimum_foot_center_height_m": 0.021327197551727295
+            },
+            "after_landing_160ms": {
+              "requested_clock_s": 3.2149609661102296,
+              "actual_sample_clock_s": 3.2200000286102295,
+              "root_roll_deg": -22.59206472404136,
+              "root_pitch_deg": 42.32553209736798,
+              "root_tilt_deg": 46.95305343725463,
+              "root_height_m": 0.28524476289749146,
+              "minimum_foot_center_height_m": 0.021383047103881836
+            }
+          },
+          "native_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 3,
+            "rally_contact_time_s": 2.722667932510376,
+            "airborne_string_time_s": 2.722667932510376,
+            "contact_flight_takeoff_s": 2.5429980754852295,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.0549609661102295,
+            "contact_flight_com_rise_m": 0.2712160050868988,
+            "contact_flight_clear_s": 0.4959971606731415,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 239681.390625,
+            "terminal_root_height_m": 0.14974233508110046,
+            "success": false
+          },
+          "native_terminated": false,
+          "last_valid_sample_clock_s": 7.980000019073486,
+          "raw_nonfoot_ground_flag": true,
+          "native_terminal_root_height_m": 0.14974233508110046
+        },
+        {
+          "candidate_id": 2,
+          "source_training_index": 82,
+          "episode_index": 2,
+          "exact_contact_clock_s": 2.8116815090179443,
+          "exact_contact_posture": {
+            "root_roll_deg": -1.6393318162679853,
+            "root_pitch_deg": 18.630000912583654,
+            "root_tilt_deg": 18.699437265038608,
+            "root_height_m": 0.6585310101509094,
+            "minimum_foot_center_height_m": 0.492024689912796
+          },
+          "contact_flight_landing_clock_s": 3.086958646774292,
+          "landing_minus_contact_s": 0.27527713775634766,
+          "phase_samples": {
+            "before_landing_40ms": {
+              "requested_clock_s": 3.046958646774292,
+              "actual_sample_clock_s": 3.0399999618530273,
+              "root_roll_deg": -16.903917140621935,
+              "root_pitch_deg": 18.81738309812526,
+              "root_tilt_deg": 25.088426772446304,
+              "root_height_m": 0.4855242073535919,
+              "minimum_foot_center_height_m": 0.13808494806289673
+            },
+            "landing": {
+              "requested_clock_s": 3.086958646774292,
+              "actual_sample_clock_s": 3.0799999237060547,
+              "root_roll_deg": -11.547236002813506,
+              "root_pitch_deg": 18.738404255187177,
+              "root_tilt_deg": 21.901269454268363,
+              "root_height_m": 0.402685284614563,
+              "minimum_foot_center_height_m": 0.04152467101812363
+            },
+            "after_landing_40ms": {
+              "requested_clock_s": 3.126958646774292,
+              "actual_sample_clock_s": 3.119999885559082,
+              "root_roll_deg": -7.396467401307683,
+              "root_pitch_deg": 19.42674154488965,
+              "root_tilt_deg": 20.73622562885832,
+              "root_height_m": 0.30857783555984497,
+              "minimum_foot_center_height_m": 0.022510357201099396
+            },
+            "after_landing_160ms": {
+              "requested_clock_s": 3.246958646774292,
+              "actual_sample_clock_s": 3.240000009536743,
+              "root_roll_deg": -15.958467314844235,
+              "root_pitch_deg": 7.835237615028189,
+              "root_tilt_deg": 17.733185829761297,
+              "root_height_m": 0.1624462753534317,
+              "minimum_foot_center_height_m": 0.021815024316310883
+            }
+          },
+          "native_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 7,
+            "rally_contact_time_s": 2.8116815090179443,
+            "airborne_string_time_s": 2.8116815090179443,
+            "contact_flight_takeoff_s": 2.6259920597076416,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.086958646774292,
+            "contact_flight_com_rise_m": 0.24328088760375977,
+            "contact_flight_clear_s": 0.4469977915287018,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 106595.296875,
+            "terminal_root_height_m": 0.13279475271701813,
+            "success": false
+          },
+          "native_terminated": false,
+          "last_valid_sample_clock_s": 7.980000019073486,
+          "raw_nonfoot_ground_flag": true,
+          "native_terminal_root_height_m": 0.13279475271701813
+        },
+        {
+          "candidate_id": 2,
+          "source_training_index": 100,
+          "episode_index": 2,
+          "exact_contact_clock_s": 2.81636643409729,
+          "exact_contact_posture": {
+            "root_roll_deg": -2.608531868694836,
+            "root_pitch_deg": 16.356076300305816,
+            "root_tilt_deg": 16.557167582772916,
+            "root_height_m": 0.6508485674858093,
+            "minimum_foot_center_height_m": 0.4877264201641083
+          },
+          "contact_flight_landing_clock_s": 3.0789592266082764,
+          "landing_minus_contact_s": 0.26259279251098633,
+          "phase_samples": {
+            "before_landing_40ms": {
+              "requested_clock_s": 3.0389592266082763,
+              "actual_sample_clock_s": 3.0399999618530273,
+              "root_roll_deg": -14.78395629601585,
+              "root_pitch_deg": 12.872996675197374,
+              "root_tilt_deg": 19.50828088851389,
+              "root_height_m": 0.46579256653785706,
+              "minimum_foot_center_height_m": 0.12184261530637741
+            },
+            "landing": {
+              "requested_clock_s": 3.0789592266082764,
+              "actual_sample_clock_s": 3.0799999237060547,
+              "root_roll_deg": -10.181836261777365,
+              "root_pitch_deg": 14.173493741435442,
+              "root_tilt_deg": 17.390513784697237,
+              "root_height_m": 0.38255199790000916,
+              "minimum_foot_center_height_m": 0.022673822939395905
+            },
+            "after_landing_40ms": {
+              "requested_clock_s": 3.1189592266082764,
+              "actual_sample_clock_s": 3.119999885559082,
+              "root_roll_deg": -8.533255349861845,
+              "root_pitch_deg": 15.39581629150424,
+              "root_tilt_deg": 17.55232204938883,
+              "root_height_m": 0.28931155800819397,
+              "minimum_foot_center_height_m": 0.022712528705596924
+            },
+            "after_landing_160ms": {
+              "requested_clock_s": 3.2389592266082765,
+              "actual_sample_clock_s": 3.240000009536743,
+              "root_roll_deg": -20.02621709180034,
+              "root_pitch_deg": 3.3970483297622365,
+              "root_tilt_deg": 20.300625524909545,
+              "root_height_m": 0.14099176228046417,
+              "minimum_foot_center_height_m": 0.02151758223772049
+            }
+          },
+          "native_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 6,
+            "rally_contact_time_s": 2.81636643409729,
+            "airborne_string_time_s": 2.81636643409729,
+            "contact_flight_takeoff_s": 2.6269919872283936,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.0789592266082764,
+            "contact_flight_com_rise_m": 0.2330196499824524,
+            "contact_flight_clear_s": 0.43899789452552795,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 7190.82275390625,
+            "terminal_root_height_m": 0.13347454369068146,
+            "success": false
+          },
+          "native_terminated": false,
+          "last_valid_sample_clock_s": 7.980000019073486,
+          "raw_nonfoot_ground_flag": true,
+          "native_terminal_root_height_m": 0.13347454369068146
+        },
+        {
+          "candidate_id": 2,
+          "source_training_index": 108,
+          "episode_index": 3,
+          "exact_contact_clock_s": 2.7648322582244873,
+          "exact_contact_posture": {
+            "root_roll_deg": 3.087711237093325,
+            "root_pitch_deg": 21.65360675799872,
+            "root_tilt_deg": 21.862165302548927,
+            "root_height_m": 0.6715081930160522,
+            "minimum_foot_center_height_m": 0.48859095573425293
+          },
+          "contact_flight_landing_clock_s": 3.065960168838501,
+          "landing_minus_contact_s": 0.30112791061401367,
+          "phase_samples": {
+            "before_landing_40ms": {
+              "requested_clock_s": 3.025960168838501,
+              "actual_sample_clock_s": 3.0199999809265137,
+              "root_roll_deg": -25.284301254152748,
+              "root_pitch_deg": 31.03542619644702,
+              "root_tilt_deg": 39.21651785815739,
+              "root_height_m": 0.4789530634880066,
+              "minimum_foot_center_height_m": 0.14784370362758636
+            },
+            "landing": {
+              "requested_clock_s": 3.065960168838501,
+              "actual_sample_clock_s": 3.059999942779541,
+              "root_roll_deg": -22.255758308158217,
+              "root_pitch_deg": 30.21257967297196,
+              "root_tilt_deg": 36.89030833978171,
+              "root_height_m": 0.3896675109863281,
+              "minimum_foot_center_height_m": 0.038488440215587616
+            },
+            "after_landing_40ms": {
+              "requested_clock_s": 3.105960168838501,
+              "actual_sample_clock_s": 3.0999999046325684,
+              "root_roll_deg": -15.826889676081015,
+              "root_pitch_deg": 28.26536861995955,
+              "root_tilt_deg": 32.07280140920684,
+              "root_height_m": 0.2878868579864502,
+              "minimum_foot_center_height_m": 0.021840326488018036
+            },
+            "after_landing_160ms": {
+              "requested_clock_s": 3.225960168838501,
+              "actual_sample_clock_s": 3.2200000286102295,
+              "root_roll_deg": -17.61401072196311,
+              "root_pitch_deg": 13.943652004061097,
+              "root_tilt_deg": 22.32691288563174,
+              "root_height_m": 0.1825208216905594,
+              "minimum_foot_center_height_m": 0.021758101880550385
+            }
+          },
+          "native_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 5,
+            "rally_contact_time_s": 2.7648322582244873,
+            "airborne_string_time_s": 2.7648322582244873,
+            "contact_flight_takeoff_s": 2.5859949588775635,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.065960168838501,
+            "contact_flight_com_rise_m": 0.25259125232696533,
+            "contact_flight_clear_s": 0.46699753403663635,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 1244.959716796875,
+            "terminal_root_height_m": 0.11915678530931473,
+            "success": false
+          },
+          "native_terminated": true,
+          "last_valid_sample_clock_s": 3.859999895095825,
+          "raw_nonfoot_ground_flag": true,
+          "native_terminal_root_height_m": 0.11915678530931473
+        },
+        {
+          "candidate_id": 2,
+          "source_training_index": 112,
+          "episode_index": 2,
+          "exact_contact_clock_s": 2.7032411098480225,
+          "exact_contact_posture": {
+            "root_roll_deg": 9.921700483810936,
+            "root_pitch_deg": 27.562375492447842,
+            "root_tilt_deg": 29.161566120048377,
+            "root_height_m": 0.6987788081169128,
+            "minimum_foot_center_height_m": 0.4912523031234741
+          },
+          "contact_flight_landing_clock_s": 3.0369622707366943,
+          "landing_minus_contact_s": 0.3337211608886719,
+          "phase_samples": {
+            "before_landing_40ms": {
+              "requested_clock_s": 2.9969622707366943,
+              "actual_sample_clock_s": 3.0,
+              "root_roll_deg": -29.340541611541045,
+              "root_pitch_deg": 53.34958188599364,
+              "root_tilt_deg": 58.643702746342754,
+              "root_height_m": 0.4551314115524292,
+              "minimum_foot_center_height_m": 0.13533443212509155
+            },
+            "landing": {
+              "requested_clock_s": 3.0369622707366943,
+              "actual_sample_clock_s": 3.0399999618530273,
+              "root_roll_deg": -26.919685663941266,
+              "root_pitch_deg": 52.418684157294216,
+              "root_tilt_deg": 57.05725608624298,
+              "root_height_m": 0.3556060791015625,
+              "minimum_foot_center_height_m": 0.021438680589199066
+            },
+            "after_landing_40ms": {
+              "requested_clock_s": 3.0769622707366944,
+              "actual_sample_clock_s": 3.0799999237060547,
+              "root_roll_deg": -24.077511739344185,
+              "root_pitch_deg": 50.34925556962078,
+              "root_tilt_deg": 54.36727214475678,
+              "root_height_m": 0.3075501024723053,
+              "minimum_foot_center_height_m": 0.0212855264544487
+            },
+            "after_landing_160ms": {
+              "requested_clock_s": 3.1969622707366945,
+              "actual_sample_clock_s": 3.1999998092651367,
+              "root_roll_deg": -22.45488862000098,
+              "root_pitch_deg": 41.54495189915181,
+              "root_tilt_deg": 46.23599161013522,
+              "root_height_m": 0.2828209400177002,
+              "minimum_foot_center_height_m": 0.02137003093957901
+            }
+          },
+          "native_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 3,
+            "rally_contact_time_s": 2.7032411098480225,
+            "airborne_string_time_s": 2.7032411098480225,
+            "contact_flight_takeoff_s": 2.5259993076324463,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.0369622707366943,
+            "contact_flight_com_rise_m": 0.2708583474159241,
+            "contact_flight_clear_s": 0.49799713492393494,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 72870.125,
+            "terminal_root_height_m": 0.13425029814243317,
+            "success": false
+          },
+          "native_terminated": false,
+          "last_valid_sample_clock_s": 7.980000019073486,
+          "raw_nonfoot_ground_flag": true,
+          "native_terminal_root_height_m": 0.13425029814243317
+        },
+        {
+          "candidate_id": 2,
+          "source_training_index": 120,
+          "episode_index": 3,
+          "exact_contact_clock_s": 2.816553831100464,
+          "exact_contact_posture": {
+            "root_roll_deg": 1.7679780089154933,
+            "root_pitch_deg": 17.936765344424426,
+            "root_tilt_deg": 18.020835323912742,
+            "root_height_m": 0.655647873878479,
+            "minimum_foot_center_height_m": 0.4833526909351349
+          },
+          "contact_flight_landing_clock_s": 3.082958936691284,
+          "landing_minus_contact_s": 0.2664051055908203,
+          "phase_samples": {
+            "before_landing_40ms": {
+              "requested_clock_s": 3.042958936691284,
+              "actual_sample_clock_s": 3.0399999618530273,
+              "root_roll_deg": -14.656328252087782,
+              "root_pitch_deg": 14.922620957085789,
+              "root_tilt_deg": 20.798854837450946,
+              "root_height_m": 0.4751858711242676,
+              "minimum_foot_center_height_m": 0.12920066714286804
+            },
+            "landing": {
+              "requested_clock_s": 3.082958936691284,
+              "actual_sample_clock_s": 3.0799999237060547,
+              "root_roll_deg": -9.188809613167289,
+              "root_pitch_deg": 15.783485172962418,
+              "root_tilt_deg": 18.20445932898954,
+              "root_height_m": 0.39205533266067505,
+              "minimum_foot_center_height_m": 0.029339447617530823
+            },
+            "after_landing_40ms": {
+              "requested_clock_s": 3.122958936691284,
+              "actual_sample_clock_s": 3.119999885559082,
+              "root_roll_deg": -6.7419015564927625,
+              "root_pitch_deg": 16.899831589507283,
+              "root_tilt_deg": 18.15848267374356,
+              "root_height_m": 0.29875847697257996,
+              "minimum_foot_center_height_m": 0.022663652896881104
+            },
+            "after_landing_160ms": {
+              "requested_clock_s": 3.2429589366912843,
+              "actual_sample_clock_s": 3.240000009536743,
+              "root_roll_deg": -16.69162137846998,
+              "root_pitch_deg": 5.062490567988126,
+              "root_tilt_deg": 17.421523840423607,
+              "root_height_m": 0.14383794367313385,
+              "minimum_foot_center_height_m": 0.021689176559448242
+            }
+          },
+          "native_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 4,
+            "rally_contact_time_s": 2.816553831100464,
+            "airborne_string_time_s": 2.816553831100464,
+            "contact_flight_takeoff_s": 2.6259920597076416,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.082958936691284,
+            "contact_flight_com_rise_m": 0.23952269554138184,
+            "contact_flight_clear_s": 0.44199785590171814,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 4355854.0,
+            "terminal_root_height_m": 0.3570554256439209,
+            "success": false
+          },
+          "native_terminated": false,
+          "last_valid_sample_clock_s": 7.980000019073486,
+          "raw_nonfoot_ground_flag": true,
+          "native_terminal_root_height_m": 0.3570554256439209
+        },
+        {
+          "candidate_id": 2,
+          "source_training_index": 123,
+          "episode_index": 2,
+          "exact_contact_clock_s": 2.849348306655884,
+          "exact_contact_posture": {
+            "root_roll_deg": -12.799791007021994,
+            "root_pitch_deg": 9.993036502349016,
+            "root_tilt_deg": 16.187194996871543,
+            "root_height_m": 0.6362298130989075,
+            "minimum_foot_center_height_m": 0.4692299962043762
+          },
+          "contact_flight_landing_clock_s": 3.104957342147827,
+          "landing_minus_contact_s": 0.25560903549194336,
+          "phase_samples": {
+            "before_landing_40ms": {
+              "requested_clock_s": 3.064957342147827,
+              "actual_sample_clock_s": 3.059999942779541,
+              "root_roll_deg": -15.85644259520662,
+              "root_pitch_deg": 3.8490764508601267,
+              "root_tilt_deg": 16.305271291758178,
+              "root_height_m": 0.46062353253364563,
+              "minimum_foot_center_height_m": 0.1255771517753601
+            },
+            "landing": {
+              "requested_clock_s": 3.104957342147827,
+              "actual_sample_clock_s": 3.0999999046325684,
+              "root_roll_deg": -13.944061092985306,
+              "root_pitch_deg": 4.137552210074643,
+              "root_tilt_deg": 14.53329740527395,
+              "root_height_m": 0.37847280502319336,
+              "minimum_foot_center_height_m": 0.03511548787355423
+            },
+            "after_landing_40ms": {
+              "requested_clock_s": 3.144957342147827,
+              "actual_sample_clock_s": 3.1399998664855957,
+              "root_roll_deg": -13.641700421359792,
+              "root_pitch_deg": 3.364654097153096,
+              "root_tilt_deg": 14.04286673398021,
+              "root_height_m": 0.2851228713989258,
+              "minimum_foot_center_height_m": 0.022668808698654175
+            },
+            "after_landing_160ms": {
+              "requested_clock_s": 3.2649573421478273,
+              "actual_sample_clock_s": 3.259999990463257,
+              "root_roll_deg": -19.589700151229415,
+              "root_pitch_deg": 1.012683694873108,
+              "root_tilt_deg": 19.614831212662416,
+              "root_height_m": 0.1626524031162262,
+              "minimum_foot_center_height_m": 0.02214249223470688
+            }
+          },
+          "native_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 4,
+            "rally_contact_time_s": 2.849348306655884,
+            "airborne_string_time_s": 2.849348306655884,
+            "contact_flight_takeoff_s": 2.6509902477264404,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.104957342147827,
+            "contact_flight_com_rise_m": 0.23751965165138245,
+            "contact_flight_clear_s": 0.4449978172779083,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 25107.37890625,
+            "terminal_root_height_m": 0.11986386775970459,
+            "success": false
+          },
+          "native_terminated": true,
+          "last_valid_sample_clock_s": 6.359999656677246,
+          "raw_nonfoot_ground_flag": true,
+          "native_terminal_root_height_m": 0.11986386775970459
+        }
+      ]
+    }
+  ],
+  "recovered_reference": {
+    "source": "Actual exploration TRAIN69; source actor still in critic warmup. No full smash.",
+    "source_training_index": 69,
+    "native_recovery": {
+      "schema": "contact-flight-recovery-v1",
+      "bound": true,
+      "contact_flight_id": 8,
+      "rally_contact_time_s": 2.725728750228882,
+      "airborne_string_time_s": 2.725728750228882,
+      "contact_flight_takeoff_s": 2.5459978580474854,
+      "qualified_contact_landing": true,
+      "contact_flight_landing_s": 3.0509612560272217,
+      "contact_flight_com_rise_m": 0.27607429027557373,
+      "contact_flight_clear_s": 0.49199721217155457,
+      "stable_recovery": true,
+      "recovery_s": 3.729912042617798,
+      "body_landing": false,
+      "maximum_body_ground_force_n": 0.0,
+      "terminal_root_height_m": 0.16465525329113007,
+      "success": true
+    },
+    "sampled_landing": {
+      "requested_clock_s": 3.0509612560272217,
+      "actual_sample_clock_s": 3.049999952316284,
+      "root_roll_deg": -11.700562499748958,
+      "root_pitch_deg": 49.63016240782219,
+      "root_tilt_deg": 50.634889920726934,
+      "root_height_m": 0.3816302716732025,
+      "minimum_foot_center_height_m": 0.023673146963119507
+    },
+    "sampled_after_landing160ms": {
+      "requested_clock_s": 3.210961256027222,
+      "actual_sample_clock_s": 3.2100000381469727,
+      "root_roll_deg": 3.5049489772168845,
+      "root_pitch_deg": 42.61571169342009,
+      "root_tilt_deg": 42.732066301987636,
+      "root_height_m": 0.2894555926322937,
+      "minimum_foot_center_height_m": 0.0215512216091156
+    }
+  },
+  "actual_air_contact_flights_compared": 28,
+  "all_original384_rows_retained": true,
+  "body_landing_field_means": "Aggregate ground contact of Go2 non-foot links, Piper links, MountPlate and Racket; no individual touching part can be attributed from the aggregate alone.",
+  "sampled_pose_rate_Hz": 50.0,
+  "recovered_reference_sample_rate_Hz": 100.0,
+  "sampling_does_not_replace_native_event_recovery_or_stability_criteria": true,
+  "causal_body_part_force_or_impulse_attribution_proven": false,
+  "profiles_sha256": "239eec062d94a20738f51672cf16ab3c1b068aee50f2c4e66e00ddd07f862379",
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/landing_posture_diagnosis_20261027/analyze_actual.py": "30190fe0e5747b5970a8348d7cfa2c547eee4bc2ea771bb6b00281988f616ee8",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/early_lateral7_n128_01/geometry.json": "8afd390b7b92179ba6e2fde3774cc60162a98a5bd63ed50defd95b2e8f9d9c37",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/tasks/stand/jump_env.py": "03c728433d3699899609b8a483d52ee74c798fa04cad560ceb98c16765a1415d",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/tasks/stand/jump_metrics.py": "96102348a875e297b0ae230a99ba02249663a06bb5d0c10e7f5ae1026c5abe7d",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/tasks/stand/contact_flight_recovery_v5.py": "fcbeb7a35fa4e119df604b92f3d443adb5955d757489556e631177d810a0c6c2",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/early_lateral7_n128_01/episodes_000.json": "96cb0dc0fc2ab0b4f26db64f78a3bbe431171d9672b584d00aba690cd5e1f125",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/early_lateral7_n128_01/all_first_episodes_000.npz": "f1a86d90368b6fe6e955ecb9af7a84a6fe902e43a79d8b5da5aff136591ec0c6",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/early_lateral7_n128_01/contacts_000.json": "19d985712ce345b6686d8c9000b1b0893a464ec55efc74a6cdc0151fa2e7c93d",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/early_lateral7_n128_01/episodes_001.json": "bafb2af2d611827cdbb8f91623d541b0ee645549c0496625d6196a3d40374e3c",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/early_lateral7_n128_01/all_first_episodes_001.npz": "af7efc13de5ffea291e674c86227bde6aea01b7d48659f2b3bd416108d73fff8",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/early_lateral7_n128_01/contacts_001.json": "d1e5c2b2b36bba39cd2f98ced664daeb2820eee40011da64288b70260f00901d",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/early_lateral7_n128_01/episodes_002.json": "9ef5ce4cba6bad4e9beb179e670458727eefcf8a8380be0ee60e55b061d7cc42",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/early_lateral7_n128_01/all_first_episodes_002.npz": "7e5496931b405b44b4af3e65da05c9301e2f29490c15c50267123e998cf657e3",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/early_lateral7_n128_01/contacts_002.json": "8a92f2cd8e5d83618165b4076d95b20cbe46f42354ecf71c2658e91b45ce0b98",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/residual_contact_recovery_n128_updates15_02/trajectory_traces/lane0069_episode000000.npz": "b5b5887dd2c887ded542accff08de291aa63962228966d2dfd04fd0cf8158eb1",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/residual_contact_recovery_n128_updates15_02/trajectory_traces/lane0069_episode000000.json": "6d2d29c3318bb743e8f4671282ccd744efe35463317e6b411a737e008d37d02e",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/rl/episode_trace_v4.py": "c4610aefb3845dcab78202103a461e3adff2e305917f758f830c829941f717ce"
+  },
+  "new_native_execution": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
