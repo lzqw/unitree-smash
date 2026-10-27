@@ -1,0 +1,541 @@
+{
+  "checked_at": "2026-10-27T02:10:39.743487+00:00",
+  "actual_first128_complete": true,
+  "first128_airborne_contacts": 2,
+  "first128_conditional_recovery": 1,
+  "first128_complete_smash": 0,
+  "original_first128_only_changed_fields": {
+    "69": [
+      "recovery_success"
+    ]
+  },
+  "original_initial_model_tensors_identical": true,
+  "warmup7_actor_and_log_std_unchanged": true,
+  "warmup7_checkpoint_is_canonical": false,
+  "common12_actual_trace_arrays_bitwise_identical": true,
+  "trace_checks": [
+    {
+      "env_id": 69,
+      "samples": 800,
+      "data_sha256": "b5b5887dd2c887ded542accff08de291aa63962228966d2dfd04fd0cf8158eb1",
+      "outcome": {
+        "airborne_contact": true,
+        "conditional_recovery": true,
+        "complete": false,
+        "fault": false
+      },
+      "CPU_base_max_error": 1.0192394256591797e-05,
+      "CPU_complete_command_max_error": 1.0013580322265625e-05,
+      "public_reconstruction_bitwise_verified": true,
+      "actual_actor_iterations": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "env_id": 112,
+      "samples": 336,
+      "data_sha256": "528e8dba04e24efffde42be1cf3f55ef9490cf6f908d4bce73c605cd6ead69e4",
+      "outcome": {
+        "airborne_contact": true,
+        "conditional_recovery": false,
+        "complete": false,
+        "fault": false
+      },
+      "CPU_base_max_error": 1.9669532775878906e-06,
+      "CPU_complete_command_max_error": 1.7881393432617188e-06,
+      "public_reconstruction_bitwise_verified": true,
+      "actual_actor_iterations": [
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "env_id": 0,
+      "samples": 271,
+      "data_sha256": "80e217332db19d632d3cdda1894bcfd8973a01f60edd02c424f9e5c77ccb545f",
+      "outcome": {
+        "airborne_contact": false,
+        "conditional_recovery": false,
+        "complete": false,
+        "fault": false
+      },
+      "CPU_base_max_error": 3.5762786865234375e-06,
+      "CPU_complete_command_max_error": 3.6954879760742188e-06,
+      "public_reconstruction_bitwise_verified": true,
+      "actual_actor_iterations": [
+        0,
+        1,
+        2
+      ]
+    }
+  ],
+  "corrected_native_TRAIN69": {
+    "launched": true,
+    "in_play": false,
+    "had_contact": true,
+    "legal_initial_contact": true,
+    "string_hit": true,
+    "airborne_string_hit": true,
+    "frame_hit": false,
+    "released": true,
+    "crossed_net": true,
+    "landed_legal_court": true,
+    "landed_target": false,
+    "ground_seen": true,
+    "robot_net_fault": false,
+    "body_ball_fault": false,
+    "wrong_side_fault": false,
+    "double_hit_fault": false,
+    "racket_invasion_fault": false,
+    "body_over_net_fault": false,
+    "under_net_obstruction_fault": false,
+    "engineering_body_crossing": false,
+    "bad_return_fault": false,
+    "net_blocked_fault": false,
+    "shuttle_net_contact": true,
+    "followthrough_crossed": false,
+    "followthrough_finished": false,
+    "env_id": 69,
+    "episode_index": 0,
+    "complete_smash": false,
+    "recovery_success": true,
+    "contact_count": 1,
+    "contact_point_m": [
+      1.189902424812317,
+      0.16410556435585022,
+      1.7616381645202637
+    ],
+    "outgoing_velocity_mps": [
+      3.9617440700531006,
+      0.739456295967102,
+      -2.541801929473877
+    ],
+    "first_landing_m": [
+      4.451673984527588,
+      0.7113856077194214,
+      0.02512357570230961
+    ],
+    "first_landing_time_s": 3.563455820083618,
+    "crossing_point_m": [
+      1.524999976158142,
+      0.22493116557598114,
+      1.557774305343628
+    ],
+    "crossing_time_s": 2.8042967319488525,
+    "release_time_s": 2.726166009902954,
+    "first_string_contact_point_m": [
+      1.189902424812317,
+      0.16410556435585022,
+      1.7616381645202637
+    ],
+    "first_string_time_s": 2.725728750228882,
+    "contact_time_s": 2.725728750228882,
+    "net_margin_m": 0.008615612983703613,
+    "numerical_failures": 0,
+    "racket_plane_native_events": [],
+    "active_rally_launch_count": 1,
+    "hit_velocity_error_mps": 6.419616624953051e-07,
+    "contact_flight_recovery": {
+      "schema": "contact-flight-recovery-v1",
+      "bound": true,
+      "contact_flight_id": 8,
+      "rally_contact_time_s": 2.725728750228882,
+      "airborne_string_time_s": 2.725728750228882,
+      "contact_flight_takeoff_s": 2.5459978580474854,
+      "qualified_contact_landing": true,
+      "contact_flight_landing_s": 3.0509612560272217,
+      "contact_flight_com_rise_m": 0.27607429027557373,
+      "contact_flight_clear_s": 0.49199721217155457,
+      "stable_recovery": true,
+      "recovery_s": 3.729912042617798,
+      "body_landing": false,
+      "maximum_body_ground_force_n": 0.0,
+      "terminal_root_height_m": 0.16465525329113007,
+      "success": true
+    },
+    "training_terminal_reasons": {
+      "rally_fault": false,
+      "robot_rule_fault": false,
+      "shuttle_only_fault": false,
+      "first_ground_without_target": true,
+      "body_ground": false,
+      "root_fallen": false
+    },
+    "training_early_termination": false,
+    "training_continue_after_miss": true,
+    "terminal_native_state": {
+      "scope": "Actual native state at terminal control step, before automatic reset; not exact first-collision substep",
+      "time_s": 8.0,
+      "body_link_positions_m": [
+        [
+          0.4632456600666046,
+          -0.23177479207515717,
+          0.16465525329113007
+        ],
+        [
+          0.6486721038818359,
+          -0.1611301451921463,
+          0.1507919281721115
+        ],
+        [
+          0.6602088809013367,
+          -0.2533401548862457,
+          0.14715635776519775
+        ],
+        [
+          0.7458497285842896,
+          -0.19589832425117493,
+          0.15150649845600128
+        ],
+        [
+          0.26628240942955017,
+          -0.2102094292640686,
+          0.18215416371822357
+        ],
+        [
+          0.27781927585601807,
+          -0.30241939425468445,
+          0.17851859331130981
+        ],
+        [
+          0.5181381702423096,
+          -0.22726017236709595,
+          0.22434140741825104
+        ],
+        [
+          0.6403079032897949,
+          -0.07302732020616531,
+          0.18668299913406372
+        ],
+        [
+          0.6737308502197266,
+          -0.3456469178199768,
+          0.16757364571094513
+        ],
+        [
+          0.7477837800979614,
+          -0.19288206100463867,
+          0.08114203810691833
+        ],
+        [
+          0.256971150636673,
+          -0.11950947344303131,
+          0.21056288480758667
+        ],
+        [
+          0.29086029529571533,
+          -0.39623621106147766,
+          0.1907079517841339
+        ],
+        [
+          0.518650233745575,
+          -0.22743169963359833,
+          0.23031707108020782
+        ],
+        [
+          0.4281265139579773,
+          -0.0902102142572403,
+          0.1794145554304123
+        ],
+        [
+          0.497802197933197,
+          -0.3955734074115753,
+          0.05837008357048035
+        ],
+        [
+          0.04498600959777832,
+          -0.1393260657787323,
+          0.204350546002388
+        ],
+        [
+          0.08132341504096985,
+          -0.42164796590805054,
+          0.21930044889450073
+        ],
+        [
+          0.5291485786437988,
+          -0.2309480458498001,
+          0.35281768441200256
+        ],
+        [
+          0.5516598224639893,
+          -0.01481640338897705,
+          0.023131854832172394
+        ],
+        [
+          0.7067379951477051,
+          -0.37258487939834595,
+          0.02392677776515484
+        ],
+        [
+          0.13479682803153992,
+          -0.07326067984104156,
+          0.022861242294311523
+        ],
+        [
+          0.16208775341510773,
+          -0.43596160411834717,
+          0.022726766765117645
+        ],
+        [
+          0.5291485786437988,
+          -0.2309480607509613,
+          0.35281771421432495
+        ],
+        [
+          0.4858100116252899,
+          -0.25257471203804016,
+          0.6337023973464966
+        ],
+        [
+          0.5086376070976257,
+          -0.25949427485466003,
+          0.8842814564704895
+        ],
+        [
+          0.508637547492981,
+          -0.25949424505233765,
+          0.8842814564704895
+        ],
+        [
+          0.4383614659309387,
+          -0.2647991180419922,
+          0.941849946975708
+        ],
+        [
+          0.6856062412261963,
+          -0.19698627293109894,
+          1.3138329982757568
+        ]
+      ],
+      "body_link_quaternions_wxyz": [
+        [
+          0.9970009922981262,
+          0.0169710423797369,
+          0.04173365235328674,
+          0.06292314827442169
+        ],
+        [
+          0.9790655970573425,
+          0.1890217661857605,
+          0.05198032781481743,
+          0.05476372689008713
+        ],
+        [
+          0.9910433888435364,
+          -0.11014401912689209,
+          0.03337997943162918,
+          0.06772587448358536
+        ],
+        [
+          0.9970009922981262,
+          0.0169710423797369,
+          0.04173365607857704,
+          0.06292314827442169
+        ],
+        [
+          0.9861055612564087,
+          0.14796844124794006,
+          0.049647897481918335,
+          0.05688679218292236
+        ],
+        [
+          0.9949213266372681,
+          -0.06656084954738617,
+          0.036318983882665634,
+          0.06619630753993988
+        ],
+        [
+          0.9970009922981262,
+          0.0169710423797369,
+          0.041733648627996445,
+          0.06292314827442169
+        ],
+        [
+          0.6996124386787415,
+          0.10546977818012238,
+          0.686887264251709,
+          0.16614575684070587
+        ],
+        [
+          0.8696146011352539,
+          -0.1288474202156067,
+          0.47649964690208435,
+          0.010809600353240967
+        ],
+        [
+          0.9970009326934814,
+          0.01697104051709175,
+          0.041733644902706146,
+          0.0629231408238411
+        ],
+        [
+          0.7033720016479492,
+          0.0726635605096817,
+          0.6929191946983337,
+          0.14089278876781464
+        ],
+        [
+          0.657931387424469,
+          -0.0938323587179184,
+          0.7472041249275208,
+          -0.0027881618589162827
+        ],
+        [
+          0.9970009922981262,
+          0.01697104051709175,
+          0.041733644902706146,
+          0.06292314827442169
+        ],
+        [
+          0.9308842420578003,
+          0.19599217176437378,
+          -0.3077762722969055,
+          -0.017757192254066467
+        ],
+        [
+          0.7519131302833557,
+          -0.0351991169154644,
+          -0.6464582085609436,
+          0.12441685795783997
+        ],
+        [
+          0.9621984958648682,
+          0.15787792205810547,
+          -0.2214571237564087,
+          0.014328587800264359
+        ],
+        [
+          0.9772986173629761,
+          -0.04984085634350777,
+          -0.1899346262216568,
+          0.07954999059438705
+        ],
+        [
+          0.9939765930175781,
+          0.018509119749069214,
+          0.041074663400650024,
+          0.09990330040454865
+        ],
+        [
+          0.9308843016624451,
+          0.19599218666553497,
+          -0.30777621269226074,
+          -0.01775718294084072
+        ],
+        [
+          0.7519131302833557,
+          -0.0351991169154644,
+          -0.6464581489562988,
+          0.12441685795783997
+        ],
+        [
+          0.9621984958648682,
+          0.15787792205810547,
+          -0.2214570790529251,
+          0.01432859618216753
+        ],
+        [
+          0.9772984981536865,
+          -0.04984085634350777,
+          -0.18993455171585083,
+          0.07954997569322586
+        ],
+        [
+          0.519691526889801,
+          -0.39229604601860046,
+          -0.5688628554344177,
+          -0.5024137496948242
+        ],
+        [
+          -0.7105322480201721,
+          0.6909489631652832,
+          0.009518018923699856,
+          -0.13282546401023865
+        ],
+        [
+          -0.995640754699707,
+          -0.0076278988271951675,
+          -0.08795458823442459,
+          -0.030084902420639992
+        ],
+        [
+          -0.6539571285247803,
+          0.6231076717376709,
+          0.3185875117778778,
+          0.28736522793769836
+        ],
+        [
+          -0.8994519114494324,
+          0.007256327662616968,
+          0.4289669394493103,
+          -0.08319167792797089
+        ],
+        [
+          0.05369441583752632,
+          -0.33268314599990845,
+          -0.06395643204450607,
+          -0.9393339157104492
+        ]
+      ],
+      "ball_position_m": [
+        15.687742233276367,
+        2.5243828296661377,
+        0.02500000223517418
+      ],
+      "ball_velocity_mps": [
+        2.120429754257202,
+        0.3403441905975342,
+        -7.497343024187586e-12
+      ],
+      "root_com_velocity_mps": [
+        -0.011728457175195217,
+        0.018413519486784935,
+        -0.010524911805987358
+      ],
+      "root_angular_velocity_rad_s": [
+        0.052294597029685974,
+        -0.002618909813463688,
+        0.03416035696864128
+      ]
+    },
+    "jump": {
+      "env_id": 69,
+      "max_height_m": 0.7181007862091064,
+      "total_com_rise_m": 0.27607429027557373,
+      "airborne_s": 0.49199721217155457,
+      "recovery_s": 3.729912042617798,
+      "takeoff_time_s": 3.275944948196411,
+      "landing_time_s": 3.276944875717163,
+      "maximum_body_ground_force_n": 0.0,
+      "max_leg_torque_nm": 23.5,
+      "max_arm_torque_nm": 21.648826599121094,
+      "max_joint_speed_rad_s": 30.00003433227539,
+      "clipped_action_values": 0.0,
+      "limited_joint_targets": 0.0,
+      "saturated_leg_joint_substeps": 495.0,
+      "qualified_jump_landed": false,
+      "qualified_flight_seen": true,
+      "body_landing": false,
+      "stable_recovery": true,
+      "success": false,
+      "terminated": false
+    },
+    "case_id": "TRAIN69_LANE69_EP0",
+    "source_training_index": 69,
+    "ground_init": true
+  },
+  "actor_learning_improvement_proven": false,
+  "initial_source_policy_sha256": "204ff76f21625d49cd1dc29ec3b6256447a5fa8b2fec935dda986842fc330034",
+  "source_script_sha256": "2a372d1cfca4fcc17272d451f2645116469425f2cd1c22afdf5e7cdd93a33bc4",
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}

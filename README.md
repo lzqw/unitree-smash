@@ -1,5 +1,11 @@
 # QuadSmash：Codex /goal 实施与训练任务包
 
+当前进展（2026-10-27T03:03:22.638063+00:00）：恢复关联v5的15更新与独立原128例已完成，最终冻结为 **0完整、0合格空中拍线、0合格恢复、NF0**。训练738回合的8空中/1恢复没有在冻结评估中复现，因此保留原教师同协议4次空中触球的来源。GPU0已接上[9组实测挥拍方向比较](reports/G07_full_racket_v5/measured_swing_queue01/REPORT.md)，每组均为全部原128来球，再独立冷128；945项源码与输入保持。原球场/球拍物理、2×2米目标和正式A/B各200、50/70/85门槛保持，G07未完成。
+
+[143.69MB完成训练、15个诊断权重、canonical及冻结128证据包](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_contact_recovery_v5_completed15_training_and_independent128_20261027.zip)已上传并新下载核验120成员CRC与119份内容SHA。[64.12MB完整源码、输入与全部10层USD资产配套包](reports/G07_full_racket_v5/contact_recovery_cold128_delivery_20261027/REPORT.md)已恢复1016项路径；新15策略从恢复源码复算1600条真实指令误差1.096725e−5、现场Python读取0。[完整报告](reports/G07_full_racket_v5/contact_recovery15_completed_delivery_20261027/REPORT.md)。
+
+[正常比例的完整扣杀成功视频（14.82秒）](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Smash_success_TRAIN29_normal_ratio_20261027.mp4)来自**上一布局TRAIN29历史成功**，全部画面明确标注；当前原点0新版仍没有完整成功，不能继承历史成绩。以下段落保留此前观察与历史证据，当前状态以上述及status/STATUS.json为准。
+
 当前进展（2026-10-27T01:25:36.020208+00:00）：[新版触球飞行恢复关联已在GPU0实际评估原128例](reports/G07_full_racket_v5/contact_recovery_queue02/REPORT.md)。owner1939834、guard1939835、Native1939849存活，128真实地面初态、原点0及931输入保持已查；结果待出。修订在[独立程序分支](https://github.com/lzqw/unitree-smash/tree/g07-contact-flight-recovery-v5-20261027)，Main旧运行代码和历史评分保持；24项CPU测试、11360真实采样复算和1600条完整教师动作复算通过，不作新Native成绩。首轮缺URDF启动失败及用量保留，补齐原引用并确认旧进程退出后使用新02目录。后续顺序为新版真实冷源核验、15更新训练和最终冻结128；原物理、目标和正式门槛保持。最新可看的视频仍为下方70.16秒实际残差15失败录像。
 
 
