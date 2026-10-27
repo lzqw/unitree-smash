@@ -1,0 +1,111 @@
+{
+  "observed_at": "2026-10-27T09:59:47.046151+00:00",
+  "previous_goal_turn_classification": "progress",
+  "previous_turn_evidence": "Local d97815e records completed early7 plus independent128 and withdraws the unsupported pre-impact velocity interpretation.",
+  "current_turn_classification": "progress",
+  "next_action_changed_by_actual_evidence": "Actual original128 forecast is accurate to0.210mm; focus new contact-reference proposals on measured y/z tracking deficits rather than replacing the forecast. No change to held native jobs.",
+  "held_receipts": [
+    {
+      "path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/stance_recovery_queue01/PLAN.json",
+      "sha256": "c4cf5e35a310322e1a4fc8bf1af2b4127e62d0360cb6db5fc74f73fb5f1e9e9d",
+      "held_files": 1050,
+      "all_unchanged": true
+    },
+    {
+      "path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/early_lateral_queue01/BOUND_SELECTED_SOURCE_INPUTS.json",
+      "sha256": "38536c9660cd74c0cb2f87ee7fd8e3b899e0e896dbb2ec013095a2d5bf37229c",
+      "held_files": 969,
+      "all_unchanged": true
+    },
+    {
+      "path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing_queue01/BOUND_SELECTED_SOURCE_INPUTS.json",
+      "sha256": "943b54d1772b684c7b25878e4d29688b8d411fa495839ddd352f771f2debbd3a",
+      "held_files": 993,
+      "all_unchanged": true
+    }
+  ],
+  "held_union_files": 1073,
+  "all_held_inputs_unchanged": true,
+  "processes": [
+    {
+      "pid": 1966524,
+      "start_ticks": "70291052",
+      "command": "/home/autodrive/Isaac/env_isaaclab/bin/python -u /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing_queue01/run.py ",
+      "CUDA_VISIBLE_DEVICES": "",
+      "children": [
+        1994961
+      ]
+    },
+    {
+      "pid": 1994961,
+      "start_ticks": "71584847",
+      "command": "/home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/scripts/run_gpu_job.py --goal G07 --budget-window g07-full-racket-unlimited-20261024 --max-seconds 18000 --env-steps-cap 716800 --output /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing7_n128_01 --require-artifact completed.json -- /home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing_queue01/evaluate_windowed_swing.py --output /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing7_n128_01 --mode search --source /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/early_lateral7_n128_01/best_candidate.pt --source-evaluation /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/early_lateral7_best_cold128_01 --precision-receipt /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin_precision_after_aim_queue01/PRECISION_ADMISSION.json --seed 724201 --headless ",
+      "CUDA_VISIBLE_DEVICES": "0",
+      "children": [
+        1994976
+      ]
+    },
+    {
+      "pid": 1994976,
+      "start_ticks": "71584859",
+      "command": "/home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing_queue01/evaluate_windowed_swing.py --output /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing7_n128_01 --mode search --source /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/early_lateral7_n128_01/best_candidate.pt --source-evaluation /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/early_lateral7_best_cold128_01 --precision-receipt /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin_precision_after_aim_queue01/PRECISION_ADMISSION.json --seed 724201 --headless ",
+      "CUDA_VISIBLE_DEVICES": "0",
+      "children": []
+    },
+    {
+      "pid": 1968858,
+      "start_ticks": "70396314",
+      "command": "/home/autodrive/Isaac/env_isaaclab/bin/python -u /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/recovery_prior_queue01/run.py ",
+      "CUDA_VISIBLE_DEVICES": "",
+      "children": []
+    },
+    {
+      "pid": 1973878,
+      "start_ticks": "70601904",
+      "command": "/home/autodrive/Isaac/env_isaaclab/bin/python -u /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/air_countermotion_queue01/run.py ",
+      "CUDA_VISIBLE_DEVICES": "",
+      "children": []
+    },
+    {
+      "pid": 1984009,
+      "start_ticks": "71053999",
+      "command": "/home/autodrive/Isaac/env_isaaclab/bin/python -u /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/momentum_strike_queue01/run.py ",
+      "CUDA_VISIBLE_DEVICES": "",
+      "children": []
+    },
+    {
+      "pid": 1990613,
+      "start_ticks": "71376602",
+      "command": "/home/autodrive/Isaac/env_isaaclab/bin/python -u /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/stance_recovery_queue01/run.py ",
+      "CUDA_VISIBLE_DEVICES": "",
+      "children": []
+    }
+  ],
+  "current_native_progress": {
+    "candidate_id": 4,
+    "candidate_name": "windowed_rate_tol3_blend1",
+    "control_ticks": 800,
+    "first_episodes_complete": 128,
+    "completed_candidates": 4,
+    "actual_control_env_steps": 512000,
+    "formal_acceptance": false
+  },
+  "new_native_job_started": false,
+  "github_upload_performed": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/current_intercept_diagnosis_20261027/analyze_forecast_and_geometry.py": "2e5d9d58a197e5d2c8f0787f4b4a6e06831988ea6d548c71154cf28b32e19a89",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/current_intercept_diagnosis_20261027/ACTUAL_ANALYSIS.stdout.log": "e95cc402a5a657fd562326429b09fcb4239c5be412bd4d51a5d135f9e35be790",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/current_intercept_diagnosis_20261027/ATTEMPT1.failed.log": "90ebee838855d29d587a59bfae46cdc8bcb6181a8ea203634f02570d5bf50924",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/current_intercept_diagnosis_20261027/REPORT.md": "54e02a8eae9eb98d6b39fe431adc8c6a7cca3feb4f62634f53b658a179dd6086",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/current_intercept_diagnosis_20261027/analyze_forecast_and_geometry.py.failed1": "ef1b5a328eeee6dd1e51ff2b1d45ce49495d4aa2ff531f03f2bab1e007d6d461",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/current_intercept_diagnosis_20261027/shared_target_controller.py": "9bbd3b38a791e88abcbd8ccf26a9c4429eac02c2ececcb3e87c5f1d86c5f7680",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/current_intercept_diagnosis_20261027/PROPOSAL.json": "253d61a85ded5f60ed02f0556f80c725c99f1604fbc754ac701e6c0104c023b7",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/current_intercept_diagnosis_20261027/CPU_SHARED_TARGET_CHECK.json": "8a7d9a0ff63bfcbbacfa8c3a2361f9c88f32326030d3150861b310ab9eccf724",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/current_intercept_diagnosis_20261027/ACTUAL_FORECAST_AND_MISS_CHECK.json": "f32b240c077cee2f4ee8c4cbf5eaaf1fe2b74726e8fbaa8d66b74c4bf8382d4f",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/current_intercept_diagnosis_20261027/check_shared_target.py": "aa6f6fbaee6813898a09ca5769dac6f8134c69399e7c27649e8c129439ca72c9",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/current_intercept_diagnosis_20261027/CPU_SHARED_TARGET.stdout.log": "e0b89e88eaf0123eb5e240cb85e157782f23d8c4519a6384aa41db496879f9af"
+  }
+}

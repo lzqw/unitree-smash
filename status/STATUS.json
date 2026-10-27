@@ -5486,7 +5486,7 @@
         "archive_proof": "reports/G07_full_racket_v4/joint40_fixed_delivery_20261026/ARCHIVE.json"
       },
       "current_native_workflow": {
-        "observed_at": "2026-10-27T09:39:16.288141+00:00",
+        "observed_at": "2026-10-27T09:59:47.046151+00:00",
         "owner_pid": 1966524,
         "owner_start_ticks": "70291052",
         "guard_pid": 1994961,
@@ -5495,12 +5495,12 @@
         "native_start_ticks": "71584859",
         "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing7_n128_01",
         "progress": {
-          "candidate_id": 3,
-          "candidate_name": "windowed_rate_tol3_blend0.5",
-          "control_ticks": 700,
-          "first_episodes_complete": 19,
-          "completed_candidates": 3,
-          "actual_control_env_steps": 396800,
+          "candidate_id": 4,
+          "candidate_name": "windowed_rate_tol3_blend1",
+          "control_ticks": 800,
+          "first_episodes_complete": 128,
+          "completed_candidates": 4,
+          "actual_control_env_steps": 512000,
           "formal_acceptance": false
         },
         "source_selected_and_CPU_checked": true,
@@ -9259,10 +9259,10 @@
         "formal_acceptance": false
       },
       "last_goal_turn_classification": {
-        "classification": "progress",
-        "observed_at": "2026-10-27T06:27:44.129301+00:00",
-        "evidence": "Selected independent cold128 actually completed0/4/0/NF0; early7 actual-source admission and CPU replay passed and native1975639 confirmed live. Uploaded277MB complete9+128 packet, fresh downloadCRC/SHA verified, all1280 raw outcomes and45381 public actions audited; recorded unselected3 CPU/GPU tolerance failure and localized first tool projection using counterfactual probes without changing original policy.",
-        "previous_turn": "progress: public countermotion implementation/CPU checks and guarded follow-up registration"
+        "observed_at": "2026-10-27T09:59:47.046151+00:00",
+        "previous_turn": "progress",
+        "current_turn": "progress",
+        "evidence": "reports/G07_full_racket_v5/current_intercept_diagnosis_20261027/CONTINUATION_EVIDENCE.json"
       },
       "completed_leg06_warmup13_frozen_TRAIN128": {
         "episodes": 128,
@@ -9955,7 +9955,7 @@
         "formal_cases_read": false,
         "formal_acceptance": false
       },
-      "current_next_action": "Finish existing windowed7 and its independent128, then use actual admitted sources for the registered recovery9, air-countermotion3, momentum-strike4 and conditional stance-recovery4 chain. Keep original physics, cases, limits and gates. Treat contact-force-substep velocities as post-step records; do not infer exact pre-impact motion from them. Save locally by default.",
+      "current_next_action": "Finish existing windowed7 and independent128, then execute only the registered source-admitted sequential recovery/air/momentum/conditional-stance chain. New shared y/z reference proposals passed CPU checks but are unqueued; revisit on the actual final source if contact deficit persists. Original forecast is already accurate in current original128 data. Save intermediate artifacts locally.",
       "latest_current_video_candidate4": {
         "checked_at": "2026-10-26T09:49:37.125036+00:00",
         "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_body_candidate4_cold128_complete_and_failures_v2_20261026.mp4",
@@ -12385,12 +12385,12 @@
         "native_execution": true,
         "formal_acceptance": false,
         "observed_current_native_progress": {
-          "candidate_id": 3,
-          "candidate_name": "windowed_rate_tol3_blend0.5",
-          "control_ticks": 700,
-          "first_episodes_complete": 19,
-          "completed_candidates": 3,
-          "actual_control_env_steps": 396800,
+          "candidate_id": 4,
+          "candidate_name": "windowed_rate_tol3_blend1",
+          "control_ticks": 800,
+          "first_episodes_complete": 128,
+          "completed_candidates": 4,
+          "actual_control_env_steps": 512000,
           "formal_acceptance": false
         },
         "observed_at": "2026-10-27T09:39:16.288141+00:00",
@@ -13058,6 +13058,39 @@
         "same_protocol_zero_noise_seed_and_original128": true,
         "selection_scope": "Development TRAIN-only measured source retention; does not imply formal performance or causal advantage.",
         "new15_not_promoted": true,
+        "formal_acceptance": false
+      },
+      "latest_current_intercept_diagnosis": {
+        "checked_at": "2026-10-27T09:48:41.792752+00:00",
+        "report": "reports/G07_full_racket_v5/current_intercept_diagnosis_20261027/REPORT.md",
+        "actual_executions": 256,
+        "distinct_original_cases": 128,
+        "maximum_forecast_position_error_m": 0.00020982689963345308,
+        "non_air_case_counts": [
+          115,
+          114
+        ],
+        "negative_y_counts": [
+          115,
+          114
+        ],
+        "median_y_errors_m": [
+          -0.11445616657355517,
+          -0.11717090250966186
+        ],
+        "native_scores_unchanged": true,
+        "formal_acceptance": false
+      },
+      "prepared_shared_yz_reference_bias": {
+        "report": "reports/G07_full_racket_v5/current_intercept_diagnosis_20261027/REPORT.md",
+        "checked_at": "2026-10-27T09:56:28.241825+00:00",
+        "candidate_count": 5,
+        "actual_source_streams": 2,
+        "primary_CPU_commands": 48000,
+        "source_zero_replays_within_original_tolerance": true,
+        "maximum_arm_target_rate_rad_s": 5.00004768371582,
+        "native_execution": false,
+        "queued_for_GPU": false,
         "formal_acceptance": false
       }
     },
