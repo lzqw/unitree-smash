@@ -1,0 +1,663 @@
+{
+  "prepared_at": "2026-10-27T03:48:31.423908+00:00",
+  "schema": "native-recovery-motion-prior-v1",
+  "table_file": "recorded_recovery_prior.npz",
+  "table_sha256": "e123651c0fd2e8cee1854c13c7d3e927381628688837242edaa53e71f1d16d97",
+  "source_trace_sha256": "b5b5887dd2c887ded542accff08de291aa63962228966d2dfd04fd0cf8158eb1",
+  "source_policy_sha256": "204ff76f21625d49cd1dc29ec3b6256447a5fa8b2fec935dda986842fc330034",
+  "source_protocol_sha256": "b9fbfbcbe6ba4ff5f8ac4a944e3bcc0d4f2f0db4adf37182e30750a0562ec196",
+  "protocol_sha256": "bfe6f2bef675bb4716e4970e6400eb86dd50b06e799e848030eb2a29ed84a309",
+  "asset_sha256": "c2264fcece90b042c7c6a1cac7d516af83972729d0402947e3a519041e184cf2",
+  "samples": 800,
+  "control_dt_s": 0.01,
+  "residual_joint_scale_rad": [
+    0.15,
+    0.15,
+    0.15,
+    0.15,
+    0.15,
+    0.15,
+    0.15,
+    0.15,
+    0.15,
+    0.15,
+    0.15,
+    0.15,
+    0.15,
+    0.15,
+    0.15,
+    0.15,
+    0.15,
+    0.15
+  ],
+  "actual_reference_planned_event_time_s": 2.747239351272583,
+  "actual_reference_first_public_air_hit_phase_s": 2.7300000190734863,
+  "public_phase773_means": "Observed airborne AND contact_seen; latch once for a post-contact recovery controller. Not a persistent hit flag or a legality oracle.",
+  "actual_reference_outcome": {
+    "airborne_contact": true,
+    "conditional_recovery": true,
+    "complete": false,
+    "fault": false
+  },
+  "actual_source_without_exploration_outcome": {
+    "airborne_contact": true,
+    "conditional_recovery": false,
+    "complete": false,
+    "fault": false
+  },
+  "actual_reference_raw_episode": {
+    "launched": true,
+    "in_play": false,
+    "had_contact": true,
+    "legal_initial_contact": true,
+    "string_hit": true,
+    "airborne_string_hit": true,
+    "frame_hit": false,
+    "released": true,
+    "crossed_net": true,
+    "landed_legal_court": true,
+    "landed_target": false,
+    "ground_seen": true,
+    "robot_net_fault": false,
+    "body_ball_fault": false,
+    "wrong_side_fault": false,
+    "double_hit_fault": false,
+    "racket_invasion_fault": false,
+    "body_over_net_fault": false,
+    "under_net_obstruction_fault": false,
+    "engineering_body_crossing": false,
+    "bad_return_fault": false,
+    "net_blocked_fault": false,
+    "shuttle_net_contact": true,
+    "followthrough_crossed": false,
+    "followthrough_finished": false,
+    "env_id": 69,
+    "episode_index": 0,
+    "complete_smash": false,
+    "recovery_success": true,
+    "contact_count": 1,
+    "contact_point_m": [
+      1.189902424812317,
+      0.16410556435585022,
+      1.7616381645202637
+    ],
+    "outgoing_velocity_mps": [
+      3.9617440700531006,
+      0.739456295967102,
+      -2.541801929473877
+    ],
+    "first_landing_m": [
+      4.451673984527588,
+      0.7113856077194214,
+      0.02512357570230961
+    ],
+    "first_landing_time_s": 3.563455820083618,
+    "crossing_point_m": [
+      1.524999976158142,
+      0.22493116557598114,
+      1.557774305343628
+    ],
+    "crossing_time_s": 2.8042967319488525,
+    "release_time_s": 2.726166009902954,
+    "first_string_contact_point_m": [
+      1.189902424812317,
+      0.16410556435585022,
+      1.7616381645202637
+    ],
+    "first_string_time_s": 2.725728750228882,
+    "contact_time_s": 2.725728750228882,
+    "net_margin_m": 0.008615612983703613,
+    "numerical_failures": 0,
+    "racket_plane_native_events": [],
+    "active_rally_launch_count": 1,
+    "hit_velocity_error_mps": 6.419616624953051e-07,
+    "contact_flight_recovery": {
+      "schema": "contact-flight-recovery-v1",
+      "bound": true,
+      "contact_flight_id": 8,
+      "rally_contact_time_s": 2.725728750228882,
+      "airborne_string_time_s": 2.725728750228882,
+      "contact_flight_takeoff_s": 2.5459978580474854,
+      "qualified_contact_landing": true,
+      "contact_flight_landing_s": 3.0509612560272217,
+      "contact_flight_com_rise_m": 0.27607429027557373,
+      "contact_flight_clear_s": 0.49199721217155457,
+      "stable_recovery": true,
+      "recovery_s": 3.729912042617798,
+      "body_landing": false,
+      "maximum_body_ground_force_n": 0.0,
+      "terminal_root_height_m": 0.16465525329113007,
+      "success": true
+    },
+    "training_terminal_reasons": {
+      "rally_fault": false,
+      "robot_rule_fault": false,
+      "shuttle_only_fault": false,
+      "first_ground_without_target": true,
+      "body_ground": false,
+      "root_fallen": false
+    },
+    "training_early_termination": false,
+    "training_continue_after_miss": true,
+    "terminal_native_state": {
+      "scope": "Actual native state at terminal control step, before automatic reset; not exact first-collision substep",
+      "time_s": 8.0,
+      "body_link_positions_m": [
+        [
+          0.4632456600666046,
+          -0.23177479207515717,
+          0.16465525329113007
+        ],
+        [
+          0.6486721038818359,
+          -0.1611301451921463,
+          0.1507919281721115
+        ],
+        [
+          0.6602088809013367,
+          -0.2533401548862457,
+          0.14715635776519775
+        ],
+        [
+          0.7458497285842896,
+          -0.19589832425117493,
+          0.15150649845600128
+        ],
+        [
+          0.26628240942955017,
+          -0.2102094292640686,
+          0.18215416371822357
+        ],
+        [
+          0.27781927585601807,
+          -0.30241939425468445,
+          0.17851859331130981
+        ],
+        [
+          0.5181381702423096,
+          -0.22726017236709595,
+          0.22434140741825104
+        ],
+        [
+          0.6403079032897949,
+          -0.07302732020616531,
+          0.18668299913406372
+        ],
+        [
+          0.6737308502197266,
+          -0.3456469178199768,
+          0.16757364571094513
+        ],
+        [
+          0.7477837800979614,
+          -0.19288206100463867,
+          0.08114203810691833
+        ],
+        [
+          0.256971150636673,
+          -0.11950947344303131,
+          0.21056288480758667
+        ],
+        [
+          0.29086029529571533,
+          -0.39623621106147766,
+          0.1907079517841339
+        ],
+        [
+          0.518650233745575,
+          -0.22743169963359833,
+          0.23031707108020782
+        ],
+        [
+          0.4281265139579773,
+          -0.0902102142572403,
+          0.1794145554304123
+        ],
+        [
+          0.497802197933197,
+          -0.3955734074115753,
+          0.05837008357048035
+        ],
+        [
+          0.04498600959777832,
+          -0.1393260657787323,
+          0.204350546002388
+        ],
+        [
+          0.08132341504096985,
+          -0.42164796590805054,
+          0.21930044889450073
+        ],
+        [
+          0.5291485786437988,
+          -0.2309480458498001,
+          0.35281768441200256
+        ],
+        [
+          0.5516598224639893,
+          -0.01481640338897705,
+          0.023131854832172394
+        ],
+        [
+          0.7067379951477051,
+          -0.37258487939834595,
+          0.02392677776515484
+        ],
+        [
+          0.13479682803153992,
+          -0.07326067984104156,
+          0.022861242294311523
+        ],
+        [
+          0.16208775341510773,
+          -0.43596160411834717,
+          0.022726766765117645
+        ],
+        [
+          0.5291485786437988,
+          -0.2309480607509613,
+          0.35281771421432495
+        ],
+        [
+          0.4858100116252899,
+          -0.25257471203804016,
+          0.6337023973464966
+        ],
+        [
+          0.5086376070976257,
+          -0.25949427485466003,
+          0.8842814564704895
+        ],
+        [
+          0.508637547492981,
+          -0.25949424505233765,
+          0.8842814564704895
+        ],
+        [
+          0.4383614659309387,
+          -0.2647991180419922,
+          0.941849946975708
+        ],
+        [
+          0.6856062412261963,
+          -0.19698627293109894,
+          1.3138329982757568
+        ]
+      ],
+      "body_link_quaternions_wxyz": [
+        [
+          0.9970009922981262,
+          0.0169710423797369,
+          0.04173365235328674,
+          0.06292314827442169
+        ],
+        [
+          0.9790655970573425,
+          0.1890217661857605,
+          0.05198032781481743,
+          0.05476372689008713
+        ],
+        [
+          0.9910433888435364,
+          -0.11014401912689209,
+          0.03337997943162918,
+          0.06772587448358536
+        ],
+        [
+          0.9970009922981262,
+          0.0169710423797369,
+          0.04173365607857704,
+          0.06292314827442169
+        ],
+        [
+          0.9861055612564087,
+          0.14796844124794006,
+          0.049647897481918335,
+          0.05688679218292236
+        ],
+        [
+          0.9949213266372681,
+          -0.06656084954738617,
+          0.036318983882665634,
+          0.06619630753993988
+        ],
+        [
+          0.9970009922981262,
+          0.0169710423797369,
+          0.041733648627996445,
+          0.06292314827442169
+        ],
+        [
+          0.6996124386787415,
+          0.10546977818012238,
+          0.686887264251709,
+          0.16614575684070587
+        ],
+        [
+          0.8696146011352539,
+          -0.1288474202156067,
+          0.47649964690208435,
+          0.010809600353240967
+        ],
+        [
+          0.9970009326934814,
+          0.01697104051709175,
+          0.041733644902706146,
+          0.0629231408238411
+        ],
+        [
+          0.7033720016479492,
+          0.0726635605096817,
+          0.6929191946983337,
+          0.14089278876781464
+        ],
+        [
+          0.657931387424469,
+          -0.0938323587179184,
+          0.7472041249275208,
+          -0.0027881618589162827
+        ],
+        [
+          0.9970009922981262,
+          0.01697104051709175,
+          0.041733644902706146,
+          0.06292314827442169
+        ],
+        [
+          0.9308842420578003,
+          0.19599217176437378,
+          -0.3077762722969055,
+          -0.017757192254066467
+        ],
+        [
+          0.7519131302833557,
+          -0.0351991169154644,
+          -0.6464582085609436,
+          0.12441685795783997
+        ],
+        [
+          0.9621984958648682,
+          0.15787792205810547,
+          -0.2214571237564087,
+          0.014328587800264359
+        ],
+        [
+          0.9772986173629761,
+          -0.04984085634350777,
+          -0.1899346262216568,
+          0.07954999059438705
+        ],
+        [
+          0.9939765930175781,
+          0.018509119749069214,
+          0.041074663400650024,
+          0.09990330040454865
+        ],
+        [
+          0.9308843016624451,
+          0.19599218666553497,
+          -0.30777621269226074,
+          -0.01775718294084072
+        ],
+        [
+          0.7519131302833557,
+          -0.0351991169154644,
+          -0.6464581489562988,
+          0.12441685795783997
+        ],
+        [
+          0.9621984958648682,
+          0.15787792205810547,
+          -0.2214570790529251,
+          0.01432859618216753
+        ],
+        [
+          0.9772984981536865,
+          -0.04984085634350777,
+          -0.18993455171585083,
+          0.07954997569322586
+        ],
+        [
+          0.519691526889801,
+          -0.39229604601860046,
+          -0.5688628554344177,
+          -0.5024137496948242
+        ],
+        [
+          -0.7105322480201721,
+          0.6909489631652832,
+          0.009518018923699856,
+          -0.13282546401023865
+        ],
+        [
+          -0.995640754699707,
+          -0.0076278988271951675,
+          -0.08795458823442459,
+          -0.030084902420639992
+        ],
+        [
+          -0.6539571285247803,
+          0.6231076717376709,
+          0.3185875117778778,
+          0.28736522793769836
+        ],
+        [
+          -0.8994519114494324,
+          0.007256327662616968,
+          0.4289669394493103,
+          -0.08319167792797089
+        ],
+        [
+          0.05369441583752632,
+          -0.33268314599990845,
+          -0.06395643204450607,
+          -0.9393339157104492
+        ]
+      ],
+      "ball_position_m": [
+        15.687742233276367,
+        2.5243828296661377,
+        0.02500000223517418
+      ],
+      "ball_velocity_mps": [
+        2.120429754257202,
+        0.3403441905975342,
+        -7.497343024187586e-12
+      ],
+      "root_com_velocity_mps": [
+        -0.011728457175195217,
+        0.018413519486784935,
+        -0.010524911805987358
+      ],
+      "root_angular_velocity_rad_s": [
+        0.052294597029685974,
+        -0.002618909813463688,
+        0.03416035696864128
+      ]
+    },
+    "jump": {
+      "env_id": 69,
+      "max_height_m": 0.7181007862091064,
+      "total_com_rise_m": 0.27607429027557373,
+      "airborne_s": 0.49199721217155457,
+      "recovery_s": 3.729912042617798,
+      "takeoff_time_s": 3.275944948196411,
+      "landing_time_s": 3.276944875717163,
+      "maximum_body_ground_force_n": 0.0,
+      "max_leg_torque_nm": 23.5,
+      "max_arm_torque_nm": 21.648826599121094,
+      "max_joint_speed_rad_s": 30.00003433227539,
+      "clipped_action_values": 0.0,
+      "limited_joint_targets": 0.0,
+      "saturated_leg_joint_substeps": 495.0,
+      "qualified_jump_landed": false,
+      "qualified_flight_seen": true,
+      "body_landing": false,
+      "stable_recovery": true,
+      "success": false,
+      "terminated": false
+    },
+    "source_training_index": 69,
+    "ground_init": true,
+    "case_id": "TRAIN69_LANE69_EP0"
+  },
+  "actual_source_without_exploration_episode": {
+    "launched": true,
+    "in_play": false,
+    "had_contact": true,
+    "legal_initial_contact": true,
+    "string_hit": true,
+    "airborne_string_hit": true,
+    "frame_hit": false,
+    "released": true,
+    "crossed_net": true,
+    "landed_legal_court": true,
+    "landed_target": true,
+    "ground_seen": true,
+    "robot_net_fault": false,
+    "body_ball_fault": false,
+    "wrong_side_fault": false,
+    "double_hit_fault": false,
+    "racket_invasion_fault": false,
+    "body_over_net_fault": false,
+    "under_net_obstruction_fault": false,
+    "engineering_body_crossing": false,
+    "bad_return_fault": false,
+    "net_blocked_fault": false,
+    "shuttle_net_contact": false,
+    "followthrough_crossed": false,
+    "followthrough_finished": false,
+    "env_id": 69,
+    "episode_index": 0,
+    "complete_smash": false,
+    "recovery_success": false,
+    "contact_count": 1,
+    "contact_point_m": [
+      1.1996655464172363,
+      0.16557256877422333,
+      1.767345666885376
+    ],
+    "outgoing_velocity_mps": [
+      4.956491470336914,
+      0.6862986087799072,
+      -3.1505167484283447
+    ],
+    "first_landing_m": [
+      2.9689135551452637,
+      0.40922877192497253,
+      0.025152184069156647
+    ],
+    "first_landing_time_s": 3.0870301723480225,
+    "crossing_point_m": [
+      1.524999976158142,
+      0.20930065214633942,
+      1.5563901662826538
+    ],
+    "crossing_time_s": 2.785452127456665,
+    "release_time_s": 2.7249791622161865,
+    "first_string_contact_point_m": [
+      1.1996655464172363,
+      0.16557256877422333,
+      1.767345666885376
+    ],
+    "first_string_time_s": 2.7245419025421143,
+    "contact_time_s": 2.7245419025421143,
+    "net_margin_m": 0.007231473922729492,
+    "numerical_failures": 0,
+    "racket_plane_native_events": [],
+    "active_rally_launch_count": 1,
+    "hit_velocity_error_mps": 1.2644053981603065e-07,
+    "contact_flight_recovery": {
+      "schema": "contact-flight-recovery-v1",
+      "bound": true,
+      "contact_flight_id": 4,
+      "rally_contact_time_s": 2.7245419025421143,
+      "airborne_string_time_s": 2.7245419025421143,
+      "contact_flight_takeoff_s": 2.5439980030059814,
+      "qualified_contact_landing": true,
+      "contact_flight_landing_s": 3.060960531234741,
+      "contact_flight_com_rise_m": 0.2787152826786041,
+      "contact_flight_clear_s": 0.5009971261024475,
+      "stable_recovery": false,
+      "recovery_s": 0.0,
+      "body_landing": true,
+      "maximum_body_ground_force_n": 37001.05078125,
+      "terminal_root_height_m": 0.1777157038450241,
+      "success": false
+    },
+    "jump": {
+      "env_id": 69,
+      "max_height_m": 0.7183707356452942,
+      "total_com_rise_m": 0.2787152826786041,
+      "airborne_s": 4.563851833343506,
+      "recovery_s": 0.0,
+      "takeoff_time_s": 3.4339334964752197,
+      "landing_time_s": 3.3959362506866455,
+      "maximum_body_ground_force_n": 37001.05078125,
+      "max_leg_torque_nm": 23.5,
+      "max_arm_torque_nm": 36.264732360839844,
+      "max_joint_speed_rad_s": 30.000030517578125,
+      "clipped_action_values": 0.0,
+      "limited_joint_targets": 0.0,
+      "saturated_leg_joint_substeps": 493.0,
+      "qualified_jump_landed": false,
+      "qualified_flight_seen": true,
+      "body_landing": true,
+      "stable_recovery": false,
+      "success": false,
+      "terminated": false
+    },
+    "case_id": "B-720402-005",
+    "ground_init": true,
+    "source_training_index": 69
+  },
+  "actual_same_case_state_comparisons": [
+    {
+      "from_s": 2.4,
+      "to_s": 2.75,
+      "failed_source_root_angular_speed_max_rad_s": 3.162618637084961,
+      "recovered_trace_root_angular_speed_max_rad_s": 4.054388999938965,
+      "failed_source_gravity_xy_norm_max": 0.47978293895721436,
+      "recovered_trace_gravity_xy_norm_max": 0.48109671473503113
+    },
+    {
+      "from_s": 2.75,
+      "to_s": 3.15,
+      "failed_source_root_angular_speed_max_rad_s": 4.271059989929199,
+      "recovered_trace_root_angular_speed_max_rad_s": 4.196543216705322,
+      "failed_source_gravity_xy_norm_max": 0.8615938425064087,
+      "recovered_trace_gravity_xy_norm_max": 0.7983168959617615
+    },
+    {
+      "from_s": 3.15,
+      "to_s": 4.0,
+      "failed_source_root_angular_speed_max_rad_s": 9.531352043151855,
+      "recovered_trace_root_angular_speed_max_rad_s": 3.511622905731201,
+      "failed_source_gravity_xy_norm_max": 0.9996543526649475,
+      "recovered_trace_gravity_xy_norm_max": 0.7027144432067871
+    }
+  ],
+  "maximum_recorded_request": 0.8109323382377625,
+  "leg_request_RMS": 0.20099546015262604,
+  "arm_request_RMS": 0.09886929392814636,
+  "CPU_base_command_max_error": 1.0192394256591797e-05,
+  "CPU_complete_command_max_error": 1.0013580322265625e-05,
+  "original_action_tolerance": 0.0005,
+  "policy_prior_is_shared_across_cases": true,
+  "runtime_case_id_input": false,
+  "exact_native_reexecution_not_yet_performed": true,
+  "smoothed_or_grouped_candidate_performance_unproven": true,
+  "complete_smash_success_claimed": false,
+  "formal_acceptance": false,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/recovery_motion_prior_20261027/prepare_seed.py": "d787f26c53a8303394b2763cce42155879189ea97a72412402ceb75bfdbbbfac",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/residual_contact_recovery_n128_updates15_02/trajectory_traces/lane0069_episode000000.npz": "b5b5887dd2c887ded542accff08de291aa63962228966d2dfd04fd0cf8158eb1",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/residual_contact_recovery_n128_updates15_02/trajectory_traces/lane0069_episode000000.json": "6d2d29c3318bb743e8f4671282ccd744efe35463317e6b411a737e008d37d02e",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_sequential_n128_01/best_candidate.pt": "204ff76f21625d49cd1dc29ec3b6256447a5fa8b2fec935dda986842fc330034",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/residual_contact_recovery_n128_updates15_02/INPUTS.json": "f38c91122c7d935f3b3c71c20036680f9fdb9caba0a90c5050611ba2c45c8fd9",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/residual_contact_recovery_n128_updates15_02/job.json": "a26b38ac79d742d1102f2a4d2c12f8bf9946c2f6845c0c6e1fbfed268eff5edf",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/configs/g07_full_racket_eval_v5_contact_recovery_origin0.json": "bfe6f2bef675bb4716e4970e6400eb86dd50b06e799e848030eb2a29ed84a309",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/measured_swing9_n128_01/public_and_actions_000.npz": "66f97d0c70fdebbcda6de927365578ab73b7c4ddd1148a8a5430d9eb873653ba",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/teacher_contact_recovery_cold128_02/episodes.json": "7acc521e351b1f8ed8c84f62058d75ce1f4f897abbb1e8cc9ba83c35da2380f6"
+  }
+}

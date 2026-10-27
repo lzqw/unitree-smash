@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/origin0_residual15_completed_delivery_20261027/ACTUAL_COMPLETED_DATA_CHECK.json",
-      "notes": "GPU0运行原9组挥拍比较；前两组分别0完整/4空中/0恢复及0完整/0空中/0恢复，NF0，第三组进行。全128几何诊断发现124漏球例同向横偏中位16.4cm，7项提前横向控制已CPU核验并排队等待原9组及冷评估结束；尚无新闭环成绩。原物理、128来球、目标及正式A/B各200和50/70/85保持，G07未完成。",
+      "notes": "GPU0继续原9组挥拍比较，已完成5组空中数4/0/0/1/0，完整与恢复均0，NF0。7项横向修正等待流程1957568仍存活无GPU子进程。新增9项真实恢复动作参考已输出明确未执行的权重、上传并新下载，800行与每项4800行便携CPU重放通过；没有继承种子回合的恢复或成功。另留存记忆保护无动作变化及恒定速度会改变来球前姿态的证据。原128、物理、目标与正式50/70/85保持，G07未完成。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
@@ -59,7 +59,7 @@
         {
           "state": "RUNNING_MEASURED_SWING_SEARCH",
           "owner_pid": 1951183,
-          "observed_at": "2026-10-27T03:37:47.705465+00:00",
+          "observed_at": "2026-10-27T04:36:27.466734+00:00",
           "formal_cases_read": false,
           "formal_acceptance": false,
           "goal_complete": false,
@@ -68,22 +68,17 @@
           "native_child_pid": 1951201,
           "gpu": 0,
           "actual_progress": {
-            "candidate_id": 2,
-            "candidate_name": "rate_tol1.5_blend1",
-            "control_ticks": 300,
-            "first_episodes_complete": 1,
-            "completed_candidates": 2,
-            "actual_control_env_steps": 243200,
+            "candidate_id": 5,
+            "candidate_name": "rate_tol6_blend0.5",
+            "control_ticks": 400,
+            "first_episodes_complete": 0,
+            "completed_candidates": 5,
+            "actual_control_env_steps": 563200,
             "formal_acceptance": false
           },
           "completed_candidates": [
             {
               "candidate_id": 0,
-              "candidate": {
-                "candidate_id": 0,
-                "name": "unchanged_source",
-                "overrides": {}
-              },
               "summary": {
                 "episodes": 128,
                 "complete": 0,
@@ -95,22 +90,39 @@
             },
             {
               "candidate_id": 1,
-              "candidate": {
-                "candidate_id": 1,
-                "name": "rate_tol1.5_blend0.5",
-                "overrides": {
-                  "swing_joint_velocity_rad_s": [
-                    0.07481538952336636,
-                    3.7403631000529556,
-                    1.487068815368809,
-                    -0.023502641031815208,
-                    -1.245855629444122,
-                    -5.0
-                  ]
-                },
-                "contact_state_only_prediction_source": 1.5,
-                "interpolation_fraction": 0.5
-              },
+              "summary": {
+                "episodes": 128,
+                "complete": 0,
+                "airborne_contacts": 0,
+                "conditional_recovery_count": 0,
+                "attack_outgoing": 0,
+                "numerical_failures": 0
+              }
+            },
+            {
+              "candidate_id": 2,
+              "summary": {
+                "episodes": 128,
+                "complete": 0,
+                "airborne_contacts": 0,
+                "conditional_recovery_count": 0,
+                "attack_outgoing": 0,
+                "numerical_failures": 0
+              }
+            },
+            {
+              "candidate_id": 3,
+              "summary": {
+                "episodes": 128,
+                "complete": 0,
+                "airborne_contacts": 1,
+                "conditional_recovery_count": 0,
+                "attack_outgoing": 0,
+                "numerical_failures": 0
+              }
+            },
+            {
+              "candidate_id": 4,
               "summary": {
                 "episodes": 128,
                 "complete": 0,
@@ -5504,7 +5516,7 @@
       "current_native_workflow": {
         "state": "RUNNING_MEASURED_SWING_SEARCH",
         "owner_pid": 1951183,
-        "observed_at": "2026-10-27T03:37:47.705465+00:00",
+        "observed_at": "2026-10-27T04:36:27.466734+00:00",
         "formal_cases_read": false,
         "formal_acceptance": false,
         "goal_complete": false,
@@ -5513,22 +5525,17 @@
         "native_child_pid": 1951201,
         "gpu": 0,
         "actual_progress": {
-          "candidate_id": 2,
-          "candidate_name": "rate_tol1.5_blend1",
-          "control_ticks": 300,
-          "first_episodes_complete": 1,
-          "completed_candidates": 2,
-          "actual_control_env_steps": 243200,
+          "candidate_id": 5,
+          "candidate_name": "rate_tol6_blend0.5",
+          "control_ticks": 400,
+          "first_episodes_complete": 0,
+          "completed_candidates": 5,
+          "actual_control_env_steps": 563200,
           "formal_acceptance": false
         },
         "completed_candidates": [
           {
             "candidate_id": 0,
-            "candidate": {
-              "candidate_id": 0,
-              "name": "unchanged_source",
-              "overrides": {}
-            },
             "summary": {
               "episodes": 128,
               "complete": 0,
@@ -5540,22 +5547,39 @@
           },
           {
             "candidate_id": 1,
-            "candidate": {
-              "candidate_id": 1,
-              "name": "rate_tol1.5_blend0.5",
-              "overrides": {
-                "swing_joint_velocity_rad_s": [
-                  0.07481538952336636,
-                  3.7403631000529556,
-                  1.487068815368809,
-                  -0.023502641031815208,
-                  -1.245855629444122,
-                  -5.0
-                ]
-              },
-              "contact_state_only_prediction_source": 1.5,
-              "interpolation_fraction": 0.5
-            },
+            "summary": {
+              "episodes": 128,
+              "complete": 0,
+              "airborne_contacts": 0,
+              "conditional_recovery_count": 0,
+              "attack_outgoing": 0,
+              "numerical_failures": 0
+            }
+          },
+          {
+            "candidate_id": 2,
+            "summary": {
+              "episodes": 128,
+              "complete": 0,
+              "airborne_contacts": 0,
+              "conditional_recovery_count": 0,
+              "attack_outgoing": 0,
+              "numerical_failures": 0
+            }
+          },
+          {
+            "candidate_id": 3,
+            "summary": {
+              "episodes": 128,
+              "complete": 0,
+              "airborne_contacts": 1,
+              "conditional_recovery_count": 0,
+              "attack_outgoing": 0,
+              "numerical_failures": 0
+            }
+          },
+          {
+            "candidate_id": 4,
             "summary": {
               "episodes": 128,
               "complete": 0,
@@ -12072,11 +12096,6 @@
       "measured_swing_completed_candidate_observations": [
         {
           "candidate_id": 0,
-          "candidate": {
-            "candidate_id": 0,
-            "name": "unchanged_source",
-            "overrides": {}
-          },
           "summary": {
             "episodes": 128,
             "complete": 0,
@@ -12088,22 +12107,39 @@
         },
         {
           "candidate_id": 1,
-          "candidate": {
-            "candidate_id": 1,
-            "name": "rate_tol1.5_blend0.5",
-            "overrides": {
-              "swing_joint_velocity_rad_s": [
-                0.07481538952336636,
-                3.7403631000529556,
-                1.487068815368809,
-                -0.023502641031815208,
-                -1.245855629444122,
-                -5.0
-              ]
-            },
-            "contact_state_only_prediction_source": 1.5,
-            "interpolation_fraction": 0.5
-          },
+          "summary": {
+            "episodes": 128,
+            "complete": 0,
+            "airborne_contacts": 0,
+            "conditional_recovery_count": 0,
+            "attack_outgoing": 0,
+            "numerical_failures": 0
+          }
+        },
+        {
+          "candidate_id": 2,
+          "summary": {
+            "episodes": 128,
+            "complete": 0,
+            "airborne_contacts": 0,
+            "conditional_recovery_count": 0,
+            "attack_outgoing": 0,
+            "numerical_failures": 0
+          }
+        },
+        {
+          "candidate_id": 3,
+          "summary": {
+            "episodes": 128,
+            "complete": 0,
+            "airborne_contacts": 1,
+            "conditional_recovery_count": 0,
+            "attack_outgoing": 0,
+            "numerical_failures": 0
+          }
+        },
+        {
+          "candidate_id": 4,
           "summary": {
             "episodes": 128,
             "complete": 0,
@@ -12158,6 +12194,95 @@
         "later_raw_recovery_or_jump_rows_differing": 24,
         "actual_public_rows_CPU_checked": 4800,
         "CPU_max_action_error": 6.556510925292969e-06
+      },
+      "recovery_motion_prior_proposals": {
+        "report": "reports/G07_full_racket_v5/recovery_motion_prior_20261027/REPORT.md",
+        "proposal_count": 9,
+        "seed_actual_recovery": true,
+        "seed_complete_smash": false,
+        "new_proposals_native_execution": false,
+        "runtime_case_id_input": false,
+        "portable_CPU_800_recovered_rows_passed": true,
+        "portable_CPU_4800_rows_per_each9_passed": true,
+        "original_live_project_Python_reads": 0,
+        "packet": {
+          "checked_at": "2026-10-27T04:14:35.352456+00:00",
+          "repo": "lzqw/unitree-smash",
+          "release": "g07-full-racket-v4-progress-20261024",
+          "asset": "G07_actual_recovery_reference_and_unexecuted_prior_proposals_20261027.zip",
+          "GitHub_asset_id": 680399596,
+          "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_actual_recovery_reference_and_unexecuted_prior_proposals_20261027.zip",
+          "bytes": 6769174,
+          "sha256": "8bddb1022cc0e7eb9752c6d67c130824665cf1db907d6006a3f5c4262f7adfa0",
+          "fresh_download": "/tmp/g07_recovery_prior_fresh_download_bu08whp8/G07_actual_recovery_reference_and_unexecuted_prior_proposals_20261027.zip",
+          "fresh_extracted": "/tmp/g07_recovery_prior_fresh_download_bu08whp8/extracted",
+          "fresh_downloaded_sha256": "8bddb1022cc0e7eb9752c6d67c130824665cf1db907d6006a3f5c4262f7adfa0",
+          "upload_succeeded": true,
+          "download_verified": true,
+          "members_CRC_verified": 23,
+          "payload_SHA_verified": 22,
+          "seed_actual_native_recovery": true,
+          "seed_complete_smash": false,
+          "proposed_family_native_execution": false,
+          "source_performance_inherited": false,
+          "required_runtime_companion": {
+            "asset": "G07_contact_recovery_v5_cold128_complete_inputs_and_assets_20261027.zip",
+            "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_contact_recovery_v5_cold128_complete_inputs_and_assets_20261027.zip",
+            "bytes": 64120557,
+            "sha256": "e0a9e87cdec749caf39d4f86230e7851e35d7dddc13ec8af425809fee798db1d"
+          },
+          "program_sha256": "ee6ece10be3a73608f163eb08cbab57c9cd2e8ab86190eaa04f392324b634e58",
+          "native_reexecution": false,
+          "formal_acceptance": false,
+          "goal_complete": false
+        },
+        "public_dataset": {
+          "checked_at": "2026-10-27T04:25:20.818286+00:00",
+          "asset": "G07_measured_swing_reference_actual_public_actions_6cases_20261027.npz",
+          "GitHub_asset": {
+            "id": 680423750,
+            "name": "G07_measured_swing_reference_actual_public_actions_6cases_20261027.npz",
+            "size": 1708174,
+            "state": "uploaded",
+            "digest": "sha256:66f97d0c70fdebbcda6de927365578ab73b7c4ddd1148a8a5430d9eb873653ba",
+            "browser_download_url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_measured_swing_reference_actual_public_actions_6cases_20261027.npz"
+          },
+          "bytes": 1708174,
+          "sha256": "66f97d0c70fdebbcda6de927365578ab73b7c4ddd1148a8a5430d9eb873653ba",
+          "fresh_download": "/tmp/g07_prior_public_reference_download_r9ncpe7i/G07_measured_swing_reference_actual_public_actions_6cases_20261027.npz",
+          "fresh_download_sha256": "66f97d0c70fdebbcda6de927365578ab73b7c4ddd1148a8a5430d9eb873653ba",
+          "upload_succeeded": true,
+          "download_verified": true,
+          "actual_public_rows": 4800,
+          "original128_reference_outcomes_not_reestimated_from6_cases": true,
+          "program_sha256": "2331dab012a231d7f31847e20df1ac954eec290fadde6232c660787ba36f47c4",
+          "new_native_performance": false,
+          "formal_acceptance": false
+        },
+        "no_extra_GPU_job_started": true
+      },
+      "contact_guard_memory_probe": {
+        "report": "reports/G07_full_racket_v5/contact_guard_memory_20261027/REPORT.md",
+        "actual_public_rows_per_setting": 4800,
+        "extra_memory_seconds": [
+          0,
+          0.4,
+          0.6
+        ],
+        "all_commands_unchanged_on_reference_inputs": true,
+        "native_run_scheduled": false,
+        "formal_acceptance": false
+      },
+      "constant_swing_preparation_confound": {
+        "report": "reports/G07_full_racket_v5/recovery_motion_prior_20261027/ACTUAL_PREPARATION_SHIFT_CHECK.json",
+        "completed_generations_checked": 5,
+        "actual_pre_ball_racket_shift_at1_5s_m": [
+          0.0623868927359581,
+          0.09384875744581223,
+          0.039904918521642685,
+          0.04742974415421486
+        ],
+        "prospective_windowed_speed_method_implemented": false
       }
     },
     "G08": {
