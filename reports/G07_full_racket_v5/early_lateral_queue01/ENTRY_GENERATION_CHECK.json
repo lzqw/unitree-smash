@@ -1,0 +1,105 @@
+{
+  "source": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/measured_swing_queue01/evaluate_swing.py",
+  "source_sha256": "57ad99259fc4bff41596711eef1f5d4f75945f46f99e97a2c20231315c50e671",
+  "target": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/early_lateral_queue01/evaluate_early_lateral.py",
+  "target_sha256": "46ee5a7d67027dc47aa6a00f231e6e5fb4edc10683f9240aee18b2688e4ae598",
+  "replacements": [
+    {
+      "before": "origin0_measured_swing_velocity_20261027",
+      "after": "early_tangent_intercept_20261027",
+      "occurrences": 1
+    },
+    {
+      "before": "SCHEMA = 'g07-measured-swing-contact-recovery-v5'",
+      "after": "SCHEMA = 'g07-public-early-lateral-intercept-v5'",
+      "occurrences": 1
+    },
+    {
+      "before": "swing_controller.py",
+      "after": "early_lateral_controller.py",
+      "occurrences": 5
+    },
+    {
+      "before": "PROPOSALS / 'RESULT.json'",
+      "after": "PROPOSALS / 'PROPOSAL.json'",
+      "occurrences": 3
+    },
+    {
+      "before": "cpu['factory_source_sha256']",
+      "after": "cpu['factory_sha256']",
+      "occurrences": 1
+    },
+    {
+      "before": "assert cpu['original_source_unchanged_candidate_matches_actual_GPU']",
+      "after": "assert cpu['results'][0]['maximum_source_action_difference'] == 0. and cpu['results'][0]['maximum_original_GPU_action_difference'] <= 5e-4",
+      "occurrences": 1
+    },
+    {
+      "before": "assert cpu['candidate_count'] == len(proposal['candidates']) == 9",
+      "after": "assert cpu['candidate_count'] == 9 and len(proposal['candidates']) == 7",
+      "occurrences": 1
+    },
+    {
+      "before": "source_check = verify_recovery_source(args.source, checkpoint, args.source_evaluation, ROOT, sha(protocol_path))",
+      "after": "source_check = verify_measured_source(args.source, checkpoint, args.source_evaluation, ROOT, sha(protocol_path))",
+      "occurrences": 1
+    },
+    {
+      "before": "assert cpu['source_checkpoint_sha256'] == sha(args.source)",
+      "after": "assert cpu['all_nine_candidates_checked'] and cpu['source_actor_weights_and_normalizers_and_checkpoint_unchanged']",
+      "occurrences": 1
+    },
+    {
+      "before": "candidates = proposal['candidates']",
+      "after": "candidates = proposal['candidates']\n        assert candidates == [row for row in module().candidates() if row['candidate_id'] in [0, 1, 2, 3, 5, 6, 7]]",
+      "occurrences": 1
+    },
+    {
+      "before": "assert len(search_metrics['history']) == 9",
+      "after": "assert len(search_metrics['history']) == 7",
+      "occurrences": 1
+    },
+    {
+      "before": "<= 921600",
+      "after": "<= 716800",
+      "occurrences": 1
+    },
+    {
+      "before": "candidates = [dict(candidate_id=selected['candidate_id'], name='independent_cold_selected_swing',\n                           overrides=checkpoint['runtime_overrides'])]",
+      "after": "candidates = [dict(candidate_id=selected['candidate_id'], name='independent_cold_selected_early_lateral',\n                           **checkpoint['early_lateral'])]",
+      "occurrences": 1
+    },
+    {
+      "before": "factory.MeasuredSwingController(base, 128, env.device, candidate['overrides'])",
+      "after": "factory.EarlyLateralController(base, 128, env.device, candidate['gain'], candidate['start_clock_s'])",
+      "occurrences": 1
+    },
+    {
+      "before": "runtime_overrides=candidate['overrides'], protocol_sha256=sha(protocol_path)",
+      "after": "early_lateral=dict(gain=candidate['gain'], start_clock_s=candidate['start_clock_s']), protocol_sha256=sha(protocol_path)",
+      "occurrences": 1
+    },
+    {
+      "before": "HERE / 'run.py', HERE / 'PLAN.json', HERE / 'PRE_NATIVE_CPU_CHECK.json']",
+      "after": "HERE / 'run.py', HERE / 'PLAN.json', HERE / 'PRE_NATIVE_CPU_CHECK.json',\n             HERE / 'source_support.py', HERE / 'SELECTED_SOURCE_CPU_CHECK.json']",
+      "occurrences": 1
+    },
+    {
+      "before": "import traceback\n",
+      "after": "import traceback\n\nfrom source_support import verify_measured_source\n",
+      "occurrences": 1
+    },
+    {
+      "before": "nine sequential ground resets",
+      "after": "seven sequential ground resets",
+      "occurrences": 1
+    },
+    {
+      "before": "Execute fixed measured swing proposals",
+      "after": "Execute public early-lateral preparation proposals",
+      "occurrences": 1
+    }
+  ],
+  "source_file_changed": false,
+  "native_execution": false
+}

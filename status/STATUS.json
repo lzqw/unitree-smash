@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/origin0_residual15_completed_delivery_20261027/ACTUAL_COMPLETED_DATA_CHECK.json",
-      "notes": "恢复关联v5已完成原教师冷128、15更新训练和最终冻结128。新冻结0完整/0空中/0恢复、NF0，未超过原教师4空中；当前GPU0运行9组实测挥拍方向比较，原128、物理、目标与正式50/70/85保持，完整目标未通过。",
+      "notes": "GPU0运行原9组挥拍比较；前两组分别0完整/4空中/0恢复及0完整/0空中/0恢复，NF0，第三组进行。全128几何诊断发现124漏球例同向横偏中位16.4cm，7项提前横向控制已CPU核验并排队等待原9组及冷评估结束；尚无新闭环成绩。原物理、128来球、目标及正式A/B各200和50/70/85保持，G07未完成。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
@@ -59,7 +59,7 @@
         {
           "state": "RUNNING_MEASURED_SWING_SEARCH",
           "owner_pid": 1951183,
-          "observed_at": "2026-10-27T03:03:22.638063+00:00",
+          "observed_at": "2026-10-27T03:37:47.705465+00:00",
           "formal_cases_read": false,
           "formal_acceptance": false,
           "goal_complete": false,
@@ -67,19 +67,62 @@
           "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/measured_swing9_n128_01",
           "native_child_pid": 1951201,
           "gpu": 0,
-          "source_hashes_held": 945,
           "actual_progress": {
-            "candidate_id": 0,
-            "candidate_name": "unchanged_source",
-            "control_ticks": 500,
-            "first_episodes_complete": 9,
-            "completed_candidates": 0,
-            "actual_control_env_steps": 64000,
+            "candidate_id": 2,
+            "candidate_name": "rate_tol1.5_blend1",
+            "control_ticks": 300,
+            "first_episodes_complete": 1,
+            "completed_candidates": 2,
+            "actual_control_env_steps": 243200,
             "formal_acceptance": false
           },
-          "report": "reports/G07_full_racket_v5/measured_swing_queue01/REPORT.md",
+          "completed_candidates": [
+            {
+              "candidate_id": 0,
+              "candidate": {
+                "candidate_id": 0,
+                "name": "unchanged_source",
+                "overrides": {}
+              },
+              "summary": {
+                "episodes": 128,
+                "complete": 0,
+                "airborne_contacts": 4,
+                "conditional_recovery_count": 0,
+                "attack_outgoing": 0,
+                "numerical_failures": 0
+              }
+            },
+            {
+              "candidate_id": 1,
+              "candidate": {
+                "candidate_id": 1,
+                "name": "rate_tol1.5_blend0.5",
+                "overrides": {
+                  "swing_joint_velocity_rad_s": [
+                    0.07481538952336636,
+                    3.7403631000529556,
+                    1.487068815368809,
+                    -0.023502641031815208,
+                    -1.245855629444122,
+                    -5.0
+                  ]
+                },
+                "contact_state_only_prediction_source": 1.5,
+                "interpolation_fraction": 0.5
+              },
+              "summary": {
+                "episodes": 128,
+                "complete": 0,
+                "airborne_contacts": 0,
+                "conditional_recovery_count": 0,
+                "attack_outgoing": 0,
+                "numerical_failures": 0
+              }
+            }
+          ],
           "verified_live_processes": true,
-          "all128_initial_ground_states_identical_to_source": true
+          "source_hashes_held": 945
         }
       ],
       "queued_native_sequence": {
@@ -5461,7 +5504,7 @@
       "current_native_workflow": {
         "state": "RUNNING_MEASURED_SWING_SEARCH",
         "owner_pid": 1951183,
-        "observed_at": "2026-10-27T03:03:22.638063+00:00",
+        "observed_at": "2026-10-27T03:37:47.705465+00:00",
         "formal_cases_read": false,
         "formal_acceptance": false,
         "goal_complete": false,
@@ -5469,19 +5512,62 @@
         "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/measured_swing9_n128_01",
         "native_child_pid": 1951201,
         "gpu": 0,
-        "source_hashes_held": 945,
         "actual_progress": {
-          "candidate_id": 0,
-          "candidate_name": "unchanged_source",
-          "control_ticks": 500,
-          "first_episodes_complete": 9,
-          "completed_candidates": 0,
-          "actual_control_env_steps": 64000,
+          "candidate_id": 2,
+          "candidate_name": "rate_tol1.5_blend1",
+          "control_ticks": 300,
+          "first_episodes_complete": 1,
+          "completed_candidates": 2,
+          "actual_control_env_steps": 243200,
           "formal_acceptance": false
         },
-        "report": "reports/G07_full_racket_v5/measured_swing_queue01/REPORT.md",
+        "completed_candidates": [
+          {
+            "candidate_id": 0,
+            "candidate": {
+              "candidate_id": 0,
+              "name": "unchanged_source",
+              "overrides": {}
+            },
+            "summary": {
+              "episodes": 128,
+              "complete": 0,
+              "airborne_contacts": 4,
+              "conditional_recovery_count": 0,
+              "attack_outgoing": 0,
+              "numerical_failures": 0
+            }
+          },
+          {
+            "candidate_id": 1,
+            "candidate": {
+              "candidate_id": 1,
+              "name": "rate_tol1.5_blend0.5",
+              "overrides": {
+                "swing_joint_velocity_rad_s": [
+                  0.07481538952336636,
+                  3.7403631000529556,
+                  1.487068815368809,
+                  -0.023502641031815208,
+                  -1.245855629444122,
+                  -5.0
+                ]
+              },
+              "contact_state_only_prediction_source": 1.5,
+              "interpolation_fraction": 0.5
+            },
+            "summary": {
+              "episodes": 128,
+              "complete": 0,
+              "airborne_contacts": 0,
+              "conditional_recovery_count": 0,
+              "attack_outgoing": 0,
+              "numerical_failures": 0
+            }
+          }
+        ],
         "verified_live_processes": true,
-        "all128_initial_ground_states_identical_to_source": true
+        "source_hashes_held": 945
       },
       "completed_causal_tangent_probes": {
         "state": "SUCCEEDED",
@@ -11982,6 +12068,96 @@
         "program_sha256": "bf05d31bec514d84d586bbcbeb2f97b3ae0a4fbb0448e976d1b3c12562a9a448",
         "reused_transport_sha256": "ffbfffc5f642e671751e6ccc716cc50985a96f03a5d809ac1bd755ce8a80b416",
         "source_scope": "Previous-origin16 TRAIN29; explicitly historical in every frame; current-origin0 success is not claimed."
+      },
+      "measured_swing_completed_candidate_observations": [
+        {
+          "candidate_id": 0,
+          "candidate": {
+            "candidate_id": 0,
+            "name": "unchanged_source",
+            "overrides": {}
+          },
+          "summary": {
+            "episodes": 128,
+            "complete": 0,
+            "airborne_contacts": 4,
+            "conditional_recovery_count": 0,
+            "attack_outgoing": 0,
+            "numerical_failures": 0
+          }
+        },
+        {
+          "candidate_id": 1,
+          "candidate": {
+            "candidate_id": 1,
+            "name": "rate_tol1.5_blend0.5",
+            "overrides": {
+              "swing_joint_velocity_rad_s": [
+                0.07481538952336636,
+                3.7403631000529556,
+                1.487068815368809,
+                -0.023502641031815208,
+                -1.245855629444122,
+                -5.0
+              ]
+            },
+            "contact_state_only_prediction_source": 1.5,
+            "interpolation_fraction": 0.5
+          },
+          "summary": {
+            "episodes": 128,
+            "complete": 0,
+            "airborne_contacts": 0,
+            "conditional_recovery_count": 0,
+            "attack_outgoing": 0,
+            "numerical_failures": 0
+          }
+        }
+      ],
+      "queued_early_lateral_intercept": {
+        "state": "WAITING_FOR_CONFIRMED_SWING9_OWNER_AND_COLD128",
+        "owner_pid": 1957568,
+        "observed_at": "2026-10-27T03:37:47.705465+00:00",
+        "formal_cases_read": false,
+        "formal_acceptance": false,
+        "goal_complete": false,
+        "parent_owner_pid": 1951183,
+        "prospective_source": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/measured_swing9_n128_01/best_candidate.pt",
+        "source_selected": false,
+        "verified_waiter_live": true,
+        "verified_parent_and_native_live": true,
+        "waiter_CUDA_VISIBLE_DEVICES": "",
+        "waiter_GPU_children": [],
+        "held_inputs": 958,
+        "retained_candidate_count": 7,
+        "report": "reports/G07_full_racket_v5/early_lateral_queue01/REPORT.md",
+        "new_native_execution": false
+      },
+      "latest_interception_diagnostic": {
+        "report": "reports/G07_full_racket_v5/early_tangent_intercept_20261027/REPORT.md",
+        "all_original128_checked": true,
+        "missed_air_string_cases": 124,
+        "signed_world_y_error_median_m": -0.16416665830416116,
+        "interpolated_geometry_only": true,
+        "native_contact_labels_unchanged": true,
+        "CPU_candidates_checked": 9,
+        "actual_public_rows_per_candidate": 4800,
+        "native_candidates_retained": 7,
+        "new_feedback_native_execution": false,
+        "formal_acceptance": false
+      },
+      "latest_native_reference_replay": {
+        "report": "reports/G07_full_racket_v5/measured_swing_reference_20261027/REPORT.md",
+        "complete": 0,
+        "air": 4,
+        "recovery": 0,
+        "numerical_failures": 0,
+        "all_summary_counts_match_prior_source_cold": true,
+        "entire_episode_bitwise_replay_claimed": false,
+        "all_recorded_body_positions_equal_until3_3s": true,
+        "later_raw_recovery_or_jump_rows_differing": 24,
+        "actual_public_rows_CPU_checked": 4800,
+        "CPU_max_action_error": 6.556510925292969e-06
       }
     },
     "G08": {

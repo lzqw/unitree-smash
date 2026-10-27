@@ -1,0 +1,4429 @@
+{
+  "checked_at": "2026-10-27T03:14:15.527432+00:00",
+  "original128_cases_checked": true,
+  "native_airborne_contacts": 4,
+  "missed_air_string_cases": 124,
+  "missed_signed_ball_minus_material_hit_point_m": {
+    "x": {
+      "min": -0.14068874084855687,
+      "median": -0.05919431618257753,
+      "max": 0.060198598371575596,
+      "p10": -0.08644026902818273,
+      "p90": -0.023336279515889364
+    },
+    "y": {
+      "min": -0.3660547819465483,
+      "median": -0.16416665830416116,
+      "max": -0.030928855017065618,
+      "p10": -0.2504113802009957,
+      "p90": -0.08569527792122823
+    },
+    "z": {
+      "min": -0.06177423900795298,
+      "median": 0.076165525384987,
+      "max": 0.21154749527027317,
+      "p10": 0.0004988267659247875,
+      "p90": 0.17119554327894979
+    }
+  },
+  "missed_absolute_ball_minus_material_hit_point_m": {
+    "x": {
+      "min": 0.0004883514169302661,
+      "median": 0.05939822648831328,
+      "max": 0.14068874084855687,
+      "p10": 0.033227427854746285,
+      "p90": 0.08644026902818273
+    },
+    "y": {
+      "min": 0.030928855017065618,
+      "median": 0.16416665830416116,
+      "max": 0.3660547819465483,
+      "p10": 0.08569527792122825,
+      "p90": 0.2504113802009957
+    },
+    "z": {
+      "min": 0.00026647625599252045,
+      "median": 0.076165525384987,
+      "max": 0.21154749527027317,
+      "p10": 0.020982846573713212,
+      "p90": 0.17119554327894979
+    }
+  },
+  "missed_ball_left_of_material_target": 124,
+  "missed_lateral_error_over_010m": 101,
+  "geometric_interpolation_seconds": 0.002,
+  "interpolated_states_not_native_substeps": true,
+  "actual_native_contact_flags_not_replaced_by_geometric_gap": true,
+  "material_contact_offset_in_racket_m": [
+    0.025599999353289604,
+    0.0,
+    0.05999999865889549
+  ],
+  "source_lateral_feedback_gate": "Public ball present, begins at event-.25s, ramps over.12s, ends event+.03s.",
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/gain_body8_sequential_n128_01/best_candidate.pt": "204ff76f21625d49cd1dc29ec3b6256447a5fa8b2fec935dda986842fc330034",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/teacher_contact_recovery_cold128_02/all_first_episodes.npz": "be7db9c6e97b2c4c0344c68553d7758d0753d95cb1fecbdbb1124e718073d95c",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/teacher_contact_recovery_cold128_02/episodes.json": "7acc521e351b1f8ed8c84f62058d75ce1f4f897abbb1e8cc9ba83c35da2380f6",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/teacher_contact_recovery_cold128_02/geometry.json": "8afd390b7b92179ba6e2fde3774cc60162a98a5bd63ed50defd95b2e8f9d9c37",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/configs/full_racket_v4_r3.json": "14d58dd674665424dab63e67d525daf9b2239821797b97202aa45f9af1e5a26c",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/control/full_racket_teacher_v4.py": "fb8a04372cbc46930871220dbe444a30d57944a2bf03d673f1b576cea8f81ed5",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/early_tangent_intercept_20261027/analyze_misses.py": "fa6394bf294b9e8c6a2e8a905920ef275f978d0aab1356864195118ea8fca551"
+  },
+  "rows": [
+    {
+      "source_training_index": 0,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7639999866485594,
+      "approximate_string_gap_m": 0.08944759921012221,
+      "actual_recorded_interpolated_ball_m": [
+        1.1501334190368653,
+        0.036652008444070815,
+        1.7993666172027587
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.168407917022705,
+        0.22654411494731902,
+        1.7244140625
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.1945582358294629,
+        0.2474612278889045,
+        1.780396158016779
+      ],
+      "ball_minus_contact_point_m": [
+        -0.04442481679259758,
+        -0.2108092194448337,
+        0.018970459185979616
+      ],
+      "normal_world": [
+        0.9998746683307692,
+        0.008896484965419388,
+        -0.013095807943564032
+      ]
+    },
+    {
+      "source_training_index": 1,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7260000228881838,
+      "approximate_string_gap_m": 0.03791688686322727,
+      "actual_recorded_interpolated_ball_m": [
+        1.2338348031044006,
+        0.07696654498577118,
+        1.8136388301849364
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2537582039833068,
+        0.17543295174837112,
+        1.6955896615982056
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.283428358058459,
+        0.19819414978471442,
+        1.749040289537108
+      ],
+      "ball_minus_contact_point_m": [
+        -0.04959355495405826,
+        -0.12122760479894323,
+        0.06459854064782844
+      ],
+      "normal_world": [
+        0.9974352418111779,
+        -0.008619348425073402,
+        -0.07105381922039301
+      ]
+    },
+    {
+      "source_training_index": 2,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.716000032424927,
+      "approximate_string_gap_m": 0.1116002588448258,
+      "actual_recorded_interpolated_ball_m": [
+        1.1730404853820802,
+        -0.018420825153589247,
+        1.8525135040283203
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2256881237030028,
+        0.1498343050479889,
+        1.7133620977401733
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.254762479872351,
+        0.17170232987299688,
+        1.7675084836726307
+      ],
+      "ball_minus_contact_point_m": [
+        -0.08172199449027073,
+        -0.19012315502658614,
+        0.08500502035568958
+      ],
+      "normal_world": [
+        0.9982597969798885,
+        -0.01610332247559451,
+        -0.056727953769893466
+      ]
+    },
+    {
+      "source_training_index": 3,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7699999809265137,
+      "approximate_string_gap_m": 0.14146530697640103,
+      "actual_recorded_interpolated_ball_m": [
+        1.1271894574165344,
+        -0.06861826404929161,
+        1.8096856474876404
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2008453607559204,
+        0.15532256662845612,
+        1.7280084490776062
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2258567449334998,
+        0.17548899556114173,
+        1.7847808509255143
+      ],
+      "ball_minus_contact_point_m": [
+        -0.09866728751696541,
+        -0.24410725961043334,
+        0.024904796562126075
+      ],
+      "normal_world": [
+        0.9985983842317264,
+        0.05237571010570592,
+        -0.007619186354748026
+      ]
+    },
+    {
+      "source_training_index": 4,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.787999963760376,
+      "approximate_string_gap_m": 0.032769365743771796,
+      "actual_recorded_interpolated_ball_m": [
+        1.1200345516204835,
+        0.07244184911251068,
+        1.786235761642456
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1383319616317749,
+        0.20643325448036193,
+        1.7293554544448853
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.1631139508482813,
+        0.22731594976969785,
+        1.7859692853864635
+      ],
+      "ball_minus_contact_point_m": [
+        -0.0430793992277978,
+        -0.15487410065718715,
+        0.00026647625599252045
+      ],
+      "normal_world": [
+        0.9996642747681186,
+        0.025375663784244967,
+        0.005235784548728815
+      ]
+    },
+    {
+      "source_training_index": 5,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7300000190734863,
+      "approximate_string_gap_m": 0.17349397991759677,
+      "actual_recorded_interpolated_ball_m": [
+        1.198323130607605,
+        -0.03831080440431833,
+        1.8690562844276428
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2506744265556335,
+        0.189892016351223,
+        1.7023513913154602
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2796718939389515,
+        0.21359956751099615,
+        1.755759805533784
+      ],
+      "ball_minus_contact_point_m": [
+        -0.08134876333134655,
+        -0.2519103719153145,
+        0.11329647889385885
+      ],
+      "normal_world": [
+        0.9975335960304196,
+        0.014448517426618892,
+        -0.06868744524869475
+      ]
+    },
+    {
+      "source_training_index": 6,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.6759998321533205,
+      "approximate_string_gap_m": 0.0765790950159804,
+      "actual_recorded_interpolated_ball_m": [
+        1.2817628383636475,
+        0.024502333253622055,
+        1.854328203201294
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2899270534515381,
+        0.11453096270561218,
+        1.6738417625427247
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.322028787562909,
+        0.1340770939607279,
+        1.7271595571891325
+      ],
+      "ball_minus_contact_point_m": [
+        -0.04026594919926163,
+        -0.10957476070710584,
+        0.1271686460121615
+      ],
+      "normal_world": [
+        0.9911377998923675,
+        0.032949426338224105,
+        -0.12868642868810828
+      ]
+    },
+    {
+      "source_training_index": 7,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7200000286102295,
+      "approximate_string_gap_m": 0.12391755534286847,
+      "actual_recorded_interpolated_ball_m": [
+        1.1763579845428467,
+        -0.08494728803634644,
+        1.8412069082260132
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2267600297927856,
+        0.11417649686336517,
+        1.7198997735977173
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.255924092448484,
+        0.13298908554165575,
+        1.7751347603596588
+      ],
+      "ball_minus_contact_point_m": [
+        -0.07956610790563734,
+        -0.2179363735780022,
+        0.0660721478663544
+      ],
+      "normal_world": [
+        0.9976961079854931,
+        -0.049420473616129446,
+        -0.04647679956878417
+      ]
+    },
+    {
+      "source_training_index": 8,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.714000034332275,
+      "approximate_string_gap_m": 0.07709711159528182,
+      "actual_recorded_interpolated_ball_m": [
+        1.2427214622497558,
+        -0.0185134488157928,
+        1.8421946167945862
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2692754864692688,
+        0.11746168434619904,
+        1.7039299726486206
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2990022861816786,
+        0.13551829082289957,
+        1.7591172551271024
+      ],
+      "ball_minus_contact_point_m": [
+        -0.0562808239319228,
+        -0.15403173963869238,
+        0.0830773616674838
+      ],
+      "normal_world": [
+        0.9973813493915699,
+        -0.039919926573796616,
+        -0.0603062463447508
+      ]
+    },
+    {
+      "source_training_index": 9,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.685999894142151,
+      "approximate_string_gap_m": 0.04552573687046057,
+      "actual_recorded_interpolated_ball_m": [
+        1.2468276262283324,
+        0.0018348747864365572,
+        1.8395193815231323
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2650335550308227,
+        0.08384608700871468,
+        1.6950234055519104
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2956726917346613,
+        0.10142970370816531,
+        1.7498633502251701
+      ],
+      "ball_minus_contact_point_m": [
+        -0.04884506550632883,
+        -0.09959482892172876,
+        0.08965603129796218
+      ],
+      "normal_world": [
+        0.9938413111121343,
+        0.04285832082314275,
+        -0.10218910246760463
+      ]
+    },
+    {
+      "source_training_index": 10,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": true,
+      "native_frame_hit": true,
+      "native_contact_time_s": 2.7798240184783936,
+      "geometric_closest_time_s": 2.7779999732971192,
+      "approximate_string_gap_m": 0.025609204559414844,
+      "actual_recorded_interpolated_ball_m": [
+        1.1991560816764832,
+        0.08526302501559258,
+        1.8450833201408385
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1473812818527223,
+        0.14491864293813705,
+        1.7461543917655944
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.173218985306567,
+        0.15802386270611388,
+        1.8046011718396078
+      ],
+      "ball_minus_contact_point_m": [
+        0.025937096369916146,
+        -0.0727608376905213,
+        0.04048214830123076
+      ],
+      "normal_world": [
+        0.999577576052059,
+        0.02728894888518303,
+        -0.009999136094302676
+      ]
+    },
+    {
+      "source_training_index": 11,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.728000020980835,
+      "approximate_string_gap_m": 0.09021104158353205,
+      "actual_recorded_interpolated_ball_m": [
+        1.1514976501464844,
+        0.03088684305548668,
+        1.8355422019958496
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2169687032699585,
+        0.172491455078125,
+        1.7110015392303466
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.246357946794834,
+        0.19491382435309174,
+        1.7647497441035187
+      ],
+      "ball_minus_contact_point_m": [
+        -0.0948602966483496,
+        -0.16402698129760507,
+        0.0707924578923309
+      ],
+      "normal_world": [
+        0.9975192598375565,
+        -0.051996672135235546,
+        -0.047451789639531665
+      ]
+    },
+    {
+      "source_training_index": 12,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.809999942779541,
+      "approximate_string_gap_m": 0.04992176630503089,
+      "actual_recorded_interpolated_ball_m": [
+        1.0771989822387695,
+        -0.05329839140176773,
+        1.7724089622497559
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.080157995223999,
+        0.1082257404923439,
+        1.7503088116645813
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.0984163423080044,
+        0.11917875850255032,
+        1.8119693660262148
+      ],
+      "ball_minus_contact_point_m": [
+        -0.021217360069234914,
+        -0.17247714990431806,
+        -0.039560403776458974
+      ],
+      "normal_world": [
+        0.9794838324208206,
+        0.17856005127618158,
+        0.09342232128602546
+      ]
+    },
+    {
+      "source_training_index": 13,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7440000057220457,
+      "approximate_string_gap_m": 0.16340708579599503,
+      "actual_recorded_interpolated_ball_m": [
+        1.157474970817566,
+        -0.003994555305689573,
+        1.8698508501052857
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2465403079986572,
+        0.19838570058345795,
+        1.708513903617859
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2755744547376044,
+        0.2211643879700922,
+        1.7623052554324319
+      ],
+      "ball_minus_contact_point_m": [
+        -0.11809948392003844,
+        -0.22515894327578176,
+        0.10754559467285385
+      ],
+      "normal_world": [
+        0.99823394727281,
+        -0.03477602734342412,
+        -0.04816237571335521
+      ]
+    },
+    {
+      "source_training_index": 14,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.6659998416900637,
+      "approximate_string_gap_m": 0.144100219229318,
+      "actual_recorded_interpolated_ball_m": [
+        1.2956340670585633,
+        -0.08228157982230186,
+        1.9261708021163941
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.3420530557632446,
+        0.013459448143839835,
+        1.6761334776878356
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.375743501560602,
+        0.019463263271109116,
+        1.731669662935373
+      ],
+      "ball_minus_contact_point_m": [
+        -0.08010943450203878,
+        -0.10174484309341097,
+        0.1945011391810212
+      ],
+      "normal_world": [
+        0.9902885116872312,
+        -0.01123567527112962,
+        -0.13857280837700625
+      ]
+    },
+    {
+      "source_training_index": 15,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7040000438690184,
+      "approximate_string_gap_m": 0.1307708076755483,
+      "actual_recorded_interpolated_ball_m": [
+        1.259850811958313,
+        0.05352266877889633,
+        1.887534499168396
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.3012782335281372,
+        0.17529335021972656,
+        1.6729987144470215
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.3328385676267047,
+        0.19734002635518427,
+        1.725660362625947
+      ],
+      "ball_minus_contact_point_m": [
+        -0.07298775566839177,
+        -0.14381735757628794,
+        0.16187413654244898
+      ],
+      "normal_world": [
+        0.9930678208076759,
+        0.017287435324891992,
+        -0.11626455975997882
+      ]
+    },
+    {
+      "source_training_index": 16,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.702000045776367,
+      "approximate_string_gap_m": 0.07623298279511895,
+      "actual_recorded_interpolated_ball_m": [
+        1.2228316068649292,
+        -0.0149327727034688,
+        1.8433452606201173
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2522536277770997,
+        0.11539794802665711,
+        1.702943217754364
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2828445985723125,
+        0.1348574005528428,
+        1.7571731174328942
+      ],
+      "ball_minus_contact_point_m": [
+        -0.06001299170738328,
+        -0.14979017325631158,
+        0.0861721431872231
+      ],
+      "normal_world": [
+        0.9963948121749494,
+        -0.0329634694605212,
+        -0.07817152903693537
+      ]
+    },
+    {
+      "source_training_index": 17,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.718000030517578,
+      "approximate_string_gap_m": 0.09209442192058395,
+      "actual_recorded_interpolated_ball_m": [
+        1.2019538283348083,
+        0.03662371877580881,
+        1.8523785471916199
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.245761799812317,
+        0.1703079715371132,
+        1.699231255054474
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2769452507727377,
+        0.19348133824274602,
+        1.751633041929362
+      ],
+      "ball_minus_contact_point_m": [
+        -0.07499142243792933,
+        -0.15685761946693721,
+        0.1007455052622579
+      ],
+      "normal_world": [
+        0.9949751159831167,
+        -0.06799781261246902,
+        -0.07349024461997201
+      ]
+    },
+    {
+      "source_training_index": 18,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7260000228881838,
+      "approximate_string_gap_m": 0.05756762591864934,
+      "actual_recorded_interpolated_ball_m": [
+        1.174908995628357,
+        0.005303336353972555,
+        1.804044497013092
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2064138650894165,
+        0.1491116464138031,
+        1.7175665855407716
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.234643647170568,
+        0.1704328418163581,
+        1.772373937567782
+      ],
+      "ball_minus_contact_point_m": [
+        -0.059734651542211026,
+        -0.16512950546238553,
+        0.03167055944530994
+      ],
+      "normal_world": [
+        0.9989732917545684,
+        -0.00687773932159292,
+        -0.04477788586865722
+      ]
+    },
+    {
+      "source_training_index": 19,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": true,
+      "native_frame_hit": true,
+      "native_contact_time_s": 2.7632081508636475,
+      "geometric_closest_time_s": 2.759999990463257,
+      "approximate_string_gap_m": 0.03528019549504192,
+      "actual_recorded_interpolated_ball_m": [
+        1.2108092308044434,
+        0.08264859020709991,
+        1.8285468816757202
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1575167179107666,
+        0.1630672812461853,
+        1.7258143424987793
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.1846046883315462,
+        0.17831157523399932,
+        1.783166004769824
+      ],
+      "ball_minus_contact_point_m": [
+        0.026204542472897163,
+        -0.0956629850268994,
+        0.04538087690589632
+      ],
+      "normal_world": [
+        0.9996782745056051,
+        -0.010934642947124498,
+        -0.022886263677474095
+      ]
+    },
+    {
+      "source_training_index": 20,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.783999967575073,
+      "approximate_string_gap_m": 0.06497664902227673,
+      "actual_recorded_interpolated_ball_m": [
+        1.1597670793533326,
+        0.08170803785324096,
+        1.8154146432876588
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.199410343170166,
+        0.22651231288909912,
+        1.7182707786560059
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.226549746689949,
+        0.24735730966509692,
+        1.7738072413805521
+      ],
+      "ball_minus_contact_point_m": [
+        -0.06678266733661653,
+        -0.16564927181185596,
+        0.041607401907106656
+      ],
+      "normal_world": [
+        0.9992383332364596,
+        -0.036567964042336934,
+        -0.013621211275824732
+      ]
+    },
+    {
+      "source_training_index": 21,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.702000045776367,
+      "approximate_string_gap_m": 0.10990880014149534,
+      "actual_recorded_interpolated_ball_m": [
+        1.211678385734558,
+        0.046909110993146895,
+        1.8641765832901
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2573855996131897,
+        0.1759643852710724,
+        1.6850055694580077
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2889696323346835,
+        0.20024481131522828,
+        1.7366608653541478
+      ],
+      "ball_minus_contact_point_m": [
+        -0.07729124660012543,
+        -0.15333570032208138,
+        0.1275157179359523
+      ],
+      "normal_world": [
+        0.9946065795879264,
+        -0.025618063951792152,
+        -0.10050605275190187
+      ]
+    },
+    {
+      "source_training_index": 22,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7919999599456786,
+      "approximate_string_gap_m": 0.10635083895015118,
+      "actual_recorded_interpolated_ball_m": [
+        1.09487943649292,
+        0.07186696827411651,
+        1.802513599395752
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1453346490859986,
+        0.26952970027923584,
+        1.7248884677886962
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.1707633485047693,
+        0.2887057736338437,
+        1.7818184182763297
+      ],
+      "ball_minus_contact_point_m": [
+        -0.0758839120118493,
+        -0.2168388053597272,
+        0.020695181119422257
+      ],
+      "normal_world": [
+        0.9999278259978955,
+        0.01197326452874753,
+        -0.0009918324693685197
+      ]
+    },
+    {
+      "source_training_index": 23,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7360000133514406,
+      "approximate_string_gap_m": 0.010754419725384379,
+      "actual_recorded_interpolated_ball_m": [
+        1.1759671926498414,
+        0.02984209209680557,
+        1.7999993562698364
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1894513845443726,
+        0.13019955158233643,
+        1.7225497961044312
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2174254164777607,
+        0.14916468196701735,
+        1.7783452903027777
+      ],
+      "ball_minus_contact_point_m": [
+        -0.041458223827919305,
+        -0.11932258987021177,
+        0.021654065967058767
+      ],
+      "normal_world": [
+        0.9987496501386577,
+        -0.041549287977591186,
+        -0.027799154959534278
+      ]
+    },
+    {
+      "source_training_index": 24,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7539999961853026,
+      "approximate_string_gap_m": 0.08735522893960893,
+      "actual_recorded_interpolated_ball_m": [
+        1.1417524218559265,
+        0.02710141334682703,
+        1.824382245540619
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.192661464214325,
+        0.19150882214307785,
+        1.7236186146736145
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2203216613568597,
+        0.21387138008004428,
+        1.7783012380791154
+      ],
+      "ball_minus_contact_point_m": [
+        -0.0785692395009332,
+        -0.18676996673321725,
+        0.046081007461503454
+      ],
+      "normal_world": [
+        0.9991486417830929,
+        -0.03402473937263393,
+        -0.023330425063101293
+      ]
+    },
+    {
+      "source_training_index": 25,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7360000133514406,
+      "approximate_string_gap_m": 0.09605481695937906,
+      "actual_recorded_interpolated_ball_m": [
+        1.1961008310317993,
+        -0.07454866021871567,
+        1.844385528564453
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2216185092926026,
+        0.10503721833229065,
+        1.7342546701431274
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2480007504132906,
+        0.12112416507491783,
+        1.7917050600800604
+      ],
+      "ball_minus_contact_point_m": [
+        -0.0518999193814913,
+        -0.1956728252936335,
+        0.05268046848439267
+      ],
+      "normal_world": [
+        0.9994910047809158,
+        0.024627653511216534,
+        -0.0202783146382271
+      ]
+    },
+    {
+      "source_training_index": 26,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.728000020980835,
+      "approximate_string_gap_m": 0.10230739453492557,
+      "actual_recorded_interpolated_ball_m": [
+        1.1871281862258911,
+        -0.06817940473556519,
+        1.813665771484375
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.242160391807556,
+        0.11607549488544464,
+        1.7143229722976685
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2707636637537596,
+        0.13310880060403546,
+        1.7704218059417332
+      ],
+      "ball_minus_contact_point_m": [
+        -0.08363547752786848,
+        -0.20128820533960065,
+        0.04324396554264176
+      ],
+      "normal_world": [
+        0.9957910404894731,
+        -0.08829503032726711,
+        -0.02458030309821011
+      ]
+    },
+    {
+      "source_training_index": 27,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7320000171661376,
+      "approximate_string_gap_m": 0.07192408357612948,
+      "actual_recorded_interpolated_ball_m": [
+        1.1653872966766357,
+        0.014756777416914703,
+        1.8270679235458374
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2218041896820069,
+        0.14933503568172454,
+        1.7156890392303468
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2517162863181284,
+        0.1702058798791239,
+        1.7697726240160754
+      ],
+      "ball_minus_contact_point_m": [
+        -0.08632898964149271,
+        -0.1554491024622092,
+        0.05729529952976198
+      ],
+      "normal_world": [
+        0.9947339748641536,
+        -0.09415661075473834,
+        -0.04048273585297773
+      ]
+    },
+    {
+      "source_training_index": 28,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.734000015258789,
+      "approximate_string_gap_m": 0.039433656277798705,
+      "actual_recorded_interpolated_ball_m": [
+        1.191184651851654,
+        0.052065282687544824,
+        1.810152280330658
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.207645010948181,
+        0.1739629849791527,
+        1.7137448906898498
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2372509523954742,
+        0.19579743559418764,
+        1.767616077824671
+      ],
+      "ball_minus_contact_point_m": [
+        -0.046066300543820216,
+        -0.14373215290664282,
+        0.042536202505987
+      ],
+      "normal_world": [
+        0.9970585349162017,
+        -0.0591112417669136,
+        -0.048786668748042675
+      ]
+    },
+    {
+      "source_training_index": 29,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7959999561309816,
+      "approximate_string_gap_m": 0.18765366014099544,
+      "actual_recorded_interpolated_ball_m": [
+        1.153788113594055,
+        -0.08856588006019592,
+        1.8648125886917115
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.200747275352478,
+        0.1780018150806427,
+        1.7296276092529297
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2277339868874864,
+        0.1956075039511087,
+        1.7863472436477184
+      ],
+      "ball_minus_contact_point_m": [
+        -0.07394587329343127,
+        -0.28417338401130465,
+        0.07846534504399316
+      ],
+      "normal_world": [
+        0.9991395614684051,
+        0.026181831966436333,
+        -0.0321659506870975
+      ]
+    },
+    {
+      "source_training_index": 30,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7739999771118162,
+      "approximate_string_gap_m": 0.08515988936052035,
+      "actual_recorded_interpolated_ball_m": [
+        1.1549822330474853,
+        0.011995681189000608,
+        1.8204755067825318
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2076517701148988,
+        0.1766158640384674,
+        1.7227869987487794
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2348807494492697,
+        0.19549359260304372,
+        1.7789792923005332
+      ],
+      "ball_minus_contact_point_m": [
+        -0.07989851640178447,
+        -0.18349791141404312,
+        0.04149621448199858
+      ],
+      "normal_world": [
+        0.9979303134832628,
+        -0.06397592783605459,
+        -0.0064938500685412185
+      ]
+    },
+    {
+      "source_training_index": 31,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7040000438690184,
+      "approximate_string_gap_m": 0.1616479231446162,
+      "actual_recorded_interpolated_ball_m": [
+        1.1828219413757324,
+        -0.030705513060092927,
+        1.8774162530899048
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2665634870529174,
+        0.1549975425004959,
+        1.6971166610717774
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2968572974797405,
+        0.17751369290179325,
+        1.7503206818492125
+      ],
+      "ball_minus_contact_point_m": [
+        -0.11403535610400817,
+        -0.20821920596188617,
+        0.12709557124069226
+      ],
+      "normal_world": [
+        0.996534339099206,
+        -0.008206304855916394,
+        -0.08277661237765628
+      ]
+    },
+    {
+      "source_training_index": 32,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.785999965667725,
+      "approximate_string_gap_m": 0.1047074065546848,
+      "actual_recorded_interpolated_ball_m": [
+        1.1377805471420288,
+        -0.06921596154570579,
+        1.8132867097854615
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1687026500701905,
+        0.13867539316415786,
+        1.7492793560028077
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.1944277968209804,
+        0.15096078720053324,
+        1.8079534194719182
+      ],
+      "ball_minus_contact_point_m": [
+        -0.05664724967895163,
+        -0.22017674874623905,
+        0.0053332903135432375
+      ],
+      "normal_world": [
+        0.999959028225579,
+        -0.009049497595549507,
+        -0.00022014409833661936
+      ]
+    },
+    {
+      "source_training_index": 33,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.70600004196167,
+      "approximate_string_gap_m": 0.07915587849589453,
+      "actual_recorded_interpolated_ball_m": [
+        1.2157959461212158,
+        0.07517924159765244,
+        1.8649207711219788
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2469371676445007,
+        0.1685999020934105,
+        1.6930351734161377
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2764939338586374,
+        0.19273442965098003,
+        1.7459434143289831
+      ],
+      "ball_minus_contact_point_m": [
+        -0.06069798773742163,
+        -0.1175551880533276,
+        0.1189773567929957
+      ],
+      "normal_world": [
+        0.9951219359094143,
+        0.03985842585801254,
+        -0.09024211079103152
+      ]
+    },
+    {
+      "source_training_index": 34,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7040000438690184,
+      "approximate_string_gap_m": 0.07326890865402746,
+      "actual_recorded_interpolated_ball_m": [
+        1.2110573291778564,
+        0.04295380488038063,
+        1.8551498651504517
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2541812658309937,
+        0.1379840075969696,
+        1.6984280586242675
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2842718856467108,
+        0.15954521144350078,
+        1.7521405235998222
+      ],
+      "ball_minus_contact_point_m": [
+        -0.07321455646885444,
+        -0.11659140656312016,
+        0.10300934155062946
+      ],
+      "normal_world": [
+        0.9958313787278942,
+        0.019511877885479943,
+        -0.08910191783729318
+      ]
+    },
+    {
+      "source_training_index": 35,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.6779998302459718,
+      "approximate_string_gap_m": 0.11466850180007715,
+      "actual_recorded_interpolated_ball_m": [
+        1.260934865474701,
+        -0.08870249912142754,
+        1.878825044631958
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2844269156455994,
+        0.054074176400899884,
+        1.6927911043167114
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.3154432134374632,
+        0.06883772859262816,
+        1.7482472726293927
+      ],
+      "ball_minus_contact_point_m": [
+        -0.05450834796276216,
+        -0.15754022771405568,
+        0.13057777200256537
+      ],
+      "normal_world": [
+        0.9878458088112048,
+        0.10134924928254004,
+        -0.11785154934918188
+      ]
+    },
+    {
+      "source_training_index": 36,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.771999979019165,
+      "approximate_string_gap_m": 0.04973051244971246,
+      "actual_recorded_interpolated_ball_m": [
+        1.135140633583069,
+        -0.024176706187427045,
+        1.844264030456543
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1568006992340087,
+        0.11137281954288483,
+        1.7489890575408935
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.1825938740365123,
+        0.1229530755206134,
+        1.8077765529038843
+      ],
+      "ball_minus_contact_point_m": [
+        -0.047453240453443346,
+        -0.14712978170804045,
+        0.03648747755265869
+      ],
+      "normal_world": [
+        0.9991995387139603,
+        0.03859094801920439,
+        -0.010536629669310585
+      ]
+    },
+    {
+      "source_training_index": 37,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.718000030517578,
+      "approximate_string_gap_m": 0.1064259534019546,
+      "actual_recorded_interpolated_ball_m": [
+        1.1890596151351929,
+        -0.07044631987810135,
+        1.842065119743347
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2255900263786317,
+        0.11199639439582824,
+        1.7203826427459716
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.254737816760276,
+        0.13058116719329357,
+        1.7757032748997188
+      ],
+      "ball_minus_contact_point_m": [
+        -0.0656782016250832,
+        -0.20102748707139492,
+        0.06636184484362828
+      ],
+      "normal_world": [
+        0.9977619088974877,
+        -0.047601000275642055,
+        -0.04696081266332487
+      ]
+    },
+    {
+      "source_training_index": 38,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7739999771118162,
+      "approximate_string_gap_m": 0.0523722991691681,
+      "actual_recorded_interpolated_ball_m": [
+        1.1623111248016358,
+        0.019925059378147127,
+        1.8102616310119628
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1956539511680604,
+        0.15889889895915985,
+        1.7266482830047607
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2218530926195883,
+        0.17739818097300772,
+        1.7834526961971424
+      ],
+      "ball_minus_contact_point_m": [
+        -0.05954196781795251,
+        -0.1574731215948606,
+        0.026808934814820384
+      ],
+      "normal_world": [
+        0.9999349661907964,
+        0.0021158851774400345,
+        -0.011206534652904058
+      ]
+    },
+    {
+      "source_training_index": 39,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7519999980926513,
+      "approximate_string_gap_m": 0.10605944346578453,
+      "actual_recorded_interpolated_ball_m": [
+        1.1413827896118165,
+        -0.04364891573786736,
+        1.8537480592727662
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1873554706573486,
+        0.13820746541023254,
+        1.7372536182403564
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2149526079659936,
+        0.1521839747204406,
+        1.794685447445296
+      ],
+      "ball_minus_contact_point_m": [
+        -0.07356981835417709,
+        -0.19583289045830796,
+        0.05906261182747019
+      ],
+      "normal_world": [
+        0.9994357917008676,
+        -0.005934551750655629,
+        -0.033058725970291525
+      ]
+    },
+    {
+      "source_training_index": 40,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7959999561309816,
+      "approximate_string_gap_m": 0.1298563519788959,
+      "actual_recorded_interpolated_ball_m": [
+        1.1406795740127564,
+        -0.07008152529597282,
+        1.8318589925765991
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1834015369415283,
+        0.14854468107223512,
+        1.7337146997451782
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2084809213923973,
+        0.1641992873411575,
+        1.7918637976237044
+      ],
+      "ball_minus_contact_point_m": [
+        -0.06780134737964083,
+        -0.2342808126371303,
+        0.03999519495289472
+      ],
+      "normal_world": [
+        0.9983851696944379,
+        0.056533417166935364,
+        -0.005570069805468711
+      ]
+    },
+    {
+      "source_training_index": 41,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.728000020980835,
+      "approximate_string_gap_m": 0.1350433078271502,
+      "actual_recorded_interpolated_ball_m": [
+        1.2167887449264527,
+        -0.05280696973204613,
+        1.8718809843063355
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.247498631477356,
+        0.14333076179027557,
+        1.716131901741028
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2759228921329338,
+        0.16265181352422298,
+        1.7715766325279456
+      ],
+      "ball_minus_contact_point_m": [
+        -0.059134147206481025,
+        -0.2154587832562691,
+        0.10030435177838992
+      ],
+      "normal_world": [
+        0.9987406533240618,
+        -0.0003534389156013172,
+        -0.05016953735843191
+      ]
+    },
+    {
+      "source_training_index": 42,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.6879999160766603,
+      "approximate_string_gap_m": 0.010448739875027119,
+      "actual_recorded_interpolated_ball_m": [
+        1.260341477394104,
+        0.046445530652999875,
+        1.8180588960647583
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2653902769088745,
+        0.0982446014881134,
+        1.6925408601760865
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.296167579855727,
+        0.11738106472309252,
+        1.7467802665530912
+      ],
+      "ball_minus_contact_point_m": [
+        -0.0358261024616231,
+        -0.07093553407009265,
+        0.07127862951166719
+      ],
+      "normal_world": [
+        0.9945308672802268,
+        0.025394192526985417,
+        -0.10130887923939577
+      ]
+    },
+    {
+      "source_training_index": 43,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.738000011444092,
+      "approximate_string_gap_m": 0.06199882711832786,
+      "actual_recorded_interpolated_ball_m": [
+        1.1758712530136108,
+        0.022150106728076935,
+        1.816322886943817
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.211686110496521,
+        0.16350390315055846,
+        1.7168079733848571
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.241220051373486,
+        0.18454680833356948,
+        1.7710325276355896
+      ],
+      "ball_minus_contact_point_m": [
+        -0.06534879835987506,
+        -0.16239670160549255,
+        0.045290359308227446
+      ],
+      "normal_world": [
+        0.9969053972359504,
+        -0.06362035684979356,
+        -0.04617444267272701
+      ]
+    },
+    {
+      "source_training_index": 44,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": true,
+      "native_frame_hit": true,
+      "native_contact_time_s": 2.7961275577545166,
+      "geometric_closest_time_s": 2.7959999561309816,
+      "approximate_string_gap_m": 0.030775313996811902,
+      "actual_recorded_interpolated_ball_m": [
+        1.1404187679290771,
+        0.02382534518837929,
+        1.7885709285736084
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1173163652420044,
+        0.15691401064395905,
+        1.73862943649292
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.1409071193460074,
+        0.1704017191816784,
+        1.7979330438466206
+      ],
+      "ball_minus_contact_point_m": [
+        -0.0004883514169302661,
+        -0.14657637399329912,
+        -0.009362115273012117
+      ],
+      "normal_world": [
+        0.9994425428864833,
+        0.004477568309538629,
+        0.033084057348424394
+      ]
+    },
+    {
+      "source_training_index": 45,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7420000076293944,
+      "approximate_string_gap_m": 0.15645806479214044,
+      "actual_recorded_interpolated_ball_m": [
+        1.1462130546569824,
+        0.006464533042162657,
+        1.8589469194412231
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1973308205604554,
+        0.22733120918273925,
+        1.7137657523155212
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2242743248211552,
+        0.2548098107055634,
+        1.7664376978127152
+      ],
+      "ball_minus_contact_point_m": [
+        -0.07806127016417275,
+        -0.24834527766340075,
+        0.09250922162850794
+      ],
+      "normal_world": [
+        0.9986992609405085,
+        0.030583996772089384,
+        -0.04079712414284781
+      ]
+    },
+    {
+      "source_training_index": 46,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.6659998416900637,
+      "approximate_string_gap_m": 0.09223035427269816,
+      "actual_recorded_interpolated_ball_m": [
+        1.3289827585220337,
+        0.03941999990493059,
+        1.8789043188095094
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.3339574575424193,
+        0.08430410847067833,
+        1.6573274612426758
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.3669215019851677,
+        0.09865164845038288,
+        1.7117598015971303
+      ],
+      "ball_minus_contact_point_m": [
+        -0.03793874346313397,
+        -0.059231648545452285,
+        0.1671445172123791
+      ],
+      "normal_world": [
+        0.9916589774406729,
+        -0.005568254609552743,
+        -0.12876904520078822
+      ]
+    },
+    {
+      "source_training_index": 47,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.716000032424927,
+      "approximate_string_gap_m": 0.14695043638557262,
+      "actual_recorded_interpolated_ball_m": [
+        1.228952169418335,
+        -0.07388088777661324,
+        1.876228928565979
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2684537887573242,
+        0.12266462445259094,
+        1.7040595769882203
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2982555756411798,
+        0.1409610853895839,
+        1.7591272882323443
+      ],
+      "ball_minus_contact_point_m": [
+        -0.06930340622284481,
+        -0.21484197316619713,
+        0.11710164033363468
+      ],
+      "normal_world": [
+        0.9973219429680563,
+        -0.005878072372674374,
+        -0.07289986515490376
+      ]
+    },
+    {
+      "source_training_index": 48,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.6980000257492067,
+      "approximate_string_gap_m": 0.13888895460849224,
+      "actual_recorded_interpolated_ball_m": [
+        1.257992398738861,
+        0.07946845814585686,
+        1.9123762488365172
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.3031075119972229,
+        0.17681396305561065,
+        1.674147641658783
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.3349059291712153,
+        0.19841398690614823,
+        1.7268511466735432
+      ],
+      "ball_minus_contact_point_m": [
+        -0.07691353043235427,
+        -0.11894552876029137,
+        0.18552510216297402
+      ],
+      "normal_world": [
+        0.9931983996247267,
+        0.006678409303487957,
+        -0.11624258183667796
+      ]
+    },
+    {
+      "source_training_index": 49,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7420000076293944,
+      "approximate_string_gap_m": 0.08203595248943588,
+      "actual_recorded_interpolated_ball_m": [
+        1.1892730951309205,
+        0.07803259789943695,
+        1.8266770958900451
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2350359559059143,
+        0.219415383040905,
+        1.6998831152915954
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2639829716578204,
+        0.2423389332101542,
+        1.7536598847432157
+      ],
+      "ball_minus_contact_point_m": [
+        -0.07470987652689987,
+        -0.16430633531071726,
+        0.07301721114682946
+      ],
+      "normal_world": [
+        0.9983120550058076,
+        -0.03480345179443551,
+        -0.04649473704919658
+      ]
+    },
+    {
+      "source_training_index": 50,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7360000133514406,
+      "approximate_string_gap_m": 0.0518535163188056,
+      "actual_recorded_interpolated_ball_m": [
+        1.17850821018219,
+        -0.010914980433881283,
+        1.8011377096176147
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.207750129699707,
+        0.13135533630847931,
+        1.7199723720550537
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2366395493690412,
+        0.15036943045425172,
+        1.7752826374760466
+      ],
+      "ball_minus_contact_point_m": [
+        -0.058131339186851205,
+        -0.161284410888133,
+        0.025855072141568014
+      ],
+      "normal_world": [
+        0.9980492610470857,
+        -0.04541191614985287,
+        -0.042841923334104415
+      ]
+    },
+    {
+      "source_training_index": 51,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.6839998722076417,
+      "approximate_string_gap_m": 0.06698710121006676,
+      "actual_recorded_interpolated_ball_m": [
+        1.2653428316116333,
+        0.04681252911686897,
+        1.8419142961502075
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2825380563735962,
+        0.13472625017166137,
+        1.6760658979415894
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.315206572136416,
+        0.15658454974109234,
+        1.7281268489869104
+      ],
+      "ball_minus_contact_point_m": [
+        -0.049863740524782596,
+        -0.10977202062422337,
+        0.11378744716329714
+      ],
+      "normal_world": [
+        0.9918878376126735,
+        -0.00930935724608571,
+        -0.1267748139959971
+      ]
+    },
+    {
+      "source_training_index": 52,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.6739998340606688,
+      "approximate_string_gap_m": 0.04234907962334971,
+      "actual_recorded_interpolated_ball_m": [
+        1.2919296979904176,
+        0.05685323029756546,
+        1.838105046749115
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.296701979637146,
+        0.09745600745081902,
+        1.670339858531952
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.3293097499104758,
+        0.11578115846518809,
+        1.7237840533903106
+      ],
+      "ball_minus_contact_point_m": [
+        -0.03738005192005822,
+        -0.05892792816762263,
+        0.1143209933588043
+      ],
+      "normal_world": [
+        0.9911300288115801,
+        0.017555969846406682,
+        -0.13173099069964087
+      ]
+    },
+    {
+      "source_training_index": 53,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7579999923706056,
+      "approximate_string_gap_m": 0.15748241959929157,
+      "actual_recorded_interpolated_ball_m": [
+        1.115990161895752,
+        -0.06135854795575142,
+        1.825558876991272
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.175148344039917,
+        0.18338142335414886,
+        1.7313028693199157
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2007473007799836,
+        0.20063394319977784,
+        1.7887694141851873
+      ],
+      "ball_minus_contact_point_m": [
+        -0.08475713888423164,
+        -0.26199249115552925,
+        0.03678946280608475
+      ],
+      "normal_world": [
+        0.9985176387677668,
+        0.05231360420085722,
+        -0.015027038469357143
+      ]
+    },
+    {
+      "source_training_index": 54,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.714000034332275,
+      "approximate_string_gap_m": 0.0682726621010567,
+      "actual_recorded_interpolated_ball_m": [
+        1.198148500919342,
+        -0.05605881027877331,
+        1.8115861654281615
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2292484998703004,
+        0.09637439623475075,
+        1.712808084487915
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.259284366085875,
+        0.11415735810557434,
+        1.7679168207620923
+      ],
+      "ball_minus_contact_point_m": [
+        -0.06113586516653302,
+        -0.17021616838434767,
+        0.0436693446660692
+      ],
+      "normal_world": [
+        0.9953966648714347,
+        -0.08050344321826453,
+        -0.05200649183350273
+      ]
+    },
+    {
+      "source_training_index": 55,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7639999866485594,
+      "approximate_string_gap_m": 0.05243678045691067,
+      "actual_recorded_interpolated_ball_m": [
+        1.1411224842071532,
+        5.5719632655382156e-05,
+        1.787315583229065
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1716963291168212,
+        0.1531272530555725,
+        1.7331030368804932
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.1978915071239338,
+        0.17143653878046072,
+        1.789970800256381
+      ],
+      "ball_minus_contact_point_m": [
+        -0.05676902291678054,
+        -0.17138081914780534,
+        -0.0026552170273159703
+      ],
+      "normal_world": [
+        0.9999238333442817,
+        0.003935235020810869,
+        -0.0116979244059905
+      ]
+    },
+    {
+      "source_training_index": 56,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7559999942779543,
+      "approximate_string_gap_m": 0.16053826372110563,
+      "actual_recorded_interpolated_ball_m": [
+        1.1484299659729005,
+        0.013589739799499512,
+        1.8554357767105103
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.213311767578125,
+        0.2393996834754944,
+        1.7170588731765748
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.240057726753782,
+        0.2616182563537887,
+        1.772252609170634
+      ],
+      "ball_minus_contact_point_m": [
+        -0.09162776078088153,
+        -0.2480285165542892,
+        0.0831831675398762
+      ],
+      "normal_world": [
+        0.9991866776718513,
+        0.02598953616140389,
+        -0.030830620707398344
+      ]
+    },
+    {
+      "source_training_index": 57,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.6719998359680175,
+      "approximate_string_gap_m": 0.086506600952624,
+      "actual_recorded_interpolated_ball_m": [
+        1.3426559448242188,
+        0.08089317381381989,
+        1.867038941383362
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.348130965232849,
+        0.13772155940532685,
+        1.6576992750167847
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.3810359939070505,
+        0.15682713726681202,
+        1.710686026082354
+      ],
+      "ball_minus_contact_point_m": [
+        -0.03838004908283166,
+        -0.07593396345299214,
+        0.15635291530100792
+      ],
+      "normal_world": [
+        0.9914248545994051,
+        -0.005482963000454382,
+        -0.1305629916909237
+      ]
+    },
+    {
+      "source_training_index": 58,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": true,
+      "native_frame_hit": true,
+      "native_contact_time_s": 2.804060697555542,
+      "geometric_closest_time_s": 2.8039999485015867,
+      "approximate_string_gap_m": 0.023901348888307923,
+      "actual_recorded_interpolated_ball_m": [
+        1.130786919593811,
+        0.06352089494466781,
+        1.8043740034103393
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.107043743133545,
+        0.18713438808917998,
+        1.7400442600250243
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.1285788329175541,
+        0.1994565457046343,
+        1.8003747178854654
+      ],
+      "ball_minus_contact_point_m": [
+        0.0022080866762568263,
+        -0.1359356507599665,
+        0.00399928552487383
+      ],
+      "normal_world": [
+        0.9902695737233854,
+        0.13206419402073208,
+        0.04387732917303667
+      ]
+    },
+    {
+      "source_training_index": 59,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.70600004196167,
+      "approximate_string_gap_m": 0.12350167066067919,
+      "actual_recorded_interpolated_ball_m": [
+        1.2032546520233154,
+        0.023937117494642737,
+        1.8835391283035279
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2497047543525697,
+        0.16425511240959167,
+        1.694933581352234
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2794926511629416,
+        0.187520889977254,
+        1.7481007197343454
+      ],
+      "ball_minus_contact_point_m": [
+        -0.07623799913962626,
+        -0.16358377248261124,
+        0.13543840856918243
+      ],
+      "normal_world": [
+        0.9952460988812317,
+        0.03434605338225401,
+        -0.09113479729912638
+      ]
+    },
+    {
+      "source_training_index": 60,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7899999618530273,
+      "approximate_string_gap_m": 0.05141874567206726,
+      "actual_recorded_interpolated_ball_m": [
+        1.1040067672729492,
+        -0.06516372598707676,
+        1.783181369304657
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1320590376853943,
+        0.09272678568959236,
+        1.7414518594741821
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.1562721628129444,
+        0.09824399652010624,
+        1.8017730395203744
+      ],
+      "ball_minus_contact_point_m": [
+        -0.05226539553999521,
+        -0.163407722507183,
+        -0.018591670215717393
+      ],
+      "normal_world": [
+        0.9997307478137969,
+        0.0051269787933031895,
+        0.022630642149961067
+      ]
+    },
+    {
+      "source_training_index": 61,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7559999942779543,
+      "approximate_string_gap_m": 0.11499815335509184,
+      "actual_recorded_interpolated_ball_m": [
+        1.1462739706039429,
+        -0.07541079670190812,
+        1.8160985469818116
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2125522136688232,
+        0.12035048007965088,
+        1.7254510402679444
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2393137859298977,
+        0.13706747557496562,
+        1.7825449989473072
+      ],
+      "ball_minus_contact_point_m": [
+        -0.09303981532595484,
+        -0.21247827227687374,
+        0.03355354803450439
+      ],
+      "normal_world": [
+        0.9997208060784651,
+        -0.01839723360137811,
+        -0.014827396590112889
+      ]
+    },
+    {
+      "source_training_index": 62,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7739999771118162,
+      "approximate_string_gap_m": 0.08544115568637436,
+      "actual_recorded_interpolated_ball_m": [
+        1.1685274243354797,
+        0.08125206455588341,
+        1.820914077758789
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2213086843490601,
+        0.23366620838642121,
+        1.7059207797050475
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.250275690575516,
+        0.25771155613056396,
+        1.7591945406769895
+      ],
+      "ball_minus_contact_point_m": [
+        -0.08174826624003617,
+        -0.17645949157468055,
+        0.06171953708179956
+      ],
+      "normal_world": [
+        0.9974485221754594,
+        -0.06313815231080726,
+        -0.033316952633300194
+      ]
+    },
+    {
+      "source_training_index": 63,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7480000019073487,
+      "approximate_string_gap_m": 0.0374101063600958,
+      "actual_recorded_interpolated_ball_m": [
+        1.1730952978134155,
+        0.0535417728126049,
+        1.809627318382263
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1828964471817016,
+        0.18180546164512634,
+        1.7247878313064575
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2099652376303014,
+        0.20380867419733817,
+        1.7799104131308594
+      ],
+      "ball_minus_contact_point_m": [
+        -0.03686993981688591,
+        -0.15026690138473325,
+        0.02971690525140369
+      ],
+      "normal_world": [
+        0.999613332252964,
+        0.0029810416404184893,
+        -0.027645964856800428
+      ]
+    },
+    {
+      "source_training_index": 64,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.787999963760376,
+      "approximate_string_gap_m": 0.04378463018292112,
+      "actual_recorded_interpolated_ball_m": [
+        1.1125615119934082,
+        0.07845026850700379,
+        1.8376147031784058
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1393253564834596,
+        0.19883966445922852,
+        1.7394290685653686
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.1642024778805862,
+        0.21715617782600666,
+        1.796883345821576
+      ],
+      "ball_minus_contact_point_m": [
+        -0.051640965887177925,
+        -0.13870590931900287,
+        0.040731357356829756
+      ],
+      "normal_world": [
+        0.9969305589201961,
+        0.07754107256226356,
+        -0.010809382820447628
+      ]
+    },
+    {
+      "source_training_index": 65,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.740000009536743,
+      "approximate_string_gap_m": 0.10588468797070039,
+      "actual_recorded_interpolated_ball_m": [
+        1.1479508876800537,
+        -0.12987282872200012,
+        1.828110694885254
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1846483945846558,
+        0.06980465352535248,
+        1.743330478668213
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2109002713470578,
+        0.08307640707494382,
+        1.8015546946794778
+      ],
+      "ball_minus_contact_point_m": [
+        -0.06294938366700409,
+        -0.21294923579694394,
+        0.026556000205776087
+      ],
+      "normal_world": [
+        0.9992281206795881,
+        0.0345357765897438,
+        -0.01872012228811433
+      ]
+    },
+    {
+      "source_training_index": 66,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.6879999160766603,
+      "approximate_string_gap_m": 0.1840544037497992,
+      "actual_recorded_interpolated_ball_m": [
+        1.2308171272277832,
+        0.003358649276196956,
+        1.9506602048873902
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2668060779571533,
+        0.15380678772926332,
+        1.6856837272644043
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2977524347639051,
+        0.17485498601554403,
+        1.739112709617117
+      ],
+      "ball_minus_contact_point_m": [
+        -0.06693530753612187,
+        -0.17149633673934708,
+        0.21154749527027317
+      ],
+      "normal_world": [
+        0.99312969681791,
+        0.03748496812169569,
+        -0.11085252574155355
+      ]
+    },
+    {
+      "source_training_index": 67,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.6619998455047607,
+      "approximate_string_gap_m": 0.0831647753398384,
+      "actual_recorded_interpolated_ball_m": [
+        1.2920690774917603,
+        0.10177287012338639,
+        1.8563806295394898
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.3162325263023376,
+        0.11654936373233796,
+        1.6462670683860778
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.3498602091961167,
+        0.13654082445257396,
+        1.6984674538963649
+      ],
+      "ball_minus_contact_point_m": [
+        -0.05779113170435646,
+        -0.03476795432918757,
+        0.1579131756431249
+      ],
+      "normal_world": [
+        0.9872836597836154,
+        0.028294636839060403,
+        -0.15643013984017226
+      ]
+    },
+    {
+      "source_training_index": 68,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.8339999198913572,
+      "approximate_string_gap_m": 0.1815367123365269,
+      "actual_recorded_interpolated_ball_m": [
+        1.0752040028572083,
+        -0.07981012910604476,
+        1.6874625205993652
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.025874376296997,
+        0.21938913464546203,
+        1.6923008203506469
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.037176275751236,
+        0.24915363859971587,
+        1.7492367596073182
+      ],
+      "ball_minus_contact_point_m": [
+        0.03802772710597235,
+        -0.32896376770576063,
+        -0.06177423900795298
+      ],
+      "normal_world": [
+        0.9727375958827105,
+        0.14589197932812067,
+        0.18026952023025966
+      ]
+    },
+    {
+      "source_training_index": 69,
+      "native_airborne_string_hit": true,
+      "native_any_racket_contact": true,
+      "native_frame_hit": false,
+      "native_contact_time_s": 2.7245419025421143,
+      "geometric_closest_time_s": 2.7200000286102295,
+      "approximate_string_gap_m": 0.044143347637683315,
+      "actual_recorded_interpolated_ball_m": [
+        1.2668766975402832,
+        0.16874413192272186,
+        1.784693956375122
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1884708404541016,
+        0.207505464553833,
+        1.69101083278656
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2146070082722606,
+        0.23596525948612548,
+        1.7435684260547908
+      ],
+      "ball_minus_contact_point_m": [
+        0.05226968926802256,
+        -0.06722112756340362,
+        0.04112553032033128
+      ],
+      "normal_world": [
+        0.9943785379661849,
+        0.08983178855470306,
+        -0.05604973681736178
+      ]
+    },
+    {
+      "source_training_index": 70,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.6159998893737795,
+      "approximate_string_gap_m": 0.13054038362860387,
+      "actual_recorded_interpolated_ball_m": [
+        1.351981019973755,
+        0.019878433272242545,
+        1.8045009136199952
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.3757112503051758,
+        0.16258552372455598,
+        1.602656364440918
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.411235505132429,
+        0.18441583398861497,
+        1.6528243291066207
+      ],
+      "ball_minus_contact_point_m": [
+        -0.05925448515867404,
+        -0.16453740071637243,
+        0.1516765845133745
+      ],
+      "normal_world": [
+        0.9799565011629112,
+        0.030437894337625657,
+        -0.19687252326527666
+      ]
+    },
+    {
+      "source_training_index": 71,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.619999885559082,
+      "approximate_string_gap_m": 0.11866767596047584,
+      "actual_recorded_interpolated_ball_m": [
+        1.310158133506775,
+        0.015667021740227938,
+        1.8173668384552002
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.3439815044403076,
+        0.14856719970703125,
+        1.6251953840255737
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.3782390974631684,
+        0.1701467888797773,
+        1.6763431939236666
+      ],
+      "ball_minus_contact_point_m": [
+        -0.06808096395639351,
+        -0.15447976713954936,
+        0.1410236445315336
+      ],
+      "normal_world": [
+        0.9870381626867201,
+        -0.00023485901687953642,
+        -0.16048554527204748
+      ]
+    },
+    {
+      "source_training_index": 72,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.8119999408721923,
+      "approximate_string_gap_m": 0.13486576546524429,
+      "actual_recorded_interpolated_ball_m": [
+        1.071568751335144,
+        -0.0712478592991829,
+        1.798275852203369
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.083991003036499,
+        0.17237500846385956,
+        1.7544055938720704
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.1031544022900466,
+        0.1876117498005955,
+        1.8148701756405936
+      ],
+      "ball_minus_contact_point_m": [
+        -0.03158565095490262,
+        -0.2588596090997784,
+        -0.016594323437224556
+      ],
+      "normal_world": [
+        0.9807280665734391,
+        0.18380532671504446,
+        0.06624244339016899
+      ]
+    },
+    {
+      "source_training_index": 73,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.843999910354614,
+      "approximate_string_gap_m": 0.08494794431048205,
+      "actual_recorded_interpolated_ball_m": [
+        1.0751998662948608,
+        0.0824728175997734,
+        1.825830626487732
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.079993987083435,
+        0.2648507535457611,
+        1.742662787437439
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.0999022253663429,
+        0.2843303354795537,
+        1.8016506484099435
+      ],
+      "ball_minus_contact_point_m": [
+        -0.024702359071482105,
+        -0.20185751787978032,
+        0.02417997807778849
+      ],
+      "normal_world": [
+        0.9878535622482686,
+        0.1463339301346497,
+        0.05226586309201839
+      ]
+    },
+    {
+      "source_training_index": 74,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.819999933242798,
+      "approximate_string_gap_m": 0.01945929945724538,
+      "actual_recorded_interpolated_ball_m": [
+        1.0904909372329712,
+        0.18846969306468964,
+        1.8588263988494873
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1009830236434937,
+        0.2656858563423157,
+        1.7393488883972168
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.1227050520163824,
+        0.2859751733253592,
+        1.7974165808404756
+      ],
+      "ball_minus_contact_point_m": [
+        -0.032214114783411185,
+        -0.09750548026066957,
+        0.061409818009011685
+      ],
+      "normal_world": [
+        0.9911063387428903,
+        0.13081567898463584,
+        0.024402529283904798
+      ]
+    },
+    {
+      "source_training_index": 75,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.718000030517578,
+      "approximate_string_gap_m": 0.1640126862274686,
+      "actual_recorded_interpolated_ball_m": [
+        1.1845046281814575,
+        0.027347569726407527,
+        1.885389757156372
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2208103775978087,
+        0.23588780611753463,
+        1.7023522496223449
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2501363345367755,
+        0.2608770752400741,
+        1.7549914411462566
+      ],
+      "ball_minus_contact_point_m": [
+        -0.06563170635531801,
+        -0.23352950551366655,
+        0.13039831601011542
+      ],
+      "normal_world": [
+        0.9974152461107891,
+        0.004930222288188924,
+        -0.07168346904233311
+      ]
+    },
+    {
+      "source_training_index": 76,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.6479998588562013,
+      "approximate_string_gap_m": 0.14497334322887656,
+      "actual_recorded_interpolated_ball_m": [
+        1.2865673780441285,
+        -0.1634177714586258,
+        1.904420304298401
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.3091150999069214,
+        -0.013077561929821967,
+        1.6782464504241943
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.3430085656332356,
+        -0.008484364638230666,
+        1.7337936855098002
+      ],
+      "ball_minus_contact_point_m": [
+        -0.0564411875891071,
+        -0.15493340682039514,
+        0.17062661878860075
+      ],
+      "normal_world": [
+        0.9890493134055046,
+        0.027879254240445163,
+        -0.14492826789517918
+      ]
+    },
+    {
+      "source_training_index": 77,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.6399998664855957,
+      "approximate_string_gap_m": 0.06453848646852359,
+      "actual_recorded_interpolated_ball_m": [
+        1.284664273262024,
+        0.10534471273422241,
+        1.8305658102035522
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.3020775318145752,
+        0.13751892745494843,
+        1.6429319381713867
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.3353098840630475,
+        0.1588493228741772,
+        1.6948548117556625
+      ],
+      "ball_minus_contact_point_m": [
+        -0.05064561080102359,
+        -0.05350461013995478,
+        0.1357109984478897
+      ],
+      "normal_world": [
+        0.9852912089657442,
+        0.057131900522936895,
+        -0.16105023898603651
+      ]
+    },
+    {
+      "source_training_index": 78,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.6759998321533205,
+      "approximate_string_gap_m": 0.09072367593580324,
+      "actual_recorded_interpolated_ball_m": [
+        1.2751946449279785,
+        0.07695126980543136,
+        1.9032472610473632
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2885406017303467,
+        0.09222919344902039,
+        1.6782347440719605
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.320261827579119,
+        0.10788012482249698,
+        1.7330450714177243
+      ],
+      "ball_minus_contact_point_m": [
+        -0.0450671826511404,
+        -0.030928855017065618,
+        0.17020218962963884
+      ],
+      "normal_world": [
+        0.9940885227890154,
+        0.0010796895937581538,
+        -0.10856722861680838
+      ]
+    },
+    {
+      "source_training_index": 79,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.8399999141693115,
+      "approximate_string_gap_m": 0.11947974593293181,
+      "actual_recorded_interpolated_ball_m": [
+        1.1198432445526123,
+        0.004455143585801125,
+        1.8023368120193481
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.179487943649292,
+        0.21254763007164001,
+        1.7211905717849731
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2061465987789652,
+        0.22825500472906435,
+        1.7786183899048038
+      ],
+      "ball_minus_contact_point_m": [
+        -0.08630335422635294,
+        -0.22379986114326322,
+        0.023718422114544335
+      ],
+      "normal_world": [
+        0.999815971356967,
+        -0.011807786662241748,
+        -0.01511951036454968
+      ]
+    },
+    {
+      "source_training_index": 80,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7739999771118162,
+      "approximate_string_gap_m": 0.24674095251009967,
+      "actual_recorded_interpolated_ball_m": [
+        1.1103927373886109,
+        -0.03593408316373825,
+        1.8724916219711303
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1535550117492677,
+        0.28730085492134094,
+        1.717754054069519
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.178619143605049,
+        0.31175640042609243,
+        1.7727910906388777
+      ],
+      "ball_minus_contact_point_m": [
+        -0.06822640621643816,
+        -0.3476904835898307,
+        0.09970053133225254
+      ],
+      "normal_world": [
+        0.9974265558369096,
+        0.06893017263848025,
+        -0.019720471884554544
+      ]
+    },
+    {
+      "source_training_index": 81,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7360000133514406,
+      "approximate_string_gap_m": 0.08897056299673128,
+      "actual_recorded_interpolated_ball_m": [
+        1.1230362176895141,
+        -0.16214620172977448,
+        1.726777195930481
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1834671020507812,
+        0.029405733942985533,
+        1.7160054206848145
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2095241778834211,
+        0.04290964247097638,
+        1.7742637510717696
+      ],
+      "ball_minus_contact_point_m": [
+        -0.08648796019390703,
+        -0.20505584420075085,
+        -0.04748655514128863
+      ],
+      "normal_world": [
+        0.9986877041425789,
+        -0.05101009378567176,
+        0.004565076823192688
+      ]
+    },
+    {
+      "source_training_index": 82,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.8239999294281004,
+      "approximate_string_gap_m": 0.0600579577092833,
+      "actual_recorded_interpolated_ball_m": [
+        1.0567351579666138,
+        0.046832204610109326,
+        1.7846848726272584
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.0622544050216676,
+        0.21447227001190186,
+        1.746931505203247
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.0794859748158205,
+        0.23388298765248816,
+        1.8067784503973214
+      ],
+      "ball_minus_contact_point_m": [
+        -0.022750816849206768,
+        -0.18705078304237882,
+        -0.022093577770063044
+      ],
+      "normal_world": [
+        0.9742680573465616,
+        0.21119053244623523,
+        0.07874205635638937
+      ]
+    },
+    {
+      "source_training_index": 83,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.8059999465942385,
+      "approximate_string_gap_m": 0.09735430105909293,
+      "actual_recorded_interpolated_ball_m": [
+        1.0944044053554536,
+        0.12469628527760505,
+        1.8653211712837219
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1543882369995118,
+        0.2711245268583298,
+        1.7315752983093262
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.1775494996998266,
+        0.28930810212810015,
+        1.7897841748359478
+      ],
+      "ball_minus_contact_point_m": [
+        -0.083145094344373,
+        -0.16461181685049509,
+        0.07553699644777412
+      ],
+      "normal_world": [
+        0.9926129460751363,
+        0.12112206536638641,
+        0.006998897443137985
+      ]
+    },
+    {
+      "source_training_index": 84,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.728000020980835,
+      "approximate_string_gap_m": 0.09670900063632537,
+      "actual_recorded_interpolated_ball_m": [
+        1.1636816740036011,
+        0.11014260202646256,
+        1.8509982824325562
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1946301221847535,
+        0.2605332612991333,
+        1.704829788208008
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.221892963611412,
+        0.28642980176602995,
+        1.7581351957680964
+      ],
+      "ball_minus_contact_point_m": [
+        -0.05821128960781086,
+        -0.17628719973956739,
+        0.09286308666445975
+      ],
+      "normal_world": [
+        0.9976911719561422,
+        0.04425629478647883,
+        -0.051514131775191506
+      ]
+    },
+    {
+      "source_training_index": 85,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.657999849319458,
+      "approximate_string_gap_m": 0.0905425875842,
+      "actual_recorded_interpolated_ball_m": [
+        1.3094870805740357,
+        0.038820146769285205,
+        1.8681156754493713
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.3200103521347046,
+        0.08829443454742432,
+        1.6531293272972107
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.3540708224663676,
+        0.10508878657956951,
+        1.7061688776965322
+      ],
+      "ball_minus_contact_point_m": [
+        -0.04458374189233183,
+        -0.0662686398102843,
+        0.16194679775283904
+      ],
+      "normal_world": [
+        0.9868110823318177,
+        0.02703366952829134,
+        -0.15960284614925122
+      ]
+    },
+    {
+      "source_training_index": 86,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.8619998931884765,
+      "approximate_string_gap_m": 0.12468900270652516,
+      "actual_recorded_interpolated_ball_m": [
+        1.0844375252723695,
+        -0.05250524990260601,
+        1.7681354403495788
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.0565144062042235,
+        0.1848832979798317,
+        1.7383021473884583
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.0732648565737337,
+        0.19879160281450176,
+        1.7997947589365164
+      ],
+      "ball_minus_contact_point_m": [
+        0.011172668698635757,
+        -0.2512968527171078,
+        -0.0316593185869376
+      ],
+      "normal_world": [
+        0.9788838956723511,
+        0.17177582820352472,
+        0.11081238034766305
+      ]
+    },
+    {
+      "source_training_index": 87,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7200000286102295,
+      "approximate_string_gap_m": 0.08811141935701697,
+      "actual_recorded_interpolated_ball_m": [
+        1.1904675960540771,
+        -0.13777121901512146,
+        1.761672854423523
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.231670618057251,
+        0.05195610225200653,
+        1.7023849487304688
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2581672766685092,
+        0.0678952077459481,
+        1.7598238885226283
+      ],
+      "ball_minus_contact_point_m": [
+        -0.0676996806144321,
+        -0.20566642676106955,
+        0.0018489659008946724
+      ],
+      "normal_world": [
+        0.9973823980038036,
+        -0.07209004347234187,
+        0.005601587662263981
+      ]
+    },
+    {
+      "source_training_index": 88,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7460000038146974,
+      "approximate_string_gap_m": 0.29512312664095885,
+      "actual_recorded_interpolated_ball_m": [
+        1.1345349073410034,
+        -0.1491118848323822,
+        1.9003575801849366
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.245213794708252,
+        0.19398055970668793,
+        1.714510440826416
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2737298411674194,
+        0.21694289711416612,
+        1.7685004951056962
+      ],
+      "ball_minus_contact_point_m": [
+        -0.139194933826416,
+        -0.3660547819465483,
+        0.13185708507924043
+      ],
+      "normal_world": [
+        0.9978310809175278,
+        0.021767785077466538,
+        -0.062123244343637744
+      ]
+    },
+    {
+      "source_training_index": 89,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.64599986076355,
+      "approximate_string_gap_m": 0.17683042045056893,
+      "actual_recorded_interpolated_ball_m": [
+        1.2609891891479492,
+        -0.09877349138259887,
+        1.9376083374023438
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2938616037368775,
+        0.04970178380608559,
+        1.6750020742416383
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.3270589532124035,
+        0.06000123068306125,
+        1.7302036791801185
+      ],
+      "ball_minus_contact_point_m": [
+        -0.0660697640644543,
+        -0.15877472206566012,
+        0.2074046582222253
+      ],
+      "normal_world": [
+        0.9909657703575204,
+        0.008752438647442505,
+        -0.13382913284277378
+      ]
+    },
+    {
+      "source_training_index": 90,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.785999965667725,
+      "approximate_string_gap_m": 0.08890354499827649,
+      "actual_recorded_interpolated_ball_m": [
+        1.2267367243766785,
+        0.11990556493401527,
+        1.8179569840431213
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2656261801719666,
+        0.2740172803401947,
+        1.6915050745010376
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.294324246348901,
+        0.29896516303851994,
+        1.7445086965709564
+      ],
+      "ball_minus_contact_point_m": [
+        -0.06758752197222262,
+        -0.17905959810450467,
+        0.07344828747216492
+      ],
+      "normal_world": [
+        0.9986357026181049,
+        -0.021860242582499946,
+        -0.04742218099875055
+      ]
+    },
+    {
+      "source_training_index": 91,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.6759998321533205,
+      "approximate_string_gap_m": 0.11076587102129823,
+      "actual_recorded_interpolated_ball_m": [
+        1.3202935695648192,
+        0.08452014625072479,
+        1.9020196199417114
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.340752911567688,
+        0.12268570810556412,
+        1.6633602380752563
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.3735105543539026,
+        0.1399631349129764,
+        1.7170611427972549
+      ],
+      "ball_minus_contact_point_m": [
+        -0.05321698478908332,
+        -0.05544298866225161,
+        0.18495847714445657
+      ],
+      "normal_world": [
+        0.9921768172014845,
+        -0.013798290433034082,
+        -0.12407566477378866
+      ]
+    },
+    {
+      "source_training_index": 92,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.693999981880188,
+      "approximate_string_gap_m": 0.19876687103488652,
+      "actual_recorded_interpolated_ball_m": [
+        1.200344979763031,
+        -0.0034384001046419144,
+        1.9428635120391846
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2677611827850341,
+        0.1635077863931656,
+        1.6837520241737365
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.298498701476159,
+        0.18535235605098485,
+        1.7369815228294003
+      ],
+      "ball_minus_contact_point_m": [
+        -0.09815372171312808,
+        -0.18879075615562677,
+        0.2058819892097843
+      ],
+      "normal_world": [
+        0.9914555864460384,
+        0.05959100283292183,
+        -0.11603763392239977
+      ]
+    },
+    {
+      "source_training_index": 93,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7360000133514406,
+      "approximate_string_gap_m": 0.049107522467456886,
+      "actual_recorded_interpolated_ball_m": [
+        1.2084078788757324,
+        0.13222474306821824,
+        1.8264884233474732
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2413100719451904,
+        0.2185148775577545,
+        1.6914804458618165
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2704029026929256,
+        0.24378744766400678,
+        1.74411374525739
+      ],
+      "ball_minus_contact_point_m": [
+        -0.06199502381719313,
+        -0.11156270459578854,
+        0.08237467809008314
+      ],
+      "normal_world": [
+        0.9971857790651534,
+        0.017067865264363692,
+        -0.07300143837994467
+      ]
+    },
+    {
+      "source_training_index": 94,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.771999979019165,
+      "approximate_string_gap_m": 0.02122391583576009,
+      "actual_recorded_interpolated_ball_m": [
+        1.1409270286560058,
+        0.16198807060718537,
+        1.8519232034683228
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.155377197265625,
+        0.2397768408060074,
+        1.7327205181121825
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.1814405404110468,
+        0.26172554728882136,
+        1.7883470965955943
+      ],
+      "ball_minus_contact_point_m": [
+        -0.04051351175504103,
+        -0.09973747668163599,
+        0.06357610687272852
+      ],
+      "normal_world": [
+        0.9999625114851505,
+        0.0007880376110627511,
+        -0.008622912560966476
+      ]
+    },
+    {
+      "source_training_index": 95,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.655999851226807,
+      "approximate_string_gap_m": 0.06726284975238545,
+      "actual_recorded_interpolated_ball_m": [
+        1.3120841026306151,
+        0.05774950385093689,
+        1.8310431241989136
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.3252795696258546,
+        0.10139710158109665,
+        1.641595196723938
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.3595213480486787,
+        0.12106142187046084,
+        1.693519901094357
+      ],
+      "ball_minus_contact_point_m": [
+        -0.0474372454180636,
+        -0.06331191801952396,
+        0.13752322310455667
+      ],
+      "normal_world": [
+        0.9866922224204246,
+        0.011907022938028484,
+        -0.16216251422507294
+      ]
+    },
+    {
+      "source_training_index": 96,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.653999853134155,
+      "approximate_string_gap_m": 0.03354044327573912,
+      "actual_recorded_interpolated_ball_m": [
+        1.306512427330017,
+        0.020633047074079515,
+        1.777332317829132
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.315018880367279,
+        0.0934828370809555,
+        1.6404242753982543
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.3488440243589532,
+        0.11363018547354178,
+        1.692436810355187
+      ],
+      "ball_minus_contact_point_m": [
+        -0.042331597028936185,
+        -0.09299713839946228,
+        0.08489550747394503
+      ],
+      "normal_world": [
+        0.9893513713164035,
+        -0.01728668636041188,
+        -0.14451655458468707
+      ]
+    },
+    {
+      "source_training_index": 97,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.740000009536743,
+      "approximate_string_gap_m": 0.08824167116304402,
+      "actual_recorded_interpolated_ball_m": [
+        1.1469188928604126,
+        0.15131112933158875,
+        1.8460943698883057
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1876592636108398,
+        0.2833498418331146,
+        1.7003060579299927
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2140170199985894,
+        0.3136442313842048,
+        1.7517149914521613
+      ],
+      "ball_minus_contact_point_m": [
+        -0.06709812713817676,
+        -0.16233310205261603,
+        0.09437937843614441
+      ],
+      "normal_world": [
+        0.9978005909929736,
+        0.05025422227302012,
+        -0.043226077289141726
+      ]
+    },
+    {
+      "source_training_index": 98,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.653999853134155,
+      "approximate_string_gap_m": 0.10571506593092025,
+      "actual_recorded_interpolated_ball_m": [
+        1.3469935655593872,
+        -0.04312434159219265,
+        1.827111256122589
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.3562914729118347,
+        0.08953183516860008,
+        1.641610038280487
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.3900420765367965,
+        0.10770357024423044,
+        1.694393033698024
+      ],
+      "ball_minus_contact_point_m": [
+        -0.04304851097740925,
+        -0.15082791183642308,
+        0.1327182224245651
+      ],
+      "normal_world": [
+        0.9896015732888592,
+        -0.013180440814650364,
+        -0.1432305907414547
+      ]
+    },
+    {
+      "source_training_index": 99,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.653999853134155,
+      "approximate_string_gap_m": 0.09987126597177828,
+      "actual_recorded_interpolated_ball_m": [
+        1.29050053358078,
+        0.04664051905274391,
+        1.8831828474998473
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.299552047252655,
+        0.11022539883852005,
+        1.6613343000411986
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.3324518477499196,
+        0.12645196319157523,
+        1.715275578692082
+      ],
+      "ball_minus_contact_point_m": [
+        -0.041951314169139664,
+        -0.07981144413883132,
+        0.1679072688077654
+      ],
+      "normal_world": [
+        0.9909865897335137,
+        0.011952671260753535,
+        -0.13342680622001366
+      ]
+    },
+    {
+      "source_training_index": 100,
+      "native_airborne_string_hit": true,
+      "native_any_racket_contact": true,
+      "native_frame_hit": false,
+      "native_contact_time_s": 2.8159291744232178,
+      "geometric_closest_time_s": 2.8139999389648436,
+      "approximate_string_gap_m": 0.042196485623205666,
+      "actual_recorded_interpolated_ball_m": [
+        1.1394807338714599,
+        0.16168570667505264,
+        1.7726486325263977
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.072810411453247,
+        0.2266283243894577,
+        1.7257184267044068
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.0942300492596921,
+        0.2440643180523682,
+        1.7848161850983049
+      ],
+      "ball_minus_contact_point_m": [
+        0.04525068461176773,
+        -0.08237861137731556,
+        -0.012167552571907159
+      ],
+      "normal_world": [
+        0.9976131351903046,
+        0.02633594897986581,
+        0.06383142084507416
+      ]
+    },
+    {
+      "source_training_index": 101,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.6239998817443846,
+      "approximate_string_gap_m": 0.17040734363155383,
+      "actual_recorded_interpolated_ball_m": [
+        1.3033967018127441,
+        -0.05680268481373787,
+        1.900585913658142
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.3256197690963745,
+        0.10958941727876663,
+        1.6587987899780274
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.358649520725106,
+        0.12465036558246669,
+        1.7129980810203786
+      ],
+      "ball_minus_contact_point_m": [
+        -0.05525281891236178,
+        -0.18145305039620455,
+        0.18758783263776335
+      ],
+      "normal_world": [
+        0.9910783586446941,
+        0.005479559736780874,
+        -0.13316779434694573
+      ]
+    },
+    {
+      "source_training_index": 102,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.6619998455047607,
+      "approximate_string_gap_m": 0.13697604689166068,
+      "actual_recorded_interpolated_ball_m": [
+        1.3048925042152404,
+        -0.027730713970959185,
+        1.9093190550804138
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.3438998460769653,
+        0.05614037066698074,
+        1.6617220520973206
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.3782897415798379,
+        0.06588361082658084,
+        1.7162909458413735
+      ],
+      "ball_minus_contact_point_m": [
+        -0.07339723736459747,
+        -0.09361432479754003,
+        0.19302810923904024
+      ],
+      "normal_world": [
+        0.988277457081885,
+        -0.006504270227604323,
+        -0.15252987344310362
+      ]
+    },
+    {
+      "source_training_index": 103,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.783999967575073,
+      "approximate_string_gap_m": 0.10333351243777589,
+      "actual_recorded_interpolated_ball_m": [
+        1.1042302012443543,
+        0.02108255811035633,
+        1.8867270231246949
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1359274864196778,
+        0.192511385679245,
+        1.7508683443069457
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.1604749322345764,
+        0.20532360028563765,
+        1.809932968802495
+      ],
+      "ball_minus_contact_point_m": [
+        -0.05624473099022209,
+        -0.1842410421752813,
+        0.07679405432219988
+      ],
+      "normal_world": [
+        0.9954823851835051,
+        0.09494217456572131,
+        -0.0008968155283231687
+      ]
+    },
+    {
+      "source_training_index": 104,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.6239998817443846,
+      "approximate_string_gap_m": 0.14341460176161056,
+      "actual_recorded_interpolated_ball_m": [
+        1.290306282043457,
+        0.010807197261601686,
+        1.9274244070053101
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.3160263061523438,
+        0.09246058166027069,
+        1.666399073600769
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.3481542194246043,
+        0.10486035202524414,
+        1.7218012638970193
+      ],
+      "ball_minus_contact_point_m": [
+        -0.05784793738114735,
+        -0.09405315476364245,
+        0.20562314310829088
+      ],
+      "normal_world": [
+        0.9937032168432307,
+        -0.035864310116932814,
+        -0.106149272702417
+      ]
+    },
+    {
+      "source_training_index": 105,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.799999952316284,
+      "approximate_string_gap_m": 0.21050972302121274,
+      "actual_recorded_interpolated_ball_m": [
+        1.111916422843933,
+        -0.16051219403743744,
+        1.8509399890899658
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1830025911331177,
+        0.13481737673282623,
+        1.739640474319458
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2072803406137333,
+        0.14821822896885714,
+        1.7986859470117857
+      ],
+      "ball_minus_contact_point_m": [
+        -0.09536391776980024,
+        -0.3087304230062946,
+        0.052254042078180074
+      ],
+      "normal_world": [
+        0.998925596394277,
+        0.044562439264264314,
+        0.012721708814347914
+      ]
+    },
+    {
+      "source_training_index": 106,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7739999771118162,
+      "approximate_string_gap_m": 0.11087597498583296,
+      "actual_recorded_interpolated_ball_m": [
+        1.1311322093009948,
+        -0.0043861326761543765,
+        1.8759592175483704
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1508606672286987,
+        0.18184434473514557,
+        1.7454501390457153
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.1758870611485226,
+        0.19940805417528426,
+        1.8030744006377573
+      ],
+      "ball_minus_contact_point_m": [
+        -0.04475485184752781,
+        -0.20379418685143863,
+        0.0728848169106131
+      ],
+      "normal_world": [
+        0.9974718710754007,
+        0.0703009200910298,
+        -0.010375309522800812
+      ]
+    },
+    {
+      "source_training_index": 107,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7579999923706056,
+      "approximate_string_gap_m": 0.11651797481649612,
+      "actual_recorded_interpolated_ball_m": [
+        1.1765456438064574,
+        -0.18211884200572967,
+        1.8076192140579224
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1715926289558412,
+        0.042991813644766806,
+        1.7452870607376099
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.1984244480795645,
+        0.04752148895871036,
+        1.804573613428907
+      ],
+      "ball_minus_contact_point_m": [
+        -0.021878804273107066,
+        -0.22964033096444003,
+        0.003045600629015377
+      ],
+      "normal_world": [
+        0.9995049544097374,
+        -0.025363550481630682,
+        -0.018615488641307975
+      ]
+    },
+    {
+      "source_training_index": 108,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": true,
+      "native_frame_hit": true,
+      "native_contact_time_s": 2.7672059535980225,
+      "geometric_closest_time_s": 2.765999984741211,
+      "approximate_string_gap_m": 0.052234770748851085,
+      "actual_recorded_interpolated_ball_m": [
+        1.2011759757995606,
+        0.06232556663453579,
+        1.7783139944076538
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1180140376091003,
+        0.14281003773212433,
+        1.7327370166778564
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.140977377427985,
+        0.15827061021247738,
+        1.791804905830069
+      ],
+      "ball_minus_contact_point_m": [
+        0.060198598371575596,
+        -0.09594504357794159,
+        -0.013490911422415097
+      ],
+      "normal_world": [
+        0.996569350266125,
+        0.0787837927178867,
+        0.02535042633050478
+      ]
+    },
+    {
+      "source_training_index": 109,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7539999961853026,
+      "approximate_string_gap_m": 0.1702958882603065,
+      "actual_recorded_interpolated_ball_m": [
+        1.1224361896514892,
+        -0.04629578478634357,
+        1.8768633127212524
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1739752173423768,
+        0.19329775273799896,
+        1.7342660188674928
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.1989727302243345,
+        0.21642606896264113,
+        1.7899038220617707
+      ],
+      "ball_minus_contact_point_m": [
+        -0.07653654057284531,
+        -0.2627218537489847,
+        0.08695949065948172
+      ],
+      "normal_world": [
+        0.9976848056152374,
+        0.06618393882912604,
+        -0.015643365544177498
+      ]
+    },
+    {
+      "source_training_index": 110,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.6159998893737795,
+      "approximate_string_gap_m": 0.26550841276733894,
+      "actual_recorded_interpolated_ball_m": [
+        1.3065251350402831,
+        -0.15515062510967254,
+        1.9073617458343506
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.385179591178894,
+        0.11281823515892028,
+        1.6458914756774903
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.419638135308878,
+        0.12658240737898924,
+        1.699543279985399
+      ],
+      "ball_minus_contact_point_m": [
+        -0.11311300026859494,
+        -0.28173303248866177,
+        0.2078184658489517
+      ],
+      "normal_world": [
+        0.9881931139882287,
+        -0.0513213222078294,
+        -0.14436236127567223
+      ]
+    },
+    {
+      "source_training_index": 111,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.6479998588562013,
+      "approximate_string_gap_m": 0.11370655252081965,
+      "actual_recorded_interpolated_ball_m": [
+        1.3079095840454102,
+        0.011576760746538638,
+        1.8785220623016357
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.3362767934799193,
+        0.09181104451417924,
+        1.6526718139648438
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.370357247716367,
+        0.10335827589470326,
+        1.7070826942411077
+      ],
+      "ball_minus_contact_point_m": [
+        -0.06244766367095678,
+        -0.09178151514816461,
+        0.17143936806052795
+      ],
+      "normal_world": [
+        0.9885012093051794,
+        0.010366357170726606,
+        -0.15085721010679867
+      ]
+    },
+    {
+      "source_training_index": 112,
+      "native_airborne_string_hit": true,
+      "native_any_racket_contact": true,
+      "native_frame_hit": false,
+      "native_contact_time_s": 2.696244955062866,
+      "geometric_closest_time_s": 2.696000003814697,
+      "approximate_string_gap_m": 0.043417159442676066,
+      "actual_recorded_interpolated_ball_m": [
+        1.29844810962677,
+        0.20559377372264862,
+        1.7693403482437133
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2236734628677368,
+        0.17810539305210113,
+        1.6816877603530884
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2518071104405877,
+        0.20476586248566464,
+        1.7341575330778156
+      ],
+      "ball_minus_contact_point_m": [
+        0.04664099918618225,
+        0.0008279112369839747,
+        0.03518281516589772
+      ],
+      "normal_world": [
+        0.9933127725291993,
+        0.07855023533078725,
+        -0.0846143986555091
+      ]
+    },
+    {
+      "source_training_index": 113,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7739999771118162,
+      "approximate_string_gap_m": 0.01014887533108911,
+      "actual_recorded_interpolated_ball_m": [
+        1.1348176002502441,
+        0.000553178321570159,
+        1.7181156039237977
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.130310869216919,
+        0.12820160388946533,
+        1.717601442337036
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.1539832078264372,
+        0.14520147852021054,
+        1.775962254987745
+      ],
+      "ball_minus_contact_point_m": [
+        -0.01916560757619301,
+        -0.1446483001986404,
+        -0.05784665106394726
+      ],
+      "normal_world": [
+        0.9983871021850188,
+        0.053844146055761814,
+        0.01800005905897855
+      ]
+    },
+    {
+      "source_training_index": 114,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.700000047683716,
+      "approximate_string_gap_m": 0.15025395992110827,
+      "actual_recorded_interpolated_ball_m": [
+        1.2552424669265747,
+        -0.12387353181838989,
+        1.880896806716919
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2820905447006226,
+        0.07531304657459259,
+        1.7012054920196533
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.3117021214075941,
+        0.08986464461067241,
+        1.7574795120064943
+      ],
+      "ball_minus_contact_point_m": [
+        -0.05645965448101942,
+        -0.2137381764290623,
+        0.12341729471042462
+      ],
+      "normal_world": [
+        0.9959653486997931,
+        0.041077050354055976,
+        -0.07978533777273875
+      ]
+    },
+    {
+      "source_training_index": 115,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.6619998455047607,
+      "approximate_string_gap_m": 0.052861599007808784,
+      "actual_recorded_interpolated_ball_m": [
+        1.2777265667915345,
+        0.018618005327880383,
+        1.7976162552833557
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.3044896125793457,
+        0.09873982816934586,
+        1.6517860889434814
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.3375350833724784,
+        0.11930520591813668,
+        1.704135128132999
+      ],
+      "ball_minus_contact_point_m": [
+        -0.05980851658094388,
+        -0.10068720059025629,
+        0.09348112715035661
+      ],
+      "normal_world": [
+        0.9888192350721694,
+        0.028507624009875797,
+        -0.1463688345400114
+      ]
+    },
+    {
+      "source_training_index": 116,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.6479998588562013,
+      "approximate_string_gap_m": 0.10488756158286616,
+      "actual_recorded_interpolated_ball_m": [
+        1.2737521171569823,
+        0.011155188572593034,
+        1.8889006137847901
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2924621820449829,
+        0.10059467703104019,
+        1.6736511945724488
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.3250872732205725,
+        0.11329495998542315,
+        1.7286935968148924
+      ],
+      "ball_minus_contact_point_m": [
+        -0.05133515606359018,
+        -0.10213977141283011,
+        0.1602070169698977
+      ],
+      "normal_world": [
+        0.9925340664975597,
+        -0.006004471197471743,
+        -0.12181983897320166
+      ]
+    },
+    {
+      "source_training_index": 117,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7480000019073487,
+      "approximate_string_gap_m": 0.20800645748784893,
+      "actual_recorded_interpolated_ball_m": [
+        1.1321874141693116,
+        0.11641582697629929,
+        1.9053877115249633
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2446130514144897,
+        0.2937797665596008,
+        1.673011589050293
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2728761550178684,
+        0.32495043208845936,
+        1.722860825665798
+      ],
+      "ball_minus_contact_point_m": [
+        -0.14068874084855687,
+        -0.20853460511216007,
+        0.18252688585916532
+      ],
+      "normal_world": [
+        0.9930302569457057,
+        0.07114929642188439,
+        -0.09396108986711951
+      ]
+    },
+    {
+      "source_training_index": 118,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7699999809265137,
+      "approximate_string_gap_m": 0.031226172918898308,
+      "actual_recorded_interpolated_ball_m": [
+        1.131018340587616,
+        -0.020506054162979126,
+        1.7485781908035278
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1148353219032288,
+        0.12533267587423325,
+        1.7338936924934387
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.137077575348381,
+        0.1394486534587999,
+        1.7935710009487429
+      ],
+      "ball_minus_contact_point_m": [
+        -0.0060592347607650865,
+        -0.15995470762177902,
+        -0.044992810145215056
+      ],
+      "normal_world": [
+        0.9935902807230739,
+        0.10809092701948249,
+        0.0330863347730199
+      ]
+    },
+    {
+      "source_training_index": 119,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.6379998683929444,
+      "approximate_string_gap_m": 0.15355881967252327,
+      "actual_recorded_interpolated_ball_m": [
+        1.2868067860603332,
+        -0.15363208949565887,
+        1.825869119167328
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.299954390525818,
+        0.06808470785617829,
+        1.670384442806244
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.331951053158506,
+        0.08305483382439072,
+        1.7252248359013131
+      ],
+      "ball_minus_contact_point_m": [
+        -0.04514426709817276,
+        -0.2366869233200496,
+        0.10064428326601482
+      ],
+      "normal_world": [
+        0.9890874423614829,
+        0.07031334720896451,
+        -0.12946839215457992
+      ]
+    },
+    {
+      "source_training_index": 120,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": true,
+      "native_frame_hit": true,
+      "native_contact_time_s": 2.8145549297332764,
+      "geometric_closest_time_s": 2.8139999389648436,
+      "approximate_string_gap_m": 0.039750130197700385,
+      "actual_recorded_interpolated_ball_m": [
+        1.1516475915908813,
+        0.10059559121727943,
+        1.7985857129096985
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.0880526065826417,
+        0.17614120990037918,
+        1.737525260448456
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.110461078170757,
+        0.18842464944828563,
+        1.7975447349539317
+      ],
+      "ball_minus_contact_point_m": [
+        0.04118651342012436,
+        -0.0878290582310062,
+        0.001040977955766742
+      ],
+      "normal_world": [
+        0.9985964076111302,
+        0.016552608780042354,
+        0.050311289475825964
+      ]
+    },
+    {
+      "source_training_index": 121,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.712000036239624,
+      "approximate_string_gap_m": 0.008572902653457025,
+      "actual_recorded_interpolated_ball_m": [
+        1.2325620651245117,
+        0.10062291622161865,
+        1.8132912397384644
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2374593496322632,
+        0.16259326934814453,
+        1.697204327583313
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2681538901457066,
+        0.18540371686722776,
+        1.7500521134650662
+      ],
+      "ball_minus_contact_point_m": [
+        -0.035591825021194845,
+        -0.08478080064560911,
+        0.06323912627339823
+      ],
+      "normal_world": [
+        0.9962500477498671,
+        -0.032916682654915964,
+        -0.08001458842850583
+      ]
+    },
+    {
+      "source_training_index": 122,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.6719998359680175,
+      "approximate_string_gap_m": 0.1877608215468431,
+      "actual_recorded_interpolated_ball_m": [
+        1.2593738079071044,
+        -0.14059077799320222,
+        1.9579397439956665
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2782294988632201,
+        0.04015217125415802,
+        1.701472234725952
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.3100710951484629,
+        0.05104554982631196,
+        1.7573543146375592
+      ],
+      "ball_minus_contact_point_m": [
+        -0.05069728724135847,
+        -0.19163632781951417,
+        0.2005854293581073
+      ],
+      "normal_world": [
+        0.993976594030285,
+        0.005993763434686579,
+        -0.10942853978667103
+      ]
+    },
+    {
+      "source_training_index": 123,
+      "native_airborne_string_hit": true,
+      "native_any_racket_contact": true,
+      "native_frame_hit": false,
+      "native_contact_time_s": 2.8473494052886963,
+      "geometric_closest_time_s": 2.845999908447266,
+      "approximate_string_gap_m": 0.06364247900904332,
+      "actual_recorded_interpolated_ball_m": [
+        1.139013123512268,
+        0.18292364627122878,
+        1.7720678687095641
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.0425284266471864,
+        0.24294281601905823,
+        1.7288429617881775
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.0580229045077079,
+        0.2637298873888064,
+        1.7887026195357347
+      ],
+      "ball_minus_contact_point_m": [
+        0.08099021900456016,
+        -0.08080624111757764,
+        -0.016634750826170608
+      ],
+      "normal_world": [
+        0.9787293994210232,
+        0.16960183903850556,
+        0.11542954086246873
+      ]
+    },
+    {
+      "source_training_index": 124,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.857999897003174,
+      "approximate_string_gap_m": 0.2032221663833387,
+      "actual_recorded_interpolated_ball_m": [
+        1.0648967385292054,
+        0.18907911479473113,
+        1.861627495288849
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1721137285232544,
+        0.41535255312919617,
+        1.6839192032814025
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.1962156710892302,
+        0.4476284644185504,
+        1.7352292580557256
+      ],
+      "ball_minus_contact_point_m": [
+        -0.1313189325600248,
+        -0.25854934962381926,
+        0.12639823723312338
+      ],
+      "normal_world": [
+        0.9931601324098305,
+        0.11067292253153832,
+        -0.03720827340815748
+      ]
+    },
+    {
+      "source_training_index": 125,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.7040000438690184,
+      "approximate_string_gap_m": 0.12901925960607055,
+      "actual_recorded_interpolated_ball_m": [
+        1.1907849788665772,
+        -0.11485762298107147,
+        1.85639226436615
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2221735954284667,
+        0.0875438392162323,
+        1.7222378253936768
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2499116455021673,
+        0.1051101736163432,
+        1.7786061168331753
+      ],
+      "ball_minus_contact_point_m": [
+        -0.059126666635590075,
+        -0.21996779659741467,
+        0.07778614753297464
+      ],
+      "normal_world": [
+        0.9983999509388561,
+        0.031501350355351516,
+        -0.04695958785039377
+      ]
+    },
+    {
+      "source_training_index": 126,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.6980000257492067,
+      "approximate_string_gap_m": 0.021326580910746566,
+      "actual_recorded_interpolated_ball_m": [
+        1.2394859194755554,
+        0.04505692273378372,
+        1.7905857920646668
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.2531186580657958,
+        0.1368395835161209,
+        1.6873512029647828
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2846048537745176,
+        0.15926521521568163,
+        1.7398970908022113
+      ],
+      "ball_minus_contact_point_m": [
+        -0.04511893429896219,
+        -0.1142082924818979,
+        0.050688701262455504
+      ],
+      "normal_world": [
+        0.9949556991699443,
+        -0.042695293835587386,
+        -0.09077592507675387
+      ]
+    },
+    {
+      "source_training_index": 127,
+      "native_airborne_string_hit": false,
+      "native_any_racket_contact": false,
+      "native_frame_hit": false,
+      "native_contact_time_s": NaN,
+      "geometric_closest_time_s": 2.728000020980835,
+      "approximate_string_gap_m": 0.18404579800640491,
+      "actual_recorded_interpolated_ball_m": [
+        1.137883472442627,
+        -0.18958167731761932,
+        1.86639244556427
+      ],
+      "actual_recorded_interpolated_string_center_m": [
+        1.1912156105041505,
+        0.07473649233579635,
+        1.7402336835861205
+      ],
+      "actual_recorded_interpolated_contact_target_point_m": [
+        1.2175734067447654,
+        0.08956788284222406,
+        1.7980320939357137
+      ],
+      "ball_minus_contact_point_m": [
+        -0.07968993430213844,
+        -0.2791495601598434,
+        0.06836035162855625
+      ],
+      "normal_world": [
+        0.9978299935947229,
+        0.059836323508775484,
+        -0.02747577608928139
+      ]
+    }
+  ],
+  "new_native_execution": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false
+}

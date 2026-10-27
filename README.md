@@ -1,5 +1,9 @@
 # QuadSmash：Codex /goal 实施与训练任务包
 
+当前进展（2026-10-27T03:37:47.705465+00:00）：GPU0的[原9组挥拍方向比较](reports/G07_full_racket_v5/measured_swing_queue01/REPORT.md)已完成前2组，原样对照为 **0完整/4空中/0恢复**，首个挥拍改动为 **0完整/0空中/0恢复**，均NF0；第三组进行。[原样对照实核](reports/G07_full_racket_v5/measured_swing_reference_20261027/REPORT.md)保留实际4800条公共指令核验和后期恢复轨迹差异，没有声称全程逐位重放。
+
+[全部原128例漏球诊断与提前横向控制](reports/G07_full_racket_v5/early_tangent_intercept_20261027/REPORT.md)发现124个未完成空中拍线的回合都向同一侧漏过，材料击球点横偏中位16.4cm（插值几何诊断，未改判原生结果）。9项设置各4800条真实公共输入CPU检查完成；两项高增益过度修正未登记，保留7项。[后续顺序流程](reports/G07_full_racket_v5/early_lateral_queue01/REPORT.md)已以CPU等待进程1957568启动，待当前9组与独立冷128完整结束，选择实测来源并再次CPU验证后，才通过同一Main GPU0 guard执行，没有新增并发GPU作业。原全部来球、物理、目标及正式50/70/85保持；7项目前没有闭环成绩，G07未完成。以下段落保留此前观察。
+
 当前进展（2026-10-27T03:03:22.638063+00:00）：恢复关联v5的15更新与独立原128例已完成，最终冻结为 **0完整、0合格空中拍线、0合格恢复、NF0**。训练738回合的8空中/1恢复没有在冻结评估中复现，因此保留原教师同协议4次空中触球的来源。GPU0已接上[9组实测挥拍方向比较](reports/G07_full_racket_v5/measured_swing_queue01/REPORT.md)，每组均为全部原128来球，再独立冷128；945项源码与输入保持。原球场/球拍物理、2×2米目标和正式A/B各200、50/70/85门槛保持，G07未完成。
 
 [143.69MB完成训练、15个诊断权重、canonical及冻结128证据包](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_contact_recovery_v5_completed15_training_and_independent128_20261027.zip)已上传并新下载核验120成员CRC与119份内容SHA。[64.12MB完整源码、输入与全部10层USD资产配套包](reports/G07_full_racket_v5/contact_recovery_cold128_delivery_20261027/REPORT.md)已恢复1016项路径；新15策略从恢复源码复算1600条真实指令误差1.096725e−5、现场Python读取0。[完整报告](reports/G07_full_racket_v5/contact_recovery15_completed_delivery_20261027/REPORT.md)。
