@@ -1,0 +1,119 @@
+{
+  "checked_at": "2026-10-26T23:59:38.340361+00:00",
+  "checkpoint_checks": [
+    {
+      "iteration": 7,
+      "checkpoint_sha256": "05738f53dcb576aa5fb6873e72284a1df20ff3416bcae352229a7ec2bb40f2bc",
+      "actor_and_log_std_unchanged": true,
+      "actor_parameter_max_differences": {
+        "log_std": 0.0,
+        "actor.0.weight": 0.0,
+        "actor.0.bias": 0.0,
+        "actor.2.weight": 0.0,
+        "actor.2.bias": 0.0,
+        "actor.4.weight": 0.0,
+        "actor.4.bias": 0.0,
+        "actor.6.weight": 0.0,
+        "actor.6.bias": 0.0
+      },
+      "actual_Adam_steps": {
+        "critic.0.weight": 140,
+        "critic.0.bias": 140,
+        "critic.2.weight": 140,
+        "critic.2.bias": 140,
+        "critic.4.weight": 140,
+        "critic.4.bias": 140,
+        "critic.6.weight": 140,
+        "critic.6.bias": 140
+      },
+      "actual_RMS_count": 114688,
+      "all128_initial_episodes_completed": true,
+      "canonical_restart": false
+    },
+    {
+      "iteration": 8,
+      "checkpoint_sha256": "ecd4a47bb058826ea8774ead143e2cf509fe87ee5cc37d40da21cb079ff6af0a",
+      "actor_and_log_std_unchanged": false,
+      "actor_parameter_max_differences": {
+        "log_std": 0.0013235807418823242,
+        "actor.0.weight": 0.0017787604592740536,
+        "actor.0.bias": 0.0013280175626277924,
+        "actor.2.weight": 0.0017323307693004608,
+        "actor.2.bias": 0.0009316205978393555,
+        "actor.4.weight": 0.0017181017901748419,
+        "actor.4.bias": 0.0007575172930955887,
+        "actor.6.weight": 0.0018320278031751513,
+        "actor.6.bias": 0.0012339422246441245
+      },
+      "actual_Adam_steps": {
+        "log_std": 20,
+        "actor.0.weight": 20,
+        "actor.0.bias": 20,
+        "actor.2.weight": 20,
+        "actor.2.bias": 20,
+        "actor.4.weight": 20,
+        "actor.4.bias": 20,
+        "actor.6.weight": 20,
+        "actor.6.bias": 20,
+        "critic.0.weight": 160,
+        "critic.0.bias": 160,
+        "critic.2.weight": 160,
+        "critic.2.bias": 160,
+        "critic.4.weight": 160,
+        "critic.4.bias": 160,
+        "critic.6.weight": 160,
+        "critic.6.bias": 160
+      },
+      "actual_RMS_count": 131072,
+      "all128_initial_episodes_completed": true,
+      "canonical_restart": false
+    }
+  ],
+  "first128_original_stochastic_training_summary": {
+    "episodes": 128,
+    "before_launch": 8,
+    "airborne_contacts": 2,
+    "conditional_recovery_count": 0,
+    "complete": 0,
+    "numerical_failures": 0
+  },
+  "previous127_raw_rows_unchanged": true,
+  "recovery_flag_observations": [
+    {
+      "TRAIN_index": 69,
+      "original_episode_index": 0,
+      "actual_airborne_contact": true,
+      "stable_recovery": true,
+      "recovery_s": 3.729912042617798,
+      "qualified_jump_landed": false,
+      "qualified_flight_seen": true,
+      "body_landing": false,
+      "maximum_body_ground_force_n": 0.0,
+      "last_takeoff_time_s": 3.275944948196411,
+      "last_landing_time_s": 3.276944875717163,
+      "last_reported_flight_interval_s": 0.0009999275207519531,
+      "outgoing_speed_mps": 4.764763240594795,
+      "landed_target": false,
+      "original_conditional_recovery": false,
+      "complete": false,
+      "actual_full100Hz_episode_trace_saved": false,
+      "scope": "Flag relationship needing a recorded event timeline; no recovery score correction or causal proof."
+    }
+  ],
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin0_residual_warmup7_actor8_20261027/check_boundary.py": "977a1cb983fdad5e7bba1d3a383820d52f5d3d62e6f23f6df29d2add7e66a428",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin0_residual_fresh_n128_updates15_01/fresh_initial_model_state.pt": "fa05c0741b400b81113d9f44ee1ab2cf7855de3d6ca0bbb37eb03d2ef00269c6",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin0_residual_fresh_n128_updates15_01/ppo/model_6.pt": "05738f53dcb576aa5fb6873e72284a1df20ff3416bcae352229a7ec2bb40f2bc",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin0_residual_fresh_n128_updates15_01/ppo/model_7.pt": "ecd4a47bb058826ea8774ead143e2cf509fe87ee5cc37d40da21cb079ff6af0a",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin0_residual_fresh_n128_updates15_01/INPUTS.json": "6c5ff817d6a2d95d05baa68cb42ef8354a3ee4c0b7e108c628ed5db551bbc467",
+    "/home/autodrive/LZQW/unitree_smash/configs/g07_full_racket_eval_v4_r3_origin0.json": "b9fbfbcbe6ba4ff5f8ac4a944e3bcc0d4f2f0db4adf37182e30750a0562ec196",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin0_residual_after_gain_body_queue01/ACTUAL_UPDATE_07.json": "cdf564892ef1ec8dee262f6314e436f5f05109bac491a611885456af2f1ce384",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin0_residual_warmup7_actor8_20261027/FIRST128_EPISODES.json": "b3bd2a2298a9b2c99689396e043d3049cf0bb36e37edf4e5ac8a1a7e6af8243c"
+  },
+  "all519_current_inputs_unchanged": true,
+  "scope": "Actual critic-warmup and first actor update; training episodes and diagnostic checkpoints, no frozen-policy performance or canonical resume claim.",
+  "scoring_or_training_sources_changed": false,
+  "new_native_execution": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false
+}

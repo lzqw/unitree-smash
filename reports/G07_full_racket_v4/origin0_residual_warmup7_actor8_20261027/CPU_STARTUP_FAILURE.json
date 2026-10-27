@@ -1,0 +1,11 @@
+{
+  "recorded_at": "2026-10-26T23:59:37.582210+00:00",
+  "failed_CPU_entrypoint": "inspect.py",
+  "entrypoint_content_sha256": "977a1cb983fdad5e7bba1d3a383820d52f5d3d62e6f23f6df29d2add7e66a428",
+  "exit_code": 1,
+  "error": "AttributeError: partially initialized module 'inspect' has no attribute 'signature'",
+  "cause": "The local CPU inspection filename shadowed the Python standard-library inspect module during NumPy/Torch import.",
+  "fix": "Renamed only the new report entrypoint to check_boundary.py before any RESULT was written.",
+  "native_training_affected": false,
+  "scoring_changed": false
+}

@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/gain_body_completed_delivery_20261027/ACTUAL_COMPLETED_DATA_CHECK.json",
-      "notes": "全身八项及独立冷128已完成，0完整/4空中/0合格恢复/0攻击、NF0，未改善。GPU0新128×15残差已完成5更新、81920步，仍critic预热，记录NF0。七个早期失败976真实输入CPU复算通过；首批127/128已结束，8例来球前失败、1待结束，选例诊断不是整体主因或冻结成绩。原A/B各200及50/70/85未通过。",
+      "notes": "GPU0新128×15残差已完成10更新、163840步，已进入actor学习，NF0。第7 actor逐位未变，第8实际更新，Adam actor20/critic160、RMS各131072。预热首128独立重算2空中/0合格恢复/0完整，69有稳定3.73秒/身体力0/末态资格假，待时序核查，评分不改。16MB实际检查点及128数据/程序已上传新下载SHA/CRC核验。此前固定冷128为0/4/0，原正式目标未通过。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
@@ -63,15 +63,15 @@
           "native_child_pid": 1923510,
           "gpu": 0,
           "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin0_residual_fresh_n128_updates15_01",
-          "observed_at": "2026-10-26T23:49:10.554912+00:00",
+          "observed_at": "2026-10-27T00:04:18.583743+00:00",
           "verified_live_processes": true,
           "actual128_ground_initial_states_verified": true,
           "actual408_native_source_hashes_verified": true,
           "base_policy_sha256": "204ff76f21625d49cd1dc29ec3b6256447a5fa8b2fec935dda986842fc330034",
           "formal_acceptance": false,
-          "actual_completed_updates": 5,
-          "actual_control_env_steps": 81920,
-          "actor_warmup": true
+          "actual_completed_updates": 10,
+          "actual_control_env_steps": 163840,
+          "actor_warmup": false
         }
       ],
       "queued_native_sequence": {
@@ -11467,6 +11467,33 @@
         "native_replay_in_fresh_extraction": false,
         "formal_acceptance": false,
         "goal_complete": false
+      },
+      "latest_training_boundary_inspection": "reports/G07_full_racket_v4/origin0_residual_warmup7_actor8_20261027/RESULT.json",
+      "latest_training_boundary_delivery": {
+        "checked_at": "2026-10-27T00:02:52.085505+00:00",
+        "asset": "G07_origin0_residual_warmup7_actor8_actual_checkpoints_and_first128_20261027.zip",
+        "GitHub_asset_id": 679884345,
+        "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_origin0_residual_warmup7_actor8_actual_checkpoints_and_first128_20261027.zip",
+        "bytes": 16000756,
+        "sha256": "82fad145f67464e1f538e6d0bb5d52301a4fc71116c1f25bef40c1b1a4e23bab",
+        "fresh_download": "/tmp/g07_warmup7_actor8_fresh_h_vpvpwv/G07_origin0_residual_warmup7_actor8_actual_checkpoints_and_first128_20261027.zip",
+        "fresh_download_verified": true,
+        "archive_members_CRC_verified": 18,
+        "archive_payload_SHA_verified": 17,
+        "actual_warmup7_actor8_and_first128_delivered": true,
+        "new_native_execution": false,
+        "native_replay_in_fresh_extraction": false,
+        "formal_acceptance": false,
+        "goal_complete": false
+      },
+      "recovery_flag_observation": {
+        "TRAIN_index": 69,
+        "airborne_contact": true,
+        "stable_recovery_s": 3.729912042617798,
+        "body_landing": false,
+        "qualified_jump_landed": false,
+        "scoring_changed": false,
+        "requires_recorded_event_timeline": true
       }
     },
     "G08": {
