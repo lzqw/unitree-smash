@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/origin0_residual15_completed_delivery_20261027/ACTUAL_COMPLETED_DATA_CHECK.json",
-      "notes": "GPU0继续提前横向七组，第3组运行。已完成原样4空中与修改组13空中，均0完整/0恢复/0攻击、NF0；修改组8例原目标首落点但13例均身体触地。新增全身动量耦合挥拍候选已验证17实际接触及2×4×4800公共指令，尚无新原生执行。本轮本地保存，减少GitHub流量；原任务门槛保持，G07未完成。",
+      "notes": "GPU0提前横向第4组运行，前三组原128复算384回合为空中4/13/11，完整/攻击/合格恢复均0、NF0。全身动量耦合四项已接原生入口，CPU等待owner1984009等待前序三组调姿及其独立128，1032项输入绑定，无新GPU子进程。未来实际源重放及新原生试验仍待执行，原门槛保持；本轮仅本地保存。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
@@ -67,23 +67,48 @@
           "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/early_lateral7_n128_01",
           "native_child_pid": 1975639,
           "gpu": 0,
-          "verified_live_at": "2026-10-27T06:49:51.497347+00:00",
+          "verified_live_at": "2026-10-27T07:01:27.859435+00:00",
           "actual_progress": {
-            "candidate_id": 2,
-            "candidate_name": "lateral_start2_gain1",
-            "control_ticks": 700,
-            "first_episodes_complete": 16,
-            "completed_candidates": 2,
-            "actual_control_env_steps": 294400,
+            "candidate_id": 3,
+            "candidate_name": "lateral_start2_gain2",
+            "control_ticks": 400,
+            "first_episodes_complete": 4,
+            "completed_candidates": 3,
+            "actual_control_env_steps": 358400,
             "formal_acceptance": false
           }
         }
       ],
       "queued_native_sequence": {
-        "state": "RUNNING_SEARCH9_THEN_INDEPENDENT_SELECTED_COLD128",
-        "owner_pid": 1951183,
-        "search_output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/measured_swing9_n128_01",
-        "cold_output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/measured_swing9_best_cold128_01",
+        "checked_at": "2026-10-27T07:01:27.859435+00:00",
+        "state": "ONE_NATIVE_JOB_THEN_SEQUENTIAL_SOURCE_ADMISSION_AND_COLD128",
+        "owners": [
+          {
+            "queue": "early_lateral_queue01",
+            "owner_pid": 1957568,
+            "state": "RUNNING_EARLY_LATERAL_SEARCH"
+          },
+          {
+            "queue": "windowed_swing_queue01",
+            "owner_pid": 1966524,
+            "state": "WAITING_FOR_CONFIRMED_EARLY7_OWNER_AND_COLD128"
+          },
+          {
+            "queue": "recovery_prior_queue01",
+            "owner_pid": 1968858,
+            "state": "WAITING_FOR_CONFIRMED_WINDOW7_OWNER_AND_COLD128"
+          },
+          {
+            "queue": "air_countermotion_queue01",
+            "owner_pid": 1973878,
+            "state": "WAITING_FOR_CONFIRMED_RECOVERY9_OWNER_AND_COLD128"
+          },
+          {
+            "queue": "momentum_strike_queue01",
+            "owner_pid": 1984009,
+            "state": "WAITING_FOR_CONFIRMED_COUNTERMOTION3_OWNER_AND_COLD128"
+          }
+        ],
         "formal_acceptance": false
       },
       "native_air_string_contact_milestone": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
@@ -12477,6 +12502,33 @@
         "native_execution": false,
         "formal_acceptance": false,
         "goal_complete": false
+      },
+      "latest_actual_early_lateral_first3": {
+        "report": "reports/G07_full_racket_v5/early_lateral_first3_checked_20261027/REPORT.md",
+        "checked_at": "2026-10-27T06:58:48.811161+00:00",
+        "episodes": 384,
+        "air_counts": [
+          4,
+          13,
+          11
+        ],
+        "complete": 0,
+        "recovery": 0,
+        "attack": 0,
+        "NF": 0,
+        "search_still_running": true,
+        "independent_cold_pending": true,
+        "formal_acceptance": false
+      },
+      "latest_native_momentum_strike_queue": {
+        "report": "reports/G07_full_racket_v5/momentum_strike_queue01/REPORT.md",
+        "owner_pid": 1984009,
+        "owner_start_ticks": "71053999",
+        "state": "WAITING_FOR_CONFIRMED_COUNTERMOTION3_OWNER_AND_COLD128",
+        "bound_inputs": 1032,
+        "has_GPU_child": false,
+        "actual_source_and_new_native_execution_pending": true,
+        "formal_acceptance": false
       }
     },
     "G08": {
