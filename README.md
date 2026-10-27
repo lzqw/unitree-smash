@@ -1,5 +1,7 @@
 # QuadSmash：Codex /goal 实施与训练任务包
 
+当前进展（2026-10-27T05:48:01.832555+00:00）：[九组挥拍比较](reports/G07_full_racket_v5/measured_swing9_completed_20261027/REPORT.md)已全部完成并独立复算1152回合，空中触球 **4/0/0/1/0/3/2/5/4，完整、合格恢复和攻击均0、NF0**，实际2.805232 GPU小时。原排序选择0原样，GPU0已接续独立冷128，尚无最终新结果。新增[公共观测腿部反向调姿](reports/G07_full_racket_v5/public_air_countermotion_20261027/REPORT.md)完成3×4800条真实输入检查，并增加高度/朝向/足支撑门控避免低位翻倒误触发；[有限后续试验](reports/G07_full_racket_v5/air_countermotion_queue01/REPORT.md)以CPU owner1973878等待恢复9项与其独立评估，1009项持有输入保持，无新增并发GPU作业。**模型预测不是实际恢复改善，正式A/B和原50/70/85未通过，G07未完成。** 以下保留此前观察。
+
 当前进展（2026-10-27T05:29:03.324714+00:00）：GPU0原9组比较已完成前8组，空中触球 **4/0/0/1/0/3/2/5，完整和合格恢复均0、NF0**，第9组继续。新增[28刚体公共状态与动量模型](reports/G07_full_racket_v5/centroidal_recovery_model_20261027/REPORT.md)已用5600条公共观测、3200帧原生姿态核验，位置误差低于2微米；当前恢复参考队列保持。另更正[恢复时长字段](reports/G07_full_racket_v5/centroidal_recovery_model_20261027/RECOVERY_DURATION_ERRATUM.md)：3.729912和历史视频4.063888秒均为最长连续稳定时长，不是恢复完成时刻；原生判定不变。**没有新的闭环恢复成绩，正式A/B与原50/70/85仍未通过，G07未完成。** 以下保留此前观察。
 
 当前进展（2026-10-27T05:09:59.049800+00:00）：GPU0原9组比较已完成前7组，空中触球 **4/0/0/1/0/3/2，完整和合格恢复均0、NF0**，第8组继续。[九项共享恢复参考](reports/G07_full_racket_v5/recovery_prior_native_20261027/REPORT.md)已接入独立原生入口，实际9×4800条指令与已公开参考逐字节一致；[后续恢复试验](reports/G07_full_racket_v5/recovery_prior_queue01/REPORT.md)已以CPU owner1968858等待短窗口试验及其独立评估，991项持有输入保持，无新增并发GPU作业。**恢复候选尚无新原生闭环成绩，原正式A/B和50/70/85仍未达标，G07未完成。** 以下保留此前观察。

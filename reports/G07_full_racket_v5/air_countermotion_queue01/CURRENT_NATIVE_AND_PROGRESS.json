@@ -1,0 +1,83 @@
+{
+  "observed_at": "2026-10-27T05:48:01.832555+00:00",
+  "previous_goal_turn_classification": "progress",
+  "previous_turn_evidence": "Known28-body model checked on5600 real public rows/3200 native poses; recovery duration semantics corrected; commits46f3145/fbad951 published.",
+  "current_turn_classification": "progress",
+  "progress": "Completed and independently verified all9 original128 trials; selected unchanged0 under predeclared rank; independent cold guard/native confirmed live. Implemented bounded public post-hit leg countermotion, corrected phase-only activation, actual3\u00d74800 CPU checks and4800 separate factory baseline passed, native pipeline owner1973878 registered.",
+  "actual_processes": [
+    {
+      "pid": 1951183,
+      "start_ticks": "69568587",
+      "command": "/home/autodrive/Isaac/env_isaaclab/bin/python -u /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/measured_swing_queue01/run.py"
+    },
+    {
+      "pid": 1973241,
+      "start_ticks": "70578565",
+      "command": "/home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/scripts/run_gpu_job.py --goal G07 --budget-window g07-full-racket-unlimited-20261024 --max-seconds 5400 --env-steps-cap 102400 --output /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/measured_swing9_best_cold128_01 --require-artifact completed.json -- /home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/measured_swing_queue01/evaluate_swing.py --output /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/measured_swing9_best_cold128_01 --mode cold --source /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/measured_swing9_n128_01/best_candidate.pt --source-evaluation /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/teacher_contact_recovery_cold128_02 --precision-receipt /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin_precision_after_aim_queue01/PRECISION_ADMISSION.json --seed 724201 --headless"
+    },
+    {
+      "pid": 1973256,
+      "start_ticks": "70578575",
+      "command": "/home/autodrive/Isaac/env_isaaclab/bin/python /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/measured_swing_queue01/evaluate_swing.py --output /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/measured_swing9_best_cold128_01 --mode cold --source /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/measured_swing9_n128_01/best_candidate.pt --source-evaluation /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/teacher_contact_recovery_cold128_02 --precision-receipt /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin_precision_after_aim_queue01/PRECISION_ADMISSION.json --seed 724201 --headless"
+    },
+    {
+      "pid": 1957568,
+      "start_ticks": "69825890",
+      "command": "/home/autodrive/Isaac/env_isaaclab/bin/python -u /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/early_lateral_queue01/run.py"
+    },
+    {
+      "pid": 1966524,
+      "start_ticks": "70291052",
+      "command": "/home/autodrive/Isaac/env_isaaclab/bin/python -u /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing_queue01/run.py"
+    },
+    {
+      "pid": 1968858,
+      "start_ticks": "70396314",
+      "command": "/home/autodrive/Isaac/env_isaaclab/bin/python -u /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/recovery_prior_queue01/run.py"
+    },
+    {
+      "pid": 1973878,
+      "start_ticks": "70601904",
+      "command": "/home/autodrive/Isaac/env_isaaclab/bin/python -u /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/air_countermotion_queue01/run.py"
+    }
+  ],
+  "completed_search": {
+    "episodes": 1152,
+    "env_steps": 921600,
+    "charged_GPU0_hours": 2.8052324800664143,
+    "selected_candidate_id": 0
+  },
+  "current_native_state": {
+    "state": "RUNNING_MEASURED_SWING_COLD",
+    "owner_pid": 1951183,
+    "observed_at": "2026-10-27T05:38:52.164025+00:00",
+    "formal_cases_read": false,
+    "formal_acceptance": false,
+    "goal_complete": false,
+    "guard_pid": 1973241,
+    "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/measured_swing9_best_cold128_01"
+  },
+  "current_native_progress": {
+    "candidate_id": 0,
+    "candidate_name": "independent_cold_selected_swing",
+    "control_ticks": 400,
+    "first_episodes_complete": 5,
+    "completed_candidates": 0,
+    "actual_control_env_steps": 51200,
+    "formal_acceptance": false
+  },
+  "current_native_ground_check": {
+    "file": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/measured_swing9_best_cold128_01/initial_ground_states_000.json",
+    "sha256": "b5802efdfd026f96728aba9013c04bb6cafec9995d1fdb97fb2176b6107d76d1",
+    "ground_resets": 128,
+    "all_original_episode_ids_zero": true,
+    "all_origins_zero": true
+  },
+  "held_inputs": 1009,
+  "all_held_inputs_unchanged": true,
+  "new_owner_cpu_only_no_children": true,
+  "new_countermotion_native_execution": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
