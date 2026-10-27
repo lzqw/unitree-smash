@@ -9345,9 +9345,9 @@
       },
       "last_goal_turn_classification": {
         "classification": "progress",
-        "observed_at": "2026-10-27T05:09:59.049800+00:00",
-        "evidence": "Integrated published recovery priors with future actual windowed-source dispatch; all9 actual4800-row output streams equal published fresh-download streams bitwise; derived and checked native9/cold128 entries; registered and started owner1968858.",
-        "previous_turn": "progress: actual windowed-swing implementation/checks/registered waiter and GitHub delivery"
+        "observed_at": "2026-10-27T05:29:03.324714+00:00",
+        "evidence": "Built known28-body public-state model and centroidal momentum matrix; verified5600 public inputs against3200 native pose rows; discovered and corrected recovery-duration interpretation; identified larger pre-landing roll and post-landing loss of support in failed69.",
+        "previous_turn": "progress: native recovery-prior integration, checks and registered waiter"
       },
       "completed_leg06_warmup13_frozen_TRAIN128": {
         "episodes": 128,
@@ -12094,7 +12094,7 @@
         "source_scope": "Previous-origin16 TRAIN29; explicitly historical in every frame; current-origin0 success is not claimed."
       },
       "measured_swing_completed_candidate_observations": {
-        "observed_at": "2026-10-27T05:09:59.049800+00:00",
+        "observed_at": "2026-10-27T05:29:03.324714+00:00",
         "completed": [
           {
             "candidate_id": 0,
@@ -12144,15 +12144,22 @@
             "airborne_contacts": 2,
             "conditional_recovery_count": 0,
             "numerical_failures": 0
+          },
+          {
+            "candidate_id": 7,
+            "complete": 0,
+            "airborne_contacts": 5,
+            "conditional_recovery_count": 0,
+            "numerical_failures": 0
           }
         ],
         "current": {
-          "candidate_id": 7,
-          "candidate_name": "fast_rate_with_normal_down0.2",
+          "candidate_id": 8,
+          "candidate_name": "fast_rate_with_normal_down0.35",
           "control_ticks": 300,
           "first_episodes_complete": 0,
-          "completed_candidates": 7,
-          "actual_control_env_steps": 755200,
+          "completed_candidates": 8,
+          "actual_control_env_steps": 857600,
           "formal_acceptance": false
         },
         "reference_source_not_promoted_to_passed": true
@@ -12334,6 +12341,19 @@
         "report": "reports/G07_full_racket_v5/recovery_prior_queue01/REPORT.md",
         "native_execution": false,
         "formal_acceptance": false
+      },
+      "latest_public_centroidal_model": {
+        "report": "reports/G07_full_racket_v5/centroidal_recovery_model_20261027/REPORT.md",
+        "actual_public_rows": 5600,
+        "actual_native_pose_rows": 3200,
+        "maximum_body_position_error_m": 1.8444502923004146e-06,
+        "maximum_tool_velocity_error_m_s": 8.172627330438331e-06,
+        "new_closed_loop_outcome": false
+      },
+      "recovery_duration_field_correction": {
+        "report": "reports/G07_full_racket_v5/centroidal_recovery_model_20261027/RECOVERY_DURATION_ERRATUM.md",
+        "meaning": "recovery_s is longest continuous eligible stable duration, not completion clock",
+        "raw_native_values_or_outcomes_changed": false
       }
     },
     "G08": {
