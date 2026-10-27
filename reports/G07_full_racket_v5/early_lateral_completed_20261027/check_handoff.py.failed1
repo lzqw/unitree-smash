@@ -1,0 +1,150 @@
+"""Verify the completed early search, actual cold result and existing handoff.
+
+No GPU launch, upload, retry or modification of any running input. The live
+window search is only observed; its first three sealed candidates are rescored.
+"""
+from datetime import datetime, timezone
+import hashlib
+import json
+from pathlib import Path
+import sys
+
+HERE = Path(__file__).resolve().parent
+BASE = HERE.parent
+MAIN = HERE.parents[2]
+ROOT = MAIN.parent/'unitree_smash_contact_recovery'
+sys.path.insert(0, str(ROOT))
+from quadsmash.control.full_racket_train_evaluation_v4 import training_cases
+from quadsmash.control.full_racket_body_search_v4 import summarize_candidate
+from quadsmash.evaluation_v4 import independent_episode
+
+
+def read(path):
+    return json.loads(path.read_text())
+
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def process(pid, expected_ticks, required):
+    path = Path('/proc', str(pid))
+    stat = (path/'stat').read_text().rsplit(')', 1)[1].split()
+    assert stat[19] == expected_ticks and stat[0] != 'Z'
+    command = (path/'cmdline').read_bytes().replace(b'\0', b' ').decode()
+    assert required in command
+    env = (path/'environ').read_bytes().split(b'\0')
+    cuda = next((x.split(b'=', 1)[1].decode() for x in env if x.startswith(b'CUDA_VISIBLE_DEVICES=')), None)
+    children = [int(x) for x in (path/'task'/str(pid)/'children').read_text().split()]
+    return dict(pid=pid, start_ticks=stat[19], command=command, CUDA_VISIBLE_DEVICES=cuda, children=children)
+
+
+def main():
+    sources = [Path(__file__)]
+    for name in ['ACTUAL_COMPLETED_SEARCH_CHECK.json', 'ACTUAL_POLICY_REPLAY_AUDIT.json', 'ACTUAL_INDEPENDENT128_CHECK.json']:
+        path = HERE/name
+        proof = read(path)
+        assert all(sha(Path(p)) == h for p, h in proof['source_sha256'].items())
+        sources.append(path)
+    union = {}
+    receipts = []
+    for path in [BASE/'stance_recovery_queue01/PLAN.json', BASE/'early_lateral_queue01/BOUND_SELECTED_SOURCE_INPUTS.json',
+                 BASE/'windowed_swing_queue01/BOUND_SELECTED_SOURCE_INPUTS.json']:
+        record = read(path)
+        held = record.get('source_sha256', record)
+        assert all(sha(Path(p)) == h for p, h in held.items())
+        for p, h in held.items():
+            assert p not in union or union[p] == h
+            union[p] = h
+        receipts.append(dict(path=str(path), sha256=sha(path), held_files=len(held), all_unchanged=True))
+        sources.append(path)
+    for path in [MAIN/'README.md', MAIN/'status/STATUS.json', HERE/'REPORT.md']:
+        assert str(path.resolve()) not in union
+    assert not Path('/proc/1957568').exists()
+    terminal = read(BASE/'early_lateral_queue01/state.json')
+    assert terminal['state'] == 'COMPLETED_EARLY_LATERAL7_AND_INDEPENDENT_COLD128'
+    for pid in [1975624, 1975639, 1992160, 1992175]:
+        assert not Path('/proc', str(pid)).exists()
+    native = [process(1966524, '70291052', 'windowed_swing_queue01/run.py'),
+              process(1994961, '71584847', 'scripts/run_gpu_job.py'),
+              process(1994976, '71584859', 'windowed_swing_queue01/evaluate_windowed_swing.py')]
+    assert native[0]['children'] == [1994961] and 1994976 in native[1]['children']
+    assert native[2]['CUDA_VISIBLE_DEVICES'] == '0'
+    waiters = []
+    for pid, ticks, name in [(1968858, '70396314', 'recovery_prior_queue01'),
+                              (1973878, '70601904', 'air_countermotion_queue01'),
+                              (1984009, '71053999', 'momentum_strike_queue01'),
+                              (1990613, '71376602', 'stance_recovery_queue01')]:
+        record = process(pid, ticks, name+'/run.py')
+        assert record['CUDA_VISIBLE_DEVICES'] == '' and record['children'] == []
+        waiters.append(record)
+    run = BASE/'windowed_swing7_n128_01'
+    metadata = read(run/'INPUTS.json')
+    cold = read(HERE/'ACTUAL_INDEPENDENT128_CHECK.json')
+    assert metadata['source_policy_sha256'] == cold['selected_policy_sha256']
+    admission_path = BASE/'windowed_swing_queue01/SELECTED_SOURCE_CPU_CHECK.json'
+    admission = read(admission_path)
+    assert admission['original_action_tolerance'] == .0005
+    for result in admission['actual_selected_source_all7_public_replays']:
+        assert result['within_original_tolerance']
+    metrics_bytes = (run/'metrics.json').read_bytes()
+    metrics = json.loads(metrics_bytes)
+    protocol_path = ROOT/'configs/g07_full_racket_eval_v5_contact_recovery_origin0.json'
+    protocol = read(protocol_path)
+    protocol['_root'] = str(ROOT)
+    cases, indices = training_cases(ROOT, protocol)
+    assert indices == list(range(128))
+    partial = []
+    sealed_paths = [run/'INPUTS.json', admission_path, protocol_path]
+    for candidate in [0, 1, 2]:
+        episode_path = run/f'episodes_{candidate:03d}.json'
+        rows = read(episode_path)
+        initial_path = run/f'initial_ground_states_{candidate:03d}.json'
+        initial = read(initial_path)
+        assert len(rows) == 128 and [x['source_training_index'] for x in rows] == indices
+        assert [x['case_id'] for x in rows] == [x['case_id'] for x in cases]
+        assert [x['episode_index'] for x in rows] == initial['episode_ids']
+        assert initial['all_clocks_zero'] and initial['actual_environment_origins_m'] == [[0., 0., 0.]]*128
+        assert all(x['ground_init'] and x['env_id'] == i for i, x in enumerate(rows))
+        checked = [independent_episode(x, protocol) for x in rows]
+        summary = summarize_candidate(rows, protocol)
+        assert summary['complete'] == sum(x['complete'] for x in checked)
+        assert summary['airborne_contacts'] == sum(x['airborne_contact'] for x in checked)
+        assert summary['conditional_recovery_count'] == sum(x['conditional_recovery'] for x in checked)
+        stored = next(x for x in metrics['history'] if x['candidate_id'] == candidate)
+        for key, value in summary.items():
+            assert value == stored['summary'][key]
+        partial.append(dict(candidate_id=candidate, candidate=stored['candidate'], summary=summary))
+        sealed_paths.extend([episode_path, initial_path])
+    sources.extend(sealed_paths)
+    cold_rows_path = BASE/'early_lateral7_best_cold128_01/episodes.json'
+    cold_rows = read(cold_rows_path)
+    air = [x for x in cold_rows if independent_episode(x, protocol)['airborne_contact']]
+    speeds = [sum(v*v for v in x['outgoing_velocity_mps'])**.5 for x in air]
+    assert len(air) == 13
+    failure_digest = dict(actual_air_contacts=len(air), target_first_landing=sum(x['landed_target'] for x in air),
+        aggregate_nonfoot_ground_contact=sum(x['contact_flight_recovery']['body_landing'] for x in air),
+        actual_outgoing_speed_range_m_s=[min(speeds), max(speeds)],
+        note='Aggregate nonfoot-ground flag includes robot, arm, mount and racket; no specific-body causal claim.')
+    sources.append(cold_rows_path)
+    record = dict(observed_at=datetime.now(timezone.utc).isoformat(), completed_early_owner_exited=True,
+        completed_search_and_cold_GPU_handles_exited=True, existing_window_processes=native,
+        downstream_CPU_only_waiters=waiters, source_policy_sha256=cold['selected_policy_sha256'],
+        held_receipts=receipts, held_union_file_count=len(union), all_held_bytes_unchanged=True,
+        independent128_failure_digest=failure_digest, actual_window_first3_rescored=partial,
+        observed_window_progress=read(run/'progress.json'), window_search_complete=False,
+        window_source_CPU_admission=admission, no_new_GPU_launch=True, github_upload_performed=False,
+        formal_cases_read=False, formal_acceptance=False, goal_complete=False,
+        source_sha256={str(p): sha(p) for p in sorted(set(sources))})
+    with (HERE/'WINDOW_SEARCH_PARTIAL_METRICS.json').open('xb') as f:
+        f.write(metrics_bytes)
+    record['source_sha256'][str(HERE/'WINDOW_SEARCH_PARTIAL_METRICS.json')] = sha(HERE/'WINDOW_SEARCH_PARTIAL_METRICS.json')
+    with (HERE/'HANDOFF_AND_HOLD_CHECK.json').open('x') as f:
+        f.write(json.dumps(record, indent=2)+'\n')
+    print(json.dumps(dict(all_held_bytes_unchanged=True, held_union_file_count=len(union),
+        independent128_failure_digest=failure_digest, actual_window_first3=[x['summary']['airborne_contacts'] for x in partial],
+        existing_native_pid=native[-1]['pid'], CPU_only_waiters=[x['pid'] for x in waiters], github_upload_performed=False)))
+
+
+if __name__ == '__main__':
+    main()

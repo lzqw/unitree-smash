@@ -1,0 +1,49 @@
+{
+  "checked_at": "2026-10-27T09:33:34.331299+00:00",
+  "installed_step_loop_calls": [
+    "self._apply_action()",
+    "self.scene.write_data_to_sim()",
+    "self.sim.step(render=False)",
+    "self.scene.update(dt=self.physics_dt)"
+  ],
+  "source_excerpts": [
+    {
+      "path": "/home/autodrive/Isaac/IsaacLab/source/isaaclab/isaaclab/envs/direct_rl_env.py",
+      "first_line": 350,
+      "last_line": 364,
+      "text": "        for _ in range(self.cfg.decimation):\n            self._sim_step_counter += 1\n            # set actions into buffers\n            self._apply_action()\n            # set actions into simulator\n            self.scene.write_data_to_sim()\n            # simulate\n            self.sim.step(render=False)\n            # render between steps only if the GUI or an RTX sensor needs it\n            # note: we assume the render interval to be the shortest accepted rendering interval.\n            #    If a camera needs rendering at a faster frequency, this will lead to unexpected behavior.\n            if self._sim_step_counter % self.cfg.sim.render_interval == 0 and is_rendering:\n                self.sim.render()\n            # update buffers at sim dt\n            self.scene.update(dt=self.physics_dt)"
+    },
+    {
+      "path": "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/tasks/stand/ball_env.py",
+      "first_line": 231,
+      "last_line": 258,
+      "text": "    def _apply_action(self):\n        # Read the previous completed substep; DirectRLEnv updates scene data\n        # after sim.step. The final substep is consumed in _get_dones below.\n        frame = self._sim_step_counter - 1\n        self._consume_physics_frame(frame)\n        # Bypass JumpEnv's per-substep metric call while retaining the\n        # CoupledEnv target write and foot-contact observation.\n        CoupledEnv._apply_action(self)\n        if frame == 0 or frame % self._jump_metric_stride == 0:\n            self._consume_jump_frame(frame)\n        force = drag_force(self.shuttle.data.root_lin_vel_w, self.cfg.shuttle_mass_kg,\n                           self.cfg.drag_k_per_m, self.cfg.wind_m_s)\n        self.previous_drag.copy_(force)\n        self.shuttle.set_external_force_and_torque(force[:, None], torch.zeros_like(force[:, None]), is_global=True)\n\n    def _consume_physics_frame(self, frame):\n        if self.contact_events is None or frame <= self._last_physics_frame:\n            return\n        self._last_physics_frame = frame\n        if frame == 0:\n            return\n        self._observe_physics_frame(frame)\n        data, ball = self.robot.data, self.shuttle.data\n        position, velocity = ball.root_pos_w, ball.root_lin_vel_w\n        forces = self.shuttle_contact.data.force_matrix_w\n        if forces.shape != (self.num_envs, 1, 2, 3):\n            raise RuntimeError(f\"Unexpected filtered contact shape: {forces.shape}\")\n        racket_force, ground_force = forces[:, 0, 0], forces[:, 0, 1]"
+    },
+    {
+      "path": "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/tasks/stand/full_racket_env_v4.py",
+      "first_line": 180,
+      "last_line": 193,
+      "text": "    def _consume_physics_frame(self,frame):\n        if self.contact_events is None or frame<=self._last_physics_frame:return\n        previous=self.previous_ball_position.clone();counts=self.contact_events.count.clone()\n        super()._consume_physics_frame(frame)\n        if not self._v4_ready or frame==0:return\n        fresh=self.launch_done&(~self.launch_signals_ready)&(frame>self.launch_frame)\n        self.rally.in_play[fresh]=True;self.launch_signals_ready[fresh]=True\n        d=self.robot.data;tool=d.body_link_pos_w[:,self.racket_body_id];q=d.body_link_quat_w[:,self.racket_body_id]\n        forces=self.shuttle_contact.data.force_matrix_w[:,0]\n        net=self.scene.sensors['inverse_net'].data.force_matrix_w[:,0]\n        racket_force,ground_force=forces[:,0],forces[:,1]\n        touching=racket_force.norm(dim=-1)>PHYSICS['contact_force_threshold_n']\n        point=self.shuttle_contact.data.contact_pos_w[:,0,0]\n        local=quat_rotate(torch.cat((q[:,:1],-q[:,1:]),-1),torch.nan_to_num(point)-tool)"
+    },
+    {
+      "path": "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/tasks/stand/full_racket_env_v4.py",
+      "first_line": 242,
+      "last_line": 267,
+      "text": "                    time=self.ball_clock,rally_contact_time=self.rally.contact_time)\n            contact_velocity=head_velocity+torch.linalg.cross(d.body_link_ang_vel_w[:,self.racket_body_id],torch.nan_to_num(point)-tool)\n            expected=d.body_link_lin_vel_w[:,self.flange_id]+torch.linalg.cross(d.body_link_ang_vel_w[:,self.flange_id],torch.nan_to_num(point)-d.body_link_pos_w[:,self.flange_id])\n            self.hit_velocity_error[first]=(contact_velocity-expected).norm(dim=-1)[first]\n            for i in torch.where(events)[0].cpu().tolist():\n                self.contact_records.append(dict(env_id=i,episode_index=int(self.episode_index[i]),\n                    event_index=int(self.rally.contact_count[i]),first_racket_contact=bool(first[i]),\n                    same_stroke_frame_string=bool(same_stroke[i]),time_s=float(self.ball_clock[i]),\n                    point_m=(point[i]-self.scene.env_origins[i]).cpu().tolist(),string_contact=bool(string[i]),\n                    frame_contact=bool(rim[i]),fixture_contact=bool(clamp[i]),\n                    point_velocity_mps=contact_velocity[i].cpu().tolist(),face_normal=normal[i].cpu().tolist(),\n                    body_link_poses_local=torch.cat((d.body_link_pos_w[i]-self.scene.env_origins[i],\n                        d.body_link_quat_w[i]),-1).cpu().tolist(),\n                    ball_position_m=(self.shuttle.data.root_pos_w[i]-self.scene.env_origins[i]).cpu().tolist(),\n                    ball_velocity_mps=self.shuttle.data.root_lin_vel_w[i].cpu().tolist(),\n                    root_link_position_m=(d.root_link_pos_w[i]-self.scene.env_origins[i]).cpu().tolist(),\n                    root_com_position_m=(d.body_com_pos_w[i,0]-self.scene.env_origins[i]).cpu().tolist(),\n                    root_com_linear_velocity_mps=d.root_com_lin_vel_w[i].cpu().tolist(),\n                    root_angular_velocity_rad_s=d.root_com_ang_vel_w[i].cpu().tolist(),\n                    flange_position_m=(d.body_link_pos_w[i,self.flange_id]-self.scene.env_origins[i]).cpu().tolist(),\n                    flange_linear_velocity_mps=d.body_link_lin_vel_w[i,self.flange_id].cpu().tolist(),\n                    flange_angular_velocity_rad_s=d.body_link_ang_vel_w[i,self.flange_id].cpu().tolist(),\n                    joint_position_rad=d.joint_pos[i,self.joint_ids].cpu().tolist(),\n                    joint_velocity_rad_s=d.joint_vel[i,self.joint_ids].cpu().tolist(),\n                    commanded_joint_position_rad=self.targets[i,self.joint_ids].cpu().tolist(),\n                    legal_initial_contact=bool(self.rally.legal_initial_contact[i]),"
+    }
+  ],
+  "conclusion": "The action hook consumes the previous completed physics frame. Contact detection and point_velocity_mps both read that completed frame; the contact record is not an immediately pre-impact velocity.",
+  "limitations": "No exact pre-impact racket velocity was saved. Separated100Hz samples establish earlier motion only; they do not isolate recoil or bound intervening motion.",
+  "controller_or_physics_changed": false,
+  "native_scores_changed": false,
+  "formal_acceptance": false,
+  "goal_complete": false,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/contact_velocity_phase_20261027/check_step_order.py": "1014409830c8644b33a64836e92df214b1fb1f31091bb398c820e95de400e7ef",
+    "/home/autodrive/Isaac/IsaacLab/source/isaaclab/isaaclab/envs/direct_rl_env.py": "52f16e81cbde14abfffcb3946b612ba9f78b3d6394e54c6f5a13af67976f6bba",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/tasks/stand/ball_env.py": "1f58c625a026f0555b6c1603dd273ced03923084da9cc643b1f3b5a7cf40fcde",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/tasks/stand/full_racket_env_v4.py": "2771eec47b6c34512279f1492f9f1f836f26c4cbb9c161dae0329c0670acb1a7",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/contact_velocity_phase_20261027/analyze_saved_states.py": "87fa8e4a4195a569d85a8dd2b43ca798c035b8fc2d9e5ffe1d081b6d19660201",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/contact_velocity_phase_20261027/SAVED_SEPARATED_STATE_CHECK.json": "6ac9b8f10700848457ba43d72058096dba12cb12596bf7cb7696adc04afe29e3"
+  }
+}
