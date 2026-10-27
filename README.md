@@ -1,5 +1,8 @@
 # QuadSmash：Codex /goal 实施与训练任务包
 
+当前进展（2026-10-27T01:25:36.020208+00:00）：[新版触球飞行恢复关联已在GPU0实际评估原128例](reports/G07_full_racket_v5/contact_recovery_queue02/REPORT.md)。owner1939834、guard1939835、Native1939849存活，128真实地面初态、原点0及931输入保持已查；结果待出。修订在[独立程序分支](https://github.com/lzqw/unitree-smash/tree/g07-contact-flight-recovery-v5-20261027)，Main旧运行代码和历史评分保持；24项CPU测试、11360真实采样复算和1600条完整教师动作复算通过，不作新Native成绩。首轮缺URDF启动失败及用量保留，补齐原引用并确认旧进程退出后使用新02目录。后续顺序为新版真实冷源核验、15更新训练和最终冻结128；原物理、目标和正式门槛保持。最新可看的视频仍为下方70.16秒实际残差15失败录像。
+
+
 当前进展（2026-10-27T01:04:23.750617+00:00）：[新origin0残差15训练与独立原128例均已完成](reports/G07_full_racket_v4/origin0_residual15_completed_delivery_20261027/REPORT.md)。最终冻结策略为**0完整、0合格空中拍线、0合格恢复、NF0**；3次实际球拍接触全为拍框。训练中721回合的7次空中触球不能当作冻结成绩。新策略未超过原教师同协议4次空中触球，保留原教师作为当前实测较好来源，正式A/B各200及原50/70/85门槛未通过。
 
 [最新70.16秒实际视频：三次拍框误击与两个未触球对照](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_origin0_residual15_fixed_cold128_20261027.mp4)已上传并独立下载SHA回验，3508帧全解码、实际输入一致和视觉审核通过。[155MB完整训练、权重、程序、原128评估与视频包](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_origin0_residual15_completed_training_cold128_and_current_video_20261027.zip)保留全部721回合和15个诊断检查点，159成员CRC/158payload SHA已新下载核验。此前73秒四次空中触球视频属于原教师，历史视频与成绩保留。

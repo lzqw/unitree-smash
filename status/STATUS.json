@@ -50,17 +50,33 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/origin0_residual15_completed_delivery_20261027/ACTUAL_COMPLETED_DATA_CHECK.json",
-      "notes": "新origin0残差15与独立原128例完成；最终0完整/0合格空中拍线/0恢复、NF0，三次拍框，新策略未超过原教师4空中。70.16秒实际视频与155MB完整包已上传并重新下载校验。只读恢复复现已完成，原首128行和12条共同轨迹一致；定位主触球飞行落地资格被后续短暂离地清除，原评分保持，修订版尚未执行。G07未达标。",
+      "notes": "新版contact-flight-recovery-v1在独立e7c8bb3分支完成；24项CPU检查、11360真实采样与1600条教师动作复算通过。GPU0已实际评估新版原128：1939834/1939835/1939849，128真实地面初态和931输入已查，结果未出。首轮缺URDF启动失败已保留；Main旧运行代码、旧评分、原物理/目标/正式门槛保持。后续新版源核验后接15更新及冻结128，G07未达标。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
       "net_diagnostic": "reports/G07_full_racket_v4/contact_fixtures_r3_01/metrics.json",
-      "active_gpu_jobs": [],
+      "active_gpu_jobs": [
+        {
+          "state": "RUNNING_TEACHER_REVISED_COLD128",
+          "workflow_pid": 1939834,
+          "guard_pid": 1939835,
+          "native_child_pid": 1939849,
+          "gpu": 0,
+          "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/teacher_contact_recovery_cold128_02",
+          "observed_at": "2026-10-27T01:25:36.020208+00:00",
+          "verified_live_processes": true,
+          "actual128_ground_initial_states_verified": true,
+          "execution_source_commit": "e7c8bb3c8abbdc9af4db7afd12215a223763fb68"
+        }
+      ],
       "queued_native_sequence": {
-        "state": "NO_QUEUED_NATIVE_JOB",
-        "observed_at": "2026-10-27T01:04:23.750617+00:00",
-        "previous_owner_pid": 1930543,
-        "previous_owner_exited": true
+        "owner_pid": 1939834,
+        "state": "RUNNING_REVISED_COLD_SOURCE_THEN_TRAIN15_AND_FROZEN128",
+        "queue": "reports/G07_full_racket_v5/contact_recovery_queue02",
+        "bound_input_count": 931,
+        "observed_at": "2026-10-27T01:25:36.020208+00:00",
+        "automatic_retry": false,
+        "formal_acceptance": false
       },
       "native_air_string_contact_milestone": "reports/G07_full_racket_v4/return_recovery_gen0_env12/MILESTONE.json",
       "latest_native_training_summary": "reports/G07_full_racket_v4/origin0_residual_fresh_n128_updates15_01/metrics.json",
@@ -1525,7 +1541,7 @@
         "csv_export_pending_parent_completion": true,
         "frozen_policy_performance": false
       },
-      "current_native_workflow_state": "COMPLETED_RESIDUAL15_COLD128_AND_READ_ONLY_RECOVERY_REPLAY",
+      "current_native_workflow_state": "RUNNING_EXPLICIT_CONTACT_FLIGHT_RECOVERY_SOURCE_COLD128",
       "latest_completed_fixed_TRAIN128": {
         "episodes": 128,
         "distinct_TRAIN_indices": [
@@ -5431,14 +5447,16 @@
         "archive_proof": "reports/G07_full_racket_v4/joint40_fixed_delivery_20261026/ARCHIVE.json"
       },
       "current_native_workflow": {
-        "state": "ANALYZING_ASSOCIATED_FLIGHT_RECOVERY",
-        "observed_at": "2026-10-27T01:04:23.750617+00:00",
-        "active_gpu_jobs": [],
-        "completed_owner_pid": 1930543,
-        "completed_guard_pid": 1932397,
-        "completed_native_child_pid": 1932411,
-        "verified_exited": true,
-        "formal_acceptance": false
+        "state": "RUNNING_TEACHER_REVISED_COLD128",
+        "workflow_pid": 1939834,
+        "guard_pid": 1939835,
+        "native_child_pid": 1939849,
+        "gpu": 0,
+        "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/teacher_contact_recovery_cold128_02",
+        "observed_at": "2026-10-27T01:25:36.020208+00:00",
+        "verified_live_processes": true,
+        "actual128_ground_initial_states_verified": true,
+        "execution_source_commit": "e7c8bb3c8abbdc9af4db7afd12215a223763fb68"
       },
       "completed_causal_tangent_probes": {
         "state": "SUCCEEDED",
@@ -9887,7 +9905,7 @@
         "formal_cases_read": false,
         "formal_acceptance": false
       },
-      "current_next_action": "Implement contact-flight-specific qualified landing and unchanged recovery association; preserve old scoring evidence and thresholds, then validate on native execution before further adaptation.",
+      "current_next_action": "Finish revised teacher cold128, independently verify all original cases and CPU commands, then execute already queued fresh15 training and final frozen128 under explicit contact-flight-recovery-v1.",
       "latest_current_video_candidate4": {
         "checked_at": "2026-10-26T09:49:37.125036+00:00",
         "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_body_candidate4_cold128_complete_and_failures_v2_20261026.mp4",
@@ -10503,9 +10521,15 @@
         "formal_acceptance": false
       },
       "current_full_racket_progress_20261027": {
-        "observed_at": "2026-10-27T01:04:23.750617+00:00",
-        "state": "RESIDUAL15_COLD128_NEGATIVE_AND_RECOVERY_SEQUENCE_ANALYZED",
-        "report": "reports/G07_full_racket_v4/origin0_residual15_completed_delivery_20261027/REPORT.md",
+        "observed_at": "2026-10-27T01:25:36.020208+00:00",
+        "state": "RUNNING_CONTACT_FLIGHT_RECOVERY_V5_SOURCE_COLD128",
+        "report": "reports/G07_full_racket_v5/contact_recovery_queue02/REPORT.md",
+        "previous_residual15_frozen128": {
+          "complete": 0,
+          "air": 0,
+          "recovered": 0,
+          "numerical_failures": 0
+        },
         "goal_complete": false,
         "formal_acceptance": false
       },
@@ -11241,14 +11265,12 @@
         "goal_complete": false
       },
       "recovery_flag_observation": {
-        "state": "ACTUAL_SEQUENCE_ANALYZED",
-        "report": "reports/G07_full_racket_v4/recovery_sequence_analysis_20261027/REPORT.md",
-        "first128_raw_rows_identical": true,
-        "common_actual_traces_identical": 12,
-        "TRAIN69_contact_flight_lands_qualified_then_later_takeoff_clears_flag": true,
-        "TRAIN69_later_stable_s": 3.729912042617798,
-        "scoring_changed": false,
-        "correction_native_executed": false
+        "state": "IMPLEMENTED_CPU_CHECKED_AND_NATIVE_SOURCE_ASSESSMENT_RUNNING",
+        "report": "reports/G07_full_racket_v5/contact_recovery_queue02/REPORT.md",
+        "explicit_new_version": "contact-flight-recovery-v1",
+        "old_jump_metrics_preserved": true,
+        "historical_scores_rewritten": false,
+        "new_native_source_assessment_completed": false
       },
       "previous_video_before_residual15_20261027": {
         "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_origin0_cold128_four_air_contacts_and_miss_20261027.mp4",
@@ -11282,6 +11304,14 @@
         "selection_scope": "Development TRAIN-only measured source retention; does not imply formal performance or causal advantage.",
         "new15_not_promoted": true,
         "formal_acceptance": false
+      },
+      "current_scoring_revision": {
+        "schema": "contact-flight-recovery-v1",
+        "protocol_sha256": "bfe6f2bef675bb4716e4970e6400eb86dd50b06e799e848030eb2a29ed84a309",
+        "old_protocol_preserved": true,
+        "physical_model_changed": false,
+        "thresholds_changed": false,
+        "new_native_performance_pending": true
       }
     },
     "G08": {

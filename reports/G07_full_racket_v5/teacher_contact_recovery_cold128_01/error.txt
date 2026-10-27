@@ -1,0 +1,37 @@
+Traceback (most recent call last):
+  File "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/evaluate_full_racket_contact_recovery_origin0_train_v5.py", line 201, in <module>
+    main()
+  File "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/evaluate_full_racket_contact_recovery_origin0_train_v5.py", line 100, in main
+    controller = make_rally_controller(checkpoint, count, env.device)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/control/full_racket_origin0_residual_v4.py", line 89, in make_rally_controller
+    return make_source(checkpoint, count, device)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/control/full_racket_gain_body_adaptation_v4.py", line 60, in make_rally_controller
+    return GainBodyAdaptationControllerV4(source, checkpoint['residual_gains_outer_to_inner'], count, device,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/control/full_racket_gain_body_adaptation_v4.py", line 29, in __init__
+    super().__init__(source, gains, count, device)
+  File "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/control/full_racket_residual_gain_v4.py", line 61, in __init__
+    self.source = make_source(source, count, device)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/control/full_racket_prepose_branch_v4.py", line 152, in make_rally_controller
+    return PreposeBranchControllerV4(source, checkpoint['runtime_overrides'], count, device)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/control/full_racket_prepose_branch_v4.py", line 55, in __init__
+    self.overrides = validate_overrides(overrides)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/control/full_racket_prepose_branch_v4.py", line 31, in validate_overrides
+    model = FullRacketGeometryV4()
+            ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/control/full_racket_geometry_v4.py", line 10, in __init__
+    super().__init__()
+  File "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/control/piper_geometry.py", line 23, in __init__
+    tree = ET.parse(self.urdf).getroot()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/xml/etree/ElementTree.py", line 1219, in parse
+    tree.parse(source, parser)
+  File "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/xml/etree/ElementTree.py", line 570, in parse
+    source = open(source, "rb")
+             ^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/autodrive/LZQW/unitree_smash_contact_recovery/assets/vendor/piper_isaac_sim/piper_description/urdf/piper_no_gripper_description.urdf'
