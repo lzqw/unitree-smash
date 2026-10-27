@@ -1,0 +1,3052 @@
+{
+  "checked_at": "2026-10-27T06:42:39.693971+00:00",
+  "runs": [
+    {
+      "name": "baseline0",
+      "original_episodes": 128,
+      "actual_airborne_contacts": 4,
+      "actual_complete": 0,
+      "actual_contact_flight_recovery_count": 0,
+      "actual_NF": 0,
+      "contact_position_max_error_m": 8.765369985807805e-07,
+      "contact_velocity_max_error_m_s": 3.877693329417062e-06,
+      "conserved_H_max_error_kg_m2_s": 6.38378239159465e-16,
+      "conserved_P_max_error_kg_m_s": 2.2992709168394815e-15,
+      "perturbed_velocity_affine_max_error_m_s": 8.881784197001252e-16,
+      "independent_central_kinematic_difference_max_error_m_s": 2.3373375457325096e-10,
+      "samples": [
+        {
+          "training_index": 69,
+          "episode_index": 0,
+          "contact_clock_s": 2.7245419025421143,
+          "actual_point_velocity_world_m_s": [
+            -0.7874146699905396,
+            -0.36063119769096375,
+            0.3989025354385376
+          ],
+          "actual_normal_point_speed_m_s": -0.8362424370180426,
+          "actual_outgoing_speed_m_s": 5.913000021821692,
+          "actual_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 4,
+            "rally_contact_time_s": 2.7245419025421143,
+            "airborne_string_time_s": 2.7245419025421143,
+            "contact_flight_takeoff_s": 2.5439980030059814,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.060960531234741,
+            "contact_flight_com_rise_m": 0.2787152826786041,
+            "contact_flight_clear_s": 0.5009971261024475,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 37001.05078125,
+            "terminal_root_height_m": 0.1777157038450241,
+            "success": false
+          },
+          "actual_target_landing": true,
+          "actual_shuttle_net_contact": false,
+          "actual_net_blocked": false,
+          "instantaneous_rate_fits": {
+            "measured_root_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.4044563296129464,
+                0.7500000000000004,
+                0.20000000000000004
+              ],
+              "normal_rate_world_per_s": [
+                0.11495893075203745,
+                -2.9999999999999996,
+                -2.63936662352621
+              ],
+              "joint_velocity_rad_s": [
+                0.07756827771663666,
+                0.6373112797737122,
+                1.4883017539978027,
+                -0.6954416632652283,
+                -0.4530470371246338,
+                -0.9440045356750488,
+                0.24463988840579987,
+                -0.016460135579109192,
+                0.12306618690490723,
+                0.26892516016960144,
+                -0.44310227036476135,
+                -0.09994164109230042,
+                -1.5402951967280665,
+                3.8251802340887764,
+                -5.0,
+                -3.6249972575360427,
+                -0.27333348989486694,
+                5.0
+              ],
+              "LP_maximum_constraint_violation": 0.0,
+              "root_motion_conserved": false
+            },
+            "conserved_momentum_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.6184699862579652,
+                -0.14814568092200286,
+                0.20000000000000004
+              ],
+              "normal_rate_world_per_s": [
+                0.09511515268436511,
+                -3.0000000000000004,
+                -3.0
+              ],
+              "joint_velocity_rad_s": [
+                0.07756827771663666,
+                0.6373112797737122,
+                1.4883017539978027,
+                -0.6954416632652283,
+                -0.4530470371246338,
+                -0.9440045356750488,
+                0.24463988840579987,
+                -0.016460135579109192,
+                0.12306618690490723,
+                0.26892516016960144,
+                -0.44310227036476135,
+                -0.09994164109230042,
+                0.4396250288447062,
+                5.0,
+                -5.0,
+                -4.944971027516834,
+                -0.27333348989486694,
+                3.91529805560223
+              ],
+              "LP_maximum_constraint_violation": 4.440892098500626e-16,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta2": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.7710952901538866,
+                -0.3189819464742222,
+                0.19999999999999987
+              ],
+              "normal_rate_world_per_s": [
+                0.09511515268436514,
+                -3.000000000000001,
+                -3.0
+              ],
+              "joint_velocity_rad_s": [
+                2.0775682777166367,
+                -1.3626887202262878,
+                -0.5116982460021973,
+                1.3045583367347717,
+                -2.453047037124634,
+                -2.944004535675049,
+                -1.7553601115942001,
+                -2.016460135579109,
+                -0.5583822727203369,
+                -0.7687866687774658,
+                1.5568977296352386,
+                1.9000583589076996,
+                -0.35811707356409644,
+                5.0,
+                -5.0,
+                -4.237244155386158,
+                -0.27333348989486694,
+                4.258168103132741
+              ],
+              "LP_maximum_constraint_violation": 8.881784197001252e-16,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta5": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.994351704239495,
+                -0.5560313229945463,
+                0.19999999999999998
+              ],
+              "normal_rate_world_per_s": [
+                0.09511515268436523,
+                -3.000000000000001,
+                -3.0
+              ],
+              "joint_velocity_rad_s": [
+                5.077568277716637,
+                -4.362688720226288,
+                -3.5116982460021973,
+                4.304558336734772,
+                -5.453047037124634,
+                -5.944004535675049,
+                -4.7553601115942,
+                -5.016460135579109,
+                -0.5583822727203369,
+                -0.7687866687774658,
+                4.556897729635239,
+                4.9000583589077,
+                -1.5219530185100403,
+                5.0,
+                -5.0,
+                -3.2058761143329457,
+                -0.27333348989486694,
+                4.738992705753631
+              ],
+              "LP_maximum_constraint_violation": 8.881784197001252e-16,
+              "root_motion_conserved": true
+            }
+          }
+        },
+        {
+          "training_index": 100,
+          "episode_index": 0,
+          "contact_clock_s": 2.8159291744232178,
+          "actual_point_velocity_world_m_s": [
+            -1.0380066633224487,
+            0.03830202668905258,
+            0.3138975501060486
+          ],
+          "actual_normal_point_speed_m_s": -1.0148509421728686,
+          "actual_outgoing_speed_m_s": 4.226883933664632,
+          "actual_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 4,
+            "rally_contact_time_s": 2.8159291744232178,
+            "airborne_string_time_s": 2.8159291744232178,
+            "contact_flight_takeoff_s": 2.6259920597076416,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.08595871925354,
+            "contact_flight_com_rise_m": 0.2404041290283203,
+            "contact_flight_clear_s": 0.4449978172779083,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 26115.841796875,
+            "terminal_root_height_m": 0.1353384405374527,
+            "success": false
+          },
+          "actual_target_landing": false,
+          "actual_shuttle_net_contact": true,
+          "actual_net_blocked": true,
+          "instantaneous_rate_fits": {
+            "measured_root_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                1.10391134962246,
+                0.7500000000000009,
+                0.20000000000000004
+              ],
+              "normal_rate_world_per_s": [
+                0.16801456786827068,
+                -3.000000000000001,
+                -1.3964707832067096
+              ],
+              "joint_velocity_rad_s": [
+                0.7665258646011353,
+                -0.07697142660617828,
+                0.23897694051265717,
+                -0.0791342630982399,
+                0.24672208726406097,
+                -0.40722280740737915,
+                -0.4509369134902954,
+                -0.6202777028083801,
+                -0.20088306069374084,
+                -0.021725928410887718,
+                -0.21475845575332642,
+                -0.043822526931762695,
+                0.5466275402974895,
+                5.0,
+                -0.5165681049929469,
+                -3.115221858024597,
+                -0.07297247648239136,
+                -4.717792804592466
+              ],
+              "LP_maximum_constraint_violation": 8.881784197001252e-16,
+              "root_motion_conserved": false
+            },
+            "conserved_momentum_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                1.456926735287156,
+                -0.7499999999999996,
+                -0.18006662695857673
+              ],
+              "normal_rate_world_per_s": [
+                0.20629028524740764,
+                -3.0,
+                -2.004408711297792
+              ],
+              "joint_velocity_rad_s": [
+                0.7665258646011353,
+                -0.07697142660617828,
+                0.23897694051265717,
+                -0.0791342630982399,
+                0.24672208726406097,
+                -0.40722280740737915,
+                -0.4509369134902954,
+                -0.6202777028083801,
+                -0.20088306069374084,
+                -0.021725928410887718,
+                -0.21475845575332642,
+                -0.043822526931762695,
+                1.9703097786074422,
+                5.0,
+                4.551677874270621,
+                -3.115221858024597,
+                -0.07297247648239136,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 0.0,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta2": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                1.689752625924962,
+                -0.75,
+                -0.2213038369598475
+              ],
+              "normal_rate_world_per_s": [
+                0.22032530641468953,
+                -3.0,
+                -2.2273286791885214
+              ],
+              "joint_velocity_rad_s": [
+                2.7665258646011353,
+                -2.0769714266061783,
+                -1.7610230594873428,
+                1.92086573690176,
+                -1.753277912735939,
+                -2.407222807407379,
+                -2.4509369134902954,
+                -2.62027770280838,
+                -0.5307883024215698,
+                -0.7575094699859619,
+                1.7852415442466736,
+                1.9561774730682373,
+                1.8699688876115286,
+                5.0,
+                4.49775240485586,
+                -3.115221858024597,
+                -0.07297247648239136,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 0.0,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta5": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.0338171875951163,
+                -0.7500000000000002,
+                -0.28035243074661764
+              ],
+              "normal_rate_world_per_s": [
+                0.24103993066775645,
+                -3.0000000000000004,
+                -2.5563416046643224
+              ],
+              "joint_velocity_rad_s": [
+                5.766525864601135,
+                -5.076971426606178,
+                -4.761023059487343,
+                4.92086573690176,
+                -4.753277912735939,
+                -5.407222807407379,
+                -5.450936913490295,
+                -5.62027770280838,
+                -0.5307883024215698,
+                -0.7575094699859619,
+                4.785241544246674,
+                4.956177473068237,
+                1.723179422756051,
+                5.0,
+                4.425468781256235,
+                -3.115221858024597,
+                -0.07297247648239136,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 4.440892098500626e-16,
+              "root_motion_conserved": true
+            }
+          }
+        },
+        {
+          "training_index": 112,
+          "episode_index": 0,
+          "contact_clock_s": 2.696244955062866,
+          "actual_point_velocity_world_m_s": [
+            -0.654674232006073,
+            -0.19067563116550446,
+            0.4332295358181
+          ],
+          "actual_normal_point_speed_m_s": -0.7042296057273794,
+          "actual_outgoing_speed_m_s": 5.9064161647877365,
+          "actual_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 3,
+            "rally_contact_time_s": 2.696244955062866,
+            "airborne_string_time_s": 2.696244955062866,
+            "contact_flight_takeoff_s": 2.5269992351531982,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.0519611835479736,
+            "contact_flight_com_rise_m": 0.2757143974304199,
+            "contact_flight_clear_s": 0.5129969716072083,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 445.0713806152344,
+            "terminal_root_height_m": 0.16938498616218567,
+            "success": false
+          },
+          "actual_target_landing": true,
+          "actual_shuttle_net_contact": false,
+          "actual_net_blocked": false,
+          "instantaneous_rate_fits": {
+            "measured_root_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                3.26592927003348,
+                0.7500000000000004,
+                -0.35653237965329504
+              ],
+              "normal_rate_world_per_s": [
+                -0.013362155666640285,
+                -3.0,
+                -2.8125753815978443
+              ],
+              "joint_velocity_rad_s": [
+                -0.6299160122871399,
+                1.2656848430633545,
+                1.9095512628555298,
+                -0.8934401869773865,
+                -1.0481184720993042,
+                -1.194886326789856,
+                0.5232494473457336,
+                0.5669956207275391,
+                0.40101978182792664,
+                0.5893937349319458,
+                -0.5072527527809143,
+                -0.04410354048013687,
+                -5.0,
+                3.2613287785449314,
+                -5.0,
+                -0.14918740171115993,
+                -0.4490211606025696,
+                5.0
+              ],
+              "LP_maximum_constraint_violation": 4.440892098500626e-16,
+              "root_motion_conserved": false
+            },
+            "conserved_momentum_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.840600436326856,
+                -0.3865319890929445,
+                0.2
+              ],
+              "normal_rate_world_per_s": [
+                -0.0303845095284805,
+                -3.0000000000000004,
+                -3.0
+              ],
+              "joint_velocity_rad_s": [
+                -0.6299160122871399,
+                1.2656848430633545,
+                1.9095512628555298,
+                -0.8934401869773865,
+                -1.0481184720993042,
+                -1.194886326789856,
+                0.5232494473457336,
+                0.5669956207275391,
+                0.40101978182792664,
+                0.5893937349319458,
+                -0.5072527527809143,
+                -0.04410354048013687,
+                0.2142027554043375,
+                3.844352634355902,
+                -5.0,
+                -4.879516985957769,
+                -0.4490211606025696,
+                5.0
+              ],
+              "LP_maximum_constraint_violation": 4.440892098500626e-16,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta2": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                3.0165581852508163,
+                -0.5667869719539133,
+                0.2
+              ],
+              "normal_rate_world_per_s": [
+                -0.030384509528480527,
+                -3.0000000000000004,
+                -3.0
+              ],
+              "joint_velocity_rad_s": [
+                1.37008398771286,
+                -0.7343151569366455,
+                -0.09044873714447021,
+                1.1065598130226135,
+                -3.048118472099304,
+                -3.194886326789856,
+                -1.4767505526542664,
+                -1.433004379272461,
+                -0.5212217569351196,
+                -0.7094621658325195,
+                1.4927472472190857,
+                1.9558964595198631,
+                -0.7518149204428255,
+                4.415978888185461,
+                -5.0,
+                -3.942206644580787,
+                -0.4490211606025696,
+                5.0
+              ],
+              "LP_maximum_constraint_violation": 4.440892098500626e-16,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta5": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                3.2699783383878067,
+                -0.7473151725060715,
+                0.16947298676710537
+              ],
+              "normal_rate_world_per_s": [
+                -0.03038450952848061,
+                -3.0000000000000004,
+                -3.0
+              ],
+              "joint_velocity_rad_s": [
+                4.37008398771286,
+                -3.7343151569366455,
+                -3.09044873714447,
+                4.1065598130226135,
+                -6.048118472099304,
+                -6.194886326789856,
+                -4.476750552654266,
+                -4.433004379272461,
+                -0.5212217569351196,
+                -0.7094621658325195,
+                4.492747247219086,
+                4.955896459519863,
+                -2.3044941685915314,
+                5.0,
+                -5.0,
+                -2.4902519802017182,
+                -0.4490211606025696,
+                5.0
+              ],
+              "LP_maximum_constraint_violation": 4.440892098500626e-16,
+              "root_motion_conserved": true
+            }
+          }
+        },
+        {
+          "training_index": 123,
+          "episode_index": 0,
+          "contact_clock_s": 2.8473494052886963,
+          "actual_point_velocity_world_m_s": [
+            -0.3326205015182495,
+            0.09352926164865494,
+            -0.22092941403388977
+          ],
+          "actual_normal_point_speed_m_s": -0.3349244699413868,
+          "actual_outgoing_speed_m_s": 5.975155147245991,
+          "actual_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 6,
+            "rally_contact_time_s": 2.8473494052886963,
+            "airborne_string_time_s": 2.8473494052886963,
+            "contact_flight_takeoff_s": 2.6509902477264404,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.1139566898345947,
+            "contact_flight_com_rise_m": 0.24228793382644653,
+            "contact_flight_clear_s": 0.45299771428108215,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 13018.697265625,
+            "terminal_root_height_m": 0.13742686808109283,
+            "success": false
+          },
+          "actual_target_landing": false,
+          "actual_shuttle_net_contact": false,
+          "actual_net_blocked": false,
+          "instantaneous_rate_fits": {
+            "measured_root_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.6351022660336976,
+                -0.75,
+                -0.5879862838909234
+              ],
+              "normal_rate_world_per_s": [
+                0.49560177801567945,
+                -0.9467498532816261,
+                -3.0
+              ],
+              "joint_velocity_rad_s": [
+                0.6344037652015686,
+                -0.4283114969730377,
+                0.009458521381020546,
+                -0.14989332854747772,
+                0.33179768919944763,
+                0.5279003381729126,
+                -0.6222241520881653,
+                -0.06876460462808609,
+                -0.24070830643177032,
+                -0.1736108958721161,
+                -0.17918546497821808,
+                -0.1946813315153122,
+                5.0,
+                5.0,
+                1.8012319844852107,
+                -3.655138611793518,
+                0.892973572812203,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 4.440892098500626e-16,
+              "root_motion_conserved": false
+            },
+            "conserved_momentum_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.271698012583847,
+                -0.7499999999999997,
+                -0.7422792504273833
+              ],
+              "normal_rate_world_per_s": [
+                0.6052161393563456,
+                -1.5991828312116954,
+                -3.0
+              ],
+              "joint_velocity_rad_s": [
+                0.6344037652015686,
+                -0.4283114969730377,
+                0.009458521381020546,
+                -0.14989332854747772,
+                0.33179768919944763,
+                0.5279003381729126,
+                -0.6222241520881653,
+                -0.06876460462808609,
+                -0.24070830643177032,
+                -0.1736108958721161,
+                -0.17918546497821808,
+                -0.1946813315153122,
+                5.0,
+                5.0,
+                4.993489762545689,
+                -3.655138611793518,
+                0.7139530740270122,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 0.0,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta2": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.4013289125140713,
+                -0.7500000000000003,
+                -0.7712366921230988
+              ],
+              "normal_rate_world_per_s": [
+                0.6414968795880057,
+                -1.8151285439936533,
+                -3.0
+              ],
+              "joint_velocity_rad_s": [
+                2.6344037652015686,
+                -2.4283114969730377,
+                -1.9905414786189795,
+                1.8501066714525223,
+                2.3317976891994476,
+                -1.4720996618270874,
+                -2.6222241520881653,
+                -2.068764604628086,
+                -0.6036847829818726,
+                -0.5553185939788818,
+                1.820814535021782,
+                1.8053186684846878,
+                5.0,
+                5.0,
+                4.9554500882350245,
+                -3.655138611793518,
+                0.9511014196650853,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 4.440892098500626e-16,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta5": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.5939062539987154,
+                -0.7500000000000003,
+                -0.8128119845226071
+              ],
+              "normal_rate_world_per_s": [
+                0.6954018732424699,
+                -2.135975147532964,
+                -3.0
+              ],
+              "joint_velocity_rad_s": [
+                5.634403765201569,
+                -5.428311496973038,
+                -4.9905414786189795,
+                4.850106671452522,
+                5.331797689199448,
+                -4.472099661827087,
+                -5.622224152088165,
+                -5.068764604628086,
+                -0.6036847829818726,
+                -0.5553185939788818,
+                4.820814535021782,
+                4.805318668484688,
+                5.0,
+                5.0,
+                4.901397885120146,
+                -3.655138611793518,
+                1.3025474250345883,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 4.440892098500626e-16,
+              "root_motion_conserved": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "early_lateral1",
+      "original_episodes": 128,
+      "actual_airborne_contacts": 13,
+      "actual_complete": 0,
+      "actual_contact_flight_recovery_count": 0,
+      "actual_NF": 0,
+      "contact_position_max_error_m": 9.278367031894952e-07,
+      "contact_velocity_max_error_m_s": 6.829600102754896e-06,
+      "conserved_H_max_error_kg_m2_s": 8.881784197001252e-16,
+      "conserved_P_max_error_kg_m_s": 2.5866797814444166e-15,
+      "perturbed_velocity_affine_max_error_m_s": 8.881784197001252e-16,
+      "independent_central_kinematic_difference_max_error_m_s": 2.8018148912067886e-10,
+      "samples": [
+        {
+          "training_index": 4,
+          "episode_index": 1,
+          "contact_clock_s": 2.782322645187378,
+          "actual_point_velocity_world_m_s": [
+            -0.9869481325149536,
+            -1.2277156114578247,
+            0.34345364570617676
+          ],
+          "actual_normal_point_speed_m_s": -1.076956041900896,
+          "actual_outgoing_speed_m_s": 4.637002165112457,
+          "actual_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 5,
+            "rally_contact_time_s": 2.782322645187378,
+            "airborne_string_time_s": 2.782322645187378,
+            "contact_flight_takeoff_s": 2.593994379043579,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.069959878921509,
+            "contact_flight_com_rise_m": 0.2534182369709015,
+            "contact_flight_clear_s": 0.45999762415885925,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 5323.76513671875,
+            "terminal_root_height_m": 0.1364704668521881,
+            "success": false
+          },
+          "actual_target_landing": false,
+          "actual_shuttle_net_contact": true,
+          "actual_net_blocked": true,
+          "instantaneous_rate_fits": {
+            "measured_root_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.0384765970044922,
+                -0.7499999999999996,
+                -0.4121393499776842
+              ],
+              "normal_rate_world_per_s": [
+                0.30211216871730906,
+                -3.0,
+                -2.596875770094265
+              ],
+              "joint_velocity_rad_s": [
+                0.07115808874368668,
+                0.07248160988092422,
+                0.604016125202179,
+                -0.7359828352928162,
+                -0.05997641757130623,
+                -0.34743162989616394,
+                -0.2553761601448059,
+                -0.13640986382961273,
+                0.04385954514145851,
+                0.03605061024427414,
+                -0.24472129344940186,
+                -0.215636745095253,
+                1.5996832276683703,
+                5.0,
+                2.5472374461468617,
+                -3.316165506839752,
+                -0.21344274282455444,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 0.0,
+              "root_motion_conserved": false
+            },
+            "conserved_momentum_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.053316246847874,
+                -0.7500000000000001,
+                -0.4847422591912942
+              ],
+              "normal_rate_world_per_s": [
+                0.3043707179557632,
+                -3.0,
+                -2.7036698804793735
+              ],
+              "joint_velocity_rad_s": [
+                0.07115808874368668,
+                0.07248160988092422,
+                0.604016125202179,
+                -0.7359828352928162,
+                -0.05997641757130623,
+                -0.34743162989616394,
+                -0.2553761601448059,
+                -0.13640986382961273,
+                0.04385954514145851,
+                0.03605061024427414,
+                -0.24472129344940186,
+                -0.215636745095253,
+                1.9260657575753457,
+                5.0,
+                4.331151413353562,
+                -3.316165506839752,
+                -0.21344274282455444,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 1.1102230246251565e-16,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta2": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.2773594642876605,
+                -0.7500000000000003,
+                -0.5504172050535451
+              ],
+              "normal_rate_world_per_s": [
+                0.30884678744933114,
+                -2.9999999999999996,
+                -2.915318071029624
+              ],
+              "joint_velocity_rad_s": [
+                2.0711580887436867,
+                -1.9275183901190758,
+                -1.395983874797821,
+                1.2640171647071838,
+                1.9400235824286938,
+                -2.347431629896164,
+                -2.255376160144806,
+                -2.1364098638296127,
+                -0.5747824907302856,
+                -0.7397353649139404,
+                1.7552787065505981,
+                1.784363254904747,
+                1.9147900134107003,
+                5.0,
+                4.349361930197535,
+                -3.316165506839752,
+                -0.21344274282455444,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 1.1102230246251565e-16,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta5": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.51757115286884,
+                -0.7500000000000001,
+                -0.32492808638508397
+              ],
+              "normal_rate_world_per_s": [
+                0.31063769432141625,
+                -3.0,
+                -3.0
+              ],
+              "joint_velocity_rad_s": [
+                5.071158088743687,
+                -4.927518390119076,
+                -4.395983874797821,
+                4.264017164707184,
+                -5.059976417571306,
+                -5.347431629896164,
+                -5.255376160144806,
+                -5.136409863829613,
+                -0.5747824907302856,
+                -0.7397353649139404,
+                4.755278706550598,
+                4.784363254904747,
+                0.9996658990950724,
+                5.0,
+                1.6280348664604816,
+                -3.316165506839752,
+                -0.21344274282455444,
+                -2.276494447711684
+              ],
+              "LP_maximum_constraint_violation": 0.0,
+              "root_motion_conserved": true
+            }
+          }
+        },
+        {
+          "training_index": 10,
+          "episode_index": 1,
+          "contact_clock_s": 2.7822601795196533,
+          "actual_point_velocity_world_m_s": [
+            -1.1970860958099365,
+            -1.1700892448425293,
+            0.43589287996292114
+          ],
+          "actual_normal_point_speed_m_s": -1.2326318592973717,
+          "actual_outgoing_speed_m_s": 5.1607441405821275,
+          "actual_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 9,
+            "rally_contact_time_s": 2.7822601795196533,
+            "airborne_string_time_s": 2.7822601795196533,
+            "contact_flight_takeoff_s": 2.593994379043579,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.069959878921509,
+            "contact_flight_com_rise_m": 0.2534489035606384,
+            "contact_flight_clear_s": 0.460997611284256,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 26128.58203125,
+            "terminal_root_height_m": 0.13565336167812347,
+            "success": false
+          },
+          "actual_target_landing": true,
+          "actual_shuttle_net_contact": false,
+          "actual_net_blocked": false,
+          "instantaneous_rate_fits": {
+            "measured_root_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.0219197268707947,
+                -0.7500000000000009,
+                -0.39387984881667204
+              ],
+              "normal_rate_world_per_s": [
+                0.1278262503798533,
+                -3.0000000012751187,
+                -2.4598490668657953
+              ],
+              "joint_velocity_rad_s": [
+                0.3433426022529602,
+                0.13240452110767365,
+                0.619391679763794,
+                -0.5188048481941223,
+                -0.05006256699562073,
+                -0.4599873125553131,
+                -0.36214199662208557,
+                -0.24676863849163055,
+                -0.056432437151670456,
+                0.030516430735588074,
+                -0.2772800624370575,
+                -0.1632324606180191,
+                1.2413363359142628,
+                5.0,
+                2.318040596034442,
+                -2.9893189668655396,
+                -0.22327452898025513,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 1.2751182332237931e-09,
+              "root_motion_conserved": false
+            },
+            "conserved_momentum_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.0314363547299177,
+                -0.7500000000000006,
+                -0.4761345528476336
+              ],
+              "normal_rate_world_per_s": [
+                0.12904954754115094,
+                -3.0,
+                -2.5861613105493126
+              ],
+              "joint_velocity_rad_s": [
+                0.3433426022529602,
+                0.13240452110767365,
+                0.619391679763794,
+                -0.5188048481941223,
+                -0.05006256699562073,
+                -0.4599873125553131,
+                -0.36214199662208557,
+                -0.24676863849163055,
+                -0.056432437151670456,
+                0.030516430735588074,
+                -0.2772800624370575,
+                -0.1632324606180191,
+                1.590859374328543,
+                5.0,
+                4.270707785590035,
+                -2.9893189668655396,
+                -0.22327452898025513,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 1.1102230246251565e-16,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta2": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.2604356332490685,
+                -0.7499999999999999,
+                -0.5300042565494767
+              ],
+              "normal_rate_world_per_s": [
+                0.13106522064074733,
+                -3.0,
+                -2.7942907745889536
+              ],
+              "joint_velocity_rad_s": [
+                2.34334260225296,
+                -1.8675954788923264,
+                -1.380608320236206,
+                1.4811951518058777,
+                -2.0500625669956207,
+                -2.459987312555313,
+                -2.3621419966220856,
+                -2.2467686384916306,
+                -0.578838586807251,
+                -0.7338553667068481,
+                1.7227199375629425,
+                1.836767539381981,
+                1.5508590472064088,
+                5.0,
+                4.219938677799709,
+                -2.9893189668655396,
+                -0.22327452898025513,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 0.0,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta5": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.5529714711544838,
+                -0.7500000000000002,
+                -0.49344569262077176
+              ],
+              "normal_rate_world_per_s": [
+                0.1330574544357706,
+                -2.9999999999999996,
+                -3.0
+              ],
+              "joint_velocity_rad_s": [
+                5.34334260225296,
+                -4.867595478892326,
+                -4.380608320236206,
+                4.481195151805878,
+                -5.050062566995621,
+                -5.459987312555313,
+                -5.362141996622086,
+                -5.2467686384916306,
+                -0.578838586807251,
+                -0.7338553667068481,
+                4.7227199375629425,
+                4.836767539381981,
+                1.1812919383164946,
+                5.0,
+                3.147064995198234,
+                -2.9893189668655396,
+                -0.22327452898025513,
+                -3.9495242928570975
+              ],
+              "LP_maximum_constraint_violation": 0.0,
+              "root_motion_conserved": true
+            }
+          }
+        },
+        {
+          "training_index": 19,
+          "episode_index": 1,
+          "contact_clock_s": 2.765394449234009,
+          "actual_point_velocity_world_m_s": [
+            -0.866184413433075,
+            -1.4355673789978027,
+            0.4675911068916321
+          ],
+          "actual_normal_point_speed_m_s": -0.9627220349451027,
+          "actual_outgoing_speed_m_s": 4.632094152143824,
+          "actual_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 5,
+            "rally_contact_time_s": 2.765394449234009,
+            "airborne_string_time_s": 2.765394449234009,
+            "contact_flight_takeoff_s": 2.5819952487945557,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.064960241317749,
+            "contact_flight_com_rise_m": 0.2589886784553528,
+            "contact_flight_clear_s": 0.4649975597858429,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 100613.3671875,
+            "terminal_root_height_m": 0.11970310658216476,
+            "success": false
+          },
+          "actual_target_landing": true,
+          "actual_shuttle_net_contact": false,
+          "actual_net_blocked": false,
+          "instantaneous_rate_fits": {
+            "measured_root_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.087261379246243,
+                -0.7499999999999996,
+                -0.3755036193694123
+              ],
+              "normal_rate_world_per_s": [
+                0.24555376820848474,
+                -3.000000000000001,
+                -2.536025344877375
+              ],
+              "joint_velocity_rad_s": [
+                -0.31630265712738037,
+                0.24299652874469757,
+                0.4526669979095459,
+                -0.9126535654067993,
+                -0.6087431907653809,
+                -0.6087477207183838,
+                -0.46141207218170166,
+                -0.019211532548069954,
+                0.1765727400779724,
+                0.13182277977466583,
+                -0.2501862645149231,
+                -0.21028883755207062,
+                1.6554929507613385,
+                5.0,
+                2.804377786882615,
+                -3.321675956249237,
+                -0.19066929817199707,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 8.881784197001252e-16,
+              "root_motion_conserved": false
+            },
+            "conserved_momentum_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.0984634033814693,
+                -0.7500000000000002,
+                -0.4158398224002544
+              ],
+              "normal_rate_world_per_s": [
+                0.2463941768010492,
+                -3.0,
+                -2.612919005539335
+              ],
+              "joint_velocity_rad_s": [
+                -0.31630265712738037,
+                0.24299652874469757,
+                0.4526669979095459,
+                -0.9126535654067993,
+                -0.6087431907653809,
+                -0.6087477207183838,
+                -0.46141207218170166,
+                -0.019211532548069954,
+                0.1765727400779724,
+                0.13182277977466583,
+                -0.2501862645149231,
+                -0.21028883755207062,
+                1.9208224866613395,
+                5.0,
+                4.22435452840382,
+                -3.321675956249237,
+                -0.19066929817199707,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 2.220446049250313e-16,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta2": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.3233916866650834,
+                -0.7499999999999998,
+                -0.47141111299210914
+              ],
+              "normal_rate_world_per_s": [
+                0.24867221587251512,
+                -3.0000000000000004,
+                -2.8213494819597797
+              ],
+              "joint_velocity_rad_s": [
+                1.6836973428726196,
+                -1.7570034712553024,
+                -1.547333002090454,
+                1.0873464345932007,
+                -2.608743190765381,
+                -2.608747720718384,
+                -2.4614120721817017,
+                -2.01921153254807,
+                -0.581011176109314,
+                -0.7277041673660278,
+                1.749813735485077,
+                1.7897111624479294,
+                1.8770076903619082,
+                5.0,
+                4.176827549038886,
+                -3.321675956249237,
+                -0.19066929817199707,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 4.440892098500626e-16,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta5": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.6047229790514796,
+                -0.7500000000000002,
+                -0.3649656609354973
+              ],
+              "normal_rate_world_per_s": [
+                0.25062477514898246,
+                -3.0000000000000004,
+                -3.0000000000000004
+              ],
+              "joint_velocity_rad_s": [
+                4.68369734287262,
+                -4.757003471255302,
+                -4.547333002090454,
+                4.087346434593201,
+                -5.608743190765381,
+                -5.608747720718384,
+                -5.461412072181702,
+                -5.01921153254807,
+                -0.581011176109314,
+                -0.7277041673660278,
+                4.749813735485077,
+                4.789711162447929,
+                1.2805920566812985,
+                5.0,
+                2.4391503161447607,
+                -3.321675956249237,
+                -0.19066929817199707,
+                -3.232585493402784
+              ],
+              "LP_maximum_constraint_violation": 4.440892098500626e-16,
+              "root_motion_conserved": true
+            }
+          }
+        },
+        {
+          "training_index": 44,
+          "episode_index": 1,
+          "contact_clock_s": 2.794940710067749,
+          "actual_point_velocity_world_m_s": [
+            -1.180659532546997,
+            -0.5392749309539795,
+            0.2627433240413666
+          ],
+          "actual_normal_point_speed_m_s": -1.1742828660894098,
+          "actual_outgoing_speed_m_s": 4.88984003308988,
+          "actual_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 5,
+            "rally_contact_time_s": 2.794940710067749,
+            "airborne_string_time_s": 2.794940710067749,
+            "contact_flight_takeoff_s": 2.6059935092926025,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.0729596614837646,
+            "contact_flight_com_rise_m": 0.24451836943626404,
+            "contact_flight_clear_s": 0.4519977271556854,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 135427.421875,
+            "terminal_root_height_m": 0.1320030391216278,
+            "success": false
+          },
+          "actual_target_landing": true,
+          "actual_shuttle_net_contact": false,
+          "actual_net_blocked": false,
+          "instantaneous_rate_fits": {
+            "measured_root_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                1.397822534900498,
+                -0.75,
+                0.20000000000000004
+              ],
+              "normal_rate_world_per_s": [
+                0.09658880972700794,
+                -3.0000000000000004,
+                -1.9440241858792306
+              ],
+              "joint_velocity_rad_s": [
+                0.8709089159965515,
+                0.32566723227500916,
+                0.9815032482147217,
+                -0.04380263015627861,
+                0.18847471475601196,
+                -0.6219907999038696,
+                -0.09861983358860016,
+                -0.4720313549041748,
+                -0.18176060914993286,
+                0.08258958905935287,
+                -0.36281144618988037,
+                -0.015761958435177803,
+                0.34647826614119204,
+                5.0,
+                -0.5825595185037719,
+                -3.172236680984497,
+                -0.1645907759666443,
+                -1.9560947877566137
+              ],
+              "LP_maximum_constraint_violation": 4.440892098500626e-16,
+              "root_motion_conserved": false
+            },
+            "conserved_momentum_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                1.7186908928654294,
+                -0.75,
+                -0.36029169843495523
+              ],
+              "normal_rate_world_per_s": [
+                0.11866073441683747,
+                -3.0,
+                -2.5345363541668693
+              ],
+              "joint_velocity_rad_s": [
+                0.8709089159965515,
+                0.32566723227500916,
+                0.9815032482147217,
+                -0.04380263015627861,
+                0.18847471475601196,
+                -0.6219907999038696,
+                -0.09861983358860016,
+                -0.4720313549041748,
+                -0.18176060914993286,
+                0.08258958905935287,
+                -0.36281144618988037,
+                -0.015761958435177803,
+                1.6328591821569538,
+                5.0,
+                4.164654340997857,
+                -3.172236680984497,
+                -0.1645907759666443,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 0.0,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta2": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                1.9497478175343195,
+                -0.75,
+                -0.408581959693075
+              ],
+              "normal_rate_world_per_s": [
+                0.1267852892186778,
+                -3.0000000000000004,
+                -2.7519006547354175
+              ],
+              "joint_velocity_rad_s": [
+                2.8709089159965515,
+                -1.6743327677249908,
+                -1.0184967517852783,
+                1.9561973698437214,
+                -1.811525285243988,
+                -2.6219907999038696,
+                -2.0986198335886,
+                -2.472031354904175,
+                -0.5584418773651123,
+                -0.7760465145111084,
+                1.6371885538101196,
+                1.9842380415648222,
+                1.5347307986062948,
+                5.0,
+                4.111210429858423,
+                -3.172236680984497,
+                -0.1645907759666443,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 4.440892098500626e-16,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta5": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.2679131729436355,
+                -0.7500000000000004,
+                -0.38777643887670343
+              ],
+              "normal_rate_world_per_s": [
+                0.13605864607456652,
+                -3.0,
+                -3.0000000000000004
+              ],
+              "joint_velocity_rad_s": [
+                5.8709089159965515,
+                -4.674332767724991,
+                -4.018496751785278,
+                4.956197369843721,
+                -4.811525285243988,
+                -5.62199079990387,
+                -5.0986198335886,
+                -5.472031354904175,
+                -0.5584418773651123,
+                -0.7760465145111084,
+                4.63718855381012,
+                4.984238041564822,
+                1.1360995574402108,
+                5.0,
+                3.222413898843226,
+                -3.172236680984497,
+                -0.1645907759666443,
+                -4.130478911984234
+              ],
+              "LP_maximum_constraint_violation": 4.440892098500626e-16,
+              "root_motion_conserved": true
+            }
+          }
+        },
+        {
+          "training_index": 58,
+          "episode_index": 1,
+          "contact_clock_s": 2.806621789932251,
+          "actual_point_velocity_world_m_s": [
+            -1.2318567037582397,
+            -0.3657330572605133,
+            0.20498570799827576
+          ],
+          "actual_normal_point_speed_m_s": -1.2354571622000958,
+          "actual_outgoing_speed_m_s": 4.140226217298941,
+          "actual_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 7,
+            "rally_contact_time_s": 2.806621789932251,
+            "airborne_string_time_s": 2.806621789932251,
+            "contact_flight_takeoff_s": 2.61499285697937,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.0749595165252686,
+            "contact_flight_com_rise_m": 0.24220439791679382,
+            "contact_flight_clear_s": 0.4439978301525116,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 155359.390625,
+            "terminal_root_height_m": 0.13630284368991852,
+            "success": false
+          },
+          "actual_target_landing": false,
+          "actual_shuttle_net_contact": true,
+          "actual_net_blocked": true,
+          "instantaneous_rate_fits": {
+            "measured_root_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                1.4020317438300673,
+                -0.7500000000000002,
+                0.20000000000000004
+              ],
+              "normal_rate_world_per_s": [
+                0.30086270669688886,
+                -2.9999999999999996,
+                -1.8473277402049928
+              ],
+              "joint_velocity_rad_s": [
+                0.9419698715209961,
+                0.5471606254577637,
+                1.4607046842575073,
+                -0.10376911610364914,
+                0.3572763204574585,
+                -0.5399272441864014,
+                0.14420512318611145,
+                -0.2305321842432022,
+                -0.2036554217338562,
+                0.16312594711780548,
+                -0.459467351436615,
+                -0.015113599598407745,
+                0.6212422623563061,
+                5.0,
+                -0.5021214193847673,
+                -3.207854926586151,
+                -0.1378074288368225,
+                -3.240914785067795
+              ],
+              "LP_maximum_constraint_violation": 2.7755575615628914e-17,
+              "root_motion_conserved": false
+            },
+            "conserved_momentum_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                1.7377279702671715,
+                -0.7499999999999998,
+                -0.3224043789921563
+              ],
+              "normal_rate_world_per_s": [
+                0.3402608303939479,
+                -3.0,
+                -2.4480505854509356
+              ],
+              "joint_velocity_rad_s": [
+                0.9419698715209961,
+                0.5471606254577637,
+                1.4607046842575073,
+                -0.10376911610364914,
+                0.3572763204574585,
+                -0.5399272441864014,
+                0.14420512318611145,
+                -0.2305321842432022,
+                -0.2036554217338562,
+                0.16312594711780548,
+                -0.459467351436615,
+                -0.015113599598407745,
+                1.7086927740995512,
+                5.0,
+                4.399833365646977,
+                -3.207854926586151,
+                -0.1378074288368225,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 0.0,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta2": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                1.9706655177396764,
+                -0.7500000000000002,
+                -0.363446678412711
+              ],
+              "normal_rate_world_per_s": [
+                0.3545144267594118,
+                -2.9999999999999996,
+                -2.6653822794546214
+              ],
+              "joint_velocity_rad_s": [
+                2.941969871520996,
+                -1.4528393745422363,
+                -0.5392953157424927,
+                1.8962308838963509,
+                -1.6427236795425415,
+                -2.5399272441864014,
+                -1.8557948768138885,
+                -2.230532184243202,
+                -0.575140118598938,
+                -0.7540583610534668,
+                1.540532648563385,
+                1.9848864004015923,
+                1.608199702220984,
+                5.0,
+                4.345059237091457,
+                -3.207854926586151,
+                -0.1378074288368225,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 0.0,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta5": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.314174186900214,
+                -0.7499999999999996,
+                -0.42160490746366114
+              ],
+              "normal_rate_world_per_s": [
+                0.3755017388142823,
+                -2.999999999999999,
+                -2.985386295600376
+              ],
+              "joint_velocity_rad_s": [
+                5.941969871520996,
+                -4.452839374542236,
+                -3.5392953157424927,
+                4.896230883896351,
+                -4.6427236795425415,
+                -5.539927244186401,
+                -4.8557948768138885,
+                -5.230532184243202,
+                -0.575140118598938,
+                -0.7540583610534668,
+                4.540532648563385,
+                4.984886400401592,
+                1.461744255571319,
+                5.0,
+                4.2733351436717655,
+                -3.207854926586151,
+                -0.1378074288368225,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 0.0,
+              "root_motion_conserved": true
+            }
+          }
+        },
+        {
+          "training_index": 69,
+          "episode_index": 1,
+          "contact_clock_s": 2.7271029949188232,
+          "actual_point_velocity_world_m_s": [
+            -0.6947572231292725,
+            -0.17099663615226746,
+            0.29691874980926514
+          ],
+          "actual_normal_point_speed_m_s": -0.7207335666514589,
+          "actual_outgoing_speed_m_s": 6.009263270007429,
+          "actual_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 7,
+            "rally_contact_time_s": 2.7271029949188232,
+            "airborne_string_time_s": 2.7271029949188232,
+            "contact_flight_takeoff_s": 2.5459978580474854,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.0539610385894775,
+            "contact_flight_com_rise_m": 0.27040138840675354,
+            "contact_flight_clear_s": 0.49499717354774475,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 52928.74609375,
+            "terminal_root_height_m": 0.28820276260375977,
+            "success": false
+          },
+          "actual_target_landing": true,
+          "actual_shuttle_net_contact": false,
+          "actual_net_blocked": false,
+          "instantaneous_rate_fits": {
+            "measured_root_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.429140430041246,
+                0.7500000000000009,
+                0.09854374486861783
+              ],
+              "normal_rate_world_per_s": [
+                0.20985028656671229,
+                -3.0,
+                -1.8998007856937003
+              ],
+              "joint_velocity_rad_s": [
+                0.32076260447502136,
+                0.6755994558334351,
+                1.6883556842803955,
+                -0.5690849423408508,
+                -0.18449153006076813,
+                -0.9169089198112488,
+                0.28197813034057617,
+                -0.02967768907546997,
+                0.03564818575978279,
+                0.2802410125732422,
+                -0.5199087262153625,
+                -0.07015426456928253,
+                -5.0,
+                3.3264337290728383,
+                -5.0,
+                -0.08165689304011219,
+                -0.20596832036972046,
+                5.0
+              ],
+              "LP_maximum_constraint_violation": 0.0,
+              "root_motion_conserved": false
+            },
+            "conserved_momentum_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.444069117736669,
+                0.0791649818800112,
+                0.2
+              ],
+              "normal_rate_world_per_s": [
+                0.16968131401407216,
+                -2.9999999999999996,
+                -2.7930022220215966
+              ],
+              "joint_velocity_rad_s": [
+                0.32076260447502136,
+                0.6755994558334351,
+                1.6883556842803955,
+                -0.5690849423408508,
+                -0.18449153006076813,
+                -0.9169089198112488,
+                0.28197813034057617,
+                -0.02967768907546997,
+                0.03564818575978279,
+                0.2802410125732422,
+                -0.5199087262153625,
+                -0.07015426456928253,
+                -0.10872523845702617,
+                2.5943609429471146,
+                -5.0,
+                -4.89126592874527,
+                -0.20596832036972046,
+                5.0
+              ],
+              "LP_maximum_constraint_violation": 5.551115123125783e-17,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta2": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.691019199627315,
+                -0.13540308227630182,
+                0.2
+              ],
+              "normal_rate_world_per_s": [
+                0.16051282747723083,
+                -3.0,
+                -2.9968736387706283
+              ],
+              "joint_velocity_rad_s": [
+                2.3207626044750214,
+                -1.324400544166565,
+                -0.3116443157196045,
+                1.4309150576591492,
+                -2.184491530060768,
+                -2.916908919811249,
+                -1.7180218696594238,
+                -2.02967768907547,
+                -0.5644708871841431,
+                -0.7771223783493042,
+                1.4800912737846375,
+                1.9298457354307175,
+                -0.09063733539423555,
+                3.278884338971462,
+                -5.0,
+                -4.89126592874527,
+                -0.20596832036972046,
+                5.0
+              ],
+              "LP_maximum_constraint_violation": 5.551115123125783e-17,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta5": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.948865957970691,
+                -0.37919238736794403,
+                0.2
+              ],
+              "normal_rate_world_per_s": [
+                0.16037222904858456,
+                -3.0000000000000004,
+                -3.0
+              ],
+              "joint_velocity_rad_s": [
+                5.320762604475021,
+                -4.324400544166565,
+                -3.3116443157196045,
+                4.430915057659149,
+                -5.184491530060768,
+                -5.916908919811249,
+                -4.718021869659424,
+                -5.02967768907547,
+                -0.5644708871841431,
+                -0.7771223783493042,
+                4.4800912737846375,
+                4.9298457354307175,
+                -0.9124595012836555,
+                5.0,
+                -5.0,
+                -3.887709578910247,
+                -0.20596832036972046,
+                4.348481881309051
+              ],
+              "LP_maximum_constraint_violation": 4.440892098500626e-16,
+              "root_motion_conserved": true
+            }
+          }
+        },
+        {
+          "training_index": 82,
+          "episode_index": 1,
+          "contact_clock_s": 2.8146798610687256,
+          "actual_point_velocity_world_m_s": [
+            -1.0720882415771484,
+            -0.3999093472957611,
+            0.22863686084747314
+          ],
+          "actual_normal_point_speed_m_s": -1.0796501800202087,
+          "actual_outgoing_speed_m_s": 4.944922226188221,
+          "actual_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 5,
+            "rally_contact_time_s": 2.8146798610687256,
+            "airborne_string_time_s": 2.8146798610687256,
+            "contact_flight_takeoff_s": 2.6249921321868896,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.082958936691284,
+            "contact_flight_com_rise_m": 0.24163982272148132,
+            "contact_flight_clear_s": 0.44199785590171814,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 1917.1015625,
+            "terminal_root_height_m": 0.1368214339017868,
+            "success": false
+          },
+          "actual_target_landing": true,
+          "actual_shuttle_net_contact": false,
+          "actual_net_blocked": false,
+          "instantaneous_rate_fits": {
+            "measured_root_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                1.9563313352703018,
+                -0.75,
+                -0.3279185972708759
+              ],
+              "normal_rate_world_per_s": [
+                0.1467602823879306,
+                0.37343329341580656,
+                -2.6374636616075393
+              ],
+              "joint_velocity_rad_s": [
+                0.2660648226737976,
+                0.04093840718269348,
+                0.5974166989326477,
+                -0.7020212411880493,
+                -0.10594655573368073,
+                -0.14719487726688385,
+                -0.3791932463645935,
+                0.00972170103341341,
+                -0.02259678766131401,
+                -0.0017353481380268931,
+                -0.26721957325935364,
+                -0.21816572546958923,
+                5.0,
+                5.0,
+                1.5853447463702044,
+                -3.350459039211273,
+                -0.22871792316436768,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 0.0,
+              "root_motion_conserved": false
+            },
+            "conserved_momentum_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                1.8960471367231049,
+                -0.7499999999999998,
+                -0.46016648101697527
+              ],
+              "normal_rate_world_per_s": [
+                0.1881997655432839,
+                -0.16588252279002824,
+                -2.7082072472726795
+              ],
+              "joint_velocity_rad_s": [
+                0.2660648226737976,
+                0.04093840718269348,
+                0.5974166989326477,
+                -0.7020212411880493,
+                -0.10594655573368073,
+                -0.14719487726688385,
+                -0.3791932463645935,
+                0.00972170103341341,
+                -0.02259678766131401,
+                -0.0017353481380268931,
+                -0.26721957325935364,
+                -0.21816572546958923,
+                5.0,
+                5.0,
+                3.9453948179243556,
+                -3.350459039211273,
+                -0.22871792316436768,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 0.0,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta2": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.12175313784109,
+                -0.75,
+                -0.5166557646753009
+              ],
+              "normal_rate_world_per_s": [
+                0.20388972441077283,
+                -0.1950611111386069,
+                -2.917942099785402
+              ],
+              "joint_velocity_rad_s": [
+                2.2660648226737976,
+                -1.9590615928173065,
+                -1.4025833010673523,
+                1.2979787588119507,
+                1.8940534442663193,
+                -2.147194877266884,
+                -2.3791932463645935,
+                -1.9902782989665866,
+                -0.5942553281784058,
+                -0.6823301315307617,
+                1.7327804267406464,
+                1.7818342745304108,
+                5.0,
+                5.0,
+                3.9698544786058934,
+                -3.350459039211273,
+                -0.22871792316436768,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 2.220446049250313e-16,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta5": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.3534227289731358,
+                -0.7500000000000002,
+                -0.2952391841465451
+              ],
+              "normal_rate_world_per_s": [
+                0.1562704712301175,
+                0.5809517799796999,
+                -3.0
+              ],
+              "joint_velocity_rad_s": [
+                5.266064822673798,
+                -4.9590615928173065,
+                -4.402583301067352,
+                4.297978758811951,
+                -5.105946555733681,
+                -5.147194877266884,
+                -5.3791932463645935,
+                -4.990278298966587,
+                -0.5942553281784058,
+                -0.6823301315307617,
+                4.732780426740646,
+                4.781834274530411,
+                5.0,
+                5.0,
+                1.2511805063902979,
+                -3.350459039211273,
+                -0.22871792316436768,
+                -2.4033159215704525
+              ],
+              "LP_maximum_constraint_violation": 0.0,
+              "root_motion_conserved": true
+            }
+          }
+        },
+        {
+          "training_index": 100,
+          "episode_index": 1,
+          "contact_clock_s": 2.8198020458221436,
+          "actual_point_velocity_world_m_s": [
+            -0.6801994442939758,
+            -1.3080809116363525,
+            0.19622719287872314
+          ],
+          "actual_normal_point_speed_m_s": -0.8736407068502512,
+          "actual_outgoing_speed_m_s": 4.502072098649007,
+          "actual_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 5,
+            "rally_contact_time_s": 2.8198020458221436,
+            "airborne_string_time_s": 2.8198020458221436,
+            "contact_flight_takeoff_s": 2.6259920597076416,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.0819590091705322,
+            "contact_flight_com_rise_m": 0.2361103892326355,
+            "contact_flight_clear_s": 0.44199785590171814,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 1709.083984375,
+            "terminal_root_height_m": 0.13756699860095978,
+            "success": false
+          },
+          "actual_target_landing": false,
+          "actual_shuttle_net_contact": true,
+          "actual_net_blocked": true,
+          "instantaneous_rate_fits": {
+            "measured_root_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.0389904025377863,
+                -0.75,
+                -0.4002564894594265
+              ],
+              "normal_rate_world_per_s": [
+                0.7814537532284356,
+                -3.0,
+                -2.558579845541074
+              ],
+              "joint_velocity_rad_s": [
+                -0.28466683626174927,
+                -0.45795688033103943,
+                -0.18276581168174744,
+                -1.0260562896728516,
+                -0.009745943360030651,
+                0.2206995040178299,
+                -0.5719383955001831,
+                0.05307123437523842,
+                0.1224186047911644,
+                -0.07547999918460846,
+                -0.054063186049461365,
+                -0.2500392198562622,
+                2.16244760113666,
+                5.0,
+                3.3135381328941933,
+                -3.729109466075897,
+                -0.14969110488891602,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 0.0,
+              "root_motion_conserved": false
+            },
+            "conserved_momentum_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.019159902255749,
+                -0.75,
+                -0.44084133428858757
+              ],
+              "normal_rate_world_per_s": [
+                0.7864579878756283,
+                -3.0,
+                -2.609216329187447
+              ],
+              "joint_velocity_rad_s": [
+                -0.28466683626174927,
+                -0.45795688033103943,
+                -0.18276581168174744,
+                -1.0260562896728516,
+                -0.009745943360030651,
+                0.2206995040178299,
+                -0.5719383955001831,
+                0.05307123437523842,
+                0.1224186047911644,
+                -0.07547999918460846,
+                -0.054063186049461365,
+                -0.2500392198562622,
+                2.3982264820806307,
+                5.0,
+                4.657070390991704,
+                -3.729109466075897,
+                -0.14969110488891602,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 0.0,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta2": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.2370590844342346,
+                -0.7500000000000002,
+                -0.4882724539029633
+              ],
+              "normal_rate_world_per_s": [
+                0.8074431325827695,
+                -3.0,
+                -2.821559277049802
+              ],
+              "joint_velocity_rad_s": [
+                1.7153331637382507,
+                -2.4579568803310394,
+                -2.1827658116817474,
+                0.9739437103271484,
+                1.9902540566399693,
+                -1.77930049598217,
+                -2.571938395500183,
+                -1.9469287656247616,
+                -0.5542248487472534,
+                -0.749775767326355,
+                1.9459368139505386,
+                1.7499607801437378,
+                2.386639621650872,
+                5.0,
+                4.674569708610737,
+                -3.729109466075897,
+                -0.14969110488891602,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 0.0,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta5": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.5023342880168675,
+                -0.75,
+                -0.5419910782937931
+              ],
+              "normal_rate_world_per_s": [
+                0.8250778335721524,
+                -3.0,
+                -3.0000000000000004
+              ],
+              "joint_velocity_rad_s": [
+                4.715333163738251,
+                -5.457956880331039,
+                -5.182765811681747,
+                3.9739437103271484,
+                4.990254056639969,
+                -4.77930049598217,
+                -5.571938395500183,
+                -4.946928765624762,
+                -0.5542248487472534,
+                -0.749775767326355,
+                4.945936813950539,
+                4.749960780143738,
+                2.445479971999018,
+                5.0,
+                4.657349817389196,
+                -3.729109466075897,
+                0.0077437652625858945,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 4.440892098500626e-16,
+              "root_motion_conserved": true
+            }
+          }
+        },
+        {
+          "training_index": 108,
+          "episode_index": 2,
+          "contact_clock_s": 2.768705129623413,
+          "actual_point_velocity_world_m_s": [
+            -0.7699376344680786,
+            -0.8361166715621948,
+            0.3026973307132721
+          ],
+          "actual_normal_point_speed_m_s": -0.7953358851530763,
+          "actual_outgoing_speed_m_s": 4.357065928816732,
+          "actual_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 5,
+            "rally_contact_time_s": 2.768705129623413,
+            "airborne_string_time_s": 2.768705129623413,
+            "contact_flight_takeoff_s": 2.5859949588775635,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.0599606037139893,
+            "contact_flight_com_rise_m": 0.2487654685974121,
+            "contact_flight_clear_s": 0.45999762415885925,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 11849.6455078125,
+            "terminal_root_height_m": 0.39549967646598816,
+            "success": false
+          },
+          "actual_target_landing": false,
+          "actual_shuttle_net_contact": true,
+          "actual_net_blocked": false,
+          "instantaneous_rate_fits": {
+            "measured_root_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                1.6407255527090387,
+                -0.75,
+                0.2
+              ],
+              "normal_rate_world_per_s": [
+                0.19053955863153743,
+                -3.0,
+                -2.1391121762818317
+              ],
+              "joint_velocity_rad_s": [
+                0.32518985867500305,
+                0.33135104179382324,
+                0.7105822563171387,
+                -0.33359357714653015,
+                -0.13944144546985626,
+                -0.737917959690094,
+                -0.25501012802124023,
+                -0.40214672684669495,
+                -0.02999214641749859,
+                0.13204747438430786,
+                -0.3249827027320862,
+                -0.08766497671604156,
+                0.57093333484772,
+                5.0,
+                -0.6553837179609986,
+                -3.4854620695114136,
+                -0.16704797744750977,
+                -1.2953061158498305
+              ],
+              "LP_maximum_constraint_violation": 1.3877787807814457e-17,
+              "root_motion_conserved": false
+            },
+            "conserved_momentum_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                1.8663953811339051,
+                -0.7500000000000001,
+                -0.3349592004192928
+              ],
+              "normal_rate_world_per_s": [
+                0.2039654483051247,
+                -3.0,
+                -2.592059492036694
+              ],
+              "joint_velocity_rad_s": [
+                0.32518985867500305,
+                0.33135104179382324,
+                0.7105822563171387,
+                -0.33359357714653015,
+                -0.13944144546985626,
+                -0.737917959690094,
+                -0.25501012802124023,
+                -0.40214672684669495,
+                -0.02999214641749859,
+                0.13204747438430786,
+                -0.3249827027320862,
+                -0.08766497671604156,
+                1.9593846484871746,
+                5.0,
+                4.085696736616414,
+                -3.4854620695114136,
+                -0.16704797744750977,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 1.1102230246251565e-16,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta2": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.091454904228374,
+                -0.7500000000000003,
+                -0.38808925527542576
+              ],
+              "normal_rate_world_per_s": [
+                0.2103876110515902,
+                -3.0,
+                -2.808723076206849
+              ],
+              "joint_velocity_rad_s": [
+                2.325189858675003,
+                -1.6686489582061768,
+                -1.2894177436828613,
+                1.6664064228534698,
+                -2.1394414454698563,
+                -2.737917959690094,
+                -2.2550101280212402,
+                -2.402146726846695,
+                -0.5510121583938599,
+                -0.7692903280258179,
+                1.6750172972679138,
+                1.9123350232839584,
+                1.857332561300043,
+                5.0,
+                4.036814043719868,
+                -3.4854620695114136,
+                -0.16704797744750977,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 3.3306690738754696e-16,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta5": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.39979984873284,
+                -0.75,
+                -0.23493787427106155
+              ],
+              "normal_rate_world_per_s": [
+                0.21605728340999708,
+                -3.0,
+                -3.0000000000000004
+              ],
+              "joint_velocity_rad_s": [
+                5.325189858675003,
+                -4.668648958206177,
+                -4.289417743682861,
+                4.66640642285347,
+                -5.139441445469856,
+                -5.737917959690094,
+                -5.25501012802124,
+                -5.402146726846695,
+                -0.5510121583938599,
+                -0.7692903280258179,
+                4.675017297267914,
+                4.912335023283958,
+                1.0409614133314375,
+                5.0,
+                1.907200999221315,
+                -3.4854620695114136,
+                -0.16704797744750977,
+                -2.7799123466705553
+              ],
+              "LP_maximum_constraint_violation": 4.440892098500626e-16,
+              "root_motion_conserved": true
+            }
+          }
+        },
+        {
+          "training_index": 112,
+          "episode_index": 1,
+          "contact_clock_s": 2.7009923458099365,
+          "actual_point_velocity_world_m_s": [
+            -0.6125682592391968,
+            -0.2678987383842468,
+            0.38077887892723083
+          ],
+          "actual_normal_point_speed_m_s": -0.6696864088729708,
+          "actual_outgoing_speed_m_s": 6.067881098146919,
+          "actual_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 5,
+            "rally_contact_time_s": 2.7009923458099365,
+            "airborne_string_time_s": 2.7009923458099365,
+            "contact_flight_takeoff_s": 2.5249993801116943,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.042961835861206,
+            "contact_flight_com_rise_m": 0.27606189250946045,
+            "contact_flight_clear_s": 0.5039970874786377,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 144044.265625,
+            "terminal_root_height_m": 0.13800419867038727,
+            "success": false
+          },
+          "actual_target_landing": true,
+          "actual_shuttle_net_contact": false,
+          "actual_net_blocked": false,
+          "instantaneous_rate_fits": {
+            "measured_root_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                3.272355028661804,
+                -0.75,
+                0.1864467322563926
+              ],
+              "normal_rate_world_per_s": [
+                0.25306467843508157,
+                -2.9999999999999996,
+                -2.4302850652262515
+              ],
+              "joint_velocity_rad_s": [
+                -0.402516633272171,
+                1.102378010749817,
+                2.0913898944854736,
+                -0.9339151382446289,
+                -0.725158154964447,
+                -0.9793904423713684,
+                0.4353194236755371,
+                0.5789645910263062,
+                0.28992465138435364,
+                0.5070521235466003,
+                -0.5880932211875916,
+                -0.0647725984454155,
+                -5.0,
+                4.73872033230855,
+                -5.0,
+                0.48545509589774555,
+                -0.36400705575942993,
+                5.0
+              ],
+              "LP_maximum_constraint_violation": 0.0,
+              "root_motion_conserved": false
+            },
+            "conserved_momentum_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.6745098028460834,
+                -0.058943333186065344,
+                0.20000000000000007
+              ],
+              "normal_rate_world_per_s": [
+                0.21972470247011983,
+                -3.0,
+                -2.8936633482611174
+              ],
+              "joint_velocity_rad_s": [
+                -0.402516633272171,
+                1.102378010749817,
+                2.0913898944854736,
+                -0.9339151382446289,
+                -0.725158154964447,
+                -0.9793904423713684,
+                0.4353194236755371,
+                0.5789645910263062,
+                0.28992465138435364,
+                0.5070521235466003,
+                -0.5880932211875916,
+                -0.0647725984454155,
+                0.16042216302591347,
+                3.349224730793411,
+                -5.0,
+                -5.0,
+                -0.36400705575942993,
+                5.0
+              ],
+              "LP_maximum_constraint_violation": 0.0,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta2": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.90996183532313,
+                -0.2415714429058375,
+                0.20000000000000007
+              ],
+              "normal_rate_world_per_s": [
+                0.212073801374908,
+                -3.0,
+                -3.0
+              ],
+              "joint_velocity_rad_s": [
+                1.597483366727829,
+                -0.8976219892501831,
+                0.09138989448547363,
+                1.066084861755371,
+                -2.725158154964447,
+                -2.9793904423713684,
+                -1.564680576324463,
+                -1.4210354089736938,
+                -0.5514234304428101,
+                -0.732681155204773,
+                1.4119067788124084,
+                1.9352274015545845,
+                -0.3886563598779138,
+                3.935662618326178,
+                -5.0,
+                -4.500892901487876,
+                -0.36400705575942993,
+                5.0
+              ],
+              "LP_maximum_constraint_violation": 0.0,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta5": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                3.2289637881879916,
+                -0.4921519950100428,
+                0.20000000000000007
+              ],
+              "normal_rate_world_per_s": [
+                0.21207380137490806,
+                -3.0,
+                -3.0
+              ],
+              "joint_velocity_rad_s": [
+                4.597483366727829,
+                -3.897621989250183,
+                -2.9086101055145264,
+                4.066084861755371,
+                -5.725158154964447,
+                -5.979390442371368,
+                -4.564680576324463,
+                -4.421035408973694,
+                -0.5514234304428101,
+                -0.732681155204773,
+                4.4119067788124084,
+                4.9352274015545845,
+                -2.1227696058621834,
+                4.742667322571456,
+                -5.0,
+                -2.8820180399234983,
+                -0.36400705575942993,
+                5.0
+              ],
+              "LP_maximum_constraint_violation": 0.0,
+              "root_motion_conserved": true
+            }
+          }
+        },
+        {
+          "training_index": 118,
+          "episode_index": 1,
+          "contact_clock_s": 2.7686426639556885,
+          "actual_point_velocity_world_m_s": [
+            -0.7723424434661865,
+            -0.747700572013855,
+            0.21923235058784485
+          ],
+          "actual_normal_point_speed_m_s": -0.8042366357183297,
+          "actual_outgoing_speed_m_s": 4.977152120828309,
+          "actual_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 6,
+            "rally_contact_time_s": 2.7686426639556885,
+            "airborne_string_time_s": 2.7686426639556885,
+            "contact_flight_takeoff_s": 2.5809953212738037,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.0559608936309814,
+            "contact_flight_com_rise_m": 0.25842058658599854,
+            "contact_flight_clear_s": 0.4659975469112396,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 74837.3125,
+            "terminal_root_height_m": 0.13674932718276978,
+            "success": false
+          },
+          "actual_target_landing": true,
+          "actual_shuttle_net_contact": false,
+          "actual_net_blocked": false,
+          "instantaneous_rate_fits": {
+            "measured_root_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                1.4091495991508454,
+                -0.7499999999999996,
+                0.2
+              ],
+              "normal_rate_world_per_s": [
+                0.27096761294532967,
+                -2.9999999999999996,
+                -2.3839902560595503
+              ],
+              "joint_velocity_rad_s": [
+                0.8286699056625366,
+                -0.008963137865066528,
+                0.8467310070991516,
+                -0.18682824075222015,
+                0.3596198856830597,
+                -0.31872478127479553,
+                -0.05654636770486832,
+                -0.32099270820617676,
+                -0.19755102694034576,
+                0.004966628272086382,
+                -0.3270566165447235,
+                -0.04169177636504173,
+                0.5342580261656039,
+                5.0,
+                -0.01844813864243358,
+                -3.488840162754059,
+                -0.3100275993347168,
+                -3.1423493431568534
+              ],
+              "LP_maximum_constraint_violation": 0.0,
+              "root_motion_conserved": false
+            },
+            "conserved_momentum_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                1.8937692089079008,
+                -0.7499999999999998,
+                -0.2182347023865599
+              ],
+              "normal_rate_world_per_s": [
+                0.29643484541789,
+                -3.0,
+                -2.9999999999999996
+              ],
+              "joint_velocity_rad_s": [
+                0.8286699056625366,
+                -0.008963137865066528,
+                0.8467310070991516,
+                -0.18682824075222015,
+                0.3596198856830597,
+                -0.31872478127479553,
+                -0.05654636770486832,
+                -0.32099270820617676,
+                -0.19755102694034576,
+                0.004966628272086382,
+                -0.3270566165447235,
+                -0.04169177636504173,
+                1.1498204079568188,
+                5.0,
+                2.6280080336873928,
+                -3.488840162754059,
+                -0.3100275993347168,
+                -3.3666114780671803
+              ],
+              "LP_maximum_constraint_violation": 0.0,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta2": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.073276522922058,
+                -0.7500000000000001,
+                0.03294448559446994
+              ],
+              "normal_rate_world_per_s": [
+                0.29643484541789006,
+                -3.0000000000000004,
+                -2.9999999999999996
+              ],
+              "joint_velocity_rad_s": [
+                2.8286699056625366,
+                -2.0089631378650665,
+                -1.1532689929008484,
+                1.8131717592477798,
+                -1.6403801143169403,
+                -2.3187247812747955,
+                -2.0565463677048683,
+                -2.3209927082061768,
+                -0.5551427602767944,
+                -0.7840603590011597,
+                1.6729433834552765,
+                1.9583082236349583,
+                0.13841092560627735,
+                5.0,
+                -0.1262760313288475,
+                -3.488840162754059,
+                -0.3100275993347168,
+                -0.48254058944634454
+              ],
+              "LP_maximum_constraint_violation": 4.440892098500626e-16,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta5": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.3027706384162827,
+                -0.7500000000000002,
+                0.20000000000000007
+              ],
+              "normal_rate_world_per_s": [
+                0.29643484541789006,
+                -3.0,
+                -3.0
+              ],
+              "joint_velocity_rad_s": [
+                5.828669905662537,
+                -5.0089631378650665,
+                -4.153268992900848,
+                4.81317175924778,
+                -4.64038011431694,
+                -5.3187247812747955,
+                -5.056546367704868,
+                -5.320992708206177,
+                -0.5551427602767944,
+                -0.7840603590011597,
+                4.6729433834552765,
+                4.958308223634958,
+                -1.003811065386417,
+                5.0,
+                -2.179408732486049,
+                -3.133300972700467,
+                -0.3100275993347168,
+                1.600311827124791
+              ],
+              "LP_maximum_constraint_violation": 2.7755575615628914e-17,
+              "root_motion_conserved": true
+            }
+          }
+        },
+        {
+          "training_index": 120,
+          "episode_index": 1,
+          "contact_clock_s": 2.8167412281036377,
+          "actual_point_velocity_world_m_s": [
+            -0.9158026576042175,
+            -1.3789126873016357,
+            0.22433431446552277
+          ],
+          "actual_normal_point_speed_m_s": -1.0018189488802953,
+          "actual_outgoing_speed_m_s": 4.286594512882902,
+          "actual_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 4,
+            "rally_contact_time_s": 2.8167412281036377,
+            "airborne_string_time_s": 2.8167412281036377,
+            "contact_flight_takeoff_s": 2.6239922046661377,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.0819590091705322,
+            "contact_flight_com_rise_m": 0.2425900101661682,
+            "contact_flight_clear_s": 0.44199785590171814,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 2514.886474609375,
+            "terminal_root_height_m": 0.11752379685640335,
+            "success": false
+          },
+          "actual_target_landing": false,
+          "actual_shuttle_net_contact": true,
+          "actual_net_blocked": true,
+          "instantaneous_rate_fits": {
+            "measured_root_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                1.878452466325766,
+                -0.75,
+                -0.33917568822459376
+              ],
+              "normal_rate_world_per_s": [
+                0.39629478246635996,
+                -3.0000000000000004,
+                -2.479139156511581
+              ],
+              "joint_velocity_rad_s": [
+                -0.04884674772620201,
+                -0.2990790903568268,
+                -0.10157187283039093,
+                -0.706895649433136,
+                -0.006302822381258011,
+                0.00011279528553131968,
+                -0.575139582157135,
+                -0.2112186849117279,
+                0.059304311871528625,
+                -0.05461837351322174,
+                -0.08038409799337387,
+                -0.201839417219162,
+                1.5021674497886623,
+                5.0,
+                2.793025344566153,
+                -3.213709592819214,
+                -0.14770478010177612,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 4.440892098500626e-16,
+              "root_motion_conserved": false
+            },
+            "conserved_momentum_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                1.874974347470436,
+                -0.7499999999999996,
+                -0.4318741166819463
+              ],
+              "normal_rate_world_per_s": [
+                0.4027394247709848,
+                -2.9999999999999996,
+                -2.5757767960560187
+              ],
+              "joint_velocity_rad_s": [
+                -0.04884674772620201,
+                -0.2990790903568268,
+                -0.10157187283039093,
+                -0.706895649433136,
+                -0.006302822381258011,
+                0.00011279528553131968,
+                -0.575139582157135,
+                -0.2112186849117279,
+                0.059304311871528625,
+                -0.05461837351322174,
+                -0.08038409799337387,
+                -0.201839417219162,
+                1.7603841600888224,
+                5.0,
+                4.336836499284354,
+                -3.213709592819214,
+                -0.14770478010177612,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 0.0,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta2": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.10142968593333,
+                -0.75,
+                -0.4867072555847807
+              ],
+              "normal_rate_world_per_s": [
+                0.41715874457579694,
+                -2.9999999999999996,
+                -2.791995007076579
+              ],
+              "joint_velocity_rad_s": [
+                1.951153252273798,
+                -2.299079090356827,
+                -2.101571872830391,
+                1.293104350566864,
+                1.993697177618742,
+                -1.9998872047144687,
+                -2.575139582157135,
+                -2.211218684911728,
+                -0.5282729864120483,
+                -0.7571607828140259,
+                1.9196159020066261,
+                1.798160582780838,
+                1.7323283101558147,
+                5.0,
+                4.35355082617409,
+                -3.213709592819214,
+                -0.14770478010177612,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 0.0,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta5": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.389458769441865,
+                -0.7500000000000001,
+                -0.41526885100474786
+              ],
+              "normal_rate_world_per_s": [
+                0.4310303352239838,
+                -2.9999999999999996,
+                -2.9999999999999996
+              ],
+              "joint_velocity_rad_s": [
+                4.951153252273798,
+                -5.299079090356827,
+                -5.101571872830391,
+                4.293104350566864,
+                -5.006302822381258,
+                -4.999887204714469,
+                -5.575139582157135,
+                -5.211218684911728,
+                -0.5282729864120483,
+                -0.7571607828140259,
+                4.919615902006626,
+                4.798160582780838,
+                1.3276151518494759,
+                5.0,
+                3.2720777967897985,
+                -3.213709592819214,
+                -0.14770478010177612,
+                -4.01025104735109
+              ],
+              "LP_maximum_constraint_violation": 2.220446049250313e-16,
+              "root_motion_conserved": true
+            }
+          }
+        },
+        {
+          "training_index": 123,
+          "episode_index": 1,
+          "contact_clock_s": 2.8484113216400146,
+          "actual_point_velocity_world_m_s": [
+            -0.2446424812078476,
+            -0.0027386751025915146,
+            -0.3151790201663971
+          ],
+          "actual_normal_point_speed_m_s": -0.2774862357077599,
+          "actual_outgoing_speed_m_s": 6.267804117482895,
+          "actual_contact_flight_recovery": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 4,
+            "rally_contact_time_s": 2.8484113216400146,
+            "airborne_string_time_s": 2.8484113216400146,
+            "contact_flight_takeoff_s": 2.6509902477264404,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.108957052230835,
+            "contact_flight_com_rise_m": 0.23945724964141846,
+            "contact_flight_clear_s": 0.4479977786540985,
+            "stable_recovery": false,
+            "recovery_s": 0.0,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 11804.0625,
+            "terminal_root_height_m": 0.1289302110671997,
+            "success": false
+          },
+          "actual_target_landing": true,
+          "actual_shuttle_net_contact": false,
+          "actual_net_blocked": false,
+          "instantaneous_rate_fits": {
+            "measured_root_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.5494610300298803,
+                -0.7500000000000002,
+                -0.6265996174419082
+              ],
+              "normal_rate_world_per_s": [
+                0.3251039975566189,
+                0.16413265506152575,
+                -3.0
+              ],
+              "joint_velocity_rad_s": [
+                0.4843308627605438,
+                -0.4170601963996887,
+                -0.059808481484651566,
+                -0.24104540050029755,
+                0.408721923828125,
+                0.4956170916557312,
+                -0.5225716829299927,
+                -0.04652119800448418,
+                -0.21769185364246368,
+                -0.13602371513843536,
+                -0.20127886533737183,
+                -0.14910903573036194,
+                5.0,
+                5.0,
+                0.7520762382033158,
+                -3.1621500849723816,
+                0.5384995557391432,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 0.0,
+              "root_motion_conserved": false
+            },
+            "conserved_momentum_arm_only": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.242437681624121,
+                -0.7500000000000001,
+                -0.7611966288280927
+              ],
+              "normal_rate_world_per_s": [
+                0.6826966207653326,
+                -3.000000000000001,
+                -3.0000000000000004
+              ],
+              "joint_velocity_rad_s": [
+                0.4843308627605438,
+                -0.4170601963996887,
+                -0.059808481484651566,
+                -0.24104540050029755,
+                0.408721923828125,
+                0.4956170916557312,
+                -0.5225716829299927,
+                -0.04652119800448418,
+                -0.21769185364246368,
+                -0.13602371513843536,
+                -0.20127886533737183,
+                -0.14910903573036194,
+                2.2672131733061516,
+                5.0,
+                4.9729574521286075,
+                -3.1621500849723816,
+                0.17708967963527056,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 8.881784197001252e-16,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta2": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.3794672171173334,
+                -0.7500000000000001,
+                -0.7861040686180578
+              ],
+              "normal_rate_world_per_s": [
+                0.6826966207653324,
+                -3.0000000000000004,
+                -2.9999999999999996
+              ],
+              "joint_velocity_rad_s": [
+                2.484330862760544,
+                -2.4170601963996887,
+                -2.0598084814846516,
+                1.7589545994997025,
+                2.408721923828125,
+                -1.5043829083442688,
+                -2.5225716829299927,
+                -2.046521198004484,
+                -0.5895137786865234,
+                -0.5343794822692871,
+                1.7987211346626282,
+                1.850890964269638,
+                2.5389199658750763,
+                5.0,
+                4.910222928436189,
+                -3.1621500849723816,
+                0.4585656924699572,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 4.440892098500626e-16,
+              "root_motion_conserved": true
+            },
+            "conserved_momentum_leg_delta5": {
+              "success": true,
+              "point_velocity_world_m_s": [
+                2.5828985491981595,
+                -0.7500000000000001,
+                -0.8215049127290188
+              ],
+              "normal_rate_world_per_s": [
+                0.6826966207653324,
+                -3.0,
+                -3.000000000000001
+              ],
+              "joint_velocity_rad_s": [
+                5.484330862760544,
+                -5.417060196399689,
+                -5.059808481484652,
+                4.7589545994997025,
+                5.408721923828125,
+                -4.504382908344269,
+                -5.522571682929993,
+                -5.046521198004484,
+                -0.5895137786865234,
+                -0.5343794822692871,
+                4.798721134662628,
+                4.850890964269638,
+                2.9423771064035416,
+                5.0,
+                4.819429909722195,
+                -3.1621500849723816,
+                0.8757075883096815,
+                -5.0
+              ],
+              "LP_maximum_constraint_violation": 8.881784197001252e-16,
+              "root_motion_conserved": true
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "scope": "Actual contact reconstruction and instantaneous fixed-q conserved-momentum rate proposals only.",
+  "actuator_velocity_limits_rad_s": {
+    "legs": 30.0,
+    "arms": 5.0
+  },
+  "original_joint_position_limits_used": true,
+  "auxiliary_preview_horizon_s": 0.08,
+  "auxiliary_point_y_limit_m_s": 0.75,
+  "auxiliary_point_z_interval_m_s": [
+    -1.2,
+    0.2
+  ],
+  "auxiliary_normal_rate_component_limit_per_s": 3.0,
+  "all_original128_case_orders_and_native_episode_ids_preserved": true,
+  "extra_force_or_simulator_state_write": false,
+  "native_execution": false,
+  "torque_tracking_or_new_contact_or_recovery_proven": false,
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/free_floating_strike_20261027/analyze_actual.py": "ffbea545d05e93d935828955935f462415c2a9d866e3ff4c1f427cc0745c87c6",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/free_floating_strike_20261027/free_floating.py": "cf6165b7d259b6d214e75c37d50915c8ef91ec223bcf5a69cca8079a9bb85c92",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/centroidal_recovery_model_20261027/known_model.py": "ad86487dc025e2c3b969483b79c1f09cd9c1afae59a731c7785190b5c51ced7b",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/centroidal_recovery_model_20261027/MODEL.json": "8c8997368ab98b3f2befa9908f537d76990dc2a1099ca30d8e6c1823de814e88",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/centroidal_recovery_model_20261027/ACTUAL_MODEL_CHECK.json": "807647a12fabb1a3d65a46e27dafb941f6fba4d56dceed25062a1b4f2775b02f",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/configs/g07_full_racket_eval_v5_contact_recovery_origin0.json": "bfe6f2bef675bb4716e4970e6400eb86dd50b06e799e848030eb2a29ed84a309",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/evaluation_v4.py": "56e02d6f31564687f99576f829b21528523e20619b5316102179e08cbff49352",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/control/full_racket_body_search_v4.py": "0377dc4b23f35f36c3d5a17562ec99e7a93fd6bcc1add1ec1ae0fb4f208c9b3c",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/control/full_racket_train_evaluation_v4.py": "2d5d102ffd8eb7328efc47ad2675d6c73ada98f7f3a3ae8da524002d22ded109",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/tasks/stand/coupled_env.py": "97c3997f703a9cf62fa9bc642ca3605da26b7507982d07ef525dff007300961c",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/early_lateral7_n128_01/episodes_000.json": "96cb0dc0fc2ab0b4f26db64f78a3bbe431171d9672b584d00aba690cd5e1f125",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/early_lateral7_n128_01/contacts_000.json": "19d985712ce345b6686d8c9000b1b0893a464ec55efc74a6cdc0151fa2e7c93d",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/early_lateral7_n128_01/initial_ground_states_000.json": "b5802efdfd026f96728aba9013c04bb6cafec9995d1fdb97fb2176b6107d76d1",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/early_lateral7_n128_01/INPUTS.json": "16188cf438a8919e810f05664e15b5838366ee52f5aef10333f2af618b029006",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/early_lateral7_n128_01/geometry.json": "8afd390b7b92179ba6e2fde3774cc60162a98a5bd63ed50defd95b2e8f9d9c37",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/early_lateral7_n128_01/episodes_001.json": "bafb2af2d611827cdbb8f91623d541b0ee645549c0496625d6196a3d40374e3c",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/early_lateral7_n128_01/contacts_001.json": "d1e5c2b2b36bba39cd2f98ced664daeb2820eee40011da64288b70260f00901d",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/early_lateral7_n128_01/initial_ground_states_001.json": "fcb608fcb740fac47e22dbb3f64cb2d3091076956bfae7d39f4c31cd744af88c"
+  }
+}
