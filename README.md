@@ -1,6 +1,6 @@
 # QuadSmash：Codex /goal 实施与训练任务包
 
-当前进展（2026-10-27T00:04:18.583743+00:00）：[新origin0残差预热7与actor更新8的实际检查](reports/G07_full_racket_v4/origin0_residual_warmup7_actor8_20261027/REPORT.md)已完成：7版actor未变，8版actor确实更新，actor/critic Adam20/160步、两套RMS各131072，全部首128闭合。GPU0当前10/15更新、163840步，记录NF0；这些训练数据不作冻结成绩。预热首128为2空中/0合格恢复/0完整；TRAIN69有3.73秒稳定、无身体触地但末态合格落地为假，需实际时序核查，原评分未改。16MB真实检查点/128行/程序已上传并独立下载18成员CRC/SHA核验。此前全身八项最佳冷128仍为0完整/4空中/0合格恢复/0攻击、NF0，未达原A/B各200及50/70/85门槛。
+当前进展（2026-10-27T00:28:15.768444+00:00）：[新origin0全身残差15已训练完，独立冷128运行中](reports/G07_full_racket_v4/recovery_sequence_observer_20261027/REPORT.md)。实际245760控制环境步、0.799042GPU小时，721闭合训练回合为7空中/0合格恢复/0完整、NF0；末canonical与原128回合链已核对，训练计数不作冻结成绩。新policy21b7670的GPU0独立冷128由1930046/1930060执行，当前300/800步，结果待出，全部128原点0地面初态与SHA已查。TRAIN69资格疑点的只读记录器通过CPU接口/随机数保持与CLI检查；owner1930543真实等待1896271完成冷128并退出，无GPU子进程，529源输入保持。新Native诊断尚未运行，原评分和正式A/B各200及50/70/85门槛不变。
 
 [最新已上传73.08秒视频：全部四次空中触球与未触球对照](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_origin0_cold128_four_air_contacts_and_miss_20261027.mp4)。该片来自上一轮冷128，当前独立冷128已核对共同有效姿态/球/时钟一致；新训练的效果视频尚未生成。
 

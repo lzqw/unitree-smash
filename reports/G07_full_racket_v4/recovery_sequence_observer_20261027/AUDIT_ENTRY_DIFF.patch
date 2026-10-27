@@ -1,0 +1,30 @@
+--- original_actual_training_entry.py
++++ audit_training_entry.py
+@@ -6 +6 @@
+-ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
++ROOT=Path(__file__).resolve().parents[3];sys.path.insert(0,str(ROOT))
+@@ -232,0 +233,22 @@
++        from reports.G07_full_racket_v4.recovery_sequence_observer_20261027.recorder import RecoverySequenceRecorder
++        import zipfile
++        audit_here=Path(__file__).resolve().parent
++        audit_plan=json.loads((audit_here/'ENTRY_PLAN.json').read_text())
++        for name,expected in audit_plan['runtime_source_sha256'].items():
++            if digest(Path(name))!=expected:raise ValueError('Read-only audit source changed: '+name)
++        if args.num_envs!=128 or args.updates!=7 or args.seed!=751001 or args.resume is not None:
++            raise ValueError('Require the original fresh128/7warmup/seed751001 replay, not another course')
++        if digest(args.base_checkpoint)!='204ff76f21625d49cd1dc29ec3b6256447a5fa8b2fec935dda986842fc330034':
++            raise ValueError('Require the actual original unchanged source')
++        observer_sources=[Path(name) for name in audit_plan['runtime_source_sha256']]
++        observer_sources.append(audit_here/'ENTRY_PLAN.json')
++        with zipfile.ZipFile(args.output/'read_only_observer_source.zip','x',zipfile.ZIP_DEFLATED)as archive:
++            for path in observer_sources:archive.write(path,str(path.relative_to(ROOT)))
++        atomic_json(args.output/'READ_ONLY_OBSERVER_INPUTS.json',dict(
++            entry_plan_sha256=digest(audit_here/'ENTRY_PLAN.json'),runtime_source_sha256=audit_plan['runtime_source_sha256'],
++            selected_first_episode_lanes=[69,112],training_or_scoring_changed=False,
++            source_first128_reference_sha256=audit_plan['original_first128_sha256'],
++            physics_step_requested_by_observer=False,formal_acceptance=False))
++        sequence_observer=RecoverySequenceRecorder(env,args.output/'recovery_sequence',
++            lanes=(69,112),maximum_samples=147456,native_source_confirmed=True)
++        env._diagnostic_observer=sequence_observer
+@@ -281,0 +304 @@
++        sequence_observer.finish(require_complete=not interrupted)
