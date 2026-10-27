@@ -9,3 +9,5 @@
 [算法与九项CPU证据](../recovery_prior_native_20261027/REPORT.md)、[计划](PLAN.json)、[执行入口检查](PRE_NATIVE_CPU_CHECK.json)及[实核进程与当前结果](CURRENT_NATIVE_AND_PROGRESS.json)可查。入口预检查实际执行了原生main的六条CPU前置条件，CLI help返回0，来源冷评估目录和新输出目录明确不同。来源失败则保留记录、停止本队列，无自动重试。
 
 旧G07结构验收器本次实际返回2，仍缺 `reports/G07/evidence.json`；完整输出保存在 `LEGACY_G07_VERIFIER.json`，没有修改验收器或生成通过证据。原指标、球场/网/完整球拍动力学、目标与正式50/70/85保持；本次九项尚未原生执行，G07未完成。
+
+本地追加观察（2026-10-27T11:24:32Z）：候选0原样已完成全部128例，结果为0完整/14空中/0恢复/0攻击、NF0；与实际选中短窗口来源的独立128一致。候选1 `full_actual_trace_absolute` 正在同一GPU0搜索中，控制步128000，尚无终态。详见 `PARTIAL_CANDIDATE0_CHECK.json`；此观察不改变九项排序、正式门槛或后续独立冷评估要求。
