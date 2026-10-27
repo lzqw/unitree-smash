@@ -1,0 +1,83 @@
+{
+  "checked_at": "2026-10-27T01:01:38.157543+00:00",
+  "initial_model_tensors_identical": true,
+  "first128_all_raw_rows_identical": true,
+  "differing_TRAIN_indices": [],
+  "actual_selected_metric_episodes": [
+    {
+      "env_id": 69,
+      "original_episode_index": 0,
+      "samples": 8000,
+      "data_file": "lane0069_first_episode_metrics.npz",
+      "data_sha256": "9101cd3c086930b8b1bebfe572ea567ffa8bc046f07acd56d7fcb53f18a0f0cd",
+      "closure": {
+        "actual_closed_episode_index": 0,
+        "native_episode_index_at_post_rally_reset_hook": 1,
+        "terminal_control_clock_s": 8.0,
+        "actual_jump_record": {
+          "env_id": 69,
+          "max_height_m": 0.7181007862091064,
+          "total_com_rise_m": 0.27607429027557373,
+          "airborne_s": 0.49199721217155457,
+          "recovery_s": 3.729912042617798,
+          "takeoff_time_s": 3.275944948196411,
+          "landing_time_s": 3.276944875717163,
+          "maximum_body_ground_force_n": 0.0,
+          "max_leg_torque_nm": 23.5,
+          "max_arm_torque_nm": 21.648826599121094,
+          "max_joint_speed_rad_s": 30.00003433227539,
+          "clipped_action_values": 0.0,
+          "limited_joint_targets": 0.0,
+          "saturated_leg_joint_substeps": 495.0,
+          "qualified_jump_landed": false,
+          "qualified_flight_seen": true,
+          "body_landing": false,
+          "stable_recovery": true,
+          "success": false,
+          "terminated": false
+        }
+      },
+      "scope": "Existing production metric sampling times; no interpolation or new criteria."
+    },
+    {
+      "env_id": 112,
+      "original_episode_index": 0,
+      "samples": 3360,
+      "data_file": "lane0112_first_episode_metrics.npz",
+      "data_sha256": "672e0bd86df03201a816220b26cb40ae3e38e60805a031794667f6023a959857",
+      "closure": {
+        "actual_closed_episode_index": 0,
+        "native_episode_index_at_post_rally_reset_hook": 1,
+        "terminal_control_clock_s": 3.359999895095825,
+        "actual_jump_record": {
+          "env_id": 112,
+          "max_height_m": 0.7188616394996643,
+          "total_com_rise_m": 0.27870988845825195,
+          "airborne_s": 0.49099722504615784,
+          "recovery_s": 0.0,
+          "takeoff_time_s": 3.3569390773773193,
+          "landing_time_s": 3.1009576320648193,
+          "maximum_body_ground_force_n": 717.2008056640625,
+          "max_leg_torque_nm": 23.5,
+          "max_arm_torque_nm": 21.547821044921875,
+          "max_joint_speed_rad_s": 30.000030517578125,
+          "clipped_action_values": 0.0,
+          "limited_joint_targets": 0.0,
+          "saturated_leg_joint_substeps": 494.0,
+          "qualified_jump_landed": false,
+          "qualified_flight_seen": true,
+          "body_landing": true,
+          "stable_recovery": false,
+          "success": false,
+          "terminated": true
+        }
+      },
+      "scope": "Existing production metric sampling times; no interpolation or new criteria."
+    }
+  ],
+  "original_scoring_retained": true,
+  "causal_metric_failure_proven": false,
+  "scope": "Actual replay provenance and original-row comparison only; event-sequence analysis remains separate.",
+  "formal_cases_read": false,
+  "formal_acceptance": false
+}

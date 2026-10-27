@@ -1,10 +1,12 @@
 # QuadSmash：Codex /goal 实施与训练任务包
 
-当前进展（2026-10-27T00:28:15.768444+00:00）：[新origin0全身残差15已训练完，独立冷128运行中](reports/G07_full_racket_v4/recovery_sequence_observer_20261027/REPORT.md)。实际245760控制环境步、0.799042GPU小时，721闭合训练回合为7空中/0合格恢复/0完整、NF0；末canonical与原128回合链已核对，训练计数不作冻结成绩。新policy21b7670的GPU0独立冷128由1930046/1930060执行，当前300/800步，结果待出，全部128原点0地面初态与SHA已查。TRAIN69资格疑点的只读记录器通过CPU接口/随机数保持与CLI检查；owner1930543真实等待1896271完成冷128并退出，无GPU子进程，529源输入保持。新Native诊断尚未运行，原评分和正式A/B各200及50/70/85门槛不变。
+当前进展（2026-10-27T01:04:23.750617+00:00）：[新origin0残差15训练与独立原128例均已完成](reports/G07_full_racket_v4/origin0_residual15_completed_delivery_20261027/REPORT.md)。最终冻结策略为**0完整、0合格空中拍线、0合格恢复、NF0**；3次实际球拍接触全为拍框。训练中721回合的7次空中触球不能当作冻结成绩。新策略未超过原教师同协议4次空中触球，保留原教师作为当前实测较好来源，正式A/B各200及原50/70/85门槛未通过。
 
-[最新已上传73.08秒视频：全部四次空中触球与未触球对照](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_origin0_cold128_four_air_contacts_and_miss_20261027.mp4)。该片来自上一轮冷128，当前独立冷128已核对共同有效姿态/球/时钟一致；新训练的效果视频尚未生成。
+[最新70.16秒实际视频：三次拍框误击与两个未触球对照](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_origin0_residual15_fixed_cold128_20261027.mp4)已上传并独立下载SHA回验，3508帧全解码、实际输入一致和视觉审核通过。[155MB完整训练、权重、程序、原128评估与视频包](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/G07_origin0_residual15_completed_training_cold128_and_current_video_20261027.zip)保留全部721回合和15个诊断检查点，159成员CRC/158payload SHA已新下载核验。此前73秒四次空中触球视频属于原教师，历史视频与成绩保留。
 
-[新训练早期失败诊断](reports/G07_full_racket_v4/origin0_residual_early_failures_20261027/REPORT.md)：最早6例在来球前终止；另保留原TRAIN0，976条实际公共输入复算源动作最大差3.57628e-6、混合后动作差0。七例原始轨迹及程序包已独立下载19成员CRC/SHA核验。当前训练已完成5/15更新、81920步，仍在critic预热、NF0；首批127例已闭合，来球前失败8例、待结束1例，不把最早失败选例当作整体主因或冻结成绩。
+[只读恢复时序复现与分析](reports/G07_full_racket_v4/recovery_sequence_analysis_20261027/REPORT.md)已完成；原首128行、初始模型和12条共同轨迹一致。实际TRAIN69在同一合格触球飞行落地后，落地资格被后续短暂离地清除，随后稳定3.73秒且无机身触地仍未获得原资格。当前保留原评分，尚未运行修订版；该例速度和落点也不满足完整扣杀。当前本项目三项进程均已退出，下一步修正同飞行关联并原生验证。早期失败诊断保留于[原报告](reports/G07_full_racket_v4/origin0_residual_early_failures_20261027/REPORT.md)，其运行中措辞仅代表历史观察。
+
+以下为历史进展，运行中措辞只代表相应观察时点，当前以以上及status/STATUS.json为准。
 
 当前进展（2026-10-26T18:01UTC）：[最新42.28秒瞄准点实际视频](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_contact_aim006_search_complete_and_failures_20261027.mp4)保留新成功TRAIN12、原成功例TRAIN13的恢复退化，以及TRAIN0拍框误击。参考点[0,.06]原128搜索为**5完整、60空中、28合格恢复、21攻击、NF0**；独立冷128现已完成为3完整、60空中、26合格恢复，NF0，仍未达标。2114帧全部解码、原生数据逐项一致、事件及成片抽样检查、新下载SHA验证均通过。[视频、46.49MB完整候选原128记录与权重](reports/G07_full_racket_v4/contact_aim_search_video_delivery_20261027/REPORT.md)已交付。此前[37.76秒48更新训练录像](https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_training_body48_learned_complete_and_early_failures_20261026.mp4)继续保留。
 

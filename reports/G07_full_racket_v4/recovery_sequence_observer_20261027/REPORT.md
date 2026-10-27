@@ -21,3 +21,5 @@ GPU0已由guard1930046/native1930060执行冻结15版原128零扰动冷评估；
 末次ACTUAL_UPDATE_15.json中的`all128_first_episodes_completed:false`是旧检查函数按`iteration==7`填写的标签，不能据此说首批128尚未结束：实际第7次检查及已保存的完整128行均证明其全部闭合。该旧回执与生产者代码保持原字节，在此说明标签边界。
 
 审阅用统一补丁的上下文空行触发git diff --cached --check，提交被检查拦下。仅将展示补丁按相同两份源文件重生成零上下文格式，原上下文字节另存本地；运行副本、记录器及529输入SHA均保持，见[PATCH_FORMAT_CHECK.json](PATCH_FORMAT_CHECK.json)。
+
+实际完成补充：owner1930543、guard1932397、native1932411均已退出；7更新114688步、0.373038632 GPU小时，初始模型/原首128行及12条共同轨迹一致。原始记录和[实际时序分析](../recovery_sequence_analysis_20261027/REPORT.md)已保存，原评分保持，修订版尚未运行。
