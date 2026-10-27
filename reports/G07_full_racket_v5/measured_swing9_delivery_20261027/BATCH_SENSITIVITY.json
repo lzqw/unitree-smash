@@ -1,0 +1,58 @@
+{
+  "checked_at": "2026-10-27T06:15:48.732127+00:00",
+  "candidate_id": 3,
+  "summaries": [
+    {
+      "CPU_batch_size": 6,
+      "actual_valid_rows": 4712,
+      "maximum_normalized_error": 0.005381584167480469,
+      "maximum_leg_error": 3.650784492492676e-07,
+      "maximum_arm_error": 0.005381584167480469,
+      "rows_exceeding_original_tolerance": 17,
+      "first_exceedance": {
+        "frame": 323,
+        "training_index": 112,
+        "clock_s": 3.2300000190734863,
+        "joint_index": 17,
+        "CPU_command": -0.18768185377120972,
+        "actual_GPU_command": -0.19306331872940063,
+        "normalized_error": 0.005381464958190918
+      },
+      "maximum_error_frame": 333,
+      "maximum_error_training_index": 112,
+      "maximum_error_joint_index": 17
+    },
+    {
+      "CPU_batch_size": 128,
+      "actual_valid_rows": 4712,
+      "maximum_normalized_error": 0.005381584167480469,
+      "maximum_leg_error": 3.650784492492676e-07,
+      "maximum_arm_error": 0.005381584167480469,
+      "rows_exceeding_original_tolerance": 17,
+      "first_exceedance": {
+        "frame": 323,
+        "training_index": 112,
+        "clock_s": 3.2300000190734863,
+        "joint_index": 17,
+        "CPU_command": -0.18768185377120972,
+        "actual_GPU_command": -0.19306331872940063,
+        "normalized_error": 0.005381464958190918
+      },
+      "maximum_error_frame": 333,
+      "maximum_error_training_index": 112,
+      "maximum_error_joint_index": 17
+    }
+  ],
+  "CPU6_vs_CPU128_max_valid_difference": 2.384185791015625e-07,
+  "original_tolerance": 0.0005,
+  "tolerance_changed": false,
+  "actual_other122_GPU_public_inputs_not_recorded": true,
+  "padding_is_batch_diagnostic_only": true,
+  "exact_original_GPU_batch_not_reconstructed": true,
+  "observed_original_project_Python_reads": [],
+  "source_program_sha256": "fdd7ecd5cb8e928e7ca22479e30856f59178d79cb01ffc0c1294b5d70f9e74a9",
+  "arrays_sha256": "bc8413df0e91f75d28ca1e69cac5f5f8a5cb3a1fddfc64c5f75d24aafcab770b",
+  "controller_source_sha256": "2244678ce3ea6bc34a31c7a062570fe6ea8e1a2e08e3d5c694a2e2753a03c0c2",
+  "native_execution": false,
+  "formal_acceptance": false
+}
