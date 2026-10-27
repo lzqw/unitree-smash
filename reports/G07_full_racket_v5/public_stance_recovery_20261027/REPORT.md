@@ -29,3 +29,5 @@
 原真实球场、完整球拍、原128、目标区、8 m/s和正式50/70/85、NF0保持。G07未完成。本轮程序、证据和报告只本地保存，不上传GitHub、权重或重复数据包。
 
 `stance_controller.py`与`check_controller.py`对应`CPU_CONTROLLER_CHECK.json`；`native_factory.py`与`check_native_factory.py`对应`NATIVE_FACTORY_CPU_CHECK.json`。装配工厂未来momentum源分支仍待真实阶段完成后检查。`check_search_prefix.py`和`ACTUAL_FIRST5_CHECK.json`保留前五项全部640行原顺序、地面初始化、真实episode编号及完整source actor树核验。各检查输出采用排他新建，复跑须先保留或移走对应JSON，不能覆盖历史。
+
+后续接入（2026-10-27T07:56:48.174632+00:00）：[支撑腿原生比较流程](../stance_recovery_queue01/REPORT.md)已完成预检查并启动CPU等待owner1990613，1050项输入已绑定，按前序真实恢复缺口决定是否串行执行四项与独立冷128。上一轮“尚未入队”为当时记录；当前尚无这四项的新原生结果，未来实际源分支检查仍待执行。
