@@ -1,0 +1,104 @@
+"""Record the live native handle, idle queued owner and sealed partial results."""
+from datetime import datetime, timezone
+import hashlib
+import json
+from pathlib import Path
+import sys
+
+HERE = Path(__file__).resolve().parent
+BASE = HERE.parent
+MAIN = HERE.parents[2]
+ROOT = MAIN.parent/'unitree_smash_contact_recovery'
+sys.path.insert(0, str(ROOT))
+from quadsmash.control.full_racket_body_search_v4 import summarize_candidate
+from quadsmash.control.full_racket_train_evaluation_v4 import training_cases
+from quadsmash.evaluation_v4 import independent_episode
+
+
+def read(path):
+    return json.loads(path.read_text())
+
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def main():
+    plan = read(HERE/'PLAN.json')
+    assert all(sha(Path(p)) == h for p, h in plan['source_sha256'].items())
+    launch = read(HERE/'OWNER_LAUNCH.json')
+    identities = [(1966524, '70291052', False), (1994961, '71584847', False),
+        (1994976, '71584859', False), (1968858, '70396314', True), (1973878, '70601904', True),
+        (1984009, '71053999', True), (1990613, '71376602', True),
+        (launch['owner_pid'], launch['owner_start_ticks'], True)]
+    processes = []
+    for pid, ticks, idle in identities:
+        p = Path('/proc', str(pid))
+        parts = (p/'stat').read_text().rsplit(')', 1)[1].split()
+        assert parts[19] == ticks and parts[0] != 'Z'
+        command = (p/'cmdline').read_bytes().replace(b'\0', b' ').decode()
+        assert str(MAIN) in command
+        env = (p/'environ').read_bytes().split(b'\0')
+        cuda = next((v.split(b'=', 1)[1].decode() for v in env if v.startswith(b'CUDA_VISIBLE_DEVICES=')), None)
+        children = [int(x) for x in (p/'task'/str(pid)/'children').read_text().split()]
+        if idle:
+            assert cuda == '' and not children
+        if pid == 1994976:
+            assert cuda == '0'
+        processes.append(dict(pid=pid, start_ticks=ticks, command=command,
+            CUDA_VISIBLE_DEVICES=cuda, children=children, CPU_only_idle_waiter=idle))
+    assert read(HERE/'state.json')['state'] == 'WAITING_FOR_CONFIRMED_EXISTING_STANCE_CHAIN_AND_COLD128'
+    run = BASE/'windowed_swing7_n128_01'
+    protocol_path = ROOT/'configs/g07_full_racket_eval_v5_contact_recovery_origin0.json'
+    protocol = read(protocol_path)
+    protocol['_root'] = str(ROOT)
+    cases, indices = training_cases(ROOT, protocol)
+    history = read(run/'metrics.json')['history']
+    results = []
+    files = [Path(__file__), HERE/'PLAN.json', HERE/'OWNER_LAUNCH.json', HERE/'PRE_NATIVE_CPU_CHECK.json',
+        HERE/'ENTRY_GENERATION_CHECK.json', protocol_path,
+        ROOT/'quadsmash/evaluation_v4.py', ROOT/'quadsmash/control/full_racket_body_search_v4.py']
+    for entry in history:
+        suffix = f"{entry['candidate_id']:03d}"
+        paths = [run/f'episodes_{suffix}.json', run/f'initial_ground_states_{suffix}.json']
+        rows, initial = [read(p) for p in paths]
+        assert len(rows) == 128 and indices == list(range(128))
+        assert [x['case_id'] for x in rows] == [x['case_id'] for x in cases]
+        assert [x['source_training_index'] for x in rows] == indices
+        assert [x['episode_index'] for x in rows] == initial['episode_ids']
+        assert initial['all_clocks_zero'] and initial['actual_environment_origins_m'] == [[0., 0., 0.]]*128
+        assert all(x['ground_init'] and x['env_id'] == i for i, x in enumerate(rows))
+        summary = summarize_candidate(rows, protocol)
+        independent = [independent_episode(x, protocol) for x in rows]
+        assert all(summary[k] == entry['summary'][k] for k in summary)
+        assert summary['complete'] == sum(x['complete'] for x in independent)
+        assert summary['airborne_contacts'] == sum(x['airborne_contact'] for x in independent)
+        assert summary['conditional_recovery_count'] == sum(x['conditional_recovery'] for x in independent)
+        assert summary['numerical_failures'] == 0
+        results.append(dict(candidate_id=entry['candidate_id'], summary=summary))
+        files.extend(paths)
+    active = [r for r in read(MAIN/'status/GPU_LEDGER.json')['runs'] if r['status'] == 'RUNNING']
+    assert len(active) == 1
+    assert active[0]['output'] == str(run) and active[0]['pid'] == 1994961
+    assert active[0]['child_pid'] == 1994976 and active[0]['gpu'] == 0
+    record = dict(observed_at=datetime.now(timezone.utc).isoformat(), previous_goal_turn_classification='progress',
+        previous_turn_evidence='283d04c: actual256 forecast/tracking diagnosis and48000 primary shared-reference CPU commands.',
+        current_turn_classification='progress', new_native_entry_prepared_and_CPU_owner_started=True,
+        processes=processes, held_files=len(plan['source_sha256']), all_held_inputs_unchanged=True,
+        original_GPU0_job_still_running=True, current_native_progress=read(run/'progress.json'),
+        actual_closed_window_results=results, actual_closed_development_episodes=128*len(results),
+        running_guard_and_native_and_ledger_match=True, terminal_job_receipt_not_required_while_running=True,
+        running_ledger_reservation_not_reported_as_final_actual_usage=True,
+        search_still_in_progress=True, selected_window_independent128_pending=True,
+        new_GPU_job_started=False, github_upload_performed=False, formal_cases_read=False,
+        formal_acceptance=False, goal_complete=False, source_sha256={str(p): sha(p) for p in files})
+    with (HERE/'CONTINUATION_EVIDENCE.json').open('x') as f:
+        f.write(json.dumps(record, indent=2)+'\n')
+    print(json.dumps(dict(held_files=record['held_files'], all_unchanged=True,
+        owner_pid=launch['owner_pid'], CPU_only_no_children=True,
+        actual_closed_window_air=[x['summary']['airborne_contacts'] for x in results],
+        original_native_pid=1994976, new_GPU_job_started=False, github_upload=False)))
+
+
+if __name__ == '__main__':
+    main()

@@ -50,7 +50,7 @@
     "G07": {
       "state": "IN_PROGRESS",
       "evidence": "reports/G07_full_racket_v4/origin0_residual15_completed_delivery_20261027/ACTUAL_COMPLETED_DATA_CHECK.json",
-      "notes": "提前横向7组及独立原128已完成，选中1冷评估0完整/13空中/0恢复/0攻击、NF0。GPU0短窗口7组继续，前三项各128均13空中、其余主指标0、NF0。接触日志速度为已完成PhysX接触子步状态，撤回撞前向后挥拍解释。全部本地保存，未上传GitHub，原正式50/70/85仍未达标。",
+      "notes": "GPU0短窗口第7项继续，前六项原128共768回合空中13/13/13/14/14/13，完整/攻击/恢复均0、NF0。共享y/z五项入口、真实来源及原生循环一致性预检查通过，CPU owner2008628绑定1095项输入等待既有链及独立评估，实际最终来源仍待准入。本轮无GitHub上传，正式50/70/85未通过。",
       "active_authorization_window": "g07-full-racket-unlimited-20261024",
       "curriculum_evidence": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/MILESTONE.json",
       "curriculum_policy": "reports/G07_full_racket_v4/slew45_both_case_recovery_gen0_c15_1540/policy_evidence.pt",
@@ -80,7 +80,7 @@
         }
       ],
       "queued_native_sequence": {
-        "checked_at": "2026-10-27T09:39:16.288141+00:00",
+        "checked_at": "2026-10-27T10:26:28.080055+00:00",
         "state": "ONE_GPU_JOB_THEN_SEQUENTIAL_ADMITTED_AND_CONDITIONAL_TRIALS",
         "owners": [
           {
@@ -112,6 +112,11 @@
             "queue": "stance_recovery_queue01",
             "owner_pid": 1990613,
             "state": "WAITING_FOR_CONFIRMED_MOMENTUM4_OWNER_AND_COLD128"
+          },
+          {
+            "queue": "shared_target_bias_queue01",
+            "owner_pid": 2008628,
+            "state": "WAITING_FOR_CONFIRMED_EXISTING_STANCE_CHAIN_AND_COLD128"
           }
         ],
         "formal_acceptance": false
@@ -5486,7 +5491,7 @@
         "archive_proof": "reports/G07_full_racket_v4/joint40_fixed_delivery_20261026/ARCHIVE.json"
       },
       "current_native_workflow": {
-        "observed_at": "2026-10-27T09:59:47.046151+00:00",
+        "observed_at": "2026-10-27T10:26:28.080055+00:00",
         "owner_pid": 1966524,
         "owner_start_ticks": "70291052",
         "guard_pid": 1994961,
@@ -5495,12 +5500,12 @@
         "native_start_ticks": "71584859",
         "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing7_n128_01",
         "progress": {
-          "candidate_id": 4,
-          "candidate_name": "windowed_rate_tol3_blend1",
-          "control_ticks": 800,
-          "first_episodes_complete": 128,
-          "completed_candidates": 4,
-          "actual_control_env_steps": 512000,
+          "candidate_id": 6,
+          "candidate_name": "windowed_rate_tol6_blend1",
+          "control_ticks": 300,
+          "first_episodes_complete": 0,
+          "completed_candidates": 6,
+          "actual_control_env_steps": 652800,
           "formal_acceptance": false
         },
         "source_selected_and_CPU_checked": true,
@@ -9259,10 +9264,10 @@
         "formal_acceptance": false
       },
       "last_goal_turn_classification": {
-        "observed_at": "2026-10-27T09:59:47.046151+00:00",
+        "observed_at": "2026-10-27T10:26:28.080055+00:00",
         "previous_turn": "progress",
         "current_turn": "progress",
-        "evidence": "reports/G07_full_racket_v5/current_intercept_diagnosis_20261027/CONTINUATION_EVIDENCE.json"
+        "evidence": "reports/G07_full_racket_v5/shared_target_bias_queue01/CONTINUATION_EVIDENCE.json"
       },
       "completed_leg06_warmup13_frozen_TRAIN128": {
         "episodes": 128,
@@ -9955,7 +9960,7 @@
         "formal_cases_read": false,
         "formal_acceptance": false
       },
-      "current_next_action": "Finish existing windowed7 and independent128, then execute only the registered source-admitted sequential recovery/air/momentum/conditional-stance chain. New shared y/z reference proposals passed CPU checks but are unqueued; revisit on the actual final source if contact deficit persists. Original forecast is already accurate in current original128 data. Save intermediate artifacts locally.",
+      "current_next_action": "Complete existing windowed7 and its actual independent128, then the admitted sequential recovery/air/momentum/conditional-stance chain. Shared-target5 is conditionally queued after the existing chain, using only its latest real completed source/cold128; skip if original air gate is met, otherwise replay all5 on that real source before finite GPU0 search and independent128. Keep original physics/cases/scoring targets and local storage default.",
       "latest_current_video_candidate4": {
         "checked_at": "2026-10-26T09:49:37.125036+00:00",
         "url": "https://github.com/lzqw/unitree-smash/releases/download/g07-full-racket-v4-progress-20261024/Current_effect_body_candidate4_cold128_complete_and_failures_v2_20261026.mp4",
@@ -10571,7 +10576,7 @@
         "formal_acceptance": false
       },
       "current_full_racket_progress_20261027": {
-        "observed_at": "2026-10-27T09:39:16.288141+00:00",
+        "observed_at": "2026-10-27T10:26:28.080055+00:00",
         "state": "RUNNING_WINDOWED_SWING7_AFTER_COMPLETED_EARLY7_AND_INDEPENDENT128",
         "report": "reports/G07_full_racket_v5/early_lateral_completed_20261027/REPORT.md",
         "latest_independent128": {
@@ -10587,7 +10592,26 @@
           13
         ],
         "goal_complete": false,
-        "formal_acceptance": false
+        "formal_acceptance": false,
+        "window_completed_air": [
+          13,
+          13,
+          13,
+          14,
+          14,
+          13
+        ],
+        "window_current_progress": {
+          "candidate_id": 6,
+          "candidate_name": "windowed_rate_tol6_blend1",
+          "control_ticks": 300,
+          "first_episodes_complete": 0,
+          "completed_candidates": 6,
+          "actual_control_env_steps": 652800,
+          "formal_acceptance": false
+        },
+        "shared_target_CPU_waiter": 2008628,
+        "shared_target_new_native_execution": false
       },
       "previous_video_before_origin0_failures_20261027": {
         "checked_at": "2026-10-26T09:01:21.484802+00:00",
@@ -12385,15 +12409,15 @@
         "native_execution": true,
         "formal_acceptance": false,
         "observed_current_native_progress": {
-          "candidate_id": 4,
-          "candidate_name": "windowed_rate_tol3_blend1",
-          "control_ticks": 800,
-          "first_episodes_complete": 128,
-          "completed_candidates": 4,
-          "actual_control_env_steps": 512000,
+          "candidate_id": 6,
+          "candidate_name": "windowed_rate_tol6_blend1",
+          "control_ticks": 300,
+          "first_episodes_complete": 0,
+          "completed_candidates": 6,
+          "actual_control_env_steps": 652800,
           "formal_acceptance": false
         },
-        "observed_at": "2026-10-27T09:39:16.288141+00:00",
+        "observed_at": "2026-10-27T10:26:28.080055+00:00",
         "guard_pid": 1994961,
         "native_pid": 1994976,
         "independent128_pending": true
@@ -12998,17 +13022,23 @@
         "formal_acceptance": false
       },
       "latest_window_search_partial": {
-        "checked_at": "2026-10-27T09:35:11.667614+00:00",
-        "report": "reports/G07_full_racket_v5/early_lateral_completed_20261027/REPORT.md",
+        "checked_at": "2026-10-27T10:25:19.115755+00:00",
+        "report": "reports/G07_full_racket_v5/shared_target_bias_queue01/REPORT.md",
         "candidate_ids": [
           0,
           1,
-          2
+          2,
+          3,
+          4,
+          5
         ],
-        "episodes": 384,
+        "episodes": 768,
         "air_counts": [
           13,
           13,
+          13,
+          14,
+          14,
           13
         ],
         "complete": 0,
@@ -13016,6 +13046,7 @@
         "attack": 0,
         "NF": 0,
         "window_search_complete": false,
+        "independently_rescored": true,
         "formal_acceptance": false
       },
       "contact_velocity_phase_correction": {
@@ -13090,7 +13121,26 @@
         "source_zero_replays_within_original_tolerance": true,
         "maximum_arm_target_rate_rad_s": 5.00004768371582,
         "native_execution": false,
-        "queued_for_GPU": false,
+        "queued_for_GPU": true,
+        "formal_acceptance": false,
+        "conditionally_queued": true,
+        "GPU_job_started": false,
+        "native_queue_report": "reports/G07_full_racket_v5/shared_target_bias_queue01/REPORT.md",
+        "CPU_waiter_pid": 2008628
+      },
+      "latest_native_shared_target_queue": {
+        "report": "reports/G07_full_racket_v5/shared_target_bias_queue01/REPORT.md",
+        "observed_at": "2026-10-27T10:25:19.115755+00:00",
+        "owner_pid": 2008628,
+        "owner_start_ticks": "72257205",
+        "parent_owner_pid": 1990613,
+        "state": "WAITING_FOR_CONFIRMED_EXISTING_STANCE_CHAIN_AND_COLD128",
+        "bound_inputs": 1095,
+        "has_GPU_child": false,
+        "actual_final_source_and_its_new_CPU_replay_pending": true,
+        "legitimate_skipped_source_stages_supported": true,
+        "conditional_original_air_deficit_required": true,
+        "native_execution": false,
         "formal_acceptance": false
       }
     },
