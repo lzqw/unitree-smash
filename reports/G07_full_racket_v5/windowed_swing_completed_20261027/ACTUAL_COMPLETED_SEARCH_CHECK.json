@@ -1,0 +1,350 @@
+{
+  "checked_at": "2026-10-27T10:36:31.738573+00:00",
+  "actual_completed_development_episodes": 896,
+  "actual_control_env_steps": 716800,
+  "charged_GPU0_hours": 2.165132041829735,
+  "results": [
+    {
+      "candidate_id": 0,
+      "candidate": {
+        "candidate_id": 0,
+        "name": "unchanged_source",
+        "joint_velocity_rad_s": null
+      },
+      "summary": {
+        "episodes": 128,
+        "complete": 0,
+        "airborne_contacts": 13,
+        "conditional_recovery_count": 0,
+        "attack_outgoing": 0,
+        "actual_attack_cross_target_chains": 0,
+        "numerical_failures": 0,
+        "mean_TRAIN_partial_score": 3.2100974653851444,
+        "formal_acceptance": false,
+        "rank": [
+          1,
+          0,
+          0,
+          3.21009747,
+          0,
+          13
+        ]
+      },
+      "actual_env_steps": 102400,
+      "original_actor_normalizer_and_ground_case_order_and_actual_episode_ids_preserved": true,
+      "policy_sha256": "ca76a711d0ef749b06595f233e01500266ca4c6af7f1ca2cc44171a2312e0fa3"
+    },
+    {
+      "candidate_id": 1,
+      "candidate": {
+        "candidate_id": 1,
+        "name": "windowed_rate_tol1.5_blend0.5",
+        "joint_velocity_rad_s": [
+          0.07481538952336636,
+          3.7403631000529556,
+          1.487068815368809,
+          -0.023502641031815208,
+          -1.245855629444122,
+          -5.0
+        ]
+      },
+      "summary": {
+        "episodes": 128,
+        "complete": 0,
+        "airborne_contacts": 13,
+        "conditional_recovery_count": 0,
+        "attack_outgoing": 0,
+        "actual_attack_cross_target_chains": 0,
+        "numerical_failures": 0,
+        "mean_TRAIN_partial_score": 3.2326552827753527,
+        "formal_acceptance": false,
+        "rank": [
+          1,
+          0,
+          0,
+          3.23265528,
+          0,
+          13
+        ]
+      },
+      "actual_env_steps": 102400,
+      "original_actor_normalizer_and_ground_case_order_and_actual_episode_ids_preserved": true,
+      "policy_sha256": "aadf6000f04e59e2250a1a21b68bba17fa3f6a4c051d3f21690ecca2f7e83e95"
+    },
+    {
+      "candidate_id": 2,
+      "candidate": {
+        "candidate_id": 2,
+        "name": "windowed_rate_tol1.5_blend1",
+        "joint_velocity_rad_s": [
+          0.9968175828644817,
+          4.246669250490433,
+          0.49424490002472726,
+          -1.2818358999682935,
+          -0.07297360897064176,
+          -5.0
+        ]
+      },
+      "summary": {
+        "episodes": 128,
+        "complete": 0,
+        "airborne_contacts": 13,
+        "conditional_recovery_count": 0,
+        "attack_outgoing": 0,
+        "actual_attack_cross_target_chains": 0,
+        "numerical_failures": 0,
+        "mean_TRAIN_partial_score": 3.260594090410998,
+        "formal_acceptance": false,
+        "rank": [
+          1,
+          0,
+          0,
+          3.26059409,
+          0,
+          13
+        ]
+      },
+      "actual_env_steps": 102400,
+      "original_actor_normalizer_and_ground_case_order_and_actual_episode_ids_preserved": true,
+      "policy_sha256": "0d125ec21e755e65ea2a90010dd8deb6046b2d98a0cfbaafc0dae47c77d185c9"
+    },
+    {
+      "candidate_id": 3,
+      "candidate": {
+        "candidate_id": 3,
+        "name": "windowed_rate_tol3_blend0.5",
+        "joint_velocity_rad_s": [
+          0.1347244705143088,
+          4.078709511472413,
+          1.1295267259441242,
+          -0.940196335315705,
+          -1.245855629444122,
+          -5.0
+        ]
+      },
+      "summary": {
+        "episodes": 128,
+        "complete": 0,
+        "airborne_contacts": 14,
+        "conditional_recovery_count": 0,
+        "attack_outgoing": 0,
+        "actual_attack_cross_target_chains": 0,
+        "numerical_failures": 0,
+        "mean_TRAIN_partial_score": 3.8145040578185196,
+        "formal_acceptance": false,
+        "rank": [
+          1,
+          0,
+          0,
+          3.81450406,
+          0,
+          14
+        ]
+      },
+      "actual_env_steps": 102400,
+      "original_actor_normalizer_and_ground_case_order_and_actual_episode_ids_preserved": true,
+      "policy_sha256": "dbf18e0bc612698a1870607263c7309c8ee6461c3c7359ed8812296014899f00"
+    },
+    {
+      "candidate_id": 4,
+      "candidate": {
+        "candidate_id": 4,
+        "name": "windowed_rate_tol3_blend1",
+        "joint_velocity_rad_s": [
+          1.1166357448463666,
+          4.923362073329347,
+          -0.22083927882464205,
+          -3.115223288536073,
+          -0.07297360897064176,
+          -5.0
+        ]
+      },
+      "summary": {
+        "episodes": 128,
+        "complete": 0,
+        "airborne_contacts": 14,
+        "conditional_recovery_count": 0,
+        "attack_outgoing": 0,
+        "actual_attack_cross_target_chains": 0,
+        "numerical_failures": 0,
+        "mean_TRAIN_partial_score": 3.638148943620031,
+        "formal_acceptance": false,
+        "rank": [
+          1,
+          0,
+          0,
+          3.63814894,
+          0,
+          14
+        ]
+      },
+      "actual_env_steps": 102400,
+      "original_actor_normalizer_and_ground_case_order_and_actual_episode_ids_preserved": true,
+      "policy_sha256": "8be69d93cbe05f35e703a6b75d10f49e5f520ca0400599c54aa21b329bd54432"
+    },
+    {
+      "candidate_id": 5,
+      "candidate": {
+        "candidate_id": 5,
+        "name": "windowed_rate_tol6_blend0.5",
+        "joint_velocity_rad_s": [
+          -1.2494315592712817,
+          4.117028474807739,
+          1.7198790933692363,
+          -0.940196335315705,
+          -1.245855629444122,
+          -4.7733231238683445
+        ]
+      },
+      "summary": {
+        "episodes": 128,
+        "complete": 0,
+        "airborne_contacts": 13,
+        "conditional_recovery_count": 0,
+        "attack_outgoing": 0,
+        "actual_attack_cross_target_chains": 0,
+        "numerical_failures": 0,
+        "mean_TRAIN_partial_score": 3.440055640478326,
+        "formal_acceptance": false,
+        "rank": [
+          1,
+          0,
+          0,
+          3.44005564,
+          0,
+          13
+        ]
+      },
+      "actual_env_steps": 102400,
+      "original_actor_normalizer_and_ground_case_order_and_actual_episode_ids_preserved": true,
+      "policy_sha256": "d642f88f54cbf067205e7c142498a7dfbf8244d023c5bc1717df17e31f697d70"
+    },
+    {
+      "candidate_id": 6,
+      "candidate": {
+        "candidate_id": 6,
+        "name": "windowed_rate_tol6_blend1",
+        "joint_velocity_rad_s": [
+          -1.6516763147248146,
+          5.0,
+          0.9598654560255819,
+          -3.115223288536073,
+          -0.07297360897064176,
+          -4.546646247736689
+        ]
+      },
+      "summary": {
+        "episodes": 128,
+        "complete": 0,
+        "airborne_contacts": 13,
+        "conditional_recovery_count": 0,
+        "attack_outgoing": 0,
+        "actual_attack_cross_target_chains": 0,
+        "numerical_failures": 0,
+        "mean_TRAIN_partial_score": 3.7061776410444973,
+        "formal_acceptance": false,
+        "rank": [
+          1,
+          0,
+          0,
+          3.70617764,
+          0,
+          13
+        ]
+      },
+      "actual_env_steps": 102400,
+      "original_actor_normalizer_and_ground_case_order_and_actual_episode_ids_preserved": true,
+      "policy_sha256": "980f0b74471f196219b1c3fd2756ba70de8ccd72e7764817534c3ca17033442f"
+    }
+  ],
+  "selected_candidate_id": 3,
+  "selected_definition": {
+    "candidate_id": 3,
+    "name": "windowed_rate_tol3_blend0.5",
+    "joint_velocity_rad_s": [
+      0.1347244705143088,
+      4.078709511472413,
+      1.1295267259441242,
+      -0.940196335315705,
+      -1.245855629444122,
+      -5.0
+    ]
+  },
+  "original_predeclared_rank_used": true,
+  "actual_runtime_source_files_checked": 394,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing_completed_20261027/check_completed.py": "01e499eeba5b0487b1ec8e33806f78e7bd45075bb87ed1716e17231ad0b73d75",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/configs/g07_full_racket_eval_v5_contact_recovery_origin0.json": "bfe6f2bef675bb4716e4970e6400eb86dd50b06e799e848030eb2a29ed84a309",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/early_lateral7_n128_01/best_candidate.pt": "a5a3bd3b88c9d256f1e736cb75f892c6a26a815f3d8c069472813a5739cb6903",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing_20261027/window_controller.py": "d156d72364f5283884544c22a73d8dfc0a4fa3dd787fa63a006848c3487636ec",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing7_n128_01/job.json": "97b4b0a51e431d8f4ad7a33bd97201683bdfed7e6177391c0951fac86c5b6623",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing7_n128_01/completed.json": "1fffc9db4128ee396f448ddace89a37354898eea599d8507532ab504e64dba3e",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing7_n128_01/INPUTS.json": "032e613f12ab457f4b7adb0d9091e531e36631c6b8c7a1070f401f8cf72316a5",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing7_n128_01/metrics.json": "226b991f51c47e4c1de69a0600671e12b1a1805f8af28f4cb64bcc1cae0be872",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing7_n128_01/execution_source_hashes.json": "9a4820735bd94d6b41c320d74565f049be756f33e593886e8d4b92c80fc3fe0b",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing7_n128_01/best_candidate.pt": "dbf18e0bc612698a1870607263c7309c8ee6461c3c7359ed8812296014899f00",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/evaluation_v4.py": "56e02d6f31564687f99576f829b21528523e20619b5316102179e08cbff49352",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/control/full_racket_body_search_v4.py": "0377dc4b23f35f36c3d5a17562ec99e7a93fd6bcc1add1ec1ae0fb4f208c9b3c",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing7_n128_01/episodes_000.json": "e845e25ccae81a08ac26ee6e9b96db62f62a9d81f8995944008ee886fec7a85a",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing7_n128_01/initial_ground_states_000.json": "b5802efdfd026f96728aba9013c04bb6cafec9995d1fdb97fb2176b6107d76d1",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing7_n128_01/candidate_000.pt": "ca76a711d0ef749b06595f233e01500266ca4c6af7f1ca2cc44171a2312e0fa3",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing7_n128_01/episodes_001.json": "8c17bdb42efbbaed1cef6b96e6d1f6a676c405ca3376bbf9ee354c727cd7fa62",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing7_n128_01/initial_ground_states_001.json": "c820867cd06fd0be285512ee7a1aa75f5a332741c3ba930cc9328e0132e3a638",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing7_n128_01/candidate_001.pt": "aadf6000f04e59e2250a1a21b68bba17fa3f6a4c051d3f21690ecca2f7e83e95",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing7_n128_01/episodes_002.json": "9781cf8f5278802a85be04f411933e2afd123cea8c5999afe6424c2bd76584a4",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing7_n128_01/initial_ground_states_002.json": "b518b4bafe9c5f18ad6596bf5837872619a9235a112293d018f722ad24a00181",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing7_n128_01/candidate_002.pt": "0d125ec21e755e65ea2a90010dd8deb6046b2d98a0cfbaafc0dae47c77d185c9",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing7_n128_01/episodes_003.json": "dc570d50e2470893c0ef5f02e6f9ca33dfb59cc5cb8f48c137f3bfffe310f011",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing7_n128_01/initial_ground_states_003.json": "bceae572dae020c1efec18bcba3b2ae13eed3027e38eed158da84df0447bf218",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing7_n128_01/candidate_003.pt": "dbf18e0bc612698a1870607263c7309c8ee6461c3c7359ed8812296014899f00",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing7_n128_01/episodes_004.json": "bdaedf3272eeefe1a28163e6d8506936d80b8e97079ace629e46e7eb70443d3a",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing7_n128_01/initial_ground_states_004.json": "a54ce080fdab4033f516e261e106a97bc4b781f785f9ee2e18a186a6aa7008de",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing7_n128_01/candidate_004.pt": "8be69d93cbe05f35e703a6b75d10f49e5f520ca0400599c54aa21b329bd54432",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing7_n128_01/episodes_005.json": "a11c64bf532f5eb52110591aba34dce6e73fd8658e0c5b84b4065d10f7a65cc9",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing7_n128_01/initial_ground_states_005.json": "c2f6cfb6d2b939cb84cadd8885e3918c40efdb2dfc97c8f4eaeafd479a1dd8d3",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing7_n128_01/candidate_005.pt": "d642f88f54cbf067205e7c142498a7dfbf8244d023c5bc1717df17e31f697d70",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing7_n128_01/episodes_006.json": "1797e27155a3f6fb06eb3fa9b11b49b77b7f9d00ecb3c33a5890044cdfb4a20b",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing7_n128_01/initial_ground_states_006.json": "3e84144d94b6e0cb7a7944a9478e3754ab3f288e3f5c3c9cd6afe1596d51b7c7",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/windowed_swing7_n128_01/candidate_006.pt": "980f0b74471f196219b1c3fd2756ba70de8ccd72e7764817534c3ca17033442f"
+  },
+  "verified_wait_observations": [
+    {
+      "observed_at": "2026-10-27T10:32:46.498157+00:00",
+      "live_original_job_handles": [
+        1994961,
+        1994976
+      ],
+      "actual_progress": {
+        "candidate_id": 6,
+        "candidate_name": "windowed_rate_tol6_blend1",
+        "control_ticks": 600,
+        "first_episodes_complete": 16,
+        "completed_candidates": 6,
+        "actual_control_env_steps": 691200,
+        "formal_acceptance": false
+      },
+      "job_status": null
+    },
+    {
+      "observed_at": "2026-10-27T10:33:56.501769+00:00",
+      "live_original_job_handles": [
+        1994961,
+        1994976
+      ],
+      "actual_progress": {
+        "candidate_id": 6,
+        "candidate_name": "windowed_rate_tol6_blend1",
+        "control_ticks": 700,
+        "first_episodes_complete": 17,
+        "completed_candidates": 6,
+        "actual_control_env_steps": 704000,
+        "formal_acceptance": false
+      },
+      "job_status": null
+    }
+  ],
+  "independent_selected_cold128_is_separate": true,
+  "formal_cases_read": false,
+  "formal_acceptance": false,
+  "goal_complete": false
+}
