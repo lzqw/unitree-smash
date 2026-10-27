@@ -51,10 +51,10 @@ class FullRacketResidualTrainingEnvV4(RallyTrainingEnvV4):
         attack=(air&rally.released&torch.isfinite(v).all(1)&(v.norm(dim=1)>=8.)&(v[:,0]>0)&(v[:,2]<=-1.))
         flags=dict(flight=self.flight_qualified,air=air&(~robot_fault),attack=attack&(~robot_fault),
             crossed=air&rally.crossed_net&(~robot_fault),target=air&rally.landed_target&(~rally.faulted()),
-            contact_recovery=air&self.jump_success&(~rally.faulted()),
+            contact_recovery=air&self.rally_recovery_success&(~rally.faulted()),
             # Pay the full chain only at the actual episode boundary, so a
             # later fall cannot keep an earlier full-success training bonus.
-            complete=rally.complete(self.jump_success)&self.reset_time_outs&(~self.reset_terminated),
+            complete=rally.complete(self.rally_recovery_success)&self.reset_time_outs&(~self.reset_terminated),
             robot_fault=robot_fault,body_fault=self.body_ground_seen)
         if self.live_alignment_reward is not None:
             # Original v1/v2 pay20 for any legal air target hit. In opt-in v3

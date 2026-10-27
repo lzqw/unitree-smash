@@ -52,6 +52,12 @@ def independent_episode(row,protocol):
     recovered=bool(jump['qualified_jump_landed'] and jump['stable_recovery'] and not jump['body_landing']
         and not jump['terminated'] and jump['recovery_s']>=recovery_protocol['continuous_stable_window_s']-1e-6
         and jump['maximum_body_ground_force_n']<=recovery_protocol['maximum_body_ground_force_n'])
+    if protocol.get('recovery_association') is not None:
+        from .tasks.stand.contact_flight_recovery_v5 import SCHEMA,independent_recovery
+        if protocol['recovery_association']['schema']!=SCHEMA:
+            raise ValueError('Unknown explicit recovery protocol version')
+        original=json.loads(Path(protocol['_root'],'configs/evaluation_protocol_v2.json').read_text())
+        recovered=independent_recovery(row['contact_flight_recovery'],row,original,protocol['physics_dt_s'])
     target=(np.isfinite(landing).all() and court['target_x_limits_m'][0]<=landing[0]<=court['target_x_limits_m'][1]
         and abs(landing[1])<=court['target_y_half_width_m']
         and court['opponent_x_limits_m'][0]<=landing[0]<=court['opponent_x_limits_m'][1]

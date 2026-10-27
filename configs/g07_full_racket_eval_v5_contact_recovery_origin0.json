@@ -1,0 +1,156 @@
+{
+  "version": "full-racket-singles-rally-v5-contact-flight1-origin0",
+  "frozen_at": "2026-10-27T01:15:20.451421+00:00",
+  "before_v4_policy_training": false,
+  "formal_suites": {
+    "A": {
+      "path": "reports/G07_full_racket_v4/protocol_frozen01/A_cases.json",
+      "sha256": "4dfcc6b52c5c8f39f7c8f46efc07449c1a7a7cf7c6611f4209e9f0aa679279ae",
+      "count": 200
+    },
+    "B": {
+      "path": "reports/G07_full_racket_v4/protocol_frozen01/B_cases.json",
+      "sha256": "e4b558de9cccd0232e56c5d71d71ee0c4fd6b0addc7cc31b5ce9e0636a05b2c6",
+      "count": 200
+    }
+  },
+  "training_suite": {
+    "path": "reports/G07_full_racket_v4/protocol_frozen01/training_cases.json",
+    "sha256": "2f9bf380d938a87418c4fa7da087e86d0da43f27a2ee6492bff7d7f1c3ff7c30",
+    "count": 128
+  },
+  "asset": {
+    "path": "assets/quadsmash_full_racket_v4_r3.usd",
+    "sha256": "c2264fcece90b042c7c6a1cac7d516af83972729d0402947e3a519041e184cf2"
+  },
+  "physical_configs": {
+    "configs/full_racket_v4.json": "d5266604b7cc7a221752de60bf68ff609e66e5fbc16ff3ed1904facc0cf63d3a",
+    "configs/court_net_v4.json": "184d07dde336bf36be7dfde089373c851a2bcb855a6e44f4120442b59818b4f4",
+    "configs/shuttle_physics_v2.json": "dba0e8d45edd661185c7f0b8a379f63993d1a87269740e672688b4577e359229",
+    "configs/evaluation_protocol_v2.json": "421497aa51eecac023c70b200e8a75ecafff01527dcf215665d5d96c1e8266a8",
+    "configs/full_racket_v4_r2.json": "b625c458880f1567fe63676fe0c5209f1d5f956ef8c419eb8c84cb229cabe46d",
+    "configs/full_racket_v4_r3.json": "14d58dd674665424dab63e67d525daf9b2239821797b97202aa45f9af1e5a26c",
+    "configs/full_racket_reset_v4.json": "0d5246e0b39daabd0c0cb15f5259c7c61df455ccb191835932cc83f4886df25b"
+  },
+  "physics_dt_s": 6.25e-05,
+  "policy_dt_s": 0.01,
+  "episode_seconds": 8.0,
+  "preparation_seconds": 2.0,
+  "initialization": {
+    "root_position_m": [
+      0.0,
+      0.0,
+      0.323
+    ],
+    "ground_only": true,
+    "reset_seeds": {
+      "A": 724101,
+      "B": 724102
+    },
+    "perturbations": {
+      "A": {
+        "joint_position_rad": 0.01,
+        "joint_velocity_rad_s": 0.02,
+        "root_xy_m": 0.02,
+        "root_yaw_rad": 0.03
+      },
+      "B": {
+        "joint_position_rad": 0.025,
+        "joint_velocity_rad_s": 0.04,
+        "root_xy_m": 0.04,
+        "root_yaw_rad": 0.08
+      }
+    },
+    "distribution": "Independent uniform [-amplitude,+amplitude], joint positions clipped only to actual joint limits; no root height or external-force aid.",
+    "nominal_arm_joint_positions_rad": [
+      0.0786861032,
+      1.20102334,
+      -2.585356,
+      -0.156469598,
+      -1.056915283,
+      0.13533029
+    ],
+    "reset_model_revision": "Ground root/leg/noise definitions unchanged; explicitly collision-free upright arm nominal. Source and native validation in full_racket_reset_v4.json."
+  },
+  "launches": "Exactly one active initial condition at t=2 s after explicit preparation. No post-launch ball state correction. Ball observations masked before active launch.",
+  "generic_command": {
+    "position_m": [
+      1.1,
+      0.0,
+      1.8
+    ],
+    "normal": [
+      1.0,
+      0.0,
+      0.0
+    ],
+    "time_s": 2.75,
+    "velocity_mps": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "aggregation": "Compute all ratios separately on each complete 200-case panel; use the worse panel for each threshold; retain every case and every numerical fault.",
+  "thresholds": {
+    "complete_success_rate": 0.5,
+    "airborne_contact_rate": 0.7,
+    "conditional_recovery_rate": 0.85,
+    "numerical_failures": 0
+  },
+  "metrics": {
+    "airborne_contact": "Actual string force during measured flight and legal first own-side racket contact; later faults remain recorded.",
+    "conditional_recovery": "Among airborne-contact episodes, original qualified-jump/continuous0.8s recovery and no rally-invalidating fault.",
+    "complete_success": "Ground initialization AND legal airborne strings AND outgoing speed>=8 m/s,vx>0,vz<=-1 m/s AND actual over-net return AND first landing in target AND original recovery AND no fault.",
+    "separate_counts": [
+      "actual_racket_contacts",
+      "strings",
+      "airborne",
+      "legal_initial_contact",
+      "attack",
+      "crossed_net",
+      "landed_legal_court",
+      "landed_target",
+      "recovery",
+      "complete",
+      "each_fault"
+    ]
+  },
+  "law_source": {
+    "version": "BWF Laws of Badminton In Force 26 April 2025 V5.0(1)",
+    "url": "https://badminton.dk/wp-content/uploads/2025/11/Section-4.1-Laws-of-Badminton-26-April-2025-V5.0-1-.pdf",
+    "future_2027_laws_applied": false
+  },
+  "engineering_constraints": {
+    "nonracket_stays_own_half": true,
+    "body_proxy": "Conservative body-local bounds of actual collider shapes; fixture is nonracket.",
+    "head_strings_same_stroke": "Continuous contact episodes; frame+strings exception grouped within40ms, normal change<15deg and no head-velocity reversal. Engineering resolution, not BWF wording.",
+    "net": "64 GPU primitive strips, suspended band; rigid equivalent without cloth holes.",
+    "shuttle": "Existing 5.2g sphere/radius25mm/uncalibrated quadratic drag; real-shuttle validation remains outside these simulation claims.",
+    "strings": "64 slices,62 nonempty thin primitive boxes inscribed in the same32gon. No outward face enlargement. String mass5g, combined inertia recomputed. Current collision/visual/audit use the same box union."
+  },
+  "policy_lock": "Freeze source SHA plus dirty snapshot, all physical hashes and weight SHA before launching formal panels; cases/thresholds never adjusted based on results.",
+  "no_old_passes_inherited": true,
+  "formal_results_available": false,
+  "revision_from": {
+    "path": "configs/g07_full_racket_eval_v4_r2.json",
+    "sha256": "3a38fabb32b6201a31c845f03d113983ad4d986c824baaf5a2f5ec0b54b33ee6",
+    "reason": "Necessary model correctness repair: clamp4mm wrist penetration generates persistent21-36kN self contact in reset_self_contact01. R3 clamp clears wrist and upright ground reset has0N actual self contact in reset_self_contact_r3_01. No thresholds or incoming cases changed.",
+    "prior_training_attempt": "reach_cem_smoke01 on erroneous r2,32 candidates,0 recoveries; preserved and not used as r3 performance."
+  },
+  "before_training_this_model_version": true,
+  "numerical_execution": {
+    "variant": "r3-origin0",
+    "environment_spacing_m": 0.0,
+    "reason": "Remove measured float32 world-coordinate accumulation drift while retaining every physical geometry, hardware and scoring field.",
+    "requires_native_precision_and_collision_isolation_admission": true,
+    "source_performance_inherited": false
+  },
+  "before_v5_policy_training": true,
+  "recovery_association": {
+    "schema": "contact-flight-recovery-v1",
+    "source_protocol_sha256": "b9fbfbcbe6ba4ff5f8ac4a944e3bcc0d4f2f0db4adf37182e30750a0562ec196",
+    "preserves_physics_cases_target_and_thresholds": true,
+    "contact_flight_qualification_and_post_landing_continuous_recovery": true
+  }
+}

@@ -37,7 +37,10 @@ def full_racket_cfg(num_envs=16,physics_dt=.0000625):
 
 class FullRacketEnvV4(BallEnv):
     action_family='absolute-joint-limits-full-racket-v4'
-    def __init__(self,cfg,*,cases=None,**kwargs):
+    def __init__(self,cfg,*,cases=None,contact_flight_recovery=None,**kwargs):
+        self.contact_recovery=None
+        if contact_flight_recovery not in (None,'contact-flight-recovery-v1'):
+            raise ValueError('Unknown explicit recovery association version')
         self.racket_config,self.court_config=load_racket(),load_court()
         self.rally=None;self._v4_ready=False;self.rally_records=[];self.contact_records=[]
         self.ball_observation_enabled=torch.zeros(cfg.scene.num_envs,dtype=torch.bool,device=cfg.sim.device)
@@ -78,7 +81,23 @@ class FullRacketEnvV4(BallEnv):
         self.first_string_point=torch.full((n,3),float('nan'),device=device)
         self.first_string_time=torch.full((n,),float('nan'),device=device)
         self._jump_metric_stride=max(1,round(.001/self.physics_dt))
+        if contact_flight_recovery is not None:
+            from .contact_flight_recovery_v5 import ContactFlightRecoveryV5
+            from .jump_env import PROTOCOL
+            self.contact_recovery=ContactFlightRecoveryV5(n,device,PROTOCOL)
         self._v4_ready=True
+
+    def _consume_jump_frame(self,frame):
+        previous=getattr(self,'_jump_physics_frame',-1)
+        metric_previous=getattr(self,'_jump_metric_previous_frame',frame-1)
+        super()._consume_jump_frame(frame)
+        if self.contact_recovery is not None and frame>previous and frame!=0:
+            self.contact_recovery.metric(self,self.stable_recovery,(frame-metric_previous)*self.physics_dt)
+
+    @property
+    def rally_recovery_success(self):
+        if self.contact_recovery is None:return self.jump_success
+        return self.contact_recovery.success(self)&(self.robot.data.root_pos_w[:,2]>=.12)
 
     def _racket_over_net_geometry(self,tool,quaternion,fully_own):
         """Use live GPU poses, not stale DirectGPU CPU scene-query poses."""
@@ -202,6 +221,7 @@ class FullRacketEnvV4(BallEnv):
                      ((normal*self.first_tool_normal).sum(-1)>np.cos(np.deg2rad(15)))&
                      ((head_velocity*self.first_tool_velocity).sum(-1)>=0))
         separated=(~touching)&(self._tool_gap(self.shuttle.data.root_pos_w,tool,q)>PHYSICS['separation_hysteresis_m'])
+        recovery_active=self.rally.in_play.clone() if self.contact_recovery is not None else None
         self.rally.advance(previous_position=previous-self.scene.env_origins,
             position=self.shuttle.data.root_pos_w-self.scene.env_origins,velocity=self.shuttle.data.root_lin_vel_w,
             time=self.ball_clock,dt=self.physics_dt,racket_contact_event=self.contact_events.count>counts,
@@ -212,7 +232,14 @@ class FullRacketEnvV4(BallEnv):
             racket_over_net=racket_over,body_over_net=body_over,engineering_body_crossing=engineering,
             racket_fully_own_side=racket_fully_own,
             same_stroke_frame_string=same_stroke)
-        if bool(events.any()):
+        record_events=events.any()
+        if self.contact_recovery is not None:
+            recovery_bind=(recovery_active&touching&string&self.observed_airborne&self.rally.legal_initial_contact&(~self.contact_recovery.bound))
+            record_events|=recovery_bind.any()
+        if bool(record_events):
+            if self.contact_recovery is not None:
+                self.contact_recovery.contact(self,legal_air_strings_touching=recovery_bind,
+                    time=self.ball_clock,rally_contact_time=self.rally.contact_time)
             contact_velocity=head_velocity+torch.linalg.cross(d.body_link_ang_vel_w[:,self.racket_body_id],torch.nan_to_num(point)-tool)
             expected=d.body_link_lin_vel_w[:,self.flange_id]+torch.linalg.cross(d.body_link_ang_vel_w[:,self.flange_id],torch.nan_to_num(point)-d.body_link_pos_w[:,self.flange_id])
             self.hit_velocity_error[first]=(contact_velocity-expected).norm(dim=-1)[first]
@@ -247,8 +274,8 @@ class FullRacketEnvV4(BallEnv):
             for i in complete.cpu().tolist():
                 row={name:bool(getattr(self.rally,name)[i]) for name in self.rally.flags}
                 row.update(env_id=i,episode_index=int(self.episode_index[i]),
-                    complete_smash=bool(self.rally.complete(self.jump_success)[i]),
-                    recovery_success=bool(self.jump_success[i]),contact_count=int(self.rally.contact_count[i]),
+                    complete_smash=bool(self.rally.complete(self.rally_recovery_success)[i]),
+                    recovery_success=bool(self.rally_recovery_success[i]),contact_count=int(self.rally.contact_count[i]),
                     contact_point_m=self.rally.contact_point[i].cpu().tolist(),
                     outgoing_velocity_mps=self.rally.outgoing_velocity[i].cpu().tolist(),
                     first_landing_m=self.rally.landing_point[i].cpu().tolist(),
@@ -261,6 +288,8 @@ class FullRacketEnvV4(BallEnv):
                     racket_plane_native_events=[record for record in self.racket_plane_records
                         if record['env_id']==i and record['episode_index']==int(self.episode_index[i])],
                     active_rally_launch_count=int(self.launch_count[i]),hit_velocity_error_mps=float(self.hit_velocity_error[i]))
+                if self.contact_recovery is not None:
+                    row['contact_flight_recovery']=self.contact_recovery.record(self,i,self.robot.data.root_pos_w[i,2])
                 self.rally_records.append(row)
             self.rally.reset(ids);self.launch_done[ids]=False;self.launch_count[ids]=0
             self.launch_signals_ready[ids]=False;self.launch_frame[ids]=-1
@@ -270,3 +299,4 @@ class FullRacketEnvV4(BallEnv):
             self.hit_velocity_error[ids]=0.
             self.first_string_point[ids]=float('nan');self.first_string_time[ids]=float('nan')
         super()._reset_idx(ids)
+        if self.contact_recovery is not None:self.contact_recovery.reset(ids)

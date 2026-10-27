@@ -1,0 +1,22 @@
+{
+  "unit_tests": 24,
+  "unit_tests_exit_code": 0,
+  "unit_test_command": "python -m pytest -q tests/test_contact_flight_recovery_v5.py tests/test_jump_metrics.py tests/test_full_racket_evaluation_v4.py tests/test_full_racket_train_evaluation_v4.py",
+  "CLI_checks": [
+    {
+      "script": "scripts/evaluate_full_racket_contact_recovery_origin0_train_v5.py",
+      "exit_code": 0,
+      "sha256": "a23491572617dc930c152990044052d9c0ece7050c1a23cb3080c7e3c14ba8fb"
+    },
+    {
+      "script": "scripts/train_full_racket_contact_recovery_origin0_v5.py",
+      "exit_code": 0,
+      "sha256": "de87b067a36dfca3cc7ae707d1f6b570eea72d87ede4c6b22337bff117a8e87b"
+    }
+  ],
+  "generator_entry_parity": true,
+  "composed_USD_source_layers_verified": 10,
+  "actual_recorded_CPU_input_samples": 11360,
+  "new_native_execution": false,
+  "formal_acceptance": false
+}
