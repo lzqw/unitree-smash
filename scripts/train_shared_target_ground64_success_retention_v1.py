@@ -406,7 +406,7 @@ def main():
     contract['prehit_teacher_prior']=dict(schema=PRIOR_SCHEMA,**prior_cfg,public_phase_indices=[0,1,2],
         cost_scope='Requested clipped residual in radians, before range/slew limiting; current public phase only')
     contract['recovery_association']=protocol['recovery_association']
-    contract['posthit_teacher_assistance']=dict(
+    posthit_teacher_assistance=dict(
         enabled=args.posthit_teacher_policy is not None and args.posthit_teacher_blend>0,
         policy=str(args.posthit_teacher_policy) if args.posthit_teacher_policy is not None else None,
         policy_sha256=digest(args.posthit_teacher_policy) if args.posthit_teacher_policy is not None else None,
@@ -418,9 +418,13 @@ def main():
                 if args.posthit_teacher_recovery_only else 'public_observed_hit_index_773_gt_0.5'))),
         all_phases=bool(args.teacher_all_phases),
         recovery_phase_included=bool(args.posthit_teacher_recovery_phase),
-        recovery_only=bool(args.posthit_teacher_recovery_only),
         leg_only=bool(args.posthit_teacher_leg_only),
         causal=True,exported_policy_does_not_embed_teacher=True)
+    # Keep the legacy contract byte-compatible for ordinary post-hit runs so
+    # checkpoints created before the recovery-only gate can still be resumed.
+    if args.posthit_teacher_recovery_only:
+        posthit_teacher_assistance['recovery_only']=True
+    contract['posthit_teacher_assistance']=posthit_teacher_assistance
     if landing_cfg is not None:contract['landing_assistance']=landing_cfg
     if support_cfg is not None:contract['support_assistance']=support_cfg
     if landing_reward_cfg is not None:contract['landing_recovery_reward']=landing_reward_cfg
