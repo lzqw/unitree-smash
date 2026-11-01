@@ -33,6 +33,8 @@ p.add_argument('--posthit-teacher-blend',type=float,default=0.0,
     help='Blend weight for the post-hit teacher residual in [0,1]; applied only to current public observation after observed hit')
 p.add_argument('--teacher-all-phases',action='store_true',
     help='Use the declared portable teacher on every current public phase; intended only for collecting on-policy teacher-assisted rollouts')
+p.add_argument('--posthit-teacher-recovery-phase',action='store_true',
+    help='Also keep the portable post-hit teacher active in the public foot-contact recovery phase; opt-in diagnostic branch')
 p.add_argument('--num-envs',type=int,default=128)
 p.add_argument('--updates',type=int,default=8)
 p.add_argument('--seed',type=int,default=751001)
@@ -102,12 +104,14 @@ class SharedTargetResidualAdapter(PreHitTeacherPriorAdapterMixin, ResidualRslAda
                  recovery_local_time_override_s=None,recovery_actor_gain_override=None,recovery_thigh_bias_override=None,
                  recovery_front_back_thigh_bias_override=None,recovery_calf_bias_override=None,recovery_roll_feedback_gain_override=None,
                  recovery_blend_s=None,landing_assistance=None,support_assistance=None,
-                 posthit_teacher_policy=None,posthit_teacher_blend=0.0,teacher_all_phases=False):
+                 posthit_teacher_policy=None,posthit_teacher_blend=0.0,teacher_all_phases=False,
+                 posthit_teacher_recovery_phase=False):
         if not isinstance(posthit_teacher_blend,(int,float)) or not 0.0 <= float(posthit_teacher_blend) <= 1.0:
             raise ValueError('posthit teacher blend must be in [0,1]')
         self.wrapped=wrapped; self.base_checkpoint=base_checkpoint
         self.posthit_teacher_blend=float(posthit_teacher_blend)
         self.teacher_all_phases=bool(teacher_all_phases)
+        self.posthit_teacher_recovery_phase=bool(posthit_teacher_recovery_phase)
         self.posthit_teacher=None
         self.posthit_teacher_path=str(posthit_teacher_policy) if posthit_teacher_policy is not None else None
         if posthit_teacher_policy is not None:
@@ -169,7 +173,9 @@ class SharedTargetResidualAdapter(PreHitTeacherPriorAdapterMixin, ResidualRslAda
         if self.posthit_teacher is not None and self.posthit_teacher_blend > 0.0:
             public=self.last_observation['policy']
             teacher_active=(torch.ones(len(public),dtype=torch.bool,device=public.device)
-                            if self.teacher_all_phases else public[:,773] > 0.5)
+                            if self.teacher_all_phases else
+                            ((public[:,773] > 0.5) |
+                             (self.posthit_teacher_recovery_phase & (public[:,774] > 0.5))))
             if bool(teacher_active.any()):
                 with torch.no_grad():
                     teacher_residual=self.posthit_teacher(public).to(residual.device)
@@ -392,8 +398,11 @@ def main():
         policy=str(args.posthit_teacher_policy) if args.posthit_teacher_policy is not None else None,
         policy_sha256=digest(args.posthit_teacher_policy) if args.posthit_teacher_policy is not None else None,
         blend=float(args.posthit_teacher_blend),
-        gate='all_current_public_phases' if args.teacher_all_phases else 'public_observed_hit_index_773_gt_0.5',
+        gate=('all_current_public_phases' if args.teacher_all_phases else
+              ('public_observed_hit_or_recovery_index_773_or_774_gt_0.5'
+               if args.posthit_teacher_recovery_phase else 'public_observed_hit_index_773_gt_0.5')),
         all_phases=bool(args.teacher_all_phases),
+        recovery_phase_included=bool(args.posthit_teacher_recovery_phase),
         causal=True,exported_policy_does_not_embed_teacher=True)
     if landing_cfg is not None:contract['landing_assistance']=landing_cfg
     if support_cfg is not None:contract['support_assistance']=support_cfg
@@ -429,7 +438,8 @@ def main():
         recovery_roll_feedback_gain_override=recovery_cfg.get('recovery_roll_feedback_gain'),
         recovery_blend_s=recovery_cfg.get('recovery_blend_s'),landing_assistance=landing_cfg,
         support_assistance=support_cfg,posthit_teacher_policy=args.posthit_teacher_policy,
-        posthit_teacher_blend=args.posthit_teacher_blend,teacher_all_phases=args.teacher_all_phases)
+        posthit_teacher_blend=args.posthit_teacher_blend,teacher_all_phases=args.teacher_all_phases,
+        posthit_teacher_recovery_phase=args.posthit_teacher_recovery_phase)
     adapter.configure_prehit_prior(prior_cfg)
     runner=None;completed_update_safe=False
     try:
