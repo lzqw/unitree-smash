@@ -50,6 +50,7 @@ class FullRacketTeacherV4:
         self.target_world=torch.tensor(seed.get('desired_ball_center_m',[1.10,0.,1.80]),dtype=torch.float32,device=device)
         self.normal_world=torch.tensor(seed.get('outward_contact_normal_world',[.99503719,0.,-.09950372]),dtype=torch.float32,device=device)
         self.velocity_world=torch.tensor(seed.get('desired_point_velocity_mps',[1.5,0.,-.3]),dtype=torch.float32,device=device)
+        self.velocity_world_override=None
         self.preparation=validate_preparation(seed.get('cartesian_preparation'))
         self.joint_preparation=None
         self.face_feedback=None
@@ -71,7 +72,8 @@ class FullRacketTeacherV4:
             self.last_arm_targets_before_slew=None;self.last_arm_targets_after_slew=None
 
     @torch.inference_mode()
-    def action(self,observation,parameters,default,limits,event_time=None,target_offset_world=None):
+    def action(self,observation,parameters,default,limits,event_time=None,target_offset_world=None,
+               desired_velocity_world=None):
         obs=observation['policy'];time=obs[:,775]
         event_time=torch.full_like(time,2.75) if event_time is None else event_time
         local=(time-parameters[:,2]-self.leg_event_time_gain*(event_time-2.75))*parameters[:,4]
@@ -123,7 +125,14 @@ class FullRacketTeacherV4:
             if target_offset_world is not None:
                 target+=target_offset_world[:,:1]*forward+target_offset_world[:,1:2]*left+target_offset_world[:,2:3]*up
             normal_target=self.face_sign*contact_normal_body(parameters,self.normal_world,forward,left,up)
-            desired_velocity=self.velocity_world[0]*forward+self.velocity_world[1]*left+self.velocity_world[2]*up
+            if desired_velocity_world is None:
+                desired_velocity_world=getattr(self,'velocity_world_override',None)
+            velocity_world=self.velocity_world if desired_velocity_world is None else desired_velocity_world
+            if velocity_world.ndim == 1:
+                velocity_world=velocity_world[None].expand(len(obs),-1)
+            if velocity_world.shape != (len(obs),3) or not torch.isfinite(velocity_world).all():
+                raise ValueError('Desired per-lane world velocity must be finite Nx3')
+            desired_velocity=velocity_world[:,0:1]*forward+velocity_world[:,1:2]*left+velocity_world[:,2:3]*up
             if self.preparation is not None:
                 desired_velocity=desired_velocity*parameters[:,7:8]
                 known=torch.tensor([1.10,0.,1.80],device=time.device)

@@ -60,9 +60,11 @@ def test_rally_selective_reset_preserves_other_episode_and_logs():
     c.base=torch.arange(38,dtype=torch.float32);c.parameters=torch.zeros(2,38)
     c.event_time=torch.ones(2);c.planned=torch.ones(2,dtype=torch.bool)
     c.target_offset_world=torch.ones(2,3);c.logs=['kept']
+    c.event_velocity_world=torch.ones(2,3)
     c.reset(torch.tensor([0]))
     assert torch.equal(c.parameters[0],c.base) and c.parameters[1].eq(0).all()
     assert c.event_time[1]==1 and c.planned[1] and c.target_offset_world[1].eq(1).all() and c.logs==['kept']
+    assert c.event_velocity_world[0].eq(0).all() and c.event_velocity_world[1].eq(1).all()
 
 
 def test_events_paid_once_reset_per_lane_and_continuous_terms_integrate():

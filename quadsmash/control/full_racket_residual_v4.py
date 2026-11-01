@@ -1,6 +1,7 @@
 """Public-observation residual commands on the unchanged full-racket robot."""
 import hashlib
 import io
+import math
 import torch
 from .full_racket_arm_target_rate_v4 import ArmTargetRateV4
 from .full_racket_rally_controller_v4 import FullRacketRallyControllerV4
@@ -47,11 +48,13 @@ def validate_frozen_baseline(checkpoint):
 
 
 class ResidualActionMixerV4:
-    def __init__(self,count,device,joint_scale_rad):
+    def __init__(self,count,device,joint_scale_rad,arm_target_rate_rad_s=5.,max_scale_rad=.25):
         self.scale=torch.as_tensor(joint_scale_rad,dtype=torch.float32,device=device)
-        if self.scale.shape!=(18,) or not torch.isfinite(self.scale).all() or (self.scale<=0).any() or (self.scale>.25).any():
-            raise ValueError('Require18 positive finite residual scales no larger than.25rad')
-        self.arm_rate=ArmTargetRateV4(count,device,5.)
+        if (not math.isfinite(float(max_scale_rad)) or not 0 < max_scale_rad <= .5
+                or self.scale.shape!=(18,) or not torch.isfinite(self.scale).all()
+                or (self.scale<=0).any() or (self.scale>max_scale_rad).any()):
+            raise ValueError('Require18 positive finite residual scales within the declared <=.5rad authority')
+        self.arm_rate=ArmTargetRateV4(count,device,arm_target_rate_rad_s)
         self.nonzero_seen=torch.zeros(count,dtype=torch.bool,device=device)
         self.last_requested=None;self.last_actual=None
 

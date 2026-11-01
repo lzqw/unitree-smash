@@ -15,7 +15,10 @@ def alignment_settings(value):
     if value is None:
         return None
     bounds = dict(contact_potential_weight=(0., 20.), normal_distance_scale_m=(1e-4, 1.),
-        attack_progress_weight=(0., 30.), frame_penalty=(0., 40.), discount=(0., 1.))
+        # Larger values are allowed for explicitly staged RL branches.  This
+        # only changes the dense TRAIN shaping; the actual attack predicate
+        # remains the unchanged 8 m/s, forward, downward event.
+        attack_progress_weight=(0., 80.), frame_penalty=(0., 40.), discount=(0., 1.))
     if not isinstance(value, dict) or set(value) != set(bounds):
         raise ValueError('Declare exactly the measured string-alignment TRAIN settings')
     result = {}

@@ -101,3 +101,20 @@ def test_ground_resize_requires_a_larger_complete_batch_multiple(num_envs):
     state, cfg, interface, *_ = checkpoint_fixture()
     with pytest.raises(ValueError):
         resize.validate_ground_resize(state, interface, cfg, num_envs)
+
+
+def test_resize_allows_only_larger_diagnostic_capacity_with_same_selection():
+    state,cfg,interface,*_=checkpoint_fixture()
+    cfg['episode_trace']=dict(max_buffer_bytes=3000000000,first_episode_lanes=[0,8],max_success_traces=24)
+    state['native']['training_config']=copy.deepcopy(cfg)
+    state['native']['training_signature']=training_signature(cfg)
+    enlarged=copy.deepcopy(cfg);enlarged['episode_trace']['max_buffer_bytes']=6000000000
+    assert resize.validate_ground_resize(state,interface,enlarged,512)==128
+    assert resize.trace_capacity_change(state['native'],enlarged)['learning_settings_changed'] is False
+    for change in ['seed','selection','smaller_capacity','unverifiable_source']:
+        source=copy.deepcopy(state);target=copy.deepcopy(enlarged)
+        if change=='seed':target['seed']+=1
+        elif change=='selection':target['episode_trace']['first_episode_lanes']=[0]
+        elif change=='smaller_capacity':target['episode_trace']['max_buffer_bytes']=1000000
+        else:source['native']['training_config']['seed']+=1
+        with pytest.raises(ValueError):resize.validate_ground_resize(source,interface,target,512)

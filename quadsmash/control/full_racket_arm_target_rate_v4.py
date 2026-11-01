@@ -5,8 +5,11 @@ import torch
 
 class ArmTargetRateV4:
     def __init__(self, count, device, maximum_rate_rad_s, control_dt_s=.01):
-        if not math.isfinite(maximum_rate_rad_s) or not 0 < maximum_rate_rad_s <= 5.:
-            raise ValueError('Arm target rate must be positive and at most the original5rad/s limit')
+        # The historical teacher used 5 rad/s.  Residual learners may opt into
+        # a larger *software command* slew rate; the physical joint limits and
+        # native actuator still remain active downstream.
+        if not math.isfinite(maximum_rate_rad_s) or not 0 < maximum_rate_rad_s <= 20.:
+            raise ValueError('Arm target rate must be positive and at most20rad/s')
         if not math.isfinite(control_dt_s) or control_dt_s <= 0:
             raise ValueError('Require a positive finite control period')
         self.rate = float(maximum_rate_rad_s)

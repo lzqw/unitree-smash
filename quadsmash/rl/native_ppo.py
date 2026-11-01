@@ -8,6 +8,7 @@ from rsl_rl.algorithms import PPO
 from rsl_rl.runners import OnPolicyRunner
 import rsl_rl.runners.on_policy_runner as runner_module
 from .action_diagnostics import post_update_diagnostics
+from .landing_exploration_v1 import LandingExplorationActorCriticV1
 
 
 class FinalObservationPPO(PPO):
@@ -57,6 +58,7 @@ class FinalObservationPPO(PPO):
 
 
 runner_module.FinalObservationPPO=FinalObservationPPO
+runner_module.LandingExplorationActorCriticV1=LandingExplorationActorCriticV1
 
 
 class NativeRunner(OnPolicyRunner):

@@ -1,0 +1,47 @@
+{
+  "schema": "g07-user-authorized-success-priority-v1",
+  "effective_date": "2026-10-30",
+  "authorization": {
+    "user_message": "现在的速度基本山够用了，不用得追求8,现在重点应该是提高一下整体的成功率，包括最终的RL的",
+    "interpretation": "Use the existing 5 m/s criterion as the primary task speed requirement and optimize complete-episode reliability, including the final RL policy. Do not require 8 m/s for task success."
+  },
+  "base_physical_and_event_protocol": {
+    "path": "configs/g07_full_racket_eval_v5_contact_recovery_origin0.json",
+    "sha256": "bfe6f2bef675bb4716e4970e6400eb86dd50b06e799e848030eb2a29ed84a309"
+  },
+  "primary_minimum_outgoing_speed_mps": 5.0,
+  "primary_metric": "complete_return_and_recovery_rate",
+  "complete_event_chain": [
+    "actual_ground_start_and_single_launch",
+    "legal_actual_airborne_strings_contact",
+    "outgoing_speed_at_least_5_mps_forward_vx_positive_downward_vz_at_most_minus1_mps",
+    "actual_net_crossing_and_first_landing_in_existing_target",
+    "same_contact_flight_qualified_landing_and_continuous_0p8s_recovery",
+    "no_rule_or_numerical_failure"
+  ],
+  "retained_reliability_thresholds_per_existing_formal_panel": {
+    "complete_return_and_recovery_rate": 0.5,
+    "airborne_contact_rate": 0.7,
+    "conditional_recovery_rate": 0.85,
+    "numerical_failures": 0
+  },
+  "historical_speed8_metric": "Archived secondary comparison; not the current task pass criterion or optimization target.",
+  "training_reward_priority": {
+    "release_speed_progress_saturates_at_mps": 5.0,
+    "independent_racket_speed_shaping_enabled": true,
+    "independent_racket_speed_reward_target_mps": 5.0,
+    "ranking": ["complete_episode_success", "recovery_given_valid_return", "legal_airborne_contact", "net_and_target_margin"]
+  },
+  "evaluation_reporting": {
+    "changing_policy_rollouts": "Development observations only; do not present as frozen-policy performance.",
+    "teacher_or_control_assisted_policy": "Report its assistance mode and measured complete success separately.",
+    "final_rl_policy": "Require frozen-policy physical evaluation without teacher actions completing the movement; retain the actual low-level servo and declared control limits.",
+    "formal_panels": "Use the existing complete A/B panels and the worse panel for each retained reliability threshold. No panel has passed under this revision."
+  },
+  "implementation": {
+    "reuse_existing_classifier": "scripts/export_complete_demonstrations_v1.py::classify(row, base_protocol, 5.0)",
+    "existing_field_alias": "curriculum_complete5 is the already-computed legacy field for the new primary complete5 event chain; preserve original files and label provenance.",
+    "running_and_queued_native_inputs": "Unchanged; rescore their actual episode evidence under this versioned primary metric.",
+    "ground64_branch": "Remains a declared diagnostic physical branch; this speed revision does not silently promote its ground geometry to formal acceptance."
+  }
+}

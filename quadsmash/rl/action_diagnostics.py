@@ -65,7 +65,8 @@ def post_update_diagnostics(policy, obs, old_mean, old_std, actions, old_logprob
     # Locked RSL-RL act_inference only forwards the MLP/normalizer. It does not
     # call update_normalization, sample, or replace policy.distribution.
     mean = policy.act_inference(obs)
-    std = policy_std(policy).expand_as(mean)
+    conditional_std = getattr(policy, 'action_std_for_observations', None)
+    std = conditional_std(obs) if conditional_std is not None else policy_std(policy).expand_as(mean)
     kl = (torch.log(std / old_std) + (old_std.square() + (old_mean - mean).square()) / (2 * std.square()) - .5).sum(-1)
     logprob = torch.distributions.Normal(mean, std).log_prob(actions).sum(-1)
     ratio = torch.exp(logprob - old_logprob.squeeze(-1))

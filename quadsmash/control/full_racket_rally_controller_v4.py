@@ -33,6 +33,9 @@ class FullRacketRallyControllerV4:
         self.relative_prepose=validate_relative_prepose(checkpoint['seed'].get('relative_contact_prepose'))
         self.height_intercept=validate_height_intercept(checkpoint['seed'].get('height_intercept'))
         self.target_offset_world=torch.zeros((count,3),device=device)
+        # Optional per-lane event target installed by an event generator.  A
+        # None value preserves the original shared teacher path bit-for-bit.
+        self.event_velocity_world=None
 
     def reset(self,ids=None):
         self.teacher.reset(ids)
@@ -40,10 +43,14 @@ class FullRacketRallyControllerV4:
             self.parameters.copy_(self.base[None])
             self.event_time.fill_(2.75);self.planned.zero_();self.logs=[]
             self.target_offset_world.zero_()
+            self.event_velocity_world=None
+            self.teacher.velocity_world_override=None
         else:
             self.parameters[ids]=self.base
             self.event_time[ids]=2.75;self.planned[ids]=False
             self.target_offset_world[ids]=0.
+            if self.event_velocity_world is not None:
+                self.event_velocity_world[ids]=0.
 
     @torch.inference_mode()
     def action(self,observation,default,limits):

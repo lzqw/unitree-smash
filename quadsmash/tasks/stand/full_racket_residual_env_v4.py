@@ -5,21 +5,32 @@ from quadsmash.physics.native import quat_rotate
 from quadsmash.control.full_racket_residual_reward_v4 import ResidualEventRewardV4
 from quadsmash.control.measured_joint_placement_reward_v4 import MeasuredJointPlacementRewardV4
 from quadsmash.control.measured_string_alignment_reward_v4 import MeasuredStringAlignmentRewardV4,alignment_settings,attack_aligned_target
+from quadsmash.control.landing_recovery_reward_v1 import LandingRecoveryRewardV1
 
 
 class FullRacketResidualTrainingEnvV4(RallyTrainingEnvV4):
     action_family='bounded-residual-joint-targets-full-racket-v4'
 
-    def __init__(self,*args,joint_placement_reward=None,live_alignment_reward=None,**kwargs):
+    def __init__(self,*args,joint_placement_reward=None,live_alignment_reward=None,racket_speed_reward=None,attack_speed_threshold_mps=8.,landing_recovery_reward=None,**kwargs):
         self.residual_rewards=None
         self.joint_placement_reward=None
         self.live_alignment_reward=None
+        self.racket_speed_reward=None
+        self.landing_recovery_reward=None
+        self.attack_speed_threshold_mps=float(attack_speed_threshold_mps)
+        if not torch.isfinite(torch.tensor(self.attack_speed_threshold_mps)) or not 0 < self.attack_speed_threshold_mps <= 8.:
+            raise ValueError('Require a positive relaxed attack speed threshold no greater than8m/s')
         alignment=alignment_settings(live_alignment_reward)
         if alignment is not None and joint_placement_reward is None:
             raise ValueError('Measured string alignment requires explicit measured joint placement too')
         super().__init__(*args,**kwargs)
         n,device=self.num_envs,self.device
         self.residual_rewards=ResidualEventRewardV4(n,device)
+        if landing_recovery_reward is not None:
+            if self.contact_recovery is None:
+                raise ValueError('Landing feedback requires contact-flight recovery association')
+            self.landing_recovery_reward=LandingRecoveryRewardV1(n,device,landing_recovery_reward,
+                self.contact_recovery.protocol['recovery']['continuous_stable_window_s'])
         if joint_placement_reward is not None:
             self.joint_placement_reward=MeasuredJointPlacementRewardV4(
                 n,device,self.rally.court,joint_placement_reward)
@@ -27,6 +38,14 @@ class FullRacketResidualTrainingEnvV4(RallyTrainingEnvV4):
             self.live_alignment_reward=MeasuredStringAlignmentRewardV4(n,device,alignment,
                 semiaxes_yz_m=self.racket_config['assumptions']['strings_semiaxes_yz_m'],
                 contact_plane_offset_m=self.cfg.shuttle_radius_m+self.racket_config['assumptions']['string_thickness_m']/2)
+        if racket_speed_reward is not None:
+            if (not isinstance(racket_speed_reward,dict)
+                    or set(racket_speed_reward) != {'weight','target_mps'}):
+                raise ValueError('Declare exactly racket speed TRAIN settings')
+            weight=float(racket_speed_reward['weight']); target=float(racket_speed_reward['target_mps'])
+            if not torch.isfinite(torch.tensor([weight,target])).all() or not 0 < weight <= 20 or not 0 < target <= 20:
+                raise ValueError('Invalid racket speed TRAIN settings')
+            self.racket_speed_reward=dict(weight=weight,target_mps=target)
         self.reward_target=torch.zeros((n,3),device=device)
         self.reward_event_time=torch.full((n,),2.75,device=device)
         self.reward_plan_valid=torch.zeros(n,dtype=torch.bool,device=device)
@@ -48,13 +67,15 @@ class FullRacketResidualTrainingEnvV4(RallyTrainingEnvV4):
         air=rally.legal_initial_contact&rally.string_hit&rally.airborne_string_hit
         robot_fault=rally.robot_rule_faulted()
         v=rally.outgoing_velocity
-        attack=(air&rally.released&torch.isfinite(v).all(1)&(v.norm(dim=1)>=8.)&(v[:,0]>0)&(v[:,2]<=-1.))
+        attack=(air&rally.released&torch.isfinite(v).all(1)&(v.norm(dim=1)>=self.attack_speed_threshold_mps)&(v[:,0]>0)&(v[:,2]<=-1.))
         flags=dict(flight=self.flight_qualified,air=air&(~robot_fault),attack=attack&(~robot_fault),
             crossed=air&rally.crossed_net&(~robot_fault),target=air&rally.landed_target&(~rally.faulted()),
             contact_recovery=air&self.rally_recovery_success&(~rally.faulted()),
             # Pay the full chain only at the actual episode boundary, so a
             # later fall cannot keep an earlier full-success training bonus.
-            complete=rally.complete(self.rally_recovery_success)&self.reset_time_outs&(~self.reset_terminated),
+            complete=((rally.complete(self.rally_recovery_success) if self.attack_speed_threshold_mps >= 8.-1e-6 else
+                       (attack&rally.crossed_net&rally.landed_target&self.rally_recovery_success&(~rally.faulted())))
+                      &self.reset_time_outs&(~self.reset_terminated)),
             robot_fault=robot_fault,body_fault=self.body_ground_seen)
         if self.live_alignment_reward is not None:
             # Original v1/v2 pay20 for any legal air target hit. In opt-in v3
@@ -74,6 +95,28 @@ class FullRacketResidualTrainingEnvV4(RallyTrainingEnvV4):
         dense=((position_term+normal_term) if self.live_alignment_reward is None else normal_term)*active
         cost=.00002*d.applied_torque.square().sum(1)+.005*self.action_delta+.02*self.residual_raw.square().sum(1)
         reward=self.residual_rewards.step(flags,dense,cost,self.step_dt)
+        if self.landing_recovery_reward is not None:
+            recovery=self.contact_recovery
+            reward=reward+self.landing_recovery_reward.step(
+                legal_air=air,associated_landing=recovery.bound&recovery.qualified_landing,
+                supported=self.observed_foot_contact.any(1),robot_fault=robot_fault,
+                body_ground_seen=self.body_ground_seen,
+                tilt_rad=torch.acos((-d.projected_gravity_b[:,2]).clamp(-1.,1.)),
+                horizontal_speed_mps=d.root_link_lin_vel_w[:,:2].norm(dim=1),
+                angular_speed_rad_s=d.root_ang_vel_w.norm(dim=1),
+                joint_speed_rad_s=d.joint_vel.abs().max(1).values,
+                longest_stable_s=recovery.longest_stable,dt=self.step_dt)
+        if self.racket_speed_reward is not None:
+            racket_offset_world=quat_rotate(d.body_link_quat_w[:,self.racket_body_id],
+                self.reward_offset.expand(self.num_envs,-1))
+            racket_point_velocity=d.body_link_lin_vel_w[:,self.racket_body_id]+torch.linalg.cross(
+                d.body_link_ang_vel_w[:,self.racket_body_id],racket_offset_world)
+            speed_along=(racket_point_velocity*self.reward_normal).sum(1).clamp_min(0.)
+            speed_active=(rally.in_play&(~rally.had_contact)&(~self.body_ground_seen)
+                &(clock>=self.reward_event_time-.25)&(clock<=self.reward_event_time+.03)
+                &torch.isfinite(speed_along))
+            speed_progress=(speed_along/self.racket_speed_reward['target_mps']).clamp(0.,1.)
+            reward=reward+self.racket_speed_reward['weight']*speed_progress*speed_active.float()*self.step_dt
         if self.joint_placement_reward is not None:
             reward=reward+self.joint_placement_reward.step(ground_seen=rally.ground_seen,
                 legal_air=air,attack=attack,crossed=rally.crossed_net,
@@ -101,3 +144,4 @@ class FullRacketResidualTrainingEnvV4(RallyTrainingEnvV4):
         if self.residual_rewards is not None:self.residual_rewards.reset(ids)
         if self.joint_placement_reward is not None:self.joint_placement_reward.reset(ids)
         if self.live_alignment_reward is not None:self.live_alignment_reward.reset(ids)
+        if self.landing_recovery_reward is not None:self.landing_recovery_reward.reset(ids)

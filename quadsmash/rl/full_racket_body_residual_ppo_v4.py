@@ -41,7 +41,7 @@ def reward_contact_offset(teacher_offset,live_alignment_enabled):
 
 
 class ResidualRslAdapterV4:
-    def __init__(self,wrapped,base_checkpoint,joint_scale_rad,stop_requested=lambda:False,base_mode=None):
+    def __init__(self,wrapped,base_checkpoint,joint_scale_rad,stop_requested=lambda:False,base_mode=None,arm_target_rate_rad_s=5.,max_scale_rad=.25):
         self.wrapped=wrapped;self.base_checkpoint=base_checkpoint
         mode=baseline_mode(base_mode)
         if mode=='frozen_public_policy':
@@ -50,7 +50,7 @@ class ResidualRslAdapterV4:
             # The explicit body factory already freezes both actual source actors.
         else:
             self.controller=FullRacketRallyControllerV4(base_checkpoint,self.num_envs,self.device)
-        self.mixer=ResidualActionMixerV4(self.num_envs,self.device,joint_scale_rad)
+        self.mixer=ResidualActionMixerV4(self.num_envs,self.device,joint_scale_rad,arm_target_rate_rad_s,max_scale_rad)
         env=self.unwrapped
         self.default=env.robot.data.default_joint_pos[0,env.joint_ids]
         self.limits=env.robot.data.joint_pos_limits[0,env.joint_ids]

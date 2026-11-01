@@ -3,8 +3,31 @@
 This is a fork at a canonical episode boundary. It never restores old physical
 buffers into a different environment layout; strict NativeRunner.load is unchanged.
 """
+import copy
 import torch
 from quadsmash.rl.native_checkpoint import SCHEMA, interface, restore_rng, training_signature
+
+
+def trace_capacity_change(native, configuration):
+    """Allow only a declared increase of diagnostic host-buffer capacity.
+
+    Trace allocation is not an input to policy learning. All sampling choices,
+    learning settings, rewards, seeds and controller contracts remain exact.
+    """
+    if native.get('training_signature') == training_signature(configuration):
+        return None
+    source=native.get('training_config')
+    if not isinstance(source,dict) or training_signature(source)!=native.get('training_signature'):
+        raise ValueError('Missing or inconsistent original training configuration')
+    old=source.get('episode_trace',{}).get('max_buffer_bytes')
+    new=configuration.get('episode_trace',{}).get('max_buffer_bytes')
+    if type(old) is not int or type(new) is not int or not 0<old<new:
+        raise ValueError('Ground resizing only permits increasing diagnostic trace memory')
+    comparable=copy.deepcopy(configuration)
+    comparable['episode_trace']['max_buffer_bytes']=old
+    if training_signature(comparable)!=native['training_signature']:
+        raise ValueError('Ground resizing cannot change PPO, seed, baseline, scales, rewards or trace selection')
+    return dict(previous_max_buffer_bytes=old,max_buffer_bytes=new,learning_settings_changed=False)
 
 
 def validate_ground_resize(state, current_interface, configuration, num_envs):
@@ -15,8 +38,7 @@ def validate_ground_resize(state, current_interface, configuration, num_envs):
         raise ValueError('Ground resizing must preserve the observation/action/asset interface')
     if current_interface.get('action_family') != 'bounded-residual-joint-targets-full-racket-v4':
         raise ValueError('This ground fork is specific to full-racket residual PPO')
-    if native.get('training_signature') != training_signature(configuration):
-        raise ValueError('Ground resizing cannot change PPO, seed, baseline, scales or rewards')
+    trace_capacity_change(native,configuration)
     previous_count = native['environment']['num_envs']
     if previous_count < 1 or num_envs <= previous_count or num_envs % previous_count:
         raise ValueError('Require a larger positive integer multiple of the original environment count')
@@ -51,4 +73,5 @@ def load_resized_ground(runner, path):
         num_envs=runner.env.num_envs, initial_iteration=state['iter'],
         previous_learner_control_env_steps=native['total_timesteps'],
         policy_optimizer_normalizers_rng_preserved=True, old_physical_state_restored=False,
-        old_environment_counters_restored=False, current_job_steps_start_at_zero=True)
+        old_environment_counters_restored=False, current_job_steps_start_at_zero=True,
+        diagnostic_trace_capacity_change=trace_capacity_change(native,runner.original_training_config))
