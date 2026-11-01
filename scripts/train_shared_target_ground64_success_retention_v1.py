@@ -418,12 +418,13 @@ def main():
                 if args.posthit_teacher_recovery_only else 'public_observed_hit_index_773_gt_0.5'))),
         all_phases=bool(args.teacher_all_phases),
         recovery_phase_included=bool(args.posthit_teacher_recovery_phase),
-        leg_only=bool(args.posthit_teacher_leg_only),
         causal=True,exported_policy_does_not_embed_teacher=True)
     # Keep the legacy contract byte-compatible for ordinary post-hit runs so
     # checkpoints created before the recovery-only gate can still be resumed.
     if args.posthit_teacher_recovery_only:
         posthit_teacher_assistance['recovery_only']=True
+    if args.posthit_teacher_leg_only:
+        posthit_teacher_assistance['leg_only']=True
     contract['posthit_teacher_assistance']=posthit_teacher_assistance
     if landing_cfg is not None:contract['landing_assistance']=landing_cfg
     if support_cfg is not None:contract['support_assistance']=support_cfg
