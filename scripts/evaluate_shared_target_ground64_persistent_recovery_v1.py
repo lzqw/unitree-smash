@@ -246,7 +246,10 @@ def main():
         reference=controller.reference_controller
         for name,value in requested_recovery.items():
             index=RECOVERY_FIELDS[name][0]
-            if index is None:
+            if name == 'recovery_side_aware_roll_feedback':
+                actual=float(reference.teacher.standing.side_aware_roll_feedback)
+                matches=bool(actual == float(value))
+            elif index is None:
                 actual=reference.teacher.leg_recovery_blend.seconds
                 matches=abs(actual-float(value))<1e-6
             else:
