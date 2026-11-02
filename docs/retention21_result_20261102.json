@@ -1,0 +1,37 @@
+{
+  "experiment": "transfer_lowppo_retention21_continuous8_env5120_01",
+  "retention_source": {
+    "episodes": 21,
+    "samples": 16800,
+    "max_command_replay_error": 0.000006735324859619141
+  },
+  "training": {
+    "updates": 8,
+    "num_envs": 5120,
+    "ppo_learning_rate": 0.0001,
+    "training_complete5_events": 56,
+    "training_conditional_recovery": 155,
+    "numerical_failures": 0
+  },
+  "frozen_evaluation": {
+    "seed": 882072,
+    "episodes": 128,
+    "complete5": 18,
+    "airborne_contacts": 70,
+    "conditional_recovery": 27,
+    "landed_target": 62,
+    "crossed_net": 69,
+    "numerical_failures": 0,
+    "complete5_rate": 0.140625
+  },
+  "baseline": {
+    "experiment": "transfer_blend04_continuous8_lowppo_env5120_01",
+    "complete5": 21,
+    "airborne_contacts": 67,
+    "conditional_recovery": 32,
+    "landed_target": 61,
+    "complete5_rate": 0.1640625
+  },
+  "decision": "keep_current_21_of_128_baseline",
+  "note": "The retention dataset and command replay contract passed; frozen complete5 performance did not improve."
+}
