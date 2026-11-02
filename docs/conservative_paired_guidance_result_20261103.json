@@ -1,0 +1,45 @@
+{
+  "experiment": "transfer_lowppo_retention21_teacher_guidance_conservative8_env5120_01",
+  "training": {
+    "updates": 8,
+    "num_envs": 5120,
+    "ppo_learning_rate": 0.0001,
+    "guidance_learning_rate": 0.000005,
+    "guidance_steps_per_update": 4,
+    "guidance_anchor_weight": 4.0,
+    "training_complete5_events": 59,
+    "training_conditional_recovery": 152,
+    "numerical_failures": 0
+  },
+  "frozen_evaluations": [
+    {
+      "seed": 882072,
+      "episodes": 128,
+      "complete5": 23,
+      "airborne_contacts": 73,
+      "conditional_recovery": 34,
+      "landed_target": 61,
+      "crossed_net": 73,
+      "numerical_failures": 0,
+      "complete5_rate": 0.1796875
+    },
+    {
+      "seed": 882075,
+      "episodes": 128,
+      "complete5": 23,
+      "airborne_contacts": 73,
+      "conditional_recovery": 34,
+      "landed_target": 61,
+      "crossed_net": 73,
+      "numerical_failures": 0,
+      "complete5_rate": 0.1796875
+    }
+  ],
+  "previous_best": {
+    "experiment": "transfer_blend04_continuous8_lowppo_env5120_01",
+    "complete5": 21,
+    "complete5_rate": 0.1640625
+  },
+  "decision": "new_best_keep_and_build_retention23",
+  "note": "Both fixed seeds matched; this remains a controller-assisted residual policy, not fully independent RL."
+}
