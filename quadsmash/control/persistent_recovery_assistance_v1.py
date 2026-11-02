@@ -47,7 +47,9 @@ class PersistentRecoveryAssistanceV1:
         reference = self.reference_controller
         for name, value in self.settings.items():
             index = RECOVERY_FIELDS[name][0]
-            if index is None:
+            if name == 'recovery_side_aware_roll_feedback':
+                reference.teacher.standing.side_aware_roll_feedback = bool(value > .5)
+            elif index is None:
                 reference.teacher.leg_recovery_blend.seconds = value
             elif ids is None:
                 reference.parameters[:, index] = value

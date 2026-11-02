@@ -12,6 +12,9 @@ RECOVERY_FIELDS={
     'recovery_roll_feedback_gain':(35,-1.,0.),
     'recovery_actor_gain':(36,.2,1.2),
     'recovery_blend_s':(None,0.,.25),
+    # A causal, optional sign-aware roll correction.  The legacy path keeps
+    # the historical symmetric correction when this is zero.
+    'recovery_side_aware_roll_feedback':(None,0.,1.),
 }
 
 
@@ -28,7 +31,9 @@ def apply_recovery_assistance(reference,settings):
     reference.base=reference.base.clone()
     for name,value in settings.items():
         index,_,_=RECOVERY_FIELDS[name]
-        if index is None:reference.teacher.leg_recovery_blend.seconds=float(value)
+        if name == 'recovery_side_aware_roll_feedback':
+            reference.teacher.standing.side_aware_roll_feedback = bool(float(value) > .5)
+        elif index is None:reference.teacher.leg_recovery_blend.seconds=float(value)
         else:reference.base[index]=float(value)
     reference.parameters.copy_(reference.base[None].expand_as(reference.parameters))
 

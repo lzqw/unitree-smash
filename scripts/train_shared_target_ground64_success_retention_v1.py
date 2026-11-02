@@ -111,7 +111,7 @@ class SharedTargetResidualAdapter(PreHitTeacherPriorAdapterMixin, ResidualRslAda
     def __init__(self,wrapped,base_checkpoint,joint_scale_rad,stop_requested=lambda:False,arm_target_rate_rad_s=5.,max_scale_rad=.25,reward_velocity_override=None,
                  recovery_local_time_override_s=None,recovery_actor_gain_override=None,recovery_thigh_bias_override=None,
                  recovery_front_back_thigh_bias_override=None,recovery_calf_bias_override=None,recovery_roll_feedback_gain_override=None,
-                 recovery_blend_s=None,landing_assistance=None,support_assistance=None,
+                 recovery_blend_s=None,recovery_side_aware_roll_feedback_override=None,landing_assistance=None,support_assistance=None,
                  posthit_teacher_policy=None,posthit_teacher_blend=0.0,teacher_all_phases=False,
                  posthit_teacher_recovery_phase=False,posthit_teacher_recovery_only=False,
                  posthit_teacher_leg_only=False):
@@ -143,7 +143,8 @@ class SharedTargetResidualAdapter(PreHitTeacherPriorAdapterMixin, ResidualRslAda
             recovery_front_back_thigh_bias_rad=recovery_front_back_thigh_bias_override,
             recovery_calf_bias_rad=recovery_calf_bias_override,
             recovery_roll_feedback_gain=recovery_roll_feedback_gain_override,
-            recovery_blend_s=recovery_blend_s)
+            recovery_blend_s=recovery_blend_s,
+            recovery_side_aware_roll_feedback=recovery_side_aware_roll_feedback_override)
         self.controller=PersistentRecoveryAssistanceV1(self.controller,
             {k:v for k,v in recovery_overrides.items() if v is not None})
         if landing_assistance is not None:
@@ -319,7 +320,7 @@ def main():
     if not isinstance(recovery_cfg,dict):raise ValueError('Recovery assistance must be an object')
     recovery_allowed={'recovery_local_time_s','recovery_actor_gain','recovery_thigh_bias_rad',
         'recovery_front_back_thigh_bias_rad','recovery_calf_bias_rad','recovery_roll_feedback_gain',
-        'recovery_blend_s'}
+        'recovery_blend_s','recovery_side_aware_roll_feedback'}
     if set(recovery_cfg)-recovery_allowed:raise ValueError('Unknown recovery assistance field')
     for key,value in recovery_cfg.items():
         if not isinstance(value,(int,float)) or not np.isfinite(value):
@@ -338,6 +339,8 @@ def main():
         raise ValueError('Recovery roll feedback outside the declared standing range')
     if 'recovery_blend_s' in recovery_cfg and not 0. <= recovery_cfg['recovery_blend_s'] <= .25:
         raise ValueError('Recovery blend outside the declared handover range')
+    if 'recovery_side_aware_roll_feedback' in recovery_cfg and recovery_cfg['recovery_side_aware_roll_feedback'] not in (0, 1, 0., 1.):
+        raise ValueError('Side-aware roll feedback must be 0 or 1')
     mode=baseline_mode(configuration.get('base_controller_mode'))
     base=torch.load(args.base_checkpoint,map_location='cpu',weights_only=False)
     source_verification=dict(shared_source=True,source_checkpoint_sha256=digest(args.base_checkpoint),
@@ -462,7 +465,9 @@ def main():
         recovery_front_back_thigh_bias_override=recovery_cfg.get('recovery_front_back_thigh_bias_rad'),
         recovery_calf_bias_override=recovery_cfg.get('recovery_calf_bias_rad'),
         recovery_roll_feedback_gain_override=recovery_cfg.get('recovery_roll_feedback_gain'),
-        recovery_blend_s=recovery_cfg.get('recovery_blend_s'),landing_assistance=landing_cfg,
+        recovery_blend_s=recovery_cfg.get('recovery_blend_s'),
+        recovery_side_aware_roll_feedback_override=recovery_cfg.get('recovery_side_aware_roll_feedback'),
+        landing_assistance=landing_cfg,
         support_assistance=support_cfg,posthit_teacher_policy=args.posthit_teacher_policy,
         posthit_teacher_blend=args.posthit_teacher_blend,teacher_all_phases=args.teacher_all_phases,
         posthit_teacher_recovery_phase=args.posthit_teacher_recovery_phase,
@@ -563,7 +568,10 @@ def main():
         reference=adapter.controller.reference_controller
         for name,value in recovery_cfg.items():
             index=RECOVERY_FIELDS[name][0]
-            if index is None:
+            if name == 'recovery_side_aware_roll_feedback':
+                actual=float(reference.teacher.standing.side_aware_roll_feedback)
+                matches=bool(actual == float(value))
+            elif index is None:
                 actual=reference.teacher.leg_recovery_blend.seconds
                 matches=abs(actual-float(value))<1e-6
             else:

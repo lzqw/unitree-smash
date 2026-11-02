@@ -13,6 +13,9 @@ class Go2StandingTransfer(Go2WalkTransfer):
     def __init__(self, manifest, num_envs, device):
         super().__init__(manifest, num_envs, device)
         self.standing_ticks = torch.zeros(num_envs, dtype=torch.long, device=device)
+        # Preserve the historical symmetric path unless a recovery branch
+        # explicitly requests side-aware roll feedback.
+        self.side_aware_roll_feedback = False
 
     def reset(self, ids=None):
         super().reset(ids)
@@ -35,6 +38,14 @@ class Go2StandingTransfer(Go2WalkTransfer):
         q[:, 4:6] += parameters[:, 1:2]
         q[:, 6:8] -= parameters[:, 1:2]
         q[:, 8:12] += parameters[:, 2:3]
-        q[:, :4] += parameters[:, 3:4]*obs[:, 7:8]
+        roll_feedback = parameters[:, 3:4]*obs[:, 7:8]
+        if self.side_aware_roll_feedback:
+            # Joint layout is [FL, FR, RL, RR] for each grouped leg joint.
+            # Opposite signs counter body roll through differential hip
+            # abduction instead of translating all four hips together.
+            side = obs.new_tensor([1., -1., 1., -1.])[None, :]
+            q[:, :4] += roll_feedback*side
+        else:
+            q[:, :4] += roll_feedback
         q[:, 12:] = arm_target
         return (2*(q-limits[:, 0])/(limits[:, 1]-limits[:, 0])-1).clamp(-1, 1)
