@@ -49,9 +49,10 @@ def load_dataset(configuration, contract, device):
 
 
 class FailureRecoveryGuidance:
-    def __init__(self, policy, public, targets, configuration):
+    def __init__(self, policy, public, targets, configuration, target_kind):
         self.policy, self.public, self.targets = policy, public, targets
         self.configuration = copy.deepcopy(configuration)
+        self.target_kind = str(target_kind)
         self.optimizer = torch.optim.Adam(policy.actor.parameters(), lr=configuration['learning_rate'])
         self.generator = torch.Generator(device='cpu').manual_seed(configuration['seed'])
         self.completed_steps = 0
@@ -100,7 +101,7 @@ class FailureRecoveryGuidance:
             final = self.policy.act_inference(TensorDict({'policy': observations}, batch_size=[count]))
             after = float((final - targets).square().mean())
         return dict(completed_steps=self.completed_steps, sampled_rows=count, phase_guidance=True,
-                    target_kind='zero_residual_base_fallback', mse_before=before, mse_after=after,
+                    target_kind=self.target_kind, mse_before=before, mse_after=after,
                     mean_fit_loss=sum(fit_values) / len(fit_values),
                     mean_anchor_loss=sum(anchor_values) / len(anchor_values),
                     max_gradient_norm_before_clip=max(gradients))
@@ -108,7 +109,8 @@ class FailureRecoveryGuidance:
 
 def attach_failure_recovery_guidance(runner, configuration, contract):
     public, targets, manifest = load_dataset(configuration, contract, runner.device)
-    guidance = FailureRecoveryGuidance(runner.alg.policy, public, targets, configuration)
+    guidance = FailureRecoveryGuidance(runner.alg.policy, public, targets, configuration,
+                                       manifest.get('target_kind', 'unknown'))
     original_update, original_save, original_load = runner.alg.update, runner.save, runner.load
 
     def update():

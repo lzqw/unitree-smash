@@ -1,0 +1,50 @@
+{
+  "experiment": "transfer_lowppo_retention21_teacher_guidance8_env5120_01",
+  "guidance_source": {
+    "episodes": 72,
+    "phase774_samples": 9535,
+    "target_kind": "paired_posthit_teacher_residual"
+  },
+  "training": {
+    "updates": 8,
+    "num_envs": 5120,
+    "ppo_learning_rate": 0.0001,
+    "training_complete5_events": 65,
+    "training_conditional_recovery": 153,
+    "numerical_failures": 0
+  },
+  "frozen_evaluations": [
+    {
+      "seed": 882072,
+      "episodes": 128,
+      "complete5": 19,
+      "airborne_contacts": 70,
+      "conditional_recovery": 31,
+      "landed_target": 65,
+      "crossed_net": 69,
+      "numerical_failures": 0,
+      "complete5_rate": 0.1484375
+    },
+    {
+      "seed": 882075,
+      "episodes": 128,
+      "complete5": 19,
+      "airborne_contacts": 70,
+      "conditional_recovery": 31,
+      "landed_target": 65,
+      "crossed_net": 69,
+      "numerical_failures": 0,
+      "complete5_rate": 0.1484375
+    }
+  ],
+  "baseline": {
+    "experiment": "transfer_blend04_continuous8_lowppo_env5120_01",
+    "complete5": 21,
+    "airborne_contacts": 67,
+    "conditional_recovery": 32,
+    "landed_target": 61,
+    "complete5_rate": 0.1640625
+  },
+  "decision": "keep_current_21_of_128_baseline",
+  "note": "Both fixed seeds matched; training counts are changing-policy interaction statistics and frozen evaluation is authoritative."
+}
