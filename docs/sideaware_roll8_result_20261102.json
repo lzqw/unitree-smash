@@ -1,0 +1,34 @@
+{
+  "experiment": "transfer_lowppo_sideaware8_noretention_env5120_01",
+  "training": {
+    "updates": 8,
+    "num_envs": 5120,
+    "ppo_learning_rate": 0.0001,
+    "posthit_teacher_blend": 0.4,
+    "side_aware_roll_feedback": true,
+    "success_retention": false,
+    "training_complete5_events": 17,
+    "numerical_failures": 0
+  },
+  "frozen_evaluation": {
+    "seed": 882072,
+    "episodes": 128,
+    "complete5": 0,
+    "airborne_contacts": 57,
+    "conditional_recovery": 1,
+    "landed_target": 47,
+    "crossed_net": 50,
+    "numerical_failures": 0,
+    "complete5_rate": 0.0
+  },
+  "baseline": {
+    "experiment": "transfer_blend04_continuous8_lowppo_env5120_01",
+    "complete5": 21,
+    "airborne_contacts": 67,
+    "conditional_recovery": 32,
+    "landed_target": 61,
+    "complete5_rate": 0.1640625
+  },
+  "decision": "reject_side_aware_sign_variant_keep_21_of_128_baseline",
+  "note": "The optional branch remains disabled by default. Training counts are changing-policy interaction statistics; frozen evaluation is authoritative."
+}
