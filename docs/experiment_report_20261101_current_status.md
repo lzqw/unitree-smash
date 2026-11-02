@@ -170,3 +170,20 @@ anchor1 没有超过基线，冻结结果为 15/128。连续训练解决了完�
 从 `transfer_blend04_continuous8_lowppo_env5120_01/checkpoint.pt` 保留 critic/Adam 状态继续 8 次更新（累计第 9–16 次）后，训练期有 2451 次空中触球、1 次条件恢复、0 个完整 5 m/s 回合，数值故障为 0。固定 128 例冻结评估按当前 5 m/s 规则为 **17/128**，空中触球 77、条件恢复 29、球侧目标 65，数值故障 0。
 
 该结果低于直接从 20/128 actor fresh transfer、PPO 1e-4 得到的 21/128 基线。保留 critic/Adam 没有自动改善长期续训，说明策略漂移和完整事件链保持仍是主要问题；当前最佳仍为 `transfer_blend04_continuous8_lowppo_env5120_01` 的 21/128 策略。
+
+## warmup4 实验与关键文件索引（2026-11-02）
+
+当前 GPU0 正在运行 `transfer_lowppo_warmup4_env5120_01`：从 21/128 低 PPO actor fresh transfer，PPO 学习率 1e-4，前 4 次更新只训练 critic，随后开放 actor；训练仍使用默认 post-hit 教师 blend 0.4、5120 并行环境和连续回合采样。截至本报告更新，已完成第 3/8 次更新，667 次空中触球，数值故障 0，尚未完成冻结评估，因此不提前报告最终成功率。
+
+本分支的关键可复现文件：
+
+- `scripts/train_shared_target_ground64_success_retention_v1.py`：主训练入口，包含 post-hit 教师、recovery-only 门控、成功保留和旧 checkpoint 合同兼容；
+- `scripts/evaluate_shared_target_ground64_persistent_recovery_fasttelemetry_v1.py`：固定 128 例冻结评估入口；
+- `scripts/audit_frozen_recovery_phase_v1.py`：按空中触球、非足部落地和稳定窗口拆分失败阶段；
+- `scripts/finetune_recovery_actor_from_native_traces_v1.py`：阶段恢复 actor 的离线拟合入口；
+- `configs/g07_shared_target_ground64_attack_recovery_v7_continuous8_lowppo.json`：低 PPO 基线配置；
+- `configs/g07_shared_target_ground64_attack_recovery_v10_warmup4_lowppo.json`：当前 warmup4 配置；
+- `docs/technical_route_current_20261101.md`：技术路线；
+- `docs/experiment_report_20261101_current_status.md`：当前实验报告和结果口径。
+
+GitHub 只保留上述源码、配置和 Markdown；模型、视频、轨迹、Isaac 日志和大型运行目录不上传。
