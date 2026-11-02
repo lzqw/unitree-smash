@@ -39,6 +39,8 @@ p.add_argument('--posthit-teacher-recovery-only',action='store_true',
     help='Use the portable post-hit teacher only in the public foot-contact recovery phase; do not alter airborne hit actions')
 p.add_argument('--posthit-teacher-leg-only',action='store_true',
     help='In post-hit assistance, blend only the first 12 leg residual joints; preserve arm/racket residuals')
+p.add_argument('--disable-success-retention',action='store_true',
+    help='Explicit ablation: skip the verified-success rehearsal optimizer for an execution-assistance isolation run')
 p.add_argument('--num-envs',type=int,default=128)
 p.add_argument('--updates',type=int,default=8)
 p.add_argument('--seed',type=int,default=751001)
@@ -430,6 +432,8 @@ def main():
     if support_cfg is not None:contract['support_assistance']=support_cfg
     if landing_reward_cfg is not None:contract['landing_recovery_reward']=landing_reward_cfg
     contract['success_retention']=dict(schema=RETENTION_SCHEMA,**configuration['success_retention'])
+    if args.disable_success_retention:
+        contract['success_retention']['disabled']=True
     train_cfg=copy.deepcopy(configuration['runner']);train_cfg['seed']=args.seed;train_cfg['residual_contract']=contract
     if episode_trace is not None:train_cfg['episode_trace']=dict(schema=TRACE_SCHEMA,**episode_trace,curriculum_retention=retention,diagnostic_retention=diagnostic_retention,speed_diagnostic_retention=speed_diagnostic_retention)
     exploration = exploration_contract(train_cfg['policy'])
@@ -490,8 +494,13 @@ def main():
             physics_dt_s=cfg.sim.dt,policy_dt_s=env.step_dt,formal_cases_read=False,
             formal_acceptance=False,scope='Native TRAIN learning across changing weights; no frozen-policy performance.'))
         runner=NativeRunner(adapter,train_cfg,log_dir=str(args.output/'ppo'),device=env.device)
-        retention_receipt=attach_success_retention(runner,configuration['success_retention'],contract)
-        atomic_json(args.output/'success_retention_admission.json',retention_receipt)
+        if args.disable_success_retention:
+            atomic_json(args.output/'success_retention_admission.json',dict(
+                schema=RETENTION_SCHEMA,disabled=True,teacher_action_override=False,
+                reason='explicit execution-assistance isolation run'))
+        else:
+            retention_receipt=attach_success_retention(runner,configuration['success_retention'],contract)
+            atomic_json(args.output/'success_retention_admission.json',retention_receipt)
         initialization=dict(mode='fresh_zero_mean_actor',num_envs=args.num_envs,initial_iteration=0)
         if mode=='frozen_public_policy':
             initialization.update(mode='fresh_zero_mean_actor_over_frozen_public_base',
