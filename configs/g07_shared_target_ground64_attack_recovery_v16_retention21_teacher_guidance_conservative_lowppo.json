@@ -1,0 +1,197 @@
+{
+  "joint_scale_rad": [
+    0.4,
+    0.4,
+    0.4,
+    0.4,
+    0.4,
+    0.4,
+    0.4,
+    0.4,
+    0.4,
+    0.4,
+    0.4,
+    0.4,
+    0.4,
+    0.4,
+    0.4,
+    0.4,
+    0.4,
+    0.4
+  ],
+  "actor_warmup_updates": 1,
+  "runner": {
+    "seed": 771001,
+    "num_steps_per_env": 128,
+    "save_interval": 1,
+    "obs_groups": {
+      "policy": [
+        "policy"
+      ],
+      "critic": [
+        "policy"
+      ]
+    },
+    "logger": "tensorboard",
+    "policy": {
+      "class_name": "PostHitExplorationActorCriticV1",
+      "actor_hidden_dims": [
+        256,
+        128,
+        64
+      ],
+      "critic_hidden_dims": [
+        256,
+        128,
+        64
+      ],
+      "activation": "elu",
+      "init_noise_std": 0.1,
+      "noise_std_type": "log",
+      "actor_obs_normalization": true,
+      "critic_obs_normalization": true,
+      "landing_exploration_scale": 0.15,
+      "airborne_hit_exploration_scale": 0.15
+    },
+    "algorithm": {
+      "class_name": "PPO",
+      "num_learning_epochs": 5,
+      "num_mini_batches": 8,
+      "learning_rate": 0.0001,
+      "schedule": "fixed",
+      "gamma": 0.997,
+      "lam": 0.98,
+      "entropy_coef": 0.005,
+      "desired_kl": 0.01,
+      "max_grad_norm": 1.0,
+      "value_loss_coef": 1.0,
+      "use_clipped_value_loss": true,
+      "clip_param": 0.2
+    }
+  },
+  "joint_placement_reward": {
+    "weight": 40.0,
+    "distance_scale_m": 0.75
+  },
+  "live_alignment_reward": {
+    "contact_potential_weight": 10.0,
+    "normal_distance_scale_m": 0.2,
+    "attack_progress_weight": 30.0,
+    "frame_penalty": 3.0,
+    "discount": 0.997
+  },
+  "episode_trace": {
+    "max_success_traces": 24,
+    "max_failure_traces": 6,
+    "first_episode_lanes": [
+      0,
+      8,
+      19,
+      23,
+      58,
+      107,
+      69,
+      112
+    ],
+    "max_buffer_bytes": 6000000000
+  },
+  "base_controller_mode": "frozen_public_policy",
+  "fresh_exploration_std": [
+    0.075,
+    0.075,
+    0.075,
+    0.075,
+    0.075,
+    0.075,
+    0.075,
+    0.075,
+    0.075,
+    0.075,
+    0.075,
+    0.075,
+    0.1,
+    0.1,
+    0.1,
+    0.1,
+    0.1,
+    0.1
+  ],
+  "training_scope": "Continuous 8-update run from current 21/128 actor with paired post-hit teacher residual targets; conservative guidance (lr5e-6, 4 steps/update, anchor4) to preserve successful prefixes; PPO learning rate 1e-4.",
+  "arm_target_rate_rad_s": 10.0,
+  "allow_joint_scale_transfer": true,
+  "residual_scale_limit_rad": 0.5,
+  "racket_speed_reward": {
+    "weight": 20.0,
+    "target_mps": 5.0
+  },
+  "attack_speed_threshold_mps": 5.0,
+  "landing_recovery_reward": {
+    "quality_weight_per_s": 6.0,
+    "stable_progress_weight": 20.0,
+    "tilt_scale_rad": 0.5,
+    "horizontal_speed_scale_mps": 0.6,
+    "angular_speed_scale_rad_s": 2.0,
+    "joint_speed_scale_rad_s": 4.0
+  },
+  "curriculum_trace": {
+    "minimum_speed_mps": 5.0,
+    "max_curriculum_success_traces": 256,
+    "max_recovery_only_traces": 64
+  },
+  "prehit_teacher_prior": {
+    "weight_per_s": 0.25,
+    "reference_scale_rad": 0.05
+  },
+  "ground_extent_diagnostic": {
+    "original_configured_m": [
+      4096.0,
+      4096.0,
+      0.1
+    ],
+    "requested_m": [
+      64.0,
+      64.0,
+      0.1
+    ]
+  },
+  "diagnostic_trace": {
+    "max_ball_positive_nonfoot_failure_traces": 48,
+    "max_ball_positive_other_failure_traces": 16
+  },
+  "speed_diagnostic_trace": {
+    "max_speed7_to8_failure_traces": 16,
+    "max_speed8_plus_failure_traces": 8
+  },
+  "success_priority_reward": {
+    "release_speed_saturation_mps": 5.0,
+    "independent_racket_speed_shaping_enabled": true
+  },
+  "recovery_assistance": {
+    "recovery_local_time_s": 1.3969805240631104,
+    "recovery_thigh_bias_rad": 0.2717982232570648,
+    "recovery_front_back_thigh_bias_rad": -0.045001253485679626,
+    "recovery_calf_bias_rad": -0.2705513834953308,
+    "recovery_roll_feedback_gain": -0.3994941711425781,
+    "recovery_actor_gain": 0.4000000059604645,
+    "recovery_blend_s": 0.08
+  },
+  "recovery_assistance_execution": "reset-persistent-recovery-assistance-v1",
+  "success_retention": {
+    "manifest": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/current_best_verified_retention21/manifest.json",
+    "manifest_sha256": "6163f1155318f0a7a3d4ecfcae0fe3668f57950f4a52f31f46713014c11babc7",
+    "learning_rate": 2e-05,
+    "steps_per_update": 64,
+    "batch_size": 1024,
+    "anchor_weight": 1.0,
+    "seed": 882102
+  },
+  "failure_recovery_guidance": {
+    "manifest": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/failure_recovery_guidance_teacher_retention21_01/manifest.json",
+    "manifest_sha256": "6650cc2a0f4b147feddbb826c11e04d5f7b3c60faaf1b805f9d8c83ee02405d4",
+    "learning_rate": 5e-06,
+    "steps_per_update": 4,
+    "batch_size": 1024,
+    "anchor_weight": 4.0,
+    "seed": 882118
+  }
+}
