@@ -68,6 +68,7 @@ from quadsmash.control.measured_joint_placement_reward_v4 import placement_setti
 from quadsmash.control.success_priority_alignment_reward_v1 import alignment_settings,REWARD_VERSION as ALIGNMENT_REWARD_VERSION
 from quadsmash.rl.native_ppo import NativeRunner
 from quadsmash.rl.success_retention_v1 import attach_success_retention,SCHEMA as RETENTION_SCHEMA
+from quadsmash.rl.failure_recovery_guidance_v1 import attach_failure_recovery_guidance,SCHEMA as FAILURE_GUIDANCE_SCHEMA
 from quadsmash.rl.posthit_exploration_v1 import exploration_contract, register_posthit_policy
 register_posthit_policy()
 from quadsmash.rl.prehit_teacher_prior_v1 import (
@@ -364,6 +365,11 @@ def main():
     live_alignment=alignment_settings(configuration.get('live_alignment_reward'))
     episode_trace=trace_settings(configuration.get('episode_trace'))
     retention=retention_settings(configuration.get('curriculum_trace'))
+    failure_guidance=configuration.get('failure_recovery_guidance')
+    if failure_guidance is not None:
+        required_guidance={'manifest','manifest_sha256','learning_rate','steps_per_update','batch_size','anchor_weight','seed'}
+        if not isinstance(failure_guidance,dict) or set(failure_guidance)!=required_guidance:
+            raise ValueError('Declare the complete failure recovery guidance configuration')
     diagnostic_retention=diagnostic_retention_settings(configuration.get('diagnostic_trace'))
     speed_diagnostic_retention=speed_diagnostic_retention_settings(configuration.get('speed_diagnostic_trace'))
     if episode_trace is None:
@@ -431,6 +437,8 @@ def main():
     if args.posthit_teacher_leg_only:
         posthit_teacher_assistance['leg_only']=True
     contract['posthit_teacher_assistance']=posthit_teacher_assistance
+    contract['failure_recovery_guidance']=(dict(schema=FAILURE_GUIDANCE_SCHEMA,**failure_guidance)
+        if failure_guidance is not None else None)
     if landing_cfg is not None:contract['landing_assistance']=landing_cfg
     if support_cfg is not None:contract['support_assistance']=support_cfg
     if landing_reward_cfg is not None:contract['landing_recovery_reward']=landing_reward_cfg
@@ -506,6 +514,9 @@ def main():
         else:
             retention_receipt=attach_success_retention(runner,configuration['success_retention'],contract)
             atomic_json(args.output/'success_retention_admission.json',retention_receipt)
+        if failure_guidance is not None:
+            guidance_receipt=attach_failure_recovery_guidance(runner,failure_guidance,contract)
+            atomic_json(args.output/'failure_recovery_guidance_admission.json',guidance_receipt)
         initialization=dict(mode='fresh_zero_mean_actor',num_envs=args.num_envs,initial_iteration=0)
         if mode=='frozen_public_policy':
             initialization.update(mode='fresh_zero_mean_actor_over_frozen_public_base',
@@ -678,6 +689,7 @@ def main():
                  num_envs=args.num_envs,initialization=initialization,
                  prehit_teacher_prior=contract['prehit_teacher_prior'],
                  success_retention=contract['success_retention'],
+                 failure_recovery_guidance=contract['failure_recovery_guidance'],
                  posthit_teacher_assistance=contract['posthit_teacher_assistance'],
                  ground_extent_diagnostic=copy.deepcopy(GROUND),
                  ground_source_verification_sha256=contract['ground_source_verification_sha256'],
