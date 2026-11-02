@@ -69,6 +69,10 @@ class FailureRecoveryGuidance:
         self.completed_steps = state['completed_steps']
 
     def step(self):
+        if not any(p.requires_grad for p in self.policy.actor.parameters()):
+            return dict(skipped_actor_warmup=True, completed_steps=self.completed_steps)
+        if not all(p.requires_grad for p in self.policy.actor.parameters()):
+            raise ValueError('Partially frozen actors require a separate failure-guidance contract')
         cfg = self.configuration
         count = cfg['steps_per_update'] * cfg['batch_size']
         ids = torch.randint(len(self.public), (count,), generator=self.generator)
