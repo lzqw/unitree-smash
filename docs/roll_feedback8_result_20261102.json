@@ -1,0 +1,34 @@
+{
+  "experiment": "transfer_lowppo_rollfeedback8_noretention_env5120_01",
+  "training": {
+    "updates": 8,
+    "num_envs": 5120,
+    "ppo_learning_rate": 0.0001,
+    "posthit_teacher_blend": 0.4,
+    "roll_feedback_gain": -0.8,
+    "success_retention": false,
+    "training_complete5_events": 75,
+    "numerical_failures": 0
+  },
+  "frozen_evaluation": {
+    "seed": 882072,
+    "episodes": 128,
+    "complete5": 18,
+    "airborne_contacts": 85,
+    "conditional_recovery": 24,
+    "landed_target": 61,
+    "crossed_net": 84,
+    "numerical_failures": 0,
+    "complete5_rate": 0.140625
+  },
+  "baseline": {
+    "experiment": "transfer_blend04_continuous8_lowppo_env5120_01",
+    "complete5": 21,
+    "airborne_contacts": 67,
+    "conditional_recovery": 32,
+    "landed_target": 61,
+    "complete5_rate": 0.1640625
+  },
+  "decision": "keep_current_21_of_128_baseline",
+  "note": "Training counts are changing-policy interaction statistics; frozen evaluation is the authoritative comparison."
+}
