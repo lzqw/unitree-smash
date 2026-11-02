@@ -62,6 +62,11 @@ def load_dataset(configuration, contract, device):
                 or metadata.get('landing_assistance') != contract.get('landing_assistance')):
             raise ValueError('Residual labels require the original base and action interface')
         for name, (index, *_bounds) in RECOVERY_FIELDS.items():
+            # New optional recovery switches must remain backward compatible
+            # with retention manifests created before the switch existed.
+            if (name not in contract['recovery_assistance']
+                    and name not in metadata.get('recovery_assistance', {})):
+                continue
             actual = (metadata['recovery_assistance'][name] if public_only_labels
                       else (source['effective_reference_parameters_after_execution'][index] if index is not None
                             else metadata['recovery_assistance'][name]))
