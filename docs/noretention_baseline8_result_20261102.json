@@ -1,0 +1,33 @@
+{
+  "experiment": "transfer_lowppo_noretention_baseline8_env5120_01",
+  "training": {
+    "updates": 8,
+    "num_envs": 5120,
+    "ppo_learning_rate": 0.0001,
+    "success_retention": false,
+    "training_complete5_events": 58,
+    "training_conditional_recovery": 159,
+    "numerical_failures": 0
+  },
+  "frozen_evaluation": {
+    "seed": 882072,
+    "episodes": 128,
+    "complete5": 8,
+    "airborne_contacts": 63,
+    "conditional_recovery": 11,
+    "landed_target": 57,
+    "crossed_net": 61,
+    "numerical_failures": 0,
+    "complete5_rate": 0.0625
+  },
+  "baseline": {
+    "experiment": "transfer_blend04_continuous8_lowppo_env5120_01",
+    "complete5": 21,
+    "airborne_contacts": 67,
+    "conditional_recovery": 32,
+    "landed_target": 61,
+    "complete5_rate": 0.1640625
+  },
+  "decision": "retain_success_rehearsal_and_add_failure_state_correction",
+  "note": "This is a changing-policy training count plus fixed-policy evaluation; no numerical failures occurred."
+}
