@@ -1,0 +1,37 @@
+{
+  "experiment": "transfer_lowppo_retention21_failure_guidance8_env5120_02",
+  "guidance_source": {
+    "episodes": 72,
+    "phase774_samples": 9535,
+    "target_kind": "zero_residual_base_fallback"
+  },
+  "training": {
+    "updates": 8,
+    "num_envs": 5120,
+    "ppo_learning_rate": 0.0001,
+    "training_complete5_events": 60,
+    "training_conditional_recovery": 138,
+    "numerical_failures": 0
+  },
+  "frozen_evaluation": {
+    "seed": 882072,
+    "episodes": 128,
+    "complete5": 8,
+    "airborne_contacts": 67,
+    "conditional_recovery": 12,
+    "landed_target": 56,
+    "crossed_net": 64,
+    "numerical_failures": 0,
+    "complete5_rate": 0.0625
+  },
+  "baseline": {
+    "experiment": "transfer_blend04_continuous8_lowppo_env5120_01",
+    "complete5": 21,
+    "airborne_contacts": 67,
+    "conditional_recovery": 32,
+    "landed_target": 61,
+    "complete5_rate": 0.1640625
+  },
+  "decision": "reject_zero_residual_guidance",
+  "note": "The guidance plumbing worked, but a uniform zero-residual fallback is not a valid expert correction target."
+}
