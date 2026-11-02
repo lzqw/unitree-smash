@@ -1,0 +1,28 @@
+{
+  "experiment": "transfer_lowppo_retention23_teacher_guidance_conservative8_env5120_01",
+  "training": {
+    "updates": 8,
+    "num_envs": 5120,
+    "training_complete5_events": 80,
+    "training_conditional_recovery": 167,
+    "numerical_failures": 0
+  },
+  "frozen_evaluation": {
+    "seed": 882072,
+    "episodes": 128,
+    "complete5": 16,
+    "airborne_contacts": 70,
+    "conditional_recovery": 23,
+    "landed_target": 61,
+    "crossed_net": 67,
+    "numerical_failures": 0,
+    "complete5_rate": 0.125
+  },
+  "current_best": {
+    "experiment": "transfer_lowppo_retention21_teacher_guidance_conservative8_env5120_01",
+    "complete5": 23,
+    "complete5_rate": 0.1796875
+  },
+  "decision": "reject_retention23_continuation_keep_23_of_128_best",
+  "note": "Longer shared-actor continuation caused regression despite a larger success retention set."
+}

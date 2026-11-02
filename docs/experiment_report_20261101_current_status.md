@@ -313,3 +313,11 @@ GitHub 只保留上述源码、配置和 Markdown；模型、视频、轨迹、I
 相较原最佳 21/128，完整成功增加 2 个，条件恢复增加 2 个，且两个固定 seed 复现。该策略成为当前最佳冻结策略，但仍依赖基础控制器、持久恢复辅助和选择性教师 guidance，不能称为完全独立 RL。下一步从这 23 个完整回合重建 retention 集合，继续扩大有效成功区域。
 
 紧凑结果保存在 `docs/conservative_paired_guidance_result_20261103.json`。
+
+## retention23 续训结果（2026-11-03）
+
+从已验证的 23/128 conservative paired-guidance actor 构建 retention23 后继续 8 次大规模更新，训练期记录 80 个完整 5 m/s 事件、167 次条件恢复，数值故障为 0。但固定 128 例冻结结果降为 **16/128**，空中触球 70、条件恢复 23、球侧目标 61。
+
+该结果说明即使扩大成功 retention 集合，继续让共享 actor 在完整动作链上更新仍会破坏已形成的击球—恢复组合。retention23 分支不替换当前 23/128 最佳；后续训练应从最佳权重重新初始化，并缩小更新范围或只更新经过验证的恢复模块。
+
+紧凑结果保存在 `docs/retention23_continuation_result_20261103.json`。
