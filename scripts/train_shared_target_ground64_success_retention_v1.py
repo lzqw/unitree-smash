@@ -71,6 +71,8 @@ from quadsmash.rl.success_retention_v1 import attach_success_retention,SCHEMA as
 from quadsmash.rl.failure_recovery_guidance_v1 import attach_failure_recovery_guidance,SCHEMA as FAILURE_GUIDANCE_SCHEMA
 from quadsmash.rl.posthit_exploration_v1 import exploration_contract, register_posthit_policy
 register_posthit_policy()
+from quadsmash.rl.phase_gated_recovery_v1 import register_phase_gated_recovery_policy
+register_phase_gated_recovery_policy()
 from quadsmash.rl.prehit_teacher_prior_v1 import (
     PreHitTeacherPriorAdapterMixin, settings as prior_settings, SCHEMA as PRIOR_SCHEMA)
 from scripts.diagnostic_curriculum_trace_v2 import (DiagnosticCurriculumEpisodeTraceRecorderV2 as EpisodeTraceRecorderV4,
@@ -204,8 +206,11 @@ class SharedTargetResidualAdapter(PreHitTeacherPriorAdapterMixin, ResidualRslAda
         return result
 
 def export_shared_policy(base_checkpoint,policy,joint_scale_rad,public_sample,metadata):
-    actor=torch.nn.Sequential(copy.deepcopy(policy.actor_obs_normalizer).cpu().eval(),
-                              copy.deepcopy(policy.actor).cpu().eval())
+    if hasattr(policy, 'export_deterministic_actor'):
+        actor=policy.export_deterministic_actor()
+    else:
+        actor=torch.nn.Sequential(copy.deepcopy(policy.actor_obs_normalizer).cpu().eval(),
+                                  copy.deepcopy(policy.actor).cpu().eval())
     scripted=torch.jit.script(actor)
     with torch.inference_mode():
         expected=policy.act_inference(TensorDict({'policy':public_sample},batch_size=[len(public_sample)])).cpu()
@@ -621,8 +626,17 @@ def main():
         for _ in range(args.updates):
             adapter.trace_iteration=runner.current_learning_iteration
             train_actor=runner.current_learning_iteration>=configuration['actor_warmup_updates']
-            for parameter in runner.alg.policy.actor.parameters():parameter.requires_grad_(train_actor)
-            runner.alg.policy.log_std.requires_grad_(train_actor)
+            policy=runner.alg.policy
+            if getattr(policy, 'phase_gated_recovery', False):
+                # The transferred public actor is deliberately immutable. Only
+                # the zero-initialized phase-774 recovery head is opened after
+                # the declared warmup, so recovery learning cannot rewrite the
+                # already effective preparation and hit prefix.
+                policy.set_recovery_trainable(train_actor)
+                policy.log_std.requires_grad_(False)
+            else:
+                for parameter in policy.actor.parameters():parameter.requires_grad_(train_actor)
+                policy.log_std.requires_grad_(train_actor)
             completed_update_safe=False
             try:runner.learn(1,init_at_random_ep_len=False)
             except ResidualTrainingInterrupted:

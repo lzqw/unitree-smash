@@ -329,3 +329,22 @@ GitHub 只保留上述源码、配置和 Markdown；模型、视频、轨迹、I
 这与 8 更新 retention23 续训的 16/128 一起说明：当前成功组合对共享 actor 的继续 PPO 更新非常敏感。23/128 checkpoint 必须冻结保护，下一步不再用共享 actor 续训，而是建立独立恢复模块或阶段化参数更新。
 
 紧凑结果保存在 `docs/short_continuation4_result_20261103.json`。
+
+## phase-gated recovery v2 新最佳结果（2026-11-03）
+
+为避免共享 actor 继续更新破坏击球前缀，新增独立的 phase-gated recovery head：转移的基础 actor 固定，actor normalizer 也固定，只在公开 `phase774` 观察阶段激活新恢复头；critic 统计可以继续适应。训练仍使用 5120 个并行环境、PPO `1e-4`、连续 8 次更新、success retention21 和实际 post-hit teacher residual 配对 guidance（学习率 `5e-6`、每轮 4 步、anchor `4`）。
+
+固定 128 例、5 m/s curriculum 评分：
+
+| seed | complete5 | 合格空中触球 | 条件恢复 | 球侧目标 | 数值故障 |
+|---:|---:|---:|---:|---:|---:|
+| 882072 | **25/128（19.53%）** | 73 | 39 | 61 | 0 |
+| 882075 | **25/128（19.53%）** | 73 | 39 | 61 | 0 |
+
+训练内跨回合统计为 76 个 complete5、167 次条件恢复；该统计来自变化中的训练策略，冻结评分以两次固定面板为准。相较 conservative paired guidance 的 23/128，完整成功增加 2 个、条件恢复增加 5 个。
+
+初版 phase-gated recovery 只冻结了基础 actor 参数，没有冻结 actor normalizer，冻结评分退化到 0/128；v2 的 `update_normalization()` 保持 actor normalizer 不变后恢复到 25/128。这证明阶段局部更新必须固定完整的观测—动作映射，而不能只冻结网络权重。
+
+当前 v2 仍保留基础控制器和持久恢复辅助，且恢复头训练阶段使用教师 guidance；因此它是阶段化控制辅助下的 residual policy，不是完全独立 RL。模型、视频、轨迹和大型日志不上传 GitHub。
+
+紧凑结果保存在 `docs/phase_gated_recovery_v2_result_20261103.json`；训练配置为 `configs/g07_shared_target_ground64_attack_recovery_v19_phase_gated_recovery_frozen_normalizer.json`。

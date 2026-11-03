@@ -21,6 +21,12 @@ from quadsmash.rl.action_diagnostics import post_update_diagnostics
 SCHEMA = 'complete-native-residual-success-retention-v1'
 
 
+def actor_update_parameters(policy):
+    """Return the actor parameters allowed by an optional phase-local policy."""
+    method = getattr(policy, 'actor_update_parameters', None)
+    return list(method()) if method is not None else list(policy.actor.parameters())
+
+
 def digest(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
@@ -98,7 +104,8 @@ class SuccessRetention:
         self.policy, self.public, self.targets = policy, public, targets
         self.offsets = offsets.cpu().clone()
         self.configuration = copy.deepcopy(configuration)
-        self.optimizer = torch.optim.Adam(policy.actor.parameters(), lr=configuration['learning_rate'])
+        self.update_parameters = actor_update_parameters(policy)
+        self.optimizer = torch.optim.Adam(self.update_parameters, lr=configuration['learning_rate'])
         self.generator = torch.Generator(device='cpu').manual_seed(configuration['seed'])
         self.completed_steps = 0
 
@@ -115,9 +122,9 @@ class SuccessRetention:
         self.completed_steps = state['completed_steps']
 
     def step(self):
-        if not any(p.requires_grad for p in self.policy.actor.parameters()):
+        if not any(p.requires_grad for p in self.update_parameters):
             return dict(skipped_actor_warmup=True, completed_steps=self.completed_steps)
-        if not all(p.requires_grad for p in self.policy.actor.parameters()):
+        if not all(p.requires_grad for p in self.update_parameters):
             raise ValueError('Partially frozen actors require a separate retention contract')
         cfg = self.configuration
         count = cfg['steps_per_update'] * cfg['batch_size']
@@ -143,9 +150,9 @@ class SuccessRetention:
                 raise RuntimeError('Nonfinite retention loss')
             self.optimizer.zero_grad(set_to_none=True)
             loss.backward()
-            norm = torch.nn.utils.clip_grad_norm_(self.policy.actor.parameters(), 1., error_if_nonfinite=True)
+            norm = torch.nn.utils.clip_grad_norm_(self.update_parameters, 1., error_if_nonfinite=True)
             self.optimizer.step()
-            if not all(torch.isfinite(p).all() for p in self.policy.actor.parameters()):
+            if not all(torch.isfinite(p).all() for p in self.update_parameters):
                 raise RuntimeError('Nonfinite retention actor')
             self.completed_steps += 1
             fit_values.append(float(fit.detach())); anchor_values.append(float(drift.detach()))

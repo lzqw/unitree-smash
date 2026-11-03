@@ -1,0 +1,49 @@
+{
+  "schema": "phase-gated-recovery-v2-result-v1",
+  "experiment": "phase_gated_recovery_v2_env5120_01",
+  "training": {
+    "updates": 8,
+    "num_envs": 5120,
+    "ppo_learning_rate": 0.0001,
+    "training_complete5_events": 76,
+    "training_conditional_recovery": 167,
+    "numerical_failures": 0,
+    "base_actor_frozen": true,
+    "actor_normalizer_frozen": true,
+    "recovery_head_phase": 774,
+    "paired_teacher_guidance": true,
+    "guidance_learning_rate": 5e-06,
+    "guidance_steps_per_update": 4,
+    "guidance_anchor_weight": 4.0
+  },
+  "frozen_evaluations": [
+    {
+      "seed": 882072,
+      "episodes": 128,
+      "complete5": 25,
+      "airborne_contacts": 73,
+      "conditional_recovery": 39,
+      "landed_target": 61,
+      "crossed_net": 73,
+      "numerical_failures": 0,
+      "metrics_local": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/phase_gated_recovery_v2_frozen128_01/metrics.json"
+    },
+    {
+      "seed": 882075,
+      "episodes": 128,
+      "complete5": 25,
+      "airborne_contacts": 73,
+      "conditional_recovery": 39,
+      "landed_target": 61,
+      "crossed_net": 73,
+      "numerical_failures": 0,
+      "metrics_local": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/phase_gated_recovery_v2_frozen128_seed882075_01/metrics.json"
+    }
+  ],
+  "previous_best_complete5": 23,
+  "decision": "new_best_keep",
+  "scope": "Fixed 128 TRAIN cases, 5 m/s curriculum score, controller-assisted residual policy; not formal 200-case acceptance or teacher-free full-body RL.",
+  "training_output_local": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/phase_gated_recovery_v2_env5120_01",
+  "policy_local": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/phase_gated_recovery_v2_env5120_01/policy.pt",
+  "policy_sha256": "1f6b13484df50c3d4de76fed1d7de3cd5e72530787af5bebbb891f460e87df6d"
+}

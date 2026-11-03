@@ -21,7 +21,8 @@ def positive_scale(value):
 
 
 def exploration_contract(policy_config):
-    if policy_config['class_name'] != 'PostHitExplorationActorCriticV1':
+    if policy_config['class_name'] not in ('PostHitExplorationActorCriticV1',
+                                           'PhaseGatedRecoveryActorCriticV1'):
         if 'airborne_hit_exploration_scale' in policy_config:
             raise ValueError('Select the post-hit actor explicitly instead of ignoring its multiplier')
         return recovery_contract(policy_config)
