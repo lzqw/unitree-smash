@@ -1,0 +1,51 @@
+{
+  "schema": "native-precontact-command-execution-audit-v2",
+  "source_evaluation": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/phase_gated_recovery_v2_frozen128_01",
+  "policy_sha256": "1f6b13484df50c3d4de76fed1d7de3cd5e72530787af5bebbb891f460e87df6d",
+  "trace_manifest_sha256": "93f7954731549fae1da23e22016e1dfea0143a1123c60b2d5e3951ca60ba3e22",
+  "production_controller_sha256": "777229e8f0e7eaede7fca66c8b96026a91ced16f76bd3be3f9ed2ae7126fe479",
+  "max_command_replay_error": 1.6808509826660156e-05,
+  "actual_shared_prefix_control_steps": 447,
+  "command_tolerance": 0.0005,
+  "groups": {
+    "no_racket_contact": {
+      "count": 18,
+      "median": {
+        "arm_slew_limited_component_fraction": 0.0,
+        "arm_slew_removed_abs_mean_rad": 2.097200524353582e-09,
+        "arm_slew_removed_max_rad": 1.1920928955078125e-07,
+        "arm_target_issue_error_rms_rad": 0.13477017730474472,
+        "leg_target_issue_error_rms_rad": 0.04898273013532162,
+        "proposed_approach_gate_mean": 0.8644212484359741
+      }
+    },
+    "qualified_air": {
+      "count": 73,
+      "median": {
+        "arm_slew_limited_component_fraction": 0.0,
+        "arm_slew_removed_abs_mean_rad": 1.9868215961338365e-09,
+        "arm_slew_removed_max_rad": 1.1920928955078125e-07,
+        "arm_target_issue_error_rms_rad": 0.12481777369976044,
+        "leg_target_issue_error_rms_rad": 0.05144365876913071,
+        "proposed_approach_gate_mean": 0.8563938140869141
+      }
+    },
+    "racket_contact_without_strings": {
+      "count": 37,
+      "median": {
+        "arm_slew_limited_component_fraction": 0.0,
+        "arm_slew_removed_abs_mean_rad": 1.9868215961338365e-09,
+        "arm_slew_removed_max_rad": 1.1920928955078125e-07,
+        "arm_target_issue_error_rms_rad": 0.11291059851646423,
+        "leg_target_issue_error_rms_rad": 0.04900619760155678,
+        "proposed_approach_gate_mean": 0.8365349769592285
+      }
+    }
+  },
+  "formal_acceptance": false,
+  "scope": "CPU replay of actual native command history; 100ms before actual contact or recorded closest approach. Target issue error is not a servo response measurement or proof of failure causality. The new approach gate is evaluated on old states; no new policy was physically executed.",
+  "window_any_final_arm_slew_limiting_cases": 0,
+  "window_max_final_arm_slew_removed_rad": 1.1920928955078125e-07,
+  "full_local_report": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/baseline25_precontact_execution_20261103.json",
+  "interpretation_limit": "Only the outer residual mixer slew limiter, at the measured baseline command history, in the declared 100ms windows. Does not exclude upstream reference limits, PD dynamics, or future candidate saturation."
+}
