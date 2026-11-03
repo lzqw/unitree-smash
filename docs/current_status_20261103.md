@@ -82,3 +82,7 @@ reports/G07_full_racket_v5/phase_gated_recovery_v2_env5120_01/policy.pt
 下一版 `FrozenV2ApproachActorCriticV1` 冻结 v2 的 actor、normalizer、恢复头和 log_std，仅训练新接近头。用足端接触历史及球拍—球距离连续交接，首次触球标志变化本身不会切断新头。使用重新验证的25条完整成功（20,000行、最大指令回放误差1.68e-5）保留集；移除不作用于接近模块的 phase774 failure guidance。7次 critic预热覆盖完整8秒回合，之后在同一连续16更新作业里开放新头。此修订尚无冻结成绩。
 
 代码检查：13项针对性检查通过，含非单位输出尺度、全部phase导出一致性、冻结旧恢复头及normalizer、新头零初始化、因果连续交接和条件高斯似然。99,624条实际公共观测上的完整v2初始映射及JIT导出最大误差均为0。
+
+新作业 `frozen_v2_smooth_approach16_env5120_01` 已由GPU0单一guard启动，5120环境、16更新、seed882126；原生启动时20,000行完整v2映射检查误差0，19个旧策略状态张量固定。目前正在critic预热，尚无新冻结成绩。调度器将在训练成功结束后运行128例评估，超过25/128才执行第二seed复核。运行快照见 `docs/frozen_v2_approach_run_20261103.json`。
+
+当前55个没有合格空中触球的案例细分为：18个没有球拍接触、37个有球拍接触但没有拍线触球。因此新模块同时面向拍线对准与漏球，不能把55个案例都称为完全未触球。逐例分类见 `docs/baseline25_noair_breakdown_20261103.json`。
