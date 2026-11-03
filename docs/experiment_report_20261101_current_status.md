@@ -348,3 +348,9 @@ GitHub 只保留上述源码、配置和 Markdown；模型、视频、轨迹、I
 当前 v2 仍保留基础控制器和持久恢复辅助，且恢复头训练阶段使用教师 guidance；因此它是阶段化控制辅助下的 residual policy，不是完全独立 RL。模型、视频、轨迹和大型日志不上传 GitHub。
 
 紧凑结果保存在 `docs/phase_gated_recovery_v2_result_20261103.json`；训练配置为 `configs/g07_shared_target_ground64_attack_recovery_v19_phase_gated_recovery_frozen_normalizer.json`。
+
+## phase-gated v2 低学习率续训对照（2026-11-03）
+
+从 25/128 v2 canonical checkpoint 以 PPO `5e-5` 继续 4 次更新，基础 actor 和 actor normalizer 仍冻结。固定 seed `882072` 得到 **25/128 complete5、air73、条件恢复36、目标61、数值故障0**，没有超过 v2 的 25/128，且条件恢复从 39 降到 36；该候选不替换当前最佳。
+
+紧凑结果保存在 `docs/phase_gated_recovery_v2_continuation4_result_20261103.json`。
