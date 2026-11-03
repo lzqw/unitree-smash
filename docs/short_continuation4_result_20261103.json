@@ -1,0 +1,25 @@
+{
+  "experiment": "transfer_lowppo_best23_teacher_guidance4_env5120_01",
+  "training": {
+    "updates": 4,
+    "num_envs": 5120,
+    "numerical_failures": 0
+  },
+  "frozen_evaluation": {
+    "seed": 882072,
+    "episodes": 128,
+    "complete5": 9,
+    "airborne_contacts": 64,
+    "conditional_recovery": 14,
+    "landed_target": 58,
+    "crossed_net": 61,
+    "numerical_failures": 0,
+    "complete5_rate": 0.0703125
+  },
+  "baseline": {
+    "experiment": "transfer_lowppo_retention21_teacher_guidance_conservative8_env5120_01",
+    "complete5": 23,
+    "complete5_rate": 0.1796875
+  },
+  "decision": "freeze_23_of_128_and_stop_shared_actor_continuation"
+}
