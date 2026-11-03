@@ -131,15 +131,36 @@ def select_exported_actor_state(state, target_contract, current_model):
         raise ValueError('Residual export joint scale differs from target contract')
     module = torch.jit.load(io.BytesIO(state['residual_actor_jit']), map_location='cpu').eval()
     source = module.state_dict()
-    mapping = {
-        '0._mean': 'actor_obs_normalizer._mean',
-        '0._var': 'actor_obs_normalizer._var',
-        '0._std': 'actor_obs_normalizer._std',
-        '0.count': 'actor_obs_normalizer.count',
-    }
-    for index in (0, 2, 4, 6):
-        mapping[f'1.{index}.weight'] = f'actor.{index}.weight'
-        mapping[f'1.{index}.bias'] = f'actor.{index}.bias'
+    if 'normalizer._mean' in source:
+        # Phase-gated exports use named submodules (normalizer/base/head),
+        # unlike the historical Sequential(normalizer, actor) export.
+        mapping = {
+            'normalizer._mean': 'actor_obs_normalizer._mean',
+            'normalizer._var': 'actor_obs_normalizer._var',
+            'normalizer._std': 'actor_obs_normalizer._std',
+            'normalizer.count': 'actor_obs_normalizer.count',
+        }
+        for index in (0, 2, 4, 6):
+            mapping[f'base.{index}.weight'] = f'actor.{index}.weight'
+            mapping[f'base.{index}.bias'] = f'actor.{index}.bias'
+        # Preserve an already learned recovery head when a new pre-hit head
+        # is added to the target policy.
+        for source_prefix,target_prefix in [('head.','recovery_head.'),
+                                             ('recovery.','recovery_head.'),
+                                             ('approach.','approach_head.')]:
+            for key in source:
+                if key.startswith(source_prefix):
+                    mapping[key]=target_prefix+key[len(source_prefix):]
+    else:
+        mapping = {
+            '0._mean': 'actor_obs_normalizer._mean',
+            '0._var': 'actor_obs_normalizer._var',
+            '0._std': 'actor_obs_normalizer._std',
+            '0.count': 'actor_obs_normalizer.count',
+        }
+        for index in (0, 2, 4, 6):
+            mapping[f'1.{index}.weight'] = f'actor.{index}.weight'
+            mapping[f'1.{index}.bias'] = f'actor.{index}.bias'
     transferred = {}
     for source_key, target_key in mapping.items():
         if source_key not in source or target_key not in current_model:
@@ -161,6 +182,16 @@ def initialize_actor(runner, path):
     state = torch.load(io.BytesIO(data), map_location='cpu', weights_only=False)
     model = runner.alg.policy.state_dict()
     if state.get('schema') == RESIDUAL_EXPORT_SCHEMA:
+        if getattr(runner.alg.policy, 'freeze_verified_policy', False):
+            metadata=state.get('residual_training_metadata', {})
+            contract=runner.original_training_config['residual_contract']
+            for key in ('recovery_assistance','recovery_assistance_execution',
+                        'landing_assistance','support_assistance'):
+                if metadata.get(key) != contract.get(key):
+                    raise ValueError('Frozen v2 initialization changes execution: '+key)
+            module=torch.jit.load(io.BytesIO(state['residual_actor_jit']),map_location='cpu')
+            if not any(k.startswith('head.') for k in module.state_dict()):
+                raise ValueError('Frozen v2 initialization requires the verified recovery head')
         transferred = select_exported_actor_state(state,
             runner.original_training_config['residual_contract'], model)
         mode = 'fresh_learner_with_transferred_exported_residual_actor'

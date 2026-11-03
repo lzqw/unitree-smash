@@ -71,8 +71,12 @@ from quadsmash.rl.success_retention_v1 import attach_success_retention,SCHEMA as
 from quadsmash.rl.failure_recovery_guidance_v1 import attach_failure_recovery_guidance,SCHEMA as FAILURE_GUIDANCE_SCHEMA
 from quadsmash.rl.posthit_exploration_v1 import exploration_contract, register_posthit_policy
 register_posthit_policy()
-from quadsmash.rl.phase_gated_recovery_v1 import register_phase_gated_recovery_policy
+from quadsmash.rl.phase_gated_recovery_v1 import (
+    register_phase_gated_recovery_policy, register_phase_gated_approach_recovery_policy)
 register_phase_gated_recovery_policy()
+register_phase_gated_approach_recovery_policy()
+from quadsmash.rl.frozen_v2_approach_v1 import register_frozen_v2_approach_policy
+register_frozen_v2_approach_policy()
 from quadsmash.rl.prehit_teacher_prior_v1 import (
     PreHitTeacherPriorAdapterMixin, settings as prior_settings, SCHEMA as PRIOR_SCHEMA)
 from scripts.diagnostic_curriculum_trace_v2 import (DiagnosticCurriculumEpisodeTraceRecorderV2 as EpisodeTraceRecorderV4,
@@ -212,6 +216,12 @@ def export_shared_policy(base_checkpoint,policy,joint_scale_rad,public_sample,me
         actor=torch.nn.Sequential(copy.deepcopy(policy.actor_obs_normalizer).cpu().eval(),
                                   copy.deepcopy(policy.actor).cpu().eval())
     scripted=torch.jit.script(actor)
+    # Exercise every raw phase even if the final rollout sample happens to
+    # contain only standing lanes. A hard-coded export gate must be detected
+    # before spending another native evaluation on a different policy.
+    phase_probe=public_sample.repeat(5,1)
+    phase_probe[:,770:775]=torch.eye(5,device=public_sample.device).repeat_interleave(len(public_sample),dim=0)
+    public_sample=torch.cat((public_sample,phase_probe),dim=0)
     with torch.inference_mode():
         expected=policy.act_inference(TensorDict({'policy':public_sample},batch_size=[len(public_sample)])).cpu()
         actual=scripted.to(public_sample.device)(public_sample).cpu()
@@ -444,6 +454,8 @@ def main():
     contract['posthit_teacher_assistance']=posthit_teacher_assistance
     contract['failure_recovery_guidance']=(dict(schema=FAILURE_GUIDANCE_SCHEMA,**failure_guidance)
         if failure_guidance is not None else None)
+    if configuration.get('phase_gated_recovery') is not None:
+        contract['phase_local_policy'] = copy.deepcopy(configuration['phase_gated_recovery'])
     if landing_cfg is not None:contract['landing_assistance']=landing_cfg
     if support_cfg is not None:contract['support_assistance']=support_cfg
     if landing_reward_cfg is not None:contract['landing_recovery_reward']=landing_reward_cfg
@@ -563,6 +575,25 @@ def main():
             from quadsmash.rl.posthit_exploration_v1 import initialize_shared_target_actor
             initialization.update(initialize_shared_target_actor(runner.alg.policy,configuration))
             if runner.alg.optimizer.state:raise ValueError('Fresh zero actor must keep empty Adam state')
+        if getattr(runner.alg.policy, 'freeze_verified_policy', False):
+            policy=runner.alg.policy
+            frozen_receipt=policy.capture_frozen_reference()
+            if args.initialize_actor is not None:
+                source=torch.load(args.initialize_actor,map_location='cpu',weights_only=False)
+                old=torch.jit.load(io.BytesIO(source['residual_actor_jit']),map_location=env.device).eval()
+                sample=runner.success_retention.public
+                error=0.0
+                with torch.no_grad():
+                    for start in range(0,len(sample),2048):
+                        public=sample[start:start+2048]
+                        obs=TensorDict({'policy':public},batch_size=[len(public)])
+                        error=max(error,float((policy.act_inference(obs)-old(public)).abs().max()))
+                if error > 2e-5:
+                    raise ValueError('New head changed the complete initial v2 policy: '+str(error))
+                frozen_receipt.update(initial_source_policy_sha256=digest(args.initialize_actor),
+                    initial_mapping_max_error=error,initial_mapping_probe_rows=len(sample),
+                    full_v2_mapping_checked=True)
+            atomic_json(args.output/'frozen_policy_admission.json',frozen_receipt)
         if not args.resume:
             atomic_torch(args.output/'fresh_initial_model_state.pt',dict(
                 model_state_dict={name:value.detach().cpu().clone() for name,value in runner.alg.policy.state_dict().items()},
@@ -628,10 +659,9 @@ def main():
             train_actor=runner.current_learning_iteration>=configuration['actor_warmup_updates']
             policy=runner.alg.policy
             if getattr(policy, 'phase_gated_recovery', False):
-                # The transferred public actor is deliberately immutable. Only
-                # the zero-initialized phase-774 recovery head is opened after
-                # the declared warmup, so recovery learning cannot rewrite the
-                # already effective preparation and hit prefix.
+                # The policy selects the explicitly trainable phase-local
+                # module. FrozenV2Approach keeps both old actor and recovery
+                # head frozen; the legacy recovery branch opens its own head.
                 policy.set_recovery_trainable(train_actor)
                 policy.log_std.requires_grad_(False)
             else:
@@ -648,6 +678,8 @@ def main():
                 losses=runner.alg.last_update_stats,formal_acceptance=False,
                 prehit_teacher_prior=adapter.prehit_prior_diagnostics(clear=True),
                 ground_contact_screen=ground_monitor.diagnostics())
+            if getattr(policy, 'freeze_verified_policy', False):
+                entry['frozen_policy_invariant']=policy.assert_frozen_reference()
             if env.live_alignment_reward is not None:
                 entry['actual_paid_alignment_rewards']=env.live_alignment_reward.statistics()
             if env.landing_recovery_reward is not None:
@@ -704,6 +736,8 @@ def main():
                  prehit_teacher_prior=contract['prehit_teacher_prior'],
                  success_retention=contract['success_retention'],
                  failure_recovery_guidance=contract['failure_recovery_guidance'],
+                 **({'phase_local_policy':contract['phase_local_policy']}
+                    if 'phase_local_policy' in contract else {}),
                  posthit_teacher_assistance=contract['posthit_teacher_assistance'],
                  ground_extent_diagnostic=copy.deepcopy(GROUND),
                  ground_source_verification_sha256=contract['ground_source_verification_sha256'],

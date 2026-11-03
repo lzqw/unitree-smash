@@ -28,7 +28,7 @@ reports/G07_full_racket_v5/phase_gated_recovery_v2_env5120_01/policy.pt
 ## 已验证的路线判断
 
 1. **实际配对教师目标有效。** 用统一 zero residual 监督失败状态会退化到 8/128；改为与学生动作坐标一致的真实 post-hit teacher residual 后达到 19/128；进一步降低 guidance 步幅并提高 anchor 后达到 23/128。
-2. **阶段化恢复头在冻结 actor normalizer 后继续提升。** 初版只冻结网络权重但让 actor normalizer 随 rollout 更新，冻结结果退化到 0/128；冻结 normalizer 后，同一阶段头路线达到 25/128，说明观测—动作映射的固定是阶段局部学习的必要条件。
+2. **阶段化恢复头在冻结 actor normalizer 后继续提升。** 初版只冻结网络权重、继续更新 actor normalizer，其实际 complete5 为 18/128；冻结 normalizer 的 v2 为 25/128。此前把初版旧 complete8=0 写成 complete5=0 属于指标误读，现已从原 episodes.json 重算更正。冻结 normalizer 保证基础动作映射固定，成绩差异仍来自不同训练运行。
 3. **共享 actor 继续长周期 PPO 会破坏已有组合。** 从 23/128 策略继续 8 次更新降到 16/128，仅 4 次短续训也降到 9/128。因此当前 25/128 checkpoint 必须冻结保护。
 4. **仅扩大 success retention 不足以解决退化。** retention21 续训为 18/128，retention23 续训为 16/128；成功回放需要和更新范围控制、阶段化恢复学习分开设计。
 5. **恢复仍是主要可修复瓶颈，但不是唯一瓶颈。** 当前已有不少合格触球后未完成恢复；同时仍有大量回合没有合格空中触球。只修复落地不能直接把成功率推到高水平。
@@ -74,3 +74,11 @@ reports/G07_full_racket_v5/phase_gated_recovery_v2_env5120_01/policy.pt
 - `docs/experiment_report_20261101_current_status.md`：完整实验历史、失败对照与路线审查。
 
 模型权重、视频、轨迹和大型运行日志继续保留在本地，不上传 GitHub。
+
+## 完整 v2 基底上的接近学习修订
+
+逐案例审计确认 v2 保留了此前全部 23 个完整成功，新增 TRAIN23、TRAIN61，未丢失旧完整成功。首个同时训练接近头和恢复头的候选只有 17/128：旧 25 个成功保留11、丢失14、新增6；原55个未触球案例新增11次合格触球，其中仅2个完整成功。该候选不是“恢复头冻结”的对照，不替换 v2。
+
+下一版 `FrozenV2ApproachActorCriticV1` 冻结 v2 的 actor、normalizer、恢复头和 log_std，仅训练新接近头。用足端接触历史及球拍—球距离连续交接，首次触球标志变化本身不会切断新头。使用重新验证的25条完整成功（20,000行、最大指令回放误差1.68e-5）保留集；移除不作用于接近模块的 phase774 failure guidance。7次 critic预热覆盖完整8秒回合，之后在同一连续16更新作业里开放新头。此修订尚无冻结成绩。
+
+代码检查：13项针对性检查通过，含非单位输出尺度、全部phase导出一致性、冻结旧恢复头及normalizer、新头零初始化、因果连续交接和条件高斯似然。99,624条实际公共观测上的完整v2初始映射及JIT导出最大误差均为0。

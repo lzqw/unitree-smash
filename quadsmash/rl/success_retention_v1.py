@@ -108,6 +108,19 @@ class SuccessRetention:
         self.optimizer = torch.optim.Adam(self.update_parameters, lr=configuration['learning_rate'])
         self.generator = torch.Generator(device='cpu').manual_seed(configuration['seed'])
         self.completed_steps = 0
+        weighting = getattr(policy, 'retention_sampling_weights', None)
+        self.stage_cdf = None
+        if weighting is not None:
+            with torch.no_grad():
+                weights = weighting(public).detach().float().cpu()
+            if weights.shape != (len(public),) or not torch.isfinite(weights).all() or (weights < 0).any():
+                raise ValueError('Invalid phase-local retention sampling weights')
+            self.stage_cdf = []
+            for start, end in zip(self.offsets[:-1], self.offsets[1:]):
+                local = weights[int(start):int(end)].clone()
+                if float(local.sum()) == 0.:
+                    local.fill_(1.)
+                self.stage_cdf.append((local / local.sum()).cumsum(0))
 
     def state_dict(self):
         return dict(schema=SCHEMA, configuration=self.configuration,
@@ -130,7 +143,14 @@ class SuccessRetention:
         count = cfg['steps_per_update'] * cfg['batch_size']
         episode = torch.randint(len(self.offsets)-1, (count,), generator=self.generator)
         lengths = self.offsets[episode+1]-self.offsets[episode]
-        within = (torch.rand(count, generator=self.generator)*lengths).long()
+        uniform = torch.rand(count, generator=self.generator)
+        if self.stage_cdf is None:
+            within = (uniform*lengths).long()
+        else:
+            within = torch.empty(count, dtype=torch.int64)
+            for index, cdf in enumerate(self.stage_cdf):
+                mask = episode == index
+                within[mask] = torch.searchsorted(cdf, uniform[mask], right=True).clamp_max(len(cdf)-1)
         ids = (self.offsets[episode]+within).to(self.public.device)
         observations = self.public[ids]
         targets = self.targets[ids]
@@ -162,6 +182,7 @@ class SuccessRetention:
             after = float((final-targets).square().mean())
         return dict(skipped_actor_warmup=False, completed_steps=self.completed_steps,
                     sampled_rows=count, episode_balanced_sampling=True,
+                    stage_weighted_sampling=self.stage_cdf is not None,
                     mse_before=before, mse_after=after,
                     mean_fit_loss=sum(fit_values)/len(fit_values),
                     mean_anchor_loss=sum(anchor_values)/len(anchor_values),

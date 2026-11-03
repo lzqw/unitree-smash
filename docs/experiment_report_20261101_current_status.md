@@ -343,7 +343,7 @@ GitHub 只保留上述源码、配置和 Markdown；模型、视频、轨迹、I
 
 训练内跨回合统计为 76 个 complete5、167 次条件恢复；该统计来自变化中的训练策略，冻结评分以两次固定面板为准。相较 conservative paired guidance 的 23/128，完整成功增加 2 个、条件恢复增加 5 个。
 
-初版 phase-gated recovery 只冻结了基础 actor 参数，没有冻结 actor normalizer，冻结评分退化到 0/128；v2 的 `update_normalization()` 保持 actor normalizer 不变后恢复到 25/128。这证明阶段局部更新必须固定完整的观测—动作映射，而不能只冻结网络权重。
+初版 phase-gated recovery 只冻结了基础 actor 参数，没有冻结 actor normalizer。更正：其完整5 m/s评分为 **18/128**、空中触球67、条件恢复28；此前误读旧8 m/s complete=0而记为0/128。v2 的 `update_normalization()` 保持 actor normalizer 不变后得到25/128。冻结完整观测—动作映射的机制已检查；两次不同训练运行的成绩差异不能单独归因于normalizer。
 
 当前 v2 仍保留基础控制器和持久恢复辅助，且恢复头训练阶段使用教师 guidance；因此它是阶段化控制辅助下的 residual policy，不是完全独立 RL。模型、视频、轨迹和大型日志不上传 GitHub。
 
@@ -354,3 +354,15 @@ GitHub 只保留上述源码、配置和 Markdown；模型、视频、轨迹、I
 从 25/128 v2 canonical checkpoint 以 PPO `5e-5` 继续 4 次更新，基础 actor 和 actor normalizer 仍冻结。固定 seed `882072` 得到 **25/128 complete5、air73、条件恢复36、目标61、数值故障0**，没有超过 v2 的 25/128，且条件恢复从 39 降到 36；该候选不替换当前最佳。
 
 紧凑结果保存在 `docs/phase_gated_recovery_v2_continuation4_result_20261103.json`。
+
+## 接近与恢复双头诊断及下一版修订（2026-11-03）
+
+首个双头候选5120环境、8更新完成，complete5冻结结果17/128、合格空中触球74、条件恢复35、目标记录63、数值故障0。逐案例对原25/128基线保留11、丢失14、新增6；原55个未触球案例新增11次合格触球，其中5次球侧全部合格、7次条件恢复、2次完整成功。两个头当时都在更新，因此这不是完整v2冻结基底的试验，不能把退化归因于单独一个阶段或尺度。
+
+后续phase772/尺度0.2诊断作业完成8更新并保存checkpoint，但导出失败，没有冻结评分，未选为最佳。导出器存在阶段范围写死和非单位恢复尺度遗漏，已修正，并增加覆盖所有phase/非单位尺度的检查；运行中的旧源码与新源码发生冲突也会使TorchScript解析失败，下一轮先固定代码再由guard串行启动。
+
+新的 `FrozenV2ApproachActorCriticV1` 保留整个v2的已学映射，只开放新接近头。脚本每轮验证旧actor、normalizer、恢复头、log_std共19个状态张量逐位不变。新头按足接触历史和球拍—球分离距离连续交接，PPO采样方差使用相同因果gate并保留正的数值floor；保留完整任务回报。success-retention更新为经过全指令回放验证的25条当前最佳成功，按新头实际gate在每条回合内加权采样。旧phase774失败guidance不再用于监督新接近头。
+
+新路线配置为 `configs/g07_shared_target_ground64_attack_recovery_v22_frozen_v2_smooth_approach.json`，连续16更新，前7更新仅critic预热。13项针对性检查通过；99,624条真实观测上的完整v2初始映射/JIT误差均为0。尚无新路线冻结成绩，25/128仍为当前最佳。
+
+紧凑证据：`docs/recovery_v2_case_retention_20261103.json`、`docs/approach_jointheads_paired_audit_20261103.json`、`docs/frozen_v2_approach_preflight_20261103.json`。全量落地前状态审计保留本地。

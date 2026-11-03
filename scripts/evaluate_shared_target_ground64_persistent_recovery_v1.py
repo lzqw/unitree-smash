@@ -375,6 +375,12 @@ def main():
                      source_training_index=indices[i]) for i in range(count)]
         protocol['_root'] = str(ROOT)
         summary = summarize_training(rows, cases, indices, protocol)
+        if checkpoint.get('residual_training_metadata',{}).get('attack_speed_threshold_mps') == 5.0:
+            from scripts.compare_frozen_complete5_v2 import complete5_summary
+            primary=complete5_summary(rows,protocol)
+            summary.update(complete5=primary['complete5'],complete5_success_rate=primary['complete5_rate'],
+                primary_metric='complete5',primary_speed_threshold_mps=5.0,
+                complete5_case_outcomes=primary['stages'],legacy_complete_field_speed_threshold_mps=8.0)
         if fixed_trace is not None:
             from quadsmash.evaluation_v4 import independent_episode
             summary['fixed_policy_recording']=fixed_trace.save(rows,[independent_episode(row,protocol) for row in rows])
