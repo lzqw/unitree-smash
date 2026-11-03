@@ -125,6 +125,48 @@ class FrozenV2ApproachActorCriticV1(PhaseGatedApproachRecoveryActorCriticV1):
             self.recovery_head_output_scale, self.approach_head_output_scale)
 
 
+class FrozenApproachRecoveryRepairActorCriticV1(FrozenV2ApproachActorCriticV1):
+    """Freeze a measured approach policy and train only its recovery head."""
+
+    phase_gated_recovery = True
+    freeze_verified_policy = True
+
+    def recovery_actor_parameters(self):
+        return list(self.recovery_head.parameters())
+
+    def set_recovery_trainable(self, enabled):
+        for module in (self.actor, self.actor_obs_normalizer, self.approach_head):
+            for parameter in module.parameters():
+                parameter.requires_grad_(False)
+        self.log_std.requires_grad_(False)
+        for parameter in self.recovery_head.parameters():
+            parameter.requires_grad_(bool(enabled))
+
+    def _std_for_raw_actor_obs(self, raw):
+        recovery = (raw[:, 774:775] > .5).to(raw.dtype)
+        base = self.log_std.exp() if self.noise_std_type == 'log' else self.std
+        return base.expand(len(raw), -1) * recovery + .0001
+
+    def _frozen_state(self):
+        return {k: v for k, v in self.state_dict().items()
+                if k == 'log_std' or k.startswith(('actor.', 'actor_obs_normalizer.', 'approach_head.'))}
+
+    def assert_frozen_reference(self):
+        if self._frozen_reference is None:
+            raise RuntimeError('Capture the transferred approach policy before learning')
+        current = self._frozen_state()
+        changed = [k for k, v in self._frozen_reference.items() if not torch.equal(current[k], v)]
+        if changed:
+            raise RuntimeError('Verified frozen approach policy changed: ' + ', '.join(changed))
+        return dict(frozen_tensors=len(current), frozen_actor_and_normalizer=True,
+                    frozen_approach_head=True, frozen_log_std=True,
+                    all_bitwise_unchanged=True, trainable_module='recovery_head')
+
+    def retention_sampling_weights(self, raw):
+        return (raw[:, 774:775] > .5).to(raw.dtype).squeeze(-1)
+
+
 def register_frozen_v2_approach_policy():
     import rsl_rl.runners.on_policy_runner as runner_module
     runner_module.FrozenV2ApproachActorCriticV1 = FrozenV2ApproachActorCriticV1
+    runner_module.FrozenApproachRecoveryRepairActorCriticV1 = FrozenApproachRecoveryRepairActorCriticV1

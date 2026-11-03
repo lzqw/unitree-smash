@@ -50,7 +50,8 @@ def load_dataset(configuration, contract, device):
     if digest(path) != configuration['manifest_sha256']:
         raise ValueError('Retention manifest changed')
     manifest = json.loads(path.read_text())
-    if (manifest.get('schema') != 'verified-fixed-success-residual-retention-v1'
+    if (manifest.get('schema') not in ('verified-fixed-success-residual-retention-v1',
+                                       'verified-recovery-repair-residual-retention-v1')
             or manifest.get('target_interface') != 'raw-residual18-before-mixer'
             or manifest.get('minimum_speed_mps') != contract['attack_speed_threshold_mps']
             or manifest.get('protocol_sha256') != contract['protocol_sha256']
@@ -92,7 +93,7 @@ def load_dataset(configuration, contract, device):
         raise ValueError('Invalid complete-episode retention arrays')
     if any(e['samples'] != offsets[i+1]-offsets[i] for i,e in enumerate(manifest['episodes'])):
         raise ValueError('Retention episode boundaries are invalid')
-    if (not public_only_labels and any(e['max_command_error'] > manifest['cpu_gpu_command_tolerance']
+    if (not public_only_labels and any(e.get('max_command_error', 0.) > manifest['cpu_gpu_command_tolerance']
            for e in manifest['episodes'])):
         raise ValueError('Retention episodes lack verified command replay')
     return (torch.from_numpy(public).to(device), torch.from_numpy(targets).to(device),

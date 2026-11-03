@@ -24,7 +24,8 @@ def exploration_contract(policy_config):
     if policy_config['class_name'] not in ('PostHitExplorationActorCriticV1',
                                            'PhaseGatedRecoveryActorCriticV1',
                                            'PhaseGatedApproachRecoveryActorCriticV1',
-                                           'FrozenV2ApproachActorCriticV1'):
+                                           'FrozenV2ApproachActorCriticV1',
+                                           'FrozenApproachRecoveryRepairActorCriticV1'):
         if 'airborne_hit_exploration_scale' in policy_config:
             raise ValueError('Select the post-hit actor explicitly instead of ignoring its multiplier')
         return recovery_contract(policy_config)
@@ -35,7 +36,8 @@ def exploration_contract(policy_config):
     contract.update(version='public-observed-hit-and-recovery-gaussian-v1',
         raw_public_airborne_hit_phase_index=773, airborne_hit_std_multiplier=scale,
         event_is_observed_contact_not_qualified_success=True, hidden_phase_state=False)
-    if policy_config['class_name'] == 'FrozenV2ApproachActorCriticV1':
+    if policy_config['class_name'] in ('FrozenV2ApproachActorCriticV1',
+                                       'FrozenApproachRecoveryRepairActorCriticV1'):
         contract.update(version='public-aerial-proximity-gaussian-v1',
             std_formula='posthit_conditional_std * current_public_proximity_gate + noise_floor',
             noise_floor_std=positive_scale(policy_config.get('approach_noise_floor_std',.0001)),

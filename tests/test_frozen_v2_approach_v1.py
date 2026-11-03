@@ -6,7 +6,9 @@ from tensordict import TensorDict
 from quadsmash.rl.phase_gated_recovery_v1 import (
     PhaseGatedRecoveryActorCriticV1, PhaseGatedApproachRecoveryActorCriticV1,
 )
-from quadsmash.rl.frozen_v2_approach_v1 import FrozenV2ApproachActorCriticV1, PublicAerialProximityGate
+from quadsmash.rl.frozen_v2_approach_v1 import (
+    FrozenV2ApproachActorCriticV1, FrozenApproachRecoveryRepairActorCriticV1,
+    PublicAerialProximityGate)
 
 
 def observations(count=30):
@@ -32,6 +34,7 @@ def make(kind, **overrides):
     (PhaseGatedApproachRecoveryActorCriticV1,dict(approach_phase_start_index=772,
         approach_phase_end_index=773,approach_head_output_scale=.2)),
     (FrozenV2ApproachActorCriticV1,dict(approach_head_output_scale=.2)),
+    (FrozenApproachRecoveryRepairActorCriticV1,dict(approach_head_output_scale=.2)),
 ])
 def test_nonzero_nonunit_heads_export_every_phase(kind,extra):
     p=make(kind,**extra)
@@ -125,3 +128,18 @@ def test_gaussian_likelihood_and_sampling_use_the_same_local_variance():
     torch.testing.assert_close(expected[:10],torch.full_like(expected[:10],.0001))
     assert (expected[10:]>.0001).all()
     assert torch.isfinite(p.get_actions_log_prob(action)).all()
+
+
+def test_recovery_repair_freezes_candidate_approach_and_opens_recovery_only():
+    p=make(FrozenApproachRecoveryRepairActorCriticV1)
+    p.capture_frozen_reference();p.set_recovery_trainable(True)
+    assert all(v.requires_grad for v in p.recovery_head.parameters())
+    assert not any(v.requires_grad for v in p.approach_head.parameters())
+    assert not any(v.requires_grad for v in p.actor.parameters())
+    raw=observations()['policy'];raw[:,770:775]=0.;raw[10:,774]=1.
+    obs=TensorDict({'policy':raw},batch_size=[len(raw)])
+    expected=p.action_std_for_observations(obs)
+    assert (expected[:10] == .0001).all()
+    assert (expected[10:] > .0001).all()
+    with torch.no_grad():p.recovery_head[-1].bias.fill_(.3)
+    assert p.assert_frozen_reference()['frozen_approach_head']

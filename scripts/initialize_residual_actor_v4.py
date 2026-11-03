@@ -190,8 +190,8 @@ def initialize_actor(runner, path):
                 if metadata.get(key) != contract.get(key):
                     raise ValueError('Frozen v2 initialization changes execution: '+key)
             module=torch.jit.load(io.BytesIO(state['residual_actor_jit']),map_location='cpu')
-            if not any(k.startswith('head.') for k in module.state_dict()):
-                raise ValueError('Frozen v2 initialization requires the verified recovery head')
+            if not any(k.startswith(prefix) for prefix in ('head.', 'recovery.') for k in module.state_dict()):
+                raise ValueError('Frozen phase-local initialization requires the verified recovery head')
         transferred = select_exported_actor_state(state,
             runner.original_training_config['residual_contract'], model)
         mode = 'fresh_learner_with_transferred_exported_residual_actor'
