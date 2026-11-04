@@ -1,0 +1,66 @@
+{
+  "schema": "offline-case-expert-distillation-native-evaluation-v1",
+  "observed_at": "2026-11-04",
+  "source_commit": "8a8d69e8ac791e502dfd4625d2bb39b0174fa963",
+  "candidate": {
+    "policy": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_env5120_01/policy.pt",
+    "complete5": 27,
+    "airborne_contacts": 74,
+    "conditional_recovery_count": 34,
+    "actual_racket_contacts": 110,
+    "crossed_net": 71,
+    "landed_target": 64,
+    "numerical_failures": 0
+  },
+  "distillation": {
+    "script": "scripts/distill_case_expert_selector_v1.py",
+    "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/offline_case_expert_distillation_03",
+    "policy_sha256": "8a9f97c34061732e36f55e1fbe6a88357fa98fdabfd5712e6d7d72daf10545c1",
+    "result_sha256": "013d4e963c43ac6f4dfdb47fe9b7be7410d70c1b1dc159a4f9376664bc8746de",
+    "updates": 1800,
+    "train_samples": 96562,
+    "validation_samples": 96562,
+    "final_train_rmse": 0.0007687944453209639,
+    "final_validation_rmse": 0.0007687944453209639,
+    "final_validation_p95": 0.0015994958812370896,
+    "native_execution_at_export": false
+  },
+  "native_fixed_panel": [
+    {
+      "seed": 882072,
+      "metrics": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/offline_case_expert_distillation_eval882072_02/metrics.json",
+      "metrics_sha256": "719b75d7005e8c72f95300383be65f6d3fff1a3d1ead2b7d3b8fc1120dda35c2",
+      "complete5": 21,
+      "airborne_contacts": 74,
+      "conditional_recovery_count": 32,
+      "actual_racket_contacts": 106,
+      "crossed_net": 74,
+      "landed_target": 65,
+      "numerical_failures": 0
+    },
+    {
+      "seed": 882075,
+      "metrics": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/offline_case_expert_distillation_eval882075_01/metrics.json",
+      "metrics_sha256": "925a23df1e0562b50c11957a1744483f30b91f051d007fc541d6c6fd6faed489",
+      "complete5": 21,
+      "airborne_contacts": 74,
+      "conditional_recovery_count": 32,
+      "actual_racket_contacts": 106,
+      "crossed_net": 74,
+      "landed_target": 65,
+      "numerical_failures": 0
+    }
+  ],
+  "comparison": {
+    "frozen_candidate_complete5": "27/128",
+    "expert_bank_controller_trial_complete5": "28/128 on both fixed seeds",
+    "distilled_policy_complete5": "21/128 on both fixed seeds",
+    "candidate_successes_retained_by_distilled_seed882072": 16,
+    "candidate_successes_lost_by_distilled_seed882072": 11,
+    "new_distilled_successes_seed882072": 5,
+    "decision": "reject_as_best_policy",
+    "reason": "Low offline action regression error did not preserve closed-loop contact and recovery behavior. The causal expert bank remains a controller trial; its memory-dependent routing is not represented by the stateless head."
+  },
+  "scope": "Fixed TRAIN128 native Isaac evaluation with persistent recovery/base controller retained; not formal acceptance, not pure standalone RL, and not a generalization result.",
+  "next_step": "Do not promote this distilled checkpoint. Preserve the 27/128 frozen policy and 28/128 causal expert-bank controller result; pursue memory-aware/online corrective learning rather than more stateless action-MSE distillation."
+}
