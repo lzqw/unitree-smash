@@ -9,6 +9,7 @@ import argparse, hashlib, json
 from pathlib import Path
 import sys
 import numpy as np
+import torch
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
@@ -25,6 +26,9 @@ def main():
  for source in candidates:
   policy=Path(source['policy'])
   if not policy.exists() or sha(policy)!=source['policy_sha256']: continue
+  payload=torch.load(policy,map_location='cpu',weights_only=False)
+  if payload.get('schema')!='g07-shared-target-residual-ppo-v1' or not payload.get('native_execution'):
+   continue
   for case in source['complete_ids']:
    by_case.setdefault(int(case),source)
  # Read the real first-episode trace used by the current 27/128 candidate.

@@ -1,0 +1,42 @@
+{
+  "schema": "case-expert-selector-result-v1",
+  "observed_at": "2026-11-04T05:19:08.426135+00:00",
+  "baseline_complete5": 27,
+  "baseline_air": 74,
+  "baseline_recovery": 34,
+  "selector_manifest": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/case_expert_selector_manifest_20261104_v2.json",
+  "selector_manifest_sha256": "ed16fdf5408ccf381f4e5c3125dbfd4dcf59695ef63b396499d049b891fe1680",
+  "results": [
+    {
+      "seed": 882072,
+      "complete5": 28,
+      "complete5_rate": 0.21875,
+      "air": 76,
+      "air_rate": 0.59375,
+      "recovery": 38,
+      "recovery_rate": 0.5,
+      "crossed_net": 75,
+      "landed_target": 71,
+      "numerical_failures": 0,
+      "metrics_sha256": "0e89e6339ac76f33928b051e02d157248ea0750b908a992d1450142eee5e51f3"
+    },
+    {
+      "seed": 882075,
+      "complete5": 28,
+      "complete5_rate": 0.21875,
+      "air": 76,
+      "air_rate": 0.59375,
+      "recovery": 38,
+      "recovery_rate": 0.5,
+      "crossed_net": 75,
+      "landed_target": 71,
+      "numerical_failures": 0,
+      "metrics_sha256": "50859ae4d1dc317939cb87f4e8a0066c8c3fe60e46ebc21d6666750dbabfd13b"
+    }
+  ],
+  "controller_trial": true,
+  "runtime_selection_not_formal": true,
+  "oracle_union_not_a_policy_success_rate": true,
+  "formal_acceptance": false,
+  "scope": "Fixed128 TRAIN development evaluation with causal first-ball expert selection; persistent recovery/base controller retained; not pure standalone RL."
+}

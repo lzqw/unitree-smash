@@ -22,6 +22,8 @@ from isaaclab.app import AppLauncher
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--output', type=Path, required=True)
 parser.add_argument('--checkpoint', type=Path, required=True)
+parser.add_argument('--expert-bank', type=Path, default=None,
+    help='Explicit case-conditioned measured expert bank; controller trial only')
 parser.add_argument('--persistent-recovery-trial', action='store_true', required=True,
     help='Explicitly keep declared recovery assistance effective after every controller reset')
 parser.add_argument('--precision-receipt', type=Path, required=True)
@@ -133,6 +135,85 @@ class SharedTargetResidualController:
         return self.mixer.action(base,residual,observation['policy'],default,limits)
 
 
+class CaseExpertBankController:
+    """Select one measured expert after the first causal ball observation.
+
+    The bank is deliberately held fixed for an episode. It is a controller
+    selection experiment over the fixed TRAIN panel, not a formal policy score.
+    All experts share the candidate's native base/controller and action mixer.
+    """
+    def __init__(self, candidate, manifest_path, count, device):
+        self.candidate_controller = SharedTargetResidualController(candidate, count, device)
+        manifest = json.loads(Path(manifest_path).read_text())
+        if manifest.get('schema') != 'case-conditioned-native-expert-bank-v1':
+            raise ValueError('Unexpected expert-bank manifest schema')
+        self.manifest = manifest
+        self.features = torch.as_tensor(
+            [row['feature'] for row in manifest['cases']], dtype=torch.float32, device=device)
+        self.expert_paths = [row['expert_policy'] for row in manifest['cases']]
+        self.experts = []
+        for path in sorted(set(x for x in self.expert_paths if x)):
+            source = torch.load(path, map_location='cpu', weights_only=False)
+            if source.get('schema') != RESIDUAL_SCHEMA or not source.get('native_execution'):
+                raise ValueError('Expert bank contains a non-native residual policy')
+            if source.get('residual_joint_scale_rad') != candidate.get('residual_joint_scale_rad'):
+                raise ValueError('Expert bank action scales differ from candidate')
+            if source.get('residual_training_metadata', {}).get('base_policy_sha256') != \
+                    candidate.get('residual_training_metadata', {}).get('base_policy_sha256'):
+                raise ValueError('Expert bank base policy differs from candidate')
+            self.experts.append((path, torch.jit.load(
+                io.BytesIO(source['residual_actor_jit']), map_location=device).eval()))
+        path_to_index = {path: i for i, (path, _) in enumerate(self.experts)}
+        self.case_expert_indices = torch.as_tensor(
+            [path_to_index.get(path, -1) for path in self.expert_paths],
+            dtype=torch.long, device=device)
+        self.selected = torch.full((count,), -1, dtype=torch.long, device=device)
+        self.selected_case = torch.full((count,), -1, dtype=torch.long, device=device)
+
+    @property
+    def reference_controller(self): return self.candidate_controller.reference_controller
+    @property
+    def logs(self): return self.candidate_controller.logs
+    @logs.setter
+    def logs(self, value): self.candidate_controller.logs = value
+    @property
+    def base(self): return self.candidate_controller.base
+    @property
+    def mixer(self): return self.candidate_controller.mixer
+    @property
+    def landing_config(self): return self.candidate_controller.landing_config
+    @property
+    def support_config(self): return self.candidate_controller.support_config
+
+    def reset(self, ids=None):
+        self.candidate_controller.reset(ids)
+        if ids is None:
+            self.selected.fill_(-1); self.selected_case.fill_(-1)
+        else:
+            self.selected[ids] = -1; self.selected_case[ids] = -1
+
+    @torch.inference_mode()
+    def action(self, observation, default, limits):
+        raw = observation['policy']
+        base = self.candidate_controller.base.action(observation, default, limits)
+        present = raw[:, 67] > .5
+        choose = (self.selected < 0) & present
+        if bool(choose.any()):
+            feature = torch.cat((raw[choose, 61:67], raw[choose, 759:770], raw[choose, 775:776]), dim=1)
+            distance = ((feature[:, None, :] - self.features[None, :, :]) ** 2).sum(-1)
+            case = distance.argmin(1)
+            expert = self.case_expert_indices[case]
+            self.selected[choose] = expert
+            self.selected_case[choose] = case
+        residual = torch.zeros_like(base)
+        for expert_index, (_, actor) in enumerate(self.experts):
+            mask = self.selected == expert_index
+            if bool(mask.any()): residual[mask] = actor(raw[mask])
+        fallback = self.selected < 0
+        if bool(fallback.any()): residual[fallback] = self.candidate_controller.actor(raw[fallback])
+        return self.candidate_controller.mixer.action(base, residual, raw, default, limits)
+
+
 def atomic_json(path, value):
     temporary = path.with_suffix(path.suffix+'.tmp')
     temporary.write_text(json.dumps(value, indent=2)+'\n')
@@ -180,6 +261,8 @@ def main():
     if not has_actor or ((args.landing_config or args.support_config or args.disable_support)
                          and not args.allow_declared_controller_variant):
         raise ValueError("Require the actually trained residual actor without an undeclared controller change")
+    if args.expert_bank is not None and not args.allow_declared_controller_variant:
+        raise ValueError('Expert-bank selection requires --allow-declared-controller-variant')
     if args.ground_xy_m != 64. or checkpoint.get("residual_training_metadata",{}).get("ground_extent_diagnostic") != GROUND:
         raise ValueError("The evaluated ground must match the trained ground64 policy")
     ground_diagnostic = dict(original_configured_m=[4096.,4096.,.1], requested_m=[args.ground_xy_m,args.ground_xy_m,.1])
@@ -193,7 +276,7 @@ def main():
         if support_trial is not None and declared_support != support_trial:
             raise ValueError('Declared support controller variant differs from checkpoint metadata')
     effective_support=policy_support_config(checkpoint.get('residual_training_metadata',{}),support_trial,args.disable_support)
-    controller_trial=bool(args.persistent_recovery_trial)
+    controller_trial=bool(args.persistent_recovery_trial or args.expert_bank is not None)
     noise = training_noise(count, amplitudes, args.seed)
     atomic_json(args.output / 'INPUTS.json', dict(policy_sha256=digest(args.checkpoint),
         protocol_sha256=digest(protocol_path), training_suite=protocol['training_suite'],
@@ -207,6 +290,7 @@ def main():
         support_config=effective_support,support_disabled=args.disable_support,
         record_all_first_episode_actions=args.record_first_episodes,
         residual_actor_enabled=has_actor,
+        expert_bank=str(args.expert_bank.resolve()) if args.expert_bank else None,
         offline_trace_finetune_candidate=offline_finetune,
         reset_noise={k: v.tolist() for k, v in noise.items()},
         scope='TRAIN-only numerical ground-extent diagnostic; original task scoring, no inherited performance or formal cases.',
@@ -224,7 +308,9 @@ def main():
     env = FrozenPanelEnv(cfg, cases=cases, reset_noise=noise,
         contact_flight_recovery=protocol['recovery_association']['schema'])
     wrapped = RslRlVecEnvWrapper(env, clip_actions=None)
-    controller = SharedTargetResidualController(checkpoint, count, env.device,landing_trial,support_trial,args.disable_support)
+    controller = (CaseExpertBankController(checkpoint, args.expert_bank, count, env.device)
+                  if args.expert_bank is not None else
+                  SharedTargetResidualController(checkpoint, count, env.device,landing_trial,support_trial,args.disable_support))
     stopping = False
     def stop(_signal, _frame):
         nonlocal stopping
@@ -390,6 +476,11 @@ def main():
             recovery_assistance_execution=RECOVERY_EXECUTION_SCHEMA,
             landing_config=controller.landing_config,support_config=controller.support_config,
             residual_actor_enabled=has_actor, ground_extent_diagnostic=ground_diagnostic)
+        if args.expert_bank is not None:
+            summary['expert_bank_selection'] = dict(
+                manifest=str(args.expert_bank.resolve()), manifest_sha256=digest(args.expert_bank),
+                controller_trial=True, runtime_selection_not_formal=True,
+                selected_case_ids=controller.selected_case.cpu().tolist())
         atomic_json(args.output / 'episodes.json', rows)
         atomic_json(args.output / 'metrics.json', summary)
         atomic_json(args.output / 'completed.json', dict(env_steps=(tick+1)*count))
