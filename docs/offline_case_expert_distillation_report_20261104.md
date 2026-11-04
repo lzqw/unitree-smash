@@ -19,6 +19,8 @@ The resulting checkpoint was then evaluated in native Isaac on the original 128 
 
 The distilled policy retained 16 of the candidate's 27 complete cases, lost 11, and gained 5 on seed 882072. Thus the small action regression error did not imply trajectory equivalence. The likely limitation is structural: the expert-bank controller remembers the first causal ball feature and holds a case-conditioned expert, whereas the exported head only receives the current public observation and cannot reproduce that memory-dependent routing reliably.
 
+A follow-up head held the first 18-dimensional causal ball feature per episode and was evaluated natively on seed 882072. It reached **17/128** complete5 (73 air contacts, 28 recoveries, zero numerical failures), so adding this memory input to a static corrective head still disturbed valid trajectories. The follow-up is recorded in [`memory_conditioned_distillation_result_20261104.json`](memory_conditioned_distillation_result_20261104.json) and is also rejected.
+
 ## Interpretation and next action
 
 This is a useful negative result. It rules out promoting stateless offline action-MSE distillation as the next best policy and shows why the controller trial should not be described as pure RL. The next implementation should preserve causal memory or learn corrections online (for example, a phase-gated recurrent/conditioning module or DAgger-style corrective updates), then validate the resulting policy natively before promotion. The rejected checkpoint and both native metrics remain available locally for reproduction; only the compact report and source are committed here.

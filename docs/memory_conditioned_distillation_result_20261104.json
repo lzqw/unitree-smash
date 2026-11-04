@@ -1,0 +1,35 @@
+{
+  "schema": "memory-conditioned-case-expert-distillation-native-evaluation-v1",
+  "observed_at": "2026-11-04",
+  "source_commit_before_change": "9922363f72fb5a43ba06ff6c199a69cc8769ea5c",
+  "training": {
+    "script": "scripts/distill_case_expert_selector_v1.py",
+    "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/offline_case_expert_distillation_06",
+    "updates": 1800,
+    "train_samples": 96562,
+    "validation_samples": 96562,
+    "memory_feature": "first causal ball feature (18 public-observation components), held per episode",
+    "final_validation_rmse": 0.0007529452559538186,
+    "native_execution_at_export": false
+  },
+  "native_eval": {
+    "seed": 882072,
+    "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/offline_case_expert_distillation_memory_eval882072_01",
+    "complete5": 17,
+    "airborne_contacts": 73,
+    "conditional_recovery_count": 28,
+    "actual_racket_contacts": 107,
+    "crossed_net": 73,
+    "landed_target": 64,
+    "numerical_failures": 0
+  },
+  "comparison": {
+    "frozen_candidate": "27/128",
+    "causal_expert_bank_controller_trial": "28/128 on both fixed seeds",
+    "stateless_distillation": "21/128 on both fixed seeds",
+    "memory_conditioned_distillation": "17/128 on seed 882072",
+    "decision": "reject",
+    "reason": "Holding the first ball feature in a static corrective head did not reproduce the expert-bank closed-loop behavior; the learned correction still disturbed valid trajectories."
+  },
+  "scope": "One fixed TRAIN128 native Isaac diagnostic with persistent recovery/base controller retained; not formal acceptance and not pure standalone RL."
+}

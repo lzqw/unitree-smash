@@ -110,6 +110,9 @@ class SharedTargetResidualController:
         self.mixer=ResidualActionMixerV4(count,device,checkpoint['residual_joint_scale_rad'],
             float(checkpoint.get('residual_arm_target_rate_rad_s',5.)),
             float(checkpoint.get('residual_scale_limit_rad',max(checkpoint['residual_joint_scale_rad'])))) if has_actor else None
+        self.memory_conditioned=bool(metadata.get('memory_conditioned',False))
+        self.first_ball_feature=torch.zeros((count,18),device=device) if self.memory_conditioned else None
+        self.first_ball_seen=torch.zeros((count,),dtype=torch.bool,device=device) if self.memory_conditioned else None
 
     @property
     def reference_controller(self):
@@ -126,12 +129,27 @@ class SharedTargetResidualController:
     def reset(self,ids=None):
         self.base.reset(ids)
         if self.mixer is not None:self.mixer.reset(ids)
+        if self.memory_conditioned:
+            if ids is None:
+                self.first_ball_feature.zero_();self.first_ball_seen.zero_()
+            else:
+                self.first_ball_feature[ids].zero_();self.first_ball_seen[ids]=False
 
     @torch.inference_mode()
     def action(self,observation,default,limits):
         base=self.base.action(observation,default,limits)
         if self.actor is None:return base
-        residual=self.actor(observation['policy'])
+        raw=observation['policy']
+        if self.memory_conditioned:
+            present=raw[:,67]>.5
+            choose=present & (~self.first_ball_seen)
+            if bool(choose.any()):
+                self.first_ball_feature[choose]=torch.cat((raw[choose,61:67],raw[choose,759:770],raw[choose,775:776]),dim=1)
+                self.first_ball_seen[choose]=True
+            actor_input=torch.cat((raw,self.first_ball_feature),dim=1)
+        else:
+            actor_input=raw
+        residual=self.actor(actor_input)
         return self.mixer.action(base,residual,observation['policy'],default,limits)
 
 
