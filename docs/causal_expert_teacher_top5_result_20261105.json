@@ -1,0 +1,56 @@
+{
+  "schema": "causal-expert-teacher-top5-result-v1",
+  "observed_at": "2026-11-05",
+  "source_commit": "1440cc165e06f25e803d1cc6dbbf745c94bcada0",
+  "training": {
+    "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/causal_expert_teacher_frozenv2_top5_8_env5120_01",
+    "num_envs": 5120,
+    "updates": 8,
+    "env_steps": 5242880,
+    "metrics_sha256": "615581a62976479da8a8631d4bdbf3d391ef2da0a170f2c01193024d85bad57e",
+    "policy_sha256": "296b16a753b30e0e36673e2dac4baf663cfb17177cfa33e6d9ad5fd9deacb477",
+    "expert_blend": 0.35,
+    "loaded_experts": 5,
+    "teacher_selection": "first observed ball feature, held until episode reset",
+    "training_episodes": 6945,
+    "training_complete5": 686,
+    "training_airborne_contacts": 3541,
+    "training_conditional_recovery": 1106,
+    "training_numerical_failures": 0
+  },
+  "student_frozen_evaluations": [
+    {
+      "seed": 882072,
+      "metrics": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/causal_expert_teacher_frozenv2_top5_8_frozen128_seed882072_01/metrics.json",
+      "metrics_sha256": "a763cf865118d110285d014c9e49f5ef45ed3da0a050d23d3dc3bee4aed3c182",
+      "complete5": 26,
+      "airborne_contacts": 74,
+      "conditional_recovery_count": 36,
+      "actual_racket_contacts": 110,
+      "crossed_net": 72,
+      "landed_target": 65,
+      "numerical_failures": 0
+    },
+    {
+      "seed": 882075,
+      "metrics": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/causal_expert_teacher_frozenv2_top5_8_frozen128_seed882075_01/metrics.json",
+      "metrics_sha256": "71611127851af396f529b982ec3e97c906bace050f0de070bc6257588a59bc18",
+      "complete5": 26,
+      "airborne_contacts": 74,
+      "conditional_recovery_count": 36,
+      "actual_racket_contacts": 110,
+      "crossed_net": 72,
+      "landed_target": 65,
+      "numerical_failures": 0
+    }
+  ],
+  "comparison": {
+    "frozen_pure_baseline": "27/128 on both fixed seeds",
+    "causal_expert_bank_controller_trial": "28/128 on both fixed seeds",
+    "student_without_teacher": "26/128 on both fixed seeds",
+    "stateless_action_distillation": "21/128 on both fixed seeds",
+    "decision": "retain_as_student_initialization_and_continue",
+    "interpretation": "The teacher produced many complete training events and the exported student retained nearly all baseline capability. The student is one case below the pure baseline, so this is transfer evidence rather than a new best checkpoint."
+  },
+  "scope": "Fixed TRAIN128 native Isaac development evaluation with persistent recovery/base controller retained; no formal acceptance or unseen-condition generalization claim."
+}
