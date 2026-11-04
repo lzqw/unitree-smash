@@ -1,0 +1,53 @@
+{
+  "schema": "causal-expert-teacher-blend02-result-v1",
+  "observed_at": "2026-11-05",
+  "source_commit": "84956b7f835e70c1926230459ec4b5860db02ffb",
+  "training": {
+    "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/causal_expert_teacher_blend02_frozenv2_8_env5120_01",
+    "num_envs": 5120,
+    "updates": 8,
+    "env_steps": 5242880,
+    "expert_blend": 0.2,
+    "loaded_experts": 5,
+    "metrics_sha256": "7e0761e9164dda934477746902108811b787c56d40541bc582a616000dfa8347",
+    "policy_sha256": "2b58ccaaf4a5b2fc9da4e5aef9ea8c24ac1bc7697ed70e5e6dfc8290a77e8851",
+    "training_episodes": 6988,
+    "training_complete5": 619,
+    "training_airborne_contacts": 3536,
+    "training_conditional_recovery": 1073,
+    "training_numerical_failures": 0
+  },
+  "student_frozen_evaluations": [
+    {
+      "seed": 882072,
+      "metrics_sha256": "12e265df93516565d5ee19169a01d786554a0f8daa424d866dd455b3298b1723",
+      "complete5": 26,
+      "airborne_contacts": 74,
+      "conditional_recovery_count": 36,
+      "actual_racket_contacts": 110,
+      "crossed_net": 74,
+      "landed_target": 65,
+      "numerical_failures": 0
+    },
+    {
+      "seed": 882075,
+      "metrics_sha256": "b77083f481e4988c762d814efe53bdb4f48cf1602facdc92aa80f9bc7ec69ef1",
+      "complete5": 26,
+      "airborne_contacts": 74,
+      "conditional_recovery_count": 36,
+      "actual_racket_contacts": 110,
+      "crossed_net": 74,
+      "landed_target": 65,
+      "numerical_failures": 0
+    }
+  ],
+  "comparison": {
+    "pure_frozen_baseline": "27/128 on both fixed seeds",
+    "blend035_student": "26/128 on both fixed seeds",
+    "blend020_student": "26/128 on both fixed seeds",
+    "controller_trial": "28/128 on both fixed seeds",
+    "decision": "retain_as_controlled_transfer_evidence_not_best",
+    "next_step": "Gate the causal teacher to measured recovery-benefit states or train a dedicated recovery head; stop scanning blend alone."
+  },
+  "scope": "Fixed TRAIN128 native Isaac evaluation with persistent recovery/base controller retained; no formal acceptance or unseen-condition generalization claim."
+}
