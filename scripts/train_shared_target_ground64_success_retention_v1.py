@@ -4,6 +4,7 @@
 Explicit recovery execution branch; native physics, task thresholds and limits remain.
 """
 import argparse,copy,hashlib,json,signal,sys,time,traceback,importlib.util
+from collections import Counter
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
@@ -45,6 +46,8 @@ p.add_argument('--case-expert-blend',type=float,default=0.0,
     help='Blend weight for the causal case expert bank in [0,1]; the exported learner does not embed this teacher')
 p.add_argument('--case-expert-recovery-only',action='store_true',
     help='Apply the selected case expert only in the public foot-contact recovery phase')
+p.add_argument('--case-expert-max-experts',type=int,default=0,
+    help='Load only the most frequently selected bank experts; zero loads the full bank')
 p.add_argument('--disable-success-retention',action='store_true',
     help='Explicit ablation: skip the verified-success rehearsal optimizer for an execution-assistance isolation run')
 p.add_argument('--num-envs',type=int,default=128)
@@ -63,6 +66,8 @@ if args.case_expert_blend < 0.0 or args.case_expert_blend > 1.0:
     p.error('--case-expert-blend must be in [0,1]')
 if args.case_expert_blend > 0.0 and args.case_expert_bank is None:
     p.error('--case-expert-blend requires --case-expert-bank')
+if args.case_expert_max_experts < 0:
+    p.error('--case-expert-max-experts must be nonnegative')
 if args.case_expert_bank is not None and args.posthit_teacher_policy is not None:
     p.error('Use either --case-expert-bank or --posthit-teacher-policy for an isolated teacher trial')
 app=AppLauncher(args).app
@@ -134,7 +139,7 @@ class SharedTargetResidualAdapter(PreHitTeacherPriorAdapterMixin, ResidualRslAda
                  posthit_teacher_policy=None,posthit_teacher_blend=0.0,teacher_all_phases=False,
                  posthit_teacher_recovery_phase=False,posthit_teacher_recovery_only=False,
                  posthit_teacher_leg_only=False,case_expert_bank=None,case_expert_blend=0.0,
-                 case_expert_recovery_only=False):
+                 case_expert_recovery_only=False,case_expert_max_experts=0):
         if not isinstance(posthit_teacher_blend,(int,float)) or not 0.0 <= float(posthit_teacher_blend) <= 1.0:
             raise ValueError('posthit teacher blend must be in [0,1]')
         self.wrapped=wrapped; self.base_checkpoint=base_checkpoint
@@ -155,6 +160,7 @@ class SharedTargetResidualAdapter(PreHitTeacherPriorAdapterMixin, ResidualRslAda
         self.case_expert_bank_path=str(case_expert_bank) if case_expert_bank is not None else None
         self.case_expert_blend=float(case_expert_blend)
         self.case_expert_recovery_only=bool(case_expert_recovery_only)
+        self.case_expert_max_experts=int(case_expert_max_experts)
         self.case_expert_features=None
         self.case_expert_indices=None
         self.case_expert_actors=[]
@@ -168,7 +174,8 @@ class SharedTargetResidualAdapter(PreHitTeacherPriorAdapterMixin, ResidualRslAda
             if len(rows) != 128:
                 raise ValueError('Case expert bank must cover the fixed TRAIN128 panel')
             self.case_expert_features=torch.as_tensor([row['feature'] for row in rows],device=self.device,dtype=torch.float32)
-            unique_paths=sorted(set(row.get('expert_policy') for row in rows if row.get('expert_policy')))
+            counts=Counter(row.get('expert_policy') for row in rows if row.get('expert_policy'))
+            unique_paths=[path for path,_ in counts.most_common(self.case_expert_max_experts or None)]
             path_to_index={}
             for path in unique_paths:
                 payload=torch.load(path,map_location='cpu',weights_only=False)
@@ -238,6 +245,7 @@ class SharedTargetResidualAdapter(PreHitTeacherPriorAdapterMixin, ResidualRslAda
         return dict(enabled=True,selected_envs=sum(x>=0 for x in selected),
                     unique_selected_cases=sorted(set(x for x in selected if x>=0)),
                     expert_count=len(self.case_expert_actors),blend=self.case_expert_blend,
+                    max_experts=self.case_expert_max_experts,
                     recovery_only=self.case_expert_recovery_only)
 
     def reset(self):
@@ -549,6 +557,7 @@ def main():
         bank_sha256=digest(args.case_expert_bank) if args.case_expert_bank is not None else None,
         blend=float(args.case_expert_blend),
         recovery_only=bool(args.case_expert_recovery_only),
+        max_experts=int(args.case_expert_max_experts),
         causal_selection='first_observed_ball_feature_then_hold_until_reset',
         exported_policy_does_not_embed_teacher=True)
     contract['failure_recovery_guidance']=(dict(schema=FAILURE_GUIDANCE_SCHEMA,**failure_guidance)
@@ -598,7 +607,8 @@ def main():
         posthit_teacher_recovery_only=args.posthit_teacher_recovery_only,
         posthit_teacher_leg_only=args.posthit_teacher_leg_only,
         case_expert_bank=args.case_expert_bank,case_expert_blend=args.case_expert_blend,
-        case_expert_recovery_only=args.case_expert_recovery_only)
+        case_expert_recovery_only=args.case_expert_recovery_only,
+        case_expert_max_experts=args.case_expert_max_experts)
     adapter.configure_prehit_prior(prior_cfg)
     runner=None;completed_update_safe=False
     try:
