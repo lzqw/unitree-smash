@@ -1,0 +1,36 @@
+{
+  "schema": "frozen-approach-continuation-result-v1",
+  "observed_at": "2026-11-05",
+  "source_commit": "a912135907a1dd443a3a35b7cced1f2d1abf72ec",
+  "initial_policy": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_env5120_01/policy.pt",
+  "initial_complete5": "27/128",
+  "training": {
+    "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach_cont8_env5120_01",
+    "updates": 8,
+    "num_envs": 5120,
+    "env_steps": 5242880,
+    "metrics_sha256": "46246e8010c89513c07d6f3585595e2c1ec53654d52fa2eb1d5f6a381aeec439",
+    "policy_sha256": "8960e8526dd912dafdb0aaaed2825e713ce34f12654ed407dba6ecc035f1cb28",
+    "completed_training_episodes": 6995,
+    "training_complete5": 0,
+    "training_airborne_contacts": 3585,
+    "training_conditional_recovery": 0,
+    "training_numerical_failures": 0,
+    "value_loss_peak": 769.6756927490234,
+    "decision": "reject_continuation"
+  },
+  "native_frozen_eval": {
+    "seed": 882072,
+    "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach_cont8_frozen128_01",
+    "metrics_sha256": "a19dabf2db4aea30c7dcb2665acdd3af7ac4849669e017e7862dd0d9eb610ced",
+    "complete5": 22,
+    "airborne_contacts": 73,
+    "conditional_recovery_count": 34,
+    "actual_racket_contacts": 110,
+    "crossed_net": 72,
+    "landed_target": 63,
+    "numerical_failures": 0
+  },
+  "interpretation": "Strict continuation of the 27/128 approach-head policy drifted downward. The training stream had no complete5 or conditional recovery outcomes, while the frozen exported checkpoint retained 22/128 on the fixed panel. Preserve the original 27/128 checkpoint and do not promote this continuation.",
+  "next_step": "Use causal teacher selection or online corrective learning with explicit intervention memory; do not continue this checkpoint or treat more approach-head updates as progress."
+}
