@@ -1,0 +1,21 @@
+{
+  "schema": "causal-expert-teacher-continuation-result-v1",
+  "observed_at": "2026-11-05",
+  "source_commit": "8751695f1d4ee9f29a82f2c6e8f83eb432e01ac6",
+  "initial_checkpoint": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/causal_expert_teacher_frozenv2_top5_8_env5120_01/checkpoint.pt",
+  "training": {
+    "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/causal_expert_teacher_frozenv2_top5_cont8_env5120_01",
+    "requested_updates": 8,
+    "completed_updates": 3,
+    "updates": [9, 10, 11],
+    "episodes": 1090,
+    "airborne_contacts": 407,
+    "conditional_recovery": 0,
+    "complete5": 0,
+    "numerical_failures": 0,
+    "termination": "safely stopped after update11 because value loss reached 802.6 and no recoverable/full events appeared",
+    "decision": "reject_continuation"
+  },
+  "interpretation": "The first causal teacher run transferred useful behavior (26/128 after teacher removal), but continuing the same checkpoint with the teacher caused the same exploration/value drift seen in the earlier approach continuation. Preserve the first teacher-trained student and do not promote this partial continuation.",
+  "next_step": "Use the first teacher-trained student as the baseline for a lower-blend or recovery-only teacher schedule; keep the teacher active during data collection but gate its influence to states where it has measured recovery benefit."
+}
