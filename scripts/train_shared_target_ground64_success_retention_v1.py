@@ -39,6 +39,12 @@ p.add_argument('--posthit-teacher-recovery-only',action='store_true',
     help='Use the portable post-hit teacher only in the public foot-contact recovery phase; do not alter airborne hit actions')
 p.add_argument('--posthit-teacher-leg-only',action='store_true',
     help='In post-hit assistance, blend only the first 12 leg residual joints; preserve arm/racket residuals')
+p.add_argument('--case-expert-bank',type=Path,
+    help='Causal measured expert bank: select one expert from the first observed ball feature and hold it per episode')
+p.add_argument('--case-expert-blend',type=float,default=0.0,
+    help='Blend weight for the causal case expert bank in [0,1]; the exported learner does not embed this teacher')
+p.add_argument('--case-expert-recovery-only',action='store_true',
+    help='Apply the selected case expert only in the public foot-contact recovery phase')
 p.add_argument('--disable-success-retention',action='store_true',
     help='Explicit ablation: skip the verified-success rehearsal optimizer for an execution-assistance isolation run')
 p.add_argument('--num-envs',type=int,default=128)
@@ -53,6 +59,12 @@ if centered_initialization!=(args.centered_source_evaluation is not None):
     p.error('Supply a centered initialization option together with --centered-source-evaluation')
 if args.posthit_teacher_recovery_only and args.posthit_teacher_recovery_phase:
     p.error('Choose either --posthit-teacher-recovery-only or --posthit-teacher-recovery-phase')
+if args.case_expert_blend < 0.0 or args.case_expert_blend > 1.0:
+    p.error('--case-expert-blend must be in [0,1]')
+if args.case_expert_blend > 0.0 and args.case_expert_bank is None:
+    p.error('--case-expert-blend requires --case-expert-bank')
+if args.case_expert_bank is not None and args.posthit_teacher_policy is not None:
+    p.error('Use either --case-expert-bank or --posthit-teacher-policy for an isolated teacher trial')
 app=AppLauncher(args).app
 
 import numpy as np
@@ -121,7 +133,8 @@ class SharedTargetResidualAdapter(PreHitTeacherPriorAdapterMixin, ResidualRslAda
                  recovery_blend_s=None,recovery_side_aware_roll_feedback_override=None,landing_assistance=None,support_assistance=None,
                  posthit_teacher_policy=None,posthit_teacher_blend=0.0,teacher_all_phases=False,
                  posthit_teacher_recovery_phase=False,posthit_teacher_recovery_only=False,
-                 posthit_teacher_leg_only=False):
+                 posthit_teacher_leg_only=False,case_expert_bank=None,case_expert_blend=0.0,
+                 case_expert_recovery_only=False):
         if not isinstance(posthit_teacher_blend,(int,float)) or not 0.0 <= float(posthit_teacher_blend) <= 1.0:
             raise ValueError('posthit teacher blend must be in [0,1]')
         self.wrapped=wrapped; self.base_checkpoint=base_checkpoint
@@ -139,6 +152,35 @@ class SharedTargetResidualAdapter(PreHitTeacherPriorAdapterMixin, ResidualRslAda
                 raise ValueError('posthit teacher policy must contain residual_actor_jit')
             self.posthit_teacher=torch.jit.load(io.BytesIO(blob),map_location=self.device).eval()
             for parameter in self.posthit_teacher.parameters(): parameter.requires_grad_(False)
+        self.case_expert_bank_path=str(case_expert_bank) if case_expert_bank is not None else None
+        self.case_expert_blend=float(case_expert_blend)
+        self.case_expert_recovery_only=bool(case_expert_recovery_only)
+        self.case_expert_features=None
+        self.case_expert_indices=None
+        self.case_expert_actors=[]
+        self.case_expert_selected=None
+        self.case_expert_selected_case=None
+        if case_expert_bank is not None:
+            manifest=json.loads(Path(case_expert_bank).read_text())
+            if manifest.get('schema') != 'case-conditioned-native-expert-bank-v1':
+                raise ValueError('Unexpected case expert bank schema')
+            rows=manifest.get('cases',[])
+            if len(rows) != 128:
+                raise ValueError('Case expert bank must cover the fixed TRAIN128 panel')
+            self.case_expert_features=torch.as_tensor([row['feature'] for row in rows],device=self.device,dtype=torch.float32)
+            unique_paths=sorted(set(row.get('expert_policy') for row in rows if row.get('expert_policy')))
+            path_to_index={}
+            for path in unique_paths:
+                payload=torch.load(path,map_location='cpu',weights_only=False)
+                blob=payload.get('residual_actor_jit')
+                if payload.get('schema') != RESIDUAL_SCHEMA or not payload.get('native_execution') or not isinstance(blob,(bytes,bytearray)):
+                    raise ValueError('Case expert bank contains a non-native residual policy')
+                path_to_index[path]=len(self.case_expert_actors)
+                self.case_expert_actors.append(torch.jit.load(io.BytesIO(blob),map_location=self.device).eval())
+            self.case_expert_indices=torch.as_tensor([path_to_index.get(row.get('expert_policy'),-1) for row in rows],
+                device=self.device,dtype=torch.long)
+            self.case_expert_selected=torch.full((self.num_envs,),-1,device=self.device,dtype=torch.long)
+            self.case_expert_selected_case=torch.full((self.num_envs,),-1,device=self.device,dtype=torch.long)
         self.controller=shared_source_controller(base_checkpoint,self.num_envs,self.device)
         # Recovery assistance is an explicit training branch.  It modifies the
         # existing public standing handover parameters only; it does not read
@@ -183,12 +225,58 @@ class SharedTargetResidualAdapter(PreHitTeacherPriorAdapterMixin, ResidualRslAda
         self.last_observation=self.wrapped.get_observations()
         self.controller.reset(); self.mixer.reset(); self._sync_reference()
 
+    def _reset_case_expert(self,ids=None):
+        if self.case_expert_selected is None:return
+        if ids is None:
+            self.case_expert_selected.fill_(-1);self.case_expert_selected_case.fill_(-1)
+        else:
+            self.case_expert_selected[ids]=-1;self.case_expert_selected_case[ids]=-1
+
+    def case_expert_diagnostics(self):
+        if self.case_expert_selected is None:return dict(enabled=False)
+        selected=self.case_expert_selected_case.detach().cpu().tolist()
+        return dict(enabled=True,selected_envs=sum(x>=0 for x in selected),
+                    unique_selected_cases=sorted(set(x for x in selected if x>=0)),
+                    expert_count=len(self.case_expert_actors),blend=self.case_expert_blend,
+                    recovery_only=self.case_expert_recovery_only)
+
+    def reset(self):
+        result=super().reset()
+        self._reset_case_expert()
+        return result
+
     def step(self,residual):
         # Teacher assistance is causal: it uses only the current public
         # observation (optionally gated by its observed-hit flag).  The PPO
         # actor still supplies the learner action and remains the exported policy.
         effective=residual
         teacher_active=None
+        if self.case_expert_selected is not None and self.case_expert_blend > 0.0:
+            public=self.last_observation['policy']
+            present=public[:,67] > 0.5
+            choose=(self.case_expert_selected < 0) & present
+            if bool(choose.any()):
+                feature=torch.cat((public[choose,61:67],public[choose,759:770],public[choose,775:776]),dim=1)
+                distance=((feature[:,None,:]-self.case_expert_features[None,:,:])**2).sum(-1)
+                case=distance.argmin(1)
+                chosen=self.case_expert_indices[case]
+                self.case_expert_selected_case[choose]=case
+                self.case_expert_selected[choose]=chosen
+                missing=chosen < 0
+                if bool(missing.any()):
+                    chosen_ids=torch.where(choose)[0]
+                    self.case_expert_selected[chosen_ids[missing]]=-2
+            teacher_active=self.case_expert_selected >= 0
+            if self.case_expert_recovery_only:
+                teacher_active &= public[:,774] > 0.5
+            if bool(teacher_active.any()):
+                teacher_residual=torch.zeros_like(residual)
+                for expert_index,actor in enumerate(self.case_expert_actors):
+                    mask=self.case_expert_selected == expert_index
+                    if bool(mask.any()):
+                        with torch.no_grad():teacher_residual[mask]=actor(public[mask]).to(residual.device)
+                weight=teacher_active.to(residual.dtype)[:,None]*self.case_expert_blend
+                effective=(1.0-weight)*effective+weight*teacher_residual
         if self.posthit_teacher is not None and self.posthit_teacher_blend > 0.0:
             public=self.last_observation['policy']
             teacher_active=(torch.ones(len(public),dtype=torch.bool,device=public.device)
@@ -205,6 +293,9 @@ class SharedTargetResidualAdapter(PreHitTeacherPriorAdapterMixin, ResidualRslAda
                 weight=teacher_active.to(residual.dtype)[:,None] * self.posthit_teacher_blend
                 effective=(1.0-weight)*residual + weight*teacher_residual
         result=super().step(effective)
+        if self.case_expert_selected is not None:
+            done_ids=torch.where(result[2].bool())[0]
+            if len(done_ids):self._reset_case_expert(done_ids)
         if teacher_active is not None:
             self.last_teacher_active_count=int(teacher_active.sum().item())
         return result
@@ -452,6 +543,14 @@ def main():
     if args.posthit_teacher_leg_only:
         posthit_teacher_assistance['leg_only']=True
     contract['posthit_teacher_assistance']=posthit_teacher_assistance
+    contract['case_expert_assistance']=dict(
+        enabled=args.case_expert_bank is not None and args.case_expert_blend>0.0,
+        bank=str(args.case_expert_bank) if args.case_expert_bank is not None else None,
+        bank_sha256=digest(args.case_expert_bank) if args.case_expert_bank is not None else None,
+        blend=float(args.case_expert_blend),
+        recovery_only=bool(args.case_expert_recovery_only),
+        causal_selection='first_observed_ball_feature_then_hold_until_reset',
+        exported_policy_does_not_embed_teacher=True)
     contract['failure_recovery_guidance']=(dict(schema=FAILURE_GUIDANCE_SCHEMA,**failure_guidance)
         if failure_guidance is not None else None)
     if configuration.get('phase_gated_recovery') is not None:
@@ -497,7 +596,9 @@ def main():
         posthit_teacher_blend=args.posthit_teacher_blend,teacher_all_phases=args.teacher_all_phases,
         posthit_teacher_recovery_phase=args.posthit_teacher_recovery_phase,
         posthit_teacher_recovery_only=args.posthit_teacher_recovery_only,
-        posthit_teacher_leg_only=args.posthit_teacher_leg_only)
+        posthit_teacher_leg_only=args.posthit_teacher_leg_only,
+        case_expert_bank=args.case_expert_bank,case_expert_blend=args.case_expert_blend,
+        case_expert_recovery_only=args.case_expert_recovery_only)
     adapter.configure_prehit_prior(prior_cfg)
     runner=None;completed_update_safe=False
     try:
@@ -677,6 +778,7 @@ def main():
                 actual_control_env_steps=adapter.total_control_env_steps,**counts,
                 losses=runner.alg.last_update_stats,formal_acceptance=False,
                 prehit_teacher_prior=adapter.prehit_prior_diagnostics(clear=True),
+                case_expert_assistance=adapter.case_expert_diagnostics(),
                 ground_contact_screen=ground_monitor.diagnostics())
             if getattr(policy, 'freeze_verified_policy', False):
                 entry['frozen_policy_invariant']=policy.assert_frozen_reference()
@@ -739,6 +841,7 @@ def main():
                  **({'phase_local_policy':contract['phase_local_policy']}
                     if 'phase_local_policy' in contract else {}),
                  posthit_teacher_assistance=contract['posthit_teacher_assistance'],
+                 case_expert_assistance=contract['case_expert_assistance'],
                  ground_extent_diagnostic=copy.deepcopy(GROUND),
                  ground_source_verification_sha256=contract['ground_source_verification_sha256'],
                  exploration=contract['exploration'],actor_warmup_updates=configuration['actor_warmup_updates']))
