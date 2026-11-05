@@ -123,6 +123,15 @@ VHSIP 计算出的目标可能合理，但 3 次 IK、20 rad/s 速率限制、�
 4. 先作为离线批量规划器和训练数据生成器，再考虑接入 Isaac 训练循环；
 5. 在 parity 和原生落地收益都通过前，不替换当前控制器。
 
+## 后续代码增量（尚未宣称原生收益）
+
+在本报告之后加入了两个实验性组件：
+
+- [`landing_support_mpc_v2.py`](../scripts/landing_support_mpc_v2.py)：在原固定接触 support QP 外增加质心投影/支撑裕度触发和终端可行性门。它仍然不能创建接触，也没有冲量模型；在 26 个失败案例的离线采样中，阶段 QP 仍可解，但终端支撑门仍经常不满足，因此暂时不把它接入正式策略。
+- [`reactive_landing_vhsip_jax.py`](../quadsmash/control/reactive_landing_vhsip_jax.py)：可选的 JAX `jit/lax.scan` VHSIP 方程实现。当前环境没有安装 JAX，尚未做 Torch-JAX parity，也没有 GPU 加速结果；Torch 版本仍是运行基准。
+
+这两项代码的目的分别是让“支撑域风险”可测量、让后续 GPU 批量规划有可复现的纯函数接口，而不是用未验证的离线结果替代原生落地评估。
+
 ## 本轮证据
 
 - 试验输出：`reports/G07_full_racket_v5/reactive_vhsip_actualfail8_seed882072_06/`

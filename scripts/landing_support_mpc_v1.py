@@ -168,6 +168,7 @@ class LandingSupportMPCV1:
                             wall_runtime_s=__import__('time').perf_counter()-started,
                             mpc_contract=self.contract())
             horizon.append(dict(row, residuals=plan.get('residuals'),
+                                acceleration=np.asarray(plan['acceleration']).tolist(),
                                 normalized_action=plan['normalized_action'].tolist(),
                                 joint_position_target=plan['joint_position_target'].tolist()))
             predicted = self._integrate(predicted, plan['acceleration'])
