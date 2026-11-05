@@ -174,6 +174,22 @@ landing_mpc_v2_posture8_seed882072_01
 
 这两个版本作为可复现实验代码保留，后续只有在加入真实接触力/冲量或更准确执行器模型后才值得做原生试跑。
 
+## 显式力矩 residual 试跑
+
+为了验证“位置目标映射损失”是否是主要原因，评估入口又加入了 Isaac 隐式 PD 的 effort overlay：保持学生的位置目标不变，把 MPC 的总腿部力矩减去学生位置 PD 已产生的力矩，作为 `joint_effort_target` 叠加。
+
+第一次试跑 `landing_mpc_v2_torque8_seed882072_02` 暴露了导出语义错误：虽然记录了 135 次 overlay，但 residual 约为零，因为代码先替换位置目标再计算 PD。该结果不作为力矩级证据。
+
+修正后，`landing_mpc_v2_torque8_seed882072_03` 实际记录：
+
+- 491 次非零腿部 torque overlay；
+- residual 均值约 15.05 N·m，最大约 46.79 N·m；
+- 数值故障为 0；
+- complete5 仍为 27/128，合格空中拍线触球 74/128，条件恢复 34/128；
+- 与基线逐案例的完整、恢复和球侧布尔结果没有变化。
+
+部分案例在力矩 overlay 后更早结束，说明当前 Pinocchio 支撑模型给出的力矩方向/接触假设与真实 PhysX 响应仍有偏差。**这次试验排除了“完全没有把力矩送进执行器”这一解释，但没有证明当前力矩解可用于稳定落地。**
+
 ## 本轮证据
 
 - 试验输出：`reports/G07_full_racket_v5/reactive_vhsip_actualfail8_seed882072_06/`
