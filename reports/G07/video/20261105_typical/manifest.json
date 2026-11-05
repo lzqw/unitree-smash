@@ -1,0 +1,80 @@
+{
+  "schema": "g07-selected-video-delivery-v1",
+  "date": "2026-11-05",
+  "source_run": "frozen_v2_smooth_approach16_env5120_01",
+  "scope": "Native PhysX recorded training episodes rendered with software OpenGL. No new physical simulation. Not recordings of the new in-progress teacher-assisted recovery run.",
+  "task_speed_threshold_mps": 5.0,
+  "frozen_evaluation_video": false,
+  "videos": [
+    {
+      "file": "success_train28.mp4",
+      "sha256": "909b3bdc6c6d99a30edd4a8b61b48c0c9fef92a2c767f62697b6575e3f40f700",
+      "bytes": 415443,
+      "case_id": "TRAIN28_LANE284_EP0",
+      "frames": 728,
+      "fps": 50.0,
+      "resolution": [
+        1280,
+        720
+      ],
+      "duration_s": 14.56,
+      "complete5": true,
+      "source_trace": "lane0284_episode000000.npz",
+      "outgoing_speed_mps": 5.214762587683165,
+      "stable_window_s": 2.91697096824646
+    },
+    {
+      "file": "failure_train20_recovery.mp4",
+      "sha256": "b24811c21eb90d3cc064b7b7eff27799393785cca445d554271322701b7ec07c",
+      "bytes": 287954,
+      "case_id": "TRAIN20_LANE148_EP0",
+      "frames": 493,
+      "fps": 50.0,
+      "resolution": [
+        1280,
+        720
+      ],
+      "duration_s": 9.86,
+      "complete5": false,
+      "source_trace": "lane0148_episode000000.npz",
+      "outgoing_speed_mps": 5.782753379105544,
+      "stable_window_s": 0.0
+    },
+    {
+      "file": "failure_train0_frame.mp4",
+      "sha256": "a31cd02f16b903b1606bb5102c8981fc83a16dafddf09ff0383d198e4ecc3bbc",
+      "bytes": 369169,
+      "case_id": "TRAIN0_LANE0_EP0",
+      "frames": 652,
+      "fps": 50.0,
+      "resolution": [
+        1280,
+        720
+      ],
+      "duration_s": 13.04,
+      "complete5": false,
+      "source_trace": "lane0000_episode000000.npz",
+      "frame_hit": true,
+      "string_hit": false,
+      "had_contact": true
+    },
+    {
+      "file": "failure_train69_miss.mp4",
+      "sha256": "03a6f5780cf823a7d3050fa0d5f46dcffc09f6b5210004f018a6c61a091d2d18",
+      "bytes": 365621,
+      "case_id": "TRAIN69_LANE69_EP0",
+      "frames": 652,
+      "fps": 50.0,
+      "resolution": [
+        1280,
+        720
+      ],
+      "duration_s": 13.04,
+      "complete5": false,
+      "source_trace": "lane0069_episode000000.npz",
+      "frame_hit": false,
+      "string_hit": false,
+      "had_contact": false
+    }
+  ]
+}
