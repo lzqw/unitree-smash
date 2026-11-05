@@ -1,0 +1,1500 @@
+{
+  "schema": "g07-baseline27-sustained-support-audit-v1",
+  "date": "2026-11-05",
+  "source": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01",
+  "source_policy_sha256": "8f510fe9f218beef791ac21675a19ed25d11f510a83fe247cddf2893bee08399",
+  "source_hashes": {
+    "INPUTS.json": "667919ca3c4ab217bd4cc50f3de15f7d6bd8fbc2c97f5553d7e27199c171c7c6",
+    "episodes.json": "7ca8e9e73b9fb782e71fef09c576ca01e8298ef7a7f133ddd19a1f177620d8b3",
+    "first_nonfoot_contact_details.json": "32a0812357634893ae76da84e97b840e515b8be7caf7dd649cdf7a17f72449b3",
+    "contact_telemetry_metadata.json": "d5e3b9f1c9d61aa1a7c9e2a02daed94323e017b3387015fb548a23325b56bcc7"
+  },
+  "ball5_except_recovery": 53,
+  "complete5": 27,
+  "ball_good_recovery_failures": 26,
+  "qualified_contact_landings": 26,
+  "first_nonfoot_cases": 22,
+  "no_nonfoot_but_insufficient_stability": 4,
+  "first_nonfoot_delay_after_landing_s_quantiles": {
+    "min": 0.3330378017425537,
+    "p25": 0.8117873487472533,
+    "median": 1.9345361709594724,
+    "p75": 2.4190387077331543,
+    "max": 3.707033742904663
+  },
+  "positive_first_native_patch_body_case_counts": {
+    "FL_thigh": 18,
+    "FR_thigh": 2,
+    "FL_hip": 2
+  },
+  "recovery_gate_coverage": {
+    "body_cases": 22,
+    "phase774_active_fraction_quantiles": {
+      "min": 0.9838709677419355,
+      "p25": 1.0,
+      "median": 1.0,
+      "p75": 1.0,
+      "max": 1.0
+    },
+    "longest_gate_off_s_max": 0.01,
+    "body_cases_gate_always_on": 19,
+    "last_pre_nonfoot_tilt_rad_median": 0.6491613603034259
+  },
+  "foot_contact_count_in_last_pre_nonfoot_control_sample": {
+    "0": 2,
+    "1": 4,
+    "2": 16,
+    "3": 0,
+    "4": 0
+  },
+  "timing_audit_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/baseline27_postlanding_failure_timing_20261105.json",
+  "timing_audit_sha256": "1d5c810a707665c0cdabc84b9099486741e854171831af6c01ab3d66fb4c6589",
+  "gate_coverage_path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/baseline27_recovery_gate_coverage_20261105.json",
+  "gate_coverage_sha256": "f47d240b383763886096238ad71e8498a36b658792606d2d99db4f9580902f42",
+  "interpretation": "All26 ball-good recovery failures qualified for landing first. The22 first nonfoot events occurred0.33..3.71s later. Phase774 was on continuously in19 of22 cases and at least98.39% of observed pre-collapse steps in the remainder. This does not support late gate activation or prolonged gate dropouts as the main explanation in this cohort. Continue sustained-support learning; event timing alone does not prove a unique controller cause.",
+  "formal_acceptance": false,
+  "new_native_execution": false,
+  "new_frozen_policy_result": false,
+  "cases": [
+    {
+      "timing": {
+        "training_index": 1,
+        "ball_conditions_passed": true,
+        "qualified_contact_landing": true,
+        "stable_recovery": false,
+        "longest_stable_s": 0.11400005221366882,
+        "nonfoot_seen": true,
+        "landing_s": 3.0529611110687256,
+        "first_nonfoot": {
+          "time_s": 5.079,
+          "delay_after_qualified_landing_s": 2.026038888931274,
+          "native_patches": [
+            {
+              "body": "FL_thigh",
+              "normal_force_sum_n": 71.01651000976562
+            }
+          ],
+          "root_link_twist_world": [
+            0.019532887265086174,
+            0.24928921461105347,
+            0.06918956339359283,
+            -1.0836124420166016,
+            0.03614164888858795,
+            -0.24569371342658997
+          ]
+        }
+      },
+      "gate_coverage": {
+        "training_index": 1,
+        "nonfoot_seen": true,
+        "qualified_landing_s": 3.0529611110687256,
+        "first_nonfoot_s": 5.079,
+        "observed_control_steps": 202,
+        "phase774_active_steps": 202,
+        "phase774_active_fraction": 1.0,
+        "longest_phase774_off_s": 0.0,
+        "gate_toggles": 0,
+        "last_pre_nonfoot_or_terminal_clock_s": 5.069999694824219,
+        "last_tilt_rad": 0.6402647208227398,
+        "last_foot_contact_flags": [
+          1.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        "last_root_velocity_b_mps": [
+          0.059298835694789886,
+          0.25106242299079895,
+          0.1294969767332077
+        ],
+        "last_root_angular_velocity_b_rad_s": [
+          -0.9792752265930176,
+          0.2919105589389801,
+          -0.49953874945640564
+        ]
+      }
+    },
+    {
+      "timing": {
+        "training_index": 3,
+        "ball_conditions_passed": true,
+        "qualified_contact_landing": true,
+        "stable_recovery": false,
+        "longest_stable_s": 0.034999996423721313,
+        "nonfoot_seen": true,
+        "landing_s": 3.0809590816497803,
+        "first_nonfoot": {
+          "time_s": 5.1450000000000005,
+          "delay_after_qualified_landing_s": 2.06404091835022,
+          "native_patches": [
+            {
+              "body": "FL_thigh",
+              "normal_force_sum_n": 611.3739013671875
+            }
+          ],
+          "root_link_twist_world": [
+            -0.0409618616104126,
+            0.2615208029747009,
+            0.09691453725099564,
+            -1.2338449954986572,
+            -0.06436917185783386,
+            -0.32932308316230774
+          ]
+        }
+      },
+      "gate_coverage": {
+        "training_index": 3,
+        "nonfoot_seen": true,
+        "qualified_landing_s": 3.0809590816497803,
+        "first_nonfoot_s": 5.1450000000000005,
+        "observed_control_steps": 206,
+        "phase774_active_steps": 205,
+        "phase774_active_fraction": 0.9951456310679612,
+        "longest_phase774_off_s": 0.01,
+        "gate_toggles": 1,
+        "last_pre_nonfoot_or_terminal_clock_s": 5.139999866485596,
+        "last_tilt_rad": 0.6625125906262951,
+        "last_foot_contact_flags": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "last_root_velocity_b_mps": [
+          -0.05138975381851196,
+          0.18074756860733032,
+          0.20312802493572235
+        ],
+        "last_root_angular_velocity_b_rad_s": [
+          -1.0989385843276978,
+          0.28987953066825867,
+          -0.6156339645385742
+        ]
+      }
+    },
+    {
+      "timing": {
+        "training_index": 8,
+        "ball_conditions_passed": true,
+        "qualified_contact_landing": true,
+        "stable_recovery": false,
+        "longest_stable_s": 0.0,
+        "nonfoot_seen": true,
+        "landing_s": 3.0319626331329346,
+        "first_nonfoot": {
+          "time_s": 4.163,
+          "delay_after_qualified_landing_s": 1.1310373668670657,
+          "native_patches": [
+            {
+              "body": "FL_thigh",
+              "normal_force_sum_n": 423.24755859375
+            }
+          ],
+          "root_link_twist_world": [
+            -0.14387187361717224,
+            0.20226037502288818,
+            0.03903873637318611,
+            -1.0542510747909546,
+            -0.7173494696617126,
+            -0.26285380125045776
+          ]
+        }
+      },
+      "gate_coverage": {
+        "training_index": 8,
+        "nonfoot_seen": true,
+        "qualified_landing_s": 3.0319626331329346,
+        "first_nonfoot_s": 4.163,
+        "observed_control_steps": 113,
+        "phase774_active_steps": 113,
+        "phase774_active_fraction": 1.0,
+        "longest_phase774_off_s": 0.0,
+        "gate_toggles": 0,
+        "last_pre_nonfoot_or_terminal_clock_s": 4.159999847412109,
+        "last_tilt_rad": 0.6221097630184509,
+        "last_foot_contact_flags": [
+          1.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        "last_root_velocity_b_mps": [
+          0.005953723564743996,
+          0.27321770787239075,
+          0.08864597231149673
+        ],
+        "last_root_angular_velocity_b_rad_s": [
+          -1.0883069038391113,
+          0.2037954479455948,
+          -0.546455979347229
+        ]
+      }
+    },
+    {
+      "timing": {
+        "training_index": 9,
+        "ball_conditions_passed": true,
+        "qualified_contact_landing": true,
+        "stable_recovery": false,
+        "longest_stable_s": 0.0,
+        "nonfoot_seen": true,
+        "landing_s": 3.0129640102386475,
+        "first_nonfoot": {
+          "time_s": 3.734,
+          "delay_after_qualified_landing_s": 0.7210359897613525,
+          "native_patches": [
+            {
+              "body": "FR_thigh",
+              "normal_force_sum_n": 40642.36328125
+            }
+          ],
+          "root_link_twist_world": [
+            0.3254639208316803,
+            -0.2762131989002228,
+            -0.0897928848862648,
+            0.6273741126060486,
+            -0.0811278223991394,
+            0.8036736845970154
+          ]
+        }
+      },
+      "gate_coverage": {
+        "training_index": 9,
+        "nonfoot_seen": true,
+        "qualified_landing_s": 3.0129640102386475,
+        "first_nonfoot_s": 3.734,
+        "observed_control_steps": 72,
+        "phase774_active_steps": 72,
+        "phase774_active_fraction": 1.0,
+        "longest_phase774_off_s": 0.0,
+        "gate_toggles": 0,
+        "last_pre_nonfoot_or_terminal_clock_s": 3.7300000190734863,
+        "last_tilt_rad": 0.8154216621692294,
+        "last_foot_contact_flags": [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        "last_root_velocity_b_mps": [
+          -0.007098481059074402,
+          -0.43077605962753296,
+          0.11734277009963989
+        ],
+        "last_root_angular_velocity_b_rad_s": [
+          1.0452600717544556,
+          1.0901386737823486,
+          0.689152717590332
+        ]
+      }
+    },
+    {
+      "timing": {
+        "training_index": 12,
+        "ball_conditions_passed": true,
+        "qualified_contact_landing": true,
+        "stable_recovery": false,
+        "longest_stable_s": 0.03699999302625656,
+        "nonfoot_seen": true,
+        "landing_s": 3.083958864212036,
+        "first_nonfoot": {
+          "time_s": 4.785,
+          "delay_after_qualified_landing_s": 1.701041135787964,
+          "native_patches": [
+            {
+              "body": "FL_thigh",
+              "normal_force_sum_n": 207.64825439453125
+            }
+          ],
+          "root_link_twist_world": [
+            0.0747603103518486,
+            0.20329003036022186,
+            0.07872865349054337,
+            -1.0053553581237793,
+            0.5035191178321838,
+            -0.25573405623435974
+          ]
+        }
+      },
+      "gate_coverage": {
+        "training_index": 12,
+        "nonfoot_seen": true,
+        "qualified_landing_s": 3.083958864212036,
+        "first_nonfoot_s": 4.785,
+        "observed_control_steps": 170,
+        "phase774_active_steps": 170,
+        "phase774_active_fraction": 1.0,
+        "longest_phase774_off_s": 0.0,
+        "gate_toggles": 0,
+        "last_pre_nonfoot_or_terminal_clock_s": 4.779999732971191,
+        "last_tilt_rad": 0.6530716860777359,
+        "last_foot_contact_flags": [
+          1.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        "last_root_velocity_b_mps": [
+          -0.04958179220557213,
+          0.13652253150939941,
+          0.18279388546943665
+        ],
+        "last_root_angular_velocity_b_rad_s": [
+          -1.0362091064453125,
+          0.25703686475753784,
+          -0.46952834725379944
+        ]
+      }
+    },
+    {
+      "timing": {
+        "training_index": 18,
+        "ball_conditions_passed": true,
+        "qualified_contact_landing": true,
+        "stable_recovery": false,
+        "longest_stable_s": 0.08199998736381531,
+        "nonfoot_seen": true,
+        "landing_s": 3.0369622707366943,
+        "first_nonfoot": {
+          "time_s": 5.847,
+          "delay_after_qualified_landing_s": 2.810037729263306,
+          "native_patches": [
+            {
+              "body": "FL_thigh",
+              "normal_force_sum_n": 2545.70068359375
+            }
+          ],
+          "root_link_twist_world": [
+            -0.01817287504673004,
+            0.26202747225761414,
+            0.0664418563246727,
+            -1.1517932415008545,
+            -0.03310665115714073,
+            -0.3389124870300293
+          ]
+        }
+      },
+      "gate_coverage": {
+        "training_index": 18,
+        "nonfoot_seen": true,
+        "qualified_landing_s": 3.0369622707366943,
+        "first_nonfoot_s": 5.847,
+        "observed_control_steps": 281,
+        "phase774_active_steps": 281,
+        "phase774_active_fraction": 1.0,
+        "longest_phase774_off_s": 0.0,
+        "gate_toggles": 0,
+        "last_pre_nonfoot_or_terminal_clock_s": 5.839999675750732,
+        "last_tilt_rad": 0.6500296293047484,
+        "last_foot_contact_flags": [
+          1.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        "last_root_velocity_b_mps": [
+          0.03490053862333298,
+          0.2466772347688675,
+          0.15438035130500793
+        ],
+        "last_root_angular_velocity_b_rad_s": [
+          -1.00363290309906,
+          0.411283940076828,
+          -0.48496899008750916
+        ]
+      }
+    },
+    {
+      "timing": {
+        "training_index": 20,
+        "ball_conditions_passed": true,
+        "qualified_contact_landing": true,
+        "stable_recovery": false,
+        "longest_stable_s": 0.0,
+        "nonfoot_seen": true,
+        "landing_s": 3.083958864212036,
+        "first_nonfoot": {
+          "time_s": 3.7030000000000003,
+          "delay_after_qualified_landing_s": 0.6190411357879642,
+          "native_patches": [
+            {
+              "body": "FL_thigh",
+              "normal_force_sum_n": 371.4089660644531
+            }
+          ],
+          "root_link_twist_world": [
+            0.019801365211606026,
+            0.5336992144584656,
+            0.0003910972736775875,
+            -0.09066473692655563,
+            -0.21203559637069702,
+            0.56304532289505
+          ]
+        }
+      },
+      "gate_coverage": {
+        "training_index": 20,
+        "nonfoot_seen": true,
+        "qualified_landing_s": 3.083958864212036,
+        "first_nonfoot_s": 3.7030000000000003,
+        "observed_control_steps": 62,
+        "phase774_active_steps": 61,
+        "phase774_active_fraction": 0.9838709677419355,
+        "longest_phase774_off_s": 0.01,
+        "gate_toggles": 1,
+        "last_pre_nonfoot_or_terminal_clock_s": 3.6999998092651367,
+        "last_tilt_rad": 0.5734182329565478,
+        "last_foot_contact_flags": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "last_root_velocity_b_mps": [
+          0.22669397294521332,
+          0.5937166810035706,
+          0.11188898980617523
+        ],
+        "last_root_angular_velocity_b_rad_s": [
+          -0.46745145320892334,
+          0.30373355746269226,
+          0.7553461790084839
+        ]
+      }
+    },
+    {
+      "timing": {
+        "training_index": 30,
+        "ball_conditions_passed": true,
+        "qualified_contact_landing": true,
+        "stable_recovery": false,
+        "longest_stable_s": 0.0,
+        "nonfoot_seen": true,
+        "landing_s": 3.0739595890045166,
+        "first_nonfoot": {
+          "time_s": 3.521,
+          "delay_after_qualified_landing_s": 0.4470404109954833,
+          "native_patches": [
+            {
+              "body": "FL_thigh",
+              "normal_force_sum_n": 310.9515686035156
+            }
+          ],
+          "root_link_twist_world": [
+            0.22483286261558533,
+            0.17958888411521912,
+            0.11540956050157547,
+            -0.9957534670829773,
+            0.6402862071990967,
+            -0.43060892820358276
+          ]
+        }
+      },
+      "gate_coverage": {
+        "training_index": 30,
+        "nonfoot_seen": true,
+        "qualified_landing_s": 3.0739595890045166,
+        "first_nonfoot_s": 3.521,
+        "observed_control_steps": 45,
+        "phase774_active_steps": 45,
+        "phase774_active_fraction": 1.0,
+        "longest_phase774_off_s": 0.0,
+        "gate_toggles": 0,
+        "last_pre_nonfoot_or_terminal_clock_s": 3.5199999809265137,
+        "last_tilt_rad": 0.6160608563785233,
+        "last_foot_contact_flags": [
+          1.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        "last_root_velocity_b_mps": [
+          0.15456049144268036,
+          0.10583566129207611,
+          0.24903608858585358
+        ],
+        "last_root_angular_velocity_b_rad_s": [
+          -1.0147422552108765,
+          0.702404260635376,
+          -0.3290456235408783
+        ]
+      }
+    },
+    {
+      "timing": {
+        "training_index": 38,
+        "ball_conditions_passed": true,
+        "qualified_contact_landing": true,
+        "stable_recovery": false,
+        "longest_stable_s": 0.0,
+        "nonfoot_seen": true,
+        "landing_s": 3.087958574295044,
+        "first_nonfoot": {
+          "time_s": 4.172,
+          "delay_after_qualified_landing_s": 1.0840414257049558,
+          "native_patches": [
+            {
+              "body": "FL_thigh",
+              "normal_force_sum_n": 654.7974853515625
+            }
+          ],
+          "root_link_twist_world": [
+            -0.04929599538445473,
+            0.22429856657981873,
+            0.059490807354450226,
+            -1.2571450471878052,
+            -0.2586386799812317,
+            -0.19339267909526825
+          ]
+        }
+      },
+      "gate_coverage": {
+        "training_index": 38,
+        "nonfoot_seen": true,
+        "qualified_landing_s": 3.087958574295044,
+        "first_nonfoot_s": 4.172,
+        "observed_control_steps": 109,
+        "phase774_active_steps": 109,
+        "phase774_active_fraction": 1.0,
+        "longest_phase774_off_s": 0.0,
+        "gate_toggles": 0,
+        "last_pre_nonfoot_or_terminal_clock_s": 4.170000076293945,
+        "last_tilt_rad": 0.6177676409437668,
+        "last_foot_contact_flags": [
+          1.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        "last_root_velocity_b_mps": [
+          -0.04827181622385979,
+          0.1659548580646515,
+          0.15598782896995544
+        ],
+        "last_root_angular_velocity_b_rad_s": [
+          -1.1700001955032349,
+          0.040069982409477234,
+          -0.5799659490585327
+        ]
+      }
+    },
+    {
+      "timing": {
+        "training_index": 42,
+        "ball_conditions_passed": true,
+        "qualified_contact_landing": true,
+        "stable_recovery": false,
+        "longest_stable_s": 0.0,
+        "nonfoot_seen": true,
+        "landing_s": 3.0129640102386475,
+        "first_nonfoot": {
+          "time_s": 3.6710000000000003,
+          "delay_after_qualified_landing_s": 0.6580359897613528,
+          "native_patches": [
+            {
+              "body": "FR_thigh",
+              "normal_force_sum_n": 46.84675216674805
+            }
+          ],
+          "root_link_twist_world": [
+            0.3587063252925873,
+            -0.34624817967414856,
+            -0.04188137501478195,
+            0.919769823551178,
+            0.3737398684024811,
+            0.5211653709411621
+          ]
+        }
+      },
+      "gate_coverage": {
+        "training_index": 42,
+        "nonfoot_seen": true,
+        "qualified_landing_s": 3.0129640102386475,
+        "first_nonfoot_s": 3.6710000000000003,
+        "observed_control_steps": 66,
+        "phase774_active_steps": 66,
+        "phase774_active_fraction": 1.0,
+        "longest_phase774_off_s": 0.0,
+        "gate_toggles": 0,
+        "last_pre_nonfoot_or_terminal_clock_s": 3.669999837875366,
+        "last_tilt_rad": 0.8585071460286552,
+        "last_foot_contact_flags": [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        "last_root_velocity_b_mps": [
+          0.27071622014045715,
+          -0.685974657535553,
+          0.055751681327819824
+        ],
+        "last_root_angular_velocity_b_rad_s": [
+          1.6163479089736938,
+          1.413901686668396,
+          0.34658145904541016
+        ]
+      }
+    },
+    {
+      "timing": {
+        "training_index": 50,
+        "ball_conditions_passed": true,
+        "qualified_contact_landing": true,
+        "stable_recovery": false,
+        "longest_stable_s": 0.08099998533725739,
+        "nonfoot_seen": true,
+        "landing_s": 3.045961618423462,
+        "first_nonfoot": {
+          "time_s": 5.8740000000000006,
+          "delay_after_qualified_landing_s": 2.8280383815765386,
+          "native_patches": [
+            {
+              "body": "FL_thigh",
+              "normal_force_sum_n": 43014.19921875
+            }
+          ],
+          "root_link_twist_world": [
+            0.007368600927293301,
+            0.30073633790016174,
+            0.07970213890075684,
+            -1.095138430595398,
+            0.13909316062927246,
+            -0.44904011487960815
+          ]
+        }
+      },
+      "gate_coverage": {
+        "training_index": 50,
+        "nonfoot_seen": true,
+        "qualified_landing_s": 3.045961618423462,
+        "first_nonfoot_s": 5.8740000000000006,
+        "observed_control_steps": 283,
+        "phase774_active_steps": 283,
+        "phase774_active_fraction": 1.0,
+        "longest_phase774_off_s": 0.0,
+        "gate_toggles": 0,
+        "last_pre_nonfoot_or_terminal_clock_s": 5.869999885559082,
+        "last_tilt_rad": 0.6511268569290255,
+        "last_foot_contact_flags": [
+          1.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        "last_root_velocity_b_mps": [
+          0.033222418278455734,
+          0.2994386851787567,
+          0.15447387099266052
+        ],
+        "last_root_angular_velocity_b_rad_s": [
+          -1.0104047060012817,
+          0.408588707447052,
+          -0.6553764343261719
+        ]
+      }
+    },
+    {
+      "timing": {
+        "training_index": 54,
+        "ball_conditions_passed": true,
+        "qualified_contact_landing": true,
+        "stable_recovery": false,
+        "longest_stable_s": 0.03599999472498894,
+        "nonfoot_seen": true,
+        "landing_s": 3.0279629230499268,
+        "first_nonfoot": {
+          "time_s": 5.7,
+          "delay_after_qualified_landing_s": 2.6720370769500734,
+          "native_patches": [
+            {
+              "body": "FL_thigh",
+              "normal_force_sum_n": 389.3033447265625
+            }
+          ],
+          "root_link_twist_world": [
+            -0.1054622158408165,
+            0.23296613991260529,
+            0.0810493528842926,
+            -1.1173453330993652,
+            -0.4764608144760132,
+            -0.23505376279354095
+          ]
+        }
+      },
+      "gate_coverage": {
+        "training_index": 54,
+        "nonfoot_seen": true,
+        "qualified_landing_s": 3.0279629230499268,
+        "first_nonfoot_s": 5.7,
+        "observed_control_steps": 267,
+        "phase774_active_steps": 267,
+        "phase774_active_fraction": 1.0,
+        "longest_phase774_off_s": 0.0,
+        "gate_toggles": 0,
+        "last_pre_nonfoot_or_terminal_clock_s": 5.690000057220459,
+        "last_tilt_rad": 0.6497274145215208,
+        "last_foot_contact_flags": [
+          1.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        "last_root_velocity_b_mps": [
+          0.041176728904247284,
+          0.24129369854927063,
+          0.15699046850204468
+        ],
+        "last_root_angular_velocity_b_rad_s": [
+          -1.0313044786453247,
+          0.41267159581184387,
+          -0.45922189950942993
+        ]
+      }
+    },
+    {
+      "timing": {
+        "training_index": 57,
+        "ball_conditions_passed": true,
+        "qualified_contact_landing": true,
+        "stable_recovery": false,
+        "longest_stable_s": 0.034999996423721313,
+        "nonfoot_seen": true,
+        "landing_s": 3.001964807510376,
+        "first_nonfoot": {
+          "time_s": 5.051,
+          "delay_after_qualified_landing_s": 2.049035192489624,
+          "native_patches": [
+            {
+              "body": "FL_thigh",
+              "normal_force_sum_n": 612.9691772460938
+            }
+          ],
+          "root_link_twist_world": [
+            -0.07533563673496246,
+            0.3176229000091553,
+            0.0944657102227211,
+            -1.344946026802063,
+            -0.10419159382581711,
+            -0.5824955701828003
+          ]
+        }
+      },
+      "gate_coverage": {
+        "training_index": 57,
+        "nonfoot_seen": true,
+        "qualified_landing_s": 3.001964807510376,
+        "first_nonfoot_s": 5.051,
+        "observed_control_steps": 205,
+        "phase774_active_steps": 205,
+        "phase774_active_fraction": 1.0,
+        "longest_phase774_off_s": 0.0,
+        "gate_toggles": 0,
+        "last_pre_nonfoot_or_terminal_clock_s": 5.049999713897705,
+        "last_tilt_rad": 0.6326844059078444,
+        "last_foot_contact_flags": [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        "last_root_velocity_b_mps": [
+          -0.0880371481180191,
+          0.223792165517807,
+          0.2414819598197937
+        ],
+        "last_root_angular_velocity_b_rad_s": [
+          -1.14311683177948,
+          0.43197101354599,
+          -0.7876463532447815
+        ]
+      }
+    },
+    {
+      "timing": {
+        "training_index": 58,
+        "ball_conditions_passed": true,
+        "qualified_contact_landing": true,
+        "stable_recovery": false,
+        "longest_stable_s": 0.060999952256679535,
+        "nonfoot_seen": true,
+        "landing_s": 3.086958646774292,
+        "first_nonfoot": {
+          "time_s": 4.66,
+          "delay_after_qualified_landing_s": 1.5730413532257081,
+          "native_patches": [
+            {
+              "body": "FL_thigh",
+              "normal_force_sum_n": 34000.171875
+            }
+          ],
+          "root_link_twist_world": [
+            0.09641136229038239,
+            0.20478713512420654,
+            0.05687514692544937,
+            -0.92153400182724,
+            0.45041021704673767,
+            -0.2963855564594269
+          ]
+        }
+      },
+      "gate_coverage": {
+        "training_index": 58,
+        "nonfoot_seen": true,
+        "qualified_landing_s": 3.086958646774292,
+        "first_nonfoot_s": 4.66,
+        "observed_control_steps": 157,
+        "phase774_active_steps": 157,
+        "phase774_active_fraction": 1.0,
+        "longest_phase774_off_s": 0.0,
+        "gate_toggles": 0,
+        "last_pre_nonfoot_or_terminal_clock_s": 4.650000095367432,
+        "last_tilt_rad": 0.6322545664412245,
+        "last_foot_contact_flags": [
+          1.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        "last_root_velocity_b_mps": [
+          0.03660405054688454,
+          0.232322558760643,
+          0.11047760397195816
+        ],
+        "last_root_angular_velocity_b_rad_s": [
+          -0.9896787405014038,
+          0.2591400146484375,
+          -0.4455036520957947
+        ]
+      }
+    },
+    {
+      "timing": {
+        "training_index": 61,
+        "ball_conditions_passed": true,
+        "qualified_contact_landing": true,
+        "stable_recovery": false,
+        "longest_stable_s": 0.07199996709823608,
+        "nonfoot_seen": true,
+        "landing_s": 3.0739595890045166,
+        "first_nonfoot": {
+          "time_s": 5.604,
+          "delay_after_qualified_landing_s": 2.5300404109954835,
+          "native_patches": [
+            {
+              "body": "FL_thigh",
+              "normal_force_sum_n": 694.1741943359375
+            }
+          ],
+          "root_link_twist_world": [
+            0.0077177416533231735,
+            0.2563149333000183,
+            0.08187948912382126,
+            -1.2574176788330078,
+            0.1427443027496338,
+            -0.27113160490989685
+          ]
+        }
+      },
+      "gate_coverage": {
+        "training_index": 61,
+        "nonfoot_seen": true,
+        "qualified_landing_s": 3.0739595890045166,
+        "first_nonfoot_s": 5.604,
+        "observed_control_steps": 253,
+        "phase774_active_steps": 253,
+        "phase774_active_fraction": 1.0,
+        "longest_phase774_off_s": 0.0,
+        "gate_toggles": 0,
+        "last_pre_nonfoot_or_terminal_clock_s": 5.599999904632568,
+        "last_tilt_rad": 0.6559850233549732,
+        "last_foot_contact_flags": [
+          1.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        "last_root_velocity_b_mps": [
+          -0.058106958866119385,
+          0.16951793432235718,
+          0.19779181480407715
+        ],
+        "last_root_angular_velocity_b_rad_s": [
+          -1.1331281661987305,
+          0.2109525203704834,
+          -0.5285578966140747
+        ]
+      }
+    },
+    {
+      "timing": {
+        "training_index": 67,
+        "ball_conditions_passed": true,
+        "qualified_contact_landing": true,
+        "stable_recovery": false,
+        "longest_stable_s": 0.06599995493888855,
+        "nonfoot_seen": true,
+        "landing_s": 2.9879658222198486,
+        "first_nonfoot": {
+          "time_s": 5.025,
+          "delay_after_qualified_landing_s": 2.0370341777801517,
+          "native_patches": [
+            {
+              "body": "FL_thigh",
+              "normal_force_sum_n": 141.0995635986328
+            }
+          ],
+          "root_link_twist_world": [
+            -0.0054379794746637344,
+            0.2676238417625427,
+            0.06944815814495087,
+            -1.1486783027648926,
+            -0.025243597105145454,
+            -0.2901626229286194
+          ]
+        }
+      },
+      "gate_coverage": {
+        "training_index": 67,
+        "nonfoot_seen": true,
+        "qualified_landing_s": 2.9879658222198486,
+        "first_nonfoot_s": 5.025,
+        "observed_control_steps": 204,
+        "phase774_active_steps": 204,
+        "phase774_active_fraction": 1.0,
+        "longest_phase774_off_s": 0.0,
+        "gate_toggles": 0,
+        "last_pre_nonfoot_or_terminal_clock_s": 5.019999980926514,
+        "last_tilt_rad": 0.6485953060853309,
+        "last_foot_contact_flags": [
+          1.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        "last_root_velocity_b_mps": [
+          0.03216918557882309,
+          0.2727309465408325,
+          0.1322099268436432
+        ],
+        "last_root_angular_velocity_b_rad_s": [
+          -1.0416368246078491,
+          0.3276909589767456,
+          -0.5575315952301025
+        ]
+      }
+    },
+    {
+      "timing": {
+        "training_index": 70,
+        "ball_conditions_passed": true,
+        "qualified_contact_landing": true,
+        "stable_recovery": false,
+        "longest_stable_s": 0.13900010287761688,
+        "nonfoot_seen": true,
+        "landing_s": 2.9439690113067627,
+        "first_nonfoot": {
+          "time_s": 5.757000000000001,
+          "delay_after_qualified_landing_s": 2.813030988693238,
+          "native_patches": [
+            {
+              "body": "FL_thigh",
+              "normal_force_sum_n": 27.957094192504883
+            }
+          ],
+          "root_link_twist_world": [
+            -0.042811401188373566,
+            0.28344690799713135,
+            0.07567621022462845,
+            -1.3065074682235718,
+            -0.1665143370628357,
+            -0.31117668747901917
+          ]
+        }
+      },
+      "gate_coverage": {
+        "training_index": 70,
+        "nonfoot_seen": true,
+        "qualified_landing_s": 2.9439690113067627,
+        "first_nonfoot_s": 5.757000000000001,
+        "observed_control_steps": 281,
+        "phase774_active_steps": 280,
+        "phase774_active_fraction": 0.99644128113879,
+        "longest_phase774_off_s": 0.01,
+        "gate_toggles": 2,
+        "last_pre_nonfoot_or_terminal_clock_s": 5.75,
+        "last_tilt_rad": 0.6462334584827572,
+        "last_foot_contact_flags": [
+          1.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        "last_root_velocity_b_mps": [
+          0.0365871861577034,
+          0.2785021662712097,
+          0.15765085816383362
+        ],
+        "last_root_angular_velocity_b_rad_s": [
+          -1.124123454093933,
+          0.4098958671092987,
+          -0.5506237745285034
+        ]
+      }
+    },
+    {
+      "timing": {
+        "training_index": 71,
+        "ball_conditions_passed": true,
+        "qualified_contact_landing": true,
+        "stable_recovery": false,
+        "longest_stable_s": 0.27100005745887756,
+        "nonfoot_seen": false,
+        "landing_s": 2.9499685764312744,
+        "first_nonfoot": null
+      },
+      "gate_coverage": {
+        "training_index": 71,
+        "nonfoot_seen": false,
+        "qualified_landing_s": 2.9499685764312744,
+        "first_nonfoot_s": null,
+        "observed_control_steps": 505,
+        "phase774_active_steps": 505,
+        "phase774_active_fraction": 1.0,
+        "longest_phase774_off_s": 0.0,
+        "gate_toggles": 0,
+        "last_pre_nonfoot_or_terminal_clock_s": 7.989999771118164,
+        "last_tilt_rad": 0.17793682437883676,
+        "last_foot_contact_flags": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "last_root_velocity_b_mps": [
+          -0.020142629742622375,
+          0.03459743410348892,
+          -0.0010506263934075832
+        ],
+        "last_root_angular_velocity_b_rad_s": [
+          -0.04668278619647026,
+          0.017827928066253662,
+          -0.2539559304714203
+        ]
+      }
+    },
+    {
+      "timing": {
+        "training_index": 77,
+        "ball_conditions_passed": true,
+        "qualified_contact_landing": true,
+        "stable_recovery": false,
+        "longest_stable_s": 0.23900030553340912,
+        "nonfoot_seen": false,
+        "landing_s": 2.9689671993255615,
+        "first_nonfoot": null
+      },
+      "gate_coverage": {
+        "training_index": 77,
+        "nonfoot_seen": false,
+        "qualified_landing_s": 2.9689671993255615,
+        "first_nonfoot_s": null,
+        "observed_control_steps": 503,
+        "phase774_active_steps": 503,
+        "phase774_active_fraction": 1.0,
+        "longest_phase774_off_s": 0.0,
+        "gate_toggles": 0,
+        "last_pre_nonfoot_or_terminal_clock_s": 7.989999771118164,
+        "last_tilt_rad": 0.19612347756285556,
+        "last_foot_contact_flags": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "last_root_velocity_b_mps": [
+          0.004026700276881456,
+          0.003890296444296837,
+          0.002632924122735858
+        ],
+        "last_root_angular_velocity_b_rad_s": [
+          -0.027746131643652916,
+          0.013274157419800758,
+          -0.002697203541174531
+        ]
+      }
+    },
+    {
+      "timing": {
+        "training_index": 85,
+        "ball_conditions_passed": true,
+        "qualified_contact_landing": true,
+        "stable_recovery": false,
+        "longest_stable_s": 0.050999969244003296,
+        "nonfoot_seen": true,
+        "landing_s": 2.977966547012329,
+        "first_nonfoot": {
+          "time_s": 4.821,
+          "delay_after_qualified_landing_s": 1.8430334529876706,
+          "native_patches": [
+            {
+              "body": "FL_thigh",
+              "normal_force_sum_n": 350.9698181152344
+            }
+          ],
+          "root_link_twist_world": [
+            -0.02103900909423828,
+            0.2705083191394806,
+            0.08313395082950592,
+            -1.2471619844436646,
+            0.030255833640694618,
+            -0.3643397092819214
+          ]
+        }
+      },
+      "gate_coverage": {
+        "training_index": 85,
+        "nonfoot_seen": true,
+        "qualified_landing_s": 2.977966547012329,
+        "first_nonfoot_s": 4.821,
+        "observed_control_steps": 185,
+        "phase774_active_steps": 185,
+        "phase774_active_fraction": 1.0,
+        "longest_phase774_off_s": 0.0,
+        "gate_toggles": 0,
+        "last_pre_nonfoot_or_terminal_clock_s": 4.819999694824219,
+        "last_tilt_rad": 0.6652245387700549,
+        "last_foot_contact_flags": [
+          1.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        "last_root_velocity_b_mps": [
+          -0.08190932869911194,
+          0.17835892736911774,
+          0.20566196739673615
+        ],
+        "last_root_angular_velocity_b_rad_s": [
+          -1.0896111726760864,
+          0.24774053692817688,
+          -0.6340712904930115
+        ]
+      }
+    },
+    {
+      "timing": {
+        "training_index": 87,
+        "ball_conditions_passed": true,
+        "qualified_contact_landing": true,
+        "stable_recovery": false,
+        "longest_stable_s": 0.0,
+        "nonfoot_seen": true,
+        "landing_s": 3.0379621982574463,
+        "first_nonfoot": {
+          "time_s": 3.371,
+          "delay_after_qualified_landing_s": 0.3330378017425537,
+          "native_patches": [
+            {
+              "body": "FL_hip",
+              "normal_force_sum_n": 38329.5390625
+            }
+          ],
+          "root_link_twist_world": [
+            -0.33199071884155273,
+            0.2526002824306488,
+            -0.3611164689064026,
+            -2.4756767749786377,
+            -2.1680753231048584,
+            1.8035842180252075
+          ]
+        }
+      },
+      "gate_coverage": {
+        "training_index": 87,
+        "nonfoot_seen": true,
+        "qualified_landing_s": 3.0379621982574463,
+        "first_nonfoot_s": 3.371,
+        "observed_control_steps": 34,
+        "phase774_active_steps": 34,
+        "phase774_active_fraction": 1.0,
+        "longest_phase774_off_s": 0.0,
+        "gate_toggles": 0,
+        "last_pre_nonfoot_or_terminal_clock_s": 3.369999885559082,
+        "last_tilt_rad": 0.6114985145717274,
+        "last_foot_contact_flags": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "last_root_velocity_b_mps": [
+          -0.015535227954387665,
+          0.5191235542297363,
+          -0.30459943413734436
+        ],
+        "last_root_angular_velocity_b_rad_s": [
+          -3.6330296993255615,
+          -1.7613649368286133,
+          -0.25490814447402954
+        ]
+      }
+    },
+    {
+      "timing": {
+        "training_index": 90,
+        "ball_conditions_passed": true,
+        "qualified_contact_landing": true,
+        "stable_recovery": false,
+        "longest_stable_s": 0.0,
+        "nonfoot_seen": true,
+        "landing_s": 3.104957342147827,
+        "first_nonfoot": {
+          "time_s": 3.745,
+          "delay_after_qualified_landing_s": 0.640042657852173,
+          "native_patches": [
+            {
+              "body": "FL_hip",
+              "normal_force_sum_n": 2597.318115234375
+            }
+          ],
+          "root_link_twist_world": [
+            0.290576308965683,
+            0.32061707973480225,
+            0.07679904997348785,
+            1.610739827156067,
+            -0.4485369920730591,
+            0.6437513828277588
+          ]
+        }
+      },
+      "gate_coverage": {
+        "training_index": 90,
+        "nonfoot_seen": true,
+        "qualified_landing_s": 3.104957342147827,
+        "first_nonfoot_s": 3.745,
+        "observed_control_steps": 64,
+        "phase774_active_steps": 64,
+        "phase774_active_fraction": 1.0,
+        "longest_phase774_off_s": 0.0,
+        "gate_toggles": 0,
+        "last_pre_nonfoot_or_terminal_clock_s": 3.740000009536743,
+        "last_tilt_rad": 0.45604328519627574,
+        "last_foot_contact_flags": [
+          1.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        "last_root_velocity_b_mps": [
+          0.5169878602027893,
+          0.392139732837677,
+          -0.11988440901041031
+        ],
+        "last_root_angular_velocity_b_rad_s": [
+          -0.09133712947368622,
+          1.019005298614502,
+          1.3706849813461304
+        ]
+      }
+    },
+    {
+      "timing": {
+        "training_index": 95,
+        "ball_conditions_passed": true,
+        "qualified_contact_landing": true,
+        "stable_recovery": false,
+        "longest_stable_s": 0.015000001527369022,
+        "nonfoot_seen": true,
+        "landing_s": 2.979966402053833,
+        "first_nonfoot": {
+          "time_s": 5.066,
+          "delay_after_qualified_landing_s": 2.086033597946167,
+          "native_patches": [
+            {
+              "body": "FL_thigh",
+              "normal_force_sum_n": 152.05784606933594
+            }
+          ],
+          "root_link_twist_world": [
+            -0.004238163586705923,
+            0.22949886322021484,
+            0.08951166272163391,
+            -1.2830877304077148,
+            0.0958859845995903,
+            -0.23421697318553925
+          ]
+        }
+      },
+      "gate_coverage": {
+        "training_index": 95,
+        "nonfoot_seen": true,
+        "qualified_landing_s": 2.979966402053833,
+        "first_nonfoot_s": 5.066,
+        "observed_control_steps": 209,
+        "phase774_active_steps": 209,
+        "phase774_active_fraction": 1.0,
+        "longest_phase774_off_s": 0.0,
+        "gate_toggles": 0,
+        "last_pre_nonfoot_or_terminal_clock_s": 5.059999942779541,
+        "last_tilt_rad": 0.6552301405731195,
+        "last_foot_contact_flags": [
+          1.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        "last_root_velocity_b_mps": [
+          0.019523661583662033,
+          0.24666467308998108,
+          0.12865838408470154
+        ],
+        "last_root_angular_velocity_b_rad_s": [
+          -1.1457451581954956,
+          0.3236786127090454,
+          -0.4450019896030426
+        ]
+      }
+    },
+    {
+      "timing": {
+        "training_index": 96,
+        "ball_conditions_passed": true,
+        "qualified_contact_landing": true,
+        "stable_recovery": false,
+        "longest_stable_s": 0.06999996304512024,
+        "nonfoot_seen": true,
+        "landing_s": 2.981966257095337,
+        "first_nonfoot": {
+          "time_s": 6.689,
+          "delay_after_qualified_landing_s": 3.707033742904663,
+          "native_patches": [
+            {
+              "body": "FL_thigh",
+              "normal_force_sum_n": 16964.927734375
+            }
+          ],
+          "root_link_twist_world": [
+            0.04933662340044975,
+            0.28268828988075256,
+            0.025021247565746307,
+            -0.9927302002906799,
+            0.225176602602005,
+            -0.34973859786987305
+          ]
+        }
+      },
+      "gate_coverage": {
+        "training_index": 96,
+        "nonfoot_seen": true,
+        "qualified_landing_s": 2.981966257095337,
+        "first_nonfoot_s": 6.689,
+        "observed_control_steps": 370,
+        "phase774_active_steps": 370,
+        "phase774_active_fraction": 1.0,
+        "longest_phase774_off_s": 0.0,
+        "gate_toggles": 0,
+        "last_pre_nonfoot_or_terminal_clock_s": 6.679999828338623,
+        "last_tilt_rad": 0.6583000015055206,
+        "last_foot_contact_flags": [
+          1.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        "last_root_velocity_b_mps": [
+          0.04764970391988754,
+          0.24175356328487396,
+          0.14989393949508667
+        ],
+        "last_root_angular_velocity_b_rad_s": [
+          -0.8766652345657349,
+          0.38514143228530884,
+          -0.5037948489189148
+        ]
+      }
+    },
+    {
+      "timing": {
+        "training_index": 98,
+        "ball_conditions_passed": true,
+        "qualified_contact_landing": true,
+        "stable_recovery": false,
+        "longest_stable_s": 0.10900004208087921,
+        "nonfoot_seen": false,
+        "landing_s": 2.981966257095337,
+        "first_nonfoot": null
+      },
+      "gate_coverage": {
+        "training_index": 98,
+        "nonfoot_seen": false,
+        "qualified_landing_s": 2.981966257095337,
+        "first_nonfoot_s": null,
+        "observed_control_steps": 501,
+        "phase774_active_steps": 501,
+        "phase774_active_fraction": 1.0,
+        "longest_phase774_off_s": 0.0,
+        "gate_toggles": 0,
+        "last_pre_nonfoot_or_terminal_clock_s": 7.989999771118164,
+        "last_tilt_rad": 0.21583346923948368,
+        "last_foot_contact_flags": [
+          1.0,
+          1.0,
+          1.0,
+          0.0
+        ],
+        "last_root_velocity_b_mps": [
+          0.0017615361139178276,
+          0.00788465142250061,
+          0.005751565098762512
+        ],
+        "last_root_angular_velocity_b_rad_s": [
+          -0.04751657322049141,
+          0.018606100231409073,
+          -0.010413216426968575
+        ]
+      }
+    },
+    {
+      "timing": {
+        "training_index": 115,
+        "ball_conditions_passed": true,
+        "qualified_contact_landing": true,
+        "stable_recovery": false,
+        "longest_stable_s": 0.20600023865699768,
+        "nonfoot_seen": false,
+        "landing_s": 2.9869658946990967,
+        "first_nonfoot": null
+      },
+      "gate_coverage": {
+        "training_index": 115,
+        "nonfoot_seen": false,
+        "qualified_landing_s": 2.9869658946990967,
+        "first_nonfoot_s": null,
+        "observed_control_steps": 501,
+        "phase774_active_steps": 501,
+        "phase774_active_fraction": 1.0,
+        "longest_phase774_off_s": 0.0,
+        "gate_toggles": 0,
+        "last_pre_nonfoot_or_terminal_clock_s": 7.989999771118164,
+        "last_tilt_rad": 0.18804855391902967,
+        "last_foot_contact_flags": [
+          1.0,
+          1.0,
+          1.0,
+          0.0
+        ],
+        "last_root_velocity_b_mps": [
+          -0.00021047581685706973,
+          0.013625852763652802,
+          5.4750475101172924e-05
+        ],
+        "last_root_angular_velocity_b_rad_s": [
+          -0.04140160605311394,
+          -0.00015174085274338722,
+          -0.030875634402036667
+        ]
+      }
+    }
+  ]
+}
