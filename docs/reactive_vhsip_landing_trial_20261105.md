@@ -179,6 +179,6 @@ landing_mpc_v2_posture8_seed882072_01
 - 试验输出：`reports/G07_full_racket_v5/reactive_vhsip_actualfail8_seed882072_06/`
 - 运行状态：GPU0，102400 env steps，约 0.322 GPU hours，正常结束
 - 基线：`reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/`
-- 当前实现提交：`de676a9`
+- 当前实现提交：`4350c2e`
 
 **结论：本轮没有找到“数学求不出来”的证据；更像是模型、接触模式和位置执行接口之间的能力不匹配。下一版应优先补上接触冲量/动量闭环和力矩级支撑，而不是继续盲目扫描单个 VHSIP 参数。**
