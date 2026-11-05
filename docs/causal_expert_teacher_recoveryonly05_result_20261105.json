@@ -1,0 +1,53 @@
+{
+  "schema": "g07-causal-expert-recovery-only-result-v1",
+  "date": "2026-11-05",
+  "training_output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/causal_expert_teacher_recoveryonly05_frozenv2_8_env5120_02",
+  "training": {
+    "num_envs": 5120,
+    "updates": 8,
+    "seed": 882144,
+    "case_expert_max_experts": 5,
+    "case_expert_blend": 0.5,
+    "case_expert_recovery_only": true,
+    "completed_episodes": 6978,
+    "air": 3510,
+    "conditional_recovery_count": 1138,
+    "complete5": 710,
+    "numerical_failures": 0,
+    "teacher_assisted": true,
+    "frozen_policy_performance": false
+  },
+  "frozen_evaluations": [
+    {
+      "seed": 882072,
+      "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/causal_expert_teacher_recoveryonly05_frozen128_seed882072_03",
+      "complete5": 24,
+      "airborne_contacts": 73,
+      "conditional_recovery_count": 34,
+      "crossed_net": 71,
+      "landed_target": 64,
+      "actual_racket_contacts": 109,
+      "numerical_failures": 0,
+      "extra_teacher_enabled": false
+    },
+    {
+      "seed": 882075,
+      "output": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/causal_expert_teacher_recoveryonly05_frozen128_seed882075_01",
+      "complete5": 24,
+      "airborne_contacts": 73,
+      "conditional_recovery_count": 34,
+      "crossed_net": 71,
+      "landed_target": 64,
+      "actual_racket_contacts": 109,
+      "numerical_failures": 0,
+      "extra_teacher_enabled": false
+    }
+  ],
+  "baseline": {
+    "name": "frozen_v2_smooth_approach16_env5120_01",
+    "complete5_seed_882072": 27,
+    "complete5_seed_882075": 27
+  },
+  "accepted": false,
+  "rejection_reason": "24/128 on both fixed seeds is below the 27/128 pure-student baseline"
+}
