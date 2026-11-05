@@ -41,6 +41,10 @@ parser.add_argument('--landing-mpc-allow-first-step', action='store_true',
     help='Apply a feasible first QP stage only when the local risk score improves, even if the terminal gate rejects')
 parser.add_argument('--landing-mpc-min-risk-score-drop', type=float, default=0.,
     help='Minimum dimensionless risk-score decrease required for a nonterminal first-step application')
+parser.add_argument('--landing-mpc-min-start-risk-score', type=float, default=0.,
+    help='Minimum risk score required to start a nonterminal touchdown intervention')
+parser.add_argument('--landing-mpc-hold-steps', type=int, default=0,
+    help='Number of subsequent policy ticks to keep a started touchdown intervention active')
 parser.add_argument('--landing-mpc-support-margin', action='store_true',
     help='Use the experimental support-margin viability gate (MPC v2)')
 parser.add_argument('--landing-mpc-torque-overlay', action='store_true',
@@ -115,6 +119,7 @@ class SharedTargetResidualController:
     def __init__(self, checkpoint, count, device,landing_trial=None,support_trial=None,disable_support=False,
                  landing_mpc_cases=None, landing_mpc_horizon_steps=10, landing_mpc_allow_first_step=False,
                  landing_mpc_min_risk_score_drop=0.,
+                 landing_mpc_min_start_risk_score=0., landing_mpc_hold_steps=0,
                  landing_mpc_support_margin=False,
                  landing_mpc_torque_overlay=False,
                  landing_mpc_touchdown_recovery=False,
@@ -153,6 +158,13 @@ class SharedTargetResidualController:
         self.landing_mpc_min_risk_score_drop=float(landing_mpc_min_risk_score_drop)
         if self.landing_mpc_min_risk_score_drop < 0. or not np.isfinite(self.landing_mpc_min_risk_score_drop):
             raise ValueError('landing_mpc_min_risk_score_drop must be finite and nonnegative')
+        self.landing_mpc_min_start_risk_score=float(landing_mpc_min_start_risk_score)
+        if self.landing_mpc_min_start_risk_score < 0. or not np.isfinite(self.landing_mpc_min_start_risk_score):
+            raise ValueError('landing_mpc_min_start_risk_score must be finite and nonnegative')
+        self.landing_mpc_hold_steps=int(landing_mpc_hold_steps)
+        if self.landing_mpc_hold_steps < 0:
+            raise ValueError('landing_mpc_hold_steps must be nonnegative')
+        self._landing_mpc_hold_remaining=torch.zeros((count,),dtype=torch.int32,device=device)
         self.landing_mpc_support_margin=bool(landing_mpc_support_margin)
         self.landing_mpc_torque_overlay=bool(landing_mpc_torque_overlay)
         self.landing_mpc_touchdown_recovery=bool(landing_mpc_touchdown_recovery)
@@ -244,8 +256,10 @@ class SharedTargetResidualController:
                 self.first_ball_feature[ids].zero_();self.first_ball_seen[ids]=False
         if ids is None:
             self._effort_override.zero_();self._effort_override_mask.zero_()
+            self._landing_mpc_hold_remaining.zero_()
         else:
             self._effort_override[ids].zero_();self._effort_override_mask[ids]=False
+            self._landing_mpc_hold_remaining[ids]=0
 
     def effort_override(self):
         """Return explicit effort residuals for the native implicit-PD actuator."""
@@ -303,6 +317,7 @@ class SharedTargetResidualController:
                     first_step_improves=bool(plan.get('first_step_improves',False)),
                     initial_risk_score=plan.get('initial_risk_score'),
                     first_step_risk_score=plan.get('first_step_risk_score'),
+                    hold_active=bool(self._landing_mpc_hold_remaining[lane].item() > 0),
                     runtime_ms=float(plan.get('wall_runtime_s',0.)*1000.),terminal_risk=plan.get('terminal_risk'),
                     horizon_steps=len(horizon),
                     failed_stage=failed_stage.get('stage') if failed_stage is not None else None,
@@ -316,10 +331,13 @@ class SharedTargetResidualController:
                     if plan.get('initial_risk_score') is not None and
                     plan.get('first_step_risk_score') is not None else None)
                 first_step_sufficiently_improves = bool(
-                    risk_drop is not None and risk_drop >= self.landing_mpc_min_risk_score_drop)
+                    risk_drop is not None and risk_drop >= self.landing_mpc_min_risk_score_drop and
+                    plan.get('initial_risk_score') is not None and
+                    float(plan['initial_risk_score']) >= self.landing_mpc_min_start_risk_score)
+                hold_active = bool(self._landing_mpc_hold_remaining[lane].item() > 0)
                 if plan.get('accepted') or (self.landing_mpc_allow_first_step and
                                             record['first_action_available'] and record['risk_trigger'] and
-                                            first_step_sufficiently_improves):
+                                            (first_step_sufficiently_improves or hold_active)):
                     chosen=np.asarray(plan['horizon'][0]['normalized_action'],dtype=np.float32)
                     # A torque-overlay trial keeps the student's position
                     # target and adds only the MPC torque residual.  Replacing
@@ -329,6 +347,8 @@ class SharedTargetResidualController:
                         action[lane]=torch.as_tensor(chosen,device=action.device)
                     record['applied_first_step']=True
                     record['first_step_risk_score_drop']=risk_drop
+                    if self.landing_mpc_hold_steps:
+                        self._landing_mpc_hold_remaining[lane]=self.landing_mpc_hold_steps
                     record['torque_overlay_applied']=False
                     first_plan_torque = plan.get('torque')
                     if first_plan_torque is None and plan.get('horizon'):
@@ -352,6 +372,8 @@ class SharedTargetResidualController:
                 else:
                     record['applied_first_step']=False
                     record['first_step_risk_score_drop']=risk_drop
+                    if hold_active:
+                        self._landing_mpc_hold_remaining[lane]-=1
                 self.landing_mpc_logs.append(record)
             except Exception as error:
                 self.landing_mpc_logs.append(dict(case=case,clock_s=float(public_clock[lane]),accepted=False,
@@ -534,6 +556,8 @@ def main():
         landing_mpc_horizon_steps=args.landing_mpc_horizon_steps,
         landing_mpc_allow_first_step=args.landing_mpc_allow_first_step,
         landing_mpc_min_risk_score_drop=args.landing_mpc_min_risk_score_drop,
+        landing_mpc_min_start_risk_score=args.landing_mpc_min_start_risk_score,
+        landing_mpc_hold_steps=args.landing_mpc_hold_steps,
         landing_mpc_support_margin=args.landing_mpc_support_margin,
         landing_mpc_torque_overlay=args.landing_mpc_torque_overlay,
         landing_mpc_touchdown_recovery=args.landing_mpc_touchdown_recovery,
@@ -567,6 +591,8 @@ def main():
                       landing_mpc_horizon_steps=args.landing_mpc_horizon_steps,
                       landing_mpc_allow_first_step=args.landing_mpc_allow_first_step,
                       landing_mpc_min_risk_score_drop=args.landing_mpc_min_risk_score_drop,
+                      landing_mpc_min_start_risk_score=args.landing_mpc_min_start_risk_score,
+                      landing_mpc_hold_steps=args.landing_mpc_hold_steps,
                       landing_mpc_support_margin=args.landing_mpc_support_margin,
                       landing_mpc_torque_overlay=args.landing_mpc_torque_overlay,
                       landing_mpc_touchdown_recovery=args.landing_mpc_touchdown_recovery,
@@ -768,6 +794,8 @@ def main():
                 horizon_steps=args.landing_mpc_horizon_steps,
                 allow_first_step=bool(args.landing_mpc_allow_first_step),
                 min_risk_score_drop=float(args.landing_mpc_min_risk_score_drop),
+                min_start_risk_score=float(args.landing_mpc_min_start_risk_score),
+                hold_steps=int(args.landing_mpc_hold_steps),
                 support_margin=bool(args.landing_mpc_support_margin),
                 torque_overlay=bool(args.landing_mpc_torque_overlay),
                 touchdown_recovery=bool(args.landing_mpc_touchdown_recovery),
