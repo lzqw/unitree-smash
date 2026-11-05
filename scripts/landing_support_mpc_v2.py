@@ -25,6 +25,8 @@ class LandingMPCSettingsV2(LandingMPCSettingsV1):
     terminal_support_margin_m: float = .010
     two_foot_max_com_distance_m: float = .075
     one_foot_max_com_distance_m: float = .045
+    landing_leg_posture_blend: float = .35
+    landing_arm_posture_blend: float = 0.
 
 
 def _hull(points):
@@ -95,9 +97,20 @@ class LandingSupportMPCV2(LandingSupportMPCV1):
             value = getattr(settings, name)
             if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or value <= 0:
                 raise ValueError(f'{name} must be positive and finite')
+        for name in ('landing_leg_posture_blend', 'landing_arm_posture_blend'):
+            value = getattr(settings, name)
+            if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or not 0. <= value <= 1.:
+                raise ValueError(f'{name} must be in [0,1]')
         if settings.terminal_support_margin_m > settings.support_margin_trigger_m:
             raise ValueError('terminal support margin must not exceed trigger margin')
         super().__init__(interface, qp_settings=qp_settings, settings=settings)
+        self.posture_target = None
+
+    def set_posture_target(self, target):
+        target = np.asarray(target, dtype=np.float64)
+        if target.shape != (18,) or not np.isfinite(target).all():
+            raise ValueError('posture target must be a finite 18-vector')
+        self.posture_target = target.copy()
 
     def _support_geometry(self, state):
         snapshot = self.qp.model.snapshot(state.q, state.v)
@@ -149,7 +162,15 @@ class LandingSupportMPCV2(LandingSupportMPCV1):
         # Copy V1 implementation's rollout but apply the support-margin risk
         # and terminal viability checks.  Keeping the same QP preserves the
         # established solver diagnostics and action interface.
-        result = super().solve(state, joint_reference, force=force)
+        effective_reference = np.asarray(joint_reference, dtype=np.float64).copy()
+        if self.posture_target is not None and int(np.asarray(state.contacts, dtype=bool).sum()) > 0:
+            weights = np.r_[
+                np.full(12, self.settings.landing_leg_posture_blend),
+                np.full(6, self.settings.landing_arm_posture_blend)]
+            effective_reference = ((1. - weights) * effective_reference
+                                   + weights * self.posture_target)
+        result = super().solve(state, effective_reference, force=force)
+        result['posture_reference_used'] = effective_reference.tolist()
         if not result.get('horizon'):
             return result
         # V1's terminal risk was computed with its own risk method (dynamic

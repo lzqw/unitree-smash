@@ -168,7 +168,7 @@ class SharedTargetResidualController:
             self.reactive_vhsip=LandingAssistedController(self.base,count,device,vhsip_config,
                 checkpoint['asset_sha256'],enabled_cases=self.reactive_vhsip_cases)
 
-    def configure_landing_mpc(self, limits):
+    def configure_landing_mpc(self, limits, default=None):
         """Create the optional CPU MPC after native limits are admitted."""
         if not self.landing_mpc_cases:
             return
@@ -190,6 +190,10 @@ class SharedTargetResidualController:
         if self.landing_mpc_support_margin:
             self.landing_mpc=LandingSupportMPCV2(interface, qp_settings=qp_settings,
                 settings=LandingMPCSettingsV2(horizon_steps=self._landing_mpc_horizon_steps))
+            if default is not None:
+                if torch.is_tensor(default):
+                    default=default.detach().cpu().numpy()
+                self.landing_mpc.set_posture_target(default)
         else:
             self.landing_mpc=LandingSupportMPCV1(interface, qp_settings=qp_settings,
                 settings=LandingMPCSettingsV1(horizon_steps=self._landing_mpc_horizon_steps))
@@ -563,7 +567,7 @@ def main():
         default = env.robot.data.default_joint_pos[0, env.joint_ids]
         limits = env.robot.data.joint_pos_limits[0, env.joint_ids]
         if hasattr(controller,'configure_landing_mpc'):
-            controller.configure_landing_mpc(limits)
+            controller.configure_landing_mpc(limits, default)
         atomic_json(args.output/'native_command_inputs.json',dict(
             default_joint_position_rad=default.cpu().tolist(),joint_limits_rad=limits.cpu().tolist(),
             protocol_sha256=digest(protocol_path),policy_sha256=digest(args.checkpoint)))
