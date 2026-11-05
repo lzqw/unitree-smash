@@ -33,6 +33,12 @@ parser.add_argument('--noise', choices=('none', 'A', 'B'), default='none')
 parser.add_argument('--seed', type=int, default=724201)
 parser.add_argument('--record-first-episodes',action='store_true',
     help='Losslessly retain actual policy inputs and dispatched actions for every selected first episode')
+parser.add_argument('--landing-mpc-cases', type=int, nargs='+', default=None,
+    help='Optional measured landing-support MPC controller trial for selected TRAIN indices')
+parser.add_argument('--landing-mpc-horizon-steps', type=int, default=10,
+    help='Short rolling support-MPC horizon in 10 ms policy steps')
+parser.add_argument('--landing-mpc-allow-first-step', action='store_true',
+    help='Apply a feasible first QP stage even when the terminal support gate rejects; log the rejection')
 parser.add_argument('--allow-offline-finetune', action='store_true',
     help='Evaluate an actor-only trace-finetuned candidate; the result is measured here and is never inherited')
 parser.add_argument('--allow-declared-controller-variant', action='store_true',
@@ -70,6 +76,8 @@ from scripts.strike_ground_contact_observer_v1 import StrikeGroundContactObserve
 from scripts.native_whole_body_admission_v1 import observe_native_whole_body
 from scripts.loaded_pinocchio_model_v1 import LoadedPinocchioModelV1
 from scripts.ground64_training_support_v1 import GROUND
+from scripts.landing_support_mpc_v1 import LandingSupportMPCV1, LandingMPCSettingsV1
+from scripts.whole_body_support_qp_v1 import PositionPDInterface, SupportSettings
 
 SHARED_SCHEMA='g07-public-shared-target-bias-v5'
 RESIDUAL_SCHEMA='g07-shared-target-residual-ppo-v1'
@@ -85,7 +93,8 @@ def load_shared_factory():
 
 class SharedTargetResidualController:
     """Freeze the measured shared-target source and apply only exported residual actor."""
-    def __init__(self, checkpoint, count, device,landing_trial=None,support_trial=None,disable_support=False):
+    def __init__(self, checkpoint, count, device,landing_trial=None,support_trial=None,disable_support=False,
+                 landing_mpc_cases=None, landing_mpc_horizon_steps=10, landing_mpc_allow_first_step=False):
         if checkpoint.get('schema') not in (RESIDUAL_SCHEMA,SHARED_SCHEMA):
             raise ValueError('Require the shared-target source or residual policy schema')
         has_actor=checkpoint['schema']==RESIDUAL_SCHEMA
@@ -113,6 +122,40 @@ class SharedTargetResidualController:
         self.memory_conditioned=bool(metadata.get('memory_conditioned',False))
         self.first_ball_feature=torch.zeros((count,18),device=device) if self.memory_conditioned else None
         self.first_ball_seen=torch.zeros((count,),dtype=torch.bool,device=device) if self.memory_conditioned else None
+        self.landing_mpc_cases=set(int(x) for x in (landing_mpc_cases or []))
+        self.landing_mpc_allow_first_step=bool(landing_mpc_allow_first_step)
+        self.landing_mpc_logs=[]
+        self.landing_mpc=None
+        if self.landing_mpc_cases:
+            limits=np.asarray(checkpoint.get('residual_training_metadata',{}).get('joint_limits_rad',[]),dtype=np.float64)
+            if limits.shape != (18,2):
+                # The exact native limits are supplied on the first action by
+                # the evaluator; this placeholder is replaced in configure.
+                limits=None
+            self._landing_mpc_horizon_steps=int(landing_mpc_horizon_steps)
+            if self._landing_mpc_horizon_steps<1 or self._landing_mpc_horizon_steps>40:
+                raise ValueError('landing_mpc_horizon_steps must be in 1..40')
+
+    def configure_landing_mpc(self, limits):
+        """Create the optional CPU MPC after native limits are admitted."""
+        if not self.landing_mpc_cases:
+            return
+        if torch.is_tensor(limits):
+            limits=limits.detach().cpu().numpy()
+        limits=np.asarray(limits,dtype=np.float64)
+        if limits.shape != (18,2) or not np.isfinite(limits).all():
+            raise ValueError('Landing MPC requires the admitted 18x2 native limits')
+        interface=PositionPDInterface(
+            limits,np.r_[np.full(12,25.),np.full(6,80.)],
+            np.r_[np.full(12,.5),np.full(6,4.)],
+            np.r_[np.full(12,23.5),np.full(6,100.)],
+            np.r_[np.full(12,30.),np.full(6,5.)],.65)
+        self.landing_mpc=LandingSupportMPCV1(interface,
+            qp_settings=SupportSettings(control_dt_s=.01,solver_eps=1e-6,residual_tolerance=3e-4),
+            settings=LandingMPCSettingsV1(horizon_steps=self._landing_mpc_horizon_steps))
+
+    def landing_mpc_diagnostics(self):
+        result=list(self.landing_mpc_logs);self.landing_mpc_logs=[];return result
 
     @property
     def reference_controller(self):
@@ -150,7 +193,42 @@ class SharedTargetResidualController:
         else:
             actor_input=raw
         residual=self.actor(actor_input)
-        return self.mixer.action(base,residual,observation['policy'],default,limits)
+        action=self.mixer.action(base,residual,observation['policy'],default,limits)
+        if self.landing_mpc is None:return action
+        raw=observation['policy'];public_clock=raw[:,775]
+        # phase774 is a measured current support/contact phase. We keep the
+        # first native version explicit: no future outcome label or case ID is
+        # exposed to the MPC; the selected case list only limits this trial.
+        active=(raw[:,774]>.5)
+        for lane in torch.where(active)[0].tolist():
+            case=int(lane)  # evaluator maps env lanes to the fixed TRAIN panel
+            if case not in self.landing_mpc_cases:continue
+            try:
+                from scripts.loaded_pinocchio_model_v1 import LoadedPinocchioModelV1
+                if not hasattr(self,'_landing_mpc_model'):
+                    self._landing_mpc_model=LoadedPinocchioModelV1()
+                pub=raw[lane].detach().cpu().numpy()
+                lim=limits.detach().cpu().numpy()
+                dflt=default.detach().cpu().numpy()
+                state=self._landing_mpc_model.state_from_public(pub,dflt)
+                joint_ref=lim[:,0]+.5*(action[lane].detach().cpu().numpy()+1.)*(lim[:,1]-lim[:,0])
+                plan=self.landing_mpc.solve(state,joint_ref,force=True)
+                record=dict(case=case,clock_s=float(public_clock[lane]),accepted=bool(plan['accepted']),
+                    first_action_available=bool(plan.get('horizon')) and bool(plan['horizon'][0].get('accepted')),
+                    solver_failure=bool(plan.get('solver_failure',False)),rejection=plan.get('rejection'),
+                    runtime_ms=float(plan.get('wall_runtime_s',0.)*1000.),terminal_risk=plan.get('terminal_risk'),
+                    horizon_steps=len(plan.get('horizon',[])),native_execution=True)
+                if plan.get('accepted') or (self.landing_mpc_allow_first_step and record['first_action_available']):
+                    chosen=np.asarray(plan['horizon'][0]['normalized_action'],dtype=np.float32)
+                    action[lane]=torch.as_tensor(chosen,device=action.device)
+                    record['applied_first_step']=True
+                else:record['applied_first_step']=False
+                self.landing_mpc_logs.append(record)
+            except Exception as error:
+                self.landing_mpc_logs.append(dict(case=case,clock_s=float(public_clock[lane]),accepted=False,
+                    first_action_available=False,applied_first_step=False,solver_failure=True,
+                    rejection='exception:'+repr(error),native_execution=True))
+        return action
 
 
 class CaseExpertBankController:
@@ -281,6 +359,13 @@ def main():
         raise ValueError("Require the actually trained residual actor without an undeclared controller change")
     if args.expert_bank is not None and not args.allow_declared_controller_variant:
         raise ValueError('Expert-bank selection requires --allow-declared-controller-variant')
+    if args.landing_mpc_cases is not None:
+        if args.allow_declared_controller_variant is not True:
+            raise ValueError('Landing MPC selection requires --allow-declared-controller-variant')
+        if any(int(x)<0 or int(x)>=count for x in args.landing_mpc_cases):
+            raise ValueError('Landing MPC cases must be fixed TRAIN indices in0..127')
+        if args.expert_bank is not None:
+            raise ValueError('Keep landing MPC trial separate from expert-bank selection')
     if args.ground_xy_m != 64. or checkpoint.get("residual_training_metadata",{}).get("ground_extent_diagnostic") != GROUND:
         raise ValueError("The evaluated ground must match the trained ground64 policy")
     ground_diagnostic = dict(original_configured_m=[4096.,4096.,.1], requested_m=[args.ground_xy_m,args.ground_xy_m,.1])
@@ -294,7 +379,7 @@ def main():
         if support_trial is not None and declared_support != support_trial:
             raise ValueError('Declared support controller variant differs from checkpoint metadata')
     effective_support=policy_support_config(checkpoint.get('residual_training_metadata',{}),support_trial,args.disable_support)
-    controller_trial=bool(args.persistent_recovery_trial or args.expert_bank is not None)
+    controller_trial=bool(args.persistent_recovery_trial or args.expert_bank is not None or args.landing_mpc_cases is not None)
     noise = training_noise(count, amplitudes, args.seed)
     atomic_json(args.output / 'INPUTS.json', dict(policy_sha256=digest(args.checkpoint),
         protocol_sha256=digest(protocol_path), training_suite=protocol['training_suite'],
@@ -308,6 +393,9 @@ def main():
         support_config=effective_support,support_disabled=args.disable_support,
         record_all_first_episode_actions=args.record_first_episodes,
         residual_actor_enabled=has_actor,
+        landing_mpc_cases=args.landing_mpc_cases,
+        landing_mpc_horizon_steps=args.landing_mpc_horizon_steps,
+        landing_mpc_allow_first_step=args.landing_mpc_allow_first_step,
         expert_bank=str(args.expert_bank.resolve()) if args.expert_bank else None,
         offline_trace_finetune_candidate=offline_finetune,
         reset_noise={k: v.tolist() for k, v in noise.items()},
@@ -328,7 +416,10 @@ def main():
     wrapped = RslRlVecEnvWrapper(env, clip_actions=None)
     controller = (CaseExpertBankController(checkpoint, args.expert_bank, count, env.device)
                   if args.expert_bank is not None else
-                  SharedTargetResidualController(checkpoint, count, env.device,landing_trial,support_trial,args.disable_support))
+                  SharedTargetResidualController(checkpoint, count, env.device,landing_trial,support_trial,args.disable_support,
+                      landing_mpc_cases=args.landing_mpc_cases,
+                      landing_mpc_horizon_steps=args.landing_mpc_horizon_steps,
+                      landing_mpc_allow_first_step=args.landing_mpc_allow_first_step))
     stopping = False
     def stop(_signal, _frame):
         nonlocal stopping
@@ -389,6 +480,8 @@ def main():
         export_robot_geometry(get_current_stage(), env.robot, args.output)
         default = env.robot.data.default_joint_pos[0, env.joint_ids]
         limits = env.robot.data.joint_pos_limits[0, env.joint_ids]
+        if hasattr(controller,'configure_landing_mpc'):
+            controller.configure_landing_mpc(limits)
         atomic_json(args.output/'native_command_inputs.json',dict(
             default_joint_position_rad=default.cpu().tolist(),joint_limits_rad=limits.cpu().tolist(),
             protocol_sha256=digest(protocol_path),policy_sha256=digest(args.checkpoint)))
@@ -396,6 +489,7 @@ def main():
         poses, balls, clocks, valid = [], [], [], []
         public, actions, public_valid = [], [], []
         support_records={}
+        landing_mpc_records=[]
         requested = round(protocol['episode_seconds']/protocol['policy_dt_s'])
         fixed_trace=None
         if args.record_first_episodes:
@@ -413,6 +507,8 @@ def main():
             for tick in range(requested):
                 obs = observation['policy']
                 action = controller.action(observation, default, limits)
+                if hasattr(controller,'landing_mpc_diagnostics'):
+                    landing_mpc_records.extend(controller.landing_mpc_diagnostics())
                 if action.shape != (count, 18) or not torch.isfinite(action).all() or (abs(action)>1).any():
                     raise ValueError('Nonfinite, invalid-width or unbounded native action')
                 if fixed_trace is not None:
@@ -462,6 +558,8 @@ def main():
         contact_observer.save()
         atomic_json(args.output / 'contacts.json', env.contact_records)
         atomic_json(args.output / 'causal_plans.json', controller.logs)
+        if args.landing_mpc_cases is not None:
+            atomic_json(args.output / 'landing_mpc_records.json', landing_mpc_records)
         first, jumps = {}, {}
         for row in env.rally_records:
             first.setdefault(row['env_id'], row)
@@ -494,6 +592,17 @@ def main():
             recovery_assistance_execution=RECOVERY_EXECUTION_SCHEMA,
             landing_config=controller.landing_config,support_config=controller.support_config,
             residual_actor_enabled=has_actor, ground_extent_diagnostic=ground_diagnostic)
+        if args.landing_mpc_cases is not None:
+            summary['landing_mpc'] = dict(schema='landing-support-mpc-v1',controller_trial=True,
+                selected_cases=[int(x) for x in args.landing_mpc_cases],
+                horizon_steps=args.landing_mpc_horizon_steps,
+                allow_first_step=bool(args.landing_mpc_allow_first_step),
+                records=len(landing_mpc_records),
+                applied_first_steps=sum(bool(r.get('applied_first_step')) for r in landing_mpc_records),
+                solver_failures=sum(bool(r.get('solver_failure')) for r in landing_mpc_records),
+                terminal_acceptances=sum(bool(r.get('accepted')) for r in landing_mpc_records),
+                records_path='landing_mpc_records.json',native_execution=True,
+                frozen_policy_performance=False,formal_acceptance=False)
         if args.expert_bank is not None:
             summary['expert_bank_selection'] = dict(
                 manifest=str(args.expert_bank.resolve()), manifest_sha256=digest(args.expert_bank),
