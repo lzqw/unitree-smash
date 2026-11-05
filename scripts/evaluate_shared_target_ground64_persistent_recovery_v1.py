@@ -39,6 +39,8 @@ parser.add_argument('--landing-mpc-horizon-steps', type=int, default=10,
     help='Short rolling support-MPC horizon in 10 ms policy steps')
 parser.add_argument('--landing-mpc-allow-first-step', action='store_true',
     help='Apply a feasible first QP stage only when the local risk score improves, even if the terminal gate rejects')
+parser.add_argument('--landing-mpc-support-margin', action='store_true',
+    help='Use the experimental support-margin viability gate (MPC v2)')
 parser.add_argument('--landing-mpc-swing-foot-weight', type=float, default=0.,
     help='Optional soft touchdown-foot task weight; zero preserves the original support QP')
 parser.add_argument('--landing-mpc-swing-foot-kp', type=float, default=80.,
@@ -87,6 +89,7 @@ from scripts.native_whole_body_admission_v1 import observe_native_whole_body
 from scripts.loaded_pinocchio_model_v1 import LoadedPinocchioModelV1
 from scripts.ground64_training_support_v1 import GROUND
 from scripts.landing_support_mpc_v1 import LandingSupportMPCV1, LandingMPCSettingsV1
+from scripts.landing_support_mpc_v2 import LandingSupportMPCV2, LandingMPCSettingsV2
 from scripts.whole_body_support_qp_v1 import PositionPDInterface, SupportSettings
 
 SHARED_SCHEMA='g07-public-shared-target-bias-v5'
@@ -105,6 +108,7 @@ class SharedTargetResidualController:
     """Freeze the measured shared-target source and apply only exported residual actor."""
     def __init__(self, checkpoint, count, device,landing_trial=None,support_trial=None,disable_support=False,
                  landing_mpc_cases=None, landing_mpc_horizon_steps=10, landing_mpc_allow_first_step=False,
+                 landing_mpc_support_margin=False,
                  landing_mpc_swing_foot_weight=0., landing_mpc_swing_foot_kp=80.,
                  landing_mpc_swing_foot_kd=18., landing_mpc_swing_foot_clearance=.025,
                  reactive_vhsip_cases=None):
@@ -137,6 +141,7 @@ class SharedTargetResidualController:
         self.first_ball_seen=torch.zeros((count,),dtype=torch.bool,device=device) if self.memory_conditioned else None
         self.landing_mpc_cases=set(int(x) for x in (landing_mpc_cases or []))
         self.landing_mpc_allow_first_step=bool(landing_mpc_allow_first_step)
+        self.landing_mpc_support_margin=bool(landing_mpc_support_margin)
         self.landing_mpc_swing_foot_weight=float(landing_mpc_swing_foot_weight)
         self.landing_mpc_swing_foot_kp=float(landing_mpc_swing_foot_kp)
         self.landing_mpc_swing_foot_kd=float(landing_mpc_swing_foot_kd)
@@ -177,13 +182,17 @@ class SharedTargetResidualController:
             np.r_[np.full(12,.5),np.full(6,4.)],
             np.r_[np.full(12,23.5),np.full(6,100.)],
             np.r_[np.full(12,30.),np.full(6,5.)],.65)
-        self.landing_mpc=LandingSupportMPCV1(interface,
-            qp_settings=SupportSettings(control_dt_s=.01,solver_eps=1e-6,residual_tolerance=3e-4,
-                swing_foot_weight=self.landing_mpc_swing_foot_weight,
-                swing_foot_kp_s2=self.landing_mpc_swing_foot_kp,
-                swing_foot_kd_s=self.landing_mpc_swing_foot_kd,
-                swing_foot_clearance_m=self.landing_mpc_swing_foot_clearance),
-            settings=LandingMPCSettingsV1(horizon_steps=self._landing_mpc_horizon_steps))
+        qp_settings=SupportSettings(control_dt_s=.01,solver_eps=1e-6,residual_tolerance=3e-4,
+            swing_foot_weight=self.landing_mpc_swing_foot_weight,
+            swing_foot_kp_s2=self.landing_mpc_swing_foot_kp,
+            swing_foot_kd_s=self.landing_mpc_swing_foot_kd,
+            swing_foot_clearance_m=self.landing_mpc_swing_foot_clearance)
+        if self.landing_mpc_support_margin:
+            self.landing_mpc=LandingSupportMPCV2(interface, qp_settings=qp_settings,
+                settings=LandingMPCSettingsV2(horizon_steps=self._landing_mpc_horizon_steps))
+        else:
+            self.landing_mpc=LandingSupportMPCV1(interface, qp_settings=qp_settings,
+                settings=LandingMPCSettingsV1(horizon_steps=self._landing_mpc_horizon_steps))
 
     def landing_mpc_diagnostics(self):
         result=list(self.landing_mpc_logs);self.landing_mpc_logs=[];return result
@@ -457,6 +466,7 @@ def main():
         landing_mpc_cases=args.landing_mpc_cases,
         landing_mpc_horizon_steps=args.landing_mpc_horizon_steps,
         landing_mpc_allow_first_step=args.landing_mpc_allow_first_step,
+        landing_mpc_support_margin=args.landing_mpc_support_margin,
         landing_mpc_swing_foot_weight=args.landing_mpc_swing_foot_weight,
         landing_mpc_swing_foot_kp=args.landing_mpc_swing_foot_kp,
         landing_mpc_swing_foot_kd=args.landing_mpc_swing_foot_kd,
@@ -486,6 +496,7 @@ def main():
                       landing_mpc_cases=args.landing_mpc_cases,
                       landing_mpc_horizon_steps=args.landing_mpc_horizon_steps,
                       landing_mpc_allow_first_step=args.landing_mpc_allow_first_step,
+                      landing_mpc_support_margin=args.landing_mpc_support_margin,
                       landing_mpc_swing_foot_weight=args.landing_mpc_swing_foot_weight,
                       landing_mpc_swing_foot_kp=args.landing_mpc_swing_foot_kp,
                       landing_mpc_swing_foot_kd=args.landing_mpc_swing_foot_kd,
@@ -669,10 +680,12 @@ def main():
                 controller_trial=True, native_execution=True, frozen_policy_performance=False,
                 formal_acceptance=False)
         if args.landing_mpc_cases is not None:
-            summary['landing_mpc'] = dict(schema='landing-support-mpc-v1',controller_trial=True,
+            summary['landing_mpc'] = dict(schema=('landing-support-mpc-v2-support-margin'
+                if args.landing_mpc_support_margin else 'landing-support-mpc-v1'),controller_trial=True,
                 selected_cases=[int(x) for x in args.landing_mpc_cases],
                 horizon_steps=args.landing_mpc_horizon_steps,
                 allow_first_step=bool(args.landing_mpc_allow_first_step),
+                support_margin=bool(args.landing_mpc_support_margin),
                 records=len(landing_mpc_records),
                 applied_first_steps=sum(bool(r.get('applied_first_step')) for r in landing_mpc_records),
                 solver_failures=sum(bool(r.get('solver_failure')) for r in landing_mpc_records),
