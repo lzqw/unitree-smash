@@ -100,7 +100,7 @@ class ReducedWholeBodySupportQP(WholeBodySupportQP):
                         desired_z_acceleration = float(np.clip(desired_z_acceleration, -80., 80.))
                         clearance_block = np.zeros((1, nz)); clearance_block[0, :24] = link_jac[2]
                         jdot_v_link = float(link_jdot[2] @ state.v)
-                        task(clearance_block, desired_z_acceleration - jdot_v_link,
+                        task(clearance_block, np.array([desired_z_acceleration - jdot_v_link]),
                              clearance_weight)
         matrices,lowers,uppers=[],[],[]
 
