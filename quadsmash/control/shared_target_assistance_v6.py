@@ -56,9 +56,12 @@ class LandingAssistedController:
 
     def action(self,observation,default,limits):
         base=self.source.action(observation,default,limits)
-        proposed=self.landing.action(base,observation['policy'],default,limits)
-        if self.enabled_cases is None:return proposed
-        mask=torch.zeros((base.shape[0],),device=base.device,dtype=torch.bool)
-        for case in self.enabled_cases:
-            if 0<=case<base.shape[0]:mask[case]=True
+        if self.enabled_cases is None:
+            mask=None
+        else:
+            mask=torch.zeros((base.shape[0],),device=base.device,dtype=torch.bool)
+            for case in self.enabled_cases:
+                if 0<=case<base.shape[0]:mask[case]=True
+        proposed=self.landing.action(base,observation['policy'],default,limits,enabled_mask=mask)
+        if mask is None:return proposed
         return torch.where(mask[:,None],proposed,base)

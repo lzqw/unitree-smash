@@ -175,10 +175,15 @@ class ReactiveLandingV1:
         return -(qxu[:,None,:]*x0).sum(-1)/qu[:,None]
 
     @torch.inference_mode()
-    def action(self,base,public,default,limits):
+    def action(self,base,public,default,limits,enabled_mask=None):
         if public.shape!=(self.count,794) or base.shape!=(self.count,18):raise ValueError('Require public794D/18D native interface')
+        if enabled_mask is None:
+            enabled_mask=torch.ones((self.count,),device=public.device,dtype=torch.bool)
+        else:
+            enabled_mask=torch.as_tensor(enabled_mask,device=public.device,dtype=torch.bool)
+            if enabled_mask.shape!=(self.count,):raise ValueError('Require one landing enable flag per environment')
         clock=public[:,775]
-        self.hit|=public[:,773]>.5
+        self.hit|=(public[:,773]>.5)&enabled_mask
         forward=public[:,763:766];up=-public[:,6:9]
         left=torch.linalg.cross(up,forward)
         rotation=torch.stack((forward,left,up),1)
@@ -188,8 +193,9 @@ class ReactiveLandingV1:
         newly=self.hit&(~self.active)&(cv[:,2]<-.05)
         self.start[newly]=clock[newly];self.last_q[newly]=q[newly,:12];self.last_time[newly]=clock[newly]-.01
         self.active|=newly
-        if not bool(self.active.any()):return base
-        ids=torch.where(self.active)[0];cfg=self.config;n=len(ids)
+        active=self.active&enabled_mask
+        if not bool(active.any()):return base
+        ids=torch.where(active)[0];cfg=self.config;n=len(ids)
         r=rotation[ids];current=q[ids];t=clock[ids]
         # Fixed public command supplies root position, exactly as the existing
         # admitted known-model observer. No true simulator pose is consumed.
