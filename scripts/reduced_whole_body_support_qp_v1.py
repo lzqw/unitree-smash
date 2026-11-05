@@ -10,6 +10,7 @@ import time
 
 import numpy as np
 import osqp
+import pinocchio as pin
 from scipy import sparse
 
 from scripts.whole_body_support_qp_v1 import WholeBodySupportQP
