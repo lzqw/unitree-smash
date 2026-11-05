@@ -32,6 +32,10 @@ def main():
     parser.add_argument('--horizon-steps', type=int, default=10)
     parser.add_argument('--sample-offset-ticks', type=int, nargs='+', default=[0, 2])
     parser.add_argument('--allow-nonterminal-first-step', action='store_true')
+    parser.add_argument('--swing-foot-weight', type=float, default=0.)
+    parser.add_argument('--swing-foot-kp', type=float, default=80.)
+    parser.add_argument('--swing-foot-kd', type=float, default=18.)
+    parser.add_argument('--swing-foot-clearance', type=float, default=.025)
     args = parser.parse_args()
     if args.output.exists():
         raise ValueError('Preserve earlier benchmark')
@@ -50,7 +54,9 @@ def main():
         np.r_[np.full(12, .5), np.full(6, 4.)],
         np.r_[np.full(12, 23.5), np.full(6, 100.)],
         np.r_[np.full(12, 30.), np.full(6, 5.)], .65)
-    qp_settings = SupportSettings(control_dt_s=.01, solver_eps=1e-6, residual_tolerance=3e-4)
+    qp_settings = SupportSettings(control_dt_s=.01, solver_eps=1e-6, residual_tolerance=3e-4,
+        swing_foot_weight=args.swing_foot_weight, swing_foot_kp_s2=args.swing_foot_kp,
+        swing_foot_kd_s=args.swing_foot_kd, swing_foot_clearance_m=args.swing_foot_clearance)
     mpc = LandingSupportMPCV1(interface, qp_settings=qp_settings,
         settings=LandingMPCSettingsV1(horizon_steps=args.horizon_steps))
     model = LoadedPinocchioModelV1()
@@ -89,6 +95,8 @@ def main():
         timing_audit=str(audit_path), timing_audit_sha256=sha(audit_path),
         source_trace_manifest_sha256=sha(source/'fixed_policy_traces/manifest.json'),
         cases=len(audit['cases']), samples=len(records), horizon_steps=args.horizon_steps,
+        swing_foot_weight=args.swing_foot_weight, swing_foot_kp=args.swing_foot_kp,
+        swing_foot_kd=args.swing_foot_kd, swing_foot_clearance=args.swing_foot_clearance,
         sample_offset_ticks=args.sample_offset_ticks, stage_qp_feasible=stage_feasible,
         stage_qp_total=stage_count, stage_qp_feasible_rate=stage_feasible/stage_count if stage_count else 0.,
         first_action_available=first_available, first_action_available_rate=first_available/len(records),

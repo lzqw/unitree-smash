@@ -39,6 +39,14 @@ parser.add_argument('--landing-mpc-horizon-steps', type=int, default=10,
     help='Short rolling support-MPC horizon in 10 ms policy steps')
 parser.add_argument('--landing-mpc-allow-first-step', action='store_true',
     help='Apply a feasible first QP stage only when the local risk score improves, even if the terminal gate rejects')
+parser.add_argument('--landing-mpc-swing-foot-weight', type=float, default=0.,
+    help='Optional soft touchdown-foot task weight; zero preserves the original support QP')
+parser.add_argument('--landing-mpc-swing-foot-kp', type=float, default=80.,
+    help='Soft touchdown-foot proportional acceleration gain')
+parser.add_argument('--landing-mpc-swing-foot-kd', type=float, default=18.,
+    help='Soft touchdown-foot damping gain')
+parser.add_argument('--landing-mpc-swing-foot-clearance', type=float, default=.025,
+    help='Target clearance above the measured support plane in metres')
 parser.add_argument('--allow-offline-finetune', action='store_true',
     help='Evaluate an actor-only trace-finetuned candidate; the result is measured here and is never inherited')
 parser.add_argument('--allow-declared-controller-variant', action='store_true',
@@ -94,7 +102,9 @@ def load_shared_factory():
 class SharedTargetResidualController:
     """Freeze the measured shared-target source and apply only exported residual actor."""
     def __init__(self, checkpoint, count, device,landing_trial=None,support_trial=None,disable_support=False,
-                 landing_mpc_cases=None, landing_mpc_horizon_steps=10, landing_mpc_allow_first_step=False):
+                 landing_mpc_cases=None, landing_mpc_horizon_steps=10, landing_mpc_allow_first_step=False,
+                 landing_mpc_swing_foot_weight=0., landing_mpc_swing_foot_kp=80.,
+                 landing_mpc_swing_foot_kd=18., landing_mpc_swing_foot_clearance=.025):
         if checkpoint.get('schema') not in (RESIDUAL_SCHEMA,SHARED_SCHEMA):
             raise ValueError('Require the shared-target source or residual policy schema')
         has_actor=checkpoint['schema']==RESIDUAL_SCHEMA
@@ -124,6 +134,10 @@ class SharedTargetResidualController:
         self.first_ball_seen=torch.zeros((count,),dtype=torch.bool,device=device) if self.memory_conditioned else None
         self.landing_mpc_cases=set(int(x) for x in (landing_mpc_cases or []))
         self.landing_mpc_allow_first_step=bool(landing_mpc_allow_first_step)
+        self.landing_mpc_swing_foot_weight=float(landing_mpc_swing_foot_weight)
+        self.landing_mpc_swing_foot_kp=float(landing_mpc_swing_foot_kp)
+        self.landing_mpc_swing_foot_kd=float(landing_mpc_swing_foot_kd)
+        self.landing_mpc_swing_foot_clearance=float(landing_mpc_swing_foot_clearance)
         self.landing_mpc_logs=[]
         self.landing_mpc=None
         if self.landing_mpc_cases:
@@ -151,7 +165,11 @@ class SharedTargetResidualController:
             np.r_[np.full(12,23.5),np.full(6,100.)],
             np.r_[np.full(12,30.),np.full(6,5.)],.65)
         self.landing_mpc=LandingSupportMPCV1(interface,
-            qp_settings=SupportSettings(control_dt_s=.01,solver_eps=1e-6,residual_tolerance=3e-4),
+            qp_settings=SupportSettings(control_dt_s=.01,solver_eps=1e-6,residual_tolerance=3e-4,
+                swing_foot_weight=self.landing_mpc_swing_foot_weight,
+                swing_foot_kp_s2=self.landing_mpc_swing_foot_kp,
+                swing_foot_kd_s=self.landing_mpc_swing_foot_kd,
+                swing_foot_clearance_m=self.landing_mpc_swing_foot_clearance),
             settings=LandingMPCSettingsV1(horizon_steps=self._landing_mpc_horizon_steps))
 
     def landing_mpc_diagnostics(self):
@@ -415,6 +433,10 @@ def main():
         landing_mpc_cases=args.landing_mpc_cases,
         landing_mpc_horizon_steps=args.landing_mpc_horizon_steps,
         landing_mpc_allow_first_step=args.landing_mpc_allow_first_step,
+        landing_mpc_swing_foot_weight=args.landing_mpc_swing_foot_weight,
+        landing_mpc_swing_foot_kp=args.landing_mpc_swing_foot_kp,
+        landing_mpc_swing_foot_kd=args.landing_mpc_swing_foot_kd,
+        landing_mpc_swing_foot_clearance=args.landing_mpc_swing_foot_clearance,
         expert_bank=str(args.expert_bank.resolve()) if args.expert_bank else None,
         offline_trace_finetune_candidate=offline_finetune,
         reset_noise={k: v.tolist() for k, v in noise.items()},
@@ -438,7 +460,11 @@ def main():
                   SharedTargetResidualController(checkpoint, count, env.device,landing_trial,support_trial,args.disable_support,
                       landing_mpc_cases=args.landing_mpc_cases,
                       landing_mpc_horizon_steps=args.landing_mpc_horizon_steps,
-                      landing_mpc_allow_first_step=args.landing_mpc_allow_first_step))
+                      landing_mpc_allow_first_step=args.landing_mpc_allow_first_step,
+                      landing_mpc_swing_foot_weight=args.landing_mpc_swing_foot_weight,
+                      landing_mpc_swing_foot_kp=args.landing_mpc_swing_foot_kp,
+                      landing_mpc_swing_foot_kd=args.landing_mpc_swing_foot_kd,
+                      landing_mpc_swing_foot_clearance=args.landing_mpc_swing_foot_clearance))
     stopping = False
     def stop(_signal, _frame):
         nonlocal stopping

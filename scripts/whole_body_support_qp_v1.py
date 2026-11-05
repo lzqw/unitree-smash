@@ -37,6 +37,13 @@ class SupportSettings:
     solver_eps: float = 1e-7
     solver_max_iterations: int = 10000
     residual_tolerance: float = 2e-4
+    # Optional soft touchdown task.  The tiny default keeps the original
+    # standing/support QP numerically equivalent unless a landing controller
+    # explicitly opts in with a larger weight.
+    swing_foot_weight: float = 1e-8
+    swing_foot_kp_s2: float = 80.
+    swing_foot_kd_s: float = 18.
+    swing_foot_clearance_m: float = .025
 
 
 class PositionPDInterface:
@@ -71,8 +78,10 @@ class PositionPDInterface:
 
 class WholeBodySupportQP:
     def __init__(self, interface, settings=SupportSettings()):
-        if any(not np.isfinite(x) or x <= 0 for x in asdict(settings).values()):
-            raise ValueError('Finite positive declared control settings required')
+        declared = asdict(settings)
+        for name, value in declared.items():
+            if not np.isfinite(value) or value < 0 or (name != 'swing_foot_weight' and value == 0):
+                raise ValueError('Finite nonnegative control settings required; all non-swing terms must be positive')
         if settings.friction_facets < 4 or settings.friction_facets % 2:
             raise ValueError('Even friction polygon with at least four facets required')
         self.model = LoadedPinocchioModelV1()
@@ -121,9 +130,26 @@ class WholeBodySupportQP:
                                      cfg.orientation_kd_s*state.v[3:6])
         desired_joint_accel = (cfg.posture_kp_s2*(joint_reference-state.joint_position) -
                               cfg.posture_kd_s*state.joint_velocity)
+        # A landing controller may opt into a soft target for feet that are
+        # not currently in contact.  The target is expressed in the loaded
+        # robot/world model and is only a cost; it never creates a ground
+        # force or changes the observed contact mask.
+        swing_targets = np.zeros((4, 3))
+        if state.contacts.any():
+            feet_ids = [self.model.names.index(n) for n in self.model.feet]
+            reference_feet = np.array(fk_positions)[feet_ids]
+            measured_feet = snapshot['body_positions_world'][feet_ids]
+            active_reference = reference_feet[state.contacts]
+            active_measured = measured_feet[state.contacts]
+            reference_center = active_reference.mean(0)
+            measured_center = active_measured.mean(0)
+            swing_targets = measured_center + reference_feet - reference_center
+            swing_targets[:, 2] = measured_center[2] + cfg.swing_foot_clearance_m
+            swing_targets[state.contacts] = measured_feet[state.contacts]
         return dict(com_position=desired_com, com_acceleration=desired_com_accel,
                     angular_acceleration_body=desired_angular_accel_body,
-                    joint_acceleration=desired_joint_accel)
+                    joint_acceleration=desired_joint_accel,
+                    swing_foot_target_world=swing_targets)
 
     def solve(self, state, joint_reference, *, static_equilibrium=False):
         """Return a separately verified model-feasible plan, or explicit failure.
