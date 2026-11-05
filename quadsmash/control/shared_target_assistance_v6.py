@@ -1,5 +1,6 @@
 """Serializable assistance settings shared by TRAIN and independent replay."""
 import math
+import torch
 
 from .reactive_landing_v1 import ReactiveLandingV1
 
@@ -39,8 +40,9 @@ def apply_recovery_assistance(reference,settings):
 
 
 class LandingAssistedController:
-    def __init__(self,source,count,device,config,asset_sha256):
+    def __init__(self,source,count,device,config,asset_sha256,enabled_cases=None):
         self.source=source;self.landing=ReactiveLandingV1(count,device,config,asset_sha256)
+        self.enabled_cases=None if enabled_cases is None else set(int(x) for x in enabled_cases)
 
     @property
     def reference_controller(self):return self.source.reference_controller
@@ -54,4 +56,9 @@ class LandingAssistedController:
 
     def action(self,observation,default,limits):
         base=self.source.action(observation,default,limits)
-        return self.landing.action(base,observation['policy'],default,limits)
+        proposed=self.landing.action(base,observation['policy'],default,limits)
+        if self.enabled_cases is None:return proposed
+        mask=torch.zeros((base.shape[0],),device=base.device,dtype=torch.bool)
+        for case in self.enabled_cases:
+            if 0<=case<base.shape[0]:mask[case]=True
+        return torch.where(mask[:,None],proposed,base)

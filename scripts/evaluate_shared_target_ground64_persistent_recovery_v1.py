@@ -47,6 +47,8 @@ parser.add_argument('--landing-mpc-swing-foot-kd', type=float, default=18.,
     help='Soft touchdown-foot damping gain')
 parser.add_argument('--landing-mpc-swing-foot-clearance', type=float, default=.025,
     help='Target clearance above the measured support plane in metres')
+parser.add_argument('--reactive-vhsip-cases', type=int, nargs='+', default=None,
+    help='Controller-trial TRAIN indices for the GPU-batched VHSIP reactive landing reference')
 parser.add_argument('--allow-offline-finetune', action='store_true',
     help='Evaluate an actor-only trace-finetuned candidate; the result is measured here and is never inherited')
 parser.add_argument('--allow-declared-controller-variant', action='store_true',
@@ -104,7 +106,8 @@ class SharedTargetResidualController:
     def __init__(self, checkpoint, count, device,landing_trial=None,support_trial=None,disable_support=False,
                  landing_mpc_cases=None, landing_mpc_horizon_steps=10, landing_mpc_allow_first_step=False,
                  landing_mpc_swing_foot_weight=0., landing_mpc_swing_foot_kp=80.,
-                 landing_mpc_swing_foot_kd=18., landing_mpc_swing_foot_clearance=.025):
+                 landing_mpc_swing_foot_kd=18., landing_mpc_swing_foot_clearance=.025,
+                 reactive_vhsip_cases=None):
         if checkpoint.get('schema') not in (RESIDUAL_SCHEMA,SHARED_SCHEMA):
             raise ValueError('Require the shared-target source or residual policy schema')
         has_actor=checkpoint['schema']==RESIDUAL_SCHEMA
@@ -138,6 +141,9 @@ class SharedTargetResidualController:
         self.landing_mpc_swing_foot_kp=float(landing_mpc_swing_foot_kp)
         self.landing_mpc_swing_foot_kd=float(landing_mpc_swing_foot_kd)
         self.landing_mpc_swing_foot_clearance=float(landing_mpc_swing_foot_clearance)
+        self.reactive_vhsip_cases=None if reactive_vhsip_cases is None else set(int(x) for x in reactive_vhsip_cases)
+        if self.reactive_vhsip_cases and self.landing_config is not None:
+            raise ValueError('Separate declared landing assistance and VHSIP trial')
         self.landing_mpc_logs=[]
         self.landing_mpc=None
         if self.landing_mpc_cases:
@@ -149,6 +155,13 @@ class SharedTargetResidualController:
             self._landing_mpc_horizon_steps=int(landing_mpc_horizon_steps)
             if self._landing_mpc_horizon_steps<1 or self._landing_mpc_horizon_steps>40:
                 raise ValueError('landing_mpc_horizon_steps must be in 1..40')
+        self.reactive_vhsip=None
+        if self.reactive_vhsip_cases:
+            vhsip_config=dict(mode='prepare_and_buffer_vhsip', blend_s=.08,
+                settling_s=.7, landing_height_m=.3, capture_gain=1., ik_iterations=5,
+                joint_target_rate_rad_s=20., ik_damping=.025)
+            self.reactive_vhsip=LandingAssistedController(self.base,count,device,vhsip_config,
+                checkpoint['asset_sha256'],enabled_cases=self.reactive_vhsip_cases)
 
     def configure_landing_mpc(self, limits):
         """Create the optional CPU MPC after native limits are admitted."""
@@ -188,7 +201,8 @@ class SharedTargetResidualController:
         self.base.logs=value
 
     def reset(self,ids=None):
-        self.base.reset(ids)
+        if self.reactive_vhsip is not None:self.reactive_vhsip.reset(ids)
+        else:self.base.reset(ids)
         if self.mixer is not None:self.mixer.reset(ids)
         if self.memory_conditioned:
             if ids is None:
@@ -198,7 +212,8 @@ class SharedTargetResidualController:
 
     @torch.inference_mode()
     def action(self,observation,default,limits):
-        base=self.base.action(observation,default,limits)
+        source=self.reactive_vhsip if self.reactive_vhsip is not None else self.base
+        base=source.action(observation,default,limits)
         if self.actor is None:return base
         raw=observation['policy']
         if self.memory_conditioned:
@@ -404,6 +419,13 @@ def main():
             raise ValueError('Landing MPC cases must be fixed TRAIN indices in0..127')
         if args.expert_bank is not None:
             raise ValueError('Keep landing MPC trial separate from expert-bank selection')
+    if args.reactive_vhsip_cases is not None:
+        if args.allow_declared_controller_variant is not True:
+            raise ValueError('Reactive VHSIP selection requires --allow-declared-controller-variant')
+        if any(int(x)<0 or int(x)>=count for x in args.reactive_vhsip_cases):
+            raise ValueError('Reactive VHSIP cases must be fixed TRAIN indices in0..127')
+        if args.expert_bank is not None or args.landing_mpc_cases is not None:
+            raise ValueError('Keep reactive VHSIP trial separate from other controller trials')
     if args.ground_xy_m != 64. or checkpoint.get("residual_training_metadata",{}).get("ground_extent_diagnostic") != GROUND:
         raise ValueError("The evaluated ground must match the trained ground64 policy")
     ground_diagnostic = dict(original_configured_m=[4096.,4096.,.1], requested_m=[args.ground_xy_m,args.ground_xy_m,.1])
@@ -417,7 +439,8 @@ def main():
         if support_trial is not None and declared_support != support_trial:
             raise ValueError('Declared support controller variant differs from checkpoint metadata')
     effective_support=policy_support_config(checkpoint.get('residual_training_metadata',{}),support_trial,args.disable_support)
-    controller_trial=bool(args.persistent_recovery_trial or args.expert_bank is not None or args.landing_mpc_cases is not None)
+    controller_trial=bool(args.persistent_recovery_trial or args.expert_bank is not None or
+                          args.landing_mpc_cases is not None or args.reactive_vhsip_cases is not None)
     noise = training_noise(count, amplitudes, args.seed)
     atomic_json(args.output / 'INPUTS.json', dict(policy_sha256=digest(args.checkpoint),
         protocol_sha256=digest(protocol_path), training_suite=protocol['training_suite'],
@@ -438,6 +461,7 @@ def main():
         landing_mpc_swing_foot_kp=args.landing_mpc_swing_foot_kp,
         landing_mpc_swing_foot_kd=args.landing_mpc_swing_foot_kd,
         landing_mpc_swing_foot_clearance=args.landing_mpc_swing_foot_clearance,
+        reactive_vhsip_cases=args.reactive_vhsip_cases,
         expert_bank=str(args.expert_bank.resolve()) if args.expert_bank else None,
         offline_trace_finetune_candidate=offline_finetune,
         reset_noise={k: v.tolist() for k, v in noise.items()},
@@ -465,7 +489,8 @@ def main():
                       landing_mpc_swing_foot_weight=args.landing_mpc_swing_foot_weight,
                       landing_mpc_swing_foot_kp=args.landing_mpc_swing_foot_kp,
                       landing_mpc_swing_foot_kd=args.landing_mpc_swing_foot_kd,
-                      landing_mpc_swing_foot_clearance=args.landing_mpc_swing_foot_clearance))
+                      landing_mpc_swing_foot_clearance=args.landing_mpc_swing_foot_clearance,
+                      reactive_vhsip_cases=args.reactive_vhsip_cases))
     stopping = False
     def stop(_signal, _frame):
         nonlocal stopping
@@ -638,6 +663,11 @@ def main():
             recovery_assistance_execution=RECOVERY_EXECUTION_SCHEMA,
             landing_config=controller.landing_config,support_config=controller.support_config,
             residual_actor_enabled=has_actor, ground_extent_diagnostic=ground_diagnostic)
+        if args.reactive_vhsip_cases is not None:
+            summary['reactive_vhsip'] = dict(schema='reactive-vhsip-position-interface-v1',
+                selected_cases=[int(x) for x in args.reactive_vhsip_cases],
+                controller_trial=True, native_execution=True, frozen_policy_performance=False,
+                formal_acceptance=False)
         if args.landing_mpc_cases is not None:
             summary['landing_mpc'] = dict(schema='landing-support-mpc-v1',controller_trial=True,
                 selected_cases=[int(x) for x in args.landing_mpc_cases],

@@ -26,7 +26,7 @@ def settings(value):
     if not isinstance(value, dict) or set(value) != set(DEFAULTS):
         raise ValueError('Declare every reactive landing field explicitly')
     result=dict(value)
-    if result['mode'] not in ('prepare_only', 'prepare_and_buffer'):
+    if result['mode'] not in ('prepare_only', 'prepare_and_buffer', 'prepare_and_buffer_vhsip'):
         raise ValueError('Unknown landing comparison mode')
     bounds=dict(blend_s=(.01,.3),settling_s=(.2,2.),landing_height_m=(.15,.42),
                 capture_gain=(0.,2.),joint_target_rate_rad_s=(1.,30.),ik_damping=(.001,.1))
@@ -130,6 +130,48 @@ class ReactiveLandingV1:
             getattr(self,name)[ids]=0
         self.r0[ids]=self.model.eye
 
+    def _vhsip_capture(self, velocity_xy, position_xy, height, vertical_velocity):
+        """Batched VHSIP/ZMP solve following Roscia et al. (RA-L 2023).
+
+        This is the analytical one-input OCP from the reference controller,
+        evaluated with torch tensors so it can run alongside the policy on the
+        selected environments.  It returns a horizontal capture/ZMP offset;
+        the downstream IK and original position-PD limits remain unchanged.
+        """
+        dt=.01; settling=1.8; gravity=9.81; compression=.4*height.clamp_min(.15)
+        mass=self.model.mass.sum().to(height)
+        stiffness=mass*(8./settling)**2
+        eig=-torch.sqrt(stiffness/mass)
+        limit=torch.e*compression*eig
+        fast=vertical_velocity < limit
+        fast_k=mass*(vertical_velocity/(torch.e*compression).clamp_min(1e-4))**2
+        stiffness=torch.where(fast,fast_k,stiffness)
+        damping=2.*torch.sqrt(mass*stiffness)
+        eig=-torch.sqrt(stiffness/mass)
+        steps=int(round(settling/dt))
+        time=torch.arange(steps,device=height.device,dtype=height.dtype)*dt
+        et=torch.exp(eig[:,None]*time[None])
+        vz_t=et*(eig[:,None]*time[None]+1.)*vertical_velocity[:,None]
+        z=et*time[None]*vertical_velocity[:,None]+height[:,None]
+        az=-(damping/mass)[:,None]*vz_t-(stiffness/mass)[:,None]*(et*time[None]*vertical_velocity[:,None])
+        omega=((gravity+az)/z.clamp_min(.12)).clamp_min(0.)
+        batch=height.shape[0]
+        P=torch.eye(2,device=height.device,dtype=height.dtype).expand(batch,2,2).clone()
+        U=torch.zeros((batch,2,1),device=height.device,dtype=height.dtype)
+        for k in range(steps-1):
+            om=omega[:,k]
+            A=torch.zeros((batch,2,2),device=height.device,dtype=height.dtype)
+            A[:,0,0]=1.; A[:,1,1]=1.; A[:,0,1]=dt*om
+            B=torch.zeros((batch,2,1),device=height.device,dtype=height.dtype)
+            B[:,0,0]=-dt*om
+            P=A@P; U=A@U+B
+        cvp=P[:,0,:]; cpp=P[:,1,:]
+        cvu=U[:,0,0]; cpu=U[:,1,0]
+        qu=cvu*cvu+(cpu-1.)**2+1e-6
+        qxu=cvu[:,None]*cvp+(cpu-1.)[:,None]*cpp
+        x0=torch.stack((velocity_xy,position_xy),dim=-1)
+        return -(qxu*x0).sum(-1)/qu[:,None]
+
     @torch.inference_mode()
     def action(self,base,public,default,limits):
         if public.shape!=(self.count,794) or base.shape!=(self.count,18):raise ValueError('Require public794D/18D native interface')
@@ -168,16 +210,28 @@ class ReactiveLandingV1:
         shape=rotate(ryaw[:,None],shape)
         com_offset=rotate(ryaw,actual['center'][ids])
         h=cfg['landing_height_m']+com_offset[:,2]
-        capture=cfg['capture_gain']*(h.clamp_min(.1)/9.81).sqrt()[:,None]*vel[:,:2]
-        plane_center=center.clone();plane_center[:,:2]+=capture;plane_center[:,2]-=h
+        has_contacts=contacts.any(1)
+        support_center=(world_feet*contacts[:,:,None]).sum(1)/contacts.sum(1).clamp_min(1)[:,None]
+        support_center=torch.where(has_contacts[:,None],support_center,center)
+        if cfg['mode']=='prepare_and_buffer_vhsip':
+            position_xy=center[:,:2]-support_center[:,:2]
+            capture=cfg['capture_gain']*self._vhsip_capture(vel[:,:2],position_xy,h,vel[:,2])
+            capture=capture.clamp(-.35,.35)
+            plane_center=support_center.clone();plane_center[:,:2]+=capture
+            ground=support_center[:,2]-0.30
+            plane_center[:,2]=ground+h
+        else:
+            capture=cfg['capture_gain']*(h.clamp_min(.1)/9.81).sqrt()[:,None]*vel[:,:2]
+            plane_center=center.clone();plane_center[:,:2]+=capture;plane_center[:,2]-=h
         feet_goal=plane_center[:,None]+shape
-        self.goal[new_ids,:2]=(center[:,:2]+capture)[first]
         # Actual contact anchors determine surface height; four simultaneous
         # contacts are never required. Subsequent feet enter support separately.
-        ground=(world_feet[:,:,2]*contacts).sum(1)/contacts.sum(1).clamp_min(1)
+        measured_ground=(world_feet[:,:,2]*contacts).sum(1)/contacts.sum(1).clamp_min(1)
+        ground=torch.where(has_contacts,measured_ground,center[:,2]-h)
+        self.goal[new_ids,:2]=plane_center[first,:2]
         self.goal[new_ids,2]=(ground+h)[first]
-        self.landing_plane[new_ids]=torch.cat(((center[:,:2]+capture)[first],ground[first,None]),1)
-        buffered=self.landed[ids]&(cfg['mode']=='prepare_and_buffer')
+        self.landing_plane[new_ids]=torch.cat((plane_center[first,:2],ground[first,None]),1)
+        buffered=self.landed[ids]&(cfg['mode'] in ('prepare_and_buffer','prepare_and_buffer_vhsip'))
         feet_goal=torch.where(self.landed[ids,None,None],self.landing_plane[ids,None]+shape,feet_goal)
         tau=(t-self.touchdown[ids]).clamp_min(0.)
         rate=7./cfg['settling_s'];decay=(-rate*tau).exp()
