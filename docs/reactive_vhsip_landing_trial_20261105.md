@@ -128,7 +128,7 @@ VHSIP 计算出的目标可能合理，但 3 次 IK、20 rad/s 速率限制、�
 在本报告之后加入了两个实验性组件：
 
 - [`landing_support_mpc_v2.py`](../scripts/landing_support_mpc_v2.py)：在原固定接触 support QP 外增加质心投影/支撑裕度触发和终端可行性门。它仍然不能创建接触，也没有冲量模型；在 26 个失败案例的离线采样中，阶段 QP 仍可解，但终端支撑门仍经常不满足，因此暂时不把它接入正式策略。
-- [`reactive_landing_vhsip_jax.py`](../quadsmash/control/reactive_landing_vhsip_jax.py)：可选的 JAX `jit/lax.scan` VHSIP 方程实现。当前环境没有安装 JAX，尚未做 Torch-JAX parity，也没有 GPU 加速结果；Torch 版本仍是运行基准。
+- [`reactive_landing_vhsip_jax.py`](../quadsmash/control/reactive_landing_vhsip_jax.py)：可选的 JAX `jit/lax.scan` VHSIP 方程实现。已在隔离的 CPU JAX 0.10.2 环境完成与 Torch 实现的数值 parity：同一批状态的最大绝对误差约 `3.0e-8`，普通函数和 `jit` 结果一致。当前 Isaac 环境没有 CUDA-enabled jaxlib，因此尚无 JAX GPU 加速结果；Torch 版本仍是原生运行基准。
 
 这两项代码的目的分别是让“支撑域风险”可测量、让后续 GPU 批量规划有可复现的纯函数接口，而不是用未验证的离线结果替代原生落地评估。
 
@@ -195,6 +195,12 @@ landing_mpc_v2_posture8_seed882072_01
 - 试验输出：`reports/G07_full_racket_v5/reactive_vhsip_actualfail8_seed882072_06/`
 - 运行状态：GPU0，102400 env steps，约 0.322 GPU hours，正常结束
 - 基线：`reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/`
-- 当前实现提交：`4350c2e`
+- 当前实现提交：`86b1200`（本报告随后会记录 JAX parity 更新）
 
-**结论：本轮没有找到“数学求不出来”的证据；更像是模型、接触模式和位置执行接口之间的能力不匹配。下一版应优先补上接触冲量/动量闭环和力矩级支撑，而不是继续盲目扫描单个 VHSIP 参数。**
+**结论：本轮没有找到“数学求不出来”的证据；更像是模型、接触模式和位置执行接口之间的能力不匹配。JAX 版本已经与 Torch 方程对齐，但这只解决批量计算的一致性，不等于已经解决落地控制。下一版应优先补上接触冲量/动量闭环和力矩级支撑，而不是继续盲目扫描单个 VHSIP 参数。**
+
+## JAX parity 记录（2026-11-06）
+
+使用同一组 3 个批量状态分别运行 Torch `_vhsip_capture`、JAX `vhsip_capture` 和 `jit_vhsip_capture`。三者输出一致，最大绝对误差为 `2.98e-8`（float32 舍入量级）。本机检测到 GPU，但隔离环境只安装了 CPU `jaxlib`，运行设备为 `CpuDevice(0)`；此前未完成 CUDA/cuDNN 安装，因此不能把该结果表述为 GPU 加速验证。
+
+这项 parity 证明的是 VHSIP 解析传播可以安全迁移到 JAX 的纯函数接口。要用于训练加速，还需要在不改变控制语义的前提下加入 `vmap` 批量环境状态、固定 horizon 的 `jit` 编译，并重新测量端到端吞吐；Isaac 物理步、IK、接触判断和力矩执行仍不是 JAX 部分。
