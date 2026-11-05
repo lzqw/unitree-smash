@@ -157,6 +157,16 @@ landing_mpc_v2_supportmargin8_seed882072_01
 
 `reports/G07_full_racket_v5/landing_mpc_v2_supportmargin8_seed882072_01/`
 
+随后又运行了加入安全腿部姿态参考的 v2 试验：
+
+```text
+landing_mpc_v2_posture8_seed882072_01
+```
+
+该版本在首次足端接触后把腿部姿态参考向实际机器人默认腿姿态平滑混合，机械臂参考保持学生动作。它记录 337 次第一步应用、111 次完整 horizon 接受，但结果仍为 27/128、74 次合格空中触球、34 次条件恢复，逐案例的完整/恢复/球侧结果与基线完全一致。
+
+这排除了“只缺一个默认腿姿态参考”这一简单解释：位置级 QP 确实在改变命令，但没有改变任务级落地事件。下一步若要继续追求收益，应把接触力/冲量和质心角动量纳入实际执行闭环，或直接采用可执行的力矩级 WBC；继续扫描 VHSIP 的 capture gain、窗口或姿态 blend 的边际价值已经很低。
+
 ## 本轮证据
 
 - 试验输出：`reports/G07_full_racket_v5/reactive_vhsip_actualfail8_seed882072_06/`
