@@ -122,6 +122,7 @@ class ReactiveLandingV1:
         self.goal=torch.zeros_like(self.c0);self.r0=torch.eye(3,device=device).expand(count,3,3).clone()
         self.landing_plane=torch.zeros_like(self.c0)
         self.last_q=torch.zeros((count,12),device=device)
+        self.nominal_feet=None
         self.last_diagnostic={}
 
     def reset(self,ids=None):
@@ -217,7 +218,11 @@ class ReactiveLandingV1:
         # A horizontal foot rectangle follows the current yaw, not body tilt.
         yaw=torch.atan2(r[:,1,0],r[:,0,0]);c,s=yaw.cos(),yaw.sin();z=torch.zeros_like(c);one=torch.ones_like(c)
         ryaw=torch.stack((c,-s,z,s,c,z,z,z,one),1).reshape(n,3,3)
-        nominal=self.model.forward(default[None].expand(n,-1))['feet']
+        # The default joint posture is fixed by the admitted native interface;
+        # cache its foot geometry instead of re-running FK at every 100 Hz tick.
+        if self.nominal_feet is None or self.nominal_feet.shape[0] != self.count:
+            self.nominal_feet=self.model.forward(default[None].expand(self.count,-1))['feet']
+        nominal=self.nominal_feet[ids]
         shape=nominal-nominal.mean(1,keepdim=True);shape[:,:,2]=0.
         shape=rotate(ryaw[:,None],shape)
         com_offset=rotate(ryaw,actual['center'][ids])

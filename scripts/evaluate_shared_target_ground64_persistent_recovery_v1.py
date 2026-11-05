@@ -158,7 +158,7 @@ class SharedTargetResidualController:
         self.reactive_vhsip=None
         if self.reactive_vhsip_cases:
             vhsip_config=dict(mode='prepare_and_buffer_vhsip', blend_s=.08,
-                settling_s=.7, landing_height_m=.3, capture_gain=1., ik_iterations=5,
+                settling_s=.7, landing_height_m=.3, capture_gain=1., ik_iterations=3,
                 joint_target_rate_rad_s=20., ik_damping=.025)
             self.reactive_vhsip=LandingAssistedController(self.base,count,device,vhsip_config,
                 checkpoint['asset_sha256'],enabled_cases=self.reactive_vhsip_cases)
