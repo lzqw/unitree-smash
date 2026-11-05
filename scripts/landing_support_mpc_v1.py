@@ -94,6 +94,18 @@ class LandingSupportMPCV1:
                             'horizontal_speed' if horizontal_speed >= self.settings.horizontal_speed_trigger_mps else
                             'none'))
 
+    def risk_score(self, risk):
+        """A local, dimensionless risk score for first-step admission.
+
+        This is deliberately weaker than the terminal support gate.  It is
+        only used to reject a first command that makes every local risk
+        measure worse; it is not a stability certificate.
+        """
+        return float(.35 * risk['tilt_rad'] / self.settings.tilt_trigger_rad
+                     + .35 * risk['horizontal_speed_mps'] / self.settings.horizontal_speed_trigger_mps
+                     + .30 * risk['angular_speed_rad_s'] / self.settings.angular_speed_trigger_rad_s
+                     + max(0, self.settings.minimum_support_feet - risk['support_feet']))
+
     def _integrate(self, state, acceleration):
         next_state = copy.deepcopy(state)
         dt = self.settings.control_dt_s
@@ -131,6 +143,10 @@ class LandingSupportMPCV1:
                         mpc_contract=self.contract())
         predicted = copy.deepcopy(state)
         horizon = []
+        initial_risk = risk
+        initial_score = self.risk_score(initial_risk)
+        first_step_risk = None
+        first_step_score = None
         for stage in range(self.settings.horizon_steps):
             plan = self.qp.solve(predicted, joint_reference)
             row = dict(stage=stage, accepted=bool(plan.get('accepted')), solver_status=plan.get('solver_status'),
@@ -139,12 +155,21 @@ class LandingSupportMPCV1:
             if not plan.get('accepted'):
                 return dict(accepted=False, intervened=True, risk=risk, horizon=horizon + [row],
                             rejection=f'QP rejected prediction stage {stage}', native_execution=False,
+                            first_step_risk=first_step_risk,
+                            first_step_risk_score=first_step_score,
+                            initial_risk_score=initial_score,
+                            first_step_improves=False,
                             solver_failure=True, wall_runtime_s=__import__('time').perf_counter()-started,
                             mpc_contract=self.contract())
             horizon.append(dict(row, residuals=plan.get('residuals'),
                                 normalized_action=plan['normalized_action'].tolist(),
                                 joint_position_target=plan['joint_position_target'].tolist()))
             predicted = self._integrate(predicted, plan['acceleration'])
+            if stage == 0:
+                first_step_risk = self.risk(predicted)
+                first_step_score = self.risk_score(first_step_risk)
+        first_step_improves = bool(first_step_score is not None and
+                                   first_step_score + 1e-6 < initial_score)
         terminal = self.risk(predicted)
         terminal_ok = bool(terminal['tilt_rad'] <= self.settings.terminal_tilt_rad
                            and terminal['angular_speed_rad_s'] <= self.settings.terminal_angular_speed_rad_s
@@ -152,6 +177,10 @@ class LandingSupportMPCV1:
         if not terminal_ok:
             return dict(accepted=False, intervened=True, risk=risk, horizon=horizon,
                         terminal_risk=terminal, rejection='terminal support margin not reached',
+                        first_step_risk=first_step_risk,
+                        first_step_risk_score=first_step_score,
+                        initial_risk_score=initial_score,
+                        first_step_improves=first_step_improves,
                         solver_failure=False, native_execution=False,
                         wall_runtime_s=__import__('time').perf_counter()-started,
                         mpc_contract=self.contract())
@@ -159,6 +188,10 @@ class LandingSupportMPCV1:
         return dict(accepted=True, intervened=True, risk=risk, horizon=horizon,
                     terminal_risk=terminal, normalized_action=np.asarray(first['normalized_action']),
                     joint_position_target=np.asarray(first['joint_position_target']),
+                    first_step_risk=first_step_risk,
+                    first_step_risk_score=first_step_score,
+                    initial_risk_score=initial_score,
+                    first_step_improves=first_step_improves,
                     solver_failure=False, native_execution=False,
                     wall_runtime_s=__import__('time').perf_counter()-started,
                     mpc_contract=self.contract())

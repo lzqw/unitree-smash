@@ -38,7 +38,7 @@ parser.add_argument('--landing-mpc-cases', type=int, nargs='+', default=None,
 parser.add_argument('--landing-mpc-horizon-steps', type=int, default=10,
     help='Short rolling support-MPC horizon in 10 ms policy steps')
 parser.add_argument('--landing-mpc-allow-first-step', action='store_true',
-    help='Apply a feasible first QP stage even when the terminal support gate rejects; log the rejection')
+    help='Apply a feasible first QP stage only when the local risk score improves, even if the terminal gate rejects')
 parser.add_argument('--allow-offline-finetune', action='store_true',
     help='Evaluate an actor-only trace-finetuned candidate; the result is measured here and is never inherited')
 parser.add_argument('--allow-declared-controller-variant', action='store_true',
@@ -221,10 +221,14 @@ class SharedTargetResidualController:
                     solver_failure=bool(plan.get('solver_failure',False)),rejection=plan.get('rejection'),
                     risk_trigger=bool(plan.get('risk',{}).get('trigger',False)),
                     risk_reason=plan.get('risk',{}).get('reason'),
+                    first_step_improves=bool(plan.get('first_step_improves',False)),
+                    initial_risk_score=plan.get('initial_risk_score'),
+                    first_step_risk_score=plan.get('first_step_risk_score'),
                     runtime_ms=float(plan.get('wall_runtime_s',0.)*1000.),terminal_risk=plan.get('terminal_risk'),
                     horizon_steps=len(plan.get('horizon',[])),native_execution=True)
                 if plan.get('accepted') or (self.landing_mpc_allow_first_step and
-                                            record['first_action_available'] and record['risk_trigger']):
+                                            record['first_action_available'] and record['risk_trigger'] and
+                                            record['first_step_improves']):
                     chosen=np.asarray(plan['horizon'][0]['normalized_action'],dtype=np.float32)
                     action[lane]=torch.as_tensor(chosen,device=action.device)
                     record['applied_first_step']=True
