@@ -138,7 +138,11 @@ class ReactiveLandingV1:
         selected environments.  It returns a horizontal capture/ZMP offset;
         the downstream IK and original position-PD limits remain unchanged.
         """
-        dt=.01; settling=1.8; gravity=9.81; compression=.4*height.clamp_min(.15)
+        # The paper uses a 1.8 s settling horizon.  The current position-PD
+        # adapter only needs the near-touchdown capture reference; keeping a
+        # 0.6 s receding window avoids hundreds of tiny Python-side launches
+        # per native tick.  The post-touchdown buffer still uses settling_s.
+        dt=.01; settling=.6; gravity=9.81; compression=.4*height.clamp_min(.15)
         mass=self.model.mass.sum().to(height)
         stiffness=mass*(8./settling)**2
         eig=-torch.sqrt(stiffness/mass)
