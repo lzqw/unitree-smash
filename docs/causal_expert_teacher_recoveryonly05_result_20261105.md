@@ -31,6 +31,10 @@ Current pure-student baseline `frozen_v2_smooth_approach16_env5120_01` is 27/128
 
 ## Interpretation
 
-The teacher generated many assisted successes during training, but that gain did not transfer to the student when the teacher was removed. The unchanged air-contact and recovery counts, together with the lower complete5 result, indicate that this blend mainly supplied execution assistance rather than a recoverable policy improvement. Keep the 27/128 pure-student checkpoint as the active baseline and do not continue this blend scan.
+The exported student did not improve over its initialization: air contacts changed from 74 to 73, conditional recoveries remained 34, and complete5 fell from 27 to 24. It retained 23 of the original complete cases, lost TRAIN28/32/35/37, and gained TRAIN3. The 710 assisted training successes do not establish learning improvement; these are changing-policy training counts, not a paired teacher-on/off evaluation.
+
+The run also had a mismatch between assistance and trainable scope: the teacher acted in phase774, while only the approach head could learn. Seven of eight updates were critic-only warmup, leaving one actor update. These are concrete limitations of this experiment, not evidence that recovery teaching is impossible. Keep the 27/128 checkpoint, with its existing base control and persistent recovery assistance, as the active baseline.
+
+The next run directly trains the recovery head while freezing the actor, approach head, normalizer, and log standard deviation: 5120 environments, 16 continuous updates, recovery-only portable teacher blend 0.5. Its final frozen result is still pending. It currently uses PPO and success retention; outcome-filtered online correction supervision is not yet implemented by this configuration.
 
 Evaluation artifacts remain local; large checkpoints and videos are intentionally not committed.
