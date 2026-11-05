@@ -2,7 +2,7 @@
 
 日期：2026-11-06  
 分支：`g07-contact-flight-recovery-v5-20261027`  
-最新提交：`7f1c189`
+最新提交：`ab1b9cd`
 
 ## 1. 当前结论
 
@@ -225,7 +225,7 @@ G. 最后用 GPU 批量训练/蒸馏恢复策略
 - VHSIP Torch：`quadsmash/control/reactive_landing_v1.py`
 - VHSIP JAX：`quadsmash/control/reactive_landing_vhsip_jax.py`
 - 试验报告：`docs/reactive_vhsip_landing_trial_20261105.md`
-- 最新提交：`7f1c189`
+- 最新提交：`ab1b9cd`
 
 ## 9. 修正后的非足部净空原生试验
 
@@ -274,7 +274,21 @@ GPU0: 0.3556 GPU h，102400 env steps，SUCCEEDED
 
 因此，连续参考解决了参考重置问题，但没有解决真实落地的主瓶颈，且在当前位置 PD 接口下会明显压缩 QP 可行域。它应保留为可复现实验分支，不应作为下一轮默认控制器。
 
-## 11. 结论
+## 11. 连续参考但释放机械臂约束的原生对照
+
+为区分“机械臂硬约束导致不可行”和“腿部支撑/接触本身不可行”，又运行了连续参考 MPC、净空任务开启、但不把机械臂命令作为精确 PD 等式的对照：
+
+```text
+reports/G07_full_racket_v5/landing_mpc_v3_freearm_clearance20_seed882072_01
+git: ab1b9cd
+GPU0: 0.3518 GPU h，102400 env steps，SUCCEEDED
+```
+
+这次 `complete5=27/128`、合格空中触球 `74/128`、条件恢复 `34/128`、越网 `71/128`、目标落点 `63/128`、数值故障 `0`。QP 首步接受由硬机械臂版本的 133 次提高到 349 次，solver failure 由 1188 降到 60，但完整任务和恢复没有改善。
+
+这证明机械臂精确保持确实压缩了模型内 QP 的可行域，却不是当前非足部触地的主因。放宽机械臂只能增加模型内可行动作，不能替代接触冲量、执行器延迟和持续支撑动力学。
+
+## 12. 结论
 
 当前证据支持：
 
