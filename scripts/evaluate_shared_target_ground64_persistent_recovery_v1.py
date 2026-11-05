@@ -73,6 +73,8 @@ parser.add_argument('--landing-mpc-nonfoot-clearance-kp', type=float, default=12
     help='Thigh clearance proportional acceleration gain')
 parser.add_argument('--landing-mpc-nonfoot-clearance-kd', type=float, default=25.,
     help='Thigh clearance damping gain')
+parser.add_argument('--landing-mpc-continuous-reference', action='store_true',
+    help='Use continuous COM/support references and preserve the supplied arm command (MPC v3)')
 parser.add_argument('--reactive-vhsip-cases', type=int, nargs='+', default=None,
     help='Controller-trial TRAIN indices for the GPU-batched VHSIP reactive landing reference')
 parser.add_argument('--allow-offline-finetune', action='store_true',
@@ -114,6 +116,7 @@ from scripts.loaded_pinocchio_model_v1 import LoadedPinocchioModelV1
 from scripts.ground64_training_support_v1 import GROUND
 from scripts.landing_support_mpc_v1 import LandingSupportMPCV1, LandingMPCSettingsV1
 from scripts.landing_support_mpc_v2 import LandingSupportMPCV2, LandingMPCSettingsV2
+from scripts.landing_support_mpc_v3 import LandingSupportMPCV3
 from scripts.whole_body_support_qp_v1 import PositionPDInterface, SupportSettings
 
 SHARED_SCHEMA='g07-public-shared-target-bias-v5'
@@ -144,6 +147,7 @@ class SharedTargetResidualController:
                  landing_mpc_swing_foot_kd=18., landing_mpc_swing_foot_clearance=.025,
                  landing_mpc_nonfoot_clearance_weight=0., landing_mpc_nonfoot_clearance_m=.08,
                  landing_mpc_nonfoot_clearance_kp=120., landing_mpc_nonfoot_clearance_kd=25.,
+                 landing_mpc_continuous_reference=False,
                  reactive_vhsip_cases=None):
         if checkpoint.get('schema') not in (RESIDUAL_SCHEMA,SHARED_SCHEMA):
             raise ValueError('Require the shared-target source or residual policy schema')
@@ -200,6 +204,7 @@ class SharedTargetResidualController:
         self.landing_mpc_nonfoot_clearance_m=float(landing_mpc_nonfoot_clearance_m)
         self.landing_mpc_nonfoot_clearance_kp=float(landing_mpc_nonfoot_clearance_kp)
         self.landing_mpc_nonfoot_clearance_kd=float(landing_mpc_nonfoot_clearance_kd)
+        self.landing_mpc_continuous_reference=bool(landing_mpc_continuous_reference)
         self.reactive_vhsip_cases=None if reactive_vhsip_cases is None else set(int(x) for x in reactive_vhsip_cases)
         if self.reactive_vhsip_cases and self.landing_config is not None:
             raise ValueError('Separate declared landing assistance and VHSIP trial')
@@ -253,8 +258,10 @@ class SharedTargetResidualController:
                 predict_touchdown_contacts=self.landing_mpc_predict_touchdown_contacts,
                 touchdown_height_tolerance_m=self.landing_mpc_touchdown_height_tolerance,
                 touchdown_vertical_speed_limit_mps=self.landing_mpc_touchdown_vertical_speed_limit)
-            self.landing_mpc=LandingSupportMPCV2(interface, qp_settings=qp_settings,
-                settings=mpc_settings)
+            self.landing_mpc=(LandingSupportMPCV3(interface, qp_settings=qp_settings,
+                settings=mpc_settings) if self.landing_mpc_continuous_reference else
+                LandingSupportMPCV2(interface, qp_settings=qp_settings,
+                settings=mpc_settings))
             if default is not None:
                 if torch.is_tensor(default):
                     default=default.detach().cpu().numpy()
@@ -293,6 +300,8 @@ class SharedTargetResidualController:
         else:
             self._effort_override[ids].zero_();self._effort_override_mask[ids]=False
             self._landing_mpc_hold_remaining[ids]=0
+        if self.landing_mpc is not None and hasattr(self.landing_mpc, 'reset'):
+            self.landing_mpc.reset()
 
     def effort_override(self):
         """Return explicit effort residuals for the native implicit-PD actuator."""
@@ -609,6 +618,7 @@ def main():
         landing_mpc_nonfoot_clearance_m=args.landing_mpc_nonfoot_clearance_m,
         landing_mpc_nonfoot_clearance_kp=args.landing_mpc_nonfoot_clearance_kp,
         landing_mpc_nonfoot_clearance_kd=args.landing_mpc_nonfoot_clearance_kd,
+        landing_mpc_continuous_reference=args.landing_mpc_continuous_reference,
         reactive_vhsip_cases=args.reactive_vhsip_cases,
         expert_bank=str(args.expert_bank.resolve()) if args.expert_bank else None,
         offline_trace_finetune_candidate=offline_finetune,
@@ -651,6 +661,7 @@ def main():
         landing_mpc_nonfoot_clearance_m=args.landing_mpc_nonfoot_clearance_m,
         landing_mpc_nonfoot_clearance_kp=args.landing_mpc_nonfoot_clearance_kp,
         landing_mpc_nonfoot_clearance_kd=args.landing_mpc_nonfoot_clearance_kd,
+                      landing_mpc_continuous_reference=args.landing_mpc_continuous_reference,
                       reactive_vhsip_cases=args.reactive_vhsip_cases))
     stopping = False
     def stop(_signal, _frame):
@@ -837,7 +848,10 @@ def main():
                 controller_trial=True, native_execution=True, frozen_policy_performance=False,
                 formal_acceptance=False)
         if args.landing_mpc_cases is not None:
-            summary['landing_mpc'] = dict(schema=('landing-support-mpc-v2-touchdown-recovery'
+            summary['landing_mpc'] = dict(schema=('landing-support-mpc-v3-continuous-touchdown-recovery'
+                if args.landing_mpc_continuous_reference and args.landing_mpc_touchdown_recovery else
+                'landing-support-mpc-v3-continuous-reference' if args.landing_mpc_continuous_reference else
+                'landing-support-mpc-v2-touchdown-recovery'
                 if args.landing_mpc_touchdown_recovery else
                 'landing-support-mpc-v2-support-margin' if args.landing_mpc_support_margin else
                 'landing-support-mpc-v1'),controller_trial=True,
@@ -857,6 +871,7 @@ def main():
                 nonfoot_clearance_m=float(args.landing_mpc_nonfoot_clearance_m),
                 nonfoot_clearance_kp_s2=float(args.landing_mpc_nonfoot_clearance_kp),
                 nonfoot_clearance_kd_s=float(args.landing_mpc_nonfoot_clearance_kd),
+                continuous_reference=bool(args.landing_mpc_continuous_reference),
                 records=len(landing_mpc_records),
                 predicted_contact_transition_records=sum(bool(r.get('predicted_contact_additions')) for r in landing_mpc_records),
                 applied_first_steps=sum(bool(r.get('applied_first_step')) for r in landing_mpc_records),
