@@ -221,6 +221,7 @@ class SharedTargetResidualController:
                 record=dict(case=case,clock_s=float(public_clock[lane]),accepted=bool(plan['accepted']),
                     first_action_available=bool(plan.get('horizon')) and bool(plan['horizon'][0].get('accepted')),
                     solver_failure=bool(plan.get('solver_failure',False)),rejection=plan.get('rejection'),
+                    constraint_failure=bool(plan.get('constraint_failure',False)),
                     risk_trigger=bool(plan.get('risk',{}).get('trigger',False)),
                     risk_reason=plan.get('risk',{}).get('reason'),
                     first_step_improves=bool(plan.get('first_step_improves',False)),

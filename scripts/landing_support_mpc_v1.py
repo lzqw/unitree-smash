@@ -151,15 +151,21 @@ class LandingSupportMPCV1:
             plan = self.qp.solve(predicted, joint_reference)
             row = dict(stage=stage, accepted=bool(plan.get('accepted')), solver_status=plan.get('solver_status'),
                        solver_iterations=plan.get('solver_iterations'), wall_runtime_s=plan.get('wall_runtime_s'),
-                       contacts=predicted.contacts.tolist(), risk=self.risk(predicted))
+                       contacts=predicted.contacts.tolist(), risk=self.risk(predicted),
+                       residuals=plan.get('residuals'), qp_rejection=plan.get('rejection'))
             if not plan.get('accepted'):
+                status = str(plan.get('solver_status', '')).lower()
+                numerical_failure = not (status.startswith('solved') and
+                                         plan.get('residuals') is not None)
                 return dict(accepted=False, intervened=True, risk=risk, horizon=horizon + [row],
                             rejection=f'QP rejected prediction stage {stage}', native_execution=False,
                             first_step_risk=first_step_risk,
                             first_step_risk_score=first_step_score,
                             initial_risk_score=initial_score,
                             first_step_improves=False,
-                            solver_failure=True, wall_runtime_s=__import__('time').perf_counter()-started,
+                            solver_failure=numerical_failure,
+                            constraint_failure=not numerical_failure,
+                            wall_runtime_s=__import__('time').perf_counter()-started,
                             mpc_contract=self.contract())
             horizon.append(dict(row, residuals=plan.get('residuals'),
                                 normalized_action=plan['normalized_action'].tolist(),
