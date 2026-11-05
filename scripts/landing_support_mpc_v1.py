@@ -118,6 +118,17 @@ class LandingSupportMPCV1:
             return dict(accepted=False, intervened=False, risk=risk,
                         rejection='risk trigger not active', horizon=[],
                         native_execution=False, mpc_contract=self.contract())
+        # This first controller has a fixed observed contact mode and a
+        # support-force QP.  With fewer than the declared minimum support feet
+        # it cannot represent touchdown/contact creation, so returning an
+        # explicit fallback is safer than asking OSQP to invent a contact
+        # transition or treating a free-flight solution as a landing plan.
+        if int(np.asarray(state.contacts, dtype=bool).sum()) < self.settings.minimum_support_feet:
+            return dict(accepted=False, intervened=True, risk=risk, horizon=[],
+                        rejection='insufficient support contacts for fixed-contact QP',
+                        solver_failure=False, native_execution=False,
+                        wall_runtime_s=__import__('time').perf_counter()-started,
+                        mpc_contract=self.contract())
         predicted = copy.deepcopy(state)
         horizon = []
         for stage in range(self.settings.horizon_steps):

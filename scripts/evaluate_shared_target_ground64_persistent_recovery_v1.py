@@ -212,13 +212,19 @@ class SharedTargetResidualController:
                 dflt=default.detach().cpu().numpy()
                 state=self._landing_mpc_model.state_from_public(pub,dflt)
                 joint_ref=lim[:,0]+.5*(action[lane].detach().cpu().numpy()+1.)*(lim[:,1]-lim[:,0])
-                plan=self.landing_mpc.solve(state,joint_ref,force=True)
+                # The native trial must exercise the declared risk trigger.  A
+                # selected TRAIN case is only an admission filter; it is not a
+                # reason to keep overwriting a stable four-foot command.
+                plan=self.landing_mpc.solve(state,joint_ref,force=False)
                 record=dict(case=case,clock_s=float(public_clock[lane]),accepted=bool(plan['accepted']),
                     first_action_available=bool(plan.get('horizon')) and bool(plan['horizon'][0].get('accepted')),
                     solver_failure=bool(plan.get('solver_failure',False)),rejection=plan.get('rejection'),
+                    risk_trigger=bool(plan.get('risk',{}).get('trigger',False)),
+                    risk_reason=plan.get('risk',{}).get('reason'),
                     runtime_ms=float(plan.get('wall_runtime_s',0.)*1000.),terminal_risk=plan.get('terminal_risk'),
                     horizon_steps=len(plan.get('horizon',[])),native_execution=True)
-                if plan.get('accepted') or (self.landing_mpc_allow_first_step and record['first_action_available']):
+                if plan.get('accepted') or (self.landing_mpc_allow_first_step and
+                                            record['first_action_available'] and record['risk_trigger']):
                     chosen=np.asarray(plan['horizon'][0]['normalized_action'],dtype=np.float32)
                     action[lane]=torch.as_tensor(chosen,device=action.device)
                     record['applied_first_step']=True

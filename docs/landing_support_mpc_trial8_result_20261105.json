@@ -1,0 +1,36 @@
+{
+  "schema": "landing-support-mpc-native-trial-analysis-v1",
+  "baseline": {
+    "path": "reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/metrics.json",
+    "complete5": 27,
+    "airborne_contacts": 74,
+    "conditional_recovery_count": 34
+  },
+  "trial": {
+    "path": "reports/G07_full_racket_v5/landing_support_mpc_trial8_seed882072_02/metrics.json",
+    "complete5": 25,
+    "airborne_contacts": 74,
+    "conditional_recovery_count": 32,
+    "selected_cases": [1, 8, 9, 20, 30, 37, 63, 71],
+    "records": 1529,
+    "first_action_available": 1504,
+    "applied_first_steps": 1504,
+    "terminal_acceptances": 788,
+    "solver_failures": 157,
+    "runtime_ms": {
+      "median": 13.091718079522252,
+      "p95": 18.216063966974616,
+      "maximum": 29.421990970149636
+    },
+    "native_execution": true,
+    "controller_trial": true,
+    "formal_acceptance": false
+  },
+  "interpretation": {
+    "stage_failure_rate": 0.1026814911706998,
+    "terminal_rejection_count": 584,
+    "terminal_rejection_rate": 0.381949,
+    "first_action_available_rate": 0.983649,
+    "next_action": "Use true risk-triggered dispatch and strict terminal acceptance before testing a hybrid-contact controller."
+  }
+}
