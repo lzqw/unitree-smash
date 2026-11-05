@@ -252,6 +252,7 @@ class SharedTargetResidualController:
                     failed_solver_iterations=failed_stage.get('solver_iterations') if failed_stage is not None else None,
                     failed_contacts=failed_stage.get('contacts') if failed_stage is not None else None,
                     failed_stage_risk=failed_stage.get('risk') if failed_stage is not None else None,
+                    failed_stage_residuals=failed_stage.get('residuals') if failed_stage is not None else None,
                     native_execution=True)
                 if plan.get('accepted') or (self.landing_mpc_allow_first_step and
                                             record['first_action_available'] and record['risk_trigger'] and

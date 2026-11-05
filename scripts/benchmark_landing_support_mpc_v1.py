@@ -83,6 +83,7 @@ def main():
                 horizon_len=len(plan['horizon']),
                 stage_feasible=sum(bool(x['accepted']) for x in plan['horizon']),
                 stage_total=len(plan['horizon']), rejection=plan.get('rejection'),
+                failed_stage=next((x for x in plan['horizon'] if not x.get('accepted')), None),
                 terminal_risk=plan.get('terminal_risk'), runtime_ms=float(plan.get('wall_runtime_s', 0.)*1000.),
                 first_action_available=bool(plan.get('horizon')) and bool(plan['horizon'][0].get('accepted'))))
     stage_count = sum(r['stage_total'] for r in records)
