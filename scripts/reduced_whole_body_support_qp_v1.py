@@ -62,7 +62,7 @@ class ReducedWholeBodySupportQP(WholeBodySupportQP):
                     continue
                 jac_foot = snapshot['foot_jacobian'][foot_index]
                 jdot_v_foot = snapshot['foot_jacobian_dot'][foot_index] @ state.v
-                foot_position = snapshot['body_positions_world'][foot_ids[foot_index]]
+                foot_position = snapshot['body_positions_world'][feet_ids[foot_index]]
                 foot_velocity = jac_foot @ state.v
                 desired_foot_acceleration = (
                     cfg.swing_foot_kp_s2 *
