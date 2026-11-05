@@ -30,6 +30,7 @@ class ReducedWholeBodySupportQP(WholeBodySupportQP):
         com_jac,com_bias=self.com_kinematics(state)
         reference=self.reference(state,snapshot,joint_reference)
         feet=np.flatnonzero(state.contacts);nforce=3*len(feet);nz=24+nforce
+        feet_ids = [self.model.names.index(n) for n in self.model.feet]
         jac=snapshot['foot_jacobian'][feet].reshape(nforce,24)
         jdot_v=(snapshot['foot_jacobian_dot'][feet]@state.v).reshape(nforce)
         contact_acceleration=-(jac@state.v)/cfg.contact_velocity_decay_s
@@ -56,7 +57,6 @@ class ReducedWholeBodySupportQP(WholeBodySupportQP):
         swing_weight = float(cfg.swing_foot_weight)
         swing_targets = reference.get('swing_foot_target_world')
         if swing_weight > 1e-7 and swing_targets is not None and len(feet):
-            foot_ids = [self.model.names.index(n) for n in self.model.feet]
             for foot_index in range(4):
                 if state.contacts[foot_index]:
                     continue
@@ -71,6 +71,36 @@ class ReducedWholeBodySupportQP(WholeBodySupportQP):
                 swing_block = np.zeros((3, nz)); swing_block[:, :24] = jac_foot
                 task(swing_block, desired_foot_acceleration - jdot_v_foot,
                      swing_weight)
+        # Keep the lower-leg body links above the measured support plane.  The
+        # task is deliberately soft and only activates near the plane or while
+        # a thigh is moving downward; it does not pretend to model a new body
+        # contact.  This targets the audited failure mode where a foot lands
+        # first and a thigh touches the ground later.
+        clearance_weight = float(cfg.nonfoot_clearance_weight)
+        if clearance_weight > 1e-7 and len(feet):
+            active_positions = snapshot['body_positions_world'][feet_ids][state.contacts]
+            ground_z = float(np.median(active_positions[:, 2])) if len(active_positions) else None
+            if ground_z is not None:
+                for link_name in ('FL_thigh', 'FR_thigh', 'RL_thigh', 'RR_thigh'):
+                    frame_id = self.model.body_frames[link_name]
+                    link_jac = pin.getFrameJacobian(self.model.model, self.model.data,
+                        frame_id, pin.ReferenceFrame.LOCAL_WORLD_ALIGNED)[:3].copy()
+                    link_jdot = pin.getFrameJacobianTimeVariation(
+                        self.model.model, self.model.data, frame_id,
+                        pin.ReferenceFrame.WORLD)[:3].copy()
+                    link_position = self.model.data.oMf[frame_id].translation.copy()
+                    link_velocity = link_jac @ state.v
+                    target_z = ground_z + float(cfg.nonfoot_clearance_m)
+                    predicted_z = link_position[2] + cfg.control_dt_s * link_velocity[2]
+                    if (predicted_z <= target_z + .12 or link_velocity[2] < -.5):
+                        desired_z_acceleration = (
+                            cfg.nonfoot_clearance_kp_s2 * (target_z - link_position[2])
+                            - cfg.nonfoot_clearance_kd_s * link_velocity[2])
+                        desired_z_acceleration = float(np.clip(desired_z_acceleration, -80., 80.))
+                        clearance_block = np.zeros((1, nz)); clearance_block[0, :24] = link_jac[2]
+                        jdot_v_link = float(link_jdot[2] @ state.v)
+                        task(clearance_block, desired_z_acceleration - jdot_v_link,
+                             clearance_weight)
         matrices,lowers,uppers=[],[],[]
 
         def constraint(matrix,low,high=None):

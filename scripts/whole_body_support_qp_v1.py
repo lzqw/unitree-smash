@@ -44,6 +44,13 @@ class SupportSettings:
     swing_foot_kp_s2: float = 80.
     swing_foot_kd_s: float = 18.
     swing_foot_clearance_m: float = .025
+    # Optional soft clearance task for lower-leg body links.  It is disabled
+    # by default; landing trials can enable it to avoid a thigh/body link
+    # entering the support plane after the first foot contact.
+    nonfoot_clearance_weight: float = 0.
+    nonfoot_clearance_m: float = .08
+    nonfoot_clearance_kp_s2: float = 120.
+    nonfoot_clearance_kd_s: float = 25.
 
 
 class PositionPDInterface:
@@ -80,7 +87,7 @@ class WholeBodySupportQP:
     def __init__(self, interface, settings=SupportSettings()):
         declared = asdict(settings)
         for name, value in declared.items():
-            if not np.isfinite(value) or value < 0 or (name != 'swing_foot_weight' and value == 0):
+            if not np.isfinite(value) or value < 0 or (name not in ('swing_foot_weight', 'nonfoot_clearance_weight') and value == 0):
                 raise ValueError('Finite nonnegative control settings required; all non-swing terms must be positive')
         if settings.friction_facets < 4 or settings.friction_facets % 2:
             raise ValueError('Even friction polygon with at least four facets required')
