@@ -272,6 +272,7 @@ class SharedTargetResidualController:
                 lim=limits.detach().cpu().numpy()
                 dflt=default.detach().cpu().numpy()
                 state=self._landing_mpc_model.state_from_public(pub,dflt)
+                original_action=np.asarray(action[lane].detach().cpu().numpy(),dtype=np.float64).copy()
                 joint_ref=lim[:,0]+.5*(action[lane].detach().cpu().numpy()+1.)*(lim[:,1]-lim[:,0])
                 # The native trial must exercise the declared risk trigger.  A
                 # selected TRAIN case is only an admission filter; it is not a
@@ -301,7 +302,12 @@ class SharedTargetResidualController:
                                             record['first_action_available'] and record['risk_trigger'] and
                                             record['first_step_improves']):
                     chosen=np.asarray(plan['horizon'][0]['normalized_action'],dtype=np.float32)
-                    action[lane]=torch.as_tensor(chosen,device=action.device)
+                    # A torque-overlay trial keeps the student's position
+                    # target and adds only the MPC torque residual.  Replacing
+                    # the target first would make the residual identically
+                    # zero because the QP target is itself PD-inverted.
+                    if not self.landing_mpc_torque_overlay:
+                        action[lane]=torch.as_tensor(chosen,device=action.device)
                     record['applied_first_step']=True
                     record['torque_overlay_applied']=False
                     first_plan_torque = plan.get('torque')
@@ -313,7 +319,7 @@ class SharedTargetResidualController:
                         # PD torque, so send only the residual.  Arm torques
                         # remain zero in the first native trial to protect the
                         # racket/contact event.
-                        target=np.asarray(plan['joint_position_target'],dtype=np.float64)
+                        target=lim[:,0]+.5*(original_action+1.)*(lim[:,1]-lim[:,0])
                         q=state.joint_position;v=state.joint_velocity
                         kp=np.asarray(self.landing_mpc.qp.interface.kp,dtype=np.float64)
                         kd=np.asarray(self.landing_mpc.qp.interface.kd,dtype=np.float64)
