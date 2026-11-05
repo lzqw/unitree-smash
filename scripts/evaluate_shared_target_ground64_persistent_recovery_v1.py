@@ -41,6 +41,8 @@ parser.add_argument('--landing-mpc-allow-first-step', action='store_true',
     help='Apply a feasible first QP stage only when the local risk score improves, even if the terminal gate rejects')
 parser.add_argument('--landing-mpc-support-margin', action='store_true',
     help='Use the experimental support-margin viability gate (MPC v2)')
+parser.add_argument('--landing-mpc-torque-overlay', action='store_true',
+    help='Apply the accepted MPC leg torque as an explicit residual on top of the position-PD command')
 parser.add_argument('--landing-mpc-swing-foot-weight', type=float, default=0.,
     help='Optional soft touchdown-foot task weight; zero preserves the original support QP')
 parser.add_argument('--landing-mpc-swing-foot-kp', type=float, default=80.,
@@ -109,6 +111,7 @@ class SharedTargetResidualController:
     def __init__(self, checkpoint, count, device,landing_trial=None,support_trial=None,disable_support=False,
                  landing_mpc_cases=None, landing_mpc_horizon_steps=10, landing_mpc_allow_first_step=False,
                  landing_mpc_support_margin=False,
+                 landing_mpc_torque_overlay=False,
                  landing_mpc_swing_foot_weight=0., landing_mpc_swing_foot_kp=80.,
                  landing_mpc_swing_foot_kd=18., landing_mpc_swing_foot_clearance=.025,
                  reactive_vhsip_cases=None):
@@ -142,6 +145,9 @@ class SharedTargetResidualController:
         self.landing_mpc_cases=set(int(x) for x in (landing_mpc_cases or []))
         self.landing_mpc_allow_first_step=bool(landing_mpc_allow_first_step)
         self.landing_mpc_support_margin=bool(landing_mpc_support_margin)
+        self.landing_mpc_torque_overlay=bool(landing_mpc_torque_overlay)
+        self._effort_override=torch.zeros((count,18),device=device)
+        self._effort_override_mask=torch.zeros((count,),dtype=torch.bool,device=device)
         self.landing_mpc_swing_foot_weight=float(landing_mpc_swing_foot_weight)
         self.landing_mpc_swing_foot_kp=float(landing_mpc_swing_foot_kp)
         self.landing_mpc_swing_foot_kd=float(landing_mpc_swing_foot_kd)
@@ -222,9 +228,18 @@ class SharedTargetResidualController:
                 self.first_ball_feature.zero_();self.first_ball_seen.zero_()
             else:
                 self.first_ball_feature[ids].zero_();self.first_ball_seen[ids]=False
+        if ids is None:
+            self._effort_override.zero_();self._effort_override_mask.zero_()
+        else:
+            self._effort_override[ids].zero_();self._effort_override_mask[ids]=False
+
+    def effort_override(self):
+        """Return explicit effort residuals for the native implicit-PD actuator."""
+        return self._effort_override
 
     @torch.inference_mode()
     def action(self,observation,default,limits):
+        self._effort_override.zero_();self._effort_override_mask.zero_()
         source=self.reactive_vhsip if self.reactive_vhsip is not None else self.base
         base=source.action(observation,default,limits)
         if self.actor is None:return base
@@ -288,6 +303,22 @@ class SharedTargetResidualController:
                     chosen=np.asarray(plan['horizon'][0]['normalized_action'],dtype=np.float32)
                     action[lane]=torch.as_tensor(chosen,device=action.device)
                     record['applied_first_step']=True
+                    record['torque_overlay_applied']=False
+                    if self.landing_mpc_torque_overlay and plan.get('torque') is not None:
+                        # The QP torque is the desired total leg torque.  The
+                        # implicit actuator adds effort target to its position
+                        # PD torque, so send only the residual.  Arm torques
+                        # remain zero in the first native trial to protect the
+                        # racket/contact event.
+                        target=np.asarray(plan['joint_position_target'],dtype=np.float64)
+                        q=state.joint_position;v=state.joint_velocity
+                        kp=np.asarray(self.landing_mpc.qp.interface.kp,dtype=np.float64)
+                        kd=np.asarray(self.landing_mpc.qp.interface.kd,dtype=np.float64)
+                        total=np.asarray(plan['torque'],dtype=np.float64)
+                        residual=total-(kp*(target-q)-kd*v)
+                        self._effort_override[lane,:12]=torch.as_tensor(residual[:12],device=action.device,dtype=action.dtype)
+                        self._effort_override_mask[lane]=True
+                        record['torque_overlay_applied']=True
                 else:record['applied_first_step']=False
                 self.landing_mpc_logs.append(record)
             except Exception as error:
@@ -471,6 +502,7 @@ def main():
         landing_mpc_horizon_steps=args.landing_mpc_horizon_steps,
         landing_mpc_allow_first_step=args.landing_mpc_allow_first_step,
         landing_mpc_support_margin=args.landing_mpc_support_margin,
+        landing_mpc_torque_overlay=args.landing_mpc_torque_overlay,
         landing_mpc_swing_foot_weight=args.landing_mpc_swing_foot_weight,
         landing_mpc_swing_foot_kp=args.landing_mpc_swing_foot_kp,
         landing_mpc_swing_foot_kd=args.landing_mpc_swing_foot_kd,
@@ -501,6 +533,7 @@ def main():
                       landing_mpc_horizon_steps=args.landing_mpc_horizon_steps,
                       landing_mpc_allow_first_step=args.landing_mpc_allow_first_step,
                       landing_mpc_support_margin=args.landing_mpc_support_margin,
+                      landing_mpc_torque_overlay=args.landing_mpc_torque_overlay,
                       landing_mpc_swing_foot_weight=args.landing_mpc_swing_foot_weight,
                       landing_mpc_swing_foot_kp=args.landing_mpc_swing_foot_kp,
                       landing_mpc_swing_foot_kd=args.landing_mpc_swing_foot_kd,
@@ -620,6 +653,13 @@ def main():
                             values['observed_foot_net_forces_world_n']=env.feet_contact.data.net_forces_w[selected[keep]]
                             for key,value in values.items():
                                 support_records.setdefault(key,[]).append(value.cpu().numpy().copy())
+                if hasattr(controller, 'effort_override'):
+                    # CoupledEnv uses an implicit PD actuator.  This effort
+                    # target is added by Isaac to the position-PD torque after
+                    # _pre_physics_step, so it is a genuine residual torque
+                    # path rather than a second position command.
+                    env.robot.set_joint_effort_target(
+                        controller.effort_override(), joint_ids=env.joint_ids)
                 observation, _, done, _ = wrapped.step(action)
                 if fixed_trace is not None:fixed_trace.close(done.bool().cpu().numpy())
                 finished |= done.bool()
@@ -690,8 +730,10 @@ def main():
                 horizon_steps=args.landing_mpc_horizon_steps,
                 allow_first_step=bool(args.landing_mpc_allow_first_step),
                 support_margin=bool(args.landing_mpc_support_margin),
+                torque_overlay=bool(args.landing_mpc_torque_overlay),
                 records=len(landing_mpc_records),
                 applied_first_steps=sum(bool(r.get('applied_first_step')) for r in landing_mpc_records),
+                applied_torque_overlays=sum(bool(r.get('torque_overlay_applied')) for r in landing_mpc_records),
                 solver_failures=sum(bool(r.get('solver_failure')) for r in landing_mpc_records),
                 terminal_acceptances=sum(bool(r.get('accepted')) for r in landing_mpc_records),
                 records_path='landing_mpc_records.json',native_execution=True,
