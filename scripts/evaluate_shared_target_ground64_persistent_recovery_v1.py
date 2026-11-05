@@ -51,6 +51,12 @@ parser.add_argument('--landing-mpc-torque-overlay', action='store_true',
     help='Apply the accepted MPC leg torque as an explicit residual on top of the position-PD command')
 parser.add_argument('--landing-mpc-touchdown-recovery', action='store_true',
     help='Allow one-contact touchdown recovery and keep rolling a ground-level swing-foot target')
+parser.add_argument('--landing-mpc-predict-touchdown-contacts', action='store_true',
+    help='Let MPC add an imminent swing-foot contact to later horizon stages (event approximation)')
+parser.add_argument('--landing-mpc-touchdown-height-tolerance', type=float, default=.012,
+    help='Predicted foot-to-support-plane height tolerance for contact-mode transition in metres')
+parser.add_argument('--landing-mpc-touchdown-vertical-speed-limit', type=float, default=1.5,
+    help='Maximum downward foot speed accepted for predicted contact-mode transition in m/s')
 parser.add_argument('--landing-mpc-swing-foot-weight', type=float, default=0.,
     help='Optional soft touchdown-foot task weight; zero preserves the original support QP')
 parser.add_argument('--landing-mpc-swing-foot-kp', type=float, default=80.,
@@ -123,6 +129,9 @@ class SharedTargetResidualController:
                  landing_mpc_support_margin=False,
                  landing_mpc_torque_overlay=False,
                  landing_mpc_touchdown_recovery=False,
+                 landing_mpc_predict_touchdown_contacts=False,
+                 landing_mpc_touchdown_height_tolerance=.012,
+                 landing_mpc_touchdown_vertical_speed_limit=1.5,
                  landing_mpc_swing_foot_weight=0., landing_mpc_swing_foot_kp=80.,
                  landing_mpc_swing_foot_kd=18., landing_mpc_swing_foot_clearance=.025,
                  reactive_vhsip_cases=None):
@@ -168,6 +177,9 @@ class SharedTargetResidualController:
         self.landing_mpc_support_margin=bool(landing_mpc_support_margin)
         self.landing_mpc_torque_overlay=bool(landing_mpc_torque_overlay)
         self.landing_mpc_touchdown_recovery=bool(landing_mpc_touchdown_recovery)
+        self.landing_mpc_predict_touchdown_contacts=bool(landing_mpc_predict_touchdown_contacts)
+        self.landing_mpc_touchdown_height_tolerance=float(landing_mpc_touchdown_height_tolerance)
+        self.landing_mpc_touchdown_vertical_speed_limit=float(landing_mpc_touchdown_vertical_speed_limit)
         self._effort_override=torch.zeros((count,18),device=device)
         self._effort_override_mask=torch.zeros((count,),dtype=torch.bool,device=device)
         self.landing_mpc_swing_foot_weight=float(landing_mpc_swing_foot_weight)
@@ -219,7 +231,10 @@ class SharedTargetResidualController:
             mpc_settings = LandingMPCSettingsV2(horizon_steps=self._landing_mpc_horizon_steps,
                 minimum_support_feet=1 if self.landing_mpc_touchdown_recovery else 2,
                 one_foot_max_com_distance_m=.20 if self.landing_mpc_touchdown_recovery else .045,
-                landing_leg_posture_blend=.15 if self.landing_mpc_touchdown_recovery else .35)
+                landing_leg_posture_blend=.15 if self.landing_mpc_touchdown_recovery else .35,
+                predict_touchdown_contacts=self.landing_mpc_predict_touchdown_contacts,
+                touchdown_height_tolerance_m=self.landing_mpc_touchdown_height_tolerance,
+                touchdown_vertical_speed_limit_mps=self.landing_mpc_touchdown_vertical_speed_limit)
             self.landing_mpc=LandingSupportMPCV2(interface, qp_settings=qp_settings,
                 settings=mpc_settings)
             if default is not None:
@@ -561,6 +576,9 @@ def main():
         landing_mpc_support_margin=args.landing_mpc_support_margin,
         landing_mpc_torque_overlay=args.landing_mpc_torque_overlay,
         landing_mpc_touchdown_recovery=args.landing_mpc_touchdown_recovery,
+        landing_mpc_predict_touchdown_contacts=args.landing_mpc_predict_touchdown_contacts,
+        landing_mpc_touchdown_height_tolerance=args.landing_mpc_touchdown_height_tolerance,
+        landing_mpc_touchdown_vertical_speed_limit=args.landing_mpc_touchdown_vertical_speed_limit,
         landing_mpc_swing_foot_weight=args.landing_mpc_swing_foot_weight,
         landing_mpc_swing_foot_kp=args.landing_mpc_swing_foot_kp,
         landing_mpc_swing_foot_kd=args.landing_mpc_swing_foot_kd,
@@ -596,6 +614,9 @@ def main():
                       landing_mpc_support_margin=args.landing_mpc_support_margin,
                       landing_mpc_torque_overlay=args.landing_mpc_torque_overlay,
                       landing_mpc_touchdown_recovery=args.landing_mpc_touchdown_recovery,
+        landing_mpc_predict_touchdown_contacts=args.landing_mpc_predict_touchdown_contacts,
+        landing_mpc_touchdown_height_tolerance=args.landing_mpc_touchdown_height_tolerance,
+        landing_mpc_touchdown_vertical_speed_limit=args.landing_mpc_touchdown_vertical_speed_limit,
                       landing_mpc_swing_foot_weight=args.landing_mpc_swing_foot_weight,
                       landing_mpc_swing_foot_kp=args.landing_mpc_swing_foot_kp,
                       landing_mpc_swing_foot_kd=args.landing_mpc_swing_foot_kd,
@@ -799,6 +820,9 @@ def main():
                 support_margin=bool(args.landing_mpc_support_margin),
                 torque_overlay=bool(args.landing_mpc_torque_overlay),
                 touchdown_recovery=bool(args.landing_mpc_touchdown_recovery),
+                predict_touchdown_contacts=bool(args.landing_mpc_predict_touchdown_contacts),
+                touchdown_height_tolerance_m=float(args.landing_mpc_touchdown_height_tolerance),
+                touchdown_vertical_speed_limit_mps=float(args.landing_mpc_touchdown_vertical_speed_limit),
                 records=len(landing_mpc_records),
                 applied_first_steps=sum(bool(r.get('applied_first_step')) for r in landing_mpc_records),
                 applied_torque_overlays=sum(bool(r.get('torque_overlay_applied')) for r in landing_mpc_records),

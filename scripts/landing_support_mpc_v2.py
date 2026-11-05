@@ -12,6 +12,7 @@ This is still a model-level controller.  It does not create contacts, model
 impact impulses, or turn a position-PD interface into a torque WBC.
 """
 from dataclasses import dataclass, asdict
+import copy
 import math
 
 import numpy as np
@@ -27,6 +28,9 @@ class LandingMPCSettingsV2(LandingMPCSettingsV1):
     one_foot_max_com_distance_m: float = .045
     landing_leg_posture_blend: float = .35
     landing_arm_posture_blend: float = 0.
+    predict_touchdown_contacts: bool = False
+    touchdown_height_tolerance_m: float = .012
+    touchdown_vertical_speed_limit_mps: float = 1.5
 
 
 def _hull(points):
@@ -101,6 +105,12 @@ class LandingSupportMPCV2(LandingSupportMPCV1):
             value = getattr(settings, name)
             if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or not 0. <= value <= 1.:
                 raise ValueError(f'{name} must be in [0,1]')
+        if not isinstance(settings.predict_touchdown_contacts, bool):
+            raise ValueError('predict_touchdown_contacts must be boolean')
+        for name in ('touchdown_height_tolerance_m', 'touchdown_vertical_speed_limit_mps'):
+            value = getattr(settings, name)
+            if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or value <= 0:
+                raise ValueError(f'{name} must be positive and finite')
         if settings.terminal_support_margin_m > settings.support_margin_trigger_m:
             raise ValueError('terminal support margin must not exceed trigger margin')
         super().__init__(interface, qp_settings=qp_settings, settings=settings)
@@ -122,6 +132,40 @@ class LandingSupportMPCV2(LandingSupportMPCV1):
     def support_margin(self, state):
         snapshot, _, active_feet = self._support_geometry(state)
         return _support_margin(snapshot['com_world'], active_feet)
+
+    def _after_prediction(self, state):
+        """Approximate imminent touchdown for the next QP stage.
+
+        This is intentionally an event approximation, not an impact model. A
+        new contact is added only when an existing support foot defines a ground
+        height and an inactive foot is close to that height while moving
+        downward. The following QP stage can then allocate reaction force to
+        that foot instead of keeping the old contact mode for the whole
+        horizon. Actual simulator contact remains authoritative at the next
+        control tick.
+        """
+        if not self.settings.predict_touchdown_contacts:
+            return state, []
+        active = np.asarray(state.contacts, dtype=bool)
+        if not active.any():
+            return state, []
+        snapshot = self.qp.model.snapshot(state.q, state.v)
+        feet_ids = [self.qp.model.names.index(name) for name in self.qp.model.feet]
+        feet = snapshot['body_positions_world'][feet_ids]
+        foot_velocity = snapshot['foot_jacobian'] @ state.v
+        ground_z = float(np.median(feet[active, 2]))
+        candidates = []
+        for index in np.flatnonzero(~active):
+            height = float(feet[index, 2] - ground_z)
+            vertical_speed = float(foot_velocity[index, 2])
+            if (height <= self.settings.touchdown_height_tolerance_m and
+                    vertical_speed <= self.settings.touchdown_vertical_speed_limit_mps):
+                candidates.append(int(index))
+        if not candidates:
+            return state, []
+        next_state = copy.deepcopy(state)
+        next_state.contacts[candidates] = True
+        return next_state, candidates
 
     def risk(self, state):
         result = super().risk(state)

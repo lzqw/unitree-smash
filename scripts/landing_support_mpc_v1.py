@@ -123,6 +123,10 @@ class LandingSupportMPCV1:
         # new foot contact during its prediction horizon.
         return next_state
 
+    def _after_prediction(self, state):
+        """Hook for a derived controller to update predicted contact mode."""
+        return state, []
+
     def solve(self, state, joint_reference, *, force=False):
         started = __import__('time').perf_counter()
         risk = self.risk(state)
@@ -173,6 +177,9 @@ class LandingSupportMPCV1:
                                 normalized_action=plan['normalized_action'].tolist(),
                                 joint_position_target=plan['joint_position_target'].tolist()))
             predicted = self._integrate(predicted, plan['acceleration'])
+            predicted, added_contacts = self._after_prediction(predicted)
+            if added_contacts:
+                row['predicted_contact_additions'] = list(added_contacts)
             if stage == 0:
                 first_step_risk = self.risk(predicted)
                 first_step_score = self.risk_score(first_step_risk)
