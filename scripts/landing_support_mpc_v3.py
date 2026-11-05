@@ -16,10 +16,13 @@ class LandingSupportMPCV3(LandingSupportMPCV2):
     """Support-margin MPC using a continuous whole-body reference."""
 
     def __init__(self, interface, *, qp_settings=None,
-                 settings=LandingMPCSettingsV2()):
+                 settings=LandingMPCSettingsV2(), preserve_arm_command=True):
         super().__init__(interface, qp_settings=qp_settings, settings=settings)
+        if type(preserve_arm_command) is not bool:
+            raise ValueError('preserve_arm_command must be boolean')
+        self.preserve_arm_command = preserve_arm_command
         self.qp = ContinuousSupportQP(interface, settings=self.qp.settings,
-            continuous_reference=True, preserve_arm_command=True,
+            continuous_reference=True, preserve_arm_command=preserve_arm_command,
             reference_frequency_rad_s=10.)
 
     def reset(self):
@@ -31,7 +34,7 @@ class LandingSupportMPCV3(LandingSupportMPCV2):
         result['schema'] = 'landing-support-mpc-v3-continuous-reference'
         result['formulation'] = 'fixed-contact-sequential-continuous-reference-QP'
         result['continuous_reference'] = True
-        result['preserve_arm_position_command'] = True
+        result['preserve_arm_position_command'] = self.preserve_arm_command
         return result
 
 
