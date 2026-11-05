@@ -170,7 +170,9 @@ class ReactiveLandingV1:
         qu=cvu*cvu+(cpu-1.)**2+1e-6
         qxu=cvu[:,None]*cvp+(cpu-1.)[:,None]*cpp
         x0=torch.stack((velocity_xy,position_xy),dim=-1)
-        return -(qxu*x0).sum(-1)/qu[:,None]
+        # x0 is [batch, axis(x/y), (velocity, position)]; keep the
+        # per-batch cost row aligned with both horizontal axes.
+        return -(qxu[:,None,:]*x0).sum(-1)/qu[:,None]
 
     @torch.inference_mode()
     def action(self,base,public,default,limits):
