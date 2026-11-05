@@ -169,6 +169,7 @@ class LandingSupportMPCV1:
                             mpc_contract=self.contract())
             horizon.append(dict(row, residuals=plan.get('residuals'),
                                 acceleration=np.asarray(plan['acceleration']).tolist(),
+                                torque=np.asarray(plan['torque']).tolist(),
                                 normalized_action=plan['normalized_action'].tolist(),
                                 joint_position_target=plan['joint_position_target'].tolist()))
             predicted = self._integrate(predicted, plan['acceleration'])
@@ -195,6 +196,7 @@ class LandingSupportMPCV1:
         return dict(accepted=True, intervened=True, risk=risk, horizon=horizon,
                     terminal_risk=terminal, normalized_action=np.asarray(first['normalized_action']),
                     joint_position_target=np.asarray(first['joint_position_target']),
+                    torque=np.asarray(first['torque']),
                     first_step_risk=first_step_risk,
                     first_step_risk_score=first_step_score,
                     initial_risk_score=initial_score,

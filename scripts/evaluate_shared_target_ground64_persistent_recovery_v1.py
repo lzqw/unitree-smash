@@ -304,7 +304,10 @@ class SharedTargetResidualController:
                     action[lane]=torch.as_tensor(chosen,device=action.device)
                     record['applied_first_step']=True
                     record['torque_overlay_applied']=False
-                    if self.landing_mpc_torque_overlay and plan.get('torque') is not None:
+                    first_plan_torque = plan.get('torque')
+                    if first_plan_torque is None and plan.get('horizon'):
+                        first_plan_torque = plan['horizon'][0].get('torque')
+                    if self.landing_mpc_torque_overlay and first_plan_torque is not None:
                         # The QP torque is the desired total leg torque.  The
                         # implicit actuator adds effort target to its position
                         # PD torque, so send only the residual.  Arm torques
@@ -314,11 +317,12 @@ class SharedTargetResidualController:
                         q=state.joint_position;v=state.joint_velocity
                         kp=np.asarray(self.landing_mpc.qp.interface.kp,dtype=np.float64)
                         kd=np.asarray(self.landing_mpc.qp.interface.kd,dtype=np.float64)
-                        total=np.asarray(plan['torque'],dtype=np.float64)
+                        total=np.asarray(first_plan_torque,dtype=np.float64)
                         residual=total-(kp*(target-q)-kd*v)
                         self._effort_override[lane,:12]=torch.as_tensor(residual[:12],device=action.device,dtype=action.dtype)
                         self._effort_override_mask[lane]=True
                         record['torque_overlay_applied']=True
+                        record['torque_overlay_residual_max']=float(np.max(np.abs(residual[:12])))
                 else:record['applied_first_step']=False
                 self.landing_mpc_logs.append(record)
             except Exception as error:
