@@ -323,6 +323,9 @@ class SharedTargetResidualController:
                 plan=self.landing_mpc.solve(state,joint_ref,force=False)
                 horizon=plan.get('horizon',[])
                 failed_stage=next((row for row in horizon if not row.get('accepted')),None)
+                predicted_contact_additions=[
+                    dict(stage=int(row.get('stage',-1)), feet=list(row.get('predicted_contact_additions',[])))
+                    for row in horizon if row.get('predicted_contact_additions')]
                 record=dict(case=case,clock_s=float(public_clock[lane]),accepted=bool(plan['accepted']),
                     first_action_available=bool(plan.get('horizon')) and bool(plan['horizon'][0].get('accepted')),
                     solver_failure=bool(plan.get('solver_failure',False)),rejection=plan.get('rejection'),
@@ -341,6 +344,7 @@ class SharedTargetResidualController:
                     failed_contacts=failed_stage.get('contacts') if failed_stage is not None else None,
                     failed_stage_risk=failed_stage.get('risk') if failed_stage is not None else None,
                     failed_stage_residuals=failed_stage.get('residuals') if failed_stage is not None else None,
+                    predicted_contact_additions=predicted_contact_additions,
                     native_execution=True)
                 risk_drop = (float(plan['initial_risk_score']) - float(plan['first_step_risk_score'])
                     if plan.get('initial_risk_score') is not None and
@@ -824,6 +828,7 @@ def main():
                 touchdown_height_tolerance_m=float(args.landing_mpc_touchdown_height_tolerance),
                 touchdown_vertical_speed_limit_mps=float(args.landing_mpc_touchdown_vertical_speed_limit),
                 records=len(landing_mpc_records),
+                predicted_contact_transition_records=sum(bool(r.get('predicted_contact_additions')) for r in landing_mpc_records),
                 applied_first_steps=sum(bool(r.get('applied_first_step')) for r in landing_mpc_records),
                 applied_torque_overlays=sum(bool(r.get('torque_overlay_applied')) for r in landing_mpc_records),
                 solver_failures=sum(bool(r.get('solver_failure')) for r in landing_mpc_records),
