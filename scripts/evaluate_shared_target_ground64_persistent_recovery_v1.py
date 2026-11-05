@@ -216,6 +216,8 @@ class SharedTargetResidualController:
                 # selected TRAIN case is only an admission filter; it is not a
                 # reason to keep overwriting a stable four-foot command.
                 plan=self.landing_mpc.solve(state,joint_ref,force=False)
+                horizon=plan.get('horizon',[])
+                failed_stage=next((row for row in horizon if not row.get('accepted')),None)
                 record=dict(case=case,clock_s=float(public_clock[lane]),accepted=bool(plan['accepted']),
                     first_action_available=bool(plan.get('horizon')) and bool(plan['horizon'][0].get('accepted')),
                     solver_failure=bool(plan.get('solver_failure',False)),rejection=plan.get('rejection'),
@@ -225,7 +227,13 @@ class SharedTargetResidualController:
                     initial_risk_score=plan.get('initial_risk_score'),
                     first_step_risk_score=plan.get('first_step_risk_score'),
                     runtime_ms=float(plan.get('wall_runtime_s',0.)*1000.),terminal_risk=plan.get('terminal_risk'),
-                    horizon_steps=len(plan.get('horizon',[])),native_execution=True)
+                    horizon_steps=len(horizon),
+                    failed_stage=failed_stage.get('stage') if failed_stage is not None else None,
+                    failed_solver_status=failed_stage.get('solver_status') if failed_stage is not None else None,
+                    failed_solver_iterations=failed_stage.get('solver_iterations') if failed_stage is not None else None,
+                    failed_contacts=failed_stage.get('contacts') if failed_stage is not None else None,
+                    failed_stage_risk=failed_stage.get('risk') if failed_stage is not None else None,
+                    native_execution=True)
                 if plan.get('accepted') or (self.landing_mpc_allow_first_step and
                                             record['first_action_available'] and record['risk_trigger'] and
                                             record['first_step_improves']):
