@@ -440,6 +440,18 @@ GPU0: 0.3661 GPU h，102400 env steps，SUCCEEDED
 
 这不是对原论文方法的否定，因为上游实现包含持续质心参考、足端落点和 WBC/力矩执行，而当前分支仍是位置目标适配器。下一步必须把捕获点与实际足端跟踪、接触模式和落地后持续参考闭环起来。
 
+## 24. VHSIP 捕获参数对照
+
+为检查真实 VHSIP 是否只是捕获参数过激，运行了保守参数组合：`settling_s=1.2`、`capture_gain=0.5`、`blend_s=0.12`。
+
+```text
+reports/G07_full_racket_v5/reactive_vhsip_posttouchdown26_tuned_20261106_01
+git: 0171994
+GPU0: 0.3853 GPU h，102400 env steps，SUCCEEDED
+```
+
+结果仍为 `complete5=27/128`、合格空中触球 74、条件恢复 34、实际球拍接触 110、越网 71、目标落点 64、数值故障 0，旧 27 个完整成功全部保留且没有新增。该结果与默认 VHSIP一致，表明主要问题不在捕获增益或 settling 系数，而在位置-PD 执行接口和 touchdown 后接触/支撑闭环。
+
 ## 23. MPC 系数对照结果
 
 在修正预测接触日志和下降速度判据后，针对同一 26 个基线恢复失败案例运行了两组 touchdown-recovery MPC：
