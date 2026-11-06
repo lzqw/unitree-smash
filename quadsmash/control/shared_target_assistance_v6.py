@@ -42,6 +42,7 @@ def apply_recovery_assistance(reference,settings):
 class LandingAssistedController:
     def __init__(self,source,count,device,config,asset_sha256,enabled_cases=None):
         self.source=source;self.landing=ReactiveLandingV1(count,device,config,asset_sha256)
+        self._native_env=None
         self.enabled_cases=None if enabled_cases is None else set(int(x) for x in enabled_cases)
 
     @property
@@ -54,6 +55,10 @@ class LandingAssistedController:
     def reset(self,ids=None):
         self.source.reset(ids);self.landing.reset(ids)
 
+    def set_native_state(self, env):
+        """Use live Isaac state for the landing reference when available."""
+        self._native_env=env
+
     def action(self,observation,default,limits):
         base=self.source.action(observation,default,limits)
         if self.enabled_cases is None:
@@ -62,6 +67,7 @@ class LandingAssistedController:
             mask=torch.zeros((base.shape[0],),device=base.device,dtype=torch.bool)
             for case in self.enabled_cases:
                 if 0<=case<base.shape[0]:mask[case]=True
-        proposed=self.landing.action(base,observation['policy'],default,limits,enabled_mask=mask)
+        proposed=self.landing.action(base,observation['policy'],default,limits,
+            enabled_mask=mask,native_env=getattr(self,'_native_env',None))
         if mask is None:return proposed
         return torch.where(mask[:,None],proposed,base)

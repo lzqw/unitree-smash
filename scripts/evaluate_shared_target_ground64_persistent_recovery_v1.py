@@ -320,6 +320,8 @@ class SharedTargetResidualController:
     def set_landing_mpc_native_state(self, env):
         """Attach the live Isaac articulation for the next MPC action."""
         self._landing_mpc_native_env=env
+        if self.reactive_vhsip is not None and hasattr(self.reactive_vhsip, 'set_native_state'):
+            self.reactive_vhsip.set_native_state(env)
 
     @torch.inference_mode()
     def action(self,observation,default,limits):

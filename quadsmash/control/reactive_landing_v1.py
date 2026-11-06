@@ -180,7 +180,7 @@ class ReactiveLandingV1:
         return -(qxu[:,None,:]*x0).sum(-1)/qu[:,None]
 
     @torch.inference_mode()
-    def action(self,base,public,default,limits,enabled_mask=None):
+    def action(self,base,public,default,limits,enabled_mask=None,native_env=None):
         if public.shape!=(self.count,794) or base.shape!=(self.count,18):raise ValueError('Require public794D/18D native interface')
         if enabled_mask is None:
             enabled_mask=torch.ones((self.count,),device=public.device,dtype=torch.bool)
@@ -189,11 +189,35 @@ class ReactiveLandingV1:
             if enabled_mask.shape!=(self.count,):raise ValueError('Require one landing enable flag per environment')
         clock=public[:,775]
         self.hit|=(public[:,773]>.5)&enabled_mask
-        forward=public[:,763:766];up=-public[:,6:9]
-        left=torch.linalg.cross(up,forward)
-        rotation=torch.stack((forward,left,up),1)
-        q=default[None]+public[:,9:27]
-        actual=self.model.forward(q,public[:,27:45],public[:,:3],public[:,3:6])
+        if native_env is None:
+            forward=public[:,763:766];up=-public[:,6:9]
+            left=torch.linalg.cross(up,forward)
+            rotation=torch.stack((forward,left,up),1)
+            q=default[None]+public[:,9:27]
+            actual=self.model.forward(q,public[:,27:45],public[:,:3],public[:,3:6])
+            root=public.new_tensor([1.10,0.,1.80])-rotate(rotation,public[:,760:763])
+            contacts=public[:,57:61]>.5
+        else:
+            # Use the same live state as the native landing MPC adapter.  The
+            # ball/phase clocks remain policy observables, but FK, COM velocity,
+            # world feet and contacts must come from Isaac's current tensors.
+            data=native_env.robot.data
+            q=data.joint_pos[:,native_env.joint_ids]
+            qd=data.joint_vel[:,native_env.joint_ids]
+            root=data.root_link_pos_w-native_env.scene.env_origins
+            quat=data.root_link_quat_w
+            w,x,y,z=quat.unbind(-1)
+            rotation=torch.stack((1-2*(y*y+z*z),2*(x*y-z*w),2*(x*z+y*w),
+                2*(x*y+z*w),1-2*(x*x+z*z),2*(y*z-x*w),
+                2*(x*z-y*w),2*(y*z+x*w),1-2*(x*x+y*y)),-1).reshape(-1,3,3)
+            omega=data.root_com_ang_vel_w
+            com_v=data.root_com_lin_vel_w
+            com_offset=rotate(rotation,data.body_com_pos_b[:,0])
+            link_v=com_v-torch.linalg.cross(omega,com_offset)
+            root_v=rotate(rotation.transpose(-1,-2),link_v)
+            root_w=rotate(rotation.transpose(-1,-2),omega)
+            actual=self.model.forward(q,qd,root_v,root_w)
+            contacts=native_env.observed_foot_contact
         cv=rotate(rotation,actual['center_v'])
         newly=self.hit&(~self.active)&(cv[:,2]<-.05)
         self.start[newly]=clock[newly];self.last_q[newly]=q[newly,:12];self.last_time[newly]=clock[newly]-.01
@@ -202,12 +226,10 @@ class ReactiveLandingV1:
         if not bool(active.any()):return base
         ids=torch.where(active)[0];cfg=self.config;n=len(ids)
         r=rotation[ids];current=q[ids];t=clock[ids]
-        # Fixed public command supplies root position, exactly as the existing
-        # admitted known-model observer. No true simulator pose is consumed.
-        root=public.new_tensor([1.10,0.,1.80])-rotate(r,public[ids,760:763])
+        root=root[ids]
         center=root+rotate(r,actual['center'][ids]);vel=cv[ids]
         world_feet=root[:,None]+rotate(r[:,None],actual['feet'][ids])
-        contacts=public[ids,57:61]>.5
+        contacts=contacts[ids]
         first=contacts.any(1)&(~self.landed[ids])
         added=contacts&(~self.support[ids])
         self.anchors[ids]=torch.where(added[:,:,None],world_feet,self.anchors[ids])
