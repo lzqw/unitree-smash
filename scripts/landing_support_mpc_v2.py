@@ -29,6 +29,8 @@ class LandingMPCSettingsV2(LandingMPCSettingsV1):
     landing_leg_posture_blend: float = .35
     landing_arm_posture_blend: float = 0.
     predict_touchdown_contacts: bool = False
+    contact_mode_fallback: bool = False
+    touchdown_mode_height_scale: float = 2.5
     touchdown_height_tolerance_m: float = .012
     touchdown_vertical_speed_limit_mps: float = 1.5
 
@@ -107,6 +109,13 @@ class LandingSupportMPCV2(LandingSupportMPCV1):
                 raise ValueError(f'{name} must be in [0,1]')
         if not isinstance(settings.predict_touchdown_contacts, bool):
             raise ValueError('predict_touchdown_contacts must be boolean')
+        if not isinstance(settings.contact_mode_fallback, bool):
+            raise ValueError('contact_mode_fallback must be boolean')
+        if (isinstance(settings.touchdown_mode_height_scale, bool) or
+                not isinstance(settings.touchdown_mode_height_scale, (int, float)) or
+                not math.isfinite(settings.touchdown_mode_height_scale) or
+                settings.touchdown_mode_height_scale < 1.):
+            raise ValueError('touchdown_mode_height_scale must be finite and >= 1')
         for name in ('touchdown_height_tolerance_m', 'touchdown_vertical_speed_limit_mps'):
             value = getattr(settings, name)
             if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or value <= 0:
@@ -169,6 +178,39 @@ class LandingSupportMPCV2(LandingSupportMPCV1):
         next_state = copy.deepcopy(state)
         next_state.contacts[candidates] = True
         return next_state, candidates
+
+    def _contact_mode_candidates(self, state):
+        """Return bounded imminent-contact alternatives for an infeasible mode."""
+        if not self.settings.contact_mode_fallback:
+            return []
+        active = np.asarray(state.contacts, dtype=bool)
+        if not active.any() or int(active.sum()) >= 4:
+            return []
+        snapshot = self.qp.model.snapshot(state.q, state.v)
+        feet_ids = [self.qp.model.names.index(name) for name in self.qp.model.feet]
+        feet = np.asarray(snapshot['body_positions_world'][feet_ids], dtype=np.float64)
+        foot_velocity = np.asarray(snapshot['foot_jacobian'], dtype=np.float64) @ state.v
+        ground_z = float(np.median(feet[active, 2]))
+        height_limit = self.settings.touchdown_height_tolerance_m * self.settings.touchdown_mode_height_scale
+        speed_limit = self.settings.touchdown_vertical_speed_limit_mps * self.settings.touchdown_mode_height_scale
+        inactive = []
+        for index in np.flatnonzero(~active):
+            height = float(feet[index, 2] - ground_z)
+            vertical_speed = float(foot_velocity[index, 2])
+            if height <= height_limit and -speed_limit <= vertical_speed <= 0.05:
+                inactive.append((height, int(index)))
+        if not inactive:
+            return []
+        inactive.sort()
+        subsets = [(item[1],) for item in inactive[:2]]
+        if len(inactive) >= 2:
+            subsets.append(tuple(item[1] for item in inactive[:2]))
+        candidates = []
+        for subset in subsets:
+            candidate = copy.deepcopy(state)
+            candidate.contacts[list(subset)] = True
+            candidates.append((candidate, list(subset)))
+        return candidates
 
     def risk(self, state):
         result = super().risk(state)

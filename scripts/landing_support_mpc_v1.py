@@ -231,6 +231,9 @@ class LandingSupportMPCV1:
                 joint_position_target=np.asarray(
                     row.get('joint_position_target', predicted.joint_position), dtype=np.float64),
             )
+            mode_additions = row.get('contact_mode_additions', [])
+            if mode_additions:
+                predicted.contacts[np.asarray(mode_additions, dtype=np.int64)] = True
             predicted = self._integrate(predicted, plan['acceleration'], plan)
             predicted, added = self._after_prediction(predicted)
             additions.extend(int(index) for index in added)
@@ -239,6 +242,10 @@ class LandingSupportMPCV1:
     def _after_prediction(self, state):
         """Hook for a derived controller to update predicted contact mode."""
         return state, []
+
+    def _contact_mode_candidates(self, state):
+        """Hook for derived controllers to propose imminent contact modes."""
+        return []
 
     def solve(self, state, joint_reference, *, force=False):
         started = __import__('time').perf_counter()
@@ -265,10 +272,20 @@ class LandingSupportMPCV1:
         first_step_risk = None
         first_step_score = None
         for stage in range(self.settings.horizon_steps):
-            plan = self.qp.solve(predicted, joint_reference)
+            plan_state = predicted
+            mode_additions = []
+            plan = self.qp.solve(plan_state, joint_reference)
+            if not plan.get('accepted'):
+                for candidate_state, candidate_additions in self._contact_mode_candidates(predicted):
+                    candidate_plan = self.qp.solve(candidate_state, joint_reference)
+                    if candidate_plan.get('accepted'):
+                        plan_state = candidate_state
+                        mode_additions = list(candidate_additions)
+                        plan = candidate_plan
+                        break
             row = dict(stage=stage, accepted=bool(plan.get('accepted')), solver_status=plan.get('solver_status'),
                        solver_iterations=plan.get('solver_iterations'), wall_runtime_s=plan.get('wall_runtime_s'),
-                       contacts=predicted.contacts.tolist(), risk=self.risk(predicted),
+                       contacts=plan_state.contacts.tolist(), risk=self.risk(plan_state),
                        residuals=plan.get('residuals'), qp_rejection=plan.get('rejection'))
             if not plan.get('accepted'):
                 status = str(plan.get('solver_status', '')).lower()
@@ -289,8 +306,10 @@ class LandingSupportMPCV1:
                                 torque=np.asarray(plan['torque']).tolist(),
                                 normalized_action=plan['normalized_action'].tolist(),
                                 joint_position_target=plan['joint_position_target'].tolist())
+            if mode_additions:
+                stage_record['contact_mode_additions'] = mode_additions
             horizon.append(stage_record)
-            predicted = self._integrate(predicted, plan['acceleration'], plan)
+            predicted = self._integrate(plan_state, plan['acceleration'], plan)
             predicted, added_contacts = self._after_prediction(predicted)
             if added_contacts:
                 # ``horizon`` stores a copy; annotate the stored stage record,

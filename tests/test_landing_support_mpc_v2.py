@@ -49,6 +49,27 @@ class ReplaySemanticsTests(unittest.TestCase):
         self.assertEqual(additions, [1])
         self.assertEqual(fake.calls, [('integrate', True, (2.0,)), ('contact', 1)])
 
+    def test_replay_horizon_applies_contact_mode_additions_before_integration(self):
+        class FakeMPC:
+            replay_horizon = LandingSupportMPCV1.replay_horizon
+
+            def _integrate(self, state, acceleration, plan=None):
+                return SimpleNamespace(value=state.value + int(state.contacts[1]),
+                                       joint_position=state.joint_position,
+                                       contacts=state.contacts.copy())
+
+            def _after_prediction(self, state):
+                return state, []
+
+        fake = FakeMPC()
+        initial = SimpleNamespace(value=0, joint_position=np.array([0.]),
+                                  contacts=np.array([True, False, False, False]))
+        horizon = [{'acceleration': [0.], 'torque': [2.],
+                    'joint_position_target': [3.], 'contact_mode_additions': [1]}]
+        final, additions = fake.replay_horizon(initial, horizon)
+        self.assertEqual(final.value, 1)
+        self.assertEqual(additions, [])
+
 
 if __name__ == '__main__':
     unittest.main()
