@@ -44,6 +44,10 @@ class SupportSettings:
     swing_foot_kp_s2: float = 80.
     swing_foot_kd_s: float = 18.
     swing_foot_clearance_m: float = .025
+    # Optional capture-point/VHSIP horizontal offset for inactive feet.  Zero
+    # preserves the original posture-relative swing target.
+    swing_foot_capture_gain: float = 0.
+    swing_foot_capture_max_m: float = .25
     # Optional soft clearance task for lower-leg body links.  It is disabled
     # by default; landing trials can enable it to avoid a thigh/body link
     # entering the support plane after the first foot contact.
@@ -87,8 +91,12 @@ class WholeBodySupportQP:
     def __init__(self, interface, settings=SupportSettings()):
         declared = asdict(settings)
         for name, value in declared.items():
-            if not np.isfinite(value) or value < 0 or (name not in ('swing_foot_weight', 'nonfoot_clearance_weight') and value == 0):
+            if (not np.isfinite(value) or value < 0 or
+                    (name not in ('swing_foot_weight', 'nonfoot_clearance_weight',
+                                  'swing_foot_capture_gain') and value == 0)):
                 raise ValueError('Finite nonnegative control settings required; all non-swing terms must be positive')
+        if settings.swing_foot_capture_max_m <= 0.:
+            raise ValueError('swing_foot_capture_max_m must be positive')
         if settings.friction_facets < 4 or settings.friction_facets % 2:
             raise ValueError('Even friction polygon with at least four facets required')
         self.model = LoadedPinocchioModelV1()
@@ -153,6 +161,18 @@ class WholeBodySupportQP:
             swing_targets = measured_center + reference_feet - reference_center
             swing_targets[:, 2] = measured_center[2] + cfg.swing_foot_clearance_m
             swing_targets[state.contacts] = measured_feet[state.contacts]
+            if cfg.swing_foot_capture_gain > 0. and (~state.contacts).any():
+                # A capture-point/VHSIP-style offset moves only feet that are
+                # not currently supporting the body.  The support QP still
+                # treats this as a soft swing task; it does not invent a
+                # reaction force or claim that touchdown has occurred.
+                height = max(float(snapshot['com_world'][2] - measured_center[2]), .10)
+                capture = (cfg.swing_foot_capture_gain *
+                           np.sqrt(height / 9.81) * snapshot['com_velocity_world'][:2])
+                norm = float(np.linalg.norm(capture))
+                if norm > cfg.swing_foot_capture_max_m:
+                    capture *= cfg.swing_foot_capture_max_m / norm
+                swing_targets[~state.contacts, :2] += capture
         return dict(com_position=desired_com, com_acceleration=desired_com_accel,
                     angular_acceleration_body=desired_angular_accel_body,
                     joint_acceleration=desired_joint_accel,
