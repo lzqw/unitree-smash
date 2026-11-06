@@ -377,3 +377,20 @@ This rules out a support-center weighting change as a standalone fix.  The
 remaining controller gap is a multi-step decision problem: after a contact
 transition, it must decide whether to keep, unload, or move a foot and then
 recompute a feasible support trajectory from the resulting native state.
+
+## Stronger landing-leg posture trial
+
+To test whether the delayed thigh contacts were primarily caused by a weak
+posture target, the landing-leg posture blend toward the verified standing
+posture was increased from the usual `0.15` to `0.5`.  All contact-mode,
+executor-replay, and support-margin settings were kept unchanged.
+
+The representative GPU0 run remained **27/128 complete5**, with 74 airborne
+contacts, 34 conditional recoveries and zero numerical failures.  It produced
+658 MPC records, 362 applied first steps, 141 solver failures and 4 predicted
+contact transitions.  No complete recovery was added.
+
+This makes a weak static leg-posture blend an unlikely standalone cause.  The
+controller needs to change the support mode and load transfer over time; a
+single stronger standing posture target does not create the missing recovery
+trajectory.
