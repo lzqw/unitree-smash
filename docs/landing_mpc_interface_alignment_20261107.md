@@ -248,3 +248,28 @@ consistent, and evaluate terminal stability on the same replay trajectory.
 The controller also needs a multi-step recovery reference or mode sequence;
 a one-step non-foot clearance inequality cannot create the missing support
 motion by itself.
+
+## Bounded contact-mode fallback trial
+
+After the hard-clearance rejection, the existing bounded contact-mode fallback
+was enabled without the hard constraint.  When the current support QP became
+infeasible, the controller tried one or two imminent touchdown feet as an
+alternative support set, then continued through the same replay and terminal
+checks.  This is still an event approximation; it does not inject a physical
+impact impulse or force a foot to carry load in Isaac.
+
+The GPU0 representative run used TRAIN 1, 67 and 95 with the frozen policy,
+the native position admission rule, executor replay, support-margin gate,
+continuous touchdown reference, and a 40-step first-action hold.  The fixed
+128-case panel remained **27/128 complete5**, with 74 airborne contacts, 34
+conditional recoveries, and zero numerical failures.  It produced 658 MPC
+records, 403 applied first steps, 139 solver failures and 7 predicted contact
+transitions.
+
+The fallback therefore makes the solver enter more contact-mode alternatives,
+but it does not yet create a new successful recovery.  The important negative
+result is that a bounded mode switch alone is insufficient: the newly added
+contact must also be realized by the native foot trajectory and support force
+response.  The next implementation should expose per-foot load transfer and
+post-switch state error, then keep or reject a mode using those measured
+signals rather than accepting a contact flag as support by itself.
