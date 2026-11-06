@@ -239,3 +239,15 @@ GPU0: 0.3756 GPU h，102400 env steps，SUCCEEDED
 结果为 `complete5=27/128`、合格空中触球 74、条件恢复 34、目标落点 64、数值故障 0；原 27 个完整成功全部保留，没有新增。保持模式把 MPC 记录从 6403 降到 3453，solver failure 从 183 降到 10，但没有提高任务成功率。
 
 这说明持续保持解决了计算开销和命令抖动，却没有解决第一步动作与真实接触/执行器响应不一致的问题。下一步应把实际 position-PD 回放误差纳入预测，并在真实 touchdown 后按接触模式重建支撑，而不是继续增加保持时间或重复调 QP 权重。
+
+## 15. position-PD 执行器回放对照
+
+针对 MPC 预测直接使用理想关节加速度的问题，加入了 `--landing-mpc-executor-replay`：在预测中按实际目标限速、隐式 PD 和力矩饱和重新计算关节加速度缩放。与持续保持实验使用相同的低增益、support-margin、touchdown-recovery 参数。
+
+```text
+reports/G07_full_racket_v5/landing_mpc_executor_replay26_20261106_01
+git: 6d4dd86
+GPU0: 0.3695 GPU h，102400 env steps，SUCCEEDED
+```
+
+结果为 `complete5=27/128`、合格空中触球 74、条件恢复 34、目标落点 64、数值故障 0；原 27 个完整成功全部保留，没有新增。记录 3702、预测接触 85、首步应用 3294、solver failure 19。执行器回放使预测更贴近实际接口，但没有提高完整成功，说明主要缺陷已收敛到 touchdown 后接触模式和持续支撑参考，而不是理想加速度与 PD 饱和这一项。
