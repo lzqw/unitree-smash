@@ -32,6 +32,7 @@ class LandingMPCSettingsV1:
     terminal_angular_speed_rad_s: float = 1.4
     terminal_horizontal_speed_mps: float = .45
     max_stage_runtime_s: float = .02
+    executor_replay: bool = False
 
 
 def _finite_positive(value, name):
@@ -56,6 +57,8 @@ class LandingSupportMPCV1:
                      'terminal_angular_speed_rad_s', 'terminal_horizontal_speed_mps',
                      'max_stage_runtime_s'):
             _finite_positive(getattr(settings, name), name)
+        if type(settings.executor_replay) is not bool:
+            raise ValueError('executor_replay must be boolean')
         if (isinstance(settings.minimum_support_feet, bool)
                 or not isinstance(settings.minimum_support_feet, int)
                 or not 0 <= settings.minimum_support_feet <= 4):
@@ -106,9 +109,29 @@ class LandingSupportMPCV1:
                      + .30 * risk['angular_speed_rad_s'] / self.settings.angular_speed_trigger_rad_s
                      + max(0, self.settings.minimum_support_feet - risk['support_feet']))
 
-    def _integrate(self, state, acceleration):
+    def _integrate(self, state, acceleration, plan=None):
         next_state = copy.deepcopy(state)
         dt = self.settings.control_dt_s
+        acceleration = np.asarray(acceleration, dtype=np.float64).copy()
+        if self.settings.executor_replay and plan is not None:
+            # The QP acceleration is a model request, while Isaac receives a
+            # rate-limited normalized position target through implicit PD.  In
+            # prediction, replay that interface: limit target motion by the
+            # admitted velocity bound, then recompute the torque actually
+            # produced by the PD/effort limits and scale only the joint part of
+            # the requested generalized acceleration.
+            qj = np.asarray(state.joint_position, dtype=np.float64)
+            vj = np.asarray(state.joint_velocity, dtype=np.float64)
+            target = np.asarray(plan['joint_position_target'], dtype=np.float64)
+            max_delta = np.asarray(self.qp.interface.velocity, dtype=np.float64) * dt
+            target = qj + np.clip(target-qj, -max_delta, max_delta)
+            realized = np.clip(self.qp.interface.kp*(target-qj)-self.qp.interface.kd*vj,
+                               -self.qp.interface.effort, self.qp.interface.effort)
+            requested = np.asarray(plan['torque'], dtype=np.float64)
+            scale = np.divide(realized, requested, out=np.zeros_like(realized),
+                              where=np.abs(requested) > 1e-6)
+            scale = np.clip(scale, -1., 1.)
+            acceleration[self.qp.model.v_indices] *= scale
         qdot = state.v.copy()
         v = state.v + dt * acceleration
         # Pinocchio free-flyer integration keeps quaternion normalization and
@@ -177,7 +200,7 @@ class LandingSupportMPCV1:
                                 normalized_action=plan['normalized_action'].tolist(),
                                 joint_position_target=plan['joint_position_target'].tolist())
             horizon.append(stage_record)
-            predicted = self._integrate(predicted, plan['acceleration'])
+            predicted = self._integrate(predicted, plan['acceleration'], plan)
             predicted, added_contacts = self._after_prediction(predicted)
             if added_contacts:
                 # ``horizon`` stores a copy; annotate the stored stage record,

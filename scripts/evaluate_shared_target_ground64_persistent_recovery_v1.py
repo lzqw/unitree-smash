@@ -6,6 +6,7 @@ Ground dimensions and first nonfoot contact events are recorded explicitly.
 This is development evidence, never an inherited or formal acceptance score.
 """
 import argparse
+from dataclasses import replace
 import hashlib
 import json
 from pathlib import Path
@@ -47,6 +48,8 @@ parser.add_argument('--landing-mpc-hold-steps', type=int, default=0,
     help='Number of subsequent policy ticks to keep a started touchdown intervention active')
 parser.add_argument('--landing-mpc-hold-first-action', action='store_true',
     help='Hold the accepted first normalized action during hold-steps instead of re-solving and replacing it every tick')
+parser.add_argument('--landing-mpc-executor-replay', action='store_true',
+    help='Replay position-target rate limits and implicit-PD effort saturation inside MPC prediction')
 parser.add_argument('--landing-mpc-support-margin', action='store_true',
     help='Use the experimental support-margin viability gate (MPC v2)')
 parser.add_argument('--landing-mpc-torque-overlay', action='store_true',
@@ -152,6 +155,7 @@ class SharedTargetResidualController:
                  landing_mpc_min_risk_score_drop=0.,
                  landing_mpc_min_start_risk_score=0., landing_mpc_hold_steps=0,
                  landing_mpc_hold_first_action=False,
+                 landing_mpc_executor_replay=False,
                  landing_mpc_support_margin=False,
                  landing_mpc_torque_overlay=False,
                  landing_mpc_touchdown_recovery=False,
@@ -206,6 +210,7 @@ class SharedTargetResidualController:
         if self.landing_mpc_hold_steps < 0:
             raise ValueError('landing_mpc_hold_steps must be nonnegative')
         self.landing_mpc_hold_first_action=bool(landing_mpc_hold_first_action)
+        self.landing_mpc_executor_replay=bool(landing_mpc_executor_replay)
         self._landing_mpc_hold_remaining=torch.zeros((count,),dtype=torch.int32,device=device)
         self._landing_mpc_held_action=torch.zeros((count,18),dtype=torch.float32,device=device)
         self.landing_mpc_support_margin=bool(landing_mpc_support_margin)
@@ -294,6 +299,7 @@ class SharedTargetResidualController:
                 predict_touchdown_contacts=self.landing_mpc_predict_touchdown_contacts,
                 touchdown_height_tolerance_m=self.landing_mpc_touchdown_height_tolerance,
                 touchdown_vertical_speed_limit_mps=self.landing_mpc_touchdown_vertical_speed_limit)
+            mpc_settings = replace(mpc_settings, executor_replay=self.landing_mpc_executor_replay)
             self.landing_mpc=(LandingSupportMPCV3(interface, qp_settings=qp_settings,
                 settings=mpc_settings, preserve_arm_command=not self.landing_mpc_free_arm)
                 if self.landing_mpc_continuous_reference else
@@ -305,7 +311,8 @@ class SharedTargetResidualController:
                 self.landing_mpc.set_posture_target(default)
         else:
             self.landing_mpc=LandingSupportMPCV1(interface, qp_settings=qp_settings,
-                settings=LandingMPCSettingsV1(horizon_steps=self._landing_mpc_horizon_steps))
+                settings=LandingMPCSettingsV1(horizon_steps=self._landing_mpc_horizon_steps,
+                    executor_replay=self.landing_mpc_executor_replay))
 
     def landing_mpc_diagnostics(self):
         result=list(self.landing_mpc_logs);self.landing_mpc_logs=[];return result
@@ -671,6 +678,7 @@ def main():
         landing_mpc_min_start_risk_score=args.landing_mpc_min_start_risk_score,
         landing_mpc_hold_steps=args.landing_mpc_hold_steps,
         landing_mpc_hold_first_action=args.landing_mpc_hold_first_action,
+        landing_mpc_executor_replay=args.landing_mpc_executor_replay,
         landing_mpc_support_margin=args.landing_mpc_support_margin,
         landing_mpc_torque_overlay=args.landing_mpc_torque_overlay,
         landing_mpc_touchdown_recovery=args.landing_mpc_touchdown_recovery,
@@ -721,6 +729,7 @@ def main():
                       landing_mpc_min_start_risk_score=args.landing_mpc_min_start_risk_score,
                       landing_mpc_hold_steps=args.landing_mpc_hold_steps,
                       landing_mpc_hold_first_action=args.landing_mpc_hold_first_action,
+                      landing_mpc_executor_replay=args.landing_mpc_executor_replay,
                       landing_mpc_support_margin=args.landing_mpc_support_margin,
                       landing_mpc_torque_overlay=args.landing_mpc_torque_overlay,
                       landing_mpc_touchdown_recovery=args.landing_mpc_touchdown_recovery,
@@ -949,6 +958,7 @@ def main():
                 min_start_risk_score=float(args.landing_mpc_min_start_risk_score),
                 hold_steps=int(args.landing_mpc_hold_steps),
                 hold_first_action=bool(args.landing_mpc_hold_first_action),
+                executor_replay=bool(args.landing_mpc_executor_replay),
                 support_margin=bool(args.landing_mpc_support_margin),
                 torque_overlay=bool(args.landing_mpc_torque_overlay),
                 touchdown_recovery=bool(args.landing_mpc_touchdown_recovery),
