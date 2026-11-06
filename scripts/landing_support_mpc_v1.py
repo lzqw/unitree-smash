@@ -171,15 +171,18 @@ class LandingSupportMPCV1:
                             constraint_failure=not numerical_failure,
                             wall_runtime_s=__import__('time').perf_counter()-started,
                             mpc_contract=self.contract())
-            horizon.append(dict(row, residuals=plan.get('residuals'),
+            stage_record = dict(row, residuals=plan.get('residuals'),
                                 acceleration=np.asarray(plan['acceleration']).tolist(),
                                 torque=np.asarray(plan['torque']).tolist(),
                                 normalized_action=plan['normalized_action'].tolist(),
-                                joint_position_target=plan['joint_position_target'].tolist()))
+                                joint_position_target=plan['joint_position_target'].tolist())
+            horizon.append(stage_record)
             predicted = self._integrate(predicted, plan['acceleration'])
             predicted, added_contacts = self._after_prediction(predicted)
             if added_contacts:
-                row['predicted_contact_additions'] = list(added_contacts)
+                # ``horizon`` stores a copy; annotate the stored stage record,
+                # not the pre-append temporary row, so diagnostics are truthful.
+                stage_record['predicted_contact_additions'] = list(added_contacts)
             if stage == 0:
                 first_step_risk = self.risk(predicted)
                 first_step_score = self.risk_score(first_step_risk)

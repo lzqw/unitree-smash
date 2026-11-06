@@ -70,7 +70,8 @@ def vhsip_capture(velocity_xy, position_xy, height, vertical_velocity, mass,
     def step(carry, om):
         p, u = carry
         a = jnp.zeros_like(p).at[:, 0, 0].set(1.).at[:, 1, 1].set(1.)
-        a = a.at[:, 0, 1].set(dt * om)
+        # State order is [velocity, position]; include x[k+1] = x[k] + dt*v[k].
+        a = a.at[:, 0, 1].set(dt * om).at[:, 1, 0].set(dt)
         b = jnp.zeros_like(u).at[:, 0, 0].set(-dt * om)
         return (a @ p, a @ u + b), None
 

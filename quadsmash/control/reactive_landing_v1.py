@@ -172,7 +172,10 @@ class ReactiveLandingV1:
         for k in range(steps-1):
             om=omega[:,k]
             A=torch.zeros((batch,2,2),device=height.device,dtype=height.dtype)
-            A[:,0,0]=1.; A[:,1,1]=1.; A[:,0,1]=dt*om
+            # State order is [velocity, position].  Keep both the acceleration
+            # response and the kinematic position integral in the discrete
+            # VHSIP model; omitting A[1,0] makes position remain constant.
+            A[:,0,0]=1.; A[:,1,1]=1.; A[:,0,1]=dt*om; A[:,1,0]=dt
             B=torch.zeros((batch,2,1),device=height.device,dtype=height.dtype)
             B[:,0,0]=-dt*om
             P=A@P; U=A@U+B
@@ -275,8 +278,13 @@ class ReactiveLandingV1:
             capture=cfg['capture_gain']*self._vhsip_capture(vel[:,:2],position_xy,h,vel[:,2])
             capture=capture.clamp(-.35,.35)
             plane_center=support_center.clone();plane_center[:,:2]+=capture
-            ground=support_center[:,2]-0.30
-            plane_center[:,2]=ground+h
+            # ``plane_center`` is a foot-plane reference.  When no measured
+            # support exists, the fallback support center is the COM, so the
+            # foot plane must be below it by the nominal COM height.  The COM
+            # target is reconstructed separately as ground + h below.
+            measured_ground=(self.anchors[ids,:,2]*support).sum(1)/support.sum(1).clamp_min(1)
+            ground=torch.where(has_contacts,measured_ground,center[:,2]-h)
+            plane_center[:,2]=ground
         else:
             capture=cfg['capture_gain']*(h.clamp_min(.1)/9.81).sqrt()[:,None]*vel[:,:2]
             plane_center=center.clone();plane_center[:,:2]+=capture;plane_center[:,2]-=h

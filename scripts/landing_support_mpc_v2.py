@@ -158,8 +158,11 @@ class LandingSupportMPCV2(LandingSupportMPCV1):
         for index in np.flatnonzero(~active):
             height = float(feet[index, 2] - ground_z)
             vertical_speed = float(foot_velocity[index, 2])
+            # World Z is positive upward.  A predicted touchdown must be
+            # descending (or momentarily stationary), while excluding a foot
+            # moving downward faster than the configured impact limit.
             if (height <= self.settings.touchdown_height_tolerance_m and
-                    vertical_speed <= self.settings.touchdown_vertical_speed_limit_mps):
+                    -self.settings.touchdown_vertical_speed_limit_mps <= vertical_speed <= 0.0):
                 candidates.append(int(index))
         if not candidates:
             return state, []
