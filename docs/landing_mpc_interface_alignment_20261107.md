@@ -140,6 +140,31 @@ response.  The next MPC change should therefore focus on contact-mode
 transition, impact velocity/impulse, and measured support feedback rather than
 another gain sweep.
 
+## Optional touchdown-impulse diagnostic
+
+The controller now has an opt-in touchdown event projection.  When the
+prediction adds a new foot contact, it solves a unilateral normal impulse for
+that foot and projects the predicted downward normal velocity toward zero.
+Negative impulses are clipped, and the native simulator remains authoritative;
+this is deliberately not presented as a full impact or friction model.  The
+default is disabled, so the established baseline is unchanged.
+
+A representative GPU0 run with this projection enabled (TRAIN 1, 67 and 95,
+same frozen policy and 128-case panel) produced **27/128 complete5**, 74
+airborne contacts, 34 conditional recoveries and zero numerical failures.  It
+applied four predicted touchdown projections.  Their downward normal speeds
+were approximately 0.0006--0.166 m/s and were reduced to numerical zero, but
+no targeted recovery case was rescued.  Command error was 0.463 rad mean and
+prediction error was 0.247 rad mean in this run.
+
+This rules out a narrow explanation in which only the predicted touchdown
+normal velocity is missing.  The impulse model remains useful for keeping
+future predictions physically better posed, but the next performance change
+must act over the following hundreds of milliseconds: re-estimate the real
+support set and support forces from native contact telemetry, update the
+continuous COM/attitude reference, and keep solving until a measurable stable
+window is reached.
+
 ## Next evaluation
 
 The next representative native run should compare the same landing cases with

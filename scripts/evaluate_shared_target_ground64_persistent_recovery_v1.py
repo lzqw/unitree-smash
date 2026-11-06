@@ -82,6 +82,8 @@ parser.add_argument('--landing-mpc-touchdown-height-tolerance', type=float, defa
     help='Predicted foot-to-support-plane height tolerance for contact-mode transition in metres')
 parser.add_argument('--landing-mpc-touchdown-vertical-speed-limit', type=float, default=1.5,
     help='Maximum downward foot speed accepted for predicted contact-mode transition in m/s')
+parser.add_argument('--landing-mpc-touchdown-impact-projection', action='store_true',
+    help='Project predicted new-contact normal velocity through a unilateral touchdown impulse')
 parser.add_argument('--landing-mpc-swing-foot-weight', type=float, default=0.,
     help='Optional soft touchdown-foot task weight; zero preserves the original support QP')
 parser.add_argument('--landing-mpc-swing-foot-kp', type=float, default=80.,
@@ -193,6 +195,7 @@ class SharedTargetResidualController:
                  landing_mpc_arm_posture_blend=0.,
                  landing_mpc_touchdown_height_tolerance=.012,
                  landing_mpc_touchdown_vertical_speed_limit=1.5,
+                 landing_mpc_touchdown_impact_projection=False,
                  landing_mpc_swing_foot_weight=0., landing_mpc_swing_foot_kp=80.,
                  landing_mpc_swing_foot_kd=18., landing_mpc_swing_foot_clearance=.025,
                  landing_mpc_nonfoot_clearance_weight=0., landing_mpc_nonfoot_clearance_m=.08,
@@ -272,6 +275,7 @@ class SharedTargetResidualController:
         self.landing_mpc_arm_posture_blend=float(landing_mpc_arm_posture_blend)
         self.landing_mpc_touchdown_height_tolerance=float(landing_mpc_touchdown_height_tolerance)
         self.landing_mpc_touchdown_vertical_speed_limit=float(landing_mpc_touchdown_vertical_speed_limit)
+        self.landing_mpc_touchdown_impact_projection=bool(landing_mpc_touchdown_impact_projection)
         self._effort_override=torch.zeros((count,18),device=device)
         self._effort_override_mask=torch.zeros((count,),dtype=torch.bool,device=device)
         self.landing_mpc_swing_foot_weight=float(landing_mpc_swing_foot_weight)
@@ -359,7 +363,8 @@ class SharedTargetResidualController:
                 contact_mode_fallback=self.landing_mpc_contact_mode_fallback,
                 touchdown_mode_height_scale=self.landing_mpc_touchdown_mode_height_scale,
                 touchdown_height_tolerance_m=self.landing_mpc_touchdown_height_tolerance,
-                touchdown_vertical_speed_limit_mps=self.landing_mpc_touchdown_vertical_speed_limit)
+                touchdown_vertical_speed_limit_mps=self.landing_mpc_touchdown_vertical_speed_limit,
+                touchdown_impact_projection=self.landing_mpc_touchdown_impact_projection)
             mpc_settings = replace(mpc_settings, executor_replay=self.landing_mpc_executor_replay)
             self.landing_mpc=(LandingSupportMPCV3(interface, qp_settings=qp_settings,
                 settings=mpc_settings, preserve_arm_command=not self.landing_mpc_free_arm)
@@ -526,6 +531,9 @@ class SharedTargetResidualController:
                 contact_mode_additions=[
                     dict(stage=int(row.get('stage',-1)), feet=list(row.get('contact_mode_additions',[])))
                     for row in horizon if row.get('contact_mode_additions')]
+                predicted_touchdown_impacts=[
+                    dict(stage=int(row.get('stage',-1)), impact=row.get('predicted_touchdown_impact'))
+                    for row in horizon if row.get('predicted_touchdown_impact')]
                 record=dict(case=case,clock_s=float(public_clock[lane]),accepted=bool(plan['accepted']),
                     first_action_available=bool(plan.get('horizon')) and bool(plan['horizon'][0].get('accepted')),
                     solver_failure=bool(plan.get('solver_failure',False)),rejection=plan.get('rejection'),
@@ -547,6 +555,7 @@ class SharedTargetResidualController:
                     failed_stage_residuals=failed_stage.get('residuals') if failed_stage is not None else None,
                     predicted_contact_additions=predicted_contact_additions,
                     contact_mode_additions=contact_mode_additions,
+                    predicted_touchdown_impacts=predicted_touchdown_impacts,
                     state_source=state_source,
                     geometric_contacts=(getattr(state, 'geometric_contacts', state.contacts).tolist()),
                     support_contacts=state.contacts.tolist(),
@@ -836,6 +845,7 @@ def main():
         landing_mpc_arm_posture_blend=args.landing_mpc_arm_posture_blend,
         landing_mpc_touchdown_height_tolerance=args.landing_mpc_touchdown_height_tolerance,
         landing_mpc_touchdown_vertical_speed_limit=args.landing_mpc_touchdown_vertical_speed_limit,
+                      landing_mpc_touchdown_impact_projection=args.landing_mpc_touchdown_impact_projection,
         landing_mpc_swing_foot_weight=args.landing_mpc_swing_foot_weight,
         landing_mpc_swing_foot_kp=args.landing_mpc_swing_foot_kp,
         landing_mpc_swing_foot_kd=args.landing_mpc_swing_foot_kd,
@@ -897,6 +907,7 @@ def main():
                       landing_mpc_arm_posture_blend=args.landing_mpc_arm_posture_blend,
         landing_mpc_touchdown_height_tolerance=args.landing_mpc_touchdown_height_tolerance,
         landing_mpc_touchdown_vertical_speed_limit=args.landing_mpc_touchdown_vertical_speed_limit,
+        landing_mpc_touchdown_impact_projection=args.landing_mpc_touchdown_impact_projection,
                       landing_mpc_swing_foot_weight=args.landing_mpc_swing_foot_weight,
                       landing_mpc_swing_foot_kp=args.landing_mpc_swing_foot_kp,
                       landing_mpc_swing_foot_kd=args.landing_mpc_swing_foot_kd,
@@ -1137,6 +1148,7 @@ def main():
                 arm_posture_blend=float(args.landing_mpc_arm_posture_blend),
                 touchdown_height_tolerance_m=float(args.landing_mpc_touchdown_height_tolerance),
                 touchdown_vertical_speed_limit_mps=float(args.landing_mpc_touchdown_vertical_speed_limit),
+                touchdown_impact_projection=bool(args.landing_mpc_touchdown_impact_projection),
                 nonfoot_clearance_weight=float(args.landing_mpc_nonfoot_clearance_weight),
                 nonfoot_clearance_m=float(args.landing_mpc_nonfoot_clearance_m),
                 nonfoot_clearance_kp_s2=float(args.landing_mpc_nonfoot_clearance_kp),
@@ -1145,6 +1157,10 @@ def main():
                 free_arm=bool(args.landing_mpc_free_arm),
                 records=len(landing_mpc_records),
                 predicted_contact_transition_records=sum(bool(r.get('predicted_contact_additions')) for r in landing_mpc_records),
+                predicted_touchdown_impact_records=sum(
+                    any(item.get('impact', {}).get('applied', False)
+                        for item in r.get('predicted_touchdown_impacts', []))
+                    for r in landing_mpc_records),
                 applied_first_steps=sum(bool(r.get('applied_first_step')) for r in landing_mpc_records),
                 applied_torque_overlays=sum(bool(r.get('torque_overlay_applied')) for r in landing_mpc_records),
                 solver_failures=sum(bool(r.get('solver_failure')) for r in landing_mpc_records),

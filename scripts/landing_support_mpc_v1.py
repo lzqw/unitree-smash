@@ -341,6 +341,10 @@ class LandingSupportMPCV1:
                 # ``horizon`` stores a copy; annotate the stored stage record,
                 # not the pre-append temporary row, so diagnostics are truthful.
                 stage_record['predicted_contact_additions'] = list(added_contacts)
+            impact = getattr(predicted, '_touchdown_impact', None)
+            if impact is not None:
+                stage_record['predicted_touchdown_impact'] = impact
+                delattr(predicted, '_touchdown_impact')
             if stage == 0:
                 first_step_risk = self.risk(predicted)
                 first_step_score = self.risk_score(first_step_risk)

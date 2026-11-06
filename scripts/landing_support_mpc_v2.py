@@ -33,6 +33,9 @@ class LandingMPCSettingsV2(LandingMPCSettingsV1):
     touchdown_mode_height_scale: float = 2.5
     touchdown_height_tolerance_m: float = .012
     touchdown_vertical_speed_limit_mps: float = 1.5
+    touchdown_impact_projection: bool = False
+    touchdown_impact_restitution: float = 0.0
+    touchdown_impact_max_impulse_ns: float = 25.0
 
 
 def _hull(points):
@@ -120,6 +123,17 @@ class LandingSupportMPCV2(LandingSupportMPCV1):
             value = getattr(settings, name)
             if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or value <= 0:
                 raise ValueError(f'{name} must be positive and finite')
+        if not isinstance(settings.touchdown_impact_projection, bool):
+            raise ValueError('touchdown_impact_projection must be boolean')
+        for name in ('touchdown_impact_restitution', 'touchdown_impact_max_impulse_ns'):
+            value = getattr(settings, name)
+            if (isinstance(value, bool) or not isinstance(value, (int, float)) or
+                    not math.isfinite(value) or value < 0.):
+                raise ValueError(f'{name} must be finite and nonnegative')
+        if settings.touchdown_impact_restitution > 1.:
+            raise ValueError('touchdown_impact_restitution must be <= 1')
+        if settings.touchdown_impact_max_impulse_ns <= 0.:
+            raise ValueError('touchdown_impact_max_impulse_ns must be positive')
         if settings.terminal_support_margin_m > settings.support_margin_trigger_m:
             raise ValueError('terminal support margin must not exceed trigger margin')
         super().__init__(interface, qp_settings=qp_settings, settings=settings)
@@ -177,7 +191,61 @@ class LandingSupportMPCV2(LandingSupportMPCV1):
             return state, []
         next_state = copy.deepcopy(state)
         next_state.contacts[candidates] = True
+        if self.settings.touchdown_impact_projection:
+            next_state._touchdown_impact = self._project_touchdown_impact(
+                next_state, candidates, pre_velocity=np.asarray(state.v, dtype=np.float64))
         return next_state, candidates
+
+    def _project_touchdown_impact(self, state, candidates, *, pre_velocity):
+        """Project predicted touchdown velocity through a unilateral impulse.
+
+        This compact event model acts only on newly added feet and uses their
+        world-Z contact normals. Negative normal impulses are clipped rather
+        than treated as adhesive support. The result is opt-in diagnostic
+        prediction; the native simulator remains authoritative.
+        """
+        info = dict(enabled=True, feet=[int(x) for x in candidates], applied=False,
+                    impulse_ns=[], pre_normal_velocity_mps=[], post_normal_velocity_mps=[],
+                    rejection=None)
+        try:
+            snapshot = self.qp.model.snapshot(state.q, state.v)
+            mass = np.asarray(snapshot['mass_matrix'], dtype=np.float64)
+            foot_jacobian = np.asarray(snapshot['foot_jacobian'], dtype=np.float64)
+            if mass.shape != (24, 24) or foot_jacobian.ndim != 3:
+                info['rejection'] = 'invalid_model_shapes'
+                return info
+            rows = np.asarray([3 * int(index) + 2 for index in candidates], dtype=np.int64)
+            normal_jacobian = foot_jacobian.reshape(-1, 24)[rows]
+            pre_normal = normal_jacobian @ pre_velocity
+            info['pre_normal_velocity_mps'] = pre_normal.tolist()
+            approaching = pre_normal < -1e-6
+            if not bool(np.any(approaching)):
+                info['rejection'] = 'no_approaching_normal_velocity'
+                return info
+            active_jacobian = normal_jacobian[approaching]
+            desired = -(1. + float(self.settings.touchdown_impact_restitution)) * \
+                (active_jacobian @ pre_velocity)
+            minv_jt = np.linalg.solve(mass, active_jacobian.T)
+            gram = active_jacobian @ minv_jt
+            impulse = np.linalg.lstsq(gram + 1e-9*np.eye(len(gram)), desired, rcond=None)[0]
+            if not np.isfinite(impulse).all():
+                info['rejection'] = 'nonfinite_impulse'
+                return info
+            impulse = np.maximum(impulse, 0.)
+            impulse = np.minimum(impulse, float(self.settings.touchdown_impact_max_impulse_ns))
+            delta_v = np.linalg.solve(mass, active_jacobian.T @ impulse)
+            if not np.isfinite(delta_v).all():
+                info['rejection'] = 'nonfinite_velocity_update'
+                return info
+            state.v = np.asarray(state.v, dtype=np.float64) + delta_v
+            state.joint_velocity = state.v[self.qp.model.v_indices].copy()
+            post_normal = normal_jacobian @ state.v
+            info.update(applied=True, impulse_ns=impulse.tolist(),
+                        post_normal_velocity_mps=post_normal.tolist())
+            return info
+        except (FloatingPointError, ValueError, np.linalg.LinAlgError) as error:
+            info['rejection'] = type(error).__name__
+            return info
 
     def _contact_mode_candidates(self, state):
         """Return bounded imminent-contact alternatives for an infeasible mode."""

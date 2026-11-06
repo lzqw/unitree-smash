@@ -4,7 +4,7 @@ from types import SimpleNamespace
 import numpy as np
 
 from scripts.landing_support_mpc_v1 import LandingSupportMPCV1
-from scripts.landing_support_mpc_v2 import _support_margin
+from scripts.landing_support_mpc_v2 import LandingSupportMPCV2, _support_margin
 from scripts.whole_body_support_qp_v1 import PositionPDInterface
 
 
@@ -26,6 +26,38 @@ class SupportMarginTests(unittest.TestCase):
 
 
 class ReplaySemanticsTests(unittest.TestCase):
+    def test_touchdown_impact_projection_removes_downward_normal_velocity(self):
+        class FakeMPC:
+            _project_touchdown_impact = LandingSupportMPCV2._project_touchdown_impact
+
+            def __init__(self):
+                self.qp = type('QP', (), {})()
+                self.qp.model = type('Model', (), {})()
+                self.qp.model.v_indices = np.arange(18) + 6
+                self.qp.model.snapshot = lambda q, v: {
+                    'mass_matrix': np.eye(24),
+                    'foot_jacobian': np.zeros((4, 3, 24)),
+                }
+                self.settings = type('Settings', (), {
+                    'touchdown_impact_restitution': 0.,
+                    'touchdown_impact_max_impulse_ns': 25.,
+                })()
+
+        fake = FakeMPC()
+        state = type('State', (), {})()
+        state.q = np.zeros(19); state.v = np.zeros(24); state.v[2] = -1.
+        state.joint_velocity = np.zeros(18)
+        state.qp = None
+        # Foot 0 world-Z velocity is the free-base z velocity.
+        fake.qp.model.snapshot = lambda q, v: {
+            'mass_matrix': np.eye(24),
+            'foot_jacobian': np.pad(np.eye(3, 24), ((0, 9), (0, 0))).reshape(4, 3, 24),
+        }
+        info = fake._project_touchdown_impact(state, [0], pre_velocity=state.v.copy())
+        self.assertTrue(info['applied'])
+        self.assertGreaterEqual(info['impulse_ns'][0], 0.)
+        self.assertAlmostEqual(info['post_normal_velocity_mps'][0], 0., places=6)
+
     def test_torque_bounds_can_match_native_one_tick_target_admission(self):
         limits = np.c_[-np.ones(18), np.ones(18)]
         interface = PositionPDInterface(
