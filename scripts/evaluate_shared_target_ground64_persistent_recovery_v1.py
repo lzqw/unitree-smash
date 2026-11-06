@@ -244,6 +244,7 @@ class SharedTargetResidualController:
         self.landing_mpc_executor_replay=bool(landing_mpc_executor_replay)
         self._landing_mpc_hold_remaining=torch.zeros((count,),dtype=torch.int32,device=device)
         self._landing_mpc_held_action=torch.zeros((count,18),dtype=torch.float32,device=device)
+        self._landing_mpc_last_target=np.full((count,18),np.nan,dtype=np.float64)
         self.landing_mpc_support_margin=bool(landing_mpc_support_margin)
         self.landing_mpc_torque_overlay=bool(landing_mpc_torque_overlay)
         self.landing_mpc_touchdown_recovery=bool(landing_mpc_touchdown_recovery)
@@ -401,6 +402,7 @@ class SharedTargetResidualController:
             self._effort_override.zero_();self._effort_override_mask.zero_()
             self._landing_mpc_hold_remaining.zero_()
             self._landing_mpc_held_action.zero_()
+            self._landing_mpc_last_target.fill(np.nan)
             for contact_state in self._landing_mpc_contact_state_lane:
                 contact_state.reset()
         else:
@@ -415,6 +417,7 @@ class SharedTargetResidualController:
                 selected = np.asarray(ids).reshape(-1).tolist()
             for lane in selected:
                 self._landing_mpc_contact_state_lane[int(lane)].reset()
+                self._landing_mpc_last_target[int(lane),:]=np.nan
         if self.landing_mpc is not None and hasattr(self.landing_mpc, 'reset'):
             self.landing_mpc.reset()
 
@@ -459,11 +462,17 @@ class SharedTargetResidualController:
                 if self.landing_mpc_hold_first_action and self._landing_mpc_hold_remaining[lane].item() > 0:
                     action[lane]=self._landing_mpc_held_action[lane].to(action.dtype)
                     self._landing_mpc_hold_remaining[lane]-=1
+                    tracking_error = None
+                    if self._landing_mpc_native_env is not None and np.isfinite(self._landing_mpc_last_target[lane]).all():
+                        actual_q = self._landing_mpc_native_env.robot.data.joint_pos[
+                            lane, self._landing_mpc_native_env.joint_ids].detach().cpu().numpy()
+                        tracking_error = float(np.max(np.abs(actual_q-self._landing_mpc_last_target[lane])))
                     self.landing_mpc_logs.append(dict(case=case,clock_s=float(public_clock[lane]),
                         accepted=True,first_action_available=True,applied_first_step=True,
                         held_first_action=True,hold_active=True,solver_failure=False,
                         constraint_failure=False,risk_trigger=True,risk_reason='held_mpc_action',
-                        state_source='held_mpc_action',native_execution=True))
+                        state_source='held_mpc_action',native_execution=True,
+                        command_tracking_error_max_rad=tracking_error))
                     continue
                 from scripts.loaded_pinocchio_model_v1 import LoadedPinocchioModelV1
                 if not hasattr(self,'_landing_mpc_model'):
@@ -484,6 +493,12 @@ class SharedTargetResidualController:
                     measured_force=getattr(state, 'measured_force_world', None)
                     state.contacts=self._landing_mpc_contact_state_lane[lane].update(
                         geometric_contacts, measured_force)
+                command_tracking_error = None
+                if (self._landing_mpc_native_env is not None and
+                        np.isfinite(self._landing_mpc_last_target[lane]).all()):
+                    actual_q = self._landing_mpc_native_env.robot.data.joint_pos[
+                        lane, self._landing_mpc_native_env.joint_ids].detach().cpu().numpy()
+                    command_tracking_error = float(np.max(np.abs(actual_q-self._landing_mpc_last_target[lane])))
                 original_action=np.asarray(action[lane].detach().cpu().numpy(),dtype=np.float64).copy()
                 joint_ref=lim[:,0]+.5*(action[lane].detach().cpu().numpy()+1.)*(lim[:,1]-lim[:,0])
                 # The native trial must exercise the declared risk trigger.  A
@@ -528,6 +543,7 @@ class SharedTargetResidualController:
                     latched_support_contacts=state.contacts.tolist(),
                     measured_foot_force_world=(getattr(state, 'measured_force_world', None).tolist()
                                                if getattr(state, 'measured_force_world', None) is not None else None),
+                    command_tracking_error_max_rad=command_tracking_error,
                     native_execution=True)
                 risk_drop = (float(plan['initial_risk_score']) - float(plan['first_step_risk_score'])
                     if plan.get('initial_risk_score') is not None and
@@ -549,6 +565,8 @@ class SharedTargetResidualController:
                     # zero because the QP target is itself PD-inverted.
                     if not self.landing_mpc_torque_overlay:
                         action[lane]=torch.as_tensor(chosen,device=action.device)
+                    chosen_target = lim[:,0] + .5*(chosen+1.)*(lim[:,1]-lim[:,0])
+                    self._landing_mpc_last_target[lane,:] = chosen_target
                     record['applied_first_step']=True
                     record['forced_first_step']=forced_first_step
                     record['first_step_risk_score_drop']=risk_drop
