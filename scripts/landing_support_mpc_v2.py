@@ -222,15 +222,13 @@ class LandingSupportMPCV2(LandingSupportMPCV1):
             return result
         # V1's terminal risk was computed with its own risk method (dynamic
         # dispatch already gives V2 support margin), but its terminal gate did
-        # not include the support condition.  Recompute from the predicted
-        # terminal state by replaying the accepted accelerations.
-        predicted = state
-        for row in result['horizon']:
-            if 'acceleration' not in row:
-                break
-            predicted = self._integrate(predicted, np.asarray(row['acceleration']))
+        # not include the support condition.  Reuse the exact same replay as
+        # the rollout: executor realization and predicted contact transitions
+        # must not silently disappear during terminal validation.
+        predicted, replayed_contact_additions = self.replay_horizon(state, result['horizon'])
         terminal = self.risk(predicted)
         result['terminal_risk'] = terminal
+        result['terminal_replayed_contact_additions'] = replayed_contact_additions
         result['support_margin_terminal_ok'] = self._terminal_ok(predicted, terminal)
         if result.get('accepted') and not result['support_margin_terminal_ok']:
             result['accepted'] = False

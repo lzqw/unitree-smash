@@ -33,6 +33,11 @@ class LandingMPCSettingsV1:
     terminal_horizontal_speed_mps: float = .45
     max_stage_runtime_s: float = .02
     executor_replay: bool = False
+    # When enabled, replay the realized implicit-PD torque through the same
+    # full-body dynamics/contact equations used by the support QP.  The
+    # legacy joint-acceleration scaling remains the fallback if the replay
+    # solve is ill-conditioned.
+    executor_replay_model_consistent: bool = True
 
 
 def _finite_positive(value, name):
@@ -59,6 +64,8 @@ class LandingSupportMPCV1:
             _finite_positive(getattr(settings, name), name)
         if type(settings.executor_replay) is not bool:
             raise ValueError('executor_replay must be boolean')
+        if type(settings.executor_replay_model_consistent) is not bool:
+            raise ValueError('executor_replay_model_consistent must be boolean')
         if (isinstance(settings.minimum_support_feet, bool)
                 or not isinstance(settings.minimum_support_feet, int)
                 or not 0 <= settings.minimum_support_feet <= 4):
@@ -131,7 +138,17 @@ class LandingSupportMPCV1:
             scale = np.divide(realized, requested, out=np.zeros_like(realized),
                               where=np.abs(requested) > 1e-6)
             scale = np.clip(scale, -1., 1.)
-            acceleration[self.qp.model.v_indices] *= scale
+            if self.settings.executor_replay_model_consistent:
+                replayed = self._replay_realized_dynamics(state, realized)
+            else:
+                replayed = None
+            if replayed is not None:
+                acceleration = replayed
+            else:
+                # Conservative fallback retained for malformed or singular
+                # contact snapshots.  It is intentionally not described as a
+                # dynamics-consistent replay.
+                acceleration[self.qp.model.v_indices] *= scale
         qdot = state.v.copy()
         v = state.v + dt * acceleration
         # Pinocchio free-flyer integration keeps quaternion normalization and
@@ -145,6 +162,79 @@ class LandingSupportMPCV1:
         # Contact mode is an observed mode; this first version never invents a
         # new foot contact during its prediction horizon.
         return next_state
+
+    def _replay_realized_dynamics(self, state, realized_torque):
+        """Recompute a full-body acceleration for the realized PD torque.
+
+        The QP solves
+
+            M a + h - S tau - J.T f = 0,
+            J a = -J v / tau_contact - Jdot v
+
+        for the currently observed contacts.  Re-solving this small KKT
+        system after the position-PD interface has clipped the requested
+        torque keeps floating-base acceleration, joint acceleration and
+        contact reaction consistent during prediction.  This is still a
+        model replay (it does not model PhysX impact impulses); returning
+        ``None`` lets the caller use the old conservative fallback when the
+        linear system is non-finite or ill-conditioned.
+        """
+        try:
+            torque = np.asarray(realized_torque, dtype=np.float64)
+            if torque.shape != (18,) or not np.isfinite(torque).all():
+                return None
+            snapshot = self.qp.model.snapshot(state.q, state.v)
+            mass = np.asarray(snapshot['mass_matrix'], dtype=np.float64)
+            nonlinear = np.asarray(snapshot['nonlinear'], dtype=np.float64)
+            if mass.shape != (24, 24) or nonlinear.shape != (24,):
+                return None
+            rhs_dynamics = self.qp.selection @ torque - nonlinear
+            active = np.flatnonzero(np.asarray(state.contacts, dtype=bool))
+            if len(active):
+                jac = np.asarray(snapshot['foot_jacobian'][active], dtype=np.float64).reshape(3*len(active), 24)
+                jdot_v = (np.asarray(snapshot['foot_jacobian_dot'][active], dtype=np.float64)
+                          @ state.v).reshape(3*len(active))
+                foot_velocity = jac @ state.v
+                contact_acceleration = -foot_velocity / self.qp.settings.contact_velocity_decay_s
+                kkt = np.block([
+                    [mass, -jac.T],
+                    [jac, np.zeros((3*len(active), 3*len(active)))]])
+                rhs = np.concatenate([rhs_dynamics, contact_acceleration-jdot_v])
+                solution, _, _, _ = np.linalg.lstsq(kkt, rhs, rcond=None)
+                acceleration = solution[:24]
+                residual = kkt @ solution - rhs
+            else:
+                acceleration = np.linalg.solve(mass, rhs_dynamics)
+                residual = mass @ acceleration - rhs_dynamics
+            if (not np.isfinite(acceleration).all() or
+                    not np.isfinite(residual).all() or
+                    float(np.max(np.abs(residual))) > 2e-5):
+                return None
+            return acceleration
+        except (FloatingPointError, ValueError, np.linalg.LinAlgError):
+            return None
+
+    def replay_horizon(self, state, horizon):
+        """Replay a stored horizon with the exact prediction semantics.
+
+        Terminal checks and diagnostics must use the same executor replay and
+        predicted-contact transition as the rollout that produced the plan.
+        """
+        predicted = copy.deepcopy(state)
+        additions = []
+        for row in horizon:
+            if 'acceleration' not in row:
+                break
+            plan = dict(
+                acceleration=np.asarray(row['acceleration'], dtype=np.float64),
+                torque=np.asarray(row.get('torque', np.zeros(18)), dtype=np.float64),
+                joint_position_target=np.asarray(
+                    row.get('joint_position_target', predicted.joint_position), dtype=np.float64),
+            )
+            predicted = self._integrate(predicted, plan['acceleration'], plan)
+            predicted, added = self._after_prediction(predicted)
+            additions.extend(int(index) for index in added)
+        return predicted, additions
 
     def _after_prediction(self, state):
         """Hook for a derived controller to update predicted contact mode."""

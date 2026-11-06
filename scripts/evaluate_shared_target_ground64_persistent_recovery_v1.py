@@ -60,6 +60,10 @@ parser.add_argument('--landing-mpc-force-post-touchdown', action='store_true',
     help='After measured post-touchdown phase, solve and apply MPC without waiting for risk thresholds')
 parser.add_argument('--landing-mpc-contact-force-threshold', type=float, default=0.,
     help='Minimum upward measured foot force for a foot to count as MPC support (0 keeps geometric contacts)')
+parser.add_argument('--landing-mpc-contact-release-threshold', type=float, default=None,
+    help='Upward-force threshold below which a latched foot begins unloading (default half engage threshold)')
+parser.add_argument('--landing-mpc-contact-release-ticks', type=int, default=3,
+    help='Consecutive unloading ticks before measured support is released')
 parser.add_argument('--landing-mpc-predict-touchdown-contacts', action='store_true',
     help='Let MPC add an imminent swing-foot contact to later horizon stages (event approximation)')
 parser.add_argument('--landing-mpc-touchdown-height-tolerance', type=float, default=.012,
@@ -138,6 +142,7 @@ from scripts.ground64_training_support_v1 import GROUND
 from scripts.landing_support_mpc_v1 import LandingSupportMPCV1, LandingMPCSettingsV1
 from scripts.landing_support_mpc_v2 import LandingSupportMPCV2, LandingMPCSettingsV2
 from scripts.landing_support_mpc_v3 import LandingSupportMPCV3
+from scripts.touchdown_contact_state_v1 import TouchdownContactSettingsV1,TouchdownContactStateV1
 from scripts.whole_body_support_qp_v1 import PositionPDInterface, SupportSettings
 
 SHARED_SCHEMA='g07-public-shared-target-bias-v5'
@@ -165,6 +170,8 @@ class SharedTargetResidualController:
                  landing_mpc_touchdown_recovery=False,
                  landing_mpc_force_post_touchdown=False,
                  landing_mpc_contact_force_threshold=0.,
+                 landing_mpc_contact_release_threshold=None,
+                 landing_mpc_contact_release_ticks=3,
                  landing_mpc_predict_touchdown_contacts=False,
                  landing_mpc_touchdown_height_tolerance=.012,
                  landing_mpc_touchdown_vertical_speed_limit=1.5,
@@ -227,6 +234,15 @@ class SharedTargetResidualController:
         if (not np.isfinite(self.landing_mpc_contact_force_threshold) or
                 self.landing_mpc_contact_force_threshold < 0.):
             raise ValueError('landing_mpc_contact_force_threshold must be nonnegative')
+        release_threshold = (self.landing_mpc_contact_force_threshold * .5
+                             if landing_mpc_contact_release_threshold is None
+                             else float(landing_mpc_contact_release_threshold))
+        self.landing_mpc_contact_release_threshold=release_threshold
+        self.landing_mpc_contact_release_ticks=int(landing_mpc_contact_release_ticks)
+        self._landing_mpc_contact_state_lane=[TouchdownContactStateV1(
+            TouchdownContactSettingsV1(self.landing_mpc_contact_force_threshold,
+                                       release_threshold,
+                                       self.landing_mpc_contact_release_ticks)) for _ in range(count)]
         self.landing_mpc_predict_touchdown_contacts=bool(landing_mpc_predict_touchdown_contacts)
         self.landing_mpc_touchdown_height_tolerance=float(landing_mpc_touchdown_height_tolerance)
         self.landing_mpc_touchdown_vertical_speed_limit=float(landing_mpc_touchdown_vertical_speed_limit)
@@ -353,10 +369,20 @@ class SharedTargetResidualController:
             self._effort_override.zero_();self._effort_override_mask.zero_()
             self._landing_mpc_hold_remaining.zero_()
             self._landing_mpc_held_action.zero_()
+            for contact_state in self._landing_mpc_contact_state_lane:
+                contact_state.reset()
         else:
             self._effort_override[ids].zero_();self._effort_override_mask[ids]=False
             self._landing_mpc_hold_remaining[ids]=0
             self._landing_mpc_held_action[ids].zero_()
+            if isinstance(ids, slice):
+                selected = range(self._effort_override.shape[0])[ids]
+            elif torch.is_tensor(ids):
+                selected = ids.detach().cpu().reshape(-1).tolist()
+            else:
+                selected = np.asarray(ids).reshape(-1).tolist()
+            for lane in selected:
+                self._landing_mpc_contact_state_lane[int(lane)].reset()
         if self.landing_mpc is not None and hasattr(self.landing_mpc, 'reset'):
             self.landing_mpc.reset()
 
@@ -421,6 +447,11 @@ class SharedTargetResidualController:
                     pub=raw[lane].detach().cpu().numpy()
                     state=self._landing_mpc_model.state_from_public(pub,dflt)
                     state_source='public_observation_reconstruction'
+                if self._landing_mpc_native_env is not None:
+                    geometric_contacts=getattr(state, 'geometric_contacts', state.contacts)
+                    measured_force=getattr(state, 'measured_force_world', None)
+                    state.contacts=self._landing_mpc_contact_state_lane[lane].update(
+                        geometric_contacts, measured_force)
                 original_action=np.asarray(action[lane].detach().cpu().numpy(),dtype=np.float64).copy()
                 joint_ref=lim[:,0]+.5*(action[lane].detach().cpu().numpy()+1.)*(lim[:,1]-lim[:,0])
                 # The native trial must exercise the declared risk trigger.  A
@@ -458,6 +489,7 @@ class SharedTargetResidualController:
                     state_source=state_source,
                     geometric_contacts=(getattr(state, 'geometric_contacts', state.contacts).tolist()),
                     support_contacts=state.contacts.tolist(),
+                    latched_support_contacts=state.contacts.tolist(),
                     measured_foot_force_world=(getattr(state, 'measured_force_world', None).tolist()
                                                if getattr(state, 'measured_force_world', None) is not None else None),
                     native_execution=True)
@@ -707,6 +739,8 @@ def main():
         landing_mpc_touchdown_recovery=args.landing_mpc_touchdown_recovery,
         landing_mpc_force_post_touchdown=args.landing_mpc_force_post_touchdown,
         landing_mpc_contact_force_threshold=args.landing_mpc_contact_force_threshold,
+        landing_mpc_contact_release_threshold=args.landing_mpc_contact_release_threshold,
+        landing_mpc_contact_release_ticks=args.landing_mpc_contact_release_ticks,
         landing_mpc_predict_touchdown_contacts=args.landing_mpc_predict_touchdown_contacts,
         landing_mpc_touchdown_height_tolerance=args.landing_mpc_touchdown_height_tolerance,
         landing_mpc_touchdown_vertical_speed_limit=args.landing_mpc_touchdown_vertical_speed_limit,
@@ -760,6 +794,8 @@ def main():
                       landing_mpc_touchdown_recovery=args.landing_mpc_touchdown_recovery,
                       landing_mpc_force_post_touchdown=args.landing_mpc_force_post_touchdown,
                       landing_mpc_contact_force_threshold=args.landing_mpc_contact_force_threshold,
+                      landing_mpc_contact_release_threshold=args.landing_mpc_contact_release_threshold,
+                      landing_mpc_contact_release_ticks=args.landing_mpc_contact_release_ticks,
         landing_mpc_predict_touchdown_contacts=args.landing_mpc_predict_touchdown_contacts,
         landing_mpc_touchdown_height_tolerance=args.landing_mpc_touchdown_height_tolerance,
         landing_mpc_touchdown_vertical_speed_limit=args.landing_mpc_touchdown_vertical_speed_limit,
@@ -991,6 +1027,9 @@ def main():
                 touchdown_recovery=bool(args.landing_mpc_touchdown_recovery),
                 force_post_touchdown=bool(args.landing_mpc_force_post_touchdown),
                 contact_force_threshold_n=float(args.landing_mpc_contact_force_threshold),
+                contact_release_threshold_n=(None if args.landing_mpc_contact_release_threshold is None
+                                            else float(args.landing_mpc_contact_release_threshold)),
+                contact_release_ticks=int(args.landing_mpc_contact_release_ticks),
                 predict_touchdown_contacts=bool(args.landing_mpc_predict_touchdown_contacts),
                 touchdown_height_tolerance_m=float(args.landing_mpc_touchdown_height_tolerance),
                 touchdown_vertical_speed_limit_mps=float(args.landing_mpc_touchdown_vertical_speed_limit),
