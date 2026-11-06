@@ -18,17 +18,20 @@ ROOT = Path(__file__).resolve().parents[2]
 MODEL = ROOT / 'configs/go2_piper_racket_landing_model_v1.json'
 DEFAULTS = dict(mode='prepare_and_buffer', blend_s=.08, settling_s=.7,
                 landing_height_m=.30, capture_gain=1., ik_iterations=5,
-                joint_target_rate_rad_s=20., ik_damping=.025)
+                joint_target_rate_rad_s=20., ik_damping=.025,
+                capture_model='height')
 
 
 def settings(value):
     if value is None:return None
-    if not isinstance(value, dict) or set(value) != set(DEFAULTS):
-        raise ValueError('Declare every reactive landing field explicitly')
-    result=dict(value)
+    if not isinstance(value, dict) or not set(value).issubset(DEFAULTS):
+        raise ValueError('Unknown reactive landing field')
+    result=dict(DEFAULTS);result.update(value)
     if result['mode'] not in ('prepare_only', 'prepare_and_buffer', 'prepare_and_buffer_vhsip',
                               'post_touchdown_buffer_vhsip'):
         raise ValueError('Unknown landing comparison mode')
+    if result['capture_model'] not in ('height', 'vhsip'):
+        raise ValueError('capture_model must be height or vhsip')
     bounds=dict(blend_s=(.01,.3),settling_s=(.2,2.),landing_height_m=(.15,.42),
                 capture_gain=(0.,2.),joint_target_rate_rad_s=(1.,30.),ik_damping=(.001,.1))
     for key,(lo,hi) in bounds.items():
@@ -273,7 +276,7 @@ class ReactiveLandingV1:
         has_contacts=support.any(1)
         support_center=(self.anchors[ids]*support[:,:,None]).sum(1)/support.sum(1).clamp_min(1)[:,None]
         support_center=torch.where(has_contacts[:,None],support_center,center)
-        if cfg['mode']=='prepare_and_buffer_vhsip':
+        if cfg['capture_model']=='vhsip':
             position_xy=center[:,:2]-support_center[:,:2]
             capture=cfg['capture_gain']*self._vhsip_capture(vel[:,:2],position_xy,h,vel[:,2])
             capture=capture.clamp(-.35,.35)
