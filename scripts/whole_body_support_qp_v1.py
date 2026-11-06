@@ -33,6 +33,7 @@ class SupportSettings:
     acceleration_regularization: float = 1e-5
     torque_regularization: float = 1e-4
     force_regularization: float = 1e-5
+    force_distribution_weight: float = 0.
     friction_facets: int = 8
     solver_eps: float = 1e-7
     solver_max_iterations: int = 10000
@@ -113,6 +114,7 @@ class WholeBodySupportQP:
         for name, value in declared.items():
             if (not np.isfinite(value) or value < 0 or
                     (name not in ('swing_foot_weight', 'nonfoot_clearance_weight',
+                                  'force_distribution_weight',
                                   'swing_foot_capture_gain') and value == 0)):
                 raise ValueError('Finite nonnegative control settings required; all non-swing terms must be positive')
         if settings.swing_foot_capture_max_m <= 0.:

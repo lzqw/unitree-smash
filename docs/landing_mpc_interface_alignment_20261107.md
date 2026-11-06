@@ -165,6 +165,26 @@ support set and support forces from native contact telemetry, update the
 continuous COM/attitude reference, and keep solving until a measurable stable
 window is reached.
 
+## Optional support-force allocation trial
+
+To address the next part of that hypothesis, the reduced support QP now has an
+optional `force_distribution_weight`.  When enabled, it softly biases the
+normal reaction variables of the currently measured contacts toward an
+equal-share load of (mg/n_{contact}).  It does not create contacts, override
+friction, or replace the hard floating-base dynamics; the default remains zero.
+
+The representative GPU0 trial used weight `0.05` with the same TRAIN 1, 67 and
+95 cases and the same frozen policy.  It completed with **27/128 complete5**,
+74 airborne contacts, 34 conditional recoveries and zero numerical failures.
+There was no task-level gain.  This means that simply preferring equal normal
+loads is insufficient; the missing information is the future support/foot
+motion and the actual native response, not only the instantaneous force split.
+
+The next controller revision should therefore use measured support force as a
+feedback signal over time: detect unloading, update the viable contact set,
+move a swing foot when the current support margin is no longer recoverable,
+and evaluate the resulting trajectory after the native position/PD interface.
+
 ## Next evaluation
 
 The next representative native run should compare the same landing cases with

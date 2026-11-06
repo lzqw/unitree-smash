@@ -51,6 +51,16 @@ class ReducedWholeBodySupportQP(WholeBodySupportQP):
         task(block,reference['angular_acceleration_body'],cfg.orientation_weight)
         block=np.zeros((18,nz));block[np.arange(18),self.model.v_indices]=1.
         task(block,reference['joint_acceleration'],cfg.posture_weight)
+        # Optional centroidal support allocation. Only measured contacts have
+        # force variables; bias them toward an equal-share normal load so a
+        # lightly loaded foot is not silently treated as durable support.
+        # This is soft and disabled by default.
+        force_distribution_weight = float(cfg.force_distribution_weight)
+        if force_distribution_weight > 1e-7 and nforce:
+            force_block = np.zeros((nforce, nz)); force_block[:, 24:] = np.eye(nforce)
+            force_target = np.zeros(nforce)
+            force_target[2::3] = self.model.mass * 9.81 / len(feet)
+            task(force_block, force_target, force_distribution_weight)
         # Optional touchdown shaping for feet that are not yet supporting the
         # body.  This remains a soft acceleration cost: only observed contacts
         # receive reaction-force variables, so the QP cannot invent a contact

@@ -84,6 +84,8 @@ parser.add_argument('--landing-mpc-touchdown-vertical-speed-limit', type=float, 
     help='Maximum downward foot speed accepted for predicted contact-mode transition in m/s')
 parser.add_argument('--landing-mpc-touchdown-impact-projection', action='store_true',
     help='Project predicted new-contact normal velocity through a unilateral touchdown impulse')
+parser.add_argument('--landing-mpc-force-distribution-weight', type=float, default=0.,
+    help='Soft equal-share normal support-force allocation weight')
 parser.add_argument('--landing-mpc-swing-foot-weight', type=float, default=0.,
     help='Optional soft touchdown-foot task weight; zero preserves the original support QP')
 parser.add_argument('--landing-mpc-swing-foot-kp', type=float, default=80.,
@@ -196,6 +198,7 @@ class SharedTargetResidualController:
                  landing_mpc_touchdown_height_tolerance=.012,
                  landing_mpc_touchdown_vertical_speed_limit=1.5,
                  landing_mpc_touchdown_impact_projection=False,
+                 landing_mpc_force_distribution_weight=0.,
                  landing_mpc_swing_foot_weight=0., landing_mpc_swing_foot_kp=80.,
                  landing_mpc_swing_foot_kd=18., landing_mpc_swing_foot_clearance=.025,
                  landing_mpc_nonfoot_clearance_weight=0., landing_mpc_nonfoot_clearance_m=.08,
@@ -276,6 +279,10 @@ class SharedTargetResidualController:
         self.landing_mpc_touchdown_height_tolerance=float(landing_mpc_touchdown_height_tolerance)
         self.landing_mpc_touchdown_vertical_speed_limit=float(landing_mpc_touchdown_vertical_speed_limit)
         self.landing_mpc_touchdown_impact_projection=bool(landing_mpc_touchdown_impact_projection)
+        self.landing_mpc_force_distribution_weight=float(landing_mpc_force_distribution_weight)
+        if (not np.isfinite(self.landing_mpc_force_distribution_weight) or
+                self.landing_mpc_force_distribution_weight < 0.):
+            raise ValueError('landing_mpc_force_distribution_weight must be finite and nonnegative')
         self._effort_override=torch.zeros((count,18),device=device)
         self._effort_override_mask=torch.zeros((count,),dtype=torch.bool,device=device)
         self.landing_mpc_swing_foot_weight=float(landing_mpc_swing_foot_weight)
@@ -347,7 +354,8 @@ class SharedTargetResidualController:
             nonfoot_clearance_weight=self.landing_mpc_nonfoot_clearance_weight,
             nonfoot_clearance_m=self.landing_mpc_nonfoot_clearance_m,
             nonfoot_clearance_kp_s2=self.landing_mpc_nonfoot_clearance_kp,
-            nonfoot_clearance_kd_s=self.landing_mpc_nonfoot_clearance_kd)
+            nonfoot_clearance_kd_s=self.landing_mpc_nonfoot_clearance_kd,
+            force_distribution_weight=self.landing_mpc_force_distribution_weight)
         qp_settings = replace(qp_settings,
             swing_foot_capture_gain=self.landing_mpc_capture_foot_gain,
             swing_foot_capture_max_m=self.landing_mpc_capture_foot_max_offset)
@@ -846,6 +854,7 @@ def main():
         landing_mpc_touchdown_height_tolerance=args.landing_mpc_touchdown_height_tolerance,
         landing_mpc_touchdown_vertical_speed_limit=args.landing_mpc_touchdown_vertical_speed_limit,
                       landing_mpc_touchdown_impact_projection=args.landing_mpc_touchdown_impact_projection,
+                      landing_mpc_force_distribution_weight=args.landing_mpc_force_distribution_weight,
         landing_mpc_swing_foot_weight=args.landing_mpc_swing_foot_weight,
         landing_mpc_swing_foot_kp=args.landing_mpc_swing_foot_kp,
         landing_mpc_swing_foot_kd=args.landing_mpc_swing_foot_kd,
@@ -908,6 +917,7 @@ def main():
         landing_mpc_touchdown_height_tolerance=args.landing_mpc_touchdown_height_tolerance,
         landing_mpc_touchdown_vertical_speed_limit=args.landing_mpc_touchdown_vertical_speed_limit,
         landing_mpc_touchdown_impact_projection=args.landing_mpc_touchdown_impact_projection,
+        landing_mpc_force_distribution_weight=args.landing_mpc_force_distribution_weight,
                       landing_mpc_swing_foot_weight=args.landing_mpc_swing_foot_weight,
                       landing_mpc_swing_foot_kp=args.landing_mpc_swing_foot_kp,
                       landing_mpc_swing_foot_kd=args.landing_mpc_swing_foot_kd,
@@ -1149,6 +1159,7 @@ def main():
                 touchdown_height_tolerance_m=float(args.landing_mpc_touchdown_height_tolerance),
                 touchdown_vertical_speed_limit_mps=float(args.landing_mpc_touchdown_vertical_speed_limit),
                 touchdown_impact_projection=bool(args.landing_mpc_touchdown_impact_projection),
+                force_distribution_weight=float(args.landing_mpc_force_distribution_weight),
                 nonfoot_clearance_weight=float(args.landing_mpc_nonfoot_clearance_weight),
                 nonfoot_clearance_m=float(args.landing_mpc_nonfoot_clearance_m),
                 nonfoot_clearance_kp_s2=float(args.landing_mpc_nonfoot_clearance_kp),
