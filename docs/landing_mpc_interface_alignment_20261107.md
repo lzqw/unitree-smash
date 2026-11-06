@@ -294,3 +294,26 @@ target, but the native trajectory still does not establish a sustained,
 load-bearing support state.  Future work should therefore prioritize measured
 per-foot load transfer and a multi-step support-mode reference rather than
 another capture-gain sweep.
+
+## Native foot-force telemetry check
+
+The native Pinocchio adapter previously populated `measured_force_world` only
+when a positive contact-force gate was requested.  That made the default
+zero-threshold MPC mode unable to inspect the raw four-foot load transfer,
+even though the simulator exposed it.  The adapter now always records the
+4x3 world-frame foot-force tensor when available; the threshold still only
+controls whether the force gates the support mask.
+
+The unchanged contact-mode-fallback representative run was repeated after
+this interface fix.  It remained **27/128 complete5**, with 74 airborne
+contacts and 34 conditional recoveries.  The run produced 658 MPC records,
+403 applied first steps, 139 solver failures, and 7 predicted contact
+transitions.  The new telemetry shows that predicted feet often have near-zero
+load at the prediction instant and only sometimes acquire load on later
+ticks; in other cases the measured support set changes again before the
+held action expires.  This confirms that a predicted contact flag is not
+equivalent to a realized load-bearing support mode.
+
+The next controller change should use this telemetry to validate a mode
+transition and to release/replan when the expected foot does not acquire load,
+rather than treating the predicted mode as persistent for the whole horizon.
