@@ -112,6 +112,10 @@ parser.add_argument('--landing-mpc-nonfoot-clearance-kd', type=float, default=25
     help='Thigh clearance damping gain')
 parser.add_argument('--landing-mpc-continuous-reference', action='store_true',
     help='Use continuous COM/support references and preserve the supplied arm command (MPC v3)')
+parser.add_argument('--landing-mpc-load-aware-support', action='store_true',
+    help='Weight the continuous support reference by measured per-foot vertical load')
+parser.add_argument('--landing-mpc-load-force-floor', type=float, default=2.,
+    help='Minimum force used for a geometrically active foot in load-aware weighting')
 parser.add_argument('--landing-mpc-free-arm', action='store_true',
     help='With continuous-reference MPC, leave arm commands as a soft cost instead of an exact PD constraint')
 parser.add_argument('--reactive-vhsip-cases', type=int, nargs='+', default=None,
@@ -216,6 +220,8 @@ class SharedTargetResidualController:
                  landing_mpc_nonfoot_clearance_hard=False,
                  landing_mpc_nonfoot_clearance_kp=120., landing_mpc_nonfoot_clearance_kd=25.,
                  landing_mpc_continuous_reference=False,
+                 landing_mpc_load_aware_support=False,
+                 landing_mpc_load_force_floor=2.,
                  landing_mpc_free_arm=False,
                  reactive_vhsip_cases=None, reactive_vhsip_post_touchdown_only=False,
                  reactive_vhsip_capture_model='height', reactive_vhsip_settling_s=.7,
@@ -320,6 +326,11 @@ class SharedTargetResidualController:
         self.landing_mpc_nonfoot_clearance_kp=float(landing_mpc_nonfoot_clearance_kp)
         self.landing_mpc_nonfoot_clearance_kd=float(landing_mpc_nonfoot_clearance_kd)
         self.landing_mpc_continuous_reference=bool(landing_mpc_continuous_reference)
+        self.landing_mpc_load_aware_support=bool(landing_mpc_load_aware_support)
+        self.landing_mpc_load_force_floor=float(landing_mpc_load_force_floor)
+        if (not np.isfinite(self.landing_mpc_load_force_floor) or
+                self.landing_mpc_load_force_floor < 0.):
+            raise ValueError('landing_mpc_load_force_floor must be finite and nonnegative')
         self.landing_mpc_free_arm=bool(landing_mpc_free_arm)
         self.reactive_vhsip_cases=None if reactive_vhsip_cases is None else set(int(x) for x in reactive_vhsip_cases)
         self.reactive_vhsip_post_touchdown_only=bool(reactive_vhsip_post_touchdown_only)
@@ -404,7 +415,9 @@ class SharedTargetResidualController:
                 touchdown_impact_projection=self.landing_mpc_touchdown_impact_projection)
             mpc_settings = replace(mpc_settings, executor_replay=self.landing_mpc_executor_replay)
             self.landing_mpc=(LandingSupportMPCV3(interface, qp_settings=qp_settings,
-                settings=mpc_settings, preserve_arm_command=not self.landing_mpc_free_arm)
+                settings=mpc_settings, preserve_arm_command=not self.landing_mpc_free_arm,
+                load_aware_support=self.landing_mpc_load_aware_support,
+                load_force_floor_n=self.landing_mpc_load_force_floor)
                 if self.landing_mpc_continuous_reference else
                 LandingSupportMPCV2(interface, qp_settings=qp_settings,
                 settings=mpc_settings))
@@ -945,6 +958,8 @@ def main():
         landing_mpc_nonfoot_clearance_kp=args.landing_mpc_nonfoot_clearance_kp,
         landing_mpc_nonfoot_clearance_kd=args.landing_mpc_nonfoot_clearance_kd,
         landing_mpc_continuous_reference=args.landing_mpc_continuous_reference,
+        landing_mpc_load_aware_support=args.landing_mpc_load_aware_support,
+        landing_mpc_load_force_floor=args.landing_mpc_load_force_floor,
         landing_mpc_free_arm=args.landing_mpc_free_arm,
         reactive_vhsip_cases=args.reactive_vhsip_cases,
         reactive_vhsip_post_touchdown_only=args.reactive_vhsip_post_touchdown_only,
@@ -1012,6 +1027,8 @@ def main():
         landing_mpc_nonfoot_clearance_kp=args.landing_mpc_nonfoot_clearance_kp,
         landing_mpc_nonfoot_clearance_kd=args.landing_mpc_nonfoot_clearance_kd,
                       landing_mpc_continuous_reference=args.landing_mpc_continuous_reference,
+                      landing_mpc_load_aware_support=args.landing_mpc_load_aware_support,
+                      landing_mpc_load_force_floor=args.landing_mpc_load_force_floor,
                       landing_mpc_free_arm=args.landing_mpc_free_arm,
                       reactive_vhsip_cases=args.reactive_vhsip_cases,
                       reactive_vhsip_post_touchdown_only=args.reactive_vhsip_post_touchdown_only,
@@ -1254,6 +1271,8 @@ def main():
                 nonfoot_clearance_kp_s2=float(args.landing_mpc_nonfoot_clearance_kp),
                 nonfoot_clearance_kd_s=float(args.landing_mpc_nonfoot_clearance_kd),
                 continuous_reference=bool(args.landing_mpc_continuous_reference),
+                load_aware_support=bool(args.landing_mpc_load_aware_support),
+                load_force_floor_n=float(args.landing_mpc_load_force_floor),
                 free_arm=bool(args.landing_mpc_free_arm),
                 records=len(landing_mpc_records),
                 predicted_contact_transition_records=sum(bool(r.get('predicted_contact_additions')) for r in landing_mpc_records),

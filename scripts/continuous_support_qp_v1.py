@@ -42,14 +42,19 @@ class PrescribedArmPDInterface(PositionPDInterface):
 class ContinuousSupportQP(ReducedWholeBodySupportQP):
     def __init__(self, interface, settings=SupportSettings(), *,
                  continuous_reference=True, preserve_arm_command=True,
-                 reference_frequency_rad_s=10.):
+                 reference_frequency_rad_s=10., load_aware=False,
+                 load_force_floor_n=2.):
         if (type(continuous_reference) is not bool or type(preserve_arm_command) is not bool
-                or not np.isfinite(reference_frequency_rad_s) or reference_frequency_rad_s <= 0):
+                or type(load_aware) is not bool
+                or not np.isfinite(reference_frequency_rad_s) or reference_frequency_rad_s <= 0
+                or not np.isfinite(load_force_floor_n) or load_force_floor_n < 0.):
             raise ValueError('Explicit Boolean branches and positive reference frequency required')
         super().__init__(PrescribedArmPDInterface(interface), settings)
         self.continuous_reference = continuous_reference
         self.preserve_arm_command = preserve_arm_command
         self.reference_frequency_rad_s = float(reference_frequency_rad_s)
+        self.load_aware = load_aware
+        self.load_force_floor_n = float(load_force_floor_n)
         self.reset()
 
     def reset(self):
@@ -76,8 +81,28 @@ class ContinuousSupportQP(ReducedWholeBodySupportQP):
         self.previous_contacts = state.contacts.copy()
         # Preserve the full loaded-posture support height. Contact anchors stop
         # a planted foot's small measured drift from moving its support target.
-        goal = raw['com_position'] + (self.support_anchors[state.contacts]-
-                                      feet[state.contacts]).mean(0)
+        support_anchors = self.support_anchors[state.contacts]
+        support_feet = feet[state.contacts]
+        weights = None
+        measured_force = getattr(state, 'measured_force_world', None)
+        if self.load_aware and measured_force is not None:
+            measured_force = np.asarray(measured_force, dtype=np.float64)
+            if measured_force.shape == (4, 3) and np.isfinite(measured_force).all():
+                weights = np.maximum(measured_force[state.contacts, 2], 0.)
+                # Keep a lightly loaded but geometrically valid foot from
+                # vanishing numerically; use the force signal to choose the
+                # support center, not to invent or remove contacts.
+                weights = np.maximum(weights, self.load_force_floor_n)
+                if not np.isfinite(weights).all() or weights.sum() <= 1e-9:
+                    weights = None
+        if weights is None:
+            anchor_center = support_anchors.mean(0)
+            foot_center = support_feet.mean(0)
+        else:
+            weights = weights / weights.sum()
+            anchor_center = (weights[:, None] * support_anchors).sum(0)
+            foot_center = (weights[:, None] * support_feet).sum(0)
+        goal = raw['com_position'] + anchor_center - foot_center
         if self.reference_position is None:
             self.reference_position = snapshot['com_world'].copy()
             self.reference_velocity = snapshot['com_velocity_world'].copy()
@@ -89,7 +114,9 @@ class ContinuousSupportQP(ReducedWholeBodySupportQP):
             com_acceleration=acceleration+cfg.com_kp_s2*(position-snapshot['com_world'])-
                 cfg.com_kd_s*(snapshot['com_velocity_world']-velocity),
             com_goal_before_filter=goal.copy(), com_reference_acceleration=acceleration,
-            active_support_anchors=self.support_anchors[state.contacts].copy())
+            active_support_anchors=self.support_anchors[state.contacts].copy(),
+            load_aware_support=bool(weights is not None),
+            support_load_weights=(weights.copy() if weights is not None else None))
         # Exact critical-damping transition for a held goal over one native
         # command interval. A changed goal affects acceleration, not a reset of
         # position/velocity. No synthetic ground force is introduced.
@@ -113,6 +140,8 @@ class ContinuousSupportQP(ReducedWholeBodySupportQP):
         plan.update(continuous_support_reference=self.continuous_reference,
             preserve_supplied_arm_position_command=self.preserve_arm_command,
             reference_frequency_rad_s=self.reference_frequency_rad_s,
+            load_aware_support=self.load_aware,
+            load_force_floor_n=self.load_force_floor_n,
             full_hold_pd_realization_verified=False)
         if plan['accepted'] and self.preserve_arm_command:
             error = float(np.max(abs(plan['joint_position_target'][12:]-target[12:])))

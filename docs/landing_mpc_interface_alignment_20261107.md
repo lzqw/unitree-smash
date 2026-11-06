@@ -358,3 +358,22 @@ the old held command can outlive its expected support mode.  Releasing and
 re-solving alone still produces no task-level gain, so the next controller
 must change the multi-step support reference and load-transfer objective after
 the release; it should not simply lower the hold duration or force threshold.
+
+## Load-aware continuous support reference trial
+
+The continuous support QP now has an optional load-aware reference.  When
+native foot forces are available, the support-anchor and measured-foot center
+used by the critically damped COM reference are weighted by each active foot's
+upward load (with a small force floor).  The contact mask itself is unchanged;
+this only changes the desired COM/support reference.
+
+The GPU0 representative run enabled this mode with a 2 N force floor and the
+same contact-mode fallback protocol.  It remained **27/128 complete5**, with
+74 airborne contacts, 34 conditional recoveries and zero numerical failures.
+It produced 615 MPC records, 346 applied first steps, 136 solver failures and
+5 predicted contact transitions.  No complete recovery was added.
+
+This rules out a support-center weighting change as a standalone fix.  The
+remaining controller gap is a multi-step decision problem: after a contact
+transition, it must decide whether to keep, unload, or move a foot and then
+recompute a feasible support trajectory from the resulting native state.
