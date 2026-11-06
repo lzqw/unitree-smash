@@ -273,3 +273,24 @@ contact must also be realized by the native foot trajectory and support force
 response.  The next implementation should expose per-foot load transfer and
 post-switch state error, then keep or reject a mode using those measured
 signals rather than accepting a contact flag as support by itself.
+
+## Capture-point foot-placement trial
+
+The next representative run enabled the existing horizontal capture-point
+reference for inactive feet (`capture_foot_gain=1.0`, maximum offset 0.25 m),
+with contact-mode fallback and the same native execution/replay settings.  The
+goal was to test whether a subset of the failures could be recovered by moving
+the next foot toward the measured COM velocity direction before it became a
+support foot.
+
+The fixed 128-case panel again remained **27/128 complete5**, with 74 airborne
+contacts, 34 conditional recoveries and zero numerical failures.  The run
+produced 642 MPC records, 371 applied first steps, 139 solver failures and 4
+predicted contact transitions.  No new complete recovery was obtained.
+
+This result makes a pure horizontal capture-point explanation unlikely for the
+current selected failures.  The controller can propose a shifted swing-foot
+target, but the native trajectory still does not establish a sustained,
+load-bearing support state.  Future work should therefore prioritize measured
+per-foot load transfer and a multi-step support-mode reference rather than
+another capture-gain sweep.
