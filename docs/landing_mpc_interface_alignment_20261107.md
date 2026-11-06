@@ -37,7 +37,7 @@ were changed.
 The targeted CPU checks pass:
 
 ```text
-10 passed
+12 passed
 ```
 
 Python compilation also passes for the modified MPC and native evaluation
