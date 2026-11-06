@@ -325,7 +325,13 @@ class LandingSupportMPCV1:
                                 acceleration=np.asarray(plan['acceleration']).tolist(),
                                 torque=np.asarray(plan['torque']).tolist(),
                                 normalized_action=plan['normalized_action'].tolist(),
-                                joint_position_target=plan['joint_position_target'].tolist())
+                                joint_position_target=plan['joint_position_target'].tolist(),
+                                predicted_joint_position=np.asarray(
+                                    plan.get('predicted_joint_position', predicted.joint_position),
+                                    dtype=np.float64).tolist(),
+                                predicted_joint_velocity=np.asarray(
+                                    plan.get('predicted_joint_velocity', predicted.joint_velocity),
+                                    dtype=np.float64).tolist())
             if mode_additions:
                 stage_record['contact_mode_additions'] = mode_additions
             horizon.append(stage_record)

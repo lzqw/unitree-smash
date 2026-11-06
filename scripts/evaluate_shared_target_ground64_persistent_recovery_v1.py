@@ -245,6 +245,7 @@ class SharedTargetResidualController:
         self._landing_mpc_hold_remaining=torch.zeros((count,),dtype=torch.int32,device=device)
         self._landing_mpc_held_action=torch.zeros((count,18),dtype=torch.float32,device=device)
         self._landing_mpc_last_target=np.full((count,18),np.nan,dtype=np.float64)
+        self._landing_mpc_last_predicted=np.full((count,18),np.nan,dtype=np.float64)
         self.landing_mpc_support_margin=bool(landing_mpc_support_margin)
         self.landing_mpc_torque_overlay=bool(landing_mpc_torque_overlay)
         self.landing_mpc_touchdown_recovery=bool(landing_mpc_touchdown_recovery)
@@ -403,6 +404,7 @@ class SharedTargetResidualController:
             self._landing_mpc_hold_remaining.zero_()
             self._landing_mpc_held_action.zero_()
             self._landing_mpc_last_target.fill(np.nan)
+            self._landing_mpc_last_predicted.fill(np.nan)
             for contact_state in self._landing_mpc_contact_state_lane:
                 contact_state.reset()
         else:
@@ -418,6 +420,7 @@ class SharedTargetResidualController:
             for lane in selected:
                 self._landing_mpc_contact_state_lane[int(lane)].reset()
                 self._landing_mpc_last_target[int(lane),:]=np.nan
+                self._landing_mpc_last_predicted[int(lane),:]=np.nan
         if self.landing_mpc is not None and hasattr(self.landing_mpc, 'reset'):
             self.landing_mpc.reset()
 
@@ -494,11 +497,14 @@ class SharedTargetResidualController:
                     state.contacts=self._landing_mpc_contact_state_lane[lane].update(
                         geometric_contacts, measured_force)
                 command_tracking_error = None
+                prediction_error = None
                 if (self._landing_mpc_native_env is not None and
                         np.isfinite(self._landing_mpc_last_target[lane]).all()):
                     actual_q = self._landing_mpc_native_env.robot.data.joint_pos[
                         lane, self._landing_mpc_native_env.joint_ids].detach().cpu().numpy()
                     command_tracking_error = float(np.max(np.abs(actual_q-self._landing_mpc_last_target[lane])))
+                    if np.isfinite(self._landing_mpc_last_predicted[lane]).all():
+                        prediction_error = float(np.max(np.abs(actual_q-self._landing_mpc_last_predicted[lane])))
                 original_action=np.asarray(action[lane].detach().cpu().numpy(),dtype=np.float64).copy()
                 joint_ref=lim[:,0]+.5*(action[lane].detach().cpu().numpy()+1.)*(lim[:,1]-lim[:,0])
                 # The native trial must exercise the declared risk trigger.  A
@@ -544,6 +550,7 @@ class SharedTargetResidualController:
                     measured_foot_force_world=(getattr(state, 'measured_force_world', None).tolist()
                                                if getattr(state, 'measured_force_world', None) is not None else None),
                     command_tracking_error_max_rad=command_tracking_error,
+                    prediction_joint_position_error_max_rad=prediction_error,
                     native_execution=True)
                 risk_drop = (float(plan['initial_risk_score']) - float(plan['first_step_risk_score'])
                     if plan.get('initial_risk_score') is not None and
@@ -583,9 +590,14 @@ class SharedTargetResidualController:
                     record['requested_target_delta_max_rad']=float(np.max(np.abs(requested_target-state.joint_position)))
                     record['admitted_target_delta_max_rad']=float(np.max(np.abs(chosen_target-state.joint_position)))
                     self._landing_mpc_last_target[lane,:] = chosen_target
+                    first_stage=plan['horizon'][0]
+                    predicted_joint_position=np.asarray(
+                        first_stage.get('predicted_joint_position', state.joint_position), dtype=np.float64)
+                    self._landing_mpc_last_predicted[lane,:] = predicted_joint_position
                     record['applied_first_step']=True
                     record['forced_first_step']=forced_first_step
                     record['first_step_risk_score_drop']=risk_drop
+                    record['predicted_first_joint_position_rad']=predicted_joint_position.tolist()
                     if self.landing_mpc_hold_steps:
                         self._landing_mpc_hold_remaining[lane]=self.landing_mpc_hold_steps
                         if self.landing_mpc_hold_first_action:
