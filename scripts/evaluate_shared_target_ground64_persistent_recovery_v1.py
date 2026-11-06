@@ -56,6 +56,8 @@ parser.add_argument('--landing-mpc-torque-overlay', action='store_true',
     help='Apply the accepted MPC leg torque as an explicit residual on top of the position-PD command')
 parser.add_argument('--landing-mpc-touchdown-recovery', action='store_true',
     help='Allow one-contact touchdown recovery and keep rolling a ground-level swing-foot target')
+parser.add_argument('--landing-mpc-force-post-touchdown', action='store_true',
+    help='After measured post-touchdown phase, solve and apply MPC without waiting for risk thresholds')
 parser.add_argument('--landing-mpc-predict-touchdown-contacts', action='store_true',
     help='Let MPC add an imminent swing-foot contact to later horizon stages (event approximation)')
 parser.add_argument('--landing-mpc-touchdown-height-tolerance', type=float, default=.012,
@@ -159,6 +161,7 @@ class SharedTargetResidualController:
                  landing_mpc_support_margin=False,
                  landing_mpc_torque_overlay=False,
                  landing_mpc_touchdown_recovery=False,
+                 landing_mpc_force_post_touchdown=False,
                  landing_mpc_predict_touchdown_contacts=False,
                  landing_mpc_touchdown_height_tolerance=.012,
                  landing_mpc_touchdown_vertical_speed_limit=1.5,
@@ -216,6 +219,7 @@ class SharedTargetResidualController:
         self.landing_mpc_support_margin=bool(landing_mpc_support_margin)
         self.landing_mpc_torque_overlay=bool(landing_mpc_torque_overlay)
         self.landing_mpc_touchdown_recovery=bool(landing_mpc_touchdown_recovery)
+        self.landing_mpc_force_post_touchdown=bool(landing_mpc_force_post_touchdown)
         self.landing_mpc_predict_touchdown_contacts=bool(landing_mpc_predict_touchdown_contacts)
         self.landing_mpc_touchdown_height_tolerance=float(landing_mpc_touchdown_height_tolerance)
         self.landing_mpc_touchdown_vertical_speed_limit=float(landing_mpc_touchdown_vertical_speed_limit)
@@ -414,7 +418,10 @@ class SharedTargetResidualController:
                 # The native trial must exercise the declared risk trigger.  A
                 # selected TRAIN case is only an admission filter; it is not a
                 # reason to keep overwriting a stable four-foot command.
-                plan=self.landing_mpc.solve(state,joint_ref,force=False)
+                force_post_touchdown = bool(self.landing_mpc_force_post_touchdown and
+                                            self.landing_mpc_touchdown_recovery and
+                                            active[lane].item())
+                plan=self.landing_mpc.solve(state,joint_ref,force=force_post_touchdown)
                 horizon=plan.get('horizon',[])
                 failed_stage=next((row for row in horizon if not row.get('accepted')),None)
                 predicted_contact_additions=[
@@ -425,6 +432,7 @@ class SharedTargetResidualController:
                     solver_failure=bool(plan.get('solver_failure',False)),rejection=plan.get('rejection'),
                     constraint_failure=bool(plan.get('constraint_failure',False)),
                     risk_trigger=bool(plan.get('risk',{}).get('trigger',False)),
+                    force_post_touchdown=force_post_touchdown,
                     risk_reason=plan.get('risk',{}).get('reason'),
                     first_step_improves=bool(plan.get('first_step_improves',False)),
                     initial_risk_score=plan.get('initial_risk_score'),
@@ -449,8 +457,10 @@ class SharedTargetResidualController:
                     plan.get('initial_risk_score') is not None and
                     float(plan['initial_risk_score']) >= self.landing_mpc_min_start_risk_score)
                 hold_active = bool(self._landing_mpc_hold_remaining[lane].item() > 0)
-                if plan.get('accepted') or (self.landing_mpc_allow_first_step and
-                                            record['first_action_available'] and record['risk_trigger'] and
+                forced_first_step = bool(force_post_touchdown and record['first_action_available'])
+                if plan.get('accepted') or forced_first_step or (self.landing_mpc_allow_first_step and
+                                            record['first_action_available'] and
+                                            record['risk_trigger'] and
                                             (first_step_sufficiently_improves or hold_active)):
                     chosen=np.asarray(plan['horizon'][0]['normalized_action'],dtype=np.float32)
                     # A torque-overlay trial keeps the student's position
@@ -460,6 +470,7 @@ class SharedTargetResidualController:
                     if not self.landing_mpc_torque_overlay:
                         action[lane]=torch.as_tensor(chosen,device=action.device)
                     record['applied_first_step']=True
+                    record['forced_first_step']=forced_first_step
                     record['first_step_risk_score_drop']=risk_drop
                     if self.landing_mpc_hold_steps:
                         self._landing_mpc_hold_remaining[lane]=self.landing_mpc_hold_steps
@@ -682,6 +693,7 @@ def main():
         landing_mpc_support_margin=args.landing_mpc_support_margin,
         landing_mpc_torque_overlay=args.landing_mpc_torque_overlay,
         landing_mpc_touchdown_recovery=args.landing_mpc_touchdown_recovery,
+        landing_mpc_force_post_touchdown=args.landing_mpc_force_post_touchdown,
         landing_mpc_predict_touchdown_contacts=args.landing_mpc_predict_touchdown_contacts,
         landing_mpc_touchdown_height_tolerance=args.landing_mpc_touchdown_height_tolerance,
         landing_mpc_touchdown_vertical_speed_limit=args.landing_mpc_touchdown_vertical_speed_limit,
@@ -733,6 +745,7 @@ def main():
                       landing_mpc_support_margin=args.landing_mpc_support_margin,
                       landing_mpc_torque_overlay=args.landing_mpc_torque_overlay,
                       landing_mpc_touchdown_recovery=args.landing_mpc_touchdown_recovery,
+                      landing_mpc_force_post_touchdown=args.landing_mpc_force_post_touchdown,
         landing_mpc_predict_touchdown_contacts=args.landing_mpc_predict_touchdown_contacts,
         landing_mpc_touchdown_height_tolerance=args.landing_mpc_touchdown_height_tolerance,
         landing_mpc_touchdown_vertical_speed_limit=args.landing_mpc_touchdown_vertical_speed_limit,
@@ -962,6 +975,7 @@ def main():
                 support_margin=bool(args.landing_mpc_support_margin),
                 torque_overlay=bool(args.landing_mpc_torque_overlay),
                 touchdown_recovery=bool(args.landing_mpc_touchdown_recovery),
+                force_post_touchdown=bool(args.landing_mpc_force_post_touchdown),
                 predict_touchdown_contacts=bool(args.landing_mpc_predict_touchdown_contacts),
                 touchdown_height_tolerance_m=float(args.landing_mpc_touchdown_height_tolerance),
                 touchdown_vertical_speed_limit_mps=float(args.landing_mpc_touchdown_vertical_speed_limit),

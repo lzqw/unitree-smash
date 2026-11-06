@@ -488,3 +488,27 @@ GPU0: 0.3695 GPU h，102400 env steps，SUCCEEDED
 ```
 
 该实验为 `complete5=27/128`、条件恢复 34、目标落点 64，旧成功全部保留且没有新增；记录 3702、预测接触 85、首步应用 3294、solver failure 19。它验证了执行器回放接口能够运行，但没有带来任务收益。后续应把真实接触事件、足端实际位置和多接触支撑模式纳入闭环，而不是继续只调整 QP 权重。
+
+## 27. 触地后持续 MPC 与第一步执行策略复核
+
+最新实现增加了显式 `force_post_touchdown` 模式，用于检验当前控制器是否只是被风险门控限制。结果如下（固定策略、TRAIN128、同一 26 个候选案例）：
+
+| 实验 | complete5 | 条件恢复 | 首步应用 | solver failure |
+|---|---:|---:|---:|---:|
+| 连续参考＋风险触发 | 27 | 34 | 2175 | 1528 |
+| 强制触地后持续求解 | 27 | 34 | 2206 | 1928 |
+| 强制＋力矩 overlay | 27 | 34 | 2170 | 1741 |
+| 强制＋无条件首步 | 27 | 34 | 2506 | 1052 |
+
+持续接管、显式力矩 overlay、无条件执行第一步都没有新增完整成功。`force_post_touchdown` 证明当前控制器不是因为只等待风险阈值才没有收益；它也暴露了当前 CPU QP 逐 tick 求解的吞吐瓶颈。力矩 overlay 没有产生净收益，说明问题不只在位置目标反解，还在接触/动力学模型与实际支撑状态不一致。
+
+## 28. 代码改动与测试
+
+评估器现在显式记录 `force_post_touchdown`、`forced_first_step`，并支持触地后在没有风险触发的情况下执行 MPC 第一阶段。触地后强制模式只依据当前实测 `phase774` 与当前接触状态，不访问未来回合结果。
+
+```text
+bash scripts/python.sh -m pytest -q tests/test_reactive_landing_v1.py tests/test_landing_support_mpc_v2.py tests/test_centroidal_support_v1.py
+17 passed
+```
+
+实现仍明确标记为 controller trial，不能把 MPC 辅助下的 27/128 称为纯 RL 成绩，也没有把大体积仿真日志上传仓库。
