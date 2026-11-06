@@ -185,6 +185,23 @@ feedback signal over time: detect unloading, update the viable contact set,
 move a swing foot when the current support margin is no longer recoverable,
 and evaluate the resulting trajectory after the native position/PD interface.
 
+## Receding-feedback trial without fixed first-step hold
+
+The fixed-hold path was then removed for the same representative cases.  With
+`hold_steps=0`, the controller read the native state and attempted a fresh
+eight-step solve on every active control tick.  The result remained **27/128
+complete5**, with 74 airborne contacts, 34 conditional recoveries and zero
+numerical failures.  The run produced 516 MPC records, 138 applied first
+steps, 292 solver failures and no terminal acceptances.
+
+This separates two issues that had been conflated: fixed-command holding is
+not the reason the task does not improve, but simply re-solving the current
+fixed-contact QP is also not a viable recovery teacher.  Its feasibility drops
+when the support mode changes, and the accepted first-step actions do not
+create a sustained stable state.  The next implementation should use a
+contact-mode state machine with explicit support-loss handling and a
+mode-consistent terminal test, rather than call the same QP more frequently.
+
 ## Next evaluation
 
 The next representative native run should compare the same landing cases with
