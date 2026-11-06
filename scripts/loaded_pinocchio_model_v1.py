@@ -151,7 +151,7 @@ class LoadedPinocchioModelV1:
         """Rotate a world vector into the floating-base body frame."""
         return rotation.T @ np.asarray(value, dtype=np.float64)
 
-    def state_from_native(self, env, lane, default=None):
+    def state_from_native(self, env, lane, default=None, contact_force_threshold_n=0.0):
         """Build a planning state from Isaac Lab's live articulation tensors.
 
         The previous evaluator reconstructed q/v from the 794-d public policy
@@ -199,13 +199,31 @@ class LoadedPinocchioModelV1:
         q[3:7] = pin.Quaternion(rotation).coeffs()
         q[self.q_indices] = joint_position
         v[self.v_indices] = joint_velocity
-        contacts = np.asarray(env.observed_foot_contact[lane].detach().cpu().numpy(), dtype=bool)
+        geometric_contacts = np.asarray(env.observed_foot_contact[lane].detach().cpu().numpy(), dtype=bool)
+        if (isinstance(contact_force_threshold_n, bool) or
+                not isinstance(contact_force_threshold_n, (int, float)) or
+                not np.isfinite(contact_force_threshold_n) or contact_force_threshold_n < 0.):
+            raise ValueError('contact_force_threshold_n must be finite and nonnegative')
+        contacts = geometric_contacts.copy()
+        measured_force_world = None
+        if contact_force_threshold_n > 0. and hasattr(env, 'feet_contact'):
+            measured_force_world = env.feet_contact.data.net_forces_w[lane].detach().cpu().numpy()
+            if measured_force_world.shape != (4, 3) or not np.isfinite(measured_force_world).all():
+                raise ValueError('native foot force measurement must be finite 4x3')
+            # A geometric contact is usable as a support constraint only when
+            # the contact sensor reports a positive upward load. This avoids
+            # giving the QP reaction-force variables to a foot that merely
+            # grazes the ground or has already unloaded.
+            contacts &= measured_force_world[:, 2] >= float(contact_force_threshold_n)
         if contacts.shape != (4,):
             raise ValueError('native state requires four measured foot contacts')
         if not np.isfinite(q).all() or not np.isfinite(v).all():
             raise ValueError('nonfinite native q/v')
-        return PublicState(q, v, rotation, root_pos.copy(), joint_position.copy(),
-                           joint_velocity.copy(), contacts, 0.0)
+        result = PublicState(q, v, rotation, root_pos.copy(), joint_position.copy(),
+                             joint_velocity.copy(), contacts, 0.0)
+        result.geometric_contacts = geometric_contacts
+        result.measured_force_world = measured_force_world
+        return result
 
     def poses(self, q):
         pin.forwardKinematics(self.model, self.data, q)

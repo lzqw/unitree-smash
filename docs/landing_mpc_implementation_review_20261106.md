@@ -512,3 +512,9 @@ bash scripts/python.sh -m pytest -q tests/test_reactive_landing_v1.py tests/test
 ```
 
 实现仍明确标记为 controller trial，不能把 MPC 辅助下的 27/128 称为纯 RL 成绩，也没有把大体积仿真日志上传仓库。
+
+## 29. 实测足端受力与几何接触分离
+
+`LoadedPinocchioModelV1.state_from_native()` 现在支持 `contact_force_threshold_n`。阈值大于零时，MPC 支撑约束只使用几何接触且足端世界 Z 向上力达到阈值的脚，同时记录 `geometric_contacts`、`support_contacts` 和 `measured_foot_force_world`。
+
+5 N 阈值固定面板实验中出现 37 条几何/受力接触不一致记录，典型为 `[True, True, False, False]` 几何接触对应实际受力 `[1.0, 106.7, 0, 0] N`。结果仍为 27/128、34 条条件恢复，没有新增成功。该结果排除了“只要把所有几何接触都当支撑就能解决”的假设，也说明接触状态机必须区分接触建立、承重和卸载。
