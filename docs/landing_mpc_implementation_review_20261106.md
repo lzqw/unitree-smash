@@ -225,7 +225,7 @@ G. 最后用 GPU 批量训练/蒸馏恢复策略
 - VHSIP Torch：`quadsmash/control/reactive_landing_v1.py`
 - VHSIP JAX：`quadsmash/control/reactive_landing_vhsip_jax.py`
 - 试验报告：`docs/reactive_vhsip_landing_trial_20261105.md`
-- 最新提交：`ab1b9cd`
+- 最新提交：`36d380b`
 
 ## 9. 修正后的非足部净空原生试验
 
