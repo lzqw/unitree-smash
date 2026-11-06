@@ -88,6 +88,7 @@ class ReducedWholeBodySupportQP(WholeBodySupportQP):
         # contact.  This targets the audited failure mode where a foot lands
         # first and a thigh touches the ground later.
         clearance_weight = float(cfg.nonfoot_clearance_weight)
+        hard_clearance_rows = []
         if clearance_weight > 1e-7 and len(feet):
             active_positions = snapshot['body_positions_world'][feet_ids][state.contacts]
             ground_z = float(np.median(active_positions[:, 2])) if len(active_positions) else None
@@ -112,11 +113,23 @@ class ReducedWholeBodySupportQP(WholeBodySupportQP):
                         jdot_v_link = float(link_jdot[2] @ state.v)
                         task(clearance_block, np.array([desired_z_acceleration - jdot_v_link]),
                              clearance_weight)
+                        if cfg.nonfoot_clearance_hard:
+                            # Enforce the same one-step clearance condition as
+                            # a hard acceleration lower bound.  This is only
+                            # active near the support plane; otherwise the
+                            # soft task above preserves the nominal QP.
+                            required = ((target_z - predicted_z) * 2. /
+                                        max(cfg.control_dt_s ** 2, 1e-12)) - jdot_v_link
+                            hard_clearance_rows.append((clearance_block[0].copy(),
+                                                        float(np.clip(required, -80., 80.))))
         matrices,lowers,uppers=[],[],[]
 
         def constraint(matrix,low,high=None):
             matrices.append(np.atleast_2d(matrix));lowers.append(np.atleast_1d(low))
             uppers.append(np.atleast_1d(low if high is None else high))
+
+        for row, lower in hard_clearance_rows:
+            constraint(row, lower, np.inf)
 
         constraint(np.c_[snapshot['mass_matrix'][:6],-jac[:,:6].T],-snapshot['nonlinear'][:6])
         if nforce:

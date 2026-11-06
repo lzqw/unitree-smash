@@ -217,3 +217,34 @@ If the command error falls while the task result remains unchanged, the next
 focus is the contact-mode and support-response model.  If it remains large,
 the native implicit-PD response and torque/position interface need further
 calibration before changing MPC weights.
+
+## Optional hard non-foot-clearance constraint
+
+The next diagnostic added an opt-in one-step hard lower acceleration bound for
+near-ground non-foot links.  It uses the same clearance target as the soft
+task, but requires the predicted vertical acceleration to be large enough to
+reach the clearance target in one control step.  This was tested only as a
+diagnostic; the default remains disabled.
+
+The GPU0 representative run used TRAIN 1, 67 and 95, horizon 8, native
+position admission, executor replay, touchdown recovery, continuous support
+reference, a 5 cm clearance target, and the hard bound enabled.  It completed
+the 128-case panel with **27/128 complete5**, 74 airborne contacts, 34
+conditional recoveries and zero numerical failures.  The MPC produced 729
+records, but **all 729 solves failed**, with zero terminal acceptances and
+zero applied first steps.
+
+This is a useful negative result: the one-step hard clearance requirement is
+incompatible with the current support-QP authority and contact model at the
+tested states.  Increasing its weight or making the same bound harder would
+only reject more candidates; it is not a usable recovery controller in this
+form.  The option remains available for future diagnosis, but it should not
+be enabled in the main evaluator.
+
+The next structural change should therefore be a contact-mode/support-state
+transition mechanism: keep unloaded or airborne feet out of the support
+constraints, add a new foot only when touchdown is predicted and physically
+consistent, and evaluate terminal stability on the same replay trajectory.
+The controller also needs a multi-step recovery reference or mode sequence;
+a one-step non-foot clearance inequality cannot create the missing support
+motion by itself.

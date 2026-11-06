@@ -96,6 +96,8 @@ parser.add_argument('--landing-mpc-swing-foot-clearance', type=float, default=.0
     help='Target clearance above the measured support plane in metres')
 parser.add_argument('--landing-mpc-nonfoot-clearance-weight', type=float, default=0.,
     help='Soft MPC weight for keeping thighs above the support plane')
+parser.add_argument('--landing-mpc-nonfoot-clearance-hard', action='store_true',
+    help='Add a one-step hard lower acceleration bound for near-ground thigh links')
 parser.add_argument('--landing-mpc-nonfoot-clearance-m', type=float, default=.08,
     help='Minimum predicted thigh clearance above the measured support plane in metres')
 parser.add_argument('--landing-mpc-nonfoot-clearance-kp', type=float, default=120.,
@@ -202,6 +204,7 @@ class SharedTargetResidualController:
                  landing_mpc_swing_foot_weight=0., landing_mpc_swing_foot_kp=80.,
                  landing_mpc_swing_foot_kd=18., landing_mpc_swing_foot_clearance=.025,
                  landing_mpc_nonfoot_clearance_weight=0., landing_mpc_nonfoot_clearance_m=.08,
+                 landing_mpc_nonfoot_clearance_hard=False,
                  landing_mpc_nonfoot_clearance_kp=120., landing_mpc_nonfoot_clearance_kd=25.,
                  landing_mpc_continuous_reference=False,
                  landing_mpc_free_arm=False,
@@ -291,6 +294,7 @@ class SharedTargetResidualController:
         self.landing_mpc_swing_foot_clearance=float(landing_mpc_swing_foot_clearance)
         self.landing_mpc_nonfoot_clearance_weight=float(landing_mpc_nonfoot_clearance_weight)
         self.landing_mpc_nonfoot_clearance_m=float(landing_mpc_nonfoot_clearance_m)
+        self.landing_mpc_nonfoot_clearance_hard=bool(landing_mpc_nonfoot_clearance_hard)
         self.landing_mpc_nonfoot_clearance_kp=float(landing_mpc_nonfoot_clearance_kp)
         self.landing_mpc_nonfoot_clearance_kd=float(landing_mpc_nonfoot_clearance_kd)
         self.landing_mpc_continuous_reference=bool(landing_mpc_continuous_reference)
@@ -352,6 +356,7 @@ class SharedTargetResidualController:
             swing_foot_kd_s=self.landing_mpc_swing_foot_kd,
             swing_foot_clearance_m=self.landing_mpc_swing_foot_clearance,
             nonfoot_clearance_weight=self.landing_mpc_nonfoot_clearance_weight,
+            nonfoot_clearance_hard=self.landing_mpc_nonfoot_clearance_hard,
             nonfoot_clearance_m=self.landing_mpc_nonfoot_clearance_m,
             nonfoot_clearance_kp_s2=self.landing_mpc_nonfoot_clearance_kp,
             nonfoot_clearance_kd_s=self.landing_mpc_nonfoot_clearance_kd,
@@ -860,6 +865,7 @@ def main():
         landing_mpc_swing_foot_kd=args.landing_mpc_swing_foot_kd,
         landing_mpc_swing_foot_clearance=args.landing_mpc_swing_foot_clearance,
         landing_mpc_nonfoot_clearance_weight=args.landing_mpc_nonfoot_clearance_weight,
+        landing_mpc_nonfoot_clearance_hard=args.landing_mpc_nonfoot_clearance_hard,
         landing_mpc_nonfoot_clearance_m=args.landing_mpc_nonfoot_clearance_m,
         landing_mpc_nonfoot_clearance_kp=args.landing_mpc_nonfoot_clearance_kp,
         landing_mpc_nonfoot_clearance_kd=args.landing_mpc_nonfoot_clearance_kd,
@@ -923,6 +929,7 @@ def main():
                       landing_mpc_swing_foot_kd=args.landing_mpc_swing_foot_kd,
                       landing_mpc_swing_foot_clearance=args.landing_mpc_swing_foot_clearance,
         landing_mpc_nonfoot_clearance_weight=args.landing_mpc_nonfoot_clearance_weight,
+        landing_mpc_nonfoot_clearance_hard=args.landing_mpc_nonfoot_clearance_hard,
         landing_mpc_nonfoot_clearance_m=args.landing_mpc_nonfoot_clearance_m,
         landing_mpc_nonfoot_clearance_kp=args.landing_mpc_nonfoot_clearance_kp,
         landing_mpc_nonfoot_clearance_kd=args.landing_mpc_nonfoot_clearance_kd,
@@ -1161,6 +1168,7 @@ def main():
                 touchdown_impact_projection=bool(args.landing_mpc_touchdown_impact_projection),
                 force_distribution_weight=float(args.landing_mpc_force_distribution_weight),
                 nonfoot_clearance_weight=float(args.landing_mpc_nonfoot_clearance_weight),
+                nonfoot_clearance_hard=bool(args.landing_mpc_nonfoot_clearance_hard),
                 nonfoot_clearance_m=float(args.landing_mpc_nonfoot_clearance_m),
                 nonfoot_clearance_kp_s2=float(args.landing_mpc_nonfoot_clearance_kp),
                 nonfoot_clearance_kd_s=float(args.landing_mpc_nonfoot_clearance_kd),
