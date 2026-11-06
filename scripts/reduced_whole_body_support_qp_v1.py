@@ -119,7 +119,12 @@ class ReducedWholeBodySupportQP(WholeBodySupportQP):
             constraint(block,np.full(cfg.friction_facets,-np.inf),np.zeros(cfg.friction_facets))
             block=np.zeros(nz);block[26+3*i]=1.
             constraint(block,0.,np.inf)
-        torque_low,torque_high=interface.torque_bounds(state.joint_position,state.joint_velocity)
+        # The native action is an absolute position target with a one-tick
+        # velocity admission bound. Solve inside that same reachable target
+        # set so the evaluator does not have to clip an otherwise feasible QP
+        # torque after the solve.
+        torque_low,torque_high=interface.torque_bounds(
+            state.joint_position, state.joint_velocity, cfg.control_dt_s)
         constraint(torque_map,torque_low-torque_bias,torque_high-torque_bias)
         next_position=state.joint_position+cfg.control_dt_s*state.joint_velocity
         acceleration_low=np.maximum((-interface.velocity-state.joint_velocity)/cfg.control_dt_s,
@@ -164,6 +169,10 @@ class ReducedWholeBodySupportQP(WholeBodySupportQP):
             inactive_foot_force=float(np.max(abs(force[~state.contacts]))) if (~state.contacts).any() else 0.,
             circular_friction_cone=float(max(0.,np.max(np.linalg.norm(force[:,:2],axis=1)-interface.friction*force[:,2]))),
             instantaneous_pd_torque=float(np.max(abs(pd_torque-torque))),
+            admitted_target_bounds=float(max(
+                0.,
+                np.max((state.joint_position-interface.velocity*cfg.control_dt_s)-target),
+                np.max(target-(state.joint_position+interface.velocity*cfg.control_dt_s)))),
             torque_bounds=float(max(0.,np.max(torque_low-torque),np.max(torque-torque_high))),
             predicted_position_bounds=float(max(0.,np.max(interface.limits[:,0]-qnext),np.max(qnext-interface.limits[:,1]))),
             predicted_velocity_bounds=float(max(0.,np.max(abs(vnext)-interface.velocity))))

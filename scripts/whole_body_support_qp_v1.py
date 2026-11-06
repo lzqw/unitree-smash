@@ -72,9 +72,29 @@ class PositionPDInterface:
                 not np.isfinite(self.friction) or self.friction <= 0):
             raise ValueError('Invalid original joint/interface limits')
 
-    def torque_bounds(self, q, v):
+    def torque_bounds(self, q, v, control_dt_s=None):
+        """Return torque bounds consistent with the native position interface.
+
+        With ``control_dt_s`` supplied, intersect the joint-limit torque set
+        with the set reachable by a position target admitted for one control
+        tick. This keeps the QP request, target admission, and native action
+        on the same interface instead of solving an aggressive torque and
+        clipping it only after the solve.
+        """
         endpoints = self.kp[:, None] * (self.limits - q[:, None]) - self.kd[:, None] * v[:, None]
-        return np.clip(endpoints, -self.effort[:, None], self.effort[:, None]).T
+        low, high = np.clip(endpoints, -self.effort[:, None], self.effort[:, None]).T
+        if control_dt_s is not None:
+            dt = float(control_dt_s)
+            if not np.isfinite(dt) or dt <= 0.:
+                raise ValueError('control_dt_s must be positive and finite')
+            admitted_low = np.maximum(self.limits[:, 0], q - self.velocity * dt)
+            admitted_high = np.minimum(self.limits[:, 1], q + self.velocity * dt)
+            admitted_endpoints = self.kp[:, None] * (
+                np.stack((admitted_low, admitted_high), axis=1) - q[:, None]
+            ) - self.kd[:, None] * v[:, None]
+            low = np.maximum(low, admitted_endpoints[:, 0])
+            high = np.minimum(high, admitted_endpoints[:, 1])
+        return low, high
 
     def target_from_torque(self, torque, q, v):
         target = np.clip(q + (torque + self.kd*v)/self.kp,
@@ -244,7 +264,10 @@ class WholeBodySupportQP:
             else:
                 block = np.zeros((3,self.nz)); block[:,42+3*i:45+3*i] = np.eye(3)
                 constraint(block, np.zeros(3))
-        torque_low, torque_high = interface.torque_bounds(state.joint_position,state.joint_velocity)
+        # Keep the support QP inside the same one-tick absolute-position
+        # command set used by the native evaluator.
+        torque_low, torque_high = interface.torque_bounds(
+            state.joint_position, state.joint_velocity, cfg.control_dt_s)
         block = np.zeros((18,self.nz)); block[:,self.t_slice] = np.eye(18)
         constraint(block, torque_low, torque_high)
         # Original hardware velocity limits applied to a one-control-step prediction.
@@ -291,7 +314,11 @@ class WholeBodySupportQP:
             active_contact_acceleration=float(np.max(np.abs((jac@a+jdot_v-contact_acceleration).reshape(4,3)[state.contacts]))) if state.contacts.any() else 0.,
             inactive_foot_force=float(np.max(np.abs(force[~state.contacts]))) if (~state.contacts).any() else 0.,
             circular_friction_cone=float(max(0.,np.max(np.linalg.norm(force[:,:2],axis=1)-interface.friction*force[:,2]))),
-            instantaneous_pd_torque=float(np.max(np.abs(instantaneous_torque-torque))))
+            instantaneous_pd_torque=float(np.max(np.abs(instantaneous_torque-torque))),
+            admitted_target_bounds=float(max(
+                0.,
+                np.max((state.joint_position-interface.velocity*cfg.control_dt_s)-target),
+                np.max(target-(state.joint_position+interface.velocity*cfg.control_dt_s)))))
         plan.update(residuals=residuals,acceleration=a,torque=torque,force_world=force,
                     joint_position_target=target,normalized_action=interface.normalized_action(target),
                     predicted_com_acceleration=com_jac@a+com_bias,

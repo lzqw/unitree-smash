@@ -5,6 +5,7 @@ import numpy as np
 
 from scripts.landing_support_mpc_v1 import LandingSupportMPCV1
 from scripts.landing_support_mpc_v2 import _support_margin
+from scripts.whole_body_support_qp_v1 import PositionPDInterface
 
 
 class SupportMarginTests(unittest.TestCase):
@@ -25,6 +26,19 @@ class SupportMarginTests(unittest.TestCase):
 
 
 class ReplaySemanticsTests(unittest.TestCase):
+    def test_torque_bounds_can_match_native_one_tick_target_admission(self):
+        limits = np.c_[-np.ones(18), np.ones(18)]
+        interface = PositionPDInterface(
+            limits, np.full(18, 10.), np.zeros(18), np.full(18, 100.),
+            np.full(18, 1.), .6)
+        q = np.zeros(18); q[1] = .8
+        v = np.zeros(18)
+        low, high = interface.torque_bounds(q, v, control_dt_s=.1)
+        np.testing.assert_allclose(low[:2], np.array([-1., -1.]))
+        np.testing.assert_allclose(high[:2], np.array([1., 1.]))
+        target = q + high / interface.kp
+        np.testing.assert_allclose(target[:2], np.array([.1, .9]))
+
     def test_command_target_admission_matches_one_step_velocity_bound(self):
         class FakeMPC:
             admit_command_target = LandingSupportMPCV1.admit_command_target
