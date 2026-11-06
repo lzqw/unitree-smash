@@ -464,3 +464,15 @@ GPU0: 0.3853 GPU h，102400 env steps，SUCCEEDED
 高增益组为 `complete5=27/128`、条件恢复 34、目标落点 62，记录 2281 个预测接触转换、5812 个首步应用、293 个 solver failure；低增益加支撑裕度组为 `complete5=27/128`、条件恢复 34、目标落点 63，记录 3379 个预测接触转换、6037 个首步应用、183 个 solver failure。两组均保留原 27 个成功，但没有新增成功。
 
 这表明降低足端和非足部净空增益可以减少数值失败和球侧退化，却不能单独解决落地稳定。后续重点应转向：真实 touchdown 后持续参考、接触模式切换、position-PD/限速延迟回放，以及实际足端位置误差闭环；不再把 OSQP 权重扫描作为主要优化路线。
+
+## 25. 持续首步保持对照
+
+新增 `landing_mpc_hold_first_action` 后，低增益 support-margin touchdown-recovery 配置在首次 MPC 通过后保持同一归一化关节目标 40 个 tick，再重新求解：
+
+```text
+reports/G07_full_racket_v5/landing_mpc_lowgain_hold26_20261106_01
+git: 90227cf
+GPU0: 0.3756 GPU h，102400 env steps，SUCCEEDED
+```
+
+该实验为 `complete5=27/128`、条件恢复 34、目标落点 64；旧 27 个成功全部保留且没有新增。MPC 记录 3453、预测接触 89、首步应用 3015、solver failure 10，明显低于不保持版本的 6403、3379、6037、183。由此可见，命令抖动和求解开销可以降低，但当前第一步位置目标仍未把 PhysX 状态带入可恢复区域，必须继续加入执行器回放与真实接触模式切换。

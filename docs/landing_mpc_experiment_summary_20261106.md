@@ -225,3 +225,17 @@ GPU0: 0.3853 GPU h，102400 env steps，SUCCEEDED
 结果为 `complete5=27/128`、合格空中触球 74、条件恢复 34、目标落点 64、数值故障 0；原 27 个完整成功全部保留，没有新增。它与原始 VHSIP结果一致，说明单纯降低捕获增益、延长 settling 或放慢交接不能解决当前恢复瓶颈。
 
 当前最合理的结论是：定高近似偶然救回 TRAIN58，但真正 VHSIP和多组支撑 QP 系数都没有形成稳定净收益。后续应停止无目的参数扫描，转向“真实 touchdown 事件 → 接触模式重建 → 执行器回放 → 持续质心/足端反馈 → 稳定后交还”的闭环实现。
+
+## 14. 持续参考保持模式
+
+为避免 MPC 每个 tick 反复覆盖学生动作，加入了 `--landing-mpc-hold-first-action`：一次首步通过后，在 40 个控制 tick 内保持同一归一化目标，再重新求解。低增益、support-margin、touchdown-recovery 参数保持不变。
+
+```text
+reports/G07_full_racket_v5/landing_mpc_lowgain_hold26_20261106_01
+git: 90227cf
+GPU0: 0.3756 GPU h，102400 env steps，SUCCEEDED
+```
+
+结果为 `complete5=27/128`、合格空中触球 74、条件恢复 34、目标落点 64、数值故障 0；原 27 个完整成功全部保留，没有新增。保持模式把 MPC 记录从 6403 降到 3453，solver failure 从 183 降到 10，但没有提高任务成功率。
+
+这说明持续保持解决了计算开销和命令抖动，却没有解决第一步动作与真实接触/执行器响应不一致的问题。下一步应把实际 position-PD 回放误差纳入预测，并在真实 touchdown 后按接触模式重建支撑，而不是继续增加保持时间或重复调 QP 权重。
