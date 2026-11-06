@@ -62,6 +62,14 @@ from the remaining task bottleneck; the next work must identify the native
 PD/contact response and recoverable-state coverage rather than merely
 increase QP gains.
 
+The evaluator now also records the predicted next joint position and compares
+it with the next native state.  The first diagnostic run had only 38 usable
+prediction comparisons because held-action records were not yet included in
+that statistic; those samples had 0.847 rad mean and 1.412 rad p95 error.  The
+held-action path is now instrumented as well, so the next run will provide a
+dense prediction-error distribution before any response-calibration change is
+accepted.
+
 ## Next evaluation
 
 The next representative native run should compare the same landing cases with

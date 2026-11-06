@@ -466,16 +466,20 @@ class SharedTargetResidualController:
                     action[lane]=self._landing_mpc_held_action[lane].to(action.dtype)
                     self._landing_mpc_hold_remaining[lane]-=1
                     tracking_error = None
+                    prediction_error = None
                     if self._landing_mpc_native_env is not None and np.isfinite(self._landing_mpc_last_target[lane]).all():
                         actual_q = self._landing_mpc_native_env.robot.data.joint_pos[
                             lane, self._landing_mpc_native_env.joint_ids].detach().cpu().numpy()
                         tracking_error = float(np.max(np.abs(actual_q-self._landing_mpc_last_target[lane])))
+                        if np.isfinite(self._landing_mpc_last_predicted[lane]).all():
+                            prediction_error = float(np.max(np.abs(actual_q-self._landing_mpc_last_predicted[lane])))
                     self.landing_mpc_logs.append(dict(case=case,clock_s=float(public_clock[lane]),
                         accepted=True,first_action_available=True,applied_first_step=True,
                         held_first_action=True,hold_active=True,solver_failure=False,
                         constraint_failure=False,risk_trigger=True,risk_reason='held_mpc_action',
                         state_source='held_mpc_action',native_execution=True,
-                        command_tracking_error_max_rad=tracking_error))
+                        command_tracking_error_max_rad=tracking_error,
+                        prediction_joint_position_error_max_rad=prediction_error))
                     continue
                 from scripts.loaded_pinocchio_model_v1 import LoadedPinocchioModelV1
                 if not hasattr(self,'_landing_mpc_model'):
