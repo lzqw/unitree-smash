@@ -79,6 +79,8 @@ parser.add_argument('--landing-mpc-free-arm', action='store_true',
     help='With continuous-reference MPC, leave arm commands as a soft cost instead of an exact PD constraint')
 parser.add_argument('--reactive-vhsip-cases', type=int, nargs='+', default=None,
     help='Controller-trial TRAIN indices for the GPU-batched VHSIP reactive landing reference')
+parser.add_argument('--reactive-vhsip-post-touchdown-only', action='store_true',
+    help='Keep the learned/policy action through flight and start VHSIP only after measured foot touchdown')
 parser.add_argument('--allow-offline-finetune', action='store_true',
     help='Evaluate an actor-only trace-finetuned candidate; the result is measured here and is never inherited')
 parser.add_argument('--allow-declared-controller-variant', action='store_true',
@@ -151,7 +153,7 @@ class SharedTargetResidualController:
                  landing_mpc_nonfoot_clearance_kp=120., landing_mpc_nonfoot_clearance_kd=25.,
                  landing_mpc_continuous_reference=False,
                  landing_mpc_free_arm=False,
-                 reactive_vhsip_cases=None):
+                 reactive_vhsip_cases=None, reactive_vhsip_post_touchdown_only=False):
         if checkpoint.get('schema') not in (RESIDUAL_SCHEMA,SHARED_SCHEMA):
             raise ValueError('Require the shared-target source or residual policy schema')
         has_actor=checkpoint['schema']==RESIDUAL_SCHEMA
@@ -210,6 +212,7 @@ class SharedTargetResidualController:
         self.landing_mpc_continuous_reference=bool(landing_mpc_continuous_reference)
         self.landing_mpc_free_arm=bool(landing_mpc_free_arm)
         self.reactive_vhsip_cases=None if reactive_vhsip_cases is None else set(int(x) for x in reactive_vhsip_cases)
+        self.reactive_vhsip_post_touchdown_only=bool(reactive_vhsip_post_touchdown_only)
         if self.reactive_vhsip_cases and self.landing_config is not None:
             raise ValueError('Separate declared landing assistance and VHSIP trial')
         self.landing_mpc_logs=[]
@@ -230,7 +233,8 @@ class SharedTargetResidualController:
                 raise ValueError('landing_mpc_horizon_steps must be in 1..40')
         self.reactive_vhsip=None
         if self.reactive_vhsip_cases:
-            vhsip_config=dict(mode='prepare_and_buffer_vhsip', blend_s=.08,
+            vhsip_config=dict(mode=('post_touchdown_buffer_vhsip' if self.reactive_vhsip_post_touchdown_only
+                                    else 'prepare_and_buffer_vhsip'), blend_s=.08,
                 settling_s=.7, landing_height_m=.3, capture_gain=1., ik_iterations=3,
                 joint_target_rate_rad_s=20., ik_damping=.025)
             self.reactive_vhsip=LandingAssistedController(self.base,count,device,vhsip_config,
@@ -646,6 +650,7 @@ def main():
         landing_mpc_continuous_reference=args.landing_mpc_continuous_reference,
         landing_mpc_free_arm=args.landing_mpc_free_arm,
         reactive_vhsip_cases=args.reactive_vhsip_cases,
+        reactive_vhsip_post_touchdown_only=args.reactive_vhsip_post_touchdown_only,
         expert_bank=str(args.expert_bank.resolve()) if args.expert_bank else None,
         offline_trace_finetune_candidate=offline_finetune,
         reset_noise={k: v.tolist() for k, v in noise.items()},
@@ -689,7 +694,8 @@ def main():
         landing_mpc_nonfoot_clearance_kd=args.landing_mpc_nonfoot_clearance_kd,
                       landing_mpc_continuous_reference=args.landing_mpc_continuous_reference,
                       landing_mpc_free_arm=args.landing_mpc_free_arm,
-                      reactive_vhsip_cases=args.reactive_vhsip_cases))
+                      reactive_vhsip_cases=args.reactive_vhsip_cases,
+                      reactive_vhsip_post_touchdown_only=args.reactive_vhsip_post_touchdown_only))
     stopping = False
     def stop(_signal, _frame):
         nonlocal stopping
@@ -874,6 +880,7 @@ def main():
         if args.reactive_vhsip_cases is not None:
             summary['reactive_vhsip'] = dict(schema='reactive-vhsip-position-interface-v1',
                 selected_cases=[int(x) for x in args.reactive_vhsip_cases],
+                post_touchdown_only=bool(args.reactive_vhsip_post_touchdown_only),
                 controller_trial=True, native_execution=True, frozen_policy_performance=False,
                 formal_acceptance=False)
         if args.landing_mpc_cases is not None:

@@ -26,7 +26,8 @@ def settings(value):
     if not isinstance(value, dict) or set(value) != set(DEFAULTS):
         raise ValueError('Declare every reactive landing field explicitly')
     result=dict(value)
-    if result['mode'] not in ('prepare_only', 'prepare_and_buffer', 'prepare_and_buffer_vhsip'):
+    if result['mode'] not in ('prepare_only', 'prepare_and_buffer', 'prepare_and_buffer_vhsip',
+                              'post_touchdown_buffer_vhsip'):
         raise ValueError('Unknown landing comparison mode')
     bounds=dict(blend_s=(.01,.3),settling_s=(.2,2.),landing_height_m=(.15,.42),
                 capture_gain=(0.,2.),joint_target_rate_rad_s=(1.,30.),ik_damping=(.001,.1))
@@ -246,6 +247,14 @@ class ReactiveLandingV1:
         new_ids=ids[first]
         self.touchdown[new_ids]=t[first];self.c0[new_ids]=center[first];self.v0[new_ids]=vel[first];self.r0[new_ids]=r[first]
         self.landed[new_ids]=True
+        if cfg['mode']=='post_touchdown_buffer_vhsip':
+            # The post-touchdown-only variant must not inherit an airborne
+            # blend clock or a stale pre-contact target.  Start its bounded
+            # joint transition from the command that was actually present at
+            # the measured touchdown tick.
+            self.start[new_ids]=t[first]
+            self.last_q[new_ids]=q[new_ids,:12]
+            self.last_time[new_ids]=t[first]
         # A horizontal foot rectangle follows the current yaw, not body tilt.
         yaw=torch.atan2(r[:,1,0],r[:,0,0]);c,s=yaw.cos(),yaw.sin();z=torch.zeros_like(c);one=torch.ones_like(c)
         ryaw=torch.stack((c,-s,z,s,c,z,z,z,one),1).reshape(n,3,3)
@@ -279,7 +288,8 @@ class ReactiveLandingV1:
         self.goal[new_ids,:2]=plane_center[first,:2]
         self.goal[new_ids,2]=(ground+h)[first]
         self.landing_plane[new_ids]=torch.cat((plane_center[first,:2],ground[first,None]),1)
-        buffered=self.landed[ids]&(cfg['mode'] in ('prepare_and_buffer','prepare_and_buffer_vhsip'))
+        buffered=self.landed[ids]&(cfg['mode'] in ('prepare_and_buffer','prepare_and_buffer_vhsip',
+                                                    'post_touchdown_buffer_vhsip'))
         feet_goal=torch.where(self.landed[ids,None,None],self.landing_plane[ids,None]+shape,feet_goal)
         tau=(t-self.touchdown[ids]).clamp_min(0.)
         rate=7./cfg['settling_s'];decay=(-rate*tau).exp()
@@ -300,7 +310,10 @@ class ReactiveLandingV1:
         target_body=torch.where(buffered[:,None,None],stance_body,target_body)
         # For the preparation-only ablation, retain the original source as soon
         # as any foot lands. Blending is shared so the comparison is explicit.
-        enabled=(~self.landed[ids])|buffered
+        if cfg['mode']=='post_touchdown_buffer_vhsip':
+            enabled=self.landed[ids]
+        else:
+            enabled=(~self.landed[ids])|buffered
         desired=limits[:,0]+.5*(base[ids]+1)*(limits[:,1]-limits[:,0])
         solution=desired.clone();coords=self.model.leg_coordinates
         eye=self.model.eye
@@ -311,7 +324,8 @@ class ReactiveLandingV1:
             # joint bounds remain independently enforced.
             solution[:,coords]+=delta.clamp(-.3,.3)
             solution[:,:12]=solution[:,:12].clamp(limits[:12,0],limits[:12,1])
-        blend=((t-self.start[ids])/cfg['blend_s']).clamp(0,1)
+        blend_clock=self.touchdown[ids] if cfg['mode']=='post_touchdown_buffer_vhsip' else self.start[ids]
+        blend=((t-blend_clock)/cfg['blend_s']).clamp(0,1)
         blend=blend.square()*(3-2*blend)*enabled
         blended=torch.lerp(desired[:,:12],solution[:,:12],blend[:,None])
         dt=(t-self.last_time[ids]).clamp(0.,.02)
