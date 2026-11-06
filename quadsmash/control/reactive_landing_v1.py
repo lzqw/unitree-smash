@@ -117,6 +117,11 @@ class ReactiveLandingV1:
         for name in ('start','touchdown','last_time'):
             setattr(self,name,torch.zeros(count,device=device))
         self.anchors=torch.zeros((count,4,3),device=device)
+        # Contact support is latched after the first measured touchdown.  The
+        # upstream landing controller keeps the touchdown trajectory active
+        # after the contact detector changes; using the instantaneous mask here
+        # made a one-foot landing immediately lose its anchor when PhysX
+        # hysteresis flickered.
         self.support=torch.zeros((count,4),device=device,dtype=torch.bool)
         self.c0=torch.zeros((count,3),device=device);self.v0=torch.zeros_like(self.c0)
         self.goal=torch.zeros_like(self.c0);self.r0=torch.eye(3,device=device).expand(count,3,3).clone()
@@ -233,7 +238,11 @@ class ReactiveLandingV1:
         first=contacts.any(1)&(~self.landed[ids])
         added=contacts&(~self.support[ids])
         self.anchors[ids]=torch.where(added[:,:,None],world_feet,self.anchors[ids])
-        self.support[ids]=contacts
+        # Keep touchdown anchors for the whole recovery buffer.  New feet can
+        # join the support set, but a transient force-threshold drop must not
+        # erase the already planned landing reference.
+        self.support[ids]|=contacts
+        support=self.support[ids]
         new_ids=ids[first]
         self.touchdown[new_ids]=t[first];self.c0[new_ids]=center[first];self.v0[new_ids]=vel[first];self.r0[new_ids]=r[first]
         self.landed[new_ids]=True
@@ -249,8 +258,8 @@ class ReactiveLandingV1:
         shape=rotate(ryaw[:,None],shape)
         com_offset=rotate(ryaw,actual['center'][ids])
         h=cfg['landing_height_m']+com_offset[:,2]
-        has_contacts=contacts.any(1)
-        support_center=(world_feet*contacts[:,:,None]).sum(1)/contacts.sum(1).clamp_min(1)[:,None]
+        has_contacts=support.any(1)
+        support_center=(self.anchors[ids]*support[:,:,None]).sum(1)/support.sum(1).clamp_min(1)[:,None]
         support_center=torch.where(has_contacts[:,None],support_center,center)
         if cfg['mode']=='prepare_and_buffer_vhsip':
             position_xy=center[:,:2]-support_center[:,:2]
@@ -265,7 +274,7 @@ class ReactiveLandingV1:
         feet_goal=plane_center[:,None]+shape
         # Actual contact anchors determine surface height; four simultaneous
         # contacts are never required. Subsequent feet enter support separately.
-        measured_ground=(world_feet[:,:,2]*contacts).sum(1)/contacts.sum(1).clamp_min(1)
+        measured_ground=(self.anchors[ids,:,2]*support).sum(1)/support.sum(1).clamp_min(1)
         ground=torch.where(has_contacts,measured_ground,center[:,2]-h)
         self.goal[new_ids,:2]=plane_center[first,:2]
         self.goal[new_ids,2]=(ground+h)[first]
@@ -285,7 +294,7 @@ class ReactiveLandingV1:
         u=u.clone();u[:,:,-1]*=sign[:,None]
         planned_rotation=u@vh
         stance_root=planned_center-rotate(planned_rotation,actual['center'][ids])
-        target_world=torch.where(contacts[:,:,None],self.anchors[ids],feet_goal)
+        target_world=torch.where(support[:,:,None],self.anchors[ids],feet_goal)
         target_body=rotate(r.transpose(-1,-2)[:,None],feet_goal-root[:,None])
         stance_body=rotate(planned_rotation.transpose(-1,-2)[:,None],target_world-stance_root[:,None])
         target_body=torch.where(buffered[:,None,None],stance_body,target_body)
