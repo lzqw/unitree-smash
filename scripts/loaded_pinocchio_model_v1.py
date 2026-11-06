@@ -205,16 +205,22 @@ class LoadedPinocchioModelV1:
                 not np.isfinite(contact_force_threshold_n) or contact_force_threshold_n < 0.):
             raise ValueError('contact_force_threshold_n must be finite and nonnegative')
         contacts = geometric_contacts.copy()
+        # Always retain the native per-foot force telemetry when available.
+        # The threshold argument controls whether force is used to gate the
+        # support mask; it should not disable the measurement itself.  The
+        # landing MPC needs the raw load transfer signal even in the default
+        # zero-threshold diagnostic mode.
         measured_force_world = None
-        if contact_force_threshold_n > 0. and hasattr(env, 'feet_contact'):
+        if hasattr(env, 'feet_contact'):
             measured_force_world = env.feet_contact.data.net_forces_w[lane].detach().cpu().numpy()
             if measured_force_world.shape != (4, 3) or not np.isfinite(measured_force_world).all():
                 raise ValueError('native foot force measurement must be finite 4x3')
-            # A geometric contact is usable as a support constraint only when
-            # the contact sensor reports a positive upward load. This avoids
-            # giving the QP reaction-force variables to a foot that merely
-            # grazes the ground or has already unloaded.
-            contacts &= measured_force_world[:, 2] >= float(contact_force_threshold_n)
+            if contact_force_threshold_n > 0.:
+                # A geometric contact is usable as a support constraint only
+                # when the contact sensor reports a positive upward load. This
+                # avoids giving the QP reaction-force variables to a foot that
+                # merely grazes the ground or has already unloaded.
+                contacts &= measured_force_world[:, 2] >= float(contact_force_threshold_n)
         if contacts.shape != (4,):
             raise ValueError('native state requires four measured foot contacts')
         if not np.isfinite(q).all() or not np.isfinite(v).all():
