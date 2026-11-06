@@ -130,8 +130,7 @@ class LandingSupportMPCV1:
             qj = np.asarray(state.joint_position, dtype=np.float64)
             vj = np.asarray(state.joint_velocity, dtype=np.float64)
             target = np.asarray(plan['joint_position_target'], dtype=np.float64)
-            max_delta = np.asarray(self.qp.interface.velocity, dtype=np.float64) * dt
-            target = qj + np.clip(target-qj, -max_delta, max_delta)
+            target = self.admit_command_target(state, target)
             realized = np.clip(self.qp.interface.kp*(target-qj)-self.qp.interface.kd*vj,
                                -self.qp.interface.effort, self.qp.interface.effort)
             requested = np.asarray(plan['torque'], dtype=np.float64)
@@ -162,6 +161,27 @@ class LandingSupportMPCV1:
         # Contact mode is an observed mode; this first version never invents a
         # new foot contact during its prediction horizon.
         return next_state
+
+    def admit_command_target(self, state, target):
+        """Return the position target the native interface can admit this tick.
+
+        The QP may request a target that is inside the joint limits but too far
+        from the measured position for the declared one-step velocity contract.
+        Prediction already applies this bound during executor replay; the
+        native evaluator must apply the identical bound before converting the
+        target back to the normalized action, otherwise the predicted and
+        executed trajectories are different.
+        """
+        q = np.asarray(state.joint_position, dtype=np.float64)
+        target = np.asarray(target, dtype=np.float64)
+        if q.shape != (18,) or target.shape != (18,) or not np.isfinite(q).all() or not np.isfinite(target).all():
+            raise ValueError('Expected finite 18D joint state and target')
+        max_delta = np.asarray(self.qp.interface.velocity, dtype=np.float64) * self.settings.control_dt_s
+        return q + np.clip(target - q, -max_delta, max_delta)
+
+    def normalized_command_target(self, state, target):
+        """Convert the admitted native target to the original action units."""
+        return self.qp.interface.normalized_action(self.admit_command_target(state, target))
 
     def _replay_realized_dynamics(self, state, realized_torque):
         """Recompute a full-body acceleration for the realized PD torque.

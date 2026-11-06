@@ -25,6 +25,22 @@ class SupportMarginTests(unittest.TestCase):
 
 
 class ReplaySemanticsTests(unittest.TestCase):
+    def test_command_target_admission_matches_one_step_velocity_bound(self):
+        class FakeMPC:
+            admit_command_target = LandingSupportMPCV1.admit_command_target
+
+            def __init__(self):
+                self.qp = SimpleNamespace(interface=SimpleNamespace(
+                    velocity=np.r_[np.full(16, 2.), 4., 4.]))
+                self.settings = SimpleNamespace(control_dt_s=.1)
+
+        fake = FakeMPC()
+        state = SimpleNamespace(joint_position=np.r_[np.zeros(17), 1.])
+        requested = np.r_[np.ones(17), 0.]
+        admitted = fake.admit_command_target(state, requested)
+        expected = np.r_[np.full(16, .2), .4, .6]
+        np.testing.assert_allclose(admitted, expected)
+
     def test_replay_horizon_uses_executor_plan_and_contact_hook(self):
         class FakeMPC:
             replay_horizon = LandingSupportMPCV1.replay_horizon

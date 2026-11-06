@@ -558,7 +558,19 @@ class SharedTargetResidualController:
                                             record['first_action_available'] and
                                             record['risk_trigger'] and
                                             (first_step_sufficiently_improves or hold_active)):
-                    chosen=np.asarray(plan['horizon'][0]['normalized_action'],dtype=np.float32)
+                    requested_target=np.asarray(plan['horizon'][0]['joint_position_target'],dtype=np.float64)
+                    # The support QP predicts this same one-step target
+                    # admission during executor replay.  Apply it before
+                    # converting back to the native normalized absolute-
+                    # position action; otherwise Isaac receives a target jump
+                    # that the prediction never simulated.
+                    if self._landing_mpc_native_env is not None and hasattr(self.landing_mpc, 'normalized_command_target'):
+                        admitted_target=self.landing_mpc.admit_command_target(state, requested_target)
+                        chosen=np.asarray(self.landing_mpc.qp.interface.normalized_action(admitted_target),
+                                          dtype=np.float32)
+                    else:
+                        admitted_target=requested_target
+                        chosen=np.asarray(plan['horizon'][0]['normalized_action'],dtype=np.float32)
                     # A torque-overlay trial keeps the student's position
                     # target and adds only the MPC torque residual.  Replacing
                     # the target first would make the residual identically
@@ -566,6 +578,10 @@ class SharedTargetResidualController:
                     if not self.landing_mpc_torque_overlay:
                         action[lane]=torch.as_tensor(chosen,device=action.device)
                     chosen_target = lim[:,0] + .5*(chosen+1.)*(lim[:,1]-lim[:,0])
+                    record['requested_joint_position_target_rad']=requested_target.tolist()
+                    record['admitted_joint_position_target_rad']=chosen_target.tolist()
+                    record['requested_target_delta_max_rad']=float(np.max(np.abs(requested_target-state.joint_position)))
+                    record['admitted_target_delta_max_rad']=float(np.max(np.abs(chosen_target-state.joint_position)))
                     self._landing_mpc_last_target[lane,:] = chosen_target
                     record['applied_first_step']=True
                     record['forced_first_step']=forced_first_step
