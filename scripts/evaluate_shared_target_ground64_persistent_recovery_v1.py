@@ -74,6 +74,10 @@ parser.add_argument('--landing-mpc-capture-foot-gain', type=float, default=0.,
     help='VHSIP/capture-point horizontal offset gain for inactive swing feet')
 parser.add_argument('--landing-mpc-capture-foot-max-offset', type=float, default=.25,
     help='Maximum horizontal capture-point foot offset in metres')
+parser.add_argument('--landing-mpc-leg-posture-blend', type=float, default=.15,
+    help='Blend from the student leg posture toward the admitted landing posture')
+parser.add_argument('--landing-mpc-arm-posture-blend', type=float, default=0.,
+    help='Blend from the student arm posture toward the admitted landing posture')
 parser.add_argument('--landing-mpc-touchdown-height-tolerance', type=float, default=.012,
     help='Predicted foot-to-support-plane height tolerance for contact-mode transition in metres')
 parser.add_argument('--landing-mpc-touchdown-vertical-speed-limit', type=float, default=1.5,
@@ -185,6 +189,8 @@ class SharedTargetResidualController:
                  landing_mpc_touchdown_mode_height_scale=2.5,
                  landing_mpc_capture_foot_gain=0.,
                  landing_mpc_capture_foot_max_offset=.25,
+                 landing_mpc_leg_posture_blend=.15,
+                 landing_mpc_arm_posture_blend=0.,
                  landing_mpc_touchdown_height_tolerance=.012,
                  landing_mpc_touchdown_vertical_speed_limit=1.5,
                  landing_mpc_swing_foot_weight=0., landing_mpc_swing_foot_kp=80.,
@@ -260,6 +266,8 @@ class SharedTargetResidualController:
         self.landing_mpc_touchdown_mode_height_scale=float(landing_mpc_touchdown_mode_height_scale)
         self.landing_mpc_capture_foot_gain=float(landing_mpc_capture_foot_gain)
         self.landing_mpc_capture_foot_max_offset=float(landing_mpc_capture_foot_max_offset)
+        self.landing_mpc_leg_posture_blend=float(landing_mpc_leg_posture_blend)
+        self.landing_mpc_arm_posture_blend=float(landing_mpc_arm_posture_blend)
         self.landing_mpc_touchdown_height_tolerance=float(landing_mpc_touchdown_height_tolerance)
         self.landing_mpc_touchdown_vertical_speed_limit=float(landing_mpc_touchdown_vertical_speed_limit)
         self._effort_override=torch.zeros((count,18),device=device)
@@ -341,7 +349,10 @@ class SharedTargetResidualController:
             mpc_settings = LandingMPCSettingsV2(horizon_steps=self._landing_mpc_horizon_steps,
                 minimum_support_feet=1 if self.landing_mpc_touchdown_recovery else 2,
                 one_foot_max_com_distance_m=.20 if self.landing_mpc_touchdown_recovery else .045,
-                landing_leg_posture_blend=.15 if self.landing_mpc_touchdown_recovery else .35,
+                landing_leg_posture_blend=(self.landing_mpc_leg_posture_blend
+                                           if self.landing_mpc_touchdown_recovery else .35),
+                landing_arm_posture_blend=(self.landing_mpc_arm_posture_blend
+                                           if self.landing_mpc_touchdown_recovery else 0.),
                 predict_touchdown_contacts=self.landing_mpc_predict_touchdown_contacts,
                 contact_mode_fallback=self.landing_mpc_contact_mode_fallback,
                 touchdown_mode_height_scale=self.landing_mpc_touchdown_mode_height_scale,
@@ -771,6 +782,8 @@ def main():
         landing_mpc_touchdown_mode_height_scale=args.landing_mpc_touchdown_mode_height_scale,
         landing_mpc_capture_foot_gain=args.landing_mpc_capture_foot_gain,
         landing_mpc_capture_foot_max_offset=args.landing_mpc_capture_foot_max_offset,
+        landing_mpc_leg_posture_blend=args.landing_mpc_leg_posture_blend,
+        landing_mpc_arm_posture_blend=args.landing_mpc_arm_posture_blend,
         landing_mpc_touchdown_height_tolerance=args.landing_mpc_touchdown_height_tolerance,
         landing_mpc_touchdown_vertical_speed_limit=args.landing_mpc_touchdown_vertical_speed_limit,
         landing_mpc_swing_foot_weight=args.landing_mpc_swing_foot_weight,
@@ -830,6 +843,8 @@ def main():
                       landing_mpc_touchdown_mode_height_scale=args.landing_mpc_touchdown_mode_height_scale,
                       landing_mpc_capture_foot_gain=args.landing_mpc_capture_foot_gain,
                       landing_mpc_capture_foot_max_offset=args.landing_mpc_capture_foot_max_offset,
+                      landing_mpc_leg_posture_blend=args.landing_mpc_leg_posture_blend,
+                      landing_mpc_arm_posture_blend=args.landing_mpc_arm_posture_blend,
         landing_mpc_touchdown_height_tolerance=args.landing_mpc_touchdown_height_tolerance,
         landing_mpc_touchdown_vertical_speed_limit=args.landing_mpc_touchdown_vertical_speed_limit,
                       landing_mpc_swing_foot_weight=args.landing_mpc_swing_foot_weight,
@@ -1068,6 +1083,8 @@ def main():
                 touchdown_mode_height_scale=float(args.landing_mpc_touchdown_mode_height_scale),
                 capture_foot_gain=float(args.landing_mpc_capture_foot_gain),
                 capture_foot_max_offset_m=float(args.landing_mpc_capture_foot_max_offset),
+                leg_posture_blend=float(args.landing_mpc_leg_posture_blend),
+                arm_posture_blend=float(args.landing_mpc_arm_posture_blend),
                 touchdown_height_tolerance_m=float(args.landing_mpc_touchdown_height_tolerance),
                 touchdown_vertical_speed_limit_mps=float(args.landing_mpc_touchdown_vertical_speed_limit),
                 nonfoot_clearance_weight=float(args.landing_mpc_nonfoot_clearance_weight),
