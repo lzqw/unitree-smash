@@ -317,3 +317,23 @@ equivalent to a realized load-bearing support mode.
 The next controller change should use this telemetry to validate a mode
 transition and to release/replan when the expected foot does not acquire load,
 rather than treating the predicted mode as persistent for the whole horizon.
+
+## Load-validated held-action trial
+
+The evaluator now has an optional contact-mode lifecycle check for held MPC
+actions.  In the representative trial, every expected support foot had to
+carry at least 5 N upward force for three consecutive control ticks; otherwise
+the held first action was released and the controller re-solved from the live
+state.  The default remains disabled so prior comparisons are unchanged.
+
+With the check enabled, the fixed panel remained **27/128 complete5**, with 74
+airborne contacts, 34 conditional recoveries, zero numerical failures, 597
+MPC records, 284 held/applied first steps, 174 solver failures, and 8
+predicted contact transitions.  There were 33 per-tick mode mismatches and 10
+early releases of a held action.
+
+This confirms that the mode-validation signal is causally observable and that
+the old held command can outlive its expected support mode.  Releasing and
+re-solving alone still produces no task-level gain, so the next controller
+must change the multi-step support reference and load-transfer objective after
+the release; it should not simply lower the hold duration or force threshold.
