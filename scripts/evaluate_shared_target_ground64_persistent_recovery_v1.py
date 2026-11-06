@@ -213,6 +213,11 @@ class SharedTargetResidualController:
         if self.reactive_vhsip_cases and self.landing_config is not None:
             raise ValueError('Separate declared landing assistance and VHSIP trial')
         self.landing_mpc_logs=[]
+        # Set by the native evaluator immediately before action().  Keeping
+        # this as an explicit adapter makes it impossible to accidentally use
+        # the public observation as the contact-sensitive MPC state when the
+        # live simulator is available.
+        self._landing_mpc_native_env=None
         self.landing_mpc=None
         if self.landing_mpc_cases:
             limits=np.asarray(checkpoint.get('residual_training_metadata',{}).get('joint_limits_rad',[]),dtype=np.float64)
@@ -312,6 +317,10 @@ class SharedTargetResidualController:
         """Return explicit effort residuals for the native implicit-PD actuator."""
         return self._effort_override
 
+    def set_landing_mpc_native_state(self, env):
+        """Attach the live Isaac articulation for the next MPC action."""
+        self._landing_mpc_native_env=env
+
     @torch.inference_mode()
     def action(self,observation,default,limits):
         self._effort_override.zero_();self._effort_override_mask.zero_()
@@ -343,10 +352,16 @@ class SharedTargetResidualController:
                 from scripts.loaded_pinocchio_model_v1 import LoadedPinocchioModelV1
                 if not hasattr(self,'_landing_mpc_model'):
                     self._landing_mpc_model=LoadedPinocchioModelV1()
-                pub=raw[lane].detach().cpu().numpy()
                 lim=limits.detach().cpu().numpy()
                 dflt=default.detach().cpu().numpy()
-                state=self._landing_mpc_model.state_from_public(pub,dflt)
+                if self._landing_mpc_native_env is not None:
+                    state=self._landing_mpc_model.state_from_native(
+                        self._landing_mpc_native_env, lane, dflt)
+                    state_source='native_sim_state'
+                else:
+                    pub=raw[lane].detach().cpu().numpy()
+                    state=self._landing_mpc_model.state_from_public(pub,dflt)
+                    state_source='public_observation_reconstruction'
                 original_action=np.asarray(action[lane].detach().cpu().numpy(),dtype=np.float64).copy()
                 joint_ref=lim[:,0]+.5*(action[lane].detach().cpu().numpy()+1.)*(lim[:,1]-lim[:,0])
                 # The native trial must exercise the declared risk trigger.  A
@@ -377,6 +392,7 @@ class SharedTargetResidualController:
                     failed_stage_risk=failed_stage.get('risk') if failed_stage is not None else None,
                     failed_stage_residuals=failed_stage.get('residuals') if failed_stage is not None else None,
                     predicted_contact_additions=predicted_contact_additions,
+                    state_source=state_source,
                     native_execution=True)
                 risk_drop = (float(plan['initial_risk_score']) - float(plan['first_step_risk_score'])
                     if plan.get('initial_risk_score') is not None and
@@ -429,7 +445,9 @@ class SharedTargetResidualController:
             except Exception as error:
                 self.landing_mpc_logs.append(dict(case=case,clock_s=float(public_clock[lane]),accepted=False,
                     first_action_available=False,applied_first_step=False,solver_failure=True,
-                    rejection='exception:'+repr(error),native_execution=True))
+                    rejection='exception:'+repr(error),state_source=(
+                        'native_sim_state' if self._landing_mpc_native_env is not None
+                        else 'public_observation_reconstruction'),native_execution=True))
         return action
 
 
@@ -756,6 +774,8 @@ def main():
         with torch.inference_mode():
             for tick in range(requested):
                 obs = observation['policy']
+                if hasattr(controller, 'set_landing_mpc_native_state'):
+                    controller.set_landing_mpc_native_state(env)
                 action = controller.action(observation, default, limits)
                 if hasattr(controller,'landing_mpc_diagnostics'):
                     landing_mpc_records.extend(controller.landing_mpc_diagnostics())

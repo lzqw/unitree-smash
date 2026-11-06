@@ -309,3 +309,45 @@ GPU0: 0.3518 GPU h，102400 env steps，SUCCEEDED
 - 不能将 OSQP 的失败等同于物理无解；
 - 继续加长固定接触 horizon 的收益有限；
 - 先做接触事件/执行器闭环，再做有限模式 MPC，最后做 JAX/GPU 批量化，成功概率最高。
+
+## 14. 原生 Isaac 状态适配对照（2026-11-06）
+
+前面的 MPC 评估用 `public[794]` 观测反解 Pinocchio 状态。这个状态包含相对量、策略历史和合成目标，适合策略输入，但不适合作为接触敏感的落地 QP 唯一状态源。新增的 `LoadedPinocchioModelV1.state_from_native()` 现在直接读取 Isaac Lab 的：
+
+- `root_link_pos_w`、`root_link_quat_w`；
+- `root_com_lin_vel_w`、`root_com_ang_vel_w`，换算为 root-link 原点速度和机身坐标系速度；
+- `joint_pos`、`joint_vel` 的已准入 18 关节顺序；
+- `observed_foot_contact` 的实测接触滞回。
+
+评估器在每个控制 tick 将真实环境句柄交给 MPC，记录中的 `state_source=native_sim_state` 表示没有走公开观测回退路径。CPU 单元测试仍为 17/17 通过，原生 128 例对照为：
+
+```text
+reports/G07_full_racket_v5/landing_mpc_v3_native_state_20261106_01
+GPU0: 0.3536 GPU h，102400 env steps，SUCCEEDED
+```
+
+| 指标 | public 状态净空 `_05` | **native Isaac 状态** | 固定策略基线 |
+|---|---:|---:|---:|
+| `complete5` | 27/128 | **27/128** | 27/128 |
+| 合格空中触球 | 74 | 74 | 74 |
+| 条件恢复 | 34 | 34 | 34 |
+| 实际球拍接触 | 110 | 110 | 110 |
+| 越网 | 71 | 71 | 71 |
+| 目标落点 | 63 | 63 | 64 |
+| 数值故障 | 0 | 0 | 0 |
+
+原生状态共记录 1897 次 MPC 诊断：343 次完整 horizon 通过，111 次包含求解器失败，98 次是原始约束残差/终端拒绝；其余主要是终端支撑裕度没有达到。所有记录均为 `native_sim_state`，没有异常回退。与前一版相比，直接使用真实状态提高了模型内可行性统计的一致性，但没有改变任务结果。因此，原先的公共观测反解确实是测量误差来源之一，却不是当前落地失败的唯一瓶颈。
+
+## 15. 结合原生状态后的失败归因与可行性判断
+
+原生对照中，失败阶段分布为 stage 0:12、stage 1:26、stage 2:21、stage 3:22、stage 4:32、stage 5:22、stage 6:34、stage 7:40；失败求解状态包括 `maximum iterations reached` 87 次、`solved` 98 次但残差超限、`solved inaccurate` 16 次以及真正的 `primal infeasible` 8 次。一个典型的 `solved` 拒绝例的动力学残差约 `9e-7`，但所有线性约束最大残差约 `1.96e-3`，高于当前 `3e-4` 验收阈值。这是数值/约束验收失败，不是动力学方程无解。
+
+因此“落地失败时 MPC 求不出来”需要分成三类：
+
+1. **接触模式不完整。** 当前 horizon 默认保持已观测接触模式；没有真实冲量和接触创建，落地瞬间的另一只脚不能自然变成约束支撑。
+2. **可行解没有等价于可执行落地。** QP 只约束即时位置 PD 可达力矩、摩擦和一阶/短时状态，未包含 PhysX 隐式积分、关节电机惯量、摩擦和碰撞冲量。
+3. **终端门控过严或目标不匹配。** 许多 horizon 的局部阶段可以求解，但 8 步后 COM 支撑裕度仍不足，于是整段计划被拒绝；强行放行会把一个局部可行的第一步误称为稳定落地。
+
+这说明 MPC **有可能求解出可执行的第一步或有限接触模式计划**，但不能靠继续增加 OSQP 迭代次数解决全部失败。下一步应加入真实接触事件和执行器响应闭环：用足端接触传感器确认 touchdown，在下一 tick 重新构建接触约束；将目标动作经过真实 position-PD/限幅/延迟模型回放后再预测；对一足、两足、三足模式分别求解并只保留满足模式转换条件的计划。对“solved 但残差略超阈值”的情况可以优化缩放和自适应容差，但不应把松弛容差作为主要稳定性方案。
+
+原生状态适配的代码入口是 `scripts/loaded_pinocchio_model_v1.py` 与 `scripts/evaluate_shared_target_ground64_persistent_recovery_v1.py`。下一阶段再将固定维度动力学、接触模式和执行器回放移植到 JAX；当前 JAX 分支仍只覆盖 VHSIP 解析子问题，CPU Pinocchio + OSQP 不能直接包在 JAX 外获得 GPU 加速。

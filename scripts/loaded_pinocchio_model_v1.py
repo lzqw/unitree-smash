@@ -146,6 +146,67 @@ class LoadedPinocchioModelV1:
         return PublicState(q, v, rotation, root, q[self.q_indices].copy(),
                            v[self.v_indices].copy(), public[57:61] > .5, projection_error)
 
+    @staticmethod
+    def _rotate_world_to_body(rotation, value):
+        """Rotate a world vector into the floating-base body frame."""
+        return rotation.T @ np.asarray(value, dtype=np.float64)
+
+    def state_from_native(self, env, lane, default=None):
+        """Build a planning state from Isaac Lab's live articulation tensors.
+
+        The previous evaluator reconstructed q/v from the 794-d public policy
+        observation.  That observation contains relative quantities and a
+        synthetic goal position, so it is not an adequate state source for a
+        contact-sensitive landing QP.  This adapter reads the actual root pose,
+        COM twist and joint state from ``env.robot.data`` and the measured foot
+        contact hysteresis from ``env.observed_foot_contact``.  It deliberately
+        does not query PhysX solver internals; these are the same tensors used
+        by the native observation and event code.
+
+        ``default`` is retained for API symmetry and validation only.  Joint
+        positions are read directly from the simulator, rather than inferred
+        as an offset from a policy observation.
+        """
+        if not hasattr(env, 'robot') or not hasattr(env.robot, 'data'):
+            raise ValueError('native state requires env.robot.data')
+        data = env.robot.data
+        lane = int(lane)
+        root_pos = (data.root_link_pos_w[lane] - env.scene.env_origins[lane]).detach().cpu().numpy()
+        quat_wxyz = data.root_link_quat_w[lane].detach().cpu().numpy()
+        if quat_wxyz.shape != (4,) or not np.isfinite(quat_wxyz).all():
+            raise ValueError('invalid native root quaternion')
+        rotation = rotation_wxyz(quat_wxyz)
+
+        # Isaac stores the COM twist in world coordinates.  Pinocchio's free
+        # flyer tangent uses the link-origin linear velocity and body-frame
+        # angular/linear components, matching the public observation contract.
+        omega_w = data.root_com_ang_vel_w[lane].detach().cpu().numpy()
+        com_v_w = data.root_com_lin_vel_w[lane].detach().cpu().numpy()
+        com_offset_b = data.body_com_pos_b[lane, 0].detach().cpu().numpy()
+        com_offset_w = rotation @ com_offset_b
+        link_v_w = com_v_w - np.cross(omega_w, com_offset_w)
+        v = np.zeros(self.model.nv, dtype=np.float64)
+        v[:3] = self._rotate_world_to_body(rotation, link_v_w)
+        v[3:6] = self._rotate_world_to_body(rotation, omega_w)
+
+        joint_ids = np.asarray(env.joint_ids, dtype=np.int64)
+        joint_position = data.joint_pos[lane, joint_ids].detach().cpu().numpy().astype(np.float64)
+        joint_velocity = data.joint_vel[lane, joint_ids].detach().cpu().numpy().astype(np.float64)
+        if joint_position.shape != (18,) or joint_velocity.shape != (18,):
+            raise ValueError('native state requires the admitted 18-joint order')
+        q = pin.neutral(self.model)
+        q[:3] = root_pos
+        q[3:7] = pin.Quaternion(rotation).coeffs()
+        q[self.q_indices] = joint_position
+        v[self.v_indices] = joint_velocity
+        contacts = np.asarray(env.observed_foot_contact[lane].detach().cpu().numpy(), dtype=bool)
+        if contacts.shape != (4,):
+            raise ValueError('native state requires four measured foot contacts')
+        if not np.isfinite(q).all() or not np.isfinite(v).all():
+            raise ValueError('nonfinite native q/v')
+        return PublicState(q, v, rotation, root_pos.copy(), joint_position.copy(),
+                           joint_velocity.copy(), contacts, 0.0)
+
     def poses(self, q):
         pin.forwardKinematics(self.model, self.data, q)
         pin.updateFramePlacements(self.model, self.data)
