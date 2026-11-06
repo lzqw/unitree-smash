@@ -394,3 +394,25 @@ This makes a weak static leg-posture blend an unlikely standalone cause.  The
 controller needs to change the support mode and load transfer over time; a
 single stronger standing posture target does not create the missing recovery
 trajectory.
+
+## 400 ms receding-horizon trial
+
+The controller was then run with `horizon_steps=40` (0.4 s at the 100 Hz
+control period), while keeping the verified fixed-policy protocol, executor
+replay, support-margin gate, predicted touchdown fallback, and continuous
+reference enabled.  This was intended to test whether the previous 8-step
+(80 ms) horizon was simply too short to see the landing transition.
+
+The complete fixed TRAIN128 run remained **27/128 complete5**, with 74
+airborne contacts, 34 conditional recoveries, 0 numerical failures, 658 MPC
+records, 403 applied first steps, 139 solver failures, 392 terminal
+acceptances, and 7 predicted contact transitions.  The longer horizon did not
+add a complete recovery or preserve a new one beyond the frozen baseline.
+
+This is evidence against a horizon-length-only explanation.  The present
+controller still rolls a fixed-contact support QP forward and only adds a
+contact mode when the current QP is rejected; it does not jointly optimize a
+contact-mode sequence, foot relocation, and load transfer over the 400 ms
+window.  The next structural change should therefore be a bounded
+mode-sequence/replan mechanism, validated by measured foot load and actual
+state after each transition, rather than more scalar horizon or gain scans.
