@@ -61,6 +61,31 @@ class ReducedWholeBodySupportQP(WholeBodySupportQP):
             force_target = np.zeros(nforce)
             force_target[2::3] = self.model.mass * 9.81 / len(feet)
             task(force_block, force_target, force_distribution_weight)
+        # Optional centroidal wrench allocation.  Unlike equal-share loading,
+        # this accounts for each active foot's moment arm around the measured
+        # COM.  The target is the net force needed for the requested COM
+        # acceleration with zero residual horizontal/roll/pitch wrench.  Hard
+        # dynamics and friction constraints remain authoritative; this is only
+        # a soft preference for a load distribution that resists tipping.
+        force_wrench_weight = float(cfg.force_wrench_weight)
+        if force_wrench_weight > 1e-7 and nforce:
+            feet_world = snapshot['body_positions_world'][
+                np.asarray([feet_ids[int(i)] for i in feet], dtype=np.int64)]
+            com_world = np.asarray(snapshot['com_world'], dtype=np.float64)
+            wrench_map = np.zeros((6, nforce))
+            for local, foot in enumerate(feet_world):
+                offset = np.asarray(foot, dtype=np.float64) - com_world
+                skew = np.array([[0., -offset[2], offset[1]],
+                                 [offset[2], 0., -offset[0]],
+                                 [-offset[1], offset[0], 0.]])
+                wrench_map[:3, 3*local:3*local+3] = np.eye(3)
+                wrench_map[3:, 3*local:3*local+3] = skew
+            desired_force = self.model.mass * (
+                np.asarray(reference['com_acceleration'], dtype=np.float64) +
+                np.array([0., 0., 9.81]))
+            wrench_target = np.r_[desired_force, np.zeros(3)]
+            wrench_block = np.zeros((6, nz)); wrench_block[:, 24:] = wrench_map
+            task(wrench_block, wrench_target, force_wrench_weight)
         # Optional touchdown shaping for feet that are not yet supporting the
         # body.  This remains a soft acceleration cost: only observed contacts
         # receive reaction-force variables, so the QP cannot invent a contact

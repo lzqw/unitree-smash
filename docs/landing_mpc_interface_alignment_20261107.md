@@ -318,6 +318,27 @@ The next controller change should use this telemetry to validate a mode
 transition and to release/replan when the expected foot does not acquire load,
 rather than treating the predicted mode as persistent for the whole horizon.
 
+## Centroidal wrench allocation trial
+
+The support QP now has an optional centroidal wrench allocation task.  It uses
+the active feet's moment arms about the measured COM and softly targets the net
+force required by the requested COM acceleration with zero residual roll/pitch
+moment.  This is a force-distribution preference only; hard dynamics,
+friction, actuator limits, and the native position interface remain unchanged.
+
+With `force_wrench_weight=0.05`, the same representative GPU0 protocol
+remained **27/128 complete5**, with 74 airborne contacts, 34 conditional
+recoveries and zero numerical failures.  It produced 997 MPC records, 694
+applied first steps, 142 solver failures and 5 predicted contact transitions.
+No complete recovery was added.
+
+The result rules out a purely instantaneous force-allocation fix for the
+selected failures.  The QP can prefer a better contact wrench, but the native
+position/PD execution still changes the support set over time.  The next
+controller revision should use the measured load history to choose a
+multi-step support mode and update the COM/foot reference after each realized
+contact transition.
+
 ## Load-validated held-action trial
 
 The evaluator now has an optional contact-mode lifecycle check for held MPC
