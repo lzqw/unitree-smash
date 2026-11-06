@@ -41,8 +41,26 @@ The targeted CPU checks pass:
 ```
 
 Python compilation also passes for the modified MPC and native evaluation
-entry points.  A new Isaac frozen-panel result has not yet been run after this
-patch, so no success-rate improvement is claimed here.
+entry points.
+
+## Native check after the patch
+
+Two native checks were run with the same frozen policy and physical protocol.
+The representative run used TRAIN 1, 67 and 95; the full run used the 26
+previously identified ball-side-good/recovery-failed cases.
+
+| run | complete5 | MPC records | applied first steps | target-error mean / median / p95 |
+|---|---:|---:|---:|---:|
+| representative 3 cases | 27/128 | 446 | 331 | 0.628 / 0.568 / 1.378 rad |
+| full 26 cases | **27/128** | 4069 | 3040 | **0.504 / 0.410 / 1.117 rad** |
+
+The previous representative telemetry was 0.831 / 0.841 / 1.404 rad.  The
+interface fix reduced command error, but it did not rescue any of the 26
+targeted cases: airborne contacts remained 74, conditional recovery remained
+34, and complete5 remained 27.  This separates an execution-interface bug
+from the remaining task bottleneck; the next work must identify the native
+PD/contact response and recoverable-state coverage rather than merely
+increase QP gains.
 
 ## Next evaluation
 
