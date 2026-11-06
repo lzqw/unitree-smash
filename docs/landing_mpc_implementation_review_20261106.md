@@ -425,3 +425,17 @@ GPU0: 0.3723 GPU h，102400 env steps，SUCCEEDED
 ## 21. 对 MPC 路线的更新
 
 后续目标不是把 MPC 作为每个控制 tick 的短期残差覆盖，而是借鉴上游 Reactive Landing Controller 的阶段化结构：VHSIP/SLIP 先产生可捕获的落地参考，真实 touchdown 事件确认后持续执行落地缓冲；每次接触模式变化重新构建有限模式支撑控制；达到稳定窗口后再交还策略。固定接触 QP 保留为约束/执行层，只有在实际闭环能把失败回合稳定接回后，才继续做完整序列优化与 JAX/GPU 批量化。
+
+## 22. 修正后真正 VHSIP 捕获模型对照
+
+为区分上一次触地后定高近似与真正 VHSIP 方程，评估器新增显式 `capture_model` 选项，并运行了：
+
+```text
+reports/G07_full_racket_v5/reactive_vhsip_native_posttouchdown26_vhsip_20261106_01
+git: c3cbacf
+GPU0: 0.3661 GPU h，102400 env steps，SUCCEEDED
+```
+
+该实验为 `post_touchdown_only=true, capture_model=vhsip`，结果为 `complete5=27/128`、合格空中触球 74、条件恢复 34、实际球拍接触 110、越网 71、目标落点 64、数值故障 0。固定策略基线的 27 个完整成功全部保留，没有新增；此前 28/128 的 `TRAIN58` 只在定高近似版本中出现。因此当前证据支持：**触地后定高参考可以救回一个案例，但修正后的真实 VHSIP 通过现有位置-PD/IK 接口还没有产生净收益。**
+
+这不是对原论文方法的否定，因为上游实现包含持续质心参考、足端落点和 WBC/力矩执行，而当前分支仍是位置目标适配器。下一步必须把捕获点与实际足端跟踪、接触模式和落地后持续参考闭环起来。
