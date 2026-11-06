@@ -152,7 +152,7 @@ class ReactiveLandingV1:
         # adapter only needs the near-touchdown capture reference; keeping a
         # 0.6 s receding window avoids hundreds of tiny Python-side launches
         # per native tick.  The post-touchdown buffer still uses settling_s.
-        dt=.01; settling=.6; gravity=9.81; compression=.4*height.clamp_min(.15)
+        dt=.01; settling=float(self.config['settling_s']); gravity=9.81; compression=.4*height.clamp_min(.15)
         mass=self.model.mass.sum().to(height)
         stiffness=mass*(8./settling)**2
         eig=-torch.sqrt(stiffness/mass)
