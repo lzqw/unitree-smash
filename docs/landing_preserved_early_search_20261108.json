@@ -1,0 +1,65 @@
+{
+  "recorded_at": "2026-11-07T22:31:42.149577+00:00",
+  "state": "RUNNING_NO_FINAL_RESULT",
+  "pid": 41500,
+  "process_start_ticks": "171679269",
+  "session_id": 19689,
+  "configuration": {
+    "max_seconds": 1800,
+    "search_seconds": 1260,
+    "remaining_final_validation_seconds": 540,
+    "workers": 4,
+    "substeps": 160,
+    "original_control_tick": 280,
+    "required_steps": 520,
+    "seed": 882116
+  },
+  "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 bash scripts/python.sh -u scripts/search_preserved_early_support_v1.py --source reports/landing_early_references_20261108/support_reference_tracking_probes_v1.json --output reports/landing_early_references_20261108/preserved_early_support_search_v1.json",
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/search_preserved_early_support_v1.py": "87fd33d712de9b7d0c602a63d070efd94daee5edee70c17ede7a980cf4fac6b3",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/tests/test_preserved_early_support_v1.py": "435b468236a5837a59e5bb935b77a726625e48d504393fd1a88ba59aab7edcea",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_early_references_20261108/support_reference_tracking_probes_v1.json": "d19acbed4420cd696c12c93cd7eeb7cc9759add8c8d8239ceca57d7701dd9253"
+  },
+  "baseline_reproduced": true,
+  "baseline_rank": [
+    0,
+    2,
+    419.0,
+    803.73125,
+    0.5921733168941228
+  ],
+  "preserved_names": [
+    "nominal",
+    "orientation_world_0_-1",
+    "linear_velocity_world_0_+1",
+    "linear_velocity_world_1_+1",
+    "angular_velocity_world_0_-1"
+  ],
+  "observed_completed_candidates": [
+    {
+      "label": "baseline",
+      "fit_rank": [
+        0,
+        2,
+        419.0,
+        803.73125,
+        0.5921733168941228
+      ],
+      "accepted_into_search": false
+    }
+  ],
+  "tests": "2 new tests + 2 ranking regression tests passed in 0.17s",
+  "native_head_diagnostic": {
+    "pid": 40391,
+    "control_ticks": 400,
+    "requested_ticks": 800
+  },
+  "native_result": false,
+  "model_improvement_result": null,
+  "expert_labels": false,
+  "limitations": [
+    "Search still running; no improvement claimed.",
+    "Observed process identity is a timestamped snapshot, not proof of future liveness.",
+    "All five retained probes and two difficult probes are development scenarios."
+  ]
+}
