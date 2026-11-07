@@ -1,0 +1,754 @@
+{
+  "observed_at": "2026-11-07T16:24:36.827078+00:00",
+  "scope": "TRAIN3 measured-query model command-pulse diagnostic; not native recovery or unseen-condition evaluation",
+  "counts": {
+    "replay_nominal": {
+      "passed": 1,
+      "total": 1
+    },
+    "replay_prefix_hips": {
+      "passed": 0,
+      "total": 4
+    },
+    "replay_terminal_calves": {
+      "passed": 0,
+      "total": 4
+    },
+    "feedback_nominal": {
+      "passed": 1,
+      "total": 1
+    },
+    "feedback_prefix_hips": {
+      "passed": 1,
+      "total": 4
+    },
+    "feedback_terminal_calves": {
+      "passed": 4,
+      "total": 4
+    }
+  },
+  "rows": [
+    {
+      "task": {
+        "name": "nominal",
+        "feedback": false,
+        "start": 0,
+        "end": 0,
+        "joint_start": 0,
+        "joint_end": 4,
+        "amplitude_rad": 0.0
+      },
+      "valid_steps": 340,
+      "failure": null,
+      "model_window": {
+        "longest_model_kinematic_window_s": 1.0200000000000007,
+        "qualifying_control_ticks": 180,
+        "required_window_s": 0.8,
+        "native_force_check": false,
+        "contact_flight_association_check": false,
+        "formal_recovery_success": false
+      },
+      "model_success": true,
+      "maximum_applied_pulse_rad": 0.0,
+      "wall_seconds": 11.496362837031484,
+      "native_execution": false,
+      "valid_expert_labels": false
+    },
+    {
+      "task": {
+        "name": "prefix_hips",
+        "feedback": false,
+        "start": 0,
+        "end": 10,
+        "joint_start": 0,
+        "joint_end": 4,
+        "amplitude_rad": -0.02
+      },
+      "valid_steps": 130,
+      "failure": {
+        "offset": 130,
+        "violations": {
+          "nonfoot_ground_violation_m": 0.001433900169291763
+        }
+      },
+      "model_window": {
+        "longest_model_kinematic_window_s": 0.0,
+        "qualifying_control_ticks": 0,
+        "required_window_s": 0.8,
+        "native_force_check": false,
+        "contact_flight_association_check": false,
+        "formal_recovery_success": false
+      },
+      "model_success": false,
+      "maximum_applied_pulse_rad": 0.020000000000000018,
+      "wall_seconds": 5.506818321999162,
+      "native_execution": false,
+      "valid_expert_labels": false
+    },
+    {
+      "task": {
+        "name": "prefix_hips",
+        "feedback": false,
+        "start": 0,
+        "end": 10,
+        "joint_start": 0,
+        "joint_end": 4,
+        "amplitude_rad": -0.005
+      },
+      "valid_steps": 169,
+      "failure": {
+        "offset": 169,
+        "violations": {
+          "nonfoot_ground_violation_m": 0.0009364988830645599
+        }
+      },
+      "model_window": {
+        "longest_model_kinematic_window_s": 0.3900000000000002,
+        "qualifying_control_ticks": 42,
+        "required_window_s": 0.8,
+        "native_force_check": false,
+        "contact_flight_association_check": false,
+        "formal_recovery_success": false
+      },
+      "model_success": false,
+      "maximum_applied_pulse_rad": 0.0050000000000000044,
+      "wall_seconds": 6.6855388870462775,
+      "native_execution": false,
+      "valid_expert_labels": false
+    },
+    {
+      "task": {
+        "name": "prefix_hips",
+        "feedback": false,
+        "start": 0,
+        "end": 10,
+        "joint_start": 0,
+        "joint_end": 4,
+        "amplitude_rad": 0.005
+      },
+      "valid_steps": 29,
+      "failure": {
+        "offset": 29,
+        "violations": {
+          "joint_velocity_violation_rad_s": 0.005857153336545018
+        }
+      },
+      "model_window": {
+        "longest_model_kinematic_window_s": 0.0,
+        "qualifying_control_ticks": 0,
+        "required_window_s": 0.8,
+        "native_force_check": false,
+        "contact_flight_association_check": false,
+        "formal_recovery_success": false
+      },
+      "model_success": false,
+      "maximum_applied_pulse_rad": 0.0050000000000000044,
+      "wall_seconds": 1.2595906290225685,
+      "native_execution": false,
+      "valid_expert_labels": false
+    },
+    {
+      "task": {
+        "name": "prefix_hips",
+        "feedback": false,
+        "start": 0,
+        "end": 10,
+        "joint_start": 0,
+        "joint_end": 4,
+        "amplitude_rad": 0.02
+      },
+      "valid_steps": 1,
+      "failure": {
+        "offset": 1,
+        "violations": {
+          "nonfoot_ground_violation_m": 5.377557034766389e-06
+        }
+      },
+      "model_window": {
+        "longest_model_kinematic_window_s": 0.0,
+        "qualifying_control_ticks": 0,
+        "required_window_s": 0.8,
+        "native_force_check": false,
+        "contact_flight_association_check": false,
+        "formal_recovery_success": false
+      },
+      "model_success": false,
+      "maximum_applied_pulse_rad": 0.020000000000000018,
+      "wall_seconds": 0.1769108260050416,
+      "native_execution": false,
+      "valid_expert_labels": false
+    },
+    {
+      "task": {
+        "name": "terminal_calves",
+        "feedback": false,
+        "start": 80,
+        "end": 100,
+        "joint_start": 8,
+        "joint_end": 12,
+        "amplitude_rad": -0.02
+      },
+      "valid_steps": 210,
+      "failure": {
+        "offset": 210,
+        "violations": {
+          "joint_position_violation_rad": 0.0033424089898419496,
+          "nonfoot_ground_violation_m": 0.002802785417836795
+        }
+      },
+      "model_window": {
+        "longest_model_kinematic_window_s": 1.0600000000000007,
+        "qualifying_control_ticks": 118,
+        "required_window_s": 0.8,
+        "native_force_check": false,
+        "contact_flight_association_check": false,
+        "formal_recovery_success": false
+      },
+      "model_success": false,
+      "maximum_applied_pulse_rad": 0.020000000000000018,
+      "wall_seconds": 8.390186914009973,
+      "native_execution": false,
+      "valid_expert_labels": false
+    },
+    {
+      "task": {
+        "name": "terminal_calves",
+        "feedback": false,
+        "start": 80,
+        "end": 100,
+        "joint_start": 8,
+        "joint_end": 12,
+        "amplitude_rad": -0.005
+      },
+      "valid_steps": 234,
+      "failure": {
+        "offset": 234,
+        "violations": {
+          "nonfoot_ground_violation_m": 0.0023118639741152303
+        }
+      },
+      "model_window": {
+        "longest_model_kinematic_window_s": 0.7700000000000005,
+        "qualifying_control_ticks": 108,
+        "required_window_s": 0.8,
+        "native_force_check": false,
+        "contact_flight_association_check": false,
+        "formal_recovery_success": false
+      },
+      "model_success": false,
+      "maximum_applied_pulse_rad": 0.004999999999999893,
+      "wall_seconds": 8.847930012037978,
+      "native_execution": false,
+      "valid_expert_labels": false
+    },
+    {
+      "task": {
+        "name": "terminal_calves",
+        "feedback": false,
+        "start": 80,
+        "end": 100,
+        "joint_start": 8,
+        "joint_end": 12,
+        "amplitude_rad": 0.005
+      },
+      "valid_steps": 235,
+      "failure": {
+        "offset": 235,
+        "violations": {
+          "nonfoot_ground_violation_m": 0.0003789551538131916
+        }
+      },
+      "model_window": {
+        "longest_model_kinematic_window_s": 0.7200000000000004,
+        "qualifying_control_ticks": 76,
+        "required_window_s": 0.8,
+        "native_force_check": false,
+        "contact_flight_association_check": false,
+        "formal_recovery_success": false
+      },
+      "model_success": false,
+      "maximum_applied_pulse_rad": 0.004999999999999893,
+      "wall_seconds": 8.788360988954082,
+      "native_execution": false,
+      "valid_expert_labels": false
+    },
+    {
+      "task": {
+        "name": "terminal_calves",
+        "feedback": false,
+        "start": 80,
+        "end": 100,
+        "joint_start": 8,
+        "joint_end": 12,
+        "amplitude_rad": 0.02
+      },
+      "valid_steps": 195,
+      "failure": {
+        "offset": 195,
+        "violations": {
+          "nonfoot_ground_violation_m": 0.0009849943917481715
+        }
+      },
+      "model_window": {
+        "longest_model_kinematic_window_s": 0.6800000000000004,
+        "qualifying_control_ticks": 72,
+        "required_window_s": 0.8,
+        "native_force_check": false,
+        "contact_flight_association_check": false,
+        "formal_recovery_success": false
+      },
+      "model_success": false,
+      "maximum_applied_pulse_rad": 0.020000000000000018,
+      "wall_seconds": 7.824393894057721,
+      "native_execution": false,
+      "valid_expert_labels": false
+    },
+    {
+      "task": {
+        "name": "nominal",
+        "feedback": true,
+        "start": 0,
+        "end": 0,
+        "joint_start": 0,
+        "joint_end": 4,
+        "amplitude_rad": 0.0
+      },
+      "valid_steps": 340,
+      "failure": null,
+      "model_window": {
+        "longest_model_kinematic_window_s": 1.0200000000000007,
+        "qualifying_control_ticks": 180,
+        "required_window_s": 0.8,
+        "native_force_check": false,
+        "contact_flight_association_check": false,
+        "formal_recovery_success": false
+      },
+      "model_success": true,
+      "maximum_applied_pulse_rad": 0.0,
+      "wall_seconds": 11.479477357817814,
+      "native_execution": false,
+      "valid_expert_labels": false
+    },
+    {
+      "task": {
+        "name": "prefix_hips",
+        "feedback": true,
+        "start": 0,
+        "end": 10,
+        "joint_start": 0,
+        "joint_end": 4,
+        "amplitude_rad": -0.02
+      },
+      "valid_steps": 29,
+      "failure": {
+        "offset": 29,
+        "violations": {
+          "joint_velocity_violation_rad_s": 0.00635473894897487
+        }
+      },
+      "model_window": {
+        "longest_model_kinematic_window_s": 0.0,
+        "qualifying_control_ticks": 0,
+        "required_window_s": 0.8,
+        "native_force_check": false,
+        "contact_flight_association_check": false,
+        "formal_recovery_success": false
+      },
+      "model_success": false,
+      "maximum_applied_pulse_rad": 0.020000000000000018,
+      "wall_seconds": 1.2928776531480253,
+      "native_execution": false,
+      "valid_expert_labels": false
+    },
+    {
+      "task": {
+        "name": "prefix_hips",
+        "feedback": true,
+        "start": 0,
+        "end": 10,
+        "joint_start": 0,
+        "joint_end": 4,
+        "amplitude_rad": -0.005
+      },
+      "valid_steps": 29,
+      "failure": {
+        "offset": 29,
+        "violations": {
+          "joint_velocity_violation_rad_s": 0.0012621500814002928
+        }
+      },
+      "model_window": {
+        "longest_model_kinematic_window_s": 0.0,
+        "qualifying_control_ticks": 0,
+        "required_window_s": 0.8,
+        "native_force_check": false,
+        "contact_flight_association_check": false,
+        "formal_recovery_success": false
+      },
+      "model_success": false,
+      "maximum_applied_pulse_rad": 0.0050000000000000044,
+      "wall_seconds": 1.2823511618189514,
+      "native_execution": false,
+      "valid_expert_labels": false
+    },
+    {
+      "task": {
+        "name": "prefix_hips",
+        "feedback": true,
+        "start": 0,
+        "end": 10,
+        "joint_start": 0,
+        "joint_end": 4,
+        "amplitude_rad": 0.005
+      },
+      "valid_steps": 340,
+      "failure": null,
+      "model_window": {
+        "longest_model_kinematic_window_s": 1.0200000000000007,
+        "qualifying_control_ticks": 182,
+        "required_window_s": 0.8,
+        "native_force_check": false,
+        "contact_flight_association_check": false,
+        "formal_recovery_success": false
+      },
+      "model_success": true,
+      "maximum_applied_pulse_rad": 0.0050000000000000044,
+      "wall_seconds": 11.220342004904523,
+      "native_execution": false,
+      "valid_expert_labels": false
+    },
+    {
+      "task": {
+        "name": "prefix_hips",
+        "feedback": true,
+        "start": 0,
+        "end": 10,
+        "joint_start": 0,
+        "joint_end": 4,
+        "amplitude_rad": 0.02
+      },
+      "valid_steps": 1,
+      "failure": {
+        "offset": 1,
+        "violations": {
+          "nonfoot_ground_violation_m": 3.96911267032396e-06
+        }
+      },
+      "model_window": {
+        "longest_model_kinematic_window_s": 0.0,
+        "qualifying_control_ticks": 0,
+        "required_window_s": 0.8,
+        "native_force_check": false,
+        "contact_flight_association_check": false,
+        "formal_recovery_success": false
+      },
+      "model_success": false,
+      "maximum_applied_pulse_rad": 0.020000000000000018,
+      "wall_seconds": 0.17394963302649558,
+      "native_execution": false,
+      "valid_expert_labels": false
+    },
+    {
+      "task": {
+        "name": "terminal_calves",
+        "feedback": true,
+        "start": 80,
+        "end": 100,
+        "joint_start": 8,
+        "joint_end": 12,
+        "amplitude_rad": -0.02
+      },
+      "valid_steps": 340,
+      "failure": null,
+      "model_window": {
+        "longest_model_kinematic_window_s": 0.9600000000000006,
+        "qualifying_control_ticks": 167,
+        "required_window_s": 0.8,
+        "native_force_check": false,
+        "contact_flight_association_check": false,
+        "formal_recovery_success": false
+      },
+      "model_success": true,
+      "maximum_applied_pulse_rad": 0.020000000000000018,
+      "wall_seconds": 11.316431443905458,
+      "native_execution": false,
+      "valid_expert_labels": false
+    },
+    {
+      "task": {
+        "name": "terminal_calves",
+        "feedback": true,
+        "start": 80,
+        "end": 100,
+        "joint_start": 8,
+        "joint_end": 12,
+        "amplitude_rad": -0.005
+      },
+      "valid_steps": 340,
+      "failure": null,
+      "model_window": {
+        "longest_model_kinematic_window_s": 1.0000000000000007,
+        "qualifying_control_ticks": 177,
+        "required_window_s": 0.8,
+        "native_force_check": false,
+        "contact_flight_association_check": false,
+        "formal_recovery_success": false
+      },
+      "model_success": true,
+      "maximum_applied_pulse_rad": 0.004999999999999893,
+      "wall_seconds": 11.386263960041106,
+      "native_execution": false,
+      "valid_expert_labels": false
+    },
+    {
+      "task": {
+        "name": "terminal_calves",
+        "feedback": true,
+        "start": 80,
+        "end": 100,
+        "joint_start": 8,
+        "joint_end": 12,
+        "amplitude_rad": 0.005
+      },
+      "valid_steps": 340,
+      "failure": null,
+      "model_window": {
+        "longest_model_kinematic_window_s": 1.0400000000000007,
+        "qualifying_control_ticks": 183,
+        "required_window_s": 0.8,
+        "native_force_check": false,
+        "contact_flight_association_check": false,
+        "formal_recovery_success": false
+      },
+      "model_success": true,
+      "maximum_applied_pulse_rad": 0.004999999999999893,
+      "wall_seconds": 11.432952943025157,
+      "native_execution": false,
+      "valid_expert_labels": false
+    },
+    {
+      "task": {
+        "name": "terminal_calves",
+        "feedback": true,
+        "start": 80,
+        "end": 100,
+        "joint_start": 8,
+        "joint_end": 12,
+        "amplitude_rad": 0.02
+      },
+      "valid_steps": 340,
+      "failure": null,
+      "model_window": {
+        "longest_model_kinematic_window_s": 1.1000000000000008,
+        "qualifying_control_ticks": 192,
+        "required_window_s": 0.8,
+        "native_force_check": false,
+        "contact_flight_association_check": false,
+        "formal_recovery_success": false
+      },
+      "model_success": true,
+      "maximum_applied_pulse_rad": 0.020000000000000018,
+      "wall_seconds": 11.234510296024382,
+      "native_execution": false,
+      "valid_expert_labels": false
+    }
+  ],
+  "failure_audit": [
+    {
+      "task": {
+        "name": "prefix_hips",
+        "feedback": true,
+        "start": 0,
+        "end": 10,
+        "joint_start": 0,
+        "joint_end": 4,
+        "amplitude_rad": -0.02
+      },
+      "failure": {
+        "offset": 29,
+        "violations": {
+          "joint_velocity_violation_rad_s": 0.00635473894897487
+        }
+      },
+      "maximum_microstep_velocity_excess": {
+        "micro": 7,
+        "joint_index": 13,
+        "speed_rad_s": 5.006354738948975,
+        "limit_rad_s": 5.0,
+        "violation_rad_s": 0.00635473894897487
+      },
+      "first_ground_violation": null,
+      "control_boundary_max_speed_ratio": 0.9858836905812407,
+      "control_boundary_worst_joint_index": 13,
+      "control_boundary_worst_joint_speed": 4.929418452906203,
+      "control_boundary_worst_joint_limit": 5.0,
+      "joint_velocities": [
+        -1.598917927742461,
+        -1.118461529324884,
+        -2.0698841110886965,
+        -1.0526945611450254,
+        -0.9040714513033763,
+        -1.056193062198031,
+        -1.7794101107197267,
+        -0.15370146242140717,
+        -0.22075707259966793,
+        1.8337837539550812,
+        1.9939394683010687,
+        -0.23909837613300539,
+        1.1944878748557437,
+        4.929418452906203,
+        -0.22785375453339757,
+        1.7798466832305495,
+        -0.04002727228397226,
+        2.5938099799557546
+      ],
+      "interpretation": "Worst boundary joint need not be worst at internal microstep; path diagnostics retain microstep maxima."
+    },
+    {
+      "task": {
+        "name": "prefix_hips",
+        "feedback": true,
+        "start": 0,
+        "end": 10,
+        "joint_start": 0,
+        "joint_end": 4,
+        "amplitude_rad": -0.005
+      },
+      "failure": {
+        "offset": 29,
+        "violations": {
+          "joint_velocity_violation_rad_s": 0.0012621500814002928
+        }
+      },
+      "maximum_microstep_velocity_excess": {
+        "micro": 7,
+        "joint_index": 13,
+        "speed_rad_s": 5.0012621500814,
+        "limit_rad_s": 5.0,
+        "violation_rad_s": 0.0012621500814002928
+      },
+      "first_ground_violation": null,
+      "control_boundary_max_speed_ratio": 0.9850098906958584,
+      "control_boundary_worst_joint_index": 13,
+      "control_boundary_worst_joint_speed": 4.925049453479292,
+      "control_boundary_worst_joint_limit": 5.0,
+      "joint_velocities": [
+        -1.553310643851208,
+        -1.1568339792888227,
+        -2.066614622579858,
+        -1.0442310623282176,
+        -0.9310359126008285,
+        -1.0307857619636198,
+        -1.7757505676469711,
+        -0.16518167637047157,
+        -0.1861082530343614,
+        1.831670140511917,
+        1.9932738587281151,
+        -0.24092886662966484,
+        1.201480375890321,
+        4.925049453479292,
+        -0.22993264937279187,
+        1.779603979330096,
+        -0.04005749002566886,
+        2.5939801518341428
+      ],
+      "interpretation": "Worst boundary joint need not be worst at internal microstep; path diagnostics retain microstep maxima."
+    },
+    {
+      "task": {
+        "name": "prefix_hips",
+        "feedback": true,
+        "start": 0,
+        "end": 10,
+        "joint_start": 0,
+        "joint_end": 4,
+        "amplitude_rad": 0.02
+      },
+      "failure": {
+        "offset": 1,
+        "violations": {
+          "nonfoot_ground_violation_m": 3.96911267032396e-06
+        }
+      },
+      "maximum_microstep_velocity_excess": {
+        "micro": 10,
+        "joint_index": 12,
+        "speed_rad_s": 2.229204017990038,
+        "limit_rad_s": 5.0,
+        "violation_rad_s": -2.770795982009962
+      },
+      "first_ground_violation": {
+        "micro": 1,
+        "body": "Head_lower",
+        "gap_m": -1.5747820239359056e-06
+      },
+      "control_boundary_max_speed_ratio": 0.4382685871948939,
+      "control_boundary_worst_joint_index": 12,
+      "control_boundary_worst_joint_speed": 2.1913429359744696,
+      "control_boundary_worst_joint_limit": 5.0,
+      "joint_velocities": [
+        0.34749231771883937,
+        0.6918767533119158,
+        -0.7197270901888376,
+        -2.5068920381154762,
+        1.1843047911637954,
+        -1.250252760895079,
+        0.23919619823491783,
+        1.2445834435046241,
+        -2.6181197542360883,
+        0.3495961062230468,
+        -2.2377047619084047,
+        2.030398184074669,
+        2.1913429359744696,
+        1.1667979830921933,
+        -1.0821233676542668,
+        1.974064480224714,
+        -0.01462944928011518,
+        1.526546233939419
+      ],
+      "interpretation": "Worst boundary joint need not be worst at internal microstep; path diagnostics retain microstep maxima."
+    }
+  ],
+  "evidence_sha256": {
+    "reports/landing_fullcommand_native_response_20261107/terminal_support_command_pulses3.json": "bfb4bc6059ba4239d73f78fc3b4b20ec5bd7d899b3257904a09d2e7f24d4e083",
+    "reports/landing_fullcommand_native_response_20261107/terminal_support_pulse_failure_audit3_micro.json": "e013f3fdcf0529c81efa5be7a9f057c996bb60852912c113b9b9d5493ae7fc59"
+  },
+  "runtime_snapshot": {
+    "reports/native_frictional_v2_sequence3_all128_20261107_02/frictional_feedback_progress.json": {
+      "control_tick": 469,
+      "replans": 5,
+      "accepted_replans": 5,
+      "latest_accepted": true,
+      "latest_wall_seconds": 364.66969019989483,
+      "latest_reason": null,
+      "teacher_steps": 9,
+      "fallback_steps": 0,
+      "teacher_model": "frictional_spheres_v1",
+      "native_recovery_success_not_yet_known": true
+    },
+    "reports/landing_native_terminal_support_followup_20261108/status.json": {
+      "state": "WAITING_FOR_GPU_OWNERS_TO_EXIT",
+      "pid": 4192383,
+      "observed_at": "2026-11-07T16:13:58.839112+00:00",
+      "owners": [
+        {
+          "pid": 4189530,
+          "start_ticks": "169281485"
+        },
+        {
+          "pid": 4189531,
+          "start_ticks": "169281505"
+        },
+        {
+          "pid": 4189548,
+          "start_ticks": "169281539"
+        }
+      ]
+    }
+  },
+  "unchanged_input_hash_checks_passed": true,
+  "native_execution": false,
+  "valid_expert_labels": false,
+  "student_baseline_complete5": 27,
+  "formal_goal_verifier": "FAILED: historical dependencies/artifacts and missing G07 evidence; contract unchanged"
+}
