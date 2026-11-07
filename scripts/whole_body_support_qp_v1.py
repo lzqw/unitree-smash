@@ -75,6 +75,12 @@ class PositionPDInterface:
                 not np.isfinite(self.friction) or self.friction <= 0):
             raise ValueError('Invalid original joint/interface limits')
 
+    def admitted_target_bounds(self, q, control_dt_s):
+        """Legacy measured-position-centered controller envelope (not hardware slew)."""
+        step = self.velocity * float(control_dt_s)
+        return (np.maximum(self.limits[:, 0], q-step),
+                np.minimum(self.limits[:, 1], q+step))
+
     def torque_bounds(self, q, v, control_dt_s=None):
         """Return torque bounds consistent with the native position interface.
 
@@ -324,8 +330,8 @@ class WholeBodySupportQP:
             instantaneous_pd_torque=float(np.max(np.abs(instantaneous_torque-torque))),
             admitted_target_bounds=float(max(
                 0.,
-                np.max((state.joint_position-interface.velocity*cfg.control_dt_s)-target),
-                np.max(target-(state.joint_position+interface.velocity*cfg.control_dt_s)))))
+                np.max(interface.admitted_target_bounds(state.joint_position,cfg.control_dt_s)[0]-target),
+                np.max(target-interface.admitted_target_bounds(state.joint_position,cfg.control_dt_s)[1]))))
         plan.update(residuals=residuals,acceleration=a,torque=torque,force_world=force,
                     joint_position_target=target,normalized_action=interface.normalized_action(target),
                     predicted_com_acceleration=com_jac@a+com_bias,

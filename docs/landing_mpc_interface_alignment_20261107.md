@@ -1,5 +1,14 @@
 # Landing MPC interface alignment — 2026-11-07
 
+> **2026-11-07 correction:** the measured-position-centered target envelope
+> discussed below was introduced by our MPC, not by the original native
+> actuator interface. Native arm software slew is relative to the previous
+> final target (10 rad/s for this checkpoint), while physical arm speed stays
+> limited to 5 rad/s. See [the command-history correction](landing_command_history_correction_20261107.md).
+> Earlier references to this envelope as the native/hardware admission rule
+> should not be used as that claim. Historical experiment results are unchanged.
+
+
 ## Why this change was needed
 
 The native full-racket environment consumes each MPC action as a normalized

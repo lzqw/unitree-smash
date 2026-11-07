@@ -126,6 +126,8 @@ parser.add_argument('--landing-mpc-load-aware-support', action='store_true',
     help='Weight the continuous support reference by measured per-foot vertical load')
 parser.add_argument('--landing-mpc-load-force-floor', type=float, default=2.,
     help='Minimum force weight for a foot selected by the observed-contact flag')
+parser.add_argument('--landing-mpc-command-history-interface', action='store_true',
+    help='Use native command-history arm slew and physical next-state velocity limits (command-history MPC)')
 parser.add_argument('--landing-mpc-free-arm', action='store_true',
     help='With continuous-reference MPC, leave arm commands as a soft cost instead of an exact PD constraint')
 parser.add_argument('--reactive-vhsip-cases', type=int, nargs='+', default=None,
@@ -180,6 +182,7 @@ from scripts.ground64_training_support_v1 import GROUND
 from scripts.landing_support_mpc_v1 import LandingSupportMPCV1, LandingMPCSettingsV1
 from scripts.landing_support_mpc_v2 import LandingSupportMPCV2, LandingMPCSettingsV2
 from scripts.landing_support_mpc_v3 import LandingSupportMPCV3
+from scripts.landing_command_history_mpc_v1 import LandingCommandHistoryMPCV1
 from scripts.touchdown_contact_state_v1 import TouchdownContactSettingsV1,TouchdownContactStateV1
 from scripts.whole_body_support_qp_v1 import PositionPDInterface, SupportSettings
 
@@ -238,6 +241,7 @@ class SharedTargetResidualController:
                  landing_mpc_load_aware_support=False,
                  landing_mpc_load_force_floor=2.,
                  landing_mpc_free_arm=False,
+                 landing_mpc_command_history_interface=False,
                  reactive_vhsip_cases=None, reactive_vhsip_post_touchdown_only=False,
                  reactive_vhsip_capture_model='height', reactive_vhsip_settling_s=.7,
                  reactive_vhsip_capture_gain=1., reactive_vhsip_blend_s=.08):
@@ -364,6 +368,14 @@ class SharedTargetResidualController:
                 self.landing_mpc_load_force_floor < 0.):
             raise ValueError('landing_mpc_load_force_floor must be finite and nonnegative')
         self.landing_mpc_free_arm=bool(landing_mpc_free_arm)
+        self.landing_mpc_command_history_interface=bool(landing_mpc_command_history_interface)
+        self.landing_mpc_arm_target_rate=float(checkpoint.get("residual_arm_target_rate_rad_s",5.))
+        if self.landing_mpc_command_history_interface and (
+                not self.landing_mpc_continuous_reference or
+                not (self.landing_mpc_support_margin or self.landing_mpc_touchdown_recovery) or
+                not self.landing_mpc_executor_replay or
+                self.landing_mpc_torque_overlay or self.landing_mpc_hold_first_action):
+            raise ValueError('Command-history MPC requires continuous reference/replay and no torque overlay/held action')
         self.reactive_vhsip_cases=None if reactive_vhsip_cases is None else set(int(x) for x in reactive_vhsip_cases)
         self.reactive_vhsip_post_touchdown_only=bool(reactive_vhsip_post_touchdown_only)
         if reactive_vhsip_capture_model not in ('height','vhsip'):
@@ -449,10 +461,13 @@ class SharedTargetResidualController:
                 touchdown_impact_projection=self.landing_mpc_touchdown_impact_projection)
             mpc_settings = replace(mpc_settings, executor_replay=self.landing_mpc_executor_replay)
             mpc_settings = replace(mpc_settings, command_rate_scale=self.landing_mpc_command_rate_scale)
-            self.landing_mpc=(LandingSupportMPCV3(interface, qp_settings=qp_settings,
+            continuous_type=LandingCommandHistoryMPCV1 if self.landing_mpc_command_history_interface else LandingSupportMPCV3
+            continuous_extra=({'arm_target_rate_rad_s':self.landing_mpc_arm_target_rate}
+                              if self.landing_mpc_command_history_interface else {})
+            self.landing_mpc=(continuous_type(interface, qp_settings=qp_settings,
                 settings=mpc_settings, preserve_arm_command=not self.landing_mpc_free_arm,
                 load_aware_support=self.landing_mpc_load_aware_support,
-                load_force_floor_n=self.landing_mpc_load_force_floor)
+                load_force_floor_n=self.landing_mpc_load_force_floor,**continuous_extra)
                 if self.landing_mpc_continuous_reference else
                 LandingSupportMPCV2(interface, qp_settings=qp_settings,
                 settings=mpc_settings))
@@ -613,6 +628,17 @@ class SharedTargetResidualController:
                     state.contacts=self._landing_mpc_contact_state_lane[lane].update(
                         geometric_contacts, measured_force)
                 joint_ref=lim[:,0]+.5*(action[lane].detach().cpu().numpy()+1.)*(lim[:,1]-lim[:,0])
+                requested_student_joint_ref=joint_ref.copy()
+                if self.landing_mpc_command_history_interface:
+                    if self._landing_mpc_native_env is None:
+                        raise ValueError('Command-history MPC requires native final-command state')
+                    native=self._landing_mpc_native_env
+                    state.previous_command_target=native.targets[lane,native.joint_ids].detach().cpu().numpy().copy()
+                    # The same history admission applies to student fallback;
+                    # failed solves must not jump back to a different slew history.
+                    joint_ref=self.landing_mpc.admit_command_target(state,joint_ref)
+                    action[lane]=torch.as_tensor(self.landing_mpc.qp.interface.normalized_action(joint_ref),
+                                                device=action.device,dtype=action.dtype)
                 control_tick = int(round(float(public_clock[lane]) / .01))
                 if isinstance(self.landing_mpc, LandingSupportMPCV3):
                     self.landing_mpc.observe(state, joint_ref, lane=lane,
@@ -746,6 +772,9 @@ class SharedTargetResidualController:
                     contact_mode_additions=contact_mode_additions,
                     predicted_touchdown_impacts=predicted_touchdown_impacts,
                     state_source=state_source,
+                    requested_student_joint_reference=requested_student_joint_ref.tolist(),
+                    previous_dispatched_target=(state.previous_command_target.tolist()
+                        if self.landing_mpc_command_history_interface else None),
                     expected_support_contacts=self._landing_mpc_expected_contacts[lane].tolist(),
                     mode_validation_force_n=self.landing_mpc_mode_validation_force,
                     mode_validation_released=release_for_mode_mismatch,
@@ -846,6 +875,14 @@ class SharedTargetResidualController:
                     record['first_step_risk_score_drop']=risk_drop
                     if hold_active:
                         self._landing_mpc_hold_remaining[lane]-=1
+                if self.landing_mpc_command_history_interface:
+                    final_target=lim[:,0]+.5*(action[lane].detach().cpu().numpy()+1.)*(lim[:,1]-lim[:,0])
+                    arm_step=np.abs(final_target[12:]-state.previous_command_target[12:])
+                    record['final_dispatched_joint_target_rad']=final_target.tolist()
+                    record['arm_command_rate_rad_s']=self.landing_mpc.qp.interface.arm_rate
+                    record['arm_target_step_max_rad']=float(arm_step.max())
+                    record['arm_target_slew_violation_rad']=float(max(0.,
+                        arm_step.max()-self.landing_mpc.qp.interface.arm_rate*self.landing_mpc.settings.control_dt_s))
                 self.landing_mpc_logs.append(record)
             except Exception as error:
                 self.landing_mpc_logs.append(dict(case=case,episode_index=episode_index,
@@ -1074,6 +1111,7 @@ def main():
         landing_mpc_load_aware_support=args.landing_mpc_load_aware_support,
         landing_mpc_load_force_floor=args.landing_mpc_load_force_floor,
         landing_mpc_free_arm=args.landing_mpc_free_arm,
+        landing_mpc_command_history_interface=args.landing_mpc_command_history_interface,
         reactive_vhsip_cases=args.reactive_vhsip_cases,
         reactive_vhsip_post_touchdown_only=args.reactive_vhsip_post_touchdown_only,
         reactive_vhsip_capture_model=args.reactive_vhsip_capture_model,
@@ -1148,6 +1186,7 @@ def main():
                       landing_mpc_load_aware_support=args.landing_mpc_load_aware_support,
                       landing_mpc_load_force_floor=args.landing_mpc_load_force_floor,
                       landing_mpc_free_arm=args.landing_mpc_free_arm,
+        landing_mpc_command_history_interface=args.landing_mpc_command_history_interface,
                       reactive_vhsip_cases=args.reactive_vhsip_cases,
                       reactive_vhsip_post_touchdown_only=args.reactive_vhsip_post_touchdown_only,
                       reactive_vhsip_capture_model=args.reactive_vhsip_capture_model,
@@ -1348,7 +1387,8 @@ def main():
                 controller_trial=True, native_execution=True, frozen_policy_performance=False,
                 formal_acceptance=False)
         if args.landing_mpc_cases is not None:
-            summary['landing_mpc'] = dict(schema=('landing-support-mpc-v3-continuous-touchdown-recovery'
+            summary['landing_mpc'] = dict(schema=('landing-command-history-mpc-v1'
+                if args.landing_mpc_command_history_interface else 'landing-support-mpc-v3-continuous-touchdown-recovery'
                 if args.landing_mpc_continuous_reference and args.landing_mpc_touchdown_recovery else
                 'landing-support-mpc-v3-continuous-reference' if args.landing_mpc_continuous_reference else
                 'landing-support-mpc-v2-touchdown-recovery'
@@ -1399,6 +1439,7 @@ def main():
                 load_aware_support=bool(args.landing_mpc_load_aware_support),
                 load_force_floor_n=float(args.landing_mpc_load_force_floor),
                 free_arm=bool(args.landing_mpc_free_arm),
+                command_history_interface=bool(args.landing_mpc_command_history_interface),
                 records=len(landing_mpc_records),
                 predicted_contact_transition_records=sum(bool(r.get('predicted_contact_additions')) for r in landing_mpc_records),
                 predicted_touchdown_impact_records=sum(

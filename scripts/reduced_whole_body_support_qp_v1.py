@@ -226,8 +226,8 @@ class ReducedWholeBodySupportQP(WholeBodySupportQP):
             instantaneous_pd_torque=float(np.max(abs(pd_torque-torque))),
             admitted_target_bounds=float(max(
                 0.,
-                np.max((state.joint_position-interface.velocity*cfg.control_dt_s)-target),
-                np.max(target-(state.joint_position+interface.velocity*cfg.control_dt_s)))),
+                np.max(interface.admitted_target_bounds(state.joint_position,cfg.control_dt_s)[0]-target),
+                np.max(target-interface.admitted_target_bounds(state.joint_position,cfg.control_dt_s)[1]))),
             torque_bounds=float(max(0.,np.max(torque_low-torque),np.max(torque-torque_high))),
             predicted_position_bounds=float(max(0.,np.max(interface.limits[:,0]-qnext),np.max(qnext-interface.limits[:,1]))),
             predicted_velocity_bounds=float(max(0.,np.max(abs(vnext)-interface.velocity))))
