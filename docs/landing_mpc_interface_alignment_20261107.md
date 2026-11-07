@@ -508,3 +508,71 @@ coverage, but the resulting position/PD support actions still did not move
 the fixed policy into a durable support state. The remaining priority is a
 load-transfer and foot-relocation objective with measured post-transition
 replanning, rather than a longer eligibility window.
+
+## 2026-11-07: contact terminology and continuous-reference memory correction
+
+The native flag previously called `geometric_contacts` is actually a force-norm
+hysteresis observation (1 N on / 0.5 N off). Comparing it with upward force
+above 5 N compares two force-based criteria, not geometry against load capacity.
+The evaluator now also records `observed_force_contacts` with an explicit
+semantic label; the old key remains only for backwards compatibility.
+The completed 5 N / 1 N / 3-tick trial is still **27/128 complete5**, 74 airborne
+contacts and 34 conditional recoveries. The 37 prior disagreements do not by
+themselves establish a cause of falling.
+
+The completed rate-scale 0.2 trial (`landing_mpc_ratescale02_20261107_01`) also
+remained **27/128**, 74 airborne contacts, 34 conditional recoveries, NF0.
+It evaluated all 128 episodes but enabled MPC only on TRAIN1/67/95. This option
+clips requested targets in prediction/execution; it does not shrink the QP's
+internal torque set by the same factor. Thus this is a post-solve admission
+experiment, not proof of an internally optimized reduced-authority controller.
+Compact, source-hashed counts are in
+`landing_mpc_memory_followup_evidence_20261107.json`.
+
+A new, source-confirmed issue was found before further tuning:
+
+1. The evaluator constructs one `LandingSupportMPCV3`. Its `ContinuousSupportQP`
+   held one COM reference position/velocity, contact history and anchor array.
+   These were shared across the selected environments.
+2. Each QP call advances that reference by 10 ms. A horizon with up to 40 stages
+   advanced live memory by prediction time, and each alternative contact mode
+   could advance it again. Rejected plans did not roll that memory back.
+3. Resetting any environment reset the shared MPC reference for all cases.
+4. Held commands skipped the live observation path, including the internal
+   contact-state counter and continuous reference update.
+
+This is a controller-memory bug, not evidence that any particular failed state
+is recoverable. It also makes prior continuous-reference trials unsuitable as
+clean tests of the intended per-environment closed-loop reference.
+
+The correction stores live memory separately per environment. Each eligible
+real control tick (including held-command ticks) advances it once. Planning
+uses a separate branch and restores live memory even after an exception.
+Alternative contact modes start from the same stage memory; only the selected
+branch advances the next prediction stage. Episode reset clears only that
+lane. Contact observations now update before the held-action early return.
+Physical parameters, policy, success conditions and the QP cost are unchanged.
+This does not turn the sequential QP into a jointly optimized hybrid MPC, nor
+does it fix implicit-PD/contact model mismatch by itself.
+
+Validation: 16 focused CPU tests passed (four new memory regressions, plus the
+existing MPC/contact-state suite). Tests cover interleaved versus independent
+lanes, selective reset, rollback after failed prediction, once-per-tick held
+observation, and branch-independent reference timing. A production QP check on
+recorded TRAIN1 observation tick371 confirms identical first targets for
+requested horizons 8/40 and no change of live memory after planning; both
+predictions rejected at stage1. That is a consistency check, not native success.
+See `landing_reference_memory_cpu_20261107.json`.
+
+The provisional COM-braking-offset experiment was stopped at tick285 with no
+complete 128-episode result. Its partial files and source snapshot remain local
+under `reports/landing_mpc_combrake02_20261107_01/`; the speculative offset was
+removed. It was only a heuristic reference offset, not an implementation of
+upstream VHSIP, and must not be reported as a completed VHSIP/MPC result.
+
+Next native comparison: retain the original 27/128 frozen policy, use the same
+TRAIN1/67/95 controller selection, 40-step horizon, original rate-scale 1.0 and
+40-step hold as `landing_mpc_horizon40_20261107_01`, changing only reference
+memory/observation semantics. Report per-case recovery, ball-side intersections,
+solver exceptions and old-success retention. No improvement is claimed until
+this full native run completes.

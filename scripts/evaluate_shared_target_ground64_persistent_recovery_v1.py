@@ -50,6 +50,8 @@ parser.add_argument('--landing-mpc-hold-first-action', action='store_true',
     help='Hold the accepted first normalized action during hold-steps instead of re-solving and replacing it every tick')
 parser.add_argument('--landing-mpc-executor-replay', action='store_true',
     help='Replay position-target rate limits and implicit-PD effort saturation inside MPC prediction')
+parser.add_argument('--landing-mpc-command-rate-scale', type=float, default=1.0,
+    help='Scale the native one-tick position-target rate allowance used by MPC (0<scale<=1)')
 parser.add_argument('--landing-mpc-support-margin', action='store_true',
     help='Use the experimental support-margin viability gate (MPC v2)')
 parser.add_argument('--landing-mpc-torque-overlay', action='store_true',
@@ -61,7 +63,7 @@ parser.add_argument('--landing-mpc-force-post-touchdown', action='store_true',
 parser.add_argument('--landing-mpc-latched-post-touchdown-ticks', type=int, default=0,
     help='Keep the post-touchdown MPC lifecycle active for this many 100 Hz ticks after phase774 is first observed (0 disables latch)')
 parser.add_argument('--landing-mpc-contact-force-threshold', type=float, default=0.,
-    help='Minimum upward measured foot force for a foot to count as MPC support (0 keeps geometric contacts)')
+    help='Minimum upward measured foot force for MPC support (0 keeps the existing force-norm hysteresis flag)')
 parser.add_argument('--landing-mpc-contact-release-threshold', type=float, default=None,
     help='Upward-force threshold below which a latched foot begins unloading (default half engage threshold)')
 parser.add_argument('--landing-mpc-contact-release-ticks', type=int, default=3,
@@ -123,7 +125,7 @@ parser.add_argument('--landing-mpc-continuous-reference', action='store_true',
 parser.add_argument('--landing-mpc-load-aware-support', action='store_true',
     help='Weight the continuous support reference by measured per-foot vertical load')
 parser.add_argument('--landing-mpc-load-force-floor', type=float, default=2.,
-    help='Minimum force used for a geometrically active foot in load-aware weighting')
+    help='Minimum force weight for a foot selected by the observed-contact flag')
 parser.add_argument('--landing-mpc-free-arm', action='store_true',
     help='With continuous-reference MPC, leave arm commands as a soft cost instead of an exact PD constraint')
 parser.add_argument('--reactive-vhsip-cases', type=int, nargs='+', default=None,
@@ -201,6 +203,7 @@ class SharedTargetResidualController:
                  landing_mpc_min_start_risk_score=0., landing_mpc_hold_steps=0,
                  landing_mpc_hold_first_action=False,
                  landing_mpc_executor_replay=False,
+                 landing_mpc_command_rate_scale=1.0,
                  landing_mpc_support_margin=False,
                  landing_mpc_torque_overlay=False,
                  landing_mpc_touchdown_recovery=False,
@@ -278,6 +281,10 @@ class SharedTargetResidualController:
             raise ValueError('landing_mpc_hold_steps must be nonnegative')
         self.landing_mpc_hold_first_action=bool(landing_mpc_hold_first_action)
         self.landing_mpc_executor_replay=bool(landing_mpc_executor_replay)
+        self.landing_mpc_command_rate_scale=float(landing_mpc_command_rate_scale)
+        if (not np.isfinite(self.landing_mpc_command_rate_scale) or
+                not 0. < self.landing_mpc_command_rate_scale <= 1.):
+            raise ValueError('landing_mpc_command_rate_scale must be in (0,1]')
         self._landing_mpc_hold_remaining=torch.zeros((count,),dtype=torch.int32,device=device)
         self._landing_mpc_held_action=torch.zeros((count,18),dtype=torch.float32,device=device)
         self._landing_mpc_last_target=np.full((count,18),np.nan,dtype=np.float64)
@@ -439,6 +446,7 @@ class SharedTargetResidualController:
                 touchdown_vertical_speed_limit_mps=self.landing_mpc_touchdown_vertical_speed_limit,
                 touchdown_impact_projection=self.landing_mpc_touchdown_impact_projection)
             mpc_settings = replace(mpc_settings, executor_replay=self.landing_mpc_executor_replay)
+            mpc_settings = replace(mpc_settings, command_rate_scale=self.landing_mpc_command_rate_scale)
             self.landing_mpc=(LandingSupportMPCV3(interface, qp_settings=qp_settings,
                 settings=mpc_settings, preserve_arm_command=not self.landing_mpc_free_arm,
                 load_aware_support=self.landing_mpc_load_aware_support,
@@ -510,7 +518,11 @@ class SharedTargetResidualController:
                 self._landing_mpc_latched_post_touchdown[int(lane)]=False
                 self._landing_mpc_latched_age[int(lane)]=0
         if self.landing_mpc is not None and hasattr(self.landing_mpc, 'reset'):
-            self.landing_mpc.reset()
+            if ids is None:
+                self.landing_mpc.reset()
+            else:
+                for lane in selected:
+                    self.landing_mpc.reset(lane=int(lane))
 
     def effort_override(self):
         """Return explicit effort residuals for the native implicit-PD actuator."""
@@ -563,6 +575,30 @@ class SharedTargetResidualController:
             case=int(lane)  # evaluator maps env lanes to the fixed TRAIN panel
             if case not in self.landing_mpc_cases:continue
             try:
+                from scripts.loaded_pinocchio_model_v1 import LoadedPinocchioModelV1
+                if not hasattr(self,'_landing_mpc_model'):
+                    self._landing_mpc_model=LoadedPinocchioModelV1()
+                lim=limits.detach().cpu().numpy()
+                dflt=default.detach().cpu().numpy()
+                if self._landing_mpc_native_env is not None:
+                    state=self._landing_mpc_model.state_from_native(
+                        self._landing_mpc_native_env, lane, dflt,
+                        self.landing_mpc_contact_force_threshold)
+                    state_source='native_sim_state'
+                else:
+                    pub=raw[lane].detach().cpu().numpy()
+                    state=self._landing_mpc_model.state_from_public(pub,dflt)
+                    state_source='public_observation_reconstruction'
+                if self._landing_mpc_native_env is not None:
+                    geometric_contacts=getattr(state, 'geometric_contacts', state.contacts)
+                    measured_force=getattr(state, 'measured_force_world', None)
+                    state.contacts=self._landing_mpc_contact_state_lane[lane].update(
+                        geometric_contacts, measured_force)
+                joint_ref=lim[:,0]+.5*(action[lane].detach().cpu().numpy()+1.)*(lim[:,1]-lim[:,0])
+                control_tick = int(round(float(public_clock[lane]) / .01))
+                if isinstance(self.landing_mpc, LandingSupportMPCV3):
+                    self.landing_mpc.observe(state, joint_ref, lane=lane,
+                                             control_tick=control_tick)
                 release_for_mode_mismatch = False
                 release_for_tracking = False
                 mode_mismatch = False
@@ -632,25 +668,6 @@ class SharedTargetResidualController:
                 if release_for_mode_mismatch or release_for_tracking:
                     self._landing_mpc_hold_remaining[lane]=0
                     self._landing_mpc_mode_mismatch[lane]=0
-                from scripts.loaded_pinocchio_model_v1 import LoadedPinocchioModelV1
-                if not hasattr(self,'_landing_mpc_model'):
-                    self._landing_mpc_model=LoadedPinocchioModelV1()
-                lim=limits.detach().cpu().numpy()
-                dflt=default.detach().cpu().numpy()
-                if self._landing_mpc_native_env is not None:
-                    state=self._landing_mpc_model.state_from_native(
-                        self._landing_mpc_native_env, lane, dflt,
-                        self.landing_mpc_contact_force_threshold)
-                    state_source='native_sim_state'
-                else:
-                    pub=raw[lane].detach().cpu().numpy()
-                    state=self._landing_mpc_model.state_from_public(pub,dflt)
-                    state_source='public_observation_reconstruction'
-                if self._landing_mpc_native_env is not None:
-                    geometric_contacts=getattr(state, 'geometric_contacts', state.contacts)
-                    measured_force=getattr(state, 'measured_force_world', None)
-                    state.contacts=self._landing_mpc_contact_state_lane[lane].update(
-                        geometric_contacts, measured_force)
                 command_tracking_error = None
                 prediction_error = None
                 if (self._landing_mpc_native_env is not None and
@@ -661,14 +678,17 @@ class SharedTargetResidualController:
                     if np.isfinite(self._landing_mpc_last_predicted[lane]).all():
                         prediction_error = float(np.max(np.abs(actual_q-self._landing_mpc_last_predicted[lane])))
                 original_action=np.asarray(action[lane].detach().cpu().numpy(),dtype=np.float64).copy()
-                joint_ref=lim[:,0]+.5*(action[lane].detach().cpu().numpy()+1.)*(lim[:,1]-lim[:,0])
                 # The native trial must exercise the declared risk trigger.  A
                 # selected TRAIN case is only an admission filter; it is not a
                 # reason to keep overwriting a stable four-foot command.
                 force_post_touchdown = bool(self.landing_mpc_force_post_touchdown and
                                             self.landing_mpc_touchdown_recovery and
                                             active[lane].item())
-                plan=self.landing_mpc.solve(state,joint_ref,force=force_post_touchdown)
+                if isinstance(self.landing_mpc, LandingSupportMPCV3):
+                    plan=self.landing_mpc.solve(state,joint_ref,force=force_post_touchdown,
+                                               lane=lane,control_tick=control_tick)
+                else:
+                    plan=self.landing_mpc.solve(state,joint_ref,force=force_post_touchdown)
                 horizon=plan.get('horizon',[])
                 failed_stage=next((row for row in horizon if not row.get('accepted')),None)
                 predicted_contact_additions=[
@@ -707,7 +727,11 @@ class SharedTargetResidualController:
                     mode_validation_force_n=self.landing_mpc_mode_validation_force,
                     mode_validation_released=release_for_mode_mismatch,
                     tracking_error_released=release_for_tracking,
+                    # Legacy key retained for old readers; this is force-norm
+                    # hysteresis, not independent geometric contact evidence.
                     geometric_contacts=(getattr(state, 'geometric_contacts', state.contacts).tolist()),
+                    observed_force_contacts=(getattr(state, 'geometric_contacts', state.contacts).tolist()),
+                    contact_observation_semantics='native-force-norm-hysteresis-1N-on-0.5N-off',
                     support_contacts=state.contacts.tolist(),
                     latched_support_contacts=state.contacts.tolist(),
                     measured_foot_force_world=(getattr(state, 'measured_force_world', None).tolist()
@@ -982,6 +1006,7 @@ def main():
         landing_mpc_hold_steps=args.landing_mpc_hold_steps,
         landing_mpc_hold_first_action=args.landing_mpc_hold_first_action,
         landing_mpc_executor_replay=args.landing_mpc_executor_replay,
+        landing_mpc_command_rate_scale=args.landing_mpc_command_rate_scale,
         landing_mpc_support_margin=args.landing_mpc_support_margin,
         landing_mpc_torque_overlay=args.landing_mpc_torque_overlay,
         landing_mpc_touchdown_recovery=args.landing_mpc_touchdown_recovery,
@@ -1055,6 +1080,7 @@ def main():
                       landing_mpc_hold_steps=args.landing_mpc_hold_steps,
                       landing_mpc_hold_first_action=args.landing_mpc_hold_first_action,
                       landing_mpc_executor_replay=args.landing_mpc_executor_replay,
+                      landing_mpc_command_rate_scale=args.landing_mpc_command_rate_scale,
                       landing_mpc_support_margin=args.landing_mpc_support_margin,
                       landing_mpc_torque_overlay=args.landing_mpc_torque_overlay,
                       landing_mpc_touchdown_recovery=args.landing_mpc_touchdown_recovery,
@@ -1306,6 +1332,7 @@ def main():
                 hold_steps=int(args.landing_mpc_hold_steps),
                 hold_first_action=bool(args.landing_mpc_hold_first_action),
                 executor_replay=bool(args.landing_mpc_executor_replay),
+                command_rate_scale=float(args.landing_mpc_command_rate_scale),
                 support_margin=bool(args.landing_mpc_support_margin),
                 torque_overlay=bool(args.landing_mpc_torque_overlay),
                 touchdown_recovery=bool(args.landing_mpc_touchdown_recovery),

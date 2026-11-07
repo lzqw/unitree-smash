@@ -26,10 +26,59 @@ class LandingSupportMPCV3(LandingSupportMPCV2):
             continuous_reference=True, preserve_arm_command=preserve_arm_command,
             reference_frequency_rad_s=10., load_aware=load_aware_support,
             load_force_floor_n=load_force_floor_n)
+        self._live_reference = {}
+        self._prediction_reference = {}
+        self._observed_tick = {}
 
-    def reset(self):
-        if hasattr(self.qp, 'reset'):
+    def reset(self, lane=None):
+        """Reset a single episode without clearing other environments."""
+        if lane is None:
+            self._live_reference.clear()
+            self._prediction_reference.clear()
+            self._observed_tick.clear()
+        else:
+            for memory in (self._live_reference, self._prediction_reference,
+                           self._observed_tick):
+                memory.pop(int(lane), None)
+        self.qp.reset()
+
+    def observe(self, state, joint_reference, *, lane=0, control_tick):
+        """Advance live control memory once per actual tick, including holds.
+
+        A reference branch for planning begins before that tick's advance.
+        Failed solves and speculative contact modes never commit their memory.
+        """
+        lane, control_tick = int(lane), int(control_tick)
+        previous = self._observed_tick.get(lane)
+        if previous == control_tick:
+            return
+        if previous is not None and control_tick < previous:
+            raise ValueError('reset the lane before its control clock restarts')
+        if lane in self._live_reference:
+            self.qp.restore_reference_state(self._live_reference[lane])
+        else:
             self.qp.reset()
+        before = self.qp.reference_state()
+        try:
+            snapshot = self.qp.model.snapshot(state.q, state.v)
+            self.qp.reference(state, snapshot, self._posture_reference(state, joint_reference))
+            self._live_reference[lane] = self.qp.reference_state()
+            self._prediction_reference[lane] = before
+            self._observed_tick[lane] = control_tick
+        except Exception:
+            self.qp.restore_reference_state(before)
+            raise
+
+    def solve(self, state, joint_reference, *, force=False, lane=0, control_tick=None):
+        lane = int(lane)
+        if control_tick is None:
+            control_tick = self._observed_tick.get(lane, -1) + 1
+        self.observe(state, joint_reference, lane=lane, control_tick=control_tick)
+        self.qp.restore_reference_state(self._prediction_reference[lane])
+        try:
+            return super().solve(state, joint_reference, force=force)
+        finally:
+            self.qp.restore_reference_state(self._live_reference[lane])
 
     def contract(self):
         result = super().contract()
@@ -39,6 +88,7 @@ class LandingSupportMPCV3(LandingSupportMPCV2):
         result['preserve_arm_position_command'] = self.preserve_arm_command
         result['load_aware_support'] = self.qp.load_aware
         result['load_force_floor_n'] = self.qp.load_force_floor_n
+        result['reference_memory'] = 'per-lane-live-tick-with-speculative-rollback'
         return result
 
 

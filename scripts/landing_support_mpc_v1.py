@@ -38,6 +38,10 @@ class LandingMPCSettingsV1:
     # legacy joint-acceleration scaling remains the fallback if the replay
     # solve is ill-conditioned.
     executor_replay_model_consistent: bool = True
+    # Fraction of the native one-tick position-target velocity allowance used
+    # by the MPC.  A value below one prevents a large QP target jump that the
+    # implicit-PD articulation cannot realize in one control interval.
+    command_rate_scale: float = 1.0
 
 
 def _finite_positive(value, name):
@@ -66,6 +70,11 @@ class LandingSupportMPCV1:
             raise ValueError('executor_replay must be boolean')
         if type(settings.executor_replay_model_consistent) is not bool:
             raise ValueError('executor_replay_model_consistent must be boolean')
+        if (isinstance(settings.command_rate_scale, bool) or
+                not isinstance(settings.command_rate_scale, (int, float)) or
+                not math.isfinite(settings.command_rate_scale) or
+                not 0. < settings.command_rate_scale <= 1.):
+            raise ValueError('command_rate_scale must be in (0,1]')
         if (isinstance(settings.minimum_support_feet, bool)
                 or not isinstance(settings.minimum_support_feet, int)
                 or not 0 <= settings.minimum_support_feet <= 4):
@@ -176,7 +185,9 @@ class LandingSupportMPCV1:
         target = np.asarray(target, dtype=np.float64)
         if q.shape != (18,) or target.shape != (18,) or not np.isfinite(q).all() or not np.isfinite(target).all():
             raise ValueError('Expected finite 18D joint state and target')
-        max_delta = np.asarray(self.qp.interface.velocity, dtype=np.float64) * self.settings.control_dt_s
+        max_delta = (np.asarray(self.qp.interface.velocity, dtype=np.float64) *
+                     self.settings.control_dt_s *
+                     float(getattr(self.settings, 'command_rate_scale', 1.0)))
         return q + np.clip(target - q, -max_delta, max_delta)
 
     def normalized_command_target(self, state, target):
@@ -294,15 +305,28 @@ class LandingSupportMPCV1:
         for stage in range(self.settings.horizon_steps):
             plan_state = predicted
             mode_additions = []
-            plan = self.qp.solve(plan_state, joint_reference)
+            stateful_reference = hasattr(self.qp, 'reference_state')
+            reference_before = self.qp.reference_state() if stateful_reference else None
+
+            def solve_mode(candidate_state):
+                # Alternatives start at the same prediction time. Evaluating
+                # a rejected mode must not advance the reference for its peers.
+                if stateful_reference:
+                    self.qp.restore_reference_state(reference_before)
+                candidate_plan = self.qp.solve(candidate_state, joint_reference)
+                memory = self.qp.reference_state() if stateful_reference else None
+                return candidate_plan, memory
+
+            plan, reference_after = solve_mode(plan_state)
             imminent_modes = self._contact_mode_candidates(predicted)
             if not plan.get('accepted'):
                 for candidate_state, candidate_additions in imminent_modes:
-                    candidate_plan = self.qp.solve(candidate_state, joint_reference)
+                    candidate_plan, candidate_memory = solve_mode(candidate_state)
                     if candidate_plan.get('accepted'):
                         plan_state = candidate_state
                         mode_additions = list(candidate_additions)
                         plan = candidate_plan
+                        reference_after = candidate_memory
                         break
             elif getattr(self.settings, 'contact_mode_sequence_search', False) and imminent_modes:
                 # The legacy fallback only introduces a touchdown mode after
@@ -311,26 +335,28 @@ class LandingSupportMPCV1:
                 # and chooses the one-step candidate with the lowest predicted
                 # risk.  The live contact/load state remains authoritative on
                 # the next tick; this is a mode proposal, not a fake contact.
-                options = [(predicted, [], plan)]
+                options = [(predicted, [], plan, reference_after)]
                 max_candidates = int(getattr(self.settings,
                                              'contact_mode_sequence_max_candidates',
                                              len(imminent_modes)))
                 for candidate_state, candidate_additions in imminent_modes[:max_candidates]:
-                    candidate_plan = self.qp.solve(candidate_state, joint_reference)
+                    candidate_plan, candidate_memory = solve_mode(candidate_state)
                     if candidate_plan.get('accepted'):
-                        options.append((candidate_state, list(candidate_additions), candidate_plan))
+                        options.append((candidate_state, list(candidate_additions), candidate_plan, candidate_memory))
                 if len(options) > 1:
                     scored = []
-                    for option_state, option_additions, option_plan in options:
+                    for option_state, option_additions, option_plan, option_memory in options:
                         trial = self._integrate(option_state, option_plan['acceleration'], option_plan)
                         trial, _ = self._after_prediction(trial)
                         scored.append((self.risk_score(self.risk(trial)),
                                        len(option_additions), option_state,
-                                       option_additions, option_plan))
+                                       option_additions, option_plan, option_memory))
                     # Keep the current mode on exact ties; adding a predicted
                     # foot must earn a lower one-step risk score.
-                    _, _, plan_state, mode_additions, plan = min(
+                    _, _, plan_state, mode_additions, plan, reference_after = min(
                         scored, key=lambda item: (item[0], item[1]))
+            if stateful_reference:
+                self.qp.restore_reference_state(reference_after)
             row = dict(stage=stage, accepted=bool(plan.get('accepted')), solver_status=plan.get('solver_status'),
                        solver_iterations=plan.get('solver_iterations'), wall_runtime_s=plan.get('wall_runtime_s'),
                        contacts=plan_state.contacts.tolist(), risk=self.risk(plan_state),

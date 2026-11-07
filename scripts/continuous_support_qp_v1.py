@@ -7,6 +7,7 @@ not freeze arm joints, remove their dynamics, or add external forces. The stance
 reference keeps position/velocity continuous across observed contact changes.
 A new controller instance is required per environment, with reset per episode.
 """
+import copy
 import numpy as np
 
 from scripts.reduced_whole_body_support_qp_v1 import ReducedWholeBodySupportQP
@@ -64,6 +65,23 @@ class ContinuousSupportQP(ReducedWholeBodySupportQP):
         self.previous_contacts = np.zeros(4, dtype=bool)
         self.interface.arm_reference = None
         self._static_fixture = False
+
+    def reference_state(self):
+        """Copy only control memory, never the mutable Pinocchio workspace."""
+        return copy.deepcopy(dict(
+            reference_position=self.reference_position,
+            reference_velocity=self.reference_velocity,
+            support_anchors=self.support_anchors,
+            previous_contacts=self.previous_contacts,
+            arm_reference=self.interface.arm_reference))
+
+    def restore_reference_state(self, memory):
+        memory = copy.deepcopy(memory)
+        self.reference_position = memory['reference_position']
+        self.reference_velocity = memory['reference_velocity']
+        self.support_anchors = memory['support_anchors']
+        self.previous_contacts = memory['previous_contacts']
+        self.interface.arm_reference = memory['arm_reference']
 
     def reference(self, state, snapshot, joint_reference):
         raw = super().reference(state, snapshot, joint_reference)

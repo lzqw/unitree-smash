@@ -324,10 +324,7 @@ class LandingSupportMPCV2(LandingSupportMPCV1):
                     risk['angular_speed_rad_s'] <= self.settings.terminal_angular_speed_rad_s and
                     risk['horizontal_speed_mps'] <= self.settings.terminal_horizontal_speed_mps)
 
-    def solve(self, state, joint_reference, *, force=False):
-        # Copy V1 implementation's rollout but apply the support-margin risk
-        # and terminal viability checks.  Keeping the same QP preserves the
-        # established solver diagnostics and action interface.
+    def _posture_reference(self, state, joint_reference):
         effective_reference = np.asarray(joint_reference, dtype=np.float64).copy()
         if self.posture_target is not None and int(np.asarray(state.contacts, dtype=bool).sum()) > 0:
             weights = np.r_[
@@ -335,6 +332,10 @@ class LandingSupportMPCV2(LandingSupportMPCV1):
                 np.full(6, self.settings.landing_arm_posture_blend)]
             effective_reference = ((1. - weights) * effective_reference
                                    + weights * self.posture_target)
+        return effective_reference
+
+    def solve(self, state, joint_reference, *, force=False):
+        effective_reference = self._posture_reference(state, joint_reference)
         result = super().solve(state, effective_reference, force=force)
         result['posture_reference_used'] = effective_reference.tolist()
         if not result.get('horizon'):
