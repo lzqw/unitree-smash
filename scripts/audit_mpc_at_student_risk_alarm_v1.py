@@ -28,6 +28,7 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--risk',type=Path,required=True)
     p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--reference-memory',choices=['first_alarm','observed_support'],default='first_alarm')
     a=p.parse_args()
     if a.output.exists():raise ValueError('Preserve existing planning evidence')
     risk=json.loads(a.risk.read_text());r=Path(risk['baseline'])
@@ -53,6 +54,7 @@ def main():
             one_foot_max_com_distance_m=.20,landing_leg_posture_blend=.15,executor_replay=True,
             predict_touchdown_contacts=True,contact_mode_fallback=True)))
     requests=[];records=[];files=[Path(__file__),a.risk]
+    background={};background_pose_error=0.;background_rotation_error=0.
     coverage={v['case']:v for v in risk['coverage']}
     for alarm in risk['case_results']:
         if not alarm['any_alarm']:continue
@@ -88,10 +90,31 @@ def main():
         records.append(record)
         requests.append(dict(operation='observe',lane=case,state=state,reference=reference,
                              control_tick=tick,solve=True,force=True))
+        if a.reference_memory=='observed_support':
+            hit=False;active=False
+            for earlier in range(tick):
+                old=public[earlier]
+                active=active or (hit and old[774]>.5)
+                hit=hit or old[773]>.5
+                if not active:continue
+                previous_state=model.state_from_public(old,default)
+                if earlier%2==0:
+                    measured=poses[earlier//2,case,root_index]
+                    pe=float(np.max(abs(previous_state.root_position_world-measured[:3])))
+                    re=float(np.max(abs(previous_state.root_rotation_world-rotation_wxyz(measured[3:]))))
+                    background_pose_error=max(background_pose_error,pe)
+                    background_rotation_error=max(background_rotation_error,re)
+                    if pe>2e-5 or re>2e-5:raise ValueError('Background public-state reconstruction mismatch')
+                previous_state.previous_command_target=limits[:,0]+.5*(actions[earlier-1]+1.)*(limits[:,1]-limits[:,0])
+                previous_reference=limits[:,0]+.5*(actions[earlier]+1.)*(limits[:,1]-limits[:,0])
+                background.setdefault(earlier,[]).append(dict(operation='observe',lane=case,
+                    state=previous_state,reference=previous_reference,control_tick=earlier,solve=False,force=True))
     queried=[r for r in records if 'skipped' not in r]
     for family in ['full_interval','feasible_command_cost']:
         cfg['family']=family;started=time.perf_counter()
-        with ParallelLandingSolverV1(cfg,workers=4,timeout_s=300.) as pool:plans=pool.batch(requests)
+        with ParallelLandingSolverV1(cfg,workers=4,timeout_s=300.) as pool:
+            for _,batch in sorted(background.items()):pool.batch(batch)
+            plans=pool.batch(requests)
         for row,plan in zip(queried,plans):
             stages=plan.get('horizon',[]);failed=next((s for s in stages if not s['accepted']),None)
             first=bool(stages and stages[0]['accepted'])
@@ -111,10 +134,14 @@ def main():
             first_feasible=sum(v['models'][family]['first_feasible'] for v in selected),
             full_horizon=sum(v['models'][family]['full_horizon'] for v in selected))
             for family in ['full_interval','feasible_command_cost']})
-    files += [r/n for n in ['native_command_inputs.json','geometry.json','all_first_episodes.npz']]
+    files += [model.path]+[r/n for n in ['native_command_inputs.json','geometry.json','all_first_episodes.npz']]
     files += [Path(m.__file__) for name,m in sys.modules.items() if name.startswith('scripts.') and getattr(m,'__file__',None)]
     output=dict(scope=__doc__,native_execution=False,teacher_rescue_established=False,
-        risk_report=str(a.risk.resolve()),reference_memory='Initialize at first alarm; no earlier teacher memory',
+        risk_report=str(a.risk.resolve()),reference_memory=a.reference_memory,
+        background_reference_updates=sum(len(v) for v in background.values()),
+        background_reference_only_no_teacher_actions=True,
+        background_pose_max_error_m=background_pose_error,
+        background_rotation_matrix_max_error=background_rotation_error,
         contact_mode='original observed force-norm hysteresis; no additional vertical force threshold',
         missing_continuous_force_archive=True,load_aware_support=False,
         summary=summary,records=records,
