@@ -130,6 +130,8 @@ parser.add_argument('--landing-mpc-load-aware-support', action='store_true',
     help='Weight the continuous support reference by measured per-foot vertical load')
 parser.add_argument('--landing-mpc-load-force-floor', type=float, default=2.,
     help='Minimum force weight for a foot selected by the observed-contact flag')
+parser.add_argument('--landing-mpc-full-command-damper', action='store_true',
+    help='All18 interval commands with joint velocity envelope; requires free-arm and active-set interval mode')
 parser.add_argument('--landing-mpc-interval-active-set', action='store_true',
     help='Use quadprog for the identical interval QP; requires interval-command mode')
 parser.add_argument('--landing-mpc-interval-command-qp', action='store_true',
@@ -199,6 +201,7 @@ from scripts.landing_command_history_mpc_v1 import LandingCommandHistoryMPCV1
 from scripts.landing_implicit_command_mpc_v1 import LandingImplicitCommandMPCV1
 from scripts.landing_interval_command_mpc_v1 import LandingIntervalCommandMPCV1
 from scripts.landing_active_set_interval_mpc_v1 import LandingActiveSetIntervalMPCV1
+from scripts.landing_full_command_interval_mpc_v1 import LandingFullCommandIntervalMPCV1
 from scripts.touchdown_contact_state_v1 import TouchdownContactSettingsV1,TouchdownContactStateV1
 from scripts.whole_body_support_qp_v1 import PositionPDInterface, SupportSettings
 
@@ -266,6 +269,7 @@ class SharedTargetResidualController:
                  landing_mpc_implicit_command_qp=False,
                  landing_mpc_interval_command_qp=False,
                  landing_mpc_interval_active_set=False,
+                 landing_mpc_full_command_damper=False,
                  reactive_vhsip_cases=None, reactive_vhsip_post_touchdown_only=False,
                  reactive_vhsip_capture_model='height', reactive_vhsip_settling_s=.7,
                  reactive_vhsip_capture_gain=1., reactive_vhsip_blend_s=.08):
@@ -393,6 +397,9 @@ class SharedTargetResidualController:
             raise ValueError('landing_mpc_load_force_floor must be finite and nonnegative')
         self.landing_mpc_free_arm=bool(landing_mpc_free_arm)
         self.landing_mpc_command_history_interface=bool(landing_mpc_command_history_interface)
+        self.landing_mpc_full_command_damper=bool(landing_mpc_full_command_damper)
+        if self.landing_mpc_full_command_damper and not (landing_mpc_interval_command_qp and landing_mpc_interval_active_set and landing_mpc_free_arm):
+            raise ValueError("Full-command damper requires free-arm and active-set interval mode")
         self.landing_mpc_interval_active_set=bool(landing_mpc_interval_active_set)
         if self.landing_mpc_interval_active_set and not landing_mpc_interval_command_qp:
             raise ValueError("Active-set backend requires interval-command QP")
@@ -500,6 +507,8 @@ class SharedTargetResidualController:
             if getattr(self,"landing_mpc_interval_command_qp",False):
                 continuous_type=(LandingActiveSetIntervalMPCV1 if getattr(self,"landing_mpc_interval_active_set",False)
                                  else LandingIntervalCommandMPCV1)
+            if getattr(self,"landing_mpc_full_command_damper",False):
+                continuous_type=LandingFullCommandIntervalMPCV1
             continuous_extra=({'arm_target_rate_rad_s':self.landing_mpc_arm_target_rate}
                               if self.landing_mpc_command_history_interface else {})
             self.landing_mpc=(continuous_type(interface, qp_settings=qp_settings,
@@ -1174,6 +1183,7 @@ def main():
         landing_mpc_implicit_command_qp=args.landing_mpc_implicit_command_qp,
         landing_mpc_interval_command_qp=args.landing_mpc_interval_command_qp,
         landing_mpc_interval_active_set=args.landing_mpc_interval_active_set,
+        landing_mpc_full_command_damper=args.landing_mpc_full_command_damper,
         reactive_vhsip_cases=args.reactive_vhsip_cases,
         reactive_vhsip_post_touchdown_only=args.reactive_vhsip_post_touchdown_only,
         reactive_vhsip_capture_model=args.reactive_vhsip_capture_model,
@@ -1252,6 +1262,7 @@ def main():
         landing_mpc_implicit_command_qp=args.landing_mpc_implicit_command_qp,
         landing_mpc_interval_command_qp=args.landing_mpc_interval_command_qp,
         landing_mpc_interval_active_set=args.landing_mpc_interval_active_set,
+        landing_mpc_full_command_damper=args.landing_mpc_full_command_damper,
                       reactive_vhsip_cases=args.reactive_vhsip_cases,
                       reactive_vhsip_post_touchdown_only=args.reactive_vhsip_post_touchdown_only,
                       reactive_vhsip_capture_model=args.reactive_vhsip_capture_model,
@@ -1483,7 +1494,7 @@ def main():
                 controller_trial=True, native_execution=True, frozen_policy_performance=False,
                 formal_acceptance=False)
         if args.landing_mpc_cases is not None:
-            summary['landing_mpc'] = dict(schema=('landing-active-set-interval-mpc-v1'
+            summary['landing_mpc'] = dict(schema=('landing-full-command-interval-v1' if args.landing_mpc_full_command_damper else 'landing-active-set-interval-mpc-v1'
                 if args.landing_mpc_interval_active_set else 'landing-interval-command-mpc-v1'
                 if args.landing_mpc_interval_command_qp else 'landing-implicit-command-mpc-v1'
                 if args.landing_mpc_implicit_command_qp else 'landing-command-history-mpc-v1'
@@ -1542,6 +1553,7 @@ def main():
                 implicit_command_qp=bool(args.landing_mpc_implicit_command_qp),
                 interval_command_qp=bool(args.landing_mpc_interval_command_qp),
                 interval_active_set=bool(args.landing_mpc_interval_active_set),
+                full_command_damper=bool(args.landing_mpc_full_command_damper),
                 records=len(landing_mpc_records),
                 predicted_contact_transition_records=sum(bool(r.get('predicted_contact_additions')) for r in landing_mpc_records),
                 predicted_touchdown_impact_records=sum(
