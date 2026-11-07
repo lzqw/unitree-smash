@@ -1,0 +1,368 @@
+{
+  "candidate_promoted": false,
+  "new_native_execution": false,
+  "runs": [
+    {
+      "scope": "Compare bilateral and unilateral implicit-PD predictions on actual commands.\n\n10 ms predictions; no new native run, no controller score or safety claim.\nOnly the initial observed feet are contact candidates. Summaries compare the\nsame successful sample intersection and report all rejected predictions.\n",
+      "source": "reports/native_student24_mpc35_all128_20261107_01",
+      "native_new_execution": false,
+      "samples": 152,
+      "stride": 100,
+      "common_samples": 138,
+      "summary": {
+        "bilateral_refreshed": {
+          "successful": 152,
+          "failed": 0,
+          "failure_reasons": {},
+          "common_sample_errors": {
+            "root_position_m": {
+              "mean": 0.0001601571000701827,
+              "p95": 0.0005526573582489119,
+              "maximum": 0.00812871095809861
+            },
+            "root_attitude_rad": {
+              "mean": 0.00071340000098735,
+              "p95": 0.0023146929204908716,
+              "maximum": 0.025473439454424724
+            },
+            "world_linear_velocity_mps": {
+              "mean": 0.024699773123163783,
+              "p95": 0.10633670329621056,
+              "maximum": 0.9715125359418918
+            },
+            "world_angular_velocity_rad_s": {
+              "mean": 0.09111034767323285,
+              "p95": 0.387493583187834,
+              "maximum": 3.1429749456325125
+            },
+            "leg_position_rad": {
+              "mean": 0.002609016112885264,
+              "p95": 0.013335346976488596,
+              "maximum": 0.05418076605087507
+            },
+            "arm_position_rad": {
+              "mean": 0.0007069810142805197,
+              "p95": 0.0038021292939855473,
+              "maximum": 0.020269164751252067
+            }
+          },
+          "runtime_ms": {
+            "mean": 4.790932860678846,
+            "p95": 5.3887206944637,
+            "maximum": 8.709748974069953
+          }
+        },
+        "unilateral": {
+          "successful": 138,
+          "failed": 14,
+          "failure_reasons": {
+            "ValueError('Contact/motor active set did not converge; no fallback applied')": 14
+          },
+          "common_sample_errors": {
+            "root_position_m": {
+              "mean": 0.0001610486752125802,
+              "p95": 0.0005604294251361572,
+              "maximum": 0.008128421839311907
+            },
+            "root_attitude_rad": {
+              "mean": 0.0007187007661346411,
+              "p95": 0.002321013552024176,
+              "maximum": 0.02547477514810349
+            },
+            "world_linear_velocity_mps": {
+              "mean": 0.02474578232127983,
+              "p95": 0.10579688893923764,
+              "maximum": 0.9714241925851341
+            },
+            "world_angular_velocity_rad_s": {
+              "mean": 0.09121411553267766,
+              "p95": 0.3900217049325335,
+              "maximum": 3.1432726914663687
+            },
+            "leg_position_rad": {
+              "mean": 0.002357642865590943,
+              "p95": 0.012233996523395907,
+              "maximum": 0.03589590542944188
+            },
+            "arm_position_rad": {
+              "mean": 0.0007053276323296706,
+              "p95": 0.0037794827593333183,
+              "maximum": 0.02027675796444517
+            }
+          },
+          "runtime_ms": {
+            "mean": 6.83390151550013,
+            "p95": 15.38687186548486,
+            "maximum": 25.98072891123593
+          }
+        }
+      },
+      "paired_error_comparison": {
+        "root_position_m": {
+          "unilateral_better": 78,
+          "common_samples": 138
+        },
+        "root_attitude_rad": {
+          "unilateral_better": 66,
+          "common_samples": 138
+        },
+        "world_linear_velocity_mps": {
+          "unilateral_better": 79,
+          "common_samples": 138
+        },
+        "world_angular_velocity_rad_s": {
+          "unilateral_better": 69,
+          "common_samples": 138
+        },
+        "leg_position_rad": {
+          "unilateral_better": 78,
+          "common_samples": 138
+        },
+        "arm_position_rad": {
+          "unilateral_better": 61,
+          "common_samples": 138
+        }
+      },
+      "unilateral_released_samples": 9,
+      "unilateral_sliding_samples": 17,
+      "source_sha256": {
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_unilateral_support_prediction_v1.py": "6b23cca69315d94b990a9d35154114ea9955bf7ebf54ff6d5ccb4dea888e2024",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_000.npz": "6ecf9bb10fb3a71804f1fd6d51635bab52c92bd2963840d9864578b96aa4f8d3",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_001.npz": "9b9652b6790e2eaa359905b7381f1a48836cc59a7333d7628fbe172986186d83",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_003.npz": "90ffd4784f551cdc14dea741de2084c3ba64a70bc5da3f011d15f09b2477426a",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_006.npz": "e06aed9808236118fcb22c5d7c13c3499cd98629c3b2c712803369c40ddd1039",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_007.npz": "2c1158ac035494f091b676166cc2c15e5bf1f8b9356f9b13ad391acc61a5e491",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_010.npz": "242b396693bf86de34935ff78986d913e9e34ef078dbc85a1bdc5945dfb58e12",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_011.npz": "d364afa3dcd56395228b937605d4268c9efdb14895cbf51e392df500ac37c2d0",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_016.npz": "e9c6d5072d85ddd9ea616367876db0c56c3ac6c757479990a97a625aac476fcc",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_017.npz": "cc7c3792ea48b455fa4f3fb25a189cefad9cdc85c75914574b3fbdcbe3a1915e",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_018.npz": "5d54623a0346c62fbc6ca9a8de09e4349ec28b76456bde4c2ea92ef6cda165e5",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_021.npz": "d136bf79d2e11bfcf1ace91821266a21d1b0bbd777e5e12df7318c1586d5bd7d",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_022.npz": "0c70adeff6e79a490918b55a218e9d342c45fcf9f17992c6fc84a2121d76eb7d",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_023.npz": "25b714f0c735337beaebd693e9dc13471011f4c60c73c88144165d59b8e976ff",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_024.npz": "0362ed1dd9eced829cc8856159888d9347b8cacfb978b9b7ec1ae8660ff0167b",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_025.npz": "33fb5156a27c1f9f8cbd7e38e2d68b9f0bf21a693062b500d5504bd56622dc2c",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_027.npz": "7d57d6872943558c89c72071f36c8180f2722a5536ec87550729418316faf839",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_028.npz": "eafca1a65b56c4c00fa1990b756c1de207a768b0abcae637d91e7d0de830c7c4",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_032.npz": "f475f1f2f88485c944ff27e8c4bd4ad8d9a0276ecff3cfefd00a227dd5323fd5",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_033.npz": "a7ecccf264b706e94607de5d53456994e74468878a7a7a62841f700ac100ee5e",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_035.npz": "20cbc215782624749b50c298474b808039d9f917e6ffa62adf2d9129c90c33de",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_036.npz": "da61b55449ed7b3b2ed3e3dcf3673c3a913082980847adb54ec54fe8eb8c8c3f",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_038.npz": "789b3e7b62b0f9074cbe435dc2079cdd7276679420959afcfab096aa5eb5cb2e",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_039.npz": "4c530f4ef6eb91f4223cdbc87b166cad2d2ebfccf2368b9e956fae248c6bd13a",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_040.npz": "81f3acb2055de905a18a3bb4959fa120836eb024eab952f42409cc240c6d042c",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_045.npz": "a9c1f58d131d1b7c3c9bcfdfac272a0dca90cb98e51ea48b133bfadfe56f6881",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_048.npz": "16d46ced505f01967c3427737655f8aa7813f2a0e951d939a48d03ebccde9116",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_049.npz": "371844e5f385055baa1258043a2e93d1fb3a97f5087f6cfcba911526a9673abd",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_050.npz": "195445122a66c7c3a8236506b73d9c6cdb4c94244715d3a753fc6047f2d2d67e",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_051.npz": "d2102d87aae9c623839f7986de63d0dc4ad248f105f95dc06fce063929e77470",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_052.npz": "929f68cc04a6f3071289f4e4ddc8e7e44771b6af6a5230d0543882799cb65bac",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_053.npz": "a11214f8f9634c6ceb88ad38bef61ddc3ef2de62bf5a6a1bcb5f193e5642a770",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_054.npz": "923412c079b2714b499aee1988ecec9ca3899463c1ac8751e302e477671d4c7a",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_055.npz": "4986c0ff05caf70f99a4a73ec94748b70a3fd8273f241b62b691f07f8410c627",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_058.npz": "2c998fb7f6f48263c0679e63c986f50224a21b76c43aa7aeaaa9809d90c1ea14",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_060.npz": "1dcf5c644973744b4fbbac9c3e12386c7333eeb49bcf25a5c679bce84fc92b8b",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_061.npz": "de6e9b454550df9defaec07784a07540a9656c76c2e52314e765f2e561ce388b",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_063.npz": "9eb8b2d3998e0e5c0f89da5801e6bd365de3f28a267d7ab2395855cf9c27ccdf",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_064.npz": "c2280e3e2ae018842309d5e8a7369ae5d5495ccdf250fe666404b8bd320ccc8d",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_065.npz": "a320e8cfd043097c8da6d9997cf0b6f90f8e3f0b7eb3ba915d502920912b1cdf",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_067.npz": "3648a3a30aa68eb0175008f9b4fd353c7a4930adeed3779f11bd55de3994505d",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_068.npz": "a568267be2ebbd517741674fb35f38417ff387ec0544674415351bea9558d06c",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_069.npz": "6c35b173e0375e73a9c6adef2078de680322185da2b3d964f9d81b09a3f199fc",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_070.npz": "9999cccdb8457521beb4607895adc32d0c096042bb253f9bab126763928a7e1f",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_072.npz": "b965131493d977a0bfd1ebf9f47b190bb62c856d08c5e715bbc61119d61aee84",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_074.npz": "d6081dd2bd7677d0719a693c40a5919a3f2a5a10c92ccedb8c499ac4aa9f92b6",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_077.npz": "71da015b7dc6b23878d1211960da6f7c3e74c6c6b0e2dba08feb7ecb290d1454",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_080.npz": "35bebce8f4b3f56ace1daca65cd54d3be7802dcbdc7ca602128e174b9dd57148",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_081.npz": "67744ee05a083f4b4fa8a9b5105b4013eb82deb4183029021a23c84698f226ea",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_082.npz": "2b67dc50b5c55c8e6fc38472a3b8217d179a4921d4d21d27dedf1554541dd174",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_083.npz": "87e88b8b397338c687c710f1b7b2578a3710e6ecfabcbf13d3c22a6ee8902374",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_084.npz": "a3d0b5bce81485adedd2d5777f1ea082d06053933f8e75d779c15dc2588d6d7e",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_085.npz": "4b6d9ccb9f283e9f0ae80743e5df29070b47b8b420ce75fa684b3100d40802e0",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_086.npz": "831ec3bbd06eab7e915f6dc1cabd4401673e96d251c1da762ab649773ea3abeb",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_091.npz": "7f73e5a1c8e840656c7d4f4c4780a026c6dd79cb7ef6fb3e4d7dad1a448387f7",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_094.npz": "ef62f9f0b33e8fbc62e7d6805a8cbc11a6e612a10e9a2dde9d2f9e87cb4f1766",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_095.npz": "55e3e2aab96ed0ed35c66357e5643b698dcb3dea36d2fa9d7090bef860122f0e",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_097.npz": "87932b3b1e989ace8b3bf03be1e4565b47c056e03af10d78dce4f5682273db48",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_099.npz": "73185445c202f69911577b634d8ddec2bcd1629d0828b757fd7926d8a2ea7086",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_100.npz": "8ca15c5ac9979e0bc930b11fd1639a352bd1c10cfc2a03ffce99ff3df20b6636",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_102.npz": "6b2e69c39224e355a6dc043ece87e677a3909aff4486a7380c5a319b0964bf0d",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_103.npz": "7a01d2bb84fd15752bc2a8bec6008a448e7d319c765d94977b563765fcb008f5",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_106.npz": "a6e388c62401b145664672963db3b7b4d7c044427cc0ab6e3beaf5fb71c7db15",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_107.npz": "f5efe8c518bd4f2090ce11b538a95d8f1e59325b73313d847ca43af44ceae3cf",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_112.npz": "d72fe47b77579724d74345234750fb21f4b9752523cc5ec0355ebc2c2e4e5b3e",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_114.npz": "6d580b75fcead2c4b354fb4989c7bbbb861664707a0d3467ff8721843c595558",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_118.npz": "398f5091c0baebd8631688094a0ae9adb62a656ae51fc9cb0082ad650e98c848",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_119.npz": "814e4bba8946eac3a1f6c5d3c8c665852b0e3a1cfbe10e4cfd81aabec05453de",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_120.npz": "3669b7f204137f314e3005fdc0965e3664ea60c53d96c879a666dad65cfc1b65",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_121.npz": "a96c53ae1dcb722c5154ccc04576b4372059532af055d98e361826029a5142f4",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_123.npz": "a252a90ffbd132236db52a27d0ad0972d57fffc51a474ff2ac81583de8f1d606",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_126.npz": "d83d43a354cfc936d1c6e1580a10b5fbc1afa3be210891d685cfad6101d029ef",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_013.npz": "5bbe7e335d0d3a610418471ec0599459dae32ab010e8706e95dfe3e41cbe50e7",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/fixed_policy_traces/case_009.npz": "66f16b1bfba20255542fbad52b2b59e59743112438b20e3ea5c7de54149ebf9e",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/job.json": "7d9869837f337238c23d198b3fa6551d410872ff7e865a97cc91fab5037b5500",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/native_command_inputs.json": "f861d727c049c85d612cad7ce2a5be9a4bc3a85ab18ba38f5018dc871fca6f7c",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_student24_mpc35_all128_20261107_01/landing_mpc_records.json": "1c5b1af3b8c746909ac8579e63287ca219e1bc47071643ea2199248c831bf818",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/unilateral_implicit_prediction_v1.py": "003221a2c6f7c386f2fd02a3ab7147b15b1c2a1a8f7b39b8ec532668541b2827",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/implicit_support_prediction_v1.py": "b751fa0ea59edd1fe8fc62cf0ba3816e5583ecc76df7058ef3f5185a335a1e01",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_relinearized_support_prediction_v1.py": "69cf0c828632658eb18b089a7273db4d0815149399a725c34d0f1b44f6c61267",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/loaded_pinocchio_model_v1.py": "2b303a32e57391ec7aaf3c3faf9d151f758477faf13ef6efae5bead979dcae82",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/whole_body_support_qp_v1.py": "b67cd1f1c8ebe973d3885773fbc9f3bf17cfd935e5e2210a4b7c0ea1ff331d6d"
+      },
+      "full_local_result": "reports/landing_student_teacher_followup_20261107/unilateral_prediction.json",
+      "full_result_sha256": "38387ec8320baeb943aca2e2a9acff3344066ddfdd8c7410c07578570e918dfa"
+    },
+    {
+      "scope": "Compare bilateral and unilateral implicit-PD predictions on actual commands.\n\n10 ms predictions; no new native run, no controller score or safety claim.\nOnly the initial observed feet are contact candidates. Summaries compare the\nsame successful sample intersection and report all rejected predictions.\n",
+      "source": "reports/landing_mpc_command_history_cohort26_repeat_20261107_01",
+      "native_new_execution": false,
+      "samples": 40,
+      "stride": 100,
+      "common_samples": 38,
+      "summary": {
+        "bilateral_refreshed": {
+          "successful": 40,
+          "failed": 0,
+          "failure_reasons": {},
+          "common_sample_errors": {
+            "root_position_m": {
+              "mean": 3.3973747469894954e-05,
+              "p95": 0.00014843059678355632,
+              "maximum": 0.00025292133470282267
+            },
+            "root_attitude_rad": {
+              "mean": 0.0003111084218393355,
+              "p95": 0.0008999396913761066,
+              "maximum": 0.001093077940705197
+            },
+            "world_linear_velocity_mps": {
+              "mean": 0.004146153072413502,
+              "p95": 0.0211819560975101,
+              "maximum": 0.05499148186456686
+            },
+            "world_angular_velocity_rad_s": {
+              "mean": 0.017643655714080636,
+              "p95": 0.1525059550014912,
+              "maximum": 0.18360480828692485
+            },
+            "leg_position_rad": {
+              "mean": 0.0014549674989451258,
+              "p95": 0.0021543227694033303,
+              "maximum": 0.031404447234478106
+            },
+            "arm_position_rad": {
+              "mean": 0.0001463134890392158,
+              "p95": 0.0009754634094503275,
+              "maximum": 0.0012145701026566869
+            }
+          },
+          "runtime_ms": {
+            "mean": 4.7722335904836655,
+            "p95": 5.077212315518409,
+            "maximum": 5.9750680811703205
+          }
+        },
+        "unilateral": {
+          "successful": 38,
+          "failed": 2,
+          "failure_reasons": {
+            "ValueError('Contact/motor active set did not converge; no fallback applied')": 2
+          },
+          "common_sample_errors": {
+            "root_position_m": {
+              "mean": 3.362820769353641e-05,
+              "p95": 0.00014572395353611202,
+              "maximum": 0.00025261632776820005
+            },
+            "root_attitude_rad": {
+              "mean": 0.00031090198444821754,
+              "p95": 0.0008731695820827183,
+              "maximum": 0.0010930831898338196
+            },
+            "world_linear_velocity_mps": {
+              "mean": 0.0040848738060880055,
+              "p95": 0.02081065807229493,
+              "maximum": 0.05491876180924069
+            },
+            "world_angular_velocity_rad_s": {
+              "mean": 0.017762647836077824,
+              "p95": 0.15225366677962776,
+              "maximum": 0.1843219838690815
+            },
+            "leg_position_rad": {
+              "mean": 0.0013593712866316824,
+              "p95": 0.0021543560085933475,
+              "maximum": 0.027325503210514634
+            },
+            "arm_position_rad": {
+              "mean": 0.00014604834723047925,
+              "p95": 0.0009575994068620415,
+              "maximum": 0.001214588759661961
+            }
+          },
+          "runtime_ms": {
+            "mean": 6.56366067705676,
+            "p95": 13.252976560033852,
+            "maximum": 16.54051896184683
+          }
+        }
+      },
+      "paired_error_comparison": {
+        "root_position_m": {
+          "unilateral_better": 17,
+          "common_samples": 38
+        },
+        "root_attitude_rad": {
+          "unilateral_better": 17,
+          "common_samples": 38
+        },
+        "world_linear_velocity_mps": {
+          "unilateral_better": 21,
+          "common_samples": 38
+        },
+        "world_angular_velocity_rad_s": {
+          "unilateral_better": 14,
+          "common_samples": 38
+        },
+        "leg_position_rad": {
+          "unilateral_better": 18,
+          "common_samples": 38
+        },
+        "arm_position_rad": {
+          "unilateral_better": 13,
+          "common_samples": 38
+        }
+      },
+      "unilateral_released_samples": 1,
+      "unilateral_sliding_samples": 5,
+      "source_sha256": {
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_unilateral_support_prediction_v1.py": "6b23cca69315d94b990a9d35154114ea9955bf7ebf54ff6d5ccb4dea888e2024",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_001.npz": "3d1553156b33c635f41886cf72ec4e74ad2e46fcb73402371db78ef8d3a2bb0e",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_003.npz": "b6b1b7d6398529c2115e29e763f7eefbf3975ef55c2ded3bd9b154189d61416b",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_008.npz": "4d24a3bf8a1ddbbecb53fae5a6c9338f427c3be722a5f72911b88861119e11ff",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_038.npz": "9d14b52f637af5852a4c05e3cdfc2cbe04ad438a548dc5b323bf0c76e4082e02",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_050.npz": "d55dacda6efa210f519a46ca3a68867d764aa741b7a5cf12518db61ce9b366cc",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_054.npz": "2266d60c63b6949defae70914f25c45339ffcdee7f0cfa01e7778fa335d2caaa",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_058.npz": "c59431f61f699d4d68e2fd9a4b7152ee2c4e60aedc211ef53854301cf0256fcb",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_061.npz": "08efd36bcc7afe64238307abc0c8163274c0e3f375d821a065e412cf91d473ca",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_067.npz": "6780e2008347e3b072eefc1a94104ae03ccc380e5c9b138c60a0e6761d76d1fa",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_071.npz": "9dd935caba668a92e93fccf55d6475a581bbfe83e865bf41f5132f917a6adc7e",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_077.npz": "6fe3880bcf154257362eea1cfad56539dda983a126c3d90ab3ffddf1b210867e",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_085.npz": "d3f2ede1fe71f8cd5887d174fdcbdcca4d6cfed57dd68818adbb6c305d4ed562",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_095.npz": "3b9d1438451156ca9cd568e343bd21ba94a55a5fb1e9bcf4b1a31b3ab8c103bf",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_096.npz": "abda3c6871ece8bd075450f4e5c9c8fa473151da5facf232e06599248a5a8834",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_115.npz": "dca544769a31538e947f91c4e84040c1e9090a60253e436c0f4798f5e95edea9",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/job.json": "95040aa7d501efedac377fc2f65469f94ad8aa51805507af730d22a561d2e4c3",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/native_command_inputs.json": "f861d727c049c85d612cad7ce2a5be9a4bc3a85ab18ba38f5018dc871fca6f7c",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/landing_mpc_records.json": "2395af026da81f37aaab90237308796fee917d69ac039c83bae4134cbdbe59e8",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/unilateral_implicit_prediction_v1.py": "003221a2c6f7c386f2fd02a3ab7147b15b1c2a1a8f7b39b8ec532668541b2827",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/implicit_support_prediction_v1.py": "b751fa0ea59edd1fe8fc62cf0ba3816e5583ecc76df7058ef3f5185a335a1e01",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_relinearized_support_prediction_v1.py": "69cf0c828632658eb18b089a7273db4d0815149399a725c34d0f1b44f6c61267",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/loaded_pinocchio_model_v1.py": "2b303a32e57391ec7aaf3c3faf9d151f758477faf13ef6efae5bead979dcae82",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/whole_body_support_qp_v1.py": "b67cd1f1c8ebe973d3885773fbc9f3bf17cfd935e5e2210a4b7c0ea1ff331d6d"
+      },
+      "full_local_result": "reports/landing_command_history_repeat_20261107/unilateral_prediction.json",
+      "full_result_sha256": "3ab0ca8aea053fb80b49dfd3a4007c88a5d404922d6d148295080d82b8da3aae"
+    }
+  ]
+}
