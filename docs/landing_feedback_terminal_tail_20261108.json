@@ -1,0 +1,462 @@
+{
+  "observed_at": "2026-11-07T19:07:52.911994+00:00",
+  "previous_turn_classification": "progress",
+  "tick": 461,
+  "coarse": {
+    "accepted": true,
+    "failure": null,
+    "completed_model_steps": 339,
+    "required_model_steps": 339,
+    "prediction_end_control_tick": 800,
+    "original_episode_end_control_tick": 800,
+    "prefix_terminal": {
+      "values": {
+        "roll": -0.24804445187016383,
+        "pitch": 0.14413312475557752,
+        "horizontal": 0.2188310632631653,
+        "vertical_speed": 0.02639009466321713,
+        "omega": 1.3153623557166818,
+        "joint_speed": 3.8511172817914647,
+        "support_feet": 3,
+        "support_margin_m": 0.050845385947543786
+      },
+      "old_endpoint_violations": {
+        "omega": 0.3153623557166818,
+        "joint_speed": 2.8511172817914647
+      }
+    },
+    "terminal": {
+      "roll": -0.2427402042667193,
+      "pitch": 0.16252011701583552,
+      "horizontal": 0.005487316381770506,
+      "vertical_speed": 0.001388815909513935,
+      "omega": 0.018061521390960192,
+      "joint_speed": 0.023922526560704593,
+      "support_feet": 3,
+      "support_margin_m": 0.038889625677158195
+    },
+    "terminal_violations": {},
+    "trailing_model_kinematic_window_s": 1.44,
+    "longest_model_kinematic_window_s": 1.44,
+    "path_diagnostics": {
+      "momentum_residual": 6.4705185653934905e-15,
+      "normal_complementarity": 1.9999401155643137e-07,
+      "friction_cone": 0.0,
+      "tangent_fixed_point": 3.1170185694692765e-09,
+      "max_contact_iterations": 21,
+      "foot_penetration_m": 5.686283560783767e-07,
+      "joint_velocity_violation_rad_s": 0.0,
+      "joint_position_violation_rad": 0.0,
+      "motor_torque_violation_nm": 0.0,
+      "nonfoot_ground_violation_m": 0.0
+    },
+    "cost": 12.574425697757844,
+    "wall_seconds": 11.495212499983609,
+    "integration_substeps": 16,
+    "finite_model_continuation_only": true,
+    "formal_recovery_success": false,
+    "native_execution": false,
+    "valid_expert_labels": false
+  },
+  "fine": {
+    "accepted": true,
+    "failure": null,
+    "completed_model_steps": 339,
+    "required_model_steps": 339,
+    "prediction_end_control_tick": 800,
+    "original_episode_end_control_tick": 800,
+    "prefix_terminal": {
+      "values": {
+        "roll": -0.23773956336695282,
+        "pitch": 0.12324015310790658,
+        "horizontal": 0.2777455076460178,
+        "vertical_speed": 0.006437299378865384,
+        "omega": 1.387627302235763,
+        "joint_speed": 3.9208470589007374,
+        "support_feet": 3,
+        "support_margin_m": 0.05277850719207715
+      },
+      "old_endpoint_violations": {
+        "omega": 0.387627302235763,
+        "joint_speed": 2.9208470589007374
+      }
+    },
+    "terminal": {
+      "roll": -0.2500571364943007,
+      "pitch": 0.17585180485985494,
+      "horizontal": 0.031709694771396825,
+      "vertical_speed": 0.006136203767765183,
+      "omega": 0.08029271715356157,
+      "joint_speed": 0.09132091083176103,
+      "support_feet": 3,
+      "support_margin_m": 0.039083404485068356
+    },
+    "terminal_violations": {},
+    "trailing_model_kinematic_window_s": 1.3900000000000001,
+    "longest_model_kinematic_window_s": 1.3900000000000001,
+    "path_diagnostics": {
+      "momentum_residual": 7.6739829768524e-15,
+      "normal_complementarity": 1.9999768731578105e-07,
+      "friction_cone": 2.168404344971009e-19,
+      "tangent_fixed_point": 2.760028228258578e-08,
+      "max_contact_iterations": 17,
+      "foot_penetration_m": 4.370487187259353e-07,
+      "joint_velocity_violation_rad_s": 0.0,
+      "joint_position_violation_rad": 0.0,
+      "motor_torque_violation_nm": 0.0,
+      "nonfoot_ground_violation_m": 7.786537190718201e-08
+    },
+    "cost": 13.443829909620339,
+    "wall_seconds": 80.6199728900101,
+    "integration_substeps": 160,
+    "finite_model_continuation_only": true,
+    "formal_recovery_success": false,
+    "native_execution": false,
+    "valid_expert_labels": false
+  },
+  "planner": {
+    "accepted": true,
+    "verification": {
+      "accepted": true,
+      "failure": null,
+      "completed_model_steps": 339,
+      "required_model_steps": 339,
+      "prediction_end_control_tick": 800,
+      "original_episode_end_control_tick": 800,
+      "prefix_terminal": {
+        "values": {
+          "roll": -0.23773956336695282,
+          "pitch": 0.12324015310790658,
+          "horizontal": 0.2777455076460178,
+          "vertical_speed": 0.006437299378865384,
+          "omega": 1.387627302235763,
+          "joint_speed": 3.9208470589007374,
+          "support_feet": 3,
+          "support_margin_m": 0.05277850719207715
+        },
+        "old_endpoint_violations": {
+          "omega": 0.387627302235763,
+          "joint_speed": 2.9208470589007374
+        }
+      },
+      "terminal": {
+        "roll": -0.2500571364943007,
+        "pitch": 0.17585180485985494,
+        "horizontal": 0.031709694771396825,
+        "vertical_speed": 0.006136203767765183,
+        "omega": 0.08029271715356157,
+        "joint_speed": 0.09132091083176103,
+        "support_feet": 3,
+        "support_margin_m": 0.039083404485068356
+      },
+      "terminal_violations": {},
+      "trailing_model_kinematic_window_s": 1.3900000000000001,
+      "longest_model_kinematic_window_s": 1.3900000000000001,
+      "path_diagnostics": {
+        "momentum_residual": 7.6739829768524e-15,
+        "normal_complementarity": 1.9999768731578105e-07,
+        "friction_cone": 2.168404344971009e-19,
+        "tangent_fixed_point": 2.760028228258578e-08,
+        "max_contact_iterations": 17,
+        "foot_penetration_m": 4.370487187259353e-07,
+        "joint_velocity_violation_rad_s": 0.0,
+        "joint_position_violation_rad": 0.0,
+        "motor_torque_violation_nm": 0.0,
+        "nonfoot_ground_violation_m": 7.786537190718201e-08
+      },
+      "cost": 13.443829909620339,
+      "wall_seconds": 79.89017821988091,
+      "integration_substeps": 160,
+      "finite_model_continuation_only": true,
+      "formal_recovery_success": false,
+      "native_execution": false,
+      "valid_expert_labels": false
+    },
+    "selected": "state_feedback_seed",
+    "selection_score": 12.737858207093158,
+    "initial_q": [
+      0.7390656471252441,
+      -0.19434626400470734,
+      0.16478627920150757,
+      -0.1385087262657896,
+      0.08901336838742341,
+      0.12310089699281722,
+      0.9786409567129905,
+      0.0029734564013779163,
+      2.0086517333984375,
+      -1.8724865913391113,
+      -0.43148356676101685,
+      1.1188081502914429,
+      -1.9363843202590942,
+      -0.005913933273404837,
+      1.635435938835144,
+      -1.9846762418746948,
+      -0.1444193422794342,
+      1.4839506149291992,
+      -1.777064323425293,
+      0.07858660072088242,
+      1.195700764656067,
+      -2.589423656463623,
+      -0.13775458931922913,
+      -1.0605629682540894,
+      0.14834614098072052
+    ],
+    "initial_v": [
+      -0.05512198812010075,
+      0.17646467202113772,
+      0.0356001982013975,
+      -0.7635258398377995,
+      0.16699788597002882,
+      -0.43205093857691557,
+      -0.12835897505283356,
+      1.682989239692688,
+      -4.181570053100586,
+      0.45587486028671265,
+      -1.0324997901916504,
+      0.48221468925476074,
+      -1.0071194171905518,
+      0.21673229336738586,
+      -2.3077638149261475,
+      -2.4291176795959473,
+      0.2607123553752899,
+      2.2640466690063477,
+      1.6071163415908813,
+      0.5433633327484131,
+      -0.25699108839035034,
+      1.7594422101974487,
+      -0.3764421045780182,
+      1.143278956413269
+    ],
+    "initial_contacts": [
+      true,
+      true,
+      false,
+      false
+    ],
+    "previous_command": [
+      -0.10206967987108584,
+      0.2541471431115525,
+      -0.025839418695213112,
+      -0.3561497860777152,
+      1.116114942216683,
+      0.13929457841291537,
+      1.5545965621349964,
+      1.6740258353016735,
+      -2.6666255831845955,
+      -1.7590248516398646,
+      -2.07278746227804,
+      -1.6889697267696242,
+      0.1441175837980495,
+      1.2964996776049418,
+      -2.5816655247431797,
+      -0.052265698462292676,
+      -1.0755840885596228,
+      0.20872395999040805
+    ],
+    "used_observed_state": true,
+    "horizon_steps": 80,
+    "verified_continuation_steps": 339,
+    "observed_control_tick": 461,
+    "wall_seconds": 103.17716764402576,
+    "planner_version": "feedback_tail_candidate_selection_v1",
+    "acceptance_rule": "constrained_prefix_plus_explicit_stable_feedback_continuation",
+    "native_execution": false,
+    "valid_expert_labels": false,
+    "recursive_feasibility_proven": false,
+    "per_call_hard_deadline": false
+  },
+  "planner_attempts": [
+    {
+      "name": "shifted_previous_plan",
+      "stage": "coarse",
+      "verification": {
+        "accepted": true,
+        "failure": null,
+        "completed_model_steps": 339,
+        "required_model_steps": 339,
+        "prediction_end_control_tick": 800,
+        "original_episode_end_control_tick": 800,
+        "prefix_terminal": {
+          "values": {
+            "roll": -0.24414851530395265,
+            "pitch": 0.1256079466914123,
+            "horizontal": 0.2940192492719525,
+            "vertical_speed": 0.026356730251111047,
+            "omega": 0.9646886848921323,
+            "joint_speed": 1.2199940745264313,
+            "support_feet": 3,
+            "support_margin_m": 0.05312120577674893
+          },
+          "old_endpoint_violations": {
+            "joint_speed": 0.21999407452643127
+          }
+        },
+        "terminal": {
+          "roll": -0.24869123998883913,
+          "pitch": 0.17428636271552855,
+          "horizontal": 0.03862317559587172,
+          "vertical_speed": 0.007964392258039382,
+          "omega": 0.10128489672664179,
+          "joint_speed": 0.11454483331595877,
+          "support_feet": 3,
+          "support_margin_m": 0.03964743712316639
+        },
+        "terminal_violations": {},
+        "trailing_model_kinematic_window_s": 1.4000000000000001,
+        "longest_model_kinematic_window_s": 1.4000000000000001,
+        "path_diagnostics": {
+          "momentum_residual": 5.9310195643647035e-15,
+          "normal_complementarity": 1.9996175050496223e-07,
+          "friction_cone": 0.0,
+          "tangent_fixed_point": 8.423774983112864e-09,
+          "max_contact_iterations": 21,
+          "foot_penetration_m": 5.621118256762814e-07,
+          "joint_velocity_violation_rad_s": 0.0,
+          "joint_position_violation_rad": 0.0,
+          "motor_torque_violation_nm": 0.0,
+          "nonfoot_ground_violation_m": 0.0
+        },
+        "cost": 13.568533027224483,
+        "wall_seconds": 11.8969774490688,
+        "integration_substeps": 16,
+        "finite_model_continuation_only": true,
+        "formal_recovery_success": false,
+        "native_execution": false,
+        "valid_expert_labels": false
+      }
+    },
+    {
+      "name": "state_feedback_seed",
+      "stage": "coarse",
+      "verification": {
+        "accepted": true,
+        "failure": null,
+        "completed_model_steps": 339,
+        "required_model_steps": 339,
+        "prediction_end_control_tick": 800,
+        "original_episode_end_control_tick": 800,
+        "prefix_terminal": {
+          "values": {
+            "roll": -0.24804445187016383,
+            "pitch": 0.14413312475557752,
+            "horizontal": 0.2188310632631653,
+            "vertical_speed": 0.02639009466321713,
+            "omega": 1.3153623557166818,
+            "joint_speed": 3.8511172817914647,
+            "support_feet": 3,
+            "support_margin_m": 0.050845385947543786
+          },
+          "old_endpoint_violations": {
+            "omega": 0.3153623557166818,
+            "joint_speed": 2.8511172817914647
+          }
+        },
+        "terminal": {
+          "roll": -0.2427402042667193,
+          "pitch": 0.16252011701583552,
+          "horizontal": 0.005487316381770506,
+          "vertical_speed": 0.001388815909513935,
+          "omega": 0.018061521390960192,
+          "joint_speed": 0.023922526560704593,
+          "support_feet": 3,
+          "support_margin_m": 0.038889625677158195
+        },
+        "terminal_violations": {},
+        "trailing_model_kinematic_window_s": 1.44,
+        "longest_model_kinematic_window_s": 1.44,
+        "path_diagnostics": {
+          "momentum_residual": 6.4705185653934905e-15,
+          "normal_complementarity": 1.9999401155643137e-07,
+          "friction_cone": 0.0,
+          "tangent_fixed_point": 3.1170185694692765e-09,
+          "max_contact_iterations": 21,
+          "foot_penetration_m": 5.686283560783767e-07,
+          "joint_velocity_violation_rad_s": 0.0,
+          "joint_position_violation_rad": 0.0,
+          "motor_torque_violation_nm": 0.0,
+          "nonfoot_ground_violation_m": 0.0
+        },
+        "cost": 12.574425697757844,
+        "wall_seconds": 11.389460911042988,
+        "integration_substeps": 16,
+        "finite_model_continuation_only": true,
+        "formal_recovery_success": false,
+        "native_execution": false,
+        "valid_expert_labels": false
+      }
+    },
+    {
+      "name": "state_feedback_seed",
+      "stage": "independent_fixed_prefix_fine",
+      "verification": {
+        "accepted": true,
+        "failure": null,
+        "completed_model_steps": 339,
+        "required_model_steps": 339,
+        "prediction_end_control_tick": 800,
+        "original_episode_end_control_tick": 800,
+        "prefix_terminal": {
+          "values": {
+            "roll": -0.23773956336695282,
+            "pitch": 0.12324015310790658,
+            "horizontal": 0.2777455076460178,
+            "vertical_speed": 0.006437299378865384,
+            "omega": 1.387627302235763,
+            "joint_speed": 3.9208470589007374,
+            "support_feet": 3,
+            "support_margin_m": 0.05277850719207715
+          },
+          "old_endpoint_violations": {
+            "omega": 0.387627302235763,
+            "joint_speed": 2.9208470589007374
+          }
+        },
+        "terminal": {
+          "roll": -0.2500571364943007,
+          "pitch": 0.17585180485985494,
+          "horizontal": 0.031709694771396825,
+          "vertical_speed": 0.006136203767765183,
+          "omega": 0.08029271715356157,
+          "joint_speed": 0.09132091083176103,
+          "support_feet": 3,
+          "support_margin_m": 0.039083404485068356
+        },
+        "terminal_violations": {},
+        "trailing_model_kinematic_window_s": 1.3900000000000001,
+        "longest_model_kinematic_window_s": 1.3900000000000001,
+        "path_diagnostics": {
+          "momentum_residual": 7.6739829768524e-15,
+          "normal_complementarity": 1.9999768731578105e-07,
+          "friction_cone": 2.168404344971009e-19,
+          "tangent_fixed_point": 2.760028228258578e-08,
+          "max_contact_iterations": 17,
+          "foot_penetration_m": 4.370487187259353e-07,
+          "joint_velocity_violation_rad_s": 0.0,
+          "joint_position_violation_rad": 0.0,
+          "motor_torque_violation_nm": 0.0,
+          "nonfoot_ground_violation_m": 7.786537190718201e-08
+        },
+        "cost": 13.443829909620339,
+        "wall_seconds": 79.89017821988091,
+        "integration_substeps": 160,
+        "finite_model_continuation_only": true,
+        "formal_recovery_success": false,
+        "native_execution": false,
+        "valid_expert_labels": false
+      }
+    }
+  ],
+  "planner_prefix_matches_independent_fine_exactly": true,
+  "actual_input_unchanged": true,
+  "source_sha256": {
+    "reports/landing_feedback_terminal_tail_20261108/query461_16.json": "1c7bf81f88414562e6c08c6c5a9810cdf175b4c2c9438a1d0db33f1743ceff47",
+    "reports/landing_feedback_terminal_tail_20261108/query461_fixed_prefix160.json": "2879df7eb4b590711041f59318f4cdb7bf4a5f44eccacff268edca1ba9641d14",
+    "reports/landing_feedback_terminal_tail_20261108/planner_query461.json": "15c5c572ab257b40c59370423a694190a9fddebd34299ced13db5070f6556c68",
+    "reports/landing_feedback_terminal_tail_20261108/formal_verify.json": "ae2b5bbc540391cfed972e3b8764c4c9229b3e2cee247c029a8aa1075e69beea"
+  },
+  "unit_checks_passed": 5,
+  "native_new_planner_executed": false,
+  "student_complete5": 27,
+  "valid_expert_labels": false,
+  "formal_goal_status": "FAILED"
+}
