@@ -466,6 +466,25 @@ error, but simply re-solving more often does not fix the task.  A successful
 controller must change the predicted support/load-transfer trajectory, not only
 refresh the same position target after tracking error grows.
 
+## Full landing-posture reference trial
+
+The upstream reactive-landing structure uses a loaded landing posture and a
+settling reference rather than the strike controller's instantaneous joint
+target.  As a direct position-interface test, the support MPC was run with a
+full (`1.0`) blend toward the admitted standing leg posture after touchdown;
+all other settings matched the 40-step fixed-policy trial.
+
+The fixed TRAIN128 result remained **27/128 complete5**, with 74 airborne
+contacts, 34 conditional recoveries, 0 numerical failures, 717 MPC records,
+430 applied first steps, 168 solver failures, 419 terminal acceptances, and 4
+predicted contact transitions.  A stronger static leg target alone therefore
+does not supply the missing sustained recovery trajectory.
+
+The next implementation should use the upstream phase idea more faithfully:
+after measured touchdown, generate a time-varying COM/attitude and foot-support
+reference, then update it from measured load and state.  Raising a posture
+blend without a load-transfer/foot-relocation plan is not enough.
+
 ## Latched post-touchdown lifecycle trial
 
 The evaluator now supports a separate post-touchdown lifecycle latch. After
