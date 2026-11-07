@@ -30,11 +30,11 @@ from scripts.audit_joint_sequence_proposal_v1 import plain
 
 def rollout(controller,initial,feedback,nominal,mode,spheres,geometry,protocol,*,tick,substeps):
     state=copy.deepcopy(initial);length=800-tick;started=time.monotonic()
-    default=np.asarray(controller.posture_target) if hasattr(controller,'posture_target') else None
     # The interface default is provided explicitly with the recorded inputs.
     default=np.asarray(nominal['default'])
     constant=initial.previous_command_target.copy()
     standing=constant.copy();standing[:12]=default[:12]
+    measured_arm_standing=standing.copy();measured_arm_standing[12:]=initial.joint_position[12:]
     targets=[];states=[];diagnostics={};failure=None;trailing=0;longest=0;end=None
     for step in range(length):
         if time.monotonic()-started>300.:
@@ -43,6 +43,10 @@ def rollout(controller,initial,feedback,nominal,mode,spheres,geometry,protocol,*
         if mode=='recorded_student':target=nominal['commands'][tick+step].copy()
         elif mode=='hold_actual_previous':target=constant.copy()
         elif mode=='recorded_stand_legs_hold_arm':target=standing.copy()
+        elif mode=='stand_legs_measured_arm':target=measured_arm_standing.copy()
+        elif mode=='terminal_legs_measured_arm':
+            target,_=feedback.action(min(80+step,339),state,previous)
+            target[12:]=initial.joint_position[12:]
         elif mode=='existing_terminal_feedback':target,_=feedback.action(min(80+step,339),state,previous)
         else:raise ValueError('Unknown reference')
         target=np.clip(target,controller.qp.interface.limits[:,0],controller.qp.interface.limits[:,1])
@@ -58,8 +62,19 @@ def rollout(controller,initial,feedback,nominal,mode,spheres,geometry,protocol,*
         bad={k:v for k,v in d.items() if (k=='nonfoot_ground_violation_m' and v>1e-6) or
             (k in ['joint_position_violation_rad','joint_velocity_violation_rad_s','motor_torque_violation_nm'] and v>3e-4)}
         if bad:
+            following=result['state'];interface=controller.qp.interface
+            position_excess=np.maximum(interface.limits[:,0]-following.joint_position,
+                                       following.joint_position-interface.limits[:,1])
+            velocity_excess=abs(following.joint_velocity)-interface.velocity
             failure=dict(step=step,reason='path_constraints',violations=bad,
-                         first_model_ground_violation=result['first_ground_violation']);break
+                first_model_ground_violation=result['first_ground_violation'],
+                interval_end_joint_limit_violations=[dict(joint=controller.qp.model.joint_order[j],
+                    position_rad=float(following.joint_position[j]),velocity_rad_s=float(following.joint_velocity[j]),
+                    position_excess_rad=float(max(0.,position_excess[j])),
+                    velocity_excess_rad_s=float(max(0.,velocity_excess[j]))) for j in range(18)
+                    if position_excess[j]>3e-4 or velocity_excess[j]>3e-4],
+                requested_target_rad=target.copy(),
+                interval_end_q=following.q.copy(),interval_end_v=following.v.copy());break
         state=result['state'];state.previous_command_target=target.copy()
         end=terminal_measures(controller,state)
         stable=kinematically_stable(end,protocol) and state.q[2]>=.12
@@ -130,7 +145,8 @@ def main():
     sources += [Path(m.__file__) for n,m in list(sys.modules.items()) if n.startswith('scripts.') and getattr(m,'__file__',None)]
     hashes={str(p.resolve()):sha(p) for p in sources};results=[]
     args.output.parent.mkdir(parents=True,exist_ok=True)
-    for mode in ['recorded_student','hold_actual_previous','recorded_stand_legs_hold_arm','existing_terminal_feedback']:
+    for mode in ['recorded_student','hold_actual_previous','recorded_stand_legs_hold_arm','existing_terminal_feedback',
+                 'stand_legs_measured_arm','terminal_legs_measured_arm']:
         coarse=rollout(controller,state,feedback,dict(default=default,commands=commands),mode,
             spheres,geometry,protocol,tick=args.tick,substeps=16)
         fine=(rollout(controller,state,feedback,dict(default=default,commands=commands),mode,
