@@ -1,0 +1,963 @@
+{
+  "scope": "Full-continuation numerical/performance comparison and unfinished native MPC prefix audit; not new recovery success.",
+  "created_utc": "2026-11-07T20:21:23.770810+00:00",
+  "previous_goal_turn_classification": "progress",
+  "benchmark": {
+    "scope": "Compare original and cached contact solves over full recorded MPC continuations.\n\nOnly this standalone CPU process swaps a function during the candidate replay;\nthe original module is restored afterwards. No native controller is changed.\n",
+    "results": [
+      {
+        "tick": 460,
+        "source_plan": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_feedback_tail_all128_20261108_01/recovery_partial/plan_000460.json",
+        "reference": {
+          "required_model_steps": 340,
+          "completed_model_steps": 340,
+          "terminal": {
+            "roll": -0.24922172697852826,
+            "pitch": 0.17471917639116635,
+            "horizontal": 0.03189629478521054,
+            "vertical_speed": 0.006375996519004463,
+            "omega": 0.08180476563035873,
+            "joint_speed": 0.09345581152193692,
+            "support_feet": 3,
+            "support_margin_m": 0.039289103172276095
+          },
+          "terminal_violations": {},
+          "trailing_model_kinematic_window_s": 1.4000000000000001,
+          "path_diagnostics": {
+            "momentum_residual": 7.35392649553468e-15,
+            "normal_complementarity": 1.9999915037635652e-07,
+            "friction_cone": 1.0842021724855044e-19,
+            "tangent_fixed_point": 2.7447135503419137e-08,
+            "max_contact_iterations": 17,
+            "foot_penetration_m": 7.567803091308722e-07,
+            "joint_velocity_violation_rad_s": 0.0,
+            "joint_position_violation_rad": 0.0,
+            "motor_torque_violation_nm": 0.0,
+            "nonfoot_ground_violation_m": 2.421761405788092e-07
+          },
+          "wall_seconds": 79.21687140595168
+        },
+        "candidate": {
+          "required_model_steps": 340,
+          "completed_model_steps": 340,
+          "terminal": {
+            "roll": -0.24922172697852826,
+            "pitch": 0.17471917639116635,
+            "horizontal": 0.03189629478521054,
+            "vertical_speed": 0.006375996519004463,
+            "omega": 0.08180476563035873,
+            "joint_speed": 0.09345581152193692,
+            "support_feet": 3,
+            "support_margin_m": 0.039289103172276095
+          },
+          "terminal_violations": {},
+          "trailing_model_kinematic_window_s": 1.4000000000000001,
+          "path_diagnostics": {
+            "momentum_residual": 7.35392649553468e-15,
+            "normal_complementarity": 1.9999915037635652e-07,
+            "friction_cone": 1.0842021724855044e-19,
+            "tangent_fixed_point": 2.7447135503419137e-08,
+            "max_contact_iterations": 17,
+            "foot_penetration_m": 7.567803091308722e-07,
+            "joint_velocity_violation_rad_s": 0.0,
+            "joint_position_violation_rad": 0.0,
+            "motor_torque_violation_nm": 0.0,
+            "nonfoot_ground_violation_m": 2.421761405788092e-07
+          },
+          "wall_seconds": 68.19218870205805
+        },
+        "maximum_state_error": {
+          "q": 0.0,
+          "v": 0.0
+        },
+        "reference_to_saved_plan_error": {
+          "q": 0.0,
+          "v": 0.0
+        },
+        "maximum_command_error_rad": 0.0,
+        "runtime_ratio_reference_over_candidate": 1.161670756046006,
+        "all_predicted_contact_flags_equal": true
+      },
+      {
+        "tick": 478,
+        "source_plan": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_feedback_tail_all128_20261108_01/recovery_partial/plan_000478.json",
+        "reference": {
+          "required_model_steps": 322,
+          "completed_model_steps": 322,
+          "terminal": {
+            "roll": -0.25242749922877844,
+            "pitch": 0.17861939791650555,
+            "horizontal": 0.025429750659471468,
+            "vertical_speed": 0.004704073737916741,
+            "omega": 0.0643691896065261,
+            "joint_speed": 0.0701926567300244,
+            "support_feet": 3,
+            "support_margin_m": 0.03843230651852481
+          },
+          "terminal_violations": {},
+          "trailing_model_kinematic_window_s": 1.36,
+          "path_diagnostics": {
+            "momentum_residual": 6.2536781308963896e-15,
+            "normal_complementarity": 1.9996452235541973e-07,
+            "friction_cone": 2.168404344971009e-19,
+            "tangent_fixed_point": 2.198688403879604e-08,
+            "max_contact_iterations": 17,
+            "foot_penetration_m": 1.4517755212578587e-07,
+            "joint_velocity_violation_rad_s": 0.0,
+            "joint_position_violation_rad": 0.0,
+            "motor_torque_violation_nm": 0.0,
+            "nonfoot_ground_violation_m": 0.0
+          },
+          "wall_seconds": 70.91964366589673
+        },
+        "candidate": {
+          "required_model_steps": 322,
+          "completed_model_steps": 322,
+          "terminal": {
+            "roll": -0.25242749922877844,
+            "pitch": 0.17861939791650555,
+            "horizontal": 0.025429750659471468,
+            "vertical_speed": 0.004704073737916741,
+            "omega": 0.0643691896065261,
+            "joint_speed": 0.0701926567300244,
+            "support_feet": 3,
+            "support_margin_m": 0.03843230651852481
+          },
+          "terminal_violations": {},
+          "trailing_model_kinematic_window_s": 1.36,
+          "path_diagnostics": {
+            "momentum_residual": 6.2536781308963896e-15,
+            "normal_complementarity": 1.9996452235541973e-07,
+            "friction_cone": 2.168404344971009e-19,
+            "tangent_fixed_point": 2.198688403879604e-08,
+            "max_contact_iterations": 17,
+            "foot_penetration_m": 1.4517755212578587e-07,
+            "joint_velocity_violation_rad_s": 0.0,
+            "joint_position_violation_rad": 0.0,
+            "motor_torque_violation_nm": 0.0,
+            "nonfoot_ground_violation_m": 0.0
+          },
+          "wall_seconds": 62.221609603147954
+        },
+        "maximum_state_error": {
+          "q": 0.0,
+          "v": 0.0
+        },
+        "reference_to_saved_plan_error": {
+          "q": 0.0,
+          "v": 0.0
+        },
+        "maximum_command_error_rad": 0.0,
+        "runtime_ratio_reference_over_candidate": 1.1397912094885556,
+        "all_predicted_contact_flags_equal": true
+      }
+    ],
+    "source_sha256": {
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/benchmark_cached_contact_tail_v1.py": "0f1d1d363c0e7595e24d97e8f4c777961349585dd6fe11175c1ba35b8af490c5",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_episode_sequence3_20261107/manifest.json": "a5903bdbf7a652d17500ac2e805d85cd4b618be2a7a258d96052af18a628df2a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_episode_sequence3_20261107/sequences.npz": "da02e715d8aba2316c87323e349b208602c7c1eb3b977ab52fa0a16fee97d1a8",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_fullcommand_native_response_20261107/frictional_terminal_restoration3.json": "110aa54f7d2ce4f6ebc2bd39f211c4429cce215a8b521e01949e04a818a48dd6",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_terminal_support_result_20261108/attitude_gain03_full_validation160.json": "569f5774eb1e173a2f3c81f7f46b9a123bcfe7ce2ea1e4634c4fdffe01c62252",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_fullcommand_native_response_20261107/sphere_crossings_v3.json": "518b4868a6de07776d701957eb0c7da654456f0e22d511ebef56b0bcce8e295b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/configs/go2_piper_authored_ground_geometry_v1.json": "e39c41e9b69e481aeac8907c2dfacb9f593cf54e00c8fb822696638ef083167b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/configs/evaluation_protocol_v2.json": "421497aa51eecac023c70b200e8a75ecafff01527dcf215665d5d96c1e8266a8",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/configs/go2_piper_racket_landing_model_v1.json": "8c8997368ab98b3f2befa9908f537d76990dc2a1099ca30d8e6c1823de814e88",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_feedback_tail_all128_20261108_01/recovery_partial/plan_000460.json": "341d66edb88dc916de25389d8092aac765775650f22835b973715641ea07ac0b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_feedback_tail_all128_20261108_01/recovery_partial/plan_000478.json": "83579cd8298eeda35b9c45a3d7283bd8c116465aceec45bef2dfd501943969aa",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/parallel_landing_solver_v1.py": "4bc18476684fbc3a81eae8b1b63073c615ceafd73a23ccca2dde919564cfea33",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recorded_nonfoot_contact_history_v1.py": "b897ec590f76795a515f1e3ad14db1529f43117731f031f00d43dc556e5e599a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/loaded_pinocchio_model_v1.py": "2b303a32e57391ec7aaf3c3faf9d151f758477faf13ef6efae5bead979dcae82",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/authored_ground_clearance_v1.py": "ba54ef51a5cfd5c64937814c343d92057cd0e9e83dc4e435f1479049aa342630",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/summarize_precontact_prediction_v1.py": "b05936fc4345546c33bf14696bfbf6ed8967025799da23d87e0b04fc014ba227",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_sphere_touchdown_predictions_v1.py": "92b1905a21c544ff212a237104edb700ce6eb3b1414908cb14d80990b21a9a03",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frictional_impulse_step_v1.py": "4e780bf218dd501a64f1885ab1697c3050d228580fc6cd3c7123d36fb18e2348",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/predict_frictional_spheres_v1.py": "d406a568a61014cbee9bde4c91d3cebd8f997f9afa9e663dfbd99cea2d1941fa",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/search_frictional_recovery_cem_v1.py": "4948b1f46219b3889967507e7be752d47059123d6c54ace1da14da0041644d20",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_native_frictional_recovery_v1.py": "e7f3dca3b74b853c52b8a56d64bfd3f48e5186dd39f4bec4b515625a7db69fa1",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/native_recovery_sequence_replay_v2.py": "eeb5c96506e6586d70e9a8f5470a7dbff01851e6c7e92039d227365677821cc0",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/implicit_support_prediction_v1.py": "b751fa0ea59edd1fe8fc62cf0ba3816e5583ecc76df7058ef3f5185a335a1e01",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/condensed_implicit_drive_v1.py": "a0f21e9b954db9e978ba428a3770fcb8cd666e08dd21aa27cedf0c0e5c5af629",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frame_point_kinematics_v1.py": "60fac87ef04f83a22807217b04e7cbe40b536251b56f5a119dc012d1f2529fd8",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_sequence_linearization_v1.py": "acc515b9f7980645cdca835deb3ae8bfc4f20ee03eee90a53d9495f976b0ccf2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_differentiated_sequence_v1.py": "9b68faddbb7350b467f5f7a75c1b78cae58759f92c2d8e559b9cac433e6d229e",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/dense_active_set_qp_v1.py": "cba063c6c594bfb42d1114dcafbaebc606d8c4b49b53ee65e764e3979b1bac4a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/whole_body_support_qp_v1.py": "b67cd1f1c8ebe973d3885773fbc9f3bf17cfd935e5e2210a4b7c0ea1ff331d6d",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/reduced_whole_body_support_qp_v1.py": "e731a0bca8744d4639099dd2ff9be94840a9f0c953c64924fb2cfa9e7a9c80c7",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/continuous_support_qp_v1.py": "824a3d49711917803e9c82af63b1d142917d62c874ec8751325578a71b4af640",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/command_history_support_qp_v1.py": "1ac2221f85cbf3d468be4c265cc932845700d5f17a9eaaf37440998873689081",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/interval_command_support_qp_v1.py": "7f9e47fdeb1f6cc420368d127f89cc1b726397752b0387f57b5bee1ea5915589",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/admitted_arm_support_qp_v1.py": "097d7022b16a28aa31f11081056092bd8b5b44172291b6bd3b1aba1dbe0a1c6e",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v1.py": "da2ff2e4ee1479bf3fc422c0b71f8831bffd9e5868d9a4e0665fd348ab659a59",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v2.py": "6d0ad9bc4fcd27a0f4f418e55b988341ffe809f14c132415281ec41621196ae2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v3.py": "d8c54679697e78678a898f5d36a27305f9252a5f2b09990d0b33ddcc25533300",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_command_history_mpc_v1.py": "466ba93dc473c7d2de93aae0d5d7848b390d72e8fe1ef779ff0818efad704d28",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_interval_command_mpc_v1.py": "545ecf58c66d0bbf07f889f8867ce36d75ca42fcd94ca77b5307666163630060",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_active_set_interval_mpc_v1.py": "4c111c5ce1d6d711cbe9e4362aad315e0f50f9c2cb363d9595409e0701c7ec8d",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_arm_feasibility_mpc_v1.py": "af9a08a8b442c43099faadbda887ed79b1e497b114cbd77e93b4cc8a2481f40b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_joint_damper_mpc_v1.py": "63b2eff24491e130f96681508524ccf124064469a285a6c82ed9dd498fa761f9",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_joint_sequence_proposal_v1.py": "42d8be1c82836a83e054c6cf7ca368f5bad9b35e298aabbeb0790bfb5b816857",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_sequential_recovery_search_v1.py": "c5e7e38a2cdb369062eda62ce0237f3c519a8086748acec12fa77608f7283039",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/microstep_ground_sequence_v1.py": "a2a04a0ce75e7fd0b3a89e74e510cd5253daba5727a757de33ea04ae3559b11a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/terminal_recovery_constraints_v1.py": "f03f94b8bb0551a8eca6a79c2ad610645c39007e79b34a403b475e1ebac6f7dd",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_joint_sequence_proposal_v1.py": "b0896a4e9a95a4f46d84ef344e2d7e7384a4fce435b17c01bb456952053382a2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_microstep_recovery_v1.py": "4be5818572ca5ac32c0cce16c10f3413d0874a63eaab048feae393f64bc8ff62",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_terminal_gravity_balance_v1.py": "62ed707ac40d281dc51456e93fabc459736673d26d2098af0effab75ab8e98ae",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_gravity_seeded_continuation_v1.py": "30449c87e796121e25f274118c869ced6d9b2c4d0bcbbbf9656260f81137a9d7",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_ramped_gravity_continuation_v1.py": "2d71a069d70d3a7ec6bc62ac3f60d7af09df122c8b68de156df60e0369d066e1",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/receding_recovery_sequence_v1.py": "6f5e9624c2d3eca6b6a78ce6627c84164b109b06419686f794bfa108551683c7",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/native_receding_recovery_v1.py": "5ba83daa3e58117d442533dbfcd344cb427ad6548753636a0e3aa9723bdb523d",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frictional_candidate_pool_v1.py": "dd6ff9629578b0c52a1e642b7c3957882b0be4d31bc49317099680640adcb07a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frictional_static_reference_v1.py": "5acb0e3224c122e81de15911660bc70ae1982c6075b59439cdb44d029d94e28f",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/sphere_recontact_reference_v1.py": "68f7897c1f439792319f5827219d4e06cb1ea5658f2d270bf47654d34df2f82c",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frictional_receding_recovery_v1.py": "5bc95986f9ad874fdd8dc63f3a863ecabc000ac58f825ca65316834c64f5082b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/native_frictional_recovery_v1.py": "7d24b9859ab5d1fad3f669c182f4c22e97799c169333106ab85581f21c1f0d1a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/terminal_support_policy_v1.py": "b67346241a07c116434b9c4ca961b3d776f9a311c3f06141035942c38e97b61c",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/search_early_recovery_knots_v1.py": "b20612b8fb52abf94ab664aa05ed1f4b0c11e6b250216088f3e57cc2d9cc6709",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/extend_recovery_to_episode_v1.py": "df76df0626347ff71f27723f6b0c8091d026b652085fe493d97b84122ccefe75",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/extend_frictional_recovery_v1.py": "90c6178fff62fad0c7ad21a35986ecf46fc28f6a1d98f2ba72bd38e663c4fafd",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/native_terminal_support_v1.py": "09e1a5a32a23a41e1cc626d61203cc3bf7cf07018f3ac7a2fe3b83dcb9a0a7d0",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/stress_terminal_support_commands_v1.py": "160fdf450086ed7b88d32bbc61ad72831ca0087a72860bab43c2db2d0d014a80",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/search_terminal_prefix_arm_margin_v1.py": "052a0c250a6134eef0de30d89a2086931c820560f4b1e0802d40bc403ec13818",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/native_terminal_arm_margin_v1.py": "a6a8942cae0c786d5c7d6727e2e162bf3429ce97c1c33b121894f6454cb3d862",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/terminal_attitude_feedback_v1.py": "47db5797915d6c1fa776d9cc7a295a85e29e91adcba81fabc439c6e0978db209",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/native_terminal_attitude_v1.py": "0e43453827c4b620c911b73bb39214d5bccd02e770d2ad072d88e2e5e186d2d7",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/feedback_tail_rollout_v1.py": "535672ced97a7ff19c58b34c192b29ed082769bbea8153078bbaf2e8a449af6b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/cached_frictional_impulse_v1.py": "bb47779ea6f61c10905a7bfc15e11eb973d8b636071a7d046f682f388a306074",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_full_command_interval_mpc_v1.py": "a32da1e8fa837b9a4e40b1614a97fe7b2cdebde18fd1b3083350e2d81558932b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_minimum_command_mpc_v1.py": "c2e2c28234f3f1625c96e75ced68e94fe6e413ae833014d81ccaff5879979c7b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_feasible_command_cost_mpc_v1.py": "daeac9ec076b81bb88e601f72560b1c7135942d15266aa0876e71fb43b61ba32"
+    },
+    "native_execution": false,
+    "valid_expert_labels": false,
+    "production_controller_changed": false,
+    "integration_substeps": 160,
+    "original_iteration_limits_and_tolerances": true,
+    "limitations": [
+      "Timing is one sequential CPU comparison per query, not a statistical throughput or real-time guarantee.",
+      "Numerical agreement on these recorded queries does not prove agreement on every state.",
+      "No prediction model fidelity, recovery success or new native score follows from this speed comparison."
+    ]
+  },
+  "native_prefix": {
+    "scope": "Check dispatch and actual-versus-predicted motion in an immutable native prefix.\n\nIncomplete runs never earn recovery/admission labels. The comparison uses the\nplan active for the preceding executed command, including at replan boundaries.\nIt does not confuse an old nominal trajectory with the current prediction.\n",
+    "executed_steps": 50,
+    "teacher_steps": 50,
+    "unverified_fallback_steps": 0,
+    "accepted_plans": 12,
+    "maximum_request_to_dispatch_error_rad": 1.8581332450473553e-07,
+    "maximum_decode_error_rad": 0.0,
+    "prediction_summary": {
+      "all_executed_intervals": {
+        "samples": 49,
+        "contact_flag_disagreements": 8,
+        "errors": {
+          "joint_position_max_rad": {
+            "median": 0.0008060556348192249,
+            "maximum": 0.003078492341651806
+          },
+          "root_position_m": {
+            "median": 4.1037629903986705e-05,
+            "maximum": 7.917746029982101e-05
+          },
+          "root_attitude_rad": {
+            "median": 0.0006256583220778506,
+            "maximum": 0.0019610429526047625
+          },
+          "joint_velocity_max_rad_s": {
+            "median": 0.03737613416883112,
+            "maximum": 0.2889706009414207
+          },
+          "root_linear_velocity_world_m_s": {
+            "median": 0.0005891164218646705,
+            "maximum": 0.003500983346498861
+          },
+          "root_angular_velocity_world_rad_s": {
+            "median": 0.0054506174210231205,
+            "maximum": 0.02491522134604135
+          }
+        }
+      },
+      "one_step": {
+        "samples": 12,
+        "contact_flag_disagreements": 3,
+        "errors": {
+          "joint_position_max_rad": {
+            "median": 0.00033173713149869943,
+            "maximum": 0.0024179159443483943
+          },
+          "root_position_m": {
+            "median": 1.7772820698117516e-05,
+            "maximum": 3.474538181137087e-05
+          },
+          "root_attitude_rad": {
+            "median": 0.0002434951679412317,
+            "maximum": 0.00035373768385928215
+          },
+          "joint_velocity_max_rad_s": {
+            "median": 0.04384198696373809,
+            "maximum": 0.2889706009414207
+          },
+          "root_linear_velocity_world_m_s": {
+            "median": 0.00023527391262199,
+            "maximum": 0.003500983346498861
+          },
+          "root_angular_velocity_world_rad_s": {
+            "median": 0.0024118968788244266,
+            "maximum": 0.0203946674965129
+          }
+        }
+      }
+    },
+    "prediction_records": [
+      {
+        "control_tick": 461,
+        "plan_tick": 460,
+        "prediction_steps": 1,
+        "joint_position_max_rad": 0.0024179159443483943,
+        "root_position_m": 3.474538181137087e-05,
+        "root_attitude_rad": 0.0002577018862592661,
+        "joint_velocity_max_rad_s": 0.2889706009414207,
+        "root_linear_velocity_world_m_s": 0.003500983346498861,
+        "root_angular_velocity_world_rad_s": 0.0203946674965129,
+        "contact_flags_equal": false
+      },
+      {
+        "control_tick": 462,
+        "plan_tick": 461,
+        "prediction_steps": 1,
+        "joint_position_max_rad": 0.0015436961468488697,
+        "root_position_m": 3.1144825280414474e-05,
+        "root_attitude_rad": 0.000256421339738922,
+        "joint_velocity_max_rad_s": 0.20217541945913658,
+        "root_linear_velocity_world_m_s": 0.0021093892525143373,
+        "root_angular_velocity_world_rad_s": 0.004003567895965455,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 463,
+        "plan_tick": 462,
+        "prediction_steps": 1,
+        "joint_position_max_rad": 0.000811385155877465,
+        "root_position_m": 2.81673162899475e-05,
+        "root_attitude_rad": 0.00026017343274950663,
+        "joint_velocity_max_rad_s": 0.10718386991688933,
+        "root_linear_velocity_world_m_s": 0.0011008578495302506,
+        "root_angular_velocity_world_rad_s": 0.00485882787780165,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 464,
+        "plan_tick": 462,
+        "prediction_steps": 2,
+        "joint_position_max_rad": 0.0015062336835816315,
+        "root_position_m": 5.215789191827674e-05,
+        "root_attitude_rad": 0.0004829277700796629,
+        "joint_velocity_max_rad_s": 0.03737613416883112,
+        "root_linear_velocity_world_m_s": 0.0007169169836717594,
+        "root_angular_velocity_world_rad_s": 0.005874157779371532,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 465,
+        "plan_tick": 462,
+        "prediction_steps": 3,
+        "joint_position_max_rad": 0.001530931256087338,
+        "root_position_m": 7.908254142105916e-05,
+        "root_attitude_rad": 0.0007454533255341955,
+        "joint_velocity_max_rad_s": 0.026872895854831214,
+        "root_linear_velocity_world_m_s": 0.0009973486162877549,
+        "root_angular_velocity_world_rad_s": 0.006336503378859708,
+        "contact_flags_equal": false
+      },
+      {
+        "control_tick": 466,
+        "plan_tick": 465,
+        "prediction_steps": 1,
+        "joint_position_max_rad": 0.0004792148839625199,
+        "root_position_m": 2.3940000254831456e-05,
+        "root_attitude_rad": 0.00029776576076889874,
+        "joint_velocity_max_rad_s": 0.15584267453745881,
+        "root_linear_velocity_world_m_s": 0.0004946819927705456,
+        "root_angular_velocity_world_rad_s": 0.0054506174210231205,
+        "contact_flags_equal": false
+      },
+      {
+        "control_tick": 467,
+        "plan_tick": 465,
+        "prediction_steps": 2,
+        "joint_position_max_rad": 0.0012047361387472755,
+        "root_position_m": 4.6920247599942114e-05,
+        "root_attitude_rad": 0.0005576437450200175,
+        "joint_velocity_max_rad_s": 0.033315302930491786,
+        "root_linear_velocity_world_m_s": 0.0003564376496166463,
+        "root_angular_velocity_world_rad_s": 0.005665752955610502,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 468,
+        "plan_tick": 467,
+        "prediction_steps": 1,
+        "joint_position_max_rad": 0.0008750479829611191,
+        "root_position_m": 2.01099674109319e-05,
+        "root_attitude_rad": 0.00024148294897145166,
+        "joint_velocity_max_rad_s": 0.03268655557179834,
+        "root_linear_velocity_world_m_s": 0.00022364394742018648,
+        "root_angular_velocity_world_rad_s": 0.0022228167785966965,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 469,
+        "plan_tick": 467,
+        "prediction_steps": 2,
+        "joint_position_max_rad": 0.0016389674698491508,
+        "root_position_m": 4.225617287623201e-05,
+        "root_attitude_rad": 0.0004902871285475791,
+        "joint_velocity_max_rad_s": 0.039255745294303424,
+        "root_linear_velocity_world_m_s": 0.0003466628625298544,
+        "root_angular_velocity_world_rad_s": 0.0043866642873462555,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 470,
+        "plan_tick": 467,
+        "prediction_steps": 3,
+        "joint_position_max_rad": 0.002228276425778386,
+        "root_position_m": 6.296978600137411e-05,
+        "root_attitude_rad": 0.0006969277988234166,
+        "joint_velocity_max_rad_s": 0.04704913039575853,
+        "root_linear_velocity_world_m_s": 0.00056052904928634,
+        "root_angular_velocity_world_rad_s": 0.00636572092908288,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 471,
+        "plan_tick": 467,
+        "prediction_steps": 4,
+        "joint_position_max_rad": 0.002571925082134774,
+        "root_position_m": 7.917746029982101e-05,
+        "root_attitude_rad": 0.0008075403967923685,
+        "joint_velocity_max_rad_s": 0.044319867440216765,
+        "root_linear_velocity_world_m_s": 0.0007429359579686037,
+        "root_angular_velocity_world_rad_s": 0.008829641143866994,
+        "contact_flags_equal": false
+      },
+      {
+        "control_tick": 472,
+        "plan_tick": 471,
+        "prediction_steps": 1,
+        "joint_position_max_rad": 0.00020869563915582034,
+        "root_position_m": 7.506360391843494e-06,
+        "root_attitude_rad": 6.766551289952047e-05,
+        "joint_velocity_max_rad_s": 0.04903622331214663,
+        "root_linear_velocity_world_m_s": 0.00013501928031444595,
+        "root_angular_velocity_world_rad_s": 0.000642616023341269,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 473,
+        "plan_tick": 472,
+        "prediction_steps": 1,
+        "joint_position_max_rad": 0.0003465721810869127,
+        "root_position_m": 3.146784927293017e-05,
+        "root_attitude_rad": 0.00035373768385928215,
+        "joint_velocity_max_rad_s": 0.04289813014663535,
+        "root_linear_velocity_world_m_s": 0.00030516895842686855,
+        "root_angular_velocity_world_rad_s": 0.0021882405308232505,
+        "contact_flags_equal": false
+      },
+      {
+        "control_tick": 474,
+        "plan_tick": 473,
+        "prediction_steps": 1,
+        "joint_position_max_rad": 4.8025913240299506e-05,
+        "root_position_m": 1.1135444411926228e-05,
+        "root_attitude_rad": 0.0001161313363196457,
+        "joint_velocity_max_rad_s": 0.013404169061897231,
+        "root_linear_velocity_world_m_s": 0.00010161168700741706,
+        "root_angular_velocity_world_rad_s": 0.00043536252975045066,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 475,
+        "plan_tick": 473,
+        "prediction_steps": 2,
+        "joint_position_max_rad": 0.00011486403530365855,
+        "root_position_m": 2.784655621746326e-05,
+        "root_attitude_rad": 0.00030860781843987026,
+        "joint_velocity_max_rad_s": 0.005221952610714009,
+        "root_linear_velocity_world_m_s": 7.383517647482478e-05,
+        "root_angular_velocity_world_rad_s": 0.0003754151789897305,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 476,
+        "plan_tick": 473,
+        "prediction_steps": 3,
+        "joint_position_max_rad": 0.0001846111929899672,
+        "root_position_m": 4.097164276293004e-05,
+        "root_attitude_rad": 0.0004739774685879811,
+        "joint_velocity_max_rad_s": 0.005293241037051644,
+        "root_linear_velocity_world_m_s": 0.00012449859658081983,
+        "root_angular_velocity_world_rad_s": 0.0009441574348870412,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 477,
+        "plan_tick": 473,
+        "prediction_steps": 4,
+        "joint_position_max_rad": 0.00027549583504551955,
+        "root_position_m": 5.200539888051142e-05,
+        "root_attitude_rad": 0.0006256583220778506,
+        "joint_velocity_max_rad_s": 0.004418304445265697,
+        "root_linear_velocity_world_m_s": 0.0002480697055027479,
+        "root_angular_velocity_world_rad_s": 0.0017793803324391336,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 478,
+        "plan_tick": 473,
+        "prediction_steps": 5,
+        "joint_position_max_rad": 0.0005864254076353159,
+        "root_position_m": 6.797889322348227e-05,
+        "root_attitude_rad": 0.0008367481600648461,
+        "joint_velocity_max_rad_s": 0.05244889574078915,
+        "root_linear_velocity_world_m_s": 0.0006379413664799626,
+        "root_angular_velocity_world_rad_s": 0.0023914035098356323,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 479,
+        "plan_tick": 478,
+        "prediction_steps": 1,
+        "joint_position_max_rad": 0.0003001685121277742,
+        "root_position_m": 1.455367828971169e-05,
+        "root_attitude_rad": 0.00017499749529604217,
+        "joint_velocity_max_rad_s": 0.04478584378084083,
+        "root_linear_velocity_world_m_s": 0.0002469038778237935,
+        "root_angular_velocity_world_rad_s": 0.0026009769790521567,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 480,
+        "plan_tick": 478,
+        "prediction_steps": 2,
+        "joint_position_max_rad": 0.00041312207189847516,
+        "root_position_m": 3.736282941203158e-05,
+        "root_attitude_rad": 0.00040258529295670627,
+        "joint_velocity_max_rad_s": 0.03326702767051026,
+        "root_linear_velocity_world_m_s": 0.00035181907984657533,
+        "root_angular_velocity_world_rad_s": 0.0036236258801891816,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 481,
+        "plan_tick": 478,
+        "prediction_steps": 3,
+        "joint_position_max_rad": 0.00044532490523852,
+        "root_position_m": 5.274562354600029e-05,
+        "root_attitude_rad": 0.0005777276914439886,
+        "joint_velocity_max_rad_s": 0.03783885888913696,
+        "root_linear_velocity_world_m_s": 0.0004960839543746446,
+        "root_angular_velocity_world_rad_s": 0.007050063429653527,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 482,
+        "plan_tick": 478,
+        "prediction_steps": 4,
+        "joint_position_max_rad": 0.0007417129893488306,
+        "root_position_m": 6.0882940624322665e-05,
+        "root_attitude_rad": 0.0007225891975794031,
+        "joint_velocity_max_rad_s": 0.05256658806029968,
+        "root_linear_velocity_world_m_s": 0.0012825753511993966,
+        "root_angular_velocity_world_rad_s": 0.009684753988924828,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 483,
+        "plan_tick": 478,
+        "prediction_steps": 5,
+        "joint_position_max_rad": 0.0008553739570983931,
+        "root_position_m": 5.719545600163075e-05,
+        "root_attitude_rad": 0.0007325852440183907,
+        "joint_velocity_max_rad_s": 0.024672237280622733,
+        "root_linear_velocity_world_m_s": 0.0011401555553074685,
+        "root_angular_velocity_world_rad_s": 0.01329539513585233,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 484,
+        "plan_tick": 478,
+        "prediction_steps": 6,
+        "joint_position_max_rad": 0.0007232215102128681,
+        "root_position_m": 4.1037629903986705e-05,
+        "root_attitude_rad": 0.0006372196304037084,
+        "joint_velocity_max_rad_s": 0.017632691700897762,
+        "root_linear_velocity_world_m_s": 0.0013974127293769907,
+        "root_angular_velocity_world_rad_s": 0.014146505070102079,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 485,
+        "plan_tick": 478,
+        "prediction_steps": 7,
+        "joint_position_max_rad": 0.00044439227102577306,
+        "root_position_m": 3.517382047956684e-05,
+        "root_attitude_rad": 0.0005573942147909902,
+        "joint_velocity_max_rad_s": 0.047267412203485265,
+        "root_linear_velocity_world_m_s": 0.0012957160282444913,
+        "root_angular_velocity_world_rad_s": 0.01467071921279015,
+        "contact_flags_equal": false
+      },
+      {
+        "control_tick": 486,
+        "plan_tick": 485,
+        "prediction_steps": 1,
+        "joint_position_max_rad": 0.0002314438482787784,
+        "root_position_m": 1.543567398530313e-05,
+        "root_attitude_rad": 0.00023524828659103716,
+        "joint_velocity_max_rad_s": 0.004956511821743836,
+        "root_linear_velocity_world_m_s": 0.00016252325297072916,
+        "root_angular_velocity_world_rad_s": 0.0013556083967763664,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 487,
+        "plan_tick": 485,
+        "prediction_steps": 2,
+        "joint_position_max_rad": 0.0005126081185832521,
+        "root_position_m": 2.8262997704110278e-05,
+        "root_attitude_rad": 0.0004729039099917926,
+        "joint_velocity_max_rad_s": 0.008100847321586446,
+        "root_linear_velocity_world_m_s": 0.0003252013803692007,
+        "root_angular_velocity_world_rad_s": 0.0024967693036104088,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 488,
+        "plan_tick": 485,
+        "prediction_steps": 3,
+        "joint_position_max_rad": 0.0008060556348192249,
+        "root_position_m": 3.984373919153277e-05,
+        "root_attitude_rad": 0.0007365052428684124,
+        "joint_velocity_max_rad_s": 0.016335726904492698,
+        "root_linear_velocity_world_m_s": 0.0005288586056961974,
+        "root_angular_velocity_world_rad_s": 0.003860402234601106,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 489,
+        "plan_tick": 485,
+        "prediction_steps": 4,
+        "joint_position_max_rad": 0.001011469925559172,
+        "root_position_m": 4.61629310819655e-05,
+        "root_attitude_rad": 0.0009393297572057767,
+        "joint_velocity_max_rad_s": 0.015182422226250658,
+        "root_linear_velocity_world_m_s": 0.0007200597123445423,
+        "root_angular_velocity_world_rad_s": 0.005044446797416375,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 490,
+        "plan_tick": 485,
+        "prediction_steps": 5,
+        "joint_position_max_rad": 0.001270548909523099,
+        "root_position_m": 5.400696896692271e-05,
+        "root_attitude_rad": 0.001215272150356295,
+        "joint_velocity_max_rad_s": 0.05236608606452675,
+        "root_linear_velocity_world_m_s": 0.0008398713124739486,
+        "root_angular_velocity_world_rad_s": 0.004868791586399981,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 491,
+        "plan_tick": 485,
+        "prediction_steps": 6,
+        "joint_position_max_rad": 0.0014363365817846585,
+        "root_position_m": 5.670276693057629e-05,
+        "root_attitude_rad": 0.0014239313680387627,
+        "joint_velocity_max_rad_s": 0.019701737153319854,
+        "root_linear_velocity_world_m_s": 0.0011500417667505232,
+        "root_angular_velocity_world_rad_s": 0.007540372523892563,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 492,
+        "plan_tick": 485,
+        "prediction_steps": 7,
+        "joint_position_max_rad": 0.0016135743417174352,
+        "root_position_m": 5.8043046190531577e-05,
+        "root_attitude_rad": 0.0016505721048101882,
+        "joint_velocity_max_rad_s": 0.02585387950755713,
+        "root_linear_velocity_world_m_s": 0.001338313552064455,
+        "root_angular_velocity_world_rad_s": 0.00846168321659109,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 493,
+        "plan_tick": 485,
+        "prediction_steps": 8,
+        "joint_position_max_rad": 0.003078492341651806,
+        "root_position_m": 5.613619334674139e-05,
+        "root_attitude_rad": 0.001871783560308198,
+        "joint_velocity_max_rad_s": 0.10429167539909417,
+        "root_linear_velocity_world_m_s": 0.0028931519834691946,
+        "root_angular_velocity_world_rad_s": 0.021507027047006824,
+        "contact_flags_equal": false
+      },
+      {
+        "control_tick": 494,
+        "plan_tick": 485,
+        "prediction_steps": 9,
+        "joint_position_max_rad": 0.0029788382318104434,
+        "root_position_m": 5.721163191984072e-05,
+        "root_attitude_rad": 0.0019610429526047625,
+        "joint_velocity_max_rad_s": 0.04285737286244262,
+        "root_linear_velocity_world_m_s": 0.003161548533665378,
+        "root_angular_velocity_world_rad_s": 0.02491522134604135,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 495,
+        "plan_tick": 494,
+        "prediction_steps": 1,
+        "joint_position_max_rad": 0.0003169020819104862,
+        "root_position_m": 1.1574035221437727e-05,
+        "root_attitude_rad": 0.00024550738691101175,
+        "joint_velocity_max_rad_s": 0.008560528343988294,
+        "root_linear_velocity_world_m_s": 0.00011979654704267691,
+        "root_angular_velocity_world_rad_s": 0.0020836961381132343,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 496,
+        "plan_tick": 494,
+        "prediction_steps": 2,
+        "joint_position_max_rad": 0.0005275137364686433,
+        "root_position_m": 2.0532344424930484e-05,
+        "root_attitude_rad": 0.0004604242548970238,
+        "joint_velocity_max_rad_s": 0.009449135054288904,
+        "root_linear_velocity_world_m_s": 0.00021402141166408311,
+        "root_angular_velocity_world_rad_s": 0.003884980858615425,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 497,
+        "plan_tick": 494,
+        "prediction_steps": 3,
+        "joint_position_max_rad": 0.0007127983860601983,
+        "root_position_m": 2.7690842257735325e-05,
+        "root_attitude_rad": 0.000644154276394204,
+        "joint_velocity_max_rad_s": 0.01832007235368155,
+        "root_linear_velocity_world_m_s": 0.0003225943566551803,
+        "root_angular_velocity_world_rad_s": 0.005040702328041963,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 498,
+        "plan_tick": 494,
+        "prediction_steps": 4,
+        "joint_position_max_rad": 0.0008701626892519965,
+        "root_position_m": 3.292592872950012e-05,
+        "root_attitude_rad": 0.0008127650996733022,
+        "joint_velocity_max_rad_s": 0.023475596407722787,
+        "root_linear_velocity_world_m_s": 0.00036414586713774243,
+        "root_angular_velocity_world_rad_s": 0.00650492278204077,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 499,
+        "plan_tick": 494,
+        "prediction_steps": 5,
+        "joint_position_max_rad": 0.0009833188920544966,
+        "root_position_m": 3.95779799956179e-05,
+        "root_attitude_rad": 0.0009825674641118331,
+        "joint_velocity_max_rad_s": 0.06004735400705821,
+        "root_linear_velocity_world_m_s": 0.0008935733850173936,
+        "root_angular_velocity_world_rad_s": 0.008276584004663393,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 500,
+        "plan_tick": 494,
+        "prediction_steps": 6,
+        "joint_position_max_rad": 0.001018033822892006,
+        "root_position_m": 4.765183158502451e-05,
+        "root_attitude_rad": 0.0010905629572122487,
+        "joint_velocity_max_rad_s": 0.013893883552901942,
+        "root_linear_velocity_world_m_s": 0.0005516717484303375,
+        "root_angular_velocity_world_rad_s": 0.007958173375400238,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 501,
+        "plan_tick": 494,
+        "prediction_steps": 7,
+        "joint_position_max_rad": 0.0009266785355883655,
+        "root_position_m": 5.035161201600469e-05,
+        "root_attitude_rad": 0.0010129471890831336,
+        "joint_velocity_max_rad_s": 0.16771307687670972,
+        "root_linear_velocity_world_m_s": 0.000723901614380291,
+        "root_angular_velocity_world_rad_s": 0.004977285730440794,
+        "contact_flags_equal": false
+      },
+      {
+        "control_tick": 502,
+        "plan_tick": 494,
+        "prediction_steps": 8,
+        "joint_position_max_rad": 0.0015436130662422887,
+        "root_position_m": 5.3883771505766756e-05,
+        "root_attitude_rad": 0.0008890765939535993,
+        "joint_velocity_max_rad_s": 0.04397444571976589,
+        "root_linear_velocity_world_m_s": 0.0005891164218646705,
+        "root_angular_velocity_world_rad_s": 0.004286461317392259,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 503,
+        "plan_tick": 502,
+        "prediction_steps": 1,
+        "joint_position_max_rad": 0.00024101320190988984,
+        "root_position_m": 1.1226873842665988e-05,
+        "root_attitude_rad": 0.00021715964265735718,
+        "joint_velocity_max_rad_s": 0.009238046409984046,
+        "root_linear_velocity_world_m_s": 0.00016290249119611965,
+        "root_angular_velocity_world_rad_s": 0.0031856357987090577,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 504,
+        "plan_tick": 502,
+        "prediction_steps": 2,
+        "joint_position_max_rad": 0.0003709587908299339,
+        "root_position_m": 2.0494969511448537e-05,
+        "root_attitude_rad": 0.000378558713807543,
+        "joint_velocity_max_rad_s": 0.037699660147722164,
+        "root_linear_velocity_world_m_s": 0.0005191759675014374,
+        "root_angular_velocity_world_rad_s": 0.005551551683165809,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 505,
+        "plan_tick": 502,
+        "prediction_steps": 3,
+        "joint_position_max_rad": 0.0005366907210636596,
+        "root_position_m": 3.558580148395988e-05,
+        "root_attitude_rad": 0.0006241931811708493,
+        "joint_velocity_max_rad_s": 0.0535178318284954,
+        "root_linear_velocity_world_m_s": 0.0007106737325494497,
+        "root_angular_velocity_world_rad_s": 0.0085392838734832,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 506,
+        "plan_tick": 502,
+        "prediction_steps": 4,
+        "joint_position_max_rad": 0.0005936610182161739,
+        "root_position_m": 4.573326181796699e-05,
+        "root_attitude_rad": 0.0007722643027792488,
+        "joint_velocity_max_rad_s": 0.017158516404544244,
+        "root_linear_velocity_world_m_s": 0.000709561875919665,
+        "root_angular_velocity_world_rad_s": 0.010036415112596266,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 507,
+        "plan_tick": 502,
+        "prediction_steps": 5,
+        "joint_position_max_rad": 0.000687702343562302,
+        "root_position_m": 5.382423308966111e-05,
+        "root_attitude_rad": 0.000938714465347744,
+        "joint_velocity_max_rad_s": 0.025470544199457934,
+        "root_linear_velocity_world_m_s": 0.0009315137838775333,
+        "root_angular_velocity_world_rad_s": 0.011281346355586669,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 508,
+        "plan_tick": 502,
+        "prediction_steps": 6,
+        "joint_position_max_rad": 0.0008221420729983553,
+        "root_position_m": 6.222917237526759e-05,
+        "root_attitude_rad": 0.0010820678284231594,
+        "joint_velocity_max_rad_s": 0.04422618794090172,
+        "root_linear_velocity_world_m_s": 0.0008625435029174319,
+        "root_angular_velocity_world_rad_s": 0.01202510331758099,
+        "contact_flags_equal": true
+      },
+      {
+        "control_tick": 509,
+        "plan_tick": 502,
+        "prediction_steps": 7,
+        "joint_position_max_rad": 0.0009979565087561149,
+        "root_position_m": 7.170690462980215e-05,
+        "root_attitude_rad": 0.0012359090896578962,
+        "joint_velocity_max_rad_s": 0.03983406341679463,
+        "root_linear_velocity_world_m_s": 0.0009728577359746575,
+        "root_angular_velocity_world_rad_s": 0.012484462406020485,
+        "contact_flags_equal": true
+      }
+    ],
+    "source_sha256": {
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_feedback_prediction_prefix_v1.py": "cf6ad088bf55c8c69efbb50df2134104cb6fd733ccb30425ce0a4dca9c9f478d",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_feedback_tail_all128_20261108_01/recovery_partial/prefix_000510_a8becd4d55a0.json": "a8becd4d55a0afcea52ae3554789c55185d0e69dd262c96c07cb4d83de25643c",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_feedback_tail_all128_20261108_01/recovery_partial/trace_000510.npz": "1587ccf663c5dd5a12ca220c4f12ce2d6388f99fb82ee9c037ddcc02d38255db",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/configs/go2_piper_racket_landing_model_v1.json": "8c8997368ab98b3f2befa9908f537d76990dc2a1099ca30d8e6c1823de814e88",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_episode_sequence3_20261107/manifest.json": "a5903bdbf7a652d17500ac2e805d85cd4b618be2a7a258d96052af18a628df2a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_feedback_tail_all128_20261108_01/recovery_partial/plan_000460.json": "341d66edb88dc916de25389d8092aac765775650f22835b973715641ea07ac0b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_feedback_tail_all128_20261108_01/recovery_partial/plan_000461.json": "52ecf4247449126ae29370bcbdf17deaeebadfe5ac767659294f9c83c7ccbded",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_feedback_tail_all128_20261108_01/recovery_partial/plan_000462.json": "1425babfa52fb26f907e0e2cf148f8e28c90181d8280d4cc81ec54105585a899",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_feedback_tail_all128_20261108_01/recovery_partial/plan_000465.json": "830d1324658aab2402308f6d1a7bc4b6c7881282657f6bc64d170647323e9f67",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_feedback_tail_all128_20261108_01/recovery_partial/plan_000467.json": "c3c747de580c38d2cfb5672694a7f83cb83909b1ea78b97e088a80a052f3b501",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_feedback_tail_all128_20261108_01/recovery_partial/plan_000471.json": "4170211a79bf1e4090529b1038873762f1d2286c98bd6c6ea6ed59ef03ed3441",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_feedback_tail_all128_20261108_01/recovery_partial/plan_000472.json": "5ba3a2fa7e6843773128eb0cd19d28f99651d101624cf0258410af3d22b3f240",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_feedback_tail_all128_20261108_01/recovery_partial/plan_000473.json": "7158af1ebb01f806036286265413b86bdda3ecae31e52ccb12b2796db2286407",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_feedback_tail_all128_20261108_01/recovery_partial/plan_000478.json": "83579cd8298eeda35b9c45a3d7283bd8c116465aceec45bef2dfd501943969aa",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_feedback_tail_all128_20261108_01/recovery_partial/plan_000485.json": "5c013abdd66755eb4d0fd39aca6836af7aeea28b9186870a33667ab7f7550e90",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_feedback_tail_all128_20261108_01/recovery_partial/plan_000494.json": "332b9200e5e71202ef5beab1f608f89f6140991785931aa7cbcecdc7fb3efa00",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_feedback_tail_all128_20261108_01/recovery_partial/plan_000502.json": "d590dc5cdde115f1685e8525a27742ee766038390ae3a56b01165328862ceb08"
+    },
+    "full_run_admission": false,
+    "new_complete_successes": null,
+    "valid_expert_labels": false,
+    "limitations": [
+      "The live run is unfinished; no full-case isolation or independent full-model audit is inferred.",
+      "Native force-hysteresis flags and model positive-impulse flags have different definitions.",
+      "Error correlation does not identify missing head contact, friction or actuator dynamics as the unique cause."
+    ]
+  },
+  "running_plans_reverified": [
+    {
+      "name": "feedback_tail",
+      "pinned_inputs": 287,
+      "unchanged": true,
+      "plan_sha256": "1309c94169b95fe97b77db92414f36204b467057dc4579a13764f1fd02eb8387"
+    },
+    {
+      "name": "isolation_shadow",
+      "pinned_inputs": 265,
+      "unchanged": true,
+      "plan_sha256": "911cf87fb0268cade2553742657f32b9db0666dc9d8d494cbae7cd9ac2f584ee"
+    },
+    {
+      "name": "isolation_terminal",
+      "pinned_inputs": 260,
+      "unchanged": true,
+      "plan_sha256": "c8229a274557861aebf86491a30c7be48f71e2ea213494aadad9a8710f5d028d"
+    },
+    {
+      "name": "head_ground",
+      "pinned_inputs": 266,
+      "unchanged": true,
+      "plan_sha256": "f7e569f6de75693e025a36c7973430da33f62f5e053f5977e4be2eba747b5041"
+    }
+  ],
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_cached_contact_20261108/full_continuations160.json": "0561d4d57507c9b14b41010dc910caff2008d058cd36aedff9d7f361b15b546a",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_cached_contact_20261108/native_prefix510.json": "e2b70fadfafed4bab741ce5469231b0add21982b8d4fb8e9fb90bf46f877116f"
+  },
+  "new_native_successes": null,
+  "student_complete5_unchanged": 27,
+  "active_native_controller_changed": false,
+  "goal_complete": false
+}
