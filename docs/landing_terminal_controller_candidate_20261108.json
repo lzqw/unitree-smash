@@ -1,0 +1,279 @@
+{
+  "observed_at": "2026-11-07T16:16:08.352397+00:00",
+  "baseline_complete5": 27,
+  "panel_size": 128,
+  "actual_failed_query_repair": {
+    "tick": 478,
+    "accepted": true,
+    "wall_seconds": 498.7787085620221,
+    "terminal": {
+      "roll": -0.2523699765765067,
+      "pitch": 0.18321718981637194,
+      "omega": 0.8876093711203974,
+      "horizontal": 0.18623184008207286,
+      "joint_speed": 0.9466747714057245,
+      "vertical_speed": 0.05667186043459399,
+      "support_margin_m": 0.04691563917766322,
+      "support_feet": 3
+    },
+    "native_continuation_executed": false
+  },
+  "component_search": {
+    "settling_targets_met": false,
+    "remaining_violation": 0.002260976361847966,
+    "terminal": {
+      "roll": -0.2617946654223478,
+      "pitch": 0.1985054031472092,
+      "omega": 0.250565244090462,
+      "horizontal": 0.005376691485109787,
+      "joint_speed": 0.2500577563088314,
+      "vertical_speed": 0.01146904904020388,
+      "support_margin_m": 0.027380692535085217,
+      "support_feet": 3
+    },
+    "original_accepted": false,
+    "held_tail_validation": {
+      "attempted": false,
+      "reason": "Settling targets not met"
+    }
+  },
+  "hip_reference_comparison": [
+    {
+      "hip_bias_rad": -0.18,
+      "model_steps": 260,
+      "failure": null,
+      "model_window": {
+        "longest_model_kinematic_window_s": 1.0200000000000007,
+        "qualifying_control_ticks": 177,
+        "required_window_s": 0.8,
+        "native_force_check": false,
+        "contact_flight_association_check": false,
+        "formal_recovery_success": false
+      }
+    },
+    {
+      "hip_bias_rad": -0.12,
+      "model_steps": 260,
+      "failure": null,
+      "model_window": {
+        "longest_model_kinematic_window_s": 0.7400000000000004,
+        "qualifying_control_ticks": 133,
+        "required_window_s": 0.8,
+        "native_force_check": false,
+        "contact_flight_association_check": false,
+        "formal_recovery_success": false
+      }
+    },
+    {
+      "hip_bias_rad": -0.06,
+      "model_steps": 260,
+      "failure": null,
+      "model_window": {
+        "longest_model_kinematic_window_s": 0.6000000000000003,
+        "qualifying_control_ticks": 109,
+        "required_window_s": 0.8,
+        "native_force_check": false,
+        "contact_flight_association_check": false,
+        "formal_recovery_success": false
+      }
+    },
+    {
+      "hip_bias_rad": 0.0,
+      "model_steps": 260,
+      "failure": null,
+      "model_window": {
+        "longest_model_kinematic_window_s": 0.47000000000000025,
+        "qualifying_control_ticks": 86,
+        "required_window_s": 0.8,
+        "native_force_check": false,
+        "contact_flight_association_check": false,
+        "formal_recovery_success": false
+      }
+    },
+    {
+      "hip_bias_rad": 0.06,
+      "model_steps": 260,
+      "failure": null,
+      "model_window": {
+        "longest_model_kinematic_window_s": 0.3200000000000001,
+        "qualifying_control_ticks": 64,
+        "required_window_s": 0.8,
+        "native_force_check": false,
+        "contact_flight_association_check": false,
+        "formal_recovery_success": false
+      }
+    },
+    {
+      "hip_bias_rad": 0.12,
+      "model_steps": 260,
+      "failure": null,
+      "model_window": {
+        "longest_model_kinematic_window_s": 0.26000000000000006,
+        "qualifying_control_ticks": 26,
+        "required_window_s": 0.8,
+        "native_force_check": false,
+        "contact_flight_association_check": false,
+        "formal_recovery_success": false
+      }
+    },
+    {
+      "hip_bias_rad": 0.18,
+      "model_steps": 260,
+      "failure": null,
+      "model_window": {
+        "longest_model_kinematic_window_s": 0.19000000000000003,
+        "qualifying_control_ticks": 19,
+        "required_window_s": 0.8,
+        "native_force_check": false,
+        "contact_flight_association_check": false,
+        "formal_recovery_success": false
+      }
+    }
+  ],
+  "full_query_validation": {
+    "case": 3,
+    "start_tick": 460,
+    "needed_steps": 340,
+    "executed_model_steps": 340,
+    "model_candidate_accepted": true,
+    "failure": null,
+    "model_window": {
+      "longest_model_kinematic_window_s": 1.0200000000000007,
+      "qualifying_control_ticks": 180,
+      "required_window_s": 0.8,
+      "native_force_check": false,
+      "contact_flight_association_check": false,
+      "formal_recovery_success": false
+    },
+    "wall_seconds": 11.703035824000835,
+    "measured_native_initial_state": true,
+    "native_continuation_executed": false,
+    "valid_expert_labels": false
+  },
+  "selected_parameters": {
+    "hip_bias_rad": -0.18,
+    "leg_posture_feedback_gain": 2.0,
+    "leg_velocity_feedback_gain": 0.5,
+    "prefix_steps": 80,
+    "terminal_steps": 260,
+    "online_replanning": false
+  },
+  "checks": {
+    "policy_unit_tests_passed": 4,
+    "dispatch_corruption_tests_passed": 4,
+    "adapter_model_commands": 340,
+    "adapter_command_error_rad": 0.0,
+    "scope": "CPU interface checks, not native recovery"
+  },
+  "live_native_v2": {
+    "control_tick": 464,
+    "replans": 4,
+    "accepted_replans": 4,
+    "latest_accepted": true,
+    "latest_wall_seconds": 181.52234525000677,
+    "latest_reason": null,
+    "teacher_steps": 4,
+    "fallback_steps": 0,
+    "teacher_model": "frictional_spheres_v1",
+    "native_recovery_success_not_yet_known": true
+  },
+  "queued_terminal_controller": {
+    "state": "WAITING_FOR_GPU_OWNERS_TO_EXIT",
+    "pid": 4192383,
+    "observed_at": "2026-11-07T16:13:58.839112+00:00",
+    "owners": [
+      {
+        "pid": 4189530,
+        "start_ticks": "169281485"
+      },
+      {
+        "pid": 4189531,
+        "start_ticks": "169281505"
+      },
+      {
+        "pid": 4189548,
+        "start_ticks": "169281539"
+      }
+    ]
+  },
+  "queue_input_count": 256,
+  "queue_plan_sha256": "5e963def6cd2e491b9f778aa71e1b5d05d9daa5ce248a918433cca43acd1371e",
+  "formal_verification": {
+    "goal_id": "G07",
+    "status": "FAILED",
+    "contract_sha256": "66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807",
+    "checks": {
+      "G00": {
+        "passed": false,
+        "errors": [
+          "Missing or empty artifact: reports/G00/native_train/checkpoint.pt"
+        ]
+      },
+      "G01": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G00",
+          "Path escapes workspace: assets/quadsmash_standard_v2.usd",
+          "Path escapes workspace: assets/vendor/piper_isaac_sim/piper_description/urdf/piper_no_gripper_description.urdf"
+        ]
+      },
+      "G02": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G01"
+        ]
+      },
+      "G03": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G02",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/train/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/train/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/reload/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/reload/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/interrupt/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/interrupt/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/resume_interrupt/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/resume_interrupt/continuation_reference.pt"
+        ]
+      },
+      "G04": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G03",
+          "Missing or empty artifact: artifacts/G04/policy.pt",
+          "Missing or empty artifact: artifacts/G04/autonomous_actor/actor.pt",
+          "Missing or empty artifact: artifacts/G04/autonomous_actor/interface.json"
+        ]
+      },
+      "G05": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G04"
+        ]
+      },
+      "G06": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G05"
+        ]
+      },
+      "G07": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G06",
+          "Missing or invalid evidence: [Errno 2] No such file or directory: '/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/G07/evidence.json'"
+        ]
+      }
+    },
+    "scope": "Structure, hashes, dependencies and thresholds only; not simulation authenticity or GPU budget enforcement."
+  },
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_fullcommand_native_response_20261107/native478_repair_v2.json": "e231d15e29e5138624481bc8e44ed6ff12d1bd11f5394d23b8c7c5eca9f0d1ac",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_fullcommand_native_response_20261107/frictional_settling_component3.json": "c2cab8830b5de91ce0647dc317d65a107eb81ee0cc51abfaf715b668ae01edb3",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_fullcommand_native_response_20261107/frictional_terminal_hip_reference3.json": "35d07b3a7e246a00550e7036b6b8c7ba293fda486a3d22eb6aaf8b0110da311f",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_fullcommand_native_response_20261107/terminal_support_policy3.json": "e86b4a48e3ea1f839181a6e52b2ed6e7ed0973f2c3bc897d018708f5172e7ace"
+  },
+  "new_native_success": false,
+  "new_student_gain": false
+}
