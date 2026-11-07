@@ -1,0 +1,792 @@
+{
+  "scope": "Offline replay of actual command sequences; not a deployable predictor.\n\nCompare held initial support with recorded future force-contact flags. The\nlatter is explicitly an oracle diagnostic, never a causal controller input.\nBoth reuse the existing implicit dynamics, without impact or sliding physics.\nNative episode termination is respected and no missing future is extrapolated.\n",
+  "run": "reports/landing_mpc_full_command_interval26_20261107_01",
+  "native_new_execution": false,
+  "causal_deployment": false,
+  "rows": [
+    {
+      "case": 12,
+      "start_tick": 318,
+      "available_steps": 17,
+      "target_mapping_error_max_rad": 2.6041849032765185e-07,
+      "models": {
+        "held_initial_contacts": {
+          "checkpoints": [
+            {
+              "steps": 1,
+              "root_height_predicted_m": 0.1664156989304576,
+              "root_height_actual_m": 0.1665407007312809,
+              "root_position_error_m": 0.00024146754426673114,
+              "root_attitude_error_rad": 0.0007367344946928933,
+              "world_linear_velocity_error_mps": 0.045692681616357866,
+              "world_angular_velocity_error_rad_s": 0.1406343127475994,
+              "joint_error_max_rad": 0.0016304368593247354
+            },
+            {
+              "steps": 10,
+              "root_height_predicted_m": 0.12461214047482172,
+              "root_height_actual_m": 0.12914500203509371,
+              "root_position_error_m": 0.006546977371679882,
+              "root_attitude_error_rad": 0.03259238342679915,
+              "world_linear_velocity_error_mps": 0.07555020771455102,
+              "world_angular_velocity_error_rad_s": 0.2587799705469876,
+              "joint_error_max_rad": 0.0617938419494366
+            },
+            {
+              "steps": 17,
+              "root_height_predicted_m": 0.1141634739130158,
+              "root_height_actual_m": 0.12058461235876639,
+              "root_position_error_m": 0.010043913188201001,
+              "root_attitude_error_rad": 0.033568813865434456,
+              "world_linear_velocity_error_mps": 0.038979422300958556,
+              "world_angular_velocity_error_rad_s": 0.33073448808706796,
+              "joint_error_max_rad": 0.053664019628022086
+            }
+          ],
+          "diagnostic_maxima": {
+            "dynamics_contact_residual_max": 1.836042429204099e-11,
+            "joint_velocity_violation_rad_s": 0.0,
+            "joint_position_violation_rad": 0.0,
+            "normal_force_violation_n": 0.0,
+            "friction_violation_n": 12.766169964124543,
+            "motor_torque_violation_nm": 0.0,
+            "maximum_active_set_iterations": 2
+          },
+          "failure": null
+        },
+        "oracle_recorded_force_contacts": {
+          "checkpoints": [
+            {
+              "steps": 1,
+              "root_height_predicted_m": 0.1664156989304576,
+              "root_height_actual_m": 0.1665407007312809,
+              "root_position_error_m": 0.00024146754426673114,
+              "root_attitude_error_rad": 0.0007367344946928933,
+              "world_linear_velocity_error_mps": 0.045692681616357866,
+              "world_angular_velocity_error_rad_s": 0.1406343127475994,
+              "joint_error_max_rad": 0.0016304368593247354
+            },
+            {
+              "steps": 10,
+              "root_height_predicted_m": 0.12345985900225376,
+              "root_height_actual_m": 0.12914500203509371,
+              "root_position_error_m": 0.007454291731809197,
+              "root_attitude_error_rad": 0.041957282072324485,
+              "world_linear_velocity_error_mps": 0.09862792850574341,
+              "world_angular_velocity_error_rad_s": 0.4161200492886787,
+              "joint_error_max_rad": 0.06339799253219724
+            },
+            {
+              "steps": 17,
+              "root_height_predicted_m": 0.11012251906360662,
+              "root_height_actual_m": 0.12058461235876639,
+              "root_position_error_m": 0.014515549669302286,
+              "root_attitude_error_rad": 0.0639847477973679,
+              "world_linear_velocity_error_mps": 0.10975180633984563,
+              "world_angular_velocity_error_rad_s": 0.2637495726367313,
+              "joint_error_max_rad": 0.07467489158972973
+            }
+          ],
+          "diagnostic_maxima": {
+            "dynamics_contact_residual_max": 1.836042429204099e-11,
+            "joint_velocity_violation_rad_s": 0.0,
+            "joint_position_violation_rad": 0.0,
+            "normal_force_violation_n": 20.52780185144617,
+            "friction_violation_n": 32.58404468834782,
+            "motor_torque_violation_nm": 0.0,
+            "maximum_active_set_iterations": 2
+          },
+          "failure": null
+        }
+      }
+    },
+    {
+      "case": 18,
+      "start_tick": 310,
+      "available_steps": 40,
+      "target_mapping_error_max_rad": 2.3730937215304948e-07,
+      "models": {
+        "held_initial_contacts": {
+          "checkpoints": [
+            {
+              "steps": 1,
+              "root_height_predicted_m": 0.24947142352790275,
+              "root_height_actual_m": 0.24945122422667998,
+              "root_position_error_m": 7.681307539209496e-05,
+              "root_attitude_error_rad": 0.0004787885115904389,
+              "world_linear_velocity_error_mps": 0.016685578394492168,
+              "world_angular_velocity_error_rad_s": 0.10422129013303973,
+              "joint_error_max_rad": 0.06446758692080623
+            },
+            {
+              "steps": 10,
+              "root_height_predicted_m": 0.23843617969285347,
+              "root_height_actual_m": 0.23349726011649485,
+              "root_position_error_m": 0.010660526809789,
+              "root_attitude_error_rad": 0.055661883738368216,
+              "world_linear_velocity_error_mps": 0.1949744428257125,
+              "world_angular_velocity_error_rad_s": 0.9908191300456809,
+              "joint_error_max_rad": 0.3158865431366471
+            },
+            {
+              "steps": 40,
+              "root_height_predicted_m": 0.17156970278559422,
+              "root_height_actual_m": 0.2008111958341099,
+              "root_position_error_m": 0.05429454809984407,
+              "root_attitude_error_rad": 0.4057543788081246,
+              "world_linear_velocity_error_mps": 0.23297827966776688,
+              "world_angular_velocity_error_rad_s": 1.4002624565644874,
+              "joint_error_max_rad": 0.2949965066316773
+            }
+          ],
+          "diagnostic_maxima": {
+            "dynamics_contact_residual_max": 1.3457679415296298e-11,
+            "joint_velocity_violation_rad_s": 0.0,
+            "joint_position_violation_rad": 0.0,
+            "normal_force_violation_n": 24.644817422319797,
+            "friction_violation_n": 41.01596502605166,
+            "motor_torque_violation_nm": 0.0,
+            "maximum_active_set_iterations": 2
+          },
+          "failure": null
+        },
+        "oracle_recorded_force_contacts": {
+          "checkpoints": [
+            {
+              "steps": 1,
+              "root_height_predicted_m": 0.24947142352790275,
+              "root_height_actual_m": 0.24945122422667998,
+              "root_position_error_m": 7.681307539209496e-05,
+              "root_attitude_error_rad": 0.0004787885115904389,
+              "world_linear_velocity_error_mps": 0.016685578394492168,
+              "world_angular_velocity_error_rad_s": 0.10422129013303973,
+              "joint_error_max_rad": 0.06446758692080623
+            },
+            {
+              "steps": 10,
+              "root_height_predicted_m": 0.23843617969285347,
+              "root_height_actual_m": 0.23349726011649485,
+              "root_position_error_m": 0.010660526809789,
+              "root_attitude_error_rad": 0.055661883738368216,
+              "world_linear_velocity_error_mps": 0.1949744428257125,
+              "world_angular_velocity_error_rad_s": 0.9908191300456809,
+              "joint_error_max_rad": 0.3158865431366471
+            },
+            {
+              "steps": 40,
+              "root_height_predicted_m": 0.2041914142744563,
+              "root_height_actual_m": 0.2008111958341099,
+              "root_position_error_m": 0.06633898730626886,
+              "root_attitude_error_rad": 0.3512650818453841,
+              "world_linear_velocity_error_mps": 0.2693792490791936,
+              "world_angular_velocity_error_rad_s": 1.1245150849607215,
+              "joint_error_max_rad": 0.35708576756155086
+            }
+          ],
+          "diagnostic_maxima": {
+            "dynamics_contact_residual_max": 1.502442614764732e-11,
+            "joint_velocity_violation_rad_s": 0.0,
+            "joint_position_violation_rad": 0.0,
+            "normal_force_violation_n": 0.0,
+            "friction_violation_n": 18.71307929547612,
+            "motor_torque_violation_nm": 0.0,
+            "maximum_active_set_iterations": 2
+          },
+          "failure": null
+        }
+      }
+    },
+    {
+      "case": 18,
+      "start_tick": 330,
+      "available_steps": 40,
+      "target_mapping_error_max_rad": 2.4230098283339885e-07,
+      "models": {
+        "held_initial_contacts": {
+          "checkpoints": [
+            {
+              "steps": 1,
+              "root_height_predicted_m": 0.21206181362232907,
+              "root_height_actual_m": 0.21206319032527343,
+              "root_position_error_m": 5.717205771764187e-06,
+              "root_attitude_error_rad": 0.00020651868008627632,
+              "world_linear_velocity_error_mps": 0.00112436255151591,
+              "world_angular_velocity_error_rad_s": 0.015128275928088804,
+              "joint_error_max_rad": 0.0017169032210366808
+            },
+            {
+              "steps": 10,
+              "root_height_predicted_m": 0.19122111690450708,
+              "root_height_actual_m": 0.20357269482956108,
+              "root_position_error_m": 0.015960106887059487,
+              "root_attitude_error_rad": 0.11090981550195242,
+              "world_linear_velocity_error_mps": 0.4014550620681553,
+              "world_angular_velocity_error_rad_s": 2.558014532447118,
+              "joint_error_max_rad": 0.3783683615463076
+            },
+            {
+              "steps": 40,
+              "root_height_predicted_m": 0.13469730176558353,
+              "root_height_actual_m": 0.1945666977946845,
+              "root_position_error_m": 0.09088469840121359,
+              "root_attitude_error_rad": 0.5907727818345937,
+              "world_linear_velocity_error_mps": 0.5956132689570508,
+              "world_angular_velocity_error_rad_s": 1.953724002801495,
+              "joint_error_max_rad": 0.43532050896718427
+            }
+          ],
+          "diagnostic_maxima": {
+            "dynamics_contact_residual_max": 1.8992807326867478e-11,
+            "joint_velocity_violation_rad_s": 0.005971889958779286,
+            "joint_position_violation_rad": 0.0,
+            "normal_force_violation_n": 9.969472525173769,
+            "friction_violation_n": 57.92594923052328,
+            "motor_torque_violation_nm": 0.0,
+            "maximum_active_set_iterations": 2
+          },
+          "failure": null
+        },
+        "oracle_recorded_force_contacts": {
+          "checkpoints": [
+            {
+              "steps": 1,
+              "root_height_predicted_m": 0.21206181362232907,
+              "root_height_actual_m": 0.21206319032527343,
+              "root_position_error_m": 5.717205771764187e-06,
+              "root_attitude_error_rad": 0.00020651868008627632,
+              "world_linear_velocity_error_mps": 0.00112436255151591,
+              "world_angular_velocity_error_rad_s": 0.015128275928088804,
+              "joint_error_max_rad": 0.0017169032210366808
+            },
+            {
+              "steps": 10,
+              "root_height_predicted_m": 0.20244612138109985,
+              "root_height_actual_m": 0.20357269482956108,
+              "root_position_error_m": 0.0013209704292198024,
+              "root_attitude_error_rad": 0.011990668595827845,
+              "world_linear_velocity_error_mps": 0.02581477286568746,
+              "world_angular_velocity_error_rad_s": 0.20298139030375942,
+              "joint_error_max_rad": 0.010863818974202077
+            },
+            {
+              "steps": 40,
+              "root_height_predicted_m": 0.18550259640988356,
+              "root_height_actual_m": 0.1945666977946845,
+              "root_position_error_m": 0.010468413246722274,
+              "root_attitude_error_rad": 0.15129735561293428,
+              "world_linear_velocity_error_mps": 0.11950101011674581,
+              "world_angular_velocity_error_rad_s": 1.6292707682693077,
+              "joint_error_max_rad": 0.0681079113572376
+            }
+          ],
+          "diagnostic_maxima": {
+            "dynamics_contact_residual_max": 9.197975714414497e-12,
+            "joint_velocity_violation_rad_s": 0.0,
+            "joint_position_violation_rad": 0.0,
+            "normal_force_violation_n": 0.6139720035639471,
+            "friction_violation_n": 7.941244883391608,
+            "motor_torque_violation_nm": 0.0,
+            "maximum_active_set_iterations": 2
+          },
+          "failure": null
+        }
+      }
+    },
+    {
+      "case": 50,
+      "start_tick": 322,
+      "available_steps": 40,
+      "target_mapping_error_max_rad": 2.434812778062678e-07,
+      "models": {
+        "held_initial_contacts": {
+          "checkpoints": [
+            {
+              "steps": 1,
+              "root_height_predicted_m": 0.23358991796572862,
+              "root_height_actual_m": 0.2335934517729943,
+              "root_position_error_m": 3.596984089004509e-05,
+              "root_attitude_error_rad": 0.0003119646471684363,
+              "world_linear_velocity_error_mps": 0.002192516479535934,
+              "world_angular_velocity_error_rad_s": 0.013542022050283816,
+              "joint_error_max_rad": 0.00048618270558575816
+            },
+            {
+              "steps": 10,
+              "root_height_predicted_m": 0.2170939172688958,
+              "root_height_actual_m": 0.2196555333449164,
+              "root_position_error_m": 0.002880981172293894,
+              "root_attitude_error_rad": 0.018662079629173826,
+              "world_linear_velocity_error_mps": 0.10786922680800623,
+              "world_angular_velocity_error_rad_s": 0.6190845380379963,
+              "joint_error_max_rad": 0.22459673549961356
+            },
+            {
+              "steps": 40,
+              "root_height_predicted_m": 0.12086934255335766,
+              "root_height_actual_m": 0.18868318710675602,
+              "root_position_error_m": 0.07820380196764863,
+              "root_attitude_error_rad": 0.5355884716502726,
+              "world_linear_velocity_error_mps": 0.29181554608519655,
+              "world_angular_velocity_error_rad_s": 2.128951285086197,
+              "joint_error_max_rad": 0.4104291907748707
+            }
+          ],
+          "diagnostic_maxima": {
+            "dynamics_contact_residual_max": 1.1027623258996755e-11,
+            "joint_velocity_violation_rad_s": 0.0,
+            "joint_position_violation_rad": 0.0,
+            "normal_force_violation_n": 0.0,
+            "friction_violation_n": 47.886272268843136,
+            "motor_torque_violation_nm": 0.0,
+            "maximum_active_set_iterations": 2
+          },
+          "failure": null
+        },
+        "oracle_recorded_force_contacts": {
+          "checkpoints": [
+            {
+              "steps": 1,
+              "root_height_predicted_m": 0.23358991796572862,
+              "root_height_actual_m": 0.2335934517729943,
+              "root_position_error_m": 3.596984089004509e-05,
+              "root_attitude_error_rad": 0.0003119646471684363,
+              "world_linear_velocity_error_mps": 0.002192516479535934,
+              "world_angular_velocity_error_rad_s": 0.013542022050283816,
+              "joint_error_max_rad": 0.00048618270558575816
+            },
+            {
+              "steps": 10,
+              "root_height_predicted_m": 0.2179993889124726,
+              "root_height_actual_m": 0.2196555333449164,
+              "root_position_error_m": 0.0018483074342626631,
+              "root_attitude_error_rad": 0.010078948463198246,
+              "world_linear_velocity_error_mps": 0.03918660257449477,
+              "world_angular_velocity_error_rad_s": 0.19103819681744846,
+              "joint_error_max_rad": 0.05750510684481469
+            },
+            {
+              "steps": 40,
+              "root_height_predicted_m": 0.1681023362703644,
+              "root_height_actual_m": 0.18868318710675602,
+              "root_position_error_m": 0.02158177570869867,
+              "root_attitude_error_rad": 0.13406414056324883,
+              "world_linear_velocity_error_mps": 0.10473977593284907,
+              "world_angular_velocity_error_rad_s": 0.662126000755035,
+              "joint_error_max_rad": 0.07556668905952257
+            }
+          ],
+          "diagnostic_maxima": {
+            "dynamics_contact_residual_max": 7.844391802791506e-12,
+            "joint_velocity_violation_rad_s": 0.0,
+            "joint_position_violation_rad": 0.0,
+            "normal_force_violation_n": 2.944850882229798,
+            "friction_violation_n": 19.974467154079242,
+            "motor_torque_violation_nm": 0.0,
+            "maximum_active_set_iterations": 2
+          },
+          "failure": null
+        }
+      }
+    },
+    {
+      "case": 50,
+      "start_tick": 335,
+      "available_steps": 40,
+      "target_mapping_error_max_rad": 2.6158762267414204e-07,
+      "models": {
+        "held_initial_contacts": {
+          "checkpoints": [
+            {
+              "steps": 1,
+              "root_height_predicted_m": 0.2149396329070269,
+              "root_height_actual_m": 0.2149660791942174,
+              "root_position_error_m": 5.272224431665022e-05,
+              "root_attitude_error_rad": 0.00044997564186839505,
+              "world_linear_velocity_error_mps": 0.0038065808195485214,
+              "world_angular_velocity_error_rad_s": 0.023419991402589987,
+              "joint_error_max_rad": 0.0020869704278733137
+            },
+            {
+              "steps": 10,
+              "root_height_predicted_m": 0.19753546761976584,
+              "root_height_actual_m": 0.20105883163870564,
+              "root_position_error_m": 0.0042654025335271024,
+              "root_attitude_error_rad": 0.028393470001322717,
+              "world_linear_velocity_error_mps": 0.08029853788238117,
+              "world_angular_velocity_error_rad_s": 0.3952913751586942,
+              "joint_error_max_rad": 0.11869147889313725
+            },
+            {
+              "steps": 40,
+              "root_height_predicted_m": 0.026100199331336213,
+              "root_height_actual_m": 0.17746527968966075,
+              "root_position_error_m": 0.16691230893650696,
+              "root_attitude_error_rad": 0.5593209856082364,
+              "world_linear_velocity_error_mps": 0.9877034099537788,
+              "world_angular_velocity_error_rad_s": 4.516447148788274,
+              "joint_error_max_rad": 0.3728815587670298
+            }
+          ],
+          "diagnostic_maxima": {
+            "dynamics_contact_residual_max": 2.26947349801776e-11,
+            "joint_velocity_violation_rad_s": 0.0,
+            "joint_position_violation_rad": 0.0,
+            "normal_force_violation_n": 0.0,
+            "friction_violation_n": 5.358933161096658,
+            "motor_torque_violation_nm": 0.0,
+            "maximum_active_set_iterations": 2
+          },
+          "failure": null
+        },
+        "oracle_recorded_force_contacts": {
+          "checkpoints": [
+            {
+              "steps": 1,
+              "root_height_predicted_m": 0.2149396329070269,
+              "root_height_actual_m": 0.2149660791942174,
+              "root_position_error_m": 5.272224431665022e-05,
+              "root_attitude_error_rad": 0.00044997564186839505,
+              "world_linear_velocity_error_mps": 0.0038065808195485214,
+              "world_angular_velocity_error_rad_s": 0.023419991402589987,
+              "joint_error_max_rad": 0.0020869704278733137
+            },
+            {
+              "steps": 10,
+              "root_height_predicted_m": 0.19963565044130935,
+              "root_height_actual_m": 0.20105883163870564,
+              "root_position_error_m": 0.0017204913729548543,
+              "root_attitude_error_rad": 0.014861065743514163,
+              "world_linear_velocity_error_mps": 0.03327851164385387,
+              "world_angular_velocity_error_rad_s": 0.25821989183250926,
+              "joint_error_max_rad": 0.03220133521271196
+            },
+            {
+              "steps": 40,
+              "root_height_predicted_m": 0.15857804989252233,
+              "root_height_actual_m": 0.17746527968966075,
+              "root_position_error_m": 0.01990817947558673,
+              "root_attitude_error_rad": 0.14391896065536053,
+              "world_linear_velocity_error_mps": 0.1406500475984314,
+              "world_angular_velocity_error_rad_s": 0.7821702756600446,
+              "joint_error_max_rad": 0.0631674668281128
+            }
+          ],
+          "diagnostic_maxima": {
+            "dynamics_contact_residual_max": 6.87805368215777e-12,
+            "joint_velocity_violation_rad_s": 0.0,
+            "joint_position_violation_rad": 0.0,
+            "normal_force_violation_n": 3.2722401265847965,
+            "friction_violation_n": 7.135708881309544,
+            "motor_torque_violation_nm": 0.0,
+            "maximum_active_set_iterations": 2
+          },
+          "failure": null
+        }
+      }
+    },
+    {
+      "case": 67,
+      "start_tick": 390,
+      "available_steps": 40,
+      "target_mapping_error_max_rad": 2.714549900417751e-07,
+      "models": {
+        "held_initial_contacts": {
+          "checkpoints": [
+            {
+              "steps": 1,
+              "root_height_predicted_m": 0.14650945537929505,
+              "root_height_actual_m": 0.14660951597036243,
+              "root_position_error_m": 0.00018874852530048532,
+              "root_attitude_error_rad": 0.001624001821971356,
+              "world_linear_velocity_error_mps": 0.028645321926006776,
+              "world_angular_velocity_error_rad_s": 0.22549122748607836,
+              "joint_error_max_rad": 0.003848703486361904
+            },
+            {
+              "steps": 10,
+              "root_height_predicted_m": 0.14166576489762328,
+              "root_height_actual_m": 0.1459116032849268,
+              "root_position_error_m": 0.0064544463695735835,
+              "root_attitude_error_rad": 0.02880681825088117,
+              "world_linear_velocity_error_mps": 0.0790186792041055,
+              "world_angular_velocity_error_rad_s": 0.2782628850919499,
+              "joint_error_max_rad": 0.08210176504932876
+            },
+            {
+              "steps": 40,
+              "root_height_predicted_m": 0.16936743291841266,
+              "root_height_actual_m": 0.1723471453427592,
+              "root_position_error_m": 0.011435406685609913,
+              "root_attitude_error_rad": 0.11973516930147415,
+              "world_linear_velocity_error_mps": 0.06062551645960758,
+              "world_angular_velocity_error_rad_s": 0.7814194039957196,
+              "joint_error_max_rad": 0.11608411713617928
+            }
+          ],
+          "diagnostic_maxima": {
+            "dynamics_contact_residual_max": 7.577938276881468e-12,
+            "joint_velocity_violation_rad_s": 0.03273887227439776,
+            "joint_position_violation_rad": 0.0,
+            "normal_force_violation_n": 4.934367094151406,
+            "friction_violation_n": 10.519361250886787,
+            "motor_torque_violation_nm": 0.0,
+            "maximum_active_set_iterations": 2
+          },
+          "failure": null
+        },
+        "oracle_recorded_force_contacts": {
+          "checkpoints": [
+            {
+              "steps": 1,
+              "root_height_predicted_m": 0.14650945537929505,
+              "root_height_actual_m": 0.14660951597036243,
+              "root_position_error_m": 0.00018874852530048532,
+              "root_attitude_error_rad": 0.001624001821971356,
+              "world_linear_velocity_error_mps": 0.028645321926006776,
+              "world_angular_velocity_error_rad_s": 0.22549122748607836,
+              "joint_error_max_rad": 0.003848703486361904
+            },
+            {
+              "steps": 10,
+              "root_height_predicted_m": 0.14127324640526262,
+              "root_height_actual_m": 0.1459116032849268,
+              "root_position_error_m": 0.0066919534322237755,
+              "root_attitude_error_rad": 0.02997362619313205,
+              "world_linear_velocity_error_mps": 0.08538447833059658,
+              "world_angular_velocity_error_rad_s": 0.3386814438530154,
+              "joint_error_max_rad": 0.04572588003027489
+            },
+            {
+              "steps": 40,
+              "root_height_predicted_m": 0.1650290763458642,
+              "root_height_actual_m": 0.1723471453427592,
+              "root_position_error_m": 0.009877732910434592,
+              "root_attitude_error_rad": 0.16631250819569937,
+              "world_linear_velocity_error_mps": 0.07486595708179664,
+              "world_angular_velocity_error_rad_s": 0.5620917875046647,
+              "joint_error_max_rad": 0.13629098390855798
+            }
+          ],
+          "diagnostic_maxima": {
+            "dynamics_contact_residual_max": 8.782308213994838e-12,
+            "joint_velocity_violation_rad_s": 0.02211802206996971,
+            "joint_position_violation_rad": 0.0,
+            "normal_force_violation_n": 0.0,
+            "friction_violation_n": 6.04251539919774,
+            "motor_torque_violation_nm": 0.0,
+            "maximum_active_set_iterations": 2
+          },
+          "failure": null
+        }
+      }
+    },
+    {
+      "case": 67,
+      "start_tick": 500,
+      "available_steps": 40,
+      "target_mapping_error_max_rad": 2.549461317613577e-07,
+      "models": {
+        "held_initial_contacts": {
+          "checkpoints": [
+            {
+              "steps": 1,
+              "root_height_predicted_m": 0.17418788169946944,
+              "root_height_actual_m": 0.1741748746489482,
+              "root_position_error_m": 4.0922693646320773e-05,
+              "root_attitude_error_rad": 0.00033474133931637404,
+              "world_linear_velocity_error_mps": 0.004577836794120349,
+              "world_angular_velocity_error_rad_s": 0.0179329979823568,
+              "joint_error_max_rad": 0.00041749867542484364
+            },
+            {
+              "steps": 10,
+              "root_height_predicted_m": 0.1750372653752354,
+              "root_height_actual_m": 0.17535002988579795,
+              "root_position_error_m": 0.001267569153765269,
+              "root_attitude_error_rad": 0.0016183541944110394,
+              "world_linear_velocity_error_mps": 0.021233132564605066,
+              "world_angular_velocity_error_rad_s": 0.058460897138101875,
+              "joint_error_max_rad": 0.009625557140165553
+            },
+            {
+              "steps": 40,
+              "root_height_predicted_m": 0.21468313234158795,
+              "root_height_actual_m": 0.2257521274554175,
+              "root_position_error_m": 0.02976267107237769,
+              "root_attitude_error_rad": 0.10426877404201472,
+              "world_linear_velocity_error_mps": 0.15164320604886727,
+              "world_angular_velocity_error_rad_s": 0.5996319949273197,
+              "joint_error_max_rad": 0.12725129305452154
+            }
+          ],
+          "diagnostic_maxima": {
+            "dynamics_contact_residual_max": 7.37543359718984e-12,
+            "joint_velocity_violation_rad_s": 0.0,
+            "joint_position_violation_rad": 0.006088111802211582,
+            "normal_force_violation_n": 8.473729782381287,
+            "friction_violation_n": 22.639507060973997,
+            "motor_torque_violation_nm": 0.0,
+            "maximum_active_set_iterations": 2
+          },
+          "failure": null
+        },
+        "oracle_recorded_force_contacts": {
+          "checkpoints": [
+            {
+              "steps": 1,
+              "root_height_predicted_m": 0.17418788169946944,
+              "root_height_actual_m": 0.1741748746489482,
+              "root_position_error_m": 4.0922693646320773e-05,
+              "root_attitude_error_rad": 0.00033474133931637404,
+              "world_linear_velocity_error_mps": 0.004577836794120349,
+              "world_angular_velocity_error_rad_s": 0.0179329979823568,
+              "joint_error_max_rad": 0.00041749867542484364
+            },
+            {
+              "steps": 10,
+              "root_height_predicted_m": 0.17512608624874867,
+              "root_height_actual_m": 0.17535002988579795,
+              "root_position_error_m": 0.0010330305086468945,
+              "root_attitude_error_rad": 0.0019951519348166283,
+              "world_linear_velocity_error_mps": 0.015490376548352051,
+              "world_angular_velocity_error_rad_s": 0.11392541696918008,
+              "joint_error_max_rad": 0.009762004507791452
+            },
+            {
+              "steps": 40,
+              "root_height_predicted_m": 0.22500126561361128,
+              "root_height_actual_m": 0.2257521274554175,
+              "root_position_error_m": 0.007032091611067789,
+              "root_attitude_error_rad": 0.023040145642065666,
+              "world_linear_velocity_error_mps": 0.02227449483827373,
+              "world_angular_velocity_error_rad_s": 0.28282158037783556,
+              "joint_error_max_rad": 0.017396192574345104
+            }
+          ],
+          "diagnostic_maxima": {
+            "dynamics_contact_residual_max": 7.633005338902876e-12,
+            "joint_velocity_violation_rad_s": 0.0,
+            "joint_position_violation_rad": 0.0,
+            "normal_force_violation_n": 0.0,
+            "friction_violation_n": 0.317234841140865,
+            "motor_torque_violation_nm": 0.0,
+            "maximum_active_set_iterations": 2
+          },
+          "failure": null
+        }
+      }
+    },
+    {
+      "case": 98,
+      "start_tick": 385,
+      "available_steps": 40,
+      "target_mapping_error_max_rad": 2.506701477500428e-07,
+      "models": {
+        "held_initial_contacts": {
+          "checkpoints": [
+            {
+              "steps": 1,
+              "root_height_predicted_m": 0.1620593550061081,
+              "root_height_actual_m": 0.16208849238045664,
+              "root_position_error_m": 0.00010147548988282285,
+              "root_attitude_error_rad": 0.0010061079014503768,
+              "world_linear_velocity_error_mps": 0.012751633546258762,
+              "world_angular_velocity_error_rad_s": 0.10544893541880304,
+              "joint_error_max_rad": 0.010908974451475595
+            },
+            {
+              "steps": 10,
+              "root_height_predicted_m": 0.16188852915385069,
+              "root_height_actual_m": 0.16298263751532271,
+              "root_position_error_m": 0.0027395087890455675,
+              "root_attitude_error_rad": 0.022890918877957616,
+              "world_linear_velocity_error_mps": 0.03701860414038834,
+              "world_angular_velocity_error_rad_s": 0.29019088359529843,
+              "joint_error_max_rad": 0.04077439220101353
+            },
+            {
+              "steps": 40,
+              "root_height_predicted_m": 0.2123559116301076,
+              "root_height_actual_m": 0.20689986595952248,
+              "root_position_error_m": 0.02203521804518042,
+              "root_attitude_error_rad": 0.041967799465571914,
+              "world_linear_velocity_error_mps": 0.11747491562632457,
+              "world_angular_velocity_error_rad_s": 0.27610820754099596,
+              "joint_error_max_rad": 0.055619305972837374
+            }
+          ],
+          "diagnostic_maxima": {
+            "dynamics_contact_residual_max": 6.366462912410498e-12,
+            "joint_velocity_violation_rad_s": 0.0,
+            "joint_position_violation_rad": 0.0,
+            "normal_force_violation_n": 2.6063546942254177,
+            "friction_violation_n": 10.544656583179686,
+            "motor_torque_violation_nm": 0.0,
+            "maximum_active_set_iterations": 2
+          },
+          "failure": null
+        },
+        "oracle_recorded_force_contacts": {
+          "checkpoints": [
+            {
+              "steps": 1,
+              "root_height_predicted_m": 0.1620593550061081,
+              "root_height_actual_m": 0.16208849238045664,
+              "root_position_error_m": 0.00010147548988282285,
+              "root_attitude_error_rad": 0.0010061079014503768,
+              "world_linear_velocity_error_mps": 0.012751633546258762,
+              "world_angular_velocity_error_rad_s": 0.10544893541880304,
+              "joint_error_max_rad": 0.010908974451475595
+            },
+            {
+              "steps": 10,
+              "root_height_predicted_m": 0.16197425204375576,
+              "root_height_actual_m": 0.16298263751532271,
+              "root_position_error_m": 0.0022730617325837387,
+              "root_attitude_error_rad": 0.020416400756445838,
+              "world_linear_velocity_error_mps": 0.02337229659322853,
+              "world_angular_velocity_error_rad_s": 0.21777838161535482,
+              "joint_error_max_rad": 0.025088219150765978
+            },
+            {
+              "steps": 40,
+              "root_height_predicted_m": 0.20177414628947746,
+              "root_height_actual_m": 0.20689986595952248,
+              "root_position_error_m": 0.012131650497991,
+              "root_attitude_error_rad": 0.11353956322821927,
+              "world_linear_velocity_error_mps": 0.06621273537390808,
+              "world_angular_velocity_error_rad_s": 0.5907432565317877,
+              "joint_error_max_rad": 0.09101956092446928
+            }
+          ],
+          "diagnostic_maxima": {
+            "dynamics_contact_residual_max": 3.865352482534945e-12,
+            "joint_velocity_violation_rad_s": 0.0,
+            "joint_position_violation_rad": 0.0,
+            "normal_force_violation_n": 2.4435126285532425,
+            "friction_violation_n": 8.41818637368834,
+            "motor_torque_violation_nm": 0.0,
+            "maximum_active_set_iterations": 2
+          },
+          "failure": null
+        }
+      }
+    }
+  ],
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_full_command_interval26_20261107_01/job.json": "4f4ca42c453996bd933c94e3e78b815ed337bf02c6ceeed607a214f65a9bc6e0",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_full_command_interval26_20261107_01/native_command_inputs.json": "f861d727c049c85d612cad7ce2a5be9a4bc3a85ab18ba38f5018dc871fca6f7c",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_full_command_interval26_20261107_01/landing_mpc_records.json": "3ffb318b64f325149bd0c165317e8a02db0f52143c568f08d47b5df90d6ae46c",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_full_command_interval26_20261107_01/fixed_policy_traces/case_012.npz": "17e88b6c4f9d9168b390c6458c0afea47664a1832eaa482698b706e121db8ad2",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_full_command_interval26_20261107_01/fixed_policy_traces/case_018.npz": "e04fa21cfe08df0903810b1a3d2b1aa6d5ff8a0ca6c345f12cb9243003004ee7",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_full_command_interval26_20261107_01/fixed_policy_traces/case_050.npz": "5d81f13886c3f27033909624df104f2aff7252ad0715922e20e2a3beaae767e2",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_full_command_interval26_20261107_01/fixed_policy_traces/case_067.npz": "89b578eff038ae90a4c294617519822f6c5855e3a9a65d4815c1749e097dddbc",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_full_command_interval26_20261107_01/fixed_policy_traces/case_098.npz": "a7eb6b5390557e9d18764e856a6c1fb71ff694918696873be8df8cfba135a8e8",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_landing_command_sequence_replay_v1.py": "3cc654d3f7196e671a99a10a65596efcac252b84a793d6e4154fa6b10739586f",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/implicit_support_prediction_v1.py": "b751fa0ea59edd1fe8fc62cf0ba3816e5583ecc76df7058ef3f5185a335a1e01",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/loaded_pinocchio_model_v1.py": "2b303a32e57391ec7aaf3c3faf9d151f758477faf13ef6efae5bead979dcae82",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/rl/episode_trace_v4.py": "c4610aefb3845dcab78202103a461e3adff2e305917f758f830c829941f717ce"
+  },
+  "full_audit_path": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_full_command_followup_20261107/actual_sequence_replay.json",
+  "full_audit_sha256": "15c6d5725fd3ee0aea6b01e4bcec32047a173a0b3d1aa12a6065cd6f4d60d4d2"
+}
