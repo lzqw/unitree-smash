@@ -66,6 +66,8 @@ parser.add_argument('--landing-mpc-touchdown-recovery', action='store_true',
     help='Allow one-contact touchdown recovery and keep rolling a ground-level swing-foot target')
 parser.add_argument('--landing-mpc-force-post-touchdown', action='store_true',
     help='After measured post-touchdown phase, solve and apply MPC without waiting for risk thresholds')
+parser.add_argument('--landing-mpc-causal-posthit-only', action='store_true',
+    help='Original frozen actor with causal observed-hit/support gate on all TRAIN128; no learned head')
 parser.add_argument('--landing-mpc-latched-post-touchdown-ticks', type=int, default=0,
     help='Keep the post-touchdown MPC lifecycle active for this many 100 Hz ticks after phase774 is first observed (0 disables latch)')
 parser.add_argument('--landing-mpc-contact-force-threshold', type=float, default=0.,
@@ -1063,6 +1065,11 @@ def main():
                 not args.landing_mpc_command_history_interface or not args.landing_mpc_continuous_reference or
                 args.landing_mpc_torque_overlay):
             raise ValueError('Correction collection requires learned head, all128 lanes and continuous command-history MPC without torque overlay')
+    if args.landing_mpc_causal_posthit_only:
+        if (args.learned_recovery_command_head or args.learned_recovery_mpc_correction or
+                args.landing_mpc_cases != list(range(128)) or args.reactive_vhsip_cases is not None or
+                not args.landing_mpc_command_history_interface or not args.record_first_episodes):
+            raise ValueError('Causal baseline trial requires all128 command-history MPC, traces and no recovery learner/VHSIP')
     learned_recovery_checkpoint = None
     if args.learned_recovery_command_head is not None:
         if not args.allow_declared_controller_variant:
@@ -1143,8 +1150,9 @@ def main():
             if args.learned_recovery_command_head else None),
         learned_recovery_command_head_sha256=(digest(args.learned_recovery_command_head)
             if args.learned_recovery_command_head else None),
-        extra_recovery_teacher_enabled=bool(args.learned_recovery_mpc_correction) if args.learned_recovery_command_head else None,
+        extra_recovery_teacher_enabled=bool(args.learned_recovery_mpc_correction or args.landing_mpc_causal_posthit_only) if (args.learned_recovery_command_head or args.landing_mpc_causal_posthit_only) else None,
         learned_recovery_mpc_correction=bool(args.learned_recovery_mpc_correction),
+        landing_mpc_causal_posthit_only=bool(args.landing_mpc_causal_posthit_only),
         student_sampling_log_prob_available=False,correction_collection_is_ppo_buffer=False,
         recovery_assistance_execution=RECOVERY_EXECUTION_SCHEMA,
         landing_trial=landing_trial,support_trial=support_trial,
@@ -1350,6 +1358,11 @@ def main():
         limits = env.robot.data.joint_pos_limits[0, env.joint_ids]
         learned_recovery = None
         learned_records = []
+        causal_teacher_records = []
+        causal_teacher_gate = None
+        if args.landing_mpc_causal_posthit_only:
+            from quadsmash.control.observed_posthit_gate_v1 import ObservedPostHitGateV1
+            causal_teacher_gate = ObservedPostHitGateV1(count, env.device, protocol['policy_dt_s'])
         if learned_recovery_checkpoint is not None:
             from quadsmash.control.learned_recovery_command_v1 import (
                 admit_native_recovery_head, NativeRecoveryCommandAdapter)
@@ -1384,10 +1397,18 @@ def main():
                 obs = observation['policy']
                 if hasattr(controller, 'set_landing_mpc_native_state'):
                     controller.set_landing_mpc_native_state(env)
-                if args.learned_recovery_mpc_correction:
+                if args.learned_recovery_mpc_correction or causal_teacher_gate is not None:
                     action = controller.action(observation,default,limits,defer_landing_mpc=True)
                 else:
                     action = controller.action(observation, default, limits)
+                if causal_teacher_gate is not None:
+                    base_command = action.clone()
+                    eligible = causal_teacher_gate.update(obs) & (~finished)
+                    action = controller.apply_landing_mpc(observation,default,limits,action,eligible_mask=eligible)
+                    causal_teacher_records.append(dict(active=eligible.cpu().numpy().copy(),
+                        base_command=base_command.cpu().numpy().copy(),
+                        final_command=action.cpu().numpy().copy(),
+                        first_episode=(~finished).cpu().numpy().copy()))
                 if learned_recovery is not None:
                     base_command = action.clone()
                     if args.learned_recovery_mpc_correction:
@@ -1465,6 +1486,9 @@ def main():
         if support_records:
             np.savez_compressed(args.output/'support_reference_and_measured_forces.npz',
                 **{key:np.concatenate(values) for key,values in support_records.items()})
+        if causal_teacher_records:
+            np.savez_compressed(args.output/'causal_teacher_commands.npz',
+                **{key:np.stack([row[key] for row in causal_teacher_records]) for key in causal_teacher_records[0]})
         if learned_records:
             np.savez_compressed(args.output/'learned_recovery_commands.npz',
                 **{key:np.stack([row[key] for row in learned_records]) for key in learned_records[0]})
@@ -1506,6 +1530,12 @@ def main():
             recovery_assistance_execution=RECOVERY_EXECUTION_SCHEMA,
             landing_config=controller.landing_config,support_config=controller.support_config,
             residual_actor_enabled=has_actor, ground_extent_diagnostic=ground_diagnostic)
+        if causal_teacher_gate is not None:
+            summary['causal_baseline_teacher'] = dict(extra_teacher_enabled=True,
+                learned_recovery_head_enabled=False,case_id_or_future_outcome_as_input=False,
+                gate='observed-airborne-hit-then-support-latched-until-reset',
+                active_first_episode_ticks=int(sum(r['active'].sum() for r in causal_teacher_records)),
+                sustained_until_episode_end=True,autonomous_risk_exit_implemented=False)
         if learned_recovery is not None:
             summary['learned_recovery_command'] = dict(
                 schema='learned-native-recovery-command-v1',
