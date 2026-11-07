@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-11-07T23:35:02.360670+00:00",
+  "as_of": "2026-11-07T23:49:03.288592+00:00",
   "completed_search": {
     "path": "reports/landing_early_references_20261108/hip_mount_constrained_search_v1.json",
     "sha256": "b68a3b0f8856de27d94d5a950529120f6d31f292da2fc52b5730b202a9967c41",
@@ -248,53 +248,43 @@
     ],
     "final_result_available": false,
     "latest_completed_generation_snapshot": {
-      "coarse_evaluations": 40,
-      "fine_evaluations": 5,
-      "best_label": "g0_fine_6",
+      "coarse_evaluations": 160,
+      "fine_evaluations": 17,
+      "best_label": "g3_fine_16",
       "best_result": {
-        "accepted": false,
-        "completed_model_steps": 375,
+        "accepted": true,
+        "completed_model_steps": 520,
         "required_model_steps": 520,
         "rank": [
-          1,
-          144.70625,
           0,
-          0.10244781233907256
+          0.0,
+          0,
+          0.07075161405459252
         ],
-        "failure": {
-          "step": 375,
-          "reason": "path_constraints",
-          "violations": {
-            "nonfoot_ground_violation_m": 0.00029447123467720576
-          },
-          "first_ground_violation": {
-            "micro": 47,
-            "body": "RR_calf",
-            "gap_m": -2.9063712651180434e-06
-          }
-        },
+        "failure": null,
         "terminal": {
-          "roll": 0.0358357890883183,
-          "pitch": -0.20286608598158767,
-          "horizontal": 0.13399466050233602,
-          "vertical_speed": 0.023029658303973265,
-          "omega": 0.3791372970881076,
-          "joint_speed": 0.5470516788225432,
+          "roll": 0.01378992232105481,
+          "pitch": -0.03155921948832333,
+          "horizontal": 0.029492301938692636,
+          "vertical_speed": 0.0041686633053666065,
+          "omega": 0.07907393574244248,
+          "joint_speed": 0.11092405039537356,
           "support_feet": 4,
-          "support_margin_m": 0.1290731728873439
+          "support_margin_m": 0.12075351012150908
         },
         "terminal_violations": {},
-        "trailing_model_window_s": 1.56,
-        "longest_model_window_s": 1.56,
-        "cost": 38.41792962715221,
+        "trailing_model_window_s": 2.52,
+        "longest_model_window_s": 2.52,
+        "cost": 36.79083930838811,
         "substeps": 160,
-        "wall_seconds": 88.19335632794537,
+        "wall_seconds": 112.4781804739032,
         "native_execution": false,
         "valid_expert_labels": false
       },
-      "completed_generations": 1
+      "completed_generations": 4
     },
-    "partial_sha256": "2b0c2b850e49110046f5b093e809903b8352d3320cdf0631931e62bd82aaa1b9"
+    "partial_sha256": "37c328775d686ef17cfa073c82cabdeb8f3ebc9e0494ed4182a642795806036f",
+    "independent_replay_pending": true
   },
   "native_success_improvement_demonstrated": false,
   "valid_expert_labels": false,
