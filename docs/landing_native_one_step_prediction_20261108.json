@@ -1,0 +1,1088 @@
+{
+  "recorded_at": "2026-11-07T17:25:30.554986+00:00",
+  "git_head": "f7b1444e4dfac4b0feeffed49a50176f3c2dc7c7",
+  "scope": "Actual-command one-step CPU replay; no new native score or expert labels",
+  "case": 3,
+  "groups": [
+    {
+      "substeps": 16,
+      "summary": {
+        "transitions": 18,
+        "joint_velocity_rmse_rad_s": {
+          "FL_hip_joint": 0.08848517037255771,
+          "FR_hip_joint": 0.008736870706850686,
+          "RL_hip_joint": 0.04422361977935405,
+          "RR_hip_joint": 0.02194259228208359,
+          "FL_thigh_joint": 0.017749072818047485,
+          "FR_thigh_joint": 0.01824500631585502,
+          "RL_thigh_joint": 0.046458955738549565,
+          "RR_thigh_joint": 0.008366645564729842,
+          "FL_calf_joint": 0.04509996590689292,
+          "FR_calf_joint": 0.016545331247866474,
+          "RL_calf_joint": 0.05564378917924255,
+          "RR_calf_joint": 0.02498054487361627,
+          "joint1": 0.010495684129908887,
+          "joint2": 0.010763625539025101,
+          "joint3": 0.01119121335232482,
+          "joint4": 0.00461768790317793,
+          "joint5": 0.0062155376896632,
+          "joint6": 0.007973666028127949
+        },
+        "joint_position_rmse_rad": {
+          "FL_hip_joint": 0.000705748668684049,
+          "FR_hip_joint": 0.00023953761025514523,
+          "RL_hip_joint": 0.0002866120798603507,
+          "RR_hip_joint": 0.00016042099139629417,
+          "FL_thigh_joint": 0.0001879495720321433,
+          "FR_thigh_joint": 0.00020590479339438394,
+          "RL_thigh_joint": 0.00031287615259759495,
+          "RR_thigh_joint": 0.0001475644802980679,
+          "FL_calf_joint": 0.00010860899684572317,
+          "FR_calf_joint": 0.0003393071089423954,
+          "RL_calf_joint": 0.00033032576964608495,
+          "RR_calf_joint": 0.00011836241370746838,
+          "joint1": 8.817551645517642e-05,
+          "joint2": 7.996910670759153e-05,
+          "joint3": 0.00012516636770292715,
+          "joint4": 8.323596910578272e-05,
+          "joint5": 5.454926096002663e-05,
+          "joint6": 0.0001280052103041956
+        },
+        "largest_joint_velocity_error_rad_s": 0.2911044780847101,
+        "worst_joint_by_rmse": "FL_hip_joint",
+        "root_linear_velocity_rmse_m_s": 0.0005768028569112642,
+        "root_angular_velocity_rmse_rad_s": 0.004098716939794871,
+        "raw_contact_mismatching_feet": 9,
+        "force_hysteresis_mismatching_feet": 9,
+        "contact_comparisons": 72
+      },
+      "mismatch_rows": [
+        {
+          "tick": 460,
+          "native_contacts": [
+            true,
+            true,
+            false,
+            false
+          ],
+          "predicted_force_hysteresis_contacts": [
+            true,
+            true,
+            true,
+            false
+          ],
+          "native_next_force_world_n": [
+            [
+              0.0,
+              0.0,
+              79.27578735351562
+            ],
+            [
+              0.0,
+              0.0,
+              118.53177642822266
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "predicted_last_normal_force_n": [
+            81.19330378253272,
+            120.02972108432161,
+            8.700089801889565,
+            0.0
+          ],
+          "native_next_sphere_gaps_m": [
+            1.7406737162772856e-10,
+            -4.3987195415262637e-07,
+            -6.448344554849106e-08,
+            0.06230781039369808
+          ]
+        },
+        {
+          "tick": 461,
+          "native_contacts": [
+            true,
+            true,
+            false,
+            false
+          ],
+          "predicted_force_hysteresis_contacts": [
+            true,
+            true,
+            true,
+            false
+          ],
+          "native_next_force_world_n": [
+            [
+              0.0,
+              0.0,
+              81.27847290039062
+            ],
+            [
+              0.0,
+              0.0,
+              108.18061065673828
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "predicted_last_normal_force_n": [
+            81.17601756002878,
+            106.9338236014145,
+            12.216249398832307,
+            0.0
+          ],
+          "native_next_sphere_gaps_m": [
+            7.727651175903905e-08,
+            -5.544383772995709e-07,
+            1.7035842662244116e-07,
+            0.07044186553912178
+          ]
+        },
+        {
+          "tick": 464,
+          "native_contacts": [
+            true,
+            true,
+            false,
+            false
+          ],
+          "predicted_force_hysteresis_contacts": [
+            true,
+            true,
+            true,
+            false
+          ],
+          "native_next_force_world_n": [
+            [
+              0.0,
+              0.0,
+              103.12410736083984
+            ],
+            [
+              0.0,
+              0.0,
+              66.66427612304688
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "predicted_last_normal_force_n": [
+            100.78852535744518,
+            70.44278003747677,
+            4.131537816897481,
+            0.0
+          ],
+          "native_next_sphere_gaps_m": [
+            1.989588408954357e-07,
+            -8.783397322277564e-07,
+            2.02522439165867e-05,
+            0.09797400492307186
+          ]
+        },
+        {
+          "tick": 465,
+          "native_contacts": [
+            true,
+            true,
+            false,
+            false
+          ],
+          "predicted_force_hysteresis_contacts": [
+            true,
+            true,
+            true,
+            false
+          ],
+          "native_next_force_world_n": [
+            [
+              0.0,
+              0.0,
+              100.37863159179688
+            ],
+            [
+              0.0,
+              0.0,
+              66.17195129394531
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "predicted_last_normal_force_n": [
+            101.83776475993602,
+            65.90563396700037,
+            7.527527930839879,
+            0.0
+          ],
+          "native_next_sphere_gaps_m": [
+            3.951043174924007e-08,
+            -1.793828825445709e-07,
+            5.996370638612636e-05,
+            0.10122012793270534
+          ]
+        },
+        {
+          "tick": 466,
+          "native_contacts": [
+            true,
+            true,
+            false,
+            false
+          ],
+          "predicted_force_hysteresis_contacts": [
+            true,
+            true,
+            true,
+            false
+          ],
+          "native_next_force_world_n": [
+            [
+              0.0,
+              0.0,
+              106.1509780883789
+            ],
+            [
+              0.0,
+              0.0,
+              51.89518737792969
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "predicted_last_normal_force_n": [
+            107.1368771121777,
+            52.47682299445994,
+            21.68464293024439,
+            0.0
+          ],
+          "native_next_sphere_gaps_m": [
+            7.451105303243888e-08,
+            -3.0515276694745297e-07,
+            1.2969653820360527e-07,
+            0.10084123883344027
+          ]
+        },
+        {
+          "tick": 467,
+          "native_contacts": [
+            true,
+            true,
+            false,
+            false
+          ],
+          "predicted_force_hysteresis_contacts": [
+            true,
+            true,
+            true,
+            false
+          ],
+          "native_next_force_world_n": [
+            [
+              0.0,
+              0.0,
+              90.22682189941406
+            ],
+            [
+              0.0,
+              0.0,
+              40.518943786621094
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "predicted_last_normal_force_n": [
+            112.33210210976601,
+            41.538851431146625,
+            27.774685487538054,
+            0.0
+          ],
+          "native_next_sphere_gaps_m": [
+            1.264608148893176e-07,
+            -5.609273139965676e-07,
+            8.430812085055694e-07,
+            0.09839674717181679
+          ]
+        },
+        {
+          "tick": 469,
+          "native_contacts": [
+            true,
+            true,
+            false,
+            false
+          ],
+          "predicted_force_hysteresis_contacts": [
+            true,
+            true,
+            true,
+            false
+          ],
+          "native_next_force_world_n": [
+            [
+              0.0,
+              0.0,
+              91.14835357666016
+            ],
+            [
+              0.0,
+              0.0,
+              19.273839950561523
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "predicted_last_normal_force_n": [
+            127.63389129327894,
+            20.48927718408569,
+            20.490246394544002,
+            0.0
+          ],
+          "native_next_sphere_gaps_m": [
+            5.568103340555797e-08,
+            -6.511863179792243e-07,
+            9.609885230597859e-07,
+            0.09217192582791316
+          ]
+        },
+        {
+          "tick": 470,
+          "native_contacts": [
+            true,
+            true,
+            false,
+            false
+          ],
+          "predicted_force_hysteresis_contacts": [
+            true,
+            true,
+            true,
+            false
+          ],
+          "native_next_force_world_n": [
+            [
+              0.0,
+              0.0,
+              145.51243591308594
+            ],
+            [
+              0.0,
+              0.0,
+              9.334155082702637
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "predicted_last_normal_force_n": [
+            132.91113090772234,
+            7.310148935738771,
+            3.2300330756117557,
+            0.0
+          ],
+          "native_next_sphere_gaps_m": [
+            1.7736203327886613e-07,
+            -5.338338752922112e-07,
+            2.3359354337018634e-06,
+            0.08969546640674592
+          ]
+        },
+        {
+          "tick": 472,
+          "native_contacts": [
+            true,
+            false,
+            false,
+            false
+          ],
+          "predicted_force_hysteresis_contacts": [
+            true,
+            false,
+            true,
+            false
+          ],
+          "native_next_force_world_n": [
+            [
+              0.0,
+              0.0,
+              144.9593505859375
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "predicted_last_normal_force_n": [
+            141.66915360632436,
+            0.0,
+            0.7631691274937058,
+            0.0
+          ],
+          "native_next_sphere_gaps_m": [
+            5.3903828112905616e-08,
+            0.0018135808916991056,
+            6.055768088559371e-06,
+            0.08683277321855931
+          ]
+        }
+      ]
+    },
+    {
+      "substeps": 160,
+      "summary": {
+        "transitions": 18,
+        "joint_velocity_rmse_rad_s": {
+          "FL_hip_joint": 0.08633070337140529,
+          "FR_hip_joint": 0.009883170622714299,
+          "RL_hip_joint": 0.029801309571897534,
+          "RR_hip_joint": 0.010081221733772511,
+          "FL_thigh_joint": 0.020441125337512172,
+          "FR_thigh_joint": 0.014524811612142157,
+          "RL_thigh_joint": 0.04245759531777128,
+          "RR_thigh_joint": 0.006308305552171783,
+          "FL_calf_joint": 0.02468523620039439,
+          "FR_calf_joint": 0.01803695308608439,
+          "RL_calf_joint": 0.02725294575497431,
+          "RR_calf_joint": 0.0026698701634471802,
+          "joint1": 0.0018599996746479408,
+          "joint2": 0.005621348236762575,
+          "joint3": 0.001751850362022767,
+          "joint4": 0.0015539515362884566,
+          "joint5": 0.0027151284463628497,
+          "joint6": 0.0013619420221892232
+        },
+        "joint_position_rmse_rad": {
+          "FL_hip_joint": 0.00070696142964297,
+          "FR_hip_joint": 0.00021375311550219633,
+          "RL_hip_joint": 0.00024371801151592894,
+          "RR_hip_joint": 3.3498682240850745e-05,
+          "FL_thigh_joint": 0.0001850208590858075,
+          "FR_thigh_joint": 0.00020440381953266653,
+          "RL_thigh_joint": 0.0003127224692283436,
+          "RR_thigh_joint": 2.2196622685256675e-05,
+          "FL_calf_joint": 0.00014015273145219576,
+          "FR_calf_joint": 0.0003682754270006569,
+          "RL_calf_joint": 0.00017609725075150214,
+          "RR_calf_joint": 9.449357216273207e-06,
+          "joint1": 1.4811283416500171e-05,
+          "joint2": 2.1244937956625358e-05,
+          "joint3": 1.6806604014998724e-05,
+          "joint4": 9.6872478510999e-06,
+          "joint5": 6.145073655043815e-06,
+          "joint6": 7.825533123225494e-06
+        },
+        "largest_joint_velocity_error_rad_s": 0.2889708467430119,
+        "worst_joint_by_rmse": "FL_hip_joint",
+        "root_linear_velocity_rmse_m_s": 0.0005511367022901142,
+        "root_angular_velocity_rmse_rad_s": 0.0030827828802174355,
+        "raw_contact_mismatching_feet": 8,
+        "force_hysteresis_mismatching_feet": 8,
+        "contact_comparisons": 72
+      },
+      "mismatch_rows": [
+        {
+          "tick": 460,
+          "native_contacts": [
+            true,
+            true,
+            false,
+            false
+          ],
+          "predicted_force_hysteresis_contacts": [
+            true,
+            true,
+            true,
+            false
+          ],
+          "native_next_force_world_n": [
+            [
+              0.0,
+              0.0,
+              79.27578735351562
+            ],
+            [
+              0.0,
+              0.0,
+              118.53177642822266
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "predicted_last_normal_force_n": [
+            81.25745482768012,
+            119.99301466924459,
+            8.850935061479868,
+            0.0
+          ],
+          "native_next_sphere_gaps_m": [
+            1.7406737162772856e-10,
+            -4.3987195415262637e-07,
+            -6.448344554849106e-08,
+            0.06230781039369808
+          ]
+        },
+        {
+          "tick": 461,
+          "native_contacts": [
+            true,
+            true,
+            false,
+            false
+          ],
+          "predicted_force_hysteresis_contacts": [
+            true,
+            true,
+            true,
+            false
+          ],
+          "native_next_force_world_n": [
+            [
+              0.0,
+              0.0,
+              81.27847290039062
+            ],
+            [
+              0.0,
+              0.0,
+              108.18061065673828
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "predicted_last_normal_force_n": [
+            81.29990507725975,
+            106.9143281364093,
+            12.06993992308765,
+            0.0
+          ],
+          "native_next_sphere_gaps_m": [
+            7.727651175903905e-08,
+            -5.544383772995709e-07,
+            1.7035842662244116e-07,
+            0.07044186553912178
+          ]
+        },
+        {
+          "tick": 464,
+          "native_contacts": [
+            true,
+            true,
+            false,
+            false
+          ],
+          "predicted_force_hysteresis_contacts": [
+            true,
+            true,
+            true,
+            false
+          ],
+          "native_next_force_world_n": [
+            [
+              0.0,
+              0.0,
+              103.12410736083984
+            ],
+            [
+              0.0,
+              0.0,
+              66.66427612304688
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "predicted_last_normal_force_n": [
+            100.88295414154618,
+            70.41426211795074,
+            4.2410697764437995,
+            0.0
+          ],
+          "native_next_sphere_gaps_m": [
+            1.989588408954357e-07,
+            -8.783397322277564e-07,
+            2.02522439165867e-05,
+            0.09797400492307186
+          ]
+        },
+        {
+          "tick": 466,
+          "native_contacts": [
+            true,
+            true,
+            false,
+            false
+          ],
+          "predicted_force_hysteresis_contacts": [
+            true,
+            true,
+            true,
+            false
+          ],
+          "native_next_force_world_n": [
+            [
+              0.0,
+              0.0,
+              106.1509780883789
+            ],
+            [
+              0.0,
+              0.0,
+              51.89518737792969
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "predicted_last_normal_force_n": [
+            107.2553897881673,
+            52.42603061465508,
+            21.787470970305442,
+            0.0
+          ],
+          "native_next_sphere_gaps_m": [
+            7.451105303243888e-08,
+            -3.0515276694745297e-07,
+            1.2969653820360527e-07,
+            0.10084123883344027
+          ]
+        },
+        {
+          "tick": 467,
+          "native_contacts": [
+            true,
+            true,
+            false,
+            false
+          ],
+          "predicted_force_hysteresis_contacts": [
+            true,
+            true,
+            true,
+            false
+          ],
+          "native_next_force_world_n": [
+            [
+              0.0,
+              0.0,
+              90.22682189941406
+            ],
+            [
+              0.0,
+              0.0,
+              40.518943786621094
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "predicted_last_normal_force_n": [
+            112.46417328575046,
+            41.49022751630593,
+            27.883326914762275,
+            0.0
+          ],
+          "native_next_sphere_gaps_m": [
+            1.264608148893176e-07,
+            -5.609273139965676e-07,
+            8.430812085055694e-07,
+            0.09839674717181679
+          ]
+        },
+        {
+          "tick": 469,
+          "native_contacts": [
+            true,
+            true,
+            false,
+            false
+          ],
+          "predicted_force_hysteresis_contacts": [
+            true,
+            true,
+            true,
+            false
+          ],
+          "native_next_force_world_n": [
+            [
+              0.0,
+              0.0,
+              91.14835357666016
+            ],
+            [
+              0.0,
+              0.0,
+              19.273839950561523
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "predicted_last_normal_force_n": [
+            127.81053778554316,
+            20.462951887594468,
+            20.70972638683333,
+            0.0
+          ],
+          "native_next_sphere_gaps_m": [
+            5.568103340555797e-08,
+            -6.511863179792243e-07,
+            9.609885230597859e-07,
+            0.09217192582791316
+          ]
+        },
+        {
+          "tick": 470,
+          "native_contacts": [
+            true,
+            true,
+            false,
+            false
+          ],
+          "predicted_force_hysteresis_contacts": [
+            true,
+            true,
+            true,
+            false
+          ],
+          "native_next_force_world_n": [
+            [
+              0.0,
+              0.0,
+              145.51243591308594
+            ],
+            [
+              0.0,
+              0.0,
+              9.334155082702637
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "predicted_last_normal_force_n": [
+            133.11922692893322,
+            7.264768226894967,
+            3.247125388493503,
+            0.0
+          ],
+          "native_next_sphere_gaps_m": [
+            1.7736203327886613e-07,
+            -5.338338752922112e-07,
+            2.3359354337018634e-06,
+            0.08969546640674592
+          ]
+        },
+        {
+          "tick": 472,
+          "native_contacts": [
+            true,
+            false,
+            false,
+            false
+          ],
+          "predicted_force_hysteresis_contacts": [
+            true,
+            false,
+            true,
+            false
+          ],
+          "native_next_force_world_n": [
+            [
+              0.0,
+              0.0,
+              144.9593505859375
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "predicted_last_normal_force_n": [
+            141.9296845547734,
+            0.0,
+            0.76590543967144,
+            0.0
+          ],
+          "native_next_sphere_gaps_m": [
+            5.3903828112905616e-08,
+            0.0018135808916991056,
+            6.055768088559371e-06,
+            0.08683277321855931
+          ]
+        }
+      ]
+    }
+  ],
+  "artifact_sha256": {
+    "reports/landing_fullcommand_native_response_20261107/native_frictional_actual_one_step3_normal.json": "474df552a467552e1a57bb10da3ff3481c3883c0b5fb673944a039a2163ad401",
+    "reports/landing_fullcommand_native_response_20261107/native_frictional_actual_one_step3.json": "2ff0fa838515f5526408a06a6a0cb2b6a644b3b8b4ff3cc68130bad05f79aeaa",
+    "reports/landing_fullcommand_native_response_20261107/one_step_audit_initial_source.py.txt": "37e9a091efa935c5b9aa0a672f9dc1f916b0de47cbd92a627fe267952f8a0961",
+    "reports/landing_fullcommand_native_response_20261107/one_step_force_semantics_correction.json": "a8ece583f7b21bbbcd15a721d9a85818c54a4661c9d1c360d75812d1ef6a9c23",
+    "scripts/audit_native_frictional_one_step_v1.py": "25774bb71f94e635fc1f30fea5713d8578dab5ff0a7a19ed2915fd053406b4e9"
+  },
+  "recorded_source_hashes_verified": true,
+  "valid_expert_labels": false,
+  "formal_acceptance": false,
+  "installed_force_semantics": "Sampled normal contact force only; model normal-force hysteresis used for aligned comparisons",
+  "force_docs": "https://isaac-sim.github.io/IsaacLab/v2.2.1/source/api/lab/isaaclab.sensors.html",
+  "live_snapshot": {
+    "output": "reports/native_frictional_v2_sequence3_all128_20261107_02",
+    "progress": {
+      "control_tick": 542,
+      "replans": 17,
+      "accepted_replans": 17,
+      "latest_accepted": true,
+      "latest_wall_seconds": 385.42151203705,
+      "latest_reason": null,
+      "teacher_steps": 82,
+      "fallback_steps": 0,
+      "teacher_model": "frictional_spheres_v1",
+      "native_recovery_success_not_yet_known": true
+    },
+    "event_file_sha256": "93c165278604310ff3ca6805a19edeff0e2fd534066bcd1366dc6cd0f7680f73",
+    "event_count": 50,
+    "latest_event_physics_frame": 87808,
+    "latest_event_sim_time_s": 5.488,
+    "case3_first_nonfoot_events": [],
+    "latest_case3_root_twist_world": [
+      0.012812268920242786,
+      -0.013164893724024296,
+      -0.02149304188787937,
+      -0.03303001821041107,
+      -0.11901501566171646,
+      0.3018582761287689
+    ],
+    "partial_only": true
+  },
+  "queues": [
+    {
+      "plan": "reports/landing_native_terminal_support_followup_20261108/plan.json",
+      "plan_sha256": "5e963def6cd2e491b9f778aa71e1b5d05d9daa5ce248a918433cca43acd1371e",
+      "pid": 4192383,
+      "alive": true,
+      "source_files": 256,
+      "changed_sources": []
+    },
+    {
+      "plan": "reports/landing_native_terminal_arm_margin_followup_20261108_v2/plan.json",
+      "plan_sha256": "be0dfcc2509e89e45e73d46b6af78b11946bc41d20ed21c64be310a15a277028",
+      "pid": 1136,
+      "alive": true,
+      "source_files": 265,
+      "changed_sources": []
+    },
+    {
+      "plan": "reports/landing_native_feedback_portfolio_followup_20261108/plan.json",
+      "plan_sha256": "44af9913d8de24503731af9e552f35b16f31185f3656bb845cd62429037cca44",
+      "pid": 5421,
+      "alive": true,
+      "source_files": 263,
+      "changed_sources": []
+    }
+  ],
+  "formal_verification": {
+    "goal_id": "G07",
+    "status": "FAILED",
+    "contract_sha256": "66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807",
+    "checks": {
+      "G00": {
+        "passed": false,
+        "errors": [
+          "Missing or empty artifact: reports/G00/native_train/checkpoint.pt"
+        ]
+      },
+      "G01": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G00",
+          "Path escapes workspace: assets/quadsmash_standard_v2.usd",
+          "Path escapes workspace: assets/vendor/piper_isaac_sim/piper_description/urdf/piper_no_gripper_description.urdf"
+        ]
+      },
+      "G02": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G01"
+        ]
+      },
+      "G03": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G02",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/train/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/train/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/reload/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/reload/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/interrupt/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/interrupt/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/resume_interrupt/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/resume_interrupt/continuation_reference.pt"
+        ]
+      },
+      "G04": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G03",
+          "Missing or empty artifact: artifacts/G04/policy.pt",
+          "Missing or empty artifact: artifacts/G04/autonomous_actor/actor.pt",
+          "Missing or empty artifact: artifacts/G04/autonomous_actor/interface.json"
+        ]
+      },
+      "G05": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G04"
+        ]
+      },
+      "G06": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G05"
+        ]
+      },
+      "G07": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G06",
+          "Missing or invalid evidence: [Errno 2] No such file or directory: '/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/G07/evidence.json'"
+        ]
+      }
+    },
+    "scope": "Structure, hashes, dependencies and thresholds only; not simulation authenticity or GPU budget enforcement."
+  }
+}
