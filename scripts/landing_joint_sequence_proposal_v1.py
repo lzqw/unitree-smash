@@ -76,13 +76,15 @@ The independent held-command kernel is used in tests, not in this derivation.
 
 def propose_sequence(controller, state, reference, *, knots=9, time_limit_s=20.,
                      constraint_start='control_endpoints', nominal_profile=None,solver_backend='osqp',
-                     differentiate_dynamics=False):
+                     differentiate_dynamics=False, local_increment_bound_rad=.1, feasibility_restoration=False):
     """Return a bounded proposal, never an executable accepted MPC plan."""
     started = time.perf_counter()
     if not 0 < time_limit_s <= 60.: raise ValueError('Bounded offline solve required')
     if constraint_start not in ('empty', 'control_endpoints'):
         raise ValueError('Explicit constraint generation initialization required')
     if solver_backend not in ('osqp','active_set'):raise ValueError('Unknown QP backend')
+    if not np.isfinite(local_increment_bound_rad) or not 0 < local_increment_bound_rad <= .1:
+        raise ValueError('Finite local trust radius in (0, 0.1] required')
     if differentiate_dynamics and nominal_profile is None:
         raise ValueError('Differentiated dynamics require a complete nominal trajectory')
     qp = controller.qp; model = qp.model; interface = qp.interface
@@ -195,8 +197,15 @@ def propose_sequence(controller, state, reference, *, knots=9, time_limit_s=20.,
                      cfg.nonfoot_clearance_weight*w)
     if nominal_profile is not None:
         # Local model trust region; never a relaxation of hardware limits.
-        bound(np.eye(n),np.zeros(n),-.1,.1,'local_increment_rad',seed=True)
-        result['local_increment_bound_rad']=.1
+        bound(np.eye(n),np.zeros(n),-local_increment_bound_rad,local_increment_bound_rad,'local_increment_rad',seed=True)
+        result['local_increment_bound_rad']=local_increment_bound_rad
+    if feasibility_restoration:
+        if nominal_profile is None:
+            raise ValueError('Restoration requires a nominal search trajectory')
+        # Feasibility restoration minimizes the local command increment,
+        # keeping every physical constraint unchanged. No slack is executed.
+        P=np.eye(n);q=np.zeros(n)
+        result['objective']='minimum-increment feasibility restoration'
     A = np.vstack(constraints); low = np.concatenate(lows); high = np.concatenate(highs)
     command_center = np.tile(reference, knots) if nominal_profile is None else np.zeros(n)
     scale = np.tile(.5*np.diff(interface.limits, axis=1).ravel(), knots)
