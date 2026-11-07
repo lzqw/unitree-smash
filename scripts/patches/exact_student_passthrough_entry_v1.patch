@@ -1,0 +1,78 @@
+--- a/scripts/evaluate_shared_target_ground64_persistent_recovery_v1.py
++++ b/scripts/evaluate_shared_target_ground64_persistent_recovery_v1.py
+@@ -134,6 +134,8 @@
+     help='Weight the continuous support reference by measured per-foot vertical load')
+ parser.add_argument('--landing-mpc-load-force-floor', type=float, default=2.,
+     help='Minimum force weight for a foot selected by the observed-contact flag')
++parser.add_argument('--landing-mpc-exact-student-passthrough', action='store_true',
++    help='Keep unchanged student joints bitwise identical through target admission')
+ parser.add_argument('--landing-mpc-minimum-command-cost', action='store_true',
+     help='Prefer small command changes with full-horizon feasibility fallback')
+ parser.add_argument('--landing-mpc-command-change-weight', type=float, default=1.,
+@@ -280,6 +282,7 @@
+                  landing_mpc_interval_active_set=False,
+                  landing_mpc_full_command_damper=False,
+                  landing_mpc_minimum_command_cost=False, landing_mpc_command_change_weight=1.,
++                 landing_mpc_exact_student_passthrough=False,
+                  reactive_vhsip_cases=None, reactive_vhsip_post_touchdown_only=False,
+                  reactive_vhsip_capture_model='height', reactive_vhsip_settling_s=.7,
+                  reactive_vhsip_capture_gain=1., reactive_vhsip_blend_s=.08):
+@@ -407,6 +410,9 @@
+             raise ValueError('landing_mpc_load_force_floor must be finite and nonnegative')
+         self.landing_mpc_free_arm=bool(landing_mpc_free_arm)
+         self.landing_mpc_command_history_interface=bool(landing_mpc_command_history_interface)
++        self.landing_mpc_exact_student_passthrough=bool(landing_mpc_exact_student_passthrough)
++        if self.landing_mpc_exact_student_passthrough and not self.landing_mpc_command_history_interface:
++            raise ValueError('Exact passthrough requires the explicit command-history interface')
+         self.landing_mpc_minimum_command_cost=bool(landing_mpc_minimum_command_cost)
+         self.landing_mpc_command_change_weight=float(landing_mpc_command_change_weight)
+         if (not np.isfinite(self.landing_mpc_command_change_weight) or self.landing_mpc_command_change_weight<0 or
+@@ -713,8 +719,13 @@
+                     # The same history admission applies to student fallback;
+                     # failed solves must not jump back to a different slew history.
+                     joint_ref=self.landing_mpc.admit_command_target(state,joint_ref)
+-                    action[lane]=torch.as_tensor(self.landing_mpc.qp.interface.normalized_action(joint_ref),
+-                                                device=action.device,dtype=action.dtype)
++                    encoded_admitted=self.landing_mpc.qp.interface.normalized_action(joint_ref)
++                    if self.landing_mpc_exact_student_passthrough:
++                        from quadsmash.control.exact_command_passthrough_v1 import exact_admitted_action
++                        action[lane]=exact_admitted_action(action[lane],requested_student_joint_ref,
++                                                          joint_ref,encoded_admitted)
++                    else:
++                        action[lane]=torch.as_tensor(encoded_admitted,device=action.device,dtype=action.dtype)
+                 control_tick = int(round(float(public_clock[lane]) / .01))
+                 if isinstance(self.landing_mpc, LandingSupportMPCV3):
+                     self.landing_mpc.observe(state, joint_ref, lane=lane,
+@@ -854,6 +865,8 @@
+                     predicted_touchdown_impacts=predicted_touchdown_impacts,
+                     state_source=state_source,
+                     requested_student_joint_reference=requested_student_joint_ref.tolist(),
++                    exact_student_passthrough=self.landing_mpc_exact_student_passthrough,
++                    student_admission_changed_joints=np.flatnonzero(joint_ref!=requested_student_joint_ref).tolist(),
+                     previous_dispatched_target=(state.previous_command_target.tolist()
+                         if self.landing_mpc_command_history_interface else None),
+                     expected_support_contacts=self._landing_mpc_expected_contacts[lane].tolist(),
+@@ -1229,6 +1242,7 @@
+         landing_mpc_full_command_damper=args.landing_mpc_full_command_damper,
+         landing_mpc_minimum_command_cost=args.landing_mpc_minimum_command_cost,
+         landing_mpc_command_change_weight=args.landing_mpc_command_change_weight,
++        landing_mpc_exact_student_passthrough=args.landing_mpc_exact_student_passthrough,
+         reactive_vhsip_cases=args.reactive_vhsip_cases,
+         reactive_vhsip_post_touchdown_only=args.reactive_vhsip_post_touchdown_only,
+         reactive_vhsip_capture_model=args.reactive_vhsip_capture_model,
+@@ -1310,6 +1324,7 @@
+         landing_mpc_full_command_damper=args.landing_mpc_full_command_damper,
+         landing_mpc_minimum_command_cost=args.landing_mpc_minimum_command_cost,
+         landing_mpc_command_change_weight=args.landing_mpc_command_change_weight,
++        landing_mpc_exact_student_passthrough=args.landing_mpc_exact_student_passthrough,
+                       reactive_vhsip_cases=args.reactive_vhsip_cases,
+                       reactive_vhsip_post_touchdown_only=args.reactive_vhsip_post_touchdown_only,
+                       reactive_vhsip_capture_model=args.reactive_vhsip_capture_model,
+@@ -1638,6 +1653,7 @@
+                 interval_command_qp=bool(args.landing_mpc_interval_command_qp),
+                 interval_active_set=bool(args.landing_mpc_interval_active_set),
+                 full_command_damper=bool(args.landing_mpc_full_command_damper),
++                exact_student_passthrough=bool(args.landing_mpc_exact_student_passthrough),
+                 minimum_command_cost=bool(args.landing_mpc_minimum_command_cost),
+                 command_change_weight=float(args.landing_mpc_command_change_weight),
+                 student_future_policy_rolled_out=False,

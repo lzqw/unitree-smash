@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "scope": "Replay target admission on actual recorded student requests (no simulation).",
+  "native_new_execution": false,
+  "counts": {
+    "records": 40036,
+    "unchanged_admission": 40036,
+    "changed_admission": 0,
+    "rejected_teacher_unchanged_admission": 15478,
+    "old_roundtrip_changed_noop_bits": 40036
+  },
+  "admitted_target_error_max_rad": 3.3757246242771544e-07,
+  "old_fallback_mapping_error_max_rad": 2.6056218960235356e-07,
+  "original_admission_tolerance_rad": 5e-06,
+  "physical_constraints_relaxed": false,
+  "lost_cases_first_200ms_below_mapping_tolerance": [
+    17,
+    25,
+    28,
+    34,
+    37,
+    39,
+    43,
+    63,
+    84,
+    126
+  ],
+  "source_sha256": {
+    "reports/landing_causal_baseline_followup_20261107/exact_passthrough_cpu.json": "e443594a4c427df5447934496e8a6456ad932da91e94346be8c496b3dfb00618",
+    "reports/landing_causal_baseline_followup_20261107/recovery_onset_v2.json": "75139ab68fea733cd3190e39c892313b7443d570a7dfac34acc540ed6b190b08"
+  },
+  "native_result_available": false
+}
