@@ -1,0 +1,40 @@
+{
+  "schema": "landing-blas-runtime-evidence-v1",
+  "benchmark_native_execution": false,
+  "benchmark_samples": 3,
+  "solves_per_state": 3,
+  "median_qp_wall_seconds": {
+    "32": 0.03402249002829194,
+    "1": 0.004649631911888719
+  },
+  "maximum_command_difference_rad": 9.657386002004387e-12,
+  "acceptance_changed": false,
+  "physical_constraints_changed": false,
+  "controller_command_same_except_output_and_blas_flag": true,
+  "interrupted_run": {
+    "status": "FAILED",
+    "exit_code": 0,
+    "timed_out": false,
+    "elapsed_s": 1507.0436983890831,
+    "charged_gpu_hours": 0.4186232495525231,
+    "charged_env_steps": 102400,
+    "control_ticks": 445,
+    "actual_control_env_steps": 56960,
+    "completed_first_episodes": 18,
+    "requested_first_episodes": 128,
+    "formal_acceptance": false,
+    "resume_semantics": "Replay the same fixed policy/cases/noise from ground; no state restoration claimed."
+  },
+  "replacement_output": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_active_set_interval_blas1_20261107_01",
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_interval_command_followup_20261107/blas32_benchmark.json": "14a97133f18869fb45e6e7640c43cdc5bfa3b3a82cf564b08b29b79c03fd0db0",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_interval_command_followup_20261107/blas1_benchmark.json": "626bb6c33728967d4fbf0d92b24e5358983bb8fd298c0f99f6db5cab339f3516",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_blas_runtime_followup_20261107/plan.json": "304a6f7e09b5f2bed78558fc8a6bd1cd9a1ce982229dc79b496ca6cbd587bbb7",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_blas_runtime_followup_20261107/entry.json": "98da43f841b2e4d166818a7384c8ded2e48263dc4313d5e4473d5e2f3f7abea8",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_blas_runtime_followup_20261107/stop_request.json": "586992857bb721604aa0fa6d42a20b62c9ee6f9d84eb8f9e8a4e4fc144a4c172",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_active_set_interval26_20261107_01/job.json": "f5c61f459489f22f6f9ce0111627788b16ff16396cae6232fde88362d0262e9a",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_active_set_interval26_20261107_01/interrupted.json": "05462f836985f816f8f275c33a42d3bdc05ef8aaa2154a9f5e6c116a547128c4",
+    "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/isaacsim/exts/isaacsim.simulation_app/isaacsim/simulation_app/simulation_app.py": "7cbaa6f00e935a6f14bf1c28ec0db089fd924e931f3b0deee07a822f9b7d0090"
+  },
+  "scope": "Three recorded-state CPU benchmarks, no universal runtime or closed-loop equivalence claim. Interrupted native run has no complete128 score. Fresh original-task native evaluation required."
+}

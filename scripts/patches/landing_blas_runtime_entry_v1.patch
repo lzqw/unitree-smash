@@ -1,0 +1,50 @@
+--- a/scripts/evaluate_shared_target_ground64_persistent_recovery_v1.py
++++ b/scripts/evaluate_shared_target_ground64_persistent_recovery_v1.py
+@@ -22,6 +22,8 @@
+ 
+ parser = argparse.ArgumentParser(description=__doc__)
+ parser.add_argument('--output', type=Path, required=True)
++parser.add_argument('--landing-blas-threads', type=int, choices=[0,1], default=0,
++    help='Explicit process-local OpenBLAS limit after Isaac startup; 0 retains historical runtime')
+ parser.add_argument('--checkpoint', type=Path, required=True)
+ parser.add_argument('--learned-recovery-command-head', type=Path, default=None,
+     help='Explicit learned native recovery head; extra MPC/VHSIP disabled, all lanes causally gated')
+@@ -165,6 +167,9 @@
+ add_origin0_launcher_args(parser,AppLauncher)
+ args = parser.parse_args()
+ app = AppLauncher(args).app
++if args.landing_blas_threads:
++    import os
++    os.environ["OPENBLAS_NUM_THREADS"] = str(args.landing_blas_threads)
+ 
+ import numpy as np
+ import torch
+@@ -196,6 +201,11 @@
+ from scripts.landing_active_set_interval_mpc_v1 import LandingActiveSetIntervalMPCV1
+ from scripts.touchdown_contact_state_v1 import TouchdownContactSettingsV1,TouchdownContactStateV1
+ from scripts.whole_body_support_qp_v1 import PositionPDInterface, SupportSettings
++
++LANDING_BLAS_RUNTIME = None
++if args.landing_blas_threads:
++    from scripts.landing_blas_runtime_v1 import configure_landing_blas_threads
++    LANDING_BLAS_RUNTIME = configure_landing_blas_threads(args.landing_blas_threads)
+ 
+ SHARED_SCHEMA='g07-public-shared-target-bias-v5'
+ RESIDUAL_SCHEMA='g07-shared-target-residual-ppo-v1'
+@@ -1017,6 +1027,8 @@
+ 
+ def main():
+     args.output.mkdir(parents=True, exist_ok=True)
++    if LANDING_BLAS_RUNTIME is not None:
++        atomic_json(args.output / 'landing_blas_runtime.json', LANDING_BLAS_RUNTIME)
+     if (args.output / 'INPUTS.json').exists():
+         raise ValueError('Use a fresh output; never overwrite a previous diagnostic')
+     protocol_path = ROOT / 'configs/g07_full_racket_eval_v5_contact_recovery_origin0.json'
+@@ -1436,6 +1448,7 @@
+                      source_training_index=indices[i]) for i in range(count)]
+         protocol['_root'] = str(ROOT)
+         summary = summarize_training(rows, cases, indices, protocol)
++        summary["landing_blas_runtime"] = LANDING_BLAS_RUNTIME
+         if checkpoint.get('residual_training_metadata',{}).get('attack_speed_threshold_mps') == 5.0:
+             from scripts.compare_frozen_complete5_v2 import complete5_summary
+             primary=complete5_summary(rows,protocol)
