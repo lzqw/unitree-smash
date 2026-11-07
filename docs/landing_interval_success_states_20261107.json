@@ -1,0 +1,389 @@
+{
+  "schema": "interval-controller-on-recorded-success-states-v1",
+  "native_candidate_executed": false,
+  "summary": {
+    "samples": 479,
+    "first_accepted": 254,
+    "horizon_accepted": 163,
+    "prediction_check_rejections": 0,
+    "wall_seconds": 142.3104510938283
+  },
+  "rescued8": {
+    "samples": 196,
+    "first_accepted": 187,
+    "horizon_accepted": 158,
+    "first_rejections": [
+      {
+        "case": 67,
+        "tick": 300,
+        "status": "maximum iterations reached",
+        "rejection": "Interval command QP did not return a solved finite result"
+      },
+      {
+        "case": 85,
+        "tick": 300,
+        "status": "maximum iterations reached",
+        "rejection": "Interval command QP did not return a solved finite result"
+      },
+      {
+        "case": 95,
+        "tick": 300,
+        "status": "maximum iterations reached",
+        "rejection": "Interval command QP did not return a solved finite result"
+      },
+      {
+        "case": 115,
+        "tick": 300,
+        "status": "maximum iterations reached",
+        "rejection": "Interval command QP did not return a solved finite result"
+      },
+      {
+        "case": 3,
+        "tick": 320,
+        "status": "primal infeasible",
+        "rejection": "Interval command QP did not return a solved finite result"
+      },
+      {
+        "case": 8,
+        "tick": 320,
+        "status": "maximum iterations reached",
+        "rejection": "Interval command QP did not return a solved finite result"
+      },
+      {
+        "case": 61,
+        "tick": 320,
+        "status": "primal infeasible",
+        "rejection": "Interval command QP did not return a solved finite result"
+      },
+      {
+        "case": 115,
+        "tick": 360,
+        "status": "solved",
+        "rejection": "Independent interval dynamics, bounds or root-height check failed"
+      },
+      {
+        "case": 67,
+        "tick": 760,
+        "status": "solved",
+        "rejection": "Independent interval dynamics, bounds or root-height check failed"
+      }
+    ]
+  },
+  "by_case": [
+    {
+      "case": 1,
+      "teacher35_rescued": false,
+      "samples": 5,
+      "old_native_applied": 4,
+      "candidate_first_accepted": 4,
+      "candidate_horizon_accepted": 1,
+      "first_full_tick": 340,
+      "last_full_tick": 340
+    },
+    {
+      "case": 3,
+      "teacher35_rescued": true,
+      "samples": 24,
+      "old_native_applied": 23,
+      "candidate_first_accepted": 23,
+      "candidate_horizon_accepted": 22,
+      "first_full_tick": 360,
+      "last_full_tick": 780
+    },
+    {
+      "case": 8,
+      "teacher35_rescued": true,
+      "samples": 24,
+      "old_native_applied": 23,
+      "candidate_first_accepted": 23,
+      "candidate_horizon_accepted": 19,
+      "first_full_tick": 380,
+      "last_full_tick": 780
+    },
+    {
+      "case": 9,
+      "teacher35_rescued": false,
+      "samples": 5,
+      "old_native_applied": 2,
+      "candidate_first_accepted": 3,
+      "candidate_horizon_accepted": 0,
+      "first_full_tick": null,
+      "last_full_tick": null
+    },
+    {
+      "case": 12,
+      "teacher35_rescued": false,
+      "samples": 3,
+      "old_native_applied": 2,
+      "candidate_first_accepted": 3,
+      "candidate_horizon_accepted": 1,
+      "first_full_tick": 320,
+      "last_full_tick": 320
+    },
+    {
+      "case": 18,
+      "teacher35_rescued": false,
+      "samples": 24,
+      "old_native_applied": 3,
+      "candidate_first_accepted": 3,
+      "candidate_horizon_accepted": 0,
+      "first_full_tick": null,
+      "last_full_tick": null
+    },
+    {
+      "case": 20,
+      "teacher35_rescued": false,
+      "samples": 24,
+      "old_native_applied": 2,
+      "candidate_first_accepted": 1,
+      "candidate_horizon_accepted": 0,
+      "first_full_tick": null,
+      "last_full_tick": null
+    },
+    {
+      "case": 30,
+      "teacher35_rescued": false,
+      "samples": 24,
+      "old_native_applied": 2,
+      "candidate_first_accepted": 2,
+      "candidate_horizon_accepted": 0,
+      "first_full_tick": null,
+      "last_full_tick": null
+    },
+    {
+      "case": 38,
+      "teacher35_rescued": false,
+      "samples": 24,
+      "old_native_applied": 4,
+      "candidate_first_accepted": 4,
+      "candidate_horizon_accepted": 0,
+      "first_full_tick": null,
+      "last_full_tick": null
+    },
+    {
+      "case": 42,
+      "teacher35_rescued": false,
+      "samples": 24,
+      "old_native_applied": 1,
+      "candidate_first_accepted": 2,
+      "candidate_horizon_accepted": 0,
+      "first_full_tick": null,
+      "last_full_tick": null
+    },
+    {
+      "case": 50,
+      "teacher35_rescued": false,
+      "samples": 24,
+      "old_native_applied": 6,
+      "candidate_first_accepted": 6,
+      "candidate_horizon_accepted": 2,
+      "first_full_tick": 360,
+      "last_full_tick": 380
+    },
+    {
+      "case": 54,
+      "teacher35_rescued": false,
+      "samples": 7,
+      "old_native_applied": 4,
+      "candidate_first_accepted": 5,
+      "candidate_horizon_accepted": 0,
+      "first_full_tick": null,
+      "last_full_tick": null
+    },
+    {
+      "case": 57,
+      "teacher35_rescued": false,
+      "samples": 3,
+      "old_native_applied": 2,
+      "candidate_first_accepted": 3,
+      "candidate_horizon_accepted": 0,
+      "first_full_tick": null,
+      "last_full_tick": null
+    },
+    {
+      "case": 58,
+      "teacher35_rescued": true,
+      "samples": 24,
+      "old_native_applied": 23,
+      "candidate_first_accepted": 24,
+      "candidate_horizon_accepted": 24,
+      "first_full_tick": 320,
+      "last_full_tick": 780
+    },
+    {
+      "case": 61,
+      "teacher35_rescued": true,
+      "samples": 24,
+      "old_native_applied": 23,
+      "candidate_first_accepted": 23,
+      "candidate_horizon_accepted": 21,
+      "first_full_tick": 360,
+      "last_full_tick": 780
+    },
+    {
+      "case": 67,
+      "teacher35_rescued": true,
+      "samples": 25,
+      "old_native_applied": 23,
+      "candidate_first_accepted": 23,
+      "candidate_horizon_accepted": 18,
+      "first_full_tick": 340,
+      "last_full_tick": 780
+    },
+    {
+      "case": 70,
+      "teacher35_rescued": false,
+      "samples": 5,
+      "old_native_applied": 3,
+      "candidate_first_accepted": 3,
+      "candidate_horizon_accepted": 0,
+      "first_full_tick": null,
+      "last_full_tick": null
+    },
+    {
+      "case": 71,
+      "teacher35_rescued": false,
+      "samples": 9,
+      "old_native_applied": 5,
+      "candidate_first_accepted": 5,
+      "candidate_horizon_accepted": 0,
+      "first_full_tick": null,
+      "last_full_tick": null
+    },
+    {
+      "case": 77,
+      "teacher35_rescued": false,
+      "samples": 25,
+      "old_native_applied": 6,
+      "candidate_first_accepted": 6,
+      "candidate_horizon_accepted": 1,
+      "first_full_tick": 360,
+      "last_full_tick": 360
+    },
+    {
+      "case": 85,
+      "teacher35_rescued": true,
+      "samples": 25,
+      "old_native_applied": 23,
+      "candidate_first_accepted": 24,
+      "candidate_horizon_accepted": 12,
+      "first_full_tick": 360,
+      "last_full_tick": 760
+    },
+    {
+      "case": 87,
+      "teacher35_rescued": false,
+      "samples": 24,
+      "old_native_applied": 1,
+      "candidate_first_accepted": 2,
+      "candidate_horizon_accepted": 0,
+      "first_full_tick": null,
+      "last_full_tick": null
+    },
+    {
+      "case": 90,
+      "teacher35_rescued": false,
+      "samples": 24,
+      "old_native_applied": 3,
+      "candidate_first_accepted": 3,
+      "candidate_horizon_accepted": 0,
+      "first_full_tick": null,
+      "last_full_tick": null
+    },
+    {
+      "case": 95,
+      "teacher35_rescued": true,
+      "samples": 25,
+      "old_native_applied": 23,
+      "candidate_first_accepted": 24,
+      "candidate_horizon_accepted": 22,
+      "first_full_tick": 340,
+      "last_full_tick": 780
+    },
+    {
+      "case": 96,
+      "teacher35_rescued": false,
+      "samples": 25,
+      "old_native_applied": 7,
+      "candidate_first_accepted": 9,
+      "candidate_horizon_accepted": 0,
+      "first_full_tick": null,
+      "last_full_tick": null
+    },
+    {
+      "case": 98,
+      "teacher35_rescued": false,
+      "samples": 4,
+      "old_native_applied": 2,
+      "candidate_first_accepted": 3,
+      "candidate_horizon_accepted": 0,
+      "first_full_tick": null,
+      "last_full_tick": null
+    },
+    {
+      "case": 115,
+      "teacher35_rescued": true,
+      "samples": 25,
+      "old_native_applied": 23,
+      "candidate_first_accepted": 23,
+      "candidate_horizon_accepted": 20,
+      "first_full_tick": 340,
+      "last_full_tick": 780
+    }
+  ],
+  "root_reconstruction_check": {
+    "scope": "Compare reconstructed planning root poses with independently saved native poses.\n\nThis checks position/orientation at matched recorded ticks, not unrecorded PhysX\ncontact internals, actuator state, or future dynamics accuracy.\n",
+    "run": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_20261107_01",
+    "samples": 479,
+    "position_max_error_m": 6.350307342195549e-07,
+    "rotation_matrix_max_error": 2.6784179216199355e-07
+  },
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_interval_command_followup_20261107/controller35_recorded_state_audit.json": "9cb0467bb7728a4254a190cbae8c2410c11d6ae5a5814dcb5e1baad271d09689",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_interval_command_followup_20261107/controller35_root_reconstruction.json": "55182656fd2ca46724a62314f75fe31ba15c60d0106be7f79af41b78c3e19e92"
+  },
+  "code_source_sha256": {
+    "reports/landing_mpc_command_history_cohort26_20261107_01/fixed_policy_traces/case_001.npz": "3d1553156b33c635f41886cf72ec4e74ad2e46fcb73402371db78ef8d3a2bb0e",
+    "reports/landing_mpc_command_history_cohort26_20261107_01/fixed_policy_traces/case_003.npz": "8c198633279c26c22d53c99ef76cde327c61595f475fea3824b7092131d084ee",
+    "reports/landing_mpc_command_history_cohort26_20261107_01/fixed_policy_traces/case_008.npz": "4d24a3bf8a1ddbbecb53fae5a6c9338f427c3be722a5f72911b88861119e11ff",
+    "reports/landing_mpc_command_history_cohort26_20261107_01/fixed_policy_traces/case_009.npz": "718edc7eff65e121e0c2345faa540d2ff02356e86da6903ad1448be06b362d98",
+    "reports/landing_mpc_command_history_cohort26_20261107_01/fixed_policy_traces/case_012.npz": "e477e46a514aa2bf61039bf30c5ebed2711dd25c19277db99c1fdc072d29f7a8",
+    "reports/landing_mpc_command_history_cohort26_20261107_01/fixed_policy_traces/case_018.npz": "9d7c6acb3464072df95e58234efff7fec78d236d201c6c4cfdd096003e342950",
+    "reports/landing_mpc_command_history_cohort26_20261107_01/fixed_policy_traces/case_020.npz": "5ecbe4dfd35521579923996da968267e97c0fdb5a9270d0192487a588ece27c2",
+    "reports/landing_mpc_command_history_cohort26_20261107_01/fixed_policy_traces/case_030.npz": "921118843c91d585b6c05faea04ad75fd3ebed5cdd3e209eb1943d6e996a4d83",
+    "reports/landing_mpc_command_history_cohort26_20261107_01/fixed_policy_traces/case_038.npz": "9d14b52f637af5852a4c05e3cdfc2cbe04ad438a548dc5b323bf0c76e4082e02",
+    "reports/landing_mpc_command_history_cohort26_20261107_01/fixed_policy_traces/case_042.npz": "721cdf3999a073ca510a8dd9822422d4ced65cebaaa1b358a811d4b445a96736",
+    "reports/landing_mpc_command_history_cohort26_20261107_01/fixed_policy_traces/case_050.npz": "d55dacda6efa210f519a46ca3a68867d764aa741b7a5cf12518db61ce9b366cc",
+    "reports/landing_mpc_command_history_cohort26_20261107_01/fixed_policy_traces/case_054.npz": "2266d60c63b6949defae70914f25c45339ffcdee7f0cfa01e7778fa335d2caaa",
+    "reports/landing_mpc_command_history_cohort26_20261107_01/fixed_policy_traces/case_057.npz": "ca27c86770c7494b933665349927425340ff9609fb3c0649956b90a5e8906361",
+    "reports/landing_mpc_command_history_cohort26_20261107_01/fixed_policy_traces/case_058.npz": "c59431f61f699d4d68e2fd9a4b7152ee2c4e60aedc211ef53854301cf0256fcb",
+    "reports/landing_mpc_command_history_cohort26_20261107_01/fixed_policy_traces/case_061.npz": "08efd36bcc7afe64238307abc0c8163274c0e3f375d821a065e412cf91d473ca",
+    "reports/landing_mpc_command_history_cohort26_20261107_01/fixed_policy_traces/case_067.npz": "6780e2008347e3b072eefc1a94104ae03ccc380e5c9b138c60a0e6761d76d1fa",
+    "reports/landing_mpc_command_history_cohort26_20261107_01/fixed_policy_traces/case_070.npz": "29f8251a0be45d818240519934d9a3df4bb85a26e3a404707cd0358ed876cf35",
+    "reports/landing_mpc_command_history_cohort26_20261107_01/fixed_policy_traces/case_071.npz": "9dd935caba668a92e93fccf55d6475a581bbfe83e865bf41f5132f917a6adc7e",
+    "reports/landing_mpc_command_history_cohort26_20261107_01/fixed_policy_traces/case_077.npz": "6fe3880bcf154257362eea1cfad56539dda983a126c3d90ab3ffddf1b210867e",
+    "reports/landing_mpc_command_history_cohort26_20261107_01/fixed_policy_traces/case_085.npz": "955b6887f6ccd12b425e169a2dabba5d6469d738c944cc21387bc4dd38009fa2",
+    "reports/landing_mpc_command_history_cohort26_20261107_01/fixed_policy_traces/case_087.npz": "1016c6bed78cee4307bb8f5bd41f2d20fa4f5a8f394895eadeed0f55a3e0b04e",
+    "reports/landing_mpc_command_history_cohort26_20261107_01/fixed_policy_traces/case_090.npz": "2fdbdaf9e71d9f994aad28a6f8887fba8e447c4380ecab6b51ec4f8b8e426a7d",
+    "reports/landing_mpc_command_history_cohort26_20261107_01/fixed_policy_traces/case_095.npz": "3b9d1438451156ca9cd568e343bd21ba94a55a5fb1e9bcf4b1a31b3ab8c103bf",
+    "reports/landing_mpc_command_history_cohort26_20261107_01/fixed_policy_traces/case_096.npz": "abda3c6871ece8bd075450f4e5c9c8fa473151da5facf232e06599248a5a8834",
+    "reports/landing_mpc_command_history_cohort26_20261107_01/fixed_policy_traces/case_098.npz": "e4ae4be7ea7db4d8f27f22f3bbde9dcbfdc02b105402ff3a0730dfd61c774ec6",
+    "reports/landing_mpc_command_history_cohort26_20261107_01/fixed_policy_traces/case_115.npz": "dca544769a31538e947f91c4e84040c1e9090a60253e436c0f4798f5e95edea9",
+    "reports/landing_mpc_command_history_cohort26_20261107_01/landing_mpc_records.json": "b663facafc1e6ad278db4e5d62046bad21c9e0fa23af819be1c6703cd43018e3",
+    "reports/landing_mpc_command_history_cohort26_20261107_01/native_command_inputs.json": "f861d727c049c85d612cad7ce2a5be9a4bc3a85ab18ba38f5018dc871fca6f7c",
+    "reports/landing_mpc_command_history_cohort26_20261107_01/job.json": "bafe7134733429bbf848cbdb7f9d58375ac43ff5acbb5b006da8b2c5c68ae453",
+    "reports/landing_mpc_command_history_cohort26_20261107_01/INPUTS.json": "6d1b2d96bdc815361687cb50958e30b0d98da4f41d4f92210d707288e0cf2e30",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_interval_command_mpc_v1.py": "9295ceac77cfca43fa65e3565d50d8301134a5fee90fe3ff5059755b14973d1f",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/interval_command_support_qp_v1.py": "64ec30f614d08714dced2380aa4edd9bb285e536b181adc10f904ba6e3b8d982",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/condensed_implicit_drive_v1.py": "a0f21e9b954db9e978ba428a3770fcb8cd666e08dd21aa27cedf0c0e5c5af629",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_interval_command_mpc_v1.py": "eedb43c155cc5c1078666f62f3b3ce6d27ee2a90cd5262b4a7ce51624b3f152b",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/implicit_support_prediction_v1.py": "b751fa0ea59edd1fe8fc62cf0ba3816e5583ecc76df7058ef3f5185a335a1e01",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/continuous_support_qp_v1.py": "824a3d49711917803e9c82af63b1d142917d62c874ec8751325578a71b4af640",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v1.py": "da2ff2e4ee1479bf3fc422c0b71f8831bffd9e5868d9a4e0665fd348ab659a59",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v2.py": "6d0ad9bc4fcd27a0f4f418e55b988341ffe809f14c132415281ec41621196ae2",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v3.py": "d8c54679697e78678a898f5d36a27305f9252a5f2b09990d0b33ddcc25533300",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_command_history_mpc_v1.py": "466ba93dc473c7d2de93aae0d5d7848b390d72e8fe1ef779ff0818efad704d28",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/command_history_support_qp_v1.py": "1ac2221f85cbf3d468be4c265cc932845700d5f17a9eaaf37440998873689081"
+  },
+  "scope": "Candidate commands on states reached by the old controller; neither candidate execution nor a forecast of the old executed commands. Root pose reconstruction checked against native recordings; other simulator internals not reconstructed."
+}
