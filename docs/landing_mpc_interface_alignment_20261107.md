@@ -651,3 +651,20 @@ this prediction metric until their distinct executed input is represented.
 Command-to-current-joint target tracking remains a separate quantity. This is a
 logging correction only, not a control change or evidence that the native model
 is accurate. Historical dense prediction statistics must be remeasured.
+
+
+### Guarded continuation queued
+
+A finite continuation waits for the memory-only run to finish successfully, then
+runs `landing_mpc_clearance_fixed3_20261107_01` with the same frozen policy,
+TRAIN1/67/95 controller selection and physical/control settings. It verifies
+source hashes before launch and stops on parent failure, numerical failure or
+source change. The child uses GPU0's exclusive budget guard, 3600-second limit
+and 102400 environment-step cap. It has **not yet produced a result**.
+
+Local orchestration receipts are under
+`reports/landing_correctness_followup_20261107/`; compact summaries will include
+complete5, retained/lost/new cases, selected-case recovery and episode-ID scope.
+This comparison tests clearance correctness plus diagnostic alignment; it still
+uses a 40-tick held command and does not establish continuously replanned or
+jointly optimized MPC recovery.
