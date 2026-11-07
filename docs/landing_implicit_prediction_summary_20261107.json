@@ -1,0 +1,289 @@
+{
+  "scope": "Compare held-command predictions with the next recorded native state.\n\nUses actual executed targets, not hindsight control selection. Samples every\n20th recorded first-episode tick. Contact changes and bound violations remain\nvisible; better joint prediction alone is not a valid support certificate.\n",
+  "native_new_execution": false,
+  "source": "reports/landing_mpc_command_history_feedback3_20261107_01",
+  "samples": 55,
+  "contact_changed_samples": 5,
+  "summary": {
+    "held_initial_torque": {
+      "successful_predictions": 55,
+      "failed_predictions": 0,
+      "errors": {
+        "leg_position_error_max_rad": {
+          "count": 55,
+          "mean": 0.0022334202959630846,
+          "median": 0.0005327543082939701,
+          "p95": 0.009109526951507796,
+          "maximum": 0.030941873182197502
+        },
+        "arm_position_error_max_rad": {
+          "count": 55,
+          "mean": 0.0031600550453403445,
+          "median": 0.0006210163236740063,
+          "p95": 0.02416867815698535,
+          "maximum": 0.0352282797194125
+        },
+        "leg_velocity_error_max_rad_s": {
+          "count": 55,
+          "mean": 0.4771886197656714,
+          "median": 0.11266615161177218,
+          "p95": 2.1538011271493827,
+          "maximum": 7.071594653395831
+        },
+        "arm_velocity_error_max_rad_s": {
+          "count": 55,
+          "mean": 0.7116927187768606,
+          "median": 0.13630725829589765,
+          "p95": 5.458397065093815,
+          "maximum": 8.09461090756658
+        },
+        "base_position_error_m": {
+          "count": 55,
+          "mean": 4.736522661721956e-05,
+          "median": 2.0498172149026258e-05,
+          "p95": 0.000296444152242553,
+          "maximum": 0.00038246649351003224
+        },
+        "base_linear_velocity_error_mps": {
+          "count": 55,
+          "mean": 0.007385597120938292,
+          "median": 0.002066380306071775,
+          "p95": 0.05494960632386684,
+          "maximum": 0.06355820403364802
+        },
+        "base_angular_velocity_error_rad_s": {
+          "count": 55,
+          "mean": 0.13661565382855387,
+          "median": 0.017087666440640303,
+          "p95": 0.4142943395615232,
+          "maximum": 2.8342885168746563
+        },
+        "runtime_ms": {
+          "count": 55,
+          "mean": 0.38946698927743867,
+          "median": 0.38380385376513004,
+          "p95": 0.42951444629579777,
+          "maximum": 0.5584810860455036
+        }
+      }
+    },
+    "implicit_1": {
+      "successful_predictions": 55,
+      "failed_predictions": 0,
+      "errors": {
+        "leg_position_error_max_rad": {
+          "count": 55,
+          "mean": 0.003179406901626115,
+          "median": 0.0006950372541214556,
+          "p95": 0.009554826916992647,
+          "maximum": 0.04763554002177853
+        },
+        "arm_position_error_max_rad": {
+          "count": 55,
+          "mean": 0.0010252641014868828,
+          "median": 0.00012305513854671268,
+          "p95": 0.003829579720772745,
+          "maximum": 0.018520745740702838
+        },
+        "leg_velocity_error_max_rad_s": {
+          "count": 55,
+          "mean": 0.2541339364051373,
+          "median": 0.06078940614575013,
+          "p95": 0.8997644354989902,
+          "maximum": 3.072777119938822
+        },
+        "arm_velocity_error_max_rad_s": {
+          "count": 55,
+          "mean": 0.08426163480663977,
+          "median": 0.00826302127087962,
+          "p95": 0.24310694916932896,
+          "maximum": 1.856791447239238
+        },
+        "base_position_error_m": {
+          "count": 55,
+          "mean": 0.00014388330856270623,
+          "median": 8.581117818100475e-05,
+          "p95": 0.00047164255126536147,
+          "maximum": 0.000608245162204021
+        },
+        "base_linear_velocity_error_mps": {
+          "count": 55,
+          "mean": 0.005050912101958127,
+          "median": 0.002155511872274622,
+          "p95": 0.01935104075917337,
+          "maximum": 0.05613574058415409
+        },
+        "base_angular_velocity_error_rad_s": {
+          "count": 55,
+          "mean": 0.05088926892824683,
+          "median": 0.007858672774439959,
+          "p95": 0.11356965405134031,
+          "maximum": 1.0804794694511959
+        },
+        "runtime_ms": {
+          "count": 55,
+          "mean": 0.3825373693623326,
+          "median": 0.35000196658074856,
+          "p95": 0.40563999209553003,
+          "maximum": 1.6135580372065306
+        }
+      }
+    },
+    "implicit_16": {
+      "successful_predictions": 55,
+      "failed_predictions": 0,
+      "errors": {
+        "leg_position_error_max_rad": {
+          "count": 55,
+          "mean": 0.0017702808414727783,
+          "median": 0.0004826833469713243,
+          "p95": 0.007378819796600008,
+          "maximum": 0.020044831598535262
+        },
+        "arm_position_error_max_rad": {
+          "count": 55,
+          "mean": 0.0008333927500827643,
+          "median": 6.727589552490976e-05,
+          "p95": 0.005356077785328044,
+          "maximum": 0.01666141603318705
+        },
+        "leg_velocity_error_max_rad_s": {
+          "count": 55,
+          "mean": 0.274676601143443,
+          "median": 0.0625866732000071,
+          "p95": 1.2447366024480664,
+          "maximum": 3.278966199020415
+        },
+        "arm_velocity_error_max_rad_s": {
+          "count": 55,
+          "mean": 0.11485695040752142,
+          "median": 0.005452489655020112,
+          "p95": 0.5066268718280912,
+          "maximum": 2.611423299227371
+        },
+        "base_position_error_m": {
+          "count": 55,
+          "mean": 4.361508048386296e-05,
+          "median": 2.2982246015788485e-05,
+          "p95": 0.00022735707800202004,
+          "maximum": 0.00032568235831872147
+        },
+        "base_linear_velocity_error_mps": {
+          "count": 55,
+          "mean": 0.005287819285643148,
+          "median": 0.0018267447678120732,
+          "p95": 0.027011948003808635,
+          "maximum": 0.056916479458041916
+        },
+        "base_angular_velocity_error_rad_s": {
+          "count": 55,
+          "mean": 0.06741402438074985,
+          "median": 0.00584224788526636,
+          "p95": 0.13212895817594078,
+          "maximum": 1.6222139494886363
+        },
+        "runtime_ms": {
+          "count": 55,
+          "mean": 1.377161888575012,
+          "median": 1.330668805167079,
+          "p95": 1.6707631759345531,
+          "maximum": 1.6807529609650373
+        }
+      }
+    },
+    "implicit_160": {
+      "successful_predictions": 55,
+      "failed_predictions": 0,
+      "errors": {
+        "leg_position_error_max_rad": {
+          "count": 55,
+          "mean": 0.0016897270408393842,
+          "median": 0.00048678878088947997,
+          "p95": 0.0074520871755809175,
+          "maximum": 0.018222294393830607
+        },
+        "arm_position_error_max_rad": {
+          "count": 55,
+          "mean": 0.0008311940356702594,
+          "median": 6.972757009782171e-05,
+          "p95": 0.005531796945331418,
+          "maximum": 0.016361031418528516
+        },
+        "leg_velocity_error_max_rad_s": {
+          "count": 55,
+          "mean": 0.2770554824988382,
+          "median": 0.06256365710534345,
+          "p95": 1.2448047415983765,
+          "maximum": 3.2917337821121926
+        },
+        "arm_velocity_error_max_rad_s": {
+          "count": 55,
+          "mean": 0.11780245373902871,
+          "median": 0.005531694095101673,
+          "p95": 0.5342851154512147,
+          "maximum": 2.673377044080646
+        },
+        "base_position_error_m": {
+          "count": 55,
+          "mean": 4.080657688321993e-05,
+          "median": 2.1834384134866004e-05,
+          "p95": 0.00022277004895736888,
+          "maximum": 0.0003094557341365506
+        },
+        "base_linear_velocity_error_mps": {
+          "count": 55,
+          "mean": 0.005348987742402671,
+          "median": 0.0018501954478011369,
+          "p95": 0.028314917024267233,
+          "maximum": 0.056948459781476835
+        },
+        "base_angular_velocity_error_rad_s": {
+          "count": 55,
+          "mean": 0.06888123532225233,
+          "median": 0.005900268481513679,
+          "p95": 0.13376802026949133,
+          "maximum": 1.6654514008226113
+        },
+        "runtime_ms": {
+          "count": 55,
+          "mean": 11.256666608493436,
+          "median": 10.630170116201043,
+          "p95": 13.7788200750947,
+          "maximum": 23.50811380892992
+        }
+      }
+    }
+  },
+  "source_sha256": {
+    "reports/landing_mpc_command_history_feedback3_20261107_01/fixed_policy_traces/case_067.npz": "ac485d547eee0ccc803a5cc4ba98be5eaed0053b6d74824d81ec6db8d1b6ce5b",
+    "reports/landing_mpc_command_history_feedback3_20261107_01/fixed_policy_traces/case_095.npz": "fa8419e53c96e1839a1257e64ff55099689e07186be6c1e829d7f55213bc4311",
+    "reports/landing_mpc_command_history_feedback3_20261107_01/fixed_policy_traces/case_001.npz": "3d1553156b33c635f41886cf72ec4e74ad2e46fcb73402371db78ef8d3a2bb0e",
+    "reports/landing_mpc_command_history_feedback3_20261107_01/landing_mpc_records.json": "d29a8ab41d1cb13d2c188141ffb05d18e9a89b67c9587df1d0ca958b4c777516",
+    "reports/landing_mpc_command_history_feedback3_20261107_01/native_command_inputs.json": "f861d727c049c85d612cad7ce2a5be9a4bc3a85ab18ba38f5018dc871fca6f7c",
+    "reports/landing_mpc_command_history_feedback3_20261107_01/job.json": "6d9772931d7afe809e4c26fe611a0c1e44ffadc682d4df8b12d8d83624c9664c",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_landing_implicit_prediction_v1.py": "2f984c36d5c35f40141b3a82ca799e3f08d042e5d7df3c1875e6ab430d0ff7ce",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/implicit_support_prediction_v1.py": "b751fa0ea59edd1fe8fc62cf0ba3816e5583ecc76df7058ef3f5185a335a1e01"
+  },
+  "constraint_violating_samples": {
+    "implicit_1": {
+      "normal_force_violation_n": 1,
+      "friction_violation_n": 11,
+      "joint_velocity_violation_rad_s": 4,
+      "joint_position_violation_rad": 0
+    },
+    "implicit_16": {
+      "normal_force_violation_n": 1,
+      "friction_violation_n": 11,
+      "joint_velocity_violation_rad_s": 4,
+      "joint_position_violation_rad": 0
+    },
+    "implicit_160": {
+      "normal_force_violation_n": 1,
+      "friction_violation_n": 11,
+      "joint_velocity_violation_rad_s": 5,
+      "joint_position_violation_rad": 0
+    }
+  },
+  "full_local_audit": "docs/landing_implicit_prediction_audit_20261107.json",
+  "full_local_audit_sha256": "77dcb1da986886edd10f73879cef0d557840a6fee86b0e729e0b9c53785d368a"
+}

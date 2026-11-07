@@ -1,0 +1,95 @@
+{
+  "scope": "Check whether successful MPC commands fit the current student action range.\n\nReplay the original production student on the actual teacher-visited states.\nVerify its recorded pre-MPC request, then compute the bounded mixer's reachable\ncommand interval. No clipped inverse is exported as an expert residual label.\n",
+  "cases": [
+    67,
+    95
+  ],
+  "residual_scale_rad": [
+    0.4,
+    0.4,
+    0.4,
+    0.4,
+    0.4,
+    0.4,
+    0.4,
+    0.4,
+    0.4,
+    0.4,
+    0.4,
+    0.4,
+    0.4,
+    0.4,
+    0.4,
+    0.4,
+    0.4,
+    0.4
+  ],
+  "arm_target_rate_rad_s": 10.0,
+  "student_pre_mpc_request_replay_error_max_rad": 7.152557373046875e-07,
+  "command_tolerance_rad": 0.0005,
+  "summaries": [
+    {
+      "case": 67,
+      "corrected_complete5": true,
+      "checked_steps": 501,
+      "outside_current_residual_range_steps": 415,
+      "maximum_interval_violation_rad": 0.5792567491531372,
+      "first_outside_range": {
+        "case": 67,
+        "tick": 299,
+        "applied": true,
+        "max_command_interval_violation_rad": 0.5040588140487671,
+        "violating_joint_indices": [
+          2,
+          3,
+          4,
+          6,
+          7
+        ]
+      }
+    },
+    {
+      "case": 95,
+      "corrected_complete5": true,
+      "checked_steps": 502,
+      "outside_current_residual_range_steps": 431,
+      "maximum_interval_violation_rad": 0.5484841823577882,
+      "first_outside_range": {
+        "case": 95,
+        "tick": 299,
+        "applied": true,
+        "max_command_interval_violation_rad": 0.3351905107498169,
+        "violating_joint_indices": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      }
+    }
+  ],
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_env5120_01/policy.pt": "8f510fe9f218beef791ac21675a19ed25d11f510a83fe247cddf2893bee08399",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/evaluate_shared_target_ground64_persistent_recovery_v1.py": "1dccad326b110e15e177af9bb540f95b0932cec5792b4fa7b00f7aabdb5ae95a",
+    "reports/landing_mpc_command_history_feedback3_20261107_01/fixed_policy_traces/case_067.npz": "ac485d547eee0ccc803a5cc4ba98be5eaed0053b6d74824d81ec6db8d1b6ce5b",
+    "reports/landing_mpc_command_history_feedback3_20261107_01/fixed_policy_traces/case_095.npz": "fa8419e53c96e1839a1257e64ff55099689e07186be6c1e829d7f55213bc4311"
+  },
+  "expert_residual_labels_exported": false,
+  "actual_student_learning": false,
+  "native_new_execution": false,
+  "full_local_audit": "reports/landing_command_history_followup_20261107/residual_representability.json",
+  "full_local_audit_sha256": "7f1ee784a77b02cab87331ee4e6760d816916a138af637c735f272f78f9e71a1",
+  "compact_export_dependency_sha256": {
+    "scripts/audit_mpc_residual_representability_v1.py": "d6eb8d4a2fa0e02287161b038ecf56f84318bcc3f52dfb97af6f1600b59c41b0",
+    "scripts/build_verified_fixed_retention_v2.py": "2ee29e83657f3776fb8ac4ad605300e14f7167cd8238d1fe567a0948b3868d91",
+    "scripts/touchdown_contact_state_v1.py": "4ceebf89b2018e303b5dc4d77b2be3a05c543c4122a171451d8a633557c9a91b",
+    "reports/landing_mpc_command_history_feedback3_20261107_01/job.json": "6d9772931d7afe809e4c26fe611a0c1e44ffadc682d4df8b12d8d83624c9664c",
+    "reports/landing_mpc_command_history_feedback3_20261107_01/INPUTS.json": "56c9d746b6dac0f15b3e95d864c55cc5c4721a4bb7757710c12fd6b827dfe07e",
+    "reports/landing_mpc_command_history_feedback3_20261107_01/metrics.json": "3af710facfb7c06c71db7e8b3da5b9adb4b2d2a683f56352d41573b9e06e5f95",
+    "reports/landing_mpc_command_history_feedback3_20261107_01/native_command_inputs.json": "f861d727c049c85d612cad7ce2a5be9a4bc3a85ab18ba38f5018dc871fca6f7c",
+    "reports/landing_mpc_command_history_feedback3_20261107_01/landing_mpc_records.json": "d29a8ab41d1cb13d2c188141ffb05d18e9a89b67c9587df1d0ca958b4c777516"
+  }
+}

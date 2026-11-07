@@ -1,0 +1,597 @@
+{
+  "scope": "Diagnose recorded landing horizons; no native control or relaxed execution.\n\nReplay live reference memory from recorded observations/commands. At selected\nticks inspect rejected QP constraints with a separate feasibility LP. Dropping\nconstraints is diagnostic only. A free-arm QP counterfactual retains physical\nand command limits but permits changing the prescribed arm target.\n",
+  "source": "reports/landing_mpc_command_history_feedback3_20261107_01",
+  "native_new_execution": false,
+  "implicit_replay_substeps": 16,
+  "qp_settings": {
+    "control_dt_s": 0.01,
+    "contact_velocity_decay_s": 0.06,
+    "com_kp_s2": 50.0,
+    "com_kd_s": 14.0,
+    "orientation_kp_s2": 60.0,
+    "orientation_kd_s": 15.0,
+    "posture_kp_s2": 40.0,
+    "posture_kd_s": 12.0,
+    "com_weight": 20.0,
+    "orientation_weight": 10.0,
+    "posture_weight": 0.2,
+    "acceleration_regularization": 1e-05,
+    "torque_regularization": 0.0001,
+    "force_regularization": 1e-05,
+    "force_distribution_weight": 0.0,
+    "force_wrench_weight": 0.0,
+    "friction_facets": 8,
+    "solver_eps": 1e-06,
+    "solver_max_iterations": 10000,
+    "residual_tolerance": 0.0003,
+    "swing_foot_weight": 1.0,
+    "swing_foot_kp_s2": 60.0,
+    "swing_foot_kd_s": 12.0,
+    "swing_foot_clearance_m": 0.005,
+    "swing_foot_capture_gain": 0.0,
+    "swing_foot_capture_max_m": 0.25,
+    "nonfoot_clearance_weight": 5.0,
+    "nonfoot_clearance_hard": false,
+    "nonfoot_clearance_m": 0.05,
+    "nonfoot_clearance_kp_s2": 60.0,
+    "nonfoot_clearance_kd_s": 15.0
+  },
+  "mpc_settings": {
+    "horizon_steps": 40,
+    "control_dt_s": 0.01,
+    "tilt_trigger_rad": 0.55,
+    "angular_speed_trigger_rad_s": 2.2,
+    "horizontal_speed_trigger_mps": 0.75,
+    "minimum_support_feet": 1,
+    "terminal_tilt_rad": 0.35,
+    "terminal_angular_speed_rad_s": 1.4,
+    "terminal_horizontal_speed_mps": 0.45,
+    "max_stage_runtime_s": 0.02,
+    "executor_replay": true,
+    "executor_replay_model_consistent": true,
+    "command_rate_scale": 1.0,
+    "support_margin_trigger_m": 0.025,
+    "terminal_support_margin_m": 0.01,
+    "two_foot_max_com_distance_m": 0.075,
+    "one_foot_max_com_distance_m": 0.2,
+    "landing_leg_posture_blend": 0.15,
+    "landing_arm_posture_blend": 0.0,
+    "predict_touchdown_contacts": true,
+    "contact_mode_fallback": true,
+    "contact_mode_sequence_search": false,
+    "contact_mode_sequence_max_candidates": 3,
+    "touchdown_mode_height_scale": 2.5,
+    "touchdown_height_tolerance_m": 0.012,
+    "touchdown_vertical_speed_limit_mps": 1.5,
+    "touchdown_impact_projection": false,
+    "touchdown_impact_restitution": 0.0,
+    "touchdown_impact_max_impulse_ns": 25.0
+  },
+  "public_vs_native_root_position_error_max_m": 2.3569504836729038e-07,
+  "records": [
+    {
+      "case": 67,
+      "tick": 300,
+      "recorded_failed_stage": 0,
+      "replay_failed_stage": 0,
+      "replay_full_horizon_accepted": false,
+      "attempts": 1,
+      "failed_contacts": [
+        true,
+        true,
+        false,
+        false
+      ],
+      "failed_joint_velocity": [
+        -2.927173614501953,
+        -1.6733542680740356,
+        -14.216902732849121,
+        17.40009307861328,
+        9.839695930480957,
+        11.100675582885742,
+        -13.776556968688965,
+        -15.173012733459473,
+        -10.677865982055664,
+        -13.94948959350586,
+        1.5459728240966797,
+        5.274417400360107,
+        4.165836811065674,
+        -4.9985432624816895,
+        -4.710888862609863,
+        -0.33535686135292053,
+        -0.08098525553941727,
+        -0.11668302118778229
+      ],
+      "failed_status": "solved inaccurate",
+      "same_state_free_arm": {
+        "accepted": true,
+        "status": "solved",
+        "residuals": {
+          "dynamics": 8.526512829121202e-14,
+          "active_contact_acceleration": 1.4210854715202004e-14,
+          "inactive_foot_force": 0.0,
+          "circular_friction_cone": 0.0,
+          "instantaneous_pd_torque": 7.827072323607354e-15,
+          "admitted_target_bounds": 0.0,
+          "torque_bounds": 7.105427357601002e-15,
+          "predicted_position_bounds": 0.0,
+          "predicted_velocity_bounds": 0.0,
+          "all_linear_constraints": 5.684341886080802e-14
+        }
+      },
+      "linear_feasibility": {
+        "status": 0,
+        "feasible": true,
+        "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+      },
+      "diagnostic_drop_one_group": {
+        "floating_dynamics": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "contact_acceleration": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "contact_friction": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "leg_torque": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "arm_torque": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "leg_joint_bounds": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "arm_joint_bounds": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        }
+      }
+    },
+    {
+      "case": 95,
+      "tick": 300,
+      "recorded_failed_stage": 0,
+      "replay_failed_stage": 0,
+      "replay_full_horizon_accepted": false,
+      "attempts": 1,
+      "failed_contacts": [
+        true,
+        true,
+        false,
+        false
+      ],
+      "failed_joint_velocity": [
+        -3.5336413383483887,
+        -2.217513084411621,
+        -10.000733375549316,
+        14.46509838104248,
+        10.230825424194336,
+        11.486427307128906,
+        -12.147693634033203,
+        -11.976160049438477,
+        -9.312474250793457,
+        -12.050751686096191,
+        2.945707321166992,
+        3.3109490871429443,
+        4.719967842102051,
+        -4.998091697692871,
+        -4.829722881317139,
+        -1.196615219116211,
+        -0.1355496346950531,
+        -0.377707839012146
+      ],
+      "failed_status": "primal infeasible",
+      "same_state_free_arm": {
+        "accepted": true,
+        "status": "solved",
+        "residuals": {
+          "dynamics": 5.684341886080802e-14,
+          "active_contact_acceleration": 1.6209256159527285e-14,
+          "inactive_foot_force": 0.0,
+          "circular_friction_cone": 0.0,
+          "instantaneous_pd_torque": 8.881784197001252e-15,
+          "admitted_target_bounds": 0.0,
+          "torque_bounds": 3.552713678800501e-15,
+          "predicted_position_bounds": 0.0,
+          "predicted_velocity_bounds": 0.0,
+          "all_linear_constraints": 5.684341886080802e-14
+        }
+      },
+      "linear_feasibility": {
+        "status": 2,
+        "feasible": false,
+        "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+      },
+      "diagnostic_drop_one_group": {
+        "floating_dynamics": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "contact_acceleration": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "contact_friction": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "leg_torque": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "arm_torque": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "leg_joint_bounds": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "arm_joint_bounds": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        }
+      }
+    },
+    {
+      "case": 1,
+      "tick": 306,
+      "recorded_failed_stage": 1,
+      "replay_failed_stage": 8,
+      "replay_full_horizon_accepted": false,
+      "attempts": 10,
+      "implicit_prediction_violation_maxima": {
+        "dynamics_contact_residual_max": 6.906475391588174e-11,
+        "joint_velocity_violation_rad_s": 0.25173476481435486,
+        "joint_position_violation_rad": 0.00018478037875646613,
+        "normal_force_violation_n": 0.0,
+        "friction_violation_n": 2.8088298545109183,
+        "motor_torque_violation_nm": 0.0
+      },
+      "all_implicit_prediction_checks_passed": false,
+      "replayed_first_target_error_rad": 2.2850397796148059e-07,
+      "failed_contacts": [
+        true,
+        true,
+        false,
+        false
+      ],
+      "failed_joint_velocity": [
+        -0.6920437948119608,
+        0.18568014712454875,
+        -2.7039524467611535,
+        6.648191546612185,
+        13.372027102991373,
+        -0.37235028941417364,
+        -2.5931242152922067,
+        -3.119431068957457,
+        -0.6900865907639313,
+        -0.03390557904940593,
+        0.2527247236329098,
+        1.0856821667201189,
+        0.9134705111679468,
+        -3.6972763615323343,
+        -2.1460681074995973,
+        -0.4086114560377571,
+        -0.18982290614640027,
+        -0.0552264800900284
+      ],
+      "failed_status": "maximum iterations reached",
+      "same_state_free_arm": {
+        "accepted": true,
+        "status": "solved",
+        "residuals": {
+          "dynamics": 5.684341886080802e-14,
+          "active_contact_acceleration": 2.6645352591003757e-14,
+          "inactive_foot_force": 0.0,
+          "circular_friction_cone": 0.0,
+          "instantaneous_pd_torque": 1.3322676295501878e-14,
+          "admitted_target_bounds": 0.0,
+          "torque_bounds": 1.1102230246251565e-16,
+          "predicted_position_bounds": 0.0,
+          "predicted_velocity_bounds": 0.0,
+          "all_linear_constraints": 5.684341886080802e-14
+        }
+      },
+      "linear_feasibility": {
+        "status": 0,
+        "feasible": true,
+        "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+      },
+      "diagnostic_drop_one_group": {
+        "floating_dynamics": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "contact_acceleration": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "contact_friction": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "leg_torque": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "arm_torque": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "leg_joint_bounds": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "arm_joint_bounds": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        }
+      }
+    },
+    {
+      "case": 1,
+      "tick": 350,
+      "recorded_failed_stage": 2,
+      "replay_failed_stage": null,
+      "replay_full_horizon_accepted": false,
+      "attempts": 40,
+      "implicit_prediction_violation_maxima": {
+        "dynamics_contact_residual_max": 6.88160639583657e-12,
+        "joint_velocity_violation_rad_s": 0.0,
+        "joint_position_violation_rad": 0.0,
+        "normal_force_violation_n": 0.0,
+        "friction_violation_n": 0.9860172455301992,
+        "motor_torque_violation_nm": 0.0
+      },
+      "all_implicit_prediction_checks_passed": false,
+      "replayed_first_target_error_rad": 1.283942201446564e-07
+    },
+    {
+      "case": 1,
+      "tick": 400,
+      "recorded_failed_stage": 1,
+      "replay_failed_stage": 27,
+      "replay_full_horizon_accepted": false,
+      "attempts": 28,
+      "implicit_prediction_violation_maxima": {
+        "dynamics_contact_residual_max": 2.983568947456661e-11,
+        "joint_velocity_violation_rad_s": 0.0,
+        "joint_position_violation_rad": 0.0,
+        "normal_force_violation_n": 0.4318097859711548,
+        "friction_violation_n": 28.076420225438497,
+        "motor_torque_violation_nm": 0.0
+      },
+      "all_implicit_prediction_checks_passed": false,
+      "replayed_first_target_error_rad": 1.7805940633053297e-07,
+      "failed_contacts": [
+        true,
+        true,
+        true,
+        false
+      ],
+      "failed_joint_velocity": [
+        3.1845886713092586,
+        -4.369980613823221,
+        -2.16871076338718,
+        -1.3347444955997576,
+        -2.2479128488851114,
+        -1.7160483952793142,
+        0.28800965853750915,
+        1.7481537583970745,
+        6.573832805917579,
+        5.45485951960256,
+        2.0037133900705784,
+        0.13439333567543033,
+        0.21066023519046348,
+        -0.2005475404492128,
+        -0.08966543196466824,
+        0.029188723939700702,
+        -0.01356271682408479,
+        -0.015115046917761171
+      ],
+      "failed_status": "primal infeasible",
+      "same_state_free_arm": {
+        "accepted": false,
+        "status": "primal infeasible",
+        "residuals": null
+      },
+      "linear_feasibility": {
+        "status": 2,
+        "feasible": false,
+        "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+      },
+      "diagnostic_drop_one_group": {
+        "floating_dynamics": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "contact_acceleration": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "contact_friction": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "leg_torque": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "arm_torque": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "leg_joint_bounds": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "arm_joint_bounds": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        }
+      }
+    },
+    {
+      "case": 67,
+      "tick": 400,
+      "recorded_failed_stage": 3,
+      "replay_failed_stage": null,
+      "replay_full_horizon_accepted": true,
+      "attempts": 40,
+      "implicit_prediction_violation_maxima": {
+        "dynamics_contact_residual_max": 4.460432023734029e-12,
+        "joint_velocity_violation_rad_s": 0.0,
+        "joint_position_violation_rad": 0.0,
+        "normal_force_violation_n": 0.0,
+        "friction_violation_n": 0.0,
+        "motor_torque_violation_nm": 0.0
+      },
+      "all_implicit_prediction_checks_passed": true,
+      "replayed_first_target_error_rad": 1.0352667789703673e-07
+    },
+    {
+      "case": 95,
+      "tick": 400,
+      "recorded_failed_stage": 2,
+      "replay_failed_stage": null,
+      "replay_full_horizon_accepted": true,
+      "attempts": 40,
+      "implicit_prediction_violation_maxima": {
+        "dynamics_contact_residual_max": 4.177991286269389e-12,
+        "joint_velocity_violation_rad_s": 0.0,
+        "joint_position_violation_rad": 0.0,
+        "normal_force_violation_n": 0.0,
+        "friction_violation_n": 0.0,
+        "motor_torque_violation_nm": 0.0
+      },
+      "all_implicit_prediction_checks_passed": true,
+      "replayed_first_target_error_rad": 3.029562161138699e-07
+    },
+    {
+      "case": 67,
+      "tick": 600,
+      "recorded_failed_stage": 2,
+      "replay_failed_stage": null,
+      "replay_full_horizon_accepted": true,
+      "attempts": 40,
+      "implicit_prediction_violation_maxima": {
+        "dynamics_contact_residual_max": 4.572342504616245e-12,
+        "joint_velocity_violation_rad_s": 0.0,
+        "joint_position_violation_rad": 0.0,
+        "normal_force_violation_n": 0.0,
+        "friction_violation_n": 0.37306356559160125,
+        "motor_torque_violation_nm": 0.0
+      },
+      "all_implicit_prediction_checks_passed": false,
+      "replayed_first_target_error_rad": 1.7103970173515393e-07
+    },
+    {
+      "case": 95,
+      "tick": 600,
+      "recorded_failed_stage": 2,
+      "replay_failed_stage": null,
+      "replay_full_horizon_accepted": true,
+      "attempts": 40,
+      "implicit_prediction_violation_maxima": {
+        "dynamics_contact_residual_max": 1.6964207816272392e-12,
+        "joint_velocity_violation_rad_s": 0.0,
+        "joint_position_violation_rad": 0.0,
+        "normal_force_violation_n": 0.0,
+        "friction_violation_n": 0.0,
+        "motor_torque_violation_nm": 0.0
+      },
+      "all_implicit_prediction_checks_passed": true,
+      "replayed_first_target_error_rad": 3.2109768799415406e-07
+    },
+    {
+      "case": 67,
+      "tick": 760,
+      "recorded_failed_stage": 2,
+      "replay_failed_stage": null,
+      "replay_full_horizon_accepted": true,
+      "attempts": 40,
+      "implicit_prediction_violation_maxima": {
+        "dynamics_contact_residual_max": 8.327560863108374e-12,
+        "joint_velocity_violation_rad_s": 0.0,
+        "joint_position_violation_rad": 0.0,
+        "normal_force_violation_n": 0.0,
+        "friction_violation_n": 0.9867691641820294,
+        "motor_torque_violation_nm": 0.0
+      },
+      "all_implicit_prediction_checks_passed": false,
+      "replayed_first_target_error_rad": 2.451088327859452e-07
+    },
+    {
+      "case": 95,
+      "tick": 760,
+      "recorded_failed_stage": 2,
+      "replay_failed_stage": null,
+      "replay_full_horizon_accepted": true,
+      "attempts": 40,
+      "implicit_prediction_violation_maxima": {
+        "dynamics_contact_residual_max": 4.534150832569139e-12,
+        "joint_velocity_violation_rad_s": 0.0,
+        "joint_position_violation_rad": 0.0,
+        "normal_force_violation_n": 0.0,
+        "friction_violation_n": 0.0,
+        "motor_torque_violation_nm": 0.0
+      },
+      "all_implicit_prediction_checks_passed": true,
+      "replayed_first_target_error_rad": 1.852438145100166e-07
+    }
+  ],
+  "source_sha256": {
+    "reports/landing_mpc_command_history_feedback3_20261107_01/fixed_policy_traces/case_001.npz": "3d1553156b33c635f41886cf72ec4e74ad2e46fcb73402371db78ef8d3a2bb0e",
+    "reports/landing_mpc_command_history_feedback3_20261107_01/fixed_policy_traces/case_067.npz": "ac485d547eee0ccc803a5cc4ba98be5eaed0053b6d74824d81ec6db8d1b6ce5b",
+    "reports/landing_mpc_command_history_feedback3_20261107_01/fixed_policy_traces/case_095.npz": "fa8419e53c96e1839a1257e64ff55099689e07186be6c1e829d7f55213bc4311",
+    "reports/landing_mpc_command_history_feedback3_20261107_01/landing_mpc_records.json": "d29a8ab41d1cb13d2c188141ffb05d18e9a89b67c9587df1d0ca958b4c777516",
+    "reports/landing_mpc_command_history_feedback3_20261107_01/native_command_inputs.json": "f861d727c049c85d612cad7ce2a5be9a4bc3a85ab18ba38f5018dc871fca6f7c",
+    "reports/landing_mpc_command_history_feedback3_20261107_01/all_first_episodes.npz": "4800b7a16e6757f152fa0b5e41f29df82b441caeaa25ccdb64ce239d49863ae3",
+    "reports/landing_mpc_command_history_feedback3_20261107_01/job.json": "6d9772931d7afe809e4c26fe611a0c1e44ffadc682d4df8b12d8d83624c9664c",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/implicit_support_prediction_v1.py": "b751fa0ea59edd1fe8fc62cf0ba3816e5583ecc76df7058ef3f5185a335a1e01",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_command_history_mpc_v1.py": "466ba93dc473c7d2de93aae0d5d7848b390d72e8fe1ef779ff0818efad704d28",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/command_history_support_qp_v1.py": "1ac2221f85cbf3d468be4c265cc932845700d5f17a9eaaf37440998873689081",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v1.py": "da2ff2e4ee1479bf3fc422c0b71f8831bffd9e5868d9a4e0665fd348ab659a59",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v2.py": "6d0ad9bc4fcd27a0f4f418e55b988341ffe809f14c132415281ec41621196ae2",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v3.py": "d8c54679697e78678a898f5d36a27305f9252a5f2b09990d0b33ddcc25533300",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/reduced_whole_body_support_qp_v1.py": "e731a0bca8744d4639099dd2ff9be94840a9f0c953c64924fb2cfa9e7a9c80c7",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_landing_horizon_conflicts_v1.py": "45327bb77b4f15c90b8ae443cc441d0ced4bf73fd22de95d58f46c48d64cf5ee"
+  }
+}

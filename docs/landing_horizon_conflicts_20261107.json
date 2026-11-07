@@ -1,0 +1,1089 @@
+{
+  "scope": "Diagnose recorded landing horizons; no native control or relaxed execution.\n\nReplay live reference memory from recorded observations/commands. At selected\nticks inspect rejected QP constraints with a separate feasibility LP. Dropping\nconstraints is diagnostic only. A free-arm QP counterfactual retains physical\nand command limits but permits changing the prescribed arm target.\n",
+  "source": "reports/landing_mpc_command_history_feedback3_20261107_01",
+  "native_new_execution": false,
+  "implicit_replay_substeps": 0,
+  "qp_settings": {
+    "control_dt_s": 0.01,
+    "contact_velocity_decay_s": 0.06,
+    "com_kp_s2": 50.0,
+    "com_kd_s": 14.0,
+    "orientation_kp_s2": 60.0,
+    "orientation_kd_s": 15.0,
+    "posture_kp_s2": 40.0,
+    "posture_kd_s": 12.0,
+    "com_weight": 20.0,
+    "orientation_weight": 10.0,
+    "posture_weight": 0.2,
+    "acceleration_regularization": 1e-05,
+    "torque_regularization": 0.0001,
+    "force_regularization": 1e-05,
+    "force_distribution_weight": 0.0,
+    "force_wrench_weight": 0.0,
+    "friction_facets": 8,
+    "solver_eps": 1e-06,
+    "solver_max_iterations": 10000,
+    "residual_tolerance": 0.0003,
+    "swing_foot_weight": 1.0,
+    "swing_foot_kp_s2": 60.0,
+    "swing_foot_kd_s": 12.0,
+    "swing_foot_clearance_m": 0.005,
+    "swing_foot_capture_gain": 0.0,
+    "swing_foot_capture_max_m": 0.25,
+    "nonfoot_clearance_weight": 5.0,
+    "nonfoot_clearance_hard": false,
+    "nonfoot_clearance_m": 0.05,
+    "nonfoot_clearance_kp_s2": 60.0,
+    "nonfoot_clearance_kd_s": 15.0
+  },
+  "mpc_settings": {
+    "horizon_steps": 40,
+    "control_dt_s": 0.01,
+    "tilt_trigger_rad": 0.55,
+    "angular_speed_trigger_rad_s": 2.2,
+    "horizontal_speed_trigger_mps": 0.75,
+    "minimum_support_feet": 1,
+    "terminal_tilt_rad": 0.35,
+    "terminal_angular_speed_rad_s": 1.4,
+    "terminal_horizontal_speed_mps": 0.45,
+    "max_stage_runtime_s": 0.02,
+    "executor_replay": true,
+    "executor_replay_model_consistent": true,
+    "command_rate_scale": 1.0,
+    "support_margin_trigger_m": 0.025,
+    "terminal_support_margin_m": 0.01,
+    "two_foot_max_com_distance_m": 0.075,
+    "one_foot_max_com_distance_m": 0.2,
+    "landing_leg_posture_blend": 0.15,
+    "landing_arm_posture_blend": 0.0,
+    "predict_touchdown_contacts": true,
+    "contact_mode_fallback": true,
+    "contact_mode_sequence_search": false,
+    "contact_mode_sequence_max_candidates": 3,
+    "touchdown_mode_height_scale": 2.5,
+    "touchdown_height_tolerance_m": 0.012,
+    "touchdown_vertical_speed_limit_mps": 1.5,
+    "touchdown_impact_projection": false,
+    "touchdown_impact_restitution": 0.0,
+    "touchdown_impact_max_impulse_ns": 25.0
+  },
+  "public_vs_native_root_position_error_max_m": 2.3569504836729038e-07,
+  "records": [
+    {
+      "case": 67,
+      "tick": 300,
+      "recorded_failed_stage": 0,
+      "replay_failed_stage": 0,
+      "replay_full_horizon_accepted": false,
+      "attempts": 1,
+      "failed_contacts": [
+        true,
+        true,
+        false,
+        false
+      ],
+      "failed_joint_velocity": [
+        -2.927173614501953,
+        -1.6733542680740356,
+        -14.216902732849121,
+        17.40009307861328,
+        9.839695930480957,
+        11.100675582885742,
+        -13.776556968688965,
+        -15.173012733459473,
+        -10.677865982055664,
+        -13.94948959350586,
+        1.5459728240966797,
+        5.274417400360107,
+        4.165836811065674,
+        -4.9985432624816895,
+        -4.710888862609863,
+        -0.33535686135292053,
+        -0.08098525553941727,
+        -0.11668302118778229
+      ],
+      "failed_status": "solved inaccurate",
+      "same_state_free_arm": {
+        "accepted": true,
+        "status": "solved",
+        "residuals": {
+          "dynamics": 8.526512829121202e-14,
+          "active_contact_acceleration": 1.4210854715202004e-14,
+          "inactive_foot_force": 0.0,
+          "circular_friction_cone": 0.0,
+          "instantaneous_pd_torque": 7.827072323607354e-15,
+          "admitted_target_bounds": 0.0,
+          "torque_bounds": 7.105427357601002e-15,
+          "predicted_position_bounds": 0.0,
+          "predicted_velocity_bounds": 0.0,
+          "all_linear_constraints": 5.684341886080802e-14
+        }
+      },
+      "linear_feasibility": {
+        "status": 0,
+        "feasible": true,
+        "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+      },
+      "diagnostic_drop_one_group": {
+        "floating_dynamics": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "contact_acceleration": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "contact_friction": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "leg_torque": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "arm_torque": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "leg_joint_bounds": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "arm_joint_bounds": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        }
+      }
+    },
+    {
+      "case": 95,
+      "tick": 300,
+      "recorded_failed_stage": 0,
+      "replay_failed_stage": 0,
+      "replay_full_horizon_accepted": false,
+      "attempts": 1,
+      "failed_contacts": [
+        true,
+        true,
+        false,
+        false
+      ],
+      "failed_joint_velocity": [
+        -3.5336413383483887,
+        -2.217513084411621,
+        -10.000733375549316,
+        14.46509838104248,
+        10.230825424194336,
+        11.486427307128906,
+        -12.147693634033203,
+        -11.976160049438477,
+        -9.312474250793457,
+        -12.050751686096191,
+        2.945707321166992,
+        3.3109490871429443,
+        4.719967842102051,
+        -4.998091697692871,
+        -4.829722881317139,
+        -1.196615219116211,
+        -0.1355496346950531,
+        -0.377707839012146
+      ],
+      "failed_status": "primal infeasible",
+      "same_state_free_arm": {
+        "accepted": true,
+        "status": "solved",
+        "residuals": {
+          "dynamics": 5.684341886080802e-14,
+          "active_contact_acceleration": 1.6209256159527285e-14,
+          "inactive_foot_force": 0.0,
+          "circular_friction_cone": 0.0,
+          "instantaneous_pd_torque": 8.881784197001252e-15,
+          "admitted_target_bounds": 0.0,
+          "torque_bounds": 3.552713678800501e-15,
+          "predicted_position_bounds": 0.0,
+          "predicted_velocity_bounds": 0.0,
+          "all_linear_constraints": 5.684341886080802e-14
+        }
+      },
+      "linear_feasibility": {
+        "status": 2,
+        "feasible": false,
+        "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+      },
+      "diagnostic_drop_one_group": {
+        "floating_dynamics": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "contact_acceleration": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "contact_friction": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "leg_torque": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "arm_torque": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "leg_joint_bounds": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "arm_joint_bounds": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        }
+      }
+    },
+    {
+      "case": 1,
+      "tick": 306,
+      "recorded_failed_stage": 1,
+      "replay_failed_stage": 1,
+      "replay_full_horizon_accepted": false,
+      "attempts": 2,
+      "replayed_first_target_error_rad": 2.2850397796148059e-07,
+      "failed_contacts": [
+        true,
+        false,
+        false,
+        false
+      ],
+      "failed_joint_velocity": [
+        -3.5211644378074665,
+        -1.4583899137137355,
+        -17.339793953142888,
+        17.535618891312495,
+        10.015168342693512,
+        -7.112468502167268,
+        -16.025874539912536,
+        -15.863470989120072,
+        -9.83645856331,
+        0.0783260429472401,
+        4.439755824802731,
+        2.905154945156904,
+        3.373471164630104,
+        -4.9999999999999645,
+        -5.000000000000018,
+        -5.000000000000013,
+        3.981860695620785,
+        3.87484080940185
+      ],
+      "failed_status": "primal infeasible",
+      "same_state_free_arm": {
+        "accepted": false,
+        "status": "primal infeasible",
+        "residuals": null
+      },
+      "linear_feasibility": {
+        "status": 2,
+        "feasible": false,
+        "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+      },
+      "diagnostic_drop_one_group": {
+        "floating_dynamics": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "contact_acceleration": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "contact_friction": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "leg_torque": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "arm_torque": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "leg_joint_bounds": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "arm_joint_bounds": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        }
+      }
+    },
+    {
+      "case": 1,
+      "tick": 350,
+      "recorded_failed_stage": 2,
+      "replay_failed_stage": 2,
+      "replay_full_horizon_accepted": false,
+      "attempts": 3,
+      "replayed_first_target_error_rad": 1.283942201446564e-07,
+      "failed_contacts": [
+        true,
+        true,
+        true,
+        false
+      ],
+      "failed_joint_velocity": [
+        -1.1087331629964248,
+        -1.280258340893428,
+        -1.8065311764740273,
+        -0.1554607966985716,
+        0.5796520056216241,
+        0.5379734094788233,
+        1.6547842519797655,
+        -0.010602819833030741,
+        -0.38840757248187097,
+        -0.640516274814853,
+        -1.8259658815016193,
+        0.005318328397250174,
+        1.1334909853048352,
+        0.8999275625211695,
+        0.7724200420922824,
+        1.1898575578425103,
+        -0.3381345606326914,
+        -0.20122169187028996
+      ],
+      "failed_status": "primal infeasible",
+      "same_state_free_arm": {
+        "accepted": true,
+        "status": "solved",
+        "residuals": {
+          "dynamics": 2.842170943040401e-14,
+          "active_contact_acceleration": 3.858025010572419e-15,
+          "inactive_foot_force": 0.0,
+          "circular_friction_cone": 0.0,
+          "instantaneous_pd_torque": 8.881784197001252e-15,
+          "admitted_target_bounds": 0.0,
+          "torque_bounds": 3.552713678800501e-15,
+          "predicted_position_bounds": 0.0,
+          "predicted_velocity_bounds": 0.0,
+          "all_linear_constraints": 2.842170943040401e-14
+        }
+      },
+      "linear_feasibility": {
+        "status": 2,
+        "feasible": false,
+        "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+      },
+      "diagnostic_drop_one_group": {
+        "floating_dynamics": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "contact_acceleration": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "contact_friction": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "leg_torque": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "arm_torque": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "leg_joint_bounds": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "arm_joint_bounds": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        }
+      }
+    },
+    {
+      "case": 1,
+      "tick": 400,
+      "recorded_failed_stage": 1,
+      "replay_failed_stage": 1,
+      "replay_full_horizon_accepted": false,
+      "attempts": 2,
+      "replayed_first_target_error_rad": 1.7805940633053297e-07,
+      "failed_contacts": [
+        true,
+        true,
+        true,
+        false
+      ],
+      "failed_joint_velocity": [
+        -0.47006266716063666,
+        -0.2836754307050262,
+        -0.5679264645573041,
+        0.35956789012195806,
+        0.47460627977140796,
+        0.0914340856640622,
+        1.3742438023393388,
+        0.05027073236114697,
+        1.4290224305612462,
+        1.506919699286045,
+        0.8543174226245537,
+        0.06317173593324424,
+        -0.12087181308306566,
+        -0.23757271863194712,
+        -0.1505151877445179,
+        0.09057582238336942,
+        0.0427583225752558,
+        0.07790430385368147
+      ],
+      "failed_status": "solved",
+      "same_state_free_arm": {
+        "accepted": true,
+        "status": "solved",
+        "residuals": {
+          "dynamics": 8.526512829121202e-14,
+          "active_contact_acceleration": 7.771561172376096e-16,
+          "inactive_foot_force": 0.0,
+          "circular_friction_cone": 4.440892098500626e-16,
+          "instantaneous_pd_torque": 9.769962616701378e-15,
+          "admitted_target_bounds": 0.0,
+          "torque_bounds": 0.0,
+          "predicted_position_bounds": 0.0,
+          "predicted_velocity_bounds": 0.0,
+          "all_linear_constraints": 8.526512829121202e-14
+        }
+      },
+      "linear_feasibility": {
+        "status": 0,
+        "feasible": true,
+        "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+      },
+      "diagnostic_drop_one_group": {
+        "floating_dynamics": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "contact_acceleration": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "contact_friction": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "leg_torque": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "arm_torque": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "leg_joint_bounds": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "arm_joint_bounds": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        }
+      }
+    },
+    {
+      "case": 67,
+      "tick": 400,
+      "recorded_failed_stage": 3,
+      "replay_failed_stage": 3,
+      "replay_full_horizon_accepted": false,
+      "attempts": 4,
+      "replayed_first_target_error_rad": 1.0352667789703673e-07,
+      "failed_contacts": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "failed_joint_velocity": [
+        -0.3131725973427339,
+        -0.45484264649858275,
+        -0.3803060670462125,
+        -0.35502321642350154,
+        -0.22827973716653793,
+        -0.7644483976027032,
+        -0.3305592059478045,
+        -1.114516229242605,
+        0.19731474031717514,
+        0.5005713155358779,
+        0.4879508385500053,
+        0.7770277923883582,
+        -0.1518316683295401,
+        0.06674845474217579,
+        0.010893250734200739,
+        -3.2235269565010713,
+        -0.36694522876733454,
+        1.6128576631528322
+      ],
+      "failed_status": "primal infeasible",
+      "same_state_free_arm": {
+        "accepted": false,
+        "status": "primal infeasible",
+        "residuals": null
+      },
+      "linear_feasibility": {
+        "status": 2,
+        "feasible": false,
+        "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+      },
+      "diagnostic_drop_one_group": {
+        "floating_dynamics": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "contact_acceleration": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "contact_friction": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "leg_torque": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "arm_torque": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "leg_joint_bounds": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "arm_joint_bounds": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        }
+      }
+    },
+    {
+      "case": 95,
+      "tick": 400,
+      "recorded_failed_stage": 2,
+      "replay_failed_stage": 2,
+      "replay_full_horizon_accepted": false,
+      "attempts": 3,
+      "replayed_first_target_error_rad": 3.029562161138699e-07,
+      "failed_contacts": [
+        true,
+        true,
+        false,
+        true
+      ],
+      "failed_joint_velocity": [
+        -0.24455618691814807,
+        -0.3234834799038281,
+        0.051322272157831764,
+        -0.11694045965716193,
+        -0.49849056512852763,
+        -0.8514176169100376,
+        -0.006030337453992021,
+        -1.0711388224850218,
+        0.4304970704635197,
+        0.5090910680498171,
+        0.5480468101057676,
+        0.6815187686735631,
+        0.23630595096537338,
+        0.25737554331153983,
+        0.13906298111177745,
+        2.1121658007602204,
+        0.1985070165327302,
+        -0.7807142487638511
+      ],
+      "failed_status": "primal infeasible",
+      "same_state_free_arm": {
+        "accepted": true,
+        "status": "solved",
+        "residuals": {
+          "dynamics": 2.842170943040401e-14,
+          "active_contact_acceleration": 6.210310043996969e-16,
+          "inactive_foot_force": 0.0,
+          "circular_friction_cone": 2.4912008523794277e-20,
+          "instantaneous_pd_torque": 1.4210854715202004e-14,
+          "admitted_target_bounds": 0.0,
+          "torque_bounds": 1.7763568394002505e-15,
+          "predicted_position_bounds": 0.0,
+          "predicted_velocity_bounds": 0.0,
+          "all_linear_constraints": 2.842170943040401e-14
+        }
+      },
+      "linear_feasibility": {
+        "status": 2,
+        "feasible": false,
+        "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+      },
+      "diagnostic_drop_one_group": {
+        "floating_dynamics": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "contact_acceleration": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "contact_friction": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "leg_torque": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "arm_torque": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "leg_joint_bounds": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "arm_joint_bounds": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        }
+      }
+    },
+    {
+      "case": 67,
+      "tick": 600,
+      "recorded_failed_stage": 2,
+      "replay_failed_stage": 2,
+      "replay_full_horizon_accepted": false,
+      "attempts": 3,
+      "replayed_first_target_error_rad": 1.7103970173515393e-07,
+      "failed_contacts": [
+        true,
+        true,
+        false,
+        true
+      ],
+      "failed_joint_velocity": [
+        -0.031072549673886295,
+        -0.056131127484442864,
+        0.0397276292348204,
+        -0.07725705015188156,
+        0.08403467826602765,
+        -0.1809344788157965,
+        -0.039463816946415285,
+        -0.1597548813489228,
+        -0.08665902900019054,
+        0.23949102309721937,
+        0.09045261173683182,
+        0.16594881173378484,
+        -0.2564545648287547,
+        0.08669543018223433,
+        0.1348001580109236,
+        -0.5307208184476085,
+        -0.1603116676694023,
+        0.22457617186497875
+      ],
+      "failed_status": "primal infeasible",
+      "same_state_free_arm": {
+        "accepted": true,
+        "status": "solved",
+        "residuals": {
+          "dynamics": 2.842170943040401e-14,
+          "active_contact_acceleration": 2.645453300864631e-16,
+          "inactive_foot_force": 0.0,
+          "circular_friction_cone": 0.0,
+          "instantaneous_pd_torque": 7.438494264988549e-15,
+          "admitted_target_bounds": 0.0,
+          "torque_bounds": 0.0,
+          "predicted_position_bounds": 0.0,
+          "predicted_velocity_bounds": 0.0,
+          "all_linear_constraints": 5.684341886080802e-14
+        }
+      },
+      "linear_feasibility": {
+        "status": 2,
+        "feasible": false,
+        "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+      },
+      "diagnostic_drop_one_group": {
+        "floating_dynamics": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "contact_acceleration": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "contact_friction": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "leg_torque": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "arm_torque": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "leg_joint_bounds": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "arm_joint_bounds": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        }
+      }
+    },
+    {
+      "case": 95,
+      "tick": 600,
+      "recorded_failed_stage": 2,
+      "replay_failed_stage": 2,
+      "replay_full_horizon_accepted": false,
+      "attempts": 3,
+      "replayed_first_target_error_rad": 3.2109768799415406e-07,
+      "failed_contacts": [
+        true,
+        true,
+        false,
+        true
+      ],
+      "failed_joint_velocity": [
+        -0.1662466934693837,
+        -0.1608457782079678,
+        -0.08912078610033142,
+        -0.1422977315522284,
+        -0.06664943247369795,
+        -0.0425325695445461,
+        -0.08168627579903216,
+        -0.05013737132082105,
+        0.06398611778758126,
+        0.018512758571994747,
+        0.1469212157732307,
+        0.026825290447594602,
+        0.3475880694704251,
+        -0.02871875466302653,
+        0.018971453602478865,
+        1.2613933609452623,
+        0.08518143155920602,
+        -0.46110985636016794
+      ],
+      "failed_status": "primal infeasible",
+      "same_state_free_arm": {
+        "accepted": true,
+        "status": "solved",
+        "residuals": {
+          "dynamics": 8.526512829121202e-14,
+          "active_contact_acceleration": 1.97758476261356e-16,
+          "inactive_foot_force": 0.0,
+          "circular_friction_cone": 0.0,
+          "instantaneous_pd_torque": 1.6986412276764895e-14,
+          "admitted_target_bounds": 0.0,
+          "torque_bounds": 0.0,
+          "predicted_position_bounds": 0.0,
+          "predicted_velocity_bounds": 0.0,
+          "all_linear_constraints": 8.526512829121202e-14
+        }
+      },
+      "linear_feasibility": {
+        "status": 2,
+        "feasible": false,
+        "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+      },
+      "diagnostic_drop_one_group": {
+        "floating_dynamics": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "contact_acceleration": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "contact_friction": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "leg_torque": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "arm_torque": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "leg_joint_bounds": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "arm_joint_bounds": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        }
+      }
+    },
+    {
+      "case": 67,
+      "tick": 760,
+      "recorded_failed_stage": 2,
+      "replay_failed_stage": 2,
+      "replay_full_horizon_accepted": false,
+      "attempts": 3,
+      "replayed_first_target_error_rad": 2.451088327859452e-07,
+      "failed_contacts": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "failed_joint_velocity": [
+        0.13657462145969335,
+        0.1324331436490371,
+        0.22976907457630982,
+        0.0895000135377459,
+        -0.3507065580356194,
+        -0.6652200612551994,
+        -0.24455455823502542,
+        -0.3785791620159609,
+        -0.14464432067941313,
+        -0.03311466420411881,
+        -0.022443656019827903,
+        -0.3499726791086264,
+        0.1250870223892381,
+        -0.4403739777675541,
+        -0.22888215938088072,
+        -4.466678322429287,
+        -0.4692866220497408,
+        1.8714000358857008
+      ],
+      "failed_status": "primal infeasible",
+      "same_state_free_arm": {
+        "accepted": false,
+        "status": "primal infeasible",
+        "residuals": null
+      },
+      "linear_feasibility": {
+        "status": 2,
+        "feasible": false,
+        "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+      },
+      "diagnostic_drop_one_group": {
+        "floating_dynamics": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "contact_acceleration": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "contact_friction": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "leg_torque": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "arm_torque": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "leg_joint_bounds": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "arm_joint_bounds": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        }
+      }
+    },
+    {
+      "case": 95,
+      "tick": 760,
+      "recorded_failed_stage": 2,
+      "replay_failed_stage": 2,
+      "replay_full_horizon_accepted": false,
+      "attempts": 3,
+      "replayed_first_target_error_rad": 1.852438145100166e-07,
+      "failed_contacts": [
+        true,
+        true,
+        false,
+        true
+      ],
+      "failed_joint_velocity": [
+        0.14061585916350566,
+        0.23485541629122864,
+        -0.013071048583826628,
+        0.2639454717659742,
+        -0.21326225675215932,
+        0.004522893254796656,
+        -0.056377945259101704,
+        0.002742600372453191,
+        0.5199661376241463,
+        0.1516706962888746,
+        0.06026737269399876,
+        0.15295089289742092,
+        0.11180604632051976,
+        0.11457940025687813,
+        0.12873934529201939,
+        1.2742477713983154,
+        0.027011156769146418,
+        -0.3370410384812844
+      ],
+      "failed_status": "primal infeasible",
+      "same_state_free_arm": {
+        "accepted": true,
+        "status": "solved",
+        "residuals": {
+          "dynamics": 5.684341886080802e-14,
+          "active_contact_acceleration": 7.1530238329731155e-16,
+          "inactive_foot_force": 0.0,
+          "circular_friction_cone": 6.828767992362981e-20,
+          "instantaneous_pd_torque": 7.438494264988549e-15,
+          "admitted_target_bounds": 0.0,
+          "torque_bounds": 0.0,
+          "predicted_position_bounds": 0.0,
+          "predicted_velocity_bounds": 0.0,
+          "all_linear_constraints": 5.684341886080802e-14
+        }
+      },
+      "linear_feasibility": {
+        "status": 2,
+        "feasible": false,
+        "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+      },
+      "diagnostic_drop_one_group": {
+        "floating_dynamics": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "contact_acceleration": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "contact_friction": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "leg_torque": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "arm_torque": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        },
+        "leg_joint_bounds": {
+          "status": 2,
+          "feasible": false,
+          "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+        },
+        "arm_joint_bounds": {
+          "status": 0,
+          "feasible": true,
+          "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+        }
+      }
+    }
+  ],
+  "source_sha256": {
+    "reports/landing_mpc_command_history_feedback3_20261107_01/fixed_policy_traces/case_001.npz": "3d1553156b33c635f41886cf72ec4e74ad2e46fcb73402371db78ef8d3a2bb0e",
+    "reports/landing_mpc_command_history_feedback3_20261107_01/fixed_policy_traces/case_067.npz": "ac485d547eee0ccc803a5cc4ba98be5eaed0053b6d74824d81ec6db8d1b6ce5b",
+    "reports/landing_mpc_command_history_feedback3_20261107_01/fixed_policy_traces/case_095.npz": "fa8419e53c96e1839a1257e64ff55099689e07186be6c1e829d7f55213bc4311",
+    "reports/landing_mpc_command_history_feedback3_20261107_01/landing_mpc_records.json": "d29a8ab41d1cb13d2c188141ffb05d18e9a89b67c9587df1d0ca958b4c777516",
+    "reports/landing_mpc_command_history_feedback3_20261107_01/native_command_inputs.json": "f861d727c049c85d612cad7ce2a5be9a4bc3a85ab18ba38f5018dc871fca6f7c",
+    "reports/landing_mpc_command_history_feedback3_20261107_01/all_first_episodes.npz": "4800b7a16e6757f152fa0b5e41f29df82b441caeaa25ccdb64ce239d49863ae3",
+    "reports/landing_mpc_command_history_feedback3_20261107_01/job.json": "6d9772931d7afe809e4c26fe611a0c1e44ffadc682d4df8b12d8d83624c9664c",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/implicit_support_prediction_v1.py": "b751fa0ea59edd1fe8fc62cf0ba3816e5583ecc76df7058ef3f5185a335a1e01",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_command_history_mpc_v1.py": "466ba93dc473c7d2de93aae0d5d7848b390d72e8fe1ef779ff0818efad704d28",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/command_history_support_qp_v1.py": "1ac2221f85cbf3d468be4c265cc932845700d5f17a9eaaf37440998873689081",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v1.py": "da2ff2e4ee1479bf3fc422c0b71f8831bffd9e5868d9a4e0665fd348ab659a59",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v2.py": "6d0ad9bc4fcd27a0f4f418e55b988341ffe809f14c132415281ec41621196ae2",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v3.py": "d8c54679697e78678a898f5d36a27305f9252a5f2b09990d0b33ddcc25533300",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/reduced_whole_body_support_qp_v1.py": "e731a0bca8744d4639099dd2ff9be94840a9f0c953c64924fb2cfa9e7a9c80c7",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_landing_horizon_conflicts_v1.py": "45327bb77b4f15c90b8ae443cc441d0ced4bf73fd22de95d58f46c48d64cf5ee"
+  }
+}
