@@ -443,3 +443,27 @@ score candidates with a short load-transfer/stability objective and to replan
 from the measured post-transition state, so that a predicted contact is useful
 only when it actually acquires load and reduces the subsequent non-foot
 contact risk.
+
+## Latched post-touchdown lifecycle trial
+
+The evaluator now supports a separate post-touchdown lifecycle latch. After
+`phase774` is first observed, the MPC can remain eligible for a bounded number
+of real 100 Hz control ticks even if the public phase signal briefly drops.
+Every tick still reconstructs the native state, updates measured contacts and
+loads, and can release a held action; the latch does not replay one command or
+invent a contact.
+
+The representative run used a 300-tick (3 s) latch, the 40-step horizon and
+the same selected TRAIN cases and support settings as the earlier fixed-policy
+trial. The full TRAIN128 result remained **27/128 complete5**, with 74 airborne
+contacts, 34 conditional recoveries, 0 numerical failures, 1111 MPC records,
+597 applied first steps, 228 solver failures, 582 terminal acceptances, and 9
+predicted contact transitions.
+
+The lifecycle latch therefore did not add a task-level recovery in this
+configuration. It does rule out a simple phase-dropout explanation for the
+selected cases: extending the eligibility window increased actual MPC
+coverage, but the resulting position/PD support actions still did not move
+the fixed policy into a durable support state. The remaining priority is a
+load-transfer and foot-relocation objective with measured post-transition
+replanning, rather than a longer eligibility window.

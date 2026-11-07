@@ -58,6 +58,8 @@ parser.add_argument('--landing-mpc-touchdown-recovery', action='store_true',
     help='Allow one-contact touchdown recovery and keep rolling a ground-level swing-foot target')
 parser.add_argument('--landing-mpc-force-post-touchdown', action='store_true',
     help='After measured post-touchdown phase, solve and apply MPC without waiting for risk thresholds')
+parser.add_argument('--landing-mpc-latched-post-touchdown-ticks', type=int, default=0,
+    help='Keep the post-touchdown MPC lifecycle active for this many 100 Hz ticks after phase774 is first observed (0 disables latch)')
 parser.add_argument('--landing-mpc-contact-force-threshold', type=float, default=0.,
     help='Minimum upward measured foot force for a foot to count as MPC support (0 keeps geometric contacts)')
 parser.add_argument('--landing-mpc-contact-release-threshold', type=float, default=None,
@@ -201,6 +203,7 @@ class SharedTargetResidualController:
                  landing_mpc_torque_overlay=False,
                  landing_mpc_touchdown_recovery=False,
                  landing_mpc_force_post_touchdown=False,
+                 landing_mpc_latched_post_touchdown_ticks=0,
                  landing_mpc_contact_force_threshold=0.,
                  landing_mpc_contact_release_threshold=None,
                  landing_mpc_contact_release_ticks=3,
@@ -280,6 +283,11 @@ class SharedTargetResidualController:
         self.landing_mpc_torque_overlay=bool(landing_mpc_torque_overlay)
         self.landing_mpc_touchdown_recovery=bool(landing_mpc_touchdown_recovery)
         self.landing_mpc_force_post_touchdown=bool(landing_mpc_force_post_touchdown)
+        self.landing_mpc_latched_post_touchdown_ticks=int(landing_mpc_latched_post_touchdown_ticks)
+        if self.landing_mpc_latched_post_touchdown_ticks < 0:
+            raise ValueError('landing_mpc_latched_post_touchdown_ticks must be nonnegative')
+        self._landing_mpc_latched_post_touchdown=torch.zeros((count,),dtype=torch.bool,device=device)
+        self._landing_mpc_latched_age=torch.zeros((count,),dtype=torch.int32,device=device)
         self.landing_mpc_contact_force_threshold=float(landing_mpc_contact_force_threshold)
         if (not np.isfinite(self.landing_mpc_contact_force_threshold) or
                 self.landing_mpc_contact_force_threshold < 0.):
@@ -472,6 +480,8 @@ class SharedTargetResidualController:
             self._landing_mpc_last_predicted.fill(np.nan)
             self._landing_mpc_expected_contacts[:]=False
             self._landing_mpc_mode_mismatch.zero_()
+            self._landing_mpc_latched_post_touchdown.zero_()
+            self._landing_mpc_latched_age.zero_()
             for contact_state in self._landing_mpc_contact_state_lane:
                 contact_state.reset()
         else:
@@ -490,6 +500,8 @@ class SharedTargetResidualController:
                 self._landing_mpc_last_predicted[int(lane),:]=np.nan
                 self._landing_mpc_expected_contacts[int(lane),:]=False
                 self._landing_mpc_mode_mismatch[int(lane)]=0
+                self._landing_mpc_latched_post_touchdown[int(lane)]=False
+                self._landing_mpc_latched_age[int(lane)]=0
         if self.landing_mpc is not None and hasattr(self.landing_mpc, 'reset'):
             self.landing_mpc.reset()
 
@@ -526,7 +538,20 @@ class SharedTargetResidualController:
         # phase774 is a measured current support/contact phase. We keep the
         # first native version explicit: no future outcome label or case ID is
         # exposed to the MPC; the selected case list only limits this trial.
-        active=(raw[:,774]>.5)
+        phase_touchdown=(raw[:,774]>.5)
+        if self.landing_mpc_latched_post_touchdown_ticks > 0:
+            newly_landed = phase_touchdown & (~self._landing_mpc_latched_post_touchdown)
+            self._landing_mpc_latched_post_touchdown |= phase_touchdown
+            self._landing_mpc_latched_age = torch.where(
+                self._landing_mpc_latched_post_touchdown,
+                self._landing_mpc_latched_age + 1,
+                self._landing_mpc_latched_age)
+            active = phase_touchdown | (
+                self._landing_mpc_latched_post_touchdown &
+                (self._landing_mpc_latched_age <= self.landing_mpc_latched_post_touchdown_ticks))
+        else:
+            newly_landed = torch.zeros_like(phase_touchdown)
+            active=phase_touchdown
         for lane in torch.where(active)[0].tolist():
             case=int(lane)  # evaluator maps env lanes to the fixed TRAIN panel
             if case not in self.landing_mpc_cases:continue
@@ -941,6 +966,7 @@ def main():
         landing_mpc_torque_overlay=args.landing_mpc_torque_overlay,
         landing_mpc_touchdown_recovery=args.landing_mpc_touchdown_recovery,
         landing_mpc_force_post_touchdown=args.landing_mpc_force_post_touchdown,
+        landing_mpc_latched_post_touchdown_ticks=args.landing_mpc_latched_post_touchdown_ticks,
         landing_mpc_contact_force_threshold=args.landing_mpc_contact_force_threshold,
         landing_mpc_contact_release_threshold=args.landing_mpc_contact_release_threshold,
         landing_mpc_contact_release_ticks=args.landing_mpc_contact_release_ticks,
@@ -1012,6 +1038,7 @@ def main():
                       landing_mpc_torque_overlay=args.landing_mpc_torque_overlay,
                       landing_mpc_touchdown_recovery=args.landing_mpc_touchdown_recovery,
                       landing_mpc_force_post_touchdown=args.landing_mpc_force_post_touchdown,
+                      landing_mpc_latched_post_touchdown_ticks=args.landing_mpc_latched_post_touchdown_ticks,
                       landing_mpc_contact_force_threshold=args.landing_mpc_contact_force_threshold,
                       landing_mpc_contact_release_threshold=args.landing_mpc_contact_release_threshold,
                       landing_mpc_contact_release_ticks=args.landing_mpc_contact_release_ticks,
@@ -1261,6 +1288,7 @@ def main():
                 torque_overlay=bool(args.landing_mpc_torque_overlay),
                 touchdown_recovery=bool(args.landing_mpc_touchdown_recovery),
                 force_post_touchdown=bool(args.landing_mpc_force_post_touchdown),
+                latched_post_touchdown_ticks=int(args.landing_mpc_latched_post_touchdown_ticks),
                 contact_force_threshold_n=float(args.landing_mpc_contact_force_threshold),
                 contact_release_threshold_n=(None if args.landing_mpc_contact_release_threshold is None
                                             else float(args.landing_mpc_contact_release_threshold)),
