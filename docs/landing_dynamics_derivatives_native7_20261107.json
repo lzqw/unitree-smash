@@ -1,0 +1,2590 @@
+{
+  "created_at": "2026-11-07T11:11:49.243666+00:00",
+  "native_run": {
+    "output": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_original27_fullcommand_cost0_all128_20261107_01",
+    "result": {
+      "weight": 0.0,
+      "complete5": 7,
+      "air": 74,
+      "recovery": 11,
+      "numerical_failures": 0,
+      "output": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_original27_fullcommand_cost0_all128_20261107_01",
+      "automatic_promotion": false,
+      "formal_acceptance": false
+    },
+    "ball5_except_recovery": 52,
+    "complete5_transition": {
+      "before": 27,
+      "after": 7,
+      "retained": [
+        28,
+        32,
+        36,
+        52,
+        60
+      ],
+      "lost": [
+        10,
+        16,
+        17,
+        23,
+        24,
+        25,
+        27,
+        33,
+        34,
+        35,
+        37,
+        39,
+        43,
+        45,
+        49,
+        51,
+        55,
+        63,
+        84,
+        94,
+        121,
+        126
+      ],
+      "gained": [
+        85,
+        98
+      ]
+    },
+    "ball_transition": {
+      "before": 53,
+      "after": 52,
+      "retained": [
+        1,
+        3,
+        8,
+        9,
+        10,
+        12,
+        16,
+        17,
+        18,
+        20,
+        23,
+        24,
+        25,
+        27,
+        28,
+        30,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        42,
+        43,
+        45,
+        49,
+        50,
+        51,
+        52,
+        54,
+        55,
+        57,
+        60,
+        61,
+        63,
+        67,
+        70,
+        71,
+        77,
+        84,
+        85,
+        87,
+        90,
+        94,
+        95,
+        96,
+        98,
+        115,
+        121,
+        126
+      ],
+      "lost": [
+        58
+      ],
+      "gained": []
+    },
+    "execution_summary": {
+      "records": 34728,
+      "applied": 29425,
+      "first_actions_available": 29425,
+      "full_horizon_accepted": 9591,
+      "first_stage_rejected": 1140,
+      "later_stage_rejected": 18820,
+      "post_rollout_rejected": 1014,
+      "other_rejected": 4163,
+      "controller_rejection_reasons": {
+        "QP rejected prediction stage 8": 2035,
+        "QP rejected prediction stage 11": 804,
+        "QP rejected prediction stage 9": 904,
+        "QP rejected prediction stage 10": 861,
+        "QP rejected prediction stage 35": 81,
+        "QP rejected prediction stage 12": 727,
+        "QP rejected prediction stage 34": 78,
+        "QP rejected prediction stage 7": 4866,
+        "QP rejected prediction stage 32": 82,
+        "QP rejected prediction stage 28": 113,
+        "QP rejected prediction stage 30": 106,
+        "QP rejected prediction stage 38": 78,
+        "QP rejected prediction stage 31": 98,
+        "QP rejected prediction stage 0": 1140,
+        "QP rejected prediction stage 39": 61,
+        "QP rejected prediction stage 33": 86,
+        "terminal support margin not reached": 1014,
+        "QP rejected prediction stage 27": 117,
+        "QP rejected prediction stage 29": 99,
+        "insufficient support contacts for fixed-contact QP": 4163,
+        "QP rejected prediction stage 6": 1711,
+        "QP rejected prediction stage 37": 82,
+        "QP rejected prediction stage 36": 75,
+        "QP rejected prediction stage 5": 516,
+        "QP rejected prediction stage 26": 115,
+        "QP rejected prediction stage 13": 718,
+        "QP rejected prediction stage 25": 115,
+        "QP rejected prediction stage 24": 122,
+        "QP rejected prediction stage 23": 115,
+        "QP rejected prediction stage 4": 345,
+        "QP rejected prediction stage 22": 114,
+        "QP rejected prediction stage 21": 132,
+        "QP rejected prediction stage 20": 156,
+        "QP rejected prediction stage 3": 393,
+        "QP rejected prediction stage 19": 228,
+        "QP rejected prediction stage 15": 370,
+        "QP rejected prediction stage 18": 247,
+        "QP rejected prediction stage 17": 248,
+        "QP rejected prediction stage 16": 316,
+        "QP rejected prediction stage 2": 397,
+        "QP rejected prediction stage 1": 515,
+        "QP rejected prediction stage 14": 594
+      },
+      "failed_stage_histogram": {
+        "8": 2035,
+        "11": 804,
+        "9": 904,
+        "10": 861,
+        "35": 81,
+        "12": 727,
+        "34": 78,
+        "7": 4866,
+        "32": 82,
+        "28": 113,
+        "30": 106,
+        "38": 78,
+        "31": 98,
+        "0": 1140,
+        "39": 61,
+        "33": 86,
+        "27": 117,
+        "29": 99,
+        "6": 1711,
+        "37": 82,
+        "36": 75,
+        "5": 516,
+        "26": 115,
+        "13": 718,
+        "25": 115,
+        "24": 122,
+        "23": 115,
+        "4": 345,
+        "22": 114,
+        "21": 132,
+        "20": 156,
+        "3": 393,
+        "19": 228,
+        "15": 370,
+        "18": 247,
+        "17": 248,
+        "16": 316,
+        "2": 397,
+        "1": 515,
+        "14": 594
+      },
+      "solver_status_histogram": {
+        "solved": 7789,
+        "primal infeasible": 12171
+      },
+      "next_tick_joint_position_prediction_error_rad": {
+        "count": 29374,
+        "mean": 0.004410758299662597,
+        "median": 0.002137942527596054,
+        "p95": 0.016401821984728275,
+        "maximum": 0.20405758499055526
+      },
+      "command_tracking_error_rad": {
+        "count": 34618,
+        "mean": 0.5709840828477865,
+        "median": 0.5853588283061981,
+        "p95": 0.9441143870353699,
+        "maximum": 2.8313769698143005
+      },
+      "solver_wall_ms": {
+        "count": 34728,
+        "mean": 220.7554497802485,
+        "median": 127.1073705283925,
+        "p95": 487.50520426547155,
+        "maximum": 895.9269020706415
+      },
+      "applied_nonimproving_risk": 10855
+    },
+    "job": {
+      "status": "SUCCEEDED",
+      "exit_code": 0,
+      "timed_out": false,
+      "charged_gpu_hours": 2.5405217997991714,
+      "charged_env_steps": 102400,
+      "started_at": "2026-11-07T08:33:44.291573+00:00",
+      "finished_at": "2026-11-07T11:06:10.177814+00:00"
+    },
+    "dispatch_integrity": {
+      "passed": true,
+      "all_lane_historical_prefix_equal": false,
+      "all_baseline_ball5_prefixes_equal": true,
+      "strict_v1_prefix_failure_not_overridden": true,
+      "indirect_physics_effect_not_excluded": true
+    },
+    "promoted": false
+  },
+  "offline": {
+    "native_execution": false,
+    "old_summary": {
+      "queries": 60,
+      "linear_solved": 28,
+      "refreshed_prediction_accepted": 1,
+      "newly_model_feasible": 0,
+      "retained_by_zero_step_only": 1,
+      "complete_constraint_checked_nominal": 28
+    },
+    "differentiated_summary": {
+      "queries": 60,
+      "linear_solved": 28,
+      "refreshed_prediction_accepted": 1,
+      "newly_model_feasible": 0,
+      "retained_by_zero_step_only": 1,
+      "complete_constraint_checked_nominal": 28
+    },
+    "summed_query_wall_s": 277.8972387535032,
+    "positive_backtrack_violation_counts": {
+      "friction_violation_n": 120,
+      "joint_velocity_violation_rad_s": 41,
+      "normal_force_violation_n": 10,
+      "joint_damper": 3
+    },
+    "sensitivity": [
+      {
+        "case": 2,
+        "prefix_steps": 4,
+        "zero_increment_error": 0.0,
+        "fractions": [
+          0.1,
+          0.01,
+          0.001,
+          0.0001,
+          1e-05
+        ],
+        "old_velocity_error_div_fraction": [
+          0.04988364998966335,
+          0.049595568804969424,
+          0.04956677923468613,
+          0.049563900344670835,
+          0.04956361196201973
+        ],
+        "differentiated_velocity_error_div_fraction": [
+          0.0010272856940917374,
+          0.00010601832231647151,
+          1.7546818909214106e-05,
+          1.9677352255018755e-05,
+          1.9924723267606946e-05
+        ]
+      },
+      {
+        "case": 3,
+        "prefix_steps": 4,
+        "zero_increment_error": 0.0,
+        "fractions": [
+          0.1,
+          0.01,
+          0.001,
+          0.0001,
+          1e-05
+        ],
+        "old_velocity_error_div_fraction": [
+          0.10237896089980714,
+          0.10075027923756473,
+          0.10058928735391844,
+          0.10057320696778448,
+          0.10057160063493996
+        ],
+        "differentiated_velocity_error_div_fraction": [
+          0.006106998149964515,
+          0.0005958402432643117,
+          6.956014694727442e-05,
+          5.7582347195086624e-05,
+          5.6566450663539845e-05
+        ]
+      },
+      {
+        "case": 58,
+        "prefix_steps": 4,
+        "zero_increment_error": 0.0,
+        "fractions": [
+          0.1,
+          0.01,
+          0.001,
+          0.0001,
+          1e-05
+        ],
+        "old_velocity_error_div_fraction": [
+          0.06438000497842339,
+          0.06463615324346335,
+          0.06466187846074195,
+          0.06466445216921055,
+          0.06466470973429093
+        ],
+        "differentiated_velocity_error_div_fraction": [
+          0.002032528248012977,
+          0.00026547388648941184,
+          0.00010522813162548803,
+          0.0001070440694719698,
+          0.00010725826702048054
+        ]
+      },
+      {
+        "case": 61,
+        "prefix_steps": 4,
+        "zero_increment_error": 0.0,
+        "fractions": [
+          0.1,
+          0.01,
+          0.001,
+          0.0001,
+          1e-05
+        ],
+        "old_velocity_error_div_fraction": [
+          0.10281574107823235,
+          0.10162439936874633,
+          0.1015064543643625,
+          0.10149467179084826,
+          0.10149349384477427
+        ],
+        "differentiated_velocity_error_div_fraction": [
+          0.005261043051047465,
+          0.0004646485980634718,
+          0.00020629757640822132,
+          0.0001977524896945907,
+          0.0001977413613741711
+        ]
+      }
+    ],
+    "records": [
+      {
+        "case": 1,
+        "query_tick": 476,
+        "complete5": false,
+        "ball5_except_recovery": true,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 34,
+          "rejection": "QP rejected prediction stage 34"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 0.34426352684386075,
+        "linear_solved": false,
+        "backtracking": []
+      },
+      {
+        "case": 2,
+        "query_tick": 340,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": true,
+          "accepted_stages": 40,
+          "rejection": null
+        },
+        "selected_fraction": 0.0,
+        "newly_model_feasible": false,
+        "wall_seconds": 8.795516364974901,
+        "linear_solved": true,
+        "backtracking": [
+          {
+            "fraction": 1.0,
+            "completed_stages": 8,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.5,
+            "completed_stages": 14,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.25,
+            "completed_stages": 15,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.125,
+            "completed_stages": 16,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0625,
+            "completed_stages": 17,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.03125,
+            "completed_stages": 17,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0,
+            "completed_stages": 40,
+            "accepted": true,
+            "rejection": null
+          }
+        ]
+      },
+      {
+        "case": 3,
+        "query_tick": 460,
+        "complete5": false,
+        "ball5_except_recovery": true,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 40,
+          "rejection": "terminal support margin not reached"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 10.385583251016214,
+        "linear_solved": true,
+        "backtracking": [
+          {
+            "fraction": 1.0,
+            "completed_stages": 10,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.5,
+            "completed_stages": 13,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.25,
+            "completed_stages": 13,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.125,
+            "completed_stages": 13,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0625,
+            "completed_stages": 36,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.03125,
+            "completed_stages": 36,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          }
+        ]
+      },
+      {
+        "case": 5,
+        "query_tick": 310,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 33,
+          "rejection": "QP rejected prediction stage 33"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 0.32384728104807436,
+        "linear_solved": false,
+        "backtracking": []
+      },
+      {
+        "case": 7,
+        "query_tick": 306,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 7,
+          "rejection": "QP rejected prediction stage 7"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 0.08104200894013047,
+        "linear_solved": false,
+        "backtracking": []
+      },
+      {
+        "case": 8,
+        "query_tick": 310,
+        "complete5": false,
+        "ball5_except_recovery": true,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 40,
+          "rejection": "terminal support margin not reached"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 9.66013668011874,
+        "linear_solved": true,
+        "backtracking": [
+          {
+            "fraction": 1.0,
+            "completed_stages": 2,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.5,
+            "completed_stages": 34,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.25,
+            "completed_stages": 36,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.125,
+            "completed_stages": 36,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0625,
+            "completed_stages": 36,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.03125,
+            "completed_stages": 34,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          }
+        ]
+      },
+      {
+        "case": 9,
+        "query_tick": 366,
+        "complete5": false,
+        "ball5_except_recovery": true,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 16,
+          "rejection": "QP rejected prediction stage 16"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 0.15195931983180344,
+        "linear_solved": false,
+        "backtracking": []
+      },
+      {
+        "case": 11,
+        "query_tick": 530,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 34,
+          "rejection": "QP rejected prediction stage 34"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 0.3364747909363359,
+        "linear_solved": false,
+        "backtracking": []
+      },
+      {
+        "case": 12,
+        "query_tick": 390,
+        "complete5": false,
+        "ball5_except_recovery": true,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 40,
+          "rejection": "terminal support margin not reached"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 10.078491642139852,
+        "linear_solved": true,
+        "backtracking": [
+          {
+            "fraction": 1.0,
+            "completed_stages": 11,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.5,
+            "completed_stages": 13,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.25,
+            "completed_stages": 13,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.125,
+            "completed_stages": 13,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0625,
+            "completed_stages": 13,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.03125,
+            "completed_stages": 17,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          }
+        ]
+      },
+      {
+        "case": 13,
+        "query_tick": 310,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 0,
+          "rejection": "QP rejected prediction stage 0"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 0.006324811140075326,
+        "linear_solved": false,
+        "backtracking": []
+      },
+      {
+        "case": 15,
+        "query_tick": 690,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 40,
+          "rejection": "terminal support margin not reached"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 9.81591172190383,
+        "linear_solved": true,
+        "backtracking": [
+          {
+            "fraction": 1.0,
+            "completed_stages": 10,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.5,
+            "completed_stages": 11,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.25,
+            "completed_stages": 12,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.125,
+            "completed_stages": 12,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0625,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          },
+          {
+            "fraction": 0.03125,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          },
+          {
+            "fraction": 0.0,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          }
+        ]
+      },
+      {
+        "case": 18,
+        "query_tick": 520,
+        "complete5": false,
+        "ball5_except_recovery": true,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 40,
+          "rejection": "terminal support margin not reached"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 10.640943181002513,
+        "linear_solved": true,
+        "backtracking": [
+          {
+            "fraction": 1.0,
+            "completed_stages": 10,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.5,
+            "completed_stages": 12,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.25,
+            "completed_stages": 13,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.125,
+            "completed_stages": 16,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0625,
+            "completed_stages": 25,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.03125,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          },
+          {
+            "fraction": 0.0,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          }
+        ]
+      },
+      {
+        "case": 19,
+        "query_tick": 646,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 30,
+          "rejection": "QP rejected prediction stage 30"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 0.2933711081277579,
+        "linear_solved": false,
+        "backtracking": []
+      },
+      {
+        "case": 20,
+        "query_tick": 326,
+        "complete5": false,
+        "ball5_except_recovery": true,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 40,
+          "rejection": "terminal support margin not reached"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 9.13407165906392,
+        "linear_solved": true,
+        "backtracking": [
+          {
+            "fraction": 1.0,
+            "completed_stages": 2,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.5,
+            "completed_stages": 2,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.25,
+            "completed_stages": 2,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.125,
+            "completed_stages": 2,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0625,
+            "completed_stages": 2,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.03125,
+            "completed_stages": 2,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          }
+        ]
+      },
+      {
+        "case": 29,
+        "query_tick": 336,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 38,
+          "rejection": "QP rejected prediction stage 38"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 0.35967616317793727,
+        "linear_solved": false,
+        "backtracking": []
+      },
+      {
+        "case": 30,
+        "query_tick": 326,
+        "complete5": false,
+        "ball5_except_recovery": true,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 40,
+          "rejection": "terminal support margin not reached"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 9.336702852044255,
+        "linear_solved": true,
+        "backtracking": [
+          {
+            "fraction": 1.0,
+            "completed_stages": 5,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.5,
+            "completed_stages": 5,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.25,
+            "completed_stages": 5,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.125,
+            "completed_stages": 21,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0625,
+            "completed_stages": 21,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.03125,
+            "completed_stages": 21,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          }
+        ]
+      },
+      {
+        "case": 31,
+        "query_tick": 560,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 39,
+          "rejection": "QP rejected prediction stage 39"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 0.4071604600176215,
+        "linear_solved": false,
+        "backtracking": []
+      },
+      {
+        "case": 32,
+        "query_tick": 310,
+        "complete5": true,
+        "ball5_except_recovery": true,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 7,
+          "rejection": "QP rejected prediction stage 7"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 0.09210836281999946,
+        "linear_solved": false,
+        "backtracking": []
+      },
+      {
+        "case": 35,
+        "query_tick": 306,
+        "complete5": true,
+        "ball5_except_recovery": true,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 40,
+          "rejection": "terminal support margin not reached"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 9.111530754016712,
+        "linear_solved": true,
+        "backtracking": [
+          {
+            "fraction": 1.0,
+            "completed_stages": 33,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.5,
+            "completed_stages": 34,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.25,
+            "completed_stages": 25,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.125,
+            "completed_stages": 22,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0625,
+            "completed_stages": 21,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.03125,
+            "completed_stages": 24,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          }
+        ]
+      },
+      {
+        "case": 38,
+        "query_tick": 316,
+        "complete5": false,
+        "ball5_except_recovery": true,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 40,
+          "rejection": "terminal support margin not reached"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 8.82227388699539,
+        "linear_solved": true,
+        "backtracking": [
+          {
+            "fraction": 1.0,
+            "completed_stages": 26,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.5,
+            "completed_stages": 24,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.25,
+            "completed_stages": 26,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.125,
+            "completed_stages": 22,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0625,
+            "completed_stages": 22,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.03125,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          },
+          {
+            "fraction": 0.0,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          }
+        ]
+      },
+      {
+        "case": 40,
+        "query_tick": 316,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 0,
+          "rejection": "QP rejected prediction stage 0"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 0.005429692100733519,
+        "linear_solved": false,
+        "backtracking": []
+      },
+      {
+        "case": 41,
+        "query_tick": 306,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 9,
+          "rejection": "QP rejected prediction stage 9"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 0.08775633317418396,
+        "linear_solved": false,
+        "backtracking": []
+      },
+      {
+        "case": 42,
+        "query_tick": 310,
+        "complete5": false,
+        "ball5_except_recovery": true,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 40,
+          "rejection": "terminal support margin not reached"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 8.908380563836545,
+        "linear_solved": true,
+        "backtracking": [
+          {
+            "fraction": 1.0,
+            "completed_stages": 1,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.5,
+            "completed_stages": 3,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.25,
+            "completed_stages": 6,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.125,
+            "completed_stages": 8,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0625,
+            "completed_stages": 9,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.03125,
+            "completed_stages": 9,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          }
+        ]
+      },
+      {
+        "case": 46,
+        "query_tick": 400,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 24,
+          "rejection": "QP rejected prediction stage 24"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 0.23525976296514273,
+        "linear_solved": false,
+        "backtracking": []
+      },
+      {
+        "case": 47,
+        "query_tick": 306,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 9,
+          "rejection": "QP rejected prediction stage 9"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 0.08755781687796116,
+        "linear_solved": false,
+        "backtracking": []
+      },
+      {
+        "case": 48,
+        "query_tick": 310,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 40,
+          "rejection": "terminal support margin not reached"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 9.038274365942925,
+        "linear_solved": true,
+        "backtracking": [
+          {
+            "fraction": 1.0,
+            "completed_stages": 27,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.5,
+            "completed_stages": 27,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.25,
+            "completed_stages": 30,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.125,
+            "completed_stages": 36,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0625,
+            "completed_stages": 36,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.03125,
+            "completed_stages": 36,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          }
+        ]
+      },
+      {
+        "case": 50,
+        "query_tick": 530,
+        "complete5": false,
+        "ball5_except_recovery": true,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 40,
+          "rejection": "terminal support margin not reached"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 10.240617257077247,
+        "linear_solved": true,
+        "backtracking": [
+          {
+            "fraction": 1.0,
+            "completed_stages": 1,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.5,
+            "completed_stages": 1,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.25,
+            "completed_stages": 1,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.125,
+            "completed_stages": 17,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0625,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          },
+          {
+            "fraction": 0.03125,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          },
+          {
+            "fraction": 0.0,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          }
+        ]
+      },
+      {
+        "case": 52,
+        "query_tick": 306,
+        "complete5": true,
+        "ball5_except_recovery": true,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 40,
+          "rejection": "terminal support margin not reached"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 8.908133243909106,
+        "linear_solved": true,
+        "backtracking": [
+          {
+            "fraction": 1.0,
+            "completed_stages": 31,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.5,
+            "completed_stages": 34,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.25,
+            "completed_stages": 24,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.125,
+            "completed_stages": 21,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0625,
+            "completed_stages": 20,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.03125,
+            "completed_stages": 20,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          }
+        ]
+      },
+      {
+        "case": 54,
+        "query_tick": 550,
+        "complete5": false,
+        "ball5_except_recovery": true,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 30,
+          "rejection": "QP rejected prediction stage 30"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 0.2992652910761535,
+        "linear_solved": false,
+        "backtracking": []
+      },
+      {
+        "case": 56,
+        "query_tick": 336,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 40,
+          "rejection": "terminal support margin not reached"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 9.790811429033056,
+        "linear_solved": true,
+        "backtracking": [
+          {
+            "fraction": 1.0,
+            "completed_stages": 5,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.5,
+            "completed_stages": 13,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.25,
+            "completed_stages": 19,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.125,
+            "completed_stages": 29,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0625,
+            "completed_stages": 29,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.03125,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          },
+          {
+            "fraction": 0.0,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          }
+        ]
+      },
+      {
+        "case": 57,
+        "query_tick": 410,
+        "complete5": false,
+        "ball5_except_recovery": true,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 40,
+          "rejection": "terminal support margin not reached"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 8.901070123072714,
+        "linear_solved": true,
+        "backtracking": [
+          {
+            "fraction": 1.0,
+            "completed_stages": 16,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.5,
+            "completed_stages": 19,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.25,
+            "completed_stages": 23,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.125,
+            "completed_stages": 39,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0625,
+            "completed_stages": 39,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.03125,
+            "completed_stages": 39,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          }
+        ]
+      },
+      {
+        "case": 58,
+        "query_tick": 390,
+        "complete5": false,
+        "ball5_except_recovery": true,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 40,
+          "rejection": "terminal support margin not reached"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 10.170264146989211,
+        "linear_solved": true,
+        "backtracking": [
+          {
+            "fraction": 1.0,
+            "completed_stages": 10,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.5,
+            "completed_stages": 19,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.25,
+            "completed_stages": 19,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.125,
+            "completed_stages": 19,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0625,
+            "completed_stages": 25,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.03125,
+            "completed_stages": 25,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          }
+        ]
+      },
+      {
+        "case": 61,
+        "query_tick": 510,
+        "complete5": false,
+        "ball5_except_recovery": true,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 40,
+          "rejection": "terminal support margin not reached"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 11.033602783922106,
+        "linear_solved": true,
+        "backtracking": [
+          {
+            "fraction": 1.0,
+            "completed_stages": 7,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.5,
+            "completed_stages": 12,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.25,
+            "completed_stages": 12,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.125,
+            "completed_stages": 13,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0625,
+            "completed_stages": 23,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.03125,
+            "completed_stages": 23,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          }
+        ]
+      },
+      {
+        "case": 62,
+        "query_tick": 310,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 8,
+          "rejection": "QP rejected prediction stage 8"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 0.07886018697172403,
+        "linear_solved": false,
+        "backtracking": []
+      },
+      {
+        "case": 65,
+        "query_tick": 516,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 40,
+          "rejection": "terminal support margin not reached"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 10.680132027948275,
+        "linear_solved": true,
+        "backtracking": [
+          {
+            "fraction": 1.0,
+            "completed_stages": 1,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.5,
+            "completed_stages": 1,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.25,
+            "completed_stages": 1,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.125,
+            "completed_stages": 19,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0625,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          },
+          {
+            "fraction": 0.03125,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          },
+          {
+            "fraction": 0.0,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          }
+        ]
+      },
+      {
+        "case": 67,
+        "query_tick": 400,
+        "complete5": false,
+        "ball5_except_recovery": true,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 40,
+          "rejection": "terminal support margin not reached"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 10.171495088143274,
+        "linear_solved": true,
+        "backtracking": [
+          {
+            "fraction": 1.0,
+            "completed_stages": 7,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.5,
+            "completed_stages": 6,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.25,
+            "completed_stages": 13,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.125,
+            "completed_stages": 14,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0625,
+            "completed_stages": 25,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.03125,
+            "completed_stages": 25,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          }
+        ]
+      },
+      {
+        "case": 68,
+        "query_tick": 386,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 40,
+          "rejection": "terminal support margin not reached"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 9.724423308158293,
+        "linear_solved": true,
+        "backtracking": [
+          {
+            "fraction": 1.0,
+            "completed_stages": 5,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.5,
+            "completed_stages": 11,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.25,
+            "completed_stages": 11,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.125,
+            "completed_stages": 24,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0625,
+            "completed_stages": 25,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.03125,
+            "completed_stages": 25,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          }
+        ]
+      },
+      {
+        "case": 70,
+        "query_tick": 296,
+        "complete5": false,
+        "ball5_except_recovery": true,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 7,
+          "rejection": "QP rejected prediction stage 7"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 0.06943684699945152,
+        "linear_solved": false,
+        "backtracking": []
+      },
+      {
+        "case": 73,
+        "query_tick": 316,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 6,
+          "rejection": "QP rejected prediction stage 6"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 0.0642527830787003,
+        "linear_solved": false,
+        "backtracking": []
+      },
+      {
+        "case": 74,
+        "query_tick": 476,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 28,
+          "rejection": "QP rejected prediction stage 28"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 0.2695944451261312,
+        "linear_solved": false,
+        "backtracking": []
+      },
+      {
+        "case": 79,
+        "query_tick": 326,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 31,
+          "rejection": "QP rejected prediction stage 31"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 0.29791763285174966,
+        "linear_solved": false,
+        "backtracking": []
+      },
+      {
+        "case": 82,
+        "query_tick": 396,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 40,
+          "rejection": "terminal support margin not reached"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 10.042003749869764,
+        "linear_solved": true,
+        "backtracking": [
+          {
+            "fraction": 1.0,
+            "completed_stages": 12,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.5,
+            "completed_stages": 16,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.25,
+            "completed_stages": 16,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.125,
+            "completed_stages": 18,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0625,
+            "completed_stages": 23,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.03125,
+            "completed_stages": 24,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          }
+        ]
+      },
+      {
+        "case": 85,
+        "query_tick": 430,
+        "complete5": false,
+        "ball5_except_recovery": true,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 40,
+          "rejection": "terminal support margin not reached"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 10.71477028215304,
+        "linear_solved": true,
+        "backtracking": [
+          {
+            "fraction": 1.0,
+            "completed_stages": 12,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.5,
+            "completed_stages": 12,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.25,
+            "completed_stages": 12,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.125,
+            "completed_stages": 13,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0625,
+            "completed_stages": 30,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.03125,
+            "completed_stages": 30,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          }
+        ]
+      },
+      {
+        "case": 86,
+        "query_tick": 500,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 37,
+          "rejection": "QP rejected prediction stage 37"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 0.35686128796078265,
+        "linear_solved": false,
+        "backtracking": []
+      },
+      {
+        "case": 87,
+        "query_tick": 306,
+        "complete5": false,
+        "ball5_except_recovery": true,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 7,
+          "rejection": "QP rejected prediction stage 7"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 0.06878015794791281,
+        "linear_solved": false,
+        "backtracking": []
+      },
+      {
+        "case": 90,
+        "query_tick": 326,
+        "complete5": false,
+        "ball5_except_recovery": true,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 40,
+          "rejection": "terminal support margin not reached"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 9.37544002989307,
+        "linear_solved": true,
+        "backtracking": [
+          {
+            "fraction": 1.0,
+            "completed_stages": 10,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.5,
+            "completed_stages": 12,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.25,
+            "completed_stages": 12,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.125,
+            "completed_stages": 12,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0625,
+            "completed_stages": 12,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.03125,
+            "completed_stages": 13,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          }
+        ]
+      },
+      {
+        "case": 91,
+        "query_tick": 470,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 37,
+          "rejection": "QP rejected prediction stage 37"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 0.38436475303024054,
+        "linear_solved": false,
+        "backtracking": []
+      },
+      {
+        "case": 93,
+        "query_tick": 310,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 7,
+          "rejection": "QP rejected prediction stage 7"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 0.07353645702823997,
+        "linear_solved": false,
+        "backtracking": []
+      },
+      {
+        "case": 95,
+        "query_tick": 460,
+        "complete5": false,
+        "ball5_except_recovery": true,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 37,
+          "rejection": "QP rejected prediction stage 37"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 0.3962665388826281,
+        "linear_solved": false,
+        "backtracking": []
+      },
+      {
+        "case": 96,
+        "query_tick": 636,
+        "complete5": false,
+        "ball5_except_recovery": true,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 34,
+          "rejection": "QP rejected prediction stage 34"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 0.3734261281788349,
+        "linear_solved": false,
+        "backtracking": []
+      },
+      {
+        "case": 97,
+        "query_tick": 480,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 40,
+          "rejection": "terminal support margin not reached"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 9.533739280886948,
+        "linear_solved": true,
+        "backtracking": [
+          {
+            "fraction": 1.0,
+            "completed_stages": 10,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.5,
+            "completed_stages": 10,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.25,
+            "completed_stages": 10,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.125,
+            "completed_stages": 10,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0625,
+            "completed_stages": 18,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.03125,
+            "completed_stages": 20,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          }
+        ]
+      },
+      {
+        "case": 99,
+        "query_tick": 520,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 30,
+          "rejection": "QP rejected prediction stage 30"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 0.29761970206163824,
+        "linear_solved": false,
+        "backtracking": []
+      },
+      {
+        "case": 100,
+        "query_tick": 516,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 40,
+          "rejection": "terminal support margin not reached"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 9.216662199003622,
+        "linear_solved": true,
+        "backtracking": [
+          {
+            "fraction": 1.0,
+            "completed_stages": 8,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.5,
+            "completed_stages": 19,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.25,
+            "completed_stages": 19,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.125,
+            "completed_stages": 24,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0625,
+            "completed_stages": 29,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.03125,
+            "completed_stages": 31,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          }
+        ]
+      },
+      {
+        "case": 101,
+        "query_tick": 610,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 36,
+          "rejection": "QP rejected prediction stage 36"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 0.34818621608428657,
+        "linear_solved": false,
+        "backtracking": []
+      },
+      {
+        "case": 102,
+        "query_tick": 326,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 40,
+          "rejection": "terminal support margin not reached"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 9.428500520065427,
+        "linear_solved": true,
+        "backtracking": [
+          {
+            "fraction": 1.0,
+            "completed_stages": 6,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.5,
+            "completed_stages": 6,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.25,
+            "completed_stages": 6,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.125,
+            "completed_stages": 24,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0625,
+            "completed_stages": 24,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.03125,
+            "completed_stages": 23,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          }
+        ]
+      },
+      {
+        "case": 111,
+        "query_tick": 370,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 26,
+          "rejection": "QP rejected prediction stage 26"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 0.24095892906188965,
+        "linear_solved": false,
+        "backtracking": []
+      },
+      {
+        "case": 114,
+        "query_tick": 450,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 33,
+          "rejection": "QP rejected prediction stage 33"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 0.3200383731164038,
+        "linear_solved": false,
+        "backtracking": []
+      },
+      {
+        "case": 119,
+        "query_tick": 390,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 26,
+          "rejection": "QP rejected prediction stage 26"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 0.25162832508794963,
+        "linear_solved": false,
+        "backtracking": []
+      },
+      {
+        "case": 120,
+        "query_tick": 400,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 40,
+          "rejection": "terminal support margin not reached"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 9.170127614866942,
+        "linear_solved": true,
+        "backtracking": [
+          {
+            "fraction": 1.0,
+            "completed_stages": 11,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.5,
+            "completed_stages": 11,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.25,
+            "completed_stages": 11,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.125,
+            "completed_stages": 11,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.0625,
+            "completed_stages": 23,
+            "accepted": false,
+            "rejection": "Refreshed dynamics violates physical/envelope constraint"
+          },
+          {
+            "fraction": 0.03125,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          },
+          {
+            "fraction": 0.0,
+            "completed_stages": 40,
+            "accepted": false,
+            "rejection": "Original terminal recovery check failed"
+          }
+        ]
+      },
+      {
+        "case": 125,
+        "query_tick": 306,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "seed": {
+          "full_prediction_accepted": false,
+          "accepted_stages": 6,
+          "rejection": "QP rejected prediction stage 6"
+        },
+        "selected_fraction": null,
+        "newly_model_feasible": false,
+        "wall_seconds": 0.06440325290895998,
+        "linear_solved": false,
+        "backtracking": []
+      }
+    ]
+  },
+  "validation": {
+    "tests_passed": 10,
+    "formal_goal": "FAILED",
+    "contract_modified": false
+  },
+  "source_sha256": {
+    "reports/landing_joint_sequence_proposal_20261107/differentiated_all.json": "f2fded51f00ead4439991d81c768ec69a5ab764ee6b57e7542454feca8084e33",
+    "reports/landing_joint_sequence_proposal_20261107/nominal_reproduction_current.json": "e83e3149588772363b26002a94ab03bb09b2978b54b35cdb73bc97e3d1562f5c",
+    "reports/landing_joint_sequence_proposal_20261107/sensitivity_current_baseline.json": "f5e911e77e7f6ca806ebfb95161658d4f63394d44dc85077ab744657f1641363",
+    "reports/landing_joint_sequence_proposal_20261107/sensitivity_current_differentiated.json": "3f7afe6f2c999d499a5fedde021b797cab0f5eba789d493edf139517d829f0cd",
+    "reports/landing_joint_sequence_proposal_20261107/tests_differentiated.log": "58bf12b055f088e5c36c6b3bc7f22b2cf477d53f5fcd7b6bc87a8b1bfb745897",
+    "reports/landing_joint_sequence_proposal_20261107/formal_verify_differentiated.json": "ae2b5bbc540391cfed972e3b8764c4c9229b3e2cee247c029a8aa1075e69beea",
+    "reports/landing_minimum_command_followup_20261107_v3/run0_result.json": "5684548a0bf7d40f2464ce9360b7b7d2a6849ab2b2ff64b78d3675c6dc11d1b3",
+    "reports/landing_minimum_command_followup_20261107_v3/run0_vs_student27.json": "bd9201e2ac3dbf67e8c0b04ec798d011439ca2ed59ee6130ae47c19fa167bd8b",
+    "reports/landing_minimum_command_followup_20261107_v3/run0_controller_execution.json": "1bfc3dd3cf7e6d8827f6a020b6303d6ff05513239bab719a00295a311a59fbda",
+    "reports/landing_minimum_command_followup_20261107_v3/run0_causal_command_audit.json": "317d4c7225641b3eace9102dc66dde82b560e4c76eecafc929d4557483efb080",
+    "reports/landing_minimum_command_followup_20261107_v3/run0_controller_command_audit.json": "9977a842d771429be96df90833315a70cd6119cf0eee740d0f7d93e4f956654f",
+    "reports/landing_minimum_command_followup_20261107_v3/run0_command_cost_audit.json": "4730ff331fb73bd38bc7c74df6400aa75b04a9917c0b933f666b82b1b0caa4ef",
+    "reports/native_original27_fullcommand_cost0_all128_20261107_01/job.json": "289f3c5d52e5aedd54d0f3c535c269e3a9df593129a60ba5d3a49fce00ac7568",
+    "reports/native_original27_fullcommand_cost0_all128_20261107_01/metrics.json": "f4d8be25cae60bcf542c76cdb30230f542b82affe52e300815203136c4beeaa7"
+  },
+  "code_sha256": {
+    "scripts/landing_differentiated_sequence_v1.py": "5814615114a138eb1c01bcc08819cc97d0cd32cd8efa6d9fe9594d2e3ab01e44",
+    "scripts/audit_sequence_sensitivity_v1.py": "e6b501934a42725821fb49259823c58859210fcb8df530e121b7a6b91136e64f",
+    "scripts/landing_joint_sequence_proposal_v1.py": "432c4fea6acc943b9492b5542e231d49675887c8b19ff0284f49703f450f06cd",
+    "scripts/audit_joint_sequence_proposal_v1.py": "b0896a4e9a95a4f46d84ef344e2d7e7384a4fce435b17c01bb456952053382a2",
+    "tests/test_differentiated_sequence_v1.py": "3ac8cdd0e324643ac65ac5be7644e11b50967cda973f044db1af331fd2311183"
+  },
+  "limitations": [
+    "Fixed TRAIN128, not formal or held-out evaluation.",
+    "Selected known-failure teacher35 is not causal all-state teacher35.",
+    "Differentiation keeps nominal contact schedule; no hybrid timing or stepping search.",
+    "Finite differences are offline and have residual numerical/linearization error.",
+    "No positive corrective labels or teacher-off gain generated by this update."
+  ]
+}

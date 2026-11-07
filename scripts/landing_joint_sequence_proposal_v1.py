@@ -75,13 +75,16 @@ The independent held-command kernel is used in tests, not in this derivation.
 
 
 def propose_sequence(controller, state, reference, *, knots=9, time_limit_s=20.,
-                     constraint_start='control_endpoints', nominal_profile=None,solver_backend='osqp'):
+                     constraint_start='control_endpoints', nominal_profile=None,solver_backend='osqp',
+                     differentiate_dynamics=False):
     """Return a bounded proposal, never an executable accepted MPC plan."""
     started = time.perf_counter()
     if not 0 < time_limit_s <= 60.: raise ValueError('Bounded offline solve required')
     if constraint_start not in ('empty', 'control_endpoints'):
         raise ValueError('Explicit constraint generation initialization required')
     if solver_backend not in ('osqp','active_set'):raise ValueError('Unknown QP backend')
+    if differentiate_dynamics and nominal_profile is None:
+        raise ValueError('Differentiated dynamics require a complete nominal trajectory')
     qp = controller.qp; model = qp.model; interface = qp.interface
     cfg = qp.settings; H = controller.settings.horizon_steps; dt = controller.settings.control_dt_s
     basis = knot_basis(H, knots); n = knots*18
@@ -130,6 +133,10 @@ def propose_sequence(controller, state, reference, *, knots=9, time_limit_s=20.,
     if nominal_profile is not None:
         from scripts.landing_sequence_linearization_v1 import affine_trajectory_sequence
         stages=affine_trajectory_sequence(controller,state,basis,nominal_profile)
+        if differentiate_dynamics:
+            from scripts.landing_differentiated_sequence_v1 import affine_differentiated_sequence
+            stages=affine_differentiated_sequence(controller,state,basis,nominal_profile)
+            result['prediction']='differentiated-loaded-interval-dynamics; nominal-contact-schedule; local-command-increments'
     angles = np.arange(cfg.friction_facets)*2*np.pi/cfg.friction_facets
     cone = np.c_[np.cos(angles), np.sin(angles),
                  np.full(cfg.friction_facets, -interface.friction*np.cos(np.pi/cfg.friction_facets))]

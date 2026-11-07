@@ -23,6 +23,7 @@ from scripts.whole_body_support_qp_v1 import SupportSettings
 from scripts.landing_support_mpc_v2 import LandingMPCSettingsV2
 from scripts.loaded_pinocchio_model_v1 import rotation_wxyz
 from scripts.landing_sequence_linearization_v1 import make_nominal_profile
+from scripts.landing_differentiated_sequence_v1 import affine_differentiated_sequence
 
 
 def plain(value):
@@ -44,17 +45,18 @@ def query(item):
     reference=np.asarray(row['student_reference'])
     started=time.perf_counter()
     profile=None;seed_info=None
-    if linearization=='nominal_rollout':
+    if linearization in ('nominal_rollout','differentiated_rollout'):
         seed=controller.solve(state,reference,lane=row['case'],control_tick=row['query_tick'],force=True)
         seed_info=dict(full_prediction_accepted=bool(seed['accepted']),
             accepted_stages=sum(s['accepted'] for s in seed.get('horizon',[])),rejection=seed.get('rejection'))
         profile=make_nominal_profile(controller,state,seed)
-    if linearization=='nominal_rollout' and profile is None:
+    if linearization in ('nominal_rollout','differentiated_rollout') and profile is None:
         proposal=dict(accepted=False,linear_proposal_solved=False,native_execution=False,
             solver_status='not_attempted_no_full_nominal',rejection='No full constraint-checked nominal sequence')
     else:
         proposal=propose_sequence(controller,state,reference,time_limit_s=limit,
-                                  constraint_start=constraint_start,nominal_profile=profile,solver_backend=backend)
+                                  constraint_start=constraint_start,nominal_profile=profile,solver_backend=backend,
+                                  differentiate_dynamics=linearization=='differentiated_rollout')
     verification=None;backtracking=[];selected_fraction=None;selected_commands=None
     nominal_commands=None if profile is None else np.stack([node['command'] for node in profile])
     if proposal['linear_proposal_solved']:
@@ -92,7 +94,7 @@ def main():
     p.add_argument('--workers',type=int,default=2)
     p.add_argument('--solver-time-limit',type=float,default=20.)
     p.add_argument('--constraint-start',choices=['empty','control_endpoints'],default='control_endpoints')
-    p.add_argument('--linearization',choices=['frozen','nominal_rollout'],default='frozen')
+    p.add_argument('--linearization',choices=['frozen','nominal_rollout','differentiated_rollout'],default='frozen')
     p.add_argument('--solver-backend',choices=['osqp','active_set'],default='osqp')
     a=p.parse_args()
     if a.output.exists():raise ValueError('Preserve earlier result')
