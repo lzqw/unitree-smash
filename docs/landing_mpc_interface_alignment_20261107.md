@@ -668,3 +668,30 @@ complete5, retained/lost/new cases, selected-case recovery and episode-ID scope.
 This comparison tests clearance correctness plus diagnostic alignment; it still
 uses a 40-tick held command and does not establish continuously replanned or
 jointly optimized MPC recovery.
+
+### Prescribed arm target contradicts the final command admission
+
+A further CPU audit on the same 61 recorded states compares three local QPs
+with identical loaded dynamics and hardware bounds. Each sample resets the
+reference, so this is not a trajectory or native performance comparison:
+
+| arm treatment | independently accepted local QPs |
+|---|---:|
+| prescribe the supplied arm goal before rate admission | 34/61 |
+| prescribe the arm goal after the existing 10 ms admission | 50/61 |
+| let the QP optimize the arm within original limits | 51/61 |
+
+In 27/61 states the supplied arm target differs from what final admission would
+send. Prescribing the unadmitted arm torque overrides the interface torque
+interval, although the final target is still clipped later. Sixteen legacy QPs
+were numerically solved but failed independent residual checks. Pre-admitting
+the arm goal gains 16 accepted states and loses none, without increasing motor
+limits or freeing the arm. This isolates an interface contradiction; it does
+not establish stable landing. Eleven samples still fail with admitted arm goals.
+
+Evidence: `landing_arm_admission_audit_20261107.json`, reproducible with
+`scripts/audit_prescribed_arm_admission_v1.py`. This uses recorded public-state
+reconstruction and reset-per-sample references, not native-state trajectory
+replay. The two already running/queued native comparisons retain their declared
+sources; arm admission is a separate subsequent change, not silently included
+in those comparisons.
