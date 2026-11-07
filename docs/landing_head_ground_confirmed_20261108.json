@@ -1,0 +1,574 @@
+{
+  "recorded_at": "2026-11-07T22:46:13.018628+00:00",
+  "native_job": {
+    "status": "SUCCEEDED",
+    "charged_gpu_hours": 0.3496639501400447,
+    "charged_env_steps": 102400,
+    "elapsed_s": 1258.790220504161,
+    "finished_at": "2026-11-07T22:41:44.905030+00:00"
+  },
+  "original_complete5": 27,
+  "counts": {
+    "all": {
+      "cases": 128,
+      "head_force_observed": 128,
+      "head_force_after_landing": 74,
+      "precedes_original_nonfoot_event": 128
+    },
+    "original_metric_success": {
+      "cases": 27,
+      "head_force_observed": 27,
+      "head_force_after_landing": 27,
+      "precedes_original_nonfoot_event": 27
+    },
+    "ball_good_recovery_failure": {
+      "cases": 26,
+      "head_force_observed": 26,
+      "head_force_after_landing": 26,
+      "precedes_original_nonfoot_event": 26
+    }
+  },
+  "timing": {
+    "all_qualified_landings": {
+      "count": 74,
+      "delay_s": {
+        "min": 0.02703098869323739,
+        "median": 0.0500393238067629,
+        "max": 0.08204244041442887
+      },
+      "sampled_duration_s": {
+        "min": 0.007,
+        "median": 0.1495,
+        "max": 2.664
+      }
+    },
+    "original_metric_success": {
+      "count": 27,
+      "delay_s": {
+        "min": 0.04603512001037613,
+        "median": 0.05503816413879381,
+        "max": 0.07104019355773916
+      },
+      "sampled_duration_s": {
+        "min": 0.01,
+        "median": 0.07100000000000001,
+        "max": 0.156
+      }
+    },
+    "ball_good_recovery_failure": {
+      "count": 26,
+      "delay_s": {
+        "min": 0.02703098869323739,
+        "median": 0.04653729438781751,
+        "max": 0.08004113578796401
+      },
+      "sampled_duration_s": {
+        "min": 0.007,
+        "median": 0.9590000000000001,
+        "max": 2.664
+      }
+    }
+  },
+  "passive_observer_verified": true,
+  "all128_first_episode_max_public_error": 0,
+  "all128_first_episode_max_action_error": 0,
+  "all128_episode_lengths_identical": true,
+  "original_metric_success_cases": [
+    {
+      "case": 10,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "first_sampled_head_force_above_1n_s": 2.317,
+      "first_sampled_head_force_after_qualified_landing_s": 3.138,
+      "contact_flight_landing_s": 3.0729596614837646,
+      "original_first_nonfoot_force_s": null,
+      "sampled_head_precedes_original_event": true,
+      "head_normal_force_peak_n": 699.1514892578125,
+      "individual_head_peak_normal_force_n": [
+        699.1514892578125,
+        0.0
+      ],
+      "sampled_exceedance_duration_after_landing_s": 0.016,
+      "lower_head_minimum_center_height_m": 0.04699952155351639
+    },
+    {
+      "case": 16,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "first_sampled_head_force_above_1n_s": 2.251,
+      "first_sampled_head_force_after_qualified_landing_s": 3.069,
+      "contact_flight_landing_s": 3.022963285446167,
+      "original_first_nonfoot_force_s": null,
+      "sampled_head_precedes_original_event": true,
+      "head_normal_force_peak_n": 467.53961181640625,
+      "individual_head_peak_normal_force_n": [
+        467.53961181640625,
+        0.0
+      ],
+      "sampled_exceedance_duration_after_landing_s": 0.117,
+      "lower_head_minimum_center_height_m": 0.046999432146549225
+    },
+    {
+      "case": 17,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "first_sampled_head_force_above_1n_s": 2.261,
+      "first_sampled_head_force_after_qualified_landing_s": 3.079,
+      "contact_flight_landing_s": 3.0279629230499268,
+      "original_first_nonfoot_force_s": null,
+      "sampled_head_precedes_original_event": true,
+      "head_normal_force_peak_n": 463.771240234375,
+      "individual_head_peak_normal_force_n": [
+        463.771240234375,
+        0.0
+      ],
+      "sampled_exceedance_duration_after_landing_s": 0.10300000000000001,
+      "lower_head_minimum_center_height_m": 0.0469994843006134
+    },
+    {
+      "case": 23,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "first_sampled_head_force_above_1n_s": 2.278,
+      "first_sampled_head_force_after_qualified_landing_s": 3.098,
+      "contact_flight_landing_s": 3.042961835861206,
+      "original_first_nonfoot_force_s": null,
+      "sampled_head_precedes_original_event": true,
+      "head_normal_force_peak_n": 654655.75,
+      "individual_head_peak_normal_force_n": [
+        654655.75,
+        0.0
+      ],
+      "sampled_exceedance_duration_after_landing_s": 0.044,
+      "lower_head_minimum_center_height_m": 0.046994008123874664
+    },
+    {
+      "case": 24,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "first_sampled_head_force_above_1n_s": 2.289,
+      "first_sampled_head_force_after_qualified_landing_s": 3.112,
+      "contact_flight_landing_s": 3.0559608936309814,
+      "original_first_nonfoot_force_s": null,
+      "sampled_head_precedes_original_event": true,
+      "head_normal_force_peak_n": 530.0473022460938,
+      "individual_head_peak_normal_force_n": [
+        530.0473022460938,
+        0.0
+      ],
+      "sampled_exceedance_duration_after_landing_s": 0.051000000000000004,
+      "lower_head_minimum_center_height_m": 0.04699942469596863
+    },
+    {
+      "case": 25,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "first_sampled_head_force_above_1n_s": 2.278,
+      "first_sampled_head_force_after_qualified_landing_s": 3.102,
+      "contact_flight_landing_s": 3.046961545944214,
+      "original_first_nonfoot_force_s": null,
+      "sampled_head_precedes_original_event": true,
+      "head_normal_force_peak_n": 410.07733154296875,
+      "individual_head_peak_normal_force_n": [
+        410.07733154296875,
+        0.0
+      ],
+      "sampled_exceedance_duration_after_landing_s": 0.046,
+      "lower_head_minimum_center_height_m": 0.046999491751194
+    },
+    {
+      "case": 27,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "first_sampled_head_force_above_1n_s": 2.27,
+      "first_sampled_head_force_after_qualified_landing_s": 3.09,
+      "contact_flight_landing_s": 3.041961908340454,
+      "original_first_nonfoot_force_s": null,
+      "sampled_head_precedes_original_event": true,
+      "head_normal_force_peak_n": 662.5874633789062,
+      "individual_head_peak_normal_force_n": [
+        662.5874633789062,
+        0.0
+      ],
+      "sampled_exceedance_duration_after_landing_s": 0.099,
+      "lower_head_minimum_center_height_m": 0.04699944704771042
+    },
+    {
+      "case": 28,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "first_sampled_head_force_above_1n_s": 2.279,
+      "first_sampled_head_force_after_qualified_landing_s": 3.103,
+      "contact_flight_landing_s": 3.045961618423462,
+      "original_first_nonfoot_force_s": null,
+      "sampled_head_precedes_original_event": true,
+      "head_normal_force_peak_n": 433.0929260253906,
+      "individual_head_peak_normal_force_n": [
+        433.0929260253906,
+        0.0
+      ],
+      "sampled_exceedance_duration_after_landing_s": 0.047,
+      "lower_head_minimum_center_height_m": 0.046999529004096985
+    },
+    {
+      "case": 32,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "first_sampled_head_force_above_1n_s": 2.316,
+      "first_sampled_head_force_after_qualified_landing_s": 3.142,
+      "contact_flight_landing_s": 3.0709598064422607,
+      "original_first_nonfoot_force_s": null,
+      "sampled_head_precedes_original_event": true,
+      "head_normal_force_peak_n": 310.3302001953125,
+      "individual_head_peak_normal_force_n": [
+        310.3302001953125,
+        0.0
+      ],
+      "sampled_exceedance_duration_after_landing_s": 0.011,
+      "lower_head_minimum_center_height_m": 0.046999432146549225
+    },
+    {
+      "case": 33,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "first_sampled_head_force_above_1n_s": 2.25,
+      "first_sampled_head_force_after_qualified_landing_s": 3.0700000000000003,
+      "contact_flight_landing_s": 3.021963357925415,
+      "original_first_nonfoot_force_s": null,
+      "sampled_head_precedes_original_event": true,
+      "head_normal_force_peak_n": 1279.261962890625,
+      "individual_head_peak_normal_force_n": [
+        1279.261962890625,
+        0.0
+      ],
+      "sampled_exceedance_duration_after_landing_s": 0.11,
+      "lower_head_minimum_center_height_m": 0.046999506652355194
+    },
+    {
+      "case": 34,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "first_sampled_head_force_above_1n_s": 2.251,
+      "first_sampled_head_force_after_qualified_landing_s": 3.069,
+      "contact_flight_landing_s": 3.021963357925415,
+      "original_first_nonfoot_force_s": null,
+      "sampled_head_precedes_original_event": true,
+      "head_normal_force_peak_n": 1192.6845703125,
+      "individual_head_peak_normal_force_n": [
+        1192.6845703125,
+        0.0
+      ],
+      "sampled_exceedance_duration_after_landing_s": 0.11,
+      "lower_head_minimum_center_height_m": 0.046999432146549225
+    },
+    {
+      "case": 35,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "first_sampled_head_force_above_1n_s": 2.227,
+      "first_sampled_head_force_after_qualified_landing_s": 3.047,
+      "contact_flight_landing_s": 3.000964879989624,
+      "original_first_nonfoot_force_s": null,
+      "sampled_head_precedes_original_event": true,
+      "head_normal_force_peak_n": 30646.591796875,
+      "individual_head_peak_normal_force_n": [
+        30646.591796875,
+        0.0
+      ],
+      "sampled_exceedance_duration_after_landing_s": 0.156,
+      "lower_head_minimum_center_height_m": 0.046999506652355194
+    },
+    {
+      "case": 36,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "first_sampled_head_force_above_1n_s": 2.306,
+      "first_sampled_head_force_after_qualified_landing_s": 3.129,
+      "contact_flight_landing_s": 3.062960386276245,
+      "original_first_nonfoot_force_s": null,
+      "sampled_head_precedes_original_event": true,
+      "head_normal_force_peak_n": 592.7465209960938,
+      "individual_head_peak_normal_force_n": [
+        592.7465209960938,
+        0.0
+      ],
+      "sampled_exceedance_duration_after_landing_s": 0.018000000000000002,
+      "lower_head_minimum_center_height_m": 0.04699944704771042
+    },
+    {
+      "case": 37,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "first_sampled_head_force_above_1n_s": 2.2600000000000002,
+      "first_sampled_head_force_after_qualified_landing_s": 3.082,
+      "contact_flight_landing_s": 3.0279629230499268,
+      "original_first_nonfoot_force_s": null,
+      "sampled_head_precedes_original_event": true,
+      "head_normal_force_peak_n": 1125.2923583984375,
+      "individual_head_peak_normal_force_n": [
+        1125.2923583984375,
+        0.0
+      ],
+      "sampled_exceedance_duration_after_landing_s": 0.08600000000000001,
+      "lower_head_minimum_center_height_m": 0.046999551355838776
+    },
+    {
+      "case": 39,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "first_sampled_head_force_above_1n_s": 2.287,
+      "first_sampled_head_force_after_qualified_landing_s": 3.114,
+      "contact_flight_landing_s": 3.0569608211517334,
+      "original_first_nonfoot_force_s": null,
+      "sampled_head_precedes_original_event": true,
+      "head_normal_force_peak_n": 2000.592529296875,
+      "individual_head_peak_normal_force_n": [
+        2000.592529296875,
+        0.0
+      ],
+      "sampled_exceedance_duration_after_landing_s": 0.032,
+      "lower_head_minimum_center_height_m": 0.046999491751194
+    },
+    {
+      "case": 43,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "first_sampled_head_force_above_1n_s": 2.279,
+      "first_sampled_head_force_after_qualified_landing_s": 3.102,
+      "contact_flight_landing_s": 3.046961545944214,
+      "original_first_nonfoot_force_s": null,
+      "sampled_head_precedes_original_event": true,
+      "head_normal_force_peak_n": 113380.796875,
+      "individual_head_peak_normal_force_n": [
+        113380.796875,
+        0.0
+      ],
+      "sampled_exceedance_duration_after_landing_s": 0.047,
+      "lower_head_minimum_center_height_m": 0.04699890315532684
+    },
+    {
+      "case": 45,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "first_sampled_head_force_above_1n_s": 2.278,
+      "first_sampled_head_force_after_qualified_landing_s": 3.1,
+      "contact_flight_landing_s": 3.0489614009857178,
+      "original_first_nonfoot_force_s": null,
+      "sampled_head_precedes_original_event": true,
+      "head_normal_force_peak_n": 531.9432373046875,
+      "individual_head_peak_normal_force_n": [
+        531.9432373046875,
+        0.0
+      ],
+      "sampled_exceedance_duration_after_landing_s": 0.07100000000000001,
+      "lower_head_minimum_center_height_m": 0.04699951410293579
+    },
+    {
+      "case": 49,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "first_sampled_head_force_above_1n_s": 2.283,
+      "first_sampled_head_force_after_qualified_landing_s": 3.109,
+      "contact_flight_landing_s": 3.062960386276245,
+      "original_first_nonfoot_force_s": null,
+      "sampled_head_precedes_original_event": true,
+      "head_normal_force_peak_n": 842.1851806640625,
+      "individual_head_peak_normal_force_n": [
+        842.1851806640625,
+        0.0
+      ],
+      "sampled_exceedance_duration_after_landing_s": 0.154,
+      "lower_head_minimum_center_height_m": 0.04699951410293579
+    },
+    {
+      "case": 51,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "first_sampled_head_force_above_1n_s": 2.24,
+      "first_sampled_head_force_after_qualified_landing_s": 3.0580000000000003,
+      "contact_flight_landing_s": 3.0119640827178955,
+      "original_first_nonfoot_force_s": null,
+      "sampled_head_precedes_original_event": true,
+      "head_normal_force_peak_n": 1085.0968017578125,
+      "individual_head_peak_normal_force_n": [
+        1085.0968017578125,
+        0.0
+      ],
+      "sampled_exceedance_duration_after_landing_s": 0.151,
+      "lower_head_minimum_center_height_m": 0.046999476850032806
+    },
+    {
+      "case": 52,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "first_sampled_head_force_above_1n_s": 2.23,
+      "first_sampled_head_force_after_qualified_landing_s": 3.047,
+      "contact_flight_landing_s": 3.000964879989624,
+      "original_first_nonfoot_force_s": null,
+      "sampled_head_precedes_original_event": true,
+      "head_normal_force_peak_n": 863.4330444335938,
+      "individual_head_peak_normal_force_n": [
+        863.4330444335938,
+        0.0
+      ],
+      "sampled_exceedance_duration_after_landing_s": 0.148,
+      "lower_head_minimum_center_height_m": 0.0469994843006134
+    },
+    {
+      "case": 55,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "first_sampled_head_force_above_1n_s": 2.298,
+      "first_sampled_head_force_after_qualified_landing_s": 3.122,
+      "contact_flight_landing_s": 3.0569608211517334,
+      "original_first_nonfoot_force_s": null,
+      "sampled_head_precedes_original_event": true,
+      "head_normal_force_peak_n": 2317.19287109375,
+      "individual_head_peak_normal_force_n": [
+        2317.19287109375,
+        0.0
+      ],
+      "sampled_exceedance_duration_after_landing_s": 0.01,
+      "lower_head_minimum_center_height_m": 0.04699938744306564
+    },
+    {
+      "case": 60,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "first_sampled_head_force_above_1n_s": 2.316,
+      "first_sampled_head_force_after_qualified_landing_s": 3.138,
+      "contact_flight_landing_s": 3.069959878921509,
+      "original_first_nonfoot_force_s": null,
+      "sampled_head_precedes_original_event": true,
+      "head_normal_force_peak_n": 534.9774169921875,
+      "individual_head_peak_normal_force_n": [
+        534.9774169921875,
+        0.0
+      ],
+      "sampled_exceedance_duration_after_landing_s": 0.014,
+      "lower_head_minimum_center_height_m": 0.0469994992017746
+    },
+    {
+      "case": 63,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "first_sampled_head_force_above_1n_s": 2.289,
+      "first_sampled_head_force_after_qualified_landing_s": 3.109,
+      "contact_flight_landing_s": 3.0529611110687256,
+      "original_first_nonfoot_force_s": null,
+      "sampled_head_precedes_original_event": true,
+      "head_normal_force_peak_n": 449.548828125,
+      "individual_head_peak_normal_force_n": [
+        449.548828125,
+        0.0
+      ],
+      "sampled_exceedance_duration_after_landing_s": 0.036000000000000004,
+      "lower_head_minimum_center_height_m": 0.04699954390525818
+    },
+    {
+      "case": 84,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "first_sampled_head_force_above_1n_s": 2.269,
+      "first_sampled_head_force_after_qualified_landing_s": 3.089,
+      "contact_flight_landing_s": 3.03996205329895,
+      "original_first_nonfoot_force_s": null,
+      "sampled_head_precedes_original_event": true,
+      "head_normal_force_peak_n": 925.5391235351562,
+      "individual_head_peak_normal_force_n": [
+        925.5391235351562,
+        0.0
+      ],
+      "sampled_exceedance_duration_after_landing_s": 0.088,
+      "lower_head_minimum_center_height_m": 0.04699952155351639
+    },
+    {
+      "case": 94,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "first_sampled_head_force_above_1n_s": 2.307,
+      "first_sampled_head_force_after_qualified_landing_s": 3.128,
+      "contact_flight_landing_s": 3.066960096359253,
+      "original_first_nonfoot_force_s": null,
+      "sampled_head_precedes_original_event": true,
+      "head_normal_force_peak_n": 480.0422668457031,
+      "individual_head_peak_normal_force_n": [
+        480.0422668457031,
+        0.0
+      ],
+      "sampled_exceedance_duration_after_landing_s": 0.025,
+      "lower_head_minimum_center_height_m": 0.046999432146549225
+    },
+    {
+      "case": 121,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "first_sampled_head_force_above_1n_s": 2.261,
+      "first_sampled_head_force_after_qualified_landing_s": 3.083,
+      "contact_flight_landing_s": 3.026962995529175,
+      "original_first_nonfoot_force_s": null,
+      "sampled_head_precedes_original_event": true,
+      "head_normal_force_peak_n": 434.6147766113281,
+      "individual_head_peak_normal_force_n": [
+        434.6147766113281,
+        0.0
+      ],
+      "sampled_exceedance_duration_after_landing_s": 0.08600000000000001,
+      "lower_head_minimum_center_height_m": 0.046999491751194
+    },
+    {
+      "case": 126,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "first_sampled_head_force_above_1n_s": 2.25,
+      "first_sampled_head_force_after_qualified_landing_s": 3.069,
+      "contact_flight_landing_s": 3.020963430404663,
+      "original_first_nonfoot_force_s": null,
+      "sampled_head_precedes_original_event": true,
+      "head_normal_force_peak_n": 3960.5419921875,
+      "individual_head_peak_normal_force_n": [
+        3960.5419921875,
+        0.0
+      ],
+      "sampled_exceedance_duration_after_landing_s": 0.132,
+      "lower_head_minimum_center_height_m": 0.046999506652355194
+    }
+  ],
+  "case3": {
+    "case": 3,
+    "complete5": false,
+    "ball5_except_recovery": true,
+    "first_sampled_head_force_above_1n_s": 2.301,
+    "first_sampled_head_force_after_qualified_landing_s": 3.1310000000000002,
+    "contact_flight_landing_s": 3.0809590816497803,
+    "original_first_nonfoot_force_s": 5.1450000000000005,
+    "sampled_head_precedes_original_event": true,
+    "head_normal_force_peak_n": 3611.4140625,
+    "individual_head_peak_normal_force_n": [
+      978.7784423828125,
+      3611.4140625
+    ],
+    "sampled_exceedance_duration_after_landing_s": 1.094,
+    "lower_head_minimum_center_height_m": 0.04699929058551788
+  },
+  "original_sensor_definition": "Go2/(base|.*_hip|.*_thigh|.*_calf), excludes Head_lower and Head_upper",
+  "run_source_matches_inspected_jump_env": true,
+  "api_reference": "https://docs.omniverse.nvidia.com/kit/docs/omni_physics/107.0/extensions/runtime/source/omni.physics.tensors/docs/api/python.html",
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_native_head_ground_followup_20261108/head_force_audit.json": "5987c75a6d2745ad1c06e8a7c83ad04e5a15abdafb53f57ffe4209f27473dbd2",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_native_head_ground_followup_20261108/native_audit.json": "1d12169c762215c5bbe09edb330c80f906887375eb7ffc2dd1654178ccb1c2de",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_head_ground_shadow_all128_20261108_01/job.json": "8dcff96989a70517eab05109eb38d3a11dcece2ef8662445bc274a2adb740504",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_head_ground_shadow_all128_20261108_01/head_ground_observation.json": "cee83623d9b677ac8ac755cd1d33870f88c99d1d35ce1ca0e328f533d21b90a2",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_head_ground_shadow_all128_20261108_01/head_ground_observation.npz": "851601301633ec7bb7649b8d811a62fca36f487998bbfd1aeaed198f7dc0ec7e",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/tasks/stand/jump_env.py": "03c728433d3699899609b8a483d52ee74c798fa04cad560ceb98c16765a1415d"
+  },
+  "scoring_changed": false,
+  "valid_expert_labels": false,
+  "limitations": [
+    "Instantaneous 1ms samples can miss between-sample contacts; summed exceedance time is not a continuous-window guarantee.",
+    "A head-force finding requires revisiting physical admissibility; original task labels are retained for traceability.",
+    "This observer does not establish unchanged trajectories: the separate student-shadow audit must also pass.",
+    "Head contact is observed; its stabilizing or destabilizing contribution has not been causally isolated.",
+    "Pre-takeoff head contact and post-qualified-landing head contact must be reported separately."
+  ]
+}
