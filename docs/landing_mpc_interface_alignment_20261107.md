@@ -760,3 +760,23 @@ planning now receive the same admitted arm goal. The focused suite has **21
 passing tests**, including live-versus-planned reference agreement. This new
 implementation has not yet been run natively; it does not change the already
 loaded clearance-only process.
+
+### Sustained feedback candidate queued after clearance comparison
+
+`landing_mpc_admitted_arm_feedback3_20261107_01` is queued behind successful
+completion of the clearance-only run. It uses the admitted-arm V3 code, removes
+40-tick single-target holds (`hold_steps=0`, no hold-first-action), and keeps the
+recovery lifecycle active after observed touchdown for the remainder of the
+8-second episode (`latched_post_touchdown_ticks=800`). Actual support constraints
+still use current contacts; latching the recovery lifecycle does not latch
+physical support forces. The 40-stage prediction and original hardware/physics
+are retained. It still uses sequential support QPs, not joint trajectory
+optimization, and applying an admissible first stage does not certify the whole
+recovery.
+
+This is an integrated sustained-feedback candidate (arm admission plus command
+feedback/lifecycle), not a one-factor ablation. It runs only after source hashes
+and the prior completion receipt pass, under the same exclusive GPU0 guard and
+3600-second/102400-step ceilings. Local receipts:
+`reports/landing_admitted_arm_feedback_followup_20261107/`.
+There is no native score for this candidate yet.
