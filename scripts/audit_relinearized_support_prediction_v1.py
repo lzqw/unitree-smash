@@ -81,11 +81,16 @@ def main():
                     out = predict_implicit_support(model, interface, state, target, substeps=16)
                     q, v, diagnostics = out['state'].q, out['state'].v, out['diagnostics']
                 else: q, v, diagnostics = refreshed(model, interface, state, target)
+                predicted_rotation = pin.Quaternion(q[3:7]).matrix()
+                actual_rotation = pin.Quaternion(actual.q[3:7]).matrix()
                 row['models'][name] = dict(ok=True,
                     leg_position_rad=float(np.max(abs(q[model.q_indices[:12]]-actual.joint_position[:12]))),
                     arm_position_rad=float(np.max(abs(q[model.q_indices[12:]]-actual.joint_position[12:]))),
                     base_linear_velocity_mps=float(np.linalg.norm(v[:3]-actual.v[:3])),
-                    base_angular_velocity_rad_s=float(np.linalg.norm(v[3:6]-actual.v[3:6])), diagnostics=diagnostics)
+                    base_angular_velocity_rad_s=float(np.linalg.norm(v[3:6]-actual.v[3:6])),
+                    world_linear_velocity_mps=float(np.linalg.norm(predicted_rotation@v[:3]-actual_rotation@actual.v[:3])),
+                    world_angular_velocity_rad_s=float(np.linalg.norm(predicted_rotation@v[3:6]-actual_rotation@actual.v[3:6])),
+                    diagnostics=diagnostics)
             except (ValueError, np.linalg.LinAlgError) as error:
                 row['models'][name] = dict(ok=False, error=repr(error))
         rows.append(row)
@@ -94,10 +99,12 @@ def main():
         valid = [r['models'][name] for r in rows if r['models'][name]['ok']]
         summary[name] = dict(successful=len(valid), failed=len(rows)-len(valid), p95={
             k:float(np.quantile([v[k] for v in valid], .95)) for k in
-            ['leg_position_rad','arm_position_rad','base_linear_velocity_mps','base_angular_velocity_rad_s']})
+            ['leg_position_rad','arm_position_rad','base_linear_velocity_mps','base_angular_velocity_rad_s',
+             'world_linear_velocity_mps','world_angular_velocity_rad_s']})
     sources += [a.run/n for n in ['job.json','native_command_inputs.json','landing_mpc_records.json']]
     sources += [ROOT/'scripts'/n for n in ['implicit_support_prediction_v1.py','loaded_pinocchio_model_v1.py']]
     result = dict(scope=__doc__, source=str(a.run), native_new_execution=False, samples=len(rows),
+        velocity_error_frames='base_* compares body-coordinate state components; world_* rotates both predictions and observations into the same world axes',
         summary=summary, records=rows, source_sha256={str(f.resolve()):hashlib.sha256(f.read_bytes()).hexdigest() for f in sources})
     a.output.parent.mkdir(parents=True, exist_ok=True)
     a.output.write_text(json.dumps(result, indent=2)+'\n')
