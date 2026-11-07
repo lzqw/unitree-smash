@@ -1,0 +1,1849 @@
+{
+  "created_at": "2026-11-07T20:44:44.258243+00:00",
+  "search_path": "reports/landing_early_references_20261108/search_continuous_v2.json",
+  "search_sha256": "403036e0b21a1006c83398783b885b65c4b04f81c967c92567939f38b9fe78b4",
+  "configuration": {
+    "query": "reports/landing_early_references_20261108/tick300_fine160.json",
+    "bundle": "reports/landing_episode_sequence3_20261107",
+    "sphere_audit": "reports/landing_fullcommand_native_response_20261107/sphere_crossings_v3.json",
+    "output": "reports/landing_early_references_20261108/search_continuous_v2.json",
+    "population": 64,
+    "generations": 8,
+    "max_seconds": 900.0,
+    "seed": 882110
+  },
+  "candidate_count": 512,
+  "wall_seconds": 178.78245388809592,
+  "any_model_feasible": false,
+  "best_coarse": {
+    "generation": 7,
+    "index": 55,
+    "knots_rad": [
+      [
+        0.43649723134043616,
+        0.605427753959328,
+        -0.38558100517114136,
+        -0.4093107621554598,
+        0.1838693714683015,
+        0.1999196864659602,
+        1.33163304091547,
+        1.4224975683408414,
+        -1.2190347205769747,
+        -1.0901514810678767,
+        -1.9649423523546732,
+        -1.7170201138444519
+      ],
+      [
+        -0.11731973515840968,
+        -0.060070418486388624,
+        -0.3537571393099744,
+        -0.01568999189257117,
+        0.9470187377307303,
+        0.5698975250896982,
+        0.8921397954735236,
+        0.9554526439497966,
+        -1.3422612678297636,
+        -1.0604086721024721,
+        -1.3775373038488907,
+        -1.550369144002001
+      ],
+      [
+        0.027002669566339597,
+        -0.21990141746132424,
+        -0.2367095774163684,
+        -0.049293326175900515,
+        0.7775270542042458,
+        1.0153565782707177,
+        0.924141411156772,
+        1.1268986216384265,
+        -1.474290224547936,
+        -1.8476248633217538,
+        -1.6285639697625154,
+        -1.5426022036816895
+      ]
+    ],
+    "result": {
+      "accepted": false,
+      "completed_model_steps": 15,
+      "required_model_steps": 500,
+      "rank": [
+        1,
+        484.125,
+        80,
+        0.5949267773832492
+      ],
+      "failure": {
+        "step": 15,
+        "reason": "path_constraints",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.0008350522183925291
+        },
+        "first_ground_violation": {
+          "micro": 14,
+          "body": "Head_lower",
+          "gap_m": -8.561646760021219e-05
+        }
+      },
+      "terminal": {
+        "roll": -0.6252964028685911,
+        "pitch": 0.660204860789458,
+        "horizontal": 0.754446313239168,
+        "vertical_speed": 1.5140278841110026,
+        "omega": 2.1602908280197894,
+        "joint_speed": 8.485262406331945,
+        "support_feet": 2,
+        "support_margin_m": -0.10526693629931248
+      },
+      "terminal_violations": {
+        "roll": 0.3634970150694417,
+        "pitch": 0.39840547299030854,
+        "horizontal": 0.454446313239168,
+        "vertical_speed": 1.4140278841110026,
+        "omega": 1.1602908280197894,
+        "joint_speed": 7.485262406331945,
+        "support_margin_m": 0.11526693629931248,
+        "trailing_window_s": 0.0
+      },
+      "trailing_model_window_s": 0.0,
+      "longest_model_window_s": 0.0,
+      "cost": 8.923901660748738,
+      "substeps": 16,
+      "wall_seconds": 0.4719524849206209,
+      "trajectory": null,
+      "native_execution": false,
+      "valid_expert_labels": false
+    }
+  },
+  "fine_candidates": [
+    {
+      "knots_rad": [
+        [
+          0.43649723134043616,
+          0.605427753959328,
+          -0.38558100517114136,
+          -0.4093107621554598,
+          0.1838693714683015,
+          0.1999196864659602,
+          1.33163304091547,
+          1.4224975683408414,
+          -1.2190347205769747,
+          -1.0901514810678767,
+          -1.9649423523546732,
+          -1.7170201138444519
+        ],
+        [
+          -0.11731973515840968,
+          -0.060070418486388624,
+          -0.3537571393099744,
+          -0.01568999189257117,
+          0.9470187377307303,
+          0.5698975250896982,
+          0.8921397954735236,
+          0.9554526439497966,
+          -1.3422612678297636,
+          -1.0604086721024721,
+          -1.3775373038488907,
+          -1.550369144002001
+        ],
+        [
+          0.027002669566339597,
+          -0.21990141746132424,
+          -0.2367095774163684,
+          -0.049293326175900515,
+          0.7775270542042458,
+          1.0153565782707177,
+          0.924141411156772,
+          1.1268986216384265,
+          -1.474290224547936,
+          -1.8476248633217538,
+          -1.6285639697625154,
+          -1.5426022036816895
+        ]
+      ],
+      "fine": {
+        "accepted": false,
+        "completed_model_steps": 15,
+        "required_model_steps": 500,
+        "rank": [
+          1,
+          484.1,
+          80,
+          0.6001468532208624
+        ],
+        "failure": {
+          "step": 15,
+          "reason": "path_constraints",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.0011773158559407193
+          },
+          "first_ground_violation": {
+            "micro": 144,
+            "body": "Head_lower",
+            "gap_m": -4.5170694968788005e-05
+          }
+        },
+        "terminal": {
+          "roll": -0.627642169670159,
+          "pitch": 0.6612812953189862,
+          "horizontal": 0.753655822748958,
+          "vertical_speed": 1.5178013838060083,
+          "omega": 2.1599181355571013,
+          "joint_speed": 8.506730979229559,
+          "support_feet": 2,
+          "support_margin_m": -0.10527898762530016
+        },
+        "terminal_violations": {
+          "roll": 0.36584278187100955,
+          "pitch": 0.39948190751983675,
+          "horizontal": 0.45365582274895805,
+          "vertical_speed": 1.4178013838060082,
+          "omega": 1.1599181355571013,
+          "joint_speed": 7.506730979229559,
+          "support_margin_m": 0.11527898762530016,
+          "trailing_window_s": 0.0
+        },
+        "trailing_model_window_s": 0.0,
+        "longest_model_window_s": 0.0,
+        "cost": 9.002202798312936,
+        "substeps": 160,
+        "wall_seconds": 4.01253338996321,
+        "native_execution": false,
+        "valid_expert_labels": false
+      }
+    },
+    {
+      "knots_rad": [
+        [
+          0.25769836499325827,
+          0.60147186956357,
+          -0.03564559082852353,
+          -0.3589058229582216,
+          0.13794024322823684,
+          0.16443936364161688,
+          1.4411959922101454,
+          1.3786454413461673,
+          -1.2136813287442954,
+          -1.0860496018247248,
+          -1.595893859373835,
+          -1.8078975882135464
+        ],
+        [
+          0.32959274263912547,
+          0.10185848433527912,
+          -0.06334366906480474,
+          -0.12854720717670806,
+          0.9190814790932671,
+          0.5556989956149735,
+          0.8640996463254977,
+          0.9393102484570514,
+          -1.2023223129954665,
+          -1.590492864949494,
+          -1.4195546708987503,
+          -1.4244841522448075
+        ],
+        [
+          0.12192706914961178,
+          -0.3092409735356534,
+          -0.31657150323055966,
+          -0.27450695884919873,
+          0.7836680299276954,
+          0.870803099411667,
+          1.2293081984327352,
+          1.0126883081791906,
+          -1.5496584780139484,
+          -1.5365207838971646,
+          -1.7555321992812245,
+          -1.4710022362120532
+        ]
+      ],
+      "fine": {
+        "accepted": false,
+        "completed_model_steps": 15,
+        "required_model_steps": 500,
+        "rank": [
+          1,
+          484.20625,
+          80,
+          0.5501005821388514
+        ],
+        "failure": {
+          "step": 15,
+          "reason": "path_constraints",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.002326338571938251
+          },
+          "first_ground_violation": {
+            "micro": 127,
+            "body": "Head_lower",
+            "gap_m": -2.260004097476287e-06
+          }
+        },
+        "terminal": {
+          "roll": -0.6010200940914461,
+          "pitch": 0.6718220863200406,
+          "horizontal": 0.697136465806537,
+          "vertical_speed": 1.4615689878585143,
+          "omega": 2.3205750347109144,
+          "joint_speed": 8.645772614871603,
+          "support_feet": 2,
+          "support_margin_m": -0.10214195447221734
+        },
+        "terminal_violations": {
+          "roll": 0.33922070629229667,
+          "pitch": 0.4100226985208912,
+          "horizontal": 0.397136465806537,
+          "vertical_speed": 1.3615689878585142,
+          "omega": 1.3205750347109144,
+          "joint_speed": 7.645772614871603,
+          "support_margin_m": 0.11214195447221734,
+          "trailing_window_s": 0.0
+        },
+        "trailing_model_window_s": 0.0,
+        "longest_model_window_s": 0.0,
+        "cost": 8.25150873208277,
+        "substeps": 160,
+        "wall_seconds": 3.6254009779077023,
+        "native_execution": false,
+        "valid_expert_labels": false
+      }
+    }
+  ],
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/search_early_landing_trajectory_v1.py": "c0e4dccc5d9323dddaf78c938e201a46e13e3955bfbb53a8d3d64ea6388989fd",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_early_references_20261108/tick300_fine160.json": "cbdfd8366d64dc678ab7ae1bca8181eca2adc660e898abe626dcfc12f54ced3a",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_episode_sequence3_20261107/manifest.json": "a5903bdbf7a652d17500ac2e805d85cd4b618be2a7a258d96052af18a628df2a",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_fullcommand_native_response_20261107/sphere_crossings_v3.json": "518b4868a6de07776d701957eb0c7da654456f0e22d511ebef56b0bcce8e295b",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/configs/go2_piper_authored_ground_geometry_v1.json": "e39c41e9b69e481aeac8907c2dfacb9f593cf54e00c8fb822696638ef083167b",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/configs/evaluation_protocol_v2.json": "421497aa51eecac023c70b200e8a75ecafff01527dcf215665d5d96c1e8266a8",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/native_command_inputs.json": "f861d727c049c85d612cad7ce2a5be9a4bc3a85ab18ba38f5018dc871fca6f7c",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/configs/go2_piper_racket_landing_model_v1.json": "8c8997368ab98b3f2befa9908f537d76990dc2a1099ca30d8e6c1823de814e88",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/parallel_landing_solver_v1.py": "4bc18476684fbc3a81eae8b1b63073c615ceafd73a23ccca2dde919564cfea33",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/loaded_pinocchio_model_v1.py": "2b303a32e57391ec7aaf3c3faf9d151f758477faf13ef6efae5bead979dcae82",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/authored_ground_clearance_v1.py": "ba54ef51a5cfd5c64937814c343d92057cd0e9e83dc4e435f1479049aa342630",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recorded_nonfoot_contact_history_v1.py": "b897ec590f76795a515f1e3ad14db1529f43117731f031f00d43dc556e5e599a",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/summarize_precontact_prediction_v1.py": "b05936fc4345546c33bf14696bfbf6ed8967025799da23d87e0b04fc014ba227",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_sphere_touchdown_predictions_v1.py": "92b1905a21c544ff212a237104edb700ce6eb3b1414908cb14d80990b21a9a03",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frictional_impulse_step_v1.py": "4e780bf218dd501a64f1885ab1697c3050d228580fc6cd3c7123d36fb18e2348",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/predict_frictional_spheres_v1.py": "d406a568a61014cbee9bde4c91d3cebd8f997f9afa9e663dfbd99cea2d1941fa",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/terminal_attitude_feedback_v1.py": "47db5797915d6c1fa776d9cc7a295a85e29e91adcba81fabc439c6e0978db209",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/feedback_tail_rollout_v1.py": "535672ced97a7ff19c58b34c192b29ed082769bbea8153078bbaf2e8a449af6b",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/condensed_implicit_drive_v1.py": "a0f21e9b954db9e978ba428a3770fcb8cd666e08dd21aa27cedf0c0e5c5af629",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/implicit_support_prediction_v1.py": "b751fa0ea59edd1fe8fc62cf0ba3816e5583ecc76df7058ef3f5185a335a1e01",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/dense_active_set_qp_v1.py": "cba063c6c594bfb42d1114dcafbaebc606d8c4b49b53ee65e764e3979b1bac4a",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/whole_body_support_qp_v1.py": "b67cd1f1c8ebe973d3885773fbc9f3bf17cfd935e5e2210a4b7c0ea1ff331d6d",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frame_point_kinematics_v1.py": "60fac87ef04f83a22807217b04e7cbe40b536251b56f5a119dc012d1f2529fd8",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/reduced_whole_body_support_qp_v1.py": "e731a0bca8744d4639099dd2ff9be94840a9f0c953c64924fb2cfa9e7a9c80c7",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/continuous_support_qp_v1.py": "824a3d49711917803e9c82af63b1d142917d62c874ec8751325578a71b4af640",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/command_history_support_qp_v1.py": "1ac2221f85cbf3d468be4c265cc932845700d5f17a9eaaf37440998873689081",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/interval_command_support_qp_v1.py": "7f9e47fdeb1f6cc420368d127f89cc1b726397752b0387f57b5bee1ea5915589",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/admitted_arm_support_qp_v1.py": "097d7022b16a28aa31f11081056092bd8b5b44172291b6bd3b1aba1dbe0a1c6e",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v1.py": "da2ff2e4ee1479bf3fc422c0b71f8831bffd9e5868d9a4e0665fd348ab659a59",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v2.py": "6d0ad9bc4fcd27a0f4f418e55b988341ffe809f14c132415281ec41621196ae2",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v3.py": "d8c54679697e78678a898f5d36a27305f9252a5f2b09990d0b33ddcc25533300",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_command_history_mpc_v1.py": "466ba93dc473c7d2de93aae0d5d7848b390d72e8fe1ef779ff0818efad704d28",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_interval_command_mpc_v1.py": "545ecf58c66d0bbf07f889f8867ce36d75ca42fcd94ca77b5307666163630060",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_active_set_interval_mpc_v1.py": "4c111c5ce1d6d711cbe9e4362aad315e0f50f9c2cb363d9595409e0701c7ec8d",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_arm_feasibility_mpc_v1.py": "af9a08a8b442c43099faadbda887ed79b1e497b114cbd77e93b4cc8a2481f40b",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_joint_damper_mpc_v1.py": "63b2eff24491e130f96681508524ccf124064469a285a6c82ed9dd498fa761f9",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_joint_sequence_proposal_v1.py": "42d8be1c82836a83e054c6cf7ca368f5bad9b35e298aabbeb0790bfb5b816857",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_sequence_linearization_v1.py": "acc515b9f7980645cdca835deb3ae8bfc4f20ee03eee90a53d9495f976b0ccf2",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_differentiated_sequence_v1.py": "9b68faddbb7350b467f5f7a75c1b78cae58759f92c2d8e559b9cac433e6d229e",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_joint_sequence_proposal_v1.py": "b0896a4e9a95a4f46d84ef344e2d7e7384a4fce435b17c01bb456952053382a2",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_full_command_interval_mpc_v1.py": "a32da1e8fa837b9a4e40b1614a97fe7b2cdebde18fd1b3083350e2d81558932b",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_minimum_command_mpc_v1.py": "c2e2c28234f3f1625c96e75ced68e94fe6e413ae833014d81ccaff5879979c7b",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_feasible_command_cost_mpc_v1.py": "daeac9ec076b81bb88e601f72560b1c7135942d15266aa0876e71fb43b61ba32"
+  },
+  "source_hash_check": {
+    "count": 43,
+    "changed": []
+  },
+  "load_audit": {
+    "scope": "Replay a failed candidate and measure its model support impulses, not native forces.",
+    "case": 3,
+    "tick": 300,
+    "feet": [
+      "FL_foot",
+      "FR_foot",
+      "RL_foot",
+      "RR_foot"
+    ],
+    "joint_order": [
+      "FL_hip_joint",
+      "FR_hip_joint",
+      "RL_hip_joint",
+      "RR_hip_joint",
+      "FL_thigh_joint",
+      "FR_thigh_joint",
+      "RL_thigh_joint",
+      "RR_thigh_joint",
+      "FL_calf_joint",
+      "FR_calf_joint",
+      "RL_calf_joint",
+      "RR_calf_joint",
+      "joint1",
+      "joint2",
+      "joint3",
+      "joint4",
+      "joint5",
+      "joint6"
+    ],
+    "mass_kg": 20.709991288604215,
+    "weight_n": 203.16501454120737,
+    "maximum_saved_replay_difference": 0.0,
+    "rows": [
+      {
+        "step": 0,
+        "mean_normal_force_n": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "peak_normal_force_n": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "loaded_microstep_fraction": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "effort_saturation_fraction": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "root_linear_velocity_world": [
+          0.029439735794514352,
+          -0.3253575958851711,
+          -1.8249796632777329
+        ],
+        "root_angular_velocity_world": [
+          0.9119741439172396,
+          0.1857934679233953,
+          -0.36279738414752727
+        ],
+        "foot_surface_gap_m": [
+          0.2376270494448554,
+          0.2898272857408807,
+          0.5469978435434699,
+          0.6821831703900412
+        ],
+        "com_world": [
+          0.7621538705321419,
+          -0.13595929790829264,
+          0.5979392225262197
+        ],
+        "first_ground_violation": null,
+        "diagnostics": {
+          "momentum_residual": 1.132774429812855e-14,
+          "normal_complementarity": 0.0,
+          "friction_cone": 0.0,
+          "tangent_fixed_point": 0.0,
+          "max_contact_iterations": 1,
+          "foot_penetration_m": 0.0,
+          "joint_velocity_violation_rad_s": 0.0,
+          "joint_position_violation_rad": 0.0,
+          "motor_torque_violation_nm": 0.0,
+          "nonfoot_ground_violation_m": 0.0
+        }
+      },
+      {
+        "step": 1,
+        "mean_normal_force_n": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "peak_normal_force_n": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "loaded_microstep_fraction": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "effort_saturation_fraction": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "root_linear_velocity_world": [
+          0.03472090634499757,
+          -0.32568552786903493,
+          -1.8842364757013492
+        ],
+        "root_angular_velocity_world": [
+          0.7241600790498177,
+          0.2126883602502738,
+          -0.42653459179069436
+        ],
+        "foot_surface_gap_m": [
+          0.2011325451035057,
+          0.25701686175718896,
+          0.5281486133033683,
+          0.6542693646512973
+        ],
+        "com_world": [
+          0.7631816782036764,
+          -0.13867757937584327,
+          0.5789720654433768
+        ],
+        "first_ground_violation": null,
+        "diagnostics": {
+          "momentum_residual": 1.5213524884316598e-14,
+          "normal_complementarity": 0.0,
+          "friction_cone": 0.0,
+          "tangent_fixed_point": 0.0,
+          "max_contact_iterations": 1,
+          "foot_penetration_m": 0.0,
+          "joint_velocity_violation_rad_s": 0.0,
+          "joint_position_violation_rad": 0.0,
+          "motor_torque_violation_nm": 0.0,
+          "nonfoot_ground_violation_m": 0.0
+        }
+      },
+      {
+        "step": 2,
+        "mean_normal_force_n": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "peak_normal_force_n": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "loaded_microstep_fraction": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "effort_saturation_fraction": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "root_linear_velocity_world": [
+          0.05259851899347019,
+          -0.33568365014498647,
+          -1.921617492704298
+        ],
+        "root_angular_velocity_world": [
+          0.14170039964843367,
+          0.4270681739323875,
+          -0.2669346221616131
+        ],
+        "foot_surface_gap_m": [
+          0.15586558266429357,
+          0.21712882362825556,
+          0.5060875324081044,
+          0.6256287667537394
+        ],
+        "com_world": [
+          0.7642094542902657,
+          -0.14139596712672184,
+          0.5590239171936143
+        ],
+        "first_ground_violation": null,
+        "diagnostics": {
+          "momentum_residual": 1.970645868709653e-14,
+          "normal_complementarity": 0.0,
+          "friction_cone": 0.0,
+          "tangent_fixed_point": 0.0,
+          "max_contact_iterations": 1,
+          "foot_penetration_m": 0.0,
+          "joint_velocity_violation_rad_s": 0.0,
+          "joint_position_violation_rad": 0.0,
+          "motor_torque_violation_nm": 0.0,
+          "nonfoot_ground_violation_m": 0.0
+        }
+      },
+      {
+        "step": 3,
+        "mean_normal_force_n": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "peak_normal_force_n": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "loaded_microstep_fraction": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "effort_saturation_fraction": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "root_linear_velocity_world": [
+          0.0719848924267397,
+          -0.3531561999997733,
+          -1.958706477854853
+        ],
+        "root_angular_velocity_world": [
+          -0.6184543906048312,
+          0.7358971084152051,
+          -0.0020012932708967923
+        ],
+        "foot_surface_gap_m": [
+          0.10368631598426259,
+          0.16982750746712663,
+          0.48117381445330876,
+          0.597252632333881
+        ],
+        "com_world": [
+          0.7652371727784482,
+          -0.14411468315541143,
+          0.5380948370399623
+        ],
+        "first_ground_violation": null,
+        "diagnostics": {
+          "momentum_residual": 2.1616389234146993e-14,
+          "normal_complementarity": 0.0,
+          "friction_cone": 0.0,
+          "tangent_fixed_point": 0.0,
+          "max_contact_iterations": 1,
+          "foot_penetration_m": 0.0,
+          "joint_velocity_violation_rad_s": 0.0,
+          "joint_position_violation_rad": 0.0,
+          "motor_torque_violation_nm": 0.0,
+          "nonfoot_ground_violation_m": 0.0
+        }
+      },
+      {
+        "step": 4,
+        "mean_normal_force_n": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "peak_normal_force_n": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "loaded_microstep_fraction": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "effort_saturation_fraction": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "root_linear_velocity_world": [
+          0.08300256651785302,
+          -0.3731248366938602,
+          -2.015350546539
+        ],
+        "root_angular_velocity_world": [
+          -1.385247367491056,
+          1.0175746134890142,
+          0.26125688092473137
+        ],
+        "foot_surface_gap_m": [
+          0.048665882740339284,
+          0.11680493050176458,
+          0.4545446895628332,
+          0.5703208674556097
+        ],
+        "com_world": [
+          0.766264806173704,
+          -0.1468338689919842,
+          0.5161848783697492
+        ],
+        "first_ground_violation": null,
+        "diagnostics": {
+          "momentum_residual": 2.5125734826048074e-14,
+          "normal_complementarity": 0.0,
+          "friction_cone": 0.0,
+          "tangent_fixed_point": 0.0,
+          "max_contact_iterations": 1,
+          "foot_penetration_m": 0.0,
+          "joint_velocity_violation_rad_s": 0.0,
+          "joint_position_violation_rad": 0.0,
+          "motor_torque_violation_nm": 0.0,
+          "nonfoot_ground_violation_m": 0.0
+        }
+      },
+      {
+        "step": 5,
+        "mean_normal_force_n": [
+          189.4299321767508,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "peak_normal_force_n": [
+          19421.8168733294,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "loaded_microstep_fraction": [
+          0.09375,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "effort_saturation_fraction": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "root_linear_velocity_world": [
+          0.13119198214901784,
+          -0.3465066858761702,
+          -2.076160807789585
+        ],
+        "root_angular_velocity_world": [
+          -1.2504754985547404,
+          0.7562150680464332,
+          -0.019383767280506614
+        ],
+        "foot_surface_gap_m": [
+          2.1722489008946244e-08,
+          0.06098406971791277,
+          0.42757251422663756,
+          0.5460257083392203
+        ],
+        "com_world": [
+          0.7672882336828972,
+          -0.14957792733256298,
+          0.49337377711620906
+        ],
+        "first_ground_violation": null,
+        "diagnostics": {
+          "momentum_residual": 1.819551453952073e-14,
+          "normal_complementarity": 1.9241805195024941e-07,
+          "friction_cone": 0.0,
+          "tangent_fixed_point": 5.551115123125783e-17,
+          "max_contact_iterations": 7,
+          "foot_penetration_m": 0.0,
+          "joint_velocity_violation_rad_s": 0.0,
+          "joint_position_violation_rad": 0.0,
+          "motor_torque_violation_nm": 0.0,
+          "nonfoot_ground_violation_m": 0.0
+        }
+      },
+      {
+        "step": 6,
+        "mean_normal_force_n": [
+          156.57668101692227,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "peak_normal_force_n": [
+          167.35109345120605,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "loaded_microstep_fraction": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "effort_saturation_fraction": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "root_linear_velocity_world": [
+          0.15975404222436618,
+          -0.3610100547741455,
+          -2.1010805713324854
+        ],
+        "root_angular_velocity_world": [
+          -1.755096765309679,
+          0.7002783590965183,
+          0.0898449819169097
+        ],
+        "foot_surface_gap_m": [
+          1.25361349079256e-08,
+          0.005843029207978773,
+          0.40082280190572345,
+          0.5245297364648706
+        ],
+        "com_world": [
+          0.7684045855463981,
+          -0.15255947632191325,
+          0.47078802785380963
+        ],
+        "first_ground_violation": null,
+        "diagnostics": {
+          "momentum_residual": 2.1429039098741498e-14,
+          "normal_complementarity": 1.8876640022272295e-07,
+          "friction_cone": 0.0,
+          "tangent_fixed_point": 1.3010426069826053e-18,
+          "max_contact_iterations": 4,
+          "foot_penetration_m": 0.0,
+          "joint_velocity_violation_rad_s": 0.0,
+          "joint_position_violation_rad": 0.0,
+          "motor_torque_violation_nm": 0.0,
+          "nonfoot_ground_violation_m": 0.0
+        }
+      },
+      {
+        "step": 7,
+        "mean_normal_force_n": [
+          186.4428117285132,
+          319.14440961990033,
+          0.0,
+          0.0
+        ],
+        "peak_normal_force_n": [
+          234.39873073594694,
+          20981.992468157703,
+          0.0,
+          0.0
+        ],
+        "loaded_microstep_fraction": [
+          1.0,
+          0.89375,
+          0.0,
+          0.0
+        ],
+        "effort_saturation_fraction": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "root_linear_velocity_world": [
+          0.1940978408656046,
+          -0.3527663474606537,
+          -2.079074636001558
+        ],
+        "root_angular_velocity_world": [
+          -2.415482838151264,
+          0.5704931223967072,
+          0.3249868392977547
+        ],
+        "foot_surface_gap_m": [
+          4.588915608616517e-09,
+          2.3426386164260293e-08,
+          0.37514309955668024,
+          0.5055621661950671
+        ],
+        "com_world": [
+          0.7698748676853148,
+          -0.15573895273276997,
+          0.4491551160196601
+        ],
+        "first_ground_violation": null,
+        "diagnostics": {
+          "momentum_residual": 1.9029916531465574e-14,
+          "normal_complementarity": 1.912489805203088e-07,
+          "friction_cone": 0.0,
+          "tangent_fixed_point": 6.164242845330126e-09,
+          "max_contact_iterations": 7,
+          "foot_penetration_m": 0.0,
+          "joint_velocity_violation_rad_s": 0.0,
+          "joint_position_violation_rad": 0.0,
+          "motor_torque_violation_nm": 0.0,
+          "nonfoot_ground_violation_m": 0.0
+        }
+      },
+      {
+        "step": 8,
+        "mean_normal_force_n": [
+          205.28154919135432,
+          162.44746931355525,
+          0.0,
+          0.0
+        ],
+        "peak_normal_force_n": [
+          213.3104702091253,
+          168.32292201064027,
+          0.0,
+          0.0
+        ],
+        "loaded_microstep_fraction": [
+          1.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        "effort_saturation_fraction": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "root_linear_velocity_world": [
+          0.25716142981880735,
+          -0.3414740426357171,
+          -2.0106919280011497
+        ],
+        "root_angular_velocity_world": [
+          -2.7334448980194996,
+          0.23085651691303855,
+          0.580930233310414
+        ],
+        "foot_surface_gap_m": [
+          -4.548738910536976e-08,
+          1.3247441883051936e-08,
+          0.35084285088113676,
+          0.48924698284980284
+        ],
+        "com_world": [
+          0.7718600743695254,
+          -0.15871934043907848,
+          0.4283149544640712
+        ],
+        "first_ground_violation": null,
+        "diagnostics": {
+          "momentum_residual": 1.8322149353267037e-14,
+          "normal_complementarity": 3.207023890894334e-08,
+          "friction_cone": 0.0,
+          "tangent_fixed_point": 5.002609531051111e-10,
+          "max_contact_iterations": 4,
+          "foot_penetration_m": 4.548738910536976e-08,
+          "joint_velocity_violation_rad_s": 0.0,
+          "joint_position_violation_rad": 0.0,
+          "motor_torque_violation_nm": 0.0,
+          "nonfoot_ground_violation_m": 0.0
+        }
+      },
+      {
+        "step": 9,
+        "mean_normal_force_n": [
+          217.98833989872728,
+          172.4315947096631,
+          0.0,
+          0.0
+        ],
+        "peak_normal_force_n": [
+          222.53409648339314,
+          177.68304482004234,
+          0.0,
+          0.0
+        ],
+        "loaded_microstep_fraction": [
+          1.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        "effort_saturation_fraction": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.275,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "root_linear_velocity_world": [
+          0.32447103906073327,
+          -0.3270019782369512,
+          -1.934204118021692
+        ],
+        "root_angular_velocity_world": [
+          -2.854134239910406,
+          -0.058049066278175854,
+          0.8066595907935324
+        ],
+        "foot_surface_gap_m": [
+          -4.4220684273024724e-07,
+          6.989550601493866e-09,
+          0.3275787228371251,
+          0.4755225595382462
+        ],
+        "com_world": [
+          0.7744210697813343,
+          -0.16138518036559535,
+          0.4083262951043936
+        ],
+        "first_ground_violation": null,
+        "diagnostics": {
+          "momentum_residual": 1.538699723191428e-14,
+          "normal_complementarity": 3.342924564941896e-08,
+          "friction_cone": 0.0,
+          "tangent_fixed_point": 1.4624907910144175e-09,
+          "max_contact_iterations": 4,
+          "foot_penetration_m": 4.4220684273024724e-07,
+          "joint_velocity_violation_rad_s": 0.0,
+          "joint_position_violation_rad": 0.0,
+          "motor_torque_violation_nm": 0.0,
+          "nonfoot_ground_violation_m": 0.0
+        }
+      },
+      {
+        "step": 10,
+        "mean_normal_force_n": [
+          221.7160852310954,
+          180.07874215649628,
+          0.0,
+          0.0
+        ],
+        "peak_normal_force_n": [
+          222.20967990445493,
+          184.70033243840058,
+          0.0,
+          0.0
+        ],
+        "loaded_microstep_fraction": [
+          1.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        "effort_saturation_fraction": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.89375,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "root_linear_velocity_world": [
+          0.3984205204462139,
+          -0.30400123403046453,
+          -1.8510146583608809
+        ],
+        "root_angular_velocity_world": [
+          -2.822967632436847,
+          -0.30365417766654357,
+          0.9851810133311532
+        ],
+        "foot_surface_gap_m": [
+          -8.163945448107224e-07,
+          3.4259674090708625e-09,
+          0.30487994869261864,
+          0.463588465266815
+        ],
+        "com_world": [
+          0.7776070290177334,
+          -0.16367738899046788,
+          0.3892744120829253
+        ],
+        "first_ground_violation": null,
+        "diagnostics": {
+          "momentum_residual": 1.1277437317325223e-14,
+          "normal_complementarity": 1.0364090196474107e-07,
+          "friction_cone": 0.0,
+          "tangent_fixed_point": 2.522636665530653e-09,
+          "max_contact_iterations": 4,
+          "foot_penetration_m": 8.163945448107224e-07,
+          "joint_velocity_violation_rad_s": 0.0,
+          "joint_position_violation_rad": 0.0,
+          "motor_torque_violation_nm": 0.0,
+          "nonfoot_ground_violation_m": 0.0
+        }
+      },
+      {
+        "step": 11,
+        "mean_normal_force_n": [
+          219.591086430586,
+          185.52334208217087,
+          0.0,
+          0.0
+        ],
+        "peak_normal_force_n": [
+          219.87318522936988,
+          189.41379739956818,
+          0.0,
+          0.0
+        ],
+        "loaded_microstep_fraction": [
+          1.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        "effort_saturation_fraction": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "root_linear_velocity_world": [
+          0.4794103613009145,
+          -0.2673919493278617,
+          -1.7638058839587916
+        ],
+        "root_angular_velocity_world": [
+          -2.6598855984172545,
+          -0.521231903947633,
+          1.0925231637859727
+        ],
+        "foot_surface_gap_m": [
+          -9.426142222081213e-07,
+          1.986111813206959e-09,
+          0.28246983346349325,
+          0.4521295944131443
+        ],
+        "com_world": [
+          0.781474811134281,
+          -0.1655276908748758,
+          0.3711911828081797
+        ],
+        "first_ground_violation": null,
+        "diagnostics": {
+          "momentum_residual": 1.2406742300186124e-14,
+          "normal_complementarity": 5.23182593983873e-08,
+          "friction_cone": 0.0,
+          "tangent_fixed_point": 3.2910827164629036e-09,
+          "max_contact_iterations": 5,
+          "foot_penetration_m": 9.440447431112442e-07,
+          "joint_velocity_violation_rad_s": 0.0,
+          "joint_position_violation_rad": 0.0,
+          "motor_torque_violation_nm": 0.0,
+          "nonfoot_ground_violation_m": 0.0
+        }
+      },
+      {
+        "step": 12,
+        "mean_normal_force_n": [
+          214.42287567351667,
+          188.83296975633272,
+          0.0,
+          0.0
+        ],
+        "peak_normal_force_n": [
+          215.88057073782042,
+          191.8258405284356,
+          0.0,
+          0.0
+        ],
+        "loaded_microstep_fraction": [
+          1.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        "effort_saturation_fraction": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "root_linear_velocity_world": [
+          0.5671755700044031,
+          -0.21412256067764246,
+          -1.675246178236463
+        ],
+        "root_angular_velocity_world": [
+          -2.3879919723008016,
+          -0.7259176650136023,
+          1.1199708068667107
+        ],
+        "foot_surface_gap_m": [
+          -7.571278451933006e-07,
+          2.3818284358712027e-09,
+          0.2602952647019293,
+          0.43958485993825525
+        ],
+        "com_world": [
+          0.7860853940435705,
+          -0.16685802928376386,
+          0.35408017887847726
+        ],
+        "first_ground_violation": null,
+        "diagnostics": {
+          "momentum_residual": 1.3774571760993837e-14,
+          "normal_complementarity": 1.3479722674875072e-07,
+          "friction_cone": 0.0,
+          "tangent_fixed_point": 3.4254542540142208e-09,
+          "max_contact_iterations": 5,
+          "foot_penetration_m": 9.424145633631087e-07,
+          "joint_velocity_violation_rad_s": 0.0,
+          "joint_position_violation_rad": 0.0,
+          "motor_torque_violation_nm": 0.0,
+          "nonfoot_ground_violation_m": 0.0
+        }
+      },
+      {
+        "step": 13,
+        "mean_normal_force_n": [
+          206.23874485169637,
+          189.5984003372723,
+          0.0,
+          0.0
+        ],
+        "peak_normal_force_n": [
+          208.94880853314027,
+          190.81504134910824,
+          0.0,
+          0.0
+        ],
+        "loaded_microstep_fraction": [
+          1.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        "effort_saturation_fraction": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "root_linear_velocity_world": [
+          0.6605482127210777,
+          -0.14373381823454423,
+          -1.5894176418795287
+        ],
+        "root_angular_velocity_world": [
+          -2.029664237106182,
+          -0.9254595768973863,
+          1.070344261450407
+        ],
+        "foot_surface_gap_m": [
+          -2.726910968975371e-07,
+          5.394970963024104e-09,
+          0.2384200543345818,
+          0.42441347276058783
+        ],
+        "com_world": [
+          0.791501215640124,
+          -0.1675858881625133,
+          0.3379193892139362
+        ],
+        "first_ground_violation": null,
+        "diagnostics": {
+          "momentum_residual": 1.120284420785822e-14,
+          "normal_complementarity": 1.8487096758307286e-07,
+          "friction_cone": 0.0,
+          "tangent_fixed_point": 8.418631877987054e-09,
+          "max_contact_iterations": 5,
+          "foot_penetration_m": 7.54948348054979e-07,
+          "joint_velocity_violation_rad_s": 0.0,
+          "joint_position_violation_rad": 0.0,
+          "motor_torque_violation_nm": 0.0,
+          "nonfoot_ground_violation_m": 0.0
+        }
+      },
+      {
+        "step": 14,
+        "mean_normal_force_n": [
+          195.58515218874453,
+          180.06401856662788,
+          0.0,
+          0.0
+        ],
+        "peak_normal_force_n": [
+          199.26453968065215,
+          186.39677673407678,
+          0.0,
+          0.0
+        ],
+        "loaded_microstep_fraction": [
+          1.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        "effort_saturation_fraction": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "root_linear_velocity_world": [
+          0.7510835012950211,
+          -0.06221473495741048,
+          -1.5178013838060083
+        ],
+        "root_angular_velocity_world": [
+          -1.6217405835808103,
+          -1.0748078672383212,
+          0.9380788241923217
+        ],
+        "foot_surface_gap_m": [
+          7.168486793746043e-09,
+          3.034712761293412e-08,
+          0.21691866997409623,
+          0.4053163640039278
+        ],
+        "com_world": [
+          0.7977679868306687,
+          -0.16767435439157716,
+          0.3226485248385189
+        ],
+        "first_ground_violation": null,
+        "diagnostics": {
+          "momentum_residual": 1.1456113835350834e-14,
+          "normal_complementarity": 1.998228714231165e-07,
+          "friction_cone": 0.0,
+          "tangent_fixed_point": 3.3209599883433916e-09,
+          "max_contact_iterations": 6,
+          "foot_penetration_m": 2.6881801430331254e-07,
+          "joint_velocity_violation_rad_s": 0.0,
+          "joint_position_violation_rad": 0.0,
+          "motor_torque_violation_nm": 0.0,
+          "nonfoot_ground_violation_m": 0.0
+        }
+      },
+      {
+        "step": 15,
+        "mean_normal_force_n": [
+          177.89651264997462,
+          140.51539078061782,
+          0.0,
+          0.0
+        ],
+        "peak_normal_force_n": [
+          187.6366196136989,
+          165.23010571465002,
+          0.0,
+          0.0
+        ],
+        "loaded_microstep_fraction": [
+          1.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        "effort_saturation_fraction": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "root_linear_velocity_world": [
+          0.8346518797238985,
+          0.017143258204259437,
+          -1.47340807887031
+        ],
+        "root_angular_velocity_world": [
+          -1.23857509896323,
+          -1.1494035799784048,
+          0.7551452164307169
+        ],
+        "foot_surface_gap_m": [
+          2.6972493447074974e-08,
+          1.2093052196779364e-07,
+          0.19578126446871513,
+          0.38143918822111333
+        ],
+        "com_world": [
+          0.8048740456276542,
+          -0.16717228308009116,
+          0.3080950827947332
+        ],
+        "first_ground_violation": {
+          "micro": 144,
+          "body": "Head_lower",
+          "gap_m": -4.5170694968788005e-05
+        },
+        "diagnostics": {
+          "momentum_residual": 1.2490876388771e-14,
+          "normal_complementarity": 1.997882523793737e-07,
+          "friction_cone": 0.0,
+          "tangent_fixed_point": 5.542810251578378e-10,
+          "max_contact_iterations": 8,
+          "foot_penetration_m": 0.0,
+          "joint_velocity_violation_rad_s": 0.0,
+          "joint_position_violation_rad": 0.0,
+          "motor_torque_violation_nm": 0.0,
+          "nonfoot_ground_violation_m": 0.0011773158559407193
+        }
+      }
+    ],
+    "source_sha256": {
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_early_references_20261108/search_continuous_v2.json": "403036e0b21a1006c83398783b885b65c4b04f81c967c92567939f38b9fe78b4",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_early_landing_loads_v1.py": "603720b8c8c07e29065703cfcf004e11fc03036df5d3b9615cf3d5655075016e"
+    },
+    "search_source_sha256": {
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/search_early_landing_trajectory_v1.py": "c0e4dccc5d9323dddaf78c938e201a46e13e3955bfbb53a8d3d64ea6388989fd",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_early_references_20261108/tick300_fine160.json": "cbdfd8366d64dc678ab7ae1bca8181eca2adc660e898abe626dcfc12f54ced3a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_episode_sequence3_20261107/manifest.json": "a5903bdbf7a652d17500ac2e805d85cd4b618be2a7a258d96052af18a628df2a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_fullcommand_native_response_20261107/sphere_crossings_v3.json": "518b4868a6de07776d701957eb0c7da654456f0e22d511ebef56b0bcce8e295b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/configs/go2_piper_authored_ground_geometry_v1.json": "e39c41e9b69e481aeac8907c2dfacb9f593cf54e00c8fb822696638ef083167b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/configs/evaluation_protocol_v2.json": "421497aa51eecac023c70b200e8a75ecafff01527dcf215665d5d96c1e8266a8",
+      "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/native_command_inputs.json": "f861d727c049c85d612cad7ce2a5be9a4bc3a85ab18ba38f5018dc871fca6f7c",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/configs/go2_piper_racket_landing_model_v1.json": "8c8997368ab98b3f2befa9908f537d76990dc2a1099ca30d8e6c1823de814e88",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/parallel_landing_solver_v1.py": "4bc18476684fbc3a81eae8b1b63073c615ceafd73a23ccca2dde919564cfea33",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/loaded_pinocchio_model_v1.py": "2b303a32e57391ec7aaf3c3faf9d151f758477faf13ef6efae5bead979dcae82",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/authored_ground_clearance_v1.py": "ba54ef51a5cfd5c64937814c343d92057cd0e9e83dc4e435f1479049aa342630",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recorded_nonfoot_contact_history_v1.py": "b897ec590f76795a515f1e3ad14db1529f43117731f031f00d43dc556e5e599a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/summarize_precontact_prediction_v1.py": "b05936fc4345546c33bf14696bfbf6ed8967025799da23d87e0b04fc014ba227",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_sphere_touchdown_predictions_v1.py": "92b1905a21c544ff212a237104edb700ce6eb3b1414908cb14d80990b21a9a03",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frictional_impulse_step_v1.py": "4e780bf218dd501a64f1885ab1697c3050d228580fc6cd3c7123d36fb18e2348",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/predict_frictional_spheres_v1.py": "d406a568a61014cbee9bde4c91d3cebd8f997f9afa9e663dfbd99cea2d1941fa",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/terminal_attitude_feedback_v1.py": "47db5797915d6c1fa776d9cc7a295a85e29e91adcba81fabc439c6e0978db209",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/feedback_tail_rollout_v1.py": "535672ced97a7ff19c58b34c192b29ed082769bbea8153078bbaf2e8a449af6b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/condensed_implicit_drive_v1.py": "a0f21e9b954db9e978ba428a3770fcb8cd666e08dd21aa27cedf0c0e5c5af629",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/implicit_support_prediction_v1.py": "b751fa0ea59edd1fe8fc62cf0ba3816e5583ecc76df7058ef3f5185a335a1e01",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/dense_active_set_qp_v1.py": "cba063c6c594bfb42d1114dcafbaebc606d8c4b49b53ee65e764e3979b1bac4a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/whole_body_support_qp_v1.py": "b67cd1f1c8ebe973d3885773fbc9f3bf17cfd935e5e2210a4b7c0ea1ff331d6d",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frame_point_kinematics_v1.py": "60fac87ef04f83a22807217b04e7cbe40b536251b56f5a119dc012d1f2529fd8",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/reduced_whole_body_support_qp_v1.py": "e731a0bca8744d4639099dd2ff9be94840a9f0c953c64924fb2cfa9e7a9c80c7",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/continuous_support_qp_v1.py": "824a3d49711917803e9c82af63b1d142917d62c874ec8751325578a71b4af640",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/command_history_support_qp_v1.py": "1ac2221f85cbf3d468be4c265cc932845700d5f17a9eaaf37440998873689081",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/interval_command_support_qp_v1.py": "7f9e47fdeb1f6cc420368d127f89cc1b726397752b0387f57b5bee1ea5915589",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/admitted_arm_support_qp_v1.py": "097d7022b16a28aa31f11081056092bd8b5b44172291b6bd3b1aba1dbe0a1c6e",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v1.py": "da2ff2e4ee1479bf3fc422c0b71f8831bffd9e5868d9a4e0665fd348ab659a59",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v2.py": "6d0ad9bc4fcd27a0f4f418e55b988341ffe809f14c132415281ec41621196ae2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v3.py": "d8c54679697e78678a898f5d36a27305f9252a5f2b09990d0b33ddcc25533300",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_command_history_mpc_v1.py": "466ba93dc473c7d2de93aae0d5d7848b390d72e8fe1ef779ff0818efad704d28",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_interval_command_mpc_v1.py": "545ecf58c66d0bbf07f889f8867ce36d75ca42fcd94ca77b5307666163630060",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_active_set_interval_mpc_v1.py": "4c111c5ce1d6d711cbe9e4362aad315e0f50f9c2cb363d9595409e0701c7ec8d",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_arm_feasibility_mpc_v1.py": "af9a08a8b442c43099faadbda887ed79b1e497b114cbd77e93b4cc8a2481f40b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_joint_damper_mpc_v1.py": "63b2eff24491e130f96681508524ccf124064469a285a6c82ed9dd498fa761f9",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_joint_sequence_proposal_v1.py": "42d8be1c82836a83e054c6cf7ca368f5bad9b35e298aabbeb0790bfb5b816857",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_sequence_linearization_v1.py": "acc515b9f7980645cdca835deb3ae8bfc4f20ee03eee90a53d9495f976b0ccf2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_differentiated_sequence_v1.py": "9b68faddbb7350b467f5f7a75c1b78cae58759f92c2d8e559b9cac433e6d229e",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_joint_sequence_proposal_v1.py": "b0896a4e9a95a4f46d84ef344e2d7e7384a4fce435b17c01bb456952053382a2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_full_command_interval_mpc_v1.py": "a32da1e8fa837b9a4e40b1614a97fe7b2cdebde18fd1b3083350e2d81558932b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_minimum_command_mpc_v1.py": "c2e2c28234f3f1625c96e75ced68e94fe6e413ae833014d81ccaff5879979c7b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_feasible_command_cost_mpc_v1.py": "daeac9ec076b81bb88e601f72560b1c7135942d15266aa0876e71fb43b61ba32"
+    },
+    "native_forces": false,
+    "valid_expert_labels": false,
+    "limitation": "Model impulse-derived mean forces do not establish real foot/head loading or prove infeasibility."
+  },
+  "load_audit_sha256": "b11e9e3d5d92b1bebbf5d575b958d5571fc6dc284a477c0fa01b194bbcaad480",
+  "earlier_tick280": {
+    "result_path": "reports/landing_early_references_20261108/tick280_fine160.json",
+    "sha256": "330995168563aa33d16c4c9365c792e2b5fa08c54fc00250103360433b21d277",
+    "initial_clearance_m": 0.48713350492656843,
+    "references": [
+      {
+        "reference": "recorded_student",
+        "completed_model_steps": 4,
+        "failure": {
+          "step": 4,
+          "reason": "path_constraints",
+          "violations": {
+            "joint_velocity_violation_rad_s": 0.1639667145524335
+          },
+          "first_model_ground_violation": null,
+          "interval_end_joint_limit_violations": [
+            {
+              "joint": "joint2",
+              "position_rad": 1.3846556294675134,
+              "velocity_rad_s": 5.1639667145524335,
+              "position_excess_rad": 0.0,
+              "velocity_excess_rad_s": 0.1639667145524335
+            }
+          ]
+        }
+      },
+      {
+        "reference": "hold_actual_previous",
+        "completed_model_steps": 32,
+        "failure": {
+          "step": 32,
+          "reason": "path_constraints",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.010255224192117898
+          },
+          "first_model_ground_violation": {
+            "micro": 106,
+            "body": "Head_lower",
+            "gap_m": -5.218633384727889e-05
+          },
+          "interval_end_joint_limit_violations": []
+        }
+      },
+      {
+        "reference": "recorded_stand_legs_hold_arm",
+        "completed_model_steps": 0,
+        "failure": {
+          "step": 0,
+          "reason": "path_constraints",
+          "violations": {
+            "joint_velocity_violation_rad_s": 7.534318735635061
+          },
+          "first_model_ground_violation": null,
+          "interval_end_joint_limit_violations": [
+            {
+              "joint": "FL_calf_joint",
+              "position_rad": -2.3961626967927887,
+              "velocity_rad_s": 37.53431873563506,
+              "position_excess_rad": 0.0,
+              "velocity_excess_rad_s": 7.534318735635061
+            },
+            {
+              "joint": "FR_calf_joint",
+              "position_rad": -2.459260955684171,
+              "velocity_rad_s": 37.31241434079347,
+              "position_excess_rad": 0.0,
+              "velocity_excess_rad_s": 7.312414340793467
+            }
+          ]
+        }
+      },
+      {
+        "reference": "existing_terminal_feedback",
+        "completed_model_steps": 0,
+        "failure": {
+          "step": 0,
+          "reason": "path_constraints",
+          "violations": {
+            "joint_velocity_violation_rad_s": 32.5301566596873
+          },
+          "first_model_ground_violation": null,
+          "interval_end_joint_limit_violations": [
+            {
+              "joint": "FR_hip_joint",
+              "position_rad": -0.23108467954990178,
+              "velocity_rad_s": -35.53524523467912,
+              "position_excess_rad": 0.0,
+              "velocity_excess_rad_s": 5.535245234679117
+            },
+            {
+              "joint": "FR_thigh_joint",
+              "position_rad": 1.2428279664081943,
+              "velocity_rad_s": -32.97205910282045,
+              "position_excess_rad": 0.0,
+              "velocity_excess_rad_s": 2.9720591028204524
+            },
+            {
+              "joint": "FR_calf_joint",
+              "position_rad": -2.3423705157846246,
+              "velocity_rad_s": 62.5301566596873,
+              "position_excess_rad": 0.0,
+              "velocity_excess_rad_s": 32.5301566596873
+            },
+            {
+              "joint": "RR_calf_joint",
+              "position_rad": -2.177940648178597,
+              "velocity_rad_s": 47.44308394548553,
+              "position_excess_rad": 0.0,
+              "velocity_excess_rad_s": 17.443083945485533
+            }
+          ]
+        }
+      },
+      {
+        "reference": "stand_legs_measured_arm",
+        "completed_model_steps": 0,
+        "failure": {
+          "step": 0,
+          "reason": "path_constraints",
+          "violations": {
+            "joint_velocity_violation_rad_s": 7.63049991973417
+          },
+          "first_model_ground_violation": null,
+          "interval_end_joint_limit_violations": [
+            {
+              "joint": "FL_calf_joint",
+              "position_rad": -2.3957151362263374,
+              "velocity_rad_s": 37.63049991973417,
+              "position_excess_rad": 0.0,
+              "velocity_excess_rad_s": 7.63049991973417
+            },
+            {
+              "joint": "FR_calf_joint",
+              "position_rad": -2.4597709514371267,
+              "velocity_rad_s": 37.20224033013753,
+              "position_excess_rad": 0.0,
+              "velocity_excess_rad_s": 7.202240330137528
+            }
+          ]
+        }
+      },
+      {
+        "reference": "terminal_legs_measured_arm",
+        "completed_model_steps": 0,
+        "failure": {
+          "step": 0,
+          "reason": "path_constraints",
+          "violations": {
+            "joint_velocity_violation_rad_s": 32.348441285626315
+          },
+          "first_model_ground_violation": null,
+          "interval_end_joint_limit_violations": [
+            {
+              "joint": "FR_hip_joint",
+              "position_rad": -0.23875631725153357,
+              "velocity_rad_s": -36.63914542469239,
+              "position_excess_rad": 0.0,
+              "velocity_excess_rad_s": 6.639145424692387
+            },
+            {
+              "joint": "FR_thigh_joint",
+              "position_rad": 1.2440417882906765,
+              "velocity_rad_s": -32.73767622151674,
+              "position_excess_rad": 0.0,
+              "velocity_excess_rad_s": 2.737676221516743
+            },
+            {
+              "joint": "FR_calf_joint",
+              "position_rad": -2.343108689502332,
+              "velocity_rad_s": 62.348441285626315,
+              "position_excess_rad": 0.0,
+              "velocity_excess_rad_s": 32.348441285626315
+            },
+            {
+              "joint": "RR_calf_joint",
+              "position_rad": -2.1789801775732687,
+              "velocity_rad_s": 47.26851580887811,
+              "position_excess_rad": 0.0,
+              "velocity_excess_rad_s": 17.268515808878107
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "initial_attempt": {
+    "status": "FAILED_REPORT_SERIALIZATION",
+    "reason": "PosixPath in configuration not JSON serializable",
+    "source_sha256": "13014a85d3d88bcbdb7d9daedab499d787f11e318647bb38f2071f5090c1c4eb",
+    "partial_ledger_preserved": true,
+    "native_execution": false,
+    "accepted_result": false
+  },
+  "native_execution": false,
+  "valid_expert_labels": false,
+  "new_accepted_native_successes": null
+}
