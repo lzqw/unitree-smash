@@ -1,0 +1,64 @@
+{
+  "timestamp_utc": "2026-11-07T17:35:41.068166+00:00",
+  "source_sha256": {
+    "scripts/native_contact_microtrace_v1.py": "4e181bc445089f50e43dfa1f278512256b0202346f62701890c80488e8b91ed3",
+    "scripts/prepare_native_contact_microtrace_v1.py": "7a1fc6fa5e10b5344521d63502f0da11be94bd049274d7d12f2c7c80e84a6921",
+    "tests/test_native_contact_microtrace_v1.py": "7a83614cb58bf7a212898001dec11818389411b1557871febe3cb97fc6cc3dbc",
+    "reports/landing_native_contact_microtrace_preparation_20261108/preparation.json": "c2f28b6741874f5b4fa3e92b65c813fe755abc17ccb5fdf6545b57853f9ed9ab",
+    "reports/landing_native_contact_microtrace_preparation_20261108/evaluate_feedback_contact_microtrace.py": "99f239d14bf9e3d7b98765606d4b5c183d9884b610df6c87068b613b8a24d88f"
+  },
+  "preparation": {
+    "source": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_native_feedback_portfolio_preparation_20261108/evaluate_feedback_portfolio.py",
+    "source_sha256": "78734df8dc2b16132418faa93a9a6f2ea60c0ee39d205bfd050d56f87cd9e9d4",
+    "entry": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_native_contact_microtrace_preparation_20261108/evaluate_feedback_contact_microtrace.py",
+    "entry_sha256": "99f239d14bf9e3d7b98765606d4b5c183d9884b610df6c87068b613b8a24d88f",
+    "preparer_sha256": "7a1fc6fa5e10b5344521d63502f0da11be94bd049274d7d12f2c7c80e84a6921",
+    "native_execution": false,
+    "queued": false,
+    "physics_or_controller_changed": false,
+    "observation_window_control_steps": 20
+  },
+  "tests": {
+    "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 bash scripts/python.sh -m pytest -q tests/test_native_contact_microtrace_v1.py",
+    "passed": 5,
+    "scope": "CPU synthetic observer semantics, not native physics"
+  },
+  "native_microtrace_executed": false,
+  "new_gpu_job_queued": false,
+  "existing_queues": [
+    {
+      "pid": 4192383,
+      "alive": true,
+      "changed_inputs": []
+    },
+    {
+      "pid": 1136,
+      "alive": true,
+      "changed_inputs": []
+    },
+    {
+      "pid": 5421,
+      "alive": true,
+      "changed_inputs": []
+    }
+  ],
+  "live_snapshot": {
+    "process_alive": true,
+    "progress": {
+      "control_tick": 562,
+      "replans": 19,
+      "accepted_replans": 19,
+      "latest_accepted": true,
+      "latest_wall_seconds": 375.66924246400595,
+      "latest_reason": null,
+      "teacher_steps": 102,
+      "fallback_steps": 0,
+      "teacher_model": "frictional_spheres_v1",
+      "native_recovery_success_not_yet_known": true
+    },
+    "last_event_time_s": 5.7,
+    "case3_first_nonfoot_s": [],
+    "partial_only": true
+  },
+  "formal_verifier_status": "FAILED"
+}
