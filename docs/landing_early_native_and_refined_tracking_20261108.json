@@ -1,0 +1,345 @@
+{
+  "observed_at": "2026-11-07T23:07:32.377264+00:00",
+  "completed_native": {
+    "run": "reports/native_early_support_all128_20261108_02",
+    "job_status": "SUCCEEDED",
+    "gpu_hours": 0.35610135969330764,
+    "env_steps": 102400,
+    "audit": {
+      "scope": "Audit actual sequence dispatch and model error, separate from recovery score.",
+      "passed_dispatch_integrity": false,
+      "native_execution": true,
+      "model_accuracy_not_implied_by_dispatch_pass": true,
+      "case": 3,
+      "start_tick": 280,
+      "planned_steps": 520,
+      "recorded_followup_steps": 520,
+      "planned_command_mapping_error_rad": 2.220446049250313e-16,
+      "measured_state_feedback_dispatch": {
+        "maximum_normalized_action_error": 0.0,
+        "maximum_target_error_rad": 2.220446049250313e-16,
+        "model_reference_not_substituted_for_measured_state": true
+      },
+      "online_mpc": false,
+      "command_reference": "Feedback recomputed from actual state; nominal sequence is not an executed-action label",
+      "maximum_arm_command_step_rad": 0.07061418233070071,
+      "untouched_lanes_equal_current_student": true,
+      "all_lane_original_prefix_equal": false,
+      "query_match": {
+        "passed": true,
+        "errors": {
+          "configuration_tangent": 1.0008417350437782e-07,
+          "velocity": 1.5565080069279702e-07,
+          "public": 0.0,
+          "previous_target_rad": 0.0
+        },
+        "tolerances": {
+          "configuration_tangent": 2e-05,
+          "velocity": 0.0002,
+          "public": 0.0005,
+          "previous_target_rad": 5e-06
+        },
+        "contacts_equal": true
+      },
+      "prediction_endpoint_observed": false,
+      "last_observed_offset": 519,
+      "last_observed_horizon_error": {
+        "configuration_tangent_max": 0.4881955578462971,
+        "joint_position_max_rad": 0.4881955578462971,
+        "root_position_m": 0.2710508984556238,
+        "root_attitude_rad": 0.3011829247468036,
+        "velocity_max": 0.22541829508271533,
+        "contacts_equal": true
+      },
+      "horizon_error_max": {
+        "configuration_tangent_max": 0.650724731724406,
+        "joint_position_max_rad": 0.650724731724406,
+        "root_position_m": 0.275858938530604,
+        "root_attitude_rad": 0.3997055162581694,
+        "velocity_max": 5.193936031011034
+      },
+      "predicted_contact_mismatch_ticks": 123,
+      "selected_case_outcome": {
+        "training_index": 3,
+        "air": true,
+        "recovery": false,
+        "complete5": false,
+        "ball5_except_recovery": true,
+        "complete8": false,
+        "rejection_reasons": [
+          "same_flight_stable_recovery"
+        ]
+      },
+      "selected_first_nonfoot_contact_s": 4.898,
+      "baseline_first_nonfoot_contact_s": 5.1450000000000005,
+      "complete5": 27,
+      "conditional_recovery_count": 34,
+      "valid_expert_labels": false,
+      "teacher_off_learning_result": false,
+      "sustained_mpc_feedback_implemented": false
+    },
+    "divergent_untouched_cases": [
+      {
+        "case": 125,
+        "prefix_samples": 800,
+        "prefix_public_max_error": 17.323974609375,
+        "prefix_action_max_error": 0.38117194175720215
+      }
+    ],
+    "selected_head_record": {
+      "case": 3,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "first_sampled_head_force_above_1n_s": 2.301,
+      "first_sampled_head_force_after_qualified_landing_s": null,
+      "contact_flight_landing_s": 3.04496169090271,
+      "original_first_nonfoot_force_s": 4.898,
+      "sampled_head_precedes_original_event": true,
+      "head_normal_force_peak_n": 978.7784423828125,
+      "individual_head_peak_normal_force_n": [
+        978.7784423828125,
+        0.0
+      ],
+      "sampled_exceedance_duration_after_landing_s": 0.0,
+      "lower_head_minimum_center_height_m": 0.046999491751194
+    },
+    "recovery_margins": {
+      "scope": "Describe control-sampled recovery margins without replacing physics-rate scoring.\n\nThe 100 Hz public trace can identify which kinematic threshold is limiting.\nIt cannot prove uninterrupted physics-rate stability or an invariant region.\n",
+      "results": [
+        {
+          "run": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_early_support_all128_20261108_02",
+          "case": 3,
+          "recovery_protocol": {
+            "continuous_stable_window_s": 0.8,
+            "maximum_abs_roll_pitch_deg": 15.0,
+            "maximum_horizontal_root_speed_m_s": 0.3,
+            "maximum_root_angular_speed_rad_s": 1.0,
+            "maximum_abs_joint_velocity_rad_s": 1.0,
+            "maximum_body_ground_force_n": 1.0,
+            "require_foot_support": true
+          },
+          "official_case_result": {
+            "training_index": 3,
+            "air": true,
+            "recovery": false,
+            "complete5": false,
+            "ball5_except_recovery": true,
+            "complete8": false,
+            "rejection_reasons": [
+              "same_flight_stable_recovery"
+            ]
+          },
+          "official_contact_flight": {
+            "schema": "contact-flight-recovery-v1",
+            "bound": true,
+            "contact_flight_id": 5,
+            "rally_contact_time_s": 2.7612717151641846,
+            "airborne_string_time_s": 2.7612717151641846,
+            "contact_flight_takeoff_s": 2.5809953212738037,
+            "qualified_contact_landing": true,
+            "contact_flight_landing_s": 3.04496169090271,
+            "contact_flight_com_rise_m": 0.28408461809158325,
+            "contact_flight_clear_s": 0.45299771428108215,
+            "stable_recovery": false,
+            "recovery_s": 0.40399834513664246,
+            "body_landing": true,
+            "maximum_body_ground_force_n": 813.12646484375,
+            "terminal_root_height_m": 0.2224200963973999,
+            "success": false
+          },
+          "control_sampled_kinematic_runs": [
+            {
+              "first_tick": 403,
+              "last_tick": 443,
+              "samples": 41,
+              "first_sample_s": 4.029999732971191,
+              "last_sample_s": 4.429999828338623,
+              "sample_span_s": 0.40000009536743164
+            },
+            {
+              "first_tick": 547,
+              "last_tick": 661,
+              "samples": 115,
+              "first_sample_s": 5.46999979019165,
+              "last_sample_s": 6.609999656677246,
+              "sample_span_s": 1.1399998664855957
+            }
+          ],
+          "last_sample": {
+            "max_abs_roll_pitch_deg": 16.39277481847144,
+            "horizontal_root_speed_m_s": 0.02008678276742854,
+            "angular_speed_rad_s": 0.08686274275119925,
+            "maximum_joint_speed_rad_s": 0.1373257040977478,
+            "supporting_foot_count": 4.0,
+            "roll_deg": -1.1562082878124842,
+            "pitch_deg": -16.39277481847144,
+            "active_kinematic_failures": [
+              "attitude"
+            ]
+          },
+          "intervals": [
+            {
+              "name": "selected_interval",
+              "first_tick": 280,
+              "last_tick": 799,
+              "samples": 520,
+              "extrema": {
+                "max_abs_roll_pitch_deg": {
+                  "min": 0.9911342480225509,
+                  "max": 32.19421442748333
+                },
+                "horizontal_root_speed_m_s": {
+                  "min": 4.491716205012764e-05,
+                  "max": 1.076077493372317
+                },
+                "angular_speed_rad_s": {
+                  "min": 0.019095476058596673,
+                  "max": 3.798237178292203
+                },
+                "maximum_joint_speed_rad_s": {
+                  "min": 0.033710453659296036,
+                  "max": 17.325714111328125
+                },
+                "supporting_foot_count": {
+                  "min": 0.0,
+                  "max": 4.0
+                }
+              },
+              "failing_sample_counts": {
+                "attitude": 236,
+                "horizontal_speed": 109,
+                "angular_speed": 73,
+                "joint_speed": 175,
+                "support": 27
+              },
+              "sole_limiting_sample_counts": {
+                "attitude": 189,
+                "horizontal_speed": 0,
+                "angular_speed": 0,
+                "joint_speed": 36,
+                "support": 0
+              }
+            },
+            {
+              "name": "last_one_second",
+              "first_tick": 700,
+              "last_tick": 799,
+              "samples": 100,
+              "extrema": {
+                "max_abs_roll_pitch_deg": {
+                  "min": 16.39277481847144,
+                  "max": 17.005386151285336
+                },
+                "horizontal_root_speed_m_s": {
+                  "min": 4.491716205012764e-05,
+                  "max": 0.05714549473426043
+                },
+                "angular_speed_rad_s": {
+                  "min": 0.019095476058596673,
+                  "max": 0.16737245739831244
+                },
+                "maximum_joint_speed_rad_s": {
+                  "min": 0.033710453659296036,
+                  "max": 0.2631068229675293
+                },
+                "supporting_foot_count": {
+                  "min": 3.0,
+                  "max": 4.0
+                }
+              },
+              "failing_sample_counts": {
+                "attitude": 100,
+                "horizontal_speed": 0,
+                "angular_speed": 0,
+                "joint_speed": 0,
+                "support": 0
+              },
+              "sole_limiting_sample_counts": {
+                "attitude": 100,
+                "horizontal_speed": 0,
+                "angular_speed": 0,
+                "joint_speed": 0,
+                "support": 0
+              }
+            }
+          ],
+          "thresholds_are_original": true,
+          "substitutes_for_physics_rate_score": false,
+          "guarantees_between_samples": false,
+          "new_native_execution": false,
+          "valid_expert_labels": false,
+          "source_sha256": {
+            "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_early_support_all128_20261108_02/fixed_policy_traces/case_003.npz": "ba53fc9aa71195d7842032f6bb9f65ded3b892943e2f89658cfc4bf9c7fdda68",
+            "/home/autodrive/LZQW/unitree_smash_contact_recovery/configs/g07_full_racket_eval_v5_contact_recovery_origin0.json": "bfe6f2bef675bb4716e4970e6400eb86dd50b06e799e848030eb2a29ed84a309",
+            "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_early_support_all128_20261108_02/execution_source_hashes.json": "22f68ab5c991f6e66eca28ca0981b052ccc5a7d34b3718de8c8e24b440da6144",
+            "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_early_support_all128_20261108_02/fixed_policy_traces/manifest.json": "b04bbbc91f48839d32cc9c13e537ca3830d0b952952c1cf1eae240733b396403",
+            "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_early_support_all128_20261108_02/INPUTS.json": "7b0ae92ce184c9d4bd06291ce01721c7078e1da36a26e421f9cbf507e67d48f4",
+            "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_early_support_all128_20261108_02/metrics.json": "0913307c5f84ef48598d6ee369d2ca82aae22ca776cb9348ee18f886394d07df",
+            "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_early_support_all128_20261108_02/episodes.json": "f75489c74ddd9662d140da2a4b6f59a1ee5b82abe3b697a022979de80d420b0e",
+            "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_native_recovery_margins_v1.py": "5367086b1daabdf31e2ac72b4a064596e971e723904cc3e9fe36ae166a3853fe",
+            "/home/autodrive/LZQW/unitree_smash_contact_recovery/configs/evaluation_protocol_v2.json": "421497aa51eecac023c70b200e8a75ecafff01527dcf215665d5d96c1e8266a8",
+            "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/tasks/stand/observation_contract.py": "3e884b4c5d72a2f86aff74114ebf0d9ece0264ea4b9e59880375a1fcc23a5772",
+            "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/tasks/stand/jump_metrics.py": "96102348a875e297b0ae230a99ba02249663a06bb5d0c10e7f5ae1026c5abe7d",
+            "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/tasks/stand/contact_flight_recovery_v5.py": "fcbeb7a35fa4e119df604b92f3d443adb5955d757489556e631177d810a0c6c2"
+          }
+        }
+      ]
+    }
+  },
+  "new_candidate": {
+    "model_accepted": 7,
+    "model_total": 13,
+    "interface_check": {
+      "scope": "CPU interface replay on model states; zero force placeholders are not native telemetry.",
+      "control_ticks": 800,
+      "feedback_commands": 520,
+      "maximum_nominal_target_error_rad": 1.5998402869144002e-07,
+      "perturbed_attitude_changes_target_rad": 0.015485419685992055,
+      "query_match": {
+        "passed": true,
+        "errors": {
+          "configuration_tangent": 0.0,
+          "velocity": 0.0,
+          "public": 0.0,
+          "previous_target_rad": 0.0
+        },
+        "tolerances": {
+          "configuration_tangent": 2e-05,
+          "velocity": 0.0002,
+          "public": 0.0005,
+          "previous_target_rad": 5e-06
+        },
+        "contacts_equal": true
+      },
+      "nominal_commands_immutable": true,
+      "other_lanes_unchanged": true,
+      "native_execution": false,
+      "valid_expert_labels": false
+    },
+    "plan_sha256": "7caebcb95435201faacdeced215985d9808824048b306407859e649a6a62a6b7",
+    "pinned_files": 307,
+    "queue": {
+      "state": "WAITING_FOR_GPU_OWNERS_TO_EXIT",
+      "pid": 45883,
+      "observed_at": "2026-11-07T23:03:32.432257+00:00",
+      "owners": [
+        {
+          "pid": 38806,
+          "start_ticks": "171534223"
+        }
+      ]
+    },
+    "native_result_available": false
+  },
+  "valid_expert_labels": false,
+  "teacher_off_learning_result": false,
+  "evidence_sha256": {
+    "reports/landing_native_early_support_followup_20261108_v2/native_audit.json": "17a53f90520712e9b48d6988c5fd982e9faed5a8c3786912ef0d1472a8f408f1",
+    "reports/landing_native_early_support_followup_20261108_v2/head_force_audit.json": "920a556adc398c79777efaef983e6b87db31003186ab1c22cb66006fbff84deb",
+    "reports/landing_native_early_support_followup_20261108_v2/recovery_margins.json": "9a7a5447bb83f5ad3ec51edd30bf16a6ee841ed158dcbfee26b6361b64d6bb7a",
+    "reports/native_early_support_all128_20261108_02/job.json": "f099e998e70f0060ba34bdc997a1d50c2b9d77baaa77200f6e31b7affafaa906",
+    "reports/native_early_support_all128_20261108_02/contact_telemetry_metadata.json": "d5e3b9f1c9d61aa1a7c9e2a02daed94323e017b3387015fb548a23325b56bcc7",
+    "reports/native_early_support_all128_20261108_02/first_nonfoot_contact_details.json": "06fcd57a085e975abf9796b83da47090a1b8b77b7d7150a1d29d9c3687de6ff4",
+    "reports/landing_native_refined_tracking_followup_20261108/plan.json": "7caebcb95435201faacdeced215985d9808824048b306407859e649a6a62a6b7"
+  }
+}
