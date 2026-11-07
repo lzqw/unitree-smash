@@ -1,0 +1,86 @@
+{
+  "as_of": "2026-11-07T23:46:19.748835+00:00",
+  "divergence": {
+    "scope": "Locate observation/action divergence in immutable, ground-start native traces.\n\nThis is temporal evidence, not a proof of physical isolation or a replacement\nfor the existing native audit. No tolerances or expert labels are changed.\n",
+    "comparisons": [
+      {
+        "run": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_reference_tracking_all128_20261108_01",
+        "case": 46,
+        "compared_samples": 542,
+        "maximum_public_error": 6.728288173675537,
+        "maximum_action_error": 0.23156088590621948,
+        "first_observation_difference_tick": 484,
+        "first_action_difference_tick": 484,
+        "first_observation_over_existing_audit_tolerance_tick": 484,
+        "first_action_over_existing_audit_tolerance_tick": 484,
+        "first_observation_difference": {
+          "time_s": 4.839999675750732,
+          "all_preceding_dispatched_actions_bitwise_equal": true,
+          "group_max_absolute_error": {
+            "base_linear_velocity": 0.008405596017837524,
+            "base_angular_velocity": 0.05600249767303467,
+            "projected_gravity": 4.6700239181518555e-05,
+            "joint_position_public": 0.0004436969757080078,
+            "joint_velocity_public": 0.5522975921630859,
+            "foot_contact_flags": 1.0,
+            "ball_public": 0.09649777412414551,
+            "observation_history": 0.0,
+            "previous_action_public": 0.0
+          },
+          "current_action_error": 0.03994494676589966,
+          "preceding_action_error": 0.0
+        }
+      }
+    ],
+    "new_native_execution": false,
+    "valid_expert_labels": false,
+    "audit_tolerances_changed": false,
+    "cause_identified": false,
+    "source_sha256": {
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/diagnose_frozen_trace_divergence_v1.py": "e26e1d67cb8b8766ec3a1f77b28585b0d4c21c8b6de23164472bf5b7511d7522",
+      "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_046.npz": "3655d996a1d131a65556323c6c8d995a7c35a56972b26394ec74bca2a373027c",
+      "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/manifest.json": "7bb60d0022e5dfc7f66153807259e255c4b4391afe1436660ba2d306b79d4e5e",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_reference_tracking_all128_20261108_01/fixed_policy_traces/case_046.npz": "5dc83fc342b9a407d27a097ee837a0a3b868e301e00842e01d75af4d973243f2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_reference_tracking_all128_20261108_01/fixed_policy_traces/manifest.json": "bb6075825e9a74ec205bdf8e4f69b982e559f297d8c4e63022c3a44bac76ff6d"
+    }
+  },
+  "queued_plan": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_native_body_pairs46_followup_20261108/plan.json",
+  "queued_plan_sha256": "48a9a3212c761ed8bf259004d85f00978e30bf7114c46b91d3e086f6bcd5ce36",
+  "source_pins": 309,
+  "native_command_differences": [
+    [
+      9,
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_reference_tracking_all128_20261108_01",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_body_pairs46_all128_20261108_01"
+    ],
+    [
+      18,
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_native_reference_tracking_preparation_20261108/evaluate_early_support.py",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_native_body_pairs46_preparation_20261108/evaluate_body_pairs46.py"
+    ],
+    [
+      20,
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_reference_tracking_all128_20261108_01",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_body_pairs46_all128_20261108_01"
+    ]
+  ],
+  "only_entry_and_output_changed": true,
+  "queue_pid": 51161,
+  "diagnostic_lanes": [
+    3,
+    46
+  ],
+  "sampling_windows_s": [
+    [
+      3.55,
+      3.85
+    ],
+    [
+      4.74,
+      4.94
+    ]
+  ],
+  "actual_pair_forces_not_yet_recorded": true,
+  "physical_cause_proven": false,
+  "valid_expert_labels": false
+}
