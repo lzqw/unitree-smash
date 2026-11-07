@@ -1,0 +1,111 @@
+{
+  "schema": "native-recovery-command-event-refinement-v2",
+  "seed": 882081,
+  "refinement_steps": 6000,
+  "elapsed_s": 50.3112408129964,
+  "parent_checkpoint_sha256": "f06ee4f42587318adb8f392f8fdc7eb243b1c6b3ff943a3931aac2d94b7fd82b",
+  "checkpoint_sha256": "56fe54640fb329cdffc4f7565360b50a404231c51c568c211c4f7a893db55788",
+  "native_evaluated": false,
+  "ppo_training": false,
+  "case_id_as_input": false,
+  "scope": "In-sample command fitting only; original actor/normalizer/interface and task retained.",
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/train_native_recovery_command_v2.py": "e9cc1051beaba47354e705588481e58938c84e2f14999e309f328cbdcd0e2cf9",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_recovery_command_fit35_20261107_02/head.pt": "f06ee4f42587318adb8f392f8fdc7eb243b1c6b3ff943a3931aac2d94b7fd82b",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/verified_native_recovery_commands_20261107_03/manifest.json": "0212119b279a65552b46741e72835f79e71979567c23ba8fca401373615b498f",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/train_native_recovery_command_v1.py": "9d1474730f87ab5484f3421679e5fc24939b8605f0af80723675329188c35c30",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/control/learned_recovery_command_v1.py": "ba6315fefa025feea9485b82e695630c931f1c8cf8532c9c02bceb027ccd1d11"
+  },
+  "groups": {
+    "before": {
+      "unchanged_positive": {
+        "episodes": 34,
+        "metrics": {
+          "command_rmse_rad": {
+            "mean": 0.015548709423883873,
+            "maximum": 0.020338570699095726
+          },
+          "onset_max_error_rad": {
+            "mean": 0.06638279453139095,
+            "maximum": 0.28961411118507385
+          },
+          "first_five_max_error_rad": {
+            "mean": 0.07610304067459177,
+            "maximum": 0.28961411118507385
+          },
+          "first_second_max_error_rad": {
+            "mean": 0.08818709598306347,
+            "maximum": 0.28961411118507385
+          }
+        }
+      },
+      "actual_correction_positive": {
+        "episodes": 8,
+        "metrics": {
+          "command_rmse_rad": {
+            "mean": 0.02269414276815951,
+            "maximum": 0.03328125923871994
+          },
+          "onset_max_error_rad": {
+            "mean": 0.1569418280851096,
+            "maximum": 0.2912670373916626
+          },
+          "first_five_max_error_rad": {
+            "mean": 0.16871612332761288,
+            "maximum": 0.2912670373916626
+          },
+          "first_second_max_error_rad": {
+            "mean": 0.2703757528215647,
+            "maximum": 0.39522138237953186
+          }
+        }
+      }
+    },
+    "after": {
+      "unchanged_positive": {
+        "episodes": 34,
+        "metrics": {
+          "command_rmse_rad": {
+            "mean": 0.006260125541730839,
+            "maximum": 0.00773230567574501
+          },
+          "onset_max_error_rad": {
+            "mean": 0.006777820252703831,
+            "maximum": 0.020383194088935852
+          },
+          "first_five_max_error_rad": {
+            "mean": 0.008060270488974364,
+            "maximum": 0.020383194088935852
+          },
+          "first_second_max_error_rad": {
+            "mean": 0.03085928985520321,
+            "maximum": 0.050595782697200775
+          }
+        }
+      },
+      "actual_correction_positive": {
+        "episodes": 8,
+        "metrics": {
+          "command_rmse_rad": {
+            "mean": 0.012770399334840477,
+            "maximum": 0.02023908495903015
+          },
+          "onset_max_error_rad": {
+            "mean": 0.007005633902736008,
+            "maximum": 0.010554510168731213
+          },
+          "first_five_max_error_rad": {
+            "mean": 0.010436647047754377,
+            "maximum": 0.01811109483242035
+          },
+          "first_second_max_error_rad": {
+            "mean": 0.07433575857430696,
+            "maximum": 0.12238691747188568
+          }
+        }
+      }
+    }
+  },
+  "fit_report_sha256": "95ed59d65bef15bf81c2776b8fbee61bac8e280d0fadbcff9717b7aa7af95b80",
+  "queue_plan": "reports/native_recovery_event_followup_20261107/plan.json"
+}
