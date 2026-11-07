@@ -1,0 +1,792 @@
+{
+  "scope": "Recorded-state CPU prediction audit; diagnostic family removal never executed in Isaac",
+  "source": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_interval_command_followup_20261107/later_prediction_conflicts_rootcheck.json",
+  "source_sha256": "f2b4e0bb4322a24739ea1b015dda938f66011a34ac14ecb8f8659a2024fb1936",
+  "source_hashes_verified": true,
+  "samples": 13,
+  "counts": {
+    "joint_position_constraint": 6,
+    "nonlinear_root_height_check": 1,
+    "root_height_constraint": 3,
+    "terminal_support_margin": 1,
+    "friction_or_command_bounds": 2
+  },
+  "records": [
+    {
+      "case": 70,
+      "tick": 300,
+      "accepted": false,
+      "rejection": "QP rejected prediction stage 21",
+      "terminal": {
+        "trigger": true,
+        "tilt_rad": 0.7314285347735805,
+        "horizontal_speed_mps": 0.9216127854161712,
+        "angular_speed_rad_s": 1.0676738200869236,
+        "support_feet": 2,
+        "reason": "support_margin",
+        "support_margin_m": -0.20221951682533434,
+        "root_height_m": 0.20016569395216105
+      },
+      "terminal_support_ok": false,
+      "failed_stage": 21,
+      "linear_feasibility": {
+        "status": 2,
+        "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+      },
+      "successful_diagnostic_family_removals": [
+        "joint_position"
+      ],
+      "failed_qp": {
+        "solver_status": "primal infeasible",
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "arm_feasibility_fallback": {
+          "fixed_status": "primal infeasible",
+          "free_status": "primal infeasible",
+          "free_accepted": false
+        }
+      },
+      "predicted_root_height_m": 0.20016569395216105,
+      "predicted_contacts": [
+        true,
+        true,
+        false,
+        false
+      ],
+      "prescribed_arm_constraint_present": false,
+      "joints_within_0p005_rad_of_limit": [
+        {
+          "joint": "RR_hip_joint",
+          "position_rad": -1.0471998453140254,
+          "velocity_rad_s": -4.099812369203236,
+          "limits_rad": [
+            -1.0471998453140259,
+            1.0471998453140259
+          ],
+          "nearest_limit_margin_rad": 4.440892098500626e-16,
+          "toward_nearest_limit": true
+        },
+        {
+          "joint": "joint5",
+          "position_rad": -1.2178950847053127,
+          "velocity_rad_s": 0.2555967132102079,
+          "limits_rad": [
+            -1.21999990940094,
+            1.21999990940094
+          ],
+          "nearest_limit_margin_rad": 0.0021048246956272276,
+          "toward_nearest_limit": false
+        }
+      ],
+      "category": "joint_position_constraint"
+    },
+    {
+      "case": 71,
+      "tick": 300,
+      "accepted": false,
+      "rejection": "QP rejected prediction stage 27",
+      "terminal": {
+        "trigger": true,
+        "tilt_rad": 0.941274521458794,
+        "horizontal_speed_mps": 1.0450489532413008,
+        "angular_speed_rad_s": 3.278722603674639,
+        "support_feet": 2,
+        "reason": "support_margin",
+        "support_margin_m": -0.22924330060141504,
+        "root_height_m": 0.13223477860824023
+      },
+      "terminal_support_ok": false,
+      "failed_stage": 27,
+      "linear_feasibility": {
+        "status": 0,
+        "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+        "scaled_violation": 0.0
+      },
+      "successful_diagnostic_family_removals": [
+        "friction",
+        "joint_position",
+        "joint_velocity",
+        "motor_torque",
+        "native_target_bounds",
+        "normal_force",
+        "preserve_arm",
+        "root_height"
+      ],
+      "failed_qp": {
+        "solver_status": "solved",
+        "rejection": "Independent interval dynamics, bounds or root-height check failed",
+        "residuals": {
+          "all_interval_constraints": 2.842170943040401e-14,
+          "independent_velocity": 6.572520305780927e-14,
+          "independent_joint_position": 8.881784197001252e-16,
+          "independent_manifold_position": 8.881784197001252e-16,
+          "dynamics_contact_residual_max": 1.9127810446661897e-11,
+          "joint_velocity_violation_rad_s": 0.0,
+          "joint_position_violation_rad": 0.0,
+          "normal_force_violation_n": 0.0,
+          "friction_violation_n": 1.914364842415082e-13,
+          "motor_torque_violation_nm": 0.0
+        },
+        "predicted_minimum_root_height_m": 0.11997826852100302,
+        "arm_feasibility_fallback": null
+      },
+      "predicted_root_height_m": 0.13223477860824023,
+      "predicted_contacts": [
+        true,
+        true,
+        false,
+        false
+      ],
+      "prescribed_arm_constraint_present": true,
+      "joints_within_0p005_rad_of_limit": [
+        {
+          "joint": "joint5",
+          "position_rad": -1.2198105361605425,
+          "velocity_rad_s": 0.02878717112559508,
+          "limits_rad": [
+            -1.21999990940094,
+            1.21999990940094
+          ],
+          "nearest_limit_margin_rad": 0.0001893732403974724,
+          "toward_nearest_limit": false
+        }
+      ],
+      "category": "nonlinear_root_height_check"
+    },
+    {
+      "case": 77,
+      "tick": 300,
+      "accepted": false,
+      "rejection": "QP rejected prediction stage 7",
+      "terminal": {
+        "trigger": true,
+        "tilt_rad": 0.7027996925415592,
+        "horizontal_speed_mps": 2.041490483846291,
+        "angular_speed_rad_s": 2.6915876734066706,
+        "support_feet": 2,
+        "reason": "support_margin",
+        "support_margin_m": -0.15618960242537816,
+        "root_height_m": 0.126891677428733
+      },
+      "terminal_support_ok": false,
+      "failed_stage": 7,
+      "linear_feasibility": {
+        "status": 2,
+        "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+      },
+      "successful_diagnostic_family_removals": [
+        "root_height"
+      ],
+      "failed_qp": {
+        "solver_status": "primal infeasible",
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "arm_feasibility_fallback": {
+          "fixed_status": "primal infeasible",
+          "free_status": "primal infeasible",
+          "free_accepted": false
+        }
+      },
+      "predicted_root_height_m": 0.126891677428733,
+      "predicted_contacts": [
+        true,
+        true,
+        false,
+        false
+      ],
+      "prescribed_arm_constraint_present": false,
+      "joints_within_0p005_rad_of_limit": [
+        {
+          "joint": "joint5",
+          "position_rad": -1.2192430220453485,
+          "velocity_rad_s": 0.057571985047824716,
+          "limits_rad": [
+            -1.21999990940094,
+            1.21999990940094
+          ],
+          "nearest_limit_margin_rad": 0.0007568873555914291,
+          "toward_nearest_limit": false
+        }
+      ],
+      "category": "root_height_constraint"
+    },
+    {
+      "case": 1,
+      "tick": 320,
+      "accepted": false,
+      "rejection": "QP rejected prediction stage 34",
+      "terminal": {
+        "trigger": true,
+        "tilt_rad": 0.30576338103664563,
+        "horizontal_speed_mps": 0.6882137439933563,
+        "angular_speed_rad_s": 0.536110063566621,
+        "support_feet": 3,
+        "reason": "support_margin",
+        "support_margin_m": -0.1245000249202665,
+        "root_height_m": 0.12436997039805438
+      },
+      "terminal_support_ok": false,
+      "failed_stage": 34,
+      "linear_feasibility": {
+        "status": 2,
+        "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+      },
+      "successful_diagnostic_family_removals": [
+        "root_height"
+      ],
+      "failed_qp": {
+        "solver_status": "primal infeasible",
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "arm_feasibility_fallback": {
+          "fixed_status": "primal infeasible",
+          "free_status": "primal infeasible",
+          "free_accepted": false
+        }
+      },
+      "predicted_root_height_m": 0.12436997039805438,
+      "predicted_contacts": [
+        true,
+        true,
+        true,
+        false
+      ],
+      "prescribed_arm_constraint_present": false,
+      "joints_within_0p005_rad_of_limit": [
+        {
+          "joint": "joint5",
+          "position_rad": -1.2158217636780482,
+          "velocity_rad_s": -0.013328282758808046,
+          "limits_rad": [
+            -1.21999990940094,
+            1.21999990940094
+          ],
+          "nearest_limit_margin_rad": 0.0041781457228917684,
+          "toward_nearest_limit": true
+        }
+      ],
+      "category": "root_height_constraint"
+    },
+    {
+      "case": 3,
+      "tick": 320,
+      "accepted": false,
+      "rejection": "QP rejected prediction stage 21",
+      "terminal": {
+        "trigger": true,
+        "tilt_rad": 0.4721484388434109,
+        "horizontal_speed_mps": 0.10223408219023884,
+        "angular_speed_rad_s": 1.5426987670801509,
+        "support_feet": 3,
+        "reason": "support_margin",
+        "support_margin_m": -0.05744946358724599,
+        "root_height_m": 0.19838008527556486
+      },
+      "terminal_support_ok": false,
+      "failed_stage": 21,
+      "linear_feasibility": {
+        "status": 2,
+        "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+      },
+      "successful_diagnostic_family_removals": [
+        "joint_position"
+      ],
+      "failed_qp": {
+        "solver_status": "primal infeasible",
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "arm_feasibility_fallback": {
+          "fixed_status": "primal infeasible",
+          "free_status": "primal infeasible",
+          "free_accepted": false
+        }
+      },
+      "predicted_root_height_m": 0.19838008527556486,
+      "predicted_contacts": [
+        true,
+        true,
+        true,
+        false
+      ],
+      "prescribed_arm_constraint_present": false,
+      "joints_within_0p005_rad_of_limit": [
+        {
+          "joint": "RL_hip_joint",
+          "position_rad": -1.0471998453140259,
+          "velocity_rad_s": -0.5672485922988176,
+          "limits_rad": [
+            -1.0471998453140259,
+            1.0471998453140259
+          ],
+          "nearest_limit_margin_rad": 0.0,
+          "toward_nearest_limit": true
+        },
+        {
+          "joint": "joint5",
+          "position_rad": -1.2199999094009402,
+          "velocity_rad_s": -0.1589894647633664,
+          "limits_rad": [
+            -1.21999990940094,
+            1.21999990940094
+          ],
+          "nearest_limit_margin_rad": -2.220446049250313e-16,
+          "toward_nearest_limit": true
+        }
+      ],
+      "category": "joint_position_constraint"
+    },
+    {
+      "case": 8,
+      "tick": 320,
+      "accepted": false,
+      "rejection": "terminal support margin not reached",
+      "terminal": {
+        "trigger": true,
+        "tilt_rad": 0.30905797892937603,
+        "horizontal_speed_mps": 0.7078551826357108,
+        "angular_speed_rad_s": 0.5177041725224824,
+        "support_feet": 3,
+        "reason": "support_margin",
+        "support_margin_m": -0.1842852424452295,
+        "root_height_m": 0.1280545287867098
+      },
+      "terminal_support_ok": false,
+      "category": "terminal_support_margin"
+    },
+    {
+      "case": 20,
+      "tick": 320,
+      "accepted": false,
+      "rejection": "QP rejected prediction stage 17",
+      "terminal": {
+        "trigger": true,
+        "tilt_rad": 0.32112819885157695,
+        "horizontal_speed_mps": 0.38346825708934057,
+        "angular_speed_rad_s": 1.6706532065009478,
+        "support_feet": 3,
+        "reason": "support_margin",
+        "support_margin_m": -0.04423190014769372,
+        "root_height_m": 0.16273464178728206
+      },
+      "terminal_support_ok": false,
+      "failed_stage": 17,
+      "linear_feasibility": {
+        "status": 2,
+        "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+      },
+      "successful_diagnostic_family_removals": [
+        "joint_position"
+      ],
+      "failed_qp": {
+        "solver_status": "primal infeasible",
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "arm_feasibility_fallback": {
+          "fixed_status": "primal infeasible",
+          "free_status": "primal infeasible",
+          "free_accepted": false
+        }
+      },
+      "predicted_root_height_m": 0.16273464178728206,
+      "predicted_contacts": [
+        true,
+        true,
+        true,
+        false
+      ],
+      "prescribed_arm_constraint_present": false,
+      "joints_within_0p005_rad_of_limit": [
+        {
+          "joint": "FL_hip_joint",
+          "position_rad": -1.0459105068549424,
+          "velocity_rad_s": -5.453161983801815,
+          "limits_rad": [
+            -1.0471998453140259,
+            1.0471998453140259
+          ],
+          "nearest_limit_margin_rad": 0.0012893384590835222,
+          "toward_nearest_limit": true
+        },
+        {
+          "joint": "joint5",
+          "position_rad": -1.217920354690626,
+          "velocity_rad_s": 0.2408887243581142,
+          "limits_rad": [
+            -1.21999990940094,
+            1.21999990940094
+          ],
+          "nearest_limit_margin_rad": 0.0020795547103138468,
+          "toward_nearest_limit": false
+        }
+      ],
+      "category": "joint_position_constraint"
+    },
+    {
+      "case": 30,
+      "tick": 320,
+      "accepted": false,
+      "rejection": "QP rejected prediction stage 16",
+      "terminal": {
+        "trigger": true,
+        "tilt_rad": 0.3828061677021541,
+        "horizontal_speed_mps": 0.3873197244732194,
+        "angular_speed_rad_s": 1.5942331034939394,
+        "support_feet": 3,
+        "reason": "support_margin",
+        "support_margin_m": -0.017263145041141827,
+        "root_height_m": 0.19271673329683459
+      },
+      "terminal_support_ok": false,
+      "failed_stage": 16,
+      "linear_feasibility": {
+        "status": 2,
+        "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+      },
+      "successful_diagnostic_family_removals": [
+        "joint_position"
+      ],
+      "failed_qp": {
+        "solver_status": "primal infeasible",
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "arm_feasibility_fallback": {
+          "fixed_status": "primal infeasible",
+          "free_status": "primal infeasible",
+          "free_accepted": false
+        }
+      },
+      "predicted_root_height_m": 0.19271673329683459,
+      "predicted_contacts": [
+        true,
+        true,
+        true,
+        false
+      ],
+      "prescribed_arm_constraint_present": false,
+      "joints_within_0p005_rad_of_limit": [
+        {
+          "joint": "joint5",
+          "position_rad": -1.2175273561552367,
+          "velocity_rad_s": 0.10091539193913977,
+          "limits_rad": [
+            -1.21999990940094,
+            1.21999990940094
+          ],
+          "nearest_limit_margin_rad": 0.0024725532457032795,
+          "toward_nearest_limit": false
+        }
+      ],
+      "category": "joint_position_constraint"
+    },
+    {
+      "case": 38,
+      "tick": 320,
+      "accepted": false,
+      "rejection": "QP rejected prediction stage 12",
+      "terminal": {
+        "trigger": true,
+        "tilt_rad": 0.47308466833649193,
+        "horizontal_speed_mps": 0.43608148148956316,
+        "angular_speed_rad_s": 1.6477216447341387,
+        "support_feet": 3,
+        "reason": "support_margin",
+        "support_margin_m": -0.026988609907731775,
+        "root_height_m": 0.20771265011504217
+      },
+      "terminal_support_ok": false,
+      "failed_stage": 12,
+      "linear_feasibility": {
+        "status": 2,
+        "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+      },
+      "successful_diagnostic_family_removals": [
+        "friction",
+        "native_target_bounds"
+      ],
+      "failed_qp": {
+        "solver_status": "primal infeasible",
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "arm_feasibility_fallback": {
+          "fixed_status": "primal infeasible",
+          "free_status": "primal infeasible",
+          "free_accepted": false
+        }
+      },
+      "predicted_root_height_m": 0.20771265011504217,
+      "predicted_contacts": [
+        true,
+        true,
+        true,
+        false
+      ],
+      "prescribed_arm_constraint_present": false,
+      "joints_within_0p005_rad_of_limit": [],
+      "category": "friction_or_command_bounds"
+    },
+    {
+      "case": 61,
+      "tick": 320,
+      "accepted": false,
+      "rejection": "QP rejected prediction stage 13",
+      "terminal": {
+        "trigger": true,
+        "tilt_rad": 0.5287446155318803,
+        "horizontal_speed_mps": 0.2068294462073295,
+        "angular_speed_rad_s": 2.6968346543105337,
+        "support_feet": 2,
+        "reason": "support_margin",
+        "support_margin_m": -0.09630117930553171,
+        "root_height_m": 0.23034617594848744
+      },
+      "terminal_support_ok": false,
+      "failed_stage": 13,
+      "linear_feasibility": {
+        "status": 2,
+        "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+      },
+      "successful_diagnostic_family_removals": [
+        "joint_position"
+      ],
+      "failed_qp": {
+        "solver_status": "primal infeasible",
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "arm_feasibility_fallback": {
+          "fixed_status": "primal infeasible",
+          "free_status": "primal infeasible",
+          "free_accepted": false
+        }
+      },
+      "predicted_root_height_m": 0.23034617594848744,
+      "predicted_contacts": [
+        true,
+        true,
+        false,
+        false
+      ],
+      "prescribed_arm_constraint_present": false,
+      "joints_within_0p005_rad_of_limit": [
+        {
+          "joint": "RR_hip_joint",
+          "position_rad": -1.0471998453140268,
+          "velocity_rad_s": -5.191500273822163,
+          "limits_rad": [
+            -1.0471998453140259,
+            1.0471998453140259
+          ],
+          "nearest_limit_margin_rad": -8.881784197001252e-16,
+          "toward_nearest_limit": true
+        },
+        {
+          "joint": "joint5",
+          "position_rad": -1.2199999094009404,
+          "velocity_rad_s": -0.28492692931943386,
+          "limits_rad": [
+            -1.21999990940094,
+            1.21999990940094
+          ],
+          "nearest_limit_margin_rad": -4.440892098500626e-16,
+          "toward_nearest_limit": true
+        }
+      ],
+      "category": "joint_position_constraint"
+    },
+    {
+      "case": 87,
+      "tick": 320,
+      "accepted": false,
+      "rejection": "QP rejected prediction stage 20",
+      "terminal": {
+        "trigger": true,
+        "tilt_rad": 0.4567420203657982,
+        "horizontal_speed_mps": 0.8655564134844943,
+        "angular_speed_rad_s": 2.2142796492543564,
+        "support_feet": 3,
+        "reason": "support_margin",
+        "support_margin_m": -0.14781062711179077,
+        "root_height_m": 0.16698955142957855
+      },
+      "terminal_support_ok": false,
+      "failed_stage": 20,
+      "linear_feasibility": {
+        "status": 2,
+        "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+      },
+      "successful_diagnostic_family_removals": [
+        "joint_position"
+      ],
+      "failed_qp": {
+        "solver_status": "primal infeasible",
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "arm_feasibility_fallback": {
+          "fixed_status": "primal infeasible",
+          "free_status": "primal infeasible",
+          "free_accepted": false
+        }
+      },
+      "predicted_root_height_m": 0.16698955142957855,
+      "predicted_contacts": [
+        true,
+        true,
+        true,
+        false
+      ],
+      "prescribed_arm_constraint_present": false,
+      "joints_within_0p005_rad_of_limit": [
+        {
+          "joint": "FL_hip_joint",
+          "position_rad": -1.0471998453140252,
+          "velocity_rad_s": -2.8471556241535176,
+          "limits_rad": [
+            -1.0471998453140259,
+            1.0471998453140259
+          ],
+          "nearest_limit_margin_rad": 6.661338147750939e-16,
+          "toward_nearest_limit": true
+        },
+        {
+          "joint": "joint5",
+          "position_rad": -1.219800085998191,
+          "velocity_rad_s": -0.36445431721435706,
+          "limits_rad": [
+            -1.21999990940094,
+            1.21999990940094
+          ],
+          "nearest_limit_margin_rad": 0.00019982340274893318,
+          "toward_nearest_limit": true
+        }
+      ],
+      "category": "joint_position_constraint"
+    },
+    {
+      "case": 90,
+      "tick": 320,
+      "accepted": false,
+      "rejection": "QP rejected prediction stage 13",
+      "terminal": {
+        "trigger": true,
+        "tilt_rad": 0.3980166692457511,
+        "horizontal_speed_mps": 0.172016816177671,
+        "angular_speed_rad_s": 1.771672548557177,
+        "support_feet": 3,
+        "reason": "support_margin",
+        "support_margin_m": -0.006910371334455678,
+        "root_height_m": 0.1832425368596628
+      },
+      "terminal_support_ok": false,
+      "failed_stage": 13,
+      "linear_feasibility": {
+        "status": 2,
+        "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+      },
+      "successful_diagnostic_family_removals": [
+        "friction",
+        "native_target_bounds"
+      ],
+      "failed_qp": {
+        "solver_status": "primal infeasible",
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "arm_feasibility_fallback": {
+          "fixed_status": "primal infeasible",
+          "free_status": "primal infeasible",
+          "free_accepted": false
+        }
+      },
+      "predicted_root_height_m": 0.1832425368596628,
+      "predicted_contacts": [
+        true,
+        true,
+        true,
+        false
+      ],
+      "prescribed_arm_constraint_present": false,
+      "joints_within_0p005_rad_of_limit": [
+        {
+          "joint": "joint5",
+          "position_rad": -1.2199999094009393,
+          "velocity_rad_s": -0.2629359793474208,
+          "limits_rad": [
+            -1.21999990940094,
+            1.21999990940094
+          ],
+          "nearest_limit_margin_rad": 6.661338147750939e-16,
+          "toward_nearest_limit": true
+        }
+      ],
+      "category": "friction_or_command_bounds"
+    },
+    {
+      "case": 42,
+      "tick": 460,
+      "accepted": false,
+      "rejection": "QP rejected prediction stage 7",
+      "terminal": {
+        "trigger": true,
+        "tilt_rad": 1.332926226057578,
+        "horizontal_speed_mps": 0.7073373205944379,
+        "angular_speed_rad_s": 1.0535002663047381,
+        "support_feet": 1,
+        "reason": "support_margin",
+        "support_margin_m": -0.4748584220311769,
+        "root_height_m": 0.1230430671501239
+      },
+      "terminal_support_ok": false,
+      "failed_stage": 7,
+      "linear_feasibility": {
+        "status": 2,
+        "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)"
+      },
+      "successful_diagnostic_family_removals": [
+        "root_height"
+      ],
+      "failed_qp": {
+        "solver_status": "primal infeasible",
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "arm_feasibility_fallback": {
+          "fixed_status": "primal infeasible",
+          "free_status": "primal infeasible",
+          "free_accepted": false
+        }
+      },
+      "predicted_root_height_m": 0.1230430671501239,
+      "predicted_contacts": [
+        false,
+        false,
+        true,
+        false
+      ],
+      "prescribed_arm_constraint_present": false,
+      "joints_within_0p005_rad_of_limit": [
+        {
+          "joint": "FL_hip_joint",
+          "position_rad": -1.0435376790296562,
+          "velocity_rad_s": -2.952301450777291,
+          "limits_rad": [
+            -1.0471998453140259,
+            1.0471998453140259
+          ],
+          "nearest_limit_margin_rad": 0.003662166284369661,
+          "toward_nearest_limit": true
+        }
+      ],
+      "category": "root_height_constraint"
+    }
+  ],
+  "native_execution": false,
+  "formal_acceptance": false
+}
