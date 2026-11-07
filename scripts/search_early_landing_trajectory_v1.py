@@ -54,15 +54,19 @@ class EarlyReference:
         return target,'continuous_early_landing_reference'
 
 
-def evaluate(controller,initial,knots,spheres,geometry,protocol,*,substeps,deadline,save=False):
+def evaluate(controller,initial,knots,spheres,geometry,protocol,*,substeps,deadline,save=False,
+             policy_factory=EarlyReference,control_tick=300):
+    if type(control_tick) is not int or not 280<=control_tick<=300:
+        raise ValueError('Declared early query clock required')
+    length=800-control_tick
     state=copy.deepcopy(initial);interface=controller.qp.interface
-    base=EarlyReference(controller.qp.model,interface,initial,knots)
+    base=policy_factory(controller.qp.model,interface,initial,knots)
     policy=TerminalAttitudeFeedbackV1(base,proportional=.3,damping_s=.04,maximum_joint_delta_rad=.08)
     first,_=policy.action(80,state,state.previous_command_target)
     if not np.array_equal(first,initial.previous_command_target):
         raise ValueError('First command must preserve actual dispatch continuity')
     start=time.monotonic();failure=None;trailing=longest=0;cost=0.;rows=[];end=None;completed=0
-    for step in range(500):
+    for step in range(length):
         if time.monotonic()>=deadline:
             failure=dict(step=step,reason='declared_compute_budget');break
         previous=state.previous_command_target.copy()
@@ -90,15 +94,15 @@ def evaluate(controller,initial,knots,spheres,geometry,protocol,*,substeps,deadl
     violations=terminal_violations(end,.01) if end else {'no_endpoint':True}
     if trailing<80:violations['trailing_window_s']=trailing*.01
     if state.q[2]<.12:violations['root_height_m']=float(state.q[2])
-    accepted=failure is None and completed==500 and not violations
+    accepted=failure is None and completed==length and not violations
     # A better failure rank is only a search heuristic, never acceptance.
     # Within the same failed control interval, prefer a later first physical
     # collision, not a lower effort obtained by letting the body fall earlier.
     fraction=0.
     if failure and failure.get('first_ground_violation') and set(failure.get('violations',{}))=={'nonfoot_ground_violation_m'}:
         fraction=failure['first_ground_violation']['micro']/substeps
-    rank=[0 if accepted else 1,500-completed-fraction,0 if accepted else max(0,80-trailing),cost/max(1,completed)]
-    return dict(accepted=accepted,completed_model_steps=completed,required_model_steps=500,
+    rank=[0 if accepted else 1,length-completed-fraction,0 if accepted else max(0,80-trailing),cost/max(1,completed)]
+    return dict(accepted=accepted,completed_model_steps=completed,required_model_steps=length,
         rank=rank,failure=failure,terminal=end,terminal_violations=violations,
         trailing_model_window_s=trailing*.01,longest_model_window_s=longest*.01,
         cost=float(cost),substeps=substeps,wall_seconds=time.monotonic()-start,
