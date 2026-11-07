@@ -1,0 +1,951 @@
+{
+  "scope": "Search full recovery references at actual states from lost baseline successes.\n\nRetrospective CPU diagnostic, not a runtime trigger or new physical execution.\nSelection uses outcome labels only to study failures. All prior reference-memory\nticks are replayed, and speculative searches do not replace observed states.\n",
+  "native_new_execution": false,
+  "source": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_original27_mpc35_causal_all128_20261107_01",
+  "outcomes_used_only_for_retrospective_selection": true,
+  "contracts": {
+    "schema": "landing-free-arm-reference-shooting-v1",
+    "formulation": "sequential-QP-with-all-substep-command-constraints",
+    "settings": {
+      "horizon_steps": 40,
+      "control_dt_s": 0.01,
+      "tilt_trigger_rad": 0.55,
+      "angular_speed_trigger_rad_s": 2.2,
+      "horizontal_speed_trigger_mps": 0.75,
+      "minimum_support_feet": 1,
+      "terminal_tilt_rad": 0.35,
+      "terminal_angular_speed_rad_s": 1.4,
+      "terminal_horizontal_speed_mps": 0.45,
+      "max_stage_runtime_s": 0.02,
+      "executor_replay": true,
+      "executor_replay_model_consistent": true,
+      "command_rate_scale": 1.0,
+      "support_margin_trigger_m": 0.025,
+      "terminal_support_margin_m": 0.01,
+      "two_foot_max_com_distance_m": 0.075,
+      "one_foot_max_com_distance_m": 0.2,
+      "landing_leg_posture_blend": 0.15,
+      "landing_arm_posture_blend": 0.0,
+      "predict_touchdown_contacts": true,
+      "contact_mode_fallback": true,
+      "contact_mode_sequence_search": false,
+      "contact_mode_sequence_max_candidates": 3,
+      "touchdown_mode_height_scale": 2.5,
+      "touchdown_height_tolerance_m": 0.012,
+      "touchdown_vertical_speed_limit_mps": 1.5,
+      "touchdown_impact_projection": false,
+      "touchdown_impact_restitution": 0.0,
+      "touchdown_impact_max_impulse_ns": 25.0
+    },
+    "support_qp_settings": {
+      "control_dt_s": 0.01,
+      "contact_velocity_decay_s": 0.06,
+      "com_kp_s2": 50.0,
+      "com_kd_s": 14.0,
+      "orientation_kp_s2": 60.0,
+      "orientation_kd_s": 15.0,
+      "posture_kp_s2": 40.0,
+      "posture_kd_s": 12.0,
+      "com_weight": 20.0,
+      "orientation_weight": 10.0,
+      "posture_weight": 0.2,
+      "acceleration_regularization": 1e-05,
+      "torque_regularization": 0.0001,
+      "force_regularization": 1e-05,
+      "force_distribution_weight": 0.0,
+      "force_wrench_weight": 0.0,
+      "friction_facets": 8,
+      "solver_eps": 1e-06,
+      "solver_max_iterations": 10000,
+      "residual_tolerance": 0.0003,
+      "swing_foot_weight": 1.0,
+      "swing_foot_kp_s2": 60.0,
+      "swing_foot_kd_s": 12.0,
+      "swing_foot_clearance_m": 0.005,
+      "swing_foot_capture_gain": 0.0,
+      "swing_foot_capture_max_m": 0.25,
+      "nonfoot_clearance_weight": 5.0,
+      "nonfoot_clearance_hard": false,
+      "nonfoot_clearance_m": 0.05,
+      "nonfoot_clearance_kp_s2": 60.0,
+      "nonfoot_clearance_kd_s": 15.0
+    },
+    "action_interface": "original-normalized-position-targets-v1",
+    "no_external_force": true,
+    "no_state_teleport": true,
+    "native_execution": false,
+    "solver_failure_is_not_hardware_impossibility": true,
+    "continuous_reference": true,
+    "preserve_arm_position_command": false,
+    "arm_command_semantics": "full18-command-optimization-with-original-physical-bounds",
+    "load_aware_support": false,
+    "load_force_floor_n": 2.0,
+    "reference_memory": "per-lane-live-tick-with-speculative-rollback",
+    "command_interface": "leg-position-range;arm-slew-from-last-final-command",
+    "arm_target_rate_rad_s": 10.0,
+    "physical_velocity_constraints_unchanged": true,
+    "substeps": 16,
+    "minimum_root_height_m": 0.12,
+    "drive_branch": "unsaturated-entire-interval",
+    "nonlinear_contact_and_impact_model_complete": false,
+    "native_recovery_validated": false,
+    "qp_backend": "quadprog",
+    "qp_backend_version": "0.1.13",
+    "hessian_regularized": false,
+    "physical_constraints_relaxed": false,
+    "iteration_limit_checked_after_solve": true,
+    "arm_reference_is_still_soft_posture_objective": true,
+    "joint_damper_gain_s_inv": 20.0,
+    "damper_in_all_implicit_substeps": true,
+    "viability_or_native_recovery_certified": false,
+    "outer_optimizer": "bounded-reference-space-CEM",
+    "entire_horizon_selects_current_command": true,
+    "full_joint_space_trajectory_optimization": false,
+    "preserve_arm_command": false
+  },
+  "summary": {
+    "samples": 22,
+    "baseline_full_horizon": 11,
+    "search_full_horizon": 11,
+    "newly_feasible": [],
+    "wall_seconds": 159.86597303603776
+  },
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_lost_success_reference_search_v1.py": "5014994ff04712bbae76cd9ba0256694188f96514291c439aea90528421d56d9",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_causal_baseline_followup_20261107/recovery_onset_v2.json": "75139ab68fea733cd3190e39c892313b7443d570a7dfac34acc540ed6b190b08",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_causal_baseline_followup_20261107/acceptance_timing.json": "f3b910928be76adf0062004eea1abc09293042652ad7a44b8958edfc57b8afb5",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_original27_mpc35_causal_all128_20261107_01/fixed_policy_traces/case_051.npz": "51702fb8523d68b4f36d4f55d9c3c0d8ab9e7ba1909272f72f747dcc54065405",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_original27_mpc35_causal_all128_20261107_01/fixed_policy_traces/case_016.npz": "d1c1a63f46736b6650288719f3a70ffc70f435adb5b8d123155866e81ecce8d8",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_original27_mpc35_causal_all128_20261107_01/fixed_policy_traces/case_017.npz": "e31b8b350dfcd9ed62cf346ffcbd781a0898af14a4549f65968b706e3f4e5a2a",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_original27_mpc35_causal_all128_20261107_01/fixed_policy_traces/case_034.npz": "4972f950cf150cac87bfc199a80a1b041af4039370c69ef93c7fdbd16a856c22",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_original27_mpc35_causal_all128_20261107_01/fixed_policy_traces/case_037.npz": "eb3c7aec133cd191f82ea6cd65157c2e936b40eb30433e5b632a2b52c38afddb",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_original27_mpc35_causal_all128_20261107_01/fixed_policy_traces/case_126.npz": "7fece7da44f86081dd0cd7b3ea4cdf88f8043823ce8fcc8a4361deda5932cfd6",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_original27_mpc35_causal_all128_20261107_01/fixed_policy_traces/case_084.npz": "5b1dc8220391428cb9e72997a6f1bc220d2d796ca8d39374432cef7900056e29",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_original27_mpc35_causal_all128_20261107_01/fixed_policy_traces/case_025.npz": "774eeaf9b458b319ae4de81d4de03f849db4f1dead3ef562a56574fe5860fa8d",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_original27_mpc35_causal_all128_20261107_01/fixed_policy_traces/case_028.npz": "cdcf07194aac80d48911b3df7914c54cc14905640be69f57f29941b4c338c6de",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_original27_mpc35_causal_all128_20261107_01/fixed_policy_traces/case_043.npz": "7c61b7f446e4c0b369318cd9cee9ea4d544adad8cef87f7b1a6edc9b63619db2",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_original27_mpc35_causal_all128_20261107_01/fixed_policy_traces/case_039.npz": "f8ddae58028b1cddfa0b0538d70a6919cb162a0d3821b6be0fd52f0bbd83953f",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_original27_mpc35_causal_all128_20261107_01/fixed_policy_traces/case_055.npz": "a4944d1aacc274d272af485d8b9233262cc493a7ce05be7c7126439f08986b0e",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_original27_mpc35_causal_all128_20261107_01/fixed_policy_traces/case_063.npz": "2c0aa43db8c53eb5280d6eef4ae6e4cc62c2916af17e1a78bd7569357a87ec10",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_original27_mpc35_causal_all128_20261107_01/job.json": "b8e50ef6bffbe4c129f37772de75e7c38d5240ef35f270f8987e30ca65379122",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_original27_mpc35_causal_all128_20261107_01/native_command_inputs.json": "f861d727c049c85d612cad7ce2a5be9a4bc3a85ab18ba38f5018dc871fca6f7c",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_original27_mpc35_causal_all128_20261107_01/landing_mpc_records.json": "54af7e8d036d73de907d425ace19db1d486dd62ce62a3a7dac7ec5abfed5a45e",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/condensed_implicit_drive_v1.py": "a0f21e9b954db9e978ba428a3770fcb8cd666e08dd21aa27cedf0c0e5c5af629",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/dense_active_set_qp_v1.py": "cba063c6c594bfb42d1114dcafbaebc606d8c4b49b53ee65e764e3979b1bac4a",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/loaded_pinocchio_model_v1.py": "2b303a32e57391ec7aaf3c3faf9d151f758477faf13ef6efae5bead979dcae82",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/whole_body_support_qp_v1.py": "b67cd1f1c8ebe973d3885773fbc9f3bf17cfd935e5e2210a4b7c0ea1ff331d6d",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frame_point_kinematics_v1.py": "60fac87ef04f83a22807217b04e7cbe40b536251b56f5a119dc012d1f2529fd8",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/reduced_whole_body_support_qp_v1.py": "e731a0bca8744d4639099dd2ff9be94840a9f0c953c64924fb2cfa9e7a9c80c7",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/continuous_support_qp_v1.py": "824a3d49711917803e9c82af63b1d142917d62c874ec8751325578a71b4af640",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/command_history_support_qp_v1.py": "1ac2221f85cbf3d468be4c265cc932845700d5f17a9eaaf37440998873689081",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/implicit_support_prediction_v1.py": "b751fa0ea59edd1fe8fc62cf0ba3816e5583ecc76df7058ef3f5185a335a1e01",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/interval_command_support_qp_v1.py": "7f9e47fdeb1f6cc420368d127f89cc1b726397752b0387f57b5bee1ea5915589",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/admitted_arm_support_qp_v1.py": "097d7022b16a28aa31f11081056092bd8b5b44172291b6bd3b1aba1dbe0a1c6e",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v1.py": "da2ff2e4ee1479bf3fc422c0b71f8831bffd9e5868d9a4e0665fd348ab659a59",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v2.py": "6d0ad9bc4fcd27a0f4f418e55b988341ffe809f14c132415281ec41621196ae2",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v3.py": "d8c54679697e78678a898f5d36a27305f9252a5f2b09990d0b33ddcc25533300",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_command_history_mpc_v1.py": "466ba93dc473c7d2de93aae0d5d7848b390d72e8fe1ef779ff0818efad704d28",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_interval_command_mpc_v1.py": "545ecf58c66d0bbf07f889f8867ce36d75ca42fcd94ca77b5307666163630060",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_active_set_interval_mpc_v1.py": "4c111c5ce1d6d711cbe9e4362aad315e0f50f9c2cb363d9595409e0701c7ec8d",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_arm_feasibility_mpc_v1.py": "af9a08a8b442c43099faadbda887ed79b1e497b114cbd77e93b4cc8a2481f40b",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_joint_damper_mpc_v1.py": "63b2eff24491e130f96681508524ccf124064469a285a6c82ed9dd498fa761f9",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_reference_shooting_mpc_v1.py": "e70189568f7b5ad10d12d79b5d7c36e8ae03410e79dd5bcb61db7d801d002cb4",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_free_arm_reference_shooting_v1.py": "e8bb4e2a146882bf583d48765dde751e7f38a5806e4426b1850305e54f502cf8"
+  },
+  "records": [
+    {
+      "case": 51,
+      "tick": 302,
+      "selection": "first_actual_qp_application",
+      "baseline_accepted": false,
+      "search_accepted": false,
+      "first_accepted": true,
+      "rejection": "QP rejected prediction stage 11",
+      "terminal": {
+        "trigger": true,
+        "tilt_rad": 0.6065918238859249,
+        "horizontal_speed_mps": 1.873031917151292,
+        "angular_speed_rad_s": 0.6840577368306747,
+        "support_feet": 2,
+        "reason": "support_margin",
+        "support_margin_m": -0.1786190887024116,
+        "root_height_m": 0.12528260731311794
+      },
+      "wall_seconds": 5.312093910062686,
+      "candidate_count": 49,
+      "best_rank": [
+        2,
+        29.037520055150853
+      ],
+      "best_rejection": "QP rejected prediction stage 11",
+      "best_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.6065918238859249,
+        "horizontal_speed_mps": 1.873031917151292,
+        "angular_speed_rad_s": 0.6840577368306747,
+        "support_feet": 2,
+        "reason": "support_margin",
+        "support_margin_m": -0.1786190887024116,
+        "root_height_m": 0.12528260731311794
+      }
+    },
+    {
+      "case": 16,
+      "tick": 303,
+      "selection": "first_actual_qp_application",
+      "baseline_accepted": false,
+      "search_accepted": false,
+      "first_accepted": true,
+      "rejection": "QP rejected prediction stage 11",
+      "terminal": {
+        "trigger": true,
+        "tilt_rad": 0.5929465944342709,
+        "horizontal_speed_mps": 1.7973204582889863,
+        "angular_speed_rad_s": 0.7398990751895584,
+        "support_feet": 2,
+        "reason": "support_margin",
+        "support_margin_m": -0.1622950702780596,
+        "root_height_m": 0.12950625330004764
+      },
+      "wall_seconds": 5.336747550871223,
+      "candidate_count": 49,
+      "best_rank": [
+        2,
+        29.033361684582843
+      ],
+      "best_rejection": "QP rejected prediction stage 11",
+      "best_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.5929465944342709,
+        "horizontal_speed_mps": 1.7973204582889863,
+        "angular_speed_rad_s": 0.7398990751895584,
+        "support_feet": 2,
+        "reason": "support_margin",
+        "support_margin_m": -0.1622950702780596,
+        "root_height_m": 0.12950625330004764
+      }
+    },
+    {
+      "case": 55,
+      "tick": 310,
+      "selection": "first_actual_qp_application",
+      "baseline_accepted": false,
+      "search_accepted": false,
+      "first_accepted": true,
+      "rejection": "QP rejected prediction stage 7",
+      "terminal": {
+        "trigger": true,
+        "tilt_rad": 0.46841195966442933,
+        "horizontal_speed_mps": 1.4546898071226422,
+        "angular_speed_rad_s": 0.8789551029069088,
+        "support_feet": 2,
+        "reason": "support_margin",
+        "support_margin_m": -0.08153031015449422,
+        "root_height_m": 0.1200167785008537
+      },
+      "wall_seconds": 3.5605047328863293,
+      "candidate_count": 49,
+      "best_rank": [
+        2,
+        33.01253707969877
+      ],
+      "best_rejection": "QP rejected prediction stage 7",
+      "best_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.46841195966442933,
+        "horizontal_speed_mps": 1.4546898071226422,
+        "angular_speed_rad_s": 0.8789551029069088,
+        "support_feet": 2,
+        "reason": "support_margin",
+        "support_margin_m": -0.08153031015449422,
+        "root_height_m": 0.1200167785008537
+      }
+    },
+    {
+      "case": 43,
+      "tick": 327,
+      "selection": "400ms_before_first_nonfoot",
+      "baseline_accepted": true,
+      "search_accepted": true,
+      "first_accepted": true,
+      "rejection": null,
+      "terminal": {
+        "trigger": false,
+        "tilt_rad": 0.004973271640396678,
+        "horizontal_speed_mps": 0.14057740100357854,
+        "angular_speed_rad_s": 0.16964857744878611,
+        "support_feet": 4,
+        "reason": "none",
+        "support_margin_m": 0.11760458665105132,
+        "root_height_m": 0.21723640262350377
+      },
+      "wall_seconds": 0.3793479308951646,
+      "candidate_count": 1,
+      "best_rank": [
+        0,
+        0.0004854264550331771
+      ],
+      "best_rejection": null,
+      "best_terminal": {
+        "trigger": false,
+        "tilt_rad": 0.004973271640396678,
+        "horizontal_speed_mps": 0.14057740100357854,
+        "angular_speed_rad_s": 0.16964857744878611,
+        "support_feet": 4,
+        "reason": "none",
+        "support_margin_m": 0.11760458665105132,
+        "root_height_m": 0.21723640262350377
+      }
+    },
+    {
+      "case": 34,
+      "tick": 329,
+      "selection": "first_actual_qp_application",
+      "baseline_accepted": true,
+      "search_accepted": true,
+      "first_accepted": true,
+      "rejection": null,
+      "terminal": {
+        "trigger": false,
+        "tilt_rad": 0.007160760744591044,
+        "horizontal_speed_mps": 0.2095404519070319,
+        "angular_speed_rad_s": 0.11174717526225254,
+        "support_feet": 4,
+        "reason": "none",
+        "support_margin_m": 0.09332980499758801,
+        "root_height_m": 0.22532294784901538
+      },
+      "wall_seconds": 0.3797604930587113,
+      "candidate_count": 1,
+      "best_rank": [
+        0,
+        0.0005639463216449575
+      ],
+      "best_rejection": null,
+      "best_terminal": {
+        "trigger": false,
+        "tilt_rad": 0.007160760744591044,
+        "horizontal_speed_mps": 0.2095404519070319,
+        "angular_speed_rad_s": 0.11174717526225254,
+        "support_feet": 4,
+        "reason": "none",
+        "support_margin_m": 0.09332980499758801,
+        "root_height_m": 0.22532294784901538
+      }
+    },
+    {
+      "case": 126,
+      "tick": 329,
+      "selection": "first_actual_qp_application",
+      "baseline_accepted": true,
+      "search_accepted": true,
+      "first_accepted": true,
+      "rejection": null,
+      "terminal": {
+        "trigger": false,
+        "tilt_rad": 0.017340087370211626,
+        "horizontal_speed_mps": 0.2959319052731524,
+        "angular_speed_rad_s": 0.15575198183571343,
+        "support_feet": 4,
+        "reason": "none",
+        "support_margin_m": 0.08847351782621296,
+        "root_height_m": 0.2327774027351109
+      },
+      "wall_seconds": 0.37629230599850416,
+      "candidate_count": 1,
+      "best_rank": [
+        0,
+        0.0011183437240435043
+      ],
+      "best_rejection": null,
+      "best_terminal": {
+        "trigger": false,
+        "tilt_rad": 0.017340087370211626,
+        "horizontal_speed_mps": 0.2959319052731524,
+        "angular_speed_rad_s": 0.15575198183571343,
+        "support_feet": 4,
+        "reason": "none",
+        "support_margin_m": 0.08847351782621296,
+        "root_height_m": 0.2327774027351109
+      }
+    },
+    {
+      "case": 17,
+      "tick": 331,
+      "selection": "first_actual_qp_application",
+      "baseline_accepted": true,
+      "search_accepted": true,
+      "first_accepted": true,
+      "rejection": null,
+      "terminal": {
+        "trigger": false,
+        "tilt_rad": 0.025360113288908637,
+        "horizontal_speed_mps": 0.15715051442626762,
+        "angular_speed_rad_s": 0.07129185732252744,
+        "support_feet": 4,
+        "reason": "none",
+        "support_margin_m": 0.08845913018624169,
+        "root_height_m": 0.2147157911931674
+      },
+      "wall_seconds": 0.3821810290683061,
+      "candidate_count": 1,
+      "best_rank": [
+        0,
+        0.0002977881310493616
+      ],
+      "best_rejection": null,
+      "best_terminal": {
+        "trigger": false,
+        "tilt_rad": 0.025360113288908637,
+        "horizontal_speed_mps": 0.15715051442626762,
+        "angular_speed_rad_s": 0.07129185732252744,
+        "support_feet": 4,
+        "reason": "none",
+        "support_margin_m": 0.08845913018624169,
+        "root_height_m": 0.2147157911931674
+      }
+    },
+    {
+      "case": 37,
+      "tick": 331,
+      "selection": "first_actual_qp_application",
+      "baseline_accepted": true,
+      "search_accepted": true,
+      "first_accepted": true,
+      "rejection": null,
+      "terminal": {
+        "trigger": false,
+        "tilt_rad": 0.027535543342088867,
+        "horizontal_speed_mps": 0.14463791558295785,
+        "angular_speed_rad_s": 0.08219428448044343,
+        "support_feet": 4,
+        "reason": "none",
+        "support_margin_m": 0.08970856757030057,
+        "root_height_m": 0.21116759447563593
+      },
+      "wall_seconds": 0.38351999782025814,
+      "candidate_count": 1,
+      "best_rank": [
+        0,
+        0.00027676027025434904
+      ],
+      "best_rejection": null,
+      "best_terminal": {
+        "trigger": false,
+        "tilt_rad": 0.027535543342088867,
+        "horizontal_speed_mps": 0.14463791558295785,
+        "angular_speed_rad_s": 0.08219428448044343,
+        "support_feet": 4,
+        "reason": "none",
+        "support_margin_m": 0.08970856757030057,
+        "root_height_m": 0.21116759447563593
+      }
+    },
+    {
+      "case": 63,
+      "tick": 332,
+      "selection": "first_actual_qp_application",
+      "baseline_accepted": true,
+      "search_accepted": true,
+      "first_accepted": true,
+      "rejection": null,
+      "terminal": {
+        "trigger": false,
+        "tilt_rad": 0.03903115861542887,
+        "horizontal_speed_mps": 0.13954374232367592,
+        "angular_speed_rad_s": 0.18761465415144174,
+        "support_feet": 3,
+        "reason": "none",
+        "support_margin_m": 0.07935508684617512,
+        "root_height_m": 0.21571557855181273
+      },
+      "wall_seconds": 0.38499496108852327,
+      "candidate_count": 1,
+      "best_rank": [
+        0,
+        0.0005467171447406156
+      ],
+      "best_rejection": null,
+      "best_terminal": {
+        "trigger": false,
+        "tilt_rad": 0.03903115861542887,
+        "horizontal_speed_mps": 0.13954374232367592,
+        "angular_speed_rad_s": 0.18761465415144174,
+        "support_feet": 3,
+        "reason": "none",
+        "support_margin_m": 0.07935508684617512,
+        "root_height_m": 0.21571557855181273
+      }
+    },
+    {
+      "case": 25,
+      "tick": 333,
+      "selection": "first_actual_qp_application",
+      "baseline_accepted": true,
+      "search_accepted": true,
+      "first_accepted": true,
+      "rejection": null,
+      "terminal": {
+        "trigger": false,
+        "tilt_rad": 0.019127626991556932,
+        "horizontal_speed_mps": 0.09909318871171578,
+        "angular_speed_rad_s": 0.12437151263600407,
+        "support_feet": 3,
+        "reason": "none",
+        "support_margin_m": 0.07265761778320862,
+        "root_height_m": 0.22604302334214763
+      },
+      "wall_seconds": 0.3792732909787446,
+      "candidate_count": 1,
+      "best_rank": [
+        0,
+        0.0002528773320442344
+      ],
+      "best_rejection": null,
+      "best_terminal": {
+        "trigger": false,
+        "tilt_rad": 0.019127626991556932,
+        "horizontal_speed_mps": 0.09909318871171578,
+        "angular_speed_rad_s": 0.12437151263600407,
+        "support_feet": 3,
+        "reason": "none",
+        "support_margin_m": 0.07265761778320862,
+        "root_height_m": 0.22604302334214763
+      }
+    },
+    {
+      "case": 28,
+      "tick": 333,
+      "selection": "first_actual_qp_application",
+      "baseline_accepted": true,
+      "search_accepted": true,
+      "first_accepted": true,
+      "rejection": null,
+      "terminal": {
+        "trigger": false,
+        "tilt_rad": 0.018170603956678702,
+        "horizontal_speed_mps": 0.09915294646918714,
+        "angular_speed_rad_s": 0.07939922367692956,
+        "support_feet": 3,
+        "reason": "none",
+        "support_margin_m": 0.0682195251400108,
+        "root_height_m": 0.22863843593900418
+      },
+      "wall_seconds": 0.4072646719869226,
+      "candidate_count": 1,
+      "best_rank": [
+        0,
+        0.0001613554351402058
+      ],
+      "best_rejection": null,
+      "best_terminal": {
+        "trigger": false,
+        "tilt_rad": 0.018170603956678702,
+        "horizontal_speed_mps": 0.09915294646918714,
+        "angular_speed_rad_s": 0.07939922367692956,
+        "support_feet": 3,
+        "reason": "none",
+        "support_margin_m": 0.0682195251400108,
+        "root_height_m": 0.22863843593900418
+      }
+    },
+    {
+      "case": 43,
+      "tick": 333,
+      "selection": "first_actual_qp_application",
+      "baseline_accepted": true,
+      "search_accepted": true,
+      "first_accepted": true,
+      "rejection": null,
+      "terminal": {
+        "trigger": false,
+        "tilt_rad": 0.010274373420030253,
+        "horizontal_speed_mps": 0.09372653363045785,
+        "angular_speed_rad_s": 0.07164929327434787,
+        "support_feet": 3,
+        "reason": "none",
+        "support_margin_m": 0.07039304771477953,
+        "root_height_m": 0.22544150466358953
+      },
+      "wall_seconds": 0.38105738582089543,
+      "candidate_count": 1,
+      "best_rank": [
+        0,
+        0.00013918284333094857
+      ],
+      "best_rejection": null,
+      "best_terminal": {
+        "trigger": false,
+        "tilt_rad": 0.010274373420030253,
+        "horizontal_speed_mps": 0.09372653363045785,
+        "angular_speed_rad_s": 0.07164929327434787,
+        "support_feet": 3,
+        "reason": "none",
+        "support_margin_m": 0.07039304771477953,
+        "root_height_m": 0.22544150466358953
+      }
+    },
+    {
+      "case": 84,
+      "tick": 334,
+      "selection": "first_actual_qp_application",
+      "baseline_accepted": true,
+      "search_accepted": true,
+      "first_accepted": true,
+      "rejection": null,
+      "terminal": {
+        "trigger": false,
+        "tilt_rad": 0.03031937063295182,
+        "horizontal_speed_mps": 0.1510692541979033,
+        "angular_speed_rad_s": 0.09855244146754256,
+        "support_feet": 4,
+        "reason": "none",
+        "support_margin_m": 0.10502161572484629,
+        "root_height_m": 0.19644392469148902
+      },
+      "wall_seconds": 0.38318059779703617,
+      "candidate_count": 1,
+      "best_rank": [
+        0,
+        0.00032534503283124125
+      ],
+      "best_rejection": null,
+      "best_terminal": {
+        "trigger": false,
+        "tilt_rad": 0.03031937063295182,
+        "horizontal_speed_mps": 0.1510692541979033,
+        "angular_speed_rad_s": 0.09855244146754256,
+        "support_feet": 4,
+        "reason": "none",
+        "support_margin_m": 0.10502161572484629,
+        "root_height_m": 0.19644392469148902
+      }
+    },
+    {
+      "case": 39,
+      "tick": 335,
+      "selection": "first_actual_qp_application",
+      "baseline_accepted": true,
+      "search_accepted": true,
+      "first_accepted": true,
+      "rejection": null,
+      "terminal": {
+        "trigger": false,
+        "tilt_rad": 0.01674460282444351,
+        "horizontal_speed_mps": 0.10436793626108587,
+        "angular_speed_rad_s": 0.06284536015832257,
+        "support_feet": 3,
+        "reason": "none",
+        "support_margin_m": 0.06611790993902959,
+        "root_height_m": 0.23181484116397968
+      },
+      "wall_seconds": 0.37454080395400524,
+      "candidate_count": 1,
+      "best_rank": [
+        0,
+        0.0001484220541282736
+      ],
+      "best_rejection": null,
+      "best_terminal": {
+        "trigger": false,
+        "tilt_rad": 0.01674460282444351,
+        "horizontal_speed_mps": 0.10436793626108587,
+        "angular_speed_rad_s": 0.06284536015832257,
+        "support_feet": 3,
+        "reason": "none",
+        "support_margin_m": 0.06611790993902959,
+        "root_height_m": 0.23181484116397968
+      }
+    },
+    {
+      "case": 16,
+      "tick": 359,
+      "selection": "400ms_before_first_nonfoot",
+      "baseline_accepted": false,
+      "search_accepted": false,
+      "first_accepted": true,
+      "rejection": "terminal support margin not reached",
+      "terminal": {
+        "trigger": true,
+        "tilt_rad": 0.3074818262426397,
+        "horizontal_speed_mps": 0.9400047039278203,
+        "angular_speed_rad_s": 2.9920540406289695,
+        "support_feet": 2,
+        "reason": "support_margin",
+        "support_margin_m": -0.20997303416249888,
+        "root_height_m": 0.19907909717739874
+      },
+      "wall_seconds": 17.475994889857247,
+      "candidate_count": 49,
+      "best_rank": [
+        1,
+        4.301968259454054
+      ],
+      "best_rejection": "terminal support margin not reached",
+      "best_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.30822612457790677,
+        "horizontal_speed_mps": 0.9340858482648582,
+        "angular_speed_rad_s": 2.5796925171329144,
+        "support_feet": 2,
+        "reason": "support_margin",
+        "support_margin_m": -0.20662083645509013,
+        "root_height_m": 0.21393218086741847
+      }
+    },
+    {
+      "case": 17,
+      "tick": 362,
+      "selection": "400ms_before_first_nonfoot",
+      "baseline_accepted": false,
+      "search_accepted": false,
+      "first_accepted": true,
+      "rejection": "terminal support margin not reached",
+      "terminal": {
+        "trigger": true,
+        "tilt_rad": 0.2118907968511244,
+        "horizontal_speed_mps": 0.6836436411303518,
+        "angular_speed_rad_s": 2.4990313303493727,
+        "support_feet": 2,
+        "reason": "support_margin",
+        "support_margin_m": -0.17759616153149585,
+        "root_height_m": 0.20720131567114178
+      },
+      "wall_seconds": 17.515840119915083,
+      "candidate_count": 49,
+      "best_rank": [
+        1,
+        3.107233050899824
+      ],
+      "best_rejection": "terminal support margin not reached",
+      "best_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.23617427929185686,
+        "horizontal_speed_mps": 0.6876083851541159,
+        "angular_speed_rad_s": 2.5210179665962573,
+        "support_feet": 2,
+        "reason": "support_margin",
+        "support_margin_m": -0.16216972242446803,
+        "root_height_m": 0.21086538148179068
+      }
+    },
+    {
+      "case": 126,
+      "tick": 366,
+      "selection": "400ms_before_first_nonfoot",
+      "baseline_accepted": false,
+      "search_accepted": false,
+      "first_accepted": true,
+      "rejection": "terminal support margin not reached",
+      "terminal": {
+        "trigger": true,
+        "tilt_rad": 0.35840665254175985,
+        "horizontal_speed_mps": 1.0910939599760021,
+        "angular_speed_rad_s": 3.4869998029366296,
+        "support_feet": 2,
+        "reason": "support_margin",
+        "support_margin_m": -0.22936958308275074,
+        "root_height_m": 0.1906190751177117
+      },
+      "wall_seconds": 17.551092862850055,
+      "candidate_count": 49,
+      "best_rank": [
+        1,
+        5.439096901221952
+      ],
+      "best_rejection": "terminal support margin not reached",
+      "best_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.32811663661581153,
+        "horizontal_speed_mps": 1.050811456577277,
+        "angular_speed_rad_s": 3.0832818318789146,
+        "support_feet": 2,
+        "reason": "support_margin",
+        "support_margin_m": -0.2325379688295799,
+        "root_height_m": 0.20603673823323532
+      }
+    },
+    {
+      "case": 37,
+      "tick": 369,
+      "selection": "400ms_before_first_nonfoot",
+      "baseline_accepted": false,
+      "search_accepted": false,
+      "first_accepted": true,
+      "rejection": "terminal support margin not reached",
+      "terminal": {
+        "trigger": true,
+        "tilt_rad": 0.22118913168100182,
+        "horizontal_speed_mps": 0.7716850418691943,
+        "angular_speed_rad_s": 2.5600280358889185,
+        "support_feet": 2,
+        "reason": "support_margin",
+        "support_margin_m": -0.19047537256735983,
+        "root_height_m": 0.20677612932725178
+      },
+      "wall_seconds": 17.571200428996235,
+      "candidate_count": 49,
+      "best_rank": [
+        1,
+        3.414279668275416
+      ],
+      "best_rejection": "terminal support margin not reached",
+      "best_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.22674544531289498,
+        "horizontal_speed_mps": 0.7545365164739564,
+        "angular_speed_rad_s": 2.4040501426330034,
+        "support_feet": 2,
+        "reason": "support_margin",
+        "support_margin_m": -0.18008486458460904,
+        "root_height_m": 0.21055630247860357
+      }
+    },
+    {
+      "case": 34,
+      "tick": 377,
+      "selection": "400ms_before_first_nonfoot",
+      "baseline_accepted": false,
+      "search_accepted": false,
+      "first_accepted": true,
+      "rejection": "terminal support margin not reached",
+      "terminal": {
+        "trigger": true,
+        "tilt_rad": 0.2602742067241585,
+        "horizontal_speed_mps": 0.7390035476284488,
+        "angular_speed_rad_s": 2.7778912573848253,
+        "support_feet": 2,
+        "reason": "support_margin",
+        "support_margin_m": -0.2427310790166801,
+        "root_height_m": 0.21126907976618825
+      },
+      "wall_seconds": 17.520096177002415,
+      "candidate_count": 49,
+      "best_rank": [
+        1,
+        4.443939038691043
+      ],
+      "best_rejection": "terminal support margin not reached",
+      "best_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.26178480674487,
+        "horizontal_speed_mps": 0.735975522079556,
+        "angular_speed_rad_s": 1.8944599131606,
+        "support_feet": 2,
+        "reason": "support_margin",
+        "support_margin_m": -0.25801660392117753,
+        "root_height_m": 0.21509694951662062
+      }
+    },
+    {
+      "case": 51,
+      "tick": 383,
+      "selection": "400ms_before_first_nonfoot",
+      "baseline_accepted": false,
+      "search_accepted": false,
+      "first_accepted": true,
+      "rejection": "terminal support margin not reached",
+      "terminal": {
+        "trigger": true,
+        "tilt_rad": 0.40173044069347646,
+        "horizontal_speed_mps": 1.0407542082030832,
+        "angular_speed_rad_s": 2.402935674507385,
+        "support_feet": 2,
+        "reason": "support_margin",
+        "support_margin_m": -0.2989191221331659,
+        "root_height_m": 0.18630460765746368
+      },
+      "wall_seconds": 17.60088088316843,
+      "candidate_count": 49,
+      "best_rank": [
+        1,
+        5.142418158766736
+      ],
+      "best_rejection": "terminal support margin not reached",
+      "best_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.35833475592238995,
+        "horizontal_speed_mps": 0.906918176844056,
+        "angular_speed_rad_s": 2.0487737067863434,
+        "support_feet": 2,
+        "reason": "support_margin",
+        "support_margin_m": -0.27624789538951344,
+        "root_height_m": 0.19675943216274897
+      }
+    },
+    {
+      "case": 84,
+      "tick": 394,
+      "selection": "400ms_before_first_nonfoot",
+      "baseline_accepted": false,
+      "search_accepted": false,
+      "first_accepted": true,
+      "rejection": "terminal support margin not reached",
+      "terminal": {
+        "trigger": true,
+        "tilt_rad": 0.24258636356845148,
+        "horizontal_speed_mps": 0.7319905384575716,
+        "angular_speed_rad_s": 3.4891021288278155,
+        "support_feet": 2,
+        "reason": "support_margin",
+        "support_margin_m": -0.21097115997357638,
+        "root_height_m": 0.2041450635127854
+      },
+      "wall_seconds": 17.594947945792228,
+      "candidate_count": 49,
+      "best_rank": [
+        1,
+        4.716808096894346
+      ],
+      "best_rejection": "terminal support margin not reached",
+      "best_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.2401788624099182,
+        "horizontal_speed_mps": 0.7153590504115646,
+        "angular_speed_rad_s": 3.3457429950307507,
+        "support_feet": 2,
+        "reason": "support_margin",
+        "support_margin_m": -0.20013581967516283,
+        "root_height_m": 0.20337139923227324
+      }
+    },
+    {
+      "case": 39,
+      "tick": 403,
+      "selection": "400ms_before_first_nonfoot",
+      "baseline_accepted": false,
+      "search_accepted": false,
+      "first_accepted": true,
+      "rejection": "terminal support margin not reached",
+      "terminal": {
+        "trigger": true,
+        "tilt_rad": 0.11052282633833894,
+        "horizontal_speed_mps": 0.6641515681968383,
+        "angular_speed_rad_s": 0.6512815008427258,
+        "support_feet": 3,
+        "reason": "support_margin",
+        "support_margin_m": -0.10709212671569474,
+        "root_height_m": 0.2045845202308272
+      },
+      "wall_seconds": 18.615160066168755,
+      "candidate_count": 49,
+      "best_rank": [
+        1,
+        2.213805680024114
+      ],
+      "best_rejection": "terminal support margin not reached",
+      "best_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.11037872781663231,
+        "horizontal_speed_mps": 0.639570751862214,
+        "angular_speed_rad_s": 0.5458688816036654,
+        "support_feet": 3,
+        "reason": "support_margin",
+        "support_margin_m": -0.09097766894673388,
+        "root_height_m": 0.20358894425598634
+      }
+    }
+  ],
+  "full_evidence_path": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_causal_baseline_followup_20261107/lost_success_reference_search.json",
+  "full_evidence_sha256": "fbb7314c998713417ae334c6d7bebecc498bfc1504b2fe3ffa6ec4676630340b"
+}
