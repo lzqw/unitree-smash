@@ -51,10 +51,10 @@ def test_multistep_directional_derivative_matches_refreshed_dynamics():
     basis = knot_basis(4, 2)
     direction = np.random.default_rng(21).normal(0, .01, (2, 18))
     rows = list(affine_differentiated_sequence(c, state, basis, profile))
-    responses = []
+    responses = [];configuration_responses=[]
     epsilon = 1e-3
     for sign in [-1., 1.]:
-        following = copy.deepcopy(state); velocities = []
+        following = copy.deepcopy(state); velocities = [];configurations=[]
         for tick, node in enumerate(profile):
             following.contacts = node['state'].contacts.copy()
             command = node['command'] + sign * epsilon * (basis[tick] @ direction)
@@ -63,13 +63,19 @@ def test_multistep_directional_derivative_matches_refreshed_dynamics():
                 contact_velocity_decay_s=c.qp.settings.contact_velocity_decay_s)
             assert outcome['diagnostics']['maximum_active_set_iterations'] == 1
             following = outcome['state']; velocities.append(following.v.copy())
+            import pinocchio as pin
+            configurations.append(pin.difference(c.qp.model.model,node['following'].q,following.q))
         responses.append(np.asarray(velocities))
+        configuration_responses.append(np.asarray(configurations))
     actual = (responses[1] - responses[0]) / (2 * epsilon)
     for tick in range(4):
         predicted = rows[(tick+1)*16-1]['velocity_map'] @ direction.ravel()
         # Central-difference and manifold sensitivities have finite precision;
         # bound the error relative to the independently propagated response.
         assert np.max(abs(predicted-actual[tick])) < 2e-3 * max(np.max(abs(actual[tick])), 1e-3)
+        actual_q=(configuration_responses[1][tick]-configuration_responses[0][tick])/(2*epsilon)
+        predicted_q=rows[(tick+1)*16-1]['endpoint_configuration_map']@direction.ravel()
+        assert np.max(abs(predicted_q-actual_q))<2e-3*max(np.max(abs(actual_q)),1e-3)
     np.testing.assert_array_equal(state.q, saved.q)
     np.testing.assert_array_equal(state.v, saved.v)
     np.testing.assert_array_equal(state.contacts, saved.contacts)

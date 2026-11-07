@@ -70,6 +70,8 @@ def affine_differentiated_sequence(controller,initial,basis,profile):
             displacement=slice(42,66),force=slice(66,66+nf),torque=slice(66+nf,84+nf))
         for micro in range(controller.qp.substeps):
             result=dict(tick=tick,micro=micro,command_map=command_map,command_bias=node['command'])
+            if micro==controller.qp.substeps-1:
+                result['endpoint_configuration_map']=(next_jac@input_map)[:24]
             for name,section in sections.items():
                 result[name+'_map']=propagated[micro,section]
                 result[name+'_bias']=nominal[micro,section]

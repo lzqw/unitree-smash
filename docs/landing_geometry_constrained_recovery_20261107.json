@@ -1,0 +1,247 @@
+{
+  "created_utc": "2026-11-07T11:53:40.044243+00:00",
+  "scope": "Offline geometry-constrained whole recovery sequences. No new native performance or learning claim.",
+  "student_baseline_complete5": 27,
+  "development_cases": 128,
+  "new_native_successes": 0,
+  "valid_expert_labels": false,
+  "first_stage": {
+    "queries": 6,
+    "accepted_model_candidates": 1,
+    "accepted_new_candidates": 0,
+    "wall_seconds": 130.96549621387385
+  },
+  "joint_task_stage": {
+    "queries": 6,
+    "accepted_model_candidates": 2,
+    "accepted_new_candidates": 1,
+    "wall_seconds": 302.61510453606024
+  },
+  "cases": [
+    {
+      "case": 2,
+      "ball5_except_recovery": false,
+      "original_query_tick": 340,
+      "initial_ground_violation_m": 0.0,
+      "after_restoration_ground_violation_m": 0.0,
+      "final_ground_violation_m": 0.0,
+      "accepted_model": true,
+      "newly_model_feasible": false,
+      "maximum_physical_violation": 3.851535712584564e-06,
+      "terminal_risk": {
+        "trigger": false,
+        "tilt_rad": 0.007952076399954003,
+        "horizontal_speed_mps": 0.16847745443838485,
+        "angular_speed_rad_s": 0.0170405382184241,
+        "support_feet": 4,
+        "reason": "none",
+        "support_margin_m": 0.13640816406586037,
+        "root_height_m": 0.1950951712562714
+      },
+      "rejection": null
+    },
+    {
+      "case": 3,
+      "ball5_except_recovery": true,
+      "original_query_tick": 460,
+      "initial_ground_violation_m": 0.42131675271080204,
+      "after_restoration_ground_violation_m": 9.90502767013457e-06,
+      "final_ground_violation_m": 6.011461558166897e-06,
+      "accepted_model": false,
+      "newly_model_feasible": true,
+      "maximum_physical_violation": 0.001426452419566182,
+      "terminal_risk": {
+        "trigger": true,
+        "tilt_rad": 0.29034714474229606,
+        "horizontal_speed_mps": 0.5680109617904109,
+        "angular_speed_rad_s": 3.7733890699042796,
+        "support_feet": 3,
+        "reason": "support_margin",
+        "support_margin_m": -0.08956805600804296,
+        "root_height_m": 0.2117866431106112
+      },
+      "rejection": "Authored nonfoot geometry penetrates ground"
+    },
+    {
+      "case": 15,
+      "ball5_except_recovery": false,
+      "original_query_tick": 690,
+      "initial_ground_violation_m": 0.3975549506686843,
+      "after_restoration_ground_violation_m": 0.00014160959765066594,
+      "final_ground_violation_m": 0.0,
+      "accepted_model": true,
+      "newly_model_feasible": true,
+      "maximum_physical_violation": 3.7445197666130525e-05,
+      "terminal_risk": {
+        "trigger": false,
+        "tilt_rad": 0.08243116124989201,
+        "horizontal_speed_mps": 0.03149805586632981,
+        "angular_speed_rad_s": 0.014834074497758951,
+        "support_feet": 3,
+        "reason": "none",
+        "support_margin_m": 0.06970238871165942,
+        "root_height_m": 0.21410589391906856
+      },
+      "rejection": null
+    },
+    {
+      "case": 18,
+      "ball5_except_recovery": true,
+      "original_query_tick": 520,
+      "initial_ground_violation_m": 0.4193421768336365,
+      "after_restoration_ground_violation_m": 0.40734796735166634,
+      "final_ground_violation_m": 0.4065919283303578,
+      "accepted_model": false,
+      "newly_model_feasible": true,
+      "maximum_physical_violation": 0.4065919283303578,
+      "terminal_risk": {
+        "trigger": true,
+        "tilt_rad": 0.2163625272854153,
+        "horizontal_speed_mps": 0.20232935912641234,
+        "angular_speed_rad_s": 0.1599990990185919,
+        "support_feet": 3,
+        "reason": "support_margin",
+        "support_margin_m": 0.016303930638804812,
+        "root_height_m": 0.20080144913231812
+      },
+      "rejection": "Authored nonfoot geometry penetrates ground"
+    },
+    {
+      "case": 57,
+      "ball5_except_recovery": true,
+      "original_query_tick": 410,
+      "initial_ground_violation_m": 0.41857246365784023,
+      "after_restoration_ground_violation_m": 0.04008396566097153,
+      "final_ground_violation_m": 0.04008396566097153,
+      "accepted_model": false,
+      "newly_model_feasible": true,
+      "maximum_physical_violation": 124.53318714764409,
+      "terminal_risk": {
+        "trigger": true,
+        "tilt_rad": 0.8019253192239386,
+        "horizontal_speed_mps": 0.5478592937635332,
+        "angular_speed_rad_s": 6.446476499802149,
+        "support_feet": 3,
+        "reason": "support_margin",
+        "support_margin_m": -0.09068296028388083,
+        "root_height_m": 0.2469582474971841
+      },
+      "rejection": "Authored nonfoot geometry penetrates ground"
+    },
+    {
+      "case": 65,
+      "ball5_except_recovery": false,
+      "original_query_tick": 516,
+      "initial_ground_violation_m": 0.39250896917091616,
+      "after_restoration_ground_violation_m": 0.23001429175631244,
+      "final_ground_violation_m": 0.23001429175631244,
+      "accepted_model": false,
+      "newly_model_feasible": true,
+      "maximum_physical_violation": 1.0419128811123073,
+      "terminal_risk": {
+        "trigger": true,
+        "tilt_rad": 0.1651469859574157,
+        "horizontal_speed_mps": 0.39328069033384166,
+        "angular_speed_rad_s": 2.8283901376363074,
+        "support_feet": 3,
+        "reason": "support_margin",
+        "support_margin_m": -0.056409347891332264,
+        "root_height_m": 0.21147592744710167
+      },
+      "rejection": "Authored nonfoot geometry penetrates ground"
+    }
+  ],
+  "geometry": {
+    "shapes": 128,
+    "mesh_unique_vertices": 83056,
+    "mesh_hull_vertices": 3136,
+    "ground_plane_z_m": 0.0,
+    "required_margin_m": 0.0,
+    "numerical_tolerance_m": 1e-06,
+    "control_steps": 40,
+    "control_dt_s": 0.01,
+    "prediction_substeps": 16,
+    "all_endpoint_hull_equivalence": {
+      "scope": "Convex-hull reduction versus previous independent full-authored geometry audit",
+      "cases": [
+        {
+          "case": 2,
+          "maximum_support_error_m": 2.7755575615628914e-17,
+          "frames": 41
+        },
+        {
+          "case": 3,
+          "maximum_support_error_m": 5.551115123125783e-17,
+          "frames": 41
+        },
+        {
+          "case": 15,
+          "maximum_support_error_m": 5.551115123125783e-17,
+          "frames": 41
+        },
+        {
+          "case": 18,
+          "maximum_support_error_m": 5.551115123125783e-17,
+          "frames": 41
+        },
+        {
+          "case": 57,
+          "maximum_support_error_m": 5.551115123125783e-17,
+          "frames": 41
+        },
+        {
+          "case": 65,
+          "maximum_support_error_m": 5.551115123125783e-17,
+          "frames": 41
+        }
+      ],
+      "passed": true
+    }
+  },
+  "tests": {
+    "passed": 18,
+    "formal_goal": "FAILED"
+  },
+  "native_runtime": {
+    "pid": 4156536,
+    "live_confirmed": true,
+    "last_reported_tick": 300,
+    "requested_ticks": 800,
+    "input_hashes_checked": 89,
+    "mismatches": 0,
+    "statement": "Existing paired experiment, not the new geometry optimizer."
+  },
+  "next": "From-ground query-matched native validation of TRAIN15; continue sustained feedback, not a success claim at 0.4 s.",
+  "limitations": [
+    "Authored ground geometry only; self-collision and cooked geometry not certified.",
+    "Optimization at control boundaries, final checking at all 16 model microsteps.",
+    "Search-only scalar geometry slack; no slack allowed for final acceptance.",
+    "Known frozen-contact dynamics and native mismatch limitations remain.",
+    "TRAIN15 ball-side failure excludes complete-task demonstration.",
+    "Minimum clearance is very small near initial Head_lower and final racket grip; native contact offsets remain unverified."
+  ],
+  "source_sha256": {
+    "scripts/authored_ground_clearance_v1.py": "ba54ef51a5cfd5c64937814c343d92057cd0e9e83dc4e435f1479049aa342630",
+    "scripts/export_authored_ground_geometry_v1.py": "070f78e3c8a65e05c86daf8a3084e33823bb3d9e629d49f107800a9010474128",
+    "scripts/audit_geometry_recovery_search_v1.py": "eaabf6118263c3a4bafd2186d7f9df605675f0e4d3250eb69e610203b6c1deaf",
+    "scripts/audit_geometry_recovery_task_v1.py": "85423a953a104bd42e4868a9266d8d4155593245711e000ad1af5e6f8da8c741",
+    "scripts/export_geometry_recovery_sequences_v1.py": "2d32bb701f0f89fbdceef5d04ee9c6a8a2c1bee3b320985a0d81f2802276bf76",
+    "scripts/landing_joint_sequence_proposal_v1.py": "42d8be1c82836a83e054c6cf7ca368f5bad9b35e298aabbeb0790bfb5b816857",
+    "scripts/landing_differentiated_sequence_v1.py": "9b68faddbb7350b467f5f7a75c1b78cae58759f92c2d8e559b9cac433e6d229e",
+    "scripts/landing_sequential_recovery_search_v1.py": "c5e7e38a2cdb369062eda62ce0237f3c519a8086748acec12fa77608f7283039",
+    "configs/go2_piper_authored_ground_geometry_v1.json": "e39c41e9b69e481aeac8907c2dfacb9f593cf54e00c8fb822696638ef083167b",
+    "configs/go2_piper_racket_landing_model_v1.json": "8c8997368ab98b3f2befa9908f537d76990dc2a1099ca30d8e6c1823de814e88",
+    "tests/test_authored_ground_clearance_v1.py": "0cc52e6a5683803c7af18005d299162cf3de4b08daea0d8699571074e07fcafd",
+    "tests/test_differentiated_sequence_v1.py": "f0372a198158470b8f6a97396433aac4c899771a67e721de9479f8f5c4252e77"
+  },
+  "artifact_sha256": {
+    "reports/landing_geometry_constrained_search_20261107/search.json": "006dcf51d499e9f33317bdbd56ada68bec0c371013ad330d304a4a532e54859a",
+    "reports/landing_geometry_constrained_search_20261107/task.json": "d8e32d4015186948c60f842ed641926a3b325acb526e02f07f4fed51a09bcc68",
+    "reports/landing_geometry_constrained_search_20261107/independent_clearance.json": "d2f576ef14201cb5ab23dd5b1abb85eee00d1b3c90eb5191d87694c1c3ff9dfd",
+    "reports/landing_geometry_constrained_search_20261107/hull_equivalence.json": "253d93731e58a8765716e46b8aadad265dd75386ae2a0a5efb4575585dea65f8",
+    "reports/landing_geometry_constrained_search_20261107/tests_final.log": "b67041a252648fd0551fb5365818ffdbc3a44ee500b1c27aad6985f599e9bc00",
+    "reports/landing_geometry_constrained_search_20261107/formal_verify.json": "ae2b5bbc540391cfed972e3b8764c4c9229b3e2cee247c029a8aa1075e69beea",
+    "reports/landing_geometry_verified_sequences_20261107/manifest.json": "f9668e1638b7be681da9d6a91350d52216f3284be0ffec4ac57c569aa6ae16aa",
+    "reports/landing_geometry_verified_sequences_20261107/sequences.npz": "461d81901d1e211f1160aee1bfead79f00524fdf7a56cd7977be63f0c446c6ad"
+  }
+}

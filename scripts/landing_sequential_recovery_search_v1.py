@@ -25,6 +25,7 @@ def rollout_for_search(controller, initial, commands, reference):
     if controller.settings.touchdown_impact_projection:
         raise ValueError('Hybrid impact derivatives are not implemented')
     previous=copy.deepcopy(interface.previous_command)
+    geometry=getattr(controller,'sequence_geometry',None)
     state=copy.deepcopy(initial);profile=[];cost=0.;checks=[]
     snap=copy.deepcopy(model.snapshot(initial.q,initial.v))
     footids=[model.names.index(name) for name in model.feet]
@@ -75,6 +76,19 @@ def rollout_for_search(controller, initial, commands, reference):
             # tolerances are not changed. Report every unscaled violation.
             scales=dict(command_admission_rad=.1,motor_torque_nm=23.5,joint_velocity_rad_s=5.,
                 joint_position_rad=.1,joint_damper_rad_s=5.,normal_force_n=100.,friction_n=100.,root_height_m=.1)
+            if geometry is not None:
+                # Reconstruct every actual model microstep, not a straight
+                # chord between endpoints. Rotations use the same log/exp
+                # coordinates as interval_outputs/world_displacement.
+                minimum=float(geometry.evaluate(state.q)[0].min())
+                for value in values:
+                    displacement=value[42:66];q=initial.q.copy()
+                    q[:3]+=displacement[:3]
+                    q[3:7]=pin.Quaternion(pin.exp3(displacement[3:6])@initial.root_rotation_world).coeffs()
+                    q[model.q_indices]=value[24:42]
+                    minimum=min(minimum,float(geometry.evaluate(q)[0].min()))
+                violation['authored_ground_clearance_m']=max(0.,geometry.margin_m-minimum)
+                scales['authored_ground_clearance_m']=.1
             normalized=sum(violation[k]/scales[k] for k in violation)
             checks.append(dict(physical=violation,normalized_l1=normalized))
             w=10. if tick==H-1 else 1./H
@@ -95,7 +109,9 @@ def rollout_for_search(controller, initial, commands, reference):
         infeasibility=max(row['normalized_l1'] for row in checks)+sum(row['normalized_l1'] for row in checks)/H
         return dict(profile=profile,checks=checks,cost=cost,infeasibility=infeasibility,
             maximum_physical_violation=envelope,terminal_risk=risk,terminal_ok=terminal,
-            physically_feasible=envelope<=cfg.residual_tolerance,native_execution=False)
+            physically_feasible=bool(envelope<=cfg.residual_tolerance and
+                (geometry is None or max(r['physical']['authored_ground_clearance_m'] for r in checks)<=1e-6)),
+            native_execution=False)
     finally:
         interface.previous_command=previous
 

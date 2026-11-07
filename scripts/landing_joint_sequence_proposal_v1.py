@@ -90,6 +90,9 @@ def propose_sequence(controller, state, reference, *, knots=9, time_limit_s=20.,
     qp = controller.qp; model = qp.model; interface = qp.interface
     cfg = qp.settings; H = controller.settings.horizon_steps; dt = controller.settings.control_dt_s
     basis = knot_basis(H, knots); n = knots*18
+    geometry=getattr(controller,'sequence_geometry',None)
+    if geometry is not None and not differentiate_dynamics:
+        raise ValueError('Ground geometry requires differentiated endpoint configuration maps')
     # snapshot arrays must survive subsequent Pinocchio calls on shared data.
     snap = copy.deepcopy(model.snapshot(state.q, state.v))
     cj, _ = qp.com_kinematics(state)
@@ -169,6 +172,10 @@ def propose_sequence(controller, state, reference, *, knots=9, time_limit_s=20.,
             task(delta, offset, np.zeros(18), .2/H)
             last_um = um; last_bias=ub
         if st['micro'] == qp.substeps-1:
+            if geometry is not None:
+                distances,distance_jac=geometry.evaluate(nominal_profile[st['tick']]['following'].q,jacobian=True)
+                bound(distance_jac@st['endpoint_configuration_map'],distances,
+                    geometry.margin_m,np.inf,'authored_ground_clearance_m',seed=True)
             terminal = st['tick'] == H-1
             w = 10. if terminal else 1./H
             if nominal_profile is None:
@@ -209,12 +216,25 @@ def propose_sequence(controller, state, reference, *, knots=9, time_limit_s=20.,
     A = np.vstack(constraints); low = np.concatenate(lows); high = np.concatenate(highs)
     command_center = np.tile(reference, knots) if nominal_profile is None else np.zeros(n)
     scale = np.tile(.5*np.diff(interface.limits, axis=1).ravel(), knots)
+    if geometry is not None:
+        # A single elastic distance variable makes infeasible starting paths
+        # searchable. It is NEVER accepted as a physical clearance allowance:
+        # nonlinear rollout and independent verification require zero violation.
+        geometry_rows=np.asarray(row_kinds)=='authored_ground_clearance_m'
+        A=np.c_[A,geometry_rows.astype(float)]
+        A=np.vstack([A,np.r_[np.zeros(n),1.]])
+        low=np.r_[low,0.];high=np.r_[high,np.inf]
+        row_kinds.append('search_only_clearance_slack_m');initial_rows.add(len(low)-1)
+        extended=np.zeros((n+1,n+1));extended[:n,:n]=P;extended[-1,-1]=1.
+        P=extended;q=np.r_[q,1e4];command_center=np.r_[command_center,0.];scale=np.r_[scale,.1]
+        result['clearance_model_sha256']=geometry.sha256
+        result['search_only_geometry_elastic']=True
     As = A*scale; rs = 1./np.maximum(np.max(abs(As), axis=1), 1e-12)
     Ps = P*scale[:, None]*scale[None, :]; qs = scale*(P@command_center+q)
     oscale = 1./max(1., np.max(abs(np.diag(Ps))))
     # Constraint generation changes only the numerical representation. Every
     # returned proposal must pass ALL original rows in physical units.
-    chosen=initial_rows.copy(); warm=np.zeros(n); cut_log=[]; solve_start=time.perf_counter(); sol=None
+    chosen=initial_rows.copy(); warm=np.zeros(len(scale)); cut_log=[]; solve_start=time.perf_counter(); sol=None
     result['initial_constraint_rows']=len(initial_rows)
     if nominal_profile is not None:
         result['zero_increment_constraint_violation']=float(max(0.,np.max(low),np.max(-high)))
@@ -269,10 +289,11 @@ def propose_sequence(controller, state, reference, *, knots=9, time_limit_s=20.,
     result['linear_constraint_violation'] = error
     if error > cfg.residual_tolerance:
         return dict(result, rejection='Independent unscaled sequence constraint check failed')
-    commands=basis@x.reshape(knots,18)
+    if geometry is not None:result['search_only_clearance_slack_m']=float(x[-1])
+    commands=basis@x[:n].reshape(knots,18)
     if nominal_profile is not None:commands+=np.stack([node['command'] for node in nominal_profile])
     result.update(linear_proposal_solved=True, commands=commands,
-                  linear_terminal_com=position_bias+position_jac@dm@x)
+                  linear_terminal_com=position_bias+position_jac@dm@x[:n])
     return result
 
 
@@ -282,6 +303,7 @@ def verify_sequence(controller, state, commands):
     dt = controller.settings.control_dt_s; following = copy.deepcopy(state)
     saved_previous = copy.deepcopy(interface.previous_command)
     checks=[]; result=dict(accepted=False, native_execution=False, completed_stages=0)
+    geometry=getattr(controller,'sequence_geometry',None)
     try:
         for index, command in enumerate(commands):
             interface.bind_previous_command(following.previous_command_target)
@@ -304,11 +326,18 @@ def verify_sequence(controller, state, commands):
             diagnostics = prediction['diagnostics'].copy(); diagnostics.pop('maximum_active_set_iterations')
             diagnostics.update(command_admission=admission, joint_damper=damper)
             # Same microstep manifold root-height check as the interval QP.
-            q = following.q.copy(); min_z = float(q[2])
+            q = following.q.copy(); min_z = float(q[2]);min_clearance=np.inf
+            if geometry is not None:min_clearance=float(geometry.evaluate(q)[0].min())
             for stage in stages:
                 q = pin.integrate(model.model, q, dt/qp.substeps*(stage['velocity_map']@command+stage['velocity_bias']))
                 min_z = min(min_z, float(q[2]))
+                if geometry is not None:min_clearance=min(min_clearance,float(geometry.evaluate(q)[0].min()))
             diagnostics['root_height_violation_m'] = max(0., qp.minimum_root_height_m-min_z)
+            if geometry is not None:
+                diagnostics['authored_ground_clearance_m']=max(0.,geometry.margin_m-min_clearance)
+                if diagnostics['authored_ground_clearance_m']>1e-6:
+                    return dict(result,rejection='Authored nonfoot geometry penetrates ground',
+                        failed_stage=index,checks=checks+[diagnostics])
             checks.append(diagnostics)
             if max(diagnostics.values()) > cfg.residual_tolerance:
                 return dict(result, rejection='Refreshed dynamics violates physical/envelope constraint',
