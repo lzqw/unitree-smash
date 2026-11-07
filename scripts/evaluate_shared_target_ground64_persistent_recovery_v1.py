@@ -70,6 +70,8 @@ parser.add_argument('--landing-mpc-mode-validation-force', type=float, default=0
     help='Optional upward force required for each predicted support foot during held MPC actions')
 parser.add_argument('--landing-mpc-mode-validation-ticks', type=int, default=3,
     help='Consecutive mode-validation failures before a held MPC action is released')
+parser.add_argument('--landing-mpc-hold-tracking-error-release-rad', type=float, default=0.,
+    help='Release a held MPC target when measured joint tracking error exceeds this value (0 disables)')
 parser.add_argument('--landing-mpc-predict-touchdown-contacts', action='store_true',
     help='Let MPC add an imminent swing-foot contact to later horizon stages (event approximation)')
 parser.add_argument('--landing-mpc-contact-mode-fallback', action='store_true',
@@ -209,6 +211,7 @@ class SharedTargetResidualController:
                  landing_mpc_contact_release_ticks=3,
                  landing_mpc_mode_validation_force=0.,
                  landing_mpc_mode_validation_ticks=3,
+                 landing_mpc_hold_tracking_error_release_rad=0.,
                  landing_mpc_predict_touchdown_contacts=False,
                  landing_mpc_contact_mode_fallback=False,
                  landing_mpc_contact_mode_sequence_search=False,
@@ -304,6 +307,10 @@ class SharedTargetResidualController:
         self.landing_mpc_mode_validation_ticks=int(landing_mpc_mode_validation_ticks)
         if self.landing_mpc_mode_validation_ticks < 1:
             raise ValueError('landing_mpc_mode_validation_ticks must be positive')
+        self.landing_mpc_hold_tracking_error_release_rad=float(landing_mpc_hold_tracking_error_release_rad)
+        if (not np.isfinite(self.landing_mpc_hold_tracking_error_release_rad) or
+                self.landing_mpc_hold_tracking_error_release_rad < 0.):
+            raise ValueError('landing_mpc_hold_tracking_error_release_rad must be finite and nonnegative')
         self._landing_mpc_expected_contacts=np.zeros((count,4),dtype=bool)
         self._landing_mpc_mode_mismatch=torch.zeros((count,),dtype=torch.int32,device=device)
         self._landing_mpc_contact_state_lane=[TouchdownContactStateV1(
@@ -557,6 +564,7 @@ class SharedTargetResidualController:
             if case not in self.landing_mpc_cases:continue
             try:
                 release_for_mode_mismatch = False
+                release_for_tracking = False
                 mode_mismatch = False
                 measured_hold_force = None
                 if (self.landing_mpc_hold_first_action and
@@ -582,9 +590,19 @@ class SharedTargetResidualController:
                     release_for_mode_mismatch = bool(
                         self._landing_mpc_mode_mismatch[lane].item() >=
                         self.landing_mpc_mode_validation_ticks)
+                if (self.landing_mpc_hold_tracking_error_release_rad > 0. and
+                        self._landing_mpc_hold_remaining[lane].item() > 0 and
+                        self._landing_mpc_native_env is not None and
+                        np.isfinite(self._landing_mpc_last_target[lane]).all()):
+                    actual_q = self._landing_mpc_native_env.robot.data.joint_pos[
+                        lane, self._landing_mpc_native_env.joint_ids].detach().cpu().numpy()
+                    if actual_q.shape == (18,) and np.isfinite(actual_q).all():
+                        tracking_error_now = float(np.max(np.abs(actual_q-self._landing_mpc_last_target[lane])))
+                        release_for_tracking = bool(
+                            tracking_error_now > self.landing_mpc_hold_tracking_error_release_rad)
                 if (self.landing_mpc_hold_first_action and
                         self._landing_mpc_hold_remaining[lane].item() > 0 and
-                        not release_for_mode_mismatch):
+                        not release_for_mode_mismatch and not release_for_tracking):
                     action[lane]=self._landing_mpc_held_action[lane].to(action.dtype)
                     self._landing_mpc_hold_remaining[lane]-=1
                     tracking_error = None
@@ -605,12 +623,13 @@ class SharedTargetResidualController:
                         mode_validation_mismatch=mode_mismatch,
                         mode_validation_mismatch_ticks=int(self._landing_mpc_mode_mismatch[lane].item()),
                         mode_validation_released=False,
+                        tracking_error_released=False,
                         measured_hold_force_world=(measured_hold_force.tolist()
                                                    if measured_hold_force is not None else None),
                         command_tracking_error_max_rad=tracking_error,
                         prediction_joint_position_error_max_rad=prediction_error))
                     continue
-                if release_for_mode_mismatch:
+                if release_for_mode_mismatch or release_for_tracking:
                     self._landing_mpc_hold_remaining[lane]=0
                     self._landing_mpc_mode_mismatch[lane]=0
                 from scripts.loaded_pinocchio_model_v1 import LoadedPinocchioModelV1
@@ -687,6 +706,7 @@ class SharedTargetResidualController:
                     expected_support_contacts=self._landing_mpc_expected_contacts[lane].tolist(),
                     mode_validation_force_n=self.landing_mpc_mode_validation_force,
                     mode_validation_released=release_for_mode_mismatch,
+                    tracking_error_released=release_for_tracking,
                     geometric_contacts=(getattr(state, 'geometric_contacts', state.contacts).tolist()),
                     support_contacts=state.contacts.tolist(),
                     latched_support_contacts=state.contacts.tolist(),
@@ -972,6 +992,7 @@ def main():
         landing_mpc_contact_release_ticks=args.landing_mpc_contact_release_ticks,
         landing_mpc_mode_validation_force=args.landing_mpc_mode_validation_force,
         landing_mpc_mode_validation_ticks=args.landing_mpc_mode_validation_ticks,
+        landing_mpc_hold_tracking_error_release_rad=args.landing_mpc_hold_tracking_error_release_rad,
         landing_mpc_predict_touchdown_contacts=args.landing_mpc_predict_touchdown_contacts,
         landing_mpc_contact_mode_fallback=args.landing_mpc_contact_mode_fallback,
         landing_mpc_contact_mode_sequence_search=args.landing_mpc_contact_mode_sequence_search,
@@ -1044,6 +1065,7 @@ def main():
                       landing_mpc_contact_release_ticks=args.landing_mpc_contact_release_ticks,
                       landing_mpc_mode_validation_force=args.landing_mpc_mode_validation_force,
                       landing_mpc_mode_validation_ticks=args.landing_mpc_mode_validation_ticks,
+                      landing_mpc_hold_tracking_error_release_rad=args.landing_mpc_hold_tracking_error_release_rad,
         landing_mpc_predict_touchdown_contacts=args.landing_mpc_predict_touchdown_contacts,
                       landing_mpc_contact_mode_fallback=args.landing_mpc_contact_mode_fallback,
                       landing_mpc_contact_mode_sequence_search=args.landing_mpc_contact_mode_sequence_search,
@@ -1295,6 +1317,7 @@ def main():
                 contact_release_ticks=int(args.landing_mpc_contact_release_ticks),
                 mode_validation_force_n=float(args.landing_mpc_mode_validation_force),
                 mode_validation_ticks=int(args.landing_mpc_mode_validation_ticks),
+                hold_tracking_error_release_rad=float(args.landing_mpc_hold_tracking_error_release_rad),
                 predict_touchdown_contacts=bool(args.landing_mpc_predict_touchdown_contacts),
                 contact_mode_fallback=bool(args.landing_mpc_contact_mode_fallback),
                 contact_mode_sequence_search=bool(args.landing_mpc_contact_mode_sequence_search),

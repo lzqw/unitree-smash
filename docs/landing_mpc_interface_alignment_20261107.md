@@ -444,6 +444,28 @@ from the measured post-transition state, so that a predicted contact is useful
 only when it actually acquires load and reduces the subsequent non-foot
 contact risk.
 
+## Hold-release on measured command tracking error
+
+The native diagnostics showed that the held MPC target was not being followed
+closely: representative cases had mean one-tick joint target errors of roughly
+0.28--0.48 rad.  The evaluator therefore gained an opt-in release rule: while
+an accepted first action is held, a measured maximum joint tracking error above
+the configured threshold immediately releases the hold and forces a new solve
+from the live state.  This tests the position-PD execution interface directly,
+rather than assuming that a held target is realized.
+
+With a 0.1 rad release threshold, the fixed TRAIN128 run remained **27/128
+complete5**, with 74 airborne contacts, 34 conditional recoveries, 0 numerical
+failures, 513 MPC records, 139 applied first steps, 294 solver failures, 7
+terminal acceptances, and 89 predicted contact transitions.  The stricter
+release reduced the number of held/applied plans and did not rescue a new
+landing.
+
+This is useful negative evidence: stale-target tracking is a real interface
+error, but simply re-solving more often does not fix the task.  A successful
+controller must change the predicted support/load-transfer trajectory, not only
+refresh the same position target after tracking error grows.
+
 ## Latched post-touchdown lifecycle trial
 
 The evaluator now supports a separate post-touchdown lifecycle latch. After
