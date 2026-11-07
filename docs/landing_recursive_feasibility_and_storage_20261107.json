@@ -1,0 +1,152 @@
+{
+  "snapshot_time": "2026-11-07T23:19:09.548379+08:00",
+  "baseline_complete5": 27,
+  "student_learning_gain_verified": false,
+  "recursive_check": {
+    "predicted_executed_steps": 10,
+    "required_remaining_steps": 340,
+    "reaches_original_end": false,
+    "first_replan_failure_offset": 10,
+    "best_cem_scaled_violation": 0.24381773932384343,
+    "initial_candidate_model_stable_window_s": 0.03,
+    "required_stable_window_s": 0.8,
+    "native_execution": false
+  },
+  "failed_query_repair": {
+    "completed_iterations": 3,
+    "accepted": true,
+    "terminal": {
+      "roll": -0.2599324216030294,
+      "pitch": 0.15777927462480326,
+      "omega": 0.9213587752126815,
+      "horizontal": 0.23621470708120768,
+      "joint_speed": 0.9998327702323155,
+      "vertical_speed": 0.03327745505002881,
+      "support_margin_m": 0.04834697700031513,
+      "support_feet": 3
+    },
+    "diagnostics": {
+      "momentum_residual": 6.95971058561895e-15,
+      "normal_complementarity": 1.9936814918408707e-07,
+      "friction_cone": 0.0,
+      "tangent_fixed_point": 5.49125144140572e-09,
+      "max_contact_iterations": 14,
+      "foot_penetration_m": 4.5041816756560826e-07,
+      "joint_velocity_violation_rad_s": 0.0,
+      "joint_position_violation_rad": 0.0,
+      "motor_torque_violation_nm": 0.0,
+      "nonfoot_ground_violation_m": 0.0
+    },
+    "wall_seconds": 292.64881897415034,
+    "native_execution": false,
+    "valid_teacher": false,
+    "integrated_into_running_native_planner": false
+  },
+  "failed_native_job": {
+    "output": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_receding_sequence3_all128_20261107_01",
+    "status": "FAILED",
+    "reason": "ENOSPC_FINAL_SAVE",
+    "observed_control_ticks": 800,
+    "valid_complete_result": false,
+    "charged_gpu_hours": 0.6636121731627888,
+    "charged_env_steps": 102400
+  },
+  "storage": {
+    "losslessly_archived_files": 22,
+    "saved_bytes": 1992059075,
+    "all_original_sha256_preserved": true,
+    "restore_command": "python3 scripts/archive_completed_contact_log_v1.py restore PATH_TO_FIRST_NONFOOT_CONTACT_DETAILS.archive.json",
+    "native_final_reserve_bytes": 536870912,
+    "tests_passed": 4
+  },
+  "live_native_job": {
+    "worker_pid": 4185579,
+    "guard_pid": 4185580,
+    "child_pid": 4185597,
+    "confirmed_via_process_table": true,
+    "output": "reports/native_frictional_sequence3_all128_20261107_01",
+    "max_seconds": 7200,
+    "env_steps_cap": 102400,
+    "automatic_promotion": false
+  },
+  "formal_verifier": {
+    "goal_id": "G07",
+    "status": "FAILED",
+    "contract_sha256": "66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807",
+    "checks": {
+      "G00": {
+        "passed": false,
+        "errors": [
+          "Missing or empty artifact: reports/G00/native_train/checkpoint.pt"
+        ]
+      },
+      "G01": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G00",
+          "Path escapes workspace: assets/quadsmash_standard_v2.usd",
+          "Path escapes workspace: assets/vendor/piper_isaac_sim/piper_description/urdf/piper_no_gripper_description.urdf"
+        ]
+      },
+      "G02": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G01"
+        ]
+      },
+      "G03": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G02",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/train/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/train/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/reload/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/reload/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/interrupt/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/interrupt/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/resume_interrupt/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/resume_interrupt/continuation_reference.pt"
+        ]
+      },
+      "G04": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G03",
+          "Missing or empty artifact: artifacts/G04/policy.pt",
+          "Missing or empty artifact: artifacts/G04/autonomous_actor/actor.pt",
+          "Missing or empty artifact: artifacts/G04/autonomous_actor/interface.json"
+        ]
+      },
+      "G05": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G04"
+        ]
+      },
+      "G06": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G05"
+        ]
+      },
+      "G07": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G06",
+          "Missing or invalid evidence: [Errno 2] No such file or directory: '/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/G07/evidence.json'"
+        ]
+      }
+    },
+    "scope": "Structure, hashes, dependencies and thresholds only; not simulation authenticity or GPU budget enforcement."
+  },
+  "source_sha256": {
+    "reports/landing_fullcommand_native_response_20261107/frictional_recursive_feasibility3.json": "a505791b6fb6511e9fe7f250223a411b2192e1d991634b5cb9b295291eaaea07",
+    "reports/landing_fullcommand_native_response_20261107/frictional_recursive_restoration3.json": "8dae9eb77aa52919e270f1e6cf1a9e9bbb326bcceccdf4063289fdbe1147b193",
+    "reports/landing_storage_reconciliation_20261107/archives.json": "3b54572392d1f1fa72d0834aacf74a4a59e25180783d4be0ad5996ceb0fd35e6",
+    "reports/native_receding_sequence3_all128_20261107_01/job.json": "415eee9202af56a705ba7c52eda6314c49442c530bcc0f2468060170cef4d74b",
+    "reports/native_receding_sequence3_all128_20261107_01/error.txt": "e73544e26bcc10cd89e069190da7091b76889ea6b02ffc47336b65e3bb31c401",
+    "reports/native_receding_sequence3_all128_20261107_01/failed_ledger_reconciliation.json": "ea6f208ef858fc12b236873337db777d5fdd5eee9e360df9023571d1a6f7bda6",
+    "reports/landing_native_frictional_storage_ready_20261107/plan.json": "e8489701e7d38fe2ee317f274e9765684cf42895b1530f10924d25dffdcc0f4f",
+    "reports/native_frictional_sequence3_all128_20261107_01/storage_admission.json": "119e1fdc02d287bfc8a20337ee6030a8c96ee0a3aa98ee8e5686f52225be517a"
+  }
+}
