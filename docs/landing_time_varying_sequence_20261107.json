@@ -1,0 +1,3403 @@
+{
+  "created_at": "2026-11-07T18:54:42.231544+08:00",
+  "native_execution": false,
+  "new_native_successes": null,
+  "summary": {
+    "queries": 60,
+    "linear_solved": 28,
+    "refreshed_prediction_accepted": 1,
+    "newly_model_feasible": 0,
+    "retained_by_zero_step_only": 1,
+    "complete_constraint_checked_nominal": 28
+  },
+  "groups": {
+    "target_nonfoot": {
+      "cases": 22,
+      "nominal_complete": 15,
+      "linear_solved": 15,
+      "new_model_plans": 0
+    },
+    "old_success": {
+      "cases": 3,
+      "nominal_complete": 2,
+      "linear_solved": 2,
+      "new_model_plans": 0
+    }
+  },
+  "positive_step_rejection_checks": {
+    "friction_violation_n": 126,
+    "joint_velocity_violation_rad_s": 47,
+    "normal_force_violation_n": 11,
+    "joint_damper": 2
+  },
+  "violation_counts_can_overlap": true,
+  "maximum_zero_increment_violation": 9.201694961546991e-12,
+  "summed_query_wall_seconds": 100.05964034213684,
+  "parallel_wall_time_not_claimed": true,
+  "records": [
+    {
+      "case": 1,
+      "query_tick": 476,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "support_feet": 2,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 34,
+        "rejection": "QP rejected prediction stage 34"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 0.3449217339511961,
+      "proposal": {
+        "prediction": null,
+        "linear_proposal_solved": false,
+        "solver_status": "not_attempted_no_full_nominal",
+        "solver_backend": null,
+        "initial_constraint_rows": null,
+        "constraint_rows": null,
+        "zero_increment_constraint_violation": null,
+        "local_increment_bound_rad": null,
+        "wall_seconds": null
+      },
+      "backtracking": []
+    },
+    {
+      "case": 2,
+      "query_tick": 340,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 4,
+      "seed": {
+        "full_prediction_accepted": true,
+        "accepted_stages": 40,
+        "rejection": null
+      },
+      "selected_fraction": 0.0,
+      "newly_model_feasible": false,
+      "wall_seconds": 2.347569043049589,
+      "proposal": {
+        "prediction": "time-varying-loaded-dynamics; nominal-contact-schedule; local-command-increments",
+        "linear_proposal_solved": true,
+        "solver_status": "solved",
+        "solver_backend": "active_set",
+        "initial_constraint_rows": 5482,
+        "constraint_rows": 70882,
+        "zero_increment_constraint_violation": 4.934941344458821e-13,
+        "local_increment_bound_rad": 0.1,
+        "wall_seconds": 1.6911438789684325
+      },
+      "backtracking": [
+        {
+          "fraction": 1.0,
+          "accepted": false,
+          "completed_stages": 2,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.5,
+          "accepted": false,
+          "completed_stages": 2,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.25,
+          "accepted": false,
+          "completed_stages": 2,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.125,
+          "accepted": false,
+          "completed_stages": 2,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0625,
+          "accepted": false,
+          "completed_stages": 3,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.03125,
+          "accepted": false,
+          "completed_stages": 3,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0,
+          "accepted": true,
+          "completed_stages": 40,
+          "rejection": null,
+          "terminal_risk": {
+            "trigger": false,
+            "tilt_rad": 0.03436003802101797,
+            "horizontal_speed_mps": 0.15149637587289488,
+            "angular_speed_rad_s": 0.16596456905557228,
+            "support_feet": 4,
+            "reason": "none",
+            "support_margin_m": 0.12202573590941114,
+            "root_height_m": 0.24214099359999647
+          }
+        }
+      ]
+    },
+    {
+      "case": 3,
+      "query_tick": 460,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "support_feet": 3,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 40,
+        "rejection": "terminal support margin not reached"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 5.025028711184859,
+      "proposal": {
+        "prediction": "time-varying-loaded-dynamics; nominal-contact-schedule; local-command-increments",
+        "linear_proposal_solved": true,
+        "solver_status": "solved",
+        "solver_backend": "active_set",
+        "initial_constraint_rows": 5122,
+        "constraint_rows": 65122,
+        "zero_increment_constraint_violation": 1.3615978613710983e-12,
+        "local_increment_bound_rad": 0.1,
+        "wall_seconds": 4.354027098976076
+      },
+      "backtracking": [
+        {
+          "fraction": 1.0,
+          "accepted": false,
+          "completed_stages": 3,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.5,
+          "accepted": false,
+          "completed_stages": 3,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.25,
+          "accepted": false,
+          "completed_stages": 3,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.125,
+          "accepted": false,
+          "completed_stages": 3,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0625,
+          "accepted": false,
+          "completed_stages": 3,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.03125,
+          "accepted": false,
+          "completed_stages": 3,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0,
+          "accepted": false,
+          "completed_stages": 40,
+          "rejection": "Original terminal recovery check failed",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.3146111170335322,
+            "horizontal_speed_mps": 1.0766040628180122,
+            "angular_speed_rad_s": 2.239913979288933,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.16245084959533945,
+            "root_height_m": 0.1273969618112389
+          }
+        }
+      ]
+    },
+    {
+      "case": 5,
+      "query_tick": 310,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 1,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 33,
+        "rejection": "QP rejected prediction stage 33"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 0.324098729994148,
+      "proposal": {
+        "prediction": null,
+        "linear_proposal_solved": false,
+        "solver_status": "not_attempted_no_full_nominal",
+        "solver_backend": null,
+        "initial_constraint_rows": null,
+        "constraint_rows": null,
+        "zero_increment_constraint_violation": null,
+        "local_increment_bound_rad": null,
+        "wall_seconds": null
+      },
+      "backtracking": []
+    },
+    {
+      "case": 7,
+      "query_tick": 306,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 1,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 7,
+        "rejection": "QP rejected prediction stage 7"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 0.08134896587580442,
+      "proposal": {
+        "prediction": null,
+        "linear_proposal_solved": false,
+        "solver_status": "not_attempted_no_full_nominal",
+        "solver_backend": null,
+        "initial_constraint_rows": null,
+        "constraint_rows": null,
+        "zero_increment_constraint_violation": null,
+        "local_increment_bound_rad": null,
+        "wall_seconds": null
+      },
+      "backtracking": []
+    },
+    {
+      "case": 8,
+      "query_tick": 310,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "support_feet": 1,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 40,
+        "rejection": "terminal support margin not reached"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 2.6004929959308356,
+      "proposal": {
+        "prediction": "time-varying-loaded-dynamics; nominal-contact-schedule; local-command-increments",
+        "linear_proposal_solved": true,
+        "solver_status": "solved",
+        "solver_backend": "active_set",
+        "initial_constraint_rows": 4807,
+        "constraint_rows": 60082,
+        "zero_increment_constraint_violation": 1.0912382109040664e-12,
+        "local_increment_bound_rad": 0.1,
+        "wall_seconds": 1.6300577060319483
+      },
+      "backtracking": [
+        {
+          "fraction": 1.0,
+          "accepted": false,
+          "completed_stages": 2,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.5,
+          "accepted": false,
+          "completed_stages": 2,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.25,
+          "accepted": false,
+          "completed_stages": 36,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.125,
+          "accepted": false,
+          "completed_stages": 36,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0625,
+          "accepted": false,
+          "completed_stages": 35,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.03125,
+          "accepted": false,
+          "completed_stages": 34,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0,
+          "accepted": false,
+          "completed_stages": 40,
+          "rejection": "Original terminal recovery check failed",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.21850694995567618,
+            "horizontal_speed_mps": 0.4336112630056439,
+            "angular_speed_rad_s": 1.4448971236436572,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.18591180926705086,
+            "root_height_m": 0.1431111075894199
+          }
+        }
+      ]
+    },
+    {
+      "case": 9,
+      "query_tick": 366,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "support_feet": 1,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 16,
+        "rejection": "QP rejected prediction stage 16"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 0.15074676205404103,
+      "proposal": {
+        "prediction": null,
+        "linear_proposal_solved": false,
+        "solver_status": "not_attempted_no_full_nominal",
+        "solver_backend": null,
+        "initial_constraint_rows": null,
+        "constraint_rows": null,
+        "zero_increment_constraint_violation": null,
+        "local_increment_bound_rad": null,
+        "wall_seconds": null
+      },
+      "backtracking": []
+    },
+    {
+      "case": 11,
+      "query_tick": 530,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 2,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 34,
+        "rejection": "QP rejected prediction stage 34"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 0.3652559360489249,
+      "proposal": {
+        "prediction": null,
+        "linear_proposal_solved": false,
+        "solver_status": "not_attempted_no_full_nominal",
+        "solver_backend": null,
+        "initial_constraint_rows": null,
+        "constraint_rows": null,
+        "zero_increment_constraint_violation": null,
+        "local_increment_bound_rad": null,
+        "wall_seconds": null
+      },
+      "backtracking": []
+    },
+    {
+      "case": 12,
+      "query_tick": 390,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "support_feet": 3,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 40,
+        "rejection": "terminal support margin not reached"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 2.944425492081791,
+      "proposal": {
+        "prediction": "time-varying-loaded-dynamics; nominal-contact-schedule; local-command-increments",
+        "linear_proposal_solved": true,
+        "solver_status": "solved",
+        "solver_backend": "active_set",
+        "initial_constraint_rows": 5122,
+        "constraint_rows": 65122,
+        "zero_increment_constraint_violation": 5.095218400160647e-12,
+        "local_increment_bound_rad": 0.1,
+        "wall_seconds": 2.1655312729999423
+      },
+      "backtracking": [
+        {
+          "fraction": 1.0,
+          "accepted": false,
+          "completed_stages": 2,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.5,
+          "accepted": false,
+          "completed_stages": 2,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.25,
+          "accepted": false,
+          "completed_stages": 4,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.125,
+          "accepted": false,
+          "completed_stages": 4,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0625,
+          "accepted": false,
+          "completed_stages": 4,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.03125,
+          "accepted": false,
+          "completed_stages": 4,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0,
+          "accepted": false,
+          "completed_stages": 40,
+          "rejection": "Original terminal recovery check failed",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.130573892832951,
+            "horizontal_speed_mps": 0.5677214263439742,
+            "angular_speed_rad_s": 0.2610127987277327,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.07403883699748748,
+            "root_height_m": 0.20692267679110476
+          }
+        }
+      ]
+    },
+    {
+      "case": 13,
+      "query_tick": 310,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 1,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 0,
+        "rejection": "QP rejected prediction stage 0"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 0.0060944820288568735,
+      "proposal": {
+        "prediction": null,
+        "linear_proposal_solved": false,
+        "solver_status": "not_attempted_no_full_nominal",
+        "solver_backend": null,
+        "initial_constraint_rows": null,
+        "constraint_rows": null,
+        "zero_increment_constraint_violation": null,
+        "local_increment_bound_rad": null,
+        "wall_seconds": null
+      },
+      "backtracking": []
+    },
+    {
+      "case": 15,
+      "query_tick": 690,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 3,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 40,
+        "rejection": "terminal support margin not reached"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 4.108592868084088,
+      "proposal": {
+        "prediction": "time-varying-loaded-dynamics; nominal-contact-schedule; local-command-increments",
+        "linear_proposal_solved": true,
+        "solver_status": "solved",
+        "solver_backend": "active_set",
+        "initial_constraint_rows": 5122,
+        "constraint_rows": 65122,
+        "zero_increment_constraint_violation": 1.5098408634450777e-12,
+        "local_increment_bound_rad": 0.1,
+        "wall_seconds": 3.3923206890467554
+      },
+      "backtracking": [
+        {
+          "fraction": 1.0,
+          "accepted": false,
+          "completed_stages": 2,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.5,
+          "accepted": false,
+          "completed_stages": 2,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.25,
+          "accepted": false,
+          "completed_stages": 2,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.125,
+          "accepted": false,
+          "completed_stages": 2,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0625,
+          "accepted": false,
+          "completed_stages": 2,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.03125,
+          "accepted": false,
+          "completed_stages": 2,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0,
+          "accepted": false,
+          "completed_stages": 40,
+          "rejection": "Original terminal recovery check failed",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.22561127066897818,
+            "horizontal_speed_mps": 0.9164297528305749,
+            "angular_speed_rad_s": 1.356989213370638,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.1332505696194795,
+            "root_height_m": 0.16903832642913874
+          }
+        }
+      ]
+    },
+    {
+      "case": 18,
+      "query_tick": 520,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "support_feet": 3,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 40,
+        "rejection": "terminal support margin not reached"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 4.493004849879071,
+      "proposal": {
+        "prediction": "time-varying-loaded-dynamics; nominal-contact-schedule; local-command-increments",
+        "linear_proposal_solved": true,
+        "solver_status": "solved",
+        "solver_backend": "active_set",
+        "initial_constraint_rows": 5122,
+        "constraint_rows": 65122,
+        "zero_increment_constraint_violation": 1.6863177521031503e-12,
+        "local_increment_bound_rad": 0.1,
+        "wall_seconds": 3.700274792034179
+      },
+      "backtracking": [
+        {
+          "fraction": 1.0,
+          "accepted": false,
+          "completed_stages": 9,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.5,
+          "accepted": false,
+          "completed_stages": 9,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.25,
+          "accepted": false,
+          "completed_stages": 9,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.125,
+          "accepted": false,
+          "completed_stages": 9,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0625,
+          "accepted": false,
+          "completed_stages": 9,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.03125,
+          "accepted": false,
+          "completed_stages": 9,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0,
+          "accepted": false,
+          "completed_stages": 40,
+          "rejection": "Original terminal recovery check failed",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.2430989193323432,
+            "horizontal_speed_mps": 0.9841088233087185,
+            "angular_speed_rad_s": 1.7058596553774341,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.14413216108351432,
+            "root_height_m": 0.15581917028237324
+          }
+        }
+      ]
+    },
+    {
+      "case": 19,
+      "query_tick": 646,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 2,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 30,
+        "rejection": "QP rejected prediction stage 30"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 0.3448506679851562,
+      "proposal": {
+        "prediction": null,
+        "linear_proposal_solved": false,
+        "solver_status": "not_attempted_no_full_nominal",
+        "solver_backend": null,
+        "initial_constraint_rows": null,
+        "constraint_rows": null,
+        "zero_increment_constraint_violation": null,
+        "local_increment_bound_rad": null,
+        "wall_seconds": null
+      },
+      "backtracking": []
+    },
+    {
+      "case": 20,
+      "query_tick": 326,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "support_feet": 2,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 40,
+        "rejection": "terminal support margin not reached"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 2.240783100016415,
+      "proposal": {
+        "prediction": "time-varying-loaded-dynamics; nominal-contact-schedule; local-command-increments",
+        "linear_proposal_solved": true,
+        "solver_status": "solved",
+        "solver_backend": "active_set",
+        "initial_constraint_rows": 5095,
+        "constraint_rows": 64690,
+        "zero_increment_constraint_violation": 5.827560656257447e-13,
+        "local_increment_bound_rad": 0.1,
+        "wall_seconds": 1.5321984430775046
+      },
+      "backtracking": [
+        {
+          "fraction": 1.0,
+          "accepted": false,
+          "completed_stages": 2,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.5,
+          "accepted": false,
+          "completed_stages": 2,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.25,
+          "accepted": false,
+          "completed_stages": 2,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.125,
+          "accepted": false,
+          "completed_stages": 2,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0625,
+          "accepted": false,
+          "completed_stages": 2,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.03125,
+          "accepted": false,
+          "completed_stages": 2,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0,
+          "accepted": false,
+          "completed_stages": 40,
+          "rejection": "Original terminal recovery check failed",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.14520884096925302,
+            "horizontal_speed_mps": 0.3304672227835421,
+            "angular_speed_rad_s": 0.27774448786661143,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.045603914197664464,
+            "root_height_m": 0.2308411782430976
+          }
+        }
+      ]
+    },
+    {
+      "case": 29,
+      "query_tick": 336,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 2,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 38,
+        "rejection": "QP rejected prediction stage 38"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 0.420816594036296,
+      "proposal": {
+        "prediction": null,
+        "linear_proposal_solved": false,
+        "solver_status": "not_attempted_no_full_nominal",
+        "solver_backend": null,
+        "initial_constraint_rows": null,
+        "constraint_rows": null,
+        "zero_increment_constraint_violation": null,
+        "local_increment_bound_rad": null,
+        "wall_seconds": null
+      },
+      "backtracking": []
+    },
+    {
+      "case": 30,
+      "query_tick": 326,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "support_feet": 2,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 40,
+        "rejection": "terminal support margin not reached"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 3.521204517921433,
+      "proposal": {
+        "prediction": "time-varying-loaded-dynamics; nominal-contact-schedule; local-command-increments",
+        "linear_proposal_solved": true,
+        "solver_status": "solved",
+        "solver_backend": "active_set",
+        "initial_constraint_rows": 5086,
+        "constraint_rows": 64546,
+        "zero_increment_constraint_violation": 1.0556000518135988e-12,
+        "local_increment_bound_rad": 0.1,
+        "wall_seconds": 2.7601619560737163
+      },
+      "backtracking": [
+        {
+          "fraction": 1.0,
+          "accepted": false,
+          "completed_stages": 5,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.5,
+          "accepted": false,
+          "completed_stages": 5,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.25,
+          "accepted": false,
+          "completed_stages": 8,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.125,
+          "accepted": false,
+          "completed_stages": 8,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0625,
+          "accepted": false,
+          "completed_stages": 8,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.03125,
+          "accepted": false,
+          "completed_stages": 8,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0,
+          "accepted": false,
+          "completed_stages": 40,
+          "rejection": "Original terminal recovery check failed",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.26278487061076844,
+            "horizontal_speed_mps": 0.7574297904807892,
+            "angular_speed_rad_s": 1.9419185719530847,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.11439775830953472,
+            "root_height_m": 0.19073880315302286
+          }
+        }
+      ]
+    },
+    {
+      "case": 31,
+      "query_tick": 560,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 3,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 39,
+        "rejection": "QP rejected prediction stage 39"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 0.4046969311311841,
+      "proposal": {
+        "prediction": null,
+        "linear_proposal_solved": false,
+        "solver_status": "not_attempted_no_full_nominal",
+        "solver_backend": null,
+        "initial_constraint_rows": null,
+        "constraint_rows": null,
+        "zero_increment_constraint_violation": null,
+        "local_increment_bound_rad": null,
+        "wall_seconds": null
+      },
+      "backtracking": []
+    },
+    {
+      "case": 32,
+      "query_tick": 310,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "support_feet": 1,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 7,
+        "rejection": "QP rejected prediction stage 7"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 0.08365647704340518,
+      "proposal": {
+        "prediction": null,
+        "linear_proposal_solved": false,
+        "solver_status": "not_attempted_no_full_nominal",
+        "solver_backend": null,
+        "initial_constraint_rows": null,
+        "constraint_rows": null,
+        "zero_increment_constraint_violation": null,
+        "local_increment_bound_rad": null,
+        "wall_seconds": null
+      },
+      "backtracking": []
+    },
+    {
+      "case": 35,
+      "query_tick": 306,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "support_feet": 2,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 40,
+        "rejection": "terminal support margin not reached"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 2.449372219853103,
+      "proposal": {
+        "prediction": "time-varying-loaded-dynamics; nominal-contact-schedule; local-command-increments",
+        "linear_proposal_solved": true,
+        "solver_status": "solved",
+        "solver_backend": "active_set",
+        "initial_constraint_rows": 4942,
+        "constraint_rows": 62242,
+        "zero_increment_constraint_violation": 7.460698725481052e-13,
+        "local_increment_bound_rad": 0.1,
+        "wall_seconds": 1.5679450191091746
+      },
+      "backtracking": [
+        {
+          "fraction": 1.0,
+          "accepted": false,
+          "completed_stages": 1,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.5,
+          "accepted": false,
+          "completed_stages": 28,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.25,
+          "accepted": false,
+          "completed_stages": 22,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.125,
+          "accepted": false,
+          "completed_stages": 20,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0625,
+          "accepted": false,
+          "completed_stages": 20,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.03125,
+          "accepted": false,
+          "completed_stages": 20,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0,
+          "accepted": false,
+          "completed_stages": 40,
+          "rejection": "Original terminal recovery check failed",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.25998274301423907,
+            "horizontal_speed_mps": 0.52422842906192,
+            "angular_speed_rad_s": 0.21565919593408128,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.1965782603673191,
+            "root_height_m": 0.1354767072199696
+          }
+        }
+      ]
+    },
+    {
+      "case": 38,
+      "query_tick": 316,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "support_feet": 2,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 40,
+        "rejection": "terminal support margin not reached"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 2.025980981066823,
+      "proposal": {
+        "prediction": "time-varying-loaded-dynamics; nominal-contact-schedule; local-command-increments",
+        "linear_proposal_solved": true,
+        "solver_status": "solved",
+        "solver_backend": "active_set",
+        "initial_constraint_rows": 4933,
+        "constraint_rows": 62098,
+        "zero_increment_constraint_violation": 1.4495071809506044e-12,
+        "local_increment_bound_rad": 0.1,
+        "wall_seconds": 1.3303644061088562
+      },
+      "backtracking": [
+        {
+          "fraction": 1.0,
+          "accepted": false,
+          "completed_stages": 5,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.5,
+          "accepted": false,
+          "completed_stages": 6,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.25,
+          "accepted": false,
+          "completed_stages": 6,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.125,
+          "accepted": false,
+          "completed_stages": 6,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0625,
+          "accepted": false,
+          "completed_stages": 7,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.03125,
+          "accepted": false,
+          "completed_stages": 7,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0,
+          "accepted": false,
+          "completed_stages": 40,
+          "rejection": "Original terminal recovery check failed",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.12612043226531122,
+            "horizontal_speed_mps": 0.16862317558967277,
+            "angular_speed_rad_s": 0.523435489011218,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.04342794201718201,
+            "root_height_m": 0.2244176891930538
+          }
+        }
+      ]
+    },
+    {
+      "case": 40,
+      "query_tick": 316,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 1,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 0,
+        "rejection": "QP rejected prediction stage 0"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 0.005868821172043681,
+      "proposal": {
+        "prediction": null,
+        "linear_proposal_solved": false,
+        "solver_status": "not_attempted_no_full_nominal",
+        "solver_backend": null,
+        "initial_constraint_rows": null,
+        "constraint_rows": null,
+        "zero_increment_constraint_violation": null,
+        "local_increment_bound_rad": null,
+        "wall_seconds": null
+      },
+      "backtracking": []
+    },
+    {
+      "case": 41,
+      "query_tick": 306,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 2,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 9,
+        "rejection": "QP rejected prediction stage 9"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 0.09836929198354483,
+      "proposal": {
+        "prediction": null,
+        "linear_proposal_solved": false,
+        "solver_status": "not_attempted_no_full_nominal",
+        "solver_backend": null,
+        "initial_constraint_rows": null,
+        "constraint_rows": null,
+        "zero_increment_constraint_violation": null,
+        "local_increment_bound_rad": null,
+        "wall_seconds": null
+      },
+      "backtracking": []
+    },
+    {
+      "case": 42,
+      "query_tick": 310,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "support_feet": 1,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 40,
+        "rejection": "terminal support margin not reached"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 2.5422799019142985,
+      "proposal": {
+        "prediction": "time-varying-loaded-dynamics; nominal-contact-schedule; local-command-increments",
+        "linear_proposal_solved": true,
+        "solver_status": "solved",
+        "solver_backend": "active_set",
+        "initial_constraint_rows": 4897,
+        "constraint_rows": 61522,
+        "zero_increment_constraint_violation": 3.7836485054009335e-12,
+        "local_increment_bound_rad": 0.1,
+        "wall_seconds": 1.6977984979748726
+      },
+      "backtracking": [
+        {
+          "fraction": 1.0,
+          "accepted": false,
+          "completed_stages": 11,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.5,
+          "accepted": false,
+          "completed_stages": 11,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.25,
+          "accepted": false,
+          "completed_stages": 11,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.125,
+          "accepted": false,
+          "completed_stages": 11,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0625,
+          "accepted": false,
+          "completed_stages": 11,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.03125,
+          "accepted": false,
+          "completed_stages": 11,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0,
+          "accepted": false,
+          "completed_stages": 40,
+          "rejection": "Original terminal recovery check failed",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.23668039706612828,
+            "horizontal_speed_mps": 0.1531389531807656,
+            "angular_speed_rad_s": 0.38108779094974005,
+            "support_feet": 4,
+            "reason": "support_margin",
+            "support_margin_m": -0.03732101053848032,
+            "root_height_m": 0.1317189030116181
+          }
+        }
+      ]
+    },
+    {
+      "case": 46,
+      "query_tick": 400,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 1,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 24,
+        "rejection": "QP rejected prediction stage 24"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 0.24182848981581628,
+      "proposal": {
+        "prediction": null,
+        "linear_proposal_solved": false,
+        "solver_status": "not_attempted_no_full_nominal",
+        "solver_backend": null,
+        "initial_constraint_rows": null,
+        "constraint_rows": null,
+        "zero_increment_constraint_violation": null,
+        "local_increment_bound_rad": null,
+        "wall_seconds": null
+      },
+      "backtracking": []
+    },
+    {
+      "case": 47,
+      "query_tick": 306,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 2,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 9,
+        "rejection": "QP rejected prediction stage 9"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 0.08903240505605936,
+      "proposal": {
+        "prediction": null,
+        "linear_proposal_solved": false,
+        "solver_status": "not_attempted_no_full_nominal",
+        "solver_backend": null,
+        "initial_constraint_rows": null,
+        "constraint_rows": null,
+        "zero_increment_constraint_violation": null,
+        "local_increment_bound_rad": null,
+        "wall_seconds": null
+      },
+      "backtracking": []
+    },
+    {
+      "case": 48,
+      "query_tick": 310,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 1,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 40,
+        "rejection": "terminal support margin not reached"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 2.5392054978292435,
+      "proposal": {
+        "prediction": "time-varying-loaded-dynamics; nominal-contact-schedule; local-command-increments",
+        "linear_proposal_solved": true,
+        "solver_status": "solved",
+        "solver_backend": "active_set",
+        "initial_constraint_rows": 4753,
+        "constraint_rows": 59218,
+        "zero_increment_constraint_violation": 1.1084466677857563e-12,
+        "local_increment_bound_rad": 0.1,
+        "wall_seconds": 1.8949723518453538
+      },
+      "backtracking": [
+        {
+          "fraction": 1.0,
+          "accepted": false,
+          "completed_stages": 4,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.5,
+          "accepted": false,
+          "completed_stages": 4,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.25,
+          "accepted": false,
+          "completed_stages": 3,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.125,
+          "accepted": false,
+          "completed_stages": 5,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0625,
+          "accepted": false,
+          "completed_stages": 5,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.03125,
+          "accepted": false,
+          "completed_stages": 5,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0,
+          "accepted": false,
+          "completed_stages": 40,
+          "rejection": "Original terminal recovery check failed",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.36795944460409097,
+            "horizontal_speed_mps": 0.7701066849078732,
+            "angular_speed_rad_s": 2.197800484510468,
+            "support_feet": 2,
+            "reason": "support_margin",
+            "support_margin_m": -0.17554057458169695,
+            "root_height_m": 0.12268437836211679
+          }
+        }
+      ]
+    },
+    {
+      "case": 50,
+      "query_tick": 530,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "support_feet": 3,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 40,
+        "rejection": "terminal support margin not reached"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 5.825061867944896,
+      "proposal": {
+        "prediction": "time-varying-loaded-dynamics; nominal-contact-schedule; local-command-increments",
+        "linear_proposal_solved": true,
+        "solver_status": "solved",
+        "solver_backend": "active_set",
+        "initial_constraint_rows": 5122,
+        "constraint_rows": 65122,
+        "zero_increment_constraint_violation": 2.674254086659277e-12,
+        "local_increment_bound_rad": 0.1,
+        "wall_seconds": 5.092777990037575
+      },
+      "backtracking": [
+        {
+          "fraction": 1.0,
+          "accepted": false,
+          "completed_stages": 9,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.5,
+          "accepted": false,
+          "completed_stages": 9,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.25,
+          "accepted": false,
+          "completed_stages": 9,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.125,
+          "accepted": false,
+          "completed_stages": 9,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0625,
+          "accepted": false,
+          "completed_stages": 9,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.03125,
+          "accepted": false,
+          "completed_stages": 8,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0,
+          "accepted": false,
+          "completed_stages": 40,
+          "rejection": "Original terminal recovery check failed",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.2666587453202884,
+            "horizontal_speed_mps": 1.0271149583872643,
+            "angular_speed_rad_s": 1.8813712503545863,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.15503132698194402,
+            "root_height_m": 0.1438524340648026
+          }
+        }
+      ]
+    },
+    {
+      "case": 52,
+      "query_tick": 306,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "support_feet": 2,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 40,
+        "rejection": "terminal support margin not reached"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 2.5691798359621316,
+      "proposal": {
+        "prediction": "time-varying-loaded-dynamics; nominal-contact-schedule; local-command-increments",
+        "linear_proposal_solved": true,
+        "solver_status": "solved",
+        "solver_backend": "active_set",
+        "initial_constraint_rows": 4951,
+        "constraint_rows": 62386,
+        "zero_increment_constraint_violation": 1.1741718708435656e-12,
+        "local_increment_bound_rad": 0.1,
+        "wall_seconds": 1.6711094190832227
+      },
+      "backtracking": [
+        {
+          "fraction": 1.0,
+          "accepted": false,
+          "completed_stages": 19,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.5,
+          "accepted": false,
+          "completed_stages": 27,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.25,
+          "accepted": false,
+          "completed_stages": 21,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.125,
+          "accepted": false,
+          "completed_stages": 20,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0625,
+          "accepted": false,
+          "completed_stages": 19,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.03125,
+          "accepted": false,
+          "completed_stages": 19,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0,
+          "accepted": false,
+          "completed_stages": 40,
+          "rejection": "Original terminal recovery check failed",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.24305527023171936,
+            "horizontal_speed_mps": 0.42120948418164894,
+            "angular_speed_rad_s": 0.3300948423383582,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.18222130587150492,
+            "root_height_m": 0.1463584495772989
+          }
+        }
+      ]
+    },
+    {
+      "case": 54,
+      "query_tick": 550,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "support_feet": 2,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 30,
+        "rejection": "QP rejected prediction stage 30"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 0.3417426811065525,
+      "proposal": {
+        "prediction": null,
+        "linear_proposal_solved": false,
+        "solver_status": "not_attempted_no_full_nominal",
+        "solver_backend": null,
+        "initial_constraint_rows": null,
+        "constraint_rows": null,
+        "zero_increment_constraint_violation": null,
+        "local_increment_bound_rad": null,
+        "wall_seconds": null
+      },
+      "backtracking": []
+    },
+    {
+      "case": 56,
+      "query_tick": 336,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 1,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 40,
+        "rejection": "terminal support margin not reached"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 3.542867111042142,
+      "proposal": {
+        "prediction": "time-varying-loaded-dynamics; nominal-contact-schedule; local-command-increments",
+        "linear_proposal_solved": true,
+        "solver_status": "solved",
+        "solver_backend": "active_set",
+        "initial_constraint_rows": 4861,
+        "constraint_rows": 60946,
+        "zero_increment_constraint_violation": 1.3393730569077889e-12,
+        "local_increment_bound_rad": 0.1,
+        "wall_seconds": 2.671237293863669
+      },
+      "backtracking": [
+        {
+          "fraction": 1.0,
+          "accepted": false,
+          "completed_stages": 5,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.5,
+          "accepted": false,
+          "completed_stages": 13,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.25,
+          "accepted": false,
+          "completed_stages": 13,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.125,
+          "accepted": false,
+          "completed_stages": 16,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0625,
+          "accepted": false,
+          "completed_stages": 16,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.03125,
+          "accepted": false,
+          "completed_stages": 16,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0,
+          "accepted": false,
+          "completed_stages": 40,
+          "rejection": "Original terminal recovery check failed",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.3661320793636701,
+            "horizontal_speed_mps": 0.8208618892746793,
+            "angular_speed_rad_s": 1.7572503443127865,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.2632470408189303,
+            "root_height_m": 0.18109602949139197
+          }
+        }
+      ]
+    },
+    {
+      "case": 57,
+      "query_tick": 410,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "support_feet": 2,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 40,
+        "rejection": "terminal support margin not reached"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 3.294808175880462,
+      "proposal": {
+        "prediction": "time-varying-loaded-dynamics; nominal-contact-schedule; local-command-increments",
+        "linear_proposal_solved": true,
+        "solver_status": "solved",
+        "solver_backend": "active_set",
+        "initial_constraint_rows": 4762,
+        "constraint_rows": 59362,
+        "zero_increment_constraint_violation": 7.318590178329032e-13,
+        "local_increment_bound_rad": 0.1,
+        "wall_seconds": 2.457096667960286
+      },
+      "backtracking": [
+        {
+          "fraction": 1.0,
+          "accepted": false,
+          "completed_stages": 13,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.5,
+          "accepted": false,
+          "completed_stages": 15,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.25,
+          "accepted": false,
+          "completed_stages": 16,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.125,
+          "accepted": false,
+          "completed_stages": 16,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0625,
+          "accepted": false,
+          "completed_stages": 17,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.03125,
+          "accepted": false,
+          "completed_stages": 17,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0,
+          "accepted": false,
+          "completed_stages": 40,
+          "rejection": "Original terminal recovery check failed",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.1671030163071841,
+            "horizontal_speed_mps": 0.7929768599441112,
+            "angular_speed_rad_s": 0.5134114928830948,
+            "support_feet": 2,
+            "reason": "support_margin",
+            "support_margin_m": -0.14128624373477786,
+            "root_height_m": 0.1731087840685986
+          }
+        }
+      ]
+    },
+    {
+      "case": 58,
+      "query_tick": 390,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "support_feet": 3,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 40,
+        "rejection": "terminal support margin not reached"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 3.4298301697708666,
+      "proposal": {
+        "prediction": "time-varying-loaded-dynamics; nominal-contact-schedule; local-command-increments",
+        "linear_proposal_solved": true,
+        "solver_status": "solved",
+        "solver_backend": "active_set",
+        "initial_constraint_rows": 5122,
+        "constraint_rows": 65122,
+        "zero_increment_constraint_violation": 2.5489850682969888e-12,
+        "local_increment_bound_rad": 0.1,
+        "wall_seconds": 2.634140687994659
+      },
+      "backtracking": [
+        {
+          "fraction": 1.0,
+          "accepted": false,
+          "completed_stages": 6,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.5,
+          "accepted": false,
+          "completed_stages": 13,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.25,
+          "accepted": false,
+          "completed_stages": 13,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.125,
+          "accepted": false,
+          "completed_stages": 13,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0625,
+          "accepted": false,
+          "completed_stages": 13,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.03125,
+          "accepted": false,
+          "completed_stages": 13,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0,
+          "accepted": false,
+          "completed_stages": 40,
+          "rejection": "Original terminal recovery check failed",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.15534354217056234,
+            "horizontal_speed_mps": 0.7086580037257174,
+            "angular_speed_rad_s": 0.4969277514334287,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.10023151118185931,
+            "root_height_m": 0.1880786243522659
+          }
+        }
+      ]
+    },
+    {
+      "case": 61,
+      "query_tick": 510,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "support_feet": 2,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 40,
+        "rejection": "terminal support margin not reached"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 4.949027601163834,
+      "proposal": {
+        "prediction": "time-varying-loaded-dynamics; nominal-contact-schedule; local-command-increments",
+        "linear_proposal_solved": true,
+        "solver_status": "solved",
+        "solver_backend": "active_set",
+        "initial_constraint_rows": 5113,
+        "constraint_rows": 64978,
+        "zero_increment_constraint_violation": 8.210099267103033e-13,
+        "local_increment_bound_rad": 0.1,
+        "wall_seconds": 4.151160482084379
+      },
+      "backtracking": [
+        {
+          "fraction": 1.0,
+          "accepted": false,
+          "completed_stages": 9,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.5,
+          "accepted": false,
+          "completed_stages": 9,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.25,
+          "accepted": false,
+          "completed_stages": 9,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.125,
+          "accepted": false,
+          "completed_stages": 9,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0625,
+          "accepted": false,
+          "completed_stages": 9,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.03125,
+          "accepted": false,
+          "completed_stages": 9,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0,
+          "accepted": false,
+          "completed_stages": 40,
+          "rejection": "Original terminal recovery check failed",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.30068362812545146,
+            "horizontal_speed_mps": 1.0695401453118016,
+            "angular_speed_rad_s": 2.1803887100881716,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.16581474305011273,
+            "root_height_m": 0.1382536249304793
+          }
+        }
+      ]
+    },
+    {
+      "case": 62,
+      "query_tick": 310,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 1,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 8,
+        "rejection": "QP rejected prediction stage 8"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 0.07916761189699173,
+      "proposal": {
+        "prediction": null,
+        "linear_proposal_solved": false,
+        "solver_status": "not_attempted_no_full_nominal",
+        "solver_backend": null,
+        "initial_constraint_rows": null,
+        "constraint_rows": null,
+        "zero_increment_constraint_violation": null,
+        "local_increment_bound_rad": null,
+        "wall_seconds": null
+      },
+      "backtracking": []
+    },
+    {
+      "case": 65,
+      "query_tick": 516,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 3,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 40,
+        "rejection": "terminal support margin not reached"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 4.42225527507253,
+      "proposal": {
+        "prediction": "time-varying-loaded-dynamics; nominal-contact-schedule; local-command-increments",
+        "linear_proposal_solved": true,
+        "solver_status": "solved",
+        "solver_backend": "active_set",
+        "initial_constraint_rows": 5122,
+        "constraint_rows": 65122,
+        "zero_increment_constraint_violation": 9.68225499775599e-13,
+        "local_increment_bound_rad": 0.1,
+        "wall_seconds": 3.680246108910069
+      },
+      "backtracking": [
+        {
+          "fraction": 1.0,
+          "accepted": false,
+          "completed_stages": 10,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.5,
+          "accepted": false,
+          "completed_stages": 10,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.25,
+          "accepted": false,
+          "completed_stages": 10,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.125,
+          "accepted": false,
+          "completed_stages": 10,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0625,
+          "accepted": false,
+          "completed_stages": 10,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.03125,
+          "accepted": false,
+          "completed_stages": 10,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0,
+          "accepted": false,
+          "completed_stages": 40,
+          "rejection": "Original terminal recovery check failed",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.2507121539636839,
+            "horizontal_speed_mps": 0.9909326543381302,
+            "angular_speed_rad_s": 1.6554673768683459,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.14844679493403046,
+            "root_height_m": 0.15288340423629546
+          }
+        }
+      ]
+    },
+    {
+      "case": 67,
+      "query_tick": 400,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "support_feet": 2,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 40,
+        "rejection": "terminal support margin not reached"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 3.3563080499880016,
+      "proposal": {
+        "prediction": "time-varying-loaded-dynamics; nominal-contact-schedule; local-command-increments",
+        "linear_proposal_solved": true,
+        "solver_status": "solved",
+        "solver_backend": "active_set",
+        "initial_constraint_rows": 5077,
+        "constraint_rows": 64402,
+        "zero_increment_constraint_violation": 7.749356711883593e-13,
+        "local_increment_bound_rad": 0.1,
+        "wall_seconds": 2.6448650078382343
+      },
+      "backtracking": [
+        {
+          "fraction": 1.0,
+          "accepted": false,
+          "completed_stages": 4,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.5,
+          "accepted": false,
+          "completed_stages": 4,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.25,
+          "accepted": false,
+          "completed_stages": 4,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.125,
+          "accepted": false,
+          "completed_stages": 7,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0625,
+          "accepted": false,
+          "completed_stages": 7,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.03125,
+          "accepted": false,
+          "completed_stages": 7,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0,
+          "accepted": false,
+          "completed_stages": 40,
+          "rejection": "Original terminal recovery check failed",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.1444839136280802,
+            "horizontal_speed_mps": 0.6762161776444963,
+            "angular_speed_rad_s": 0.2336143873250629,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.08555840852942187,
+            "root_height_m": 0.20953436251330426
+          }
+        }
+      ]
+    },
+    {
+      "case": 68,
+      "query_tick": 386,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 3,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 40,
+        "rejection": "terminal support margin not reached"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 3.7689673600252718,
+      "proposal": {
+        "prediction": "time-varying-loaded-dynamics; nominal-contact-schedule; local-command-increments",
+        "linear_proposal_solved": true,
+        "solver_status": "solved",
+        "solver_backend": "active_set",
+        "initial_constraint_rows": 5122,
+        "constraint_rows": 65122,
+        "zero_increment_constraint_violation": 3.5434809858088065e-12,
+        "local_increment_bound_rad": 0.1,
+        "wall_seconds": 3.130450628930703
+      },
+      "backtracking": [
+        {
+          "fraction": 1.0,
+          "accepted": false,
+          "completed_stages": 2,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.5,
+          "accepted": false,
+          "completed_stages": 2,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.25,
+          "accepted": false,
+          "completed_stages": 2,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.125,
+          "accepted": false,
+          "completed_stages": 2,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0625,
+          "accepted": false,
+          "completed_stages": 2,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.03125,
+          "accepted": false,
+          "completed_stages": 2,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0,
+          "accepted": false,
+          "completed_stages": 40,
+          "rejection": "Original terminal recovery check failed",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.2284305680599187,
+            "horizontal_speed_mps": 0.8706917390151143,
+            "angular_speed_rad_s": 1.1555269297149522,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.14466266513632495,
+            "root_height_m": 0.16231314636844996
+          }
+        }
+      ]
+    },
+    {
+      "case": 70,
+      "query_tick": 296,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "support_feet": 2,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 7,
+        "rejection": "QP rejected prediction stage 7"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 0.07957657985389233,
+      "proposal": {
+        "prediction": null,
+        "linear_proposal_solved": false,
+        "solver_status": "not_attempted_no_full_nominal",
+        "solver_backend": null,
+        "initial_constraint_rows": null,
+        "constraint_rows": null,
+        "zero_increment_constraint_violation": null,
+        "local_increment_bound_rad": null,
+        "wall_seconds": null
+      },
+      "backtracking": []
+    },
+    {
+      "case": 73,
+      "query_tick": 316,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 2,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 6,
+        "rejection": "QP rejected prediction stage 6"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 0.07787533197551966,
+      "proposal": {
+        "prediction": null,
+        "linear_proposal_solved": false,
+        "solver_status": "not_attempted_no_full_nominal",
+        "solver_backend": null,
+        "initial_constraint_rows": null,
+        "constraint_rows": null,
+        "zero_increment_constraint_violation": null,
+        "local_increment_bound_rad": null,
+        "wall_seconds": null
+      },
+      "backtracking": []
+    },
+    {
+      "case": 74,
+      "query_tick": 476,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 3,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 28,
+        "rejection": "QP rejected prediction stage 28"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 0.31960703083314,
+      "proposal": {
+        "prediction": null,
+        "linear_proposal_solved": false,
+        "solver_status": "not_attempted_no_full_nominal",
+        "solver_backend": null,
+        "initial_constraint_rows": null,
+        "constraint_rows": null,
+        "zero_increment_constraint_violation": null,
+        "local_increment_bound_rad": null,
+        "wall_seconds": null
+      },
+      "backtracking": []
+    },
+    {
+      "case": 79,
+      "query_tick": 326,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 2,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 31,
+        "rejection": "QP rejected prediction stage 31"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 0.30675408500246704,
+      "proposal": {
+        "prediction": null,
+        "linear_proposal_solved": false,
+        "solver_status": "not_attempted_no_full_nominal",
+        "solver_backend": null,
+        "initial_constraint_rows": null,
+        "constraint_rows": null,
+        "zero_increment_constraint_violation": null,
+        "local_increment_bound_rad": null,
+        "wall_seconds": null
+      },
+      "backtracking": []
+    },
+    {
+      "case": 82,
+      "query_tick": 396,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 3,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 40,
+        "rejection": "terminal support margin not reached"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 2.9525785620789975,
+      "proposal": {
+        "prediction": "time-varying-loaded-dynamics; nominal-contact-schedule; local-command-increments",
+        "linear_proposal_solved": true,
+        "solver_status": "solved",
+        "solver_backend": "active_set",
+        "initial_constraint_rows": 5122,
+        "constraint_rows": 65122,
+        "zero_increment_constraint_violation": 2.637470282853932e-12,
+        "local_increment_bound_rad": 0.1,
+        "wall_seconds": 2.294749622931704
+      },
+      "backtracking": [
+        {
+          "fraction": 1.0,
+          "accepted": false,
+          "completed_stages": 2,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.5,
+          "accepted": false,
+          "completed_stages": 2,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.25,
+          "accepted": false,
+          "completed_stages": 3,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.125,
+          "accepted": false,
+          "completed_stages": 6,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0625,
+          "accepted": false,
+          "completed_stages": 6,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.03125,
+          "accepted": false,
+          "completed_stages": 6,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0,
+          "accepted": false,
+          "completed_stages": 40,
+          "rejection": "Original terminal recovery check failed",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.11713286107771544,
+            "horizontal_speed_mps": 0.3952977391867207,
+            "angular_speed_rad_s": 0.18780093710227702,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.05477785324558993,
+            "root_height_m": 0.21275534516633915
+          }
+        }
+      ]
+    },
+    {
+      "case": 85,
+      "query_tick": 430,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "support_feet": 3,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 40,
+        "rejection": "terminal support margin not reached"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 3.834406217094511,
+      "proposal": {
+        "prediction": "time-varying-loaded-dynamics; nominal-contact-schedule; local-command-increments",
+        "linear_proposal_solved": true,
+        "solver_status": "solved",
+        "solver_backend": "active_set",
+        "initial_constraint_rows": 5122,
+        "constraint_rows": 65122,
+        "zero_increment_constraint_violation": 9.201694961546991e-12,
+        "local_increment_bound_rad": 0.1,
+        "wall_seconds": 3.1009792929980904
+      },
+      "backtracking": [
+        {
+          "fraction": 1.0,
+          "accepted": false,
+          "completed_stages": 9,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.5,
+          "accepted": false,
+          "completed_stages": 9,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.25,
+          "accepted": false,
+          "completed_stages": 9,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.125,
+          "accepted": false,
+          "completed_stages": 9,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0625,
+          "accepted": false,
+          "completed_stages": 9,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.03125,
+          "accepted": false,
+          "completed_stages": 9,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0,
+          "accepted": false,
+          "completed_stages": 40,
+          "rejection": "Original terminal recovery check failed",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.3174419633375041,
+            "horizontal_speed_mps": 1.0764089882621746,
+            "angular_speed_rad_s": 2.159666160015543,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.1682645343200142,
+            "root_height_m": 0.12678217198828454
+          }
+        }
+      ]
+    },
+    {
+      "case": 86,
+      "query_tick": 500,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 3,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 37,
+        "rejection": "QP rejected prediction stage 37"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 0.3550672789569944,
+      "proposal": {
+        "prediction": null,
+        "linear_proposal_solved": false,
+        "solver_status": "not_attempted_no_full_nominal",
+        "solver_backend": null,
+        "initial_constraint_rows": null,
+        "constraint_rows": null,
+        "zero_increment_constraint_violation": null,
+        "local_increment_bound_rad": null,
+        "wall_seconds": null
+      },
+      "backtracking": []
+    },
+    {
+      "case": 87,
+      "query_tick": 306,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "support_feet": 2,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 7,
+        "rejection": "QP rejected prediction stage 7"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 0.06891322904266417,
+      "proposal": {
+        "prediction": null,
+        "linear_proposal_solved": false,
+        "solver_status": "not_attempted_no_full_nominal",
+        "solver_backend": null,
+        "initial_constraint_rows": null,
+        "constraint_rows": null,
+        "zero_increment_constraint_violation": null,
+        "local_increment_bound_rad": null,
+        "wall_seconds": null
+      },
+      "backtracking": []
+    },
+    {
+      "case": 90,
+      "query_tick": 326,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "support_feet": 2,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 40,
+        "rejection": "terminal support margin not reached"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 2.250141777098179,
+      "proposal": {
+        "prediction": "time-varying-loaded-dynamics; nominal-contact-schedule; local-command-increments",
+        "linear_proposal_solved": true,
+        "solver_status": "solved",
+        "solver_backend": "active_set",
+        "initial_constraint_rows": 5032,
+        "constraint_rows": 63682,
+        "zero_increment_constraint_violation": 1.1136647160014945e-12,
+        "local_increment_bound_rad": 0.1,
+        "wall_seconds": 1.5594259758945554
+      },
+      "backtracking": [
+        {
+          "fraction": 1.0,
+          "accepted": false,
+          "completed_stages": 3,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.5,
+          "accepted": false,
+          "completed_stages": 3,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.25,
+          "accepted": false,
+          "completed_stages": 4,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.125,
+          "accepted": false,
+          "completed_stages": 5,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0625,
+          "accepted": false,
+          "completed_stages": 5,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.03125,
+          "accepted": false,
+          "completed_stages": 6,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0,
+          "accepted": false,
+          "completed_stages": 40,
+          "rejection": "Original terminal recovery check failed",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.10501455078102875,
+            "horizontal_speed_mps": 0.19341953670975706,
+            "angular_speed_rad_s": 0.2959062959947483,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.005937241251573744,
+            "root_height_m": 0.24053782283454456
+          }
+        }
+      ]
+    },
+    {
+      "case": 91,
+      "query_tick": 470,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 3,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 37,
+        "rejection": "QP rejected prediction stage 37"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 0.37828992400318384,
+      "proposal": {
+        "prediction": null,
+        "linear_proposal_solved": false,
+        "solver_status": "not_attempted_no_full_nominal",
+        "solver_backend": null,
+        "initial_constraint_rows": null,
+        "constraint_rows": null,
+        "zero_increment_constraint_violation": null,
+        "local_increment_bound_rad": null,
+        "wall_seconds": null
+      },
+      "backtracking": []
+    },
+    {
+      "case": 93,
+      "query_tick": 310,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 2,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 7,
+        "rejection": "QP rejected prediction stage 7"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 0.0742775909602642,
+      "proposal": {
+        "prediction": null,
+        "linear_proposal_solved": false,
+        "solver_status": "not_attempted_no_full_nominal",
+        "solver_backend": null,
+        "initial_constraint_rows": null,
+        "constraint_rows": null,
+        "zero_increment_constraint_violation": null,
+        "local_increment_bound_rad": null,
+        "wall_seconds": null
+      },
+      "backtracking": []
+    },
+    {
+      "case": 95,
+      "query_tick": 460,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "support_feet": 3,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 37,
+        "rejection": "QP rejected prediction stage 37"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 0.4121233089827001,
+      "proposal": {
+        "prediction": null,
+        "linear_proposal_solved": false,
+        "solver_status": "not_attempted_no_full_nominal",
+        "solver_backend": null,
+        "initial_constraint_rows": null,
+        "constraint_rows": null,
+        "zero_increment_constraint_violation": null,
+        "local_increment_bound_rad": null,
+        "wall_seconds": null
+      },
+      "backtracking": []
+    },
+    {
+      "case": 96,
+      "query_tick": 636,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "support_feet": 2,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 34,
+        "rejection": "QP rejected prediction stage 34"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 0.3835282828658819,
+      "proposal": {
+        "prediction": null,
+        "linear_proposal_solved": false,
+        "solver_status": "not_attempted_no_full_nominal",
+        "solver_backend": null,
+        "initial_constraint_rows": null,
+        "constraint_rows": null,
+        "zero_increment_constraint_violation": null,
+        "local_increment_bound_rad": null,
+        "wall_seconds": null
+      },
+      "backtracking": []
+    },
+    {
+      "case": 97,
+      "query_tick": 480,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 3,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 40,
+        "rejection": "terminal support margin not reached"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 3.891234894050285,
+      "proposal": {
+        "prediction": "time-varying-loaded-dynamics; nominal-contact-schedule; local-command-increments",
+        "linear_proposal_solved": true,
+        "solver_status": "solved",
+        "solver_backend": "active_set",
+        "initial_constraint_rows": 5122,
+        "constraint_rows": 65122,
+        "zero_increment_constraint_violation": 7.198294645029487e-12,
+        "local_increment_bound_rad": 0.1,
+        "wall_seconds": 3.1235174799803644
+      },
+      "backtracking": [
+        {
+          "fraction": 1.0,
+          "accepted": false,
+          "completed_stages": 7,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.5,
+          "accepted": false,
+          "completed_stages": 7,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.25,
+          "accepted": false,
+          "completed_stages": 7,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.125,
+          "accepted": false,
+          "completed_stages": 7,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0625,
+          "accepted": false,
+          "completed_stages": 7,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.03125,
+          "accepted": false,
+          "completed_stages": 7,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0,
+          "accepted": false,
+          "completed_stages": 40,
+          "rejection": "Original terminal recovery check failed",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.19929347238413253,
+            "horizontal_speed_mps": 0.9270809234384306,
+            "angular_speed_rad_s": 0.9714004673681462,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.12539442878045162,
+            "root_height_m": 0.17790252676718252
+          }
+        }
+      ]
+    },
+    {
+      "case": 99,
+      "query_tick": 520,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 2,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 30,
+        "rejection": "QP rejected prediction stage 30"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 0.31667509698309004,
+      "proposal": {
+        "prediction": null,
+        "linear_proposal_solved": false,
+        "solver_status": "not_attempted_no_full_nominal",
+        "solver_backend": null,
+        "initial_constraint_rows": null,
+        "constraint_rows": null,
+        "zero_increment_constraint_violation": null,
+        "local_increment_bound_rad": null,
+        "wall_seconds": null
+      },
+      "backtracking": []
+    },
+    {
+      "case": 100,
+      "query_tick": 516,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 2,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 40,
+        "rejection": "terminal support margin not reached"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 2.6398504411336035,
+      "proposal": {
+        "prediction": "time-varying-loaded-dynamics; nominal-contact-schedule; local-command-increments",
+        "linear_proposal_solved": true,
+        "solver_status": "solved",
+        "solver_backend": "active_set",
+        "initial_constraint_rows": 5113,
+        "constraint_rows": 64978,
+        "zero_increment_constraint_violation": 1.4818322330103036e-12,
+        "local_increment_bound_rad": 0.1,
+        "wall_seconds": 1.9145118508022279
+      },
+      "backtracking": [
+        {
+          "fraction": 1.0,
+          "accepted": false,
+          "completed_stages": 8,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.5,
+          "accepted": false,
+          "completed_stages": 7,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.25,
+          "accepted": false,
+          "completed_stages": 7,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.125,
+          "accepted": false,
+          "completed_stages": 7,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0625,
+          "accepted": false,
+          "completed_stages": 7,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.03125,
+          "accepted": false,
+          "completed_stages": 7,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0,
+          "accepted": false,
+          "completed_stages": 40,
+          "rejection": "Original terminal recovery check failed",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.1842491339408583,
+            "horizontal_speed_mps": 0.46326897963737085,
+            "angular_speed_rad_s": 0.45247251469545496,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.10259754213755828,
+            "root_height_m": 0.18071284056423104
+          }
+        }
+      ]
+    },
+    {
+      "case": 101,
+      "query_tick": 610,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 2,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 36,
+        "rejection": "QP rejected prediction stage 36"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 0.3723252972122282,
+      "proposal": {
+        "prediction": null,
+        "linear_proposal_solved": false,
+        "solver_status": "not_attempted_no_full_nominal",
+        "solver_backend": null,
+        "initial_constraint_rows": null,
+        "constraint_rows": null,
+        "zero_increment_constraint_violation": null,
+        "local_increment_bound_rad": null,
+        "wall_seconds": null
+      },
+      "backtracking": []
+    },
+    {
+      "case": 102,
+      "query_tick": 326,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 2,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 40,
+        "rejection": "terminal support margin not reached"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 2.024969497928396,
+      "proposal": {
+        "prediction": "time-varying-loaded-dynamics; nominal-contact-schedule; local-command-increments",
+        "linear_proposal_solved": true,
+        "solver_status": "solved",
+        "solver_backend": "active_set",
+        "initial_constraint_rows": 4942,
+        "constraint_rows": 62242,
+        "zero_increment_constraint_violation": 1.744382416291046e-12,
+        "local_increment_bound_rad": 0.1,
+        "wall_seconds": 1.3612071801908314
+      },
+      "backtracking": [
+        {
+          "fraction": 1.0,
+          "accepted": false,
+          "completed_stages": 3,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.5,
+          "accepted": false,
+          "completed_stages": 3,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.25,
+          "accepted": false,
+          "completed_stages": 3,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.125,
+          "accepted": false,
+          "completed_stages": 3,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0625,
+          "accepted": false,
+          "completed_stages": 4,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.03125,
+          "accepted": false,
+          "completed_stages": 4,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0,
+          "accepted": false,
+          "completed_stages": 40,
+          "rejection": "Original terminal recovery check failed",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.06970454130049054,
+            "horizontal_speed_mps": 0.20867987778476937,
+            "angular_speed_rad_s": 0.24984466318318316,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.01026962447941652,
+            "root_height_m": 0.2245930620706844
+          }
+        }
+      ]
+    },
+    {
+      "case": 111,
+      "query_tick": 370,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 1,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 26,
+        "rejection": "QP rejected prediction stage 26"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 0.27011990104801953,
+      "proposal": {
+        "prediction": null,
+        "linear_proposal_solved": false,
+        "solver_status": "not_attempted_no_full_nominal",
+        "solver_backend": null,
+        "initial_constraint_rows": null,
+        "constraint_rows": null,
+        "zero_increment_constraint_violation": null,
+        "local_increment_bound_rad": null,
+        "wall_seconds": null
+      },
+      "backtracking": []
+    },
+    {
+      "case": 114,
+      "query_tick": 450,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 3,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 33,
+        "rejection": "QP rejected prediction stage 33"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 0.37663522781804204,
+      "proposal": {
+        "prediction": null,
+        "linear_proposal_solved": false,
+        "solver_status": "not_attempted_no_full_nominal",
+        "solver_backend": null,
+        "initial_constraint_rows": null,
+        "constraint_rows": null,
+        "zero_increment_constraint_violation": null,
+        "local_increment_bound_rad": null,
+        "wall_seconds": null
+      },
+      "backtracking": []
+    },
+    {
+      "case": 119,
+      "query_tick": 390,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 2,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 26,
+        "rejection": "QP rejected prediction stage 26"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 0.2958704801276326,
+      "proposal": {
+        "prediction": null,
+        "linear_proposal_solved": false,
+        "solver_status": "not_attempted_no_full_nominal",
+        "solver_backend": null,
+        "initial_constraint_rows": null,
+        "constraint_rows": null,
+        "zero_increment_constraint_violation": null,
+        "local_increment_bound_rad": null,
+        "wall_seconds": null
+      },
+      "backtracking": []
+    },
+    {
+      "case": 120,
+      "query_tick": 400,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 3,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 40,
+        "rejection": "terminal support margin not reached"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 2.9382117490749806,
+      "proposal": {
+        "prediction": "time-varying-loaded-dynamics; nominal-contact-schedule; local-command-increments",
+        "linear_proposal_solved": true,
+        "solver_status": "solved",
+        "solver_backend": "active_set",
+        "initial_constraint_rows": 5122,
+        "constraint_rows": 65122,
+        "zero_increment_constraint_violation": 1.0018652574217413e-12,
+        "local_increment_bound_rad": 0.1,
+        "wall_seconds": 2.1379807798657566
+      },
+      "backtracking": [
+        {
+          "fraction": 1.0,
+          "accepted": false,
+          "completed_stages": 6,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.5,
+          "accepted": false,
+          "completed_stages": 11,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.25,
+          "accepted": false,
+          "completed_stages": 11,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.125,
+          "accepted": false,
+          "completed_stages": 11,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0625,
+          "accepted": false,
+          "completed_stages": 11,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.03125,
+          "accepted": false,
+          "completed_stages": 11,
+          "rejection": "Refreshed dynamics violates physical/envelope constraint",
+          "terminal_risk": null
+        },
+        {
+          "fraction": 0.0,
+          "accepted": false,
+          "completed_stages": 40,
+          "rejection": "Original terminal recovery check failed",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.22966185955317855,
+            "horizontal_speed_mps": 0.7214521667022115,
+            "angular_speed_rad_s": 1.0869102208338997,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.12286705313419043,
+            "root_height_m": 0.1569917913431014
+          }
+        }
+      ]
+    },
+    {
+      "case": 125,
+      "query_tick": 306,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "support_feet": 2,
+      "seed": {
+        "full_prediction_accepted": false,
+        "accepted_stages": 6,
+        "rejection": "QP rejected prediction stage 6"
+      },
+      "selected_fraction": null,
+      "newly_model_feasible": false,
+      "wall_seconds": 0.06186635117046535,
+      "proposal": {
+        "prediction": null,
+        "linear_proposal_solved": false,
+        "solver_status": "not_attempted_no_full_nominal",
+        "solver_backend": null,
+        "initial_constraint_rows": null,
+        "constraint_rows": null,
+        "zero_increment_constraint_violation": null,
+        "local_increment_bound_rad": null,
+        "wall_seconds": null
+      },
+      "backtracking": []
+    }
+  ],
+  "full_result": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_joint_sequence_proposal_20261107/nominal_active_all_v2.json",
+  "full_result_sha256": "c6b18f663ea4abdba4e36d77239b6b6dfbbb070f8ed5a36bc71179d81ed8181c",
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_student_risk_prediction_20261107/mpc_with_observed_reference_v2.json": "410c4eed537cbf14c79e1c616146ab1ece7ef695a113aa6dcc985486162180da",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_joint_sequence_proposal_v1.py": "4338a3828f1466cf419a26e80416066236b9fb7bcf54f8645e8106af25c7078d",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/all_first_episodes.npz": "a60949357daa9b846c202d38e0436cfd5cfbe621c630d235e7e164a6ec9c9700",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/native_command_inputs.json": "f861d727c049c85d612cad7ce2a5be9a4bc3a85ab18ba38f5018dc871fca6f7c",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/geometry.json": "8afd390b7b92179ba6e2fde3774cc60162a98a5bd63ed50defd95b2e8f9d9c37",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/configs/go2_piper_racket_landing_model_v1.json": "8c8997368ab98b3f2befa9908f537d76990dc2a1099ca30d8e6c1823de814e88",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_001.npz": "63777ced85e16bad20bbb0c230966dce0a2a4e4de5ede302d4e0a4ba0b63fc6d",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_002.npz": "bef8b2c68302b3f469cb23b3a9981e37721b8c7fbc466d65e675a721053c4e85",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_003.npz": "37320a97164425d38e36b9188ce81b83fa0d9a26b13d650352a9d53dc3359c2c",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_005.npz": "32a73b89b907a9e8f5c28ac19e22e4c1a28012246af167a534e739555d28215e",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_007.npz": "6bf3b98bc263e117a7faac8674017f3fbd57aed34c1ba769f13da630a4b3d3b6",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_008.npz": "81142e9626462c05998a27df9d547a8bea41634e698754aa956e37c4cd278690",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_009.npz": "574ff7d269d7238b518ef051cdc7b9ac643ae303a930105e78c7ca28f3db7f25",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_011.npz": "9e55bed1613829b3228b342900895459c6b677cf447667977c1bbe01521ed8ba",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_012.npz": "abb2ac723849cdabe0bdcf04c302db5409620a7bda13cf426c4eed65bbbdccf9",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_013.npz": "be6002c495cdd50a0af09235d62f0047a4319aa2c6191daaa6e8729ef718680a",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_015.npz": "d693dfe069315417f2d08940b0c1a41590da6a6fd9086a93eb09aaa3ead16497",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_018.npz": "9cf04374baa930c51055b16bc3e90ed4047abc7c70b2500452e5e989156137eb",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_019.npz": "e6c0cae87bdcca62b35d249bfd3041337b20f2faccea0b5c44420ad4abdf960f",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_020.npz": "e7b774717dc74c7540779b7960df3a4bf01e1ab553a4e92204de664823e9535f",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_029.npz": "632b5ef883e459255f891aceccd7453bb2fafeed922f1e97abb09976d9b97255",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_030.npz": "7321f79a38ab8dc1c26e74baf8f67f0c1061a38078c13d530a31af6dbfe897fd",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_031.npz": "951a983fee678e78e0e2b1c250be71345049698585026aa674d3db7a7d50978a",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_032.npz": "035d32779cf2f4635eb118c4795f716560c1765d9a1c5fdac3b10c7ffa6d744c",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_035.npz": "de6c39cf0b559ae3df01fdeabae96579489db217dad2297897797612e7e9837e",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_038.npz": "90495bdb24cb5b268349842d9239cfa14f5bf4de3775fc89e0e1f984ad216c51",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_040.npz": "03e0bc491dc594a16906d7d6c08cb5c9e2bfd6d0f8406940a679f1fb0bceaa94",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_041.npz": "894d8c06732d7d29a2e612794a4a642dd9c2393e597324f47e176d7f1df05862",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_042.npz": "b6597b1de22bb69f7462799cf19d4c1ed66643367b6a295f058aca74c588ec26",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_046.npz": "3655d996a1d131a65556323c6c8d995a7c35a56972b26394ec74bca2a373027c",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_047.npz": "f98edbc6ea3ad3d8654a0227837d0f5bae100938f67a664a2a00ff9eb8f83a83",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_048.npz": "9f329ed75c5e5df4f4783238fb27e59e7f7c35e0030705bea282495799dcb72d",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_050.npz": "17a12dc8b179720fd13401b3475e89dfddc3d53d69e499db4a5946b1fbfaec50",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_052.npz": "31d5d7613c7d21b068d415fd98f97cbfb91a221f14099dd8944f73fb12e30046",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_054.npz": "8bdb716ca14c16d39ef423693790f78ab534216e6acb79587cec2e066ae7bf84",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_056.npz": "8de00e2232f103260a9c0ced3c7832f0753380c8556b0204b13dc0b15522968f",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_057.npz": "49363914c03f11186796c46f4de346b979231a6ef182601836273e0df0791907",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_058.npz": "029251cd8050a57dac27b121a0c5b4173e1010e7275e89016847a58c61936613",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_061.npz": "8eeeca813d2a9be355feea7f4a10bbdf8b9aa3d57dcbb049a60a0c610a0d83df",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_062.npz": "f5d2c614781567bd82d494450be49275195b930b8ed9f7b3fdf7d9016bd81264",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_065.npz": "4e8325aa1f35577a78da5d248141c40dd45d1f4396d6a792b33e8bd4d702bf32",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_067.npz": "6aa48c3300174b8b18d5bbb121b6e502539139915ce8f37dac2450ddd8a97f1d",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_068.npz": "fec0207d82371f7d89f8a16b5a9590267c03d68f45583e3ac52ce66ed068298d",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_070.npz": "896eeeb10e0d673adad607f0c3d84737862ada571543bf2a778cd34b2dc8aeeb",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_073.npz": "2a07cde50c33b840b74752141f20ef14a7e35d72c46a604ff647d2cbe96204e6",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_074.npz": "12f79c85e72009b57e75d3a8de832bb76e1ca170cd527175785f9ca3351d32bb",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_079.npz": "46aa27d5d7a12241ae41b22d73bf9360a337e277df6e3868cd91259e22909c3a",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_082.npz": "96eb10f35f5e2585eeb3e4243129f878ff7d5a0e5e470073964271fe6a197708",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_085.npz": "90fb307b7530559888eddc76b74675da21c510befbf799199c2b3d1582df7ef1",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_086.npz": "05d3b07f8f099c19693ac24e8246e8f06954813d4ca4913fe70fc8ea1a641e90",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_087.npz": "9b3d41988865a0f03bce9f1dde81095c74672ba3f60348b1519a3b5ac716db06",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_090.npz": "6ecd17ab8297ea2bd2ba98bc5d0e39f77f28a084367a2497576b0c1681f241b9",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_091.npz": "a99d2d50df63d9978a234640824717ba1012ce60523206287cf7cf3bbb4a4fd2",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_093.npz": "66d03dff4a203f907485bf00127ecad28aedcf387fb59ae0060963a459b49152",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_095.npz": "0398f9d731c2d95231d541bbc832784724f95ff6ffd216a69d11ee819ef14f24",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_096.npz": "892ed1f0296e9935977c5e2f34c277686a11c707c94c343384a57235694f6f05",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_097.npz": "df35259ec58101dca53fbfa4e3e63d8e429db0a62d4db0fe41410089f38888f9",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_099.npz": "330294094be95343ce0debdc9d3b36d6085f6d587e8688f625fb28b718f7fe52",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_100.npz": "a880719e258ff8650fde7166211079f96b73f3324e86ae6c2519cbb462d4e6e5",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_101.npz": "15bda0cd1f3f0b089967c6aa70417e881a96a8fe09ce1c0c1e3d13b00e8f3a45",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_102.npz": "1f5db38701e68e5c29e14dcbd9a854cba9f8b3e12c7ab68aef78d31f249fb267",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_111.npz": "46c0ecdeab52a0a9aa2cb0d8841ff5901047d7f612c37d068137cac3ab080855",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_114.npz": "f9525371f8b4650f48f748efc24dadcfb0aa26a558bcc5aab74b3128fe4ce2c3",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_119.npz": "2b1f18446463c8f94ceb8ef2b8bf21e11972a61d78fcfd727906453fd8866329",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_120.npz": "db9c514062159d880e5f97091f18518ea1f6e4ae33fd16c43c9c76e83c185d72",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_125.npz": "4028428e53495a382a3e8cc5486fce3181fab69c2541c29aa172cedd3c939cbd",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/parallel_landing_solver_v1.py": "4bc18476684fbc3a81eae8b1b63073c615ceafd73a23ccca2dde919564cfea33",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/condensed_implicit_drive_v1.py": "a0f21e9b954db9e978ba428a3770fcb8cd666e08dd21aa27cedf0c0e5c5af629",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/implicit_support_prediction_v1.py": "b751fa0ea59edd1fe8fc62cf0ba3816e5583ecc76df7058ef3f5185a335a1e01",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/dense_active_set_qp_v1.py": "cba063c6c594bfb42d1114dcafbaebc606d8c4b49b53ee65e764e3979b1bac4a",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/loaded_pinocchio_model_v1.py": "2b303a32e57391ec7aaf3c3faf9d151f758477faf13ef6efae5bead979dcae82",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/whole_body_support_qp_v1.py": "b67cd1f1c8ebe973d3885773fbc9f3bf17cfd935e5e2210a4b7c0ea1ff331d6d",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frame_point_kinematics_v1.py": "60fac87ef04f83a22807217b04e7cbe40b536251b56f5a119dc012d1f2529fd8",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/reduced_whole_body_support_qp_v1.py": "e731a0bca8744d4639099dd2ff9be94840a9f0c953c64924fb2cfa9e7a9c80c7",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/continuous_support_qp_v1.py": "824a3d49711917803e9c82af63b1d142917d62c874ec8751325578a71b4af640",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/command_history_support_qp_v1.py": "1ac2221f85cbf3d468be4c265cc932845700d5f17a9eaaf37440998873689081",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/interval_command_support_qp_v1.py": "7f9e47fdeb1f6cc420368d127f89cc1b726397752b0387f57b5bee1ea5915589",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/admitted_arm_support_qp_v1.py": "097d7022b16a28aa31f11081056092bd8b5b44172291b6bd3b1aba1dbe0a1c6e",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v1.py": "da2ff2e4ee1479bf3fc422c0b71f8831bffd9e5868d9a4e0665fd348ab659a59",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v2.py": "6d0ad9bc4fcd27a0f4f418e55b988341ffe809f14c132415281ec41621196ae2",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v3.py": "d8c54679697e78678a898f5d36a27305f9252a5f2b09990d0b33ddcc25533300",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_command_history_mpc_v1.py": "466ba93dc473c7d2de93aae0d5d7848b390d72e8fe1ef779ff0818efad704d28",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_interval_command_mpc_v1.py": "545ecf58c66d0bbf07f889f8867ce36d75ca42fcd94ca77b5307666163630060",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_active_set_interval_mpc_v1.py": "4c111c5ce1d6d711cbe9e4362aad315e0f50f9c2cb363d9595409e0701c7ec8d",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_arm_feasibility_mpc_v1.py": "af9a08a8b442c43099faadbda887ed79b1e497b114cbd77e93b4cc8a2481f40b",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_joint_damper_mpc_v1.py": "63b2eff24491e130f96681508524ccf124064469a285a6c82ed9dd498fa761f9",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_joint_sequence_proposal_v1.py": "727a0ca571e745e58adba1f934a8c109d0e3c0de75f44d5aa139a00bee495f51",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_sequence_linearization_v1.py": "acc515b9f7980645cdca835deb3ae8bfc4f20ee03eee90a53d9495f976b0ccf2"
+  }
+}

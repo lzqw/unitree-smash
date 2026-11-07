@@ -75,12 +75,13 @@ The independent held-command kernel is used in tests, not in this derivation.
 
 
 def propose_sequence(controller, state, reference, *, knots=9, time_limit_s=20.,
-                     constraint_start='control_endpoints'):
+                     constraint_start='control_endpoints', nominal_profile=None,solver_backend='osqp'):
     """Return a bounded proposal, never an executable accepted MPC plan."""
     started = time.perf_counter()
     if not 0 < time_limit_s <= 60.: raise ValueError('Bounded offline solve required')
     if constraint_start not in ('empty', 'control_endpoints'):
         raise ValueError('Explicit constraint generation initialization required')
+    if solver_backend not in ('osqp','active_set'):raise ValueError('Unknown QP backend')
     qp = controller.qp; model = qp.model; interface = qp.interface
     cfg = qp.settings; H = controller.settings.horizon_steps; dt = controller.settings.control_dt_s
     basis = knot_basis(H, knots); n = knots*18
@@ -93,6 +94,11 @@ def propose_sequence(controller, state, reference, *, knots=9, time_limit_s=20.,
         prediction='frozen-loaded-dynamics; fixed-observed-contact; unsaturated-PD',
         horizon_steps=H, control_dt_s=dt, knots=knots, decision_variables=n,
         constraint_start=constraint_start)
+    result.update(solver_backend=solver_backend,
+        per_call_hard_deadline=solver_backend=='osqp',
+        external_process_guard_required=solver_backend=='active_set')
+    if nominal_profile is not None:
+        result['prediction']='time-varying-loaded-dynamics; nominal-contact-schedule; local-command-increments'
     if not len(feet):
         return dict(result, rejection='No observed support for this fixed-contact proposal')
     S = np.zeros((24, 18)); S[model.v_indices, np.arange(18)] = 1.
@@ -117,10 +123,13 @@ def propose_sequence(controller, state, reference, *, knots=9, time_limit_s=20.,
     def task(mat, bias, target, weight):
         nonlocal P, q
         P += weight*mat.T@mat; q += weight*mat.T@(bias-target)
-    last_um = None
+    last_um = None; last_bias=None
     stages = affine_sequence(snap['mass_matrix'], snap['nonlinear'], S,
         interface.kp, interface.kd, jac, jdot, state.v, state.joint_position,
         basis, dt=dt, substeps=qp.substeps, decay=cfg.contact_velocity_decay_s)
+    if nominal_profile is not None:
+        from scripts.landing_sequence_linearization_v1 import affine_trajectory_sequence
+        stages=affine_trajectory_sequence(controller,state,basis,nominal_profile)
     angles = np.arange(cfg.friction_facets)*2*np.pi/cfg.friction_facets
     cone = np.c_[np.cos(angles), np.sin(angles),
                  np.full(cfg.friction_facets, -interface.friction*np.cos(np.pi/cfg.friction_facets))]
@@ -134,42 +143,55 @@ def propose_sequence(controller, state, reference, *, knots=9, time_limit_s=20.,
         gain = qp.damper_gain_s_inv
         bound(S.T@vm+gain*qm, S.T@vb+gain*qb,
               gain*interface.limits[:, 0], gain*interface.limits[:, 1],'joint_damper_rad_s')
-        zmap = state.root_rotation_world[2]@dm[:3]
-        zbias = state.q[2]+state.root_rotation_world[2]@db[:3]
+        zmap = state.root_rotation_world[2]@dm[:3] if nominal_profile is None else dm[2]
+        zbias = state.q[2]+(state.root_rotation_world[2]@db[:3] if nominal_profile is None else db[2])
         bound(zmap[None, :], np.array([zbias]), qp.minimum_root_height_m, np.inf,'root_height_m')
-        for foot in range(len(feet)):
+        for foot in range(len(st['force_bias'])//3):
             fm = st['force_map'][3*foot:3*foot+3]; fb = st['force_bias'][3*foot:3*foot+3]
             bound(fm[2:3], fb[2:3], 0., np.inf,'normal_force_n')
             bound(cone@fm, cone@fb, -np.inf, 0.,'friction_n')
         if st['micro'] == 0:
-            um = st['command_map']
-            bound(um, np.zeros(18), interface.limits[:, 0], interface.limits[:, 1],'command_range_rad',seed=True)
+            um = st['command_map']; ub=st.get('command_bias',np.zeros(18))
+            bound(um, ub, interface.limits[:, 0], interface.limits[:, 1],'command_range_rad',seed=True)
             delta = um if last_um is None else um-last_um
-            offset = -state.previous_command_target if last_um is None else np.zeros(18)
+            offset = ub-(state.previous_command_target if last_um is None else last_bias)
             bound(delta[12:], offset[12:], -interface.arm_rate*dt, interface.arm_rate*dt,'arm_slew_rad',seed=True)
-            task(um, np.zeros(18), reference, .02/H)
+            task(um, ub, reference, .02/H)
             task(delta, offset, np.zeros(18), .2/H)
-            last_um = um
+            last_um = um; last_bias=ub
         if st['micro'] == qp.substeps-1:
             terminal = st['tick'] == H-1
             w = 10. if terminal else 1./H
-            task(cj@dm, snap['com_world']+cj@db, com_goal, 100.*w)
-            task(cj@vm, cj@vb, np.zeros(3), 5.*w)
+            if nominal_profile is None:
+                position_jac=cj;position_bias=snap['com_world']+cj@db;velocity_jac=cj
+            else:
+                node=nominal_profile[st['tick']]
+                position_jac=node['com_jac_world']
+                position_bias=node['end_snapshot']['com_world']+position_jac@(db-node['displacement'])
+                local_to_world=node['world_to_local'].T
+                velocity_jac=position_jac@local_to_world
+            task(position_jac@dm, position_bias, com_goal, 100.*w)
+            task(velocity_jac@vm, velocity_jac@vb, np.zeros(3), 5.*w)
             task(vm[3:6], vb[3:6], np.zeros(3), 2.*w)
             # Relative orientation tangent towards original yaw, upright roll/pitch.
             yaw = np.arctan2(state.root_rotation_world[1, 0], state.root_rotation_world[0, 0])
             yaw_rotation = pin.rpy.rpyToMatrix(0., 0., yaw)
-            upright_delta = pin.log3(state.root_rotation_world.T@yaw_rotation)
+            upright_delta = pin.log3(state.root_rotation_world.T@yaw_rotation) if nominal_profile is None else pin.log3(yaw_rotation@state.root_rotation_world.T)
             task(dm[3:6], db[3:6], upright_delta, 10.*w)
-            for frame in clearance_frames.values():
+            for frame in (clearance_frames if nominal_profile is None else node['frames']).values():
                 # Link-origin reference only, as in the existing QP. Native
                 # collision geometry remains an additional execution check.
-                task(frame['jacobian'][2:3]@dm,
-                     np.array([frame['position'][2]])+frame['jacobian'][2:3]@db,
+                frame_jac=frame['jacobian'][2:3] if nominal_profile is None else frame['jacobian'][2:3]@node['world_to_local']
+                frame_bias=np.array([frame['position'][2]])+frame_jac@(db if nominal_profile is None else db-node['displacement'])
+                task(frame_jac@dm,frame_bias,
                      np.array([max(frame['position'][2], ground+cfg.nonfoot_clearance_m)]),
                      cfg.nonfoot_clearance_weight*w)
+    if nominal_profile is not None:
+        # Local model trust region; never a relaxation of hardware limits.
+        bound(np.eye(n),np.zeros(n),-.1,.1,'local_increment_rad',seed=True)
+        result['local_increment_bound_rad']=.1
     A = np.vstack(constraints); low = np.concatenate(lows); high = np.concatenate(highs)
-    command_center = np.tile(reference, knots)
+    command_center = np.tile(reference, knots) if nominal_profile is None else np.zeros(n)
     scale = np.tile(.5*np.diff(interface.limits, axis=1).ravel(), knots)
     As = A*scale; rs = 1./np.maximum(np.max(abs(As), axis=1), 1e-12)
     Ps = P*scale[:, None]*scale[None, :]; qs = scale*(P@command_center+q)
@@ -178,18 +200,23 @@ def propose_sequence(controller, state, reference, *, knots=9, time_limit_s=20.,
     # returned proposal must pass ALL original rows in physical units.
     chosen=initial_rows.copy(); warm=np.zeros(n); cut_log=[]; solve_start=time.perf_counter(); sol=None
     result['initial_constraint_rows']=len(initial_rows)
+    if nominal_profile is not None:
+        result['zero_increment_constraint_violation']=float(max(0.,np.max(low),np.max(-high)))
     for cutting_round in range(32):
         remaining=time_limit_s-(time.perf_counter()-solve_start)
         if remaining<=0:break
         indices=np.array(sorted(chosen),dtype=int)
         solver = osqp.OSQP()
+        if solver_backend=='active_set':
+            from scripts.dense_active_set_qp_v1 import DenseActiveSetQP
+            solver=DenseActiveSetQP()
         solver.setup(P=sparse.csc_matrix(np.triu(Ps*oscale)), q=qs*oscale,
             A=sparse.csc_matrix(As[indices]*rs[indices,None]),
             l=(low[indices]-A[indices]@command_center)*rs[indices],
             u=(high[indices]-A[indices]@command_center)*rs[indices],
             eps_abs=1e-7, eps_rel=1e-7, max_iter=20000,
-            time_limit=max(.001,remaining),polish=True,verbose=False)
-        if warm is not None:solver.warm_start(x=warm)
+            polish=True,verbose=False,**({'time_limit':max(.001,remaining)} if solver_backend=='osqp' else {}))
+        if warm is not None and hasattr(solver,'warm_start'):solver.warm_start(x=warm)
         sol=solver.solve()
         if sol.info.status_val!=1 or sol.x is None or not np.isfinite(sol.x).all():break
         warm=sol.x.copy(); trial=command_center+scale*warm; response=A@trial
@@ -207,7 +234,8 @@ def propose_sequence(controller, state, reference, *, knots=9, time_limit_s=20.,
     result.update(solver_status=sol.info.status, iterations=sol.info.iter,
         constraint_rows=len(low), solver_runtime_s=sol.info.run_time,
         total_solver_wall_seconds=time.perf_counter()-solve_start,
-        primal_residual=sol.info.pri_res,dual_residual=sol.info.dua_res,
+        primal_residual=getattr(sol.info,'pri_res',getattr(solver,'last_diagnostics',{}).get('scaled_primal_residual')),
+        dual_residual=getattr(sol.info,'dua_res',getattr(solver,'last_diagnostics',{}).get('stationarity')),
         wall_seconds=time.perf_counter()-started)
     # A finite iterate after timeout/iteration limit is diagnostic only.
     # Status numbers differ across OSQP releases. Infeasibility certificates
@@ -225,8 +253,10 @@ def propose_sequence(controller, state, reference, *, knots=9, time_limit_s=20.,
     result['linear_constraint_violation'] = error
     if error > cfg.residual_tolerance:
         return dict(result, rejection='Independent unscaled sequence constraint check failed')
-    result.update(linear_proposal_solved=True, commands=basis@x.reshape(knots, 18),
-                  linear_terminal_com=snap['com_world']+cj@(dm@x+db))
+    commands=basis@x.reshape(knots,18)
+    if nominal_profile is not None:commands+=np.stack([node['command'] for node in nominal_profile])
+    result.update(linear_proposal_solved=True, commands=commands,
+                  linear_terminal_com=position_bias+position_jac@dm@x)
     return result
 
 
