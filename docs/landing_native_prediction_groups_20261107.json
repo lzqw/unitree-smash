@@ -1,0 +1,1801 @@
+{
+  "scope": "Separate actual applied-command errors from fallback and contact-flag changes.\n\nThese are adjacent 10 ms native states. Contact flags are force observations,\nnot an independent geometric contact detector. Different runs reach different\nstates; their errors do not constitute a matched controller ablation.\n",
+  "native_new_execution": false,
+  "independent_geometry_contact": false,
+  "matched_between_run_ablation": false,
+  "runs": [
+    {
+      "run": "reports/landing_mpc_command_history_cohort26_repeat_20261107_01",
+      "samples": 479,
+      "groups": {
+        "all": {
+          "samples": 479,
+          "models": {
+            "held_initial_torque": {
+              "failed": 0,
+              "errors": {
+                "leg_position_error_max_rad": {
+                  "count": 479,
+                  "median": 0.00578153737110898,
+                  "p95": 0.033873655504742424,
+                  "maximum": 0.1390734964524687
+                },
+                "arm_position_error_max_rad": {
+                  "count": 479,
+                  "median": 0.007472868593912052,
+                  "p95": 0.083341486952655,
+                  "maximum": 0.3103568759165922
+                },
+                "base_linear_velocity_error_mps": {
+                  "count": 479,
+                  "median": 0.02057884801492474,
+                  "p95": 0.08963943442713389,
+                  "maximum": 0.40893700948642286
+                },
+                "base_angular_velocity_error_rad_s": {
+                  "count": 479,
+                  "median": 0.17046963128204398,
+                  "p95": 1.2317942460866071,
+                  "maximum": 4.389021856148583
+                }
+              },
+              "diagnostic_violations": {
+                "normal_force_violation_n": {
+                  "stats": null,
+                  "above_1e_minus3": 0
+                },
+                "friction_violation_n": {
+                  "stats": null,
+                  "above_1e_minus3": 0
+                },
+                "joint_velocity_violation_rad_s": {
+                  "stats": null,
+                  "above_1e_minus3": 0
+                }
+              }
+            },
+            "implicit_1": {
+              "failed": 0,
+              "errors": {
+                "leg_position_error_max_rad": {
+                  "count": 479,
+                  "median": 0.006420747021244955,
+                  "p95": 0.040165404447387955,
+                  "maximum": 0.09761357635709622
+                },
+                "arm_position_error_max_rad": {
+                  "count": 479,
+                  "median": 0.0020732539084065277,
+                  "p95": 0.02209611627832957,
+                  "maximum": 0.05439273338142295
+                },
+                "base_linear_velocity_error_mps": {
+                  "count": 479,
+                  "median": 0.010872355805830469,
+                  "p95": 0.08632392260682877,
+                  "maximum": 0.40357773792123025
+                },
+                "base_angular_velocity_error_rad_s": {
+                  "count": 479,
+                  "median": 0.06713246204160218,
+                  "p95": 0.49667045673314014,
+                  "maximum": 3.9631266571778903
+                }
+              },
+              "diagnostic_violations": {
+                "normal_force_violation_n": {
+                  "stats": {
+                    "count": 479,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 4.513642330360295
+                  },
+                  "above_1e_minus3": 7
+                },
+                "friction_violation_n": {
+                  "stats": {
+                    "count": 479,
+                    "median": 0.0,
+                    "p95": 5.069688578363292,
+                    "maximum": 34.067430106277996
+                  },
+                  "above_1e_minus3": 61
+                },
+                "joint_velocity_violation_rad_s": {
+                  "stats": {
+                    "count": 479,
+                    "median": 0.0,
+                    "p95": 0.536470429249634,
+                    "maximum": 2.5704254911574314
+                  },
+                  "above_1e_minus3": 37
+                }
+              }
+            },
+            "implicit_16": {
+              "failed": 0,
+              "errors": {
+                "leg_position_error_max_rad": {
+                  "count": 479,
+                  "median": 0.003267868410417485,
+                  "p95": 0.02874778023754083,
+                  "maximum": 0.0907254876099155
+                },
+                "arm_position_error_max_rad": {
+                  "count": 479,
+                  "median": 0.0008580174708910926,
+                  "p95": 0.023302358385316687,
+                  "maximum": 0.05573691874433022
+                },
+                "base_linear_velocity_error_mps": {
+                  "count": 479,
+                  "median": 0.013731276612496679,
+                  "p95": 0.08373973889701274,
+                  "maximum": 0.4055844540280315
+                },
+                "base_angular_velocity_error_rad_s": {
+                  "count": 479,
+                  "median": 0.07338381586369573,
+                  "p95": 0.6072275280305753,
+                  "maximum": 3.8993728912898886
+                }
+              },
+              "diagnostic_violations": {
+                "normal_force_violation_n": {
+                  "stats": {
+                    "count": 479,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 5.297962816906976
+                  },
+                  "above_1e_minus3": 7
+                },
+                "friction_violation_n": {
+                  "stats": {
+                    "count": 479,
+                    "median": 0.0,
+                    "p95": 6.139300906930908,
+                    "maximum": 35.2615398726342
+                  },
+                  "above_1e_minus3": 64
+                },
+                "joint_velocity_violation_rad_s": {
+                  "stats": {
+                    "count": 479,
+                    "median": 0.0,
+                    "p95": 0.9432376972207784,
+                    "maximum": 4.115187510714012
+                  },
+                  "above_1e_minus3": 45
+                }
+              }
+            },
+            "implicit_160": {
+              "failed": 0,
+              "errors": {
+                "leg_position_error_max_rad": {
+                  "count": 479,
+                  "median": 0.0031006403185375175,
+                  "p95": 0.027543790860142855,
+                  "maximum": 0.08951136838472773
+                },
+                "arm_position_error_max_rad": {
+                  "count": 479,
+                  "median": 0.000901910239921519,
+                  "p95": 0.023406653385295125,
+                  "maximum": 0.055820196198170774
+                },
+                "base_linear_velocity_error_mps": {
+                  "count": 479,
+                  "median": 0.013701535093318803,
+                  "p95": 0.08346247990802559,
+                  "maximum": 0.4057435928851934
+                },
+                "base_angular_velocity_error_rad_s": {
+                  "count": 479,
+                  "median": 0.07423763514807144,
+                  "p95": 0.6247177947527164,
+                  "maximum": 3.8947803634480156
+                }
+              },
+              "diagnostic_violations": {
+                "normal_force_violation_n": {
+                  "stats": {
+                    "count": 479,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 5.341413649648131
+                  },
+                  "above_1e_minus3": 7
+                },
+                "friction_violation_n": {
+                  "stats": {
+                    "count": 479,
+                    "median": 0.0,
+                    "p95": 6.231701557368209,
+                    "maximum": 35.34478399617396
+                  },
+                  "above_1e_minus3": 64
+                },
+                "joint_velocity_violation_rad_s": {
+                  "stats": {
+                    "count": 479,
+                    "median": 0.0,
+                    "p95": 0.9860776261904703,
+                    "maximum": 4.224498067511451
+                  },
+                  "above_1e_minus3": 47
+                }
+              }
+            }
+          }
+        },
+        "applied": {
+          "samples": 243,
+          "models": {
+            "held_initial_torque": {
+              "failed": 0,
+              "errors": {
+                "leg_position_error_max_rad": {
+                  "count": 243,
+                  "median": 0.0005399515210937622,
+                  "p95": 0.003956911611496161,
+                  "maximum": 0.0459867823987089
+                },
+                "arm_position_error_max_rad": {
+                  "count": 243,
+                  "median": 0.0004893471805644811,
+                  "p95": 0.004805218414044863,
+                  "maximum": 0.011750578215037888
+                },
+                "base_linear_velocity_error_mps": {
+                  "count": 243,
+                  "median": 0.0018292182391955558,
+                  "p95": 0.02278932135010572,
+                  "maximum": 0.0791565047780262
+                },
+                "base_angular_velocity_error_rad_s": {
+                  "count": 243,
+                  "median": 0.015478819238853381,
+                  "p95": 0.21360176315177065,
+                  "maximum": 0.4640370088119885
+                }
+              },
+              "diagnostic_violations": {
+                "normal_force_violation_n": {
+                  "stats": null,
+                  "above_1e_minus3": 0
+                },
+                "friction_violation_n": {
+                  "stats": null,
+                  "above_1e_minus3": 0
+                },
+                "joint_velocity_violation_rad_s": {
+                  "stats": null,
+                  "above_1e_minus3": 0
+                }
+              }
+            },
+            "implicit_1": {
+              "failed": 0,
+              "errors": {
+                "leg_position_error_max_rad": {
+                  "count": 243,
+                  "median": 0.0006794674907091292,
+                  "p95": 0.007673335998732421,
+                  "maximum": 0.03421614879295265
+                },
+                "arm_position_error_max_rad": {
+                  "count": 243,
+                  "median": 0.00011526718338883413,
+                  "p95": 0.001998147077110979,
+                  "maximum": 0.005035325385827238
+                },
+                "base_linear_velocity_error_mps": {
+                  "count": 243,
+                  "median": 0.0019014666122207644,
+                  "p95": 0.015835958254103537,
+                  "maximum": 0.06717006363436955
+                },
+                "base_angular_velocity_error_rad_s": {
+                  "count": 243,
+                  "median": 0.00611351257683813,
+                  "p95": 0.10247181291371661,
+                  "maximum": 0.255100093847668
+                }
+              },
+              "diagnostic_violations": {
+                "normal_force_violation_n": {
+                  "stats": {
+                    "count": 243,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 4.513642330360295
+                  },
+                  "above_1e_minus3": 6
+                },
+                "friction_violation_n": {
+                  "stats": {
+                    "count": 243,
+                    "median": 0.0,
+                    "p95": 1.9650262104042178,
+                    "maximum": 12.378860039214755
+                  },
+                  "above_1e_minus3": 32
+                },
+                "joint_velocity_violation_rad_s": {
+                  "stats": {
+                    "count": 243,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 0.0
+                  },
+                  "above_1e_minus3": 0
+                }
+              }
+            },
+            "implicit_16": {
+              "failed": 0,
+              "errors": {
+                "leg_position_error_max_rad": {
+                  "count": 243,
+                  "median": 0.0004582543097145231,
+                  "p95": 0.0038818570159023648,
+                  "maximum": 0.04320966531248693
+                },
+                "arm_position_error_max_rad": {
+                  "count": 243,
+                  "median": 6.505922717670032e-05,
+                  "p95": 0.0005414101962519344,
+                  "maximum": 0.0022561372355644205
+                },
+                "base_linear_velocity_error_mps": {
+                  "count": 243,
+                  "median": 0.001549107330274918,
+                  "p95": 0.018329428506894965,
+                  "maximum": 0.07178499587206273
+                },
+                "base_angular_velocity_error_rad_s": {
+                  "count": 243,
+                  "median": 0.004679397923082177,
+                  "p95": 0.08948186902942017,
+                  "maximum": 0.24517961548666337
+                }
+              },
+              "diagnostic_violations": {
+                "normal_force_violation_n": {
+                  "stats": {
+                    "count": 243,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 5.297962816906976
+                  },
+                  "above_1e_minus3": 6
+                },
+                "friction_violation_n": {
+                  "stats": {
+                    "count": 243,
+                    "median": 0.0,
+                    "p95": 1.886536424631796,
+                    "maximum": 12.212613758610498
+                  },
+                  "above_1e_minus3": 32
+                },
+                "joint_velocity_violation_rad_s": {
+                  "stats": {
+                    "count": 243,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 0.0
+                  },
+                  "above_1e_minus3": 0
+                }
+              }
+            },
+            "implicit_160": {
+              "failed": 0,
+              "errors": {
+                "leg_position_error_max_rad": {
+                  "count": 243,
+                  "median": 0.00044891744056252403,
+                  "p95": 0.003911427764387458,
+                  "maximum": 0.04404846400689044
+                },
+                "arm_position_error_max_rad": {
+                  "count": 243,
+                  "median": 5.862190532179845e-05,
+                  "p95": 0.0005473367128363518,
+                  "maximum": 0.002091207548684304
+                },
+                "base_linear_velocity_error_mps": {
+                  "count": 243,
+                  "median": 0.0015352610175701018,
+                  "p95": 0.01854149187291879,
+                  "maximum": 0.07208548706048713
+                },
+                "base_angular_velocity_error_rad_s": {
+                  "count": 243,
+                  "median": 0.004586842001118939,
+                  "p95": 0.09030234761693698,
+                  "maximum": 0.24452315439623054
+                }
+              },
+              "diagnostic_violations": {
+                "normal_force_violation_n": {
+                  "stats": {
+                    "count": 243,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 5.341413649648131
+                  },
+                  "above_1e_minus3": 6
+                },
+                "friction_violation_n": {
+                  "stats": {
+                    "count": 243,
+                    "median": 0.0,
+                    "p95": 1.8882380483879715,
+                    "maximum": 12.199828142510789
+                  },
+                  "above_1e_minus3": 32
+                },
+                "joint_velocity_violation_rad_s": {
+                  "stats": {
+                    "count": 243,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 0.0
+                  },
+                  "above_1e_minus3": 0
+                }
+              }
+            }
+          }
+        },
+        "applied_force_flag_unchanged": {
+          "samples": 222,
+          "models": {
+            "held_initial_torque": {
+              "failed": 0,
+              "errors": {
+                "leg_position_error_max_rad": {
+                  "count": 222,
+                  "median": 0.0005001502143081593,
+                  "p95": 0.002651162765116895,
+                  "maximum": 0.03381416465313647
+                },
+                "arm_position_error_max_rad": {
+                  "count": 222,
+                  "median": 0.00044512398942830184,
+                  "p95": 0.003935547242421118,
+                  "maximum": 0.011750578215037888
+                },
+                "base_linear_velocity_error_mps": {
+                  "count": 222,
+                  "median": 0.001745230047206941,
+                  "p95": 0.01851425054299038,
+                  "maximum": 0.0791565047780262
+                },
+                "base_angular_velocity_error_rad_s": {
+                  "count": 222,
+                  "median": 0.01525597671367737,
+                  "p95": 0.17535640638231872,
+                  "maximum": 0.40583904265537085
+                }
+              },
+              "diagnostic_violations": {
+                "normal_force_violation_n": {
+                  "stats": null,
+                  "above_1e_minus3": 0
+                },
+                "friction_violation_n": {
+                  "stats": null,
+                  "above_1e_minus3": 0
+                },
+                "joint_velocity_violation_rad_s": {
+                  "stats": null,
+                  "above_1e_minus3": 0
+                }
+              }
+            },
+            "implicit_1": {
+              "failed": 0,
+              "errors": {
+                "leg_position_error_max_rad": {
+                  "count": 222,
+                  "median": 0.0005785126476927083,
+                  "p95": 0.006175109405380887,
+                  "maximum": 0.03421614879295265
+                },
+                "arm_position_error_max_rad": {
+                  "count": 222,
+                  "median": 0.00011067626563554533,
+                  "p95": 0.0018646479457801522,
+                  "maximum": 0.005035325385827238
+                },
+                "base_linear_velocity_error_mps": {
+                  "count": 222,
+                  "median": 0.0017469577457293372,
+                  "p95": 0.010242325294935786,
+                  "maximum": 0.06717006363436955
+                },
+                "base_angular_velocity_error_rad_s": {
+                  "count": 222,
+                  "median": 0.0055213292681727585,
+                  "p95": 0.06891871585296268,
+                  "maximum": 0.255100093847668
+                }
+              },
+              "diagnostic_violations": {
+                "normal_force_violation_n": {
+                  "stats": {
+                    "count": 222,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 1.5907665667801163
+                  },
+                  "above_1e_minus3": 1
+                },
+                "friction_violation_n": {
+                  "stats": {
+                    "count": 222,
+                    "median": 0.0,
+                    "p95": 1.0039770465091873,
+                    "maximum": 12.378860039214755
+                  },
+                  "above_1e_minus3": 21
+                },
+                "joint_velocity_violation_rad_s": {
+                  "stats": {
+                    "count": 222,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 0.0
+                  },
+                  "above_1e_minus3": 0
+                }
+              }
+            },
+            "implicit_16": {
+              "failed": 0,
+              "errors": {
+                "leg_position_error_max_rad": {
+                  "count": 222,
+                  "median": 0.00044234602696578695,
+                  "p95": 0.0024417817644313273,
+                  "maximum": 0.03350274927153718
+                },
+                "arm_position_error_max_rad": {
+                  "count": 222,
+                  "median": 6.434587187786889e-05,
+                  "p95": 0.0003191356145813055,
+                  "maximum": 0.0022561372355644205
+                },
+                "base_linear_velocity_error_mps": {
+                  "count": 222,
+                  "median": 0.001441749458048734,
+                  "p95": 0.008642243662925516,
+                  "maximum": 0.07178499587206273
+                },
+                "base_angular_velocity_error_rad_s": {
+                  "count": 222,
+                  "median": 0.00434778623890688,
+                  "p95": 0.04187541830797122,
+                  "maximum": 0.24517961548666337
+                }
+              },
+              "diagnostic_violations": {
+                "normal_force_violation_n": {
+                  "stats": {
+                    "count": 222,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 1.5539758328664934
+                  },
+                  "above_1e_minus3": 1
+                },
+                "friction_violation_n": {
+                  "stats": {
+                    "count": 222,
+                    "median": 0.0,
+                    "p95": 0.9296652609675857,
+                    "maximum": 12.212613758610498
+                  },
+                  "above_1e_minus3": 21
+                },
+                "joint_velocity_violation_rad_s": {
+                  "stats": {
+                    "count": 222,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 0.0
+                  },
+                  "above_1e_minus3": 0
+                }
+              }
+            },
+            "implicit_160": {
+              "failed": 0,
+              "errors": {
+                "leg_position_error_max_rad": {
+                  "count": 222,
+                  "median": 0.0004272093817099254,
+                  "p95": 0.002325352502316691,
+                  "maximum": 0.03342300183276481
+                },
+                "arm_position_error_max_rad": {
+                  "count": 222,
+                  "median": 5.8007616721700295e-05,
+                  "p95": 0.0002987827362924741,
+                  "maximum": 0.002091207548684304
+                },
+                "base_linear_velocity_error_mps": {
+                  "count": 222,
+                  "median": 0.0014360081756320186,
+                  "p95": 0.009278312439481202,
+                  "maximum": 0.07208548706048713
+                },
+                "base_angular_velocity_error_rad_s": {
+                  "count": 222,
+                  "median": 0.0043640508936977004,
+                  "p95": 0.04274669931659109,
+                  "maximum": 0.24452315439623054
+                }
+              },
+              "diagnostic_violations": {
+                "normal_force_violation_n": {
+                  "stats": {
+                    "count": 222,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 1.5515863591131014
+                  },
+                  "above_1e_minus3": 1
+                },
+                "friction_violation_n": {
+                  "stats": {
+                    "count": 222,
+                    "median": 0.0,
+                    "p95": 0.9370077911165476,
+                    "maximum": 12.199828142510789
+                  },
+                  "above_1e_minus3": 21
+                },
+                "joint_velocity_violation_rad_s": {
+                  "stats": {
+                    "count": 222,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 0.0
+                  },
+                  "above_1e_minus3": 0
+                }
+              }
+            }
+          }
+        },
+        "applied_force_flag_changed": {
+          "samples": 21,
+          "models": {
+            "held_initial_torque": {
+              "failed": 0,
+              "errors": {
+                "leg_position_error_max_rad": {
+                  "count": 21,
+                  "median": 0.0014548246929089181,
+                  "p95": 0.031952330688271635,
+                  "maximum": 0.0459867823987089
+                },
+                "arm_position_error_max_rad": {
+                  "count": 21,
+                  "median": 0.0010389848999923998,
+                  "p95": 0.009665468410321273,
+                  "maximum": 0.010475803815665721
+                },
+                "base_linear_velocity_error_mps": {
+                  "count": 21,
+                  "median": 0.005074108461897489,
+                  "p95": 0.05861340691723657,
+                  "maximum": 0.06880841727570637
+                },
+                "base_angular_velocity_error_rad_s": {
+                  "count": 21,
+                  "median": 0.0668624761847472,
+                  "p95": 0.34547517788272775,
+                  "maximum": 0.4640370088119885
+                }
+              },
+              "diagnostic_violations": {
+                "normal_force_violation_n": {
+                  "stats": null,
+                  "above_1e_minus3": 0
+                },
+                "friction_violation_n": {
+                  "stats": null,
+                  "above_1e_minus3": 0
+                },
+                "joint_velocity_violation_rad_s": {
+                  "stats": null,
+                  "above_1e_minus3": 0
+                }
+              }
+            },
+            "implicit_1": {
+              "failed": 0,
+              "errors": {
+                "leg_position_error_max_rad": {
+                  "count": 21,
+                  "median": 0.0031122869517592466,
+                  "p95": 0.02948319663976884,
+                  "maximum": 0.03086050342530533
+                },
+                "arm_position_error_max_rad": {
+                  "count": 21,
+                  "median": 0.00046677059451089714,
+                  "p95": 0.0022718876060066062,
+                  "maximum": 0.0031700441601809487
+                },
+                "base_linear_velocity_error_mps": {
+                  "count": 21,
+                  "median": 0.004093014959549169,
+                  "p95": 0.05478638619600058,
+                  "maximum": 0.06390886327951224
+                },
+                "base_angular_velocity_error_rad_s": {
+                  "count": 21,
+                  "median": 0.02269398017871523,
+                  "p95": 0.17702847746285816,
+                  "maximum": 0.2186409564830314
+                }
+              },
+              "diagnostic_violations": {
+                "normal_force_violation_n": {
+                  "stats": {
+                    "count": 21,
+                    "median": 0.0,
+                    "p95": 3.767058728705563,
+                    "maximum": 4.513642330360295
+                  },
+                  "above_1e_minus3": 5
+                },
+                "friction_violation_n": {
+                  "stats": {
+                    "count": 21,
+                    "median": 0.26318644129040214,
+                    "p95": 3.8858591537896934,
+                    "maximum": 5.878715278911923
+                  },
+                  "above_1e_minus3": 11
+                },
+                "joint_velocity_violation_rad_s": {
+                  "stats": {
+                    "count": 21,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 0.0
+                  },
+                  "above_1e_minus3": 0
+                }
+              }
+            },
+            "implicit_16": {
+              "failed": 0,
+              "errors": {
+                "leg_position_error_max_rad": {
+                  "count": 21,
+                  "median": 0.00188502945675606,
+                  "p95": 0.031955162073571186,
+                  "maximum": 0.04320966531248693
+                },
+                "arm_position_error_max_rad": {
+                  "count": 21,
+                  "median": 0.00010335091272528629,
+                  "p95": 0.0011805426173372435,
+                  "maximum": 0.0015443434079620982
+                },
+                "base_linear_velocity_error_mps": {
+                  "count": 21,
+                  "median": 0.0033756406695266707,
+                  "p95": 0.05536430460087948,
+                  "maximum": 0.06477700071811482
+                },
+                "base_angular_velocity_error_rad_s": {
+                  "count": 21,
+                  "median": 0.011383776881785275,
+                  "p95": 0.1852074092799341,
+                  "maximum": 0.20432722714412405
+                }
+              },
+              "diagnostic_violations": {
+                "normal_force_violation_n": {
+                  "stats": {
+                    "count": 21,
+                    "median": 0.0,
+                    "p95": 4.265339605099353,
+                    "maximum": 5.297962816906976
+                  },
+                  "above_1e_minus3": 5
+                },
+                "friction_violation_n": {
+                  "stats": {
+                    "count": 21,
+                    "median": 0.20095650548781907,
+                    "p95": 4.195834245759411,
+                    "maximum": 6.067010127486157
+                  },
+                  "above_1e_minus3": 11
+                },
+                "joint_velocity_violation_rad_s": {
+                  "stats": {
+                    "count": 21,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 0.0
+                  },
+                  "above_1e_minus3": 0
+                }
+              }
+            },
+            "implicit_160": {
+              "failed": 0,
+              "errors": {
+                "leg_position_error_max_rad": {
+                  "count": 21,
+                  "median": 0.0018350946466687557,
+                  "p95": 0.032019561858223744,
+                  "maximum": 0.04404846400689044
+                },
+                "arm_position_error_max_rad": {
+                  "count": 21,
+                  "median": 0.00010972896617778005,
+                  "p95": 0.0011245269376987527,
+                  "maximum": 0.0014324308783524795
+                },
+                "base_linear_velocity_error_mps": {
+                  "count": 21,
+                  "median": 0.0034111464928653417,
+                  "p95": 0.055384870743056765,
+                  "maximum": 0.0648339491548988
+                },
+                "base_angular_velocity_error_rad_s": {
+                  "count": 21,
+                  "median": 0.011587639426660851,
+                  "p95": 0.185927450846719,
+                  "maximum": 0.20331296708680252
+                }
+              },
+              "diagnostic_violations": {
+                "normal_force_violation_n": {
+                  "stats": {
+                    "count": 21,
+                    "median": 0.0,
+                    "p95": 4.301953024548483,
+                    "maximum": 5.341413649648131
+                  },
+                  "above_1e_minus3": 5
+                },
+                "friction_violation_n": {
+                  "stats": {
+                    "count": 21,
+                    "median": 0.19672664692861697,
+                    "p95": 4.227843046110007,
+                    "maximum": 6.113078173161732
+                  },
+                  "above_1e_minus3": 11
+                },
+                "joint_velocity_violation_rad_s": {
+                  "stats": {
+                    "count": 21,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 0.0
+                  },
+                  "above_1e_minus3": 0
+                }
+              }
+            }
+          }
+        }
+      },
+      "audit": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_full_command_followup_20261107/controller35_actual_prediction.json",
+      "audit_sha256": "4e8a66e8b1c04ecc9ac0836b80c43ac08e3b24a082665679126c2d5508ee49bb"
+    },
+    {
+      "run": "reports/landing_mpc_active_set_interval_blas1_20261107_01",
+      "samples": 265,
+      "groups": {
+        "all": {
+          "samples": 265,
+          "models": {
+            "held_initial_torque": {
+              "failed": 0,
+              "errors": {
+                "leg_position_error_max_rad": {
+                  "count": 265,
+                  "median": 0.017416163303400456,
+                  "p95": 0.044026065650204976,
+                  "maximum": 0.1542958148235718
+                },
+                "arm_position_error_max_rad": {
+                  "count": 265,
+                  "median": 0.04182914000361804,
+                  "p95": 0.08249113329828844,
+                  "maximum": 0.2733350656041287
+                },
+                "base_linear_velocity_error_mps": {
+                  "count": 265,
+                  "median": 0.07533816352075004,
+                  "p95": 0.11710707733092374,
+                  "maximum": 0.3813009000494059
+                },
+                "base_angular_velocity_error_rad_s": {
+                  "count": 265,
+                  "median": 0.29743309045505156,
+                  "p95": 1.5222293749573361,
+                  "maximum": 4.8894339393335615
+                }
+              },
+              "diagnostic_violations": {
+                "normal_force_violation_n": {
+                  "stats": null,
+                  "above_1e_minus3": 0
+                },
+                "friction_violation_n": {
+                  "stats": null,
+                  "above_1e_minus3": 0
+                },
+                "joint_velocity_violation_rad_s": {
+                  "stats": null,
+                  "above_1e_minus3": 0
+                }
+              }
+            },
+            "implicit_1": {
+              "failed": 0,
+              "errors": {
+                "leg_position_error_max_rad": {
+                  "count": 265,
+                  "median": 0.02308382656497987,
+                  "p95": 0.05202551651751472,
+                  "maximum": 0.1497009840463559
+                },
+                "arm_position_error_max_rad": {
+                  "count": 265,
+                  "median": 0.005459190888198684,
+                  "p95": 0.019208788018177752,
+                  "maximum": 0.03228796914183932
+                },
+                "base_linear_velocity_error_mps": {
+                  "count": 265,
+                  "median": 0.07301384770753314,
+                  "p95": 0.10448307804071148,
+                  "maximum": 0.3943759175026881
+                },
+                "base_angular_velocity_error_rad_s": {
+                  "count": 265,
+                  "median": 0.13793623840312258,
+                  "p95": 0.6224696624449954,
+                  "maximum": 2.4814455215630065
+                }
+              },
+              "diagnostic_violations": {
+                "normal_force_violation_n": {
+                  "stats": {
+                    "count": 265,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 81.8056576583164
+                  },
+                  "above_1e_minus3": 3
+                },
+                "friction_violation_n": {
+                  "stats": {
+                    "count": 265,
+                    "median": 0.0,
+                    "p95": 4.251738504569684,
+                    "maximum": 199.21348677405817
+                  },
+                  "above_1e_minus3": 26
+                },
+                "joint_velocity_violation_rad_s": {
+                  "stats": {
+                    "count": 265,
+                    "median": 0.0,
+                    "p95": 0.4117058838516646,
+                    "maximum": 2.0756869107511013
+                  },
+                  "above_1e_minus3": 18
+                }
+              }
+            },
+            "implicit_16": {
+              "failed": 0,
+              "errors": {
+                "leg_position_error_max_rad": {
+                  "count": 265,
+                  "median": 0.01584212932212048,
+                  "p95": 0.03615813823253781,
+                  "maximum": 0.1533825247237004
+                },
+                "arm_position_error_max_rad": {
+                  "count": 265,
+                  "median": 0.005135518786978155,
+                  "p95": 0.020310165668811372,
+                  "maximum": 0.03586581570583451
+                },
+                "base_linear_velocity_error_mps": {
+                  "count": 265,
+                  "median": 0.06904660467513134,
+                  "p95": 0.1076229101399104,
+                  "maximum": 0.3903216346787768
+                },
+                "base_angular_velocity_error_rad_s": {
+                  "count": 265,
+                  "median": 0.1806504957342942,
+                  "p95": 0.7556004198937433,
+                  "maximum": 2.466655517668375
+                }
+              },
+              "diagnostic_violations": {
+                "normal_force_violation_n": {
+                  "stats": {
+                    "count": 265,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 82.69596567670261
+                  },
+                  "above_1e_minus3": 3
+                },
+                "friction_violation_n": {
+                  "stats": {
+                    "count": 265,
+                    "median": 0.0,
+                    "p95": 4.5956044001321175,
+                    "maximum": 199.517335704192
+                  },
+                  "above_1e_minus3": 15
+                },
+                "joint_velocity_violation_rad_s": {
+                  "stats": {
+                    "count": 265,
+                    "median": 0.0,
+                    "p95": 0.8580008003972551,
+                    "maximum": 3.1656285915996456
+                  },
+                  "above_1e_minus3": 17
+                }
+              }
+            },
+            "implicit_160": {
+              "failed": 0,
+              "errors": {
+                "leg_position_error_max_rad": {
+                  "count": 265,
+                  "median": 0.015437999573613026,
+                  "p95": 0.03463546797990768,
+                  "maximum": 0.15363692153122988
+                },
+                "arm_position_error_max_rad": {
+                  "count": 265,
+                  "median": 0.004946816501304019,
+                  "p95": 0.020405715770634228,
+                  "maximum": 0.03622806535795789
+                },
+                "base_linear_velocity_error_mps": {
+                  "count": 265,
+                  "median": 0.068774202698383,
+                  "p95": 0.10778028085408639,
+                  "maximum": 0.39003842904243335
+                },
+                "base_angular_velocity_error_rad_s": {
+                  "count": 265,
+                  "median": 0.18475636391865036,
+                  "p95": 0.7649042219890623,
+                  "maximum": 2.4658777882305607
+                }
+              },
+              "diagnostic_violations": {
+                "normal_force_violation_n": {
+                  "stats": {
+                    "count": 265,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 82.76665234754373
+                  },
+                  "above_1e_minus3": 5
+                },
+                "friction_violation_n": {
+                  "stats": {
+                    "count": 265,
+                    "median": 0.0,
+                    "p95": 5.125871777117546,
+                    "maximum": 199.5424710371558
+                  },
+                  "above_1e_minus3": 59
+                },
+                "joint_velocity_violation_rad_s": {
+                  "stats": {
+                    "count": 265,
+                    "median": 0.0,
+                    "p95": 0.9027392086926286,
+                    "maximum": 3.270229301615169
+                  },
+                  "above_1e_minus3": 37
+                }
+              }
+            }
+          }
+        },
+        "applied": {
+          "samples": 104,
+          "models": {
+            "held_initial_torque": {
+              "failed": 0,
+              "errors": {
+                "leg_position_error_max_rad": {
+                  "count": 104,
+                  "median": 0.002983946572503615,
+                  "p95": 0.03831582030724946,
+                  "maximum": 0.15348355952440507
+                },
+                "arm_position_error_max_rad": {
+                  "count": 104,
+                  "median": 0.00416477801625886,
+                  "p95": 0.038267381845535624,
+                  "maximum": 0.05205681242753335
+                },
+                "base_linear_velocity_error_mps": {
+                  "count": 104,
+                  "median": 0.010728618594718322,
+                  "p95": 0.08692987132979423,
+                  "maximum": 0.1957698416136564
+                },
+                "base_angular_velocity_error_rad_s": {
+                  "count": 104,
+                  "median": 0.14965541874038452,
+                  "p95": 0.9741982676291115,
+                  "maximum": 2.383723798451539
+                }
+              },
+              "diagnostic_violations": {
+                "normal_force_violation_n": {
+                  "stats": null,
+                  "above_1e_minus3": 0
+                },
+                "friction_violation_n": {
+                  "stats": null,
+                  "above_1e_minus3": 0
+                },
+                "joint_velocity_violation_rad_s": {
+                  "stats": null,
+                  "above_1e_minus3": 0
+                }
+              }
+            },
+            "implicit_1": {
+              "failed": 0,
+              "errors": {
+                "leg_position_error_max_rad": {
+                  "count": 104,
+                  "median": 0.00470235534655461,
+                  "p95": 0.03186390160273495,
+                  "maximum": 0.14298891208082587
+                },
+                "arm_position_error_max_rad": {
+                  "count": 104,
+                  "median": 0.0015682121408746585,
+                  "p95": 0.003965042923926557,
+                  "maximum": 0.007402371643965511
+                },
+                "base_linear_velocity_error_mps": {
+                  "count": 104,
+                  "median": 0.005376115965522052,
+                  "p95": 0.0669877578853109,
+                  "maximum": 0.19816398441273408
+                },
+                "base_angular_velocity_error_rad_s": {
+                  "count": 104,
+                  "median": 0.053581781492316786,
+                  "p95": 0.40934875746907684,
+                  "maximum": 0.9461158877490583
+                }
+              },
+              "diagnostic_violations": {
+                "normal_force_violation_n": {
+                  "stats": {
+                    "count": 104,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 0.0
+                  },
+                  "above_1e_minus3": 0
+                },
+                "friction_violation_n": {
+                  "stats": {
+                    "count": 104,
+                    "median": 0.0,
+                    "p95": 0.20154394714030582,
+                    "maximum": 2.9686588547088633
+                  },
+                  "above_1e_minus3": 11
+                },
+                "joint_velocity_violation_rad_s": {
+                  "stats": {
+                    "count": 104,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 0.03212184104637128
+                  },
+                  "above_1e_minus3": 3
+                }
+              }
+            },
+            "implicit_16": {
+              "failed": 0,
+              "errors": {
+                "leg_position_error_max_rad": {
+                  "count": 104,
+                  "median": 0.0014546216748112517,
+                  "p95": 0.020368219253758445,
+                  "maximum": 0.14714893967735776
+                },
+                "arm_position_error_max_rad": {
+                  "count": 104,
+                  "median": 0.0002966336113328638,
+                  "p95": 0.002106020865692001,
+                  "maximum": 0.00720300457461508
+                },
+                "base_linear_velocity_error_mps": {
+                  "count": 104,
+                  "median": 0.006428184276399886,
+                  "p95": 0.07948314400277048,
+                  "maximum": 0.195553946011746
+                },
+                "base_angular_velocity_error_rad_s": {
+                  "count": 104,
+                  "median": 0.03814093212096845,
+                  "p95": 0.3305124870225149,
+                  "maximum": 0.8161504405553703
+                }
+              },
+              "diagnostic_violations": {
+                "normal_force_violation_n": {
+                  "stats": {
+                    "count": 104,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 5.989720620535143e-06
+                  },
+                  "above_1e_minus3": 0
+                },
+                "friction_violation_n": {
+                  "stats": {
+                    "count": 104,
+                    "median": 0.0,
+                    "p95": 1.3643376877792142e-05,
+                    "maximum": 4.2918882724674035e-05
+                  },
+                  "above_1e_minus3": 0
+                },
+                "joint_velocity_violation_rad_s": {
+                  "stats": {
+                    "count": 104,
+                    "median": 0.0,
+                    "p95": 1.192802779659274e-07,
+                    "maximum": 2.463309485278842e-07
+                  },
+                  "above_1e_minus3": 0
+                }
+              }
+            },
+            "implicit_160": {
+              "failed": 0,
+              "errors": {
+                "leg_position_error_max_rad": {
+                  "count": 104,
+                  "median": 0.0013968420094550016,
+                  "p95": 0.02012586784693708,
+                  "maximum": 0.14713726943922145
+                },
+                "arm_position_error_max_rad": {
+                  "count": 104,
+                  "median": 0.0002625215946246984,
+                  "p95": 0.0021069676717699513,
+                  "maximum": 0.007247495614608855
+                },
+                "base_linear_velocity_error_mps": {
+                  "count": 104,
+                  "median": 0.006456695300133849,
+                  "p95": 0.07955230637460979,
+                  "maximum": 0.19531981617337535
+                },
+                "base_angular_velocity_error_rad_s": {
+                  "count": 104,
+                  "median": 0.040808220929790785,
+                  "p95": 0.32892590329338633,
+                  "maximum": 0.8077584422101605
+                }
+              },
+              "diagnostic_violations": {
+                "normal_force_violation_n": {
+                  "stats": {
+                    "count": 104,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 0.2018805432979853
+                  },
+                  "above_1e_minus3": 2
+                },
+                "friction_violation_n": {
+                  "stats": {
+                    "count": 104,
+                    "median": 0.0,
+                    "p95": 0.8308654120807085,
+                    "maximum": 5.424844907595542
+                  },
+                  "above_1e_minus3": 44
+                },
+                "joint_velocity_violation_rad_s": {
+                  "stats": {
+                    "count": 104,
+                    "median": 0.0,
+                    "p95": 0.019598587325927893,
+                    "maximum": 0.04351787777141247
+                  },
+                  "above_1e_minus3": 20
+                }
+              }
+            }
+          }
+        },
+        "applied_force_flag_unchanged": {
+          "samples": 80,
+          "models": {
+            "held_initial_torque": {
+              "failed": 0,
+              "errors": {
+                "leg_position_error_max_rad": {
+                  "count": 80,
+                  "median": 0.0025720983829051747,
+                  "p95": 0.025633575568502532,
+                  "maximum": 0.15348355952440507
+                },
+                "arm_position_error_max_rad": {
+                  "count": 80,
+                  "median": 0.0018241371482102392,
+                  "p95": 0.03645461744647616,
+                  "maximum": 0.05205681242753335
+                },
+                "base_linear_velocity_error_mps": {
+                  "count": 80,
+                  "median": 0.008030253000350167,
+                  "p95": 0.07149727031650827,
+                  "maximum": 0.151324106178395
+                },
+                "base_angular_velocity_error_rad_s": {
+                  "count": 80,
+                  "median": 0.12324798856047922,
+                  "p95": 0.7102334898276778,
+                  "maximum": 1.584723088814899
+                }
+              },
+              "diagnostic_violations": {
+                "normal_force_violation_n": {
+                  "stats": null,
+                  "above_1e_minus3": 0
+                },
+                "friction_violation_n": {
+                  "stats": null,
+                  "above_1e_minus3": 0
+                },
+                "joint_velocity_violation_rad_s": {
+                  "stats": null,
+                  "above_1e_minus3": 0
+                }
+              }
+            },
+            "implicit_1": {
+              "failed": 0,
+              "errors": {
+                "leg_position_error_max_rad": {
+                  "count": 80,
+                  "median": 0.003896858803014769,
+                  "p95": 0.024749697087650166,
+                  "maximum": 0.14298891208082587
+                },
+                "arm_position_error_max_rad": {
+                  "count": 80,
+                  "median": 0.0014391830857472879,
+                  "p95": 0.0039621979321169095,
+                  "maximum": 0.004798350304518431
+                },
+                "base_linear_velocity_error_mps": {
+                  "count": 80,
+                  "median": 0.003952473354011031,
+                  "p95": 0.06447464914114634,
+                  "maximum": 0.09703713935509257
+                },
+                "base_angular_velocity_error_rad_s": {
+                  "count": 80,
+                  "median": 0.040406780148510964,
+                  "p95": 0.2989940924836053,
+                  "maximum": 0.5416066825608478
+                }
+              },
+              "diagnostic_violations": {
+                "normal_force_violation_n": {
+                  "stats": {
+                    "count": 80,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 0.0
+                  },
+                  "above_1e_minus3": 0
+                },
+                "friction_violation_n": {
+                  "stats": {
+                    "count": 80,
+                    "median": 0.0,
+                    "p95": 0.048863745086073496,
+                    "maximum": 2.9686588547088633
+                  },
+                  "above_1e_minus3": 6
+                },
+                "joint_velocity_violation_rad_s": {
+                  "stats": {
+                    "count": 80,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 0.03212184104637128
+                  },
+                  "above_1e_minus3": 3
+                }
+              }
+            },
+            "implicit_16": {
+              "failed": 0,
+              "errors": {
+                "leg_position_error_max_rad": {
+                  "count": 80,
+                  "median": 0.0010153836356642243,
+                  "p95": 0.011083997741345974,
+                  "maximum": 0.14714893967735776
+                },
+                "arm_position_error_max_rad": {
+                  "count": 80,
+                  "median": 0.00022872256940433683,
+                  "p95": 0.0014632227440205315,
+                  "maximum": 0.0032612747375885265
+                },
+                "base_linear_velocity_error_mps": {
+                  "count": 80,
+                  "median": 0.004156854553270322,
+                  "p95": 0.06490752210553351,
+                  "maximum": 0.10379230567949617
+                },
+                "base_angular_velocity_error_rad_s": {
+                  "count": 80,
+                  "median": 0.02862403053384381,
+                  "p95": 0.2574528975351228,
+                  "maximum": 0.4448134945192478
+                }
+              },
+              "diagnostic_violations": {
+                "normal_force_violation_n": {
+                  "stats": {
+                    "count": 80,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 5.989720620535143e-06
+                  },
+                  "above_1e_minus3": 0
+                },
+                "friction_violation_n": {
+                  "stats": {
+                    "count": 80,
+                    "median": 0.0,
+                    "p95": 5.722043062350578e-06,
+                    "maximum": 2.4996723214670702e-05
+                  },
+                  "above_1e_minus3": 0
+                },
+                "joint_velocity_violation_rad_s": {
+                  "stats": {
+                    "count": 80,
+                    "median": 0.0,
+                    "p95": 1.1512965607529678e-07,
+                    "maximum": 1.9113092264433362e-07
+                  },
+                  "above_1e_minus3": 0
+                }
+              }
+            },
+            "implicit_160": {
+              "failed": 0,
+              "errors": {
+                "leg_position_error_max_rad": {
+                  "count": 80,
+                  "median": 0.0008872989392872954,
+                  "p95": 0.010057669982348026,
+                  "maximum": 0.14713726943922145
+                },
+                "arm_position_error_max_rad": {
+                  "count": 80,
+                  "median": 0.000195978590914761,
+                  "p95": 0.0014075172800830425,
+                  "maximum": 0.003339689732419271
+                },
+                "base_linear_velocity_error_mps": {
+                  "count": 80,
+                  "median": 0.004266542637819434,
+                  "p95": 0.06503241611598148,
+                  "maximum": 0.10610144246729078
+                },
+                "base_angular_velocity_error_rad_s": {
+                  "count": 80,
+                  "median": 0.029385937695752706,
+                  "p95": 0.25602852879702664,
+                  "maximum": 0.45111342405423216
+                }
+              },
+              "diagnostic_violations": {
+                "normal_force_violation_n": {
+                  "stats": {
+                    "count": 80,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 0.16541336702051343
+                  },
+                  "above_1e_minus3": 1
+                },
+                "friction_violation_n": {
+                  "stats": {
+                    "count": 80,
+                    "median": 0.0,
+                    "p95": 1.2235891128391385,
+                    "maximum": 5.424844907595542
+                  },
+                  "above_1e_minus3": 29
+                },
+                "joint_velocity_violation_rad_s": {
+                  "stats": {
+                    "count": 80,
+                    "median": 0.0,
+                    "p95": 0.019331942033224966,
+                    "maximum": 0.035686022097169534
+                  },
+                  "above_1e_minus3": 16
+                }
+              }
+            }
+          }
+        },
+        "applied_force_flag_changed": {
+          "samples": 24,
+          "models": {
+            "held_initial_torque": {
+              "failed": 0,
+              "errors": {
+                "leg_position_error_max_rad": {
+                  "count": 24,
+                  "median": 0.007297195132882184,
+                  "p95": 0.042928089132357475,
+                  "maximum": 0.04916939525093422
+                },
+                "arm_position_error_max_rad": {
+                  "count": 24,
+                  "median": 0.01460341866055577,
+                  "p95": 0.043168035724313186,
+                  "maximum": 0.04403353860980547
+                },
+                "base_linear_velocity_error_mps": {
+                  "count": 24,
+                  "median": 0.03480579919089513,
+                  "p95": 0.08911716962180491,
+                  "maximum": 0.1957698416136564
+                },
+                "base_angular_velocity_error_rad_s": {
+                  "count": 24,
+                  "median": 0.3065357823836224,
+                  "p95": 1.5815730683305387,
+                  "maximum": 2.383723798451539
+                }
+              },
+              "diagnostic_violations": {
+                "normal_force_violation_n": {
+                  "stats": null,
+                  "above_1e_minus3": 0
+                },
+                "friction_violation_n": {
+                  "stats": null,
+                  "above_1e_minus3": 0
+                },
+                "joint_velocity_violation_rad_s": {
+                  "stats": null,
+                  "above_1e_minus3": 0
+                }
+              }
+            },
+            "implicit_1": {
+              "failed": 0,
+              "errors": {
+                "leg_position_error_max_rad": {
+                  "count": 24,
+                  "median": 0.007900921752979143,
+                  "p95": 0.046300974967914355,
+                  "maximum": 0.051681968139803414
+                },
+                "arm_position_error_max_rad": {
+                  "count": 24,
+                  "median": 0.0016830650093943023,
+                  "p95": 0.0040450322479046695,
+                  "maximum": 0.007402371643965511
+                },
+                "base_linear_velocity_error_mps": {
+                  "count": 24,
+                  "median": 0.03432167668477404,
+                  "p95": 0.08875668186054823,
+                  "maximum": 0.19816398441273408
+                },
+                "base_angular_velocity_error_rad_s": {
+                  "count": 24,
+                  "median": 0.16247640182913925,
+                  "p95": 0.5209359416272094,
+                  "maximum": 0.9461158877490583
+                }
+              },
+              "diagnostic_violations": {
+                "normal_force_violation_n": {
+                  "stats": {
+                    "count": 24,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 0.0
+                  },
+                  "above_1e_minus3": 0
+                },
+                "friction_violation_n": {
+                  "stats": {
+                    "count": 24,
+                    "median": 0.0,
+                    "p95": 0.24348868417724423,
+                    "maximum": 0.43429223059757427
+                  },
+                  "above_1e_minus3": 5
+                },
+                "joint_velocity_violation_rad_s": {
+                  "stats": {
+                    "count": 24,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 0.0
+                  },
+                  "above_1e_minus3": 0
+                }
+              }
+            },
+            "implicit_16": {
+              "failed": 0,
+              "errors": {
+                "leg_position_error_max_rad": {
+                  "count": 24,
+                  "median": 0.005022450450272664,
+                  "p95": 0.033021050043662174,
+                  "maximum": 0.03692196935035438
+                },
+                "arm_position_error_max_rad": {
+                  "count": 24,
+                  "median": 0.000935337322700236,
+                  "p95": 0.0024419881357240574,
+                  "maximum": 0.00720300457461508
+                },
+                "base_linear_velocity_error_mps": {
+                  "count": 24,
+                  "median": 0.03339762348085444,
+                  "p95": 0.08870369900137771,
+                  "maximum": 0.195553946011746
+                },
+                "base_angular_velocity_error_rad_s": {
+                  "count": 24,
+                  "median": 0.153006008155953,
+                  "p95": 0.5217448264329689,
+                  "maximum": 0.8161504405553703
+                }
+              },
+              "diagnostic_violations": {
+                "normal_force_violation_n": {
+                  "stats": {
+                    "count": 24,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 0.0
+                  },
+                  "above_1e_minus3": 0
+                },
+                "friction_violation_n": {
+                  "stats": {
+                    "count": 24,
+                    "median": 0.0,
+                    "p95": 2.5205600303013214e-05,
+                    "maximum": 4.2918882724674035e-05
+                  },
+                  "above_1e_minus3": 0
+                },
+                "joint_velocity_violation_rad_s": {
+                  "stats": {
+                    "count": 24,
+                    "median": 0.0,
+                    "p95": 2.185467009141458e-07,
+                    "maximum": 2.463309485278842e-07
+                  },
+                  "above_1e_minus3": 0
+                }
+              }
+            },
+            "implicit_160": {
+              "failed": 0,
+              "errors": {
+                "leg_position_error_max_rad": {
+                  "count": 24,
+                  "median": 0.005082483895503101,
+                  "p95": 0.03359008208232698,
+                  "maximum": 0.03561792359603466
+                },
+                "arm_position_error_max_rad": {
+                  "count": 24,
+                  "median": 0.0009115510905073343,
+                  "p95": 0.0024565410630076603,
+                  "maximum": 0.007247495614608855
+                },
+                "base_linear_velocity_error_mps": {
+                  "count": 24,
+                  "median": 0.03336939409959408,
+                  "p95": 0.08869731172371395,
+                  "maximum": 0.19531981617337535
+                },
+                "base_angular_velocity_error_rad_s": {
+                  "count": 24,
+                  "median": 0.15365926082167436,
+                  "p95": 0.5223687313316699,
+                  "maximum": 0.8077584422101605
+                }
+              },
+              "diagnostic_violations": {
+                "normal_force_violation_n": {
+                  "stats": {
+                    "count": 24,
+                    "median": 0.0,
+                    "p95": 0.0,
+                    "maximum": 0.2018805432979853
+                  },
+                  "above_1e_minus3": 1
+                },
+                "friction_violation_n": {
+                  "stats": {
+                    "count": 24,
+                    "median": 0.050871738583098125,
+                    "p95": 0.6024718245389178,
+                    "maximum": 0.7034311134243691
+                  },
+                  "above_1e_minus3": 15
+                },
+                "joint_velocity_violation_rad_s": {
+                  "stats": {
+                    "count": 24,
+                    "median": 0.0,
+                    "p95": 0.01956041133672763,
+                    "maximum": 0.04351787777141247
+                  },
+                  "above_1e_minus3": 4
+                }
+              }
+            }
+          }
+        }
+      },
+      "audit": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_full_command_followup_20261107/interval28_actual_prediction.json",
+      "audit_sha256": "2511b55f986a7b465cc65b63069ef3bf002f3e71dab6d2f9888dc0cdd4065608"
+    }
+  ],
+  "script_sha256": "8eb770eaa93a107e188e03bbacce029ed111a04f730a3fb36c449d86845a9abc"
+}
