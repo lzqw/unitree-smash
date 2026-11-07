@@ -580,8 +580,10 @@ this full native run completes.
 ### Disagreement events and native rerun status
 
 The original 37 differing force-contact records cover **17 TRAIN cases**.
-Among them, 26 precede that episode's first logged non-foot collision, five
-follow it, and six belong to episodes with no recorded non-foot collision.
+A provisional clock comparison placed 26 before the first-episode non-foot
+collision, five after it and six against cases without a recorded collision.
+**Correction:** legacy MPC logs lack episode IDs and can include unscored later
+episodes; these 26/5/6 counts are NOT verified same-episode timing attribution.
 Only three records apply a feasible MPC first stage (TRAIN12 at 7.47/7.88 s,
 TRAIN50 at 3.58 s). The remaining records are rejected at stage0 or have no
 admitted support. This is retrospective timing evidence, not proof that the
@@ -596,3 +598,43 @@ It uses the existing single-GPU budget guard, a 3600-second job ceiling and
 102400 control-environment-step cap. It is a frozen-policy controller
 comparison, not PPO training. At this report revision it is **running**, with
 no final performance result; 27/128 remains the retained baseline.
+
+
+### Clearance coordinates: confirmed model-state error, native test pending
+
+The reduced QP calls `reference()` after taking a measured-state snapshot.
+That reference computes posture height with a zero-root configuration and writes
+Pinocchio's shared Data. The subsequent thigh-clearance task previously read
+frame positions/Jacobians from that scratch data as if they were the current
+state. It also combined a LOCAL_WORLD_ALIGNED point Jacobian with an untranslated
+WORLD Jacobian derivative.
+
+On recorded TRAIN1 tick371 the model's current FL thigh origin is approximately
+0.13285 m high, whereas the legacy cache supplied -0.01025 m. This is a comparison
+inside the same model on a recorded public observation, not a newly measured
+native clearance or collision-surface distance.
+
+The correction explicitly recomputes and copies point kinematics at the current
+predicted q/v, including the moving-origin term in the Jacobian derivative.
+It changes no physics, actuator limits, cost coefficients or success conditions.
+`landing_clearance_coordinates_cpu_20261107.json` contains a same-state CPU
+comparison on 61 recorded post-touchdown states from TRAIN1/67/95. Median absolute
+legacy height error is 0.16261 m, maximum 0.52492 m. Local QP acceptance is 51/61
+before and 50/61 after: correcting the equations is not evidence of better
+native recovery or even a higher local solve rate.
+
+Validation: 18 focused tests pass, including independent finite-difference
+checks of point velocity/Jacobian derivatives and a regression through the
+production QP after reference FK has modified shared data. Returned snapshots
+are verified not to alias later FK operations.
+
+The evaluator also now records episode IDs/control ticks and stops MPC work on
+each lane after its scored first episode ends. Previously unscored subsequent
+episodes could add solver records and, before per-lane memory isolation, affect
+shared controller memory. Native first-episode performance remains the score;
+legacy all-call totals should not be interpreted as first-episode totals.
+
+These new clearance/logging changes are **not included** in the currently
+running memory-only experiment (source `95854e0`). Finish that comparison first,
+then test corrected clearance with the same policy and controller settings.
+No new success-rate claim is made from these CPU corrections.

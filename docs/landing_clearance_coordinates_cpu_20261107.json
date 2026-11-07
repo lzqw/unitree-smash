@@ -1,0 +1,1366 @@
+{
+  "scope": "CPU same-state QP counterfactual on recorded public observations; not a native performance result",
+  "source": "reports/landing_mpc_horizon40_20261107_01",
+  "legacy_ref": "55534de",
+  "legacy_qp_sha256": "9e3e9b121bb0596f3c98cb30d5af6eb54d381360c5e0965b3a0cd1d17f2227fd",
+  "corrected_qp_sha256": "436e2668b8059cb7e4cede7159bdf6e397ae211dda1f080ebd054901732191a5",
+  "recorded_input_sha256": {
+    "reports/landing_mpc_horizon40_20261107_01/fixed_policy_traces/case_001.npz": "4505ebcbabc10696e16dd50c2fa86a1b00ff8afa6b5f5d730779e54d0e28ac90",
+    "reports/landing_mpc_horizon40_20261107_01/fixed_policy_traces/case_067.npz": "6ecfadc51e01847e3bfd03fe1faeadcfacb3edd6fed6d8427b01b372f0ee8138",
+    "reports/landing_mpc_horizon40_20261107_01/fixed_policy_traces/case_095.npz": "0b2a3935084abcdb9c100446e21f75a9c1c43ab028b8cb9ec9de6ab594ca65cf"
+  },
+  "sampling": "every tenth phase774 first-episode row for TRAIN1/67/95",
+  "counts": {
+    "samples": 61,
+    "legacy_accepted": 51,
+    "corrected_accepted": 50
+  },
+  "legacy_absolute_height_error_m": {
+    "median": 0.1626087514812683,
+    "maximum": 0.5249217549241623
+  },
+  "records": [
+    {
+      "case": 1,
+      "tick": 306,
+      "clock_s": 3.059999942779541,
+      "contacts": [
+        true,
+        false,
+        false,
+        false
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.22421093721451188,
+        "FR_thigh": -0.2542210041605882,
+        "RL_thigh": -0.4741648473873273,
+        "RR_thigh": -0.5116752016451872
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.06084881223299554
+    },
+    {
+      "case": 1,
+      "tick": 316,
+      "clock_s": 3.1599998474121094,
+      "contacts": [
+        true,
+        false,
+        false,
+        false
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.12201753675242799,
+        "FR_thigh": -0.15980816286176863,
+        "RL_thigh": -0.37660533550849495,
+        "RR_thigh": -0.3546012969407856
+      },
+      "legacy_accepted": false,
+      "corrected_accepted": false,
+      "legacy_status": "primal infeasible",
+      "corrected_status": "primal infeasible",
+      "common_accepted_target_difference_max_rad": null
+    },
+    {
+      "case": 1,
+      "tick": 326,
+      "clock_s": 3.259999990463257,
+      "contacts": [
+        true,
+        true,
+        false,
+        false
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.1596808702194786,
+        "FR_thigh": -0.140388542251625,
+        "RL_thigh": -0.3350229730278238,
+        "RR_thigh": -0.3358138862418261
+      },
+      "legacy_accepted": false,
+      "corrected_accepted": false,
+      "legacy_status": "primal infeasible",
+      "corrected_status": "primal infeasible",
+      "common_accepted_target_difference_max_rad": null
+    },
+    {
+      "case": 1,
+      "tick": 336,
+      "clock_s": 3.359999895095825,
+      "contacts": [
+        true,
+        true,
+        false,
+        false
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.15846789590986612,
+        "FR_thigh": -0.13608987395635597,
+        "RL_thigh": -0.2847916626951913,
+        "RR_thigh": -0.3081536100059718
+      },
+      "legacy_accepted": false,
+      "corrected_accepted": false,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": null
+    },
+    {
+      "case": 1,
+      "tick": 346,
+      "clock_s": 3.4600000381469727,
+      "contacts": [
+        true,
+        true,
+        true,
+        false
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.14147004711349712,
+        "FR_thigh": -0.16638723413175835,
+        "RL_thigh": -0.18733334053699904,
+        "RR_thigh": -0.24249167081055764
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.014819624258151087
+    },
+    {
+      "case": 1,
+      "tick": 356,
+      "clock_s": 3.559999942779541,
+      "contacts": [
+        true,
+        true,
+        true,
+        false
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.12916740325529802,
+        "FR_thigh": -0.15665121016067562,
+        "RL_thigh": -0.14137243984221148,
+        "RR_thigh": -0.19150895506746804
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.11548732509068071
+    },
+    {
+      "case": 1,
+      "tick": 366,
+      "clock_s": 3.6599998474121094,
+      "contacts": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.13921479418150312,
+        "FR_thigh": -0.16310066508254423,
+        "RL_thigh": -0.1657342648078,
+        "RR_thigh": -0.19365808465161422
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.015256175023130508
+    },
+    {
+      "case": 1,
+      "tick": 376,
+      "clock_s": 3.759999990463257,
+      "contacts": [
+        true,
+        true,
+        true,
+        false
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.1420529374691241,
+        "FR_thigh": -0.16435874730330186,
+        "RL_thigh": -0.18379768049000905,
+        "RR_thigh": -0.19904521531145927
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.01588008731097479
+    },
+    {
+      "case": 1,
+      "tick": 386,
+      "clock_s": 3.859999895095825,
+      "contacts": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.13836149892054728,
+        "FR_thigh": -0.1580655657306282,
+        "RL_thigh": -0.18310847396416963,
+        "RR_thigh": -0.19034405717773042
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.0682762056377475
+    },
+    {
+      "case": 1,
+      "tick": 396,
+      "clock_s": 3.9599997997283936,
+      "contacts": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.1384073785145136,
+        "FR_thigh": -0.15707377054564617,
+        "RL_thigh": -0.18469675029380528,
+        "RR_thigh": -0.1896285575744952
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.026932909847276143
+    },
+    {
+      "case": 1,
+      "tick": 406,
+      "clock_s": 4.059999942779541,
+      "contacts": [
+        true,
+        true,
+        false,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.13509711023989834,
+        "FR_thigh": -0.15853935489326898,
+        "RL_thigh": -0.18078874248448723,
+        "RR_thigh": -0.1910027234581983
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.10094428818330436
+    },
+    {
+      "case": 1,
+      "tick": 416,
+      "clock_s": 4.159999847412109,
+      "contacts": [
+        true,
+        true,
+        false,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.12521524117391067,
+        "FR_thigh": -0.1527533450140162,
+        "RL_thigh": -0.16729859089846635,
+        "RR_thigh": -0.1955862649573193
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.10066713472942346
+    },
+    {
+      "case": 1,
+      "tick": 426,
+      "clock_s": 4.259999752044678,
+      "contacts": [
+        true,
+        true,
+        false,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.11497810040413117,
+        "FR_thigh": -0.1562267773178447,
+        "RL_thigh": -0.14823190454127305,
+        "RR_thigh": -0.19049648455619853
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.2853481799032842
+    },
+    {
+      "case": 1,
+      "tick": 436,
+      "clock_s": 4.360000133514404,
+      "contacts": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.10548403003716801,
+        "FR_thigh": -0.1603474084824028,
+        "RL_thigh": -0.13802782398945843,
+        "RR_thigh": -0.19492732469411828
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.2093163848419517
+    },
+    {
+      "case": 1,
+      "tick": 446,
+      "clock_s": 4.460000038146973,
+      "contacts": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.09626417703528226,
+        "FR_thigh": -0.16352743292189606,
+        "RL_thigh": -0.12683915149285555,
+        "RR_thigh": -0.19777903650880838
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.13524692115962011
+    },
+    {
+      "case": 1,
+      "tick": 456,
+      "clock_s": 4.559999942779541,
+      "contacts": [
+        true,
+        false,
+        false,
+        false
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.08507432975670755,
+        "FR_thigh": -0.1562059382987354,
+        "RL_thigh": -0.11797145319083724,
+        "RR_thigh": -0.2001195610586074
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.0660579660058922
+    },
+    {
+      "case": 1,
+      "tick": 466,
+      "clock_s": 4.659999847412109,
+      "contacts": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.07412842925297607,
+        "FR_thigh": -0.15678700926135916,
+        "RL_thigh": -0.0949444453130324,
+        "RR_thigh": -0.18979917802464466
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.022866519755177103
+    },
+    {
+      "case": 1,
+      "tick": 476,
+      "clock_s": 4.759999752044678,
+      "contacts": [
+        true,
+        false,
+        true,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.07045938419993682,
+        "FR_thigh": -0.15818570804134363,
+        "RL_thigh": -0.09266133771085508,
+        "RR_thigh": -0.1905268860037643
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.06111176268541829
+    },
+    {
+      "case": 1,
+      "tick": 486,
+      "clock_s": 4.859999656677246,
+      "contacts": [
+        true,
+        false,
+        true,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.06696012540675288,
+        "FR_thigh": -0.16002100862633775,
+        "RL_thigh": -0.08902112517658067,
+        "RR_thigh": -0.19175046346730343
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.05394404497546734
+    },
+    {
+      "case": 1,
+      "tick": 496,
+      "clock_s": 4.960000038146973,
+      "contacts": [
+        true,
+        false,
+        true,
+        false
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.06684237142977789,
+        "FR_thigh": -0.16238383492519057,
+        "RL_thigh": -0.08759603966419302,
+        "RR_thigh": -0.18972165754310147
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.06367122359939925
+    },
+    {
+      "case": 67,
+      "tick": 299,
+      "clock_s": 2.990000009536743,
+      "contacts": [
+        true,
+        false,
+        false,
+        false
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.24463908415700517,
+        "FR_thigh": -0.2760900125922539,
+        "RL_thigh": -0.4849800157144147,
+        "RR_thigh": -0.5211680718921821
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.05545330454176223
+    },
+    {
+      "case": 67,
+      "tick": 309,
+      "clock_s": 3.0899999141693115,
+      "contacts": [
+        true,
+        true,
+        false,
+        false
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.1275202515302948,
+        "FR_thigh": -0.152038346034534,
+        "RL_thigh": -0.37095266968059226,
+        "RR_thigh": -0.34483952283278924
+      },
+      "legacy_accepted": false,
+      "corrected_accepted": false,
+      "legacy_status": "primal infeasible inaccurate",
+      "corrected_status": "primal infeasible inaccurate",
+      "common_accepted_target_difference_max_rad": null
+    },
+    {
+      "case": 67,
+      "tick": 319,
+      "clock_s": 3.18999981880188,
+      "contacts": [
+        true,
+        true,
+        false,
+        false
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.1616905756125992,
+        "FR_thigh": -0.13271767669248294,
+        "RL_thigh": -0.326523511761792,
+        "RR_thigh": -0.3240260179550864
+      },
+      "legacy_accepted": false,
+      "corrected_accepted": false,
+      "legacy_status": "primal infeasible",
+      "corrected_status": "primal infeasible",
+      "common_accepted_target_difference_max_rad": null
+    },
+    {
+      "case": 67,
+      "tick": 329,
+      "clock_s": 3.2899999618530273,
+      "contacts": [
+        true,
+        true,
+        false,
+        false
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.1623730579864846,
+        "FR_thigh": -0.11690053687215399,
+        "RL_thigh": -0.2757182262026235,
+        "RR_thigh": -0.28886256905027624
+      },
+      "legacy_accepted": false,
+      "corrected_accepted": false,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": null
+    },
+    {
+      "case": 67,
+      "tick": 339,
+      "clock_s": 3.3899998664855957,
+      "contacts": [
+        true,
+        true,
+        true,
+        false
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.153394582128959,
+        "FR_thigh": -0.14117887770694437,
+        "RL_thigh": -0.17982937855844594,
+        "RR_thigh": -0.2090125285394149
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.0319671324033608
+    },
+    {
+      "case": 67,
+      "tick": 349,
+      "clock_s": 3.490000009536743,
+      "contacts": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.15114678385344396,
+        "FR_thigh": -0.15142612397958688,
+        "RL_thigh": -0.18290069438102902,
+        "RR_thigh": -0.192111059023561
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.025997599639147204
+    },
+    {
+      "case": 67,
+      "tick": 359,
+      "clock_s": 3.5899999141693115,
+      "contacts": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.16067851350315188,
+        "FR_thigh": -0.15066834115230543,
+        "RL_thigh": -0.19597020835542264,
+        "RR_thigh": -0.191972671885132
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.04751042366584651
+    },
+    {
+      "case": 67,
+      "tick": 369,
+      "clock_s": 3.68999981880188,
+      "contacts": [
+        true,
+        true,
+        false,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.182283893334574,
+        "FR_thigh": -0.17304179835377798,
+        "RL_thigh": -0.20471918411129383,
+        "RR_thigh": -0.20397686800661985
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.018188729615017052
+    },
+    {
+      "case": 67,
+      "tick": 379,
+      "clock_s": 3.7899999618530273,
+      "contacts": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.1743849368416298,
+        "FR_thigh": -0.16248704698175592,
+        "RL_thigh": -0.20064239121456978,
+        "RR_thigh": -0.19515430051841864
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.03917632864728193
+    },
+    {
+      "case": 67,
+      "tick": 389,
+      "clock_s": 3.8899998664855957,
+      "contacts": [
+        true,
+        true,
+        true,
+        false
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.15166544373050003,
+        "FR_thigh": -0.13858557519224457,
+        "RL_thigh": -0.18813705709956874,
+        "RR_thigh": -0.17576788616107694
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.031065062605902805
+    },
+    {
+      "case": 67,
+      "tick": 399,
+      "clock_s": 3.990000009536743,
+      "contacts": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.15425145841145682,
+        "FR_thigh": -0.13695580782268585,
+        "RL_thigh": -0.19161193547084998,
+        "RR_thigh": -0.17719150503817768
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.06371089763195953
+    },
+    {
+      "case": 67,
+      "tick": 409,
+      "clock_s": 4.089999675750732,
+      "contacts": [
+        true,
+        false,
+        false,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.1341527259872036,
+        "FR_thigh": -0.11452353051733878,
+        "RL_thigh": -0.20331702362059773,
+        "RR_thigh": -0.17711374325483037
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.13161235017992157
+    },
+    {
+      "case": 67,
+      "tick": 419,
+      "clock_s": 4.190000057220459,
+      "contacts": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.13701216705184308,
+        "FR_thigh": -0.10286009036102589,
+        "RL_thigh": -0.18948046205500155,
+        "RR_thigh": -0.14486216366372004
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.20418041174864276
+    },
+    {
+      "case": 67,
+      "tick": 429,
+      "clock_s": 4.289999961853027,
+      "contacts": [
+        true,
+        false,
+        true,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.14032931953179872,
+        "FR_thigh": -0.09484499110127764,
+        "RL_thigh": -0.18329715634080163,
+        "RR_thigh": -0.12455314858751365
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.14213644371865586
+    },
+    {
+      "case": 67,
+      "tick": 439,
+      "clock_s": 4.389999866485596,
+      "contacts": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.14498618170604455,
+        "FR_thigh": -0.08790824673574342,
+        "RL_thigh": -0.18877161960217176,
+        "RR_thigh": -0.11939577531602813
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.07503514297775271
+    },
+    {
+      "case": 67,
+      "tick": 449,
+      "clock_s": 4.489999771118164,
+      "contacts": [
+        false,
+        true,
+        true,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.1487660390199146,
+        "FR_thigh": -0.07991820381408639,
+        "RL_thigh": -0.1893999102874898,
+        "RR_thigh": -0.1092271785488374
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.026582711985722582
+    },
+    {
+      "case": 67,
+      "tick": 459,
+      "clock_s": 4.589999675750732,
+      "contacts": [
+        true,
+        true,
+        true,
+        false
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.15514393646587957,
+        "FR_thigh": -0.07512624760062461,
+        "RL_thigh": -0.18505366185369837,
+        "RR_thigh": -0.08997151110652417
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": false,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": null
+    },
+    {
+      "case": 67,
+      "tick": 469,
+      "clock_s": 4.690000057220459,
+      "contacts": [
+        false,
+        true,
+        true,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.15656945460755453,
+        "FR_thigh": -0.07051882077823149,
+        "RL_thigh": -0.18366527864845317,
+        "RR_thigh": -0.0841000000662584
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.07101505346737791
+    },
+    {
+      "case": 67,
+      "tick": 479,
+      "clock_s": 4.789999961853027,
+      "contacts": [
+        false,
+        true,
+        false,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.15793430384470056,
+        "FR_thigh": -0.06654088103110077,
+        "RL_thigh": -0.18610526010780437,
+        "RR_thigh": -0.08115118020771814
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.03968919843531915
+    },
+    {
+      "case": 67,
+      "tick": 489,
+      "clock_s": 4.889999866485596,
+      "contacts": [
+        false,
+        true,
+        false,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.1591906980872625,
+        "FR_thigh": -0.06415052545005252,
+        "RL_thigh": -0.18588628781285654,
+        "RR_thigh": -0.07923757918797952
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.0321761492545356
+    },
+    {
+      "case": 67,
+      "tick": 499,
+      "clock_s": 4.989999771118164,
+      "contacts": [
+        false,
+        true,
+        false,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.1621234675777751,
+        "FR_thigh": -0.06021856009680873,
+        "RL_thigh": -0.18876915608331654,
+        "RR_thigh": -0.08489552105932034
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.020932907951639892
+    },
+    {
+      "case": 67,
+      "tick": 509,
+      "clock_s": 5.089999675750732,
+      "contacts": [
+        true,
+        true,
+        false,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.16195753772208746,
+        "FR_thigh": -0.05784882467969024,
+        "RL_thigh": -0.18697449272642722,
+        "RR_thigh": -0.08187448401324585
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.08765978495769922
+    },
+    {
+      "case": 67,
+      "tick": 519,
+      "clock_s": 5.190000057220459,
+      "contacts": [
+        true,
+        true,
+        false,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.16211407401415856,
+        "FR_thigh": -0.05776445746371108,
+        "RL_thigh": -0.18826702063387415,
+        "RR_thigh": -0.0824995827512055
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.18695931196891968
+    },
+    {
+      "case": 67,
+      "tick": 529,
+      "clock_s": 5.289999961853027,
+      "contacts": [
+        true,
+        true,
+        false,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.1627304559807807,
+        "FR_thigh": -0.05593458396131451,
+        "RL_thigh": -0.18876639361321446,
+        "RR_thigh": -0.08067121034485251
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.182734273924974
+    },
+    {
+      "case": 95,
+      "tick": 298,
+      "clock_s": 2.9800000190734863,
+      "contacts": [
+        true,
+        false,
+        false,
+        false
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.24382048557713076,
+        "FR_thigh": -0.2722381996218228,
+        "RL_thigh": -0.49192971311640465,
+        "RR_thigh": -0.5249217549241623
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.053297085107951725
+    },
+    {
+      "case": 95,
+      "tick": 308,
+      "clock_s": 3.0799999237060547,
+      "contacts": [
+        true,
+        true,
+        false,
+        false
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.13975430862067198,
+        "FR_thigh": -0.14665802181448875,
+        "RL_thigh": -0.37676736463597776,
+        "RR_thigh": -0.34279490335429463
+      },
+      "legacy_accepted": false,
+      "corrected_accepted": false,
+      "legacy_status": "primal infeasible",
+      "corrected_status": "primal infeasible",
+      "common_accepted_target_difference_max_rad": null
+    },
+    {
+      "case": 95,
+      "tick": 318,
+      "clock_s": 3.179999828338623,
+      "contacts": [
+        false,
+        true,
+        false,
+        false
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.1712857388240932,
+        "FR_thigh": -0.12993415144128298,
+        "RL_thigh": -0.3394747840478467,
+        "RR_thigh": -0.31521082117674204
+      },
+      "legacy_accepted": false,
+      "corrected_accepted": false,
+      "legacy_status": "primal infeasible",
+      "corrected_status": "primal infeasible",
+      "common_accepted_target_difference_max_rad": null
+    },
+    {
+      "case": 95,
+      "tick": 328,
+      "clock_s": 3.2799999713897705,
+      "contacts": [
+        true,
+        true,
+        false,
+        false
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.17329010917807627,
+        "FR_thigh": -0.10714148731915847,
+        "RL_thigh": -0.27456563034066406,
+        "RR_thigh": -0.27070094974284004
+      },
+      "legacy_accepted": false,
+      "corrected_accepted": false,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": null
+    },
+    {
+      "case": 95,
+      "tick": 338,
+      "clock_s": 3.379999876022339,
+      "contacts": [
+        true,
+        true,
+        false,
+        false
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.1723634899720485,
+        "FR_thigh": -0.13327306745878623,
+        "RL_thigh": -0.18557931462841779,
+        "RR_thigh": -0.19554944291374496
+      },
+      "legacy_accepted": false,
+      "corrected_accepted": false,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": null
+    },
+    {
+      "case": 95,
+      "tick": 348,
+      "clock_s": 3.4800000190734863,
+      "contacts": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.17702828183719824,
+        "FR_thigh": -0.14957160509570852,
+        "RL_thigh": -0.1859980455907002,
+        "RR_thigh": -0.18646107738113935
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.007820823932775
+    },
+    {
+      "case": 95,
+      "tick": 358,
+      "clock_s": 3.5799999237060547,
+      "contacts": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.18275403372482693,
+        "FR_thigh": -0.15031322479322445,
+        "RL_thigh": -0.19853156593425225,
+        "RR_thigh": -0.1875018245822492
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.014702459072321677
+    },
+    {
+      "case": 95,
+      "tick": 368,
+      "clock_s": 3.679999828338623,
+      "contacts": [
+        true,
+        true,
+        false,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.19712928646223646,
+        "FR_thigh": -0.16769721209487193,
+        "RL_thigh": -0.2106075247108862,
+        "RR_thigh": -0.19136591872943645
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.021088535831089966
+    },
+    {
+      "case": 95,
+      "tick": 378,
+      "clock_s": 3.7799999713897705,
+      "contacts": [
+        true,
+        true,
+        false,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.18417165483858558,
+        "FR_thigh": -0.1531002768020943,
+        "RL_thigh": -0.2035918339438509,
+        "RR_thigh": -0.18273323292233934
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.036643589148604994
+    },
+    {
+      "case": 95,
+      "tick": 388,
+      "clock_s": 3.879999876022339,
+      "contacts": [
+        true,
+        true,
+        false,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.1601222778475869,
+        "FR_thigh": -0.12124490789926386,
+        "RL_thigh": -0.1933885287863414,
+        "RR_thigh": -0.1590929410771585
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.09311146880044585
+    },
+    {
+      "case": 95,
+      "tick": 398,
+      "clock_s": 3.9800000190734863,
+      "contacts": [
+        true,
+        true,
+        false,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.16709270802082066,
+        "FR_thigh": -0.11263116202717174,
+        "RL_thigh": -0.19997994557029225,
+        "RR_thigh": -0.1530292626171054
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.09791607628264455
+    },
+    {
+      "case": 95,
+      "tick": 408,
+      "clock_s": 4.079999923706055,
+      "contacts": [
+        true,
+        true,
+        false,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.17842485594203436,
+        "FR_thigh": -0.09549769780361807,
+        "RL_thigh": -0.2168165327545542,
+        "RR_thigh": -0.13997296480258783
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.2609747188677638
+    },
+    {
+      "case": 95,
+      "tick": 418,
+      "clock_s": 4.179999828338623,
+      "contacts": [
+        false,
+        true,
+        false,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.16826685960881818,
+        "FR_thigh": -0.07101917247776761,
+        "RL_thigh": -0.255630999513041,
+        "RR_thigh": -0.15229938538083002
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.05847763312913104
+    },
+    {
+      "case": 95,
+      "tick": 428,
+      "clock_s": 4.279999732971191,
+      "contacts": [
+        false,
+        true,
+        false,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.18537998464240796,
+        "FR_thigh": -0.06111352032077466,
+        "RL_thigh": -0.2816513149753597,
+        "RR_thigh": -0.15280852014218926
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.1584683191132703
+    },
+    {
+      "case": 95,
+      "tick": 438,
+      "clock_s": 4.380000114440918,
+      "contacts": [
+        false,
+        true,
+        false,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.1950033340889818,
+        "FR_thigh": -0.034119629519044084,
+        "RL_thigh": -0.28400157104511337,
+        "RR_thigh": -0.1152974480101081
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.1166202760105346
+    },
+    {
+      "case": 95,
+      "tick": 448,
+      "clock_s": 4.480000019073486,
+      "contacts": [
+        false,
+        true,
+        false,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.2313634497858103,
+        "FR_thigh": -0.03343340986548374,
+        "RL_thigh": -0.3012609895863124,
+        "RR_thigh": -0.09688822012185366
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.10120109773275465
+    },
+    {
+      "case": 95,
+      "tick": 458,
+      "clock_s": 4.579999923706055,
+      "contacts": [
+        false,
+        true,
+        false,
+        true
+      ],
+      "legacy_height_error_m": {
+        "FL_thigh": -0.25771683294687275,
+        "FR_thigh": -0.03144588949150272,
+        "RL_thigh": -0.29879699303871005,
+        "RR_thigh": -0.06424466647273162
+      },
+      "legacy_accepted": true,
+      "corrected_accepted": true,
+      "legacy_status": "solved",
+      "corrected_status": "solved",
+      "common_accepted_target_difference_max_rad": 0.12396265877194157
+    }
+  ]
+}

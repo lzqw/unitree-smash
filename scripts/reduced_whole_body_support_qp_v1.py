@@ -10,10 +10,10 @@ import time
 
 import numpy as np
 import osqp
-import pinocchio as pin
 from scipy import sparse
 
 from scripts.whole_body_support_qp_v1 import WholeBodySupportQP
+from scripts.frame_point_kinematics_v1 import frame_point_kinematics
 
 
 class ReducedWholeBodySupportQP(WholeBodySupportQP):
@@ -114,19 +114,25 @@ class ReducedWholeBodySupportQP(WholeBodySupportQP):
         # first and a thigh touches the ground later.
         clearance_weight = float(cfg.nonfoot_clearance_weight)
         hard_clearance_rows = []
+        clearance_points = {}
         if clearance_weight > 1e-7 and len(feet):
+            # reference() performs FK at a zero-root posture to derive target
+            # height. That mutates model.data. Recompute/copy kinematics at the
+            # actual predicted state before evaluating measured link clearance.
+            clearance_frames = frame_point_kinematics(
+                self.model, state.q, state.v,
+                ('FL_thigh', 'FR_thigh', 'RL_thigh', 'RR_thigh'))
+            clearance_points = {name: frame['position'].tolist()
+                                for name, frame in clearance_frames.items()}
             active_positions = snapshot['body_positions_world'][feet_ids][state.contacts]
             ground_z = float(np.median(active_positions[:, 2])) if len(active_positions) else None
             if ground_z is not None:
                 for link_name in ('FL_thigh', 'FR_thigh', 'RL_thigh', 'RR_thigh'):
-                    frame_id = self.model.body_frames[link_name]
-                    link_jac = pin.getFrameJacobian(self.model.model, self.model.data,
-                        frame_id, pin.ReferenceFrame.LOCAL_WORLD_ALIGNED)[:3].copy()
-                    link_jdot = pin.getFrameJacobianTimeVariation(
-                        self.model.model, self.model.data, frame_id,
-                        pin.ReferenceFrame.WORLD)[:3].copy()
-                    link_position = self.model.data.oMf[frame_id].translation.copy()
-                    link_velocity = link_jac @ state.v
+                    frame = clearance_frames[link_name]
+                    link_jac = frame['jacobian']
+                    link_jdot = frame['jacobian_dot']
+                    link_position = frame['position']
+                    link_velocity = frame['velocity']
                     target_z = ground_z + float(cfg.nonfoot_clearance_m)
                     predicted_z = link_position[2] + cfg.control_dt_s * link_velocity[2]
                     if (predicted_z <= target_z + .12 or link_velocity[2] < -.5):
@@ -184,6 +190,7 @@ class ReducedWholeBodySupportQP(WholeBodySupportQP):
         if static_equilibrium:constraint(np.c_[np.eye(24),np.zeros((24,nforce))],np.zeros(24))
         matrix=np.vstack(matrices);low,high=np.concatenate(lowers),np.concatenate(uppers)
         plan=dict(accepted=False,contacts=state.contacts.copy(),reference=reference,
+                  nonfoot_clearance_points_world=clearance_points,
                   static_model_check=static_equilibrium,native_execution=False,
                   formulation='actuated_torques_and_inactive_forces_eliminated',decision_variables=nz)
         if np.any(low>high):

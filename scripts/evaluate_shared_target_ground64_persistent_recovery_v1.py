@@ -286,6 +286,7 @@ class SharedTargetResidualController:
                 not 0. < self.landing_mpc_command_rate_scale <= 1.):
             raise ValueError('landing_mpc_command_rate_scale must be in (0,1]')
         self._landing_mpc_hold_remaining=torch.zeros((count,),dtype=torch.int32,device=device)
+        self._landing_mpc_finished_first_episode=torch.zeros((count,),dtype=torch.bool,device=device)
         self._landing_mpc_held_action=torch.zeros((count,18),dtype=torch.float32,device=device)
         self._landing_mpc_last_target=np.full((count,18),np.nan,dtype=np.float64)
         self._landing_mpc_last_predicted=np.full((count,18),np.nan,dtype=np.float64)
@@ -488,6 +489,7 @@ class SharedTargetResidualController:
             else:
                 self.first_ball_feature[ids].zero_();self.first_ball_seen[ids]=False
         if ids is None:
+            self._landing_mpc_finished_first_episode.zero_()
             self._effort_override.zero_();self._effort_override_mask.zero_()
             self._landing_mpc_hold_remaining.zero_()
             self._landing_mpc_held_action.zero_()
@@ -500,6 +502,7 @@ class SharedTargetResidualController:
             for contact_state in self._landing_mpc_contact_state_lane:
                 contact_state.reset()
         else:
+            self._landing_mpc_finished_first_episode[ids]=False
             self._effort_override[ids].zero_();self._effort_override_mask[ids]=False
             self._landing_mpc_hold_remaining[ids]=0
             self._landing_mpc_held_action[ids].zero_()
@@ -527,6 +530,15 @@ class SharedTargetResidualController:
     def effort_override(self):
         """Return explicit effort residuals for the native implicit-PD actuator."""
         return self._effort_override
+
+    def finish_landing_mpc_episodes(self, done):
+        """This evaluator scores first episodes only; stop unscored MPC work."""
+        newly = done.bool() & ~self._landing_mpc_finished_first_episode
+        self._landing_mpc_finished_first_episode |= done.bool()
+        self._landing_mpc_hold_remaining[newly] = 0
+        if isinstance(self.landing_mpc, LandingSupportMPCV3):
+            for lane in torch.where(newly)[0].tolist():
+                self.landing_mpc.reset(lane=lane)
 
     def set_landing_mpc_native_state(self, env):
         """Attach the live Isaac articulation for the next MPC action."""
@@ -571,9 +583,12 @@ class SharedTargetResidualController:
         else:
             newly_landed = torch.zeros_like(phase_touchdown)
             active=phase_touchdown
+        active = active & ~self._landing_mpc_finished_first_episode
         for lane in torch.where(active)[0].tolist():
             case=int(lane)  # evaluator maps env lanes to the fixed TRAIN panel
             if case not in self.landing_mpc_cases:continue
+            episode_index = (int(self._landing_mpc_native_env.episode_index[lane].item())
+                             if self._landing_mpc_native_env is not None else None)
             try:
                 from scripts.loaded_pinocchio_model_v1 import LoadedPinocchioModelV1
                 if not hasattr(self,'_landing_mpc_model'):
@@ -649,7 +664,8 @@ class SharedTargetResidualController:
                         tracking_error = float(np.max(np.abs(actual_q-self._landing_mpc_last_target[lane])))
                         if np.isfinite(self._landing_mpc_last_predicted[lane]).all():
                             prediction_error = float(np.max(np.abs(actual_q-self._landing_mpc_last_predicted[lane])))
-                    self.landing_mpc_logs.append(dict(case=case,clock_s=float(public_clock[lane]),
+                    self.landing_mpc_logs.append(dict(case=case,episode_index=episode_index,
+                        control_tick=control_tick,clock_s=float(public_clock[lane]),
                         accepted=True,first_action_available=True,applied_first_step=True,
                         held_first_action=True,hold_active=True,solver_failure=False,
                         constraint_failure=False,risk_trigger=True,risk_reason='held_mpc_action',
@@ -700,7 +716,8 @@ class SharedTargetResidualController:
                 predicted_touchdown_impacts=[
                     dict(stage=int(row.get('stage',-1)), impact=row.get('predicted_touchdown_impact'))
                     for row in horizon if row.get('predicted_touchdown_impact')]
-                record=dict(case=case,clock_s=float(public_clock[lane]),accepted=bool(plan['accepted']),
+                record=dict(case=case,episode_index=episode_index,control_tick=control_tick,
+                    clock_s=float(public_clock[lane]),accepted=bool(plan['accepted']),
                     first_action_available=bool(plan.get('horizon')) and bool(plan['horizon'][0].get('accepted')),
                     solver_failure=bool(plan.get('solver_failure',False)),rejection=plan.get('rejection'),
                     constraint_failure=bool(plan.get('constraint_failure',False)),
@@ -820,7 +837,8 @@ class SharedTargetResidualController:
                         self._landing_mpc_hold_remaining[lane]-=1
                 self.landing_mpc_logs.append(record)
             except Exception as error:
-                self.landing_mpc_logs.append(dict(case=case,clock_s=float(public_clock[lane]),accepted=False,
+                self.landing_mpc_logs.append(dict(case=case,episode_index=episode_index,
+                    clock_s=float(public_clock[lane]),accepted=False,
                     first_action_available=False,applied_first_step=False,solver_failure=True,
                     rejection='exception:'+repr(error),state_source=(
                         'native_sim_state' if self._landing_mpc_native_env is not None
@@ -1249,6 +1267,8 @@ def main():
                     env.robot.set_joint_effort_target(
                         controller.effort_override(), joint_ids=env.joint_ids)
                 observation, _, done, _ = wrapped.step(action)
+                if hasattr(controller, 'finish_landing_mpc_episodes'):
+                    controller.finish_landing_mpc_episodes(done)
                 if fixed_trace is not None:fixed_trace.close(done.bool().cpu().numpy())
                 finished |= done.bool()
                 if (tick+1) % 100 == 0 or stopping or bool(finished.all()):
