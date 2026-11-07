@@ -576,3 +576,23 @@ TRAIN1/67/95 controller selection, 40-step horizon, original rate-scale 1.0 and
 memory/observation semantics. Report per-case recovery, ball-side intersections,
 solver exceptions and old-success retention. No improvement is claimed until
 this full native run completes.
+
+### Disagreement events and native rerun status
+
+The original 37 differing force-contact records cover **17 TRAIN cases**.
+Among them, 26 precede that episode's first logged non-foot collision, five
+follow it, and six belong to episodes with no recorded non-foot collision.
+Only three records apply a feasible MPC first stage (TRAIN12 at 7.47/7.88 s,
+TRAIN50 at 3.58 s). The remaining records are rejected at stage0 or have no
+admitted support. This is retrospective timing evidence, not proof that the
+threshold caused or prevented falling; held intervals were not fully logged
+with both predicates in that old run. Full compact events are in
+`landing_contact_disagreements_20261107.json`.
+
+The corrected native comparison started on GPU0 on 2026-11-07 at approximately
+10:09 Beijing time, code commit `95854e0`, output
+`reports/landing_mpc_reference_isolated3_20261107_01`.
+It uses the existing single-GPU budget guard, a 3600-second job ceiling and
+102400 control-environment-step cap. It is a frozen-policy controller
+comparison, not PPO training. At this report revision it is **running**, with
+no final performance result; 27/128 remains the retained baseline.
