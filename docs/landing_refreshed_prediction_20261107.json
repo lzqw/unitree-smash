@@ -1,0 +1,131 @@
+[
+  {
+    "scope": "Actual applied-command diagnostic: frozen versus refreshed local dynamics.\n\nBoth predictions retain the observed initial contact set for 10 ms. Refreshing\nM, h, J and Jdot is not a collision, friction/slip or contact-transition model.\nNo controller or native physical parameter is changed by this CPU audit.\n",
+    "source": "reports/landing_mpc_command_history_cohort26_repeat_20261107_01",
+    "native_new_execution": false,
+    "samples": 243,
+    "summary": {
+      "frozen": {
+        "successful": 243,
+        "failed": 0,
+        "p95": {
+          "leg_position_rad": 0.0038818570159023648,
+          "arm_position_rad": 0.0005414101962519344,
+          "base_linear_velocity_mps": 0.018329428506894965,
+          "base_angular_velocity_rad_s": 0.08948186902942017
+        }
+      },
+      "refreshed": {
+        "successful": 243,
+        "failed": 0,
+        "p95": {
+          "leg_position_rad": 0.003876627067438238,
+          "arm_position_rad": 0.0004969329240582576,
+          "base_linear_velocity_mps": 0.01825877597810025,
+          "base_angular_velocity_rad_s": 0.09688657875984351
+        }
+      }
+    },
+    "source_sha256": {
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_relinearized_support_prediction_v1.py": "d1479f16cd8a820f7362a467b04962146502a0c68061229efe2d4e01bcb486bb",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_001.npz": "3d1553156b33c635f41886cf72ec4e74ad2e46fcb73402371db78ef8d3a2bb0e",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_003.npz": "b6b1b7d6398529c2115e29e763f7eefbf3975ef55c2ded3bd9b154189d61416b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_008.npz": "4d24a3bf8a1ddbbecb53fae5a6c9338f427c3be722a5f72911b88861119e11ff",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_009.npz": "718edc7eff65e121e0c2345faa540d2ff02356e86da6903ad1448be06b362d98",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_012.npz": "e477e46a514aa2bf61039bf30c5ebed2711dd25c19277db99c1fdc072d29f7a8",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_018.npz": "9d7c6acb3464072df95e58234efff7fec78d236d201c6c4cfdd096003e342950",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_020.npz": "5ecbe4dfd35521579923996da968267e97c0fdb5a9270d0192487a588ece27c2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_030.npz": "921118843c91d585b6c05faea04ad75fd3ebed5cdd3e209eb1943d6e996a4d83",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_038.npz": "9d14b52f637af5852a4c05e3cdfc2cbe04ad438a548dc5b323bf0c76e4082e02",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_042.npz": "721cdf3999a073ca510a8dd9822422d4ced65cebaaa1b358a811d4b445a96736",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_050.npz": "d55dacda6efa210f519a46ca3a68867d764aa741b7a5cf12518db61ce9b366cc",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_054.npz": "2266d60c63b6949defae70914f25c45339ffcdee7f0cfa01e7778fa335d2caaa",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_057.npz": "ca27c86770c7494b933665349927425340ff9609fb3c0649956b90a5e8906361",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_058.npz": "c59431f61f699d4d68e2fd9a4b7152ee2c4e60aedc211ef53854301cf0256fcb",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_061.npz": "08efd36bcc7afe64238307abc0c8163274c0e3f375d821a065e412cf91d473ca",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_067.npz": "6780e2008347e3b072eefc1a94104ae03ccc380e5c9b138c60a0e6761d76d1fa",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_070.npz": "29f8251a0be45d818240519934d9a3df4bb85a26e3a404707cd0358ed876cf35",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_071.npz": "9dd935caba668a92e93fccf55d6475a581bbfe83e865bf41f5132f917a6adc7e",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_077.npz": "6fe3880bcf154257362eea1cfad56539dda983a126c3d90ab3ffddf1b210867e",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_085.npz": "d3f2ede1fe71f8cd5887d174fdcbdcca4d6cfed57dd68818adbb6c305d4ed562",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_090.npz": "2fdbdaf9e71d9f994aad28a6f8887fba8e447c4380ecab6b51ec4f8b8e426a7d",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_095.npz": "3b9d1438451156ca9cd568e343bd21ba94a55a5fb1e9bcf4b1a31b3ab8c103bf",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_096.npz": "abda3c6871ece8bd075450f4e5c9c8fa473151da5facf232e06599248a5a8834",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_098.npz": "e4ae4be7ea7db4d8f27f22f3bbde9dcbfdc02b105402ff3a0730dfd61c774ec6",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_115.npz": "dca544769a31538e947f91c4e84040c1e9090a60253e436c0f4798f5e95edea9",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/fixed_policy_traces/case_087.npz": "1016c6bed78cee4307bb8f5bd41f2d20fa4f5a8f394895eadeed0f55a3e0b04e",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/job.json": "95040aa7d501efedac377fc2f65469f94ad8aa51805507af730d22a561d2e4c3",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/native_command_inputs.json": "f861d727c049c85d612cad7ce2a5be9a4bc3a85ab18ba38f5018dc871fca6f7c",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_repeat_20261107_01/landing_mpc_records.json": "2395af026da81f37aaab90237308796fee917d69ac039c83bae4134cbdbe59e8",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/implicit_support_prediction_v1.py": "b751fa0ea59edd1fe8fc62cf0ba3816e5583ecc76df7058ef3f5185a335a1e01",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/loaded_pinocchio_model_v1.py": "2b303a32e57391ec7aaf3c3faf9d151f758477faf13ef6efae5bead979dcae82"
+    },
+    "full_audit_path": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_full_command_followup_20261107/controller35_refreshed_prediction.json",
+    "full_audit_sha256": "6d501eb9e5e4c6b3f85a85e912aafac0a5f855c8e3bcb057d8dfb7a20705ce42",
+    "previous_frozen_audit_reproduction_error_max": 0.0
+  },
+  {
+    "scope": "Actual applied-command diagnostic: frozen versus refreshed local dynamics.\n\nBoth predictions retain the observed initial contact set for 10 ms. Refreshing\nM, h, J and Jdot is not a collision, friction/slip or contact-transition model.\nNo controller or native physical parameter is changed by this CPU audit.\n",
+    "source": "reports/landing_mpc_active_set_interval_blas1_20261107_01",
+    "native_new_execution": false,
+    "samples": 104,
+    "summary": {
+      "frozen": {
+        "successful": 104,
+        "failed": 0,
+        "p95": {
+          "leg_position_rad": 0.020368219253758445,
+          "arm_position_rad": 0.002106020865692001,
+          "base_linear_velocity_mps": 0.07948314400277048,
+          "base_angular_velocity_rad_s": 0.3305124870225149
+        }
+      },
+      "refreshed": {
+        "successful": 104,
+        "failed": 0,
+        "p95": {
+          "leg_position_rad": 0.0212982516953598,
+          "arm_position_rad": 0.0022286934456283787,
+          "base_linear_velocity_mps": 0.06601298693572649,
+          "base_angular_velocity_rad_s": 0.3291955114422888
+        }
+      }
+    },
+    "source_sha256": {
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_relinearized_support_prediction_v1.py": "d1479f16cd8a820f7362a467b04962146502a0c68061229efe2d4e01bcb486bb",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_active_set_interval_blas1_20261107_01/fixed_policy_traces/case_067.npz": "5a448b8b028d0842687b32f27a0d313d0467f2b758e6e4a58a450832a89cfc90",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_active_set_interval_blas1_20261107_01/fixed_policy_traces/case_085.npz": "180758b35ae0abf936633abb9be8f64051b0205f4064b49f27bf767b17d83a64",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_active_set_interval_blas1_20261107_01/fixed_policy_traces/case_095.npz": "c60f56723f07d04c95f3777262adeabea5074d573e8b47bf8d6efc6c040e0b06",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_active_set_interval_blas1_20261107_01/fixed_policy_traces/case_096.npz": "0611f88f344a32d9f8f38e2caa2af461a1d3a3df11625e46b6c43677ed060bb2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_active_set_interval_blas1_20261107_01/fixed_policy_traces/case_098.npz": "c2b1cde1c949d7625ae51362f0dadebe3e00a0b3476be66cc33ab9035bb8cd74",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_active_set_interval_blas1_20261107_01/fixed_policy_traces/case_115.npz": "90ce881ce7f9b0fa49fbb056c4967af6b14c0f3f3efea538b74c649697ff32bb",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_active_set_interval_blas1_20261107_01/fixed_policy_traces/case_009.npz": "2b33dab97a034292fc9b8203a9ebba8acf81981c9283ddf21ad5ec179516265d",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_active_set_interval_blas1_20261107_01/fixed_policy_traces/case_012.npz": "915e429012b78a7bb88b3a9129457fb0b4d5f4da3325238032e48f09a48705d2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_active_set_interval_blas1_20261107_01/fixed_policy_traces/case_018.npz": "78ade35ea46c8c3ef36d0cf552da5b1adab70bd90715d1d0b42f0623dd64523b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_active_set_interval_blas1_20261107_01/fixed_policy_traces/case_042.npz": "534a5bb3460c8faa72370a3b9fda538e55a54fcd74ded5c1f24bf05ba20e7c20",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_active_set_interval_blas1_20261107_01/fixed_policy_traces/case_050.npz": "5c5dcb7360c93ebe3cd261ff2e53b84ff144cd8bc6d9c89289867a2901cda61b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_active_set_interval_blas1_20261107_01/fixed_policy_traces/case_054.npz": "93b5399c4926e2eee9f85979385b962810026b66cd355b03eadc8f0ed5ed1590",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_active_set_interval_blas1_20261107_01/fixed_policy_traces/case_057.npz": "851d360950993cf0176732e025fe15b22ed245e2b844aa3bfbcba7063e4efbab",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_active_set_interval_blas1_20261107_01/fixed_policy_traces/case_058.npz": "ad319f8290870d4968e7310f4e4ee1218176f8bbedcfd9c3afe6eccb5bcdb1f8",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_active_set_interval_blas1_20261107_01/fixed_policy_traces/case_070.npz": "28b655176a27eff560340048debb4f3322926417c05eec1d73782538ed62afc5",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_active_set_interval_blas1_20261107_01/fixed_policy_traces/case_071.npz": "2ee52f9b3a9f3350286182f662701089540d9b0b162d9426a29ab5b96aca2f38",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_active_set_interval_blas1_20261107_01/fixed_policy_traces/case_077.npz": "340d841da9f8ecf590047bac9599e6a540bd747507386728757447a815edbd18",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_active_set_interval_blas1_20261107_01/fixed_policy_traces/case_001.npz": "e8ef71aa0b495f440664b94cb6674aecfd17c345e0cd4c10cf2a93a900a5b475",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_active_set_interval_blas1_20261107_01/fixed_policy_traces/case_003.npz": "0c2acb30521bb119c04e47931a4ade2a0505add442b9c125a06fdfaae1528dc5",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_active_set_interval_blas1_20261107_01/fixed_policy_traces/case_008.npz": "ac827fbba3b1351509da0a5ab01432168a086a09b1f0d084d34a28a12fc0bbe2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_active_set_interval_blas1_20261107_01/fixed_policy_traces/case_020.npz": "4c657f805fde8f15ea16fcf5da2b84ab134c2558187200ee0f7574370646e7c2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_active_set_interval_blas1_20261107_01/fixed_policy_traces/case_030.npz": "4dadae9ed958286311a2bef23ae824c1111b28e18b7a72ffb16d47530fd38dac",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_active_set_interval_blas1_20261107_01/fixed_policy_traces/case_038.npz": "4896f95c43b4e530ee3e37b7578d62554247e0f0d45a2b0bd20f8cd356eac64e",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_active_set_interval_blas1_20261107_01/fixed_policy_traces/case_061.npz": "e7028670f6f6005edc0b8017d35e6b837c9db5a36e8fb579b7da62dac95cd2e1",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_active_set_interval_blas1_20261107_01/fixed_policy_traces/case_090.npz": "c91447daa9307eb15bc55a9b57c9053cf25be5b51d8b04a74c21b61625477845",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_active_set_interval_blas1_20261107_01/job.json": "45919b16f03461bf8c03b1eb1fb09be1e3b9c5657e63adc989d02e8e8bf22e0c",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_active_set_interval_blas1_20261107_01/native_command_inputs.json": "f861d727c049c85d612cad7ce2a5be9a4bc3a85ab18ba38f5018dc871fca6f7c",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_active_set_interval_blas1_20261107_01/landing_mpc_records.json": "dfa57d660a5285beb28e530da7223d8d5f2fb481295e8c0e7b4fe604c80c532b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/implicit_support_prediction_v1.py": "b751fa0ea59edd1fe8fc62cf0ba3816e5583ecc76df7058ef3f5185a335a1e01",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/loaded_pinocchio_model_v1.py": "2b303a32e57391ec7aaf3c3faf9d151f758477faf13ef6efae5bead979dcae82"
+    },
+    "full_audit_path": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_full_command_followup_20261107/interval28_refreshed_prediction.json",
+    "full_audit_sha256": "9b2d77544b9ac10c9aea1f3a2916507878e9712fece5b1af50eb44d7d51a4326",
+    "previous_frozen_audit_reproduction_error_max": 0.0
+  }
+]
