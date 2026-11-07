@@ -24,7 +24,8 @@ from scripts.whole_body_support_qp_v1 import PositionPDInterface,SupportSettings
 
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--run',type=Path,required=True)
-    p.add_argument('--output',type=Path,required=True);a=p.parse_args()
+    p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--preserve-feasibility',action='store_true');a=p.parse_args()
     if a.output.exists():raise ValueError('Preserve prior evidence')
     read=lambda n:json.loads((a.run/n).read_text())
     assert read('job.json')['status']=='SUCCEEDED'
@@ -39,9 +40,13 @@ def main():
     settings=LandingMPCSettingsV2(horizon_steps=40,minimum_support_feet=1,
         one_foot_max_com_distance_m=.20,landing_leg_posture_blend=.15,
         executor_replay=True,predict_touchdown_contacts=True,contact_mode_fallback=True)
+    candidate_class=LandingMinimumCommandMPCV1
+    if a.preserve_feasibility:
+        from scripts.landing_feasible_command_cost_mpc_v1 import LandingFeasibleCommandCostMPCV1
+        candidate_class=LandingFeasibleCommandCostMPCV1
     controllers={name:cls(interface,qp_settings=cfg,settings=settings,arm_target_rate_rad_s=10.)
         for name,cls in [('unchanged',LandingFullCommandIntervalMPCV1),
-                         ('minimum_command',LandingMinimumCommandMPCV1)]}
+                         ('minimum_command',candidate_class)]}
     for c in controllers.values():c.set_posture_target(default)
     public={};sources=[Path(__file__)];seen=set();output=[]
     for row in read('landing_mpc_records.json'):
@@ -68,7 +73,8 @@ def main():
             item=dict(first_accepted=bool(first.get('accepted')),horizon_accepted=bool(plan['accepted']),
                 failed_stage=None if failed is None else failed['stage'],
                 stage_count=len(stages),rejection=plan.get('rejection'),
-                terminal=plan.get('terminal_risk'),runtime_ms=1000*(time.perf_counter()-start))
+                terminal=plan.get('terminal_risk'),runtime_ms=1000*(time.perf_counter()-start),
+                command_cost_selection=plan.get('command_cost_selection'))
             if first.get('accepted'):
                 target=np.asarray(first['joint_position_target']);delta=target-reference
                 item.update(command_change_l2_rad=float(np.linalg.norm(delta)),
@@ -100,7 +106,19 @@ def main():
         'landing_interval_command_mpc_v1.py','interval_command_support_qp_v1.py',
         'condensed_implicit_drive_v1.py','implicit_support_prediction_v1.py',
         'continuous_support_qp_v1.py','loaded_pinocchio_model_v1.py']]
+    if a.preserve_feasibility:
+        sources.append(ROOT/'scripts/landing_feasible_command_cost_mpc_v1.py')
+        for r in output:
+            old,new=r['models']['unchanged'],r['models']['minimum_command']
+            if old['horizon_accepted'] and not new['horizon_accepted']:
+                raise ValueError('Lost a complete baseline prediction')
+            if new['command_cost_selection']['baseline_fallback_evaluated']:
+                assert new['horizon_accepted']==old['horizon_accepted']
+                assert new['first_accepted']==old['first_accepted']
+                if old['first_accepted']:
+                    np.testing.assert_allclose(new['target'],old['target'],atol=1e-10,rtol=0.)
     result=dict(scope=__doc__,source=str(a.run),native_new_execution=False,samples=len(output),
+        preserve_feasibility=a.preserve_feasibility,
         common_first_step_samples=len(common),summary=summary,command_distance_increases=violations,
         contracts={n:c.contract() for n,c in controllers.items()},records=output,
         source_sha256={str(p.resolve()):hashlib.sha256(p.read_bytes()).hexdigest() for p in sources})

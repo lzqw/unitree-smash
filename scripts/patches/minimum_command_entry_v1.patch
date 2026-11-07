@@ -1,0 +1,91 @@
+--- a/scripts/evaluate_shared_target_ground64_persistent_recovery_v1.py
++++ b/scripts/evaluate_shared_target_ground64_persistent_recovery_v1.py
+@@ -134,6 +134,10 @@
+     help='Weight the continuous support reference by measured per-foot vertical load')
+ parser.add_argument('--landing-mpc-load-force-floor', type=float, default=2.,
+     help='Minimum force weight for a foot selected by the observed-contact flag')
++parser.add_argument('--landing-mpc-minimum-command-cost', action='store_true',
++    help='Prefer small command changes with full-horizon feasibility fallback')
++parser.add_argument('--landing-mpc-command-change-weight', type=float, default=1.,
++    help='Nonnegative command-change cost weight after QP objective normalization')
+ parser.add_argument('--landing-mpc-full-command-damper', action='store_true',
+     help='All18 interval commands with joint velocity envelope; requires free-arm and active-set interval mode')
+ parser.add_argument('--landing-mpc-interval-active-set', action='store_true',
+@@ -206,6 +210,7 @@
+ from scripts.landing_interval_command_mpc_v1 import LandingIntervalCommandMPCV1
+ from scripts.landing_active_set_interval_mpc_v1 import LandingActiveSetIntervalMPCV1
+ from scripts.landing_full_command_interval_mpc_v1 import LandingFullCommandIntervalMPCV1
++from scripts.landing_feasible_command_cost_mpc_v1 import LandingFeasibleCommandCostMPCV1
+ from scripts.touchdown_contact_state_v1 import TouchdownContactSettingsV1,TouchdownContactStateV1
+ from scripts.whole_body_support_qp_v1 import PositionPDInterface, SupportSettings
+ 
+@@ -274,6 +279,7 @@
+                  landing_mpc_interval_command_qp=False,
+                  landing_mpc_interval_active_set=False,
+                  landing_mpc_full_command_damper=False,
++                 landing_mpc_minimum_command_cost=False, landing_mpc_command_change_weight=1.,
+                  reactive_vhsip_cases=None, reactive_vhsip_post_touchdown_only=False,
+                  reactive_vhsip_capture_model='height', reactive_vhsip_settling_s=.7,
+                  reactive_vhsip_capture_gain=1., reactive_vhsip_blend_s=.08):
+@@ -401,6 +407,11 @@
+             raise ValueError('landing_mpc_load_force_floor must be finite and nonnegative')
+         self.landing_mpc_free_arm=bool(landing_mpc_free_arm)
+         self.landing_mpc_command_history_interface=bool(landing_mpc_command_history_interface)
++        self.landing_mpc_minimum_command_cost=bool(landing_mpc_minimum_command_cost)
++        self.landing_mpc_command_change_weight=float(landing_mpc_command_change_weight)
++        if (not np.isfinite(self.landing_mpc_command_change_weight) or self.landing_mpc_command_change_weight<0 or
++                (self.landing_mpc_minimum_command_cost and not landing_mpc_full_command_damper)):
++            raise ValueError('Minimum-command cost requires full-command interval mode and finite nonnegative weight')
+         self.landing_mpc_full_command_damper=bool(landing_mpc_full_command_damper)
+         if self.landing_mpc_full_command_damper and not (landing_mpc_interval_command_qp and landing_mpc_interval_active_set and landing_mpc_free_arm):
+             raise ValueError("Full-command damper requires free-arm and active-set interval mode")
+@@ -513,8 +524,12 @@
+                                  else LandingIntervalCommandMPCV1)
+             if getattr(self,"landing_mpc_full_command_damper",False):
+                 continuous_type=LandingFullCommandIntervalMPCV1
++            if self.landing_mpc_minimum_command_cost:
++                continuous_type=LandingFeasibleCommandCostMPCV1
+             continuous_extra=({'arm_target_rate_rad_s':self.landing_mpc_arm_target_rate}
+                               if self.landing_mpc_command_history_interface else {})
++            if self.landing_mpc_minimum_command_cost:
++                continuous_extra['command_change_weight']=self.landing_mpc_command_change_weight
+             self.landing_mpc=(continuous_type(interface, qp_settings=qp_settings,
+                 settings=mpc_settings, preserve_arm_command=not self.landing_mpc_free_arm,
+                 load_aware_support=self.landing_mpc_load_aware_support,
+@@ -1211,6 +1226,8 @@
+         landing_mpc_interval_command_qp=args.landing_mpc_interval_command_qp,
+         landing_mpc_interval_active_set=args.landing_mpc_interval_active_set,
+         landing_mpc_full_command_damper=args.landing_mpc_full_command_damper,
++        landing_mpc_minimum_command_cost=args.landing_mpc_minimum_command_cost,
++        landing_mpc_command_change_weight=args.landing_mpc_command_change_weight,
+         reactive_vhsip_cases=args.reactive_vhsip_cases,
+         reactive_vhsip_post_touchdown_only=args.reactive_vhsip_post_touchdown_only,
+         reactive_vhsip_capture_model=args.reactive_vhsip_capture_model,
+@@ -1290,6 +1307,8 @@
+         landing_mpc_interval_command_qp=args.landing_mpc_interval_command_qp,
+         landing_mpc_interval_active_set=args.landing_mpc_interval_active_set,
+         landing_mpc_full_command_damper=args.landing_mpc_full_command_damper,
++        landing_mpc_minimum_command_cost=args.landing_mpc_minimum_command_cost,
++        landing_mpc_command_change_weight=args.landing_mpc_command_change_weight,
+                       reactive_vhsip_cases=args.reactive_vhsip_cases,
+                       reactive_vhsip_post_touchdown_only=args.reactive_vhsip_post_touchdown_only,
+                       reactive_vhsip_capture_model=args.reactive_vhsip_capture_model,
+@@ -1558,7 +1577,7 @@
+                 controller_trial=True, native_execution=True, frozen_policy_performance=False,
+                 formal_acceptance=False)
+         if args.landing_mpc_cases is not None:
+-            summary['landing_mpc'] = dict(schema=('landing-full-command-interval-v1' if args.landing_mpc_full_command_damper else 'landing-active-set-interval-mpc-v1'
++            summary['landing_mpc'] = dict(schema=('landing-feasible-command-cost-v1' if args.landing_mpc_minimum_command_cost else 'landing-full-command-interval-v1' if args.landing_mpc_full_command_damper else 'landing-active-set-interval-mpc-v1'
+                 if args.landing_mpc_interval_active_set else 'landing-interval-command-mpc-v1'
+                 if args.landing_mpc_interval_command_qp else 'landing-implicit-command-mpc-v1'
+                 if args.landing_mpc_implicit_command_qp else 'landing-command-history-mpc-v1'
+@@ -1618,6 +1637,9 @@
+                 interval_command_qp=bool(args.landing_mpc_interval_command_qp),
+                 interval_active_set=bool(args.landing_mpc_interval_active_set),
+                 full_command_damper=bool(args.landing_mpc_full_command_damper),
++                minimum_command_cost=bool(args.landing_mpc_minimum_command_cost),
++                command_change_weight=float(args.landing_mpc_command_change_weight),
++                student_future_policy_rolled_out=False,
+                 records=len(landing_mpc_records),
+                 predicted_contact_transition_records=sum(bool(r.get('predicted_contact_additions')) for r in landing_mpc_records),
+                 predicted_touchdown_impact_records=sum(
