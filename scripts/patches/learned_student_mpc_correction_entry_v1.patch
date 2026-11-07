@@ -1,0 +1,122 @@
+--- a/scripts/evaluate_shared_target_ground64_persistent_recovery_v1.py
++++ b/scripts/evaluate_shared_target_ground64_persistent_recovery_v1.py
+@@ -27,6 +27,8 @@
+ parser.add_argument('--checkpoint', type=Path, required=True)
+ parser.add_argument('--learned-recovery-command-head', type=Path, default=None,
+     help='Explicit learned native recovery head; extra MPC/VHSIP disabled, all lanes causally gated')
++parser.add_argument('--learned-recovery-mpc-correction', action='store_true',
++    help='Explicit learned-proposal then MPC execution collection; all128 causal lanes, not teacher-off')
+ parser.add_argument('--expert-bank', type=Path, default=None,
+     help='Explicit case-conditioned measured expert bank; controller trial only')
+ parser.add_argument('--persistent-recovery-trial', action='store_true', required=True,
+@@ -612,7 +614,7 @@
+             self.reactive_vhsip.set_native_state(env)
+ 
+     @torch.inference_mode()
+-    def action(self,observation,default,limits):
++    def action(self,observation,default,limits,*,defer_landing_mpc=False):
+         self._effort_override.zero_();self._effort_override_mask.zero_()
+         source=self.reactive_vhsip if self.reactive_vhsip is not None else self.base
+         base=source.action(observation,default,limits)
+@@ -629,12 +631,21 @@
+             actor_input=raw
+         residual=self.actor(actor_input)
+         action=self.mixer.action(base,residual,observation['policy'],default,limits)
++        if defer_landing_mpc:return action
++        return self.apply_landing_mpc(observation,default,limits,action)
++
++    @torch.inference_mode()
++    def apply_landing_mpc(self,observation,default,limits,action,*,eligible_mask=None):
+         if self.landing_mpc is None:return action
+         raw=observation['policy'];public_clock=raw[:,775]
+         # phase774 is a measured current support/contact phase. We keep the
+         # first native version explicit: no future outcome label or case ID is
+         # exposed to the MPC; the selected case list only limits this trial.
+         phase_touchdown=(raw[:,774]>.5)
++        if eligible_mask is not None:
++            if eligible_mask.shape!=phase_touchdown.shape or eligible_mask.dtype!=torch.bool:
++                raise ValueError('Require causal per-lane recovery eligibility')
++            phase_touchdown &= eligible_mask
+         if self.landing_mpc_latched_post_touchdown_ticks > 0:
+             newly_landed = phase_touchdown & (~self._landing_mpc_latched_post_touchdown)
+             self._landing_mpc_latched_post_touchdown |= phase_touchdown
+@@ -649,6 +660,7 @@
+             newly_landed = torch.zeros_like(phase_touchdown)
+             active=phase_touchdown
+         active = active & ~self._landing_mpc_finished_first_episode
++        if eligible_mask is not None:active &= eligible_mask
+         for lane in torch.where(active)[0].tolist():
+             case=int(lane)  # evaluator maps env lanes to the fixed TRAIN panel
+             if case not in self.landing_mpc_cases:continue
+@@ -1046,11 +1058,16 @@
+     checkpoint = torch.load(args.checkpoint, map_location='cpu', weights_only=False)
+     if checkpoint.get('schema') not in (RESIDUAL_SCHEMA,SHARED_SCHEMA) or checkpoint.get('protocol_sha256') != digest(protocol_path):
+         raise ValueError('Require the explicitly measured shared-target residual policy')
++    if args.learned_recovery_mpc_correction:
++        if (args.learned_recovery_command_head is None or args.landing_mpc_cases!=list(range(128)) or
++                not args.landing_mpc_command_history_interface or not args.landing_mpc_continuous_reference or
++                args.landing_mpc_torque_overlay):
++            raise ValueError('Correction collection requires learned head, all128 lanes and continuous command-history MPC without torque overlay')
+     learned_recovery_checkpoint = None
+     if args.learned_recovery_command_head is not None:
+         if not args.allow_declared_controller_variant:
+             raise ValueError('Learned command head requires an explicit controller variant')
+-        if (args.landing_mpc_cases is not None or args.reactive_vhsip_cases is not None or
++        if ((args.landing_mpc_cases is not None and not args.learned_recovery_mpc_correction) or args.reactive_vhsip_cases is not None or
+                 args.expert_bank is not None or args.landing_config is not None or
+                 args.support_config is not None or args.disable_support):
+             raise ValueError('Evaluate learned recovery with unchanged base and no extra teacher')
+@@ -1126,7 +1143,9 @@
+             if args.learned_recovery_command_head else None),
+         learned_recovery_command_head_sha256=(digest(args.learned_recovery_command_head)
+             if args.learned_recovery_command_head else None),
+-        extra_recovery_teacher_enabled=False if args.learned_recovery_command_head else None,
++        extra_recovery_teacher_enabled=bool(args.learned_recovery_mpc_correction) if args.learned_recovery_command_head else None,
++        learned_recovery_mpc_correction=bool(args.learned_recovery_mpc_correction),
++        student_sampling_log_prob_available=False,correction_collection_is_ppo_buffer=False,
+         recovery_assistance_execution=RECOVERY_EXECUTION_SCHEMA,
+         landing_trial=landing_trial,support_trial=support_trial,
+         support_config=effective_support,support_disabled=args.disable_support,
+@@ -1365,16 +1384,28 @@
+                 obs = observation['policy']
+                 if hasattr(controller, 'set_landing_mpc_native_state'):
+                     controller.set_landing_mpc_native_state(env)
+-                action = controller.action(observation, default, limits)
++                if args.learned_recovery_mpc_correction:
++                    action = controller.action(observation,default,limits,defer_landing_mpc=True)
++                else:
++                    action = controller.action(observation, default, limits)
+                 if learned_recovery is not None:
+                     base_command = action.clone()
+-                    action = learned_recovery.action(obs, base_command)
++                    if args.learned_recovery_mpc_correction:
++                        from quadsmash.control.teacher_corrected_recovery_command_v1 import teacher_corrected_recovery_command
++                        action,pair=teacher_corrected_recovery_command(learned_recovery,obs,base_command,
++                            lambda proposal,eligible:controller.apply_landing_mpc(
++                                observation,default,limits,proposal,eligible_mask=eligible))
++                    else:
++                        action = learned_recovery.action(obs, base_command)
+                     learned_records.append(dict(
+                         active=learned_recovery.active.cpu().numpy().copy(),
+                         base_command=base_command.cpu().numpy().copy(),
+                         learned_delta=learned_recovery.last_delta.cpu().numpy().copy(),
+                         final_command=action.cpu().numpy().copy(),
+                         first_episode=(~finished).cpu().numpy().copy()))
++                    if args.learned_recovery_mpc_correction:
++                        learned_records[-1].update({key:pair[key].cpu().numpy().copy() for key in
++                            ('student_command','previous_command','teacher_command_delta','teacher_changed')})
+                 if hasattr(controller,'landing_mpc_diagnostics'):
+                     landing_mpc_records.extend(controller.landing_mpc_diagnostics())
+                 if action.shape != (count, 18) or not torch.isfinite(action).all() or (abs(action)>1).any():
+@@ -1479,7 +1510,10 @@
+             summary['learned_recovery_command'] = dict(
+                 schema='learned-native-recovery-command-v1',
+                 head_sha256=digest(args.learned_recovery_command_head),
+-                extra_mpc_or_vhsip_teacher_enabled=False,
++                extra_mpc_or_vhsip_teacher_enabled=bool(args.learned_recovery_mpc_correction),
++                collection_is_on_policy_ppo=False,
++                teacher_changed_first_episode_ticks=(int(sum((r['teacher_changed'] & r['first_episode']).sum() for r in learned_records))
++                    if args.learned_recovery_mpc_correction else 0),
+                 base_controller_and_persistent_recovery_retained=True,
+                 case_id_or_future_outcome_as_input=False,
+                 active_first_episode_ticks=int(sum((r['active'] & r['first_episode']).sum() for r in learned_records)))
