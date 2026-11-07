@@ -1,0 +1,91 @@
+--- a/scripts/evaluate_shared_target_ground64_persistent_recovery_v1.py
++++ b/scripts/evaluate_shared_target_ground64_persistent_recovery_v1.py
+@@ -126,6 +126,8 @@
+     help='Weight the continuous support reference by measured per-foot vertical load')
+ parser.add_argument('--landing-mpc-load-force-floor', type=float, default=2.,
+     help='Minimum force weight for a foot selected by the observed-contact flag')
++parser.add_argument('--landing-mpc-implicit-command-qp', action='store_true',
++    help='Experimental matching implicit-PD QP and predictor; requires command-history mode')
+ parser.add_argument('--landing-mpc-command-history-interface', action='store_true',
+     help='Use native command-history arm slew and physical next-state velocity limits (command-history MPC)')
+ parser.add_argument('--landing-mpc-free-arm', action='store_true',
+@@ -183,6 +185,7 @@
+ from scripts.landing_support_mpc_v2 import LandingSupportMPCV2, LandingMPCSettingsV2
+ from scripts.landing_support_mpc_v3 import LandingSupportMPCV3
+ from scripts.landing_command_history_mpc_v1 import LandingCommandHistoryMPCV1
++from scripts.landing_implicit_command_mpc_v1 import LandingImplicitCommandMPCV1
+ from scripts.touchdown_contact_state_v1 import TouchdownContactSettingsV1,TouchdownContactStateV1
+ from scripts.whole_body_support_qp_v1 import PositionPDInterface, SupportSettings
+ 
+@@ -242,6 +245,7 @@
+                  landing_mpc_load_force_floor=2.,
+                  landing_mpc_free_arm=False,
+                  landing_mpc_command_history_interface=False,
++                 landing_mpc_implicit_command_qp=False,
+                  reactive_vhsip_cases=None, reactive_vhsip_post_touchdown_only=False,
+                  reactive_vhsip_capture_model='height', reactive_vhsip_settling_s=.7,
+                  reactive_vhsip_capture_gain=1., reactive_vhsip_blend_s=.08):
+@@ -369,6 +373,9 @@
+             raise ValueError('landing_mpc_load_force_floor must be finite and nonnegative')
+         self.landing_mpc_free_arm=bool(landing_mpc_free_arm)
+         self.landing_mpc_command_history_interface=bool(landing_mpc_command_history_interface)
++        self.landing_mpc_implicit_command_qp=bool(landing_mpc_implicit_command_qp)
++        if self.landing_mpc_implicit_command_qp and not self.landing_mpc_command_history_interface:
++            raise ValueError("Implicit command QP requires the command-history interface")
+         self.landing_mpc_arm_target_rate=float(checkpoint.get("residual_arm_target_rate_rad_s",5.))
+         if self.landing_mpc_command_history_interface and (
+                 not self.landing_mpc_continuous_reference or
+@@ -462,6 +469,8 @@
+             mpc_settings = replace(mpc_settings, executor_replay=self.landing_mpc_executor_replay)
+             mpc_settings = replace(mpc_settings, command_rate_scale=self.landing_mpc_command_rate_scale)
+             continuous_type=LandingCommandHistoryMPCV1 if self.landing_mpc_command_history_interface else LandingSupportMPCV3
++            if getattr(self,"landing_mpc_implicit_command_qp",False):
++                continuous_type=LandingImplicitCommandMPCV1
+             continuous_extra=({'arm_target_rate_rad_s':self.landing_mpc_arm_target_rate}
+                               if self.landing_mpc_command_history_interface else {})
+             self.landing_mpc=(continuous_type(interface, qp_settings=qp_settings,
+@@ -761,6 +770,10 @@
+                     first_step_risk_score=plan.get('first_step_risk_score'),
+                     hold_active=bool(self._landing_mpc_hold_remaining[lane].item() > 0),
+                     runtime_ms=float(plan.get('wall_runtime_s',0.)*1000.),terminal_risk=plan.get('terminal_risk'),
++                    implicit_prediction_check_count=len(plan.get("implicit_prediction_checks",[])),
++                    implicit_prediction_maxima={key:max(check[key] for check in plan["implicit_prediction_checks"])
++                        for key in plan.get("implicit_prediction_checks",[{}])[0]}
++                        if plan.get("implicit_prediction_checks") else {},
+                     horizon_steps=len(horizon),
+                     failed_stage=failed_stage.get('stage') if failed_stage is not None else None,
+                     failed_solver_status=failed_stage.get('solver_status') if failed_stage is not None else None,
+@@ -1112,6 +1125,7 @@
+         landing_mpc_load_force_floor=args.landing_mpc_load_force_floor,
+         landing_mpc_free_arm=args.landing_mpc_free_arm,
+         landing_mpc_command_history_interface=args.landing_mpc_command_history_interface,
++        landing_mpc_implicit_command_qp=args.landing_mpc_implicit_command_qp,
+         reactive_vhsip_cases=args.reactive_vhsip_cases,
+         reactive_vhsip_post_touchdown_only=args.reactive_vhsip_post_touchdown_only,
+         reactive_vhsip_capture_model=args.reactive_vhsip_capture_model,
+@@ -1187,6 +1201,7 @@
+                       landing_mpc_load_force_floor=args.landing_mpc_load_force_floor,
+                       landing_mpc_free_arm=args.landing_mpc_free_arm,
+         landing_mpc_command_history_interface=args.landing_mpc_command_history_interface,
++        landing_mpc_implicit_command_qp=args.landing_mpc_implicit_command_qp,
+                       reactive_vhsip_cases=args.reactive_vhsip_cases,
+                       reactive_vhsip_post_touchdown_only=args.reactive_vhsip_post_touchdown_only,
+                       reactive_vhsip_capture_model=args.reactive_vhsip_capture_model,
+@@ -1387,7 +1402,8 @@
+                 controller_trial=True, native_execution=True, frozen_policy_performance=False,
+                 formal_acceptance=False)
+         if args.landing_mpc_cases is not None:
+-            summary['landing_mpc'] = dict(schema=('landing-command-history-mpc-v1'
++            summary['landing_mpc'] = dict(schema=('landing-implicit-command-mpc-v1'
++                if args.landing_mpc_implicit_command_qp else 'landing-command-history-mpc-v1'
+                 if args.landing_mpc_command_history_interface else 'landing-support-mpc-v3-continuous-touchdown-recovery'
+                 if args.landing_mpc_continuous_reference and args.landing_mpc_touchdown_recovery else
+                 'landing-support-mpc-v3-continuous-reference' if args.landing_mpc_continuous_reference else
+@@ -1440,6 +1456,7 @@
+                 load_force_floor_n=float(args.landing_mpc_load_force_floor),
+                 free_arm=bool(args.landing_mpc_free_arm),
+                 command_history_interface=bool(args.landing_mpc_command_history_interface),
++                implicit_command_qp=bool(args.landing_mpc_implicit_command_qp),
+                 records=len(landing_mpc_records),
+                 predicted_contact_transition_records=sum(bool(r.get('predicted_contact_additions')) for r in landing_mpc_records),
+                 predicted_touchdown_impact_records=sum(
