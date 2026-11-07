@@ -1,0 +1,149 @@
+{
+  "observed_at": "2026-11-07T16:36:51.181062+00:00",
+  "scope": "Native adapter/preparation and serialized queue; no new native performance claim",
+  "plan_path": "reports/landing_native_terminal_arm_margin_followup_20261108_v2/plan.json",
+  "plan_sha256": "be0dfcc2509e89e45e73d46b6af78b11946bc41d20ed21c64be310a15a277028",
+  "input_pin_count": 265,
+  "all_input_hashes_match": true,
+  "adapter_check": {
+    "native_execution": false,
+    "constructed_real_adapter": true,
+    "commands_checked": 340,
+    "maximum_command_difference_rad": 0.0,
+    "teacher_steps": 340,
+    "candidate_sha256": "2aaeb77e178a82e7bf1529cb51391b4d7001286e61f8d91c7a7d907b364f354d"
+  },
+  "queue_state": {
+    "state": "WAITING_FOR_GPU_OWNERS_TO_EXIT",
+    "pid": 1136,
+    "observed_at": "2026-11-07T16:38:09.841021+00:00",
+    "owners": [
+      {
+        "pid": 4189530,
+        "start_ticks": "169281485"
+      },
+      {
+        "pid": 4189531,
+        "start_ticks": "169281505"
+      },
+      {
+        "pid": 4189548,
+        "start_ticks": "169281539"
+      },
+      {
+        "pid": 4192383,
+        "start_ticks": "169429230"
+      }
+    ]
+  },
+  "live_processes": {
+    "4189530": "169281485",
+    "4189531": "169281505",
+    "4189548": "169281539",
+    "4192383": "169429230",
+    "1136": "169574330"
+  },
+  "current_native_progress": {
+    "control_tick": 477,
+    "replans": 8,
+    "accepted_replans": 8,
+    "latest_accepted": true,
+    "latest_wall_seconds": 240.69060614681803,
+    "latest_reason": null,
+    "teacher_steps": 17,
+    "fallback_steps": 0,
+    "teacher_model": "frictional_spheres_v1",
+    "native_recovery_success_not_yet_known": true
+  },
+  "corrected_dispatch_tests_passed": 6,
+  "base_dispatch_tests_passed": 4,
+  "student_baseline_complete5": 27,
+  "corrected_candidate_native_execution": false,
+  "valid_expert_labels": false,
+  "goal_achieved": false,
+  "formal_verification": {
+    "goal_id": "G07",
+    "status": "FAILED",
+    "contract_sha256": "66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807",
+    "checks": {
+      "G00": {
+        "passed": false,
+        "errors": [
+          "Missing or empty artifact: reports/G00/native_train/checkpoint.pt"
+        ]
+      },
+      "G01": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G00",
+          "Path escapes workspace: assets/quadsmash_standard_v2.usd",
+          "Path escapes workspace: assets/vendor/piper_isaac_sim/piper_description/urdf/piper_no_gripper_description.urdf"
+        ]
+      },
+      "G02": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G01"
+        ]
+      },
+      "G03": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G02",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/train/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/train/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/reload/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/reload/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/interrupt/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/interrupt/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/resume_interrupt/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/resume_interrupt/continuation_reference.pt"
+        ]
+      },
+      "G04": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G03",
+          "Missing or empty artifact: artifacts/G04/policy.pt",
+          "Missing or empty artifact: artifacts/G04/autonomous_actor/actor.pt",
+          "Missing or empty artifact: artifacts/G04/autonomous_actor/interface.json"
+        ]
+      },
+      "G05": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G04"
+        ]
+      },
+      "G06": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G05"
+        ]
+      },
+      "G07": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G06",
+          "Missing or invalid evidence: [Errno 2] No such file or directory: '/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/G07/evidence.json'"
+        ]
+      }
+    },
+    "scope": "Structure, hashes, dependencies and thresholds only; not simulation authenticity or GPU budget enforcement."
+  },
+  "audit_import_check": {
+    "audit_sha256": "817b2c73eefdce77dcbe92f19975ae51e95cea3b40cdb5ba791739f54ac28eff",
+    "resolved_root": "/home/autodrive/LZQW/unitree_smash_contact_recovery",
+    "root_matches_workspace": true,
+    "corrected_policy_loader": "scripts.native_terminal_arm_margin_v1",
+    "native_execution": false
+  },
+  "cancelled_before_gpu_launch": {
+    "pid": 595,
+    "gpu_started": false,
+    "reason": "Generated audit ROOT resolved reports directory; fix generator and repin new queue before native launch."
+  },
+  "repin_expected_source_changes": [
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/prepare_native_terminal_arm_margin_v1.py"
+  ]
+}
