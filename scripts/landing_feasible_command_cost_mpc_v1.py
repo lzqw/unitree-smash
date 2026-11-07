@@ -4,11 +4,14 @@ If the command-cost rollout fails, replay the unmodified objective from the
 same state, control tick and per-lane reference memory. That baseline result is
 returned unchanged, including failure. No new first-step authority is granted.
 """
+import time
+
 from scripts.landing_minimum_command_mpc_v1 import LandingMinimumCommandMPCV1
 
 
 class LandingFeasibleCommandCostMPCV1(LandingMinimumCommandMPCV1):
     def solve(self,state,joint_reference,**kwargs):
+        started=time.perf_counter()
         kwargs=dict(kwargs)
         lane=int(kwargs.get('lane',0))
         if kwargs.get('control_tick') is None:
@@ -22,8 +25,13 @@ class LandingFeasibleCommandCostMPCV1(LandingMinimumCommandMPCV1):
                 fallback=super().solve(state,joint_reference,**kwargs)
             finally:
                 self.qp.command_change_weight=weight
+        elapsed=time.perf_counter()-started
+        candidate_runtime=float(candidate.get('wall_runtime_s',0.))
+        fallback_runtime=None if fallback is None else float(fallback.get('wall_runtime_s',0.))
         result=candidate if fallback is None else fallback
         result['command_cost_selection']=dict(
+            candidate_runtime_s=candidate_runtime,baseline_runtime_s=fallback_runtime,
+            total_runtime_s=elapsed,
             declared_weight=weight,selected_weight=weight if fallback is None else 0.,
             command_cost_horizon_accepted=bool(candidate['accepted']),
             baseline_fallback_evaluated=fallback is not None,
@@ -32,6 +40,7 @@ class LandingFeasibleCommandCostMPCV1(LandingMinimumCommandMPCV1):
             same_control_tick=kwargs['control_tick'],
             future_student_policy_predicted=False,
             full_horizon_acceptance_is_native_success=False)
+        result['wall_runtime_s']=elapsed
         result['mpc_contract']=self.contract()
         return result
 

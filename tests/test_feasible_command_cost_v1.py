@@ -1,4 +1,6 @@
 import numpy as np
+import pytest
+from scripts.audit_native_command_cost_v1 import validate_selection
 from scripts.landing_feasible_command_cost_mpc_v1 import LandingFeasibleCommandCostMPCV1
 from scripts.landing_full_command_interval_mpc_v1 import LandingFullCommandIntervalMPCV1
 from scripts.landing_support_mpc_v2 import LandingMPCSettingsV2
@@ -24,6 +26,14 @@ def test_failed_candidate_does_not_advance_reference_twice():
         np.testing.assert_array_equal(b['horizon'][0]['joint_position_target'],a['horizon'][0]['joint_position_target'])
         assert new.qp.student_command_reference is None
         assert new.qp.command_change_weight==1.
+        record=dict(command_cost_selection=b['command_cost_selection'],control_tick=tick,
+                    accepted=b['accepted'],runtime_ms=1000*b['wall_runtime_s'])
+        assert validate_selection(record,1.)=='baseline'
+        # Reporting only the returned baseline time must fail: both solves
+        # consumed wall time, even though only the baseline command is used.
+        record['runtime_ms']=1000*b['command_cost_selection']['baseline_runtime_s']
+        with pytest.raises(ValueError,match='runtime omits'):
+            validate_selection(record,1.)
 
 
 def test_zero_weight_does_not_launch_a_duplicate_baseline():
@@ -33,3 +43,6 @@ def test_zero_weight_does_not_launch_a_duplicate_baseline():
     r=c.solve(state,state.joint_position,force=True,lane=0,control_tick=9)
     assert not r['command_cost_selection']['baseline_fallback_evaluated']
     assert r['command_cost_selection']['selected_weight']==0.
+    record=dict(command_cost_selection=r['command_cost_selection'],control_tick=9,
+                accepted=r['accepted'],runtime_ms=1000*r['wall_runtime_s'])
+    assert validate_selection(record,0.)=='command_cost'

@@ -92,7 +92,8 @@ def main():
             for j,command in enumerate(r['post_commands']):run(command,f'run{index}_audit{j}.log')
             metrics=json.loads((target/'metrics.json').read_text());inputs=json.loads((target/'INPUTS.json').read_text())
             ca=json.loads(Path(r['causal_audit']).read_text())
-            if (not ca['passed'] or metrics['numerical_failures'] or
+            selection=json.loads(Path(r['selection_audit']).read_text())
+            if (not ca['passed'] or not selection['passed'] or metrics['numerical_failures'] or
                     not inputs['landing_mpc_minimum_command_cost'] or
                     inputs['landing_mpc_command_change_weight']!=r['weight']):
                 raise ValueError('Native candidate validation failed')

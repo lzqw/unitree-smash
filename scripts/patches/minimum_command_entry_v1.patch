@@ -52,7 +52,15 @@
              self.landing_mpc=(continuous_type(interface, qp_settings=qp_settings,
                  settings=mpc_settings, preserve_arm_command=not self.landing_mpc_free_arm,
                  load_aware_support=self.landing_mpc_load_aware_support,
-@@ -1211,6 +1226,8 @@
+@@ -820,6 +835,7 @@
+                     first_step_improves=bool(plan.get('first_step_improves',False)),
+                     initial_risk_score=plan.get('initial_risk_score'),
+                     first_step_risk_score=plan.get('first_step_risk_score'),
++                    command_cost_selection=plan.get('command_cost_selection'),
+                     hold_active=bool(self._landing_mpc_hold_remaining[lane].item() > 0),
+                     runtime_ms=float(plan.get('wall_runtime_s',0.)*1000.),terminal_risk=plan.get('terminal_risk'),
+                     implicit_prediction_check_count=len(plan.get("implicit_prediction_checks",[])),
+@@ -1211,6 +1227,8 @@
          landing_mpc_interval_command_qp=args.landing_mpc_interval_command_qp,
          landing_mpc_interval_active_set=args.landing_mpc_interval_active_set,
          landing_mpc_full_command_damper=args.landing_mpc_full_command_damper,
@@ -61,7 +69,7 @@
          reactive_vhsip_cases=args.reactive_vhsip_cases,
          reactive_vhsip_post_touchdown_only=args.reactive_vhsip_post_touchdown_only,
          reactive_vhsip_capture_model=args.reactive_vhsip_capture_model,
-@@ -1290,6 +1307,8 @@
+@@ -1290,6 +1308,8 @@
          landing_mpc_interval_command_qp=args.landing_mpc_interval_command_qp,
          landing_mpc_interval_active_set=args.landing_mpc_interval_active_set,
          landing_mpc_full_command_damper=args.landing_mpc_full_command_damper,
@@ -70,7 +78,7 @@
                        reactive_vhsip_cases=args.reactive_vhsip_cases,
                        reactive_vhsip_post_touchdown_only=args.reactive_vhsip_post_touchdown_only,
                        reactive_vhsip_capture_model=args.reactive_vhsip_capture_model,
-@@ -1558,7 +1577,7 @@
+@@ -1558,7 +1578,7 @@
                  controller_trial=True, native_execution=True, frozen_policy_performance=False,
                  formal_acceptance=False)
          if args.landing_mpc_cases is not None:
@@ -79,7 +87,7 @@
                  if args.landing_mpc_interval_active_set else 'landing-interval-command-mpc-v1'
                  if args.landing_mpc_interval_command_qp else 'landing-implicit-command-mpc-v1'
                  if args.landing_mpc_implicit_command_qp else 'landing-command-history-mpc-v1'
-@@ -1618,6 +1637,9 @@
+@@ -1618,6 +1638,9 @@
                  interval_command_qp=bool(args.landing_mpc_interval_command_qp),
                  interval_active_set=bool(args.landing_mpc_interval_active_set),
                  full_command_damper=bool(args.landing_mpc_full_command_damper),
