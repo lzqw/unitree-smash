@@ -61,3 +61,33 @@ OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 bash scripts/python.sh scripts/audit_na
 ```
 
 完成后核对本轮输入哈希全部一致。G07正式验证再次返回FAILED，原因仍包括历史依赖证据缺失、资产路径及正式评估证据不足；未修改验收器或阈值。下一项决定性证据仍是完整原生运行能否稳定救回失败案例。
+
+## 后续对照：直接删除轻载足接触并不是已证实的修正
+
+继续对同18个原生转移做了一个离线反事实诊断：只从模型接触Jacobian中移除左后足，重新求解完整耦合动力学、其余足冲量与隐式PD；其余输入保持一致，仍用160子步。这个模型允许该足穿地，仅用于定位误差，**不可作为可行教师，也未改动任何原生控制器**。
+
+对8个“原生下一采样法向力为零、模型下一法向力大于0.5 N”的步骤：
+
+| 速度误差RMSE（rad/s） | 原完整接触模型 | 整步移除左后足接触 |
+|---|---:|---:|
+| 左前髋 | 0.12563 | 0.13242 |
+| 左后大腿关节 | 0.06100 | 1.54168 |
+
+首步左前髋误差从−0.28897变为−0.29728 rad/s，并未被消除；左后腿预测反而明显变差，部分步骤还穿地。第464步局部误差有所改善，因此也不能将结论扩展成“删除接触在任何状态都更差”。
+
+这个对照不支持将采样力为零直接变成“整个下一步禁止建立接触”。它没有证明原接触模型正确，更不能据此反推原生每个微步的真实接触史。接下来需要连续微步的原生受力／运动证据，而不是依据单次力采样改写支撑集合。强制删除接触后的标签一致性是人为结果，程序刻意不把它作为改善指标。
+
+同时复核已保存的原生参数准入：关节armature、关节摩擦均为零，驱动kp/kd、力矩／速度限制与模型设置一致；足地材料组合系数约0.65。因而本批误差不能简单归因于“漏了一个已记录的非零armature”或“摩擦系数随意设置”。这仍不排除PhysX接触求解、驱动迭代及其他离散模型差异。
+
+诊断程序为`scripts/diagnose_rear_contact_prediction_v1.py`，[紧凑结果](landing_rear_contact_sensitivity_20261108.json)保存逐步误差、反事实约束违反、原生参数准入摘要与哈希。实际执行命令如下，复现需新输出路径：
+
+```bash
+OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 bash scripts/python.sh scripts/diagnose_rear_contact_prediction_v1.py \
+  --run reports/native_frictional_sequence3_all128_20261107_01 \
+  --bundle reports/landing_episode_sequence3_20261107 \
+  --sphere-audit reports/landing_fullcommand_native_response_20261107/sphere_crossings_v3.json \
+  --one-step-audit reports/landing_fullcommand_native_response_20261107/native_frictional_actual_one_step3_normal.json \
+  --output /tmp/rear_contact_sensitivity3_repeat.json
+```
+
+本次快照中原生V2进至第552步，18次重规划接受、92步教师执行、尚无回退；事件记录到5.604秒时仍未记录TRAIN3非足部触地。它继续按原限时运行，完整恢复和任务成绩尚未结算。G07验证仍FAILED，未作任何成功提升。
