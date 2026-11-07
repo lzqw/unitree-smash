@@ -30,6 +30,8 @@ class LandingMPCSettingsV2(LandingMPCSettingsV1):
     landing_arm_posture_blend: float = 0.
     predict_touchdown_contacts: bool = False
     contact_mode_fallback: bool = False
+    contact_mode_sequence_search: bool = False
+    contact_mode_sequence_max_candidates: int = 3
     touchdown_mode_height_scale: float = 2.5
     touchdown_height_tolerance_m: float = .012
     touchdown_vertical_speed_limit_mps: float = 1.5
@@ -114,6 +116,13 @@ class LandingSupportMPCV2(LandingSupportMPCV1):
             raise ValueError('predict_touchdown_contacts must be boolean')
         if not isinstance(settings.contact_mode_fallback, bool):
             raise ValueError('contact_mode_fallback must be boolean')
+        if not isinstance(settings.contact_mode_sequence_search, bool):
+            raise ValueError('contact_mode_sequence_search must be boolean')
+        if (isinstance(settings.contact_mode_sequence_max_candidates, bool) or
+                not isinstance(settings.contact_mode_sequence_max_candidates, int) or
+                settings.contact_mode_sequence_max_candidates < 1 or
+                settings.contact_mode_sequence_max_candidates > 8):
+            raise ValueError('contact_mode_sequence_max_candidates must be an integer in 1..8')
         if (isinstance(settings.touchdown_mode_height_scale, bool) or
                 not isinstance(settings.touchdown_mode_height_scale, (int, float)) or
                 not math.isfinite(settings.touchdown_mode_height_scale) or

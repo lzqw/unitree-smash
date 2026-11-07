@@ -295,14 +295,42 @@ class LandingSupportMPCV1:
             plan_state = predicted
             mode_additions = []
             plan = self.qp.solve(plan_state, joint_reference)
+            imminent_modes = self._contact_mode_candidates(predicted)
             if not plan.get('accepted'):
-                for candidate_state, candidate_additions in self._contact_mode_candidates(predicted):
+                for candidate_state, candidate_additions in imminent_modes:
                     candidate_plan = self.qp.solve(candidate_state, joint_reference)
                     if candidate_plan.get('accepted'):
                         plan_state = candidate_state
                         mode_additions = list(candidate_additions)
                         plan = candidate_plan
                         break
+            elif getattr(self.settings, 'contact_mode_sequence_search', False) and imminent_modes:
+                # The legacy fallback only introduces a touchdown mode after
+                # the fixed-contact QP fails.  This optional bounded search
+                # evaluates imminent modes even when the old mode is feasible,
+                # and chooses the one-step candidate with the lowest predicted
+                # risk.  The live contact/load state remains authoritative on
+                # the next tick; this is a mode proposal, not a fake contact.
+                options = [(predicted, [], plan)]
+                max_candidates = int(getattr(self.settings,
+                                             'contact_mode_sequence_max_candidates',
+                                             len(imminent_modes)))
+                for candidate_state, candidate_additions in imminent_modes[:max_candidates]:
+                    candidate_plan = self.qp.solve(candidate_state, joint_reference)
+                    if candidate_plan.get('accepted'):
+                        options.append((candidate_state, list(candidate_additions), candidate_plan))
+                if len(options) > 1:
+                    scored = []
+                    for option_state, option_additions, option_plan in options:
+                        trial = self._integrate(option_state, option_plan['acceleration'], option_plan)
+                        trial, _ = self._after_prediction(trial)
+                        scored.append((self.risk_score(self.risk(trial)),
+                                       len(option_additions), option_state,
+                                       option_additions, option_plan))
+                    # Keep the current mode on exact ties; adding a predicted
+                    # foot must earn a lower one-step risk score.
+                    _, _, plan_state, mode_additions, plan = min(
+                        scored, key=lambda item: (item[0], item[1]))
             row = dict(stage=stage, accepted=bool(plan.get('accepted')), solver_status=plan.get('solver_status'),
                        solver_iterations=plan.get('solver_iterations'), wall_runtime_s=plan.get('wall_runtime_s'),
                        contacts=plan_state.contacts.tolist(), risk=self.risk(plan_state),

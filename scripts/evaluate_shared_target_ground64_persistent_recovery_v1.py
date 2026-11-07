@@ -72,6 +72,10 @@ parser.add_argument('--landing-mpc-predict-touchdown-contacts', action='store_tr
     help='Let MPC add an imminent swing-foot contact to later horizon stages (event approximation)')
 parser.add_argument('--landing-mpc-contact-mode-fallback', action='store_true',
     help='When the current support mode is infeasible, try bounded imminent-contact modes')
+parser.add_argument('--landing-mpc-contact-mode-sequence-search', action='store_true',
+    help='Evaluate bounded imminent touchdown modes even when the current QP is feasible')
+parser.add_argument('--landing-mpc-contact-mode-sequence-max-candidates', type=int, default=3,
+    help='Maximum imminent touchdown mode candidates evaluated per horizon stage')
 parser.add_argument('--landing-mpc-touchdown-mode-height-scale', type=float, default=2.5,
     help='Multiplier for the touchdown height/velocity window used by contact-mode fallback')
 parser.add_argument('--landing-mpc-capture-foot-gain', type=float, default=0.,
@@ -204,6 +208,8 @@ class SharedTargetResidualController:
                  landing_mpc_mode_validation_ticks=3,
                  landing_mpc_predict_touchdown_contacts=False,
                  landing_mpc_contact_mode_fallback=False,
+                 landing_mpc_contact_mode_sequence_search=False,
+                 landing_mpc_contact_mode_sequence_max_candidates=3,
                  landing_mpc_touchdown_mode_height_scale=2.5,
                  landing_mpc_capture_foot_gain=0.,
                  landing_mpc_capture_foot_max_offset=.25,
@@ -298,6 +304,8 @@ class SharedTargetResidualController:
                                        self.landing_mpc_contact_release_ticks)) for _ in range(count)]
         self.landing_mpc_predict_touchdown_contacts=bool(landing_mpc_predict_touchdown_contacts)
         self.landing_mpc_contact_mode_fallback=bool(landing_mpc_contact_mode_fallback)
+        self.landing_mpc_contact_mode_sequence_search=bool(landing_mpc_contact_mode_sequence_search)
+        self.landing_mpc_contact_mode_sequence_max_candidates=int(landing_mpc_contact_mode_sequence_max_candidates)
         self.landing_mpc_touchdown_mode_height_scale=float(landing_mpc_touchdown_mode_height_scale)
         self.landing_mpc_capture_foot_gain=float(landing_mpc_capture_foot_gain)
         self.landing_mpc_capture_foot_max_offset=float(landing_mpc_capture_foot_max_offset)
@@ -409,6 +417,8 @@ class SharedTargetResidualController:
                                            if self.landing_mpc_touchdown_recovery else 0.),
                 predict_touchdown_contacts=self.landing_mpc_predict_touchdown_contacts,
                 contact_mode_fallback=self.landing_mpc_contact_mode_fallback,
+                contact_mode_sequence_search=self.landing_mpc_contact_mode_sequence_search,
+                contact_mode_sequence_max_candidates=self.landing_mpc_contact_mode_sequence_max_candidates,
                 touchdown_mode_height_scale=self.landing_mpc_touchdown_mode_height_scale,
                 touchdown_height_tolerance_m=self.landing_mpc_touchdown_height_tolerance,
                 touchdown_vertical_speed_limit_mps=self.landing_mpc_touchdown_vertical_speed_limit,
@@ -938,6 +948,8 @@ def main():
         landing_mpc_mode_validation_ticks=args.landing_mpc_mode_validation_ticks,
         landing_mpc_predict_touchdown_contacts=args.landing_mpc_predict_touchdown_contacts,
         landing_mpc_contact_mode_fallback=args.landing_mpc_contact_mode_fallback,
+        landing_mpc_contact_mode_sequence_search=args.landing_mpc_contact_mode_sequence_search,
+        landing_mpc_contact_mode_sequence_max_candidates=args.landing_mpc_contact_mode_sequence_max_candidates,
         landing_mpc_touchdown_mode_height_scale=args.landing_mpc_touchdown_mode_height_scale,
         landing_mpc_capture_foot_gain=args.landing_mpc_capture_foot_gain,
         landing_mpc_capture_foot_max_offset=args.landing_mpc_capture_foot_max_offset,
@@ -1007,6 +1019,8 @@ def main():
                       landing_mpc_mode_validation_ticks=args.landing_mpc_mode_validation_ticks,
         landing_mpc_predict_touchdown_contacts=args.landing_mpc_predict_touchdown_contacts,
                       landing_mpc_contact_mode_fallback=args.landing_mpc_contact_mode_fallback,
+                      landing_mpc_contact_mode_sequence_search=args.landing_mpc_contact_mode_sequence_search,
+                      landing_mpc_contact_mode_sequence_max_candidates=args.landing_mpc_contact_mode_sequence_max_candidates,
                       landing_mpc_touchdown_mode_height_scale=args.landing_mpc_touchdown_mode_height_scale,
                       landing_mpc_capture_foot_gain=args.landing_mpc_capture_foot_gain,
                       landing_mpc_capture_foot_max_offset=args.landing_mpc_capture_foot_max_offset,
@@ -1255,6 +1269,8 @@ def main():
                 mode_validation_ticks=int(args.landing_mpc_mode_validation_ticks),
                 predict_touchdown_contacts=bool(args.landing_mpc_predict_touchdown_contacts),
                 contact_mode_fallback=bool(args.landing_mpc_contact_mode_fallback),
+                contact_mode_sequence_search=bool(args.landing_mpc_contact_mode_sequence_search),
+                contact_mode_sequence_max_candidates=int(args.landing_mpc_contact_mode_sequence_max_candidates),
                 touchdown_mode_height_scale=float(args.landing_mpc_touchdown_mode_height_scale),
                 capture_foot_gain=float(args.landing_mpc_capture_foot_gain),
                 capture_foot_max_offset_m=float(args.landing_mpc_capture_foot_max_offset),

@@ -416,3 +416,30 @@ contact-mode sequence, foot relocation, and load transfer over the 400 ms
 window.  The next structural change should therefore be a bounded
 mode-sequence/replan mechanism, validated by measured foot load and actual
 state after each transition, rather than more scalar horizon or gain scans.
+
+## Bounded contact-mode sequence search trial
+
+The controller now has an opt-in bounded mode search. At each horizon stage,
+when an inactive foot is within the existing touchdown height/velocity window,
+the controller evaluates the current support mode and up to three imminent
+contact-mode candidates even if the current fixed-contact QP is feasible. It
+selects a candidate only when the one-step predicted risk score improves; the
+next live tick still validates measured load and can release/replan. This is
+the first change that searches a support-mode sequence rather than only using
+a new contact after QP infeasibility.
+
+The representative GPU0 run used the same frozen policy and 40-step horizon as
+the preceding trial, with `contact_mode_sequence_search=true` and
+`max_candidates=3`. The full fixed TRAIN128 result remained **27/128
+complete5**, with 74 airborne contacts, 34 conditional recoveries, 0 numerical
+failures, 703 MPC records, 447 applied first steps, 140 solver failures, 435
+terminal acceptances, and 4 predicted contact transitions.
+
+The mode search therefore did not yet produce a task-level gain. It did,
+however, change the internal candidate evaluation and increase the number of
+accepted first-step applications without changing the frozen student's ball
+events. The next useful extension is not a larger candidate count: it is to
+score candidates with a short load-transfer/stability objective and to replan
+from the measured post-transition state, so that a predicted contact is useful
+only when it actually acquires load and reduces the subsequent non-foot
+contact risk.
