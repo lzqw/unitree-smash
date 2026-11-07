@@ -1,0 +1,191 @@
+{
+  "observed_at": "2026-11-07T18:50:04.526028+00:00",
+  "student_complete5": 27,
+  "assisted_complete5": 28,
+  "new_case": 3,
+  "strict_isolation_passed": false,
+  "unresolved_untreated_case": 125,
+  "valid_expert_labels": false,
+  "native_candidate_executed": false,
+  "full_model": {
+    "model_candidate_accepted": true,
+    "failure": null,
+    "executed_model_steps": 340,
+    "integration_substeps": 160,
+    "model_window": {
+      "longest_model_kinematic_window_s": 1.430000000000001,
+      "qualifying_control_ticks": 239,
+      "required_window_s": 0.8,
+      "native_force_check": false,
+      "contact_flight_association_check": false,
+      "formal_recovery_success": false
+    },
+    "terminal": {
+      "roll_pitch_deg": [
+        -13.946890903387207,
+        9.394910493508226
+      ],
+      "attitude_margin_deg": 1.0531090966127934,
+      "horizontal_speed_m_s": 0.011999306630171682,
+      "angular_speed_rad_s": 0.03747034635408465,
+      "joint_speed_rad_s": 0.0435700087058425,
+      "support_count": 3
+    },
+    "feedback_parameters": {
+      "proportional": 0.3,
+      "damping_s": 0.04,
+      "maximum_joint_delta_rad": 0.08,
+      "regularization_m": 0.003,
+      "ramp_s": 0.2
+    },
+    "wall_seconds": 78.7220403989777
+  },
+  "late_model_rows": [
+    {
+      "query_tick": 620,
+      "policy": "original_terminal_feedback",
+      "completed_model_steps": 180,
+      "needed_steps": 180,
+      "failure": null,
+      "model_window": {
+        "longest_model_kinematic_window_s": 0.9500000000000006,
+        "qualifying_control_ticks": 97,
+        "required_window_s": 0.8,
+        "native_force_check": false,
+        "contact_flight_association_check": false,
+        "formal_recovery_success": false
+      },
+      "last_roll_pitch_deg": [
+        -15.901272741807214,
+        11.213440725807875
+      ],
+      "last_joint_speed_rad_s": 0.06798433596426648,
+      "last_root_angular_speed_rad_s": 0.05795100720819518,
+      "last_horizontal_speed_m_s": 0.021082270568312113,
+      "last_support_count": 3,
+      "terminal_attitude_margin_deg": -0.9012727418072135,
+      "wall_seconds": 38.25130649516359
+    },
+    {
+      "query_tick": 620,
+      "policy": "support_kinematic_attitude_feedback",
+      "completed_model_steps": 180,
+      "needed_steps": 180,
+      "failure": null,
+      "model_window": {
+        "longest_model_kinematic_window_s": 1.410000000000001,
+        "qualifying_control_ticks": 144,
+        "required_window_s": 0.8,
+        "native_force_check": false,
+        "contact_flight_association_check": false,
+        "formal_recovery_success": false
+      },
+      "last_roll_pitch_deg": [
+        -14.315269148694227,
+        9.922948466397196
+      ],
+      "last_joint_speed_rad_s": 0.026935149330817053,
+      "last_root_angular_speed_rad_s": 0.022779386296048067,
+      "last_horizontal_speed_m_s": 0.010576864149728452,
+      "last_support_count": 3,
+      "terminal_attitude_margin_deg": 0.6847308513057726,
+      "wall_seconds": 37.123789745848626
+    },
+    {
+      "query_tick": 700,
+      "policy": "original_terminal_feedback",
+      "completed_model_steps": 100,
+      "needed_steps": 100,
+      "failure": null,
+      "model_window": {
+        "longest_model_kinematic_window_s": 0.8100000000000005,
+        "qualifying_control_ticks": 81,
+        "required_window_s": 0.8,
+        "native_force_check": false,
+        "contact_flight_association_check": false,
+        "formal_recovery_success": false
+      },
+      "last_roll_pitch_deg": [
+        -15.877547625245729,
+        11.2739970714088
+      ],
+      "last_joint_speed_rad_s": 0.0771883544010839,
+      "last_root_angular_speed_rad_s": 0.06410783864574006,
+      "last_horizontal_speed_m_s": 0.023714599423367982,
+      "last_support_count": 3,
+      "terminal_attitude_margin_deg": -0.8775476252457288,
+      "wall_seconds": 19.45906510297209
+    },
+    {
+      "query_tick": 700,
+      "policy": "support_kinematic_attitude_feedback",
+      "completed_model_steps": 100,
+      "needed_steps": 100,
+      "failure": null,
+      "model_window": {
+        "longest_model_kinematic_window_s": 1.0000000000000007,
+        "qualifying_control_ticks": 100,
+        "required_window_s": 0.8,
+        "native_force_check": false,
+        "contact_flight_association_check": false,
+        "formal_recovery_success": false
+      },
+      "last_roll_pitch_deg": [
+        -14.219144804850806,
+        10.067390342543137
+      ],
+      "last_joint_speed_rad_s": 0.07962641234325489,
+      "last_root_angular_speed_rad_s": 0.07028112517387691,
+      "last_horizontal_speed_m_s": 0.023435628458005134,
+      "last_support_count": 3,
+      "terminal_attitude_margin_deg": 0.7808551951491935,
+      "wall_seconds": 19.428509476128966
+    }
+  ],
+  "adapter_check": {
+    "actual_adapter_instantiated": true,
+    "commands_checked": 340,
+    "maximum_command_error_rad": 0.0,
+    "prefix_maximum_error_rad": 0.0,
+    "rejected_candidate_not_admitted": true,
+    "native_execution": false,
+    "valid_expert_labels": false,
+    "validation_sha256": "569f5774eb1e173a2f3c81f7f46b9a123bcfe7ce2ea1e4634c4fdffe01c62252",
+    "adapter_sha256": "0e43453827c4b620c911b73bb39214d5bccd02e770d2ad072d88e2e5e186d2d7"
+  },
+  "queue": {
+    "state": "WAITING_FOR_GPU_OWNERS_TO_EXIT",
+    "pid": 16111,
+    "observed_at": "2026-11-07T18:49:10.972863+00:00",
+    "owners": [
+      {
+        "pid": 9913,
+        "start_ticks": "170024324"
+      },
+      {
+        "pid": 14275,
+        "start_ticks": "170262836"
+      },
+      {
+        "pid": 14276,
+        "start_ticks": "170262852"
+      },
+      {
+        "pid": 14292,
+        "start_ticks": "170262875"
+      },
+      {
+        "pid": 13007,
+        "start_ticks": "170195700"
+      }
+    ]
+  },
+  "plan_sha256": "b92d1dbe4e37634f3234e5fbdc7727972458508d9b7306859bb23843432fdb5d",
+  "pinned_input_count": 280,
+  "artifacts_sha256": {
+    "reports/landing_terminal_support_result_20261108/attitude_gain03_full_validation160.json": "569f5774eb1e173a2f3c81f7f46b9a123bcfe7ce2ea1e4634c4fdffe01c62252",
+    "reports/landing_terminal_support_result_20261108/attitude_gain03_model160_late.json": "4c4dfa6bbbec8d2448f52d375843e4dd8aea4ad1f927e4b7830eab75c65dbacf",
+    "reports/landing_native_terminal_attitude_followup_20261108/plan.json": "b92d1dbe4e37634f3234e5fbdc7727972458508d9b7306859bb23843432fdb5d"
+  },
+  "formal_goal_status": "FAILED"
+}
