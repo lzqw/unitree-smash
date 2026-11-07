@@ -1,0 +1,144 @@
+{
+  "complete5": 20,
+  "air": 74,
+  "recovery": 28,
+  "ball5_except_recovery": 53,
+  "original_success_retained": [
+    10,
+    23,
+    24,
+    27,
+    32,
+    33,
+    35,
+    36,
+    45,
+    49,
+    52,
+    60,
+    94,
+    121
+  ],
+  "original_success_lost": [
+    16,
+    17,
+    25,
+    28,
+    34,
+    37,
+    39,
+    43,
+    51,
+    55,
+    63,
+    84,
+    126
+  ],
+  "new_successes": [
+    1,
+    58,
+    61,
+    67,
+    85,
+    115
+  ],
+  "lost_failure_summary": {
+    "nonfoot_contact": 9,
+    "without_nonfoot_contact": 4
+  },
+  "execution": {
+    "records": 40036,
+    "applied": 24558,
+    "first_actions_available": 24558,
+    "full_horizon_accepted": 0,
+    "first_stage_rejected": 3334,
+    "later_stage_rejected": 24558,
+    "post_rollout_rejected": 0,
+    "other_rejected": 12144,
+    "controller_rejection_reasons": {
+      "QP rejected prediction stage 0": 3334,
+      "QP rejected prediction stage 1": 2415,
+      "insufficient support contacts for fixed-contact QP": 12144,
+      "QP rejected prediction stage 2": 17012,
+      "QP rejected prediction stage 3": 4856,
+      "QP rejected prediction stage 4": 264,
+      "QP rejected prediction stage 5": 11
+    },
+    "failed_stage_histogram": {
+      "0": 3334,
+      "1": 2415,
+      "2": 17012,
+      "3": 4856,
+      "4": 264,
+      "5": 11
+    },
+    "solver_status_histogram": {
+      "primal infeasible": 26350,
+      "maximum iterations reached": 514,
+      "primal infeasible inaccurate": 379,
+      "solved inaccurate": 68,
+      "solved": 581
+    },
+    "next_tick_joint_position_prediction_error_rad": {
+      "count": 24493,
+      "mean": 0.002026236907031696,
+      "median": 0.0006473679832630364,
+      "p95": 0.00849682337990696,
+      "maximum": 0.16855895539630728
+    },
+    "command_tracking_error_rad": {
+      "count": 38357,
+      "mean": 0.6133033162212719,
+      "median": 0.5307782888412476,
+      "p95": 1.1523602247238154,
+      "maximum": 1.9742591381072998
+    },
+    "solver_wall_ms": {
+      "count": 40036,
+      "mean": 7.028895998054704,
+      "median": 8.519554045051336,
+      "p95": 14.915379229933023,
+      "maximum": 214.7438491228968
+    },
+    "applied_nonimproving_risk": 5999
+  },
+  "command_mapping": true,
+  "causal_dispatch_verified": true,
+  "all_baseline_ball5_prefixes_equal": true,
+  "strict_historical_prefix_all_lanes_passed": false,
+  "historical_prefix_divergent_cases": [
+    4,
+    14,
+    44,
+    66,
+    76,
+    78,
+    88,
+    89,
+    92,
+    104,
+    105,
+    108,
+    110,
+    113,
+    116,
+    117,
+    122,
+    124
+  ],
+  "indirect_physics_effect_not_excluded": true,
+  "unique_divergence_cause_established": false,
+  "automatic_promotion": false,
+  "formal_acceptance": false,
+  "gpu_hours": 0.4535683538824863,
+  "env_steps": 102400,
+  "source_sha256": {
+    "reports/landing_causal_baseline_followup_20261107/vs_student27.json": "840f71a21f698d39689f6abc012bcf7baa403d8fe01c660a0a4e6d8c3ae1c00f",
+    "reports/landing_causal_baseline_followup_20261107/vs_controller35.json": "a9e9737237a1799f5e1fcd1d7c84cb639949e4607219f8e2a6801a7bece33c8e",
+    "reports/landing_causal_baseline_followup_20261107/controller_execution.json": "84f25d1592bfd52c8d63dca91fb11ea1da6c242ff84687c162376e2782517a61",
+    "reports/landing_causal_baseline_followup_20261107/dispatch_integrity.json": "6802cdb890382799a590e8ba28b9e63c904f3fdd7717b73b151534ef39dc8c89",
+    "reports/landing_causal_baseline_followup_20261107/controller_command_audit.json": "607e3d64cddc826e9029fca4466d699aab6468214c80145b7129383b059a5b3c",
+    "reports/native_original27_mpc35_causal_all128_20261107_01/metrics.json": "68b0c4dda847befcfd7b51a06697b553ddf0391f900d21e83e6d40476db159ce",
+    "reports/native_original27_mpc35_causal_all128_20261107_01/job.json": "b8e50ef6bffbe4c129f37772de75e7c38d5240ef35f270f8987e30ca65379122"
+  }
+}
