@@ -1,0 +1,255 @@
+{
+  "timestamp_utc": "2026-11-07T18:15:56.174119+00:00",
+  "scope": "Completed native continuous terminal-feedback diagnostic; strict batch isolation FAILED, no expert labels or student promotion.",
+  "before": {
+    "complete5": 27,
+    "air": 74,
+    "recovery": 34,
+    "ball5_except_recovery": 53,
+    "numerical_failures": 0
+  },
+  "after": {
+    "complete5": 28,
+    "air": 74,
+    "recovery": 35,
+    "ball5_except_recovery": 53,
+    "numerical_failures": 0
+  },
+  "stage_transitions": {
+    "complete5": {
+      "before": 27,
+      "after": 28,
+      "retained_count": 27,
+      "lost": [],
+      "gained": [
+        3
+      ]
+    },
+    "air": {
+      "before": 74,
+      "after": 74,
+      "retained_count": 74,
+      "lost": [],
+      "gained": []
+    },
+    "recovery": {
+      "before": 34,
+      "after": 35,
+      "retained_count": 34,
+      "lost": [],
+      "gained": [
+        3
+      ]
+    },
+    "ball5_except_recovery": {
+      "before": 53,
+      "after": 53,
+      "retained_count": 53,
+      "lost": [],
+      "gained": []
+    }
+  },
+  "execution": {
+    "teacher_steps": 340,
+    "prefix_feedback_steps": 80,
+    "terminal_feedback_steps": 260,
+    "unverified_fallback_steps": 0,
+    "maximum_command_mapping_error_rad": 1.8581332450473553e-07,
+    "maximum_arm_command_step_rad": 0.09999998897143314,
+    "untouched_lanes_equal_current_student": true,
+    "actual_observations_and_command_history_verified": true,
+    "online_replanning": false
+  },
+  "selected_case": {
+    "training_index": 3,
+    "air": true,
+    "recovery": true,
+    "complete5": true,
+    "ball5_except_recovery": true,
+    "complete8": false,
+    "rejection_reasons": []
+  },
+  "selected_contact_flight": {
+    "schema": "contact-flight-recovery-v1",
+    "bound": true,
+    "contact_flight_id": 5,
+    "rally_contact_time_s": 2.7612717151641846,
+    "airborne_string_time_s": 2.7612717151641846,
+    "contact_flight_takeoff_s": 2.5809953212738037,
+    "qualified_contact_landing": true,
+    "contact_flight_landing_s": 3.0809590816497803,
+    "contact_flight_com_rise_m": 0.28408509492874146,
+    "contact_flight_clear_s": 0.4899972379207611,
+    "stable_recovery": true,
+    "recovery_s": 0.9379914999008179,
+    "body_landing": false,
+    "maximum_body_ground_force_n": 0.0,
+    "terminal_root_height_m": 0.18131645023822784,
+    "success": true
+  },
+  "selected_first_nonfoot_contact_s": null,
+  "baseline_first_nonfoot_contact_s": 5.1450000000000005,
+  "maximum_nominal_tracking_error": {
+    "root_position_m": 0.01251242452751091,
+    "root_attitude_rad": 0.07370959864840308,
+    "joint_max_rad": 0.062121361009718434
+  },
+  "tracking_error_scope": "Nominal feedback trajectory vs actual state; not actual-command one-step model error.",
+  "strict_isolation_passed": false,
+  "differing_uncontrolled_cases": [
+    {
+      "case": 125,
+      "samples": 800,
+      "same_episode_length": true,
+      "public_max_error": 19.563156127929688,
+      "action_max_error": 0.4427248239517212
+    }
+  ],
+  "full_audit_sources_verified": {
+    "count": 271,
+    "changed": []
+  },
+  "divergence_diagnostic": {
+    "scope": "Locate observation/action divergence in immutable, ground-start native traces.\n\nThis is temporal evidence, not a proof of physical isolation or a replacement\nfor the existing native audit. No tolerances or expert labels are changed.\n",
+    "comparisons": [
+      {
+        "run": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_frictional_sequence3_all128_20261107_01",
+        "case": 125,
+        "compared_samples": 800,
+        "maximum_public_error": 22.619094848632812,
+        "maximum_action_error": 0.663077712059021,
+        "first_observation_difference_tick": 545,
+        "first_action_difference_tick": 545,
+        "first_observation_over_existing_audit_tolerance_tick": 545,
+        "first_action_over_existing_audit_tolerance_tick": 545,
+        "first_observation_difference": {
+          "time_s": 5.449999809265137,
+          "all_preceding_dispatched_actions_bitwise_equal": true,
+          "group_max_absolute_error": {
+            "base_linear_velocity": 0.00014440342783927917,
+            "base_angular_velocity": 0.002425670623779297,
+            "projected_gravity": 2.384185791015625e-06,
+            "joint_position_public": 2.3365020751953125e-05,
+            "joint_velocity_public": 0.04503750801086426,
+            "foot_contact_flags": 0.0,
+            "ball_public": 0.009059906005859375,
+            "observation_history": 0.0,
+            "previous_action_public": 0.0
+          },
+          "current_action_error": 0.00012767314910888672,
+          "preceding_action_error": 0.0
+        }
+      },
+      {
+        "run": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_terminal_support_all128_20261108_01",
+        "case": 125,
+        "compared_samples": 800,
+        "maximum_public_error": 19.563156127929688,
+        "maximum_action_error": 0.4427248239517212,
+        "first_observation_difference_tick": 567,
+        "first_action_difference_tick": 567,
+        "first_observation_over_existing_audit_tolerance_tick": 567,
+        "first_action_over_existing_audit_tolerance_tick": 567,
+        "first_observation_difference": {
+          "time_s": 5.670000076293945,
+          "all_preceding_dispatched_actions_bitwise_equal": true,
+          "group_max_absolute_error": {
+            "base_linear_velocity": 0.0004780897870659828,
+            "base_angular_velocity": 0.002328842878341675,
+            "projected_gravity": 1.9669532775878906e-06,
+            "joint_position_public": 6.198883056640625e-06,
+            "joint_velocity_public": 0.04953891038894653,
+            "foot_contact_flags": 0.0,
+            "ball_public": 0.0038290023803710938,
+            "observation_history": 0.0,
+            "previous_action_public": 0.0
+          },
+          "current_action_error": 0.00010578334331512451,
+          "preceding_action_error": 0.0
+        }
+      }
+    ],
+    "new_native_execution": false,
+    "valid_expert_labels": false,
+    "audit_tolerances_changed": false,
+    "cause_identified": false,
+    "source_sha256": {
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/diagnose_frozen_trace_divergence_v1.py": "e26e1d67cb8b8766ec3a1f77b28585b0d4c21c8b6de23164472bf5b7511d7522",
+      "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_125.npz": "4028428e53495a382a3e8cc5486fce3181fab69c2541c29aa172cedd3c939cbd",
+      "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/manifest.json": "7bb60d0022e5dfc7f66153807259e255c4b4391afe1436660ba2d306b79d4e5e",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_frictional_sequence3_all128_20261107_01/fixed_policy_traces/case_125.npz": "fd578bdbb7007f54535ad0bf8af149cdcab70a04f467f71343176252bf920975",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_frictional_sequence3_all128_20261107_01/fixed_policy_traces/manifest.json": "17884783170423845c4edd6ecfa4d9b28d7eacd187c87fa2fe7d15316407afc9",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_terminal_support_all128_20261108_01/fixed_policy_traces/case_125.npz": "f7e9f197947920bf2208f0702fa0b71a1d9acb8adbfc2aa41e33fc9ea6ff84a4",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_terminal_support_all128_20261108_01/fixed_policy_traces/manifest.json": "1c08fa8e6a57638bfb2aba5dfdfaadc07202fd879400da27cc358b08ca62527b"
+    }
+  },
+  "completed_native_job": {
+    "status": "SUCCEEDED",
+    "charged_gpu_hours": 0.34846925519387395,
+    "charged_env_steps": 102400,
+    "elapsed_s": 1254.4893186979461,
+    "timed_out": false,
+    "exit_code": 0,
+    "started_at": "2026-11-07T17:48:59.554045+00:00",
+    "finished_at": "2026-11-07T18:09:54.050589+00:00"
+  },
+  "verification": {
+    "real_trace_identity_check": true,
+    "treated_action_460_observation_461_check": true,
+    "G07": "FAILED"
+  },
+  "next_jobs": {
+    "reports/landing_native_terminal_arm_margin_followup_20261108_v2/status.json": {
+      "state": "RUNNING_INDEPENDENT_DIAGNOSTIC",
+      "pid": 11575,
+      "time": "2026-11-07T18:10:15.332037+00:00",
+      "previous_audit_not_promoted": true
+    },
+    "reports/landing_native_feedback_recorded_followup_20261108/status.json": {
+      "state": "WAITING_FOR_GPU_OWNERS_TO_EXIT",
+      "pid": 9913,
+      "observed_at": "2026-11-07T17:53:09.770543+00:00",
+      "owners": [
+        {
+          "pid": 4189530,
+          "start_ticks": "169281485"
+        },
+        {
+          "pid": 4189531,
+          "start_ticks": "169281505"
+        },
+        {
+          "pid": 4189548,
+          "start_ticks": "169281539"
+        },
+        {
+          "pid": 4192383,
+          "start_ticks": "169429230"
+        },
+        {
+          "pid": 1136,
+          "start_ticks": "169574330"
+        }
+      ]
+    }
+  },
+  "online_mpc_replanning": false,
+  "teacher_off_learning_result": false,
+  "valid_expert_labels": false,
+  "formal_acceptance": false,
+  "source_sha256": {
+    "reports/landing_native_terminal_support_followup_20261108/native_audit.json": "8f10abdbd7e34ec38d54dd80ca67a0996f97b57eab2a21bae941f09db242cad1",
+    "reports/landing_native_terminal_support_followup_20261108/comparison.json": "ee92afbdad86faddf262c5f5d0a3674a559b57a4821ad4de72735fefa10900c4",
+    "reports/landing_native_terminal_support_followup_20261108/status.json": "834fb77dcb7b36a1ca26b417e018cdab92f536879a6d6988a52c494aa63e064b",
+    "reports/native_terminal_support_all128_20261108_01/job.json": "c3ac86d68e94fa141202f27a1ed55321d2bdb056ed3c80fe47283c897318f10c",
+    "reports/native_terminal_support_all128_20261108_01/metrics.json": "0c95633dc33586aa5196b8914faddb15c405ed44582d686e9ca6d5dda70f6b04",
+    "reports/native_terminal_support_all128_20261108_01/episodes.json": "6dd0a6dcaf0f8c7dd0b508c6ef337cfe3244f0e1a10aac664c28c579f9133185",
+    "reports/native_terminal_support_all128_20261108_01/INPUTS.json": "5785adb02180de3e9d60f7f65e19cd29931642ffa668085870bfd0ef5d5c26bd",
+    "reports/native_terminal_support_all128_20261108_01/completed.json": "c4a2cdc51b7afa8f30801dae79e3db905be163f9c7bc5e5a8e2f496c01538989",
+    "reports/native_terminal_support_all128_20261108_01/sequence_native_result.json": "82f451a02caca8ad58d9ccff64d3d91f86d5e51a582842757a7075f2a376f4f4",
+    "reports/native_terminal_support_all128_20261108_01/sequence_dispatch.npz": "1ca9e58bd36fe48bb21342d9cbe7293e60784f627cdf4b8be02796c93016ca3b",
+    "reports/native_terminal_support_all128_20261108_01/sequence_native_trace.npz": "fe63935cdf1445ee3920fc18e930545cc1f5c00854e5f413dd35ace082241216",
+    "reports/landing_terminal_support_result_20261108/train125_divergence.json": "8e98c7db7fb4aff329e15f6de338c29f9fa3f4d33117e77aa8d2edd7f898c12a",
+    "scripts/diagnose_frozen_trace_divergence_v1.py": "e26e1d67cb8b8766ec3a1f77b28585b0d4c21c8b6de23164472bf5b7511d7522"
+  }
+}
