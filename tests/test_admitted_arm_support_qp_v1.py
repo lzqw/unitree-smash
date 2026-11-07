@@ -50,3 +50,20 @@ def test_invalid_posture_is_rejected_instead_of_hidden_by_admission():
     target=state.joint_position.copy();target[12]=10.
     with pytest.raises(ValueError,match='outside original bounds'):
         qp.solve(state,target)
+
+
+def test_mpc_live_reference_uses_the_same_admitted_arm_goal_as_planning():
+    from scripts.landing_support_mpc_v3 import LandingSupportMPCV3
+    qp, interface, state = fixture()
+    mpc=LandingSupportMPCV3(interface,qp_settings=SupportSettings(),preserve_arm_command=True)
+    target=state.joint_position.copy();target[12:]+=[.9,-.8,.7,-.6,.5,-.4]
+    mapped=mpc._posture_reference(state,target)
+    np.testing.assert_allclose(mapped[12:],mpc.admit_command_target(state,target)[12:],atol=1e-12)
+    mpc.observe(state,target,lane=0,control_tick=300)
+    observed=mpc._live_reference[0]
+    mpc.qp.reset()
+    snapshot=mpc.qp.model.snapshot(state.q,state.v)
+    mpc.qp.reference(state,snapshot,mapped)
+    independent=mpc.qp.reference_state()
+    np.testing.assert_allclose(observed['reference_position'],independent['reference_position'],atol=1e-12)
+    np.testing.assert_allclose(observed['reference_velocity'],independent['reference_velocity'],atol=1e-12)

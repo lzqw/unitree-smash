@@ -728,3 +728,35 @@ Two new regression checks bring the focused suite to 20 passing tests. This
 candidate is not yet wired into the running/queued comparisons, preserving their
 source hashes and isolating the effects. It must receive its own native trial
 before being promoted as a useful recovery teacher.
+
+### Memory-only native comparison completed
+
+`landing_mpc_reference_isolated3_20261107_01` completed 102400 environment steps:
+**27/128 complete5, 74 airborne contacts, 34 conditional recoveries, zero native
+numerical failures**. All original 27 complete cases were retained; none gained.
+Controller selection remained TRAIN1/67/95, not all 26 recovery failures.
+
+| case | previous horizon40 stable window | isolated-reference stable window | final recovery |
+|---|---:|---:|---|
+| TRAIN1 | 0.206 s | 0.754 s | failed; root-height termination |
+| TRAIN67 | 0.105 s | 0.176 s | failed; non-foot contact |
+| TRAIN95 | 0.060 s | 0.065 s | failed; non-foot contact |
+
+TRAIN1 improved a partial stability measure, but never completed the required
+0.8-second window and still collapsed. Do not count delayed failure as rescue.
+There are 648 controller records / 347 applied records / 159 failure records;
+these legacy totals include later unscored episodes and clock-reset exceptions,
+so they are not first-episode feasibility rates. Compact evidence and hashes:
+`landing_reference_isolation_result_20261107.json`.
+
+The next clearance-only comparison started at approximately 10:30 Beijing time
+on GPU0 (native PID4083994), keeping the source snapshot taken before arm changes.
+It includes explicit episode/tick telemetry and stops MPC in completed lanes.
+No result is available yet.
+
+After that process had initialized its controller, the admitted-arm QP was wired
+into the next V3 implementation. Both live reference updates and speculative
+planning now receive the same admitted arm goal. The focused suite has **21
+passing tests**, including live-versus-planned reference agreement. This new
+implementation has not yet been run natively; it does not change the already
+loaded clearance-only process.

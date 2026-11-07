@@ -8,7 +8,7 @@ arm position command, which is important for the Go2+PiPER load after a hit.
 """
 import numpy as np
 
-from scripts.continuous_support_qp_v1 import ContinuousSupportQP
+from scripts.admitted_arm_support_qp_v1 import AdmittedArmSupportQP
 from scripts.landing_support_mpc_v2 import LandingSupportMPCV2, LandingMPCSettingsV2
 
 
@@ -22,13 +22,21 @@ class LandingSupportMPCV3(LandingSupportMPCV2):
         if type(preserve_arm_command) is not bool:
             raise ValueError('preserve_arm_command must be boolean')
         self.preserve_arm_command = preserve_arm_command
-        self.qp = ContinuousSupportQP(interface, settings=self.qp.settings,
+        self.qp = AdmittedArmSupportQP(interface, settings=self.qp.settings,
             continuous_reference=True, preserve_arm_command=preserve_arm_command,
             reference_frequency_rad_s=10., load_aware=load_aware_support,
             load_force_floor_n=load_force_floor_n)
         self._live_reference = {}
         self._prediction_reference = {}
         self._observed_tick = {}
+
+    def _posture_reference(self, state, joint_reference):
+        reference = super()._posture_reference(state, joint_reference)
+        if self.preserve_arm_command:
+            # Both live-reference observation and speculative QPs must use
+            # the arm goal that the final position interface can actually send.
+            reference[12:] = self.admit_command_target(state, reference)[12:]
+        return reference
 
     def reset(self, lane=None):
         """Reset a single episode without clearing other environments."""
@@ -86,6 +94,7 @@ class LandingSupportMPCV3(LandingSupportMPCV2):
         result['formulation'] = 'fixed-contact-sequential-continuous-reference-QP'
         result['continuous_reference'] = True
         result['preserve_arm_position_command'] = self.preserve_arm_command
+        result['arm_command_semantics'] = 'preserve-after-native-target-admission'
         result['load_aware_support'] = self.qp.load_aware
         result['load_force_floor_n'] = self.qp.load_force_floor_n
         result['reference_memory'] = 'per-lane-live-tick-with-speculative-rollback'

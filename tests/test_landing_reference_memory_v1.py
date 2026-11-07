@@ -29,6 +29,7 @@ def fixture():
     q.reset()
     c = LandingSupportMPCV3.__new__(LandingSupportMPCV3)
     c.qp = q
+    c.preserve_arm_command = False  # isolate reference memory; real arm mapping has separate tests
     c.posture_target = None
     c._live_reference = {}; c._prediction_reference = {}; c._observed_tick = {}
     return c
