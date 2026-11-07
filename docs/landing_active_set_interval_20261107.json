@@ -1,0 +1,1829 @@
+{
+  "schema": "landing-active-set-interval-backend-evidence-v1",
+  "native_candidate_executed": false,
+  "convergence_summary": {
+    "samples": 30,
+    "linear_feasible": 16,
+    "baseline_accepted": 0,
+    "longer_accepted": 10
+  },
+  "backend_summary": {
+    "samples": 30,
+    "baseline_accepted": 1,
+    "active_set_accepted": 16
+  },
+  "backend_records": [
+    {
+      "case": 67,
+      "tick": 300,
+      "old_native_applied": false,
+      "previous_audit_status": "maximum iterations reached",
+      "baseline": {
+        "accepted": false,
+        "solver_status": "maximum iterations reached",
+        "solver_iterations": 10000,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.1904282569885254
+      },
+      "baseline_solver": {
+        "status": "maximum iterations reached",
+        "iter": 10000,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": 8.442480900297533e-05,
+        "dua_res": 0.00018319635469964634,
+        "run_time": 0.18720261700000002
+      },
+      "active_set": {
+        "accepted": true,
+        "solver_status": "solved",
+        "solver_iterations": 21,
+        "rejection": null,
+        "residuals": {
+          "all_interval_constraints": 2.8421709430404007e-13,
+          "independent_velocity": 7.460698725481052e-14,
+          "independent_joint_position": 6.661338147750939e-16,
+          "independent_manifold_position": 4.440892098500626e-16,
+          "dynamics_contact_residual_max": 3.444711182964966e-11,
+          "joint_velocity_violation_rad_s": 2.220446049250313e-14,
+          "joint_position_violation_rad": 0.0,
+          "normal_force_violation_n": 0.0,
+          "friction_violation_n": 0.0,
+          "motor_torque_violation_nm": 0.0
+        },
+        "predicted_minimum_root_height_m": 0.3378923360974084,
+        "wall_runtime_s": 0.003765840083360672
+      },
+      "active_set_solver": {
+        "status": "solved",
+        "iter": 21,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": null,
+        "dua_res": null,
+        "run_time": 0.000302312895655632
+      },
+      "active_set_kkt": {
+        "scaled_primal_residual": 9.43689570931383e-16,
+        "stationarity": 2.499736528882579e-14,
+        "dual_sign_violation": 0.0,
+        "complementarity": 5.542873266293455e-17,
+        "iterations": 21,
+        "minimum_hessian_eigenvalue": 1.7903902864184833e-08
+      }
+    },
+    {
+      "case": 70,
+      "tick": 300,
+      "old_native_applied": false,
+      "previous_audit_status": "maximum iterations reached",
+      "baseline": {
+        "accepted": false,
+        "solver_status": "maximum iterations reached",
+        "solver_iterations": 10000,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.1733258820604533
+      },
+      "baseline_solver": {
+        "status": "maximum iterations reached",
+        "iter": 10000,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": 0.009258683682891353,
+        "dua_res": 0.00012592407758795247,
+        "run_time": 0.167363426
+      },
+      "active_set": {
+        "accepted": false,
+        "solver_status": "primal infeasible",
+        "solver_iterations": 0,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.002995139919221401
+      },
+      "active_set_solver": {
+        "status": "primal infeasible",
+        "iter": 0,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": null,
+        "dua_res": null,
+        "run_time": 0.00023000105284154415
+      },
+      "active_set_kkt": {}
+    },
+    {
+      "case": 71,
+      "tick": 300,
+      "old_native_applied": false,
+      "previous_audit_status": "primal infeasible",
+      "baseline": {
+        "accepted": false,
+        "solver_status": "primal infeasible",
+        "solver_iterations": 4825,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.09463125583715737
+      },
+      "baseline_solver": {
+        "status": "primal infeasible",
+        "iter": 4825,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": 0.023428852221868593,
+        "dua_res": 8.710176265031675e-05,
+        "run_time": 0.091810343
+      },
+      "active_set": {
+        "accepted": false,
+        "solver_status": "primal infeasible",
+        "solver_iterations": 0,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.003378513967618346
+      },
+      "active_set_solver": {
+        "status": "primal infeasible",
+        "iter": 0,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": null,
+        "dua_res": null,
+        "run_time": 0.0002688630484044552
+      },
+      "active_set_kkt": {}
+    },
+    {
+      "case": 77,
+      "tick": 300,
+      "old_native_applied": false,
+      "previous_audit_status": "primal infeasible inaccurate",
+      "baseline": {
+        "accepted": false,
+        "solver_status": "primal infeasible inaccurate",
+        "solver_iterations": 10000,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.18964687990956008
+      },
+      "baseline_solver": {
+        "status": "primal infeasible inaccurate",
+        "iter": 10000,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": 0.012559063731627022,
+        "dua_res": 0.0007074744523311575,
+        "run_time": 0.186933499
+      },
+      "active_set": {
+        "accepted": false,
+        "solver_status": "primal infeasible",
+        "solver_iterations": 0,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.0035360129550099373
+      },
+      "active_set_solver": {
+        "status": "primal infeasible",
+        "iter": 0,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": null,
+        "dua_res": null,
+        "run_time": 0.00022705411538481712
+      },
+      "active_set_kkt": {}
+    },
+    {
+      "case": 85,
+      "tick": 300,
+      "old_native_applied": false,
+      "previous_audit_status": "maximum iterations reached",
+      "baseline": {
+        "accepted": false,
+        "solver_status": "maximum iterations reached",
+        "solver_iterations": 10000,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.1865281229838729
+      },
+      "baseline_solver": {
+        "status": "maximum iterations reached",
+        "iter": 10000,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": 5.17379651434717e-05,
+        "dua_res": 5.544512137856398e-06,
+        "run_time": 0.183786805
+      },
+      "active_set": {
+        "accepted": true,
+        "solver_status": "solved",
+        "solver_iterations": 26,
+        "rejection": null,
+        "residuals": {
+          "all_interval_constraints": 1.1368683772161603e-13,
+          "independent_velocity": 1.2079226507921703e-13,
+          "independent_joint_position": 7.28583859910259e-16,
+          "independent_manifold_position": 7.147060721024445e-16,
+          "dynamics_contact_residual_max": 3.532818482199218e-11,
+          "joint_velocity_violation_rad_s": 6.217248937900877e-15,
+          "joint_position_violation_rad": 0.0,
+          "normal_force_violation_n": 0.0,
+          "friction_violation_n": 0.0,
+          "motor_torque_violation_nm": 0.0
+        },
+        "predicted_minimum_root_height_m": 0.31202384345876955,
+        "wall_runtime_s": 0.0035377591848373413
+      },
+      "active_set_solver": {
+        "status": "solved",
+        "iter": 26,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": null,
+        "dua_res": null,
+        "run_time": 0.00031750788912177086
+      },
+      "active_set_kkt": {
+        "scaled_primal_residual": 7.494005416219807e-16,
+        "stationarity": 5.099046185286227e-14,
+        "dual_sign_violation": 0.0,
+        "complementarity": 1.9362863436650493e-17,
+        "iterations": 26,
+        "minimum_hessian_eigenvalue": 1.7554426478841903e-08
+      }
+    },
+    {
+      "case": 95,
+      "tick": 300,
+      "old_native_applied": false,
+      "previous_audit_status": "maximum iterations reached",
+      "baseline": {
+        "accepted": false,
+        "solver_status": "maximum iterations reached",
+        "solver_iterations": 10000,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.18694829987362027
+      },
+      "baseline_solver": {
+        "status": "maximum iterations reached",
+        "iter": 10000,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": 8.465660627184857e-05,
+        "dua_res": 2.2415501299289007e-05,
+        "run_time": 0.18420574399999998
+      },
+      "active_set": {
+        "accepted": true,
+        "solver_status": "solved",
+        "solver_iterations": 23,
+        "rejection": null,
+        "residuals": {
+          "all_interval_constraints": 1.7053025658242404e-13,
+          "independent_velocity": 1.4210854715202004e-13,
+          "independent_joint_position": 1.1102230246251565e-15,
+          "independent_manifold_position": 7.494005416219807e-16,
+          "dynamics_contact_residual_max": 4.61000126961153e-11,
+          "joint_velocity_violation_rad_s": 0.0,
+          "joint_position_violation_rad": 0.0,
+          "normal_force_violation_n": 0.0,
+          "friction_violation_n": 1.4210854715202004e-13,
+          "motor_torque_violation_nm": 0.0
+        },
+        "predicted_minimum_root_height_m": 0.31320512858115696,
+        "wall_runtime_s": 0.0034799068234860897
+      },
+      "active_set_solver": {
+        "status": "solved",
+        "iter": 23,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": null,
+        "dua_res": null,
+        "run_time": 0.0002894338686019182
+      },
+      "active_set_kkt": {
+        "scaled_primal_residual": 4.718447854656915e-16,
+        "stationarity": 6.616235337375542e-15,
+        "dual_sign_violation": 0.0,
+        "complementarity": 2.5357899778654837e-17,
+        "iterations": 23,
+        "minimum_hessian_eigenvalue": 1.8195958510860658e-08
+      }
+    },
+    {
+      "case": 96,
+      "tick": 300,
+      "old_native_applied": false,
+      "previous_audit_status": "maximum iterations reached",
+      "baseline": {
+        "accepted": false,
+        "solver_status": "maximum iterations reached",
+        "solver_iterations": 10000,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.18806814588606358
+      },
+      "baseline_solver": {
+        "status": "maximum iterations reached",
+        "iter": 10000,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": 4.3596472078083006e-05,
+        "dua_res": 2.506776654192654e-05,
+        "run_time": 0.185339441
+      },
+      "active_set": {
+        "accepted": true,
+        "solver_status": "solved",
+        "solver_iterations": 29,
+        "rejection": null,
+        "residuals": {
+          "all_interval_constraints": 2.1316282072803006e-14,
+          "independent_velocity": 9.769962616701378e-14,
+          "independent_joint_position": 8.881784197001252e-16,
+          "independent_manifold_position": 6.661338147750939e-16,
+          "dynamics_contact_residual_max": 4.632738637155853e-11,
+          "joint_velocity_violation_rad_s": 7.105427357601002e-15,
+          "joint_position_violation_rad": 0.0,
+          "normal_force_violation_n": 0.0,
+          "friction_violation_n": 5.826450433232822e-13,
+          "motor_torque_violation_nm": 0.0
+        },
+        "predicted_minimum_root_height_m": 0.3140908830366569,
+        "wall_runtime_s": 0.0035122858826071024
+      },
+      "active_set_solver": {
+        "status": "solved",
+        "iter": 29,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": null,
+        "dua_res": null,
+        "run_time": 0.00034584803506731987
+      },
+      "active_set_kkt": {
+        "scaled_primal_residual": 3.885780586188048e-16,
+        "stationarity": 1.2052858711086856e-14,
+        "dual_sign_violation": 0.0,
+        "complementarity": 2.2508389104592948e-17,
+        "iterations": 29,
+        "minimum_hessian_eigenvalue": 1.9745153649483978e-08
+      }
+    },
+    {
+      "case": 98,
+      "tick": 300,
+      "old_native_applied": false,
+      "previous_audit_status": "maximum iterations reached",
+      "baseline": {
+        "accepted": false,
+        "solver_status": "maximum iterations reached",
+        "solver_iterations": 10000,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.1862174381967634
+      },
+      "baseline_solver": {
+        "status": "maximum iterations reached",
+        "iter": 10000,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": 0.00013543151698428146,
+        "dua_res": 1.842778207553839e-06,
+        "run_time": 0.18350223499999999
+      },
+      "active_set": {
+        "accepted": true,
+        "solver_status": "solved",
+        "solver_iterations": 26,
+        "rejection": null,
+        "residuals": {
+          "all_interval_constraints": 5.684341886080802e-14,
+          "independent_velocity": 7.105427357601002e-14,
+          "independent_joint_position": 8.881784197001252e-16,
+          "independent_manifold_position": 6.938893903907228e-16,
+          "dynamics_contact_residual_max": 4.0813574742060155e-11,
+          "joint_velocity_violation_rad_s": 9.769962616701378e-15,
+          "joint_position_violation_rad": 0.0,
+          "normal_force_violation_n": 0.0,
+          "friction_violation_n": 0.0,
+          "motor_torque_violation_nm": 0.0
+        },
+        "predicted_minimum_root_height_m": 0.30829881645648327,
+        "wall_runtime_s": 0.0035615849774330854
+      },
+      "active_set_solver": {
+        "status": "solved",
+        "iter": 26,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": null,
+        "dua_res": null,
+        "run_time": 0.00032825605012476444
+      },
+      "active_set_kkt": {
+        "scaled_primal_residual": 8.604228440844963e-16,
+        "stationarity": 4.0818477070603265e-14,
+        "dual_sign_violation": 0.0,
+        "complementarity": 3.0892812763120173e-17,
+        "iterations": 26,
+        "minimum_hessian_eigenvalue": 2.0938990179548972e-08
+      }
+    },
+    {
+      "case": 115,
+      "tick": 300,
+      "old_native_applied": false,
+      "previous_audit_status": "maximum iterations reached",
+      "baseline": {
+        "accepted": false,
+        "solver_status": "maximum iterations reached",
+        "solver_iterations": 10000,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.1871839091181755
+      },
+      "baseline_solver": {
+        "status": "maximum iterations reached",
+        "iter": 10000,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": 9.887993877251712e-05,
+        "dua_res": 1.8076242234442247e-06,
+        "run_time": 0.184468055
+      },
+      "active_set": {
+        "accepted": true,
+        "solver_status": "solved",
+        "solver_iterations": 30,
+        "rejection": null,
+        "residuals": {
+          "all_interval_constraints": 8.348877145181177e-14,
+          "independent_velocity": 8.79296635503124e-14,
+          "independent_joint_position": 6.661338147750939e-16,
+          "independent_manifold_position": 4.440892098500626e-16,
+          "dynamics_contact_residual_max": 4.433786671143025e-11,
+          "joint_velocity_violation_rad_s": 3.375077994860476e-14,
+          "joint_position_violation_rad": 0.0,
+          "normal_force_violation_n": 0.0,
+          "friction_violation_n": 0.0,
+          "motor_torque_violation_nm": 0.0
+        },
+        "predicted_minimum_root_height_m": 0.3293576015368633,
+        "wall_runtime_s": 0.003620249917730689
+      },
+      "active_set_solver": {
+        "status": "solved",
+        "iter": 30,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": null,
+        "dua_res": null,
+        "run_time": 0.00034715584479272366
+      },
+      "active_set_kkt": {
+        "scaled_primal_residual": 1.3600232051658168e-15,
+        "stationarity": 4.678896159404644e-14,
+        "dual_sign_violation": 0.0,
+        "complementarity": 6.013618935008633e-17,
+        "iterations": 30,
+        "minimum_hessian_eigenvalue": 1.692398350568682e-08
+      }
+    },
+    {
+      "case": 1,
+      "tick": 320,
+      "old_native_applied": false,
+      "previous_audit_status": "primal infeasible",
+      "baseline": {
+        "accepted": false,
+        "solver_status": "primal infeasible",
+        "solver_iterations": 3500,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.06891543697565794
+      },
+      "baseline_solver": {
+        "status": "primal infeasible",
+        "iter": 3500,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": 0.040814801265548005,
+        "dua_res": 0.0005572216668524441,
+        "run_time": 0.066147251
+      },
+      "active_set": {
+        "accepted": false,
+        "solver_status": "primal infeasible",
+        "solver_iterations": 0,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.003358330810442567
+      },
+      "active_set_solver": {
+        "status": "primal infeasible",
+        "iter": 0,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": null,
+        "dua_res": null,
+        "run_time": 0.00024333898909389973
+      },
+      "active_set_kkt": {}
+    },
+    {
+      "case": 3,
+      "tick": 320,
+      "old_native_applied": false,
+      "previous_audit_status": "primal infeasible",
+      "baseline": {
+        "accepted": false,
+        "solver_status": "primal infeasible",
+        "solver_iterations": 7650,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.14517863490618765
+      },
+      "baseline_solver": {
+        "status": "primal infeasible",
+        "iter": 7650,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": 0.06510057859208934,
+        "dua_res": 0.001084067460289898,
+        "run_time": 0.142494768
+      },
+      "active_set": {
+        "accepted": false,
+        "solver_status": "primal infeasible",
+        "solver_iterations": 0,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.0033505528699606657
+      },
+      "active_set_solver": {
+        "status": "primal infeasible",
+        "iter": 0,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": null,
+        "dua_res": null,
+        "run_time": 0.00026249606162309647
+      },
+      "active_set_kkt": {}
+    },
+    {
+      "case": 8,
+      "tick": 320,
+      "old_native_applied": false,
+      "previous_audit_status": "maximum iterations reached",
+      "baseline": {
+        "accepted": false,
+        "solver_status": "maximum iterations reached",
+        "solver_iterations": 10000,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.18726640287786722
+      },
+      "baseline_solver": {
+        "status": "maximum iterations reached",
+        "iter": 10000,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": 0.011180610120291057,
+        "dua_res": 0.00023133348177278013,
+        "run_time": 0.18458937
+      },
+      "active_set": {
+        "accepted": false,
+        "solver_status": "primal infeasible",
+        "solver_iterations": 0,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.0033954319078475237
+      },
+      "active_set_solver": {
+        "status": "primal infeasible",
+        "iter": 0,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": null,
+        "dua_res": null,
+        "run_time": 0.00028225709684193134
+      },
+      "active_set_kkt": {}
+    },
+    {
+      "case": 18,
+      "tick": 320,
+      "old_native_applied": false,
+      "previous_audit_status": "maximum iterations reached",
+      "baseline": {
+        "accepted": false,
+        "solver_status": "maximum iterations reached",
+        "solver_iterations": 10000,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.1861831999849528
+      },
+      "baseline_solver": {
+        "status": "maximum iterations reached",
+        "iter": 10000,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": 0.00020323952472938814,
+        "dua_res": 7.842572461033586e-06,
+        "run_time": 0.183495234
+      },
+      "active_set": {
+        "accepted": true,
+        "solver_status": "solved",
+        "solver_iterations": 26,
+        "rejection": null,
+        "residuals": {
+          "all_interval_constraints": 2.2737367544323206e-13,
+          "independent_velocity": 4.729550084903167e-14,
+          "independent_joint_position": 8.881784197001252e-16,
+          "independent_manifold_position": 4.440892098500626e-16,
+          "dynamics_contact_residual_max": 1.2647660696529783e-11,
+          "joint_velocity_violation_rad_s": 0.0,
+          "joint_position_violation_rad": 0.0,
+          "normal_force_violation_n": 1.3997108124778024e-13,
+          "friction_violation_n": 5.287968605035589e-13,
+          "motor_torque_violation_nm": 0.0
+        },
+        "predicted_minimum_root_height_m": 0.21410776615381652,
+        "wall_runtime_s": 0.00354172196239233
+      },
+      "active_set_solver": {
+        "status": "solved",
+        "iter": 26,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": null,
+        "dua_res": null,
+        "run_time": 0.00031126802787184715
+      },
+      "active_set_kkt": {
+        "scaled_primal_residual": 1.3322676295501878e-15,
+        "stationarity": 4.378442053365461e-15,
+        "dual_sign_violation": 0.0,
+        "complementarity": 4.03350055612085e-18,
+        "iterations": 26,
+        "minimum_hessian_eigenvalue": 2.6528200572615546e-08
+      }
+    },
+    {
+      "case": 20,
+      "tick": 320,
+      "old_native_applied": false,
+      "previous_audit_status": "maximum iterations reached",
+      "baseline": {
+        "accepted": false,
+        "solver_status": "maximum iterations reached",
+        "solver_iterations": 10000,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.1870743539184332
+      },
+      "baseline_solver": {
+        "status": "maximum iterations reached",
+        "iter": 10000,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": 0.03842803741303756,
+        "dua_res": 0.00019252093432153906,
+        "run_time": 0.184368655
+      },
+      "active_set": {
+        "accepted": false,
+        "solver_status": "primal infeasible",
+        "solver_iterations": 0,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.0035106258001178503
+      },
+      "active_set_solver": {
+        "status": "primal infeasible",
+        "iter": 0,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": null,
+        "dua_res": null,
+        "run_time": 0.00024727219715714455
+      },
+      "active_set_kkt": {}
+    },
+    {
+      "case": 30,
+      "tick": 320,
+      "old_native_applied": false,
+      "previous_audit_status": "primal infeasible",
+      "baseline": {
+        "accepted": false,
+        "solver_status": "primal infeasible",
+        "solver_iterations": 8525,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.16298140306025743
+      },
+      "baseline_solver": {
+        "status": "primal infeasible",
+        "iter": 8525,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": 0.06738492754365527,
+        "dua_res": 0.0019427851680884369,
+        "run_time": 0.160240368
+      },
+      "active_set": {
+        "accepted": false,
+        "solver_status": "primal infeasible",
+        "solver_iterations": 0,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.0032350029796361923
+      },
+      "active_set_solver": {
+        "status": "primal infeasible",
+        "iter": 0,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": null,
+        "dua_res": null,
+        "run_time": 0.00022228783927857876
+      },
+      "active_set_kkt": {}
+    },
+    {
+      "case": 38,
+      "tick": 320,
+      "old_native_applied": false,
+      "previous_audit_status": "primal infeasible inaccurate",
+      "baseline": {
+        "accepted": false,
+        "solver_status": "primal infeasible inaccurate",
+        "solver_iterations": 10000,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.19060645904392004
+      },
+      "baseline_solver": {
+        "status": "primal infeasible inaccurate",
+        "iter": 10000,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": 0.07297421189255333,
+        "dua_res": 0.0012821426812788404,
+        "run_time": 0.187791174
+      },
+      "active_set": {
+        "accepted": false,
+        "solver_status": "primal infeasible",
+        "solver_iterations": 0,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.0034234318882226944
+      },
+      "active_set_solver": {
+        "status": "primal infeasible",
+        "iter": 0,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": null,
+        "dua_res": null,
+        "run_time": 0.00021558813750743866
+      },
+      "active_set_kkt": {}
+    },
+    {
+      "case": 50,
+      "tick": 320,
+      "old_native_applied": false,
+      "previous_audit_status": "solved inaccurate",
+      "baseline": {
+        "accepted": false,
+        "solver_status": "solved inaccurate",
+        "solver_iterations": 10000,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.1873557169456035
+      },
+      "baseline_solver": {
+        "status": "solved inaccurate",
+        "iter": 10000,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": 1.3016979723190271e-05,
+        "dua_res": 1.5943540228478976e-07,
+        "run_time": 0.18465953799999998
+      },
+      "active_set": {
+        "accepted": true,
+        "solver_status": "solved",
+        "solver_iterations": 23,
+        "rejection": null,
+        "residuals": {
+          "all_interval_constraints": 3.552713678800501e-15,
+          "independent_velocity": 4.263256414560601e-14,
+          "independent_joint_position": 6.661338147750939e-16,
+          "independent_manifold_position": 2.3592239273284576e-16,
+          "dynamics_contact_residual_max": 1.000444171950221e-11,
+          "joint_velocity_violation_rad_s": 1.3322676295501878e-14,
+          "joint_position_violation_rad": 2.220446049250313e-16,
+          "normal_force_violation_n": 0.0,
+          "friction_violation_n": 0.0,
+          "motor_torque_violation_nm": 0.0
+        },
+        "predicted_minimum_root_height_m": 0.21333090391278425,
+        "wall_runtime_s": 0.003571515902876854
+      },
+      "active_set_solver": {
+        "status": "solved",
+        "iter": 23,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": null,
+        "dua_res": null,
+        "run_time": 0.00029535917565226555
+      },
+      "active_set_kkt": {
+        "scaled_primal_residual": 2.220446049250313e-16,
+        "stationarity": 3.3306690738754696e-15,
+        "dual_sign_violation": 0.0,
+        "complementarity": 4.688051833684566e-19,
+        "iterations": 23,
+        "minimum_hessian_eigenvalue": 3.0605253971359636e-08
+      }
+    },
+    {
+      "case": 61,
+      "tick": 320,
+      "old_native_applied": false,
+      "previous_audit_status": "primal infeasible",
+      "baseline": {
+        "accepted": false,
+        "solver_status": "primal infeasible",
+        "solver_iterations": 9450,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.1802538181655109
+      },
+      "baseline_solver": {
+        "status": "primal infeasible",
+        "iter": 9450,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": 0.06595169335009449,
+        "dua_res": 0.010717583618504325,
+        "run_time": 0.17746955099999998
+      },
+      "active_set": {
+        "accepted": false,
+        "solver_status": "primal infeasible",
+        "solver_iterations": 0,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.0033889031037688255
+      },
+      "active_set_solver": {
+        "status": "primal infeasible",
+        "iter": 0,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": null,
+        "dua_res": null,
+        "run_time": 0.0002471108455210924
+      },
+      "active_set_kkt": {}
+    },
+    {
+      "case": 70,
+      "tick": 320,
+      "old_native_applied": false,
+      "previous_audit_status": "maximum iterations reached",
+      "baseline": {
+        "accepted": false,
+        "solver_status": "maximum iterations reached",
+        "solver_iterations": 10000,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.18671417119912803
+      },
+      "baseline_solver": {
+        "status": "maximum iterations reached",
+        "iter": 10000,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": 5.009263489228244e-05,
+        "dua_res": 2.8536984937991424e-06,
+        "run_time": 0.18403327
+      },
+      "active_set": {
+        "accepted": true,
+        "solver_status": "solved",
+        "solver_iterations": 13,
+        "rejection": null,
+        "residuals": {
+          "all_interval_constraints": 5.637851296924623e-18,
+          "independent_velocity": 1.0746958878371515e-13,
+          "independent_joint_position": 8.881784197001252e-16,
+          "independent_manifold_position": 1.1102230246251565e-15,
+          "dynamics_contact_residual_max": 5.314859663485549e-12,
+          "joint_velocity_violation_rad_s": 3.552713678800501e-15,
+          "joint_position_violation_rad": 0.0,
+          "normal_force_violation_n": 0.0,
+          "friction_violation_n": 0.0,
+          "motor_torque_violation_nm": 0.0
+        },
+        "predicted_minimum_root_height_m": 0.26062927662031804,
+        "wall_runtime_s": 0.003738021943718195
+      },
+      "active_set_solver": {
+        "status": "solved",
+        "iter": 13,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": null,
+        "dua_res": null,
+        "run_time": 0.0005468640010803938
+      },
+      "active_set_kkt": {
+        "scaled_primal_residual": 2.7755575615628914e-17,
+        "stationarity": 1.444157293750692e-15,
+        "dual_sign_violation": 0.0,
+        "complementarity": 5.250733746845669e-20,
+        "iterations": 13,
+        "minimum_hessian_eigenvalue": 1.4933124076451528e-08
+      }
+    },
+    {
+      "case": 71,
+      "tick": 320,
+      "old_native_applied": false,
+      "previous_audit_status": "maximum iterations reached",
+      "baseline": {
+        "accepted": false,
+        "solver_status": "maximum iterations reached",
+        "solver_iterations": 10000,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.16247283201664686
+      },
+      "baseline_solver": {
+        "status": "maximum iterations reached",
+        "iter": 10000,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": 0.00018892885571007424,
+        "dua_res": 2.5429671380728983e-06,
+        "run_time": 0.160143927
+      },
+      "active_set": {
+        "accepted": true,
+        "solver_status": "solved",
+        "solver_iterations": 16,
+        "rejection": null,
+        "residuals": {
+          "all_interval_constraints": 7.105427357601002e-15,
+          "independent_velocity": 5.773159728050814e-14,
+          "independent_joint_position": 5.551115123125783e-16,
+          "independent_manifold_position": 8.881784197001252e-16,
+          "dynamics_contact_residual_max": 3.844036200462142e-12,
+          "joint_velocity_violation_rad_s": 3.907985046680551e-14,
+          "joint_position_violation_rad": 0.0,
+          "normal_force_violation_n": 0.0,
+          "friction_violation_n": 0.0,
+          "motor_torque_violation_nm": 0.0
+        },
+        "predicted_minimum_root_height_m": 0.24460781318548105,
+        "wall_runtime_s": 0.0029532781336456537
+      },
+      "active_set_solver": {
+        "status": "solved",
+        "iter": 16,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": null,
+        "dua_res": null,
+        "run_time": 0.00022022798657417297
+      },
+      "active_set_kkt": {
+        "scaled_primal_residual": 2.983706589437719e-17,
+        "stationarity": 2.1540928762942002e-15,
+        "dual_sign_violation": 0.0,
+        "complementarity": 2.06389195714195e-18,
+        "iterations": 16,
+        "minimum_hessian_eigenvalue": 0.00017053810108253316
+      }
+    },
+    {
+      "case": 77,
+      "tick": 320,
+      "old_native_applied": false,
+      "previous_audit_status": "maximum iterations reached",
+      "baseline": {
+        "accepted": false,
+        "solver_status": "maximum iterations reached",
+        "solver_iterations": 10000,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.19224536092951894
+      },
+      "baseline_solver": {
+        "status": "maximum iterations reached",
+        "iter": 10000,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": 0.0019504108533095134,
+        "dua_res": 2.8956544666926092e-05,
+        "run_time": 0.189538249
+      },
+      "active_set": {
+        "accepted": true,
+        "solver_status": "solved",
+        "solver_iterations": 28,
+        "rejection": null,
+        "residuals": {
+          "all_interval_constraints": 2.842170943040401e-14,
+          "independent_velocity": 6.039613253960852e-14,
+          "independent_joint_position": 1.3322676295501878e-15,
+          "independent_manifold_position": 2.220446049250313e-16,
+          "dynamics_contact_residual_max": 9.72022462519817e-12,
+          "joint_velocity_violation_rad_s": 2.6645352591003757e-15,
+          "joint_position_violation_rad": 0.0,
+          "normal_force_violation_n": 0.0,
+          "friction_violation_n": 0.0,
+          "motor_torque_violation_nm": 0.0
+        },
+        "predicted_minimum_root_height_m": 0.2075463330629744,
+        "wall_runtime_s": 0.0035423191729933023
+      },
+      "active_set_solver": {
+        "status": "solved",
+        "iter": 28,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": null,
+        "dua_res": null,
+        "run_time": 0.0003983280621469021
+      },
+      "active_set_kkt": {
+        "scaled_primal_residual": 3.3809555517821573e-16,
+        "stationarity": 6.716849298982197e-14,
+        "dual_sign_violation": 0.0,
+        "complementarity": 4.846357345750895e-15,
+        "iterations": 28,
+        "minimum_hessian_eigenvalue": 2.2506598336791022e-08
+      }
+    },
+    {
+      "case": 87,
+      "tick": 320,
+      "old_native_applied": false,
+      "previous_audit_status": "primal infeasible inaccurate",
+      "baseline": {
+        "accepted": false,
+        "solver_status": "primal infeasible inaccurate",
+        "solver_iterations": 10000,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.19564926181919873
+      },
+      "baseline_solver": {
+        "status": "primal infeasible inaccurate",
+        "iter": 10000,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": 0.06888599383953459,
+        "dua_res": 0.001197060625091249,
+        "run_time": 0.192957791
+      },
+      "active_set": {
+        "accepted": false,
+        "solver_status": "primal infeasible",
+        "solver_iterations": 0,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.003494607051834464
+      },
+      "active_set_solver": {
+        "status": "primal infeasible",
+        "iter": 0,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": null,
+        "dua_res": null,
+        "run_time": 0.00024997093714773655
+      },
+      "active_set_kkt": {}
+    },
+    {
+      "case": 90,
+      "tick": 320,
+      "old_native_applied": false,
+      "previous_audit_status": "primal infeasible",
+      "baseline": {
+        "accepted": false,
+        "solver_status": "primal infeasible",
+        "solver_iterations": 5125,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.1006160459946841
+      },
+      "baseline_solver": {
+        "status": "primal infeasible",
+        "iter": 5125,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": 0.0826384454612468,
+        "dua_res": 0.0012839788299668562,
+        "run_time": 0.09779357500000001
+      },
+      "active_set": {
+        "accepted": false,
+        "solver_status": "primal infeasible",
+        "solver_iterations": 0,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.0033867519814521074
+      },
+      "active_set_solver": {
+        "status": "primal infeasible",
+        "iter": 0,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": null,
+        "dua_res": null,
+        "run_time": 0.00023436406627297401
+      },
+      "active_set_kkt": {}
+    },
+    {
+      "case": 20,
+      "tick": 340,
+      "old_native_applied": true,
+      "previous_audit_status": "solved",
+      "baseline": {
+        "accepted": false,
+        "solver_status": "solved",
+        "solver_iterations": 2275,
+        "rejection": "Independent interval dynamics, bounds or root-height check failed",
+        "residuals": {
+          "all_interval_constraints": 0.0003056816371440618,
+          "independent_velocity": 5.0421425132340936e-08,
+          "independent_joint_position": 5.822975435165745e-10,
+          "independent_manifold_position": 5.822968773827597e-10,
+          "dynamics_contact_residual_max": 9.830358749240986e-12,
+          "joint_velocity_violation_rad_s": 0.0,
+          "joint_position_violation_rad": 0.0,
+          "normal_force_violation_n": 0.0,
+          "friction_violation_n": 0.0,
+          "motor_torque_violation_nm": 0.0
+        },
+        "predicted_minimum_root_height_m": 0.197616701500122,
+        "wall_runtime_s": 0.045942198019474745
+      },
+      "baseline_solver": {
+        "status": "solved",
+        "iter": 2275,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": 1.6923852496630865e-06,
+        "dua_res": 2.9916300886907036e-07,
+        "run_time": 0.043151813
+      },
+      "active_set": {
+        "accepted": true,
+        "solver_status": "solved",
+        "solver_iterations": 15,
+        "rejection": null,
+        "residuals": {
+          "all_interval_constraints": 3.979039320256561e-13,
+          "independent_velocity": 3.2862601528904634e-14,
+          "independent_joint_position": 8.881784197001252e-16,
+          "independent_manifold_position": 4.440892098500626e-16,
+          "dynamics_contact_residual_max": 8.679279517309624e-12,
+          "joint_velocity_violation_rad_s": 0.0,
+          "joint_position_violation_rad": 0.0,
+          "normal_force_violation_n": 0.0,
+          "friction_violation_n": 0.0,
+          "motor_torque_violation_nm": 0.0
+        },
+        "predicted_minimum_root_height_m": 0.197616701500122,
+        "wall_runtime_s": 0.0030815869104117155
+      },
+      "active_set_solver": {
+        "status": "solved",
+        "iter": 15,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": null,
+        "dua_res": null,
+        "run_time": 0.00021978188306093216
+      },
+      "active_set_kkt": {
+        "scaled_primal_residual": 2.886579864025407e-15,
+        "stationarity": 2.3765711620882257e-16,
+        "dual_sign_violation": 0.0,
+        "complementarity": 2.8328249551355803e-19,
+        "iterations": 15,
+        "minimum_hessian_eigenvalue": 1.514800036455748e-08
+      }
+    },
+    {
+      "case": 30,
+      "tick": 340,
+      "old_native_applied": true,
+      "previous_audit_status": "solved inaccurate",
+      "baseline": {
+        "accepted": false,
+        "solver_status": "solved inaccurate",
+        "solver_iterations": 10000,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.18776739877648652
+      },
+      "baseline_solver": {
+        "status": "solved inaccurate",
+        "iter": 10000,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": 3.894452439315993e-06,
+        "dua_res": 3.485959835647541e-08,
+        "run_time": 0.184909037
+      },
+      "active_set": {
+        "accepted": true,
+        "solver_status": "solved",
+        "solver_iterations": 20,
+        "rejection": null,
+        "residuals": {
+          "all_interval_constraints": 3.552713678800501e-15,
+          "independent_velocity": 6.927791673660977e-14,
+          "independent_joint_position": 1.3322676295501878e-15,
+          "independent_manifold_position": 4.996003610813204e-16,
+          "dynamics_contact_residual_max": 1.007194327939942e-11,
+          "joint_velocity_violation_rad_s": 0.0,
+          "joint_position_violation_rad": 0.0,
+          "normal_force_violation_n": 0.0,
+          "friction_violation_n": 1.1368683772161603e-13,
+          "motor_torque_violation_nm": 0.0
+        },
+        "predicted_minimum_root_height_m": 0.18432839246371724,
+        "wall_runtime_s": 0.0035191981587558985
+      },
+      "active_set_solver": {
+        "status": "solved",
+        "iter": 20,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": null,
+        "dua_res": null,
+        "run_time": 0.00026371399872004986
+      },
+      "active_set_kkt": {
+        "scaled_primal_residual": 1.1277561034063476e-16,
+        "stationarity": 2.6682215464868264e-16,
+        "dual_sign_violation": 0.0,
+        "complementarity": 1.686232318548173e-18,
+        "iterations": 20,
+        "minimum_hessian_eigenvalue": 1.2367699358547186e-08
+      }
+    },
+    {
+      "case": 42,
+      "tick": 360,
+      "old_native_applied": false,
+      "previous_audit_status": "primal infeasible",
+      "baseline": {
+        "accepted": false,
+        "solver_status": "primal infeasible",
+        "solver_iterations": 900,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.021293957950547338
+      },
+      "baseline_solver": {
+        "status": "primal infeasible",
+        "iter": 900,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": 0.19112637359289325,
+        "dua_res": 0.020982617106132008,
+        "run_time": 0.018302618
+      },
+      "active_set": {
+        "accepted": false,
+        "solver_status": "primal infeasible",
+        "solver_iterations": 0,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.0032796738669276237
+      },
+      "active_set_solver": {
+        "status": "primal infeasible",
+        "iter": 0,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": null,
+        "dua_res": null,
+        "run_time": 0.00023961113765835762
+      },
+      "active_set_kkt": {}
+    },
+    {
+      "case": 115,
+      "tick": 360,
+      "old_native_applied": true,
+      "previous_audit_status": "solved",
+      "baseline": {
+        "accepted": false,
+        "solver_status": "solved",
+        "solver_iterations": 2025,
+        "rejection": "Independent interval dynamics, bounds or root-height check failed",
+        "residuals": {
+          "all_interval_constraints": 0.0005706704350245673,
+          "independent_velocity": 4.285460875053104e-14,
+          "independent_joint_position": 8.881784197001252e-16,
+          "independent_manifold_position": 4.440892098500626e-16,
+          "dynamics_contact_residual_max": 3.581135388230905e-12,
+          "joint_velocity_violation_rad_s": 0.0,
+          "joint_position_violation_rad": 0.0,
+          "normal_force_violation_n": 0.0,
+          "friction_violation_n": 0.0,
+          "motor_torque_violation_nm": 0.0
+        },
+        "predicted_minimum_root_height_m": 0.12359875088005964,
+        "wall_runtime_s": 0.046461598947644234
+      },
+      "baseline_solver": {
+        "status": "solved",
+        "iter": 2025,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": 2.04346039340067e-06,
+        "dua_res": 6.401922503847095e-07,
+        "run_time": 0.043385157
+      },
+      "active_set": {
+        "accepted": true,
+        "solver_status": "solved",
+        "solver_iterations": 15,
+        "rejection": null,
+        "residuals": {
+          "all_interval_constraints": 0.0,
+          "independent_velocity": 5.706546346573305e-14,
+          "independent_joint_position": 1.3322676295501878e-15,
+          "independent_manifold_position": 2.220446049250313e-16,
+          "dynamics_contact_residual_max": 2.6432189770275727e-12,
+          "joint_velocity_violation_rad_s": 0.0,
+          "joint_position_violation_rad": 0.0,
+          "normal_force_violation_n": 0.0,
+          "friction_violation_n": 0.0,
+          "motor_torque_violation_nm": 0.0
+        },
+        "predicted_minimum_root_height_m": 0.12359883580789496,
+        "wall_runtime_s": 0.003469106974080205
+      },
+      "active_set_solver": {
+        "status": "solved",
+        "iter": 15,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": null,
+        "dua_res": null,
+        "run_time": 0.00025945412926375866
+      },
+      "active_set_kkt": {
+        "scaled_primal_residual": 2.7755575615628914e-17,
+        "stationarity": 1.5616545278202562e-16,
+        "dual_sign_violation": 0.0,
+        "complementarity": 3.52149402642804e-21,
+        "iterations": 15,
+        "minimum_hessian_eigenvalue": 3.2240657040812804e-08
+      }
+    },
+    {
+      "case": 42,
+      "tick": 460,
+      "old_native_applied": false,
+      "previous_audit_status": "maximum iterations reached",
+      "baseline": {
+        "accepted": false,
+        "solver_status": "maximum iterations reached",
+        "solver_iterations": 10000,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.1677363400813192
+      },
+      "baseline_solver": {
+        "status": "maximum iterations reached",
+        "iter": 10000,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": 0.012790428547836819,
+        "dua_res": 0.00022378356944309147,
+        "run_time": 0.165266711
+      },
+      "active_set": {
+        "accepted": false,
+        "solver_status": "primal infeasible",
+        "solver_iterations": 0,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.0029124331194907427
+      },
+      "active_set_solver": {
+        "status": "primal infeasible",
+        "iter": 0,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": null,
+        "dua_res": null,
+        "run_time": 0.00021284492686390877
+      },
+      "active_set_kkt": {}
+    },
+    {
+      "case": 96,
+      "tick": 620,
+      "old_native_applied": false,
+      "previous_audit_status": "solved inaccurate",
+      "baseline": {
+        "accepted": false,
+        "solver_status": "solved inaccurate",
+        "solver_iterations": 10000,
+        "rejection": "Interval command QP did not return a solved finite result",
+        "residuals": null,
+        "predicted_minimum_root_height_m": null,
+        "wall_runtime_s": 0.16593116894364357
+      },
+      "baseline_solver": {
+        "status": "solved inaccurate",
+        "iter": 10000,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": 4.94826494496581e-06,
+        "dua_res": 8.179978827243251e-08,
+        "run_time": 0.163405901
+      },
+      "active_set": {
+        "accepted": true,
+        "solver_status": "solved",
+        "solver_iterations": 18,
+        "rejection": null,
+        "residuals": {
+          "all_interval_constraints": 2.7755575615628914e-17,
+          "independent_velocity": 5.81756864903582e-14,
+          "independent_joint_position": 1.3322676295501878e-15,
+          "independent_manifold_position": 8.881784197001252e-16,
+          "dynamics_contact_residual_max": 1.687983086640088e-12,
+          "joint_velocity_violation_rad_s": 0.0,
+          "joint_position_violation_rad": 0.0,
+          "normal_force_violation_n": 0.0,
+          "friction_violation_n": 0.0,
+          "motor_torque_violation_nm": 0.0
+        },
+        "predicted_minimum_root_height_m": 0.1456601566159688,
+        "wall_runtime_s": 0.003121966030448675
+      },
+      "active_set_solver": {
+        "status": "solved",
+        "iter": 18,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": null,
+        "dua_res": null,
+        "run_time": 0.0002358399797230959
+      },
+      "active_set_kkt": {
+        "scaled_primal_residual": 1.3877787807814457e-17,
+        "stationarity": 9.71445146547012e-17,
+        "dual_sign_violation": 0.0,
+        "complementarity": 7.459941300126038e-19,
+        "iterations": 18,
+        "minimum_hessian_eigenvalue": 0.00014473111869756506
+      }
+    },
+    {
+      "case": 67,
+      "tick": 760,
+      "old_native_applied": true,
+      "previous_audit_status": "solved",
+      "baseline": {
+        "accepted": true,
+        "solver_status": "solved",
+        "solver_iterations": 350,
+        "rejection": null,
+        "residuals": {
+          "all_interval_constraints": 9.510237042320568e-11,
+          "independent_velocity": 2.842170943040401e-14,
+          "independent_joint_position": 8.881784197001252e-16,
+          "independent_manifold_position": 2.220446049250313e-16,
+          "dynamics_contact_residual_max": 1.588063014423824e-12,
+          "joint_velocity_violation_rad_s": 0.0,
+          "joint_position_violation_rad": 0.0,
+          "normal_force_violation_n": 0.0,
+          "friction_violation_n": 0.0,
+          "motor_torque_violation_nm": 0.0
+        },
+        "predicted_minimum_root_height_m": 0.25759493949061496,
+        "wall_runtime_s": 0.012564226053655148
+      },
+      "baseline_solver": {
+        "status": "solved",
+        "iter": 350,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": 6.661870514401702e-07,
+        "dua_res": 2.032998250658494e-08,
+        "run_time": 0.009361782
+      },
+      "active_set": {
+        "accepted": true,
+        "solver_status": "solved",
+        "solver_iterations": 13,
+        "rejection": null,
+        "residuals": {
+          "all_interval_constraints": 0.0,
+          "independent_velocity": 3.186340080674199e-14,
+          "independent_joint_position": 8.881784197001252e-16,
+          "independent_manifold_position": 2.220446049250313e-16,
+          "dynamics_contact_residual_max": 2.9487523534044158e-12,
+          "joint_velocity_violation_rad_s": 0.0,
+          "joint_position_violation_rad": 0.0,
+          "normal_force_violation_n": 0.0,
+          "friction_violation_n": 0.0,
+          "motor_torque_violation_nm": 0.0
+        },
+        "predicted_minimum_root_height_m": 0.25759493949061496,
+        "wall_runtime_s": 0.003394915023818612
+      },
+      "active_set_solver": {
+        "status": "solved",
+        "iter": 13,
+        "prim_res": null,
+        "dual_res": null,
+        "pri_res": null,
+        "dua_res": null,
+        "run_time": 0.00020910892635583878
+      },
+      "active_set_kkt": {
+        "scaled_primal_residual": 2.7755575615628914e-17,
+        "stationarity": 1.2327717514339087e-17,
+        "dual_sign_violation": 0.0,
+        "complementarity": 1.1738093345585053e-22,
+        "iterations": 13,
+        "minimum_hessian_eigenvalue": 3.3560587638968974e-08
+      }
+    }
+  ],
+  "full_recorded_state_comparison": {
+    "candidate_first_step_accepted": {
+      "before": 254,
+      "after": 270,
+      "retained": 254,
+      "lost": [],
+      "gained": [
+        [
+          18,
+          320
+        ],
+        [
+          20,
+          340
+        ],
+        [
+          30,
+          340
+        ],
+        [
+          50,
+          320
+        ],
+        [
+          67,
+          300
+        ],
+        [
+          67,
+          760
+        ],
+        [
+          70,
+          320
+        ],
+        [
+          71,
+          320
+        ],
+        [
+          77,
+          320
+        ],
+        [
+          85,
+          300
+        ],
+        [
+          95,
+          300
+        ],
+        [
+          96,
+          300
+        ],
+        [
+          96,
+          620
+        ],
+        [
+          98,
+          300
+        ],
+        [
+          115,
+          300
+        ],
+        [
+          115,
+          360
+        ]
+      ]
+    },
+    "candidate_horizon_accepted": {
+      "before": 163,
+      "after": 187,
+      "retained": 163,
+      "lost": [],
+      "gained": [
+        [
+          8,
+          360
+        ],
+        [
+          8,
+          440
+        ],
+        [
+          8,
+          460
+        ],
+        [
+          61,
+          640
+        ],
+        [
+          67,
+          360
+        ],
+        [
+          67,
+          500
+        ],
+        [
+          67,
+          560
+        ],
+        [
+          67,
+          700
+        ],
+        [
+          67,
+          760
+        ],
+        [
+          85,
+          340
+        ],
+        [
+          85,
+          420
+        ],
+        [
+          85,
+          440
+        ],
+        [
+          85,
+          540
+        ],
+        [
+          85,
+          600
+        ],
+        [
+          85,
+          620
+        ],
+        [
+          85,
+          640
+        ],
+        [
+          85,
+          660
+        ],
+        [
+          85,
+          700
+        ],
+        [
+          85,
+          720
+        ],
+        [
+          85,
+          780
+        ],
+        [
+          95,
+          520
+        ],
+        [
+          115,
+          360
+        ],
+        [
+          115,
+          380
+        ],
+        [
+          115,
+          400
+        ]
+      ]
+    }
+  },
+  "old_executed_samples": 243,
+  "new_accepted_on_old_executed_samples": 243,
+  "old_total_audit_wall_seconds": 142.3104510938283,
+  "new_total_audit_wall_seconds": 78.59478837135248,
+  "backend_version": "quadprog 0.1.13",
+  "native_queued_plan": "reports/landing_active_set_interval_followup_20261107/plan.json",
+  "cancelled_unexecuted_plan": "reports/landing_interval_command_followup_20261107/plan.json",
+  "original_code_revision": "e66fdbe",
+  "physical_constraints_relaxed": false,
+  "unit_tests_passed": 15,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_interval_command_followup_20261107/first_stage_convergence.json": "fc42fa3cd908483e68ba3bb76623c2e5973671f95c76d9074cee8947ed01e85c",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_interval_command_followup_20261107/first_stage_active_set.json": "87a9c2ee48d886999f5819f99bd813451dc12b671e7a62ca95f10d31435bac61",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_interval_command_followup_20261107/controller35_recorded_state_audit.json": "9cb0467bb7728a4254a190cbae8c2410c11d6ae5a5814dcb5e1baad271d09689",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_interval_command_followup_20261107/controller35_active_set_audit.json": "ca5ebf52394e6d16f3641ca266ed2ff7c2d896c4668a1d7f3059a59794670ed1"
+  },
+  "pre_backend_source_snapshot": {
+    "scripts/interval_command_support_qp_v1.py": "64ec30f614d08714dced2380aa4edd9bb285e536b181adc10f904ba6e3b8d982",
+    "scripts/landing_interval_command_mpc_v1.py": "eedb43c155cc5c1078666f62f3b3ce6d27ee2a90cd5262b4a7ce51624b3f152b",
+    "scripts/run_interval_command_followup_v1.py": "cbc5229cea226bfdda0b594c10013e7d86faf73cecf4895e2a87841e51016227",
+    "scripts/audit_interval_command_mpc_v1.py": "9295ceac77cfca43fa65e3565d50d8301134a5fee90fe3ff5059755b14973d1f"
+  },
+  "scope": "Matched mathematical problems and recorded states; no new native recovery score or learned improvement."
+}

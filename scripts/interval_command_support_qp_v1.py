@@ -23,6 +23,9 @@ class IntervalCommandSupportQP(CommandHistorySupportQP):
             raise ValueError('Explicit substeps and original root-height threshold required')
         self.substeps=substeps;self.minimum_root_height_m=float(minimum_root_height_m)
 
+    def _make_solver(self):
+        return osqp.OSQP()
+
     def solve(self,state,joint_reference,*,static_equilibrium=False):
         started=time.perf_counter();cfg=self.settings;interface=self.interface;dt=cfg.control_dt_s
         if cfg.force_distribution_weight or cfg.force_wrench_weight or cfg.nonfoot_clearance_hard:
@@ -101,7 +104,7 @@ class IntervalCommandSupportQP(CommandHistorySupportQP):
         scaled=A*scale[None,:];row_scale=1./np.maximum(np.max(abs(scaled),axis=1),1e-12)
         hs=H*scale[:,None]*scale[None,:];gs=scale*(H@center+g)
         objective_scale=1./max(float(np.max(abs(np.diag(hs)))),1.)
-        solver=osqp.OSQP()
+        solver=self._make_solver()
         solver.setup(P=sparse.csc_matrix(np.triu(hs*objective_scale)),q=gs*objective_scale,
             A=sparse.csc_matrix(scaled*row_scale[:,None]),l=(low-A@center)*row_scale,u=(high-A@center)*row_scale,
             eps_abs=cfg.solver_eps,eps_rel=cfg.solver_eps,max_iter=cfg.solver_max_iterations,polish=True,verbose=False)

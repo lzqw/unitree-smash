@@ -22,6 +22,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--run',type=Path,required=True)
     parser.add_argument('--output',type=Path,required=True)
+    parser.add_argument('--backend',choices=['osqp','active-set'],default='osqp')
     args=parser.parse_args()
     if args.output.exists():raise ValueError('Do not overwrite earlier evidence')
     read=lambda f:json.loads((args.run/f).read_text())
@@ -37,7 +38,11 @@ def main():
         one_foot_max_com_distance_m=.20,landing_leg_posture_blend=.15,
         landing_arm_posture_blend=0.,executor_replay=True,predict_touchdown_contacts=True,
         contact_mode_fallback=True)
-    mpc=LandingIntervalCommandMPCV1(interface,qp_settings=cfg,settings=settings,arm_target_rate_rad_s=10.)
+    controller=LandingIntervalCommandMPCV1
+    if args.backend=='active-set':
+        from scripts.landing_active_set_interval_mpc_v1 import LandingActiveSetIntervalMPCV1
+        controller=LandingActiveSetIntervalMPCV1
+    mpc=controller(interface,qp_settings=cfg,settings=settings,arm_target_rate_rad_s=10.)
     mpc.set_posture_target(default)
     logs=read('landing_mpc_records.json');public={};hashes={};output=[]
     for case in sorted({r['case'] for r in logs}):
@@ -89,6 +94,8 @@ def main():
         'implicit_support_prediction_v1.py','continuous_support_qp_v1.py',
         'landing_support_mpc_v1.py','landing_support_mpc_v2.py','landing_support_mpc_v3.py',
         'landing_command_history_mpc_v1.py','command_history_support_qp_v1.py']]
+    if args.backend=='active-set':
+        files += [ROOT/'scripts'/n for n in ['landing_active_set_interval_mpc_v1.py','dense_active_set_qp_v1.py']]
     hashes.update({str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in files})
     summary=dict(samples=len(output),first_accepted=sum(r['candidate_first_step_accepted'] for r in output),
         horizon_accepted=sum(r['candidate_horizon_accepted'] for r in output),

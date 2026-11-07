@@ -23,6 +23,8 @@ from isaaclab.app import AppLauncher
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--output', type=Path, required=True)
 parser.add_argument('--checkpoint', type=Path, required=True)
+parser.add_argument('--learned-recovery-command-head', type=Path, default=None,
+    help='Explicit learned native recovery head; extra MPC/VHSIP disabled, all lanes causally gated')
 parser.add_argument('--expert-bank', type=Path, default=None,
     help='Explicit case-conditioned measured expert bank; controller trial only')
 parser.add_argument('--persistent-recovery-trial', action='store_true', required=True,
@@ -1006,6 +1008,16 @@ def main():
     checkpoint = torch.load(args.checkpoint, map_location='cpu', weights_only=False)
     if checkpoint.get('schema') not in (RESIDUAL_SCHEMA,SHARED_SCHEMA) or checkpoint.get('protocol_sha256') != digest(protocol_path):
         raise ValueError('Require the explicitly measured shared-target residual policy')
+    learned_recovery_checkpoint = None
+    if args.learned_recovery_command_head is not None:
+        if not args.allow_declared_controller_variant:
+            raise ValueError('Learned command head requires an explicit controller variant')
+        if (args.landing_mpc_cases is not None or args.reactive_vhsip_cases is not None or
+                args.expert_bank is not None or args.landing_config is not None or
+                args.support_config is not None or args.disable_support):
+            raise ValueError('Evaluate learned recovery with unchanged base and no extra teacher')
+        learned_recovery_checkpoint = torch.load(args.learned_recovery_command_head,
+            map_location='cpu', weights_only=False)
     offline_finetune = bool(args.allow_offline_finetune and
         checkpoint.get('residual_training_metadata', {}).get('offline_trace_finetune') and
         checkpoint.get('base_controller', {}).get('native_execution'))
@@ -1072,6 +1084,11 @@ def main():
         origin_precision_receipt_sha256=digest(args.precision_receipt),origin_spacing_m=0.,
         training_indices=indices, reset_noise_amplitudes=amplitudes, reset_noise_seed=args.seed,
         controller_trial=controller_trial, ground_extent_diagnostic=ground_diagnostic,
+        learned_recovery_command_head=(str(args.learned_recovery_command_head.resolve())
+            if args.learned_recovery_command_head else None),
+        learned_recovery_command_head_sha256=(digest(args.learned_recovery_command_head)
+            if args.learned_recovery_command_head else None),
+        extra_recovery_teacher_enabled=False if args.learned_recovery_command_head else None,
         recovery_assistance_execution=RECOVERY_EXECUTION_SCHEMA,
         landing_trial=landing_trial,support_trial=support_trial,
         support_config=effective_support,support_disabled=args.disable_support,
@@ -1268,6 +1285,14 @@ def main():
         export_robot_geometry(get_current_stage(), env.robot, args.output)
         default = env.robot.data.default_joint_pos[0, env.joint_ids]
         limits = env.robot.data.joint_pos_limits[0, env.joint_ids]
+        learned_recovery = None
+        learned_records = []
+        if learned_recovery_checkpoint is not None:
+            from quadsmash.control.learned_recovery_command_v1 import (
+                admit_native_recovery_head, NativeRecoveryCommandAdapter)
+            recovery_head = admit_native_recovery_head(learned_recovery_checkpoint,
+                digest(args.checkpoint), digest(protocol_path), limits, protocol['policy_dt_s'])
+            learned_recovery = NativeRecoveryCommandAdapter(recovery_head, count, env.device, limits)
         if hasattr(controller,'configure_landing_mpc'):
             controller.configure_landing_mpc(limits, default)
         atomic_json(args.output/'native_command_inputs.json',dict(
@@ -1297,6 +1322,15 @@ def main():
                 if hasattr(controller, 'set_landing_mpc_native_state'):
                     controller.set_landing_mpc_native_state(env)
                 action = controller.action(observation, default, limits)
+                if learned_recovery is not None:
+                    base_command = action.clone()
+                    action = learned_recovery.action(obs, base_command)
+                    learned_records.append(dict(
+                        active=learned_recovery.active.cpu().numpy().copy(),
+                        base_command=base_command.cpu().numpy().copy(),
+                        learned_delta=learned_recovery.last_delta.cpu().numpy().copy(),
+                        final_command=action.cpu().numpy().copy(),
+                        first_episode=(~finished).cpu().numpy().copy()))
                 if hasattr(controller,'landing_mpc_diagnostics'):
                     landing_mpc_records.extend(controller.landing_mpc_diagnostics())
                 if action.shape != (count, 18) or not torch.isfinite(action).all() or (abs(action)>1).any():
@@ -1332,6 +1366,8 @@ def main():
                     env.robot.set_joint_effort_target(
                         controller.effort_override(), joint_ids=env.joint_ids)
                 observation, _, done, _ = wrapped.step(action)
+                if learned_recovery is not None:
+                    learned_recovery.reset(done.bool())
                 if hasattr(controller, 'finish_landing_mpc_episodes'):
                     controller.finish_landing_mpc_episodes(done)
                 if fixed_trace is not None:fixed_trace.close(done.bool().cpu().numpy())
@@ -1354,6 +1390,9 @@ def main():
         if support_records:
             np.savez_compressed(args.output/'support_reference_and_measured_forces.npz',
                 **{key:np.concatenate(values) for key,values in support_records.items()})
+        if learned_records:
+            np.savez_compressed(args.output/'learned_recovery_commands.npz',
+                **{key:np.stack([row[key] for row in learned_records]) for key in learned_records[0]})
         contact_observer.save()
         atomic_json(args.output / 'contacts.json', env.contact_records)
         atomic_json(args.output / 'causal_plans.json', controller.logs)
@@ -1391,6 +1430,14 @@ def main():
             recovery_assistance_execution=RECOVERY_EXECUTION_SCHEMA,
             landing_config=controller.landing_config,support_config=controller.support_config,
             residual_actor_enabled=has_actor, ground_extent_diagnostic=ground_diagnostic)
+        if learned_recovery is not None:
+            summary['learned_recovery_command'] = dict(
+                schema='learned-native-recovery-command-v1',
+                head_sha256=digest(args.learned_recovery_command_head),
+                extra_mpc_or_vhsip_teacher_enabled=False,
+                base_controller_and_persistent_recovery_retained=True,
+                case_id_or_future_outcome_as_input=False,
+                active_first_episode_ticks=int(sum((r['active'] & r['first_episode']).sum() for r in learned_records)))
         if args.reactive_vhsip_cases is not None:
             summary['reactive_vhsip'] = dict(schema='reactive-vhsip-position-interface-v1',
                 selected_cases=[int(x) for x in args.reactive_vhsip_cases],

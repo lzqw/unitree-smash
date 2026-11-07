@@ -10,10 +10,12 @@ class IntervalPredictionRejected(ValueError):
 
 
 class LandingIntervalCommandMPCV1(LandingCommandHistoryMPCV1):
+    qp_type=IntervalCommandSupportQP
+
     def __init__(self,interface,*,arm_target_rate_rad_s=5.,substeps=16,**kwargs):
         super().__init__(interface,arm_target_rate_rad_s=arm_target_rate_rad_s,**kwargs)
         old=self.qp
-        self.qp=IntervalCommandSupportQP(interface,old.settings,arm_target_rate_rad_s=arm_target_rate_rad_s,
+        self.qp=self.qp_type(interface,old.settings,arm_target_rate_rad_s=arm_target_rate_rad_s,
             substeps=substeps,minimum_root_height_m=.12,continuous_reference=old.continuous_reference,
             preserve_arm_command=old.preserve_arm_command,reference_frequency_rad_s=old.reference_frequency_rad_s,
             load_aware=old.load_aware,load_force_floor_n=old.load_force_floor_n)

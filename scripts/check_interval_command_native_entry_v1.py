@@ -11,6 +11,7 @@ import torch
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
 from scripts.landing_command_history_mpc_v1 import LandingCommandHistoryMPCV1
 from scripts.landing_interval_command_mpc_v1 import LandingIntervalCommandMPCV1
+from scripts.landing_active_set_interval_mpc_v1 import LandingActiveSetIntervalMPCV1
 from scripts.landing_support_mpc_v1 import LandingSupportMPCV1,LandingMPCSettingsV1
 from scripts.landing_support_mpc_v2 import LandingSupportMPCV2,LandingMPCSettingsV2
 from scripts.landing_support_mpc_v3 import LandingSupportMPCV3
@@ -49,7 +50,17 @@ def check(source):
         assert isinstance(subject.landing_mpc.qp,IntervalCommandSupportQP)==enabled
         assert subject.landing_mpc.qp.interface.arm_rate==10.
         np.testing.assert_array_equal(subject.landing_mpc.qp.interface.velocity[12:],np.full(6,5.))
-    print('Explicit interval-command flag, baseline branch and physical/interface limits checked; no native execution')
+    if 'landing_mpc_interval_active_set' in values:
+        assert sum(k.arg=='landing_mpc_interval_active_set' for n in ast.walk(tree)
+            if isinstance(n,ast.Call) for k in n.keywords)==2
+        values.update(landing_mpc_interval_command_qp=True,landing_mpc_interval_active_set=True)
+        subject=SimpleNamespace(**values)
+        namespace['configure_landing_mpc'](subject,np.tile([-4.,4.],(18,1)),np.zeros(18))
+        assert type(subject.landing_mpc) is LandingActiveSetIntervalMPCV1
+        assert subject.landing_mpc.contract()['qp_backend']=='quadprog'
+        assert subject.landing_mpc.qp.interface.arm_rate==10.
+        np.testing.assert_array_equal(subject.landing_mpc.qp.interface.velocity[12:],np.full(6,5.))
+    print('Explicit interval-command flags, baseline and solver branches, physical/interface limits checked; no native execution')
 
 
 if __name__=='__main__':
