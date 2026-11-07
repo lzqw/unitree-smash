@@ -695,3 +695,27 @@ reconstruction and reset-per-sample references, not native-state trajectory
 replay. The two already running/queued native comparisons retain their declared
 sources; arm admission is a separate subsequent change, not silently included
 in those comparisons.
+
+### Recomputed time-aligned joint prediction diagnostics
+
+Using the first chronological clock segment per case in the legacy logs:
+
+| run | old held/stale-inclusive mean (rad) | matched one-tick n | matched mean / p95 (rad) |
+|---|---:|---:|---:|
+| horizon40 | 0.16823 | 11 | 0.00504 / 0.00896 |
+| command-rate scale 0.2 | 0.18306 | 18 | 0.00429 / 0.00855 |
+
+Each value is the maximum joint-position error for one observation. The matched
+set requires the record to occur exactly one control tick after an applied new
+QP command; later held observations are excluded. These small, selected sets
+only assess accepted-command one-step joint motion. They do not validate base
+motion, reaction forces, impact prediction, rejected states or long horizons.
+Legacy episode identities are inferred only from the first monotone clock
+segment. Fresh explicit episode/tick telemetry remains necessary.
+
+This evidence weakens the interpretation that all large reported errors were
+one-step actuator mismatch. It instead motivates correcting arm command
+admission and replacing long single-command holds with sustained feedback after
+the in-progress controlled comparisons. Reproduction and hashes are in
+`scripts/audit_landing_prediction_timing_v1.py` and
+`landing_prediction_timing_checked_20261107.json`.
