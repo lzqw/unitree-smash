@@ -1,0 +1,83 @@
+--- a/scripts/evaluate_shared_target_ground64_persistent_recovery_v1.py
++++ b/scripts/evaluate_shared_target_ground64_persistent_recovery_v1.py
+@@ -140,2 +140,3 @@
+     help='Prefer small command changes with full-horizon feasibility fallback')
++parser.add_argument('--landing-mpc-solver-workers', type=int, choices=range(9), default=0)
+ parser.add_argument('--landing-mpc-command-change-weight', type=float, default=1.,
+@@ -618,2 +619,6 @@
+                     self.landing_mpc.reset(lane=int(lane))
++        pool = getattr(self, '_landing_solver_pool', None)
++        if pool is not None:
++            lanes = self.landing_mpc_cases if ids is None else selected
++            pool.batch([dict(operation='reset', lane=int(lane)) for lane in lanes])
+
+@@ -631,2 +636,6 @@
+                 self.landing_mpc.reset(lane=lane)
++        pool = getattr(self, '_landing_solver_pool', None)
++        if pool is not None:
++            pool.batch([dict(operation='reset', lane=int(lane))
++                        for lane in torch.where(newly)[0].tolist()])
+
+@@ -686,5 +695,6 @@
+         if eligible_mask is not None:active &= eligible_mask
+-        for lane in torch.where(active)[0].tolist():
++        pool = getattr(self, '_landing_solver_pool', None)
++        def advance_lane(lane):
+             case=int(lane)  # evaluator maps env lanes to the fixed TRAIN panel
+-            if case not in self.landing_mpc_cases:continue
++            if case not in self.landing_mpc_cases:return
+             episode_index = (int(self._landing_mpc_native_env.episode_index[lane].item())
+@@ -729,3 +739,3 @@
+                 control_tick = int(round(float(public_clock[lane]) / .01))
+-                if isinstance(self.landing_mpc, LandingSupportMPCV3):
++                if pool is None and isinstance(self.landing_mpc, LandingSupportMPCV3):
+                     self.landing_mpc.observe(state, joint_ref, lane=lane,
+@@ -800,3 +810,3 @@
+                         prediction_joint_position_error_max_rad=prediction_error))
+-                    continue
++                    return
+                 if release_for_mode_mismatch or release_for_tracking:
+@@ -821,3 +831,7 @@
+                                             active[lane].item())
+-                if isinstance(self.landing_mpc, LandingSupportMPCV3):
++                if pool is not None:
++                    plan = yield dict(operation='observe', lane=int(lane), state=state,
++                        reference=joint_ref, control_tick=control_tick, solve=True,
++                        force=force_post_touchdown)
++                elif isinstance(self.landing_mpc, LandingSupportMPCV3):
+                     plan=self.landing_mpc.solve(state,joint_ref,force=force_post_touchdown,
+@@ -987,2 +1001,19 @@
+                         else 'public_observation_reconstruction'),native_execution=True))
++        pending = []
++        for lane in torch.where(active)[0].tolist():
++            continuation = advance_lane(lane)
++            try:
++                request = next(continuation)
++            except StopIteration:
++                continue
++            pending.append((continuation, request))
++        if pending:
++            # Pool errors abort the run; do not silently issue a fallback.
++            plans = pool.batch([request for _, request in pending])
++            for (continuation, _), plan in zip(pending, plans):
++                try:
++                    continuation.send(plan)
++                except StopIteration:
++                    continue
++                raise RuntimeError('A native lane requested more than one solve per tick')
+         return action
+@@ -1408,2 +1439,5 @@
+             controller.configure_landing_mpc(limits, default)
++        if args.landing_mpc_solver_workers:
++            from scripts.native_parallel_landing_configuration_v1 import attach_parallel_solver
++            attach_parallel_solver(controller, args.landing_mpc_solver_workers)
+         atomic_json(args.output/'native_command_inputs.json',dict(
+@@ -1658,2 +1692,3 @@
+                 command_change_weight=float(args.landing_mpc_command_change_weight),
++                solver_workers=int(args.landing_mpc_solver_workers),
+                 student_future_policy_rolled_out=False,
+@@ -1681,2 +1716,4 @@
+     finally:
++        pool = getattr(controller, '_landing_solver_pool', None)
++        if pool is not None:pool.close()
+         env._diagnostic_observer=None
