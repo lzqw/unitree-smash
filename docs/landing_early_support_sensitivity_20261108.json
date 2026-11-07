@@ -1,0 +1,460 @@
+{
+  "observed_at": "2026-11-07T21:50:53.447641+00:00",
+  "source": "reports/landing_early_references_20261108/support_tail_domain_probes_v1.json",
+  "source_sha256": "d3b399a87a8f07a1585a25126758e17ed17ce2076494bf3d119156a901d9bbc4",
+  "probe_count": 13,
+  "accepted_model_probes": 1,
+  "compute_expired_probes": 0,
+  "nominal_maximum_difference": 0.0,
+  "wall_seconds": 243.81592581793666,
+  "rows": [
+    {
+      "probe": {
+        "name": "nominal",
+        "kind": "nominal"
+      },
+      "accepted_model": true,
+      "completed_model_steps": 520,
+      "failure": {},
+      "terminal": {
+        "roll": 0.08022261779770234,
+        "pitch": -0.04221206582242648,
+        "horizontal": 0.03357732881328807,
+        "vertical_speed": 0.014085804106899172,
+        "omega": 0.08013523093340398,
+        "joint_speed": 0.1472042652528488,
+        "support_feet": 4,
+        "support_margin_m": 0.06286933400395124
+      },
+      "longest_model_window_s": 3.7600000000000002,
+      "trailing_model_window_s": 3.7600000000000002
+    },
+    {
+      "probe": {
+        "name": "orientation_world_0_-1",
+        "kind": "orientation",
+        "world_axis": 0,
+        "amount": -0.008726646259971648,
+        "unit": "rad"
+      },
+      "accepted_model": false,
+      "completed_model_steps": 313,
+      "failure": {
+        "step": 313,
+        "reason": "path_constraints",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.008428043426954454
+        },
+        "first_ground_violation": {
+          "micro": 22,
+          "body": "Head_lower",
+          "gap_m": -2.2224616549625098e-05
+        }
+      },
+      "terminal": {
+        "roll": 0.0912706795642783,
+        "pitch": 0.24018527879607177,
+        "horizontal": 0.6675869149657141,
+        "vertical_speed": 0.49818422331114537,
+        "omega": 1.9174516148426697,
+        "joint_speed": 2.182365140865004,
+        "support_feet": 4,
+        "support_margin_m": -0.13099395428573737
+      },
+      "longest_model_window_s": 0.86,
+      "trailing_model_window_s": 0.0
+    },
+    {
+      "probe": {
+        "name": "orientation_world_0_+1",
+        "kind": "orientation",
+        "world_axis": 0,
+        "amount": 0.008726646259971648,
+        "unit": "rad"
+      },
+      "accepted_model": false,
+      "completed_model_steps": 149,
+      "failure": {
+        "step": 149,
+        "reason": "path_constraints",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.006711409066959009
+        },
+        "first_ground_violation": {
+          "micro": 64,
+          "body": "FR_hip",
+          "gap_m": -3.38028454427014e-05
+        }
+      },
+      "terminal": {
+        "roll": 0.6444216895824776,
+        "pitch": 0.3006779902634401,
+        "horizontal": 0.8835704617554935,
+        "vertical_speed": 0.6396816010589235,
+        "omega": 3.0320687139358298,
+        "joint_speed": 2.3895184961452545,
+        "support_feet": 2,
+        "support_margin_m": -0.2357515663234172
+      },
+      "longest_model_window_s": 0.0,
+      "trailing_model_window_s": 0.0
+    },
+    {
+      "probe": {
+        "name": "orientation_world_1_-1",
+        "kind": "orientation",
+        "world_axis": 1,
+        "amount": -0.008726646259971648,
+        "unit": "rad"
+      },
+      "accepted_model": false,
+      "completed_model_steps": 255,
+      "failure": {
+        "step": 255,
+        "reason": "path_constraints",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.00031587885667890524
+        },
+        "first_ground_violation": {
+          "micro": 128,
+          "body": "RR_calf",
+          "gap_m": -5.258652255084317e-06
+        }
+      },
+      "terminal": {
+        "roll": -0.012057192509741061,
+        "pitch": -0.2893182545155878,
+        "horizontal": 0.1379304042185413,
+        "vertical_speed": 0.055416751760964444,
+        "omega": 0.13786117347638877,
+        "joint_speed": 0.46968527242331515,
+        "support_feet": 4,
+        "support_margin_m": 0.11371633752150709
+      },
+      "longest_model_window_s": 0.16,
+      "trailing_model_window_s": 0.0
+    },
+    {
+      "probe": {
+        "name": "orientation_world_1_+1",
+        "kind": "orientation",
+        "world_axis": 1,
+        "amount": 0.008726646259971648,
+        "unit": "rad"
+      },
+      "accepted_model": false,
+      "completed_model_steps": 136,
+      "failure": {
+        "step": 136,
+        "reason": "path_constraints",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.008165923979087185
+        },
+        "first_ground_violation": {
+          "micro": 55,
+          "body": "Head_lower",
+          "gap_m": -2.0168330845116156e-06
+        }
+      },
+      "terminal": {
+        "roll": 0.25179931762268903,
+        "pitch": 0.24699260815261434,
+        "horizontal": 0.6795894471251186,
+        "vertical_speed": 0.7100660042558523,
+        "omega": 2.3524446887409587,
+        "joint_speed": 2.1802424663825732,
+        "support_feet": 3,
+        "support_margin_m": -0.14515621135977502
+      },
+      "longest_model_window_s": 0.0,
+      "trailing_model_window_s": 0.0
+    },
+    {
+      "probe": {
+        "name": "linear_velocity_world_0_-1",
+        "kind": "linear_velocity",
+        "world_axis": 0,
+        "amount": -0.02,
+        "unit": "m/s"
+      },
+      "accepted_model": false,
+      "completed_model_steps": 376,
+      "failure": {
+        "step": 376,
+        "reason": "path_constraints",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.008909421849796054
+        },
+        "first_ground_violation": {
+          "micro": 18,
+          "body": "Head_lower",
+          "gap_m": -3.752000649177162e-05
+        }
+      },
+      "terminal": {
+        "roll": 0.14124562652080944,
+        "pitch": 0.26854144395507124,
+        "horizontal": 0.7185276720563395,
+        "vertical_speed": 0.49701641999671303,
+        "omega": 2.0206191212266322,
+        "joint_speed": 3.1436289499939023,
+        "support_feet": 3,
+        "support_margin_m": -0.14644622533306922
+      },
+      "longest_model_window_s": 1.1,
+      "trailing_model_window_s": 0.0
+    },
+    {
+      "probe": {
+        "name": "linear_velocity_world_0_+1",
+        "kind": "linear_velocity",
+        "world_axis": 0,
+        "amount": 0.02,
+        "unit": "m/s"
+      },
+      "accepted_model": false,
+      "completed_model_steps": 153,
+      "failure": {
+        "step": 153,
+        "reason": "path_constraints",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.005052272721587779
+        },
+        "first_ground_violation": {
+          "micro": 80,
+          "body": "Head_lower",
+          "gap_m": -4.369168840663573e-05
+        }
+      },
+      "terminal": {
+        "roll": 0.20988093373675357,
+        "pitch": 0.2543947103182763,
+        "horizontal": 0.790102008058958,
+        "vertical_speed": 0.5220402779492064,
+        "omega": 1.7222353269531645,
+        "joint_speed": 4.758627966071989,
+        "support_feet": 3,
+        "support_margin_m": -0.1283994084104163
+      },
+      "longest_model_window_s": 0.0,
+      "trailing_model_window_s": 0.0
+    },
+    {
+      "probe": {
+        "name": "linear_velocity_world_1_-1",
+        "kind": "linear_velocity",
+        "world_axis": 1,
+        "amount": -0.02,
+        "unit": "m/s"
+      },
+      "accepted_model": false,
+      "completed_model_steps": 168,
+      "failure": {
+        "step": 168,
+        "reason": "path_constraints",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.0030902122715840002
+        },
+        "first_ground_violation": {
+          "micro": 113,
+          "body": "FR_hip",
+          "gap_m": -3.5808333159234595e-05
+        }
+      },
+      "terminal": {
+        "roll": 0.6337103159448298,
+        "pitch": 0.27960667702778197,
+        "horizontal": 0.9287624702141798,
+        "vertical_speed": 0.607591489355714,
+        "omega": 3.019445011399933,
+        "joint_speed": 4.74743135767264,
+        "support_feet": 2,
+        "support_margin_m": -0.24471558861611675
+      },
+      "longest_model_window_s": 0.07,
+      "trailing_model_window_s": 0.0
+    },
+    {
+      "probe": {
+        "name": "linear_velocity_world_1_+1",
+        "kind": "linear_velocity",
+        "world_axis": 1,
+        "amount": 0.02,
+        "unit": "m/s"
+      },
+      "accepted_model": false,
+      "completed_model_steps": 329,
+      "failure": {
+        "step": 329,
+        "reason": "path_constraints",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.008103822713814893
+        },
+        "first_ground_violation": {
+          "micro": 30,
+          "body": "Head_lower",
+          "gap_m": -4.157311228380339e-05
+        }
+      },
+      "terminal": {
+        "roll": 0.12201133448323712,
+        "pitch": 0.2515436494285604,
+        "horizontal": 0.6787971886650429,
+        "vertical_speed": 0.49764493168554286,
+        "omega": 1.942049774199934,
+        "joint_speed": 2.559166638434858,
+        "support_feet": 3,
+        "support_margin_m": -0.13775518057412542
+      },
+      "longest_model_window_s": 0.9500000000000001,
+      "trailing_model_window_s": 0.0
+    },
+    {
+      "probe": {
+        "name": "angular_velocity_world_0_-1",
+        "kind": "angular_velocity",
+        "world_axis": 0,
+        "amount": -0.02,
+        "unit": "rad/s"
+      },
+      "accepted_model": false,
+      "completed_model_steps": 328,
+      "failure": {
+        "step": 328,
+        "reason": "path_constraints",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.009083099896612191
+        },
+        "first_ground_violation": {
+          "micro": 14,
+          "body": "Head_lower",
+          "gap_m": -3.579927053295323e-05
+        }
+      },
+      "terminal": {
+        "roll": 0.12102026796259122,
+        "pitch": 0.2515528375393083,
+        "horizontal": 0.6795997504780263,
+        "vertical_speed": 0.5000667371546317,
+        "omega": 1.9158871231831793,
+        "joint_speed": 2.5216468197289004,
+        "support_feet": 3,
+        "support_margin_m": -0.13743875200069322
+      },
+      "longest_model_window_s": 0.9400000000000001,
+      "trailing_model_window_s": 0.0
+    },
+    {
+      "probe": {
+        "name": "angular_velocity_world_0_+1",
+        "kind": "angular_velocity",
+        "world_axis": 0,
+        "amount": 0.02,
+        "unit": "rad/s"
+      },
+      "accepted_model": false,
+      "completed_model_steps": 167,
+      "failure": {
+        "step": 167,
+        "reason": "path_constraints",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.006456098441619484
+        },
+        "first_ground_violation": {
+          "micro": 63,
+          "body": "FR_hip",
+          "gap_m": -4.853082630766614e-05
+        }
+      },
+      "terminal": {
+        "roll": 0.6254512426416389,
+        "pitch": 0.2894200569955434,
+        "horizontal": 0.9601230309820912,
+        "vertical_speed": 0.6299021456893109,
+        "omega": 2.922102495454052,
+        "joint_speed": 4.721627444919435,
+        "support_feet": 2,
+        "support_margin_m": -0.2512074178471911
+      },
+      "longest_model_window_s": 0.03,
+      "trailing_model_window_s": 0.0
+    },
+    {
+      "probe": {
+        "name": "angular_velocity_world_1_-1",
+        "kind": "angular_velocity",
+        "world_axis": 1,
+        "amount": -0.02,
+        "unit": "rad/s"
+      },
+      "accepted_model": false,
+      "completed_model_steps": 384,
+      "failure": {
+        "step": 384,
+        "reason": "path_constraints",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.0053618570559155615
+        },
+        "first_ground_violation": {
+          "micro": 72,
+          "body": "Head_lower",
+          "gap_m": -4.4899061931932827e-05
+        }
+      },
+      "terminal": {
+        "roll": 0.1565577969619205,
+        "pitch": 0.2683742869520908,
+        "horizontal": 0.7204080502155314,
+        "vertical_speed": 0.47654167103729334,
+        "omega": 1.9931682871416463,
+        "joint_speed": 3.4643487424048813,
+        "support_feet": 3,
+        "support_margin_m": -0.14389119080561094
+      },
+      "longest_model_window_s": 0.8200000000000001,
+      "trailing_model_window_s": 0.0
+    },
+    {
+      "probe": {
+        "name": "angular_velocity_world_1_+1",
+        "kind": "angular_velocity",
+        "world_axis": 1,
+        "amount": 0.02,
+        "unit": "rad/s"
+      },
+      "accepted_model": false,
+      "completed_model_steps": 161,
+      "failure": {
+        "step": 161,
+        "reason": "path_constraints",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.005622899780667004
+        },
+        "first_ground_violation": {
+          "micro": 58,
+          "body": "Head_lower",
+          "gap_m": -4.478644873405491e-05
+        }
+      },
+      "terminal": {
+        "roll": 0.1977894407981584,
+        "pitch": 0.26923222492223187,
+        "horizontal": 0.8675217705715585,
+        "vertical_speed": 0.44891352772569587,
+        "omega": 1.5295390019900508,
+        "joint_speed": 4.252882940952902,
+        "support_feet": 3,
+        "support_margin_m": -0.13841868689737838
+      },
+      "longest_model_window_s": 0.0,
+      "trailing_model_window_s": 0.0
+    }
+  ],
+  "native_execution": false,
+  "valid_expert_labels": false,
+  "query_admission_widened": false,
+  "tests": "2 passed",
+  "goal_verification": "FAILED; original dependencies/artifacts and formal acceptance incomplete",
+  "queued_native_pins_checked": 294,
+  "queued_native_pins_changed": 0
+}
