@@ -563,7 +563,9 @@
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_fullcommand_native_response_20261107/frictional_terminal_feedback3.json": "cfb9c3d51561d605321e789c49a232f33bad4e7b277069824526d0b913ee94f5",
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_frictional_sequence3_all128_20261107_01/metrics.json": "8eaa424bc76ae19f497dbfb6f19ec4b80b53607393f1d9b027cbf36e85949394",
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_frictional_sequence3_all128_20261107_01/job.json": "2b45038f31ee26a13c747ce32593701fdd05d0bc781e9ceadb9d4ec44732dad7",
-    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_frictional_sequence3_all128_20261107_01/sequence_native_result.json": "a3f77f4a7c661b16d864877a62182d661b16f47035a207d1036447abaa96d48c"
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_frictional_sequence3_all128_20261107_01/sequence_native_result.json": "a3f77f4a7c661b16d864877a62182d661b16f47035a207d1036447abaa96d48c",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_native_frictional_storage_ready_20261107/comparison.json": "301b6988d488fb15b862d409ccdd738dad5c73b965d37a0a404396023fd1bc4a",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_native_frictional_storage_ready_20261107/native_audit.json": "49c1e8a2476be01a49f9ded5cafc64c171aa981b1d6b6863938b88cc6cfaa23e"
   },
   "new_native_success_claim": false,
   "new_learning_gain_claim": false,
@@ -588,6 +590,43 @@
     "teacher_steps": 18,
     "unverified_student_fallback_steps": 322,
     "planning_failed": true,
-    "independent_full_audit": "RUNNING"
-  }
+    "independent_full_audit": "FAILED_UNTOUCHED_CASE125_TRAJECTORY_COMPARISON"
+  },
+  "native_v1_audit_update": {
+    "dispatch": {
+      "teacher_steps": 18,
+      "unverified_fallback_steps": 322,
+      "replans": 9,
+      "accepted_replans": 8,
+      "maximum_command_mapping_error_rad": 1.5846177969791597e-07,
+      "maximum_arm_command_step_rad": 0.10000009298153145,
+      "untouched_lanes_equal_current_student": true,
+      "actual_observations_and_command_history_verified": true
+    },
+    "passed_dispatch_integrity": false,
+    "selected_first_nonfoot_contact_s": 5.267,
+    "baseline_first_nonfoot_contact_s": 5.1450000000000005,
+    "unmatched_cases": [
+      {
+        "case": 125,
+        "samples": 800,
+        "same_episode_length": true,
+        "public_max_error": 22.619094848632812,
+        "action_max_error": 0.663077712059021
+      }
+    ],
+    "case125_first_public_difference_tick": 545,
+    "case125_first_action_difference_tick": 545,
+    "case125_first_action_difference_above_0005_tick": 558,
+    "all_outcome_sets_unchanged": true,
+    "root_cause_not_established": true
+  },
+  "native_v2_independent_update": {
+    "state": "RUNNING_INDEPENDENT_DIAGNOSTIC",
+    "pid": 4189530,
+    "time": "2026-11-07T15:49:21.560962+00:00",
+    "previous_audit_not_promoted": true,
+    "reason": "Previous automatic queue stopped on audit failure; new independent diagnostic keeps strict comparison unchanged and does not promote the old result."
+  },
+  "last_update_at": "2026-11-07T15:49:53.939845+00:00"
 }
