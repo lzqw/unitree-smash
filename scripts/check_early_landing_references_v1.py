@@ -97,6 +97,8 @@ def main():
     for name in ['bundle','validation','warm-plan','sphere-audit','output']:
         parser.add_argument('--'+name,type=Path,required=True)
     parser.add_argument('--tick',type=int,default=300)
+    parser.add_argument('--screen-substeps',type=int,choices=[16,160],default=16,
+                        help='160 checks whether a coarse rejection persists at the native time step.')
     args=parser.parse_args()
     if args.output.exists() or not 280<=args.tick<=310 or args.tick%2:
         raise ValueError('Fresh, bounded, pose-aligned early query required')
@@ -148,9 +150,10 @@ def main():
     for mode in ['recorded_student','hold_actual_previous','recorded_stand_legs_hold_arm','existing_terminal_feedback',
                  'stand_legs_measured_arm','terminal_legs_measured_arm']:
         coarse=rollout(controller,state,feedback,dict(default=default,commands=commands),mode,
-            spheres,geometry,protocol,tick=args.tick,substeps=16)
+            spheres,geometry,protocol,tick=args.tick,substeps=args.screen_substeps)
         fine=(rollout(controller,state,feedback,dict(default=default,commands=commands),mode,
-            spheres,geometry,protocol,tick=args.tick,substeps=160) if coarse['accepted'] else None)
+            spheres,geometry,protocol,tick=args.tick,substeps=160)
+              if coarse['accepted'] and args.screen_substeps!=160 else None)
         results.append(dict(reference=mode,coarse=coarse,fine=fine))
         print(json.dumps(plain(dict(reference=mode,accepted=coarse['accepted'],steps=coarse['completed_model_steps'],
             failure=coarse['failure'],fine_accepted=None if fine is None else fine['accepted']))),flush=True)
