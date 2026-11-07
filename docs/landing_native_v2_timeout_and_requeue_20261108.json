@@ -1,0 +1,182 @@
+{
+  "timestamp_utc": "2026-11-07T17:54:20.781253+00:00",
+  "previous_native_job": {
+    "goal": "G07",
+    "budget_window": "g07-full-racket-unlimited-20261024",
+    "git_sha": "b4d4704136f30474219e6dfe0779693e0c9fce96",
+    "command": [
+      "bash",
+      "scripts/python.sh",
+      "-u",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_native_frictional_v2_preparation_20261107/evaluate_frictional_v2.py",
+      "--output",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_frictional_v2_sequence3_all128_20261107_02",
+      "--checkpoint",
+      "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_env5120_01/policy.pt",
+      "--precision-receipt",
+      "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin_precision_after_aim_queue01/PRECISION_ADMISSION.json",
+      "--ground-xy-m",
+      "64",
+      "--record-first-episodes",
+      "--seed",
+      "882102",
+      "--persistent-recovery-trial",
+      "--allow-declared-controller-variant",
+      "--recovery-sequence-bundle",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_episode_sequence3_20261107",
+      "--recovery-sequence-case",
+      "3",
+      "--landing-blas-threads",
+      "1",
+      "--headless",
+      "--device",
+      "cuda:0",
+      "--frictional-warm-plan",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_fullcommand_native_response_20261107/frictional_terminal_restoration3.json",
+      "--frictional-sphere-audit",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_fullcommand_native_response_20261107/sphere_crossings_v3.json"
+    ],
+    "output": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_frictional_v2_sequence3_all128_20261107_02",
+    "gpu": 0,
+    "status": "FAILED",
+    "charged_gpu_hours": 1.9934960993691735,
+    "charged_env_steps": 102400,
+    "started_at": "2026-11-07T15:49:21.890244+00:00",
+    "pid": 4189531,
+    "original_authorization": "g07-full-racket-unlimited-20261024",
+    "authorization_started_at": "2026-10-24T01:53:52.256487+00:00",
+    "authorization_deadline": null,
+    "child_pid": 4189548,
+    "exit_code": 0,
+    "timed_out": true,
+    "receipt_present": false,
+    "elapsed_s": 7176.585957729025,
+    "finished_at": "2026-11-07T17:48:58.488839+00:00"
+  },
+  "last_replan_progress": {
+    "control_tick": 612,
+    "replans": 24,
+    "accepted_replans": 23,
+    "latest_accepted": false,
+    "latest_wall_seconds": 34.071635723114014,
+    "latest_reason": "No nonlinear-verified continuation from supplied state",
+    "teacher_steps": 152,
+    "fallback_steps": 0,
+    "teacher_model": "frictional_spheres_v1",
+    "native_recovery_success_not_yet_known": true
+  },
+  "completed_control_ticks": 613,
+  "missing_final_artifacts": [
+    "sequence_native_result.json",
+    "sequence_native_trace.npz",
+    "metrics.json",
+    "completed.json"
+  ],
+  "save_error": "Traceback (most recent call last):\n  File \"/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_native_frictional_v2_preparation_20261107/evaluate_frictional_v2.py\", line 1723, in <module>\n    main()\n  File \"/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_native_frictional_v2_preparation_20261107/evaluate_frictional_v2.py\", line 1558, in main\n    sequence_result=native_replay.save()\n                    ^^^^^^^^^^^^^^^^^^^^\n  File \"/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/native_frictional_recovery_v2.py\", line 18, in save\n    result=super().save()\n           ^^^^^^^^^^^^^^\n  File \"/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/native_frictional_recovery_v1.py\", line 91, in save\n    result=super().save()\n           ^^^^^^^^^^^^^^\n  File \"/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/native_receding_recovery_v1.py\", line 62, in save\n    result=super().save()\n           ^^^^^^^^^^^^^^\n  File \"/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/native_recovery_sequence_replay_v2.py\", line 125, in save\n    if not self.started or self.applied!=self.steps:raise ValueError('Full planned sequence was not executed')\n                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nValueError: Full planned sequence was not executed\n",
+  "source_sha256": {
+    "reports/native_frictional_v2_sequence3_all128_20261107_02/job.json": "26506b9ace02f80ac34b267907f83d9125b7a1ede52ef2c6766a383bf776be24",
+    "reports/native_frictional_v2_sequence3_all128_20261107_02/frictional_feedback_progress.json": "1a4798cf0e96366b77174af35cc267aa523b97cd4f90ac0344a3319c6d1b15b1",
+    "reports/native_frictional_v2_sequence3_all128_20261107_02/progress.json": "a2a94c49ae29a57707c71c6cefbee00a5c46b90807dec93b24dc0f718ebf47e7",
+    "reports/native_frictional_v2_sequence3_all128_20261107_02/error.txt": "baad574528c5e535f114b79b1f6a660750332fe43e534406a74da437bed25a64",
+    "reports/native_frictional_v2_sequence3_all128_20261107_02/sequence_dispatch.npz": "a573c113d10efc495970682cf6c39620814ea1ed3e4ffdf481b24b3e70fa25a3",
+    "reports/landing_native_feedback_recorded_followup_20261108/plan.json": "88418ac3c2dc31ccee4556a41a92c8db548b6f29874d9a93244c5596b6f4477c",
+    "reports/landing_native_feedback_recorded_followup_20261108/launch.json": "4568d2cd742cf57a079be1edd98253e1ce09e1778fd1929988bf01dbffaaacd9",
+    "reports/landing_native_feedback_recorded_preparation_20261108/preparation.json": "d9256dad1525d420c235d37b6a17b6c91635fecafd15d43a5cffd89695831f85",
+    "reports/landing_native_feedback_recorded_preparation_20261108/evaluate_feedback_recorded.py": "988ffbd818cae464c1b72bca22be23966c89586b736ad7ca3f4923269f63a3c4",
+    "scripts/recovery_partial_evidence_v1.py": "7b57714285aeef93950fc48a526795dbd8216c98eb964c4ee19278fe0ff0785f",
+    "scripts/prepare_native_recovery_partial_v1.py": "f7e71b44e22aec89aaebefd9e8e32698e6e7ee08f5ac010c99397a9dfa5b1b57",
+    "tests/test_recovery_partial_evidence_v1.py": "eeb8a417f3fd4c166796003017c6ab5191eddf59090ac15baebca6990758aea0"
+  },
+  "replacement_launch": {
+    "pid": 9913,
+    "start_ticks": "170024324",
+    "old_cancellation": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_native_feedback_portfolio_followup_20261108/cancelled_before_launch.json",
+    "command": [
+      "/usr/bin/python3",
+      "-u",
+      "scripts/queue_native_terminal_support_v1.py",
+      "--plan",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_native_feedback_recorded_followup_20261108/plan.json"
+    ],
+    "plan_sha256": "88418ac3c2dc31ccee4556a41a92c8db548b6f29874d9a93244c5596b6f4477c",
+    "timestamp_utc": "2026-11-07T17:53:09.753454+00:00"
+  },
+  "replaced_queue_cancellation": {
+    "state": "CANCELLED_BEFORE_LAUNCH",
+    "old_pid": 5421,
+    "old_start_ticks": "169786721",
+    "old_status": {
+      "state": "WAITING_FOR_GPU_OWNERS_TO_EXIT",
+      "pid": 5421,
+      "observed_at": "2026-11-07T17:13:33.741440+00:00",
+      "owners": [
+        {
+          "pid": 4189530,
+          "start_ticks": "169281485"
+        },
+        {
+          "pid": 4189531,
+          "start_ticks": "169281505"
+        },
+        {
+          "pid": 4189548,
+          "start_ticks": "169281539"
+        },
+        {
+          "pid": 4192383,
+          "start_ticks": "169429230"
+        },
+        {
+          "pid": 1136,
+          "start_ticks": "169574330"
+        }
+      ]
+    },
+    "old_plan_sha256": "44af9913d8de24503731af9e552f35b16f31185f3656bb845cd62429037cca44",
+    "replacement_plan": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_native_feedback_recorded_followup_20261108/plan.json",
+    "reason": "Add passive microstep observation and durable incomplete evidence; controller and full-run acceptance unchanged",
+    "timestamp_utc": "2026-11-07T17:53:09.752623+00:00",
+    "native_old_output_exists": false
+  },
+  "replacement_status": {
+    "state": "WAITING_FOR_GPU_OWNERS_TO_EXIT",
+    "pid": 9913,
+    "observed_at": "2026-11-07T17:53:09.770543+00:00",
+    "owners": [
+      {
+        "pid": 4189530,
+        "start_ticks": "169281485"
+      },
+      {
+        "pid": 4189531,
+        "start_ticks": "169281505"
+      },
+      {
+        "pid": 4189548,
+        "start_ticks": "169281539"
+      },
+      {
+        "pid": 4192383,
+        "start_ticks": "169429230"
+      },
+      {
+        "pid": 1136,
+        "start_ticks": "169574330"
+      }
+    ]
+  },
+  "replacement_inputs_verified": 269,
+  "running_terminal_feedback_status": {
+    "state": "RUNNING_INDEPENDENT_DIAGNOSTIC",
+    "pid": 9289,
+    "time": "2026-11-07T17:48:59.346460+00:00",
+    "previous_audit_not_promoted": true
+  },
+  "tests": {
+    "passed": 9,
+    "scope": "Synthetic recorder and prefix evidence semantics; not native recovery"
+  },
+  "formal_verifier_status": "FAILED",
+  "new_complete_success_result": null,
+  "valid_expert_labels": false
+}
