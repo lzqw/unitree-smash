@@ -1,0 +1,692 @@
+{
+  "schema": "interval-arm-feasibility-evidence-v1",
+  "native_new_execution": false,
+  "source": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_mpc_command_history_cohort26_20261107_01",
+  "constraint_conflicts": {
+    "samples": 14,
+    "free_arm_physically_verified": 13,
+    "diagnostic_family_removal_feasible": {
+      "friction": 0,
+      "joint_position": 1,
+      "joint_velocity": 13,
+      "motor_torque": 3,
+      "native_target_bounds": 0,
+      "normal_force": 0,
+      "preserve_arm": 13,
+      "root_height": 0
+    }
+  },
+  "recorded_panel": {
+    "candidate_first_step_accepted": {
+      "before": 270,
+      "after": 283,
+      "gained": [
+        [
+          70,
+          300
+        ],
+        [
+          71,
+          300
+        ],
+        [
+          77,
+          300
+        ],
+        [
+          1,
+          320
+        ],
+        [
+          3,
+          320
+        ],
+        [
+          8,
+          320
+        ],
+        [
+          20,
+          320
+        ],
+        [
+          30,
+          320
+        ],
+        [
+          38,
+          320
+        ],
+        [
+          61,
+          320
+        ],
+        [
+          87,
+          320
+        ],
+        [
+          90,
+          320
+        ],
+        [
+          42,
+          460
+        ]
+      ],
+      "lost": []
+    },
+    "candidate_horizon_accepted": {
+      "before": 187,
+      "after": 187,
+      "gained": [],
+      "lost": []
+    }
+  },
+  "free_arm_still_rejected_states": [
+    {
+      "case": 42,
+      "tick": 360,
+      "joint": "FR_hip_joint",
+      "joint_position_rad": 1.0465301498770714,
+      "joint_velocity_rad_s": 1.5026798248291016,
+      "limits_rad": [
+        -1.0471998453140259,
+        1.0471998453140259
+      ],
+      "nearest_limit_margin_rad": 0.0006696954369544983,
+      "interpretation": "Near-bound state; frozen-contact/unsaturated model conflict, not proof of hardware impossibility."
+    }
+  ],
+  "new_first_step_later_failures": [
+    {
+      "case": 70,
+      "tick": 300,
+      "failed_stage": 21,
+      "rejection": "QP rejected prediction stage 21"
+    },
+    {
+      "case": 71,
+      "tick": 300,
+      "failed_stage": 27,
+      "rejection": "QP rejected prediction stage 27"
+    },
+    {
+      "case": 77,
+      "tick": 300,
+      "failed_stage": 7,
+      "rejection": "QP rejected prediction stage 7"
+    },
+    {
+      "case": 1,
+      "tick": 320,
+      "failed_stage": 34,
+      "rejection": "QP rejected prediction stage 34"
+    },
+    {
+      "case": 3,
+      "tick": 320,
+      "failed_stage": 21,
+      "rejection": "QP rejected prediction stage 21"
+    },
+    {
+      "case": 8,
+      "tick": 320,
+      "failed_stage": null,
+      "rejection": "terminal support margin not reached"
+    },
+    {
+      "case": 20,
+      "tick": 320,
+      "failed_stage": 17,
+      "rejection": "QP rejected prediction stage 17"
+    },
+    {
+      "case": 30,
+      "tick": 320,
+      "failed_stage": 16,
+      "rejection": "QP rejected prediction stage 16"
+    },
+    {
+      "case": 38,
+      "tick": 320,
+      "failed_stage": 12,
+      "rejection": "QP rejected prediction stage 12"
+    },
+    {
+      "case": 61,
+      "tick": 320,
+      "failed_stage": 13,
+      "rejection": "QP rejected prediction stage 13"
+    },
+    {
+      "case": 87,
+      "tick": 320,
+      "failed_stage": 20,
+      "rejection": "QP rejected prediction stage 20"
+    },
+    {
+      "case": 90,
+      "tick": 320,
+      "failed_stage": 13,
+      "rejection": "QP rejected prediction stage 13"
+    },
+    {
+      "case": 42,
+      "tick": 460,
+      "failed_stage": 7,
+      "rejection": "QP rejected prediction stage 7"
+    }
+  ],
+  "native_one_step_prediction": {
+    "all": {
+      "samples": 479,
+      "models": {
+        "held_initial_torque": {
+          "successful_predictions": 479,
+          "errors": {
+            "arm_position_error_max_rad": {
+              "median": 0.007472868593912052,
+              "p95": 0.083341486952655,
+              "maximum": 0.3103568759165922
+            },
+            "leg_position_error_max_rad": {
+              "median": 0.00578153737110898,
+              "p95": 0.033873655504742424,
+              "maximum": 0.1390734964524687
+            },
+            "arm_velocity_error_max_rad_s": {
+              "median": 1.542014148218627,
+              "p95": 16.80084288837325,
+              "maximum": 62.73878448412259
+            },
+            "leg_velocity_error_max_rad_s": {
+              "median": 1.3031234561991774,
+              "p95": 6.713622936693805,
+              "maximum": 27.80141746828914
+            },
+            "base_position_error_m": {
+              "median": 9.585654826697092e-05,
+              "p95": 0.00045968032541353863,
+              "maximum": 0.0011177040169425443
+            },
+            "base_linear_velocity_error_mps": {
+              "median": 0.02057884801492474,
+              "p95": 0.08963943442713389,
+              "maximum": 0.40893700948642286
+            },
+            "base_angular_velocity_error_rad_s": {
+              "median": 0.17046963128204398,
+              "p95": 1.2317942460866071,
+              "maximum": 4.389021856148583
+            }
+          }
+        },
+        "implicit_16": {
+          "successful_predictions": 479,
+          "errors": {
+            "arm_position_error_max_rad": {
+              "median": 0.0008580174708910926,
+              "p95": 0.023302358385316687,
+              "maximum": 0.05573691874433022
+            },
+            "leg_position_error_max_rad": {
+              "median": 0.003267868410417485,
+              "p95": 0.02874778023754083,
+              "maximum": 0.0907254876099155
+            },
+            "arm_velocity_error_max_rad_s": {
+              "median": 0.11104699868727119,
+              "p95": 2.6809549280286427,
+              "maximum": 8.53128923908601
+            },
+            "leg_velocity_error_max_rad_s": {
+              "median": 0.4971695698840193,
+              "p95": 5.052974189584204,
+              "maximum": 13.431368251257814
+            },
+            "base_position_error_m": {
+              "median": 7.643062563193321e-05,
+              "p95": 0.0004486667695930456,
+              "maximum": 0.00115307232970639
+            },
+            "base_linear_velocity_error_mps": {
+              "median": 0.013731276612496679,
+              "p95": 0.08373973889701274,
+              "maximum": 0.4055844540280315
+            },
+            "base_angular_velocity_error_rad_s": {
+              "median": 0.07338381586369573,
+              "p95": 0.6072275280305753,
+              "maximum": 3.8993728912898886
+            }
+          }
+        },
+        "implicit_160": {
+          "successful_predictions": 479,
+          "errors": {
+            "arm_position_error_max_rad": {
+              "median": 0.000901910239921519,
+              "p95": 0.023406653385295125,
+              "maximum": 0.055820196198170774
+            },
+            "leg_position_error_max_rad": {
+              "median": 0.0031006403185375175,
+              "p95": 0.027543790860142855,
+              "maximum": 0.08951136838472773
+            },
+            "arm_velocity_error_max_rad_s": {
+              "median": 0.11214409415461035,
+              "p95": 2.6963892602846022,
+              "maximum": 8.532300668517664
+            },
+            "leg_velocity_error_max_rad_s": {
+              "median": 0.4996872808647579,
+              "p95": 5.100339452381436,
+              "maximum": 13.817956491047589
+            },
+            "base_position_error_m": {
+              "median": 6.208979477256563e-05,
+              "p95": 0.00042699801487235356,
+              "maximum": 0.001172812887072777
+            },
+            "base_linear_velocity_error_mps": {
+              "median": 0.013701535093318803,
+              "p95": 0.08346247990802559,
+              "maximum": 0.4057435928851934
+            },
+            "base_angular_velocity_error_rad_s": {
+              "median": 0.07423763514807144,
+              "p95": 0.6247177947527164,
+              "maximum": 3.8947803634480156
+            }
+          }
+        }
+      }
+    },
+    "applied": {
+      "samples": 243,
+      "models": {
+        "held_initial_torque": {
+          "successful_predictions": 243,
+          "errors": {
+            "arm_position_error_max_rad": {
+              "median": 0.0004266327644051604,
+              "p95": 0.004805218414044863,
+              "maximum": 0.011750578215037888
+            },
+            "leg_position_error_max_rad": {
+              "median": 0.0005008843596423507,
+              "p95": 0.003956911611496161,
+              "maximum": 0.0459867823987089
+            },
+            "arm_velocity_error_max_rad_s": {
+              "median": 0.09226684693816271,
+              "p95": 0.9783654837805451,
+              "maximum": 2.4755951309388626
+            },
+            "leg_velocity_error_max_rad_s": {
+              "median": 0.08698710084963918,
+              "p95": 1.1468184290857464,
+              "maximum": 7.297915866914197
+            },
+            "base_position_error_m": {
+              "median": 1.9221123238000945e-05,
+              "p95": 9.959153429943833e-05,
+              "maximum": 0.0003790352704961519
+            },
+            "base_linear_velocity_error_mps": {
+              "median": 0.0018007656002088457,
+              "p95": 0.02278932135010572,
+              "maximum": 0.0791565047780262
+            },
+            "base_angular_velocity_error_rad_s": {
+              "median": 0.014307506951591708,
+              "p95": 0.21360176315177065,
+              "maximum": 0.4640370088119885
+            }
+          }
+        },
+        "implicit_16": {
+          "successful_predictions": 243,
+          "errors": {
+            "arm_position_error_max_rad": {
+              "median": 6.53800821222017e-05,
+              "p95": 0.0005414101962519344,
+              "maximum": 0.0022561372355644205
+            },
+            "leg_position_error_max_rad": {
+              "median": 0.0004277769644034368,
+              "p95": 0.0038818570159023648,
+              "maximum": 0.04320966531248693
+            },
+            "arm_velocity_error_max_rad_s": {
+              "median": 0.004378734077205227,
+              "p95": 0.0998025702526381,
+              "maximum": 0.6113720759222341
+            },
+            "leg_velocity_error_max_rad_s": {
+              "median": 0.04724219348783276,
+              "p95": 0.6941032254083126,
+              "maximum": 7.172322119323686
+            },
+            "base_position_error_m": {
+              "median": 2.093928792169011e-05,
+              "p95": 8.313880625330554e-05,
+              "maximum": 0.00038419282208030075
+            },
+            "base_linear_velocity_error_mps": {
+              "median": 0.00136432283717015,
+              "p95": 0.018329428506894965,
+              "maximum": 0.07178499587206273
+            },
+            "base_angular_velocity_error_rad_s": {
+              "median": 0.004246156474282602,
+              "p95": 0.08948186902942017,
+              "maximum": 0.24517961548666337
+            }
+          }
+        },
+        "implicit_160": {
+          "successful_predictions": 243,
+          "errors": {
+            "arm_position_error_max_rad": {
+              "median": 5.9739625535071283e-05,
+              "p95": 0.0005473367128363518,
+              "maximum": 0.002091207548684304
+            },
+            "leg_position_error_max_rad": {
+              "median": 0.0004151536033813047,
+              "p95": 0.003911427764387458,
+              "maximum": 0.04404846400689044
+            },
+            "arm_velocity_error_max_rad_s": {
+              "median": 0.004381932672701858,
+              "p95": 0.09948660954594403,
+              "maximum": 0.6108848525397778
+            },
+            "leg_velocity_error_max_rad_s": {
+              "median": 0.047760367924365874,
+              "p95": 0.6933394267485253,
+              "maximum": 7.178570935695106
+            },
+            "base_position_error_m": {
+              "median": 1.903837346206262e-05,
+              "p95": 8.844564067672855e-05,
+              "maximum": 0.00035874102659216677
+            },
+            "base_linear_velocity_error_mps": {
+              "median": 0.0013352452694515202,
+              "p95": 0.01854149187291879,
+              "maximum": 0.07208548706048713
+            },
+            "base_angular_velocity_error_rad_s": {
+              "median": 0.004316163347388921,
+              "p95": 0.09030234761693698,
+              "maximum": 0.24452315439623054
+            }
+          }
+        }
+      }
+    },
+    "applied_unchanged_contact": {
+      "samples": 225,
+      "models": {
+        "held_initial_torque": {
+          "successful_predictions": 225,
+          "errors": {
+            "arm_position_error_max_rad": {
+              "median": 0.0003893109265781791,
+              "p95": 0.003920688106984647,
+              "maximum": 0.011750578215037888
+            },
+            "leg_position_error_max_rad": {
+              "median": 0.00046594316203801833,
+              "p95": 0.002597383322026741,
+              "maximum": 0.03381416465313647
+            },
+            "arm_velocity_error_max_rad_s": {
+              "median": 0.08499860476182622,
+              "p95": 0.8745108613267463,
+              "maximum": 2.372805551750478
+            },
+            "leg_velocity_error_max_rad_s": {
+              "median": 0.07949002609187505,
+              "p95": 0.7698022710609793,
+              "maximum": 7.297915866914197
+            },
+            "base_position_error_m": {
+              "median": 1.8769609059464967e-05,
+              "p95": 7.507134750122524e-05,
+              "maximum": 0.0003790352704961519
+            },
+            "base_linear_velocity_error_mps": {
+              "median": 0.0016825496057891463,
+              "p95": 0.017802325177967888,
+              "maximum": 0.0791565047780262
+            },
+            "base_angular_velocity_error_rad_s": {
+              "median": 0.01360949697394878,
+              "p95": 0.17371097394776935,
+              "maximum": 0.40583904265537085
+            }
+          }
+        },
+        "implicit_16": {
+          "successful_predictions": 225,
+          "errors": {
+            "arm_position_error_max_rad": {
+              "median": 6.442163531206191e-05,
+              "p95": 0.0003092837711169627,
+              "maximum": 0.0022561372355644205
+            },
+            "leg_position_error_max_rad": {
+              "median": 0.00040384257418590863,
+              "p95": 0.002433587843654105,
+              "maximum": 0.03350274927153718
+            },
+            "arm_velocity_error_max_rad_s": {
+              "median": 0.004280516698483797,
+              "p95": 0.06759940121471807,
+              "maximum": 0.6113720759222341
+            },
+            "leg_velocity_error_max_rad_s": {
+              "median": 0.042925555732679685,
+              "p95": 0.4776536908991144,
+              "maximum": 7.172322119323686
+            },
+            "base_position_error_m": {
+              "median": 2.0717693317991605e-05,
+              "p95": 6.306993366497867e-05,
+              "maximum": 0.00038419282208030075
+            },
+            "base_linear_velocity_error_mps": {
+              "median": 0.0012575122227911032,
+              "p95": 0.008422730304126156,
+              "maximum": 0.07178499587206273
+            },
+            "base_angular_velocity_error_rad_s": {
+              "median": 0.003999216562958136,
+              "p95": 0.0416430282312193,
+              "maximum": 0.24517961548666337
+            }
+          }
+        },
+        "implicit_160": {
+          "successful_predictions": 225,
+          "errors": {
+            "arm_position_error_max_rad": {
+              "median": 5.9067016834557506e-05,
+              "p95": 0.00029443021683397356,
+              "maximum": 0.002091207548684304
+            },
+            "leg_position_error_max_rad": {
+              "median": 0.0003946207259928336,
+              "p95": 0.0023244767777674813,
+              "maximum": 0.03342300183276481
+            },
+            "arm_velocity_error_max_rad_s": {
+              "median": 0.00425126689302255,
+              "p95": 0.0680822636444146,
+              "maximum": 0.6108848525397778
+            },
+            "leg_velocity_error_max_rad_s": {
+              "median": 0.04290452020698339,
+              "p95": 0.4782810779159529,
+              "maximum": 7.178570935695106
+            },
+            "base_position_error_m": {
+              "median": 1.9003529066974768e-05,
+              "p95": 5.3417704676721624e-05,
+              "maximum": 0.00035874102659216677
+            },
+            "base_linear_velocity_error_mps": {
+              "median": 0.0012482213103129833,
+              "p95": 0.008952685581260531,
+              "maximum": 0.07208548706048713
+            },
+            "base_angular_velocity_error_rad_s": {
+              "median": 0.004035126769330045,
+              "p95": 0.04239033684017966,
+              "maximum": 0.24452315439623054
+            }
+          }
+        }
+      }
+    },
+    "rescued_cases": {
+      "samples": 196,
+      "models": {
+        "held_initial_torque": {
+          "successful_predictions": 196,
+          "errors": {
+            "arm_position_error_max_rad": {
+              "median": 0.000347183005990917,
+              "p95": 0.01801166917507724,
+              "maximum": 0.03672819741235672
+            },
+            "leg_position_error_max_rad": {
+              "median": 0.0004337246030263822,
+              "p95": 0.007052659021689667,
+              "maximum": 0.030941873182197502
+            },
+            "arm_velocity_error_max_rad_s": {
+              "median": 0.07544382141736333,
+              "p95": 4.253595820317413,
+              "maximum": 8.353438392612333
+            },
+            "leg_velocity_error_max_rad_s": {
+              "median": 0.06675598048688039,
+              "p95": 1.7088473839446987,
+              "maximum": 7.071594653395831
+            },
+            "base_position_error_m": {
+              "median": 1.8705501825643456e-05,
+              "p95": 0.000270285812935184,
+              "maximum": 0.00038246649351003224
+            },
+            "base_linear_velocity_error_mps": {
+              "median": 0.0014395754768163891,
+              "p95": 0.04561566052532657,
+              "maximum": 0.06355820403364802
+            },
+            "base_angular_velocity_error_rad_s": {
+              "median": 0.011522041959939177,
+              "p95": 0.24765039699325644,
+              "maximum": 2.8342885168746563
+            }
+          }
+        },
+        "implicit_16": {
+          "successful_predictions": 196,
+          "errors": {
+            "arm_position_error_max_rad": {
+              "median": 6.40463466032859e-05,
+              "p95": 0.0016723062019701473,
+              "maximum": 0.01666141603318705
+            },
+            "leg_position_error_max_rad": {
+              "median": 0.00042042718116683947,
+              "p95": 0.004273331975271355,
+              "maximum": 0.02649253745988389
+            },
+            "arm_velocity_error_max_rad_s": {
+              "median": 0.0037984421865392016,
+              "p95": 0.20765414117484293,
+              "maximum": 2.611423299227371
+            },
+            "leg_velocity_error_max_rad_s": {
+              "median": 0.04118732649480311,
+              "p95": 0.723581674563099,
+              "maximum": 3.8639447082926583
+            },
+            "base_position_error_m": {
+              "median": 2.01267623326348e-05,
+              "p95": 0.0001781109929881304,
+              "maximum": 0.00032568235831872147
+            },
+            "base_linear_velocity_error_mps": {
+              "median": 0.0011840070855400093,
+              "p95": 0.02227513907836974,
+              "maximum": 0.05712558554455399
+            },
+            "base_angular_velocity_error_rad_s": {
+              "median": 0.003893762384843101,
+              "p95": 0.1785603687522693,
+              "maximum": 1.6222139494886363
+            }
+          }
+        },
+        "implicit_160": {
+          "successful_predictions": 196,
+          "errors": {
+            "arm_position_error_max_rad": {
+              "median": 6.337731177441519e-05,
+              "p95": 0.0016240220457285626,
+              "maximum": 0.016361031418528516
+            },
+            "leg_position_error_max_rad": {
+              "median": 0.0004127081626355278,
+              "p95": 0.004203770008506191,
+              "maximum": 0.026762806806091666
+            },
+            "arm_velocity_error_max_rad_s": {
+              "median": 0.0039029241881260827,
+              "p95": 0.21133572132660022,
+              "maximum": 2.673377044080646
+            },
+            "leg_velocity_error_max_rad_s": {
+              "median": 0.041152280283338824,
+              "p95": 0.7240765756915901,
+              "maximum": 3.873165295462816
+            },
+            "base_position_error_m": {
+              "median": 1.9429546199260286e-05,
+              "p95": 0.00018288962229983093,
+              "maximum": 0.0003094557341365506
+            },
+            "base_linear_velocity_error_mps": {
+              "median": 0.001180550742203813,
+              "p95": 0.023246294921334964,
+              "maximum": 0.05721124884165448
+            },
+            "base_angular_velocity_error_rad_s": {
+              "median": 0.003900091594490348,
+              "p95": 0.18079541525712856,
+              "maximum": 1.6654514008226113
+            }
+          }
+        }
+      }
+    }
+  },
+  "observed_contact_changed_samples": 28,
+  "scope": "No constraint-family-removal LP is executable. Only arm preservation equality can be removed in the candidate; original physical limits remain. One-step errors do not establish long-horizon prediction accuracy.",
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_interval_command_followup_20261107/constraint_conflicts_with_state.json": "5de17fe95b00ea377f140211a9685e0d732d89dc837254842360017d5c7f3d05",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_interval_command_followup_20261107/controller35_active_set_audit.json": "ca5ebf52394e6d16f3641ca266ed2ff7c2d896c4668a1d7f3059a59794670ed1",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_interval_command_followup_20261107/controller35_arm_feasibility_audit.json": "d683b62f97c919fe52df08829cb54f64d39456736c3b5174bac58a16c92e982e",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_interval_command_followup_20261107/controller35_native_prediction_error.json": "a036c37ebad488ffc680338db7e4aafdba8e67a9cd76703717cafccb32517767",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/summarize_interval_feasibility_v1.py": "76a88f9aa800c1dfaefc05b3fcc535cd50481382e2c1021f08d5c863aea795b1"
+  }
+}
