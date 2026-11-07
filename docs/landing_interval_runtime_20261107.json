@@ -1,0 +1,103 @@
+{
+  "scope": "Isolated CPU comparison; never patches files or a running native process.",
+  "native_new_execution": false,
+  "installed_in_native_controller": false,
+  "samples": 111,
+  "full_plan_decision_differences": [],
+  "first_command_max_difference_rad": 0.0,
+  "command_equivalence_tolerance_rad": 1e-10,
+  "passed": true,
+  "elapsed_seconds": {
+    "original": 42.14462438202463,
+    "batched": 37.61067422386259
+  },
+  "total_cpu_replay_speedup": 1.120549558116813,
+  "summaries": {
+    "original": {
+      "unchanged": {
+        "first_accepted": 75,
+        "horizon_accepted": 32,
+        "runtime_s": 17.26716514164582,
+        "common_command_change_l2_mean_rad": 1.0450647007596365,
+        "common_command_change_l2_p95_rad": 1.3968747939208335
+      },
+      "minimum_command": {
+        "first_accepted": 75,
+        "horizon_accepted": 20,
+        "runtime_s": 17.38123706378974,
+        "common_command_change_l2_mean_rad": 0.2730073451311588,
+        "common_command_change_l2_p95_rad": 0.4294585933212133
+      }
+    },
+    "batched": {
+      "unchanged": {
+        "first_accepted": 75,
+        "horizon_accepted": 32,
+        "runtime_s": 15.076490732608363,
+        "common_command_change_l2_mean_rad": 1.0450647007596365,
+        "common_command_change_l2_p95_rad": 1.3968747939208335
+      },
+      "minimum_command": {
+        "first_accepted": 75,
+        "horizon_accepted": 20,
+        "runtime_s": 14.99402535194531,
+        "common_command_change_l2_mean_rad": 0.2730073451311588,
+        "common_command_change_l2_p95_rad": 0.4294585933212133
+      }
+    }
+  },
+  "limitations": [
+    "One sequential timing pair; scheduling and cache effects remain.",
+    "Matches sampled plans and first commands, not native closed-loop trajectories.",
+    "No physical constraints, objective or horizon shortened."
+  ],
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_batched_interval_runtime_v1.py": "15f852097e841797803b61a40924f600650a5610bdd782a1a2c3eff378026223",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/batched_interval_constraints_v1.py": "c78c74f3aab3516defedfff6a40a863be7a1c91e23c03544142f85e0bfb673d3",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/tests/test_batched_interval_constraints_v1.py": "e7368d90c1064dcdb715104f4e71ca571280947e7bb1f455b461387f8ed777f2",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_batched_interval_runtime_20261107_01/original.json": "e58968c539a1a5ae800e112edd850801176ed9099271fba46a6b0bd3295ea779",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_batched_interval_runtime_20261107_01/batched.json": "828f8456a0cec00f920059f7b2afc830219795a427460f4dd852bcb6353e86fd"
+  },
+  "profile_total_seconds": 67.77008468500017,
+  "profile_hotspots": [
+    {
+      "file": "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/implicit_support_prediction_v1.py",
+      "line": 62,
+      "function": "predict_implicit_support",
+      "calls": 10917,
+      "self_seconds": 2.727319844,
+      "cumulative_seconds": 24.040432236
+    },
+    {
+      "file": "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/loaded_pinocchio_model_v1.py",
+      "line": 240,
+      "function": "snapshot",
+      "calls": 51837,
+      "self_seconds": 2.8517850030000003,
+      "cumulative_seconds": 15.854555454000002
+    },
+    {
+      "file": "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/condensed_implicit_drive_v1.py",
+      "line": 54,
+      "function": "interval_constraints",
+      "calls": 3775,
+      "self_seconds": 1.5252046190000002,
+      "cumulative_seconds": 9.971124612
+    },
+    {
+      "file": "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v1.py",
+      "line": 248,
+      "function": "replay_horizon",
+      "calls": 150,
+      "self_seconds": 0.019996404000000002,
+      "cumulative_seconds": 9.460710429
+    }
+  ],
+  "pending_patch": {
+    "path": "scripts/patches/batched_interval_constraints_entry_v1.patch",
+    "source_before_sha256": "7f9e47fdeb1f6cc420368d127f89cc1b726397752b0387f57b5bee1ea5915589",
+    "source_after_sha256": "4fe9b06f1ed177c245f3026ca03ffa004519a00839cf14de22dcacd8a97fb24e",
+    "patch_sha256": "38349b4af90c5f03afccbad3cd87ba3590d078060c4846672f87d12767c86ef7",
+    "installed": false
+  }
+}

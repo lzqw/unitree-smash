@@ -1,0 +1,12 @@
+--- a/scripts/interval_command_support_qp_v1.py
++++ b/scripts/interval_command_support_qp_v1.py
+@@ -11,7 +11,8 @@
+ from scipy import sparse
+ 
+ from scripts.command_history_support_qp_v1 import CommandHistorySupportQP
+-from scripts.condensed_implicit_drive_v1 import condense_implicit_drive,interval_constraints
++from scripts.condensed_implicit_drive_v1 import condense_implicit_drive
++from scripts.batched_interval_constraints_v1 import interval_constraints
+ from scripts.frame_point_kinematics_v1 import frame_point_kinematics
+ from scripts.implicit_support_prediction_v1 import predict_implicit_support
+ 
