@@ -1,0 +1,272 @@
+{
+  "snapshot_time": "2026-11-07T23:01:33.992293+08:00",
+  "baseline": {
+    "complete5": 27,
+    "total": 128,
+    "qualified_air": 74,
+    "conditional_recovery": 34,
+    "ball5_except_recovery": 53,
+    "teacher_off_new_learning": false
+  },
+  "old_model_native_replay": {
+    "complete5": 27,
+    "conditional_recovery_count": 34,
+    "selected_case_outcome": {
+      "training_index": 3,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery"
+      ]
+    },
+    "selected_first_nonfoot_contact_s": 4.908,
+    "baseline_first_nonfoot_contact_s": 5.1450000000000005,
+    "planned_command_mapping_error_rad": 1.816657184683379e-07,
+    "passed_dispatch_integrity": true,
+    "last_observed_horizon_error": {
+      "configuration_tangent_max": 0.383153517750858,
+      "joint_position_max_rad": 0.383153517750858,
+      "root_position_m": 0.17603706851416084,
+      "root_attitude_rad": 0.3940937927994086,
+      "velocity_max": 0.04382001574458656,
+      "contacts_equal": true
+    }
+  },
+  "matched_prediction_before_recorded_nonfoot": {
+    "models": {
+      "refreshed_fixed": {
+        "attempted": 30,
+        "failed": 0,
+        "leg_error_rad": {
+          "n": 30,
+          "median": 0.000982247651240109,
+          "p95": 0.010293469785446787,
+          "maximum": 0.017968338185555544
+        },
+        "arm_error_rad": {
+          "n": 30,
+          "median": 0.0001475772537513631,
+          "p95": 0.00029561046971162666,
+          "maximum": 0.0035842765258435882
+        },
+        "root_error_m": {
+          "n": 30,
+          "median": 5.348210786930691e-05,
+          "p95": 7.638863682400763e-05,
+          "maximum": 0.00035339963599972257
+        },
+        "velocity_error_max": {
+          "n": 30,
+          "median": 0.14682928476850443,
+          "p95": 1.7672325071184651,
+          "maximum": 3.1901245592895986
+        },
+        "attitude_error_rad": {
+          "n": 30,
+          "median": 0.00027720608620994674,
+          "p95": 0.00043053860069215894,
+          "maximum": 0.003676359347924368
+        }
+      },
+      "frictional_spheres": {
+        "attempted": 30,
+        "failed": 0,
+        "leg_error_rad": {
+          "n": 30,
+          "median": 0.00035768809613212493,
+          "p95": 0.0027628304139849617,
+          "maximum": 0.007624923105231662
+        },
+        "arm_error_rad": {
+          "n": 30,
+          "median": 0.00012619664712673617,
+          "p95": 0.0002497853897178492,
+          "maximum": 0.003581605124738374
+        },
+        "root_error_m": {
+          "n": 30,
+          "median": 2.3241460760556475e-05,
+          "p95": 3.952651213436291e-05,
+          "maximum": 0.00036081578455494104
+        },
+        "velocity_error_max": {
+          "n": 30,
+          "median": 0.047623951593526614,
+          "p95": 0.43099233351165495,
+          "maximum": 1.1381078934575912
+        },
+        "attitude_error_rad": {
+          "n": 30,
+          "median": 0.00024505618677867684,
+          "p95": 0.0003954692876480921,
+          "maximum": 0.0035526675014391326
+        }
+      }
+    },
+    "paired_count": 30,
+    "improved": 23,
+    "worsened": 7
+  },
+  "frictional_restoration": {
+    "case": 3,
+    "horizon_steps": 80,
+    "control_dt_s": 0.01,
+    "accepted": true,
+    "maximum_scaled_violation": 0.0,
+    "terminal": {
+      "roll": -0.2596181872471649,
+      "pitch": 0.15110383863150906,
+      "omega": 0.8759220601971881,
+      "horizontal": 0.20678470426068904,
+      "joint_speed": 0.9632766265509776,
+      "vertical_speed": 0.0566190679081318,
+      "support_margin_m": 0.05095320381641701,
+      "support_feet": 3
+    },
+    "diagnostics": {
+      "momentum_residual": 5.842548667089886e-15,
+      "normal_complementarity": 1.99801382917697e-07,
+      "friction_cone": 0.0,
+      "tangent_fixed_point": 1.9957913256068993e-09,
+      "max_contact_iterations": 19,
+      "foot_penetration_m": 7.099782808571431e-07,
+      "joint_velocity_violation_rad_s": 0.00014355950456224065,
+      "joint_position_violation_rad": 0.0,
+      "motor_torque_violation_nm": 0.0,
+      "nonfoot_ground_violation_m": 0.0
+    },
+    "wall_seconds": 213.06965218298137,
+    "native_execution": false,
+    "valid_teacher": false,
+    "maximum_iterations": 4,
+    "completed_iterations": 2
+  },
+  "actual_query_replay": {
+    "accepted": true,
+    "used_observed_state": true,
+    "horizon_steps": 80,
+    "wall_seconds": 7.811810312094167,
+    "native_execution": false,
+    "valid_expert_labels": false,
+    "per_call_hard_deadline": false,
+    "external_process_guard_required": true
+  },
+  "runtime": {
+    "old_model_feedback": {
+      "state": "RUNNING_QUERY_MATCHED_NATIVE_FEEDBACK",
+      "pid": 4177917,
+      "time": "2026-11-07T14:30:46.244063+00:00"
+    },
+    "new_frictional_feedback": {
+      "state": "WAITING_FOR_FULL_EPISODE_OPEN_LOOP_AUDIT",
+      "pid": 4183631,
+      "time": "2026-11-07T14:59:36.744112+00:00"
+    },
+    "new_native_output": "reports/native_frictional_sequence3_all128_20261107_01",
+    "max_gpu_seconds": 7200,
+    "env_steps_cap": 102400,
+    "automatic_promotion": false
+  },
+  "tests": {
+    "passed": 9,
+    "seconds": 6.99,
+    "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 bash scripts/python.sh -m pytest -q tests/test_native_frictional_recovery_v1.py tests/test_frictional_candidate_pool_v1.py",
+    "native_physics_executed_by_tests": false
+  },
+  "formal_verifier": {
+    "goal_id": "G07",
+    "status": "FAILED",
+    "contract_sha256": "66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807",
+    "checks": {
+      "G00": {
+        "passed": false,
+        "errors": [
+          "Missing or empty artifact: reports/G00/native_train/checkpoint.pt"
+        ]
+      },
+      "G01": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G00",
+          "Path escapes workspace: assets/quadsmash_standard_v2.usd",
+          "Path escapes workspace: assets/vendor/piper_isaac_sim/piper_description/urdf/piper_no_gripper_description.urdf"
+        ]
+      },
+      "G02": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G01"
+        ]
+      },
+      "G03": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G02",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/train/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/train/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/reload/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/reload/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/interrupt/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/interrupt/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/resume_interrupt/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/resume_interrupt/continuation_reference.pt"
+        ]
+      },
+      "G04": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G03",
+          "Missing or empty artifact: artifacts/G04/policy.pt",
+          "Missing or empty artifact: artifacts/G04/autonomous_actor/actor.pt",
+          "Missing or empty artifact: artifacts/G04/autonomous_actor/interface.json"
+        ]
+      },
+      "G05": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G04"
+        ]
+      },
+      "G06": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G05"
+        ]
+      },
+      "G07": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G06",
+          "Missing or invalid evidence: [Errno 2] No such file or directory: '/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/G07/evidence.json'"
+        ]
+      }
+    },
+    "scope": "Structure, hashes, dependencies and thresholds only; not simulation authenticity or GPU budget enforcement."
+  },
+  "limitations": [
+    "0.8 second trajectory endpoint feasibility is not the original 0.8 second stable window or full episode success",
+    "Measured-state solve took seconds, not real-time 10 ms",
+    "Candidate is conditioned on one known TRAIN3 query; not a general causal teacher",
+    "Frictional predictor does not reproduce all PhysX body collisions and actuator/contact implementation",
+    "Failed planning latches unverified student fallback; no failed output is an expert label",
+    "No native gain or new teacher-off student result yet"
+  ],
+  "source_sha256": {
+    "reports/landing_fullcommand_native_response_20261107/frictional_joint_horizon3.json": "1bb319236e85ba8a7255aff8a8c4a510a1e7adee0a4720e134449bdbd3b3e6bd",
+    "reports/landing_fullcommand_native_response_20261107/frictional_terminal_restoration3.json": "110aa54f7d2ce4f6ebc2bd39f211c4429cce215a8b521e01949e04a818a48dd6",
+    "reports/landing_fullcommand_native_response_20261107/frictional_actual_query_mpc_cpu.json": "0e62fa5c8c4be065da497630afac2e30c570fa86ff2f2688b0ed0b1c7dbce151",
+    "reports/landing_fullcommand_native_response_20261107/native_sequence3_matched_friction.json": "3f03b6203ab61d99f88cf54de451f8af447b2e4f29ea6bf08fadb9deb6c48637",
+    "reports/landing_episode_native_reconciled_20261107/native_audit.json": "41676fb79470915cfc357ea6c06df33cf3ef67b95fbbb027d3af19db70e43788",
+    "reports/landing_native_frictional_followup_20261107/plan.json": "272095c8d8c721720f4b35158e1b2df81055986cb702f0b66026be6759f1d4f1",
+    "reports/landing_native_frictional_preparation_20261107/preparation.json": "e620c22d6f25a268b79fe810d39db48c748d2de1e4c4fa1f7c57b7a7d8aa95aa",
+    "scripts/frictional_candidate_pool_v1.py": "dd6ff9629578b0c52a1e642b7c3957882b0be4d31bc49317099680640adcb07a",
+    "scripts/frictional_receding_recovery_v1.py": "5bc95986f9ad874fdd8dc63f3a863ecabc000ac58f825ca65316834c64f5082b",
+    "scripts/native_frictional_recovery_v1.py": "7d24b9859ab5d1fad3f669c182f4c22e97799c169333106ab85581f21c1f0d1a",
+    "scripts/restore_frictional_terminal_v1.py": "7c3aa702f21dc3e68229d47cacbf010563aea1b2a3013ff89ea119e4b22ac6ad",
+    "scripts/audit_native_frictional_recovery_v1.py": "e7f3dca3b74b853c52b8a56d64bfd3f48e5186dd39f4bec4b515625a7db69fa1",
+    "scripts/prepare_native_frictional_recovery_v1.py": "6fa6b0b85b8aa23ae99e65bf47f54a3dbc66e1a5b965ff69d9faebe91d6e60ad"
+  }
+}

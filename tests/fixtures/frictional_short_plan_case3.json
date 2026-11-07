@@ -1,0 +1,305 @@
+{
+  "configuration": {
+    "family": "full_interval",
+    "arm_target_rate_rad_s": 10.0,
+    "posture_target": [
+      0.10000000149011612,
+      -0.10000000149011612,
+      0.10000000149011612,
+      -0.10000000149011612,
+      0.800000011920929,
+      0.800000011920929,
+      1.0,
+      1.0,
+      -1.5,
+      -1.5,
+      -1.5,
+      -1.5,
+      0.07868610322475433,
+      1.2010233402252197,
+      -2.5853559970855713,
+      -0.15646959841251373,
+      -1.056915283203125,
+      0.13533028960227966
+    ],
+    "interface": {
+      "limits": [
+        [
+          -1.0471998453140259,
+          1.0471998453140259
+        ],
+        [
+          -1.0471998453140259,
+          1.0471998453140259
+        ],
+        [
+          -1.0471998453140259,
+          1.0471998453140259
+        ],
+        [
+          -1.0471998453140259,
+          1.0471998453140259
+        ],
+        [
+          -1.5707999467849731,
+          3.4906997680664062
+        ],
+        [
+          -1.5707999467849731,
+          3.4906997680664062
+        ],
+        [
+          -0.5235999226570129,
+          4.537899494171143
+        ],
+        [
+          -0.5235999226570129,
+          4.537899494171143
+        ],
+        [
+          -2.7227001190185547,
+          -0.8377599120140076
+        ],
+        [
+          -2.7227001190185547,
+          -0.8377599120140076
+        ],
+        [
+          -2.7227001190185547,
+          -0.8377599120140076
+        ],
+        [
+          -2.7227001190185547,
+          -0.8377599120140076
+        ],
+        [
+          -2.618000030517578,
+          2.167999744415283
+        ],
+        [
+          0.0,
+          3.1399998664855957
+        ],
+        [
+          -2.9669997692108154,
+          0.0
+        ],
+        [
+          -1.744999885559082,
+          1.744999885559082
+        ],
+        [
+          -1.21999990940094,
+          1.21999990940094
+        ],
+        [
+          -2.0943996906280518,
+          2.0943996906280518
+        ]
+      ],
+      "stiffness": [
+        25.0,
+        25.0,
+        25.0,
+        25.0,
+        25.0,
+        25.0,
+        25.0,
+        25.0,
+        25.0,
+        25.0,
+        25.0,
+        25.0,
+        80.0,
+        80.0,
+        80.0,
+        80.0,
+        80.0,
+        80.0
+      ],
+      "damping": [
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        4.0,
+        4.0,
+        4.0,
+        4.0,
+        4.0,
+        4.0
+      ],
+      "effort": [
+        23.5,
+        23.5,
+        23.5,
+        23.5,
+        23.5,
+        23.5,
+        23.5,
+        23.5,
+        23.5,
+        23.5,
+        23.5,
+        23.5,
+        100.0,
+        100.0,
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "velocity": [
+        30.0,
+        30.0,
+        30.0,
+        30.0,
+        30.0,
+        30.0,
+        30.0,
+        30.0,
+        30.0,
+        30.0,
+        30.0,
+        30.0,
+        5.0,
+        5.0,
+        5.0,
+        5.0,
+        5.0,
+        5.0
+      ],
+      "friction": 0.65
+    },
+    "qp_settings": {
+      "control_dt_s": 0.01,
+      "contact_velocity_decay_s": 0.06,
+      "com_kp_s2": 50.0,
+      "com_kd_s": 14.0,
+      "orientation_kp_s2": 60.0,
+      "orientation_kd_s": 15.0,
+      "posture_kp_s2": 40.0,
+      "posture_kd_s": 12.0,
+      "com_weight": 20.0,
+      "orientation_weight": 10.0,
+      "posture_weight": 0.2,
+      "acceleration_regularization": 1e-05,
+      "torque_regularization": 0.0001,
+      "force_regularization": 1e-05,
+      "force_distribution_weight": 0.0,
+      "force_wrench_weight": 0.0,
+      "friction_facets": 8,
+      "solver_eps": 1e-06,
+      "solver_max_iterations": 10000,
+      "residual_tolerance": 0.0003,
+      "swing_foot_weight": 1.0,
+      "swing_foot_kp_s2": 60.0,
+      "swing_foot_kd_s": 12.0,
+      "swing_foot_clearance_m": 0.005,
+      "swing_foot_capture_gain": 0.0,
+      "swing_foot_capture_max_m": 0.25,
+      "nonfoot_clearance_weight": 5.0,
+      "nonfoot_clearance_hard": false,
+      "nonfoot_clearance_m": 0.05,
+      "nonfoot_clearance_kp_s2": 60.0,
+      "nonfoot_clearance_kd_s": 15.0
+    },
+    "settings": {
+      "horizon_steps": 40,
+      "control_dt_s": 0.01,
+      "tilt_trigger_rad": 0.55,
+      "angular_speed_trigger_rad_s": 2.2,
+      "horizontal_speed_trigger_mps": 0.75,
+      "minimum_support_feet": 1,
+      "terminal_tilt_rad": 0.35,
+      "terminal_angular_speed_rad_s": 1.4,
+      "terminal_horizontal_speed_mps": 0.45,
+      "max_stage_runtime_s": 0.02,
+      "executor_replay": true,
+      "executor_replay_model_consistent": true,
+      "command_rate_scale": 1.0,
+      "support_margin_trigger_m": 0.025,
+      "terminal_support_margin_m": 0.01,
+      "two_foot_max_com_distance_m": 0.075,
+      "one_foot_max_com_distance_m": 0.2,
+      "landing_leg_posture_blend": 0.15,
+      "landing_arm_posture_blend": 0.0,
+      "predict_touchdown_contacts": true,
+      "contact_mode_fallback": true,
+      "contact_mode_sequence_search": false,
+      "contact_mode_sequence_max_candidates": 3,
+      "touchdown_mode_height_scale": 2.5,
+      "touchdown_height_tolerance_m": 0.012,
+      "touchdown_vertical_speed_limit_mps": 1.5,
+      "touchdown_impact_projection": false,
+      "touchdown_impact_restitution": 0.0,
+      "touchdown_impact_max_impulse_ns": 25.0
+    }
+  },
+  "spheres": [
+    {
+      "body": "FL_foot",
+      "path": "/World/Go2/FL_foot/collisions/mesh_0/sphere",
+      "center_body_m": [
+        -0.0020000000949949026,
+        0.0,
+        0.0
+      ],
+      "radius_m": 0.02199999988079071,
+      "contact_offset_authored": null,
+      "rest_offset_authored": null
+    },
+    {
+      "body": "FR_foot",
+      "path": "/World/Go2/FR_foot/collisions/mesh_0/sphere",
+      "center_body_m": [
+        -0.0020000000949949026,
+        0.0,
+        0.0
+      ],
+      "radius_m": 0.02199999988079071,
+      "contact_offset_authored": null,
+      "rest_offset_authored": null
+    },
+    {
+      "body": "RL_foot",
+      "path": "/World/Go2/RL_foot/collisions/mesh_0/sphere",
+      "center_body_m": [
+        -0.0020000000949949026,
+        0.0,
+        0.0
+      ],
+      "radius_m": 0.02199999988079071,
+      "contact_offset_authored": null,
+      "rest_offset_authored": null
+    },
+    {
+      "body": "RR_foot",
+      "path": "/World/Go2/RR_foot/collisions/mesh_0/sphere",
+      "center_body_m": [
+        -0.0020000000949949026,
+        0.0,
+        0.0
+      ],
+      "radius_m": 0.02199999988079071,
+      "contact_offset_authored": null,
+      "rest_offset_authored": null
+    }
+  ],
+  "source_sha256": {
+    "reports/landing_episode_sequence3_20261107/manifest.json": "a5903bdbf7a652d17500ac2e805d85cd4b618be2a7a258d96052af18a628df2a",
+    "reports/landing_fullcommand_native_response_20261107/frictional_early_knots3.json": "dbbcf3cfce3a268c5960fc88cbcab1d278e59187260705dd3013398d4c91add1",
+    "reports/landing_fullcommand_native_response_20261107/sphere_crossings_v3.json": "518b4868a6de07776d701957eb0c7da654456f0e22d511ebef56b0bcce8e295b"
+  },
+  "fixture_sha256": "cf2e3db461b8dd31b2b2fec0375e15a642a8c6cd1b6a5cda4360776b9f5d21c1",
+  "native_execution": false,
+  "valid_teacher": false
+}
