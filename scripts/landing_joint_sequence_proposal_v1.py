@@ -19,6 +19,13 @@ from scripts.landing_joint_damper_mpc_v1 import joint_damper_constraints
 from scripts.frame_point_kinematics_v1 import frame_point_kinematics
 
 
+def finite_iterate_status(status):
+    """Use installed OSQP constants; certificates are never position targets."""
+    return status in {osqp.constant(name) for name in (
+        'OSQP_SOLVED', 'OSQP_SOLVED_INACCURATE',
+        'OSQP_MAX_ITER_REACHED', 'OSQP_TIME_LIMIT_REACHED')}
+
+
 def knot_basis(ticks, knots):
     if type(ticks) is not int or type(knots) is not int or not 2 <= knots <= ticks <= 80:
         raise ValueError('Require 2..80 ticks and at most one knot per tick')
@@ -67,10 +74,13 @@ The independent held-command kernel is used in tests, not in this derivation.
                 torque_bias=-kp*qb-kd*(selection.T@vb))
 
 
-def propose_sequence(controller, state, reference, *, knots=9, time_limit_s=20.):
+def propose_sequence(controller, state, reference, *, knots=9, time_limit_s=20.,
+                     constraint_start='control_endpoints'):
     """Return a bounded proposal, never an executable accepted MPC plan."""
     started = time.perf_counter()
     if not 0 < time_limit_s <= 60.: raise ValueError('Bounded offline solve required')
+    if constraint_start not in ('empty', 'control_endpoints'):
+        raise ValueError('Explicit constraint generation initialization required')
     qp = controller.qp; model = qp.model; interface = qp.interface
     cfg = qp.settings; H = controller.settings.horizon_steps; dt = controller.settings.control_dt_s
     basis = knot_basis(H, knots); n = knots*18
@@ -81,7 +91,8 @@ def propose_sequence(controller, state, reference, *, knots=9, time_limit_s=20.)
     feet = np.flatnonzero(state.contacts)
     result = dict(native_execution=False, accepted=False, linear_proposal_solved=False,
         prediction='frozen-loaded-dynamics; fixed-observed-contact; unsaturated-PD',
-        horizon_steps=H, control_dt_s=dt, knots=knots, decision_variables=n)
+        horizon_steps=H, control_dt_s=dt, knots=knots, decision_variables=n,
+        constraint_start=constraint_start)
     if not len(feet):
         return dict(result, rejection='No observed support for this fixed-contact proposal')
     S = np.zeros((24, 18)); S[model.v_indices, np.arange(18)] = 1.
@@ -95,9 +106,12 @@ def propose_sequence(controller, state, reference, *, knots=9, time_limit_s=20.)
     clearance_frames = frame_point_kinematics(model, state.q, state.v,
         ('FL_thigh', 'FR_thigh', 'RL_thigh', 'RR_thigh'))
     ground = float(np.median(footpos[:, 2]))
-    constraints=[]; lows=[]; highs=[]
+    constraints=[]; lows=[]; highs=[]; row_kinds=[]; initial_rows=set()
     P = np.eye(n)*1e-7; q = np.zeros(n)
-    def bound(mat, bias, lo, hi):
+    def bound(mat, bias, lo, hi, kind, *, seed=False):
+        start=len(row_kinds); row_kinds.extend([kind]*len(bias))
+        if constraint_start=='control_endpoints' and (seed or st['micro']==qp.substeps-1):
+            initial_rows.update(range(start,start+len(bias)))
         constraints.append(mat); lows.append(np.broadcast_to(lo, len(bias))-bias)
         highs.append(np.broadcast_to(hi, len(bias))-bias)
     def task(mat, bias, target, weight):
@@ -114,25 +128,25 @@ def propose_sequence(controller, state, reference, *, knots=9, time_limit_s=20.)
         vm, vb = st['velocity_map'], st['velocity_bias']
         qm, qb = st['joint_position_map'], st['joint_position_bias']
         dm, db = st['displacement_map'], st['displacement_bias']
-        bound(st['torque_map'], st['torque_bias'], -interface.effort, interface.effort)
-        bound(S.T@vm, S.T@vb, -interface.velocity, interface.velocity)
-        bound(qm, qb, interface.limits[:, 0], interface.limits[:, 1])
+        bound(st['torque_map'], st['torque_bias'], -interface.effort, interface.effort,'motor_torque_nm')
+        bound(S.T@vm, S.T@vb, -interface.velocity, interface.velocity,'joint_velocity_rad_s')
+        bound(qm, qb, interface.limits[:, 0], interface.limits[:, 1],'joint_position_rad')
         gain = qp.damper_gain_s_inv
         bound(S.T@vm+gain*qm, S.T@vb+gain*qb,
-              gain*interface.limits[:, 0], gain*interface.limits[:, 1])
+              gain*interface.limits[:, 0], gain*interface.limits[:, 1],'joint_damper_rad_s')
         zmap = state.root_rotation_world[2]@dm[:3]
         zbias = state.q[2]+state.root_rotation_world[2]@db[:3]
-        bound(zmap[None, :], np.array([zbias]), qp.minimum_root_height_m, np.inf)
+        bound(zmap[None, :], np.array([zbias]), qp.minimum_root_height_m, np.inf,'root_height_m')
         for foot in range(len(feet)):
             fm = st['force_map'][3*foot:3*foot+3]; fb = st['force_bias'][3*foot:3*foot+3]
-            bound(fm[2:3], fb[2:3], 0., np.inf)
-            bound(cone@fm, cone@fb, -np.inf, 0.)
+            bound(fm[2:3], fb[2:3], 0., np.inf,'normal_force_n')
+            bound(cone@fm, cone@fb, -np.inf, 0.,'friction_n')
         if st['micro'] == 0:
             um = st['command_map']
-            bound(um, np.zeros(18), interface.limits[:, 0], interface.limits[:, 1])
+            bound(um, np.zeros(18), interface.limits[:, 0], interface.limits[:, 1],'command_range_rad',seed=True)
             delta = um if last_um is None else um-last_um
             offset = -state.previous_command_target if last_um is None else np.zeros(18)
-            bound(delta[12:], offset[12:], -interface.arm_rate*dt, interface.arm_rate*dt)
+            bound(delta[12:], offset[12:], -interface.arm_rate*dt, interface.arm_rate*dt,'arm_slew_rad',seed=True)
             task(um, np.zeros(18), reference, .02/H)
             task(delta, offset, np.zeros(18), .2/H)
             last_um = um
@@ -162,7 +176,8 @@ def propose_sequence(controller, state, reference, *, knots=9, time_limit_s=20.)
     oscale = 1./max(1., np.max(abs(np.diag(Ps))))
     # Constraint generation changes only the numerical representation. Every
     # returned proposal must pass ALL original rows in physical units.
-    chosen=set(); warm=None; cut_log=[]; solve_start=time.perf_counter(); sol=None
+    chosen=initial_rows.copy(); warm=np.zeros(n); cut_log=[]; solve_start=time.perf_counter(); sol=None
+    result['initial_constraint_rows']=len(initial_rows)
     for cutting_round in range(32):
         remaining=time_limit_s-(time.perf_counter()-solve_start)
         if remaining<=0:break
@@ -194,6 +209,15 @@ def propose_sequence(controller, state, reference, *, knots=9, time_limit_s=20.)
         total_solver_wall_seconds=time.perf_counter()-solve_start,
         primal_residual=sol.info.pri_res,dual_residual=sol.info.dua_res,
         wall_seconds=time.perf_counter()-started)
+    # A finite iterate after timeout/iteration limit is diagnostic only.
+    # Status numbers differ across OSQP releases. Infeasibility certificates
+    # are not candidate commands and must not be decoded as joint angles.
+    if finite_iterate_status(sol.info.status_val) and sol.x is not None and np.isfinite(sol.x).all():
+        response=A@(command_center+scale*sol.x)
+        violations=np.maximum(0.,np.maximum(low-response,response-high))
+        kinds=np.asarray(row_kinds)
+        result['all_row_violation_by_kind']={kind:float(np.max(violations[kinds==kind]))
+                                            for kind in sorted(set(row_kinds))}
     if sol.info.status_val != 1 or sol.x is None or not np.isfinite(sol.x).all():
         return dict(result, rejection='Sequence QP not solved; no command authorized')
     x = command_center+scale*sol.x

@@ -33,7 +33,7 @@ def plain(value):
 
 
 def query(item):
-    cfg, row, obs, previous, measured_pose, default, limit = item
+    cfg, row, obs, previous, measured_pose, default, limit, constraint_start = item
     controller=build_controller(cfg);model=controller.qp.model
     state=model.state_from_public(obs,default)
     pose_error=float(np.max(abs(state.root_position_world-measured_pose[:3])))
@@ -42,7 +42,8 @@ def query(item):
     state.previous_command_target=previous
     reference=np.asarray(row['student_reference'])
     started=time.perf_counter()
-    proposal=propose_sequence(controller,state,reference,time_limit_s=limit)
+    proposal=propose_sequence(controller,state,reference,time_limit_s=limit,
+                              constraint_start=constraint_start)
     verification=None
     if proposal['linear_proposal_solved']:
         verification=verify_sequence(controller,state,proposal['commands'])
@@ -61,6 +62,7 @@ def main():
     p.add_argument('--cases',type=int,nargs='*')
     p.add_argument('--workers',type=int,default=2)
     p.add_argument('--solver-time-limit',type=float,default=20.)
+    p.add_argument('--constraint-start',choices=['empty','control_endpoints'],default='control_endpoints')
     a=p.parse_args()
     if a.output.exists():raise ValueError('Preserve earlier result')
     if not 1<=a.workers<=4:raise ValueError('1..4 CPU workers')
@@ -96,7 +98,7 @@ def main():
             obs=unpack_public(z['packed_public'])[tick];action=z['dispatched_actions'][tick-1]
         if not valid[tick//2,case] or tick%2:raise ValueError('No matching measured pose')
         previous=limits[:,0]+.5*(action+1.)*(limits[:,1]-limits[:,0])
-        items.append((cfg,row,obs,previous,poses[tick//2,case,root_index],default,a.solver_time_limit))
+        items.append((cfg,row,obs,previous,poses[tick//2,case,root_index],default,a.solver_time_limit,a.constraint_start))
     a.output.parent.mkdir(parents=True,exist_ok=True)
     rows=[]
     with ProcessPoolExecutor(max_workers=a.workers,mp_context=multiprocessing.get_context('spawn')) as pool:

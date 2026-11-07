@@ -3,6 +3,15 @@ import pytest
 from scripts.landing_joint_sequence_proposal_v1 import affine_sequence, knot_basis
 
 
+def test_osqp_iterates_and_infeasibility_certificates_are_distinct():
+    import osqp
+    from scripts.landing_joint_sequence_proposal_v1 import finite_iterate_status
+    for name in ['OSQP_SOLVED','OSQP_SOLVED_INACCURATE','OSQP_MAX_ITER_REACHED','OSQP_TIME_LIMIT_REACHED']:
+        assert finite_iterate_status(osqp.constant(name))
+    for name in ['OSQP_PRIMAL_INFEASIBLE','OSQP_DUAL_INFEASIBLE']:
+        assert not finite_iterate_status(osqp.constant(name))
+
+
 def test_sequence_matches_independent_scalar_implicit_equations():
     basis = knot_basis(5, 3)
     commands = np.array([.3, -.1, .2])

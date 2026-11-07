@@ -37,7 +37,9 @@ OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 bash scripts/python.sh -u \
   scripts/audit_joint_sequence_proposal_v1.py \
   --alarm-plans reports/landing_student_risk_prediction_20261107/mpc_with_observed_reference_v2.json \
   --output reports/landing_joint_sequence_proposal_20261107/reproduction.json \
-  --workers 4 --solver-time-limit 20
+  --workers 4 --solver-time-limit 20 --constraint-start empty
 ```
+
+原始结果与精确源码对应提交`2c2ed0e`；后续版本增加了约束初始化方式，严格复现请在独立检出该提交后运行。不要在持有中的原生工作区切换版本。后续数值组织对照见[补充报告](landing_joint_sequence_conditioning_20261107.md)。
 
 该候选不晋升、不蒸馏。下一版整段优化需要处理数值条件及沿轨迹变化的动力学，并明确未来接触/落脚，而不能只把冻结模型中的终端代价加大。当前全18关节持续控制与命令改动代价原生对照继续，89项持有输入未改。本项没有替代或中断该对照。正式G07校验仍返回FAILED，完整目标未完成。
