@@ -1,0 +1,64 @@
+{
+  "timestamp_utc": "2026-11-07T18:22:45.360592+00:00",
+  "previous_goal_turn": "progress: completed native result and unchanged-tolerance isolation audit, committed as50c0c39",
+  "scope": "Prepare and queue an exact student-command negative control while preserving terminal-feedback calculations. Native result pending.",
+  "current_native_process": {
+    "pid": 11593,
+    "identity": "170126904",
+    "control_ticks": 500
+  },
+  "negative_control_queue": {
+    "state": "WAITING_FOR_GPU_OWNERS_TO_EXIT",
+    "pid": 13007,
+    "observed_at": "2026-11-07T18:21:43.533999+00:00",
+    "owners": [
+      {
+        "pid": 1136,
+        "start_ticks": "169574330"
+      },
+      {
+        "pid": 11575,
+        "start_ticks": "170126865"
+      },
+      {
+        "pid": 11576,
+        "start_ticks": "170126882"
+      },
+      {
+        "pid": 11593,
+        "start_ticks": "170126904"
+      },
+      {
+        "pid": 9913,
+        "start_ticks": "170024324"
+      }
+    ]
+  },
+  "negative_control_plan_sha256": "e5ba9c9f11549d2cc28ad43082b1efad308295dcb5900cec0dad36f6e34cf5ff",
+  "pinned_inputs_verified": 261,
+  "changed_pinned_inputs": [],
+  "matched_completed_terminal_seed": 882103,
+  "maximum_runtime_s": 2400,
+  "maximum_environment_steps": 102400,
+  "checks": {
+    "command_preservation": true,
+    "actual_previous_command": true,
+    "mutated_input_rejected": true,
+    "incomplete_result_rejected": true,
+    "unit_tests": 3,
+    "native_equivalence": false
+  },
+  "G07_verifier_status": "FAILED",
+  "source_sha256": {
+    "scripts/native_terminal_shadow_v1.py": "e08669c54d9ffdedb754cde3fca40ed880c76e09d6e2ae9d3f5919a8d869c4ed",
+    "scripts/audit_native_terminal_shadow_v1.py": "11eb7669a1fb5be3cb1e63f1b223e30eb42db2af99c33546bf4f9c543cb049db",
+    "scripts/prepare_native_terminal_shadow_v1.py": "6dde868b4980a22f4f81b501a364f2ccb8dba2f58b23a4d203cddb78beb0c40f",
+    "tests/test_native_terminal_shadow_v1.py": "78eab4980af5cd453a9b79a688e548aa88931978b42740811587f90a8c2f9d20",
+    "reports/landing_native_terminal_shadow_followup_20261108/plan.json": "e5ba9c9f11549d2cc28ad43082b1efad308295dcb5900cec0dad36f6e34cf5ff",
+    "reports/landing_native_terminal_shadow_preparation_20261108/preparation.json": "ef4a9238903f98d28d3672c026ee69ec0c35ac38997c9237dc0371e217dea5a5"
+  },
+  "native_execution": false,
+  "valid_expert_labels": false,
+  "audit_tolerances_changed": false,
+  "goal_complete": false
+}
