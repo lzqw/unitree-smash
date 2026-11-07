@@ -1,0 +1,596 @@
+{
+  "scope": "Recorded neighboring-state model diagnostics; no new native execution or student training.",
+  "created_utc": "2026-11-07T19:53:46.800047+00:00",
+  "student_complete5": 27,
+  "native_teacher_candidate_complete5": 28,
+  "native_teacher_candidate_strict_audit": "FAILED: untreated TRAIN125 trajectory differs",
+  "native_state_checks": [
+    {
+      "case": 1,
+      "native_samples": 6
+    },
+    {
+      "case": 3,
+      "native_samples": 6
+    },
+    {
+      "case": 8,
+      "native_samples": 6
+    },
+    {
+      "case": 9,
+      "native_samples": 2
+    },
+    {
+      "case": 12,
+      "native_samples": 4
+    },
+    {
+      "case": 18,
+      "native_samples": 6
+    },
+    {
+      "case": 20,
+      "native_samples": 6
+    },
+    {
+      "case": 30,
+      "native_samples": 4
+    },
+    {
+      "case": 38,
+      "native_samples": 6
+    },
+    {
+      "case": 42,
+      "native_samples": 2
+    },
+    {
+      "case": 50,
+      "native_samples": 5
+    },
+    {
+      "case": 54,
+      "native_samples": 6
+    },
+    {
+      "case": 57,
+      "native_samples": 6
+    },
+    {
+      "case": 58,
+      "native_samples": 4
+    },
+    {
+      "case": 61,
+      "native_samples": 6
+    },
+    {
+      "case": 67,
+      "native_samples": 6
+    },
+    {
+      "case": 70,
+      "native_samples": 6
+    },
+    {
+      "case": 71,
+      "native_samples": 6
+    },
+    {
+      "case": 77,
+      "native_samples": 6
+    },
+    {
+      "case": 85,
+      "native_samples": 6
+    },
+    {
+      "case": 87,
+      "native_samples": 6
+    },
+    {
+      "case": 90,
+      "native_samples": 6
+    },
+    {
+      "case": 95,
+      "native_samples": 6
+    },
+    {
+      "case": 96,
+      "native_samples": 6
+    },
+    {
+      "case": 98,
+      "native_samples": 6
+    },
+    {
+      "case": 115,
+      "native_samples": 6
+    }
+  ],
+  "maximum_reconstruction_error": {
+    "position": 5.70176109437881e-07,
+    "rotation": 3.2809402451816627e-07,
+    "joint": 5.960464477539063e-08,
+    "velocity": 6.3058366217561e-07
+  },
+  "cohort": [
+    {
+      "case": 1,
+      "control_tick": 460,
+      "exclusions": [],
+      "diagnostic_state_distance": 0.35979274500447755
+    },
+    {
+      "case": 3,
+      "control_tick": 460,
+      "exclusions": [],
+      "diagnostic_state_distance": 0.0
+    },
+    {
+      "case": 8,
+      "control_tick": 460,
+      "exclusions": [
+        "not_observed_recovery_phase",
+        "nonfoot_fault_already_observed"
+      ],
+      "diagnostic_state_distance": 9.572955185130885
+    },
+    {
+      "case": 9,
+      "control_tick": 460,
+      "exclusions": [
+        "first_episode_ended_before_query"
+      ],
+      "diagnostic_state_distance": null
+    },
+    {
+      "case": 12,
+      "control_tick": 460,
+      "exclusions": [],
+      "diagnostic_state_distance": 2.567237647263611
+    },
+    {
+      "case": 18,
+      "control_tick": 460,
+      "exclusions": [],
+      "diagnostic_state_distance": 0.8992787571725469
+    },
+    {
+      "case": 20,
+      "control_tick": 460,
+      "exclusions": [
+        "not_observed_recovery_phase",
+        "nonfoot_fault_already_observed"
+      ],
+      "diagnostic_state_distance": 10.514637941548225
+    },
+    {
+      "case": 30,
+      "control_tick": 460,
+      "exclusions": [
+        "not_observed_recovery_phase",
+        "nonfoot_fault_already_observed"
+      ],
+      "diagnostic_state_distance": 17.107635481734086
+    },
+    {
+      "case": 38,
+      "control_tick": 460,
+      "exclusions": [
+        "not_observed_recovery_phase",
+        "nonfoot_fault_already_observed"
+      ],
+      "diagnostic_state_distance": 10.028689322766656
+    },
+    {
+      "case": 42,
+      "control_tick": 460,
+      "exclusions": [
+        "first_episode_ended_before_query"
+      ],
+      "diagnostic_state_distance": null
+    },
+    {
+      "case": 50,
+      "control_tick": 460,
+      "exclusions": [],
+      "diagnostic_state_distance": 0.9659682545456644
+    },
+    {
+      "case": 54,
+      "control_tick": 460,
+      "exclusions": [],
+      "diagnostic_state_distance": 1.4751596375067537
+    },
+    {
+      "case": 57,
+      "control_tick": 460,
+      "exclusions": [],
+      "diagnostic_state_distance": 0.3741583194348376
+    },
+    {
+      "case": 58,
+      "control_tick": 460,
+      "exclusions": [],
+      "diagnostic_state_distance": 3.855288227477571
+    },
+    {
+      "case": 61,
+      "control_tick": 460,
+      "exclusions": [],
+      "diagnostic_state_distance": 0.680720335512881
+    },
+    {
+      "case": 67,
+      "control_tick": 460,
+      "exclusions": [],
+      "diagnostic_state_distance": 0.3354084684322956
+    },
+    {
+      "case": 70,
+      "control_tick": 460,
+      "exclusions": [],
+      "diagnostic_state_distance": 1.2408685152081218
+    },
+    {
+      "case": 71,
+      "control_tick": 460,
+      "exclusions": [],
+      "diagnostic_state_distance": 4.326642928720528
+    },
+    {
+      "case": 77,
+      "control_tick": 460,
+      "exclusions": [],
+      "diagnostic_state_distance": 1.9530113866998606
+    },
+    {
+      "case": 85,
+      "control_tick": 460,
+      "exclusions": [],
+      "diagnostic_state_distance": 0.7763609657467414
+    },
+    {
+      "case": 87,
+      "control_tick": 460,
+      "exclusions": [
+        "not_observed_recovery_phase",
+        "nonfoot_fault_already_observed"
+      ],
+      "diagnostic_state_distance": 11.673753160124388
+    },
+    {
+      "case": 90,
+      "control_tick": 460,
+      "exclusions": [
+        "not_observed_recovery_phase",
+        "nonfoot_fault_already_observed"
+      ],
+      "diagnostic_state_distance": 11.002500794558955
+    },
+    {
+      "case": 95,
+      "control_tick": 460,
+      "exclusions": [],
+      "diagnostic_state_distance": 0.4574706230290455
+    },
+    {
+      "case": 96,
+      "control_tick": 460,
+      "exclusions": [],
+      "diagnostic_state_distance": 1.6095737854402519
+    },
+    {
+      "case": 98,
+      "control_tick": 460,
+      "exclusions": [],
+      "diagnostic_state_distance": 2.374802206804989
+    },
+    {
+      "case": 115,
+      "control_tick": 460,
+      "exclusions": [],
+      "diagnostic_state_distance": 0.7517227899149993
+    }
+  ],
+  "selected_cases": [
+    67,
+    1,
+    57,
+    95,
+    61
+  ],
+  "comparisons": [
+    {
+      "configuration": "coarse16",
+      "records": [
+        {
+          "case": 67,
+          "accepted": false,
+          "failure": {
+            "step": 0,
+            "reason": "path_constraints",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.00028769284087297453
+            }
+          },
+          "completed_model_steps": 0,
+          "trailing_model_kinematic_window_s": 0.0,
+          "wall_seconds": 0.08244418306276202
+        },
+        {
+          "case": 1,
+          "accepted": false,
+          "failure": {
+            "step": 8,
+            "reason": "path_constraints",
+            "violations": {
+              "joint_velocity_violation_rad_s": 0.22358380948277734
+            }
+          },
+          "completed_model_steps": 8,
+          "trailing_model_kinematic_window_s": 0.0,
+          "wall_seconds": 0.3668390018865466
+        },
+        {
+          "case": 57,
+          "accepted": false,
+          "failure": {
+            "step": 8,
+            "reason": "path_constraints",
+            "violations": {
+              "joint_velocity_violation_rad_s": 0.012971442316245252
+            }
+          },
+          "completed_model_steps": 8,
+          "trailing_model_kinematic_window_s": 0.0,
+          "wall_seconds": 0.5657493029721081
+        },
+        {
+          "case": 95,
+          "accepted": false,
+          "failure": {
+            "step": 0,
+            "reason": "path_constraints",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.00033470878085788136
+            }
+          },
+          "completed_model_steps": 0,
+          "trailing_model_kinematic_window_s": 0.0,
+          "wall_seconds": 0.14501701411791146
+        },
+        {
+          "case": 61,
+          "accepted": false,
+          "failure": {
+            "step": 26,
+            "reason": "path_constraints",
+            "violations": {
+              "joint_velocity_violation_rad_s": 0.0830319057483857
+            }
+          },
+          "completed_model_steps": 26,
+          "trailing_model_kinematic_window_s": 0.0,
+          "wall_seconds": 1.8222733449656516
+        }
+      ]
+    },
+    {
+      "configuration": "fine160",
+      "records": [
+        {
+          "case": 67,
+          "accepted": false,
+          "failure": {
+            "step": 0,
+            "reason": "path_constraints",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.0002733747532807501
+            }
+          },
+          "completed_model_steps": 0,
+          "trailing_model_kinematic_window_s": 0.0,
+          "wall_seconds": 0.7832356260623783
+        },
+        {
+          "case": 1,
+          "accepted": false,
+          "failure": {
+            "step": 8,
+            "reason": "path_constraints",
+            "violations": {
+              "joint_velocity_violation_rad_s": 0.2445880623335972
+            }
+          },
+          "completed_model_steps": 8,
+          "trailing_model_kinematic_window_s": 0.0,
+          "wall_seconds": 2.5884792399592698
+        },
+        {
+          "case": 57,
+          "accepted": false,
+          "failure": {
+            "step": 8,
+            "reason": "path_constraints",
+            "violations": {
+              "joint_velocity_violation_rad_s": 0.045209042087579476
+            }
+          },
+          "completed_model_steps": 8,
+          "trailing_model_kinematic_window_s": 0.0,
+          "wall_seconds": 4.182361451908946
+        },
+        {
+          "case": 95,
+          "accepted": false,
+          "failure": {
+            "step": 0,
+            "reason": "path_constraints",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.000313605611185562
+            }
+          },
+          "completed_model_steps": 0,
+          "trailing_model_kinematic_window_s": 0.0,
+          "wall_seconds": 0.8771711960434914
+        },
+        {
+          "case": 61,
+          "accepted": false,
+          "failure": {
+            "step": 26,
+            "reason": "path_constraints",
+            "violations": {
+              "joint_velocity_violation_rad_s": 0.0924227408609477
+            }
+          },
+          "completed_model_steps": 26,
+          "trailing_model_kinematic_window_s": 0.0,
+          "wall_seconds": 13.939247814007103
+        }
+      ]
+    },
+    {
+      "configuration": "continuous_prefix160",
+      "records": [
+        {
+          "case": 67,
+          "accepted": false,
+          "failure": {
+            "step": 0,
+            "reason": "path_constraints",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.00036876838600872347
+            }
+          },
+          "completed_model_steps": 0,
+          "trailing_model_kinematic_window_s": 0.0,
+          "wall_seconds": 0.26116328802891076
+        },
+        {
+          "case": 1,
+          "accepted": false,
+          "failure": {
+            "step": 0,
+            "reason": "path_constraints",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.0003398596529858161
+            }
+          },
+          "completed_model_steps": 0,
+          "trailing_model_kinematic_window_s": 0.0,
+          "wall_seconds": 0.22202261490747333
+        },
+        {
+          "case": 57,
+          "accepted": false,
+          "failure": {
+            "step": 0,
+            "reason": "path_constraints",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.0002419454767914747
+            }
+          },
+          "completed_model_steps": 0,
+          "trailing_model_kinematic_window_s": 0.0,
+          "wall_seconds": 0.23088024789467454
+        },
+        {
+          "case": 95,
+          "accepted": false,
+          "failure": {
+            "step": 0,
+            "reason": "path_constraints",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.000604208472006651
+            }
+          },
+          "completed_model_steps": 0,
+          "trailing_model_kinematic_window_s": 0.0,
+          "wall_seconds": 0.25662653986364603
+        },
+        {
+          "case": 61,
+          "accepted": false,
+          "failure": {
+            "step": 0,
+            "reason": "path_constraints",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.0002054183161318071
+            }
+          },
+          "completed_model_steps": 0,
+          "trailing_model_kinematic_window_s": 0.0,
+          "wall_seconds": 0.23489271197468042
+        }
+      ]
+    }
+  ],
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_recovery_neighborhood_20261108/coarse16.json": "48c225d4727b2a3886fedbd3cc3309c6ad0c2a2dfc0851cbd3ddae4543fc12eb",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_recovery_neighborhood_20261108/fine160.json": "b5d1ebb8529bf56dd135e095f2bdd9aeb6689b6e30488cc98c790f71d1f32ba8",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_recovery_neighborhood_20261108/diagnosis.json": "e90aea64f20892d320b1b6ee09cccfac79b2157c81ba66ede68a406258240968",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_recovery_neighborhood_20261108/continuous_prefix160.json": "a4cf24cd76713f4b8b1b330ad06662dde70eec0616010e5737289a90940a016e"
+  },
+  "source_reverification": {
+    "coarse16": {
+      "count": 108,
+      "mismatches": []
+    },
+    "fine160": {
+      "count": 108,
+      "mismatches": []
+    },
+    "diagnosis": {
+      "count": 110,
+      "mismatches": []
+    },
+    "continuous_prefix160": {
+      "count": 110,
+      "mismatches": []
+    }
+  },
+  "formal_acceptance": false,
+  "valid_expert_labels": false,
+  "initial_geometry_and_command": [
+    {
+      "case": 67,
+      "initial_authored_minimum_gap_m": 3.9400371340536644e-08,
+      "initial_closest_body": "Head_lower",
+      "largest_leg_command_delta_rad": 0.9181460705508897,
+      "largest_arm_command_delta_rad": 0.10000000000000009
+    },
+    {
+      "case": 1,
+      "initial_authored_minimum_gap_m": 1.8831630593796334e-07,
+      "initial_closest_body": "Head_lower",
+      "largest_leg_command_delta_rad": 0.7501589317917983,
+      "largest_arm_command_delta_rad": 0.10000000000000009
+    },
+    {
+      "case": 57,
+      "initial_authored_minimum_gap_m": -8.747397397396162e-08,
+      "initial_closest_body": "Head_lower",
+      "largest_leg_command_delta_rad": 1.1090390434780844,
+      "largest_arm_command_delta_rad": 0.09892224736129265
+    },
+    {
+      "case": 95,
+      "initial_authored_minimum_gap_m": 5.0167524100197536e-08,
+      "initial_closest_body": "Head_lower",
+      "largest_leg_command_delta_rad": 0.9693820337977783,
+      "largest_arm_command_delta_rad": 0.10000000000000009
+    },
+    {
+      "case": 61,
+      "initial_authored_minimum_gap_m": -1.2320176418639806e-07,
+      "initial_closest_body": "Head_lower",
+      "largest_leg_command_delta_rad": 1.6255763273318657,
+      "largest_arm_command_delta_rad": 0.097694304140623
+    }
+  ]
+}
