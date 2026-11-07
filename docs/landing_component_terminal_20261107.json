@@ -1,0 +1,724 @@
+{
+  "observed_at": "2026-11-07T15:55:41.986830+00:00",
+  "baseline_complete5": 27,
+  "panel_size": 128,
+  "settling_v1": {
+    "completed": true,
+    "iterations": 6,
+    "wall_seconds": 606.1846255529672,
+    "original_accepted": false,
+    "settling_targets_met": false,
+    "terminal": {
+      "roll": -0.26222252215250325,
+      "pitch": 0.19889453045838423,
+      "omega": 0.2529701165665035,
+      "horizontal": 0.004708173030528938,
+      "joint_speed": 0.38220804560151256,
+      "vertical_speed": 0.008281544131462463,
+      "support_margin_m": 0.027703069949299643,
+      "support_feet": 3
+    },
+    "diagnostics": {
+      "momentum_residual": 6.3243681125424445e-15,
+      "normal_complementarity": 1.9990571772238175e-07,
+      "friction_cone": 0.0,
+      "tangent_fixed_point": 5.3533007280531786e-09,
+      "max_contact_iterations": 19,
+      "foot_penetration_m": 7.099782808571431e-07,
+      "joint_velocity_violation_rad_s": 0.0,
+      "joint_position_violation_rad": 0.0,
+      "motor_torque_violation_nm": 0.0,
+      "nonfoot_ground_violation_m": 0.00013790285152870396
+    },
+    "preload_gap_max_rad": 0.014590755241531195,
+    "maximum_scaled_settling_violation": 0.5288321824060502,
+    "held_tail_validation": {
+      "attempted": false,
+      "reason": "Settling targets not met"
+    }
+  },
+  "recursive_model_v2": {
+    "exit_code": 124,
+    "timeout_s": 1800,
+    "predicted_executed_steps": 60,
+    "needed_steps": 340,
+    "accepted_queries": 6,
+    "reaches_original_end": false,
+    "native_execution": false,
+    "valid_teacher": false
+  },
+  "native_query478": {
+    "measured_state": true,
+    "original_reason": "No independently verified frictional sequence from current observation",
+    "warm_prediction": {
+      "solved": true,
+      "accepted": false,
+      "maximum_scaled_violation": 0.27095630736942566,
+      "cost": 87.61862467522155,
+      "first_violation_tick": null,
+      "diagnostics": {
+        "momentum_residual": 6.194697532713178e-15,
+        "normal_complementarity": 1.9997641392821563e-07,
+        "friction_cone": 0.0,
+        "tangent_fixed_point": 2.2934353964554344e-09,
+        "max_contact_iterations": 16,
+        "foot_penetration_m": 5.014428488860079e-07,
+        "joint_velocity_violation_rad_s": 0.0,
+        "joint_position_violation_rad": 0.0,
+        "motor_torque_violation_nm": 0.0,
+        "nonfoot_ground_violation_m": 0.0
+      },
+      "terminal": {
+        "roll": -0.25497515851639246,
+        "pitch": 0.18771353609090538,
+        "omega": 1.0523562670670121,
+        "horizontal": 0.26585335413113026,
+        "joint_speed": 1.2709563073694257,
+        "vertical_speed": 0.06288875306233631,
+        "support_margin_m": 0.058103397127664505,
+        "support_feet": 3
+      }
+    },
+    "best_last_search": {
+      "solved": true,
+      "accepted": false,
+      "maximum_scaled_violation": 0.02277615587419346,
+      "cost": 70.87945359967273,
+      "first_violation_tick": null,
+      "diagnostics": {
+        "momentum_residual": 5.374173328576148e-15,
+        "normal_complementarity": 1.999259957446986e-07,
+        "friction_cone": 0.0,
+        "tangent_fixed_point": 2.1659353642219936e-09,
+        "max_contact_iterations": 16,
+        "foot_penetration_m": 5.541831095794147e-07,
+        "joint_velocity_violation_rad_s": 0.0,
+        "joint_position_violation_rad": 0.0,
+        "motor_torque_violation_nm": 0.0,
+        "nonfoot_ground_violation_m": 0.0
+      },
+      "terminal": {
+        "roll": -0.26776217146343123,
+        "pitch": 0.20003517733134477,
+        "omega": 0.8853666910681658,
+        "horizontal": 0.17740503909817226,
+        "joint_speed": 0.9678705074315364,
+        "vertical_speed": 0.06540763788942404,
+        "support_margin_m": 0.04326009935890673,
+        "support_feet": 3
+      }
+    },
+    "repair_v2_running": true,
+    "native_continuation_executed": false
+  },
+  "component_search": {
+    "output": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_fullcommand_native_response_20261107/frictional_settling_component3.json",
+    "started": true,
+    "changes": "Signed command gap and per-joint velocity inequalities; same feasible set and physical model",
+    "original_hardware_and_task_unchanged": true
+  },
+  "cpu_tests": {
+    "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 bash scripts/python.sh -m unittest tests.test_terminal_settling_constraints_v2 -v",
+    "passed": 3
+  },
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_fullcommand_native_response_20261107/frictional_settling_endpoint3.json": "f49f68f105e30f01a1f4780df756b217aaa639e8a0667a790388262f84882022",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_fullcommand_native_response_20261107/frictional_recursive_v2_case3.partial.json": "71db1ba68d5b5fb919fe65d82dcdf45c12ebc9dfdd3ce121d37a2a0ea84024b9",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_frictional_sequence3_all128_20261107_01/sequence_native_result.json": "a3f77f4a7c661b16d864877a62182d661b16f47035a207d1036447abaa96d48c",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_fullcommand_native_response_20261107/frictional_fixed_preload3.json": "8d36ed4559bf3d32938054d1696492632e17c982067eca6df0024659acb0288a",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_fullcommand_native_response_20261107/frictional_terminal_posture_feedback3.json": "ab4f9c3cc6d6fd532aee4e00b00927a46e1fb07f67c4e5e8b5655ba2a33b744c"
+  },
+  "new_native_gain": false,
+  "new_learning_gain": false,
+  "fixed_preload": {
+    "native_execution": false,
+    "valid_teacher": false,
+    "wall_seconds": 13.554847235092893,
+    "rows": [
+      {
+        "source": "reports/landing_fullcommand_native_response_20261107/frictional_terminal_restoration3.json",
+        "mode": "fixed_initial_gravity_preload",
+        "valid_steps": 23,
+        "failure": {
+          "tick": 23,
+          "reason": "dynamic_constraint_violation",
+          "violations": {
+            "joint_position_violation_rad": 0.011016237656894301
+          }
+        },
+        "model_window": {
+          "longest_model_kinematic_window_s": 0.01,
+          "qualifying_control_ticks": 1,
+          "required_window_s": 0.8,
+          "native_force_check": false,
+          "contact_flight_association_check": false,
+          "formal_recovery_success": false
+        },
+        "ramp_ticks": 0
+      },
+      {
+        "source": "reports/landing_fullcommand_native_response_20261107/frictional_terminal_restoration3.json",
+        "mode": "fixed_initial_gravity_preload",
+        "valid_steps": 19,
+        "failure": {
+          "tick": 19,
+          "reason": "dynamic_constraint_violation",
+          "violations": {
+            "joint_position_violation_rad": 0.012026863083531403
+          }
+        },
+        "model_window": {
+          "longest_model_kinematic_window_s": 0.0,
+          "qualifying_control_ticks": 0,
+          "required_window_s": 0.8,
+          "native_force_check": false,
+          "contact_flight_association_check": false,
+          "formal_recovery_success": false
+        },
+        "ramp_ticks": 10
+      },
+      {
+        "source": "reports/landing_fullcommand_native_response_20261107/frictional_terminal_restoration3.json",
+        "mode": "fixed_initial_gravity_preload",
+        "valid_steps": 16,
+        "failure": {
+          "tick": 16,
+          "reason": "dynamic_constraint_violation",
+          "violations": {
+            "joint_position_violation_rad": 0.010483346707514496
+          }
+        },
+        "model_window": {
+          "longest_model_kinematic_window_s": 0.0,
+          "qualifying_control_ticks": 0,
+          "required_window_s": 0.8,
+          "native_force_check": false,
+          "contact_flight_association_check": false,
+          "formal_recovery_success": false
+        },
+        "ramp_ticks": 20
+      },
+      {
+        "source": "reports/landing_fullcommand_native_response_20261107/frictional_terminal_restoration3.json",
+        "mode": "fixed_initial_gravity_preload",
+        "valid_steps": 15,
+        "failure": {
+          "tick": 15,
+          "reason": "dynamic_constraint_violation",
+          "violations": {
+            "joint_position_violation_rad": 0.014353077799208691
+          }
+        },
+        "model_window": {
+          "longest_model_kinematic_window_s": 0.0,
+          "qualifying_control_ticks": 0,
+          "required_window_s": 0.8,
+          "native_force_check": false,
+          "contact_flight_association_check": false,
+          "formal_recovery_success": false
+        },
+        "ramp_ticks": 40
+      },
+      {
+        "source": "reports/landing_fullcommand_native_response_20261107/frictional_recursive_restoration3.json",
+        "mode": "fixed_initial_gravity_preload",
+        "valid_steps": 20,
+        "failure": {
+          "tick": 20,
+          "reason": "dynamic_constraint_violation",
+          "violations": {
+            "joint_position_violation_rad": 0.007413073628193878
+          }
+        },
+        "model_window": {
+          "longest_model_kinematic_window_s": 0.0,
+          "qualifying_control_ticks": 0,
+          "required_window_s": 0.8,
+          "native_force_check": false,
+          "contact_flight_association_check": false,
+          "formal_recovery_success": false
+        },
+        "ramp_ticks": 0
+      },
+      {
+        "source": "reports/landing_fullcommand_native_response_20261107/frictional_recursive_restoration3.json",
+        "mode": "fixed_initial_gravity_preload",
+        "valid_steps": 16,
+        "failure": {
+          "tick": 16,
+          "reason": "dynamic_constraint_violation",
+          "violations": {
+            "joint_position_violation_rad": 0.0009175276066835103
+          }
+        },
+        "model_window": {
+          "longest_model_kinematic_window_s": 0.0,
+          "qualifying_control_ticks": 0,
+          "required_window_s": 0.8,
+          "native_force_check": false,
+          "contact_flight_association_check": false,
+          "formal_recovery_success": false
+        },
+        "ramp_ticks": 10
+      },
+      {
+        "source": "reports/landing_fullcommand_native_response_20261107/frictional_recursive_restoration3.json",
+        "mode": "fixed_initial_gravity_preload",
+        "valid_steps": 15,
+        "failure": {
+          "tick": 15,
+          "reason": "dynamic_constraint_violation",
+          "violations": {
+            "joint_position_violation_rad": 0.007123403974385489
+          }
+        },
+        "model_window": {
+          "longest_model_kinematic_window_s": 0.0,
+          "qualifying_control_ticks": 0,
+          "required_window_s": 0.8,
+          "native_force_check": false,
+          "contact_flight_association_check": false,
+          "formal_recovery_success": false
+        },
+        "ramp_ticks": 20
+      },
+      {
+        "source": "reports/landing_fullcommand_native_response_20261107/frictional_recursive_restoration3.json",
+        "mode": "fixed_initial_gravity_preload",
+        "valid_steps": 15,
+        "failure": {
+          "tick": 15,
+          "reason": "dynamic_constraint_violation",
+          "violations": {
+            "joint_position_violation_rad": 0.018629886026638953
+          }
+        },
+        "model_window": {
+          "longest_model_kinematic_window_s": 0.0,
+          "qualifying_control_ticks": 0,
+          "required_window_s": 0.8,
+          "native_force_check": false,
+          "contact_flight_association_check": false,
+          "formal_recovery_success": false
+        },
+        "ramp_ticks": 40
+      }
+    ]
+  },
+  "posture_feedback": {
+    "native_execution": false,
+    "valid_teacher": false,
+    "wall_seconds": 53.769168119179085,
+    "rows": [
+      {
+        "source": "reports/landing_fullcommand_native_response_20261107/frictional_terminal_restoration3.json",
+        "mode": "fixed_preload_with_leg_posture_feedback",
+        "valid_steps": 24,
+        "failure": {
+          "tick": 24,
+          "reason": "dynamic_constraint_violation",
+          "violations": {
+            "joint_position_violation_rad": 0.004016370521646273
+          }
+        },
+        "model_window": {
+          "longest_model_kinematic_window_s": 0.01,
+          "qualifying_control_ticks": 1,
+          "required_window_s": 0.8,
+          "native_force_check": false,
+          "contact_flight_association_check": false,
+          "formal_recovery_success": false
+        },
+        "ramp_ticks": 0,
+        "posture_gain": 0.25,
+        "velocity_gain": 0.0
+      },
+      {
+        "source": "reports/landing_fullcommand_native_response_20261107/frictional_terminal_restoration3.json",
+        "mode": "fixed_preload_with_leg_posture_feedback",
+        "valid_steps": 26,
+        "failure": {
+          "tick": 26,
+          "reason": "dynamic_constraint_violation",
+          "violations": {
+            "joint_position_violation_rad": 0.0031776311027833515
+          }
+        },
+        "model_window": {
+          "longest_model_kinematic_window_s": 0.02,
+          "qualifying_control_ticks": 2,
+          "required_window_s": 0.8,
+          "native_force_check": false,
+          "contact_flight_association_check": false,
+          "formal_recovery_success": false
+        },
+        "ramp_ticks": 0,
+        "posture_gain": 0.25,
+        "velocity_gain": 0.5
+      },
+      {
+        "source": "reports/landing_fullcommand_native_response_20261107/frictional_terminal_restoration3.json",
+        "mode": "fixed_preload_with_leg_posture_feedback",
+        "valid_steps": 27,
+        "failure": {
+          "tick": 27,
+          "reason": "dynamic_constraint_violation",
+          "violations": {
+            "joint_position_violation_rad": 0.00559790749396738
+          }
+        },
+        "model_window": {
+          "longest_model_kinematic_window_s": 0.01,
+          "qualifying_control_ticks": 1,
+          "required_window_s": 0.8,
+          "native_force_check": false,
+          "contact_flight_association_check": false,
+          "formal_recovery_success": false
+        },
+        "ramp_ticks": 0,
+        "posture_gain": 0.5,
+        "velocity_gain": 0.0
+      },
+      {
+        "source": "reports/landing_fullcommand_native_response_20261107/frictional_terminal_restoration3.json",
+        "mode": "fixed_preload_with_leg_posture_feedback",
+        "valid_steps": 30,
+        "failure": {
+          "tick": 30,
+          "reason": "dynamic_constraint_violation",
+          "violations": {
+            "joint_position_violation_rad": 0.0014904753164319828
+          }
+        },
+        "model_window": {
+          "longest_model_kinematic_window_s": 0.02,
+          "qualifying_control_ticks": 2,
+          "required_window_s": 0.8,
+          "native_force_check": false,
+          "contact_flight_association_check": false,
+          "formal_recovery_success": false
+        },
+        "ramp_ticks": 0,
+        "posture_gain": 0.5,
+        "velocity_gain": 0.5
+      },
+      {
+        "source": "reports/landing_fullcommand_native_response_20261107/frictional_terminal_restoration3.json",
+        "mode": "fixed_preload_with_leg_posture_feedback",
+        "valid_steps": 38,
+        "failure": {
+          "tick": 38,
+          "reason": "dynamic_constraint_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.0018248673000790389
+          }
+        },
+        "model_window": {
+          "longest_model_kinematic_window_s": 0.01,
+          "qualifying_control_ticks": 1,
+          "required_window_s": 0.8,
+          "native_force_check": false,
+          "contact_flight_association_check": false,
+          "formal_recovery_success": false
+        },
+        "ramp_ticks": 0,
+        "posture_gain": 1.0,
+        "velocity_gain": 0.0
+      },
+      {
+        "source": "reports/landing_fullcommand_native_response_20261107/frictional_terminal_restoration3.json",
+        "mode": "fixed_preload_with_leg_posture_feedback",
+        "valid_steps": 43,
+        "failure": {
+          "tick": 43,
+          "reason": "dynamic_constraint_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.00016469843854913235
+          }
+        },
+        "model_window": {
+          "longest_model_kinematic_window_s": 0.02,
+          "qualifying_control_ticks": 2,
+          "required_window_s": 0.8,
+          "native_force_check": false,
+          "contact_flight_association_check": false,
+          "formal_recovery_success": false
+        },
+        "ramp_ticks": 0,
+        "posture_gain": 1.0,
+        "velocity_gain": 0.5
+      },
+      {
+        "source": "reports/landing_fullcommand_native_response_20261107/frictional_terminal_restoration3.json",
+        "mode": "fixed_preload_with_leg_posture_feedback",
+        "valid_steps": 160,
+        "failure": null,
+        "model_window": {
+          "longest_model_kinematic_window_s": 0.37000000000000016,
+          "qualifying_control_ticks": 38,
+          "required_window_s": 0.8,
+          "native_force_check": false,
+          "contact_flight_association_check": false,
+          "formal_recovery_success": false
+        },
+        "ramp_ticks": 0,
+        "posture_gain": 2.0,
+        "velocity_gain": 0.0
+      },
+      {
+        "source": "reports/landing_fullcommand_native_response_20261107/frictional_terminal_restoration3.json",
+        "mode": "fixed_preload_with_leg_posture_feedback",
+        "valid_steps": 160,
+        "failure": null,
+        "model_window": {
+          "longest_model_kinematic_window_s": 0.38000000000000017,
+          "qualifying_control_ticks": 39,
+          "required_window_s": 0.8,
+          "native_force_check": false,
+          "contact_flight_association_check": false,
+          "formal_recovery_success": false
+        },
+        "ramp_ticks": 0,
+        "posture_gain": 2.0,
+        "velocity_gain": 0.5
+      },
+      {
+        "source": "reports/landing_fullcommand_native_response_20261107/frictional_recursive_restoration3.json",
+        "mode": "fixed_preload_with_leg_posture_feedback",
+        "valid_steps": 21,
+        "failure": {
+          "tick": 21,
+          "reason": "dynamic_constraint_violation",
+          "violations": {
+            "joint_position_violation_rad": 0.0030225727257646717
+          }
+        },
+        "model_window": {
+          "longest_model_kinematic_window_s": 0.0,
+          "qualifying_control_ticks": 0,
+          "required_window_s": 0.8,
+          "native_force_check": false,
+          "contact_flight_association_check": false,
+          "formal_recovery_success": false
+        },
+        "ramp_ticks": 0,
+        "posture_gain": 0.25,
+        "velocity_gain": 0.0
+      },
+      {
+        "source": "reports/landing_fullcommand_native_response_20261107/frictional_recursive_restoration3.json",
+        "mode": "fixed_preload_with_leg_posture_feedback",
+        "valid_steps": 23,
+        "failure": {
+          "tick": 23,
+          "reason": "dynamic_constraint_violation",
+          "violations": {
+            "joint_position_violation_rad": 0.005617866190475773
+          }
+        },
+        "model_window": {
+          "longest_model_kinematic_window_s": 0.0,
+          "qualifying_control_ticks": 0,
+          "required_window_s": 0.8,
+          "native_force_check": false,
+          "contact_flight_association_check": false,
+          "formal_recovery_success": false
+        },
+        "ramp_ticks": 0,
+        "posture_gain": 0.25,
+        "velocity_gain": 0.5
+      },
+      {
+        "source": "reports/landing_fullcommand_native_response_20261107/frictional_recursive_restoration3.json",
+        "mode": "fixed_preload_with_leg_posture_feedback",
+        "valid_steps": 23,
+        "failure": {
+          "tick": 23,
+          "reason": "dynamic_constraint_violation",
+          "violations": {
+            "joint_position_violation_rad": 0.0023641386223438587
+          }
+        },
+        "model_window": {
+          "longest_model_kinematic_window_s": 0.0,
+          "qualifying_control_ticks": 0,
+          "required_window_s": 0.8,
+          "native_force_check": false,
+          "contact_flight_association_check": false,
+          "formal_recovery_success": false
+        },
+        "ramp_ticks": 0,
+        "posture_gain": 0.5,
+        "velocity_gain": 0.0
+      },
+      {
+        "source": "reports/landing_fullcommand_native_response_20261107/frictional_recursive_restoration3.json",
+        "mode": "fixed_preload_with_leg_posture_feedback",
+        "valid_steps": 26,
+        "failure": {
+          "tick": 26,
+          "reason": "dynamic_constraint_violation",
+          "violations": {
+            "joint_position_violation_rad": 0.0038347960767519673
+          }
+        },
+        "model_window": {
+          "longest_model_kinematic_window_s": 0.0,
+          "qualifying_control_ticks": 0,
+          "required_window_s": 0.8,
+          "native_force_check": false,
+          "contact_flight_association_check": false,
+          "formal_recovery_success": false
+        },
+        "ramp_ticks": 0,
+        "posture_gain": 0.5,
+        "velocity_gain": 0.5
+      },
+      {
+        "source": "reports/landing_fullcommand_native_response_20261107/frictional_recursive_restoration3.json",
+        "mode": "fixed_preload_with_leg_posture_feedback",
+        "valid_steps": 40,
+        "failure": {
+          "tick": 40,
+          "reason": "dynamic_constraint_violation",
+          "violations": {
+            "joint_position_violation_rad": 0.0005437996695842884
+          }
+        },
+        "model_window": {
+          "longest_model_kinematic_window_s": 0.0,
+          "qualifying_control_ticks": 0,
+          "required_window_s": 0.8,
+          "native_force_check": false,
+          "contact_flight_association_check": false,
+          "formal_recovery_success": false
+        },
+        "ramp_ticks": 0,
+        "posture_gain": 1.0,
+        "velocity_gain": 0.0
+      },
+      {
+        "source": "reports/landing_fullcommand_native_response_20261107/frictional_recursive_restoration3.json",
+        "mode": "fixed_preload_with_leg_posture_feedback",
+        "valid_steps": 160,
+        "failure": null,
+        "model_window": {
+          "longest_model_kinematic_window_s": 0.47000000000000025,
+          "qualifying_control_ticks": 47,
+          "required_window_s": 0.8,
+          "native_force_check": false,
+          "contact_flight_association_check": false,
+          "formal_recovery_success": false
+        },
+        "ramp_ticks": 0,
+        "posture_gain": 1.0,
+        "velocity_gain": 0.5
+      },
+      {
+        "source": "reports/landing_fullcommand_native_response_20261107/frictional_recursive_restoration3.json",
+        "mode": "fixed_preload_with_leg_posture_feedback",
+        "valid_steps": 160,
+        "failure": null,
+        "model_window": {
+          "longest_model_kinematic_window_s": 0.35000000000000014,
+          "qualifying_control_ticks": 35,
+          "required_window_s": 0.8,
+          "native_force_check": false,
+          "contact_flight_association_check": false,
+          "formal_recovery_success": false
+        },
+        "ramp_ticks": 0,
+        "posture_gain": 2.0,
+        "velocity_gain": 0.0
+      },
+      {
+        "source": "reports/landing_fullcommand_native_response_20261107/frictional_recursive_restoration3.json",
+        "mode": "fixed_preload_with_leg_posture_feedback",
+        "valid_steps": 160,
+        "failure": null,
+        "model_window": {
+          "longest_model_kinematic_window_s": 0.36000000000000015,
+          "qualifying_control_ticks": 36,
+          "required_window_s": 0.8,
+          "native_force_check": false,
+          "contact_flight_association_check": false,
+          "formal_recovery_success": false
+        },
+        "ramp_ticks": 0,
+        "posture_gain": 2.0,
+        "velocity_gain": 0.5
+      }
+    ]
+  },
+  "formal_verification": {
+    "goal_id": "G07",
+    "status": "FAILED",
+    "contract_sha256": "66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807",
+    "checks": {
+      "G00": {
+        "passed": false,
+        "errors": [
+          "Missing or empty artifact: reports/G00/native_train/checkpoint.pt"
+        ]
+      },
+      "G01": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G00",
+          "Path escapes workspace: assets/quadsmash_standard_v2.usd",
+          "Path escapes workspace: assets/vendor/piper_isaac_sim/piper_description/urdf/piper_no_gripper_description.urdf"
+        ]
+      },
+      "G02": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G01"
+        ]
+      },
+      "G03": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G02",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/train/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/train/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/reload/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/reload/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/interrupt/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/interrupt/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/resume_interrupt/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/resume_interrupt/continuation_reference.pt"
+        ]
+      },
+      "G04": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G03",
+          "Missing or empty artifact: artifacts/G04/policy.pt",
+          "Missing or empty artifact: artifacts/G04/autonomous_actor/actor.pt",
+          "Missing or empty artifact: artifacts/G04/autonomous_actor/interface.json"
+        ]
+      },
+      "G05": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G04"
+        ]
+      },
+      "G06": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G05"
+        ]
+      },
+      "G07": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G06",
+          "Missing or invalid evidence: [Errno 2] No such file or directory: '/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/G07/evidence.json'"
+        ]
+      }
+    },
+    "scope": "Structure, hashes, dependencies and thresholds only; not simulation authenticity or GPU budget enforcement."
+  },
+  "last_update_at": "2026-11-07T16:00:19.032697+00:00"
+}
