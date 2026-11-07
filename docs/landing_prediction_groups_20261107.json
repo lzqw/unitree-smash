@@ -1,0 +1,983 @@
+{
+  "scope": "Stratify archived one-step predictions; this is not a causal experiment.\n\nOnly actual applied commands sampled every 20 ticks are represented. Require\nthe complete prediction interval to precede the first recorded nonfoot event.\nReport per-case statistics as well as pooled ticks to expose duration bias.\n",
+  "native_new_execution": false,
+  "source_run": "reports/native_original27_mpc35_causal_all128_20261107_01",
+  "groups": {
+    "retained": {
+      "case_ids": [
+        10,
+        23,
+        24,
+        27,
+        32,
+        33,
+        35,
+        36,
+        45,
+        49,
+        52,
+        60,
+        94,
+        121
+      ],
+      "all": {
+        "samples": 322,
+        "paired_successful_samples": 322,
+        "cases": [
+          10,
+          23,
+          24,
+          27,
+          32,
+          33,
+          35,
+          36,
+          45,
+          49,
+          52,
+          60,
+          94,
+          121
+        ],
+        "models": {
+          "frozen": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.002106168975944633,
+              "arm_position_rad": 0.00012929271989934316,
+              "world_linear_velocity_mps": 0.004470393826871029,
+              "world_angular_velocity_rad_s": 0.016858508099159793
+            },
+            "negative_normal_force_samples": 4,
+            "friction_cone_violation_samples": 26
+          },
+          "refreshed": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.002106231932290414,
+              "arm_position_rad": 0.0001295614489163821,
+              "world_linear_velocity_mps": 0.004657807974434021,
+              "world_angular_velocity_rad_s": 0.014657313181316639
+            },
+            "negative_normal_force_samples": 4,
+            "friction_cone_violation_samples": 27
+          }
+        }
+      },
+      "before_nonfoot": {
+        "samples": 322,
+        "paired_successful_samples": 322,
+        "cases": [
+          10,
+          23,
+          24,
+          27,
+          32,
+          33,
+          35,
+          36,
+          45,
+          49,
+          52,
+          60,
+          94,
+          121
+        ],
+        "models": {
+          "frozen": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.002106168975944633,
+              "arm_position_rad": 0.00012929271989934316,
+              "world_linear_velocity_mps": 0.004470393826871029,
+              "world_angular_velocity_rad_s": 0.016858508099159793
+            },
+            "negative_normal_force_samples": 4,
+            "friction_cone_violation_samples": 26
+          },
+          "refreshed": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.002106231932290414,
+              "arm_position_rad": 0.0001295614489163821,
+              "world_linear_velocity_mps": 0.004657807974434021,
+              "world_angular_velocity_rad_s": 0.014657313181316639
+            },
+            "negative_normal_force_samples": 4,
+            "friction_cone_violation_samples": 27
+          }
+        }
+      },
+      "early_before_nonfoot": {
+        "samples": 22,
+        "paired_successful_samples": 22,
+        "cases": [
+          10,
+          23,
+          24,
+          27,
+          32,
+          33,
+          35,
+          36,
+          45,
+          49,
+          52,
+          60,
+          94,
+          121
+        ],
+        "models": {
+          "frozen": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.006370221090455073,
+              "arm_position_rad": 0.00021158494367059068,
+              "world_linear_velocity_mps": 0.006332326855666685,
+              "world_angular_velocity_rad_s": 0.05521751335581764
+            },
+            "negative_normal_force_samples": 0,
+            "friction_cone_violation_samples": 8
+          },
+          "refreshed": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.0064131525874268095,
+              "arm_position_rad": 0.00022040237938286686,
+              "world_linear_velocity_mps": 0.006173433621198297,
+              "world_angular_velocity_rad_s": 0.02691610317564774
+            },
+            "negative_normal_force_samples": 0,
+            "friction_cone_violation_samples": 9
+          }
+        }
+      },
+      "force_flag_unchanged": {
+        "samples": 293,
+        "paired_successful_samples": 293,
+        "cases": [
+          10,
+          23,
+          24,
+          27,
+          32,
+          33,
+          35,
+          36,
+          45,
+          49,
+          52,
+          60,
+          94,
+          121
+        ],
+        "models": {
+          "frozen": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.00203039138323131,
+              "arm_position_rad": 0.0001269024503851134,
+              "world_linear_velocity_mps": 0.004159391010024751,
+              "world_angular_velocity_rad_s": 0.01591946689051686
+            },
+            "negative_normal_force_samples": 0,
+            "friction_cone_violation_samples": 18
+          },
+          "refreshed": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.0020296878231413447,
+              "arm_position_rad": 0.00012933359764728534,
+              "world_linear_velocity_mps": 0.004378152979397742,
+              "world_angular_velocity_rad_s": 0.013805015915095238
+            },
+            "negative_normal_force_samples": 0,
+            "friction_cone_violation_samples": 19
+          }
+        }
+      },
+      "force_flag_changed": {
+        "samples": 29,
+        "paired_successful_samples": 29,
+        "cases": [
+          23,
+          24,
+          27,
+          32,
+          33,
+          35,
+          36,
+          45,
+          49,
+          52,
+          60,
+          121
+        ],
+        "models": {
+          "frozen": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.002792089295066535,
+              "arm_position_rad": 0.0001655464623097637,
+              "world_linear_velocity_mps": 0.005697772669533455,
+              "world_angular_velocity_rad_s": 0.02262115394637244
+            },
+            "negative_normal_force_samples": 4,
+            "friction_cone_violation_samples": 8
+          },
+          "refreshed": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.0027890970491822207,
+              "arm_position_rad": 0.0001768631746164482,
+              "world_linear_velocity_mps": 0.005719468414266049,
+              "world_angular_velocity_rad_s": 0.02231563336802172
+            },
+            "negative_normal_force_samples": 4,
+            "friction_cone_violation_samples": 8
+          }
+        }
+      },
+      "case_balanced_median_of_case_p95": {
+        "frozen": {
+          "leg_position_rad": 0.0019718214330141687,
+          "arm_position_rad": 0.00011705695744663734,
+          "world_linear_velocity_mps": 0.00411278537856842,
+          "world_angular_velocity_rad_s": 0.012771424409280497
+        },
+        "refreshed": {
+          "leg_position_rad": 0.0019679766623479497,
+          "arm_position_rad": 0.00011587213669038697,
+          "world_linear_velocity_mps": 0.004274358775617866,
+          "world_angular_velocity_rad_s": 0.011662012321147578
+        }
+      }
+    },
+    "lost": {
+      "case_ids": [
+        16,
+        17,
+        25,
+        28,
+        34,
+        37,
+        39,
+        43,
+        51,
+        55,
+        63,
+        84,
+        126
+      ],
+      "all": {
+        "samples": 74,
+        "paired_successful_samples": 74,
+        "cases": [
+          16,
+          17,
+          25,
+          28,
+          34,
+          37,
+          39,
+          43,
+          51,
+          55,
+          63,
+          84,
+          126
+        ],
+        "models": {
+          "frozen": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.0048573596494710805,
+              "arm_position_rad": 0.000594349695763374,
+              "world_linear_velocity_mps": 0.047741587846487854,
+              "world_angular_velocity_rad_s": 0.20427455995454086
+            },
+            "negative_normal_force_samples": 7,
+            "friction_cone_violation_samples": 20
+          },
+          "refreshed": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.004887543934760517,
+              "arm_position_rad": 0.0005497919758723947,
+              "world_linear_velocity_mps": 0.04721648991148534,
+              "world_angular_velocity_rad_s": 0.20211708407785
+            },
+            "negative_normal_force_samples": 7,
+            "friction_cone_violation_samples": 20
+          }
+        }
+      },
+      "before_nonfoot": {
+        "samples": 70,
+        "paired_successful_samples": 70,
+        "cases": [
+          16,
+          17,
+          25,
+          28,
+          34,
+          37,
+          39,
+          43,
+          51,
+          55,
+          63,
+          84,
+          126
+        ],
+        "models": {
+          "frozen": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.004556377862584914,
+              "arm_position_rad": 0.00020534666656326636,
+              "world_linear_velocity_mps": 0.006507554554348805,
+              "world_angular_velocity_rad_s": 0.04548551886692911
+            },
+            "negative_normal_force_samples": 5,
+            "friction_cone_violation_samples": 18
+          },
+          "refreshed": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.0045689737511157005,
+              "arm_position_rad": 0.0001999566319805944,
+              "world_linear_velocity_mps": 0.006332940203063577,
+              "world_angular_velocity_rad_s": 0.03202739943798488
+            },
+            "negative_normal_force_samples": 5,
+            "friction_cone_violation_samples": 18
+          }
+        }
+      },
+      "early_before_nonfoot": {
+        "samples": 21,
+        "paired_successful_samples": 21,
+        "cases": [
+          16,
+          17,
+          25,
+          28,
+          34,
+          37,
+          39,
+          43,
+          51,
+          55,
+          63,
+          84,
+          126
+        ],
+        "models": {
+          "frozen": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.005043766359506874,
+              "arm_position_rad": 0.00022450367349591271,
+              "world_linear_velocity_mps": 0.007201060627138304,
+              "world_angular_velocity_rad_s": 0.050152863793835135
+            },
+            "negative_normal_force_samples": 4,
+            "friction_cone_violation_samples": 13
+          },
+          "refreshed": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.005123118741463983,
+              "arm_position_rad": 0.00021307950361512326,
+              "world_linear_velocity_mps": 0.0067565844287719,
+              "world_angular_velocity_rad_s": 0.0337462587975961
+            },
+            "negative_normal_force_samples": 4,
+            "friction_cone_violation_samples": 13
+          }
+        }
+      },
+      "force_flag_unchanged": {
+        "samples": 57,
+        "paired_successful_samples": 57,
+        "cases": [
+          16,
+          17,
+          25,
+          28,
+          34,
+          37,
+          39,
+          43,
+          51,
+          55,
+          63,
+          84,
+          126
+        ],
+        "models": {
+          "frozen": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.004482039621730748,
+              "arm_position_rad": 0.00019038401033689972,
+              "world_linear_velocity_mps": 0.005796536016395659,
+              "world_angular_velocity_rad_s": 0.04069509427498872
+            },
+            "negative_normal_force_samples": 0,
+            "friction_cone_violation_samples": 9
+          },
+          "refreshed": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.004483611166966161,
+              "arm_position_rad": 0.0001912681912963689,
+              "world_linear_velocity_mps": 0.005062014000280551,
+              "world_angular_velocity_rad_s": 0.03023893798582151
+            },
+            "negative_normal_force_samples": 0,
+            "friction_cone_violation_samples": 9
+          }
+        }
+      },
+      "force_flag_changed": {
+        "samples": 13,
+        "paired_successful_samples": 13,
+        "cases": [
+          16,
+          17,
+          25,
+          28,
+          39,
+          43,
+          51,
+          55,
+          84
+        ],
+        "models": {
+          "frozen": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.00427912449741492,
+              "arm_position_rad": 0.0008867033851473892,
+              "world_linear_velocity_mps": 0.02386923622803032,
+              "world_angular_velocity_rad_s": 0.13182558566026387
+            },
+            "negative_normal_force_samples": 5,
+            "friction_cone_violation_samples": 9
+          },
+          "refreshed": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.00426651007718166,
+              "arm_position_rad": 0.0008492219045300928,
+              "world_linear_velocity_mps": 0.022842862508987403,
+              "world_angular_velocity_rad_s": 0.1330507582034071
+            },
+            "negative_normal_force_samples": 5,
+            "friction_cone_violation_samples": 9
+          }
+        }
+      },
+      "case_balanced_median_of_case_p95": {
+        "frozen": {
+          "leg_position_rad": 0.0036420424341954303,
+          "arm_position_rad": 0.00016500568454063205,
+          "world_linear_velocity_mps": 0.0051173902328646775,
+          "world_angular_velocity_rad_s": 0.0365968430573397
+        },
+        "refreshed": {
+          "leg_position_rad": 0.0035576544671782366,
+          "arm_position_rad": 0.00015344852704815004,
+          "world_linear_velocity_mps": 0.004908017215919285,
+          "world_angular_velocity_rad_s": 0.023423662126549213
+        }
+      }
+    },
+    "rescued": {
+      "case_ids": [
+        1,
+        58,
+        61,
+        67,
+        85,
+        115
+      ],
+      "all": {
+        "samples": 138,
+        "paired_successful_samples": 138,
+        "cases": [
+          1,
+          58,
+          61,
+          67,
+          85,
+          115
+        ],
+        "models": {
+          "frozen": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.002212438109095383,
+              "arm_position_rad": 0.0001285825066183799,
+              "world_linear_velocity_mps": 0.003607731670465386,
+              "world_angular_velocity_rad_s": 0.021230065042956055
+            },
+            "negative_normal_force_samples": 2,
+            "friction_cone_violation_samples": 8
+          },
+          "refreshed": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.002211712548434997,
+              "arm_position_rad": 0.0001287449456465195,
+              "world_linear_velocity_mps": 0.003742245021337769,
+              "world_angular_velocity_rad_s": 0.012221803278510909
+            },
+            "negative_normal_force_samples": 2,
+            "friction_cone_violation_samples": 7
+          }
+        }
+      },
+      "before_nonfoot": {
+        "samples": 138,
+        "paired_successful_samples": 138,
+        "cases": [
+          1,
+          58,
+          61,
+          67,
+          85,
+          115
+        ],
+        "models": {
+          "frozen": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.002212438109095383,
+              "arm_position_rad": 0.0001285825066183799,
+              "world_linear_velocity_mps": 0.003607731670465386,
+              "world_angular_velocity_rad_s": 0.021230065042956055
+            },
+            "negative_normal_force_samples": 2,
+            "friction_cone_violation_samples": 8
+          },
+          "refreshed": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.002211712548434997,
+              "arm_position_rad": 0.0001287449456465195,
+              "world_linear_velocity_mps": 0.003742245021337769,
+              "world_angular_velocity_rad_s": 0.012221803278510909
+            },
+            "negative_normal_force_samples": 2,
+            "friction_cone_violation_samples": 7
+          }
+        }
+      },
+      "early_before_nonfoot": {
+        "samples": 4,
+        "paired_successful_samples": 4,
+        "cases": [
+          1,
+          58,
+          61,
+          115
+        ],
+        "models": {
+          "frozen": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.0011225308385443887,
+              "arm_position_rad": 0.0009874609023680756,
+              "world_linear_velocity_mps": 0.013276743479640293,
+              "world_angular_velocity_rad_s": 0.14273563612048581
+            },
+            "negative_normal_force_samples": 0,
+            "friction_cone_violation_samples": 2
+          },
+          "refreshed": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.0010772377489266986,
+              "arm_position_rad": 0.0009861752542116406,
+              "world_linear_velocity_mps": 0.01430414324175761,
+              "world_angular_velocity_rad_s": 0.14367269556254994
+            },
+            "negative_normal_force_samples": 0,
+            "friction_cone_violation_samples": 1
+          }
+        }
+      },
+      "force_flag_unchanged": {
+        "samples": 130,
+        "paired_successful_samples": 130,
+        "cases": [
+          1,
+          58,
+          61,
+          67,
+          85,
+          115
+        ],
+        "models": {
+          "frozen": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.0020815354657899624,
+              "arm_position_rad": 0.00012794640458406724,
+              "world_linear_velocity_mps": 0.0035013164182109385,
+              "world_angular_velocity_rad_s": 0.020328044151305086
+            },
+            "negative_normal_force_samples": 0,
+            "friction_cone_violation_samples": 5
+          },
+          "refreshed": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.0020818534960029603,
+              "arm_position_rad": 0.00012809597935314887,
+              "world_linear_velocity_mps": 0.0037309945745900718,
+              "world_angular_velocity_rad_s": 0.011119140213850177
+            },
+            "negative_normal_force_samples": 0,
+            "friction_cone_violation_samples": 4
+          }
+        }
+      },
+      "force_flag_changed": {
+        "samples": 8,
+        "paired_successful_samples": 8,
+        "cases": [
+          1,
+          58,
+          67,
+          85,
+          115
+        ],
+        "models": {
+          "frozen": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.007988233039589548,
+              "arm_position_rad": 0.00014601458680441046,
+              "world_linear_velocity_mps": 0.005559590970786714,
+              "world_angular_velocity_rad_s": 0.025071868037193502
+            },
+            "negative_normal_force_samples": 2,
+            "friction_cone_violation_samples": 3
+          },
+          "refreshed": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.007949629063173518,
+              "arm_position_rad": 0.00013397770278268382,
+              "world_linear_velocity_mps": 0.00577912527333672,
+              "world_angular_velocity_rad_s": 0.02004801937003514
+            },
+            "negative_normal_force_samples": 2,
+            "friction_cone_violation_samples": 3
+          }
+        }
+      },
+      "case_balanced_median_of_case_p95": {
+        "frozen": {
+          "leg_position_rad": 0.002047942326737372,
+          "arm_position_rad": 0.00012696736521751182,
+          "world_linear_velocity_mps": 0.003330953789984369,
+          "world_angular_velocity_rad_s": 0.010680053530322947
+        },
+        "refreshed": {
+          "leg_position_rad": 0.002046566424229578,
+          "arm_position_rad": 0.00012703135417444498,
+          "world_linear_velocity_mps": 0.003652977029335714,
+          "world_angular_velocity_rad_s": 0.009909553251147767
+        }
+      }
+    },
+    "unresolved": {
+      "case_ids": [
+        3,
+        8,
+        9,
+        12,
+        18,
+        20,
+        30,
+        38,
+        42,
+        50,
+        54,
+        57,
+        70,
+        71,
+        77,
+        87,
+        90,
+        95,
+        96,
+        98
+      ],
+      "all": {
+        "samples": 80,
+        "paired_successful_samples": 80,
+        "cases": [
+          3,
+          8,
+          9,
+          12,
+          18,
+          20,
+          30,
+          38,
+          42,
+          50,
+          54,
+          57,
+          70,
+          71,
+          77,
+          90,
+          95,
+          96,
+          98
+        ],
+        "models": {
+          "frozen": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.006728545939659851,
+              "arm_position_rad": 0.0024074094065483173,
+              "world_linear_velocity_mps": 0.05577852502753081,
+              "world_angular_velocity_rad_s": 0.2819972954489621
+            },
+            "negative_normal_force_samples": 2,
+            "friction_cone_violation_samples": 17
+          },
+          "refreshed": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.00667144935750125,
+              "arm_position_rad": 0.002512051474822077,
+              "world_linear_velocity_mps": 0.05563944130235773,
+              "world_angular_velocity_rad_s": 0.29009162132125593
+            },
+            "negative_normal_force_samples": 2,
+            "friction_cone_violation_samples": 18
+          }
+        }
+      },
+      "before_nonfoot": {
+        "samples": 72,
+        "paired_successful_samples": 72,
+        "cases": [
+          3,
+          8,
+          9,
+          12,
+          18,
+          20,
+          30,
+          38,
+          42,
+          50,
+          54,
+          57,
+          70,
+          71,
+          77,
+          90,
+          95,
+          96,
+          98
+        ],
+        "models": {
+          "frozen": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.004482441354543468,
+              "arm_position_rad": 0.000730365653935947,
+              "world_linear_velocity_mps": 0.01832098903521931,
+              "world_angular_velocity_rad_s": 0.09984238916055727
+            },
+            "negative_normal_force_samples": 1,
+            "friction_cone_violation_samples": 15
+          },
+          "refreshed": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.004506052783924411,
+              "arm_position_rad": 0.0006235337821939917,
+              "world_linear_velocity_mps": 0.018785682471984175,
+              "world_angular_velocity_rad_s": 0.10168879333751105
+            },
+            "negative_normal_force_samples": 1,
+            "friction_cone_violation_samples": 16
+          }
+        }
+      },
+      "early_before_nonfoot": {
+        "samples": 26,
+        "paired_successful_samples": 26,
+        "cases": [
+          3,
+          8,
+          9,
+          12,
+          18,
+          20,
+          30,
+          38,
+          42,
+          50,
+          54,
+          57,
+          70,
+          77,
+          90
+        ],
+        "models": {
+          "frozen": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.006488917457064924,
+              "arm_position_rad": 0.0007788906510637489,
+              "world_linear_velocity_mps": 0.019873670076133956,
+              "world_angular_velocity_rad_s": 0.15849039600042397
+            },
+            "negative_normal_force_samples": 0,
+            "friction_cone_violation_samples": 5
+          },
+          "refreshed": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.006432526302303981,
+              "arm_position_rad": 0.0006625353815500612,
+              "world_linear_velocity_mps": 0.02113544571533859,
+              "world_angular_velocity_rad_s": 0.17035923373971246
+            },
+            "negative_normal_force_samples": 0,
+            "friction_cone_violation_samples": 6
+          }
+        }
+      },
+      "force_flag_unchanged": {
+        "samples": 61,
+        "paired_successful_samples": 61,
+        "cases": [
+          3,
+          8,
+          9,
+          12,
+          18,
+          30,
+          38,
+          42,
+          50,
+          54,
+          57,
+          70,
+          71,
+          77,
+          90,
+          95,
+          96,
+          98
+        ],
+        "models": {
+          "frozen": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.004046091418452802,
+              "arm_position_rad": 0.0008193281486702508,
+              "world_linear_velocity_mps": 0.010050375096840708,
+              "world_angular_velocity_rad_s": 0.08030473660849466
+            },
+            "negative_normal_force_samples": 0,
+            "friction_cone_violation_samples": 12
+          },
+          "refreshed": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.00407052305471356,
+              "arm_position_rad": 0.0006950367143467862,
+              "world_linear_velocity_mps": 0.011739245705625671,
+              "world_angular_velocity_rad_s": 0.0835860871736683
+            },
+            "negative_normal_force_samples": 0,
+            "friction_cone_violation_samples": 13
+          }
+        }
+      },
+      "force_flag_changed": {
+        "samples": 11,
+        "paired_successful_samples": 11,
+        "cases": [
+          8,
+          20,
+          38,
+          50,
+          54,
+          57,
+          71,
+          95
+        ],
+        "models": {
+          "frozen": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.004500020873135058,
+              "arm_position_rad": 0.00033099216684448485,
+              "world_linear_velocity_mps": 0.02593467446472142,
+              "world_angular_velocity_rad_s": 0.24988017273827645
+            },
+            "negative_normal_force_samples": 1,
+            "friction_cone_violation_samples": 3
+          },
+          "refreshed": {
+            "failed": 0,
+            "p95": {
+              "leg_position_rad": 0.004475677504472253,
+              "arm_position_rad": 0.00042396338294820035,
+              "world_linear_velocity_mps": 0.027263108095499658,
+              "world_angular_velocity_rad_s": 0.2631732308681806
+            },
+            "negative_normal_force_samples": 1,
+            "friction_cone_violation_samples": 3
+          }
+        }
+      },
+      "case_balanced_median_of_case_p95": {
+        "frozen": {
+          "leg_position_rad": 0.001058699624934889,
+          "arm_position_rad": 0.0002117819626678327,
+          "world_linear_velocity_mps": 0.006417770757243371,
+          "world_angular_velocity_rad_s": 0.03198659783828871
+        },
+        "refreshed": {
+          "leg_position_rad": 0.0011426870228478268,
+          "arm_position_rad": 0.00023478638911426998,
+          "world_linear_velocity_mps": 0.0064194377910717325,
+          "world_angular_velocity_rad_s": 0.025030758300915328
+        }
+      }
+    }
+  },
+  "limitations": [
+    "Observational outcome groups; no causal attribution or controller promotion.",
+    "Sampling every 200 ms misses brief impacts and excludes rejected-QP commands.",
+    "Both models retain the initial contact set for 10 ms; no new collision/slip model.",
+    "Computable predictions may violate unilateral force or friction; counts are retained.",
+    "First nonfoot event is the recorded sensor-threshold crossing, not exact collision onset.",
+    "An unchanged thresholded force flag does not imply unchanged physical contact."
+  ],
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_causal_baseline_followup_20261107/relinearized_prediction.json": "8d9787599749749f4ed7f8436af56fa92f05770be648979d120daca24d0fcee8",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_causal_baseline_followup_20261107/acceptance_timing.json": "f3b910928be76adf0062004eea1abc09293042652ad7a44b8958edfc57b8afb5",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_causal_baseline_followup_20261107/recovery_onset_v2.json": "75139ab68fea733cd3190e39c892313b7443d570a7dfac34acc540ed6b190b08",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/summarize_recovery_prediction_groups_v1.py": "1303857d402cd7372b911a1fd77524b6923591ddd11b239bd83a682a192e494f"
+  },
+  "full_local_evidence": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_causal_baseline_followup_20261107/prediction_groups.json",
+  "full_local_evidence_sha256": "6fedf9467a50e2a700112e98d1080f52e33dde48b5b66407a509d6a7b65676ee"
+}
