@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-11-07T23:33:56.344879+00:00",
+  "as_of": "2026-11-07T23:35:02.360670+00:00",
   "completed_search": {
     "path": "reports/landing_early_references_20261108/hip_mount_constrained_search_v1.json",
     "sha256": "b68a3b0f8856de27d94d5a950529120f6d31f292da2fc52b5730b202a9967c41",
@@ -246,7 +246,55 @@
         "best": "g0_fine_29"
       }
     ],
-    "final_result_available": false
+    "final_result_available": false,
+    "latest_completed_generation_snapshot": {
+      "coarse_evaluations": 40,
+      "fine_evaluations": 5,
+      "best_label": "g0_fine_6",
+      "best_result": {
+        "accepted": false,
+        "completed_model_steps": 375,
+        "required_model_steps": 520,
+        "rank": [
+          1,
+          144.70625,
+          0,
+          0.10244781233907256
+        ],
+        "failure": {
+          "step": 375,
+          "reason": "path_constraints",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.00029447123467720576
+          },
+          "first_ground_violation": {
+            "micro": 47,
+            "body": "RR_calf",
+            "gap_m": -2.9063712651180434e-06
+          }
+        },
+        "terminal": {
+          "roll": 0.0358357890883183,
+          "pitch": -0.20286608598158767,
+          "horizontal": 0.13399466050233602,
+          "vertical_speed": 0.023029658303973265,
+          "omega": 0.3791372970881076,
+          "joint_speed": 0.5470516788225432,
+          "support_feet": 4,
+          "support_margin_m": 0.1290731728873439
+        },
+        "terminal_violations": {},
+        "trailing_model_window_s": 1.56,
+        "longest_model_window_s": 1.56,
+        "cost": 38.41792962715221,
+        "substeps": 160,
+        "wall_seconds": 88.19335632794537,
+        "native_execution": false,
+        "valid_expert_labels": false
+      },
+      "completed_generations": 1
+    },
+    "partial_sha256": "2b0c2b850e49110046f5b093e809903b8352d3320cdf0631931e62bd82aaa1b9"
   },
   "native_success_improvement_demonstrated": false,
   "valid_expert_labels": false,
