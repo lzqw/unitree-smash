@@ -1,0 +1,345 @@
+{
+  "scope": "Paired recorded-state assessment; never promote from CPU feasibility alone.",
+  "native_execution": false,
+  "source": "reports/landing_full_command_followup_20261107/recorded479.json",
+  "candidate_contract": {
+    "schema": "landing-full-command-interval-v1",
+    "formulation": "sequential-QP-with-all-substep-command-constraints",
+    "settings": {
+      "horizon_steps": 40,
+      "control_dt_s": 0.01,
+      "tilt_trigger_rad": 0.55,
+      "angular_speed_trigger_rad_s": 2.2,
+      "horizontal_speed_trigger_mps": 0.75,
+      "minimum_support_feet": 1,
+      "terminal_tilt_rad": 0.35,
+      "terminal_angular_speed_rad_s": 1.4,
+      "terminal_horizontal_speed_mps": 0.45,
+      "max_stage_runtime_s": 0.02,
+      "executor_replay": true,
+      "executor_replay_model_consistent": true,
+      "command_rate_scale": 1.0,
+      "support_margin_trigger_m": 0.025,
+      "terminal_support_margin_m": 0.01,
+      "two_foot_max_com_distance_m": 0.075,
+      "one_foot_max_com_distance_m": 0.2,
+      "landing_leg_posture_blend": 0.15,
+      "landing_arm_posture_blend": 0.0,
+      "predict_touchdown_contacts": true,
+      "contact_mode_fallback": true,
+      "contact_mode_sequence_search": false,
+      "contact_mode_sequence_max_candidates": 3,
+      "touchdown_mode_height_scale": 2.5,
+      "touchdown_height_tolerance_m": 0.012,
+      "touchdown_vertical_speed_limit_mps": 1.5,
+      "touchdown_impact_projection": false,
+      "touchdown_impact_restitution": 0.0,
+      "touchdown_impact_max_impulse_ns": 25.0
+    },
+    "support_qp_settings": {
+      "control_dt_s": 0.01,
+      "contact_velocity_decay_s": 0.06,
+      "com_kp_s2": 50.0,
+      "com_kd_s": 14.0,
+      "orientation_kp_s2": 60.0,
+      "orientation_kd_s": 15.0,
+      "posture_kp_s2": 40.0,
+      "posture_kd_s": 12.0,
+      "com_weight": 20.0,
+      "orientation_weight": 10.0,
+      "posture_weight": 0.2,
+      "acceleration_regularization": 1e-05,
+      "torque_regularization": 0.0001,
+      "force_regularization": 1e-05,
+      "force_distribution_weight": 0.0,
+      "force_wrench_weight": 0.0,
+      "friction_facets": 8,
+      "solver_eps": 1e-06,
+      "solver_max_iterations": 10000,
+      "residual_tolerance": 0.0003,
+      "swing_foot_weight": 1.0,
+      "swing_foot_kp_s2": 60.0,
+      "swing_foot_kd_s": 12.0,
+      "swing_foot_clearance_m": 0.005,
+      "swing_foot_capture_gain": 0.0,
+      "swing_foot_capture_max_m": 0.25,
+      "nonfoot_clearance_weight": 5.0,
+      "nonfoot_clearance_hard": false,
+      "nonfoot_clearance_m": 0.05,
+      "nonfoot_clearance_kp_s2": 60.0,
+      "nonfoot_clearance_kd_s": 15.0
+    },
+    "action_interface": "original-normalized-position-targets-v1",
+    "no_external_force": true,
+    "no_state_teleport": true,
+    "native_execution": false,
+    "solver_failure_is_not_hardware_impossibility": true,
+    "continuous_reference": true,
+    "preserve_arm_position_command": false,
+    "arm_command_semantics": "all18-physical-command-optimization; student-soft-posture-reference",
+    "load_aware_support": false,
+    "load_force_floor_n": 2.0,
+    "reference_memory": "per-lane-live-tick-with-speculative-rollback",
+    "command_interface": "leg-position-range;arm-slew-from-last-final-command",
+    "arm_target_rate_rad_s": 10.0,
+    "physical_velocity_constraints_unchanged": true,
+    "substeps": 16,
+    "minimum_root_height_m": 0.12,
+    "drive_branch": "unsaturated-entire-interval",
+    "nonlinear_contact_and_impact_model_complete": false,
+    "native_recovery_validated": false,
+    "qp_backend": "quadprog",
+    "qp_backend_version": "0.1.13",
+    "hessian_regularized": false,
+    "physical_constraints_relaxed": false,
+    "iteration_limit_checked_after_solve": true,
+    "arm_reference_is_still_soft_posture_objective": true,
+    "joint_damper_gain_s_inv": 20.0,
+    "damper_in_all_implicit_substeps": true,
+    "viability_or_native_recovery_certified": false,
+    "preserve_arm_command": false,
+    "reference_space_search_enabled": false
+  },
+  "groups": {
+    "all_recorded": {
+      "samples": 479,
+      "first_step": {
+        "before": 276,
+        "after": 276,
+        "retained_count": 276,
+        "lost": [],
+        "gained": []
+      },
+      "full_horizon": {
+        "before": 190,
+        "after": 199,
+        "retained_count": 189,
+        "lost": [
+          [
+            67,
+            320
+          ]
+        ],
+        "gained": [
+          [
+            1,
+            360
+          ],
+          [
+            3,
+            320
+          ],
+          [
+            18,
+            320
+          ],
+          [
+            38,
+            320
+          ],
+          [
+            50,
+            320
+          ],
+          [
+            50,
+            340
+          ],
+          [
+            54,
+            320
+          ],
+          [
+            57,
+            360
+          ],
+          [
+            61,
+            340
+          ],
+          [
+            77,
+            340
+          ]
+        ]
+      }
+    },
+    "previously_applied": {
+      "samples": 243,
+      "first_step": {
+        "before": 237,
+        "after": 237,
+        "retained_count": 237,
+        "lost": [],
+        "gained": []
+      },
+      "full_horizon": {
+        "before": 185,
+        "after": 190,
+        "retained_count": 185,
+        "lost": [],
+        "gained": [
+          [
+            1,
+            360
+          ],
+          [
+            50,
+            340
+          ],
+          [
+            57,
+            360
+          ],
+          [
+            61,
+            340
+          ],
+          [
+            77,
+            340
+          ]
+        ]
+      }
+    },
+    "rescued_eight_cases": {
+      "samples": 196,
+      "first_step": {
+        "before": 196,
+        "after": 196,
+        "retained_count": 196,
+        "lost": [],
+        "gained": []
+      },
+      "full_horizon": {
+        "before": 184,
+        "after": 185,
+        "retained_count": 183,
+        "lost": [
+          [
+            67,
+            320
+          ]
+        ],
+        "gained": [
+          [
+            3,
+            320
+          ],
+          [
+            61,
+            340
+          ]
+        ]
+      }
+    },
+    "later_joint_limit_failures": {
+      "samples": 6,
+      "first_step": {
+        "before": 6,
+        "after": 6,
+        "retained_count": 6,
+        "lost": [],
+        "gained": []
+      },
+      "full_horizon": {
+        "before": 0,
+        "after": 1,
+        "retained_count": 0,
+        "lost": [],
+        "gained": [
+          [
+            3,
+            320
+          ]
+        ]
+      }
+    }
+  },
+  "later_failure_changes": [
+    {
+      "case": 70,
+      "tick": 300,
+      "before_stage": 32,
+      "after_stage": 30,
+      "before_rejection": "QP rejected prediction stage 32",
+      "after_rejection": "QP rejected prediction stage 30"
+    },
+    {
+      "case": 3,
+      "tick": 320,
+      "before_stage": null,
+      "after_stage": null,
+      "before_rejection": "terminal support margin not reached",
+      "after_rejection": null
+    },
+    {
+      "case": 20,
+      "tick": 320,
+      "before_stage": 15,
+      "after_stage": null,
+      "before_rejection": "QP rejected prediction stage 15",
+      "after_rejection": "terminal support margin not reached"
+    },
+    {
+      "case": 30,
+      "tick": 320,
+      "before_stage": 16,
+      "after_stage": null,
+      "before_rejection": "QP rejected prediction stage 16",
+      "after_rejection": "terminal support margin not reached"
+    },
+    {
+      "case": 61,
+      "tick": 320,
+      "before_stage": null,
+      "after_stage": null,
+      "before_rejection": "terminal support margin not reached",
+      "after_rejection": "terminal support margin not reached"
+    },
+    {
+      "case": 87,
+      "tick": 320,
+      "before_stage": 28,
+      "after_stage": 31,
+      "before_rejection": "QP rejected prediction stage 28",
+      "after_rejection": "QP rejected prediction stage 31"
+    }
+  ],
+  "rejection_counts": {
+    "QP rejected prediction stage 12": 2,
+    "QP rejected prediction stage 30": 1,
+    "QP rejected prediction stage 24": 1,
+    "QP rejected prediction stage 7": 5,
+    "QP rejected prediction stage 10": 6,
+    "QP rejected prediction stage 9": 1,
+    "terminal support margin not reached": 37,
+    "QP rejected prediction stage 31": 2,
+    "QP rejected prediction stage 32": 1,
+    "QP rejected prediction stage 36": 2,
+    "QP rejected prediction stage 26": 2,
+    "QP rejected prediction stage 35": 1,
+    "QP rejected prediction stage 0": 8,
+    "QP rejected prediction stage 16": 1,
+    "QP rejected prediction stage 22": 1,
+    "QP rejected prediction stage 38": 1,
+    "QP rejected prediction stage 17": 3,
+    "insufficient support contacts for fixed-contact QP": 195,
+    "QP rejected prediction stage 25": 1,
+    "QP rejected prediction stage 28": 1,
+    "QP rejected prediction stage 23": 1,
+    "QP rejected prediction stage 27": 1,
+    "QP rejected prediction stage 33": 1,
+    "QP rejected prediction stage 18": 1,
+    "QP rejected prediction stage 6": 1,
+    "QP rejected prediction stage 14": 1,
+    "QP rejected prediction stage 8": 2
+  },
+  "wall_seconds": 99.26172889024019,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_interval_command_followup_20261107/joint_damper20_recorded479.json": "8fbdbd528d8b9c7f1abda0e82560239cd73b5d6ecaffa13598d6fb8311ccc345",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_full_command_followup_20261107/recorded479.json": "68eb28a8b4919b21e066f852ea3ebf08d24faeb84c19357f66f9b5334386736e",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/docs/landing_later_prediction_failures_20261107.json": "2a497e58282fc38516d9aef71be20fb71069529a8f26d1d2f9ca58635b159b6d",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/summarize_joint_damper_v1.py": "08dc1abe56575c3ca79149617c909caf7cdcd6b9fd1eeb838d82671b8a90bd86"
+  }
+}

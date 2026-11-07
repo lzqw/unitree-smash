@@ -22,7 +22,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--run',type=Path,required=True)
     parser.add_argument('--output',type=Path,required=True)
-    parser.add_argument('--backend',choices=['osqp','active-set','arm-feasibility','joint-damper'],default='osqp')
+    parser.add_argument('--backend',choices=['osqp','active-set','arm-feasibility','joint-damper','full-command'],default='osqp')
     args=parser.parse_args()
     if args.output.exists():raise ValueError('Do not overwrite earlier evidence')
     read=lambda f:json.loads((args.run/f).read_text())
@@ -48,6 +48,9 @@ def main():
     if args.backend=='joint-damper':
         from scripts.landing_joint_damper_mpc_v1 import LandingJointDamperMPCV1
         controller=LandingJointDamperMPCV1
+    if args.backend=='full-command':
+        from scripts.landing_full_command_interval_mpc_v1 import LandingFullCommandIntervalMPCV1
+        controller=LandingFullCommandIntervalMPCV1
     mpc=controller(interface,qp_settings=cfg,settings=settings,arm_target_rate_rad_s=10.)
     mpc.set_posture_target(default)
     logs=read('landing_mpc_records.json');public={};hashes={};output=[]
@@ -101,12 +104,14 @@ def main():
         'implicit_support_prediction_v1.py','continuous_support_qp_v1.py',
         'landing_support_mpc_v1.py','landing_support_mpc_v2.py','landing_support_mpc_v3.py',
         'landing_command_history_mpc_v1.py','command_history_support_qp_v1.py']]
-    if args.backend in ('active-set','arm-feasibility','joint-damper'):
+    if args.backend in ('active-set','arm-feasibility','joint-damper','full-command'):
         files += [ROOT/'scripts'/n for n in ['landing_active_set_interval_mpc_v1.py','dense_active_set_qp_v1.py']]
-    if args.backend in ('arm-feasibility','joint-damper'):
+    if args.backend in ('arm-feasibility','joint-damper','full-command'):
         files += [ROOT/'scripts/landing_arm_feasibility_mpc_v1.py']
-    if args.backend=='joint-damper':
+    if args.backend in ('joint-damper','full-command'):
         files += [ROOT/'scripts/landing_joint_damper_mpc_v1.py']
+    if args.backend=='full-command':
+        files += [ROOT/'scripts/landing_full_command_interval_mpc_v1.py']
     hashes.update({str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in files})
     summary=dict(samples=len(output),first_accepted=sum(r['candidate_first_step_accepted'] for r in output),
         horizon_accepted=sum(r['candidate_horizon_accepted'] for r in output),
