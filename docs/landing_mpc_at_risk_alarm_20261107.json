@@ -1,0 +1,4035 @@
+{
+  "scope": "Query full recovery plans at first held-out alarms on real student traces.\n\nPlanning-only counterfactual; no state is stepped in Isaac. Uses actual recorded\nroot poses and public proprioception at the same time. A first alarm between\n50 Hz pose samples is delayed by one 10 ms tick, never assigned a future pose.\n",
+  "native_execution": false,
+  "teacher_rescue_established": false,
+  "risk_report": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_student_risk_prediction_20261107/full_episode_alarms.json",
+  "reference_memory": "Initialize at first alarm; no earlier teacher memory",
+  "contact_mode": "original observed force-norm hysteresis; no additional vertical force threshold",
+  "missing_continuous_force_archive": true,
+  "load_aware_support": false,
+  "summary": {
+    "all": {
+      "cases": 60,
+      "models": {
+        "full_interval": {
+          "first_feasible": 58,
+          "full_horizon": 1
+        },
+        "feasible_command_cost": {
+          "first_feasible": 58,
+          "full_horizon": 1
+        }
+      }
+    },
+    "old_success": {
+      "cases": 3,
+      "models": {
+        "full_interval": {
+          "first_feasible": 3,
+          "full_horizon": 0
+        },
+        "feasible_command_cost": {
+          "first_feasible": 3,
+          "full_horizon": 0
+        }
+      }
+    },
+    "ball_qualified_nonfoot_failure": {
+      "cases": 22,
+      "models": {
+        "full_interval": {
+          "first_feasible": 22,
+          "full_horizon": 0
+        },
+        "feasible_command_cost": {
+          "first_feasible": 22,
+          "full_horizon": 0
+        }
+      }
+    }
+  },
+  "records": [
+    {
+      "case": 1,
+      "first_alarm_tick": 475,
+      "query_tick": 476,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "first_nonfoot_s": 5.079,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 35,
+          "failed_stage": 34,
+          "rejection": "QP rejected prediction stage 34",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.4026009170632324,
+            "horizontal_speed_mps": 1.025443218134671,
+            "angular_speed_rad_s": 2.3605930346940918,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.19344433871304548,
+            "root_height_m": 0.12648747975316757
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.3397554780123797
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 35,
+          "failed_stage": 34,
+          "rejection": "QP rejected prediction stage 34",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.4026009170632324,
+            "horizontal_speed_mps": 1.025443218134671,
+            "angular_speed_rad_s": 2.3605930346940918,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.19344433871304548,
+            "root_height_m": 0.12648747975316757
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.1760920628439635,
+            "baseline_runtime_s": 0.28396044997498393,
+            "total_runtime_s": 0.5493825171142817,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 476,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.3397554780123797
+        }
+      },
+      "foot_fk_max_error_m": 1.752858331816043e-07,
+      "gravity_max_error": 5.708604178256138e-08,
+      "support_feet": 2,
+      "lead_s": 0.31899999999999995
+    },
+    {
+      "case": 2,
+      "first_alarm_tick": 340,
+      "query_tick": 340,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": null,
+      "models": {
+        "full_interval": {
+          "full_horizon": true,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": null,
+          "terminal_risk": {
+            "trigger": false,
+            "tilt_rad": 0.03436003770716992,
+            "horizontal_speed_mps": 0.1514963739829061,
+            "angular_speed_rad_s": 0.16596456355133588,
+            "support_feet": 4,
+            "reason": "none",
+            "support_margin_m": 0.12202573672094766,
+            "root_height_m": 0.2421409371574966
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.6929997200866531
+        },
+        "feasible_command_cost": {
+          "full_horizon": true,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": null,
+          "terminal_risk": {
+            "trigger": false,
+            "tilt_rad": 0.03436003770716992,
+            "horizontal_speed_mps": 0.1514963739829061,
+            "angular_speed_rad_s": 0.16596456355133588,
+            "support_feet": 4,
+            "reason": "none",
+            "support_margin_m": 0.12202573672094766,
+            "root_height_m": 0.2421409371574966
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.3340041898190975,
+            "baseline_runtime_s": 0.3298583619762212,
+            "total_runtime_s": 0.7944408180192113,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": true,
+            "selected": "baseline",
+            "same_control_tick": 340,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.6929997200866531
+        }
+      },
+      "foot_fk_max_error_m": 1.567904649446561e-07,
+      "gravity_max_error": 2.759632422577596e-08,
+      "support_feet": 4,
+      "lead_s": null
+    },
+    {
+      "case": 3,
+      "first_alarm_tick": 460,
+      "query_tick": 460,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "first_nonfoot_s": 5.1450000000000005,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.31461110464315406,
+            "horizontal_speed_mps": 1.0766040454030574,
+            "angular_speed_rad_s": 2.2399138818689073,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.16245084573031507,
+            "root_height_m": 0.1273969886869192
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.4042964503377428
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.31461110464315406,
+            "horizontal_speed_mps": 1.0766040454030574,
+            "angular_speed_rad_s": 2.2399138818689073,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.16245084573031507,
+            "root_height_m": 0.1273969886869192
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.19970929599367082,
+            "baseline_runtime_s": 0.3247718149796128,
+            "total_runtime_s": 0.6223183670081198,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 460,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.4042964503377428
+        }
+      },
+      "foot_fk_max_error_m": 2.467723440036096e-07,
+      "gravity_max_error": 2.6719566226240943e-08,
+      "support_feet": 3,
+      "lead_s": 0.5449999999999999
+    },
+    {
+      "case": 5,
+      "first_alarm_tick": 310,
+      "query_tick": 310,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": 4.9830000000000005,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 34,
+          "failed_stage": 33,
+          "rejection": "QP rejected prediction stage 33",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.3483420315246146,
+            "horizontal_speed_mps": 0.6086597340586457,
+            "angular_speed_rad_s": 1.8869613396795257,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.23310373350878982,
+            "root_height_m": 0.12868425118435123
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 1.2769173615668923
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 34,
+          "failed_stage": 33,
+          "rejection": "QP rejected prediction stage 33",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.3483420315246146,
+            "horizontal_speed_mps": 0.6086597340586457,
+            "angular_speed_rad_s": 1.8869613396795257,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.23310373350878982,
+            "root_height_m": 0.12868425118435123
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.15549687296152115,
+            "baseline_runtime_s": 0.2628285388927907,
+            "total_runtime_s": 0.5027549020014703,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 310,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 1.2769173615668923
+        }
+      },
+      "foot_fk_max_error_m": 2.657715436060748e-07,
+      "gravity_max_error": 1.1300063418318018e-07,
+      "support_feet": 1,
+      "lead_s": 1.8830000000000005
+    },
+    {
+      "case": 7,
+      "first_alarm_tick": 305,
+      "query_tick": 306,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": 6.197,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 8,
+          "failed_stage": 7,
+          "rejection": "QP rejected prediction stage 7",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.6485339209041744,
+            "horizontal_speed_mps": 1.9330999755589695,
+            "angular_speed_rad_s": 1.9604266742207976,
+            "support_feet": 1,
+            "reason": "support_margin",
+            "support_margin_m": -0.15847128478263262,
+            "root_height_m": 0.12256915554346695
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.34201227379241145
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 8,
+          "failed_stage": 7,
+          "rejection": "QP rejected prediction stage 7",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.6485339209041744,
+            "horizontal_speed_mps": 1.9330999755589695,
+            "angular_speed_rad_s": 1.9604266742207976,
+            "support_feet": 1,
+            "reason": "support_margin",
+            "support_margin_m": -0.15847128478263262,
+            "root_height_m": 0.12256915554346695
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.059908551862463355,
+            "baseline_runtime_s": 0.06705866707488894,
+            "total_runtime_s": 0.1499007970560342,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 306,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.34201227379241145
+        }
+      },
+      "foot_fk_max_error_m": 2.3176865721064033e-07,
+      "gravity_max_error": 1.1340466898879242e-08,
+      "support_feet": 1,
+      "lead_s": 3.137
+    },
+    {
+      "case": 8,
+      "first_alarm_tick": 310,
+      "query_tick": 310,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "first_nonfoot_s": 4.163,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.21850707594812213,
+            "horizontal_speed_mps": 0.43361162981082096,
+            "angular_speed_rad_s": 1.4448987080641598,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.1859118486559557,
+            "root_height_m": 0.1431109080658308
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.8815795434114624
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.21850707594812213,
+            "horizontal_speed_mps": 0.43361162981082096,
+            "angular_speed_rad_s": 1.4448987080641598,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.1859118486559557,
+            "root_height_m": 0.1431109080658308
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.2916675319429487,
+            "baseline_runtime_s": 0.3059825759846717,
+            "total_runtime_s": 0.7210436051245779,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 310,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.8815795434114624
+        }
+      },
+      "foot_fk_max_error_m": 1.5450654550219767e-07,
+      "gravity_max_error": 1.0928390303810431e-07,
+      "support_feet": 1,
+      "lead_s": 1.0630000000000002
+    },
+    {
+      "case": 9,
+      "first_alarm_tick": 365,
+      "query_tick": 366,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "first_nonfoot_s": 3.734,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 17,
+          "failed_stage": 16,
+          "rejection": "QP rejected prediction stage 16",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.6537737007246999,
+            "horizontal_speed_mps": 1.1926476918244207,
+            "angular_speed_rad_s": 1.1354555761126666,
+            "support_feet": 2,
+            "reason": "support_margin",
+            "support_margin_m": -0.19217971026132377,
+            "root_height_m": 0.12237123368550373
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.30095515320010596
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 17,
+          "failed_stage": 16,
+          "rejection": "QP rejected prediction stage 16",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.6537737007246999,
+            "horizontal_speed_mps": 1.1926476918244207,
+            "angular_speed_rad_s": 1.1354555761126666,
+            "support_feet": 2,
+            "reason": "support_margin",
+            "support_margin_m": -0.19217971026132377,
+            "root_height_m": 0.12237123368550373
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.1073201207909733,
+            "baseline_runtime_s": 0.1240933418739587,
+            "total_runtime_s": 0.27948404592461884,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 366,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.30095515320010596
+        }
+      },
+      "foot_fk_max_error_m": 1.7669338392423128e-07,
+      "gravity_max_error": 3.2095656243846804e-08,
+      "support_feet": 1,
+      "lead_s": 0.07399999999999984
+    },
+    {
+      "case": 11,
+      "first_alarm_tick": 530,
+      "query_tick": 530,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": 5.655,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 35,
+          "failed_stage": 34,
+          "rejection": "QP rejected prediction stage 34",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.4116639250179338,
+            "horizontal_speed_mps": 0.6949792769897908,
+            "angular_speed_rad_s": 1.4771164603303621,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.17221776371445455,
+            "root_height_m": 0.12172462859378914
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.3720207788705894
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 35,
+          "failed_stage": 34,
+          "rejection": "QP rejected prediction stage 34",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.4116639250179338,
+            "horizontal_speed_mps": 0.6949792769897908,
+            "angular_speed_rad_s": 1.4771164603303621,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.17221776371445455,
+            "root_height_m": 0.12172462859378914
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.14913131901994348,
+            "baseline_runtime_s": 0.2809386330191046,
+            "total_runtime_s": 0.5122483419254422,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 530,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.3720207788705894
+        }
+      },
+      "foot_fk_max_error_m": 1.3502352680383467e-07,
+      "gravity_max_error": 3.154904515412227e-08,
+      "support_feet": 2,
+      "lead_s": 0.3550000000000004
+    },
+    {
+      "case": 12,
+      "first_alarm_tick": 390,
+      "query_tick": 390,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "first_nonfoot_s": 4.785,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.13057386859337652,
+            "horizontal_speed_mps": 0.5677212089256544,
+            "angular_speed_rad_s": 0.26101271545399896,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.07403881099786208,
+            "root_height_m": 0.20692264706228067
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.4672226948391758
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.13057386859337652,
+            "horizontal_speed_mps": 0.5677212089256544,
+            "angular_speed_rad_s": 0.26101271545399896,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.07403881099786208,
+            "root_height_m": 0.20692264706228067
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.3083144628908485,
+            "baseline_runtime_s": 0.3215348629746586,
+            "total_runtime_s": 0.753468015929684,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 390,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.4672226948391758
+        }
+      },
+      "foot_fk_max_error_m": 2.0658398136585987e-07,
+      "gravity_max_error": 1.889786671593896e-08,
+      "support_feet": 3,
+      "lead_s": 0.8850000000000002
+    },
+    {
+      "case": 13,
+      "first_alarm_tick": 310,
+      "query_tick": 310,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": 3.494,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": false,
+          "stage_count": 1,
+          "failed_stage": 0,
+          "rejection": "QP rejected prediction stage 0",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.6466935446700061,
+            "horizontal_speed_mps": 0.38948877147494954,
+            "angular_speed_rad_s": 2.0455642521538175,
+            "support_feet": 1,
+            "reason": "support_margin",
+            "support_margin_m": -0.2132487315632959,
+            "root_height_m": 0.26824548840522766
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": null
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": false,
+          "stage_count": 1,
+          "failed_stage": 0,
+          "rejection": "QP rejected prediction stage 0",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.6466935446700061,
+            "horizontal_speed_mps": 0.38948877147494954,
+            "angular_speed_rad_s": 2.0455642521538175,
+            "support_feet": 1,
+            "reason": "support_margin",
+            "support_margin_m": -0.2132487315632959,
+            "root_height_m": 0.26824548840522766
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.00458973809145391,
+            "baseline_runtime_s": 0.004526766948401928,
+            "total_runtime_s": 0.010192255023866892,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 310,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": null
+        }
+      },
+      "foot_fk_max_error_m": 1.5719750140474886e-07,
+      "gravity_max_error": 6.822160647512732e-08,
+      "support_feet": 1,
+      "lead_s": 0.39400000000000013
+    },
+    {
+      "case": 15,
+      "first_alarm_tick": 690,
+      "query_tick": 690,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": 7.76,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.22561130956474423,
+            "horizontal_speed_mps": 0.9164298494787908,
+            "angular_speed_rad_s": 1.3569893869113006,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.13325060586903853,
+            "root_height_m": 0.16903823158982023
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.4428403009603939
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.22561130956474423,
+            "horizontal_speed_mps": 0.9164298494787908,
+            "angular_speed_rad_s": 1.3569893869113006,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.13325060586903853,
+            "root_height_m": 0.16903823158982023
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.16536668105982244,
+            "baseline_runtime_s": 0.3242613449692726,
+            "total_runtime_s": 0.5843573450110853,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 690,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.4428403009603939
+        }
+      },
+      "foot_fk_max_error_m": 1.9784030125258312e-07,
+      "gravity_max_error": 3.031055120783499e-08,
+      "support_feet": 3,
+      "lead_s": 0.8599999999999994
+    },
+    {
+      "case": 18,
+      "first_alarm_tick": 520,
+      "query_tick": 520,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "first_nonfoot_s": 5.847,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.24309881624691587,
+            "horizontal_speed_mps": 0.9841088540643094,
+            "angular_speed_rad_s": 1.7058580508557115,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.14413212940362258,
+            "root_height_m": 0.1558192157341367
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.3328464703567487
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.24309881624691587,
+            "horizontal_speed_mps": 0.9841088540643094,
+            "angular_speed_rad_s": 1.7058580508557115,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.14413212940362258,
+            "root_height_m": 0.1558192157341367
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.19119497505016625,
+            "baseline_runtime_s": 0.3282367989886552,
+            "total_runtime_s": 0.6214868610259145,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 520,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.3328464703567487
+        }
+      },
+      "foot_fk_max_error_m": 1.4681338389443965e-07,
+      "gravity_max_error": 3.24251173411394e-08,
+      "support_feet": 3,
+      "lead_s": 0.6470000000000002
+    },
+    {
+      "case": 19,
+      "first_alarm_tick": 645,
+      "query_tick": 646,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": 6.726,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 31,
+          "failed_stage": 30,
+          "rejection": "QP rejected prediction stage 30",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.5155070425017377,
+            "horizontal_speed_mps": 0.7106941658470712,
+            "angular_speed_rad_s": 0.5676043878686045,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.19092146787205008,
+            "root_height_m": 0.12069847710639185
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.31606280397708986
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 31,
+          "failed_stage": 30,
+          "rejection": "QP rejected prediction stage 30",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.5155070425017377,
+            "horizontal_speed_mps": 0.7106941658470712,
+            "angular_speed_rad_s": 0.5676043878686045,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.19092146787205008,
+            "root_height_m": 0.12069847710639185
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.15570713090710342,
+            "baseline_runtime_s": 0.25011275219731033,
+            "total_runtime_s": 0.48383391206152737,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 646,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.31606280397708986
+        }
+      },
+      "foot_fk_max_error_m": 1.7726513967808444e-07,
+      "gravity_max_error": 8.547793778346247e-08,
+      "support_feet": 2,
+      "lead_s": 0.266
+    },
+    {
+      "case": 20,
+      "first_alarm_tick": 325,
+      "query_tick": 326,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "first_nonfoot_s": 3.7030000000000003,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.14520875346269457,
+            "horizontal_speed_mps": 0.33046702101262593,
+            "angular_speed_rad_s": 0.2777438221139217,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.04560390495534942,
+            "root_height_m": 0.23084119006603243
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.6021037424148242
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.14520875346269457,
+            "horizontal_speed_mps": 0.33046702101262593,
+            "angular_speed_rad_s": 0.2777438221139217,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.04560390495534942,
+            "root_height_m": 0.23084119006603243
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.2893925018142909,
+            "baseline_runtime_s": 0.320756213972345,
+            "total_runtime_s": 0.7304384228773415,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 326,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.6021037424148242
+        }
+      },
+      "foot_fk_max_error_m": 1.7148363918098597e-07,
+      "gravity_max_error": 4.0653554411740345e-08,
+      "support_feet": 2,
+      "lead_s": 0.44300000000000006
+    },
+    {
+      "case": 29,
+      "first_alarm_tick": 335,
+      "query_tick": 336,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": 3.5140000000000002,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 39,
+          "failed_stage": 38,
+          "rejection": "QP rejected prediction stage 38",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.5403744625946575,
+            "horizontal_speed_mps": 1.048119105945774,
+            "angular_speed_rad_s": 4.3998244862162235,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.22927241549120417,
+            "root_height_m": 0.12387629931907922
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.46053288214352484
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 39,
+          "failed_stage": 38,
+          "rejection": "QP rejected prediction stage 38",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.5403744625946575,
+            "horizontal_speed_mps": 1.048119105945774,
+            "angular_speed_rad_s": 4.3998244862162235,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.22927241549120417,
+            "root_height_m": 0.12387629931907922
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.2458780489396304,
+            "baseline_runtime_s": 0.31146007613278925,
+            "total_runtime_s": 0.6651445408351719,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 336,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.46053288214352484
+        }
+      },
+      "foot_fk_max_error_m": 1.2410020316933057e-07,
+      "gravity_max_error": 2.4522977926100253e-08,
+      "support_feet": 2,
+      "lead_s": 0.15400000000000036
+    },
+    {
+      "case": 30,
+      "first_alarm_tick": 325,
+      "query_tick": 326,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "first_nonfoot_s": 3.521,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.2627848639769382,
+            "horizontal_speed_mps": 0.7574299600073796,
+            "angular_speed_rad_s": 1.9419184065882025,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.11439778227476705,
+            "root_height_m": 0.19073880748879687
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.5802847351739505
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.2627848639769382,
+            "horizontal_speed_mps": 0.7574299600073796,
+            "angular_speed_rad_s": 1.9419184065882025,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.11439778227476705,
+            "root_height_m": 0.19073880748879687
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.3585777459666133,
+            "baseline_runtime_s": 0.3256949440110475,
+            "total_runtime_s": 0.8129368429072201,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 326,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.5802847351739505
+        }
+      },
+      "foot_fk_max_error_m": 3.0712775583863205e-07,
+      "gravity_max_error": 1.6806795649637607e-08,
+      "support_feet": 2,
+      "lead_s": 0.2609999999999997
+    },
+    {
+      "case": 31,
+      "first_alarm_tick": 560,
+      "query_tick": 560,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": 6.032,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": 39,
+          "rejection": "QP rejected prediction stage 39",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.37078717100121483,
+            "horizontal_speed_mps": 1.1292384850364952,
+            "angular_speed_rad_s": 2.897489523256245,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.1897020718561969,
+            "root_height_m": 0.1206762505718791
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.33658643388590864
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": 39,
+          "rejection": "QP rejected prediction stage 39",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.37078717100121483,
+            "horizontal_speed_mps": 1.1292384850364952,
+            "angular_speed_rad_s": 2.897489523256245,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.1897020718561969,
+            "root_height_m": 0.1206762505718791
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.18253933498635888,
+            "baseline_runtime_s": 0.3210900698322803,
+            "total_runtime_s": 0.600545265013352,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 560,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.33658643388590864
+        }
+      },
+      "foot_fk_max_error_m": 1.9478424498342584e-07,
+      "gravity_max_error": 2.0219859231396242e-08,
+      "support_feet": 3,
+      "lead_s": 0.4319999999999995
+    },
+    {
+      "case": 32,
+      "first_alarm_tick": 310,
+      "query_tick": 310,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "first_nonfoot_s": null,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 8,
+          "failed_stage": 7,
+          "rejection": "QP rejected prediction stage 7",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.43531119910942967,
+            "horizontal_speed_mps": 1.6178323780055288,
+            "angular_speed_rad_s": 0.48262721003908826,
+            "support_feet": 1,
+            "reason": "support_margin",
+            "support_margin_m": -0.12245389331023987,
+            "root_height_m": 0.13708735138320843
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.6251617219260259
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 8,
+          "failed_stage": 7,
+          "rejection": "QP rejected prediction stage 7",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.43531119910942967,
+            "horizontal_speed_mps": 1.6178323780055288,
+            "angular_speed_rad_s": 0.48262721003908826,
+            "support_feet": 1,
+            "reason": "support_margin",
+            "support_margin_m": -0.12245389331023987,
+            "root_height_m": 0.13708735138320843
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.06740042706951499,
+            "baseline_runtime_s": 0.06774417287670076,
+            "total_runtime_s": 0.15840692399069667,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 310,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.6251617219260259
+        }
+      },
+      "foot_fk_max_error_m": 2.340401493716726e-07,
+      "gravity_max_error": 2.600908832750548e-08,
+      "support_feet": 1,
+      "lead_s": null
+    },
+    {
+      "case": 35,
+      "first_alarm_tick": 305,
+      "query_tick": 306,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "first_nonfoot_s": null,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.25998253531361903,
+            "horizontal_speed_mps": 0.5242276668788426,
+            "angular_speed_rad_s": 0.21565922675331714,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.1965781410307593,
+            "root_height_m": 0.1354769274864231
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 1.2241655501766826
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.25998253531361903,
+            "horizontal_speed_mps": 0.5242276668788426,
+            "angular_speed_rad_s": 0.21565922675331714,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.1965781410307593,
+            "root_height_m": 0.1354769274864231
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.2726357311476022,
+            "baseline_runtime_s": 0.3117204741574824,
+            "total_runtime_s": 0.7014344548806548,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 306,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 1.2241655501766826
+        }
+      },
+      "foot_fk_max_error_m": 2.8654843342579284e-07,
+      "gravity_max_error": 8.609420543148616e-08,
+      "support_feet": 2,
+      "lead_s": null
+    },
+    {
+      "case": 38,
+      "first_alarm_tick": 315,
+      "query_tick": 316,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "first_nonfoot_s": 4.172,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.1261203995798787,
+            "horizontal_speed_mps": 0.16862320657696114,
+            "angular_speed_rad_s": 0.5234354445211402,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.043427889624063507,
+            "root_height_m": 0.2244175955008164
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 1.1329368843423095
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.1261203995798787,
+            "horizontal_speed_mps": 0.16862320657696114,
+            "angular_speed_rad_s": 0.5234354445211402,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.043427889624063507,
+            "root_height_m": 0.2244175955008164
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.31691321078687906,
+            "baseline_runtime_s": 0.3147304910235107,
+            "total_runtime_s": 0.7607076920103282,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 316,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 1.1329368843423095
+        }
+      },
+      "foot_fk_max_error_m": 1.4696016781279297e-07,
+      "gravity_max_error": 5.050705198517136e-08,
+      "support_feet": 2,
+      "lead_s": 1.0119999999999996
+    },
+    {
+      "case": 40,
+      "first_alarm_tick": 315,
+      "query_tick": 316,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": 3.58,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": false,
+          "stage_count": 1,
+          "failed_stage": 0,
+          "rejection": "QP rejected prediction stage 0",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.5639453148212948,
+            "horizontal_speed_mps": 0.12929900702727642,
+            "angular_speed_rad_s": 2.0019181247097335,
+            "support_feet": 1,
+            "reason": "support_margin",
+            "support_margin_m": -0.2056666963947154,
+            "root_height_m": 0.25101563334465027
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": null
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": false,
+          "stage_count": 1,
+          "failed_stage": 0,
+          "rejection": "QP rejected prediction stage 0",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.5639453148212948,
+            "horizontal_speed_mps": 0.12929900702727642,
+            "angular_speed_rad_s": 2.0019181247097335,
+            "support_feet": 1,
+            "reason": "support_margin",
+            "support_margin_m": -0.2056666963947154,
+            "root_height_m": 0.25101563334465027
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.004526026081293821,
+            "baseline_runtime_s": 0.004463178105652332,
+            "total_runtime_s": 0.010047044139355421,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 316,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": null
+        }
+      },
+      "foot_fk_max_error_m": 2.1242115783026705e-07,
+      "gravity_max_error": 1.262970102944294e-07,
+      "support_feet": 1,
+      "lead_s": 0.41999999999999993
+    },
+    {
+      "case": 41,
+      "first_alarm_tick": 305,
+      "query_tick": 306,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": 3.487,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 10,
+          "failed_stage": 9,
+          "rejection": "QP rejected prediction stage 9",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.68767117425258,
+            "horizontal_speed_mps": 2.0714850812403576,
+            "angular_speed_rad_s": 0.8096286550570534,
+            "support_feet": 2,
+            "reason": "support_margin",
+            "support_margin_m": -0.19659061678655737,
+            "root_height_m": 0.1202570468074818
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.8502807227023004
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 10,
+          "failed_stage": 9,
+          "rejection": "QP rejected prediction stage 9",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.68767117425258,
+            "horizontal_speed_mps": 2.0714850812403576,
+            "angular_speed_rad_s": 0.8096286550570534,
+            "support_feet": 2,
+            "reason": "support_margin",
+            "support_margin_m": -0.19659061678655737,
+            "root_height_m": 0.1202570468074818
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.06538565689697862,
+            "baseline_runtime_s": 0.07433288707397878,
+            "total_runtime_s": 0.1676556710153818,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 306,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.8502807227023004
+        }
+      },
+      "foot_fk_max_error_m": 1.7848230637884654e-07,
+      "gravity_max_error": 5.631788357884915e-08,
+      "support_feet": 2,
+      "lead_s": 0.42700000000000005
+    },
+    {
+      "case": 42,
+      "first_alarm_tick": 310,
+      "query_tick": 310,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "first_nonfoot_s": 3.6710000000000003,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.2366804159559493,
+            "horizontal_speed_mps": 0.15313859035256425,
+            "angular_speed_rad_s": 0.3810875968351094,
+            "support_feet": 4,
+            "reason": "support_margin",
+            "support_margin_m": -0.03732097980369199,
+            "root_height_m": 0.1317187966417581
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.6357961332882142
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.2366804159559493,
+            "horizontal_speed_mps": 0.15313859035256425,
+            "angular_speed_rad_s": 0.3810875968351094,
+            "support_feet": 4,
+            "reason": "support_margin",
+            "support_margin_m": -0.03732097980369199,
+            "root_height_m": 0.1317187966417581
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.19811810902319849,
+            "baseline_runtime_s": 0.312470595119521,
+            "total_runtime_s": 0.6151408569421619,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 310,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.6357961332882142
+        }
+      },
+      "foot_fk_max_error_m": 1.764625501277095e-07,
+      "gravity_max_error": 4.506319761787836e-08,
+      "support_feet": 1,
+      "lead_s": 0.5710000000000002
+    },
+    {
+      "case": 46,
+      "first_alarm_tick": 400,
+      "query_tick": 400,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": 4.566,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 25,
+          "failed_stage": 24,
+          "rejection": "QP rejected prediction stage 24",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.4068565552386296,
+            "horizontal_speed_mps": 0.5754268130115456,
+            "angular_speed_rad_s": 0.30277753001974317,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.1297204764320671,
+            "root_height_m": 0.12178211427684231
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.29740115511983095
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 25,
+          "failed_stage": 24,
+          "rejection": "QP rejected prediction stage 24",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.4068565552386296,
+            "horizontal_speed_mps": 0.5754268130115456,
+            "angular_speed_rad_s": 0.30277753001974317,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.1297204764320671,
+            "root_height_m": 0.12178211427684231
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.1322258620057255,
+            "baseline_runtime_s": 0.20228306902572513,
+            "total_runtime_s": 0.3996758069843054,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 400,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.29740115511983095
+        }
+      },
+      "foot_fk_max_error_m": 1.4213436483334618e-07,
+      "gravity_max_error": 1.4781887103243463e-08,
+      "support_feet": 1,
+      "lead_s": 0.5659999999999998
+    },
+    {
+      "case": 47,
+      "first_alarm_tick": 305,
+      "query_tick": 306,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": null,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 10,
+          "failed_stage": 9,
+          "rejection": "QP rejected prediction stage 9",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.6955006356629876,
+            "horizontal_speed_mps": 2.0947357884683426,
+            "angular_speed_rad_s": 1.069065398215629,
+            "support_feet": 2,
+            "reason": "support_margin",
+            "support_margin_m": -0.17989102098916313,
+            "root_height_m": 0.13724125543606133
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 1.2805248392404476
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 10,
+          "failed_stage": 9,
+          "rejection": "QP rejected prediction stage 9",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.6955006356629876,
+            "horizontal_speed_mps": 2.0947357884683426,
+            "angular_speed_rad_s": 1.069065398215629,
+            "support_feet": 2,
+            "reason": "support_margin",
+            "support_margin_m": -0.17989102098916313,
+            "root_height_m": 0.13724125543606133
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.0730822270270437,
+            "baseline_runtime_s": 0.07279499107971787,
+            "total_runtime_s": 0.17527707992121577,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 306,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 1.2805248392404476
+        }
+      },
+      "foot_fk_max_error_m": 1.9388696925748405e-07,
+      "gravity_max_error": 1.5993005320069642e-07,
+      "support_feet": 2,
+      "lead_s": null
+    },
+    {
+      "case": 48,
+      "first_alarm_tick": 310,
+      "query_tick": 310,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": 3.658,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.36795941298823537,
+            "horizontal_speed_mps": 0.7701066364357684,
+            "angular_speed_rad_s": 2.1978003940675994,
+            "support_feet": 2,
+            "reason": "support_margin",
+            "support_margin_m": -0.1755405650950093,
+            "root_height_m": 0.12268429123958197
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.8068374001081953
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.36795941298823537,
+            "horizontal_speed_mps": 0.7701066364357684,
+            "angular_speed_rad_s": 2.1978003940675994,
+            "support_feet": 2,
+            "reason": "support_margin",
+            "support_margin_m": -0.1755405650950093,
+            "root_height_m": 0.12268429123958197
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.29424311500042677,
+            "baseline_runtime_s": 0.30328804487362504,
+            "total_runtime_s": 0.7208221019245684,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 310,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.8068374001081953
+        }
+      },
+      "foot_fk_max_error_m": 1.6481040548965709e-07,
+      "gravity_max_error": 8.967697251449636e-09,
+      "support_feet": 1,
+      "lead_s": 0.5579999999999998
+    },
+    {
+      "case": 50,
+      "first_alarm_tick": 530,
+      "query_tick": 530,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "first_nonfoot_s": 5.8740000000000006,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.2666587775387866,
+            "horizontal_speed_mps": 1.027114988221135,
+            "angular_speed_rad_s": 1.8813715816137317,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.15503133847897596,
+            "root_height_m": 0.14385244408770606
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.4083788561673646
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.2666587775387866,
+            "horizontal_speed_mps": 1.027114988221135,
+            "angular_speed_rad_s": 1.8813715816137317,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.15503133847897596,
+            "root_height_m": 0.14385244408770606
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.19928226992487907,
+            "baseline_runtime_s": 0.3334911009296775,
+            "total_runtime_s": 0.6357892190571874,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 530,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.4083788561673646
+        }
+      },
+      "foot_fk_max_error_m": 1.246355268991195e-07,
+      "gravity_max_error": 2.8021393316812748e-08,
+      "support_feet": 3,
+      "lead_s": 0.5740000000000007
+    },
+    {
+      "case": 52,
+      "first_alarm_tick": 305,
+      "query_tick": 306,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "first_nonfoot_s": null,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.24305506276012917,
+            "horizontal_speed_mps": 0.4212083263531054,
+            "angular_speed_rad_s": 0.3300959568391313,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.18222116878102593,
+            "root_height_m": 0.14635841463323832
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 1.1214837899483803
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.24305506276012917,
+            "horizontal_speed_mps": 0.4212083263531054,
+            "angular_speed_rad_s": 0.3300959568391313,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.18222116878102593,
+            "root_height_m": 0.14635841463323832
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.2998658479191363,
+            "baseline_runtime_s": 0.3133282659109682,
+            "total_runtime_s": 0.7370708058588207,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 306,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 1.1214837899483803
+        }
+      },
+      "foot_fk_max_error_m": 1.4278416682333983e-07,
+      "gravity_max_error": 8.01815599471567e-08,
+      "support_feet": 2,
+      "lead_s": null
+    },
+    {
+      "case": 54,
+      "first_alarm_tick": 550,
+      "query_tick": 550,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "first_nonfoot_s": 5.7,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 31,
+          "failed_stage": 30,
+          "rejection": "QP rejected prediction stage 30",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.46903682449788153,
+            "horizontal_speed_mps": 0.971064393297115,
+            "angular_speed_rad_s": 2.190308397972219,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.21165542522664918,
+            "root_height_m": 0.12363784265588681
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.36771824126944913
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 31,
+          "failed_stage": 30,
+          "rejection": "QP rejected prediction stage 30",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.46903682449788153,
+            "horizontal_speed_mps": 0.971064393297115,
+            "angular_speed_rad_s": 2.190308397972219,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.21165542522664918,
+            "root_height_m": 0.12363784265588681
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.16008847299963236,
+            "baseline_runtime_s": 0.2569629498757422,
+            "total_runtime_s": 0.49685620004311204,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 550,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.36771824126944913
+        }
+      },
+      "foot_fk_max_error_m": 1.4603619535868972e-07,
+      "gravity_max_error": 6.880949077192611e-08,
+      "support_feet": 2,
+      "lead_s": 0.20000000000000018
+    },
+    {
+      "case": 56,
+      "first_alarm_tick": 335,
+      "query_tick": 336,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": 3.6630000000000003,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.3661321501131405,
+            "horizontal_speed_mps": 0.8208621038804897,
+            "angular_speed_rad_s": 1.7572507815825462,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.2632470715362687,
+            "root_height_m": 0.18109595177803098
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.670225953270221
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.3661321501131405,
+            "horizontal_speed_mps": 0.8208621038804897,
+            "angular_speed_rad_s": 1.7572507815825462,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.2632470715362687,
+            "root_height_m": 0.18109595177803098
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.2770793561358005,
+            "baseline_runtime_s": 0.31376424385234714,
+            "total_runtime_s": 0.7108336731325835,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 336,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.670225953270221
+        }
+      },
+      "foot_fk_max_error_m": 1.5729456037671952e-07,
+      "gravity_max_error": 4.9508377231166634e-08,
+      "support_feet": 1,
+      "lead_s": 0.3030000000000004
+    },
+    {
+      "case": 57,
+      "first_alarm_tick": 410,
+      "query_tick": 410,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "first_nonfoot_s": 5.051,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.16710296584144915,
+            "horizontal_speed_mps": 0.792976620082612,
+            "angular_speed_rad_s": 0.5134110659684391,
+            "support_feet": 2,
+            "reason": "support_margin",
+            "support_margin_m": -0.14128621268845545,
+            "root_height_m": 0.17310875059589576
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.6821101977046438
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.16710296584144915,
+            "horizontal_speed_mps": 0.792976620082612,
+            "angular_speed_rad_s": 0.5134110659684391,
+            "support_feet": 2,
+            "reason": "support_margin",
+            "support_margin_m": -0.14128621268845545,
+            "root_height_m": 0.17310875059589576
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.22286856407299638,
+            "baseline_runtime_s": 0.29969580797478557,
+            "total_runtime_s": 0.6316474780905992,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 410,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.6821101977046438
+        }
+      },
+      "foot_fk_max_error_m": 1.8272350016390604e-07,
+      "gravity_max_error": 4.3056146536990525e-08,
+      "support_feet": 2,
+      "lead_s": 0.9510000000000005
+    },
+    {
+      "case": 58,
+      "first_alarm_tick": 390,
+      "query_tick": 390,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "first_nonfoot_s": 4.66,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.15534351939709387,
+            "horizontal_speed_mps": 0.708657890009982,
+            "angular_speed_rad_s": 0.4969275409337668,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.10023149083905636,
+            "root_height_m": 0.18807858894156848
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.397927898248369
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.15534351939709387,
+            "horizontal_speed_mps": 0.708657890009982,
+            "angular_speed_rad_s": 0.4969275409337668,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.10023149083905636,
+            "root_height_m": 0.18807858894156848
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.27641271497122943,
+            "baseline_runtime_s": 0.32620596908964217,
+            "total_runtime_s": 0.7198461901862174,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 390,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.397927898248369
+        }
+      },
+      "foot_fk_max_error_m": 1.5335225736490266e-07,
+      "gravity_max_error": 2.3239848961909004e-08,
+      "support_feet": 3,
+      "lead_s": 0.7600000000000002
+    },
+    {
+      "case": 61,
+      "first_alarm_tick": 510,
+      "query_tick": 510,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "first_nonfoot_s": 5.604,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.30068374134762893,
+            "horizontal_speed_mps": 1.0695403857290566,
+            "angular_speed_rad_s": 2.180390569805975,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.16581478701386554,
+            "root_height_m": 0.13825344037583126
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.36801963933091153
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.30068374134762893,
+            "horizontal_speed_mps": 1.0695403857290566,
+            "angular_speed_rad_s": 2.180390569805975,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.16581478701386554,
+            "root_height_m": 0.13825344037583126
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.18184995092451572,
+            "baseline_runtime_s": 0.3237731889821589,
+            "total_runtime_s": 0.6041618331801146,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 510,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.36801963933091153
+        }
+      },
+      "foot_fk_max_error_m": 2.6522903628922734e-07,
+      "gravity_max_error": 3.696309822109889e-08,
+      "support_feet": 2,
+      "lead_s": 0.5039999999999996
+    },
+    {
+      "case": 62,
+      "first_alarm_tick": 310,
+      "query_tick": 310,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": 3.735,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 9,
+          "failed_stage": 8,
+          "rejection": "QP rejected prediction stage 8",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.6294475455324872,
+            "horizontal_speed_mps": 2.0109509790026414,
+            "angular_speed_rad_s": 4.948774169457021,
+            "support_feet": 1,
+            "reason": "support_margin",
+            "support_margin_m": -0.1378615058740036,
+            "root_height_m": 0.1407100977621384
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.8705460540051364
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 9,
+          "failed_stage": 8,
+          "rejection": "QP rejected prediction stage 8",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.6294475455324872,
+            "horizontal_speed_mps": 2.0109509790026414,
+            "angular_speed_rad_s": 4.948774169457021,
+            "support_feet": 1,
+            "reason": "support_margin",
+            "support_margin_m": -0.1378615058740036,
+            "root_height_m": 0.1407100977621384
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.0593062830157578,
+            "baseline_runtime_s": 0.06733514810912311,
+            "total_runtime_s": 0.15142779797315598,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 310,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.8705460540051364
+        }
+      },
+      "foot_fk_max_error_m": 1.3451454311530497e-07,
+      "gravity_max_error": 3.792244129829925e-08,
+      "support_feet": 1,
+      "lead_s": 0.6349999999999998
+    },
+    {
+      "case": 65,
+      "first_alarm_tick": 515,
+      "query_tick": 516,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": 5.851,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.25071213111240487,
+            "horizontal_speed_mps": 0.9909326189892373,
+            "angular_speed_rad_s": 1.6554672031782223,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.1484467850498785,
+            "root_height_m": 0.15288337737449154
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.3827376274842953
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.25071213111240487,
+            "horizontal_speed_mps": 0.9909326189892373,
+            "angular_speed_rad_s": 1.6554672031782223,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.1484467850498785,
+            "root_height_m": 0.15288337737449154
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.17964758118614554,
+            "baseline_runtime_s": 0.3233563059475273,
+            "total_runtime_s": 0.6014337008818984,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 516,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.3827376274842953
+        }
+      },
+      "foot_fk_max_error_m": 2.0898751085240974e-07,
+      "gravity_max_error": 2.2794336307363494e-08,
+      "support_feet": 3,
+      "lead_s": 0.6909999999999998
+    },
+    {
+      "case": 67,
+      "first_alarm_tick": 400,
+      "query_tick": 400,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "first_nonfoot_s": 5.025,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.14448391253125356,
+            "horizontal_speed_mps": 0.67621617001115,
+            "angular_speed_rad_s": 0.23361437926706025,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.08555840750119628,
+            "root_height_m": 0.20953426914141526
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.5591071968610004
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.14448391253125356,
+            "horizontal_speed_mps": 0.67621617001115,
+            "angular_speed_rad_s": 0.23361437926706025,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.08555840750119628,
+            "root_height_m": 0.20953426914141526
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.21567598404362798,
+            "baseline_runtime_s": 0.32545160804875195,
+            "total_runtime_s": 0.6472562041599303,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 400,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.5591071968610004
+        }
+      },
+      "foot_fk_max_error_m": 1.8604739382421798e-07,
+      "gravity_max_error": 2.5823281402104215e-08,
+      "support_feet": 2,
+      "lead_s": 1.0250000000000004
+    },
+    {
+      "case": 68,
+      "first_alarm_tick": 385,
+      "query_tick": 386,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": 4.383,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.22843050063998235,
+            "horizontal_speed_mps": 0.8706916453797972,
+            "angular_speed_rad_s": 1.1555263070809887,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.14466263494879802,
+            "root_height_m": 0.16231301413347438
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.40539410208224813
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.22843050063998235,
+            "horizontal_speed_mps": 0.8706916453797972,
+            "angular_speed_rad_s": 1.1555263070809887,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.14466263494879802,
+            "root_height_m": 0.16231301413347438
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.22247387818060815,
+            "baseline_runtime_s": 0.32649286603555083,
+            "total_runtime_s": 0.6572135060559958,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 386,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.40539410208224813
+        }
+      },
+      "foot_fk_max_error_m": 1.391280393947536e-07,
+      "gravity_max_error": 2.3150961286910743e-08,
+      "support_feet": 3,
+      "lead_s": 0.5230000000000001
+    },
+    {
+      "case": 70,
+      "first_alarm_tick": 295,
+      "query_tick": 296,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "first_nonfoot_s": 5.757000000000001,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 8,
+          "failed_stage": 7,
+          "rejection": "QP rejected prediction stage 7",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.8068413098280851,
+            "horizontal_speed_mps": 2.2791521461354707,
+            "angular_speed_rad_s": 1.5426991587160503,
+            "support_feet": 2,
+            "reason": "support_margin",
+            "support_margin_m": -0.2189970216087732,
+            "root_height_m": 0.14012670929589185
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.948917548629081
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 8,
+          "failed_stage": 7,
+          "rejection": "QP rejected prediction stage 7",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.8068413098280851,
+            "horizontal_speed_mps": 2.2791521461354707,
+            "angular_speed_rad_s": 1.5426991587160503,
+            "support_feet": 2,
+            "reason": "support_margin",
+            "support_margin_m": -0.2189970216087732,
+            "root_height_m": 0.14012670929589185
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.059041274012997746,
+            "baseline_runtime_s": 0.05832436098717153,
+            "total_runtime_s": 0.14067536708898842,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 296,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.948917548629081
+        }
+      },
+      "foot_fk_max_error_m": 1.511125478081965e-07,
+      "gravity_max_error": 1.2600100351978227e-07,
+      "support_feet": 2,
+      "lead_s": 2.7970000000000006
+    },
+    {
+      "case": 73,
+      "first_alarm_tick": 315,
+      "query_tick": 316,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": 3.6670000000000003,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 7,
+          "failed_stage": 6,
+          "rejection": "QP rejected prediction stage 6",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.5450518405592976,
+            "horizontal_speed_mps": 1.6233717484385342,
+            "angular_speed_rad_s": 7.595391722996711,
+            "support_feet": 2,
+            "reason": "support_margin",
+            "support_margin_m": -0.10012773178423535,
+            "root_height_m": 0.1508719942426444
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 1.2702581830979258
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 7,
+          "failed_stage": 6,
+          "rejection": "QP rejected prediction stage 6",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.5450518405592976,
+            "horizontal_speed_mps": 1.6233717484385342,
+            "angular_speed_rad_s": 7.595391722996711,
+            "support_feet": 2,
+            "reason": "support_margin",
+            "support_margin_m": -0.10012773178423535,
+            "root_height_m": 0.1508719942426444
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.035398022970184684,
+            "baseline_runtime_s": 0.05560965905897319,
+            "total_runtime_s": 0.10793371498584747,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 316,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 1.2702581830979258
+        }
+      },
+      "foot_fk_max_error_m": 2.5183197949196767e-07,
+      "gravity_max_error": 1.6890820131454376e-08,
+      "support_feet": 2,
+      "lead_s": 0.5070000000000001
+    },
+    {
+      "case": 74,
+      "first_alarm_tick": 475,
+      "query_tick": 476,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": 5.003,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 29,
+          "failed_stage": 28,
+          "rejection": "QP rejected prediction stage 28",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.5385659496010304,
+            "horizontal_speed_mps": 0.7610410713772111,
+            "angular_speed_rad_s": 0.6403490731273709,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.1927555686657793,
+            "root_height_m": 0.12090241001526587
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.4900359966781306
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 29,
+          "failed_stage": 28,
+          "rejection": "QP rejected prediction stage 28",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.5385659496010304,
+            "horizontal_speed_mps": 0.7610410713772111,
+            "angular_speed_rad_s": 0.6403490731273709,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.1927555686657793,
+            "root_height_m": 0.12090241001526587
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.14236408611759543,
+            "baseline_runtime_s": 0.2310442158486694,
+            "total_runtime_s": 0.44515073695220053,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 476,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.4900359966781306
+        }
+      },
+      "foot_fk_max_error_m": 1.7586425404836348e-07,
+      "gravity_max_error": 3.152510949511189e-08,
+      "support_feet": 3,
+      "lead_s": 0.24300000000000033
+    },
+    {
+      "case": 79,
+      "first_alarm_tick": 325,
+      "query_tick": 326,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": 3.403,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 32,
+          "failed_stage": 31,
+          "rejection": "QP rejected prediction stage 31",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.6426020196460625,
+            "horizontal_speed_mps": 1.2382420827194378,
+            "angular_speed_rad_s": 4.839841952396966,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.25522483041405747,
+            "root_height_m": 0.12781073164075407
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.5937063556876023
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 32,
+          "failed_stage": 31,
+          "rejection": "QP rejected prediction stage 31",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.6426020196460625,
+            "horizontal_speed_mps": 1.2382420827194378,
+            "angular_speed_rad_s": 4.839841952396966,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.25522483041405747,
+            "root_height_m": 0.12781073164075407
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.16933738999068737,
+            "baseline_runtime_s": 0.2551771111320704,
+            "total_runtime_s": 0.5077773618977517,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 326,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.5937063556876023
+        }
+      },
+      "foot_fk_max_error_m": 2.5244107193511667e-07,
+      "gravity_max_error": 1.2546284344772118e-08,
+      "support_feet": 2,
+      "lead_s": 0.1429999999999998
+    },
+    {
+      "case": 82,
+      "first_alarm_tick": 395,
+      "query_tick": 396,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": 5.071,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.11713286929031154,
+            "horizontal_speed_mps": 0.3952978209801169,
+            "angular_speed_rad_s": 0.187800962771316,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.054777862624322896,
+            "root_height_m": 0.2127553204826219
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.5064014613147557
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.11713286929031154,
+            "horizontal_speed_mps": 0.3952978209801169,
+            "angular_speed_rad_s": 0.187800962771316,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.054777862624322896,
+            "root_height_m": 0.2127553204826219
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.2754822641145438,
+            "baseline_runtime_s": 0.31949173589237034,
+            "total_runtime_s": 0.7127954501193017,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 396,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.5064014613147557
+        }
+      },
+      "foot_fk_max_error_m": 1.539703984032581e-07,
+      "gravity_max_error": 1.2261859444473444e-08,
+      "support_feet": 3,
+      "lead_s": 1.1109999999999998
+    },
+    {
+      "case": 85,
+      "first_alarm_tick": 430,
+      "query_tick": 430,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "first_nonfoot_s": 4.821,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.3174418629795009,
+            "horizontal_speed_mps": 1.0764088818821766,
+            "angular_speed_rad_s": 2.1596654733926455,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.16826451134593523,
+            "root_height_m": 0.1267821949810635
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.4464693079348013
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.3174418629795009,
+            "horizontal_speed_mps": 1.0764088818821766,
+            "angular_speed_rad_s": 2.1596654733926455,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.16826451134593523,
+            "root_height_m": 0.1267821949810635
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.1722453881520778,
+            "baseline_runtime_s": 0.3466723489109427,
+            "total_runtime_s": 0.616633668076247,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 430,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.4464693079348013
+        }
+      },
+      "foot_fk_max_error_m": 1.1911859588986662e-07,
+      "gravity_max_error": 3.420284941380025e-08,
+      "support_feet": 3,
+      "lead_s": 0.5209999999999999
+    },
+    {
+      "case": 86,
+      "first_alarm_tick": 500,
+      "query_tick": 500,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": 5.3500000000000005,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 38,
+          "failed_stage": 37,
+          "rejection": "QP rejected prediction stage 37",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.46708476041232166,
+            "horizontal_speed_mps": 0.739263018731671,
+            "angular_speed_rad_s": 1.036510706111934,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.21549272852200427,
+            "root_height_m": 0.12090508058040414
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.4456740056206006
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 38,
+          "failed_stage": 37,
+          "rejection": "QP rejected prediction stage 37",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.46708476041232166,
+            "horizontal_speed_mps": 0.739263018731671,
+            "angular_speed_rad_s": 1.036510706111934,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.21549272852200427,
+            "root_height_m": 0.12090508058040414
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.16575338691473007,
+            "baseline_runtime_s": 0.30362295103259385,
+            "total_runtime_s": 0.5604578340426087,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 500,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.4456740056206006
+        }
+      },
+      "foot_fk_max_error_m": 1.5915356155193905e-07,
+      "gravity_max_error": 3.324471775645321e-08,
+      "support_feet": 3,
+      "lead_s": 0.35000000000000053
+    },
+    {
+      "case": 87,
+      "first_alarm_tick": 305,
+      "query_tick": 306,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "first_nonfoot_s": 3.371,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 8,
+          "failed_stage": 7,
+          "rejection": "QP rejected prediction stage 7",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.7366321602925743,
+            "horizontal_speed_mps": 2.0824627526576593,
+            "angular_speed_rad_s": 2.7161733214992663,
+            "support_feet": 2,
+            "reason": "support_margin",
+            "support_margin_m": -0.19525512348677745,
+            "root_height_m": 0.12902134498696735
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.7654129487237706
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 8,
+          "failed_stage": 7,
+          "rejection": "QP rejected prediction stage 7",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.7366321602925743,
+            "horizontal_speed_mps": 2.0824627526576593,
+            "angular_speed_rad_s": 2.7161733214992663,
+            "support_feet": 2,
+            "reason": "support_margin",
+            "support_margin_m": -0.19525512348677745,
+            "root_height_m": 0.12902134498696735
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.07016477291472256,
+            "baseline_runtime_s": 0.059084251057356596,
+            "total_runtime_s": 0.1526548049878329,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 306,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.7654129487237706
+        }
+      },
+      "foot_fk_max_error_m": 1.9116719329748122e-07,
+      "gravity_max_error": 2.0403912337485508e-08,
+      "support_feet": 2,
+      "lead_s": 0.31099999999999994
+    },
+    {
+      "case": 90,
+      "first_alarm_tick": 325,
+      "query_tick": 326,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "first_nonfoot_s": 3.745,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.10501458313564291,
+            "horizontal_speed_mps": 0.19341958451715488,
+            "angular_speed_rad_s": 0.2959061775624988,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.005937247250872488,
+            "root_height_m": 0.2405376733070502
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.5417997666084426
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.10501458313564291,
+            "horizontal_speed_mps": 0.19341958451715488,
+            "angular_speed_rad_s": 0.2959061775624988,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.005937247250872488,
+            "root_height_m": 0.2405376733070502
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.3150081899948418,
+            "baseline_runtime_s": 0.31487396196462214,
+            "total_runtime_s": 0.7560063649434596,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 326,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.5417997666084426
+        }
+      },
+      "foot_fk_max_error_m": 1.8878195895410954e-07,
+      "gravity_max_error": 3.632477774129228e-08,
+      "support_feet": 2,
+      "lead_s": 0.4849999999999999
+    },
+    {
+      "case": 91,
+      "first_alarm_tick": 470,
+      "query_tick": 470,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": 5.082,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 38,
+          "failed_stage": 37,
+          "rejection": "QP rejected prediction stage 37",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.3731923010190934,
+            "horizontal_speed_mps": 1.1196956817708394,
+            "angular_speed_rad_s": 2.794371946614013,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.19452978536465923,
+            "root_height_m": 0.12465075070043423
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.37228008696872705
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 38,
+          "failed_stage": 37,
+          "rejection": "QP rejected prediction stage 37",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.3731923010190934,
+            "horizontal_speed_mps": 1.1196956817708394,
+            "angular_speed_rad_s": 2.794371946614013,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.19452978536465923,
+            "root_height_m": 0.12465075070043423
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.19194705015979707,
+            "baseline_runtime_s": 0.30848413496278226,
+            "total_runtime_s": 0.5963226349558681,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 470,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.37228008696872705
+        }
+      },
+      "foot_fk_max_error_m": 1.2790590361855259e-07,
+      "gravity_max_error": 2.043292812725639e-08,
+      "support_feet": 3,
+      "lead_s": 0.3819999999999997
+    },
+    {
+      "case": 93,
+      "first_alarm_tick": 310,
+      "query_tick": 310,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": 6.341,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 8,
+          "failed_stage": 7,
+          "rejection": "QP rejected prediction stage 7",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.6534616457411397,
+            "horizontal_speed_mps": 1.9608752775987182,
+            "angular_speed_rad_s": 1.0963964049130959,
+            "support_feet": 2,
+            "reason": "support_margin",
+            "support_margin_m": -0.14616305392265305,
+            "root_height_m": 0.12751741749821824
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 1.0502003665016701
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 8,
+          "failed_stage": 7,
+          "rejection": "QP rejected prediction stage 7",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.6534616457411397,
+            "horizontal_speed_mps": 1.9608752775987182,
+            "angular_speed_rad_s": 1.0963964049130959,
+            "support_feet": 2,
+            "reason": "support_margin",
+            "support_margin_m": -0.14616305392265305,
+            "root_height_m": 0.12751741749821824
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.05862357607111335,
+            "baseline_runtime_s": 0.06448057503439486,
+            "total_runtime_s": 0.14653002610430121,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 310,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 1.0502003665016701
+        }
+      },
+      "foot_fk_max_error_m": 2.0824132151986419e-07,
+      "gravity_max_error": 4.717069945758823e-08,
+      "support_feet": 2,
+      "lead_s": 3.241
+    },
+    {
+      "case": 95,
+      "first_alarm_tick": 460,
+      "query_tick": 460,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "first_nonfoot_s": 5.066,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 38,
+          "failed_stage": 37,
+          "rejection": "QP rejected prediction stage 37",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.33711189237639544,
+            "horizontal_speed_mps": 0.9964761225249051,
+            "angular_speed_rad_s": 2.0677036359154286,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.15829073777338223,
+            "root_height_m": 0.12164916514794864
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.3843104764798922
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 38,
+          "failed_stage": 37,
+          "rejection": "QP rejected prediction stage 37",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.33711189237639544,
+            "horizontal_speed_mps": 0.9964761225249051,
+            "angular_speed_rad_s": 2.0677036359154286,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.15829073777338223,
+            "root_height_m": 0.12164916514794864
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.14409247296862304,
+            "baseline_runtime_s": 0.3095325781032443,
+            "total_runtime_s": 0.5400171058718115,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 460,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.3843104764798922
+        }
+      },
+      "foot_fk_max_error_m": 1.562472365934653e-07,
+      "gravity_max_error": 1.0292724589300306e-08,
+      "support_feet": 3,
+      "lead_s": 0.4659999999999993
+    },
+    {
+      "case": 96,
+      "first_alarm_tick": 635,
+      "query_tick": 636,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "first_nonfoot_s": 6.689,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 35,
+          "failed_stage": 34,
+          "rejection": "QP rejected prediction stage 34",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.3930024100001395,
+            "horizontal_speed_mps": 1.0238494135751903,
+            "angular_speed_rad_s": 2.344823550032813,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.18931736655225764,
+            "root_height_m": 0.12622782860135232
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.32014748134221493
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 35,
+          "failed_stage": 34,
+          "rejection": "QP rejected prediction stage 34",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.3930024100001395,
+            "horizontal_speed_mps": 1.0238494135751903,
+            "angular_speed_rad_s": 2.344823550032813,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.18931736655225764,
+            "root_height_m": 0.12622782860135232
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.1810923300217837,
+            "baseline_runtime_s": 0.30171204917132854,
+            "total_runtime_s": 0.5706983159761876,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 636,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.32014748134221493
+        }
+      },
+      "foot_fk_max_error_m": 1.714069125524631e-07,
+      "gravity_max_error": 2.5734831488044563e-08,
+      "support_feet": 2,
+      "lead_s": 0.32899999999999974
+    },
+    {
+      "case": 97,
+      "first_alarm_tick": 480,
+      "query_tick": 480,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": 5.488,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.19929347096933486,
+            "horizontal_speed_mps": 0.9270809230375817,
+            "angular_speed_rad_s": 0.971400460816531,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.12539442828473693,
+            "root_height_m": 0.17790242851307297
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.5360450375498088
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.19929347096933486,
+            "horizontal_speed_mps": 0.9270809230375817,
+            "angular_speed_rad_s": 0.971400460816531,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.12539442828473693,
+            "root_height_m": 0.17790242851307297
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.25755565613508224,
+            "baseline_runtime_s": 0.32615867583081126,
+            "total_runtime_s": 0.6974151870235801,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 480,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.5360450375498088
+        }
+      },
+      "foot_fk_max_error_m": 1.917885684155074e-07,
+      "gravity_max_error": 7.253165845710896e-09,
+      "support_feet": 3,
+      "lead_s": 0.6880000000000006
+    },
+    {
+      "case": 99,
+      "first_alarm_tick": 520,
+      "query_tick": 520,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": 5.377,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 31,
+          "failed_stage": 30,
+          "rejection": "QP rejected prediction stage 30",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.5135172061128169,
+            "horizontal_speed_mps": 0.87042451324958,
+            "angular_speed_rad_s": 1.613524211374693,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.22337420258107243,
+            "root_height_m": 0.1208476371561047
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.3073157247610567
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 31,
+          "failed_stage": 30,
+          "rejection": "QP rejected prediction stage 30",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.5135172061128169,
+            "horizontal_speed_mps": 0.87042451324958,
+            "angular_speed_rad_s": 1.613524211374693,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.22337420258107243,
+            "root_height_m": 0.1208476371561047
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.1644676940049976,
+            "baseline_runtime_s": 0.24730717297643423,
+            "total_runtime_s": 0.49131874996237457,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 520,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.3073157247610567
+        }
+      },
+      "foot_fk_max_error_m": 1.1112144041036665e-07,
+      "gravity_max_error": 1.0978070552614128e-07,
+      "support_feet": 2,
+      "lead_s": 0.1769999999999996
+    },
+    {
+      "case": 100,
+      "first_alarm_tick": 515,
+      "query_tick": 516,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": null,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.18424914233330353,
+            "horizontal_speed_mps": 0.46326901149526417,
+            "angular_speed_rad_s": 0.4524725745706646,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.10259754734325971,
+            "root_height_m": 0.18071269709927265
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.4467165336897154
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.18424914233330353,
+            "horizontal_speed_mps": 0.46326901149526417,
+            "angular_speed_rad_s": 0.4524725745706646,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.10259754734325971,
+            "root_height_m": 0.18071269709927265
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.16389174899086356,
+            "baseline_runtime_s": 0.3254465612117201,
+            "total_runtime_s": 0.5837841939646751,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 516,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.4467165336897154
+        }
+      },
+      "foot_fk_max_error_m": 1.080925179919312e-07,
+      "gravity_max_error": 2.4546039756323523e-08,
+      "support_feet": 2,
+      "lead_s": null
+    },
+    {
+      "case": 101,
+      "first_alarm_tick": 610,
+      "query_tick": 610,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": 6.506,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 37,
+          "failed_stage": 36,
+          "rejection": "QP rejected prediction stage 36",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.369610392044188,
+            "horizontal_speed_mps": 1.0279070925965483,
+            "angular_speed_rad_s": 2.4327782111816783,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.17923064175859107,
+            "root_height_m": 0.12392468184818711
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.35391238161963545
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 37,
+          "failed_stage": 36,
+          "rejection": "QP rejected prediction stage 36",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.369610392044188,
+            "horizontal_speed_mps": 1.0279070925965483,
+            "angular_speed_rad_s": 2.4327782111816783,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.17923064175859107,
+            "root_height_m": 0.12392468184818711
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.15838501183316112,
+            "baseline_runtime_s": 0.30012583499774337,
+            "total_runtime_s": 0.5463822558522224,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 610,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.35391238161963545
+        }
+      },
+      "foot_fk_max_error_m": 1.5418452470328248e-07,
+      "gravity_max_error": 2.8963591691688606e-08,
+      "support_feet": 2,
+      "lead_s": 0.4059999999999997
+    },
+    {
+      "case": 102,
+      "first_alarm_tick": 325,
+      "query_tick": 326,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": null,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.06970451399477061,
+            "horizontal_speed_mps": 0.20867989769289874,
+            "angular_speed_rad_s": 0.24984461157388435,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.010269574224986092,
+            "root_height_m": 0.22459304145602874
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.643238480837892
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.06970451399477061,
+            "horizontal_speed_mps": 0.20867989769289874,
+            "angular_speed_rad_s": 0.24984461157388435,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.010269574224986092,
+            "root_height_m": 0.22459304145602874
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.31476113107055426,
+            "baseline_runtime_s": 0.308414006838575,
+            "total_runtime_s": 0.7499179609585553,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 326,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.643238480837892
+        }
+      },
+      "foot_fk_max_error_m": 1.9696539388380785e-07,
+      "gravity_max_error": 8.39473627278764e-08,
+      "support_feet": 2,
+      "lead_s": null
+    },
+    {
+      "case": 111,
+      "first_alarm_tick": 370,
+      "query_tick": 370,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": 3.8040000000000003,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 27,
+          "failed_stage": 26,
+          "rejection": "QP rejected prediction stage 26",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.6085766907083222,
+            "horizontal_speed_mps": 0.9468767077577949,
+            "angular_speed_rad_s": 2.6039328473041463,
+            "support_feet": 2,
+            "reason": "support_margin",
+            "support_margin_m": -0.17336759969335414,
+            "root_height_m": 0.12288145285482657
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.4799223343035916
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 27,
+          "failed_stage": 26,
+          "rejection": "QP rejected prediction stage 26",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.6085766907083222,
+            "horizontal_speed_mps": 0.9468767077577949,
+            "angular_speed_rad_s": 2.6039328473041463,
+            "support_feet": 2,
+            "reason": "support_margin",
+            "support_margin_m": -0.17336759969335414,
+            "root_height_m": 0.12288145285482657
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.1625044560059905,
+            "baseline_runtime_s": 0.20315455505624413,
+            "total_runtime_s": 0.44044654606841505,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 370,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.4799223343035916
+        }
+      },
+      "foot_fk_max_error_m": 1.8987583205731795e-07,
+      "gravity_max_error": 2.1785060644319287e-08,
+      "support_feet": 1,
+      "lead_s": 0.10400000000000009
+    },
+    {
+      "case": 114,
+      "first_alarm_tick": 450,
+      "query_tick": 450,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": 4.686,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 34,
+          "failed_stage": 33,
+          "rejection": "QP rejected prediction stage 33",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.5756621302263654,
+            "horizontal_speed_mps": 1.2096302611055152,
+            "angular_speed_rad_s": 2.982644756784718,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.269922585640348,
+            "root_height_m": 0.12107442675641648
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.39290649263507427
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 34,
+          "failed_stage": 33,
+          "rejection": "QP rejected prediction stage 33",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.5756621302263654,
+            "horizontal_speed_mps": 1.2096302611055152,
+            "angular_speed_rad_s": 2.982644756784718,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.269922585640348,
+            "root_height_m": 0.12107442675641648
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.19392110407352448,
+            "baseline_runtime_s": 0.27252131304703653,
+            "total_runtime_s": 0.5570270780008286,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 450,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.39290649263507427
+        }
+      },
+      "foot_fk_max_error_m": 2.3108142416239374e-07,
+      "gravity_max_error": 6.285540982142734e-08,
+      "support_feet": 3,
+      "lead_s": 0.18599999999999994
+    },
+    {
+      "case": 119,
+      "first_alarm_tick": 390,
+      "query_tick": 390,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": 4.0520000000000005,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 27,
+          "failed_stage": 26,
+          "rejection": "QP rejected prediction stage 26",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.43520009130350773,
+            "horizontal_speed_mps": 0.7563267022354562,
+            "angular_speed_rad_s": 1.5498398742632977,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.2115524321700445,
+            "root_height_m": 0.12277298783678892
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.3772759696147188
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 27,
+          "failed_stage": 26,
+          "rejection": "QP rejected prediction stage 26",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.43520009130350773,
+            "horizontal_speed_mps": 0.7563267022354562,
+            "angular_speed_rad_s": 1.5498398742632977,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.2115524321700445,
+            "root_height_m": 0.12277298783678892
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.11534185311757028,
+            "baseline_runtime_s": 0.2155344958882779,
+            "total_runtime_s": 0.39502172521315515,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 390,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.3772759696147188
+        }
+      },
+      "foot_fk_max_error_m": 1.5777236769820568e-07,
+      "gravity_max_error": 2.518544506280307e-08,
+      "support_feet": 2,
+      "lead_s": 0.15200000000000058
+    },
+    {
+      "case": 120,
+      "first_alarm_tick": 400,
+      "query_tick": 400,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": 5.027,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.22966182057862083,
+            "horizontal_speed_mps": 0.7214521148402013,
+            "angular_speed_rad_s": 1.086909894812462,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.12286704039353512,
+            "root_height_m": 0.15699172739245276
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 0.5905281288335543
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 40,
+          "failed_stage": null,
+          "rejection": "terminal support margin not reached",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.22966182057862083,
+            "horizontal_speed_mps": 0.7214521148402013,
+            "angular_speed_rad_s": 1.086909894812462,
+            "support_feet": 3,
+            "reason": "support_margin",
+            "support_margin_m": -0.12286704039353512,
+            "root_height_m": 0.15699172739245276
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.14228768018074334,
+            "baseline_runtime_s": 0.32466488890349865,
+            "total_runtime_s": 0.5585235101170838,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 400,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 0.5905281288335543
+        }
+      },
+      "foot_fk_max_error_m": 1.7337563384955956e-07,
+      "gravity_max_error": 3.0900107833575774e-08,
+      "support_feet": 3,
+      "lead_s": 1.0270000000000001
+    },
+    {
+      "case": 125,
+      "first_alarm_tick": 305,
+      "query_tick": 306,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "first_nonfoot_s": 4.681,
+      "models": {
+        "full_interval": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 7,
+          "failed_stage": 6,
+          "rejection": "QP rejected prediction stage 6",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.6836726407035284,
+            "horizontal_speed_mps": 1.9485202429558373,
+            "angular_speed_rad_s": 0.8978209931255768,
+            "support_feet": 2,
+            "reason": "support_margin",
+            "support_margin_m": -0.1426999443357775,
+            "root_height_m": 0.13567421039445166
+          },
+          "command_cost_selection": null,
+          "command_change_l2_rad": 1.0368195046895476
+        },
+        "feasible_command_cost": {
+          "full_horizon": false,
+          "first_feasible": true,
+          "stage_count": 7,
+          "failed_stage": 6,
+          "rejection": "QP rejected prediction stage 6",
+          "terminal_risk": {
+            "trigger": true,
+            "tilt_rad": 0.6836726407035284,
+            "horizontal_speed_mps": 1.9485202429558373,
+            "angular_speed_rad_s": 0.8978209931255768,
+            "support_feet": 2,
+            "reason": "support_margin",
+            "support_margin_m": -0.1426999443357775,
+            "root_height_m": 0.13567421039445166
+          },
+          "command_cost_selection": {
+            "candidate_runtime_s": 0.05052168993279338,
+            "baseline_runtime_s": 0.05048295413143933,
+            "total_runtime_s": 0.12110996805131435,
+            "declared_weight": 1.0,
+            "selected_weight": 0.0,
+            "command_cost_horizon_accepted": false,
+            "baseline_fallback_evaluated": true,
+            "baseline_horizon_accepted": false,
+            "selected": "baseline",
+            "same_control_tick": 306,
+            "future_student_policy_predicted": false,
+            "full_horizon_acceptance_is_native_success": false
+          },
+          "command_change_l2_rad": 1.0368195046895476
+        }
+      },
+      "foot_fk_max_error_m": 1.972527491345133e-07,
+      "gravity_max_error": 9.237943088269418e-08,
+      "support_feet": 2,
+      "lead_s": 1.621
+    }
+  ],
+  "limitations": [
+    "Queries on historical student states; no physical correction executed.",
+    "Held-out fold alarms are retrospective validation, not an installed deployment model.",
+    "At most10ms delay to the next actually recorded root pose; never backdate that pose.",
+    "A feasible teacher plan can still be inaccurate or worse than the student."
+  ],
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_mpc_at_student_risk_alarm_v1.py": "d3548eb4e23bb2eb4ecde126a169853c85e659066b82d2b4efc1b955de19321b",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_student_risk_prediction_20261107/full_episode_alarms.json": "21ffcf82cb9ae3a1def1871cfd6d797a4b0cd6e371156fb1b0bcd5efa39273f6",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_001.npz": "63777ced85e16bad20bbb0c230966dce0a2a4e4de5ede302d4e0a4ba0b63fc6d",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_002.npz": "bef8b2c68302b3f469cb23b3a9981e37721b8c7fbc466d65e675a721053c4e85",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_003.npz": "37320a97164425d38e36b9188ce81b83fa0d9a26b13d650352a9d53dc3359c2c",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_005.npz": "32a73b89b907a9e8f5c28ac19e22e4c1a28012246af167a534e739555d28215e",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_007.npz": "6bf3b98bc263e117a7faac8674017f3fbd57aed34c1ba769f13da630a4b3d3b6",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_008.npz": "81142e9626462c05998a27df9d547a8bea41634e698754aa956e37c4cd278690",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_009.npz": "574ff7d269d7238b518ef051cdc7b9ac643ae303a930105e78c7ca28f3db7f25",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_011.npz": "9e55bed1613829b3228b342900895459c6b677cf447667977c1bbe01521ed8ba",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_012.npz": "abb2ac723849cdabe0bdcf04c302db5409620a7bda13cf426c4eed65bbbdccf9",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_013.npz": "be6002c495cdd50a0af09235d62f0047a4319aa2c6191daaa6e8729ef718680a",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_015.npz": "d693dfe069315417f2d08940b0c1a41590da6a6fd9086a93eb09aaa3ead16497",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_018.npz": "9cf04374baa930c51055b16bc3e90ed4047abc7c70b2500452e5e989156137eb",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_019.npz": "e6c0cae87bdcca62b35d249bfd3041337b20f2faccea0b5c44420ad4abdf960f",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_020.npz": "e7b774717dc74c7540779b7960df3a4bf01e1ab553a4e92204de664823e9535f",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_029.npz": "632b5ef883e459255f891aceccd7453bb2fafeed922f1e97abb09976d9b97255",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_030.npz": "7321f79a38ab8dc1c26e74baf8f67f0c1061a38078c13d530a31af6dbfe897fd",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_031.npz": "951a983fee678e78e0e2b1c250be71345049698585026aa674d3db7a7d50978a",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_032.npz": "035d32779cf2f4635eb118c4795f716560c1765d9a1c5fdac3b10c7ffa6d744c",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_035.npz": "de6c39cf0b559ae3df01fdeabae96579489db217dad2297897797612e7e9837e",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_038.npz": "90495bdb24cb5b268349842d9239cfa14f5bf4de3775fc89e0e1f984ad216c51",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_040.npz": "03e0bc491dc594a16906d7d6c08cb5c9e2bfd6d0f8406940a679f1fb0bceaa94",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_041.npz": "894d8c06732d7d29a2e612794a4a642dd9c2393e597324f47e176d7f1df05862",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_042.npz": "b6597b1de22bb69f7462799cf19d4c1ed66643367b6a295f058aca74c588ec26",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_046.npz": "3655d996a1d131a65556323c6c8d995a7c35a56972b26394ec74bca2a373027c",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_047.npz": "f98edbc6ea3ad3d8654a0227837d0f5bae100938f67a664a2a00ff9eb8f83a83",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_048.npz": "9f329ed75c5e5df4f4783238fb27e59e7f7c35e0030705bea282495799dcb72d",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_050.npz": "17a12dc8b179720fd13401b3475e89dfddc3d53d69e499db4a5946b1fbfaec50",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_052.npz": "31d5d7613c7d21b068d415fd98f97cbfb91a221f14099dd8944f73fb12e30046",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_054.npz": "8bdb716ca14c16d39ef423693790f78ab534216e6acb79587cec2e066ae7bf84",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_056.npz": "8de00e2232f103260a9c0ced3c7832f0753380c8556b0204b13dc0b15522968f",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_057.npz": "49363914c03f11186796c46f4de346b979231a6ef182601836273e0df0791907",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_058.npz": "029251cd8050a57dac27b121a0c5b4173e1010e7275e89016847a58c61936613",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_061.npz": "8eeeca813d2a9be355feea7f4a10bbdf8b9aa3d57dcbb049a60a0c610a0d83df",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_062.npz": "f5d2c614781567bd82d494450be49275195b930b8ed9f7b3fdf7d9016bd81264",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_065.npz": "4e8325aa1f35577a78da5d248141c40dd45d1f4396d6a792b33e8bd4d702bf32",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_067.npz": "6aa48c3300174b8b18d5bbb121b6e502539139915ce8f37dac2450ddd8a97f1d",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_068.npz": "fec0207d82371f7d89f8a16b5a9590267c03d68f45583e3ac52ce66ed068298d",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_070.npz": "896eeeb10e0d673adad607f0c3d84737862ada571543bf2a778cd34b2dc8aeeb",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_073.npz": "2a07cde50c33b840b74752141f20ef14a7e35d72c46a604ff647d2cbe96204e6",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_074.npz": "12f79c85e72009b57e75d3a8de832bb76e1ca170cd527175785f9ca3351d32bb",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_079.npz": "46aa27d5d7a12241ae41b22d73bf9360a337e277df6e3868cd91259e22909c3a",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_082.npz": "96eb10f35f5e2585eeb3e4243129f878ff7d5a0e5e470073964271fe6a197708",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_085.npz": "90fb307b7530559888eddc76b74675da21c510befbf799199c2b3d1582df7ef1",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_086.npz": "05d3b07f8f099c19693ac24e8246e8f06954813d4ca4913fe70fc8ea1a641e90",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_087.npz": "9b3d41988865a0f03bce9f1dde81095c74672ba3f60348b1519a3b5ac716db06",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_090.npz": "6ecd17ab8297ea2bd2ba98bc5d0e39f77f28a084367a2497576b0c1681f241b9",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_091.npz": "a99d2d50df63d9978a234640824717ba1012ce60523206287cf7cf3bbb4a4fd2",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_093.npz": "66d03dff4a203f907485bf00127ecad28aedcf387fb59ae0060963a459b49152",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_095.npz": "0398f9d731c2d95231d541bbc832784724f95ff6ffd216a69d11ee819ef14f24",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_096.npz": "892ed1f0296e9935977c5e2f34c277686a11c707c94c343384a57235694f6f05",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_097.npz": "df35259ec58101dca53fbfa4e3e63d8e429db0a62d4db0fe41410089f38888f9",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_099.npz": "330294094be95343ce0debdc9d3b36d6085f6d587e8688f625fb28b718f7fe52",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_100.npz": "a880719e258ff8650fde7166211079f96b73f3324e86ae6c2519cbb462d4e6e5",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_101.npz": "15bda0cd1f3f0b089967c6aa70417e881a96a8fe09ce1c0c1e3d13b00e8f3a45",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_102.npz": "1f5db38701e68e5c29e14dcbd9a854cba9f8b3e12c7ab68aef78d31f249fb267",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_111.npz": "46c0ecdeab52a0a9aa2cb0d8841ff5901047d7f612c37d068137cac3ab080855",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_114.npz": "f9525371f8b4650f48f748efc24dadcfb0aa26a558bcc5aab74b3128fe4ce2c3",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_119.npz": "2b1f18446463c8f94ceb8ef2b8bf21e11972a61d78fcfd727906453fd8866329",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_120.npz": "db9c514062159d880e5f97091f18518ea1f6e4ae33fd16c43c9c76e83c185d72",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_125.npz": "4028428e53495a382a3e8cc5486fce3181fab69c2541c29aa172cedd3c939cbd",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/native_command_inputs.json": "f861d727c049c85d612cad7ce2a5be9a4bc3a85ab18ba38f5018dc871fca6f7c",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/geometry.json": "8afd390b7b92179ba6e2fde3774cc60162a98a5bd63ed50defd95b2e8f9d9c37",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/all_first_episodes.npz": "a60949357daa9b846c202d38e0436cfd5cfbe621c630d235e7e164a6ec9c9700",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/loaded_pinocchio_model_v1.py": "2b303a32e57391ec7aaf3c3faf9d151f758477faf13ef6efae5bead979dcae82",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/parallel_landing_solver_v1.py": "4bc18476684fbc3a81eae8b1b63073c615ceafd73a23ccca2dde919564cfea33",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/whole_body_support_qp_v1.py": "b67cd1f1c8ebe973d3885773fbc9f3bf17cfd935e5e2210a4b7c0ea1ff331d6d",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frame_point_kinematics_v1.py": "60fac87ef04f83a22807217b04e7cbe40b536251b56f5a119dc012d1f2529fd8",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/reduced_whole_body_support_qp_v1.py": "e731a0bca8744d4639099dd2ff9be94840a9f0c953c64924fb2cfa9e7a9c80c7",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v1.py": "da2ff2e4ee1479bf3fc422c0b71f8831bffd9e5868d9a4e0665fd348ab659a59",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v2.py": "6d0ad9bc4fcd27a0f4f418e55b988341ffe809f14c132415281ec41621196ae2"
+  },
+  "full_local_result": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_student_risk_prediction_20261107/mpc_at_first_alarm.json",
+  "full_local_result_sha256": "5e00cf0f6c70426a781843848eedfa5f157175c1dfe5db663be3497cc5c937d6"
+}
