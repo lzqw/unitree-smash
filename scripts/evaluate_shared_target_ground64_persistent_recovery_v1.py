@@ -290,6 +290,7 @@ class SharedTargetResidualController:
         self._landing_mpc_held_action=torch.zeros((count,18),dtype=torch.float32,device=device)
         self._landing_mpc_last_target=np.full((count,18),np.nan,dtype=np.float64)
         self._landing_mpc_last_predicted=np.full((count,18),np.nan,dtype=np.float64)
+        self._landing_mpc_prediction_tick=np.full(count,-1,dtype=np.int64)
         self.landing_mpc_support_margin=bool(landing_mpc_support_margin)
         self.landing_mpc_torque_overlay=bool(landing_mpc_torque_overlay)
         self.landing_mpc_touchdown_recovery=bool(landing_mpc_touchdown_recovery)
@@ -495,6 +496,7 @@ class SharedTargetResidualController:
             self._landing_mpc_held_action.zero_()
             self._landing_mpc_last_target.fill(np.nan)
             self._landing_mpc_last_predicted.fill(np.nan)
+            self._landing_mpc_prediction_tick.fill(-1)
             self._landing_mpc_expected_contacts[:]=False
             self._landing_mpc_mode_mismatch.zero_()
             self._landing_mpc_latched_post_touchdown.zero_()
@@ -516,6 +518,7 @@ class SharedTargetResidualController:
                 self._landing_mpc_contact_state_lane[int(lane)].reset()
                 self._landing_mpc_last_target[int(lane),:]=np.nan
                 self._landing_mpc_last_predicted[int(lane),:]=np.nan
+                self._landing_mpc_prediction_tick[int(lane)]=-1
                 self._landing_mpc_expected_contacts[int(lane),:]=False
                 self._landing_mpc_mode_mismatch[int(lane)]=0
                 self._landing_mpc_latched_post_touchdown[int(lane)]=False
@@ -662,7 +665,8 @@ class SharedTargetResidualController:
                         actual_q = self._landing_mpc_native_env.robot.data.joint_pos[
                             lane, self._landing_mpc_native_env.joint_ids].detach().cpu().numpy()
                         tracking_error = float(np.max(np.abs(actual_q-self._landing_mpc_last_target[lane])))
-                        if np.isfinite(self._landing_mpc_last_predicted[lane]).all():
+                        if (control_tick == self._landing_mpc_prediction_tick[lane] and
+                                np.isfinite(self._landing_mpc_last_predicted[lane]).all()):
                             prediction_error = float(np.max(np.abs(actual_q-self._landing_mpc_last_predicted[lane])))
                     self.landing_mpc_logs.append(dict(case=case,episode_index=episode_index,
                         control_tick=control_tick,clock_s=float(public_clock[lane]),
@@ -679,6 +683,7 @@ class SharedTargetResidualController:
                         measured_hold_force_world=(measured_hold_force.tolist()
                                                    if measured_hold_force is not None else None),
                         command_tracking_error_max_rad=tracking_error,
+                        prediction_error_scope="next-control-tick-only; null-if-unmatched",
                         prediction_joint_position_error_max_rad=prediction_error))
                     continue
                 if release_for_mode_mismatch or release_for_tracking:
@@ -691,7 +696,8 @@ class SharedTargetResidualController:
                     actual_q = self._landing_mpc_native_env.robot.data.joint_pos[
                         lane, self._landing_mpc_native_env.joint_ids].detach().cpu().numpy()
                     command_tracking_error = float(np.max(np.abs(actual_q-self._landing_mpc_last_target[lane])))
-                    if np.isfinite(self._landing_mpc_last_predicted[lane]).all():
+                    if (control_tick == self._landing_mpc_prediction_tick[lane] and
+                                np.isfinite(self._landing_mpc_last_predicted[lane]).all()):
                         prediction_error = float(np.max(np.abs(actual_q-self._landing_mpc_last_predicted[lane])))
                 original_action=np.asarray(action[lane].detach().cpu().numpy(),dtype=np.float64).copy()
                 # The native trial must exercise the declared risk trigger.  A
@@ -754,7 +760,8 @@ class SharedTargetResidualController:
                     measured_foot_force_world=(getattr(state, 'measured_force_world', None).tolist()
                                                if getattr(state, 'measured_force_world', None) is not None else None),
                     command_tracking_error_max_rad=command_tracking_error,
-                    prediction_joint_position_error_max_rad=prediction_error,
+                    prediction_error_scope="next-control-tick-only; null-if-unmatched",
+                        prediction_joint_position_error_max_rad=prediction_error,
                     native_execution=True)
                 risk_drop = (float(plan['initial_risk_score']) - float(plan['first_step_risk_score'])
                     if plan.get('initial_risk_score') is not None and
@@ -798,6 +805,10 @@ class SharedTargetResidualController:
                     predicted_joint_position=np.asarray(
                         first_stage.get('predicted_joint_position', state.joint_position), dtype=np.float64)
                     self._landing_mpc_last_predicted[lane,:] = predicted_joint_position
+                    # A one-step prediction can be compared only at its target
+                    # tick, never throughout a 40-tick held-action interval.
+                    self._landing_mpc_prediction_tick[lane] = (
+                        control_tick + 1 if not self.landing_mpc_torque_overlay else -1)
                     record['applied_first_step']=True
                     record['forced_first_step']=forced_first_step
                     record['first_step_risk_score_drop']=risk_drop

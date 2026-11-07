@@ -638,3 +638,16 @@ These new clearance/logging changes are **not included** in the currently
 running memory-only experiment (source `95854e0`). Finish that comparison first,
 then test corrected clearance with the same policy and controller settings.
 No new success-rate claim is made from these CPU corrections.
+
+
+### One-step prediction error must be time-aligned
+
+The held-action diagnostic previously compared every held tick to the original
+one-step predicted joint position, even 40 ticks later. Those aggregate values
+are not valid one-step model-error distributions. The next evaluator records a
+prediction only at its intended next control tick; later held ticks report null
+instead of reusing stale predictions. Torque-overlay trials are excluded from
+this prediction metric until their distinct executed input is represented.
+Command-to-current-joint target tracking remains a separate quantity. This is a
+logging correction only, not a control change or evidence that the native model
+is accurate. Historical dense prediction statistics must be remeasured.
