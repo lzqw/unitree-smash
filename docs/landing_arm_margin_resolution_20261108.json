@@ -1,0 +1,1143 @@
+{
+  "observed_at": "2026-11-07T16:31:10.559313+00:00",
+  "scope": "Coupled command-margin repair and integration-resolution audit, model-only",
+  "evidence": {
+    "terminal_prefix_arm_margin3": {
+      "path": "reports/landing_fullcommand_native_response_20261107/terminal_prefix_arm_margin3.json",
+      "sha256": "10a0accccdd27c5885ad33f71f446b97c0712c2aa24d1b71dcc1c9a4e641c0ec",
+      "rows": [
+        {
+          "task": {
+            "name": "nominal",
+            "feedback": true,
+            "start": 0,
+            "end": 0,
+            "joint_start": 0,
+            "joint_end": 4,
+            "amplitude_rad": 0.0,
+            "arm_correction_rad": 0.0
+          },
+          "valid_steps": 340,
+          "failure": null,
+          "model_window": {
+            "longest_model_kinematic_window_s": 1.0200000000000007,
+            "qualifying_control_ticks": 180,
+            "required_window_s": 0.8,
+            "native_force_check": false,
+            "contact_flight_association_check": false,
+            "formal_recovery_success": false
+          },
+          "model_success": true,
+          "maximum_applied_pulse_rad": 0.0,
+          "wall_seconds": 11.518164585111663,
+          "native_execution": false,
+          "valid_expert_labels": false,
+          "joint2_peak_rad_s": 5.0001437477421256,
+          "joint2_limit_rad_s": 5.0,
+          "joint2_command_correction_max_rad": 0.0
+        },
+        {
+          "task": {
+            "name": "prefix_hips",
+            "feedback": true,
+            "start": 0,
+            "end": 10,
+            "joint_start": 0,
+            "joint_end": 4,
+            "amplitude_rad": -0.02,
+            "arm_correction_rad": 0.0
+          },
+          "valid_steps": 29,
+          "failure": {
+            "offset": 29,
+            "violations": {
+              "joint_velocity_violation_rad_s": 0.00635473894897487
+            }
+          },
+          "model_window": {
+            "longest_model_kinematic_window_s": 0.0,
+            "qualifying_control_ticks": 0,
+            "required_window_s": 0.8,
+            "native_force_check": false,
+            "contact_flight_association_check": false,
+            "formal_recovery_success": false
+          },
+          "model_success": false,
+          "maximum_applied_pulse_rad": 0.020000000000000018,
+          "wall_seconds": 1.3010112009942532,
+          "native_execution": false,
+          "valid_expert_labels": false,
+          "joint2_peak_rad_s": 5.006354738948975,
+          "joint2_limit_rad_s": 5.0,
+          "joint2_command_correction_max_rad": 0.0
+        },
+        {
+          "task": {
+            "name": "prefix_hips",
+            "feedback": true,
+            "start": 0,
+            "end": 10,
+            "joint_start": 0,
+            "joint_end": 4,
+            "amplitude_rad": -0.005,
+            "arm_correction_rad": 0.0
+          },
+          "valid_steps": 29,
+          "failure": {
+            "offset": 29,
+            "violations": {
+              "joint_velocity_violation_rad_s": 0.0012621500814002928
+            }
+          },
+          "model_window": {
+            "longest_model_kinematic_window_s": 0.0,
+            "qualifying_control_ticks": 0,
+            "required_window_s": 0.8,
+            "native_force_check": false,
+            "contact_flight_association_check": false,
+            "formal_recovery_success": false
+          },
+          "model_success": false,
+          "maximum_applied_pulse_rad": 0.0050000000000000044,
+          "wall_seconds": 1.3098368330392987,
+          "native_execution": false,
+          "valid_expert_labels": false,
+          "joint2_peak_rad_s": 5.0012621500814,
+          "joint2_limit_rad_s": 5.0,
+          "joint2_command_correction_max_rad": 0.0
+        },
+        {
+          "task": {
+            "name": "nominal",
+            "feedback": true,
+            "start": 0,
+            "end": 0,
+            "joint_start": 0,
+            "joint_end": 4,
+            "amplitude_rad": 0.0,
+            "arm_correction_rad": -0.001
+          },
+          "valid_steps": 340,
+          "failure": null,
+          "model_window": {
+            "longest_model_kinematic_window_s": 1.0200000000000007,
+            "qualifying_control_ticks": 180,
+            "required_window_s": 0.8,
+            "native_force_check": false,
+            "contact_flight_association_check": false,
+            "formal_recovery_success": false
+          },
+          "model_success": true,
+          "maximum_applied_pulse_rad": 0.0,
+          "wall_seconds": 11.545054331887513,
+          "native_execution": false,
+          "valid_expert_labels": false,
+          "joint2_peak_rad_s": 4.9938519473085945,
+          "joint2_limit_rad_s": 5.0,
+          "joint2_command_correction_max_rad": 0.0009999999999998899
+        },
+        {
+          "task": {
+            "name": "prefix_hips",
+            "feedback": true,
+            "start": 0,
+            "end": 10,
+            "joint_start": 0,
+            "joint_end": 4,
+            "amplitude_rad": -0.02,
+            "arm_correction_rad": -0.001
+          },
+          "valid_steps": 340,
+          "failure": null,
+          "model_window": {
+            "longest_model_kinematic_window_s": 0.9900000000000007,
+            "qualifying_control_ticks": 167,
+            "required_window_s": 0.8,
+            "native_force_check": false,
+            "contact_flight_association_check": false,
+            "formal_recovery_success": false
+          },
+          "model_success": true,
+          "maximum_applied_pulse_rad": 0.020000000000000018,
+          "wall_seconds": 11.511872159084305,
+          "native_execution": false,
+          "valid_expert_labels": false,
+          "joint2_peak_rad_s": 5.00005519619774,
+          "joint2_limit_rad_s": 5.0,
+          "joint2_command_correction_max_rad": 0.0009999999999998899
+        },
+        {
+          "task": {
+            "name": "prefix_hips",
+            "feedback": true,
+            "start": 0,
+            "end": 10,
+            "joint_start": 0,
+            "joint_end": 4,
+            "amplitude_rad": -0.005,
+            "arm_correction_rad": -0.001
+          },
+          "valid_steps": 340,
+          "failure": null,
+          "model_window": {
+            "longest_model_kinematic_window_s": 1.0100000000000007,
+            "qualifying_control_ticks": 177,
+            "required_window_s": 0.8,
+            "native_force_check": false,
+            "contact_flight_association_check": false,
+            "formal_recovery_success": false
+          },
+          "model_success": true,
+          "maximum_applied_pulse_rad": 0.0050000000000000044,
+          "wall_seconds": 11.506689441855997,
+          "native_execution": false,
+          "valid_expert_labels": false,
+          "joint2_peak_rad_s": 4.994966410885633,
+          "joint2_limit_rad_s": 5.0,
+          "joint2_command_correction_max_rad": 0.0009999999999998899
+        },
+        {
+          "task": {
+            "name": "nominal",
+            "feedback": true,
+            "start": 0,
+            "end": 0,
+            "joint_start": 0,
+            "joint_end": 4,
+            "amplitude_rad": 0.0,
+            "arm_correction_rad": -0.003
+          },
+          "valid_steps": 340,
+          "failure": null,
+          "model_window": {
+            "longest_model_kinematic_window_s": 1.0100000000000007,
+            "qualifying_control_ticks": 178,
+            "required_window_s": 0.8,
+            "native_force_check": false,
+            "contact_flight_association_check": false,
+            "formal_recovery_success": false
+          },
+          "model_success": true,
+          "maximum_applied_pulse_rad": 0.0,
+          "wall_seconds": 11.432347098132595,
+          "native_execution": false,
+          "valid_expert_labels": false,
+          "joint2_peak_rad_s": 4.981264042427463,
+          "joint2_limit_rad_s": 5.0,
+          "joint2_command_correction_max_rad": 0.0030000000000001137
+        },
+        {
+          "task": {
+            "name": "prefix_hips",
+            "feedback": true,
+            "start": 0,
+            "end": 10,
+            "joint_start": 0,
+            "joint_end": 4,
+            "amplitude_rad": -0.02,
+            "arm_correction_rad": -0.003
+          },
+          "valid_steps": 340,
+          "failure": null,
+          "model_window": {
+            "longest_model_kinematic_window_s": 0.9900000000000007,
+            "qualifying_control_ticks": 163,
+            "required_window_s": 0.8,
+            "native_force_check": false,
+            "contact_flight_association_check": false,
+            "formal_recovery_success": false
+          },
+          "model_success": true,
+          "maximum_applied_pulse_rad": 0.020000000000000018,
+          "wall_seconds": 11.523522089002654,
+          "native_execution": false,
+          "valid_expert_labels": false,
+          "joint2_peak_rad_s": 4.987451895954929,
+          "joint2_limit_rad_s": 5.0,
+          "joint2_command_correction_max_rad": 0.0030000000000001137
+        },
+        {
+          "task": {
+            "name": "prefix_hips",
+            "feedback": true,
+            "start": 0,
+            "end": 10,
+            "joint_start": 0,
+            "joint_end": 4,
+            "amplitude_rad": -0.005,
+            "arm_correction_rad": -0.003
+          },
+          "valid_steps": 340,
+          "failure": null,
+          "model_window": {
+            "longest_model_kinematic_window_s": 1.0100000000000007,
+            "qualifying_control_ticks": 177,
+            "required_window_s": 0.8,
+            "native_force_check": false,
+            "contact_flight_association_check": false,
+            "formal_recovery_success": false
+          },
+          "model_success": true,
+          "maximum_applied_pulse_rad": 0.0050000000000000044,
+          "wall_seconds": 11.364836296066642,
+          "native_execution": false,
+          "valid_expert_labels": false,
+          "joint2_peak_rad_s": 4.9823706180327605,
+          "joint2_limit_rad_s": 5.0,
+          "joint2_command_correction_max_rad": 0.0030000000000001137
+        },
+        {
+          "task": {
+            "name": "nominal",
+            "feedback": true,
+            "start": 0,
+            "end": 0,
+            "joint_start": 0,
+            "joint_end": 4,
+            "amplitude_rad": 0.0,
+            "arm_correction_rad": -0.006
+          },
+          "valid_steps": 340,
+          "failure": null,
+          "model_window": {
+            "longest_model_kinematic_window_s": 1.0200000000000007,
+            "qualifying_control_ticks": 178,
+            "required_window_s": 0.8,
+            "native_force_check": false,
+            "contact_flight_association_check": false,
+            "formal_recovery_success": false
+          },
+          "model_success": true,
+          "maximum_applied_pulse_rad": 0.0,
+          "wall_seconds": 11.402397389989346,
+          "native_execution": false,
+          "valid_expert_labels": false,
+          "joint2_peak_rad_s": 4.962371411513789,
+          "joint2_limit_rad_s": 5.0,
+          "joint2_command_correction_max_rad": 0.005999999999999783
+        },
+        {
+          "task": {
+            "name": "prefix_hips",
+            "feedback": true,
+            "start": 0,
+            "end": 10,
+            "joint_start": 0,
+            "joint_end": 4,
+            "amplitude_rad": -0.02,
+            "arm_correction_rad": -0.006
+          },
+          "valid_steps": 340,
+          "failure": null,
+          "model_window": {
+            "longest_model_kinematic_window_s": 0.9800000000000006,
+            "qualifying_control_ticks": 158,
+            "required_window_s": 0.8,
+            "native_force_check": false,
+            "contact_flight_association_check": false,
+            "formal_recovery_success": false
+          },
+          "model_success": true,
+          "maximum_applied_pulse_rad": 0.020000000000000018,
+          "wall_seconds": 11.627600851934403,
+          "native_execution": false,
+          "valid_expert_labels": false,
+          "joint2_peak_rad_s": 4.968536438948955,
+          "joint2_limit_rad_s": 5.0,
+          "joint2_command_correction_max_rad": 0.005999999999999783
+        },
+        {
+          "task": {
+            "name": "prefix_hips",
+            "feedback": true,
+            "start": 0,
+            "end": 10,
+            "joint_start": 0,
+            "joint_end": 4,
+            "amplitude_rad": -0.005,
+            "arm_correction_rad": -0.006
+          },
+          "valid_steps": 340,
+          "failure": null,
+          "model_window": {
+            "longest_model_kinematic_window_s": 1.0100000000000007,
+            "qualifying_control_ticks": 175,
+            "required_window_s": 0.8,
+            "native_force_check": false,
+            "contact_flight_association_check": false,
+            "formal_recovery_success": false
+          },
+          "model_success": true,
+          "maximum_applied_pulse_rad": 0.0050000000000000044,
+          "wall_seconds": 11.403599109966308,
+          "native_execution": false,
+          "valid_expert_labels": false,
+          "joint2_peak_rad_s": 4.963466142308507,
+          "joint2_limit_rad_s": 5.0,
+          "joint2_command_correction_max_rad": 0.005999999999999783
+        },
+        {
+          "task": {
+            "name": "nominal",
+            "feedback": true,
+            "start": 0,
+            "end": 0,
+            "joint_start": 0,
+            "joint_end": 4,
+            "amplitude_rad": 0.0,
+            "arm_correction_rad": -0.01
+          },
+          "valid_steps": 340,
+          "failure": null,
+          "model_window": {
+            "longest_model_kinematic_window_s": 1.0100000000000007,
+            "qualifying_control_ticks": 176,
+            "required_window_s": 0.8,
+            "native_force_check": false,
+            "contact_flight_association_check": false,
+            "formal_recovery_success": false
+          },
+          "model_success": true,
+          "maximum_applied_pulse_rad": 0.0,
+          "wall_seconds": 11.340720238164067,
+          "native_execution": false,
+          "valid_expert_labels": false,
+          "joint2_peak_rad_s": 4.944387003954736,
+          "joint2_limit_rad_s": 5.0,
+          "joint2_command_correction_max_rad": 0.009999999999999787
+        },
+        {
+          "task": {
+            "name": "prefix_hips",
+            "feedback": true,
+            "start": 0,
+            "end": 10,
+            "joint_start": 0,
+            "joint_end": 4,
+            "amplitude_rad": -0.02,
+            "arm_correction_rad": -0.01
+          },
+          "valid_steps": 340,
+          "failure": null,
+          "model_window": {
+            "longest_model_kinematic_window_s": 0.9700000000000006,
+            "qualifying_control_ticks": 154,
+            "required_window_s": 0.8,
+            "native_force_check": false,
+            "contact_flight_association_check": false,
+            "formal_recovery_success": false
+          },
+          "model_success": true,
+          "maximum_applied_pulse_rad": 0.020000000000000018,
+          "wall_seconds": 11.59331920510158,
+          "native_execution": false,
+          "valid_expert_labels": false,
+          "joint2_peak_rad_s": 4.947655260033361,
+          "joint2_limit_rad_s": 5.0,
+          "joint2_command_correction_max_rad": 0.009999999999999787
+        },
+        {
+          "task": {
+            "name": "prefix_hips",
+            "feedback": true,
+            "start": 0,
+            "end": 10,
+            "joint_start": 0,
+            "joint_end": 4,
+            "amplitude_rad": -0.005,
+            "arm_correction_rad": -0.01
+          },
+          "valid_steps": 340,
+          "failure": null,
+          "model_window": {
+            "longest_model_kinematic_window_s": 1.0100000000000007,
+            "qualifying_control_ticks": 175,
+            "required_window_s": 0.8,
+            "native_force_check": false,
+            "contact_flight_association_check": false,
+            "formal_recovery_success": false
+          },
+          "model_success": true,
+          "maximum_applied_pulse_rad": 0.0050000000000000044,
+          "wall_seconds": 11.46651836601086,
+          "native_execution": false,
+          "valid_expert_labels": false,
+          "joint2_peak_rad_s": 4.9452962311460205,
+          "joint2_limit_rad_s": 5.0,
+          "joint2_command_correction_max_rad": 0.009999999999999787
+        }
+      ],
+      "wall_seconds": 47.0436573990155
+    },
+    "terminal_prefix_arm_margin3_allpulses": {
+      "path": "reports/landing_fullcommand_native_response_20261107/terminal_prefix_arm_margin3_allpulses.json",
+      "sha256": "86cd7bef8ce67f5fab70b115d6881af9657554101f784fb275792b7dec2c9070",
+      "rows": [
+        {
+          "task": {
+            "name": "nominal",
+            "feedback": true,
+            "start": 0,
+            "end": 0,
+            "joint_start": 0,
+            "joint_end": 4,
+            "amplitude_rad": 0.0,
+            "arm_correction_rad": -0.006
+          },
+          "valid_steps": 340,
+          "failure": null,
+          "model_window": {
+            "longest_model_kinematic_window_s": 1.0200000000000007,
+            "qualifying_control_ticks": 178,
+            "required_window_s": 0.8,
+            "native_force_check": false,
+            "contact_flight_association_check": false,
+            "formal_recovery_success": false
+          },
+          "model_success": true,
+          "maximum_applied_pulse_rad": 0.0,
+          "wall_seconds": 11.353335949126631,
+          "native_execution": false,
+          "valid_expert_labels": false,
+          "joint2_peak_rad_s": 4.962371411513789,
+          "joint2_limit_rad_s": 5.0,
+          "joint2_command_correction_max_rad": 0.005999999999999783
+        },
+        {
+          "task": {
+            "name": "prefix_hips",
+            "feedback": true,
+            "start": 0,
+            "end": 10,
+            "joint_start": 0,
+            "joint_end": 4,
+            "amplitude_rad": -0.02,
+            "arm_correction_rad": -0.006
+          },
+          "valid_steps": 340,
+          "failure": null,
+          "model_window": {
+            "longest_model_kinematic_window_s": 0.9800000000000006,
+            "qualifying_control_ticks": 158,
+            "required_window_s": 0.8,
+            "native_force_check": false,
+            "contact_flight_association_check": false,
+            "formal_recovery_success": false
+          },
+          "model_success": true,
+          "maximum_applied_pulse_rad": 0.020000000000000018,
+          "wall_seconds": 31.563445993931964,
+          "native_execution": false,
+          "valid_expert_labels": false,
+          "joint2_peak_rad_s": 4.968536438948955,
+          "joint2_limit_rad_s": 5.0,
+          "joint2_command_correction_max_rad": 0.005999999999999783
+        },
+        {
+          "task": {
+            "name": "prefix_hips",
+            "feedback": true,
+            "start": 0,
+            "end": 10,
+            "joint_start": 0,
+            "joint_end": 4,
+            "amplitude_rad": -0.005,
+            "arm_correction_rad": -0.006
+          },
+          "valid_steps": 340,
+          "failure": null,
+          "model_window": {
+            "longest_model_kinematic_window_s": 1.0100000000000007,
+            "qualifying_control_ticks": 175,
+            "required_window_s": 0.8,
+            "native_force_check": false,
+            "contact_flight_association_check": false,
+            "formal_recovery_success": false
+          },
+          "model_success": true,
+          "maximum_applied_pulse_rad": 0.0050000000000000044,
+          "wall_seconds": 13.419605510076508,
+          "native_execution": false,
+          "valid_expert_labels": false,
+          "joint2_peak_rad_s": 4.963466142308507,
+          "joint2_limit_rad_s": 5.0,
+          "joint2_command_correction_max_rad": 0.005999999999999783
+        },
+        {
+          "task": {
+            "name": "prefix_hips",
+            "feedback": true,
+            "start": 0,
+            "end": 10,
+            "joint_start": 0,
+            "joint_end": 4,
+            "amplitude_rad": 0.005,
+            "arm_correction_rad": -0.006
+          },
+          "valid_steps": 340,
+          "failure": null,
+          "model_window": {
+            "longest_model_kinematic_window_s": 1.0200000000000007,
+            "qualifying_control_ticks": 179,
+            "required_window_s": 0.8,
+            "native_force_check": false,
+            "contact_flight_association_check": false,
+            "formal_recovery_success": false
+          },
+          "model_success": true,
+          "maximum_applied_pulse_rad": 0.0050000000000000044,
+          "wall_seconds": 13.891477735014632,
+          "native_execution": false,
+          "valid_expert_labels": false,
+          "joint2_peak_rad_s": 4.961526679051338,
+          "joint2_limit_rad_s": 5.0,
+          "joint2_command_correction_max_rad": 0.005999999999999783
+        },
+        {
+          "task": {
+            "name": "prefix_hips",
+            "feedback": true,
+            "start": 0,
+            "end": 10,
+            "joint_start": 0,
+            "joint_end": 4,
+            "amplitude_rad": 0.02,
+            "arm_correction_rad": -0.006
+          },
+          "valid_steps": 1,
+          "failure": {
+            "offset": 1,
+            "violations": {
+              "nonfoot_ground_violation_m": 3.96911267032396e-06
+            }
+          },
+          "model_window": {
+            "longest_model_kinematic_window_s": 0.0,
+            "qualifying_control_ticks": 0,
+            "required_window_s": 0.8,
+            "native_force_check": false,
+            "contact_flight_association_check": false,
+            "formal_recovery_success": false
+          },
+          "model_success": false,
+          "maximum_applied_pulse_rad": 0.020000000000000018,
+          "wall_seconds": 0.17541900696232915,
+          "native_execution": false,
+          "valid_expert_labels": false,
+          "joint2_peak_rad_s": 1.1667979830921933,
+          "joint2_limit_rad_s": 5.0,
+          "joint2_command_correction_max_rad": 0.0
+        },
+        {
+          "task": {
+            "name": "terminal_calves",
+            "feedback": true,
+            "start": 80,
+            "end": 100,
+            "joint_start": 8,
+            "joint_end": 12,
+            "amplitude_rad": -0.02,
+            "arm_correction_rad": -0.006
+          },
+          "valid_steps": 340,
+          "failure": null,
+          "model_window": {
+            "longest_model_kinematic_window_s": 0.9600000000000006,
+            "qualifying_control_ticks": 166,
+            "required_window_s": 0.8,
+            "native_force_check": false,
+            "contact_flight_association_check": false,
+            "formal_recovery_success": false
+          },
+          "model_success": true,
+          "maximum_applied_pulse_rad": 0.020000000000000018,
+          "wall_seconds": 18.55330786202103,
+          "native_execution": false,
+          "valid_expert_labels": false,
+          "joint2_peak_rad_s": 4.962371411513789,
+          "joint2_limit_rad_s": 5.0,
+          "joint2_command_correction_max_rad": 0.005999999999999783
+        },
+        {
+          "task": {
+            "name": "terminal_calves",
+            "feedback": true,
+            "start": 80,
+            "end": 100,
+            "joint_start": 8,
+            "joint_end": 12,
+            "amplitude_rad": -0.005,
+            "arm_correction_rad": -0.006
+          },
+          "valid_steps": 340,
+          "failure": null,
+          "model_window": {
+            "longest_model_kinematic_window_s": 1.0000000000000007,
+            "qualifying_control_ticks": 176,
+            "required_window_s": 0.8,
+            "native_force_check": false,
+            "contact_flight_association_check": false,
+            "formal_recovery_success": false
+          },
+          "model_success": true,
+          "maximum_applied_pulse_rad": 0.004999999999999893,
+          "wall_seconds": 11.48880767216906,
+          "native_execution": false,
+          "valid_expert_labels": false,
+          "joint2_peak_rad_s": 4.962371411513789,
+          "joint2_limit_rad_s": 5.0,
+          "joint2_command_correction_max_rad": 0.005999999999999783
+        },
+        {
+          "task": {
+            "name": "terminal_calves",
+            "feedback": true,
+            "start": 80,
+            "end": 100,
+            "joint_start": 8,
+            "joint_end": 12,
+            "amplitude_rad": 0.005,
+            "arm_correction_rad": -0.006
+          },
+          "valid_steps": 340,
+          "failure": null,
+          "model_window": {
+            "longest_model_kinematic_window_s": 1.0400000000000007,
+            "qualifying_control_ticks": 181,
+            "required_window_s": 0.8,
+            "native_force_check": false,
+            "contact_flight_association_check": false,
+            "formal_recovery_success": false
+          },
+          "model_success": true,
+          "maximum_applied_pulse_rad": 0.004999999999999893,
+          "wall_seconds": 11.35498032392934,
+          "native_execution": false,
+          "valid_expert_labels": false,
+          "joint2_peak_rad_s": 4.962371411513789,
+          "joint2_limit_rad_s": 5.0,
+          "joint2_command_correction_max_rad": 0.005999999999999783
+        },
+        {
+          "task": {
+            "name": "terminal_calves",
+            "feedback": true,
+            "start": 80,
+            "end": 100,
+            "joint_start": 8,
+            "joint_end": 12,
+            "amplitude_rad": 0.02,
+            "arm_correction_rad": -0.006
+          },
+          "valid_steps": 340,
+          "failure": null,
+          "model_window": {
+            "longest_model_kinematic_window_s": 1.1000000000000008,
+            "qualifying_control_ticks": 188,
+            "required_window_s": 0.8,
+            "native_force_check": false,
+            "contact_flight_association_check": false,
+            "formal_recovery_success": false
+          },
+          "model_success": true,
+          "maximum_applied_pulse_rad": 0.020000000000000018,
+          "wall_seconds": 11.407995630986989,
+          "native_execution": false,
+          "valid_expert_labels": false,
+          "joint2_peak_rad_s": 4.962371411513789,
+          "joint2_limit_rad_s": 5.0,
+          "joint2_command_correction_max_rad": 0.005999999999999783
+        }
+      ],
+      "wall_seconds": 37.916384177980945
+    },
+    "terminal_support_resolution3": {
+      "path": "reports/landing_fullcommand_native_response_20261107/terminal_support_resolution3.json",
+      "sha256": "13e75144e99f37dd6c87d9275dc9caabad1406f00b4c8f3f99050d79c07d6539",
+      "rows": [
+        {
+          "task": {
+            "name": "nominal",
+            "feedback": true,
+            "start": 0,
+            "end": 0,
+            "joint_start": 0,
+            "joint_end": 4,
+            "amplitude_rad": 0.0,
+            "arm_correction_rad": 0.0,
+            "substeps": 16
+          },
+          "valid_steps": 340,
+          "failure": null,
+          "model_window": {
+            "longest_model_kinematic_window_s": 1.0200000000000007,
+            "qualifying_control_ticks": 180,
+            "required_window_s": 0.8,
+            "native_force_check": false,
+            "contact_flight_association_check": false,
+            "formal_recovery_success": false
+          },
+          "model_success": true,
+          "maximum_applied_pulse_rad": 0.0,
+          "wall_seconds": 11.488278386881575,
+          "native_execution": false,
+          "valid_expert_labels": false,
+          "joint2_peak_rad_s": 5.0001437477421256,
+          "joint2_limit_rad_s": 5.0,
+          "joint2_command_correction_max_rad": 0.0
+        },
+        {
+          "task": {
+            "name": "nominal",
+            "feedback": true,
+            "start": 0,
+            "end": 0,
+            "joint_start": 0,
+            "joint_end": 4,
+            "amplitude_rad": 0.0,
+            "arm_correction_rad": 0.0,
+            "substeps": 32
+          },
+          "valid_steps": 29,
+          "failure": {
+            "offset": 29,
+            "violations": {
+              "joint_velocity_violation_rad_s": 0.008296274781868007
+            }
+          },
+          "model_window": {
+            "longest_model_kinematic_window_s": 0.0,
+            "qualifying_control_ticks": 0,
+            "required_window_s": 0.8,
+            "native_force_check": false,
+            "contact_flight_association_check": false,
+            "formal_recovery_success": false
+          },
+          "model_success": false,
+          "maximum_applied_pulse_rad": 0.0,
+          "wall_seconds": 2.349634529091418,
+          "native_execution": false,
+          "valid_expert_labels": false,
+          "joint2_peak_rad_s": 5.008296274781868,
+          "joint2_limit_rad_s": 5.0,
+          "joint2_command_correction_max_rad": 0.0
+        },
+        {
+          "task": {
+            "name": "nominal",
+            "feedback": true,
+            "start": 0,
+            "end": 0,
+            "joint_start": 0,
+            "joint_end": 4,
+            "amplitude_rad": 0.0,
+            "arm_correction_rad": 0.0,
+            "substeps": 64
+          },
+          "valid_steps": 29,
+          "failure": {
+            "offset": 29,
+            "violations": {
+              "joint_velocity_violation_rad_s": 0.012425540826670911
+            }
+          },
+          "model_window": {
+            "longest_model_kinematic_window_s": 0.0,
+            "qualifying_control_ticks": 0,
+            "required_window_s": 0.8,
+            "native_force_check": false,
+            "contact_flight_association_check": false,
+            "formal_recovery_success": false
+          },
+          "model_success": false,
+          "maximum_applied_pulse_rad": 0.0,
+          "wall_seconds": 4.790035807993263,
+          "native_execution": false,
+          "valid_expert_labels": false,
+          "joint2_peak_rad_s": 5.012425540826671,
+          "joint2_limit_rad_s": 5.0,
+          "joint2_command_correction_max_rad": 0.0
+        },
+        {
+          "task": {
+            "name": "nominal",
+            "feedback": true,
+            "start": 0,
+            "end": 0,
+            "joint_start": 0,
+            "joint_end": 4,
+            "amplitude_rad": 0.0,
+            "arm_correction_rad": 0.0,
+            "substeps": 160
+          },
+          "valid_steps": 29,
+          "failure": {
+            "offset": 29,
+            "violations": {
+              "joint_velocity_violation_rad_s": 0.014807888465503183
+            }
+          },
+          "model_window": {
+            "longest_model_kinematic_window_s": 0.0,
+            "qualifying_control_ticks": 0,
+            "required_window_s": 0.8,
+            "native_force_check": false,
+            "contact_flight_association_check": false,
+            "formal_recovery_success": false
+          },
+          "model_success": false,
+          "maximum_applied_pulse_rad": 0.0,
+          "wall_seconds": 26.238971532089636,
+          "native_execution": false,
+          "valid_expert_labels": false,
+          "joint2_peak_rad_s": 5.014807888465503,
+          "joint2_limit_rad_s": 5.0,
+          "joint2_command_correction_max_rad": 0.0
+        },
+        {
+          "task": {
+            "name": "nominal",
+            "feedback": true,
+            "start": 0,
+            "end": 0,
+            "joint_start": 0,
+            "joint_end": 4,
+            "amplitude_rad": 0.0,
+            "arm_correction_rad": -0.006,
+            "substeps": 16
+          },
+          "valid_steps": 340,
+          "failure": null,
+          "model_window": {
+            "longest_model_kinematic_window_s": 1.0200000000000007,
+            "qualifying_control_ticks": 178,
+            "required_window_s": 0.8,
+            "native_force_check": false,
+            "contact_flight_association_check": false,
+            "formal_recovery_success": false
+          },
+          "model_success": true,
+          "maximum_applied_pulse_rad": 0.0,
+          "wall_seconds": 11.453672671923414,
+          "native_execution": false,
+          "valid_expert_labels": false,
+          "joint2_peak_rad_s": 4.962371411513789,
+          "joint2_limit_rad_s": 5.0,
+          "joint2_command_correction_max_rad": 0.005999999999999783
+        },
+        {
+          "task": {
+            "name": "nominal",
+            "feedback": true,
+            "start": 0,
+            "end": 0,
+            "joint_start": 0,
+            "joint_end": 4,
+            "amplitude_rad": 0.0,
+            "arm_correction_rad": -0.006,
+            "substeps": 32
+          },
+          "valid_steps": 340,
+          "failure": null,
+          "model_window": {
+            "longest_model_kinematic_window_s": 1.0200000000000007,
+            "qualifying_control_ticks": 185,
+            "required_window_s": 0.8,
+            "native_force_check": false,
+            "contact_flight_association_check": false,
+            "formal_recovery_success": false
+          },
+          "model_success": true,
+          "maximum_applied_pulse_rad": 0.0,
+          "wall_seconds": 20.006731856847182,
+          "native_execution": false,
+          "valid_expert_labels": false,
+          "joint2_peak_rad_s": 4.970516768627737,
+          "joint2_limit_rad_s": 5.0,
+          "joint2_command_correction_max_rad": 0.005999999999999783
+        },
+        {
+          "task": {
+            "name": "nominal",
+            "feedback": true,
+            "start": 0,
+            "end": 0,
+            "joint_start": 0,
+            "joint_end": 4,
+            "amplitude_rad": 0.0,
+            "arm_correction_rad": -0.006,
+            "substeps": 64
+          },
+          "valid_steps": 340,
+          "failure": null,
+          "model_window": {
+            "longest_model_kinematic_window_s": 1.0100000000000007,
+            "qualifying_control_ticks": 184,
+            "required_window_s": 0.8,
+            "native_force_check": false,
+            "contact_flight_association_check": false,
+            "formal_recovery_success": false
+          },
+          "model_success": true,
+          "maximum_applied_pulse_rad": 0.0,
+          "wall_seconds": 40.91182508901693,
+          "native_execution": false,
+          "valid_expert_labels": false,
+          "joint2_peak_rad_s": 4.974600088001659,
+          "joint2_limit_rad_s": 5.0,
+          "joint2_command_correction_max_rad": 0.005999999999999783
+        },
+        {
+          "task": {
+            "name": "nominal",
+            "feedback": true,
+            "start": 0,
+            "end": 0,
+            "joint_start": 0,
+            "joint_end": 4,
+            "amplitude_rad": 0.0,
+            "arm_correction_rad": -0.006,
+            "substeps": 160
+          },
+          "valid_steps": 340,
+          "failure": null,
+          "model_window": {
+            "longest_model_kinematic_window_s": 1.0000000000000007,
+            "qualifying_control_ticks": 184,
+            "required_window_s": 0.8,
+            "native_force_check": false,
+            "contact_flight_association_check": false,
+            "formal_recovery_success": false
+          },
+          "model_success": true,
+          "maximum_applied_pulse_rad": 0.0,
+          "wall_seconds": 77.74774613883346,
+          "native_execution": false,
+          "valid_expert_labels": false,
+          "joint2_peak_rad_s": 4.976990598663641,
+          "joint2_limit_rad_s": 5.0,
+          "joint2_command_correction_max_rad": 0.005999999999999783
+        }
+      ],
+      "wall_seconds": 92.605142012937
+    }
+  },
+  "student_complete5": 27,
+  "native_recovery_gain_established": false,
+  "valid_expert_labels": false,
+  "formal_goal_verifier": {
+    "goal_id": "G07",
+    "status": "FAILED",
+    "contract_sha256": "66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807",
+    "checks": {
+      "G00": {
+        "passed": false,
+        "errors": [
+          "Missing or empty artifact: reports/G00/native_train/checkpoint.pt"
+        ]
+      },
+      "G01": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G00",
+          "Path escapes workspace: assets/quadsmash_standard_v2.usd",
+          "Path escapes workspace: assets/vendor/piper_isaac_sim/piper_description/urdf/piper_no_gripper_description.urdf"
+        ]
+      },
+      "G02": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G01"
+        ]
+      },
+      "G03": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G02",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/train/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/train/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/reload/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/reload/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/interrupt/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/interrupt/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/resume_interrupt/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/resume_interrupt/continuation_reference.pt"
+        ]
+      },
+      "G04": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G03",
+          "Missing or empty artifact: artifacts/G04/policy.pt",
+          "Missing or empty artifact: artifacts/G04/autonomous_actor/actor.pt",
+          "Missing or empty artifact: artifacts/G04/autonomous_actor/interface.json"
+        ]
+      },
+      "G05": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G04"
+        ]
+      },
+      "G06": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G05"
+        ]
+      },
+      "G07": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G06",
+          "Missing or invalid evidence: [Errno 2] No such file or directory: '/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/G07/evidence.json'"
+        ]
+      }
+    },
+    "scope": "Structure, hashes, dependencies and thresholds only; not simulation authenticity or GPU budget enforcement."
+  },
+  "full_candidate": {
+    "model_candidate_accepted": true,
+    "executed_model_steps": 340,
+    "failure": null,
+    "model_window": {
+      "longest_model_kinematic_window_s": 1.0000000000000007,
+      "qualifying_control_ticks": 184,
+      "required_window_s": 0.8,
+      "native_force_check": false,
+      "contact_flight_association_check": false,
+      "formal_recovery_success": false
+    },
+    "arm_correction": {
+      "joint_index": 13,
+      "amplitude_rad": -0.006,
+      "start": 15,
+      "end": 45,
+      "profile": "half_sine"
+    },
+    "integration_substeps": 160,
+    "wall_seconds": 77.86971003189683,
+    "native_continuation_executed": false,
+    "valid_expert_labels": false,
+    "path": "reports/landing_fullcommand_native_response_20261107/terminal_support_arm_margin_policy3.json",
+    "sha256": "2aaeb77e178a82e7bf1529cb51391b4d7001286e61f8d91c7a7d907b364f354d"
+  },
+  "runtime_observed_at": "2026-11-07T16:31:46.673273+00:00",
+  "native_progress": {
+    "control_tick": 472,
+    "replans": 6,
+    "accepted_replans": 6,
+    "latest_accepted": true,
+    "latest_wall_seconds": 169.8589294750709,
+    "latest_reason": null,
+    "teacher_steps": 12,
+    "fallback_steps": 0,
+    "teacher_model": "frictional_spheres_v1",
+    "native_recovery_success_not_yet_known": true
+  },
+  "live_processes": {
+    "4189530": "169281485",
+    "4189531": "169281505",
+    "4189548": "169281539",
+    "4192383": "169429230"
+  }
+}
