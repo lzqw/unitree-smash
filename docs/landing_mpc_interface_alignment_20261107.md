@@ -719,3 +719,12 @@ admission and replacing long single-command holds with sustained feedback after
 the in-progress controlled comparisons. Reproduction and hashes are in
 `scripts/audit_landing_prediction_timing_v1.py` and
 `landing_prediction_timing_checked_20261107.json`.
+
+`AdmittedArmSupportQP` is now implemented as a separate candidate, preserving
+all original limits and the original prescribed-arm behavior after admission.
+It records both requested and admitted references, rejects invalid targets
+rather than hiding them with clipping, and leaves the caller's target unchanged.
+Two new regression checks bring the focused suite to 20 passing tests. This
+candidate is not yet wired into the running/queued comparisons, preserving their
+source hashes and isolating the effects. It must receive its own native trial
+before being promoted as a useful recovery teacher.
