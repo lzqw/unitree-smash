@@ -1,0 +1,829 @@
+{
+  "scope": "Keep compact full-horizon search evidence separate from native outcomes.",
+  "native_execution": false,
+  "contract": {
+    "schema": "landing-reference-shooting-mpc-v1",
+    "formulation": "sequential-QP-with-all-substep-command-constraints",
+    "settings": {
+      "horizon_steps": 40,
+      "control_dt_s": 0.01,
+      "tilt_trigger_rad": 0.55,
+      "angular_speed_trigger_rad_s": 2.2,
+      "horizontal_speed_trigger_mps": 0.75,
+      "minimum_support_feet": 1,
+      "terminal_tilt_rad": 0.35,
+      "terminal_angular_speed_rad_s": 1.4,
+      "terminal_horizontal_speed_mps": 0.45,
+      "max_stage_runtime_s": 0.02,
+      "executor_replay": true,
+      "executor_replay_model_consistent": true,
+      "command_rate_scale": 1.0,
+      "support_margin_trigger_m": 0.025,
+      "terminal_support_margin_m": 0.01,
+      "two_foot_max_com_distance_m": 0.075,
+      "one_foot_max_com_distance_m": 0.2,
+      "landing_leg_posture_blend": 0.15,
+      "landing_arm_posture_blend": 0.0,
+      "predict_touchdown_contacts": true,
+      "contact_mode_fallback": true,
+      "contact_mode_sequence_search": false,
+      "contact_mode_sequence_max_candidates": 3,
+      "touchdown_mode_height_scale": 2.5,
+      "touchdown_height_tolerance_m": 0.012,
+      "touchdown_vertical_speed_limit_mps": 1.5,
+      "touchdown_impact_projection": false,
+      "touchdown_impact_restitution": 0.0,
+      "touchdown_impact_max_impulse_ns": 25.0
+    },
+    "support_qp_settings": {
+      "control_dt_s": 0.01,
+      "contact_velocity_decay_s": 0.06,
+      "com_kp_s2": 50.0,
+      "com_kd_s": 14.0,
+      "orientation_kp_s2": 60.0,
+      "orientation_kd_s": 15.0,
+      "posture_kp_s2": 40.0,
+      "posture_kd_s": 12.0,
+      "com_weight": 20.0,
+      "orientation_weight": 10.0,
+      "posture_weight": 0.2,
+      "acceleration_regularization": 1e-05,
+      "torque_regularization": 0.0001,
+      "force_regularization": 1e-05,
+      "force_distribution_weight": 0.0,
+      "force_wrench_weight": 0.0,
+      "friction_facets": 8,
+      "solver_eps": 1e-06,
+      "solver_max_iterations": 10000,
+      "residual_tolerance": 0.0003,
+      "swing_foot_weight": 1.0,
+      "swing_foot_kp_s2": 60.0,
+      "swing_foot_kd_s": 12.0,
+      "swing_foot_clearance_m": 0.005,
+      "swing_foot_capture_gain": 0.0,
+      "swing_foot_capture_max_m": 0.25,
+      "nonfoot_clearance_weight": 5.0,
+      "nonfoot_clearance_hard": false,
+      "nonfoot_clearance_m": 0.05,
+      "nonfoot_clearance_kp_s2": 60.0,
+      "nonfoot_clearance_kd_s": 15.0
+    },
+    "action_interface": "original-normalized-position-targets-v1",
+    "no_external_force": true,
+    "no_state_teleport": true,
+    "native_execution": false,
+    "solver_failure_is_not_hardware_impossibility": true,
+    "continuous_reference": true,
+    "preserve_arm_position_command": "conditional",
+    "arm_command_semantics": "preserve-when-feasible; bounded-free-arm-only-after-primal-infeasible",
+    "load_aware_support": false,
+    "load_force_floor_n": 2.0,
+    "reference_memory": "per-lane-live-tick-with-speculative-rollback",
+    "command_interface": "leg-position-range;arm-slew-from-last-final-command",
+    "arm_target_rate_rad_s": 10.0,
+    "physical_velocity_constraints_unchanged": true,
+    "substeps": 16,
+    "minimum_root_height_m": 0.12,
+    "drive_branch": "unsaturated-entire-interval",
+    "nonlinear_contact_and_impact_model_complete": false,
+    "native_recovery_validated": false,
+    "qp_backend": "quadprog",
+    "qp_backend_version": "0.1.13",
+    "hessian_regularized": false,
+    "physical_constraints_relaxed": false,
+    "iteration_limit_checked_after_solve": true,
+    "arm_reference_is_still_soft_posture_objective": true,
+    "joint_damper_gain_s_inv": 20.0,
+    "damper_in_all_implicit_substeps": true,
+    "viability_or_native_recovery_certified": false,
+    "outer_optimizer": "bounded-reference-space-CEM",
+    "entire_horizon_selects_current_command": true,
+    "full_joint_space_trajectory_optimization": false
+  },
+  "samples": 13,
+  "baseline_complete_predictions": 0,
+  "selected_complete_predictions": 0,
+  "candidates": 637,
+  "wall_seconds": 218.1235383185558,
+  "records": [
+    {
+      "case": 70,
+      "tick": 300,
+      "baseline_accepted": false,
+      "baseline_valid_steps": 32,
+      "baseline_rejection": "QP rejected prediction stage 32",
+      "baseline_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.5324515221804333,
+        "horizontal_speed_mps": 0.9851158844061493,
+        "angular_speed_rad_s": 1.5436938876064912,
+        "support_feet": 2,
+        "reason": "support_margin",
+        "support_margin_m": -0.22370634427485805,
+        "root_height_m": 0.12546024971266662
+      },
+      "selected_new_plan": false,
+      "accepted": false,
+      "candidate_count": 49,
+      "accepted_candidate_count": 0,
+      "selected_knots_world_mps2": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "best_rank": [
+        2,
+        8.038192950151055
+      ],
+      "best_valid_steps": 32,
+      "best_rejection": "QP rejected prediction stage 32",
+      "best_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.5260537158884091,
+        "horizontal_speed_mps": 0.9924027468858629,
+        "angular_speed_rad_s": 1.4487514056815747,
+        "support_feet": 2,
+        "reason": "support_margin",
+        "support_margin_m": -0.22504153775535932,
+        "root_height_m": 0.1239434629333294
+      },
+      "wall_seconds": 19.094343238975853
+    },
+    {
+      "case": 71,
+      "tick": 300,
+      "baseline_accepted": false,
+      "baseline_valid_steps": 30,
+      "baseline_rejection": "QP rejected prediction stage 30",
+      "baseline_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.8264885667261413,
+        "horizontal_speed_mps": 0.9555414951702861,
+        "angular_speed_rad_s": 1.91526811048679,
+        "support_feet": 4,
+        "reason": "support_margin",
+        "support_margin_m": -0.2553702197779257,
+        "root_height_m": 0.12884884139031177
+      },
+      "selected_new_plan": false,
+      "accepted": false,
+      "candidate_count": 49,
+      "accepted_candidate_count": 0,
+      "selected_knots_world_mps2": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "best_rank": [
+        2,
+        7.0491551833762545
+      ],
+      "best_valid_steps": 33,
+      "best_rejection": "QP rejected prediction stage 33",
+      "best_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.9154380839758008,
+        "horizontal_speed_mps": 0.904638521394129,
+        "angular_speed_rad_s": 1.9298405716126148,
+        "support_feet": 4,
+        "reason": "support_margin",
+        "support_margin_m": -0.1450868944058327,
+        "root_height_m": 0.12445316087054016
+      },
+      "wall_seconds": 19.008924728026614
+    },
+    {
+      "case": 77,
+      "tick": 300,
+      "baseline_accepted": false,
+      "baseline_valid_steps": 7,
+      "baseline_rejection": "QP rejected prediction stage 7",
+      "baseline_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.661002595238468,
+        "horizontal_speed_mps": 1.9608965583327134,
+        "angular_speed_rad_s": 0.961502778437544,
+        "support_feet": 2,
+        "reason": "support_margin",
+        "support_margin_m": -0.15922458154863803,
+        "root_height_m": 0.12894850012017875
+      },
+      "selected_new_plan": false,
+      "accepted": false,
+      "candidate_count": 49,
+      "accepted_candidate_count": 0,
+      "selected_knots_world_mps2": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "best_rank": [
+        2,
+        33.03506390784544
+      ],
+      "best_valid_steps": 7,
+      "best_rejection": "QP rejected prediction stage 7",
+      "best_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.661002595238468,
+        "horizontal_speed_mps": 1.9608965583327134,
+        "angular_speed_rad_s": 0.961502778437544,
+        "support_feet": 2,
+        "reason": "support_margin",
+        "support_margin_m": -0.15922458154863803,
+        "root_height_m": 0.12894850012017875
+      },
+      "wall_seconds": 4.651893625967205
+    },
+    {
+      "case": 1,
+      "tick": 320,
+      "baseline_accepted": false,
+      "baseline_valid_steps": 40,
+      "baseline_rejection": "terminal support margin not reached",
+      "baseline_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.27657974609101443,
+        "horizontal_speed_mps": 0.6453380165836545,
+        "angular_speed_rad_s": 0.5725924541421128,
+        "support_feet": 3,
+        "reason": "support_margin",
+        "support_margin_m": -0.1104686233165314,
+        "root_height_m": 0.15763897922759587
+      },
+      "selected_new_plan": false,
+      "accepted": false,
+      "candidate_count": 49,
+      "accepted_candidate_count": 0,
+      "selected_knots_world_mps2": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "best_rank": [
+        1,
+        2.3578690328461636
+      ],
+      "best_valid_steps": 40,
+      "best_rejection": "terminal support margin not reached",
+      "best_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.2983443332497175,
+        "horizontal_speed_mps": 0.5153407763263578,
+        "angular_speed_rad_s": 0.3088445122390222,
+        "support_feet": 4,
+        "reason": "support_margin",
+        "support_margin_m": -0.10449988956026286,
+        "root_height_m": 0.1662684239810746
+      },
+      "wall_seconds": 23.42783210799098
+    },
+    {
+      "case": 3,
+      "tick": 320,
+      "baseline_accepted": false,
+      "baseline_valid_steps": 40,
+      "baseline_rejection": "terminal support margin not reached",
+      "baseline_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.2594431487918947,
+        "horizontal_speed_mps": 0.18028542029126438,
+        "angular_speed_rad_s": 0.8941526248729935,
+        "support_feet": 4,
+        "reason": "support_margin",
+        "support_margin_m": -0.02900808765590251,
+        "root_height_m": 0.14741230784705656
+      },
+      "selected_new_plan": false,
+      "accepted": false,
+      "candidate_count": 49,
+      "accepted_candidate_count": 0,
+      "selected_knots_world_mps2": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "best_rank": [
+        1,
+        0.7104775411235796
+      ],
+      "best_valid_steps": 40,
+      "best_rejection": "terminal support margin not reached",
+      "best_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.26077226929728337,
+        "horizontal_speed_mps": 0.15734121389375022,
+        "angular_speed_rad_s": 0.9233415571174145,
+        "support_feet": 4,
+        "reason": "support_margin",
+        "support_margin_m": -0.025450792415655076,
+        "root_height_m": 0.14695473312491264
+      },
+      "wall_seconds": 21.294345383998007
+    },
+    {
+      "case": 8,
+      "tick": 320,
+      "baseline_accepted": false,
+      "baseline_valid_steps": 40,
+      "baseline_rejection": "terminal support margin not reached",
+      "baseline_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.3277847291675027,
+        "horizontal_speed_mps": 0.5084766860968839,
+        "angular_speed_rad_s": 0.4772660800560705,
+        "support_feet": 4,
+        "reason": "support_margin",
+        "support_margin_m": -0.1624676098696783,
+        "root_height_m": 0.16558306081530508
+      },
+      "selected_new_plan": false,
+      "accepted": false,
+      "candidate_count": 49,
+      "accepted_candidate_count": 0,
+      "selected_knots_world_mps2": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "best_rank": [
+        1,
+        3.339495991582345
+      ],
+      "best_valid_steps": 40,
+      "best_rejection": "terminal support margin not reached",
+      "best_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.3317074718208559,
+        "horizontal_speed_mps": 0.4698286417967,
+        "angular_speed_rad_s": 0.4954179665275825,
+        "support_feet": 4,
+        "reason": "support_margin",
+        "support_margin_m": -0.15581087278518235,
+        "root_height_m": 0.16637788109900262
+      },
+      "wall_seconds": 24.34866010886617
+    },
+    {
+      "case": 20,
+      "tick": 320,
+      "baseline_accepted": false,
+      "baseline_valid_steps": 15,
+      "baseline_rejection": "QP rejected prediction stage 15",
+      "baseline_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.5062762872312196,
+        "horizontal_speed_mps": 0.47615339237075294,
+        "angular_speed_rad_s": 5.6906523383339325,
+        "support_feet": 4,
+        "reason": "support_margin",
+        "support_margin_m": -0.030035978383483573,
+        "root_height_m": 0.1714815203038779
+      },
+      "selected_new_plan": false,
+      "accepted": false,
+      "candidate_count": 49,
+      "accepted_candidate_count": 0,
+      "selected_knots_world_mps2": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "best_rank": [
+        2,
+        11.054282057584402
+      ],
+      "best_valid_steps": 29,
+      "best_rejection": "QP rejected prediction stage 29",
+      "best_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.6110526474970334,
+        "horizontal_speed_mps": 0.6228496484016277,
+        "angular_speed_rad_s": 3.773060004870111,
+        "support_feet": 4,
+        "reason": "support_margin",
+        "support_margin_m": -0.10218699595773108,
+        "root_height_m": 0.12111759516001516
+      },
+      "wall_seconds": 13.810986676020548
+    },
+    {
+      "case": 30,
+      "tick": 320,
+      "baseline_accepted": false,
+      "baseline_valid_steps": 16,
+      "baseline_rejection": "QP rejected prediction stage 16",
+      "baseline_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.6197852986652163,
+        "horizontal_speed_mps": 0.36988444830154205,
+        "angular_speed_rad_s": 3.833504285104097,
+        "support_feet": 3,
+        "reason": "support_margin",
+        "support_margin_m": -0.004441662949374204,
+        "root_height_m": 0.19062567937856517
+      },
+      "selected_new_plan": false,
+      "accepted": false,
+      "candidate_count": 49,
+      "accepted_candidate_count": 0,
+      "selected_knots_world_mps2": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "best_rank": [
+        2,
+        8.044338841273323
+      ],
+      "best_valid_steps": 32,
+      "best_rejection": "QP rejected prediction stage 32",
+      "best_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.6840312414244849,
+        "horizontal_speed_mps": 0.5579879624075531,
+        "angular_speed_rad_s": 3.414214055839997,
+        "support_feet": 3,
+        "reason": "support_margin",
+        "support_margin_m": -0.07737053369228546,
+        "root_height_m": 0.12128928313497832
+      },
+      "wall_seconds": 12.289115293882787
+    },
+    {
+      "case": 38,
+      "tick": 320,
+      "baseline_accepted": false,
+      "baseline_valid_steps": 26,
+      "baseline_rejection": "QP rejected prediction stage 26",
+      "baseline_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.5191180834111487,
+        "horizontal_speed_mps": 0.1856662283336315,
+        "angular_speed_rad_s": 2.9409428379755864,
+        "support_feet": 4,
+        "reason": "support_margin",
+        "support_margin_m": 0.01467425655159367,
+        "root_height_m": 0.12017001024861697
+      },
+      "selected_new_plan": false,
+      "accepted": false,
+      "candidate_count": 49,
+      "accepted_candidate_count": 0,
+      "selected_knots_world_mps2": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "best_rank": [
+        2,
+        3.016690829405503
+      ],
+      "best_valid_steps": 37,
+      "best_rejection": "QP rejected prediction stage 37",
+      "best_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.6427952499991695,
+        "horizontal_speed_mps": 0.19691521941303172,
+        "angular_speed_rad_s": 2.5599562155923747,
+        "support_feet": 4,
+        "reason": "support_margin",
+        "support_margin_m": 0.009862964731706617,
+        "root_height_m": 0.1212253602639219
+      },
+      "wall_seconds": 14.391059180954471
+    },
+    {
+      "case": 61,
+      "tick": 320,
+      "baseline_accepted": false,
+      "baseline_valid_steps": 40,
+      "baseline_rejection": "terminal support margin not reached",
+      "baseline_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.3154959915897615,
+        "horizontal_speed_mps": 0.30132626003467683,
+        "angular_speed_rad_s": 0.9231935206401773,
+        "support_feet": 4,
+        "reason": "support_margin",
+        "support_margin_m": -0.11947896417546568,
+        "root_height_m": 0.1285484093811347
+      },
+      "selected_new_plan": false,
+      "accepted": false,
+      "candidate_count": 49,
+      "accepted_candidate_count": 0,
+      "selected_knots_world_mps2": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "best_rank": [
+        1,
+        2.355274802865076
+      ],
+      "best_valid_steps": 40,
+      "best_rejection": "terminal support margin not reached",
+      "best_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.33304698104825914,
+        "horizontal_speed_mps": 0.2515759221391552,
+        "angular_speed_rad_s": 0.9500989683905283,
+        "support_feet": 4,
+        "reason": "support_margin",
+        "support_margin_m": -0.10755578168939595,
+        "root_height_m": 0.1461013028948796
+      },
+      "wall_seconds": 24.249191153794527
+    },
+    {
+      "case": 87,
+      "tick": 320,
+      "baseline_accepted": false,
+      "baseline_valid_steps": 28,
+      "baseline_rejection": "QP rejected prediction stage 28",
+      "baseline_terminal": {
+        "trigger": true,
+        "tilt_rad": 1.0057901830714655,
+        "horizontal_speed_mps": 1.0688092761542816,
+        "angular_speed_rad_s": 5.0660836762098915,
+        "support_feet": 2,
+        "reason": "support_margin",
+        "support_margin_m": -0.19382498283644128,
+        "root_height_m": 0.12702477323866973
+      },
+      "selected_new_plan": false,
+      "accepted": false,
+      "candidate_count": 49,
+      "accepted_candidate_count": 0,
+      "selected_knots_world_mps2": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "best_rank": [
+        2,
+        11.076773305564814
+      ],
+      "best_valid_steps": 29,
+      "best_rejection": "QP rejected prediction stage 29",
+      "best_terminal": {
+        "trigger": true,
+        "tilt_rad": 1.0373877233120612,
+        "horizontal_speed_mps": 1.1254221595953409,
+        "angular_speed_rad_s": 5.0100009583540395,
+        "support_feet": 2,
+        "reason": "support_margin",
+        "support_margin_m": -0.20217055859995295,
+        "root_height_m": 0.12025395112616014
+      },
+      "wall_seconds": 13.54515939205885
+    },
+    {
+      "case": 90,
+      "tick": 320,
+      "baseline_accepted": false,
+      "baseline_valid_steps": 40,
+      "baseline_rejection": "terminal support margin not reached",
+      "baseline_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.41656558167650654,
+        "horizontal_speed_mps": 0.8674336214900634,
+        "angular_speed_rad_s": 3.5440492516814346,
+        "support_feet": 3,
+        "reason": "support_margin",
+        "support_margin_m": -0.13609198718389717,
+        "root_height_m": 0.1388790139504333
+      },
+      "selected_new_plan": false,
+      "accepted": false,
+      "candidate_count": 49,
+      "accepted_candidate_count": 0,
+      "selected_knots_world_mps2": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "best_rank": [
+        1,
+        5.350636280873869
+      ],
+      "best_valid_steps": 40,
+      "best_rejection": "terminal support margin not reached",
+      "best_terminal": {
+        "trigger": true,
+        "tilt_rad": 0.39642088742507564,
+        "horizontal_speed_mps": 0.8555870113850188,
+        "angular_speed_rad_s": 3.3270322209957293,
+        "support_feet": 3,
+        "reason": "support_margin",
+        "support_margin_m": -0.13842266306399278,
+        "root_height_m": 0.15029613257834978
+      },
+      "wall_seconds": 24.493397125042975
+    },
+    {
+      "case": 42,
+      "tick": 460,
+      "baseline_accepted": false,
+      "baseline_valid_steps": 7,
+      "baseline_rejection": "QP rejected prediction stage 7",
+      "baseline_terminal": {
+        "trigger": true,
+        "tilt_rad": 1.3452469969619374,
+        "horizontal_speed_mps": 0.7110945768413112,
+        "angular_speed_rad_s": 1.233764075538479,
+        "support_feet": 1,
+        "reason": "support_margin",
+        "support_margin_m": -0.47486613820340073,
+        "root_height_m": 0.12363188107023859
+      },
+      "selected_new_plan": false,
+      "accepted": false,
+      "candidate_count": 49,
+      "accepted_candidate_count": 0,
+      "selected_knots_world_mps2": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "best_rank": [
+        2,
+        33.067536643378716
+      ],
+      "best_valid_steps": 7,
+      "best_rejection": "QP rejected prediction stage 7",
+      "best_terminal": {
+        "trigger": true,
+        "tilt_rad": 1.3452469969619374,
+        "horizontal_speed_mps": 0.7110945768413112,
+        "angular_speed_rad_s": 1.233764075538479,
+        "support_feet": 1,
+        "reason": "support_margin",
+        "support_margin_m": -0.47486613820340073,
+        "root_height_m": 0.12363188107023859
+      },
+      "wall_seconds": 3.518630302976817
+    }
+  ],
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_interval_command_followup_20261107/reference_shooting13.json": "f2972fb194e593412c9bfe00754e46d5e922618eff7501c7730120559c463f4c",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/summarize_reference_shooting_v1.py": "ae32c78300b4b866ac2097525907fe588a78245899701f1f084de5e9a197311a"
+  }
+}
