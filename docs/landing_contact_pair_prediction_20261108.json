@@ -1,0 +1,594 @@
+{
+  "scope": "Completed passive native recording, pair-contact numerical diagnostic, and pending 26-case native execution",
+  "snapshot_beijing": "2026-11-08T15:57:39+08:00",
+  "student_complete5": 27,
+  "assisted_timed85_complete5": 28,
+  "passive_replay_passed": true,
+  "family_trial_state": "RUNNING_NATIVE_FAMILY_TRIAL",
+  "family_result_pending": true,
+  "original_physics_and_task_unchanged": true,
+  "new_student_learning": false,
+  "model_promoted": false,
+  "valid_expert_labels": false,
+  "geometry": {
+    "85": {
+      "frames": 1921,
+      "minimum_pair_gap_m": -3.1796394293903685e-07,
+      "close_pair_frame_count": 883,
+      "opposite_horizontal_pair_frame_count": 274
+    },
+    "87": {
+      "frames": 1921,
+      "minimum_pair_gap_m": 0.1873544917712753,
+      "close_pair_frame_count": 0,
+      "opposite_horizontal_pair_frame_count": 0
+    }
+  },
+  "pair_prediction": {
+    "85": {
+      "intervals": 1920,
+      "completed": 1920,
+      "maximum_error_rad_s": 41.908276261129316,
+      "median_error_rad_s": 0.0032656565321289577,
+      "improved_intervals": 273,
+      "worsened_intervals": 1,
+      "original_large_errors": [
+        {
+          "case": 85,
+          "physics_frame": 46790,
+          "completed": true,
+          "old_joint_velocity_error_rad_s": 3.037643543353875,
+          "joint_velocity_error_rad_s": 3.037643543353875,
+          "joint_position_error_rad": 4.288060733159682e-07,
+          "root_linear_velocity_error_m_s": 0.013084092632593714,
+          "root_angular_velocity_error_rad_s": 0.09284705615099582,
+          "pair_gaps_m": [
+            0.00022303070388092483,
+            0.564597866270105,
+            0.5578803650833639,
+            0.5405260228345143,
+            0.5239375752811856,
+            0.18137424791931905
+          ],
+          "pair_impulse_ns": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "ground_impulse_ns": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "momentum_residual": 3.903127820947816e-15,
+          "external_pair_base_wrench_max": 1.104362966816828e-16,
+          "model_joint_velocity": [
+            1.457543869263152,
+            3.0817508827638225,
+            3.8985051875321406,
+            5.563302247482111,
+            -2.0632037009088204,
+            -11.500527757479405,
+            -1.9661501567970465,
+            2.668252999844777,
+            14.08948672801797,
+            14.843755557903998,
+            9.421267552387306,
+            7.231270983397514,
+            1.9954434481859737,
+            -2.6124641460325737,
+            -2.707403517154951,
+            -1.0798563984282616,
+            0.5529678035816556,
+            0.22574506939189018
+          ]
+        },
+        {
+          "case": 85,
+          "physics_frame": 46791,
+          "completed": true,
+          "old_joint_velocity_error_rad_s": 1.48007121797448,
+          "joint_velocity_error_rad_s": 0.2388564539765703,
+          "joint_position_error_rad": 6.775426611760338e-06,
+          "root_linear_velocity_error_m_s": 0.0008060928578491962,
+          "root_angular_velocity_error_rad_s": 0.006273593020569853,
+          "pair_gaps_m": [
+            8.89145234361094e-06,
+            0.5646601237823861,
+            0.5579488495903072,
+            0.5407086430308686,
+            0.524179732240769,
+            0.18133664599536117
+          ],
+          "pair_impulse_ns": [
+            [
+              0.030496666177467574,
+              -0.05260729869377024,
+              0.12161536948589743
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "ground_impulse_ns": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "momentum_residual": 3.093011957666647e-15,
+          "external_pair_base_wrench_max": 1.1260506044260414e-16,
+          "model_joint_velocity": [
+            3.9485320689569887,
+            0.8044908432018572,
+            3.9961226396235543,
+            5.68193482625622,
+            -6.2911394642973555,
+            -7.544683032124845,
+            -2.140488408481405,
+            2.489599682876085,
+            10.59372635292324,
+            12.46334166487442,
+            9.431775422001317,
+            7.251719436054632,
+            1.7331155424560756,
+            -2.451694737553148,
+            -2.8581610876439854,
+            -0.9303235161118275,
+            0.5449893523448257,
+            0.40680917168694686
+          ]
+        },
+        {
+          "case": 85,
+          "physics_frame": 47060,
+          "completed": true,
+          "old_joint_velocity_error_rad_s": 25.824655769913374,
+          "joint_velocity_error_rad_s": 25.810575736994434,
+          "joint_position_error_rad": 5.65148781994651e-07,
+          "root_linear_velocity_error_m_s": 0.03007931361534847,
+          "root_angular_velocity_error_rad_s": 0.353776576125338,
+          "pair_gaps_m": [
+            -1.947816181541162e-07,
+            0.6002332287220122,
+            0.6036619281818157,
+            0.578259230707247,
+            0.5722673378675445,
+            0.1779067490653741
+          ],
+          "pair_impulse_ns": [
+            [
+              -0.0002693939269594189,
+              -0.00020457327485443394,
+              0.0006765303028462176
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "ground_impulse_ns": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "momentum_residual": 5.622238785640832e-15,
+          "external_pair_base_wrench_max": 1.2346248493828449e-16,
+          "model_joint_velocity": [
+            5.56297544952029,
+            -0.9399567860257836,
+            4.511647976886704,
+            3.928211580565252,
+            -5.875031789081891,
+            -8.518979730248525,
+            -0.13478147589182024,
+            3.8698268231862487,
+            16.648819221491504,
+            19.35337221449752,
+            8.411770634245036,
+            6.432177493344947,
+            1.2516448150284718,
+            -2.023023794379444,
+            -2.27876486983098,
+            -1.0329534378989234,
+            0.6590221963099059,
+            0.16221259167151628
+          ]
+        },
+        {
+          "case": 85,
+          "physics_frame": 47086,
+          "completed": true,
+          "old_joint_velocity_error_rad_s": 41.908276261129316,
+          "joint_velocity_error_rad_s": 41.908276261129316,
+          "joint_position_error_rad": 5.498854451113644e-05,
+          "root_linear_velocity_error_m_s": 0.011229827233236388,
+          "root_angular_velocity_error_rad_s": 0.08318077361890437,
+          "pair_gaps_m": [
+            0.0004371360215546169,
+            0.6013985538170504,
+            0.6049042499987617,
+            0.5817984662090785,
+            0.5766256453274768,
+            0.17839476323959041
+          ],
+          "pair_impulse_ns": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "ground_impulse_ns": [
+            [
+              -0.00013560403461772372,
+              0.0026705854353438283,
+              0.010965030358948297
+            ],
+            [
+              0.02692577515185607,
+              0.003244682765737212,
+              0.041723954318527594
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "momentum_residual": 4.454769886308441e-15,
+          "external_pair_base_wrench_max": 1.7283403521112164e-16,
+          "model_joint_velocity": [
+            -3.543822487930873,
+            -1.7197359772484337,
+            3.846402665709384,
+            2.9711223215658182,
+            9.65489832194707,
+            -7.430677562784322,
+            0.2666259691896212,
+            4.259357104787823,
+            -16.45231903936444,
+            17.176203430929117,
+            8.580667280250875,
+            6.3995885953548735,
+            1.6818926733623811,
+            -2.727693834993005,
+            -1.8947669648759493,
+            -1.2544268808447996,
+            0.5257100957078084,
+            0.04000795378838115
+          ]
+        },
+        {
+          "case": 85,
+          "physics_frame": 47089,
+          "completed": true,
+          "old_joint_velocity_error_rad_s": 3.891378384295219,
+          "joint_velocity_error_rad_s": 3.8197392326309227,
+          "joint_position_error_rad": 2.5715999936837264e-05,
+          "root_linear_velocity_error_m_s": 0.0012679050534902237,
+          "root_angular_velocity_error_rad_s": 0.010811257361605764,
+          "pair_gaps_m": [
+            0.0001352757579617045,
+            0.6015297748301042,
+            0.6050371835314554,
+            0.5824481917135609,
+            0.5772594435218911,
+            0.1784580816886846
+          ],
+          "pair_impulse_ns": [
+            [
+              -0.005616226128337453,
+              0.0008641091256113016,
+              0.011364625907726173
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "ground_impulse_ns": [
+            [
+              -0.0029952331761965885,
+              -0.0017719763922966916,
+              0.005354049977254403
+            ],
+            [
+              -0.030721534733046525,
+              -0.0036896701969790537,
+              0.047603549231616804
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "momentum_residual": 3.5561831257524545e-15,
+          "external_pair_base_wrench_max": 1.0466480866888303e-16,
+          "model_joint_velocity": [
+            -3.374093502100895,
+            1.0059420003104873,
+            4.057333305558331,
+            3.1975927909429034,
+            9.604501018917656,
+            5.033579441838472,
+            0.3493179294512966,
+            4.358019234220749,
+            -16.344601740269468,
+            -24.96151001961065,
+            8.609563386449942,
+            6.432522767694952,
+            1.838534935991645,
+            -2.575770248534589,
+            -1.8418025580246096,
+            -1.3915194881651336,
+            0.532418572759919,
+            -0.06843406577066846
+          ]
+        }
+      ],
+      "failures": []
+    },
+    "87": {
+      "intervals": 1920,
+      "completed": 1920,
+      "maximum_error_rad_s": 0.0027433940994082626,
+      "median_error_rad_s": 0.00011080882810898807,
+      "improved_intervals": 0,
+      "worsened_intervals": 0,
+      "original_large_errors": [],
+      "failures": []
+    }
+  },
+  "geometric_derivative_max_error": 1.399778459809653e-09,
+  "native_foot_friction": 0.5,
+  "old_prediction": {
+    "85": {
+      "all_completed": {
+        "intervals": 1920,
+        "maximum_joint_velocity_error_rad_s": 41.908276261129316,
+        "median_joint_velocity_error_rad_s": 0.007851156604061327
+      },
+      "endpoint_clear_1mm": {
+        "intervals": 1920,
+        "maximum_joint_velocity_error_rad_s": 41.908276261129316,
+        "median_joint_velocity_error_rad_s": 0.007851156604061327
+      },
+      "new_normal_load_1n": {
+        "intervals": 4,
+        "maximum_joint_velocity_error_rad_s": 41.908276261129316,
+        "median_joint_velocity_error_rad_s": 1.870801086994196
+      },
+      "sphere_plane_crossing": {
+        "intervals": 191,
+        "maximum_joint_velocity_error_rad_s": 0.2643235840066227,
+        "median_joint_velocity_error_rad_s": 0.014877516789177037
+      }
+    },
+    "87": {
+      "all_completed": {
+        "intervals": 1920,
+        "maximum_joint_velocity_error_rad_s": 0.0027433940994082626,
+        "median_joint_velocity_error_rad_s": 0.00011080882810898807
+      },
+      "endpoint_clear_1mm": {
+        "intervals": 1920,
+        "maximum_joint_velocity_error_rad_s": 0.0027433940994082626,
+        "median_joint_velocity_error_rad_s": 0.00011080882810898807
+      },
+      "new_normal_load_1n": {
+        "intervals": 0,
+        "maximum_joint_velocity_error_rad_s": null,
+        "median_joint_velocity_error_rad_s": null
+      },
+      "sphere_plane_crossing": {
+        "intervals": 0,
+        "maximum_joint_velocity_error_rad_s": null,
+        "median_joint_velocity_error_rad_s": null
+      }
+    }
+  },
+  "sources": {
+    "reports/landing_timed_impact_family_followup_20261108_02/impact_audit.json": "7c7f7569f19567e5103d137797d6704e4aee4dff923114f255a0449b980f6182",
+    "reports/landing_timed_impact_family_followup_20261108_02/physics_prediction.json": "06da64646f23aec6eddaa16a927e045fe33e9723990c3277c9a027d89f660ce1",
+    "reports/landing_timed_impact_family_followup_20261108_02/impact_error_summary.json": "48ab02b2d0d92c18ca05b72570a5e3c6cc224d1baf3d3fc4d4e696c4572f7c59",
+    "reports/landing_timed_impact_family_followup_20261108_02/foot_pair_geometry.json": "e05f29baae51d9456e4a87775c52b325d4271a610870ce00b96d1dade432eb70",
+    "reports/landing_timed_impact_family_followup_20261108_02/pair_prediction.json": "7d872a77ea4d4e1c9bb44e719ac3c9eb885d7b790762b23aee2f8c496017ef2a",
+    "scripts/summarize_timed_impact_errors_v1.py": "6c0e3f9909b2afe6bebe5a8514056eee401a7f5a8e9480e52a66bf68c424f412",
+    "scripts/audit_timed_foot_pair_geometry_v1.py": "2ce085e7d7610b4646f39755d775d1b00efaa06977a6734a0be5eebfe71dd545",
+    "scripts/foot_pair_contact_step_v1.py": "47aee463072ea551c9a8d7303d9eb9958330bf7261b65cd9a1754a2bf5853f7a",
+    "scripts/compare_foot_pair_prediction_v1.py": "a04b8ba476b01aba1d3d9602c7299e27784f0aa7272825143b24945c077d6405",
+    "reports/native_timed85_impact_all128_20261108_02/foot_impact_observation.npz": "4ce9f255d62810c2f8db0a8ca1258cf5128fc55bea1e024f65555e66937f9852",
+    "reports/native_timed85_impact_all128_20261108_02/job.json": "b17ca4e85c510ca3634101ce832a352b3daeb57b30ed3abec4789ec168f5c671"
+  },
+  "strict_isolation_vs_student_passed": false,
+  "strict_isolation_different_cases": [
+    46,
+    82,
+    125
+  ],
+  "limitations": [
+    "Pair identity inferred from geometry and matching opposite normal-force vectors; native pair IDs not recorded.",
+    "Maximum impact velocity error remains 41.9083 rad/s.",
+    "Case87 is airborne in this observation window, not a landing-validation case.",
+    "The 26-case trial is known-case reference transfer, not online MPC or causal risk gating.",
+    "No historical acceptance or contact-scoring definition was modified."
+  ]
+}
