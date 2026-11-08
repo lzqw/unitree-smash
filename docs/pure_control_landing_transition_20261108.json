@@ -1,0 +1,389 @@
+{
+  "scope": "Completed native contact evidence and transition to pure-control landing, no new RL/BC/distillation.",
+  "native": {
+    "complete5": 27,
+    "case": 71,
+    "passive_parent_replay": true,
+    "filtered_observation_passed": true,
+    "strict_untouched_isolation_passed": false,
+    "pair_summaries": [
+      {
+        "feet": [
+          "FL_foot",
+          "FR_foot"
+        ],
+        "peak_normal_n": 1805.413330078125,
+        "first_force_over_1n_s": 3.2275,
+        "sampled_exceedance_s": 0.0205,
+        "normal_antisymmetry_max_n": 0.0
+      },
+      {
+        "feet": [
+          "FL_foot",
+          "RL_foot"
+        ],
+        "peak_normal_n": 0.0,
+        "first_force_over_1n_s": null,
+        "sampled_exceedance_s": 0.0,
+        "normal_antisymmetry_max_n": 0.0
+      },
+      {
+        "feet": [
+          "FL_foot",
+          "RR_foot"
+        ],
+        "peak_normal_n": 0.0,
+        "first_force_over_1n_s": null,
+        "sampled_exceedance_s": 0.0,
+        "normal_antisymmetry_max_n": 0.0
+      },
+      {
+        "feet": [
+          "FR_foot",
+          "RL_foot"
+        ],
+        "peak_normal_n": 0.0,
+        "first_force_over_1n_s": null,
+        "sampled_exceedance_s": 0.0,
+        "normal_antisymmetry_max_n": 0.0
+      },
+      {
+        "feet": [
+          "FR_foot",
+          "RR_foot"
+        ],
+        "peak_normal_n": 0.0,
+        "first_force_over_1n_s": null,
+        "sampled_exceedance_s": 0.0,
+        "normal_antisymmetry_max_n": 0.0
+      },
+      {
+        "feet": [
+          "RL_foot",
+          "RR_foot"
+        ],
+        "peak_normal_n": 0.0,
+        "first_force_over_1n_s": null,
+        "sampled_exceedance_s": 0.0,
+        "normal_antisymmetry_max_n": 0.0
+      }
+    ],
+    "selected_peak_events": [
+      {
+        "physics_frame": 51640,
+        "feet": [
+          "FL_foot",
+          "FR_foot"
+        ],
+        "normal_force_world_n": [
+          643.6427001953125,
+          1686.7843017578125,
+          0.006788874976336956
+        ],
+        "friction_force_world_n": [
+          842.8872680664062,
+          -321.6288146972656,
+          31.230268478393555
+        ],
+        "ground_normal_force_world_n": [
+          [
+            0.0,
+            0.0,
+            342.0227355957031
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ]
+        ]
+      }
+    ],
+    "charged_gpu_hours": 0.3732480400563994,
+    "charged_env_steps": 102400
+  },
+  "model_searches": [
+    {
+      "family": "foot_anchored",
+      "source": "reports/landing_foot_anchored71_actual300_search_20261108/result.json",
+      "accepted": false,
+      "wall_seconds": 31.06529826694168,
+      "generations": 6,
+      "parameters": [
+        0.15,
+        0.3518606790802552,
+        0.0012823826406942558,
+        0.00940743839063327,
+        0.0281189910613606,
+        0.13569439432814615,
+        0.013356210819346327,
+        0.12,
+        0.055907947692123816,
+        0.12111647372737692,
+        -0.06919249225993965,
+        -0.07998915354845376,
+        0.03906401237086484,
+        -0.006341271369121445
+      ],
+      "minimum_checked_foot_gap_m": 0.057949666004777786,
+      "result": {
+        "completed_model_steps": 7,
+        "required_model_steps": 500,
+        "failure": {
+          "step": 7,
+          "reason": "path_constraints",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.00030400280990824924
+          },
+          "first_ground_violation": {
+            "micro": 148,
+            "body": "Head_lower",
+            "gap_m": -2.3851000286637114e-05
+          }
+        },
+        "terminal": {
+          "roll": -0.44043205862615153,
+          "pitch": 0.6364070300913973,
+          "horizontal": 0.476762050186546,
+          "vertical_speed": 0.8389712033465011,
+          "omega": 1.8733958464249079,
+          "joint_speed": 9.582634683269804,
+          "support_feet": 2,
+          "support_margin_m": -0.05093013990463484
+        },
+        "longest_model_window_s": 0.0,
+        "trailing_model_window_s": 0.0
+      },
+      "reference_check": {
+        "passed": true,
+        "jacobian_max_error": 9.6169183727568e-11,
+        "command_samples": 500,
+        "maximum_arm_step_rad": 0.007172107870665023,
+        "actual_first_command_exact": true,
+        "scope": "Kinematics and interface on actual query, not dynamic/native recovery"
+      }
+    },
+    {
+      "family": "command_preload",
+      "source": "reports/landing_loaded_foot71_actual300_search_20261108/result.json",
+      "accepted": false,
+      "wall_seconds": 576.0327490130439,
+      "generations": 6,
+      "parameters": [
+        0.47649738462809277,
+        0.3193539389800495,
+        -0.012739518555390853,
+        -0.08630351501937843,
+        -0.024120323656289043,
+        0.18318998941935988,
+        0.002811079754679873,
+        0.27587986538785075,
+        0.252890654102072,
+        -0.05236916955948182,
+        -0.02310813433069353,
+        0.05978174876643934,
+        -0.047173747605237196,
+        0.0559162417942079,
+        0.7653227358716094,
+        1.0
+      ],
+      "minimum_checked_foot_gap_m": 0.007479048032011444,
+      "result": {
+        "completed_model_steps": 56,
+        "required_model_steps": 500,
+        "failure": {
+          "step": 56,
+          "reason": "path_constraints",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.010628526752930842
+          },
+          "first_ground_violation": {
+            "micro": 57,
+            "body": "FL_hip",
+            "gap_m": -9.123996255384903e-05
+          }
+        },
+        "terminal": {
+          "roll": -0.8236226973590427,
+          "pitch": 0.33217536021718846,
+          "horizontal": 0.8817361554053006,
+          "vertical_speed": 0.8281984139740575,
+          "omega": 4.738747936079169,
+          "joint_speed": 4.334779093334303,
+          "support_feet": 3,
+          "support_margin_m": -0.28374372363689226
+        },
+        "longest_model_window_s": 0.0,
+        "trailing_model_window_s": 0.0
+      },
+      "reference_check": {
+        "passed": true,
+        "jacobian_max_error": 9.6169183727568e-11,
+        "command_samples": 500,
+        "maximum_arm_step_rad": 0.007172107870665023,
+        "actual_first_command_exact": true,
+        "scope": "Kinematics and interface on actual query, not dynamic/native recovery"
+      }
+    },
+    {
+      "family": "measured_support_feedback",
+      "source": "reports/landing_feedback_foot71_actual300_search_20261108/result.json",
+      "accepted": false,
+      "wall_seconds": 650.4008174929768,
+      "generations": 4,
+      "parameters": [
+        0.5682281144630252,
+        0.2832638603156517,
+        0.0156779882758192,
+        -0.06624478281821215,
+        0.04334906122048138,
+        0.1557339948947445,
+        0.008190877408669847,
+        0.35119561289190443,
+        -0.08307288104507993,
+        -0.07692007005775828,
+        -0.009600743022939756,
+        -0.07089113591122495,
+        -0.08872429947561983,
+        0.022020310636503813,
+        0.9727537559238585,
+        1.0,
+        0.13659909046939653,
+        0.025911771977863297,
+        0.2463286280353283
+      ],
+      "minimum_checked_foot_gap_m": 0.007625903262162066,
+      "result": {
+        "completed_model_steps": 54,
+        "required_model_steps": 500,
+        "failure": {
+          "step": 54,
+          "reason": "path_constraints",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.00085085953151646
+          },
+          "first_ground_violation": {
+            "micro": 152,
+            "body": "FL_thigh",
+            "gap_m": -2.6065542400470487e-05
+          }
+        },
+        "terminal": {
+          "roll": -1.5135562919671846,
+          "pitch": 0.00574547806602015,
+          "horizontal": 0.9252368754398211,
+          "vertical_speed": 1.0056524773686102,
+          "omega": 7.450361536084507,
+          "joint_speed": 8.142933698649673,
+          "support_feet": 1,
+          "support_margin_m": -0.2152385478519713
+        },
+        "longest_model_window_s": 0.0,
+        "trailing_model_window_s": 0.0
+      },
+      "reference_check": {
+        "passed": true,
+        "jacobian_max_error": 9.6169183727568e-11,
+        "command_samples": 500,
+        "maximum_arm_step_rad": 0.007172107870665023,
+        "actual_first_command_exact": true,
+        "scope": "Kinematics and interface on actual query, not dynamic/native recovery"
+      }
+    }
+  ],
+  "preload_controlled_comparison": {
+    "with_preload": {
+      "completed_model_steps": 56,
+      "failure": {
+        "step": 56,
+        "reason": "path_constraints",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.011832331776943011
+        },
+        "first_ground_violation": {
+          "micro": 39,
+          "body": "FL_hip",
+          "gap_m": -6.188557916383952e-06
+        }
+      },
+      "longest_model_window_s": 0.0
+    },
+    "without_preload": {
+      "completed_model_steps": 6,
+      "failure": {
+        "step": 6,
+        "reason": "path_constraints",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.0024090879852879388
+        },
+        "first_ground_violation": {
+          "micro": 106,
+          "body": "Head_lower",
+          "gap_m": -1.4140359452345652e-05
+        }
+      },
+      "longest_model_window_s": 0.0
+    }
+  },
+  "head_geometry": {
+    "passed": true,
+    "actual_query": "reports/landing_joint_timed71_actual300_replan_20261108/inputs.json",
+    "head_checks": [
+      {
+        "body": "Head_lower",
+        "gap_m": 0.05099798748459915,
+        "rate_m_s": -0.9978823582099574,
+        "shape_index": 12,
+        "finite_difference_rate_m_s": -0.9978823578560281,
+        "error_m_s": 3.539293302878832e-10
+      },
+      {
+        "body": "Head_upper",
+        "gap_m": 0.08529491098686319,
+        "rate_m_s": -1.0006739531359308,
+        "shape_index": 11,
+        "finite_difference_rate_m_s": -1.0006739527279596,
+        "error_m_s": 4.079712123683521e-10
+      }
+    ],
+    "native_execution": false,
+    "collision_success_not_inferred": true,
+    "source_sha256": {
+      "reports/landing_joint_timed71_actual300_replan_20261108/inputs.json": "1deff1fd65b92e5b608cc3d6cb8d50f5a626cb1ad6d9bfa5600a5d3b5297f4cb",
+      "scripts/event_recovery_manager_v1.py": "8fe16ba41ec3d2fc942dbf01686d4af3a5fde354dc6536726bab826b29b959e2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/configs/go2_piper_authored_ground_geometry_v1.json": "e39c41e9b69e481aeac8907c2dfacb9f593cf54e00c8fb822696638ef083167b"
+    }
+  },
+  "phase_and_arbiter_tests": {
+    "command": "env CUDA_VISIBLE_DEVICES= OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 bash scripts/python.sh -m pytest -q tests/test_event_recovery_manager_v1.py",
+    "passed": 5,
+    "native_execution": false
+  },
+  "new_control_scope": {
+    "learning_paused": true,
+    "event_manager_native_wiring_complete": false,
+    "full_command_horizon_search": "reports/pure_control_full_command_horizon71_20261108",
+    "physical_limits_changed": false,
+    "historical_complete5_changed": false,
+    "formal_goal_passed": false
+  },
+  "source_sha256": {
+    "reports/landing_native71_selected_pair_preparation_20261108/native_audit.json": "982e7c6f16f144ea0eb042d5dd805e123dc51878f62dc0196e391a0cb820e4cf",
+    "reports/native71_selected_pair_all128_20261108_01/job.json": "1d766e93d92bcaf4b3603e8a7bb751efbe58f9db55f0a3d452d215930ec484f8",
+    "reports/landing_foot_anchored71_actual300_search_20261108/result.json": "30c31f6c2c471abf8c26fdee7edfe853c9613c36919c7aae5adcc0906b8a7c75",
+    "reports/landing_loaded_foot71_actual300_search_20261108/result.json": "e440d3a58caed4adf6aa07c2f6331253b9336697daa4d816c4975f6e309208e2",
+    "reports/landing_feedback_foot71_actual300_search_20261108/result.json": "4c0f6f0bba170e326bfe653b0aef8e697416c885df06eae2b9a082a928d88a2d",
+    "reports/landing_loaded_foot71_preload_comparison_20261108.json": "f48230ef6b4ef8a2669576c650f095e80aacb79c312c0f70dda86ddfd3f2c28b",
+    "reports/pure_control_head_geometry_check_20261108.json": "8a98a46143a7fdb1ca95b2a1a46f5a3e391d6172d0e771a0a80eef15568cf525"
+  }
+}
