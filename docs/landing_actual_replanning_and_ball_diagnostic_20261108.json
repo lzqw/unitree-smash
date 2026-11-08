@@ -1,0 +1,123 @@
+{
+  "timestamp": "2026-11-08T04:02:42.690535+00:00",
+  "actual_state_replanning": {
+    "case": 87,
+    "control_tick": 400,
+    "accepted": true,
+    "independent_replay_exact": true,
+    "wall_seconds": 303.97421241295524,
+    "warm_result": {
+      "accepted": false,
+      "completed_model_steps": 23,
+      "required_model_steps": 400,
+      "rank": [
+        1,
+        377.0,
+        80,
+        0.064990453894004
+      ],
+      "failure": {
+        "step": 23,
+        "reason": "path_constraints",
+        "violations": {
+          "joint_position_violation_rad": 0.0013259732736807806
+        },
+        "first_ground_violation": null
+      },
+      "terminal": {
+        "roll": 0.18184094952278762,
+        "pitch": 0.028194541982227914,
+        "horizontal": 0.3578920334620538,
+        "vertical_speed": 0.23509752380804474,
+        "omega": 0.4329484233767355,
+        "joint_speed": 1.3927080325341554,
+        "support_feet": 3,
+        "support_margin_m": 0.05854790698760987
+      },
+      "terminal_violations": {
+        "horizontal": 0.057892033462053794,
+        "vertical_speed": 0.13509752380804474,
+        "joint_speed": 0.3927080325341554,
+        "trailing_window_s": 0.0
+      },
+      "trailing_model_window_s": 0.0,
+      "longest_model_window_s": 0.0,
+      "cost": 1.4947804395620918,
+      "substeps": 160,
+      "wall_seconds": 6.137955639977008,
+      "control_tick": 400,
+      "original_episode_end_tick": 800,
+      "preceding_stable_ticks": 0,
+      "native_execution": false,
+      "valid_expert_labels": false
+    },
+    "new_result": {
+      "completed_model_steps": 400,
+      "required_model_steps": 400,
+      "terminal": {
+        "roll": -0.020006415654682613,
+        "pitch": 0.028447416206362777,
+        "horizontal": 0.015570563366072026,
+        "vertical_speed": 0.009149586079598567,
+        "omega": 0.015814608242377258,
+        "joint_speed": 0.0845991500726585,
+        "support_feet": 4,
+        "support_margin_m": 0.16255373293436906
+      },
+      "terminal_violations": {},
+      "trailing_model_window_s": 2.59,
+      "failure": null
+    },
+    "stages": [
+      {
+        "stage": "current_state_warm_prediction",
+        "generation": null,
+        "candidates": 0
+      },
+      {
+        "stage": "coarse_candidates",
+        "generation": 0,
+        "candidates": 24
+      },
+      {
+        "stage": "fine_candidates",
+        "generation": 0,
+        "candidates": 4
+      }
+    ],
+    "query_is_native": true,
+    "native_execution": false
+  },
+  "native_sampled_joint_limits": {
+    "scope": "100 Hz measured native states versus original model/interface limits; not substep certification",
+    "maximum_position_violation_rad": 0.0,
+    "maximum_velocity_violation_rad_s": 0.0,
+    "threshold_rad": 0.0003,
+    "position_violation_records": [],
+    "valid_expert_labels": false
+  },
+  "running_diagnostic": {
+    "plan": "reports/landing_native_ball_partner_followup_20261108/plan.json",
+    "pid": 81745,
+    "progress": {
+      "control_ticks": 100,
+      "requested_ticks": 800,
+      "first_episodes_complete": 0,
+      "formal_eligible": false,
+      "formal_acceptance": false
+    },
+    "declared_sensors": 33,
+    "declared_partner_bodies": 3713,
+    "declared_sample_frames": 1603,
+    "passivity_pending": true,
+    "collision_filters_changed": false,
+    "controls_changed": false
+  },
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_foot_space87_actual_replanning_20261108.json": "9d6a51dd2c95a363d18dd47223377ea1e7320f06edf7bfccf4955a18d0fd412e",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_native_foot_space87_followup_20261108/actual_joint_limit_diagnostic.json": "c019f3727a1e310012f4d2b7b952224fa7523d5cfa74dd8a0f7db515e4a99ec9",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_native_ball_partner_followup_20261108/plan.json": "96af7d1ec45a2ef93934f18baa81e799b865d685b5e7e64965c8d1ffd53c4540"
+  },
+  "valid_expert_labels": false,
+  "teacher_off_learning_result": false
+}
