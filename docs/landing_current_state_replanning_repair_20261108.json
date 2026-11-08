@@ -1,0 +1,419 @@
+{
+  "scope": "Model repair, native interruption diagnosis, unchanged strict comparison and separately queued native v2.",
+  "model_repairs": [
+    {
+      "probe": {
+        "name": "orientation_1_-1",
+        "kind": "orientation",
+        "world_axis": 1,
+        "amount": -0.008726646259971648,
+        "unit": "rad"
+      },
+      "accepted": true,
+      "wall_seconds": 268.38615330215544,
+      "independent_replay_exact": true,
+      "terminal": {
+        "roll": 0.0329774868739265,
+        "pitch": 0.02149743062721683,
+        "horizontal": 0.0252790428328458,
+        "vertical_speed": 0.007269902887621973,
+        "omega": 0.0415354211202969,
+        "joint_speed": 0.12998254006904492,
+        "support_feet": 4,
+        "support_margin_m": 0.11361414984519363
+      },
+      "trailing_model_window_s": 3.1,
+      "completed_model_steps": 450,
+      "stages": [
+        "current_state_warm_prediction",
+        "coarse_candidates",
+        "fine_candidates"
+      ]
+    },
+    {
+      "probe": {
+        "name": "linear_velocity_0_-1",
+        "kind": "linear_velocity",
+        "world_axis": 0,
+        "amount": -0.02,
+        "unit": "m/s"
+      },
+      "accepted": true,
+      "wall_seconds": 263.07064447994344,
+      "independent_replay_exact": true,
+      "terminal": {
+        "roll": 0.05111509359054764,
+        "pitch": 0.015987123246963678,
+        "horizontal": 0.026230028681681294,
+        "vertical_speed": 0.0077383392316240016,
+        "omega": 0.048895820483828116,
+        "joint_speed": 0.13471185326850976,
+        "support_feet": 4,
+        "support_margin_m": 0.10371674921981183
+      },
+      "trailing_model_window_s": 3.0700000000000003,
+      "completed_model_steps": 450,
+      "stages": [
+        "current_state_warm_prediction",
+        "coarse_candidates",
+        "fine_candidates"
+      ]
+    }
+  ],
+  "native_execution_of_repaired_perturbations": false,
+  "representation_regression": {
+    "scope": "Reproduce the native tick550 representation mismatch and check its repair.\n\nQueries, poses and the accepted plan come from completed/partial native\nevidence. This recomputes commands only; it is not another physical rollout.\n",
+    "rows": [
+      {
+        "control_tick": 400,
+        "query_exactly_matches_paired_native_trace": true,
+        "original_command_exact": true,
+        "original_command_error_rad": 0.0,
+        "redundant_field_errors": {
+          "root_rotation_world": 2.7755575615628914e-17,
+          "root_position_world": 0.0,
+          "joint_position": 0.0,
+          "joint_velocity": 0.0
+        },
+        "corrected_command_exact": true,
+        "corrected_command_error_rad": 0.0,
+        "measured_state_and_history_preserved": true,
+        "contradictory_state_rejected": true
+      },
+      {
+        "control_tick": 550,
+        "query_exactly_matches_paired_native_trace": true,
+        "original_command_exact": false,
+        "original_command_error_rad": 5.551115123125783e-17,
+        "redundant_field_errors": {
+          "root_rotation_world": 6.938893903907228e-18,
+          "root_position_world": 0.0,
+          "joint_position": 0.0,
+          "joint_velocity": 0.0
+        },
+        "corrected_command_exact": true,
+        "corrected_command_error_rad": 0.0,
+        "measured_state_and_history_preserved": true,
+        "contradictory_state_rejected": true
+      }
+    ],
+    "source_sha256": {
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/check_current_state_representation_v2.py": "7bd5999d36497f2621986b801c5d0fc1ddaac40f1d5b810b48a9d6bf2739bdc1",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_current_state_bundle_20261108/manifest.json": "7db62e268c63c14202d08a97acf223c6beaf4e03b0e0310ce29245665ea0b882",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_current_state_all128_20261108_01/current_state_planning.json": "1b3437c695a9627b2731e25578672630d26623cb79502aba5fbd7a488b78f825",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_current_state_all128_20261108_01/error.txt": "26b09ea9c315ade164b6bbb08cd7a05fde511d39b8598aef09e5becb21acaeca",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_replanned_suffix_all128_20261108_01/sequence_native_trace.npz": "a6c2f7c0328829ca94f162b41897ddc7afff8d3225c8a0d98402929db5d43b3f",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_replanned_suffix_all128_20261108_01/all_first_episodes.npz": "2d3b3acff9edb8ea1482af0b506aa393dcb62eee29e7f8fd3c609214fce81042",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/loaded_pinocchio_model_v1.py": "2b303a32e57391ec7aaf3c3faf9d151f758477faf13ef6efae5bead979dcae82",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/native_recovery_sequence_replay_v2.py": "eeb5c96506e6586d70e9a8f5470a7dbff01851e6c7e92039d227365677821cc0",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/parallel_landing_solver_v1.py": "4bc18476684fbc3a81eae8b1b63073c615ceafd73a23ccca2dde919564cfea33",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/authored_ground_clearance_v1.py": "ba54ef51a5cfd5c64937814c343d92057cd0e9e83dc4e435f1479049aa342630",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recorded_nonfoot_contact_history_v1.py": "b897ec590f76795a515f1e3ad14db1529f43117731f031f00d43dc556e5e599a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/summarize_precontact_prediction_v1.py": "b05936fc4345546c33bf14696bfbf6ed8967025799da23d87e0b04fc014ba227",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_sphere_touchdown_predictions_v1.py": "92b1905a21c544ff212a237104edb700ce6eb3b1414908cb14d80990b21a9a03",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frictional_impulse_step_v1.py": "4e780bf218dd501a64f1885ab1697c3050d228580fc6cd3c7123d36fb18e2348",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/predict_frictional_spheres_v1.py": "d406a568a61014cbee9bde4c91d3cebd8f997f9afa9e663dfbd99cea2d1941fa",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/terminal_attitude_feedback_v1.py": "47db5797915d6c1fa776d9cc7a295a85e29e91adcba81fabc439c6e0978db209",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/feedback_tail_rollout_v1.py": "535672ced97a7ff19c58b34c192b29ed082769bbea8153078bbaf2e8a449af6b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/condensed_implicit_drive_v1.py": "a0f21e9b954db9e978ba428a3770fcb8cd666e08dd21aa27cedf0c0e5c5af629",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/implicit_support_prediction_v1.py": "b751fa0ea59edd1fe8fc62cf0ba3816e5583ecc76df7058ef3f5185a335a1e01",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/dense_active_set_qp_v1.py": "cba063c6c594bfb42d1114dcafbaebc606d8c4b49b53ee65e764e3979b1bac4a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/whole_body_support_qp_v1.py": "b67cd1f1c8ebe973d3885773fbc9f3bf17cfd935e5e2210a4b7c0ea1ff331d6d",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frame_point_kinematics_v1.py": "60fac87ef04f83a22807217b04e7cbe40b536251b56f5a119dc012d1f2529fd8",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/reduced_whole_body_support_qp_v1.py": "e731a0bca8744d4639099dd2ff9be94840a9f0c953c64924fb2cfa9e7a9c80c7",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/continuous_support_qp_v1.py": "824a3d49711917803e9c82af63b1d142917d62c874ec8751325578a71b4af640",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/command_history_support_qp_v1.py": "1ac2221f85cbf3d468be4c265cc932845700d5f17a9eaaf37440998873689081",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/interval_command_support_qp_v1.py": "7f9e47fdeb1f6cc420368d127f89cc1b726397752b0387f57b5bee1ea5915589",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/admitted_arm_support_qp_v1.py": "097d7022b16a28aa31f11081056092bd8b5b44172291b6bd3b1aba1dbe0a1c6e",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v1.py": "da2ff2e4ee1479bf3fc422c0b71f8831bffd9e5868d9a4e0665fd348ab659a59",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v2.py": "6d0ad9bc4fcd27a0f4f418e55b988341ffe809f14c132415281ec41621196ae2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v3.py": "d8c54679697e78678a898f5d36a27305f9252a5f2b09990d0b33ddcc25533300",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_command_history_mpc_v1.py": "466ba93dc473c7d2de93aae0d5d7848b390d72e8fe1ef779ff0818efad704d28",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_interval_command_mpc_v1.py": "545ecf58c66d0bbf07f889f8867ce36d75ca42fcd94ca77b5307666163630060",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_active_set_interval_mpc_v1.py": "4c111c5ce1d6d711cbe9e4362aad315e0f50f9c2cb363d9595409e0701c7ec8d",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_arm_feasibility_mpc_v1.py": "af9a08a8b442c43099faadbda887ed79b1e497b114cbd77e93b4cc8a2481f40b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_joint_damper_mpc_v1.py": "63b2eff24491e130f96681508524ccf124064469a285a6c82ed9dd498fa761f9",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_joint_sequence_proposal_v1.py": "42d8be1c82836a83e054c6cf7ca368f5bad9b35e298aabbeb0790bfb5b816857",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_sequence_linearization_v1.py": "acc515b9f7980645cdca835deb3ae8bfc4f20ee03eee90a53d9495f976b0ccf2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_differentiated_sequence_v1.py": "9b68faddbb7350b467f5f7a75c1b78cae58759f92c2d8e559b9cac433e6d229e",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_joint_sequence_proposal_v1.py": "b0896a4e9a95a4f46d84ef344e2d7e7384a4fce435b17c01bb456952053382a2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/search_early_landing_trajectory_v1.py": "fd812e8c4ed7d5680d3e8f5594022590d8ccbfc8fbe67cc3ff31f0d0bbbd18cd",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/search_whole_body_early_landing_v2.py": "29a7c9c01880d8a5506a91203e199f8936fe600bf0cb8c1cc00c0763bf3c819d",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/search_landing_support_tail_v3.py": "a81ea7a73a87714534a1978198cd285487f4575250b3f1f24f83ffa175f1177a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/native_early_support_tail_v1.py": "d797d9b8aac908aaac120e95d45ecae704e726efecf6ccc10225ea364ed514c5",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_reference_tracking_v1.py": "9ba85a60f6540e9a9526d764555727c0e96a3fef8ca147b50907935864f33777",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/prepare_native_early_support_v1.py": "1c54f429dbe8914b24a83be560d3b8a93dd92944e993b4497ec14e5283a02e40",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/prepare_native_reference_tracking_v1.py": "a90ded7f733c17233a814a22df9f9d81cdb7476536775ef496095f7500042d8e",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/prepare_native_refined_tracking_v1.py": "c58a0b48bebfa3a5da94f617bcbe7c0805d11e08b92c91a7fc8bcf9a4c92ab7c",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/prepare_native_constrained_tracking_v1.py": "4df92fef72d8d25d873edea6b5ae4d4a6e1cb1a2201a9fd5facc6619dc8e8810",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/perturb_early_support_domain_v1.py": "526b1b5411603d596c04cd66cd16f4b888422fa6e91d0fe7d25b584b910cb481",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/evaluate_landing_reference_tracking_v1.py": "4dfb275c60142900eae97c44c7fd01ee951797231a4799ec61d50a6e49af42cd",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/refine_multistate_support_v1.py": "532285432b4a6caceb293294014b823f7060d5314e283ad2da09cfd919ba42b8",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/search_preserved_early_support_v1.py": "87fd33d712de9b7d0c602a63d070efd94daee5edee70c17ede7a980cf4fac6b3",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/hip_mount_path_constraint_v1.py": "9ef5b05bdc70f3a9053ca9d37123a9a40bd567279f95cd60c0abdcd459f12e3a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/constrained_recovery_suffix_v1.py": "cd7e0543e6abcb7fa4f4ab8d52a627887c365852d176dafbdf31314ef97c5a62",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/probe_constrained_support_domain_v1.py": "31026d45933362884a54f28687e2baa19faa2fa9a21c47e9034bf7af20cd4c25",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/check_constrained_recovery_suffix_v1.py": "6a1f657bbfbf28b84073c147e012667c39a1ac1ca37fe6f6b17a3a37682d281c",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/solve_recorded_recovery_suffix_v1.py": "3bb13e901fd5b81cda309658a14b281ada9a7d5dfc4045690fe2c0b1c0864dd0",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/native_replanned_suffix_v1.py": "7b276874ff16c38f1813b58472a3c4582078ee4712b179d7682983ac40f3dfd5",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/current_state_recovery_service_v1.py": "4626f70d6f2793d2c51d6dd62cc256da2cc6226706f20d1ec5fc02a3b7472013",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/native_current_state_recovery_v1.py": "f8319f95e0b5cd0fe07fd2a767e3063c1300bb48cd766fc64c335223469d29a1",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/native_current_state_recovery_v2.py": "1c690e54fff274ee99f107e005107e6c6c8c5a428a82fb70f02f73ab51b95690",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/check_early_support_dispatch_v1.py": "6eaba089be0665208c3ce90d65fd3a4d14ec50c568e2c036d01e792bc2694ad8",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_full_command_interval_mpc_v1.py": "a32da1e8fa837b9a4e40b1614a97fe7b2cdebde18fd1b3083350e2d81558932b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_minimum_command_mpc_v1.py": "c2e2c28234f3f1625c96e75ced68e94fe6e413ae833014d81ccaff5879979c7b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_feasible_command_cost_mpc_v1.py": "daeac9ec076b81bb88e601f72560b1c7135942d15266aa0876e71fb43b61ba32"
+    },
+    "native_execution": false,
+    "exact_command_check_retained": true,
+    "physical_or_task_thresholds_changed": false,
+    "valid_expert_labels": false
+  },
+  "native_incomplete_job": {
+    "goal": "G07",
+    "budget_window": "g07-full-racket-unlimited-20261024",
+    "git_sha": "539590695361840cd8807595b9690ea99acd2838",
+    "command": [
+      "bash",
+      "scripts/python.sh",
+      "-u",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_native_current_state_preparation_20261108/evaluate_early_support.py",
+      "--output",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_current_state_all128_20261108_01",
+      "--checkpoint",
+      "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_env5120_01/policy.pt",
+      "--precision-receipt",
+      "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin_precision_after_aim_queue01/PRECISION_ADMISSION.json",
+      "--ground-xy-m",
+      "64",
+      "--record-first-episodes",
+      "--seed",
+      "882114",
+      "--persistent-recovery-trial",
+      "--allow-declared-controller-variant",
+      "--recovery-sequence-bundle",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_current_state_bundle_20261108",
+      "--recovery-sequence-case",
+      "3",
+      "--landing-blas-threads",
+      "1",
+      "--headless",
+      "--device",
+      "cuda:0"
+    ],
+    "output": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_current_state_all128_20261108_01",
+    "gpu": 0,
+    "status": "FAILED",
+    "charged_gpu_hours": 0.3018118949282992,
+    "charged_env_steps": 102400,
+    "started_at": "2026-11-08T01:12:49.871570+00:00",
+    "pid": 61747,
+    "original_authorization": "g07-full-racket-unlimited-20261024",
+    "authorization_started_at": "2026-10-24T01:53:52.256487+00:00",
+    "authorization_deadline": null,
+    "child_pid": 61763,
+    "exit_code": 0,
+    "timed_out": false,
+    "receipt_present": false,
+    "elapsed_s": 1086.5228217418771,
+    "finished_at": "2026-11-08T01:30:56.406759+00:00"
+  },
+  "native_planning_calls": [
+    {
+      "tick": 400,
+      "accepted": true,
+      "wall_seconds": 152.08400357794017,
+      "stages": [
+        "current_state_warm_prediction"
+      ]
+    },
+    {
+      "tick": 550,
+      "accepted": true,
+      "wall_seconds": 93.8683342570439,
+      "stages": [
+        "current_state_warm_prediction"
+      ]
+    }
+  ],
+  "native_error": "Traceback (most recent call last):\n  File \"/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_native_current_state_preparation_20261108/evaluate_early_support.py\", line 1722, in <module>\n    main()\n  File \"/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_native_current_state_preparation_20261108/evaluate_early_support.py\", line 1483, in main\n    action=native_replay.action(tick,obs,action,finished,replay_state)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/native_current_state_recovery_v1.py\", line 85, in action\n    raise ValueError('Predicted and dispatched first command differ')\nValueError: Predicted and dispatched first command differ\n",
+  "microtrace": {
+    "fields": {
+      "joint_position": {
+        "first_difference_frame": 90570,
+        "maximum_absolute_difference": 0.00018072128295898438,
+        "first_difference_maximum": 5.960464477539063e-08
+      },
+      "joint_velocity": {
+        "first_difference_frame": 90570,
+        "maximum_absolute_difference": 0.7284676432609558,
+        "first_difference_maximum": 0.01200711727142334
+      },
+      "env_position_request": {
+        "first_difference_frame": 90721,
+        "maximum_absolute_difference": 0.00036966800689697266,
+        "first_difference_maximum": 0.00012183189392089844
+      },
+      "articulation_position_request": {
+        "first_difference_frame": 90721,
+        "maximum_absolute_difference": 0.00036966800689697266,
+        "first_difference_maximum": 0.00012183189392089844
+      },
+      "submitted_position_target": {
+        "first_difference_frame": 90721,
+        "maximum_absolute_difference": 0.00036966800689697266,
+        "first_difference_maximum": 0.00012183189392089844
+      },
+      "submitted_velocity_target": {
+        "first_difference_frame": null,
+        "maximum_absolute_difference": 0.0,
+        "first_difference_maximum": null
+      },
+      "submitted_effort_target": {
+        "first_difference_frame": null,
+        "maximum_absolute_difference": 0.0,
+        "first_difference_maximum": null
+      },
+      "external_robot_force_buffer": {
+        "first_difference_frame": null,
+        "maximum_absolute_difference": 0.0,
+        "first_difference_maximum": null
+      },
+      "external_robot_torque_buffer": {
+        "first_difference_frame": null,
+        "maximum_absolute_difference": 0.0,
+        "first_difference_maximum": null
+      },
+      "external_robot_wrench_enabled": {
+        "first_difference_frame": null,
+        "maximum_absolute_difference": 0.0,
+        "first_difference_maximum": null
+      },
+      "external_robot_wrench_global": {
+        "first_difference_frame": null,
+        "maximum_absolute_difference": 0.0,
+        "first_difference_maximum": null
+      },
+      "external_robot_wrench_positions_enabled": {
+        "first_difference_frame": null,
+        "maximum_absolute_difference": 0.0,
+        "first_difference_maximum": null
+      },
+      "external_robot_wrench_positions": {
+        "first_difference_frame": null,
+        "maximum_absolute_difference": 0.0,
+        "first_difference_maximum": null
+      },
+      "root_link_position": {
+        "first_difference_frame": 90572,
+        "maximum_absolute_difference": 3.3974647521972656e-06,
+        "first_difference_maximum": 1.4901161193847656e-08
+      },
+      "root_link_quaternion": {
+        "first_difference_frame": 90573,
+        "maximum_absolute_difference": 7.867813110351562e-06,
+        "first_difference_maximum": 2.9802322387695312e-08
+      },
+      "root_com_linear_velocity": {
+        "first_difference_frame": 90570,
+        "maximum_absolute_difference": 0.005552422255277634,
+        "first_difference_maximum": 4.732981324195862e-06
+      },
+      "root_com_angular_velocity": {
+        "first_difference_frame": 90570,
+        "maximum_absolute_difference": 0.06334388256072998,
+        "first_difference_maximum": 4.145503044128418e-05
+      },
+      "foot_normal_force": {
+        "first_difference_frame": 90570,
+        "maximum_absolute_difference": 486.468017578125,
+        "first_difference_maximum": 0.017574310302734375
+      },
+      "observed_foot_contact": {
+        "first_difference_frame": 90623,
+        "maximum_absolute_difference": 1.0,
+        "first_difference_maximum": 1.0
+      },
+      "ball_world_position": {
+        "first_difference_frame": null,
+        "maximum_absolute_difference": 0.0,
+        "first_difference_maximum": null
+      },
+      "ball_world_velocity": {
+        "first_difference_frame": null,
+        "maximum_absolute_difference": 0.0,
+        "first_difference_maximum": null
+      },
+      "episode_index": {
+        "first_difference_frame": null,
+        "maximum_absolute_difference": 0.0,
+        "first_difference_maximum": null
+      }
+    },
+    "first_physical_state_difference_frame": 90570,
+    "submitted_buffers_equal_through_first_state_difference": true,
+    "cause_identified": false,
+    "case": 125,
+    "before": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_isolation_shadow_all128_20261108_01",
+    "after": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_replanned_suffix_all128_20261108_01",
+    "source_sha256": {
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_isolation_shadow_all128_20261108_01/isolation_microtrace.npz": "9729113e23b3157e4dbfc424ba9766f1c265da39a3de8df8278a161c4c845280",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_isolation_shadow_all128_20261108_01/isolation_microtrace.json": "5a7983b6ed08d037fab3e9c0266db3de0eb1bd3adf7b86db6ba60322e500c5d5",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_replanned_suffix_all128_20261108_01/isolation_microtrace.npz": "a26df6de11e7fe347c2babdd1ef1f2ffe545cf83c62b44df93a8cfb963f98157",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_replanned_suffix_all128_20261108_01/isolation_microtrace.json": "e8974eea7797a93d13acaf34f1a958708ad273a48d23862ef295636d3327c9b6",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/compare_isolation_microtrace_v1.py": "6156e31a77f747495f17242fcf16c389d32f0b34f6d0e22b9c7569c214bf03cd"
+    },
+    "physics_dt_s": 6.25e-05,
+    "source_native_jobs_not_admitted_by_this_comparison": true,
+    "valid_expert_labels": false,
+    "strict_audit_tolerances_changed": false,
+    "interpretation": "Same-frame differences do not establish causal ordering inside PhysX. Submitted effort is a control buffer, not realized implicit-PD torque."
+  },
+  "artifact_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_early_references_20261108/suffix_domain_replanning_v1.json": "d43d83c187c87cae446226730f5cb362702e10467e981cc6af2adcc6301256eb",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_early_references_20261108/current_state_representation_v2.json": "f210d267dfd371370cbff9a93db67e326add7c0f4ea3be785282fdb1cb49eee5",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_native_replanned_suffix_followup_20261108/train125_microtrace_comparison.json": "4bc366581142e815faabeb019d5582800d356f3862229f1c4e962bed5d623efa",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_current_state_all128_20261108_01/job.json": "0a406fba9e76e73f1fd72f585ec8952ff3f0a94b3c6901d0e997c64fd203d283",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_current_state_all128_20261108_01/current_state_planning.json": "1b3437c695a9627b2731e25578672630d26623cb79502aba5fbd7a488b78f825",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_current_state_all128_20261108_01/error.txt": "26b09ea9c315ade164b6bbb08cd7a05fde511d39b8598aef09e5becb21acaeca"
+  },
+  "next_runs": [
+    {
+      "label": "pair_observer",
+      "plan_sha256": "c1c3f3dd64e9b9e665aa0f07ab4b9eca031171bc00605e954ef6f0290ab32902",
+      "status_snapshot": {
+        "state": "RUNNING_INDEPENDENT_DIAGNOSTIC",
+        "pid": 64298,
+        "time": "2026-11-08T01:32:56.488389+00:00",
+        "previous_audit_not_promoted": true
+      }
+    },
+    {
+      "label": "current_state_v2",
+      "plan_sha256": "381155fdd5a477062062f81144119f85be998ab4916c57a51d9b79888dd5c6b5",
+      "status_snapshot": {
+        "state": "WAITING_FOR_GPU_OWNERS_TO_EXIT",
+        "pid": 65221,
+        "observed_at": "2026-11-08T01:37:28.722111+00:00",
+        "owners": [
+          {
+            "pid": 64297,
+            "start_ticks": "172782974"
+          },
+          {
+            "pid": 64298,
+            "start_ticks": "172782977"
+          },
+          {
+            "pid": 64300,
+            "start_ticks": "172782997"
+          },
+          {
+            "pid": 64316,
+            "start_ticks": "172783021"
+          }
+        ]
+      }
+    }
+  ]
+}
