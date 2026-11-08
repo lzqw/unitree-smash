@@ -1,0 +1,133 @@
+{
+  "case": 85,
+  "selection": {
+    "case": 85,
+    "release_time_s": 2.6745693683624268,
+    "landing_time_s": 2.977966547012329,
+    "first_scored_nonfoot_s": 4.821,
+    "delay_after_landing_s": 1.8430334529876706,
+    "selection_reason": "median_scored_nonfoot"
+  },
+  "accepted": false,
+  "wall_seconds": 110.0025769721251,
+  "query_is_native": true,
+  "simulator_state_reset": false,
+  "native_execution": false,
+  "valid_expert_labels": false,
+  "physical_impossibility_claim": false,
+  "prior_unmodified_controller_completed_steps": 23,
+  "best_rejected": {
+    "accepted": false,
+    "completed_model_steps": 24,
+    "required_model_steps": 520,
+    "rank": [
+      1,
+      496.0,
+      80,
+      0.4502631513537536
+    ],
+    "failure": {
+      "step": 24,
+      "reason": "path_constraints",
+      "violations": {
+        "joint_position_violation_rad": 0.03495510923246625,
+        "nonfoot_ground_violation_m": 0.010759934075602294
+      },
+      "first_ground_violation": {
+        "micro": 35,
+        "body": "Head_lower",
+        "gap_m": -5.8522911162164903e-05
+      }
+    },
+    "terminal": {
+      "roll": -0.2620943747831517,
+      "pitch": 0.6551602581586082,
+      "horizontal": 0.22507386239095487,
+      "vertical_speed": 1.5125860932717894,
+      "omega": 1.6951733811544087,
+      "joint_speed": 9.566686931081403,
+      "support_feet": 2,
+      "support_margin_m": -0.03389617399607633
+    },
+    "terminal_violations": {
+      "roll": 0.00029498698400226564,
+      "pitch": 0.3933608703594588,
+      "vertical_speed": 1.4125860932717893,
+      "omega": 0.6951733811544087,
+      "joint_speed": 8.566686931081403,
+      "support_margin_m": 0.04389617399607633,
+      "trailing_window_s": 0.0
+    },
+    "trailing_model_window_s": 0.0,
+    "longest_model_window_s": 0.0,
+    "cost": 10.806315632490087,
+    "substeps": 160,
+    "wall_seconds": 5.672315031057224,
+    "control_tick": 280,
+    "original_episode_end_tick": 800,
+    "preceding_stable_ticks": 0,
+    "native_execution": false,
+    "valid_expert_labels": false
+  },
+  "stages": [
+    {
+      "stage": "current_state_warm_prediction",
+      "generation": null,
+      "candidates": 0
+    },
+    {
+      "stage": "coarse_candidates",
+      "generation": 0,
+      "candidates": 24
+    },
+    {
+      "stage": "fine_candidates",
+      "generation": 0,
+      "candidates": 4
+    },
+    {
+      "stage": "coarse_candidates",
+      "generation": 1,
+      "candidates": 24
+    },
+    {
+      "stage": "fine_candidates",
+      "generation": 1,
+      "candidates": 4
+    },
+    {
+      "stage": "coarse_candidates",
+      "generation": 2,
+      "candidates": 24
+    },
+    {
+      "stage": "fine_candidates",
+      "generation": 2,
+      "candidates": 4
+    },
+    {
+      "stage": "coarse_candidates",
+      "generation": 3,
+      "candidates": 24
+    },
+    {
+      "stage": "fine_candidates",
+      "generation": 3,
+      "candidates": 4
+    }
+  ],
+  "source_sha256": {
+    "reports/landing_foot_space_family85_replanning_20261108.json": "301d1c3fe4aeabf6399f93da7d0c4343e32ee641eaabb7a5cddefec71470ab9a",
+    "scripts/solve_foot_space_family_v1.py": "2b7c7546364d155e3d58489bed08c15c9366d6ebee9f1a27bf85220bcc8482e6",
+    "scripts/search_family_early_reference_v1.py": "f866005082835085b7c20c976c741e8b7443811a243c52c0662d9c26e56422db",
+    "scripts/audit_native_mpc_prediction_v1.py": "af2bafed66191333de8053803c1acc4c2fb3eb7e4437e5c942bd60baa0e793c6"
+  },
+  "absolute_reference_search_started": true,
+  "absolute_reference_search_final_result": null,
+  "native_mpc_final_result": null,
+  "validation": {
+    "syntax_check": true,
+    "prediction_audit_rejects_non_mpc_run": true,
+    "positive_native_prediction_audit_completed": false
+  }
+}
