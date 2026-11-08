@@ -7640,7 +7640,10 @@
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_long_recovery_handoff_20261108_02/result.json": "6ad45eb5aec20a9e5b5e2016d51a94c9aa64c579e9db49897d8d0001412d69a2",
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_recovery_long_reference_fine_v8.py": "7751752070c9cfe23d6102199e692dc64dc78e3c5016e2fb2ed7ed0ede562845",
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/check_long_reference_compatibility_v1.py": "1cd1a01b7903f52acb8acf7e2da163aed93e975f94b02e0d979f7908f99fcb1d",
-    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_long_recovery_perturbations_v9.py": "632019b9bc6e4b6c1a2e114ca3b185167c8bd51d78399da684334a34f38f672d"
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_long_recovery_perturbations_v9.py": "632019b9bc6e4b6c1a2e114ca3b185167c8bd51d78399da684334a34f38f672d",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_long_reference_closed_loop_fine_20261108/case_012_predictive_selection.json": "f05f33c7bd4bfa0590ee9efe496ee217aceef58cff191306dfc85835c59d7050",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_long_reference_closed_loop_fine_20261108/case_050_predictive_selection.json": "abfa4c47442eb3d5c9db4b8553fa5f4d60272adf1fab2a438d83a414fb88af40",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_long_reference_closed_loop_fine_20261108/case_058_predictive_selection.json": "fbec34a50adb36de9108ab0f87b4f6631a96b67834a15618232d5bf395c5b13c"
   },
   "new_controller_coarse_closed_loop": {
     "state": "COMPLETED_MODEL_REFERENCE_TRACKING",
@@ -7659,10 +7662,20 @@
     "valid_expert_labels": false
   },
   "new_controller_fine_status": {
-    "state": "RUNNING_MODEL_REFERENCE_TRACKING",
+    "state": "COMPLETED_MODEL_REFERENCE_TRACKING",
     "pid": 159138,
-    "completed": 1,
-    "total": 3
+    "results": {
+      "predictive_selection": {
+        "cases": 3,
+        "model_600ms": 3,
+        "model_1200ms": 3,
+        "model_episode_end": 3,
+        "final_model_stable_08s": 3
+      }
+    },
+    "wall_seconds": 293.22913130396046,
+    "native_success": false,
+    "valid_expert_labels": false
   },
   "entry_check": {
     "passed": true,
@@ -8943,8 +8956,52 @@
   "perturbation_status": {
     "state": "RUNNING_MODEL_REFERENCE_TRACKING",
     "pid": 159504,
-    "completed": 3,
+    "completed": 4,
     "total": 18
   },
-  "formal_verify_status": "FAILED"
+  "formal_verify_status": "FAILED",
+  "new_controller_fine_cases": [
+    {
+      "source_case": 12,
+      "source_key": "b3ecba2f76bf08103511b30e640b81e37ff711b4550e76d2c2b8d628fb42b297",
+      "mode": "predictive_selection",
+      "steps": 518,
+      "failure": null,
+      "longest_model_stable_s": 3.619999999999967,
+      "final_model_stable_s": 3.619999999999967,
+      "required_steps": 518,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 50,
+      "source_key": "e65b64b6c97f6c2a1f42806c5fdf79f472cb175685c516f76543a6fcdae88c32",
+      "mode": "predictive_selection",
+      "steps": 525,
+      "failure": null,
+      "longest_model_stable_s": 3.1599999999999766,
+      "final_model_stable_s": 3.1599999999999766,
+      "required_steps": 525,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 58,
+      "source_key": "89aa89569506421a7aac8a5dd6b13b60555638e69b3aa7d4ec962d496cb65a70",
+      "mode": "predictive_selection",
+      "steps": 518,
+      "failure": null,
+      "longest_model_stable_s": 3.989999999999959,
+      "final_model_stable_s": 3.989999999999959,
+      "required_steps": 518,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    }
+  ]
 }
