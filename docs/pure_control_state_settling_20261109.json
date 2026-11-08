@@ -1,0 +1,199 @@
+{
+  "time_utc": "2026-11-08T20:49:25.108979+00:00",
+  "scope": "pure control recovery, no RL/BC/distillation",
+  "snapshots": [
+    {
+      "state_key": "114:272",
+      "snapshot_path": "reports/pure_control_state_settling_feedback_20261109/candidate_snapshots/state_114_272.json",
+      "snapshot_sha256": "03d2d4563e3e3f1d62c9788756b07d6f0aa72b86f9e33d78de5f22c3aef82aa4",
+      "checked_steps": 67,
+      "model_path_complete": false,
+      "longest_stable_s": 0.0,
+      "failure": {
+        "step": 67,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -2.066802602000012e-05, 'exact': True, 'shape_index': 31, 'obstacle': 'net_segment_32'}\")"
+      }
+    },
+    {
+      "state_key": "126:272",
+      "snapshot_path": "reports/pure_control_state_settling_feedback_20261109/candidate_snapshots/state_126_272.json",
+      "snapshot_sha256": "e229cd39cd753272f19444abdb63775c307c12d7cb5efce88a4d72a8204de791",
+      "checked_steps": 183,
+      "model_path_complete": false,
+      "longest_stable_s": 0.0,
+      "failure": {
+        "step": 183,
+        "reason": "model_rejected",
+        "error": "ValueError('foot_pair_clearance:{\"bodies\": [\"FL_foot\", \"FR_foot\"], \"constraint_type\": \"foot_pair_clearance\", \"gap_m\": -4.737041712235546e-06, \"planning_margin_m\": 0.0, \"prediction_geometry_call\": 304132, \"violation_m\": 4.737041712235546e-06}')"
+      }
+    },
+    {
+      "state_key": "27:274",
+      "snapshot_path": "reports/pure_control_state_settling_feedback_20261109/candidate_snapshots/state_27_274.json",
+      "snapshot_sha256": "d2122f634c6373e742d0674438f22e82113902f246e726920e1b35b002db8118",
+      "checked_steps": 371,
+      "model_path_complete": false,
+      "longest_stable_s": 0.059999942779541016,
+      "failure": {
+        "step": 371,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.0008377971483993496
+        },
+        "collision": {
+          "micro": 145,
+          "body": "FR_hip",
+          "gap_m": -4.178397086540553e-05
+        }
+      }
+    },
+    {
+      "state_key": "65:275",
+      "snapshot_path": "reports/pure_control_state_settling_feedback_20261109/candidate_snapshots/state_65_275.json",
+      "snapshot_sha256": "e35b61c4214cb66a6fa865d669f0733234bf05d3904ce3e8870ac1966e264978",
+      "checked_steps": 188,
+      "model_path_complete": false,
+      "longest_stable_s": 0.0,
+      "failure": {
+        "step": 188,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.00031993035697213366
+        },
+        "collision": {
+          "micro": 154,
+          "body": "RR_calf",
+          "gap_m": -4.874254602189876e-05
+        }
+      }
+    },
+    {
+      "state_key": "72:281",
+      "snapshot_path": "reports/pure_control_state_settling_feedback_20261109/candidate_snapshots/state_72_281.json",
+      "snapshot_sha256": "fc5c8f284bd1d78a511dae4cf32ec8b770e1ad87d0b24974356eb8c13ace74bd",
+      "checked_steps": 102,
+      "model_path_complete": false,
+      "longest_stable_s": 0.0,
+      "failure": {
+        "step": 102,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.0022549332958648974
+        },
+        "collision": {
+          "micro": 122,
+          "body": "RL_calf",
+          "gap_m": -3.865224001385094e-05
+        }
+      }
+    },
+    {
+      "state_key": "87:272",
+      "snapshot_path": "reports/pure_control_state_settling_feedback_20261109/candidate_snapshots/state_87_272.json",
+      "snapshot_sha256": "595645692fe0e6ca64b13125b4c4ca8782b877fb4ece5f1d2283951edae830ca",
+      "checked_steps": 109,
+      "model_path_complete": false,
+      "longest_stable_s": 0.0,
+      "failure": {
+        "step": 109,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.005216080140186138
+        },
+        "collision": {
+          "micro": 80,
+          "body": "RL_thigh",
+          "gap_m": -6.45592602002143e-05
+        }
+      }
+    }
+  ],
+  "causal_checks": {
+    "checks": [
+      {
+        "state_key": "114:272",
+        "entry_max_command_difference_rad": 0.0
+      },
+      {
+        "state_key": "126:272",
+        "entry_max_command_difference_rad": 0.0
+      },
+      {
+        "state_key": "27:274",
+        "entry_max_command_difference_rad": 0.0
+      },
+      {
+        "state_key": "65:275",
+        "entry_max_command_difference_rad": 0.0
+      },
+      {
+        "state_key": "72:281",
+        "entry_max_command_difference_rad": 0.0
+      },
+      {
+        "state_key": "87:272",
+        "entry_max_command_difference_rad": 0.0
+      }
+    ],
+    "early_capture": {
+      "first_eligible_model_tick": 525,
+      "reference_disabled": true,
+      "airborne_rejected": true,
+      "contact_flags_unchanged": true,
+      "original_target_limits": true,
+      "not_success_certification": true
+    },
+    "kind": "command_and_causal_gate_checks_not_native_success"
+  },
+  "runtime": {
+    "state": "RUNNING_STATE_SETTLING_FEEDBACK",
+    "pid": 211873,
+    "completed": 1,
+    "total": 12,
+    "results": [
+      {
+        "state_key": "114:272",
+        "mode": "state_settling",
+        "steps": 67,
+        "required_steps": 528,
+        "failure": {
+          "tick": 339,
+          "reason": "model_rejected",
+          "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -4.60601306869271e-06, 'exact': True, 'shape_index': 31, 'obstacle': 'net_segment_32'}\")"
+        },
+        "full_model_path": false,
+        "final_model_stable_s": 0.0,
+        "state_settling_capture_tick": null,
+        "native_success": false,
+        "valid_expert_labels": false
+      }
+    ]
+  },
+  "native_progress": {
+    "control_tick": 480,
+    "owned_cases": 110,
+    "applied_steps": 16673,
+    "training": false
+  },
+  "source_sha256": {
+    "scripts/pure_control_state_settling_v23.py": "49b72ff9d942d6547873c69df3a82d57dde1fee5b7117d8b4902449ac9e39a12",
+    "scripts/evaluate_state_settling_feedback_v1.py": "90f3c5dc3dc874eaf4d426f78ade5e3fac96822687ac75bde4cc117c0be30db1",
+    "reports/pure_control_state_settling_feedback_20261109/inputs.json": "be41c8fb28d73ac68a77e46e9919d61140dd88ca92234eb65e9454af176cb971"
+  },
+  "verification": {
+    "command": "python3 tools/verify_goal.py --root . --goal G07",
+    "exit_code": 2,
+    "status": "FAILED",
+    "reason": "Historical missing checkpoints, asset paths outside workspace and missing G07 evidence; unchanged acceptance contract"
+  },
+  "best_native_strict_landing_segment_cases": [
+    30,
+    42,
+    50,
+    85,
+    90
+  ],
+  "all_five_have_pre_takeover_head_contact": true,
+  "new_native_success": false
+}
