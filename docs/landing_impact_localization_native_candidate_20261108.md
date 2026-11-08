@@ -45,6 +45,14 @@ GPU0作业设置2400秒与102400环境步上限。结束后自动检查实际命
 
 - [冲击误差传播诊断](../scripts/audit_impact_error_propagation_v1.py)
 - [有限迭代探针](../scripts/temporal_impact_probe_v1.py)、[单步对照](../scripts/compare_temporal_impact_probe_v1.py)、[控制周期对照](../scripts/compare_temporal_control_interval_v1.py)
-- [原生实验控制入口](../scripts/native_experimental_recovery_v1.py)、[准备程序](../scripts/prepare_native_experimental_recovery_v1.py)
+- [原生实验控制入口v2](../scripts/native_experimental_recovery_v2.py)、[准备程序v2](../scripts/prepare_native_experimental_recovery_v2.py)
 - [有界运行与自动审计](../scripts/run_native_experimental_recovery_v1.py)、[实际命令和隔离审计](../scripts/audit_native_experimental_recovery_v1.py)
 - [紧凑结果与输入哈希](landing_impact_localization_native_candidate_20261108.json)
+
+## 首次启动失败与独立进程修复
+
+首个原生作业已终止，保留在`native_experimental85_all128_20261108_01`。环境建立后、执行控制回合前，适配器调用离线`state_from_row()`时发现全局`_WORKER`为空，抛出`KeyError: controller`。此前准备进程恰好初始化过搜索器，掩盖了这个进程依赖。不能把它解释为控制器落地失败，也没有生成新成功率。
+
+v2由自身机器人模型与记录构型直接构造`PublicState`，不读取离线搜索全局对象。新增[独立进程检查](../scripts/check_native_experimental_recovery_v2.py)：全局worker始终为空，正确查询通过；将查询位置改动1mm时按原容差拒绝，未放宽匹配条件。
+
+新的完整作业目录为`native_experimental85_all128_20261108_02`，准备与运行状态在`landing_native_experimental85_preparation_20261108_02`。旧代码、失败日志和用量保留；不覆盖或重启原作业目录。首个作业记录GPU用量0.002706小时；其102400是失败无收据时的保守计费步数，不是已经执行完的训练步数。

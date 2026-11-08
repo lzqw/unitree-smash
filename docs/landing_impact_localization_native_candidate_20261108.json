@@ -732,7 +732,7 @@
     ]
   },
   "native_plan": "reports/landing_native_experimental85_preparation_20261108/plan.json",
-  "native_status_at_report": "PREPARED_NOT_YET_EXECUTED",
+  "native_status_at_report": "SECOND_ATTEMPT_PREPARED",
   "model_promoted": false,
   "valid_expert_labels": false,
   "sources": [
@@ -759,6 +759,22 @@
     {
       "path": "reports/physx_tgs_reference_20261108/version_5_4_0/manifest.json",
       "sha256": "67cb2480685b3faa7889074de5c32a4879177817704d3c3540a42a54f42d0b30"
+    },
+    {
+      "path": "reports/landing_native_experimental85_preparation_20261108_02/plan.json",
+      "sha256": "cbef78dc81354f1e356bd5e4cb2543176a9fcf6d338fb832c9f868468989fdd9"
+    },
+    {
+      "path": "reports/landing_native_experimental85_preparation_20261108_02/fresh_process_check/result.json",
+      "sha256": "9f5ce4df3e849f369dcd3f1026f16bdd1ac29e3fadbb67db7958812589b2c9ed"
+    },
+    {
+      "path": "reports/native_experimental85_all128_20261108_01/job.json",
+      "sha256": "5ab509fecc9db8ebc7c29143cf9cec91310529f42b905be49e3d9526f94dcfcd"
+    },
+    {
+      "path": "reports/native_experimental85_all128_20261108_01/error.txt",
+      "sha256": "cb6c0baf84cf8ec28543348063f8947008be799d5e46ad462b9b3ccb401d9ffa"
     }
   ],
   "upstream": {
@@ -776,5 +792,62 @@
       }
     ],
     "installed_binary_equivalence": false
-  }
+  },
+  "first_native_attempt": {
+    "status": "FAILED_BEFORE_CONTROL",
+    "error": "KeyError: controller; offline worker dependency in native state construction",
+    "charged_gpu_hours": 0.0027056658216881462,
+    "formal_success_result_available": false
+  },
+  "native_adapter_v2_check": {
+    "passed": true,
+    "offline_worker_remained_empty": true,
+    "native_execution": false,
+    "checks": {
+      "recorded_query": {
+        "passed": true,
+        "query": {
+          "passed": true,
+          "errors": {
+            "configuration_tangent": 0.0,
+            "velocity": 0.0,
+            "public": 0.0,
+            "previous_target_rad": 0.0
+          },
+          "tolerances": {
+            "configuration_tangent": 2e-05,
+            "velocity": 0.0002,
+            "public": 0.0005,
+            "previous_target_rad": 5e-06
+          },
+          "contacts_equal": true
+        },
+        "first_target_rad": [
+          -0.2610016354309579,
+          -0.3706783811434775,
+          -0.19998438241440653,
+          -0.4086693311705716,
+          0.9798577572812803,
+          1.1690067371669315,
+          1.5767764265192774,
+          1.6081955126934169,
+          -1.535904148790543,
+          -1.8335653731268167,
+          -1.8886821150535678,
+          -1.9779112627853905,
+          -2.0530408128341833,
+          1.6512290014060227,
+          -1.5740168826504544,
+          -0.8921674202895247,
+          -1.1837172868969787,
+          -1.3276695222456567
+        ]
+      },
+      "wrong_query": {
+        "rejected": true,
+        "error": "Original measured query differs; proposal not executed"
+      }
+    }
+  },
+  "native_plan_v2": "reports/landing_native_experimental85_preparation_20261108_02/plan.json"
 }
