@@ -1,5 +1,5 @@
 {
-  "snapshot_time_utc": "2026-11-08T16:11:32.184261+00:00",
+  "snapshot_time_utc": "2026-11-08T16:15:36.744166+00:00",
   "scope": "Pure-control landing; no RL, BC, distillation or native success promotion",
   "key_model_results": [
     {
@@ -89,10 +89,138 @@
     }
   ],
   "coverage_status": {
-    "state": "RUNNING_NATIVE_PHASE_MODEL",
-    "pid": 173263,
-    "completed": 6,
-    "total": 9
+    "state": "COMPLETED_NATIVE_PHASE_MODEL",
+    "results": [
+      {
+        "source_case": 12,
+        "steps": 518,
+        "required_steps": 518,
+        "failure": null,
+        "final_model_stable_s": 3.609999656677246,
+        "longest_model_stable_s": 3.609999656677246,
+        "force_recording_exact_motion_checks": 2,
+        "contact_mask_difference_steps": 1,
+        "native_phase_code_used": true,
+        "forces_are_model_impulse_estimates": true,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "source_case": 18,
+        "steps": 526,
+        "required_steps": 526,
+        "failure": null,
+        "final_model_stable_s": 3.799999713897705,
+        "longest_model_stable_s": 3.799999713897705,
+        "force_recording_exact_motion_checks": 2,
+        "contact_mask_difference_steps": 0,
+        "native_phase_code_used": true,
+        "forces_are_model_impulse_estimates": true,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "source_case": 50,
+        "steps": 525,
+        "required_steps": 525,
+        "failure": null,
+        "final_model_stable_s": 3.8499999046325684,
+        "longest_model_stable_s": 3.8499999046325684,
+        "force_recording_exact_motion_checks": 2,
+        "contact_mask_difference_steps": 1,
+        "native_phase_code_used": true,
+        "forces_are_model_impulse_estimates": true,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "source_case": 9,
+        "steps": 530,
+        "required_steps": 530,
+        "failure": null,
+        "final_model_stable_s": 3.6599998474121094,
+        "longest_model_stable_s": 3.6599998474121094,
+        "force_recording_exact_motion_checks": 2,
+        "contact_mask_difference_steps": 0,
+        "native_phase_code_used": true,
+        "forces_are_model_impulse_estimates": true,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "source_case": 42,
+        "steps": 529,
+        "required_steps": 529,
+        "failure": null,
+        "final_model_stable_s": 3.6299996376037598,
+        "longest_model_stable_s": 3.6299996376037598,
+        "force_recording_exact_motion_checks": 2,
+        "contact_mask_difference_steps": 251,
+        "native_phase_code_used": true,
+        "forces_are_model_impulse_estimates": true,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "source_case": 54,
+        "steps": 527,
+        "required_steps": 527,
+        "failure": null,
+        "final_model_stable_s": 3.6299996376037598,
+        "longest_model_stable_s": 3.6299996376037598,
+        "force_recording_exact_motion_checks": 2,
+        "contact_mask_difference_steps": 292,
+        "native_phase_code_used": true,
+        "forces_are_model_impulse_estimates": true,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "source_case": 85,
+        "steps": 532,
+        "required_steps": 532,
+        "failure": null,
+        "final_model_stable_s": 3.9699997901916504,
+        "longest_model_stable_s": 3.9699997901916504,
+        "force_recording_exact_motion_checks": 2,
+        "contact_mask_difference_steps": 0,
+        "native_phase_code_used": true,
+        "forces_are_model_impulse_estimates": true,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "source_case": 123,
+        "steps": 515,
+        "required_steps": 515,
+        "failure": null,
+        "final_model_stable_s": 3.9099998474121094,
+        "longest_model_stable_s": 3.9099998474121094,
+        "force_recording_exact_motion_checks": 2,
+        "contact_mask_difference_steps": 0,
+        "native_phase_code_used": true,
+        "forces_are_model_impulse_estimates": true,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "source_case": 90,
+        "steps": 520,
+        "required_steps": 520,
+        "failure": null,
+        "final_model_stable_s": 3.5699996948242188,
+        "longest_model_stable_s": 3.5699996948242188,
+        "force_recording_exact_motion_checks": 2,
+        "contact_mask_difference_steps": 0,
+        "native_phase_code_used": true,
+        "forces_are_model_impulse_estimates": true,
+        "native_success": false,
+        "valid_expert_labels": false
+      }
+    ],
+    "wall_seconds": 607.9101365311071,
+    "native_success": false,
+    "valid_expert_labels": false
   },
   "native_preparation": {
     "plan": "reports/pure_control_settled_stance_native_preparation_20261109_01/plan.json",
@@ -101,15 +229,27 @@
     "reference_count": 40,
     "command_checks": 212,
     "launched": false,
-    "queued": false
+    "queued": true,
+    "serial_status": {
+      "state": "WAITING_VERIFIED_PREDECESSOR",
+      "pid": 174652,
+      "time": "2026-11-08T16:15:10.970116+00:00",
+      "predecessor_pid": 165955
+    },
+    "serial_owner": {
+      "pid": 174652,
+      "predecessor_pid": 165955,
+      "predecessor_start_ticks": "177707906",
+      "plan_sha256": "661b6569ebf7e2ec212752cb299597146244d36862f23054b5d77dc05144a3ad"
+    }
   },
   "active_native": {
     "run": "reports/pure_control_reference_clock_all128_20261108_01",
     "pid": 166094,
     "progress": {
-      "control_tick": 560,
+      "control_tick": 600,
       "owned_cases": 110,
-      "applied_steps": 21588,
+      "applied_steps": 24308,
       "training": false
     },
     "final_result_available": false
@@ -119,9 +259,9 @@
       "state": "SEARCHING_FULL_COMMAND_COHORT",
       "pid": 173934,
       "cases": 15,
-      "completed_candidates": 224,
-      "elapsed_s": 104.57954111602157,
-      "generation": 0
+      "completed_candidates": 768,
+      "elapsed_s": 348.2058459590189,
+      "generation": 2
     },
     "inputs": {
       "source_sha256": {
@@ -427,7 +567,8 @@
     "scripts/native_pure_control_settled_stance_v14.py": "0305d8d31c70e038248669fde0cc357838c0f42bc720a46b6c4c4f1a0e70eb3a",
     "scripts/check_pure_control_settled_stance_v14.py": "4ec12a75ff1b13fc2a2f31606078aaf31cf08548dc504bc74beb08fe503f3064",
     "scripts/prepare_native_settled_stance_v15.py": "cfcdb48d4019b62d6b2748cdd60ba19992e748a797291d6da1e2b85ef7053747",
-    "scripts/search_uncovered_recovery_cohort_v4.py": "cdfdfa385039bf1711c851401ba4b0b07778980cf1db3996d8f72655abc7fc93"
+    "scripts/search_uncovered_recovery_cohort_v4.py": "cdfdfa385039bf1711c851401ba4b0b07778980cf1db3996d8f72655abc7fc93",
+    "scripts/run_serial_pure_control_current_v3.py": "1323fe3029416d54814190e6dbe20b1a842867ed2a8cdd73f9a3f88f3ed8f9d8"
   },
   "native_success": false,
   "valid_expert_labels": false,
@@ -438,5 +579,139 @@
     "status": "FAILED",
     "artifact": "reports/pure_control_settled_stance_model_20261108/formal_verify.json",
     "note": "Historic missing checkpoints, external asset paths and missing formal evidence remain; no acceptance contracts altered. Native safe landing remains unproven."
+  },
+  "coverage_result": {
+    "state": "COMPLETED_NATIVE_PHASE_MODEL",
+    "results": [
+      {
+        "source_case": 12,
+        "steps": 518,
+        "required_steps": 518,
+        "failure": null,
+        "final_model_stable_s": 3.609999656677246,
+        "longest_model_stable_s": 3.609999656677246,
+        "force_recording_exact_motion_checks": 2,
+        "contact_mask_difference_steps": 1,
+        "native_phase_code_used": true,
+        "forces_are_model_impulse_estimates": true,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "source_case": 18,
+        "steps": 526,
+        "required_steps": 526,
+        "failure": null,
+        "final_model_stable_s": 3.799999713897705,
+        "longest_model_stable_s": 3.799999713897705,
+        "force_recording_exact_motion_checks": 2,
+        "contact_mask_difference_steps": 0,
+        "native_phase_code_used": true,
+        "forces_are_model_impulse_estimates": true,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "source_case": 50,
+        "steps": 525,
+        "required_steps": 525,
+        "failure": null,
+        "final_model_stable_s": 3.8499999046325684,
+        "longest_model_stable_s": 3.8499999046325684,
+        "force_recording_exact_motion_checks": 2,
+        "contact_mask_difference_steps": 1,
+        "native_phase_code_used": true,
+        "forces_are_model_impulse_estimates": true,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "source_case": 9,
+        "steps": 530,
+        "required_steps": 530,
+        "failure": null,
+        "final_model_stable_s": 3.6599998474121094,
+        "longest_model_stable_s": 3.6599998474121094,
+        "force_recording_exact_motion_checks": 2,
+        "contact_mask_difference_steps": 0,
+        "native_phase_code_used": true,
+        "forces_are_model_impulse_estimates": true,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "source_case": 42,
+        "steps": 529,
+        "required_steps": 529,
+        "failure": null,
+        "final_model_stable_s": 3.6299996376037598,
+        "longest_model_stable_s": 3.6299996376037598,
+        "force_recording_exact_motion_checks": 2,
+        "contact_mask_difference_steps": 251,
+        "native_phase_code_used": true,
+        "forces_are_model_impulse_estimates": true,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "source_case": 54,
+        "steps": 527,
+        "required_steps": 527,
+        "failure": null,
+        "final_model_stable_s": 3.6299996376037598,
+        "longest_model_stable_s": 3.6299996376037598,
+        "force_recording_exact_motion_checks": 2,
+        "contact_mask_difference_steps": 292,
+        "native_phase_code_used": true,
+        "forces_are_model_impulse_estimates": true,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "source_case": 85,
+        "steps": 532,
+        "required_steps": 532,
+        "failure": null,
+        "final_model_stable_s": 3.9699997901916504,
+        "longest_model_stable_s": 3.9699997901916504,
+        "force_recording_exact_motion_checks": 2,
+        "contact_mask_difference_steps": 0,
+        "native_phase_code_used": true,
+        "forces_are_model_impulse_estimates": true,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "source_case": 123,
+        "steps": 515,
+        "required_steps": 515,
+        "failure": null,
+        "final_model_stable_s": 3.9099998474121094,
+        "longest_model_stable_s": 3.9099998474121094,
+        "force_recording_exact_motion_checks": 2,
+        "contact_mask_difference_steps": 0,
+        "native_phase_code_used": true,
+        "forces_are_model_impulse_estimates": true,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "source_case": 90,
+        "steps": 520,
+        "required_steps": 520,
+        "failure": null,
+        "final_model_stable_s": 3.5699996948242188,
+        "longest_model_stable_s": 3.5699996948242188,
+        "force_recording_exact_motion_checks": 2,
+        "contact_mask_difference_steps": 0,
+        "native_phase_code_used": true,
+        "forces_are_model_impulse_estimates": true,
+        "native_success": false,
+        "valid_expert_labels": false
+      }
+    ],
+    "wall_seconds": 607.9101365311071,
+    "native_success": false,
+    "valid_expert_labels": false
   }
 }
