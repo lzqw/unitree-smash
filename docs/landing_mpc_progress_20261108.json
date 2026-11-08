@@ -1,0 +1,78 @@
+{
+  "observed_at": "2026-11-08T02:31:26.679979+00:00",
+  "scope": "Current full-remainder recovery planner and unchanged native isolation checks",
+  "student_complete5": 27,
+  "assisted_complete5": 28,
+  "assisted_new_cases": [
+    3
+  ],
+  "old_successes_retained": 27,
+  "strict_isolation_passed": false,
+  "nonintervened_cases": 127,
+  "nonintervened_exact_cases": 125,
+  "changed_cases": [
+    {
+      "case": 46,
+      "compared_samples": 542,
+      "maximum_public_error": 24.35762596130371,
+      "maximum_action_error": 0.3105319142341614,
+      "first_observation_difference_tick": 484,
+      "first_action_difference_tick": 484,
+      "first_observation_over_existing_audit_tolerance_tick": 484,
+      "first_action_over_existing_audit_tolerance_tick": 484,
+      "first_observation_difference": {
+        "time_s": 4.839999675750732,
+        "all_preceding_dispatched_actions_bitwise_equal": true,
+        "group_max_absolute_error": {
+          "base_linear_velocity": 0.008405596017837524,
+          "base_angular_velocity": 0.05600249767303467,
+          "projected_gravity": 4.6700239181518555e-05,
+          "joint_position_public": 0.0004436969757080078,
+          "joint_velocity_public": 0.5522975921630859,
+          "foot_contact_flags": 1.0,
+          "ball_public": 0.09649777412414551,
+          "observation_history": 0.0,
+          "previous_action_public": 0.0
+        },
+        "current_action_error": 0.03994494676589966,
+        "preceding_action_error": 0.0
+      },
+      "before_samples": 542,
+      "after_samples": 544
+    },
+    {
+      "case": 125,
+      "compared_samples": 800,
+      "maximum_public_error": 19.563156127929688,
+      "maximum_action_error": 0.4427248239517212,
+      "first_observation_difference_tick": 567,
+      "first_action_difference_tick": 567,
+      "first_observation_over_existing_audit_tolerance_tick": 567,
+      "first_action_over_existing_audit_tolerance_tick": 567,
+      "first_observation_difference": {
+        "time_s": 5.670000076293945,
+        "all_preceding_dispatched_actions_bitwise_equal": true,
+        "group_max_absolute_error": {
+          "base_linear_velocity": 0.0004780897870659828,
+          "base_angular_velocity": 0.002328842878341675,
+          "projected_gravity": 1.9669532775878906e-06,
+          "joint_position_public": 6.198883056640625e-06,
+          "joint_velocity_public": 0.04953891038894653,
+          "foot_contact_flags": 0.0,
+          "ball_public": 0.0038290023803710938,
+          "observation_history": 0.0,
+          "previous_action_public": 0.0
+        },
+        "current_action_error": 0.00010578334331512451,
+        "preceding_action_error": 0.0
+      },
+      "before_samples": 800,
+      "after_samples": 800
+    }
+  ],
+  "causal_diagnosis_complete": false,
+  "valid_expert_labels": false,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_native_current_state_followup_20261108_v2/whole_panel_isolation_diagnosis.json": "728cbf468c0e7e20aa17aee2b2564475a8701d3e4e6069d61333e86b307cd0e4"
+  }
+}
