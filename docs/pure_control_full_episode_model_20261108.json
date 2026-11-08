@@ -1,0 +1,2887 @@
+{
+  "model_results": {
+    "pure_control_reference_full_model_20261108": {
+      "summary": {
+        "state": "COMPLETED_MODEL_REFERENCE_TRACKING",
+        "pid": 153422,
+        "results": {
+          "predictive_selection": {
+            "cases": 31,
+            "model_600ms": 31,
+            "model_1200ms": 8,
+            "model_episode_end": 3,
+            "final_model_stable_08s": 3
+          }
+        },
+        "wall_seconds": 225.78443638188764,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      "cases": [
+        {
+          "source_case": 10,
+          "source_key": "4f43c9573d9269fb8850864b6a133e97803d3d0408a1d046b8da163f3f7bf660",
+          "mode": "predictive_selection",
+          "steps": 70,
+          "failure": {
+            "step": 70,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.0035294628733091443
+            },
+            "collision": {
+              "micro": 6,
+              "body": "Head_lower",
+              "gap_m": -0.00027764678242027385
+            },
+            "command_source": "uncertified_posture_fallback"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 520,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 69,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "SUSTAIN",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.22011431141851817,
+              0.25277511308954376
+            ],
+            "root_velocity_world": [
+              0.9681523494703799,
+              0.020631472960089048,
+              -0.369735840030299
+            ],
+            "omega": 0.4033011542835298,
+            "joint_speed": 5.765732922957719,
+            "support_feet": 3,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 12,
+          "source_key": "411c045d19b944648bbf693d49272172897a4586b93a115d914d259963968bf2",
+          "mode": "predictive_selection",
+          "steps": 94,
+          "failure": {
+            "step": 94,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.00010243061656582415, 'exact': True, 'shape_index': 48, 'obstacle': 'net_segment_28'}\")"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 518,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 93,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "SUSTAIN",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              -0.12072902218791885,
+              0.21584885135178564
+            ],
+            "root_velocity_world": [
+              0.7965960680747428,
+              -0.05835833614519011,
+              -0.39377965256103276
+            ],
+            "omega": 0.45845396703503505,
+            "joint_speed": 4.36699051027613,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 19,
+          "source_key": "2a4e94201c66ddf51204f22ba268421e60920a02bbaab96b06bab8736a76faa7",
+          "mode": "predictive_selection",
+          "steps": 148,
+          "failure": {
+            "step": 148,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.006559702330470648
+            },
+            "collision": {
+              "micro": 10,
+              "body": "RR_calf",
+              "gap_m": -0.0009812699452310687
+            },
+            "command_source": "uncertified_posture_fallback"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 522,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 147,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.0772119820444474,
+              -0.25754975411766207
+            ],
+            "root_velocity_world": [
+              -1.2791372374881795,
+              -0.5815735786430213,
+              -0.6153051530484446
+            ],
+            "omega": 3.0145245798735116,
+            "joint_speed": 3.4148950658273143,
+            "support_feet": 1,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 22,
+          "source_key": "5b27bfba5ad9de919a821dff74cd03a814e855993413a56ad1ee9993ce4821a6",
+          "mode": "predictive_selection",
+          "steps": 84,
+          "failure": {
+            "step": 84,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0001886229377035223, 'exact': True, 'shape_index': 45, 'obstacle': 'net_segment_24'}\")"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 520,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 83,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "SUSTAIN",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.09534243459522287,
+              0.21090953077885077
+            ],
+            "root_velocity_world": [
+              -0.12583512369549096,
+              -0.2618627677438474,
+              -0.12588112143260188
+            ],
+            "omega": 1.2332796359033005,
+            "joint_speed": 2.3978789179381685,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 24,
+          "source_key": "8eac6b7bb53d7b69b4140948c0ebb86c31ac458ac28e032cb086954c7b73bbc7",
+          "mode": "predictive_selection",
+          "steps": 83,
+          "failure": {
+            "step": 83,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0008851578363722676, 'exact': True, 'shape_index': 49, 'obstacle': 'net_segment_26'}\")"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 524,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 82,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "SUSTAIN",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.10771495111554076,
+              0.27331035071837484
+            ],
+            "root_velocity_world": [
+              1.0810797272838215,
+              -0.06447686619461561,
+              -0.414981801098851
+            ],
+            "omega": 1.1097043775663864,
+            "joint_speed": 7.515208650324337,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 28,
+          "source_key": "3b408272f9072117dc04f57664375813e9b31eb123ca63149c7aa80b9fc3a24f",
+          "mode": "predictive_selection",
+          "steps": 83,
+          "failure": {
+            "step": 83,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0011018748081271946, 'exact': True, 'shape_index': 49, 'obstacle': 'net_segment_25'}\")"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 525,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 82,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.26562175117765935,
+              0.34272192475342994
+            ],
+            "root_velocity_world": [
+              0.6718242981946715,
+              -0.08071092565815419,
+              -0.38097811353390165
+            ],
+            "omega": 3.4496517602022405,
+            "joint_speed": 4.675785979685587,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 32,
+          "source_key": "4f98b382187be97de7d7f5bf561080bceb0e73d1990f0dcdc73a0677c0955653",
+          "mode": "predictive_selection",
+          "steps": 92,
+          "failure": {
+            "step": 92,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0006265483557750307, 'exact': True, 'shape_index': 48, 'obstacle': 'net_segment_24'}\")"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 520,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 91,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.209534795961445,
+              0.3427649296479367
+            ],
+            "root_velocity_world": [
+              0.6638127373477194,
+              -0.27528056905211123,
+              -0.6452716002954935
+            ],
+            "omega": 1.8639862932537083,
+            "joint_speed": 4.823868241242455,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 33,
+          "source_key": "dbea6a747ab697c54b8fc7e21b649a569b629178e231d004a752c42eeebde142",
+          "mode": "predictive_selection",
+          "steps": 69,
+          "failure": {
+            "step": 69,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.009829074046005325
+            },
+            "collision": {
+              "micro": 1,
+              "body": "Head_lower",
+              "gap_m": -0.0005569175837186191
+            },
+            "command_source": "uncertified_posture_fallback"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 528,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 68,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              -0.243467731636616,
+              0.28396359572437313
+            ],
+            "root_velocity_world": [
+              0.9370136289962983,
+              0.21848750389871785,
+              -0.5563167678962258
+            ],
+            "omega": 1.001248978882095,
+            "joint_speed": 7.011843758156473,
+            "support_feet": 3,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 36,
+          "source_key": "d06a3a179ddc8e9553d41aeb102fe69b9d7990a5ee87edc5457a51dcf2da877c",
+          "mode": "predictive_selection",
+          "steps": 165,
+          "failure": {
+            "step": 165,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.001929719222591606, 'exact': True, 'shape_index': 33, 'obstacle': 'net_segment_22'}\")"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 523,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 164,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.17085723701325178,
+              0.28733233144825693
+            ],
+            "root_velocity_world": [
+              0.5872474880142867,
+              0.12601324183567345,
+              -0.5289857397640344
+            ],
+            "omega": 3.0183494099508668,
+            "joint_speed": 4.700302580201035,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 43,
+          "source_key": "f6731d9a45f2b0769a8eb4cfb163ffd70c2ebf9a20a73cd0a69551000333b674",
+          "mode": "predictive_selection",
+          "steps": 64,
+          "failure": {
+            "step": 64,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.008423685031863908
+            },
+            "collision": {
+              "micro": 4,
+              "body": "Head_lower",
+              "gap_m": -0.0005897824697205442
+            },
+            "command_source": "uncertified_posture_fallback"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 525,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 63,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.38685959379851215,
+              0.35396603309313523
+            ],
+            "root_velocity_world": [
+              0.8494545693475033,
+              0.07386715958176354,
+              -0.5470060814513441
+            ],
+            "omega": 1.011271890145971,
+            "joint_speed": 4.435907963583703,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 50,
+          "source_key": "d1a2bfc9373b3f081f8149164e24da0dce1930e4f86d73739f8fcbf634bdce6e",
+          "mode": "predictive_selection",
+          "steps": 71,
+          "failure": {
+            "step": 71,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.008856005471337983
+            },
+            "collision": {
+              "micro": 2,
+              "body": "Head_lower",
+              "gap_m": -0.00048099042709325024
+            },
+            "command_source": "uncertified_posture_fallback"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 525,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 70,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.17295930312423846,
+              0.2779539624047187
+            ],
+            "root_velocity_world": [
+              0.8444932648546074,
+              -0.13069144894203263,
+              -0.27672155102971413
+            ],
+            "omega": 2.216873010646155,
+            "joint_speed": 4.786560255980025,
+            "support_feet": 3,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 55,
+          "source_key": "c4f8c2802564df65b92d19ce85a7c2519bf2e7f762028718e54e3de662ef3f64",
+          "mode": "predictive_selection",
+          "steps": 61,
+          "failure": {
+            "step": 61,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.00019676951607879023
+            },
+            "collision": {
+              "micro": 12,
+              "body": "Head_lower",
+              "gap_m": -1.5262214895186976e-05
+            },
+            "command_source": "interval_qp"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 523,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 60,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "SUSTAIN",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.2850860800336696,
+              0.40892920358238055
+            ],
+            "root_velocity_world": [
+              0.5839253864321182,
+              0.15153151902988288,
+              -0.24594024582709426
+            ],
+            "omega": 0.8912796164793568,
+            "joint_speed": 8.077954326443512,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 58,
+          "source_key": "27f9ee15790e8529a6b8ba96b113f7e8f3b512afd3cb11c33cde4aa359fe51e5",
+          "mode": "predictive_selection",
+          "steps": 93,
+          "failure": {
+            "step": 93,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.004251866689483311
+            },
+            "collision": {
+              "micro": 10,
+              "body": "Head_lower",
+              "gap_m": -0.000281148169351611
+            },
+            "command_source": "uncertified_posture_fallback"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 518,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 92,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.04439448750612998,
+              0.5006738503173185
+            ],
+            "root_velocity_world": [
+              0.6715399384258458,
+              -0.16989625331864672,
+              -0.786586581636826
+            ],
+            "omega": 1.6476907556839064,
+            "joint_speed": 16.953530421612772,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 60,
+          "source_key": "1dce1a503131d9a6723c7d6404ea48b869d9c25e1da1f28b1b9c45e2f3b2d8a5",
+          "mode": "predictive_selection",
+          "steps": 123,
+          "failure": {
+            "step": 123,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.001025373834252798, 'exact': True, 'shape_index': 48, 'obstacle': 'net_segment_24'}\")"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 521,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 122,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "SUSTAIN",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.06534930741213857,
+              0.11265845316851227
+            ],
+            "root_velocity_world": [
+              0.660890193278921,
+              -0.2162555192693463,
+              -0.46660539218244773
+            ],
+            "omega": 0.9571320414787204,
+            "joint_speed": 3.3723601474005553,
+            "support_feet": 3,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 64,
+          "source_key": "fc1dec0db746123096c455e3a2b79061803b2651f6490e2bb5167c2ece36d315",
+          "mode": "predictive_selection",
+          "steps": 520,
+          "failure": null,
+          "longest_model_stable_s": 4.089999999999957,
+          "final_model_stable_s": 4.089999999999957,
+          "required_steps": 520,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 519,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "SUSTAIN",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              -6.945794010467508e-05,
+              -0.018061340092338098
+            ],
+            "root_velocity_world": [
+              -0.00014119154675662542,
+              0.00020845468396380522,
+              -0.00011140149017277093
+            ],
+            "omega": 0.010871171318018156,
+            "joint_speed": 0.011461929339917937,
+            "support_feet": 4,
+            "sampled_stable_s": 4.089999999999957
+          }
+        },
+        {
+          "source_case": 68,
+          "source_key": "b03e194df76eae7fe0b5c078f7278a4091e8894eba321e479f14d9f009811174",
+          "mode": "predictive_selection",
+          "steps": 96,
+          "failure": {
+            "step": 96,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0014189359098959959, 'exact': True, 'shape_index': 49, 'obstacle': 'net_segment_28'}\")"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 516,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 95,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.01511084982777671,
+              0.354996422891849
+            ],
+            "root_velocity_world": [
+              0.6508173936880468,
+              -0.08996751218640338,
+              -0.7410737296472792
+            ],
+            "omega": 2.060622644084857,
+            "joint_speed": 4.8831487810939525,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 74,
+          "source_key": "b247b313c35c7f2f79bf0dca42e6336b6c710532936aef9ca9a31610e42b8ed0",
+          "mode": "predictive_selection",
+          "steps": 98,
+          "failure": {
+            "step": 98,
+            "reason": "model_rejected",
+            "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 5.959394329124734e-07, 'friction_cone': 0.0, 'tangent_fixed_point': 1.6098504984629614e-07}, 'box_violation': 0.0, 'box_fixed_point': 5.551115123125783e-17}\")"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 517,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 97,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.4285753941126079,
+              -0.0048501018311366
+            ],
+            "root_velocity_world": [
+              0.42189169425680556,
+              -0.7720234059496612,
+              -0.21633166319139985
+            ],
+            "omega": 7.226003950557688,
+            "joint_speed": 22.559172937248324,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 75,
+          "source_key": "4794635d317bdd880fbcd4394cc657f2e768b5da03752499b29a2b974238530f",
+          "mode": "predictive_selection",
+          "steps": 73,
+          "failure": {
+            "step": 73,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.010657788056575232
+            },
+            "collision": {
+              "micro": 0,
+              "body": "FR_hip",
+              "gap_m": -0.00046247628369670835
+            },
+            "command_source": "uncertified_posture_fallback"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 527,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 72,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.8118606088581927,
+              0.3367661156993733
+            ],
+            "root_velocity_world": [
+              0.6394190287397167,
+              0.27699693445025536,
+              -0.12195859025222038
+            ],
+            "omega": 7.58070162699688,
+            "joint_speed": 10.347511181421408,
+            "support_feet": 3,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 80,
+          "source_key": "2bea32faaeb6bb314a2b32189cdcb0479f546eb348f04f2ed472a7116b539469",
+          "mode": "predictive_selection",
+          "steps": 84,
+          "failure": {
+            "step": 84,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.0033863535162054065
+            },
+            "collision": {
+              "micro": 8,
+              "body": "Head_lower",
+              "gap_m": -0.0003412292755222632
+            },
+            "command_source": "uncertified_posture_fallback"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 522,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 83,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              -0.37836679213129204,
+              0.4185816421193667
+            ],
+            "root_velocity_world": [
+              1.2319896480524628,
+              -0.1395851213478167,
+              -0.36241938757909065
+            ],
+            "omega": 1.4139405548852866,
+            "joint_speed": 10.459296451949637,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 81,
+          "source_key": "5e351efdb8c7503ba7f26d2715ce1689ba8b73f0f9b8b42f21d6b1de6e8a9ea6",
+          "mode": "predictive_selection",
+          "steps": 83,
+          "failure": {
+            "step": 83,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.003861910280699849, 'exact': True, 'shape_index': 47, 'obstacle': 'net_segment_27'}\")"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 526,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 82,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              -0.024603868185983386,
+              0.2130561816461425
+            ],
+            "root_velocity_world": [
+              0.5510758052512575,
+              0.424508873793521,
+              -0.4220610243730355
+            ],
+            "omega": 2.023683104551695,
+            "joint_speed": 4.313544987315675,
+            "support_feet": 4,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 82,
+          "source_key": "a8e3c72dbcf98735c63616343e1207587e59c3e101166c32fcfc3d29caf78c8d",
+          "mode": "predictive_selection",
+          "steps": 102,
+          "failure": {
+            "step": 102,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0006940439579652376, 'exact': True, 'shape_index': 48, 'obstacle': 'net_segment_30'}\")"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 517,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 101,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              -0.07141616063817643,
+              0.4131765029653843
+            ],
+            "root_velocity_world": [
+              0.7596882750762265,
+              -0.11433750840699422,
+              -0.6845313292457669
+            ],
+            "omega": 2.2120538339906424,
+            "joint_speed": 4.158272436310467,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 83,
+          "source_key": "a2489f5eef84824287f0b962af80195ed9247d3e6ac88406fb69bd127e5257a1",
+          "mode": "predictive_selection",
+          "steps": 87,
+          "failure": {
+            "step": 87,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0020750711183205556, 'exact': True, 'shape_index': 48, 'obstacle': 'net_segment_39'}\")"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 518,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 86,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              -0.5992189131205176,
+              0.4348372641562295
+            ],
+            "root_velocity_world": [
+              1.1346322190898848,
+              0.12849611874181155,
+              -0.5559053044953084
+            ],
+            "omega": 3.774929365509366,
+            "joint_speed": 7.325558956181369,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 86,
+          "source_key": "8acd0ab6e9e6df638707d239a348c7741894c9612a812f746d23206055f89abc",
+          "mode": "predictive_selection",
+          "steps": 99,
+          "failure": {
+            "step": 99,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.001840654474831972, 'exact': True, 'shape_index': 48, 'obstacle': 'net_segment_34'}\")"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 513,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 98,
+            "command_source": "uncertified_posture_fallback",
+            "solver_accepted": false,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              -0.3041547960793046,
+              0.16553900432645244
+            ],
+            "root_velocity_world": [
+              0.9541675410652208,
+              0.2430054742396065,
+              -0.4088422419914486
+            ],
+            "omega": 1.7876289666444325,
+            "joint_speed": 17.832302683372273,
+            "support_feet": 3,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 94,
+          "source_key": "acee09a8de584a6f817f3f44cdffbf8aa453344dc8a44441a76abbf01fca29d6",
+          "mode": "predictive_selection",
+          "steps": 71,
+          "failure": {
+            "step": 71,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.006846684132061645
+            },
+            "collision": {
+              "micro": 3,
+              "body": "Head_lower",
+              "gap_m": -0.0003600480759222563
+            },
+            "command_source": "uncertified_posture_fallback"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 522,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 70,
+            "command_source": "uncertified_posture_fallback",
+            "solver_accepted": false,
+            "phase": "SUSTAIN",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              -0.2451770682943319,
+              0.40292240111588906
+            ],
+            "root_velocity_world": [
+              1.0553693774691588,
+              0.1464572385824458,
+              -0.31995412369587795
+            ],
+            "omega": 2.2794697547717293,
+            "joint_speed": 19.018425810634792,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 100,
+          "source_key": "a5e15e994779d6e064bbf7745d371977e61f0c048bb485397fcb84ce738e8c25",
+          "mode": "predictive_selection",
+          "steps": 89,
+          "failure": {
+            "step": 89,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.010592450261691776
+            },
+            "collision": {
+              "micro": 2,
+              "body": "Head_lower",
+              "gap_m": -0.00017194699212463166
+            },
+            "command_source": "uncertified_posture_fallback"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 517,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 88,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              -0.40558237248847623,
+              0.45815261143063396
+            ],
+            "root_velocity_world": [
+              1.1236330864412596,
+              -0.11357058404222464,
+              -0.4287412998030447
+            ],
+            "omega": 3.8559898513769815,
+            "joint_speed": 15.54410041434511,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 103,
+          "source_key": "075ef48996990b3c0376dd90ce89fad63758f5eb972105ad129f1dd1f9c4ed48",
+          "mode": "predictive_selection",
+          "steps": 183,
+          "failure": {
+            "step": 183,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.016339109993569315
+            },
+            "collision": {
+              "micro": 0,
+              "body": "RL_thigh",
+              "gap_m": -0.0004133794596573436
+            },
+            "command_source": "uncertified_posture_fallback"
+          },
+          "longest_model_stable_s": 0.09,
+          "final_model_stable_s": 0.0,
+          "required_steps": 521,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 182,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              -0.805983825595438,
+              -0.04091441397114066
+            ],
+            "root_velocity_world": [
+              0.08757353031714162,
+              1.235989650802034,
+              -1.2843668329873945
+            ],
+            "omega": 5.220716504594285,
+            "joint_speed": 9.160418566097034,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 118,
+          "source_key": "1f570570bddceedccc8db8b8462616fdbb5700d1aaaf756853de8c2fecc43377",
+          "mode": "predictive_selection",
+          "steps": 522,
+          "failure": null,
+          "longest_model_stable_s": 3.899999999999961,
+          "final_model_stable_s": 3.899999999999961,
+          "required_steps": 522,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 521,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "SUSTAIN",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              9.479794498492667e-05,
+              -0.005250403799416541
+            ],
+            "root_velocity_world": [
+              -6.127488605964716e-06,
+              6.0849438967588204e-05,
+              -8.853001250157955e-06
+            ],
+            "omega": 0.007581639078676239,
+            "joint_speed": 0.005790390036619408,
+            "support_feet": 4,
+            "sampled_stable_s": 3.899999999999961
+          }
+        },
+        {
+          "source_case": 119,
+          "source_key": "13e40a0b8350f623e04001fda4a91663efd131f3cc5bbc77683c8d1b0b5ef919",
+          "mode": "predictive_selection",
+          "steps": 61,
+          "failure": {
+            "step": 61,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.005142295919024556
+            },
+            "collision": {
+              "micro": 7,
+              "body": "Head_lower",
+              "gap_m": -0.0003752819475761754
+            },
+            "command_source": "uncertified_posture_fallback"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 534,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 60,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              -0.2983213999455931,
+              0.3320185780085016
+            ],
+            "root_velocity_world": [
+              0.7452532914019981,
+              -0.04199197409336912,
+              0.16107601881702738
+            ],
+            "omega": 4.6324457192664115,
+            "joint_speed": 7.488197075179289,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 120,
+          "source_key": "3996f8049d623034e409ca8547997528da2ef777d3f2242544e4422bca3ced85",
+          "mode": "predictive_selection",
+          "steps": 225,
+          "failure": {
+            "step": 225,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.007914576691399763
+            },
+            "collision": {
+              "micro": 7,
+              "body": "Head_lower",
+              "gap_m": -0.0002359917879273185
+            },
+            "command_source": "uncertified_posture_fallback"
+          },
+          "longest_model_stable_s": 0.10999999999999999,
+          "final_model_stable_s": 0.0,
+          "required_steps": 517,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 224,
+            "command_source": "uncertified_posture_fallback",
+            "solver_accepted": false,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.32465193666770203,
+              0.3491724181667352
+            ],
+            "root_velocity_world": [
+              0.9183552749450767,
+              0.07412988232162637,
+              -0.5483472794354394
+            ],
+            "omega": 5.922752968357755,
+            "joint_speed": 12.023205323805293,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 121,
+          "source_key": "2d512965c97b6361d2770611b2c33c80ab10073a0125d6e1c4ffacab16ef427a",
+          "mode": "predictive_selection",
+          "steps": 108,
+          "failure": {
+            "step": 108,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.006756138109757115
+            },
+            "collision": {
+              "micro": 3,
+              "body": "Head_lower",
+              "gap_m": -0.00022205438662192822
+            },
+            "command_source": "uncertified_posture_fallback"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 527,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 107,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.0966648702360476,
+              0.34499604867035655
+            ],
+            "root_velocity_world": [
+              0.8044173079866073,
+              0.6732167942970552,
+              -0.7374651456114301
+            ],
+            "omega": 0.7044906051540928,
+            "joint_speed": 7.223194747889861,
+            "support_feet": 3,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 123,
+          "source_key": "abcad11be74fb0332038fd946fb9b54c2c8ea8aedf5417af00692e9bc7c2c226",
+          "mode": "predictive_selection",
+          "steps": 515,
+          "failure": null,
+          "longest_model_stable_s": 3.9199999999999604,
+          "final_model_stable_s": 3.9199999999999604,
+          "required_steps": 515,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 514,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "SUSTAIN",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.00010814447743377047,
+              -0.014446132034426327
+            ],
+            "root_velocity_world": [
+              -8.675679418936727e-06,
+              -0.0007716671320481806,
+              0.00010483492594491428
+            ],
+            "omega": 0.024894287102514158,
+            "joint_speed": 0.022692983330913657,
+            "support_feet": 4,
+            "sampled_stable_s": 3.9199999999999604
+          }
+        }
+      ]
+    },
+    "pure_control_spherical_full_model_20261108": {
+      "summary": {
+        "state": "COMPLETED_MODEL_REFERENCE_TRACKING",
+        "pid": 153922,
+        "results": {
+          "predictive_selection": {
+            "cases": 31,
+            "model_600ms": 31,
+            "model_1200ms": 7,
+            "model_episode_end": 3,
+            "final_model_stable_08s": 3
+          }
+        },
+        "wall_seconds": 227.60089178103954,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      "cases": [
+        {
+          "source_case": 10,
+          "source_key": "4f43c9573d9269fb8850864b6a133e97803d3d0408a1d046b8da163f3f7bf660",
+          "mode": "predictive_selection",
+          "steps": 70,
+          "failure": {
+            "step": 70,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 3.797422152311547e-05
+            },
+            "collision": {
+              "micro": 15,
+              "body": "Head_lower",
+              "gap_m": -3.797422152311547e-05
+            },
+            "command_source": "interval_qp"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 520,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 69,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "SUSTAIN",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.2218263384541291,
+              0.24978347391274233
+            ],
+            "root_velocity_world": [
+              1.0213990861262177,
+              -0.0004828649266274132,
+              -0.3675633068394933
+            ],
+            "omega": 0.48812955767716176,
+            "joint_speed": 6.3732505086253814,
+            "support_feet": 3,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 12,
+          "source_key": "411c045d19b944648bbf693d49272172897a4586b93a115d914d259963968bf2",
+          "mode": "predictive_selection",
+          "steps": 94,
+          "failure": {
+            "step": 94,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0008276889306806272, 'exact': True, 'shape_index': 48, 'obstacle': 'net_segment_28'}\")"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 518,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 93,
+            "command_source": "uncertified_posture_fallback",
+            "solver_accepted": false,
+            "phase": "SUSTAIN",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              -0.13293194155446073,
+              0.21763715296845387
+            ],
+            "root_velocity_world": [
+              0.7219441864784196,
+              -0.060010249794738346,
+              -0.45523126261086855
+            ],
+            "omega": 2.197281038837664,
+            "joint_speed": 19.09196554480021,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 19,
+          "source_key": "2a4e94201c66ddf51204f22ba268421e60920a02bbaab96b06bab8736a76faa7",
+          "mode": "predictive_selection",
+          "steps": 149,
+          "failure": {
+            "step": 149,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.01217305966904187
+            },
+            "collision": {
+              "micro": 2,
+              "body": "RR_calf",
+              "gap_m": -0.00026245334065719966
+            },
+            "command_source": "uncertified_posture_fallback"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 522,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 148,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.030358402631943403,
+              -0.1833079957580687
+            ],
+            "root_velocity_world": [
+              -1.3992817213453677,
+              -0.6276989458077148,
+              -0.6750941213483947
+            ],
+            "omega": 2.728650829921054,
+            "joint_speed": 5.587998037365731,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 22,
+          "source_key": "5b27bfba5ad9de919a821dff74cd03a814e855993413a56ad1ee9993ce4821a6",
+          "mode": "predictive_selection",
+          "steps": 85,
+          "failure": {
+            "step": 85,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.00019036476120397891, 'exact': True, 'shape_index': 45, 'obstacle': 'net_segment_24'}\")"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 520,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 84,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "SUSTAIN",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.09445284036132442,
+              0.20976521964865272
+            ],
+            "root_velocity_world": [
+              -0.15227662928550034,
+              -0.26647391848016555,
+              -0.1340398685779455
+            ],
+            "omega": 1.1091993072741435,
+            "joint_speed": 2.3953310503289114,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 24,
+          "source_key": "8eac6b7bb53d7b69b4140948c0ebb86c31ac458ac28e032cb086954c7b73bbc7",
+          "mode": "predictive_selection",
+          "steps": 82,
+          "failure": {
+            "step": 82,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0004955158884914672, 'exact': True, 'shape_index': 49, 'obstacle': 'net_segment_26'}\")"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 524,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 81,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "SUSTAIN",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.11388573032662588,
+              0.2695995590064669
+            ],
+            "root_velocity_world": [
+              1.0778174027276426,
+              0.01536176763052699,
+              -0.3672429573145175
+            ],
+            "omega": 1.1489170001016142,
+            "joint_speed": 7.491706846508961,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 28,
+          "source_key": "3b408272f9072117dc04f57664375813e9b31eb123ca63149c7aa80b9fc3a24f",
+          "mode": "predictive_selection",
+          "steps": 78,
+          "failure": {
+            "step": 78,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0004201148779363669, 'exact': True, 'shape_index': 48, 'obstacle': 'net_segment_26'}\")"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 525,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 77,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "SUSTAIN",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.10216665040120736,
+              0.273321434553177
+            ],
+            "root_velocity_world": [
+              0.6873318994627982,
+              -0.12554319131641362,
+              -0.1640971038631575
+            ],
+            "omega": 0.8665096821934877,
+            "joint_speed": 5.747879822256079,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 32,
+          "source_key": "4f98b382187be97de7d7f5bf561080bceb0e73d1990f0dcdc73a0677c0955653",
+          "mode": "predictive_selection",
+          "steps": 90,
+          "failure": {
+            "step": 90,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0007595943047457175, 'exact': True, 'shape_index': 48, 'obstacle': 'net_segment_24'}\")"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 520,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 89,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "SUSTAIN",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.26875661358761893,
+              0.2937211211279564
+            ],
+            "root_velocity_world": [
+              0.7919913885864616,
+              -0.030950575619847043,
+              -0.5110158737948854
+            ],
+            "omega": 2.2675042881659433,
+            "joint_speed": 3.1281239848279534,
+            "support_feet": 3,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 33,
+          "source_key": "dbea6a747ab697c54b8fc7e21b649a569b629178e231d004a752c42eeebde142",
+          "mode": "predictive_selection",
+          "steps": 69,
+          "failure": {
+            "step": 69,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.010281535466432588
+            },
+            "collision": {
+              "micro": 0,
+              "body": "Head_lower",
+              "gap_m": -0.0003909994639449618
+            },
+            "command_source": "uncertified_posture_fallback"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 528,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 68,
+            "command_source": "uncertified_posture_fallback",
+            "solver_accepted": false,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              -0.24817941035855975,
+              0.28582868458243843
+            ],
+            "root_velocity_world": [
+              0.9543072866855397,
+              0.1665107748540914,
+              -0.6109615645377755
+            ],
+            "omega": 1.6834128000884845,
+            "joint_speed": 12.168985969201342,
+            "support_feet": 3,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 36,
+          "source_key": "d06a3a179ddc8e9553d41aeb102fe69b9d7990a5ee87edc5457a51dcf2da877c",
+          "mode": "predictive_selection",
+          "steps": 190,
+          "failure": {
+            "step": 190,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0016630558148533511, 'exact': True, 'shape_index': 34, 'obstacle': 'net_segment_32'}\")"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 523,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 189,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.026935833314532007,
+              0.2868585604190711
+            ],
+            "root_velocity_world": [
+              0.6251812882661849,
+              0.41440915627051705,
+              -0.5449067023060415
+            ],
+            "omega": 3.2513086545794083,
+            "joint_speed": 10.38210174490307,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 43,
+          "source_key": "f6731d9a45f2b0769a8eb4cfb163ffd70c2ebf9a20a73cd0a69551000333b674",
+          "mode": "predictive_selection",
+          "steps": 64,
+          "failure": {
+            "step": 64,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.00868247718310091
+            },
+            "collision": {
+              "micro": 3,
+              "body": "Head_lower",
+              "gap_m": -7.13694999642106e-05
+            },
+            "command_source": "uncertified_posture_fallback"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 525,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 63,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.3847630040161624,
+              0.3529944782768203
+            ],
+            "root_velocity_world": [
+              0.8642298968022123,
+              0.08457803108207268,
+              -0.5613675974248022
+            ],
+            "omega": 0.9166734430547404,
+            "joint_speed": 4.681790461178584,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 50,
+          "source_key": "d1a2bfc9373b3f081f8149164e24da0dce1930e4f86d73739f8fcbf634bdce6e",
+          "mode": "predictive_selection",
+          "steps": 71,
+          "failure": {
+            "step": 71,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.007440139822176187
+            },
+            "collision": {
+              "micro": 4,
+              "body": "Head_lower",
+              "gap_m": -0.0003722911575882587
+            },
+            "command_source": "uncertified_posture_fallback"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 525,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 70,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.17061847976892272,
+              0.27189291496753165
+            ],
+            "root_velocity_world": [
+              0.8724019131059262,
+              -0.11814306150460577,
+              -0.2799293998706694
+            ],
+            "omega": 2.1526357883022267,
+            "joint_speed": 5.138116714557525,
+            "support_feet": 3,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 55,
+          "source_key": "c4f8c2802564df65b92d19ce85a7c2519bf2e7f762028718e54e3de662ef3f64",
+          "mode": "predictive_selection",
+          "steps": 61,
+          "failure": {
+            "step": 61,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 3.824088033020645e-05
+            },
+            "collision": {
+              "micro": 15,
+              "body": "Head_lower",
+              "gap_m": -3.824088033020645e-05
+            },
+            "command_source": "interval_qp"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 523,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 60,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "SUSTAIN",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.2855910820914573,
+              0.4077836495055354
+            ],
+            "root_velocity_world": [
+              0.5837213403754025,
+              0.15730294589104488,
+              -0.24433171487632754
+            ],
+            "omega": 0.8893010528919078,
+            "joint_speed": 9.292670026088205,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 58,
+          "source_key": "27f9ee15790e8529a6b8ba96b113f7e8f3b512afd3cb11c33cde4aa359fe51e5",
+          "mode": "predictive_selection",
+          "steps": 94,
+          "failure": {
+            "step": 94,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0009323317848730864, 'exact': True, 'shape_index': 48, 'obstacle': 'net_segment_31'}\")"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 518,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 93,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              -0.14172751981160656,
+              0.3425152267439137
+            ],
+            "root_velocity_world": [
+              1.0138862053401236,
+              0.007229333787532072,
+              -0.6295067641080738
+            ],
+            "omega": 0.6237221157867143,
+            "joint_speed": 4.965507075416693,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 60,
+          "source_key": "1dce1a503131d9a6723c7d6404ea48b869d9c25e1da1f28b1b9c45e2f3b2d8a5",
+          "mode": "predictive_selection",
+          "steps": 102,
+          "failure": {
+            "step": 102,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0016970713295445818, 'exact': True, 'shape_index': 47, 'obstacle': 'net_segment_24'}\")"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 521,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 101,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "SUSTAIN",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.14299986514684826,
+              0.0534919390913057
+            ],
+            "root_velocity_world": [
+              0.23558309350402806,
+              0.06502270678592373,
+              -0.10600878686559213
+            ],
+            "omega": 0.20770010792581342,
+            "joint_speed": 1.6727815344152128,
+            "support_feet": 3,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 64,
+          "source_key": "fc1dec0db746123096c455e3a2b79061803b2651f6490e2bb5167c2ece36d315",
+          "mode": "predictive_selection",
+          "steps": 520,
+          "failure": null,
+          "longest_model_stable_s": 4.089999999999957,
+          "final_model_stable_s": 4.089999999999957,
+          "required_steps": 520,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 519,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "SUSTAIN",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.0006022838752674442,
+              -0.020349939649505933
+            ],
+            "root_velocity_world": [
+              -0.0007320356913779311,
+              0.0012089295681899745,
+              -0.00012331660610034263
+            ],
+            "omega": 0.021484249187332362,
+            "joint_speed": 0.02120803379183886,
+            "support_feet": 4,
+            "sampled_stable_s": 4.089999999999957
+          }
+        },
+        {
+          "source_case": 68,
+          "source_key": "b03e194df76eae7fe0b5c078f7278a4091e8894eba321e479f14d9f009811174",
+          "mode": "predictive_selection",
+          "steps": 88,
+          "failure": {
+            "step": 88,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0002252865724769182, 'exact': True, 'shape_index': 48, 'obstacle': 'net_segment_29'}\")"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 516,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 87,
+            "command_source": "uncertified_posture_fallback",
+            "solver_accepted": false,
+            "phase": "SUSTAIN",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              -0.12975025668332427,
+              0.22900636010901632
+            ],
+            "root_velocity_world": [
+              0.7192186611184467,
+              -0.09606474811441419,
+              -0.44300836935905036
+            ],
+            "omega": 1.9239750415872132,
+            "joint_speed": 16.38095944389148,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 74,
+          "source_key": "b247b313c35c7f2f79bf0dca42e6336b6c710532936aef9ca9a31610e42b8ed0",
+          "mode": "predictive_selection",
+          "steps": 97,
+          "failure": {
+            "step": 97,
+            "reason": "model_rejected",
+            "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 1.01898707782766e-06, 'friction_cone': 0.0, 'tangent_fixed_point': 2.3443870580952542e-07}, 'box_violation': 1.759126178058068e-10, 'box_fixed_point': 8.446576771348191e-13}\")"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 517,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 96,
+            "command_source": "uncertified_posture_fallback",
+            "solver_accepted": false,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.33635081571995395,
+              0.014728078412424572
+            ],
+            "root_velocity_world": [
+              0.4587916885916377,
+              -0.7365308662625203,
+              -0.25382236369015626
+            ],
+            "omega": 7.592357052192077,
+            "joint_speed": 24.83643788854338,
+            "support_feet": 3,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 75,
+          "source_key": "4794635d317bdd880fbcd4394cc657f2e768b5da03752499b29a2b974238530f",
+          "mode": "predictive_selection",
+          "steps": 70,
+          "failure": {
+            "step": 70,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0016695544824507041, 'exact': True, 'shape_index': 48, 'obstacle': 'net_segment_21'}\")"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 527,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 69,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.6101720248436475,
+              0.23036146133525545
+            ],
+            "root_velocity_world": [
+              0.7590235758131784,
+              0.2672942039429617,
+              -0.29184492104389087
+            ],
+            "omega": 2.963511811490963,
+            "joint_speed": 4.678748095973203,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 80,
+          "source_key": "2bea32faaeb6bb314a2b32189cdcb0479f546eb348f04f2ed472a7116b539469",
+          "mode": "predictive_selection",
+          "steps": 84,
+          "failure": {
+            "step": 84,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.005319056430273354
+            },
+            "collision": {
+              "micro": 3,
+              "body": "Head_lower",
+              "gap_m": -5.772022818222727e-05
+            },
+            "command_source": "uncertified_posture_fallback"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 522,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 83,
+            "command_source": "uncertified_posture_fallback",
+            "solver_accepted": false,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              -0.3911987455870045,
+              0.4177559530749433
+            ],
+            "root_velocity_world": [
+              1.1678546407421284,
+              -0.1278956753877195,
+              -0.48835254931803296
+            ],
+            "omega": 2.123002485738937,
+            "joint_speed": 13.831104610126975,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 81,
+          "source_key": "5e351efdb8c7503ba7f26d2715ce1689ba8b73f0f9b8b42f21d6b1de6e8a9ea6",
+          "mode": "predictive_selection",
+          "steps": 83,
+          "failure": {
+            "step": 83,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.00040851315467583995, 'exact': True, 'shape_index': 47, 'obstacle': 'net_segment_27'}\")"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 526,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 82,
+            "command_source": "uncertified_posture_fallback",
+            "solver_accepted": false,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.004789071535615145,
+              0.22970400252971904
+            ],
+            "root_velocity_world": [
+              0.5121116893252844,
+              0.30614968759042394,
+              -0.40459377564727056
+            ],
+            "omega": 3.674397748560336,
+            "joint_speed": 9.145398792033845,
+            "support_feet": 4,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 82,
+          "source_key": "a8e3c72dbcf98735c63616343e1207587e59c3e101166c32fcfc3d29caf78c8d",
+          "mode": "predictive_selection",
+          "steps": 98,
+          "failure": {
+            "step": 98,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.002000462982363838, 'exact': True, 'shape_index': 47, 'obstacle': 'net_segment_31'}\")"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 517,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 97,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              -0.1870949565871413,
+              0.2974604684338536
+            ],
+            "root_velocity_world": [
+              0.824103336786053,
+              0.05476776481393084,
+              -0.5443351643602292
+            ],
+            "omega": 1.295692317873694,
+            "joint_speed": 7.5284849125978965,
+            "support_feet": 3,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 83,
+          "source_key": "a2489f5eef84824287f0b962af80195ed9247d3e6ac88406fb69bd127e5257a1",
+          "mode": "predictive_selection",
+          "steps": 86,
+          "failure": {
+            "step": 86,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0011367108529584035, 'exact': True, 'shape_index': 48, 'obstacle': 'net_segment_38'}\")"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 518,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 85,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              -0.5848761307188848,
+              0.4100873126014467
+            ],
+            "root_velocity_world": [
+              1.1381235200393043,
+              0.09123762455529505,
+              -0.5988807486146243
+            ],
+            "omega": 2.6608164021763567,
+            "joint_speed": 6.661522091314682,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 86,
+          "source_key": "8acd0ab6e9e6df638707d239a348c7741894c9612a812f746d23206055f89abc",
+          "mode": "predictive_selection",
+          "steps": 99,
+          "failure": {
+            "step": 99,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.000730621154394694, 'exact': True, 'shape_index': 48, 'obstacle': 'net_segment_34'}\")"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 513,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 98,
+            "command_source": "uncertified_posture_fallback",
+            "solver_accepted": false,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              -0.2816474269842205,
+              0.1590336202148959
+            ],
+            "root_velocity_world": [
+              0.955372200998272,
+              0.2646208900058804,
+              -0.4084136243805133
+            ],
+            "omega": 1.5449696349728141,
+            "joint_speed": 19.380592765563566,
+            "support_feet": 3,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 94,
+          "source_key": "acee09a8de584a6f817f3f44cdffbf8aa453344dc8a44441a76abbf01fca29d6",
+          "mode": "predictive_selection",
+          "steps": 71,
+          "failure": {
+            "step": 71,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.006603061931822446
+            },
+            "collision": {
+              "micro": 3,
+              "body": "Head_lower",
+              "gap_m": -0.00014027967040755596
+            },
+            "command_source": "uncertified_posture_fallback"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 522,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 70,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "SUSTAIN",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              -0.25830643189070496,
+              0.39694247055330056
+            ],
+            "root_velocity_world": [
+              1.0979394434307799,
+              0.18904495706103347,
+              -0.3182969998787375
+            ],
+            "omega": 1.7949305819099926,
+            "joint_speed": 6.4150634001408084,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 100,
+          "source_key": "a5e15e994779d6e064bbf7745d371977e61f0c048bb485397fcb84ce738e8c25",
+          "mode": "predictive_selection",
+          "steps": 87,
+          "failure": {
+            "step": 87,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.001401585953702106, 'exact': True, 'shape_index': 49, 'obstacle': 'net_segment_36'}\")"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 517,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 86,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              -0.39207524798007837,
+              0.43505391213951167
+            ],
+            "root_velocity_world": [
+              1.084158726433354,
+              -0.035538185427077484,
+              -0.6013451803768527
+            ],
+            "omega": 1.1812737556773645,
+            "joint_speed": 8.173768648321223,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 103,
+          "source_key": "075ef48996990b3c0376dd90ce89fad63758f5eb972105ad129f1dd1f9c4ed48",
+          "mode": "predictive_selection",
+          "steps": 179,
+          "failure": {
+            "step": 179,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.007190955972604321
+            },
+            "collision": {
+              "micro": 8,
+              "body": "RL_thigh",
+              "gap_m": -0.00022552810707203268
+            },
+            "command_source": "uncertified_posture_fallback"
+          },
+          "longest_model_stable_s": 0.07,
+          "final_model_stable_s": 0.0,
+          "required_steps": 521,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 178,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              -0.7775993824070422,
+              -0.031396059453327484
+            ],
+            "root_velocity_world": [
+              -0.044931096830373385,
+              1.3037024157235966,
+              -1.3622435730055469
+            ],
+            "omega": 4.854556856453587,
+            "joint_speed": 7.741569685957407,
+            "support_feet": 1,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 118,
+          "source_key": "1f570570bddceedccc8db8b8462616fdbb5700d1aaaf756853de8c2fecc43377",
+          "mode": "predictive_selection",
+          "steps": 522,
+          "failure": null,
+          "longest_model_stable_s": 3.899999999999961,
+          "final_model_stable_s": 3.899999999999961,
+          "required_steps": 522,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 521,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "SUSTAIN",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              -0.0005956697501103079,
+              0.0018842253931930742
+            ],
+            "root_velocity_world": [
+              -8.057296486484878e-06,
+              5.879598302555096e-05,
+              4.243417379641321e-06
+            ],
+            "omega": 0.006314957890731735,
+            "joint_speed": 0.004870697593528414,
+            "support_feet": 4,
+            "sampled_stable_s": 3.899999999999961
+          }
+        },
+        {
+          "source_case": 119,
+          "source_key": "13e40a0b8350f623e04001fda4a91663efd131f3cc5bbc77683c8d1b0b5ef919",
+          "mode": "predictive_selection",
+          "steps": 61,
+          "failure": {
+            "step": 61,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.0050785732051488106
+            },
+            "collision": {
+              "micro": 7,
+              "body": "Head_lower",
+              "gap_m": -0.00034190076187486096
+            },
+            "command_source": "uncertified_posture_fallback"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 534,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 60,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              -0.2981762136316324,
+              0.3320597052131128
+            ],
+            "root_velocity_world": [
+              0.7492251347860166,
+              -0.03937444764383882,
+              0.1655059193934324
+            ],
+            "omega": 4.646872573639747,
+            "joint_speed": 7.518492994993175,
+            "support_feet": 2,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 120,
+          "source_key": "3996f8049d623034e409ca8547997528da2ef777d3f2242544e4422bca3ced85",
+          "mode": "predictive_selection",
+          "steps": 217,
+          "failure": {
+            "step": 217,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.009005556000711262
+            },
+            "collision": {
+              "micro": 4,
+              "body": "Head_lower",
+              "gap_m": -0.00044301556883753757
+            },
+            "command_source": "uncertified_posture_fallback"
+          },
+          "longest_model_stable_s": 0.05,
+          "final_model_stable_s": 0.0,
+          "required_steps": 517,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 216,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "BUFFER_LOAD",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.5246166977545194,
+              0.3184961226990208
+            ],
+            "root_velocity_world": [
+              0.8911966453371403,
+              -0.02125123710391702,
+              -0.47195335119419685
+            ],
+            "omega": 2.646402951248495,
+            "joint_speed": 4.218631824198031,
+            "support_feet": 3,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 121,
+          "source_key": "2d512965c97b6361d2770611b2c33c80ab10073a0125d6e1c4ffacab16ef427a",
+          "mode": "predictive_selection",
+          "steps": 95,
+          "failure": {
+            "step": 95,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0029923653716359576, 'exact': True, 'shape_index': 48, 'obstacle': 'net_segment_28'}\")"
+          },
+          "longest_model_stable_s": 0.0,
+          "final_model_stable_s": 0.0,
+          "required_steps": 527,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 94,
+            "command_source": "uncertified_posture_fallback",
+            "solver_accepted": false,
+            "phase": "SUSTAIN",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.37279687854029564,
+              0.3947930215435621
+            ],
+            "root_velocity_world": [
+              0.549452181331705,
+              0.3519165199959875,
+              -0.576037437331153
+            ],
+            "omega": 1.4904924831852533,
+            "joint_speed": 27.501481758250915,
+            "support_feet": 1,
+            "sampled_stable_s": 0.0
+          }
+        },
+        {
+          "source_case": 123,
+          "source_key": "abcad11be74fb0332038fd946fb9b54c2c8ea8aedf5417af00692e9bc7c2c226",
+          "mode": "predictive_selection",
+          "steps": 515,
+          "failure": null,
+          "longest_model_stable_s": 3.9199999999999604,
+          "final_model_stable_s": 3.9199999999999604,
+          "required_steps": 515,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 514,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "SUSTAIN",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              -0.0010117038478651503,
+              -0.008303220303109468
+            ],
+            "root_velocity_world": [
+              -6.367886600262211e-05,
+              -0.0008390671204289346,
+              0.00011433949278667193
+            ],
+            "omega": 0.02824369270655639,
+            "joint_speed": 0.02561584832866759,
+            "support_feet": 4,
+            "sampled_stable_s": 3.9199999999999604
+          }
+        }
+      ]
+    },
+    "pure_control_reference_full_fine_model_20261108": {
+      "summary": {
+        "state": "COMPLETED_MODEL_REFERENCE_TRACKING",
+        "pid": 154133,
+        "results": {
+          "predictive_selection": {
+            "cases": 3,
+            "model_600ms": 3,
+            "model_1200ms": 3,
+            "model_episode_end": 3,
+            "final_model_stable_08s": 3
+          }
+        },
+        "wall_seconds": 260.05685383593664,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      "cases": [
+        {
+          "source_case": 64,
+          "source_key": "fc1dec0db746123096c455e3a2b79061803b2651f6490e2bb5167c2ece36d315",
+          "mode": "predictive_selection",
+          "steps": 520,
+          "failure": null,
+          "longest_model_stable_s": 4.089999999999957,
+          "final_model_stable_s": 4.089999999999957,
+          "required_steps": 520,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 519,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "SUSTAIN",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              -3.2160229054893695e-05,
+              -0.021978382470321297
+            ],
+            "root_velocity_world": [
+              -0.0003304683615757625,
+              0.0007572892051086125,
+              -3.329733129241444e-05
+            ],
+            "omega": 0.013039446987192184,
+            "joint_speed": 0.013351297208704796,
+            "support_feet": 4,
+            "sampled_stable_s": 4.089999999999957
+          }
+        },
+        {
+          "source_case": 118,
+          "source_key": "1f570570bddceedccc8db8b8462616fdbb5700d1aaaf756853de8c2fecc43377",
+          "mode": "predictive_selection",
+          "steps": 522,
+          "failure": null,
+          "longest_model_stable_s": 3.9099999999999606,
+          "final_model_stable_s": 3.9099999999999606,
+          "required_steps": 522,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 521,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "SUSTAIN",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              9.786125064117899e-05,
+              -0.005195370034246344
+            ],
+            "root_velocity_world": [
+              -4.666006577853419e-06,
+              6.196832820127155e-05,
+              -7.450379147544872e-06
+            ],
+            "omega": 0.007577896696187469,
+            "joint_speed": 0.0057889088798342425,
+            "support_feet": 4,
+            "sampled_stable_s": 3.9099999999999606
+          }
+        },
+        {
+          "source_case": 123,
+          "source_key": "abcad11be74fb0332038fd946fb9b54c2c8ea8aedf5417af00692e9bc7c2c226",
+          "mode": "predictive_selection",
+          "steps": 515,
+          "failure": null,
+          "longest_model_stable_s": 3.9199999999999604,
+          "final_model_stable_s": 3.9199999999999604,
+          "required_steps": 515,
+          "model_only": true,
+          "phase_uses_predicted_impulse_contacts": true,
+          "full_episode_certified": false,
+          "valid_expert_labels": false,
+          "terminal": {
+            "step": 514,
+            "command_source": "interval_qp",
+            "solver_accepted": true,
+            "phase": "SUSTAIN",
+            "position_reference_error_m": null,
+            "maximum_joint_reference_error_rad": null,
+            "roll_pitch_rad": [
+              0.00012301629903280288,
+              -0.014294358405926993
+            ],
+            "root_velocity_world": [
+              -1.7348562755178e-05,
+              -0.000762427819685469,
+              9.897141278756517e-05
+            ],
+            "omega": 0.02493561830786052,
+            "joint_speed": 0.02261117632194689,
+            "support_feet": 4,
+            "sampled_stable_s": 3.9199999999999604
+          }
+        }
+      ]
+    }
+  },
+  "contact_point_audit": {
+    "summary": {
+      "samples": 14811,
+      "cases": 80,
+      "velocity_difference": {
+        "median": 0.015249904472376149,
+        "p95": 0.10680072132633167,
+        "maximum": 0.5800349840876626
+      },
+      "frame_tangent_speed": {
+        "median": 0.016279766603056817,
+        "p95": 0.13335962632702114,
+        "maximum": 3.761571018606159
+      },
+      "surface_tangent_speed": {
+        "median": 0.001720537641627913,
+        "p95": 0.018852483635193526,
+        "maximum": 4.070619857883333
+      },
+      "force_threshold_diagnostic_n": 5.0,
+      "prior_interval_nonfoot_max_n": 1.0,
+      "native_control_changed": false,
+      "causal_recovery_gain_not_established": true
+    },
+    "source_sha256": {
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_support_contact_point_v1.py": "0ef6c60cc063e96d6c4b0886e3d83e78d6e4f0ccd2b28c820abf7190df4d7b8a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_self_collision_all128_20261108_01/pure_control_commands.npz": "5a57af49a8265e2951c4b950ede96b41ba2c5de7bc9c851dc815f65fcd78a6d8",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_self_collision_all128_20261108_01/pure_control_ground_forces.npz": "453ee303e2d364b42f08858c2247afe978b010d809f3421ff99543666e82d517",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/configs/go2_piper_authored_foot_spheres_v1.json": "52076c7ac53859936b807539be4fc12be761debb10e011f27f8986f071d9682e"
+    }
+  },
+  "spherical_kinematic_check": {
+    "passed": true,
+    "samples": 64,
+    "jacobian_error": 0.0,
+    "bias_finite_difference_error": 1.769640789461846e-08,
+    "virtual_work_error": 2.842170943040401e-14,
+    "solves": [
+      {
+        "case": 70,
+        "tick": 298,
+        "solver_accepted": false
+      },
+      {
+        "case": 91,
+        "tick": 337,
+        "solver_accepted": true
+      },
+      {
+        "case": 52,
+        "tick": 382,
+        "solver_accepted": true
+      },
+      {
+        "case": 96,
+        "tick": 432,
+        "solver_accepted": true
+      },
+      {
+        "case": 97,
+        "tick": 490,
+        "solver_accepted": true
+      },
+      {
+        "case": 93,
+        "tick": 558,
+        "solver_accepted": true
+      },
+      {
+        "case": 119,
+        "tick": 632,
+        "solver_accepted": true
+      },
+      {
+        "case": 115,
+        "tick": 716,
+        "solver_accepted": false
+      }
+    ],
+    "native_execution": false,
+    "landing_success_not_inferred": true
+  },
+  "native_v7_status": {
+    "state": "RUNNING_NATIVE_PURE_CONTROL",
+    "pid": 150734,
+    "time": "2026-11-08T13:22:15.641415+00:00"
+  },
+  "native_v7_progress": {
+    "control_tick": 600,
+    "owned_cases": 110,
+    "applied_steps": 16541,
+    "training": false
+  },
+  "native_v9_queue": {
+    "state": "WAITING_VERIFIED_PREDECESSOR",
+    "pid": 152512,
+    "time": "2026-11-08T13:33:54.349984+00:00",
+    "predecessor_pid": 150734
+  },
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_recovery_full_model_episode_v3.py": "ad4350b79d16472be63888b711d6757b40216641f28408680c5919902b5c28c0",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_recovery_spherical_full_model_v4.py": "a4f595e7404518ea991aa669a5d211b18c6f73a575880688dd03d14c3b01ad94",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_recovery_full_model_fine_v5.py": "ff1b561d1d2bb4aa5f0c514a9c1a306744d617fdcce040f95fbb52a36e53b1ce",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_support_contact_point_v1.py": "0ef6c60cc063e96d6c4b0886e3d83e78d6e4f0ccd2b28c820abf7190df4d7b8a",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/spherical_support_kinematics_v1.py": "804493358d764db6dfc81295e8432415c9b15e2fb5f47ebc8e1c7b0b2bc4199d",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/implicit_spherical_support_prediction_v2.py": "6b98c909e1362b9ee5113c0096bb34d638714df3da0877ab5696901fdc41df52",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_interval_spherical_support_v4.py": "5033d6320471912fb7a0f02394e3774830c1dc1f582074ee09988996a726b4b2",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_spherical_support_recovery_v10.py": "868889663a8cae2ec8d7f69fe405f9bb2b47b3b0f4502e9319cb1276e33db412",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/check_spherical_support_kinematics_v1.py": "033f3c70b123d5b9df5cf67ccbdf5663d0b909e32876b50ecfc97f80ceb8c50f",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_reference_full_model_20261108/result.json": "11a6cdf898dd41f96821852897caa87c1203639511390f854091edb2665056bd",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_spherical_full_model_20261108/result.json": "7c7e5fd4a8097dfe5e22a9275474d587712a90c7e6c5a0f2bd339374e953df44",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_reference_full_fine_model_20261108/result.json": "ebefbfd0081dbb38a2b7fb3f3651ccbf33a633ab86947d93465e54bb61968ded"
+  },
+  "training": false,
+  "valid_expert_labels": false,
+  "new_native_success_not_established": true
+}
