@@ -1,5 +1,5 @@
 {
-  "snapshot_time_utc": "2026-11-08T15:41:18.557212+00:00",
+  "snapshot_time_utc": "2026-11-08T15:51:15.189208+00:00",
   "scope": "Pure control recovery; frozen strike prefix; no RL/BC/distillation",
   "native_v9": {
     "summary": {
@@ -5158,7 +5158,10 @@
     "scripts/audit_sustained_recovery_full_v2.py": "ec65d2bc6f83f860b389f4df24c920f82a8bccb608e8c4e61b0b06d6bfd66d26",
     "scripts/audit_native_phase_model_recovery_v1.py": "ebbbacac96223b48f0dceb42ac940fe777a5fcc6f847ffac9076dad44e9f7bf7",
     "scripts/pure_control_terminal_stance_v13.py": "7eedccf0b544f930c968f59e7d575ed9c118c5d07921ec294ee344d9f38414e4",
-    "scripts/audit_terminal_stance_model_v1.py": "d697f4baea0d6267662d93f0bb1fcee65a51cea4d4b726bfe2e0f3a79bcc9fc6"
+    "scripts/audit_terminal_stance_model_v1.py": "d697f4baea0d6267662d93f0bb1fcee65a51cea4d4b726bfe2e0f3a79bcc9fc6",
+    "scripts/native_pure_control_terminal_stance_v13.py": "3cf4ff496e24f8be6eb8c2c7309e177cd190275a1e7fbfdebc1910d0cdf40920",
+    "scripts/check_pure_control_terminal_stance_v13.py": "ca7d93dafcb0a832de30b5cce07fde56bd93b5cd86060ba84f08789dc9eee37b",
+    "scripts/prepare_native_terminal_stance_v14.py": "16e3ebabe2820d44ba079252e1d39b9c4e8ba4601c9dc149ff76d00d8470061f"
   },
   "training": false,
   "valid_expert_labels": false,
@@ -5539,10 +5542,40 @@
   "completed_sustained_search_source_note": "Search ran source from commit 5cae5a3; later change removes only the extra EOF blank line.",
   "terminal_stance_hypothesis": {
     "status_snapshot": {
-      "state": "RUNNING_NATIVE_PHASE_MODEL",
-      "pid": 169873,
-      "completed": 0,
-      "total": 2
+      "state": "COMPLETED_NATIVE_PHASE_MODEL",
+      "results": [
+        {
+          "source_case": 61,
+          "steps": 525,
+          "required_steps": 525,
+          "failure": null,
+          "final_model_stable_s": 2.940000057220459,
+          "longest_model_stable_s": 2.940000057220459,
+          "force_recording_exact_motion_checks": 2,
+          "contact_mask_difference_steps": 160,
+          "native_phase_code_used": true,
+          "forces_are_model_impulse_estimates": true,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "source_case": 30,
+          "steps": 523,
+          "required_steps": 523,
+          "failure": null,
+          "final_model_stable_s": 2.0099997520446777,
+          "longest_model_stable_s": 2.0099997520446777,
+          "force_recording_exact_motion_checks": 2,
+          "contact_mask_difference_steps": 0,
+          "native_phase_code_used": true,
+          "forces_are_model_impulse_estimates": true,
+          "native_success": false,
+          "valid_expert_labels": false
+        }
+      ],
+      "wall_seconds": 354.51780477096327,
+      "native_success": false,
+      "valid_expert_labels": false
     },
     "inputs": {
       "source_sha256": {
@@ -5618,7 +5651,87 @@
     },
     "native_success": false,
     "valid_expert_labels": false,
-    "scope": "After reference completion only: actual terminal stance soft objectives, continuous original QP and live contacts. No fixed command hold."
+    "scope": "After reference completion only: actual terminal stance soft objectives, continuous original QP and live contacts. No fixed command hold.",
+    "result": {
+      "state": "COMPLETED_NATIVE_PHASE_MODEL",
+      "results": [
+        {
+          "source_case": 61,
+          "steps": 525,
+          "required_steps": 525,
+          "failure": null,
+          "final_model_stable_s": 2.940000057220459,
+          "longest_model_stable_s": 2.940000057220459,
+          "force_recording_exact_motion_checks": 2,
+          "contact_mask_difference_steps": 160,
+          "native_phase_code_used": true,
+          "forces_are_model_impulse_estimates": true,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "source_case": 30,
+          "steps": 523,
+          "required_steps": 523,
+          "failure": null,
+          "final_model_stable_s": 2.0099997520446777,
+          "longest_model_stable_s": 2.0099997520446777,
+          "force_recording_exact_motion_checks": 2,
+          "contact_mask_difference_steps": 0,
+          "native_phase_code_used": true,
+          "forces_are_model_impulse_estimates": true,
+          "native_success": false,
+          "valid_expert_labels": false
+        }
+      ],
+      "wall_seconds": 354.51780477096327,
+      "native_success": false,
+      "valid_expert_labels": false
+    },
+    "logged_prefix_comparisons": [
+      {
+        "case": 30,
+        "prefix_steps": 320,
+        "compared_fields": [
+          "step",
+          "phase",
+          "command_source",
+          "contact_mask",
+          "prior_impulse_contacts",
+          "phase_mask_differs",
+          "final_microstep_ground_force_n",
+          "roll_pitch_rad",
+          "root_velocity_world",
+          "omega",
+          "joint_speed",
+          "sampled_stable_s"
+        ],
+        "logged_prefix_difference_count": 0,
+        "first_differences": [],
+        "limitation": "Checks stored trajectory fields; full q and final commands were not included in these model summaries."
+      },
+      {
+        "case": 61,
+        "prefix_steps": 320,
+        "compared_fields": [
+          "step",
+          "phase",
+          "command_source",
+          "contact_mask",
+          "prior_impulse_contacts",
+          "phase_mask_differs",
+          "final_microstep_ground_force_n",
+          "roll_pitch_rad",
+          "root_velocity_world",
+          "omega",
+          "joint_speed",
+          "sampled_stable_s"
+        ],
+        "logged_prefix_difference_count": 0,
+        "first_differences": [],
+        "limitation": "Checks stored trajectory fields; full q and final commands were not included in these model summaries."
+      }
+    ]
   },
   "formal_verification": {
     "command": "python3 tools/verify_goal.py --root . --goal G07",
@@ -5626,5 +5739,569 @@
     "status": "FAILED",
     "artifact": "reports/pure_control_sustained_native_phase_model_20261108/formal_verify.json",
     "reason": "Historical missing checkpoints, external asset paths and missing formal evidence; no acceptance contract changed."
+  },
+  "terminal_support_geometry": {
+    "source": "optimized model reference terminal states, not actual closed-loop/native terminal states",
+    "contact_hull_approximation": "point foot-frame centers; ignores finite footprint, angular momentum and dynamic stepping",
+    "not_physical_impossibility_proof": true,
+    "results": [
+      {
+        "case": 12,
+        "reference_duration_s": 1.6,
+        "contacts": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "com_world": [
+          0.7525895132864026,
+          -0.33471134598593205,
+          0.37653176412599787
+        ],
+        "com_velocity_world": [
+          -0.12460267528689489,
+          -0.02108591972124975,
+          -0.0030063766468806786
+        ],
+        "com_to_foot_center_hull_margin_m": 0.11493160897447578,
+        "constant_height_capture_to_hull_margin_m": 0.11430377622928359,
+        "foot_center_hull": [
+          [
+            0.4757767696971953,
+            -0.07384456072391646
+          ],
+          [
+            0.4998348716487356,
+            -0.4867978429664995
+          ],
+          [
+            1.0011716851423527,
+            -0.4154015207731519
+          ],
+          [
+            0.9262736886356704,
+            -0.1213564156750365
+          ]
+        ]
+      },
+      {
+        "case": 30,
+        "reference_duration_s": 3.2,
+        "contacts": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "com_world": [
+          0.5670148537501714,
+          -0.23280789575320796,
+          0.3460646154405698
+        ],
+        "com_velocity_world": [
+          -0.19761311946570329,
+          -0.0008234813600636345,
+          -0.10153840605356294
+        ],
+        "com_to_foot_center_hull_margin_m": 0.12576966841609244,
+        "constant_height_capture_to_hull_margin_m": 0.10266164100273223,
+        "foot_center_hull": [
+          [
+            0.39489458302437597,
+            -0.4937987281981496
+          ],
+          [
+            0.8883249413007513,
+            -0.3601330947515461
+          ],
+          [
+            0.789383149211545,
+            -0.015510003010038693
+          ],
+          [
+            0.4386009975178757,
+            -0.1465105365408688
+          ]
+        ]
+      },
+      {
+        "case": 50,
+        "reference_duration_s": 1.6,
+        "contacts": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "com_world": [
+          0.5798497584377479,
+          -0.3657614195513663,
+          0.3257321169192788
+        ],
+        "com_velocity_world": [
+          0.01426109364352498,
+          -0.03469570635544624,
+          -0.03322932412106819
+        ],
+        "com_to_foot_center_hull_margin_m": 0.1584326894502674,
+        "constant_height_capture_to_hull_margin_m": 0.16500460061575892,
+        "foot_center_hull": [
+          [
+            0.35499881995256655,
+            -0.29730343789229785
+          ],
+          [
+            0.5050160567431061,
+            -0.6248467817523176
+          ],
+          [
+            0.8980313079127349,
+            -0.42264233483288
+          ],
+          [
+            0.7445714290376593,
+            -0.11192008655949834
+          ]
+        ]
+      },
+      {
+        "case": 58,
+        "reference_duration_s": 1.6,
+        "contacts": [
+          true,
+          true,
+          true,
+          false
+        ],
+        "com_world": [
+          0.8477052843512621,
+          -0.18777604293813624,
+          0.39555871229505996
+        ],
+        "com_velocity_world": [
+          0.20949750715345605,
+          0.06390906622629434,
+          -0.0013945441460301146
+        ],
+        "com_to_foot_center_hull_margin_m": 0.06519467555307466,
+        "constant_height_capture_to_hull_margin_m": 0.0745252114110636,
+        "foot_center_hull": [
+          [
+            0.4964518217586683,
+            -0.0731979002957423
+          ],
+          [
+            0.9970273593357869,
+            -0.3419368574194979
+          ],
+          [
+            0.9345882546056143,
+            -0.0223167606145346
+          ]
+        ]
+      },
+      {
+        "case": 61,
+        "reference_duration_s": 3.2,
+        "contacts": [
+          true,
+          true,
+          true,
+          false
+        ],
+        "com_world": [
+          0.7660705490050858,
+          -0.15084490539337356,
+          0.3622397901979756
+        ],
+        "com_velocity_world": [
+          -0.09600357565379088,
+          0.0793654174324024,
+          0.0009389721365249944
+        ],
+        "com_to_foot_center_hull_margin_m": 0.08955892952049672,
+        "constant_height_capture_to_hull_margin_m": 0.06824380552092711,
+        "foot_center_hull": [
+          [
+            0.39153189380500514,
+            -0.24382423537060652
+          ],
+          [
+            0.9680793086549274,
+            -0.28156297380939177
+          ],
+          [
+            0.8265007253006567,
+            -0.018732879619042277
+          ]
+        ]
+      }
+    ]
+  },
+  "expanded_native_phase_model": {
+    "status_snapshot": {
+      "state": "COMPLETED_NATIVE_PHASE_MODEL",
+      "results": [
+        {
+          "source_case": 90,
+          "steps": 520,
+          "required_steps": 520,
+          "failure": null,
+          "final_model_stable_s": 2.880000114440918,
+          "longest_model_stable_s": 2.880000114440918,
+          "force_recording_exact_motion_checks": 2,
+          "contact_mask_difference_steps": 0,
+          "native_phase_code_used": true,
+          "forces_are_model_impulse_estimates": true,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "source_case": 18,
+          "steps": 526,
+          "required_steps": 526,
+          "failure": null,
+          "final_model_stable_s": 3.239999771118164,
+          "longest_model_stable_s": 3.239999771118164,
+          "force_recording_exact_motion_checks": 2,
+          "contact_mask_difference_steps": 0,
+          "native_phase_code_used": true,
+          "forces_are_model_impulse_estimates": true,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "source_case": 85,
+          "steps": 532,
+          "required_steps": 532,
+          "failure": null,
+          "final_model_stable_s": 3.9699997901916504,
+          "longest_model_stable_s": 3.9699997901916504,
+          "force_recording_exact_motion_checks": 2,
+          "contact_mask_difference_steps": 0,
+          "native_phase_code_used": true,
+          "forces_are_model_impulse_estimates": true,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "source_case": 9,
+          "steps": 530,
+          "required_steps": 530,
+          "failure": null,
+          "final_model_stable_s": 3.3299999237060547,
+          "longest_model_stable_s": 3.3299999237060547,
+          "force_recording_exact_motion_checks": 2,
+          "contact_mask_difference_steps": 0,
+          "native_phase_code_used": true,
+          "forces_are_model_impulse_estimates": true,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "source_case": 54,
+          "steps": 527,
+          "required_steps": 527,
+          "failure": null,
+          "final_model_stable_s": 3.6299996376037598,
+          "longest_model_stable_s": 3.6299996376037598,
+          "force_recording_exact_motion_checks": 2,
+          "contact_mask_difference_steps": 227,
+          "native_phase_code_used": true,
+          "forces_are_model_impulse_estimates": true,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "source_case": 42,
+          "steps": 529,
+          "required_steps": 529,
+          "failure": null,
+          "final_model_stable_s": 3.049999713897705,
+          "longest_model_stable_s": 3.049999713897705,
+          "force_recording_exact_motion_checks": 2,
+          "contact_mask_difference_steps": 209,
+          "native_phase_code_used": true,
+          "forces_are_model_impulse_estimates": true,
+          "native_success": false,
+          "valid_expert_labels": false
+        }
+      ],
+      "wall_seconds": 333.1223890520632,
+      "native_success": false,
+      "valid_expert_labels": false
+    },
+    "inputs": {
+      "source_sha256": {
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_native_phase_model_recovery_v1.py": "ebbbacac96223b48f0dceb42ac940fe777a5fcc6f847ffac9076dad44e9f7bf7",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_expanded_cohort_preparation_20261108/controller.json": "4833e46b8a444b1d73a14644e9eeaa0e4e5f24fdb8a4109189b699e75f5194fe",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_failure_chain_20261108/release_state_bank.json": "f6bdc432b9825de70ba94948ef32577a648927f774f28b6e9e1468be008fbe60",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_expanded_cohort_preparation_20261108/reference_library.json": "666845ce4bf9aa64385e9189f07847f6c68627a97b9beaefea0e8413650ea0f8",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_native_all128_20261108_01/native_command_inputs.json": "f861d727c049c85d612cad7ce2a5be9a4bc3a85ab18ba38f5018dc871fca6f7c",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/loaded_pinocchio_model_v1.py": "2b303a32e57391ec7aaf3c3faf9d151f758477faf13ef6efae5bead979dcae82",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/whole_body_support_qp_v1.py": "b67cd1f1c8ebe973d3885773fbc9f3bf17cfd935e5e2210a4b7c0ea1ff331d6d",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frame_point_kinematics_v1.py": "60fac87ef04f83a22807217b04e7cbe40b536251b56f5a119dc012d1f2529fd8",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/reduced_whole_body_support_qp_v1.py": "e731a0bca8744d4639099dd2ff9be94840a9f0c953c64924fb2cfa9e7a9c80c7",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/continuous_support_qp_v1.py": "824a3d49711917803e9c82af63b1d142917d62c874ec8751325578a71b4af640",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/command_history_support_qp_v1.py": "1ac2221f85cbf3d468be4c265cc932845700d5f17a9eaaf37440998873689081",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/condensed_implicit_drive_v1.py": "a0f21e9b954db9e978ba428a3770fcb8cd666e08dd21aa27cedf0c0e5c5af629",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/implicit_support_prediction_v1.py": "b751fa0ea59edd1fe8fc62cf0ba3816e5583ecc76df7058ef3f5185a335a1e01",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_interval_qp_v1.py": "cbc3d59485da07153e8e3ae3a42de2231dff7c738a22a18b8ad74bd39dbb844f",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/authored_ground_clearance_v1.py": "ba54ef51a5cfd5c64937814c343d92057cd0e9e83dc4e435f1479049aa342630",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/event_recovery_manager_v1.py": "8fe16ba41ec3d2fc942dbf01686d4af3a5fde354dc6536726bab826b29b959e2",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/dense_active_set_qp_v1.py": "cba063c6c594bfb42d1114dcafbaebc606d8c4b49b53ee65e764e3979b1bac4a",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_recovery_v1.py": "119a6f073b32e4c7f577c2653314c2e441dbc3c13771e577031962b79281337f",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/full_authority_position_interface_v1.py": "88a371b4e72864952c7e7c3c2250ccd90603e3e7c0ef7c1579030cc9e89034ca",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/authored_net_clearance_v1.py": "386ed6042d439bde4366dec73a536d6a21a0eaf700152e7e4ca16aeef67f6526",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/foot_pair_clearance_kinematics_v1.py": "2e3caa0b3b791ad45f2e51eb1956f74b7cc4e310c15cad72cb23d8b023a60b11",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recovery_surface_constraints_v1.py": "5c546c5acbfd2e2d5f03578b21a10237162bb293013a825a71f25f92de7671eb",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_court_recovery_v4.py": "4666b83f6adf72c6cfab09703583815405703f9f0d5c76c22c7a97ad4604dbac",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_interval_self_collision_v2.py": "642610fc843e5d8dbf5f43e50994922e3d5565066466f708c18462a62be7f75d",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frictional_impulse_step_v1.py": "4e780bf218dd501a64f1885ab1697c3050d228580fc6cd3c7123d36fb18e2348",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frictional_speed_limited_step_v1.py": "6b5392e7dbdb2f4c95a48570d668a28e66fbd2ffd8eb7ae1bef04a8a01b01b92",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frictional_position_limited_step_v1.py": "07d976fa06b4c1e9e90792f463cb058be5c9a1af38170e22ff226c9680230413",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/hip_mount_collision_response_v1.py": "d7d9d9fff88f3e3a12a61962aadf41537192d930f6f5ee7b2e0a2c31b8ebc2e8",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/hip_mount_planning_constraints_v1.py": "2c63e83e930fed048e87d04fb5df6cde04c822f586f57207670520e7f83f508a",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_self_collision_recovery_v5.py": "90d9a6b84c7b153b74e3d36c16a38bda59fa90cb14290e904fdc32e0807a5bf9",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_interval_moving_foot_v3.py": "daf71c5788dcb9a553a83fb2ebcda14e7a5e86a37d9965ed2c5fb0ab82adf363",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_moving_foot_recovery_v7.py": "d018a7f7ae1352feb4f7157114a05996564bc1490b768cef3a7201f4e8ea87ca",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recovery_reference_library_v1.py": "6c97dc2ba1b7c118cfc71c614157b2307dd15cc1f1cc75e2eeeee6570dc31735",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recorded_nonfoot_contact_history_v1.py": "b897ec590f76795a515f1e3ad14db1529f43117731f031f00d43dc556e5e599a",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/summarize_precontact_prediction_v1.py": "b05936fc4345546c33bf14696bfbf6ed8967025799da23d87e0b04fc014ba227",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_sphere_touchdown_predictions_v1.py": "92b1905a21c544ff212a237104edb700ce6eb3b1414908cb14d80990b21a9a03",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/predict_self_contact_spheres_v2.py": "5e22b438815a60997f637bae461f69ec3c0a983f26d11e4abb94f5510ac8a446",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/foot_separation_path_constraint_v1.py": "8926324e99df4984bf7af09a686e813df57ebb8524408485633e430e1cd04f85",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_trajectory_recovery_v8.py": "fdbaf93a10c735c5736d3cf4f6dd2d912c43041e2cd6ce2144f63d9ba6005448",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_trajectory_recovery_v9.py": "a9d471bf6e674d5e4ec4f8625b34204f01544b0f4e0bcad1e0ec702869f8e042",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recovery_reference_library_v2.py": "2497e602cd60d3499477adeb1ad92631afc737c8b46e76c20020f71bdde4c232",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_long_trajectory_recovery_v11.py": "39b3596b3e711762fdfdddcb19967413396d15b6f659717e4eabff6b1724a5ac",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_reference_clock_v12.py": "47b155c960fe42b79d5e0d86046d78c14d04b9b18b382fd4f0c3bfac9cf592be",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/parallel_landing_solver_v1.py": "4bc18476684fbc3a81eae8b1b63073c615ceafd73a23ccca2dde919564cfea33",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/interval_command_support_qp_v1.py": "7f9e47fdeb1f6cc420368d127f89cc1b726397752b0387f57b5bee1ea5915589",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/admitted_arm_support_qp_v1.py": "097d7022b16a28aa31f11081056092bd8b5b44172291b6bd3b1aba1dbe0a1c6e",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v1.py": "da2ff2e4ee1479bf3fc422c0b71f8831bffd9e5868d9a4e0665fd348ab659a59",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v2.py": "6d0ad9bc4fcd27a0f4f418e55b988341ffe809f14c132415281ec41621196ae2",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v3.py": "d8c54679697e78678a898f5d36a27305f9252a5f2b09990d0b33ddcc25533300",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_command_history_mpc_v1.py": "466ba93dc473c7d2de93aae0d5d7848b390d72e8fe1ef779ff0818efad704d28",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_interval_command_mpc_v1.py": "545ecf58c66d0bbf07f889f8867ce36d75ca42fcd94ca77b5307666163630060",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_active_set_interval_mpc_v1.py": "4c111c5ce1d6d711cbe9e4362aad315e0f50f9c2cb363d9595409e0701c7ec8d",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_arm_feasibility_mpc_v1.py": "af9a08a8b442c43099faadbda887ed79b1e497b114cbd77e93b4cc8a2481f40b",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_joint_damper_mpc_v1.py": "63b2eff24491e130f96681508524ccf124064469a285a6c82ed9dd498fa761f9",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_joint_sequence_proposal_v1.py": "42d8be1c82836a83e054c6cf7ca368f5bad9b35e298aabbeb0790bfb5b816857",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_sequence_linearization_v1.py": "acc515b9f7980645cdca835deb3ae8bfc4f20ee03eee90a53d9495f976b0ccf2",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_differentiated_sequence_v1.py": "9b68faddbb7350b467f5f7a75c1b78cae58759f92c2d8e559b9cac433e6d229e",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_joint_sequence_proposal_v1.py": "b0896a4e9a95a4f46d84ef344e2d7e7384a4fce435b17c01bb456952053382a2"
+      },
+      "cases": [
+        9,
+        18,
+        42,
+        54,
+        85,
+        90
+      ],
+      "workers": 6,
+      "max_seconds": 1800,
+      "physical_substeps": 160,
+      "force_units": "impulse / actual microstep seconds",
+      "training": false
+    },
+    "native_success": false,
+    "result": {
+      "state": "COMPLETED_NATIVE_PHASE_MODEL",
+      "results": [
+        {
+          "source_case": 90,
+          "steps": 520,
+          "required_steps": 520,
+          "failure": null,
+          "final_model_stable_s": 2.880000114440918,
+          "longest_model_stable_s": 2.880000114440918,
+          "force_recording_exact_motion_checks": 2,
+          "contact_mask_difference_steps": 0,
+          "native_phase_code_used": true,
+          "forces_are_model_impulse_estimates": true,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "source_case": 18,
+          "steps": 526,
+          "required_steps": 526,
+          "failure": null,
+          "final_model_stable_s": 3.239999771118164,
+          "longest_model_stable_s": 3.239999771118164,
+          "force_recording_exact_motion_checks": 2,
+          "contact_mask_difference_steps": 0,
+          "native_phase_code_used": true,
+          "forces_are_model_impulse_estimates": true,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "source_case": 85,
+          "steps": 532,
+          "required_steps": 532,
+          "failure": null,
+          "final_model_stable_s": 3.9699997901916504,
+          "longest_model_stable_s": 3.9699997901916504,
+          "force_recording_exact_motion_checks": 2,
+          "contact_mask_difference_steps": 0,
+          "native_phase_code_used": true,
+          "forces_are_model_impulse_estimates": true,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "source_case": 9,
+          "steps": 530,
+          "required_steps": 530,
+          "failure": null,
+          "final_model_stable_s": 3.3299999237060547,
+          "longest_model_stable_s": 3.3299999237060547,
+          "force_recording_exact_motion_checks": 2,
+          "contact_mask_difference_steps": 0,
+          "native_phase_code_used": true,
+          "forces_are_model_impulse_estimates": true,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "source_case": 54,
+          "steps": 527,
+          "required_steps": 527,
+          "failure": null,
+          "final_model_stable_s": 3.6299996376037598,
+          "longest_model_stable_s": 3.6299996376037598,
+          "force_recording_exact_motion_checks": 2,
+          "contact_mask_difference_steps": 227,
+          "native_phase_code_used": true,
+          "forces_are_model_impulse_estimates": true,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "source_case": 42,
+          "steps": 529,
+          "required_steps": 529,
+          "failure": null,
+          "final_model_stable_s": 3.049999713897705,
+          "longest_model_stable_s": 3.049999713897705,
+          "force_recording_exact_motion_checks": 2,
+          "contact_mask_difference_steps": 209,
+          "native_phase_code_used": true,
+          "forces_are_model_impulse_estimates": true,
+          "native_success": false,
+          "valid_expert_labels": false
+        }
+      ],
+      "wall_seconds": 333.1223890520632,
+      "native_success": false,
+      "valid_expert_labels": false
+    }
+  },
+  "terminal_stance_coverage_model": {
+    "status_snapshot": {
+      "state": "RUNNING_NATIVE_PHASE_MODEL",
+      "pid": 170848,
+      "completed": 0,
+      "total": 12
+    },
+    "inputs": {
+      "source_sha256": {
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_terminal_stance_model_v1.py": "d697f4baea0d6267662d93f0bb1fcee65a51cea4d4b726bfe2e0f3a79bcc9fc6",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_sustained_path_preparation_20261108/controller.json": "0b159dfebdab57ee1e72941164ab9a73f49a6357ba51da441dc097efefccecd0",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_failure_chain_20261108/release_state_bank.json": "f6bdc432b9825de70ba94948ef32577a648927f774f28b6e9e1468be008fbe60",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_sustained_path_preparation_20261108/reference_library.json": "f8bbd0498fd9dc52d9aa3174b4836ab2af0ed98a03f32a3215c8113907ca6ece",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_native_all128_20261108_01/native_command_inputs.json": "f861d727c049c85d612cad7ce2a5be9a4bc3a85ab18ba38f5018dc871fca6f7c",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/loaded_pinocchio_model_v1.py": "2b303a32e57391ec7aaf3c3faf9d151f758477faf13ef6efae5bead979dcae82",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/whole_body_support_qp_v1.py": "b67cd1f1c8ebe973d3885773fbc9f3bf17cfd935e5e2210a4b7c0ea1ff331d6d",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frame_point_kinematics_v1.py": "60fac87ef04f83a22807217b04e7cbe40b536251b56f5a119dc012d1f2529fd8",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/reduced_whole_body_support_qp_v1.py": "e731a0bca8744d4639099dd2ff9be94840a9f0c953c64924fb2cfa9e7a9c80c7",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/continuous_support_qp_v1.py": "824a3d49711917803e9c82af63b1d142917d62c874ec8751325578a71b4af640",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/command_history_support_qp_v1.py": "1ac2221f85cbf3d468be4c265cc932845700d5f17a9eaaf37440998873689081",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/condensed_implicit_drive_v1.py": "a0f21e9b954db9e978ba428a3770fcb8cd666e08dd21aa27cedf0c0e5c5af629",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/implicit_support_prediction_v1.py": "b751fa0ea59edd1fe8fc62cf0ba3816e5583ecc76df7058ef3f5185a335a1e01",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_interval_qp_v1.py": "cbc3d59485da07153e8e3ae3a42de2231dff7c738a22a18b8ad74bd39dbb844f",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/authored_ground_clearance_v1.py": "ba54ef51a5cfd5c64937814c343d92057cd0e9e83dc4e435f1479049aa342630",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/event_recovery_manager_v1.py": "8fe16ba41ec3d2fc942dbf01686d4af3a5fde354dc6536726bab826b29b959e2",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/dense_active_set_qp_v1.py": "cba063c6c594bfb42d1114dcafbaebc606d8c4b49b53ee65e764e3979b1bac4a",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_recovery_v1.py": "119a6f073b32e4c7f577c2653314c2e441dbc3c13771e577031962b79281337f",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/full_authority_position_interface_v1.py": "88a371b4e72864952c7e7c3c2250ccd90603e3e7c0ef7c1579030cc9e89034ca",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/authored_net_clearance_v1.py": "386ed6042d439bde4366dec73a536d6a21a0eaf700152e7e4ca16aeef67f6526",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/foot_pair_clearance_kinematics_v1.py": "2e3caa0b3b791ad45f2e51eb1956f74b7cc4e310c15cad72cb23d8b023a60b11",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recovery_surface_constraints_v1.py": "5c546c5acbfd2e2d5f03578b21a10237162bb293013a825a71f25f92de7671eb",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_court_recovery_v4.py": "4666b83f6adf72c6cfab09703583815405703f9f0d5c76c22c7a97ad4604dbac",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_interval_self_collision_v2.py": "642610fc843e5d8dbf5f43e50994922e3d5565066466f708c18462a62be7f75d",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frictional_impulse_step_v1.py": "4e780bf218dd501a64f1885ab1697c3050d228580fc6cd3c7123d36fb18e2348",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frictional_speed_limited_step_v1.py": "6b5392e7dbdb2f4c95a48570d668a28e66fbd2ffd8eb7ae1bef04a8a01b01b92",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frictional_position_limited_step_v1.py": "07d976fa06b4c1e9e90792f463cb058be5c9a1af38170e22ff226c9680230413",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/hip_mount_collision_response_v1.py": "d7d9d9fff88f3e3a12a61962aadf41537192d930f6f5ee7b2e0a2c31b8ebc2e8",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/hip_mount_planning_constraints_v1.py": "2c63e83e930fed048e87d04fb5df6cde04c822f586f57207670520e7f83f508a",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_self_collision_recovery_v5.py": "90d9a6b84c7b153b74e3d36c16a38bda59fa90cb14290e904fdc32e0807a5bf9",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_interval_moving_foot_v3.py": "daf71c5788dcb9a553a83fb2ebcda14e7a5e86a37d9965ed2c5fb0ab82adf363",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_moving_foot_recovery_v7.py": "d018a7f7ae1352feb4f7157114a05996564bc1490b768cef3a7201f4e8ea87ca",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recovery_reference_library_v1.py": "6c97dc2ba1b7c118cfc71c614157b2307dd15cc1f1cc75e2eeeee6570dc31735",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recorded_nonfoot_contact_history_v1.py": "b897ec590f76795a515f1e3ad14db1529f43117731f031f00d43dc556e5e599a",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/summarize_precontact_prediction_v1.py": "b05936fc4345546c33bf14696bfbf6ed8967025799da23d87e0b04fc014ba227",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_sphere_touchdown_predictions_v1.py": "92b1905a21c544ff212a237104edb700ce6eb3b1414908cb14d80990b21a9a03",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/predict_self_contact_spheres_v2.py": "5e22b438815a60997f637bae461f69ec3c0a983f26d11e4abb94f5510ac8a446",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/foot_separation_path_constraint_v1.py": "8926324e99df4984bf7af09a686e813df57ebb8524408485633e430e1cd04f85",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_trajectory_recovery_v8.py": "fdbaf93a10c735c5736d3cf4f6dd2d912c43041e2cd6ce2144f63d9ba6005448",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_trajectory_recovery_v9.py": "a9d471bf6e674d5e4ec4f8625b34204f01544b0f4e0bcad1e0ec702869f8e042",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recovery_reference_library_v2.py": "2497e602cd60d3499477adeb1ad92631afc737c8b46e76c20020f71bdde4c232",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_long_trajectory_recovery_v11.py": "39b3596b3e711762fdfdddcb19967413396d15b6f659717e4eabff6b1724a5ac",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_reference_clock_v12.py": "47b155c960fe42b79d5e0d86046d78c14d04b9b18b382fd4f0c3bfac9cf592be",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_terminal_stance_v13.py": "7eedccf0b544f930c968f59e7d575ed9c118c5d07921ec294ee344d9f38414e4",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/parallel_landing_solver_v1.py": "4bc18476684fbc3a81eae8b1b63073c615ceafd73a23ccca2dde919564cfea33",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/interval_command_support_qp_v1.py": "7f9e47fdeb1f6cc420368d127f89cc1b726397752b0387f57b5bee1ea5915589",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/admitted_arm_support_qp_v1.py": "097d7022b16a28aa31f11081056092bd8b5b44172291b6bd3b1aba1dbe0a1c6e",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v1.py": "da2ff2e4ee1479bf3fc422c0b71f8831bffd9e5868d9a4e0665fd348ab659a59",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v2.py": "6d0ad9bc4fcd27a0f4f418e55b988341ffe809f14c132415281ec41621196ae2",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v3.py": "d8c54679697e78678a898f5d36a27305f9252a5f2b09990d0b33ddcc25533300",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_command_history_mpc_v1.py": "466ba93dc473c7d2de93aae0d5d7848b390d72e8fe1ef779ff0818efad704d28",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_interval_command_mpc_v1.py": "545ecf58c66d0bbf07f889f8867ce36d75ca42fcd94ca77b5307666163630060",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_active_set_interval_mpc_v1.py": "4c111c5ce1d6d711cbe9e4362aad315e0f50f9c2cb363d9595409e0701c7ec8d",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_arm_feasibility_mpc_v1.py": "af9a08a8b442c43099faadbda887ed79b1e497b114cbd77e93b4cc8a2481f40b",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_joint_damper_mpc_v1.py": "63b2eff24491e130f96681508524ccf124064469a285a6c82ed9dd498fa761f9",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_joint_sequence_proposal_v1.py": "42d8be1c82836a83e054c6cf7ca368f5bad9b35e298aabbeb0790bfb5b816857",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_sequence_linearization_v1.py": "acc515b9f7980645cdca835deb3ae8bfc4f20ee03eee90a53d9495f976b0ccf2",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_differentiated_sequence_v1.py": "9b68faddbb7350b467f5f7a75c1b78cae58759f92c2d8e559b9cac433e6d229e",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_joint_sequence_proposal_v1.py": "b0896a4e9a95a4f46d84ef344e2d7e7384a4fce435b17c01bb456952053382a2"
+      },
+      "cases": [
+        9,
+        12,
+        18,
+        42,
+        50,
+        54,
+        58,
+        64,
+        85,
+        90,
+        118,
+        123
+      ],
+      "workers": 6,
+      "max_seconds": 1800,
+      "physical_substeps": 160,
+      "force_units": "impulse / actual microstep seconds",
+      "training": false
+    },
+    "native_success": false
+  },
+  "prepared_terminal_stance_native": {
+    "plan": "reports/pure_control_terminal_stance_native_preparation_20261108_01/plan.json",
+    "status": "Prepared and manual entry check passed; not launched or queued",
+    "reference_count": 40,
+    "native_success": false,
+    "manual_entry_check": {
+      "path": "reports/pure_control_terminal_stance_native_preparation_20261108_01/manual_entry_check.json",
+      "passed": true,
+      "reference_count": 40,
+      "command_checks": 212
+    }
   }
 }
