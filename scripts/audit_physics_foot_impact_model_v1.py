@@ -26,7 +26,7 @@ from scripts.frictional_speed_limited_step_v1 import speed_limited_velocity_step
 from scripts.audit_joint_sequence_proposal_v1 import plain
 
 
-def predict(job):
+def _predict(job):
     w=_WORKER;model=w['controller'].qp.model;interface=w['controller'].qp.interface
     before=state_from_row(job['before']);after=state_from_row(job['after']);dt=job['dt']
     q,v=before.q,before.v;snap=model.snapshot(q,v)
@@ -57,6 +57,13 @@ def predict(job):
         modeled_final_foot_gap_m=sphere_gaps(model,next_q,w['spheres']),
         motor_torque_nm=result['torque'],momentum_residual=result['momentum_residual'],
         actual_joint_velocity=after.v[model.v_indices],model_joint_velocity=next_v[model.v_indices])
+
+
+def predict(job):
+    try:
+        return dict(_predict(job),completed=True)
+    except (ValueError,np.linalg.LinAlgError) as error:
+        return dict(case=job['case'],physics_frame=job['frame'],completed=False,error=repr(error))
 
 
 def main():
@@ -102,10 +109,12 @@ def main():
         rows=list(pool.map(predict,jobs,chunksize=16))
     summaries={}
     for case in meta['lanes']:
-        subset=[r for r in rows if r['case']==case]
-        fields=[k for k in subset[0] if '_error_' in k]
+        all_case=[r for r in rows if r['case']==case]
+        subset=[r for r in all_case if r['completed']]
+        fields=[k for k in subset[0] if '_error_' in k] if subset else []
         worst=sorted(subset,key=lambda r:r['maximum_joint_velocity_error_rad_s'],reverse=True)[:5]
-        summaries[str(case)]=dict(intervals=len(subset),
+        summaries[str(case)]=dict(intervals=len(all_case),completed=len(subset),
+            failures=[r for r in all_case if not r['completed']],
             errors={k:dict(maximum=max(r[k] for r in subset),median=float(np.median([r[k] for r in subset]))) for k in fields},
             worst_frames=[r['physics_frame'] for r in worst])
         clear=[r for r in subset if min(r['actual_initial_nonfoot_gap_m'],r['actual_final_nonfoot_gap_m'])>.001]

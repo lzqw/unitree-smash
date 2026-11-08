@@ -1,0 +1,1955 @@
+{
+  "scope": "Passive native impact evidence and rejected promotion of event-resolved model, 2026-11-08",
+  "student_complete5": 27,
+  "auxiliary_complete5": 28,
+  "auxiliary_gained_case": 87,
+  "auxiliary_isolation_passed": false,
+  "native_observer": {
+    "status": "SUCCEEDED",
+    "elapsed_s": 1263.823694176972,
+    "charged_gpu_hours": 0.3510621372713811,
+    "charged_env_steps": 102400
+  },
+  "passive_audit": {
+    "passed": true,
+    "passive_original_replay": true,
+    "complete_physics_window": true
+  },
+  "physical_step_summaries": {
+    "85": {
+      "intervals": 1440,
+      "completed": 1440,
+      "failures": [],
+      "errors": {
+        "root_position_error_m": {
+          "maximum": 8.729884304332877e-05,
+          "median": 1.6655722909224632e-07
+        },
+        "root_rotation_error_rad": {
+          "maximum": 4.6562680399986785e-05,
+          "median": 1.1842485057335798e-06
+        },
+        "root_linear_velocity_error_m_s": {
+          "maximum": 2.573955410558406,
+          "median": 6.634309928685195e-05
+        },
+        "root_angular_velocity_error_rad_s": {
+          "maximum": 1.3402754165160782,
+          "median": 0.0005326043714624793
+        },
+        "maximum_joint_position_error_rad": {
+          "maximum": 0.0003177184506806749,
+          "median": 1.8233823388114079e-06
+        },
+        "maximum_joint_velocity_error_rad_s": {
+          "maximum": 9.223566126112935,
+          "median": 0.030926296578218493
+        }
+      },
+      "worst_frames": [
+        48400,
+        47735,
+        48496,
+        47642,
+        48442
+      ],
+      "both_endpoints_clear_1mm": {
+        "intervals": 874,
+        "errors": {
+          "root_position_error_m": {
+            "maximum": 4.0927119984853296e-07,
+            "median": 1.633778821849755e-07
+          },
+          "root_rotation_error_rad": {
+            "maximum": 3.059576500893886e-06,
+            "median": 1.4691291793693842e-06
+          },
+          "root_linear_velocity_error_m_s": {
+            "maximum": 0.0178269457526555,
+            "median": 2.8105789238056747e-05
+          },
+          "root_angular_velocity_error_rad_s": {
+            "maximum": 0.06889045809196018,
+            "median": 0.000330853144497723
+          },
+          "maximum_joint_position_error_rad": {
+            "maximum": 4.172654874068371e-05,
+            "median": 1.46875101936228e-06
+          },
+          "maximum_joint_velocity_error_rad_s": {
+            "maximum": 9.136903199720813,
+            "median": 0.017928268989183316
+          }
+        }
+      }
+    },
+    "87": {
+      "intervals": 1440,
+      "completed": 1440,
+      "failures": [],
+      "errors": {
+        "root_position_error_m": {
+          "maximum": 4.582684942282349e-07,
+          "median": 1.5399959459665664e-07
+        },
+        "root_rotation_error_rad": {
+          "maximum": 3.318605242769351e-06,
+          "median": 1.453678856424268e-06
+        },
+        "root_linear_velocity_error_m_s": {
+          "maximum": 0.04419004260089068,
+          "median": 2.901664348072205e-06
+        },
+        "root_angular_velocity_error_rad_s": {
+          "maximum": 0.20102985960460804,
+          "median": 1.8291403580415057e-05
+        },
+        "maximum_joint_position_error_rad": {
+          "maximum": 5.119604855230442e-05,
+          "median": 5.728061202026069e-07
+        },
+        "maximum_joint_velocity_error_rad_s": {
+          "maximum": 11.296931290915056,
+          "median": 0.00016388633319523727
+        }
+      },
+      "worst_frames": [
+        48832,
+        48601,
+        48602,
+        48842,
+        48850
+      ],
+      "both_endpoints_clear_1mm": {
+        "intervals": 1440,
+        "errors": {
+          "root_position_error_m": {
+            "maximum": 4.582684942282349e-07,
+            "median": 1.5399959459665664e-07
+          },
+          "root_rotation_error_rad": {
+            "maximum": 3.318605242769351e-06,
+            "median": 1.453678856424268e-06
+          },
+          "root_linear_velocity_error_m_s": {
+            "maximum": 0.04419004260089068,
+            "median": 2.901664348072205e-06
+          },
+          "root_angular_velocity_error_rad_s": {
+            "maximum": 0.20102985960460804,
+            "median": 1.8291403580415057e-05
+          },
+          "maximum_joint_position_error_rad": {
+            "maximum": 5.119604855230442e-05,
+            "median": 5.728061202026069e-07
+          },
+          "maximum_joint_velocity_error_rad_s": {
+            "maximum": 11.296931290915056,
+            "median": 0.00016388633319523727
+          }
+        }
+      }
+    }
+  },
+  "event_step_summary": {
+    "85": {
+      "intervals": 1440,
+      "completed": 1440,
+      "failed": [],
+      "original_path_exact_count": 1437,
+      "changed_intervals": [
+        {
+          "physics_frame": 47642,
+          "old_joint_velocity_error": 4.95202853431151,
+          "new_joint_velocity_error": 0.4697525065693071,
+          "old_normal_impulse_ns": [
+            0.5479959547102,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "new_normal_impulse_ns": [
+            0.8610019979429552,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "measured_normal_force_n": [
+            13759.3857421875,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "events": [
+            {
+              "time_from_interval_start_s": 2.282571792602539e-05,
+              "feet": [
+                0
+              ],
+              "preimpact_gap_m": [
+                -2.2175048255967944e-10,
+                0.020867723032690404,
+                0.3911702509742869,
+                0.42425949840493593
+              ],
+              "bracket_width_s": 2.384185791027009e-10
+            }
+          ]
+        },
+        {
+          "physics_frame": 47735,
+          "old_joint_velocity_error": 9.136903199720813,
+          "new_joint_velocity_error": 4.013718651497543,
+          "old_normal_impulse_ns": [
+            0.006841460398655376,
+            0.39627644433833753,
+            0.0,
+            0.0
+          ],
+          "new_normal_impulse_ns": [
+            0.007371920398672719,
+            1.2274801022013169,
+            0.0,
+            0.0
+          ],
+          "measured_normal_force_n": [
+            133.2393035888672,
+            19102.619140625,
+            0.0,
+            0.0
+          ],
+          "events": [
+            {
+              "time_from_interval_start_s": 4.2286872863769526e-05,
+              "feet": [
+                1
+              ],
+              "preimpact_gap_m": [
+                -1.6384210556677492e-07,
+                -5.283997336902324e-10,
+                0.3742448706938606,
+                0.3964258591252198
+              ],
+              "bracket_width_s": 2.384185791027009e-10
+            }
+          ]
+        },
+        {
+          "physics_frame": 48496,
+          "old_joint_velocity_error": 5.200111057687742,
+          "new_joint_velocity_error": 0.8377819578009316,
+          "old_normal_impulse_ns": [
+            0.14013063106446874,
+            0.002104191296270499,
+            0.0,
+            0.0
+          ],
+          "new_normal_impulse_ns": [
+            0.31657727346847675,
+            0.002603757232600931,
+            0.0,
+            0.0
+          ],
+          "measured_normal_force_n": [
+            5210.744140625,
+            48.43262481689453,
+            0.0,
+            0.0
+          ],
+          "events": [
+            {
+              "time_from_interval_start_s": 3.536105155944825e-05,
+              "feet": [
+                0
+              ],
+              "preimpact_gap_m": [
+                -8.033244902616588e-11,
+                2.835961379274443e-08,
+                0.23852394618271422,
+                0.19361173786814492
+              ],
+              "bracket_width_s": 2.384185791027009e-10
+            }
+          ]
+        }
+      ]
+    },
+    "87": {
+      "intervals": 1440,
+      "completed": 1440,
+      "failed": [],
+      "original_path_exact_count": 1437,
+      "changed_intervals": [
+        {
+          "physics_frame": 48601,
+          "old_joint_velocity_error": 8.777620367008563,
+          "new_joint_velocity_error": 13.283850763133945,
+          "old_normal_impulse_ns": [
+            0.08616791144577729,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "new_normal_impulse_ns": [
+            1.0352509341304719,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "measured_normal_force_n": [
+            10883.2685546875,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "events": [
+            {
+              "time_from_interval_start_s": 5.5737495422363275e-05,
+              "feet": [
+                0
+              ],
+              "preimpact_gap_m": [
+                -7.430960777266016e-10,
+                0.06404554025202437,
+                0.38575735575777975,
+                0.48980263361609333
+              ],
+              "bracket_width_s": 2.384185791027009e-10
+            }
+          ]
+        },
+        {
+          "physics_frame": 48602,
+          "old_joint_velocity_error": 0.7663778041667206,
+          "new_joint_velocity_error": 0.1219514423921062,
+          "old_normal_impulse_ns": [
+            0.2273483758008779,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "new_normal_impulse_ns": [
+            0.2610002858808083,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "measured_normal_force_n": [
+            4168.41943359375,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "events": [
+            {
+              "time_from_interval_start_s": 8.300065994262696e-06,
+              "feet": [
+                0
+              ],
+              "preimpact_gap_m": [
+                -3.975332910077789e-11,
+                0.06397920240206768,
+                0.38570049025656866,
+                0.48974378901924365
+              ],
+              "bracket_width_s": 2.3841857910100685e-10
+            }
+          ]
+        },
+        {
+          "physics_frame": 48832,
+          "old_joint_velocity_error": 11.296931290915056,
+          "new_joint_velocity_error": 0.8636604575076134,
+          "old_normal_impulse_ns": [
+            0.009525760533469634,
+            0.6237397513931333,
+            0.0,
+            0.0
+          ],
+          "new_normal_impulse_ns": [
+            0.013163461813106032,
+            1.5004118804865978,
+            0.0,
+            0.0
+          ],
+          "measured_normal_force_n": [
+            193.9841766357422,
+            24070.8046875,
+            0.0,
+            0.0
+          ],
+          "events": [
+            {
+              "time_from_interval_start_s": 3.617525100708008e-05,
+              "feet": [
+                1
+              ],
+              "preimpact_gap_m": [
+                -2.937434060226729e-08,
+                -7.902355922406734e-10,
+                0.32997380043877694,
+                0.4291271406651539
+              ],
+              "bracket_width_s": 2.384185791027009e-10
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "control_interval_summary": {
+    "85": {
+      "original_warm": {
+        "completed": 9,
+        "errors": {
+          "root_position_error_m": {
+            "maximum": 0.012598773736622507,
+            "median": 7.616148074407114e-05
+          },
+          "root_rotation_error_rad": {
+            "maximum": 0.006375344878210369,
+            "median": 0.0002996409094679498
+          },
+          "root_linear_velocity_error_m_s": {
+            "maximum": 2.5080652631932807,
+            "median": 0.011644333365184728
+          },
+          "root_angular_velocity_error_rad_s": {
+            "maximum": 1.1558553418856528,
+            "median": 0.04205870918972957
+          },
+          "maximum_joint_position_error_rad": {
+            "maximum": 0.055713387920963475,
+            "median": 0.004078143476620832
+          },
+          "maximum_joint_velocity_error_rad_s": {
+            "maximum": 15.4765021480456,
+            "median": 0.7309325827952649
+          }
+        }
+      },
+      "original_cold": {
+        "completed": 9,
+        "errors": {
+          "root_position_error_m": {
+            "maximum": 0.012598773736456854,
+            "median": 7.616148074565438e-05
+          },
+          "root_rotation_error_rad": {
+            "maximum": 0.00637534447663551,
+            "median": 0.00029964090933016585
+          },
+          "root_linear_velocity_error_m_s": {
+            "maximum": 2.5080652631362836,
+            "median": 0.011644333363976358
+          },
+          "root_angular_velocity_error_rad_s": {
+            "maximum": 1.1558553249865435,
+            "median": 0.042058709167162305
+          },
+          "maximum_joint_position_error_rad": {
+            "maximum": 0.055713388835396005,
+            "median": 0.004078146494057133
+          },
+          "maximum_joint_velocity_error_rad_s": {
+            "maximum": 15.47650225872055,
+            "median": 0.7309320348612672
+          }
+        }
+      },
+      "event_resolved": {
+        "completed": 9,
+        "errors": {
+          "root_position_error_m": {
+            "maximum": 0.012598773736456854,
+            "median": 7.680165307915508e-05
+          },
+          "root_rotation_error_rad": {
+            "maximum": 0.00637534447663551,
+            "median": 0.00030192959070410183
+          },
+          "root_linear_velocity_error_m_s": {
+            "maximum": 2.5080652631362836,
+            "median": 0.011637848281252227
+          },
+          "root_angular_velocity_error_rad_s": {
+            "maximum": 1.1558553249865435,
+            "median": 0.04197096095364571
+          },
+          "maximum_joint_position_error_rad": {
+            "maximum": 0.055713388835396005,
+            "median": 0.004108715771810267
+          },
+          "maximum_joint_velocity_error_rad_s": {
+            "maximum": 15.47650225872055,
+            "median": 0.7377008951655882
+          }
+        }
+      }
+    },
+    "87": {
+      "original_warm": {
+        "completed": 9,
+        "errors": {
+          "root_position_error_m": {
+            "maximum": 1.853206276251779e-05,
+            "median": 1.4303707803896421e-05
+          },
+          "root_rotation_error_rad": {
+            "maximum": 0.0002547704244953426,
+            "median": 0.0002426793915703559
+          },
+          "root_linear_velocity_error_m_s": {
+            "maximum": 0.002601298780525282,
+            "median": 0.0004060648784809132
+          },
+          "root_angular_velocity_error_rad_s": {
+            "maximum": 0.01231438836991575,
+            "median": 0.0022684076535839496
+          },
+          "maximum_joint_position_error_rad": {
+            "maximum": 0.012013040670205255,
+            "median": 3.7794634190735366e-05
+          },
+          "maximum_joint_velocity_error_rad_s": {
+            "maximum": 4.229313011958503,
+            "median": 0.006337144856732202
+          }
+        }
+      },
+      "original_cold": {
+        "completed": 9,
+        "errors": {
+          "root_position_error_m": {
+            "maximum": 1.853206289345835e-05,
+            "median": 1.4303707803896421e-05
+          },
+          "root_rotation_error_rad": {
+            "maximum": 0.00025477043387276066,
+            "median": 0.0002426793915703559
+          },
+          "root_linear_velocity_error_m_s": {
+            "maximum": 0.0026012987712296844,
+            "median": 0.0004060648784809132
+          },
+          "root_angular_velocity_error_rad_s": {
+            "maximum": 0.012314387276077499,
+            "median": 0.0022684076535839496
+          },
+          "maximum_joint_position_error_rad": {
+            "maximum": 0.012013040155334886,
+            "median": 3.7794634190735366e-05
+          },
+          "maximum_joint_velocity_error_rad_s": {
+            "maximum": 4.229313071295074,
+            "median": 0.006337144856732202
+          }
+        }
+      },
+      "event_resolved": {
+        "completed": 9,
+        "errors": {
+          "root_position_error_m": {
+            "maximum": 1.8645538067565962e-05,
+            "median": 1.4303707803896421e-05
+          },
+          "root_rotation_error_rad": {
+            "maximum": 0.0002546874181273643,
+            "median": 0.0002426793915703559
+          },
+          "root_linear_velocity_error_m_s": {
+            "maximum": 0.002618962608302848,
+            "median": 0.0004060648784809132
+          },
+          "root_angular_velocity_error_rad_s": {
+            "maximum": 0.012247880373518675,
+            "median": 0.0022684076535839496
+          },
+          "maximum_joint_position_error_rad": {
+            "maximum": 0.012210096396956693,
+            "median": 3.7794634190735366e-05
+          },
+          "maximum_joint_velocity_error_rad_s": {
+            "maximum": 4.22891873422444,
+            "median": 0.006337144856732202
+          }
+        }
+      }
+    }
+  },
+  "control_interval_rows": [
+    {
+      "case": 85,
+      "tick": 297,
+      "modes": {
+        "original_warm": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.779523771225902e-05,
+            "root_rotation_error_rad": 0.00023823852755951546,
+            "root_linear_velocity_error_m_s": 0.0007126218048583306,
+            "root_angular_velocity_error_rad_s": 0.010194039184333929,
+            "maximum_joint_position_error_rad": 0.00031706185032498446,
+            "maximum_joint_velocity_error_rad_s": 0.09855813197386709
+          }
+        },
+        "original_cold": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.7795237697952573e-05,
+            "root_rotation_error_rad": 0.00023823852652098297,
+            "root_linear_velocity_error_m_s": 0.0007126218072242898,
+            "root_angular_velocity_error_rad_s": 0.010194039100675917,
+            "maximum_joint_position_error_rad": 0.0003170618513903545,
+            "maximum_joint_velocity_error_rad_s": 0.09855813202364949
+          }
+        },
+        "event_resolved": {
+          "completed": true,
+          "events": [
+            {
+              "time_from_interval_start_s": 2.711772918701172e-05,
+              "feet": [
+                0
+              ],
+              "preimpact_gap_m": [
+                -3.462776385076971e-10,
+                0.020838623770350992,
+                0.39119079799951595,
+                0.4242188045993575
+              ],
+              "bracket_width_s": 2.384185791027009e-10,
+              "micro": 122
+            }
+          ],
+          "metrics": {
+            "root_position_error_m": 1.7772593127289005e-05,
+            "root_rotation_error_rad": 0.00023819403891224095,
+            "root_linear_velocity_error_m_s": 0.0007034949676370258,
+            "root_angular_velocity_error_rad_s": 0.01021752867055633,
+            "maximum_joint_position_error_rad": 0.0003369209935641937,
+            "maximum_joint_velocity_error_rad_s": 0.09934960619068534
+          }
+        }
+      }
+    },
+    {
+      "case": 85,
+      "tick": 298,
+      "modes": {
+        "original_warm": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 7.616148074407114e-05,
+            "root_rotation_error_rad": 0.0002996409094679498,
+            "root_linear_velocity_error_m_s": 0.011644333365184728,
+            "root_angular_velocity_error_rad_s": 0.04205870918972957,
+            "maximum_joint_position_error_rad": 0.02288000360779141,
+            "maximum_joint_velocity_error_rad_s": 3.016251798351778
+          }
+        },
+        "original_cold": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 7.616148074565438e-05,
+            "root_rotation_error_rad": 0.00029964090933016585,
+            "root_linear_velocity_error_m_s": 0.011644333363976358,
+            "root_angular_velocity_error_rad_s": 0.042058709167162305,
+            "maximum_joint_position_error_rad": 0.02288000360774034,
+            "maximum_joint_velocity_error_rad_s": 3.016251798371801
+          }
+        },
+        "event_resolved": {
+          "completed": true,
+          "events": [
+            {
+              "time_from_interval_start_s": 4.069089889526366e-05,
+              "feet": [
+                1
+              ],
+              "preimpact_gap_m": [
+                -5.009342226094948e-08,
+                -5.918034881591261e-10,
+                0.37426282593087956,
+                0.3964200276895947
+              ],
+              "bracket_width_s": 2.3841857909592465e-10,
+              "micro": 55
+            }
+          ],
+          "metrics": {
+            "root_position_error_m": 7.680165307915508e-05,
+            "root_rotation_error_rad": 0.00030192959070410183,
+            "root_linear_velocity_error_m_s": 0.011637848281252227,
+            "root_angular_velocity_error_rad_s": 0.04197096095364571,
+            "maximum_joint_position_error_rad": 0.022818235778530038,
+            "maximum_joint_velocity_error_rad_s": 3.016056568544718
+          }
+        }
+      }
+    },
+    {
+      "case": 85,
+      "tick": 299,
+      "modes": {
+        "original_warm": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.683909709017967e-05,
+            "root_rotation_error_rad": 0.00014898116358068263,
+            "root_linear_velocity_error_m_s": 0.0008061952365953572,
+            "root_angular_velocity_error_rad_s": 0.01922186733749844,
+            "maximum_joint_position_error_rad": 0.0005042137038546723,
+            "maximum_joint_velocity_error_rad_s": 0.18557100509095292
+          }
+        },
+        "original_cold": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.6839097455781146e-05,
+            "root_rotation_error_rad": 0.00014898120793879416,
+            "root_linear_velocity_error_m_s": 0.00080619566079315,
+            "root_angular_velocity_error_rad_s": 0.019221883220572184,
+            "maximum_joint_position_error_rad": 0.000504213709980883,
+            "maximum_joint_velocity_error_rad_s": 0.18557102069697606
+          }
+        },
+        "event_resolved": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.6839097455781146e-05,
+            "root_rotation_error_rad": 0.00014898120793879416,
+            "root_linear_velocity_error_m_s": 0.00080619566079315,
+            "root_angular_velocity_error_rad_s": 0.019221883220572184,
+            "maximum_joint_position_error_rad": 0.000504213709980883,
+            "maximum_joint_velocity_error_rad_s": 0.18557102069697606
+          }
+        }
+      }
+    },
+    {
+      "case": 85,
+      "tick": 300,
+      "modes": {
+        "original_warm": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.595611634869617e-05,
+            "root_rotation_error_rad": 0.00011242808475870964,
+            "root_linear_velocity_error_m_s": 0.0005387726742777674,
+            "root_angular_velocity_error_rad_s": 0.015545797921553688,
+            "maximum_joint_position_error_rad": 0.0006132172806778691,
+            "maximum_joint_velocity_error_rad_s": 0.1484369994596033
+          }
+        },
+        "original_cold": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.5956114586133948e-05,
+            "root_rotation_error_rad": 0.00011242801279926442,
+            "root_linear_velocity_error_m_s": 0.0005387728829381572,
+            "root_angular_velocity_error_rad_s": 0.015545831191319706,
+            "maximum_joint_position_error_rad": 0.0006132186457246114,
+            "maximum_joint_velocity_error_rad_s": 0.14843735652392454
+          }
+        },
+        "event_resolved": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.5956114586133948e-05,
+            "root_rotation_error_rad": 0.00011242801279926442,
+            "root_linear_velocity_error_m_s": 0.0005387728829381572,
+            "root_angular_velocity_error_rad_s": 0.015545831191319706,
+            "maximum_joint_position_error_rad": 0.0006132186457246114,
+            "maximum_joint_velocity_error_rad_s": 0.14843735652392454
+          }
+        }
+      }
+    },
+    {
+      "case": 85,
+      "tick": 301,
+      "modes": {
+        "original_warm": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.7413661517817132e-05,
+            "root_rotation_error_rad": 0.00020306372278401557,
+            "root_linear_velocity_error_m_s": 0.0005841132178676321,
+            "root_angular_velocity_error_rad_s": 0.009489523934109706,
+            "maximum_joint_position_error_rad": 0.00037989392062431904,
+            "maximum_joint_velocity_error_rad_s": 0.15405287133908274
+          }
+        },
+        "original_cold": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.7413647990950097e-05,
+            "root_rotation_error_rad": 0.00020306319283696213,
+            "root_linear_velocity_error_m_s": 0.0005841134248759518,
+            "root_angular_velocity_error_rad_s": 0.009489625963144087,
+            "maximum_joint_position_error_rad": 0.00037989934933224667,
+            "maximum_joint_velocity_error_rad_s": 0.15405343677565675
+          }
+        },
+        "event_resolved": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.7413647990950097e-05,
+            "root_rotation_error_rad": 0.00020306319283696213,
+            "root_linear_velocity_error_m_s": 0.0005841134248759518,
+            "root_angular_velocity_error_rad_s": 0.009489625963144087,
+            "maximum_joint_position_error_rad": 0.00037989934933224667,
+            "maximum_joint_velocity_error_rad_s": 0.15405343677565675
+          }
+        }
+      }
+    },
+    {
+      "case": 85,
+      "tick": 302,
+      "modes": {
+        "original_warm": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 0.012598773736622507,
+            "root_rotation_error_rad": 0.006375344878210369,
+            "root_linear_velocity_error_m_s": 2.5080652631932807,
+            "root_angular_velocity_error_rad_s": 1.1558553418856528,
+            "maximum_joint_position_error_rad": 0.055713387920963475,
+            "maximum_joint_velocity_error_rad_s": 15.4765021480456
+          }
+        },
+        "original_cold": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 0.012598773736456854,
+            "root_rotation_error_rad": 0.00637534447663551,
+            "root_linear_velocity_error_m_s": 2.5080652631362836,
+            "root_angular_velocity_error_rad_s": 1.1558553249865435,
+            "maximum_joint_position_error_rad": 0.055713388835396005,
+            "maximum_joint_velocity_error_rad_s": 15.47650225872055
+          }
+        },
+        "event_resolved": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 0.012598773736456854,
+            "root_rotation_error_rad": 0.00637534447663551,
+            "root_linear_velocity_error_m_s": 2.5080652631362836,
+            "root_angular_velocity_error_rad_s": 1.1558553249865435,
+            "maximum_joint_position_error_rad": 0.055713388835396005,
+            "maximum_joint_velocity_error_rad_s": 15.47650225872055
+          }
+        }
+      }
+    },
+    {
+      "case": 85,
+      "tick": 303,
+      "modes": {
+        "original_warm": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 0.00048744351598769046,
+            "root_rotation_error_rad": 0.0030682782143838343,
+            "root_linear_velocity_error_m_s": 0.08696877724497463,
+            "root_angular_velocity_error_rad_s": 0.5387362669364528,
+            "maximum_joint_position_error_rad": 0.004078143476620832,
+            "maximum_joint_velocity_error_rad_s": 0.7309325827952649
+          }
+        },
+        "original_cold": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 0.0004874435068030112,
+            "root_rotation_error_rad": 0.003068278141395974,
+            "root_linear_velocity_error_m_s": 0.08696877438732355,
+            "root_angular_velocity_error_rad_s": 0.5387362699036025,
+            "maximum_joint_position_error_rad": 0.004078146494057133,
+            "maximum_joint_velocity_error_rad_s": 0.7309320348612672
+          }
+        },
+        "event_resolved": {
+          "completed": true,
+          "events": [
+            {
+              "time_from_interval_start_s": 2.4457693099975586e-05,
+              "feet": [
+                0
+              ],
+              "preimpact_gap_m": [
+                -1.0642486197864898e-10,
+                -8.88916698582598e-09,
+                0.23854843187429575,
+                0.19364337171168536
+              ],
+              "bracket_width_s": 2.384185790993128e-10,
+              "micro": 16
+            }
+          ],
+          "metrics": {
+            "root_position_error_m": 0.0004879209447320508,
+            "root_rotation_error_rad": 0.003069714535073269,
+            "root_linear_velocity_error_m_s": 0.08701663672737606,
+            "root_angular_velocity_error_rad_s": 0.53871611690285,
+            "maximum_joint_position_error_rad": 0.004108715771810267,
+            "maximum_joint_velocity_error_rad_s": 0.7377008951655882
+          }
+        }
+      }
+    },
+    {
+      "case": 85,
+      "tick": 304,
+      "modes": {
+        "original_warm": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 0.00033951400880257793,
+            "root_rotation_error_rad": 0.0029005143545271046,
+            "root_linear_velocity_error_m_s": 0.06950251155085795,
+            "root_angular_velocity_error_rad_s": 0.6484643756546706,
+            "maximum_joint_position_error_rad": 0.0058191519225858634,
+            "maximum_joint_velocity_error_rad_s": 1.0815382652476702
+          }
+        },
+        "original_cold": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 0.0003395140206443774,
+            "root_rotation_error_rad": 0.0029005143590148984,
+            "root_linear_velocity_error_m_s": 0.06950251343202758,
+            "root_angular_velocity_error_rad_s": 0.6484643774926311,
+            "maximum_joint_position_error_rad": 0.005819151982318138,
+            "maximum_joint_velocity_error_rad_s": 1.081538275751464
+          }
+        },
+        "event_resolved": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 0.0003395140206443774,
+            "root_rotation_error_rad": 0.0029005143590148984,
+            "root_linear_velocity_error_m_s": 0.06950251343202758,
+            "root_angular_velocity_error_rad_s": 0.6484643774926311,
+            "maximum_joint_position_error_rad": 0.005819151982318138,
+            "maximum_joint_velocity_error_rad_s": 1.081538275751464
+          }
+        }
+      }
+    },
+    {
+      "case": 85,
+      "tick": 305,
+      "modes": {
+        "original_warm": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 0.00046965252270754455,
+            "root_rotation_error_rad": 0.004356707621799202,
+            "root_linear_velocity_error_m_s": 0.08697661977872966,
+            "root_angular_velocity_error_rad_s": 0.6734297082700655,
+            "maximum_joint_position_error_rad": 0.006513256522270805,
+            "maximum_joint_velocity_error_rad_s": 0.8148547301528621
+          }
+        },
+        "original_cold": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 0.00046965252506746616,
+            "root_rotation_error_rad": 0.004356707615145933,
+            "root_linear_velocity_error_m_s": 0.08697662044348245,
+            "root_angular_velocity_error_rad_s": 0.6734297071582233,
+            "maximum_joint_position_error_rad": 0.006513256532325706,
+            "maximum_joint_velocity_error_rad_s": 0.8148547339415249
+          }
+        },
+        "event_resolved": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 0.00046965252506746616,
+            "root_rotation_error_rad": 0.004356707615145933,
+            "root_linear_velocity_error_m_s": 0.08697662044348245,
+            "root_angular_velocity_error_rad_s": 0.6734297071582233,
+            "maximum_joint_position_error_rad": 0.006513256532325706,
+            "maximum_joint_velocity_error_rad_s": 0.8148547339415249
+          }
+        }
+      }
+    },
+    {
+      "case": 87,
+      "tick": 297,
+      "modes": {
+        "original_warm": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.6786449246167968e-05,
+            "root_rotation_error_rad": 0.00025430349835303277,
+            "root_linear_velocity_error_m_s": 0.0004819889736762513,
+            "root_angular_velocity_error_rad_s": 0.00031990587042607745,
+            "maximum_joint_position_error_rad": 3.393962529785188e-05,
+            "maximum_joint_velocity_error_rad_s": 0.003935185331156887
+          }
+        },
+        "original_cold": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.6786449246167968e-05,
+            "root_rotation_error_rad": 0.00025430349835303277,
+            "root_linear_velocity_error_m_s": 0.0004819889736762513,
+            "root_angular_velocity_error_rad_s": 0.00031990587042607745,
+            "maximum_joint_position_error_rad": 3.393962529785188e-05,
+            "maximum_joint_velocity_error_rad_s": 0.003935185331156887
+          }
+        },
+        "event_resolved": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.6786449246167968e-05,
+            "root_rotation_error_rad": 0.00025430349835303277,
+            "root_linear_velocity_error_m_s": 0.0004819889736762513,
+            "root_angular_velocity_error_rad_s": 0.00031990587042607745,
+            "maximum_joint_position_error_rad": 3.393962529785188e-05,
+            "maximum_joint_velocity_error_rad_s": 0.003935185331156887
+          }
+        }
+      }
+    },
+    {
+      "case": 87,
+      "tick": 298,
+      "modes": {
+        "original_warm": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.3288108323980271e-05,
+            "root_rotation_error_rad": 0.00022828911936848855,
+            "root_linear_velocity_error_m_s": 0.0004060648784809132,
+            "root_angular_velocity_error_rad_s": 0.00045243531131379224,
+            "maximum_joint_position_error_rad": 3.7794634190735366e-05,
+            "maximum_joint_velocity_error_rad_s": 0.0025243835694035432
+          }
+        },
+        "original_cold": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.3288108323980271e-05,
+            "root_rotation_error_rad": 0.00022828911936848855,
+            "root_linear_velocity_error_m_s": 0.0004060648784809132,
+            "root_angular_velocity_error_rad_s": 0.00045243531131379224,
+            "maximum_joint_position_error_rad": 3.7794634190735366e-05,
+            "maximum_joint_velocity_error_rad_s": 0.0025243835694035432
+          }
+        },
+        "event_resolved": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.3288108323980271e-05,
+            "root_rotation_error_rad": 0.00022828911936848855,
+            "root_linear_velocity_error_m_s": 0.0004060648784809132,
+            "root_angular_velocity_error_rad_s": 0.00045243531131379224,
+            "maximum_joint_position_error_rad": 3.7794634190735366e-05,
+            "maximum_joint_velocity_error_rad_s": 0.0025243835694035432
+          }
+        }
+      }
+    },
+    {
+      "case": 87,
+      "tick": 299,
+      "modes": {
+        "original_warm": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.2589384304917864e-05,
+            "root_rotation_error_rad": 0.00025439874873707974,
+            "root_linear_velocity_error_m_s": 0.00054359580757738,
+            "root_angular_velocity_error_rad_s": 0.00046919232298158587,
+            "maximum_joint_position_error_rad": 3.1565882738782136e-05,
+            "maximum_joint_velocity_error_rad_s": 0.006337144856732202
+          }
+        },
+        "original_cold": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.2589384304917864e-05,
+            "root_rotation_error_rad": 0.00025439874873707974,
+            "root_linear_velocity_error_m_s": 0.00054359580757738,
+            "root_angular_velocity_error_rad_s": 0.00046919232298158587,
+            "maximum_joint_position_error_rad": 3.1565882738782136e-05,
+            "maximum_joint_velocity_error_rad_s": 0.006337144856732202
+          }
+        },
+        "event_resolved": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.2589384304917864e-05,
+            "root_rotation_error_rad": 0.00025439874873707974,
+            "root_linear_velocity_error_m_s": 0.00054359580757738,
+            "root_angular_velocity_error_rad_s": 0.00046919232298158587,
+            "maximum_joint_position_error_rad": 3.1565882738782136e-05,
+            "maximum_joint_velocity_error_rad_s": 0.006337144856732202
+          }
+        }
+      }
+    },
+    {
+      "case": 87,
+      "tick": 300,
+      "modes": {
+        "original_warm": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.4303707803896421e-05,
+            "root_rotation_error_rad": 0.0002444448085418421,
+            "root_linear_velocity_error_m_s": 0.0003649080835171334,
+            "root_angular_velocity_error_rad_s": 0.0010751207000058154,
+            "maximum_joint_position_error_rad": 3.5671048141283634e-05,
+            "maximum_joint_velocity_error_rad_s": 0.004338577530404619
+          }
+        },
+        "original_cold": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.4303707803896421e-05,
+            "root_rotation_error_rad": 0.0002444448085418421,
+            "root_linear_velocity_error_m_s": 0.0003649080835171334,
+            "root_angular_velocity_error_rad_s": 0.0010751207000058154,
+            "maximum_joint_position_error_rad": 3.5671048141283634e-05,
+            "maximum_joint_velocity_error_rad_s": 0.004338577530404619
+          }
+        },
+        "event_resolved": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.4303707803896421e-05,
+            "root_rotation_error_rad": 0.0002444448085418421,
+            "root_linear_velocity_error_m_s": 0.0003649080835171334,
+            "root_angular_velocity_error_rad_s": 0.0010751207000058154,
+            "maximum_joint_position_error_rad": 3.5671048141283634e-05,
+            "maximum_joint_velocity_error_rad_s": 0.004338577530404619
+          }
+        }
+      }
+    },
+    {
+      "case": 87,
+      "tick": 301,
+      "modes": {
+        "original_warm": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.4401990068087368e-05,
+            "root_rotation_error_rad": 0.0002426793915703559,
+            "root_linear_velocity_error_m_s": 0.0002855510102770876,
+            "root_angular_velocity_error_rad_s": 0.0022684076535839496,
+            "maximum_joint_position_error_rad": 3.107562781429207e-05,
+            "maximum_joint_velocity_error_rad_s": 0.007018044225537867
+          }
+        },
+        "original_cold": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.4401990068087368e-05,
+            "root_rotation_error_rad": 0.0002426793915703559,
+            "root_linear_velocity_error_m_s": 0.0002855510102770876,
+            "root_angular_velocity_error_rad_s": 0.0022684076535839496,
+            "maximum_joint_position_error_rad": 3.107562781429207e-05,
+            "maximum_joint_velocity_error_rad_s": 0.007018044225537867
+          }
+        },
+        "event_resolved": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.4401990068087368e-05,
+            "root_rotation_error_rad": 0.0002426793915703559,
+            "root_linear_velocity_error_m_s": 0.0002855510102770876,
+            "root_angular_velocity_error_rad_s": 0.0022684076535839496,
+            "maximum_joint_position_error_rad": 3.107562781429207e-05,
+            "maximum_joint_velocity_error_rad_s": 0.007018044225537867
+          }
+        }
+      }
+    },
+    {
+      "case": 87,
+      "tick": 302,
+      "modes": {
+        "original_warm": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.1729107715465295e-05,
+            "root_rotation_error_rad": 0.00021809208704762816,
+            "root_linear_velocity_error_m_s": 0.00018245712273981312,
+            "root_angular_velocity_error_rad_s": 0.004259228069005106,
+            "maximum_joint_position_error_rad": 4.2025610672902225e-05,
+            "maximum_joint_velocity_error_rad_s": 0.005529898533770616
+          }
+        },
+        "original_cold": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.1729107715465295e-05,
+            "root_rotation_error_rad": 0.00021809208704762816,
+            "root_linear_velocity_error_m_s": 0.00018245712273981312,
+            "root_angular_velocity_error_rad_s": 0.004259228069005106,
+            "maximum_joint_position_error_rad": 4.2025610672902225e-05,
+            "maximum_joint_velocity_error_rad_s": 0.005529898533770616
+          }
+        },
+        "event_resolved": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.1729107715465295e-05,
+            "root_rotation_error_rad": 0.00021809208704762816,
+            "root_linear_velocity_error_m_s": 0.00018245712273981312,
+            "root_angular_velocity_error_rad_s": 0.004259228069005106,
+            "maximum_joint_position_error_rad": 4.2025610672902225e-05,
+            "maximum_joint_velocity_error_rad_s": 0.005529898533770616
+          }
+        }
+      }
+    },
+    {
+      "case": 87,
+      "tick": 303,
+      "modes": {
+        "original_warm": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 7.110584913972116e-06,
+            "root_rotation_error_rad": 0.0001772260917467606,
+            "root_linear_velocity_error_m_s": 0.002601298780525282,
+            "root_angular_velocity_error_rad_s": 0.01231438836991575,
+            "maximum_joint_position_error_rad": 0.012013040670205255,
+            "maximum_joint_velocity_error_rad_s": 4.229313011958503
+          }
+        },
+        "original_cold": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 7.110586156834368e-06,
+            "root_rotation_error_rad": 0.0001772260898412871,
+            "root_linear_velocity_error_m_s": 0.0026012987712296844,
+            "root_angular_velocity_error_rad_s": 0.012314387276077499,
+            "maximum_joint_position_error_rad": 0.012013040155334886,
+            "maximum_joint_velocity_error_rad_s": 4.229313071295074
+          }
+        },
+        "event_resolved": {
+          "completed": true,
+          "events": [
+            {
+              "time_from_interval_start_s": 5.0649166107177745e-05,
+              "feet": [
+                0
+              ],
+              "preimpact_gap_m": [
+                -3.871752710105092e-10,
+                0.06403592080245084,
+                0.385760109006027,
+                0.4897681007879845
+              ],
+              "bracket_width_s": 2.384185791027009e-10,
+              "micro": 121
+            }
+          ],
+          "metrics": {
+            "root_position_error_m": 7.174349046030237e-06,
+            "root_rotation_error_rad": 0.00017508565863520416,
+            "root_linear_velocity_error_m_s": 0.002618962608302848,
+            "root_angular_velocity_error_rad_s": 0.012247880373518675,
+            "maximum_joint_position_error_rad": 0.012210096396956693,
+            "maximum_joint_velocity_error_rad_s": 4.22891873422444
+          }
+        }
+      }
+    },
+    {
+      "case": 87,
+      "tick": 304,
+      "modes": {
+        "original_warm": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.6379503465558564e-05,
+            "root_rotation_error_rad": 0.00019759532798236014,
+            "root_linear_velocity_error_m_s": 0.00041145722800883566,
+            "root_angular_velocity_error_rad_s": 0.005567155119605448,
+            "maximum_joint_position_error_rad": 0.001232150797104703,
+            "maximum_joint_velocity_error_rad_s": 0.02970526111939087
+          }
+        },
+        "original_cold": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.6379515607739745e-05,
+            "root_rotation_error_rad": 0.00019759473504398048,
+            "root_linear_velocity_error_m_s": 0.0004114577952834121,
+            "root_angular_velocity_error_rad_s": 0.005567157559192376,
+            "maximum_joint_position_error_rad": 0.0012321536774506647,
+            "maximum_joint_velocity_error_rad_s": 0.029705108366426813
+          }
+        },
+        "event_resolved": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.6379515607739745e-05,
+            "root_rotation_error_rad": 0.00019759473504398048,
+            "root_linear_velocity_error_m_s": 0.0004114577952834121,
+            "root_angular_velocity_error_rad_s": 0.005567157559192376,
+            "maximum_joint_position_error_rad": 0.0012321536774506647,
+            "maximum_joint_velocity_error_rad_s": 0.029705108366426813
+          }
+        }
+      }
+    },
+    {
+      "case": 87,
+      "tick": 305,
+      "modes": {
+        "original_warm": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.853206276251779e-05,
+            "root_rotation_error_rad": 0.0002547704244953426,
+            "root_linear_velocity_error_m_s": 0.00029693631688823633,
+            "root_angular_velocity_error_rad_s": 0.0026932851473974342,
+            "maximum_joint_position_error_rad": 0.00031505106235152347,
+            "maximum_joint_velocity_error_rad_s": 0.02596361813230086
+          }
+        },
+        "original_cold": {
+          "completed": true,
+          "events": [],
+          "metrics": {
+            "root_position_error_m": 1.853206289345835e-05,
+            "root_rotation_error_rad": 0.00025477043387276066,
+            "root_linear_velocity_error_m_s": 0.00029693619491891513,
+            "root_angular_velocity_error_rad_s": 0.0026932882415992374,
+            "maximum_joint_position_error_rad": 0.0003150509679845648,
+            "maximum_joint_velocity_error_rad_s": 0.02596358226528306
+          }
+        },
+        "event_resolved": {
+          "completed": true,
+          "events": [
+            {
+              "time_from_interval_start_s": 3.463745117187501e-05,
+              "feet": [
+                1
+              ],
+              "preimpact_gap_m": [
+                -6.347749284020543e-07,
+                -1.7021090439883757e-10,
+                0.32998044435699425,
+                0.4291230843434315
+              ],
+              "bracket_width_s": 2.384185791027009e-10,
+              "micro": 32
+            }
+          ],
+          "metrics": {
+            "root_position_error_m": 1.8645538067565962e-05,
+            "root_rotation_error_rad": 0.0002546874181273643,
+            "root_linear_velocity_error_m_s": 0.00028261928590856685,
+            "root_angular_velocity_error_rad_s": 0.002603286313614698,
+            "maximum_joint_position_error_rad": 0.0002937249920933471,
+            "maximum_joint_velocity_error_rad_s": 0.02613961500866857
+          }
+        }
+      }
+    }
+  ],
+  "inferred_impulse_rows": [
+    {
+      "case": 85,
+      "physics_frame": 47642,
+      "loaded_feet": [
+        "FL_foot"
+      ],
+      "inferred_impulse_ns": [
+        [
+          0.13277768487519784,
+          -0.5433918441089493,
+          0.860430275303254
+        ]
+      ],
+      "measured_normal_impulse_ns": [
+        0.8599616088867188
+      ],
+      "model_impulse_ns": [
+        [
+          0.08055033208888053,
+          -0.34697004308042556,
+          0.5479959547102
+        ]
+      ],
+      "inferred_tangent_over_normal": [
+        0.6501151661125791
+      ],
+      "configured_friction": 0.65,
+      "incoming_material_point_velocity": [
+        [
+          -0.4491515926570379,
+          3.4833172035123736,
+          -2.7519527769157994
+        ]
+      ],
+      "outgoing_material_point_velocity": [
+        [
+          -0.17592165420107175,
+          0.2479456433657625,
+          -0.002513035166247235
+        ]
+      ],
+      "generalized_residual_l2": 0.04231546790563048,
+      "generalized_change_l2": 1.0752457680321126,
+      "residual_vector": [
+        -8.218958669625742e-05,
+        -6.360809483008101e-05,
+        -5.0053330462818124e-05,
+        0.00010077667262378687,
+        -9.581093348186298e-05,
+        2.4779620107037714e-05,
+        6.950515882975239e-05,
+        -8.95929603558776e-05,
+        -0.00012710634404770188,
+        -2.252773092094795e-06,
+        3.161809982980338e-06,
+        1.9399989942116833e-06,
+        6.985425362685445e-07,
+        3.4157635697345883e-06,
+        9.012659029228021e-07,
+        -3.0132262956145508e-06,
+        2.7340816069369923e-06,
+        9.511368868161911e-07,
+        -0.014604388486400591,
+        0.03970840935164386,
+        0.0007002749987485481,
+        -8.771702743306256e-06,
+        -8.416583943246732e-06,
+        5.967442199528826e-06
+      ],
+      "least_squares_rank": 3,
+      "actual_max_joint_speed_fraction": 1.000007152557373,
+      "actual_endpoint_nonfoot_gap_m": 0.02628291914349634
+    },
+    {
+      "case": 85,
+      "physics_frame": 47735,
+      "loaded_feet": [
+        "FL_foot",
+        "FR_foot"
+      ],
+      "inferred_impulse_ns": [
+        [
+          0.0032172028692772628,
+          -0.004528159305086127,
+          0.00995794462268221
+        ],
+        [
+          0.21870190207174472,
+          -0.39530487402938347,
+          1.1926894254607476
+        ]
+      ],
+      "measured_normal_impulse_ns": [
+        0.008327456474304199,
+        1.1939136962890626
+      ],
+      "model_impulse_ns": [
+        [
+          0.0031722372305436775,
+          -0.003116451293762024,
+          0.006841460398655376
+        ],
+        [
+          0.1640826922469986,
+          -0.19855519685321177,
+          0.39627644433833753
+        ]
+      ],
+      "inferred_tangent_over_normal": [
+        0.5578152732188775,
+        0.378782907229708
+      ],
+      "configured_friction": 0.65,
+      "incoming_material_point_velocity": [
+        [
+          0.002748205060596476,
+          -0.001983384311669778,
+          0.00015191334691833092
+        ],
+        [
+          -1.365123156552797,
+          1.0553259145763874,
+          -3.410423551996604
+        ]
+      ],
+      "outgoing_material_point_velocity": [
+        [
+          -0.031169707990275963,
+          0.02555771714060462,
+          -0.00040631329673601613
+        ],
+        [
+          -0.08424569365027512,
+          -1.0361704808356547,
+          -0.059656265025141764
+        ]
+      ],
+      "generalized_residual_l2": 0.02223460603463084,
+      "generalized_change_l2": 1.3816531024562242,
+      "residual_vector": [
+        -0.00012238425398136688,
+        -8.550500536486094e-05,
+        -5.582155149441714e-05,
+        0.000367022642909387,
+        -0.000302960174552766,
+        -8.665344436939448e-05,
+        -4.7562384247913344e-05,
+        -0.00016149743152474067,
+        0.00020053009508614158,
+        -7.096299403758222e-05,
+        7.837279092640093e-05,
+        -0.0002696891550156826,
+        9.850480896141832e-06,
+        1.0348172505683285e-05,
+        3.740585420531565e-07,
+        -3.2661582900158444e-05,
+        2.360121049897301e-05,
+        -1.9179360988405482e-06,
+        -0.00013094335912629002,
+        0.01533124032854406,
+        0.016090313759587648,
+        2.6526146018158173e-05,
+        3.1134636922339364e-05,
+        7.560407900581664e-06
+      ],
+      "least_squares_rank": 6,
+      "actual_max_joint_speed_fraction": 0.9917786598205567,
+      "actual_endpoint_nonfoot_gap_m": 0.026264373240705907
+    },
+    {
+      "case": 85,
+      "physics_frame": 48496,
+      "loaded_feet": [
+        "FL_foot",
+        "FR_foot"
+      ],
+      "inferred_impulse_ns": [
+        [
+          0.13007196567550122,
+          0.16711967651566495,
+          0.32567400565099797
+        ],
+        [
+          0.001530720669433272,
+          0.0012098627455534203,
+          0.002985875625315688
+        ]
+      ],
+      "measured_normal_impulse_ns": [
+        0.3256715087890625,
+        0.0030270390510559082
+      ],
+      "model_impulse_ns": [
+        [
+          0.06707333277271899,
+          0.061624904830889365,
+          0.14013063106446874
+        ],
+        [
+          0.001066196556516461,
+          0.0008566765901705218,
+          0.002104191296270499
+        ]
+      ],
+      "inferred_tangent_over_normal": [
+        0.6502599466728349,
+        0.6534502324861046
+      ],
+      "configured_friction": 0.65,
+      "incoming_material_point_velocity": [
+        [
+          -1.2429204121303752,
+          -0.887765957284393,
+          -0.6640994329425364
+        ],
+        [
+          -0.607528638108795,
+          -0.48024477806640253,
+          6.724428423368622e-05
+        ]
+      ],
+      "outgoing_material_point_velocity": [
+        [
+          0.16134347333408955,
+          0.052421835334350714,
+          0.009588216716472558
+        ],
+        [
+          -0.5987849389150626,
+          -0.4888398177185206,
+          -0.00018556875821118535
+        ]
+      ],
+      "generalized_residual_l2": 5.417248889790215e-05,
+      "generalized_change_l2": 0.4037324836920684,
+      "residual_vector": [
+        1.2077052945702604e-05,
+        3.651360171302853e-06,
+        9.262053688452454e-07,
+        -8.980581910851548e-06,
+        3.919389157864411e-05,
+        -2.414565302442939e-06,
+        -9.316120069768896e-06,
+        2.4573711876557658e-05,
+        -1.8414910186267952e-05,
+        -4.109862763624077e-06,
+        7.250320119720161e-06,
+        -3.2859915153156047e-06,
+        9.948633551827395e-07,
+        1.6361326905610764e-07,
+        1.6542702641230062e-07,
+        2.2517585281296194e-07,
+        2.329810905476364e-07,
+        1.278566451044013e-07,
+        1.1935834779094618e-06,
+        5.76847646429751e-06,
+        -2.0746313535251453e-06,
+        4.10929920580973e-07,
+        4.976537142620694e-07,
+        1.1674604522244963e-06
+      ],
+      "least_squares_rank": 6,
+      "actual_max_joint_speed_fraction": 0.8137292861938477,
+      "actual_endpoint_nonfoot_gap_m": 9.76719671669235e-08
+    },
+    {
+      "case": 87,
+      "physics_frame": 48601,
+      "loaded_feet": [
+        "FL_foot"
+      ],
+      "inferred_impulse_ns": [
+        [
+          0.04900022368893926,
+          -0.43959245668565783,
+          0.6803791946976019
+        ]
+      ],
+      "measured_normal_impulse_ns": [
+        0.6802042846679688
+      ],
+      "model_impulse_ns": [
+        [
+          -0.00541734390899213,
+          -0.05574653730777315,
+          0.08616791144577729
+        ]
+      ],
+      "inferred_tangent_over_normal": [
+        0.6501006981136456
+      ],
+      "configured_friction": 0.65,
+      "incoming_material_point_velocity": [
+        [
+          0.38327133240401934,
+          1.6827459430883116,
+          -3.788433053684028
+        ]
+      ],
+      "outgoing_material_point_velocity": [
+        [
+          -0.9008265140132503,
+          -1.8483018770131503,
+          -0.648515428839971
+        ]
+      ],
+      "generalized_residual_l2": 0.038746988936139176,
+      "generalized_change_l2": 0.8896270487792195,
+      "residual_vector": [
+        4.305327200798681e-05,
+        -2.0551480246489007e-06,
+        9.972163426796854e-06,
+        3.5395760699497014e-05,
+        2.9448829533929022e-05,
+        -1.3879213261361323e-05,
+        -1.5174123906586123e-05,
+        6.617409905865235e-05,
+        6.0655054398353614e-05,
+        -1.6892332305723913e-06,
+        5.983455578080455e-07,
+        1.1303987610136578e-06,
+        -3.3974176729116324e-07,
+        1.6698708180680342e-06,
+        4.7093396198467566e-08,
+        -2.7149191070987124e-06,
+        9.68293414093784e-07,
+        2.9151280669471923e-09,
+        -0.01275296650446614,
+        0.036587952326583274,
+        1.0516433105631185e-05,
+        -3.5694087918521273e-07,
+        -7.064103786342705e-06,
+        -2.625607735798456e-06
+      ],
+      "least_squares_rank": 3,
+      "actual_max_joint_speed_fraction": 1.0014981269836425,
+      "actual_endpoint_nonfoot_gap_m": 0.01954151775439389
+    },
+    {
+      "case": 87,
+      "physics_frame": 48602,
+      "loaded_feet": [
+        "FL_foot"
+      ],
+      "inferred_impulse_ns": [
+        [
+          0.03904943643270858,
+          0.16179763138123143,
+          0.2613617343740282
+        ]
+      ],
+      "measured_normal_impulse_ns": [
+        0.2605262145996094
+      ],
+      "model_impulse_ns": [
+        [
+          0.042329165793455976,
+          0.14158431835642288,
+          0.2273483758008779
+        ]
+      ],
+      "inferred_tangent_over_normal": [
+        0.6368307124656728
+      ],
+      "configured_friction": 0.65,
+      "incoming_material_point_velocity": [
+        [
+          -0.9011290266070452,
+          -1.8483501346690296,
+          -0.6488908820571431
+        ]
+      ],
+      "outgoing_material_point_velocity": [
+        [
+          -0.35360545891587325,
+          -1.1810039079059478,
+          -0.002609190158415764
+        ]
+      ],
+      "generalized_residual_l2": 0.008807523837797976,
+      "generalized_change_l2": 0.3161565765708565,
+      "residual_vector": [
+        -0.002115936720485684,
+        -0.0013269931174396676,
+        -0.0009117694619809047,
+        0.0036005339426189407,
+        -0.0046014595334510425,
+        -0.0008919587326902279,
+        0.0005753608942348949,
+        -0.0010313109315316787,
+        -0.0009532653485717166,
+        -0.00020745198694990723,
+        0.00011328742067518802,
+        -9.742195967606979e-06,
+        3.976040499387571e-05,
+        0.00010811035628372689,
+        5.927011613803153e-06,
+        -0.00010104754561551482,
+        6.43139756136094e-05,
+        -1.4662098333400551e-05,
+        -0.00181960269668538,
+        0.005198784847432867,
+        0.0016544155447027846,
+        0.00013609475593260768,
+        0.0002956998823233152,
+        4.0393977613129316e-05
+      ],
+      "least_squares_rank": 3,
+      "actual_max_joint_speed_fraction": 1.0000035285949707,
+      "actual_endpoint_nonfoot_gap_m": 0.019528642831707216
+    },
+    {
+      "case": 87,
+      "physics_frame": 48832,
+      "loaded_feet": [
+        "FL_foot",
+        "FR_foot"
+      ],
+      "inferred_impulse_ns": [
+        [
+          0.006696754267339735,
+          -0.0040879871419480796,
+          0.011841362571044765
+        ],
+        [
+          0.032629188872045065,
+          0.04805083988703126,
+          1.5047901068221434
+        ]
+      ],
+      "measured_normal_impulse_ns": [
+        0.012124011039733887,
+        1.50442529296875
+      ],
+      "model_impulse_ns": [
+        [
+          0.0058285083861564155,
+          -0.00208954254515611,
+          0.009525760533469634
+        ],
+        [
+          0.04603706642478531,
+          -0.05563163015071294,
+          0.6237397513931333
+        ]
+      ],
+      "inferred_tangent_over_normal": [
+        0.6625842740794173,
+        0.0385982368589023
+      ],
+      "configured_friction": 0.65,
+      "incoming_material_point_velocity": [
+        [
+          0.0008979087948635112,
+          -0.001265426978372619,
+          0.00011153359292448428
+        ],
+        [
+          -0.2879394000909028,
+          0.4977952021003079,
+          -4.368890460456821
+        ]
+      ],
+      "outgoing_material_point_velocity": [
+        [
+          -0.019570643586436898,
+          0.006620817198274231,
+          0.0006621863369504766
+        ],
+        [
+          0.05097423118776678,
+          0.16882650988352432,
+          0.00030651481349741605
+        ]
+      ],
+      "generalized_residual_l2": 0.009515635885870009,
+      "generalized_change_l2": 1.6024037217620277,
+      "residual_vector": [
+        4.433997846164939e-05,
+        2.849023815615359e-05,
+        6.205413306092922e-06,
+        -1.769636890380788e-05,
+        6.583683324823397e-05,
+        -6.809139048372104e-05,
+        -4.329805428371879e-05,
+        6.253773888522654e-05,
+        2.08598792537607e-05,
+        -2.9957624412380035e-05,
+        4.603242699319221e-05,
+        -8.404845872554342e-06,
+        1.8536898117000949e-06,
+        4.0300428889260807e-07,
+        -7.451950190187905e-07,
+        -1.6021125866504137e-06,
+        3.8831677180278237e-07,
+        -5.18927597008967e-07,
+        -7.401206062026915e-05,
+        0.005689867847909675,
+        0.007625339150702203,
+        3.866876434325173e-06,
+        -2.7209779223330974e-06,
+        4.184292589046359e-06
+      ],
+      "least_squares_rank": 6,
+      "actual_max_joint_speed_fraction": 1.000043773651123,
+      "actual_endpoint_nonfoot_gap_m": 0.018306346651884325
+    }
+  ],
+  "model_promoted": false,
+  "valid_expert_labels": false,
+  "evidence": {
+    "passive": {
+      "path": "reports/landing_native_foot_impact_followup_20261108/impact_audit.json",
+      "sha256": "168ebd3ddfaf67f55e13c280b8d841b4674632f1b448c62bb5186037c0738029"
+    },
+    "physical": {
+      "path": "reports/landing_native_foot_impact_followup_20261108/physics_step_model.json",
+      "sha256": "576374cd4a6c149a4e75e218ff84155a89c9d247653788584f1a6fc487c31b9a"
+    },
+    "event": {
+      "path": "reports/landing_native_foot_impact_followup_20261108/event_resolved_comparison.json",
+      "sha256": "59c25b2c04ddccfc5cbf09fbe7df7499aadda7a37fb2813e142a07b5d1d0a23c"
+    },
+    "control": {
+      "path": "reports/landing_native_foot_impact_followup_20261108/event_control_interval.json",
+      "sha256": "6706ae799a8cb084e2a0b87e95ee7e7307cd49f01717a03370a1a6eb124f5b74"
+    },
+    "impulse": {
+      "path": "reports/landing_native_foot_impact_followup_20261108/impact_impulse_inference.json",
+      "sha256": "c58bc7409f6b835695ae9490d07f932d4116edfa7d8909d3585c641c8ceddb7b"
+    }
+  },
+  "limitations": [
+    "Diagnostic states selected before event-model construction; not held-out generalization.",
+    "Each 10 ms interval begins from measurement; intermediate states are predictions.",
+    "Nonfoot/self-contact, finite PhysX iterations and friction memory remain unmodeled.",
+    "Force sensor provides normal-force evidence, not a tangential measurement.",
+    "Inference assumes contact locations and the existing rigid-body mass model.",
+    "Generalized residual mixes force and torque units; not a physical energy norm.",
+    "Finite-step drive, frame change, joint-limit and nonfoot impulses may bias inference."
+  ]
+}
