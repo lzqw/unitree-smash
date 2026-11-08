@@ -1,0 +1,1806 @@
+{
+  "scope": "Task-space landing candidate search and unchanged-observer audit, 2026-11-08",
+  "status": {
+    "state": "COMPLETED_MODEL_SEARCH",
+    "candidates": 52,
+    "ik_rejected": 38,
+    "verified": 0,
+    "native_execution": false
+  },
+  "cases": [
+    {
+      "case": 87,
+      "requests": 13,
+      "ik_rejected": 10,
+      "baseline": {
+        "case": 87,
+        "placement": {
+          "front_down": 0.0,
+          "rear_down": 0.0,
+          "front_forward": 0.0
+        },
+        "ik_max_foot_errors_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "native_execution": false,
+        "valid_expert_labels": false,
+        "ik_rejected": false,
+        "independently_verified": false,
+        "result": {
+          "accepted": false,
+          "completed_model_steps": 30,
+          "required_model_steps": 520,
+          "rank": [
+            1,
+            489.83125,
+            80,
+            0.30972503277366165
+          ],
+          "failure": {
+            "step": 30,
+            "reason": "path_constraints",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.008936707636811106
+            },
+            "first_ground_violation": {
+              "micro": 27,
+              "body": "Head_lower",
+              "gap_m": -6.173296571761189e-05
+            }
+          },
+          "terminal": {
+            "roll": -0.09663833406405233,
+            "pitch": 0.6211654256826433,
+            "horizontal": 0.7442379257690983,
+            "vertical_speed": 1.2773120870344061,
+            "omega": 0.7665598483878776,
+            "joint_speed": 8.645042333305792,
+            "support_feet": 2,
+            "support_margin_m": -0.055472628563137505
+          },
+          "terminal_violations": {
+            "pitch": 0.3593660378834939,
+            "horizontal": 0.4442379257690983,
+            "vertical_speed": 1.177312087034406,
+            "joint_speed": 7.645042333305792,
+            "support_margin_m": 0.0654726285631375,
+            "trailing_window_s": 0.0
+          },
+          "trailing_model_window_s": 0.0,
+          "longest_model_window_s": 0.0,
+          "cost": 9.29175098320985,
+          "substeps": 160,
+          "wall_seconds": 5.95259625185281,
+          "control_tick": 280,
+          "original_episode_end_tick": 800,
+          "preceding_stable_ticks": 0,
+          "native_execution": false,
+          "valid_expert_labels": false
+        },
+        "file": "candidate_000.json"
+      },
+      "best": {
+        "case": 87,
+        "placement": {
+          "front_down": 0.025,
+          "rear_down": 0.0,
+          "front_forward": 0.03
+        },
+        "ik_max_foot_errors_m": [
+          3.2812522630289174e-07,
+          1.2843126266941168e-06,
+          1.9544896971602642e-08
+        ],
+        "native_execution": false,
+        "valid_expert_labels": false,
+        "ik_rejected": false,
+        "independently_verified": false,
+        "result": {
+          "accepted": false,
+          "completed_model_steps": 49,
+          "required_model_steps": 520,
+          "rank": [
+            1,
+            471.0,
+            80,
+            0.3560240531511745
+          ],
+          "failure": {
+            "step": 49,
+            "reason": "path_constraints",
+            "violations": {
+              "joint_position_violation_rad": 0.03876335640621886
+            },
+            "first_ground_violation": null
+          },
+          "terminal": {
+            "roll": -0.04686637514084465,
+            "pitch": 0.2699507147229907,
+            "horizontal": 1.479898326139687,
+            "vertical_speed": 0.01174122140090191,
+            "omega": 1.386109363752714,
+            "joint_speed": 6.836189573562262,
+            "support_feet": 2,
+            "support_margin_m": -0.17897303336240358
+          },
+          "terminal_violations": {
+            "pitch": 0.008151326923841296,
+            "horizontal": 1.179898326139687,
+            "omega": 0.386109363752714,
+            "joint_speed": 5.836189573562262,
+            "support_margin_m": 0.1889730333624036,
+            "trailing_window_s": 0.0
+          },
+          "trailing_model_window_s": 0.0,
+          "longest_model_window_s": 0.0,
+          "cost": 17.445178604407552,
+          "substeps": 160,
+          "wall_seconds": 11.691811769967899,
+          "control_tick": 280,
+          "original_episode_end_tick": 800,
+          "preceding_stable_ticks": 0,
+          "native_execution": false,
+          "valid_expert_labels": false
+        },
+        "file": "candidate_002.json"
+      }
+    },
+    {
+      "case": 85,
+      "requests": 13,
+      "ik_rejected": 10,
+      "baseline": {
+        "case": 85,
+        "placement": {
+          "front_down": 0.0,
+          "rear_down": 0.0,
+          "front_forward": 0.0
+        },
+        "ik_max_foot_errors_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "native_execution": false,
+        "valid_expert_labels": false,
+        "ik_rejected": false,
+        "independently_verified": false,
+        "result": {
+          "accepted": false,
+          "completed_model_steps": 23,
+          "required_model_steps": 520,
+          "rank": [
+            1,
+            496.95,
+            80,
+            0.43435468340670014
+          ],
+          "failure": {
+            "step": 23,
+            "reason": "path_constraints",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.01800309559341777
+            },
+            "first_ground_violation": {
+              "micro": 8,
+              "body": "Head_lower",
+              "gap_m": -2.0877751155987112e-05
+            }
+          },
+          "terminal": {
+            "roll": -0.18974258941081965,
+            "pitch": 0.666015289138791,
+            "horizontal": 0.3679262307042824,
+            "vertical_speed": 1.963794257564816,
+            "omega": 1.1595214755563554,
+            "joint_speed": 13.656625356206005,
+            "support_feet": 2,
+            "support_margin_m": -0.040960682901124534
+          },
+          "terminal_violations": {
+            "pitch": 0.40421590133964164,
+            "horizontal": 0.06792623070428239,
+            "vertical_speed": 1.8637942575648159,
+            "omega": 0.15952147555635543,
+            "joint_speed": 12.656625356206005,
+            "support_margin_m": 0.050960682901124536,
+            "trailing_window_s": 0.0
+          },
+          "trailing_model_window_s": 0.0,
+          "longest_model_window_s": 0.0,
+          "cost": 9.990157718354103,
+          "substeps": 160,
+          "wall_seconds": 4.72508107800968,
+          "control_tick": 280,
+          "original_episode_end_tick": 800,
+          "preceding_stable_ticks": 0,
+          "native_execution": false,
+          "valid_expert_labels": false
+        },
+        "file": "candidate_013.json"
+      },
+      "best": {
+        "case": 85,
+        "placement": {
+          "front_down": 0.025,
+          "rear_down": 0.0,
+          "front_forward": 0.03
+        },
+        "ik_max_foot_errors_m": [
+          4.0074353894861533e-07,
+          9.704438975559149e-07,
+          1.8406156880152858e-08
+        ],
+        "native_execution": false,
+        "valid_expert_labels": false,
+        "ik_rejected": false,
+        "independently_verified": false,
+        "result": {
+          "accepted": false,
+          "completed_model_steps": 23,
+          "required_model_steps": 520,
+          "rank": [
+            1,
+            496.35625,
+            80,
+            0.4353375573852055
+          ],
+          "failure": {
+            "step": 23,
+            "reason": "path_constraints",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.005991184128541313
+            },
+            "first_ground_violation": {
+              "micro": 103,
+              "body": "Head_lower",
+              "gap_m": -9.51650542748636e-05
+            }
+          },
+          "terminal": {
+            "roll": -0.21174998746294993,
+            "pitch": 0.6658942380709373,
+            "horizontal": 0.2828873041210316,
+            "vertical_speed": 1.7730745810110562,
+            "omega": 1.437194642620493,
+            "joint_speed": 11.396222698926392,
+            "support_feet": 2,
+            "support_margin_m": -0.0009675157831415787
+          },
+          "terminal_violations": {
+            "pitch": 0.4040948502717879,
+            "vertical_speed": 1.673074581011056,
+            "omega": 0.4371946426204929,
+            "joint_speed": 10.396222698926392,
+            "support_margin_m": 0.010967515783141578,
+            "trailing_window_s": 0.0
+          },
+          "trailing_model_window_s": 0.0,
+          "longest_model_window_s": 0.0,
+          "cost": 10.012763819859726,
+          "substeps": 160,
+          "wall_seconds": 5.013962639961392,
+          "control_tick": 280,
+          "original_episode_end_tick": 800,
+          "preceding_stable_ticks": 0,
+          "native_execution": false,
+          "valid_expert_labels": false
+        },
+        "file": "candidate_015.json"
+      }
+    },
+    {
+      "case": 96,
+      "requests": 13,
+      "ik_rejected": 10,
+      "baseline": {
+        "case": 96,
+        "placement": {
+          "front_down": 0.0,
+          "rear_down": 0.0,
+          "front_forward": 0.0
+        },
+        "ik_max_foot_errors_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "native_execution": false,
+        "valid_expert_labels": false,
+        "ik_rejected": false,
+        "independently_verified": false,
+        "result": {
+          "accepted": false,
+          "completed_model_steps": 23,
+          "required_model_steps": 520,
+          "rank": [
+            1,
+            496.99375,
+            80,
+            0.4245868462120357
+          ],
+          "failure": {
+            "step": 23,
+            "reason": "path_constraints",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.018928305813847454
+            },
+            "first_ground_violation": {
+              "micro": 1,
+              "body": "Head_lower",
+              "gap_m": -5.894184611095199e-05
+            }
+          },
+          "terminal": {
+            "roll": -0.05261672114137186,
+            "pitch": 0.6804776053734486,
+            "horizontal": 0.44943435576586926,
+            "vertical_speed": 1.9732187078536827,
+            "omega": 0.9223966488338388,
+            "joint_speed": 12.821048766132932,
+            "support_feet": 2,
+            "support_margin_m": -0.06181553183958564
+          },
+          "terminal_violations": {
+            "pitch": 0.4186782175742992,
+            "horizontal": 0.14943435576586928,
+            "vertical_speed": 1.8732187078536826,
+            "joint_speed": 11.821048766132932,
+            "support_margin_m": 0.07181553183958564,
+            "trailing_window_s": 0.0
+          },
+          "trailing_model_window_s": 0.0,
+          "longest_model_window_s": 0.0,
+          "cost": 9.765497462876821,
+          "substeps": 160,
+          "wall_seconds": 4.660514339106157,
+          "control_tick": 280,
+          "original_episode_end_tick": 800,
+          "preceding_stable_ticks": 0,
+          "native_execution": false,
+          "valid_expert_labels": false
+        },
+        "file": "candidate_026.json"
+      },
+      "best": {
+        "case": 96,
+        "placement": {
+          "front_down": 0.025,
+          "rear_down": 0.0,
+          "front_forward": 0.03
+        },
+        "ik_max_foot_errors_m": [
+          4.1775808978537536e-07,
+          9.479538601816661e-07,
+          1.8051081587750316e-08
+        ],
+        "native_execution": false,
+        "valid_expert_labels": false,
+        "ik_rejected": false,
+        "independently_verified": false,
+        "result": {
+          "accepted": false,
+          "completed_model_steps": 23,
+          "required_model_steps": 520,
+          "rank": [
+            1,
+            496.44375,
+            80,
+            0.4255894760483354
+          ],
+          "failure": {
+            "step": 23,
+            "reason": "path_constraints",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.007559477591706484
+            },
+            "first_ground_violation": {
+              "micro": 89,
+              "body": "Head_lower",
+              "gap_m": -6.497534605513777e-06
+            }
+          },
+          "terminal": {
+            "roll": -0.07169055424033831,
+            "pitch": 0.6813312283858775,
+            "horizontal": 0.3885879396555191,
+            "vertical_speed": 1.7958977749721592,
+            "omega": 1.1478764568506519,
+            "joint_speed": 10.751600191387436,
+            "support_feet": 2,
+            "support_margin_m": -0.02362334808687456
+          },
+          "terminal_violations": {
+            "pitch": 0.41953184058672804,
+            "horizontal": 0.08858793965551909,
+            "vertical_speed": 1.695897774972159,
+            "omega": 0.14787645685065187,
+            "joint_speed": 9.751600191387436,
+            "support_margin_m": 0.03362334808687456,
+            "trailing_window_s": 0.0
+          },
+          "trailing_model_window_s": 0.0,
+          "longest_model_window_s": 0.0,
+          "cost": 9.788557949111715,
+          "substeps": 160,
+          "wall_seconds": 5.110683241859078,
+          "control_tick": 280,
+          "original_episode_end_tick": 800,
+          "preceding_stable_ticks": 0,
+          "native_execution": false,
+          "valid_expert_labels": false
+        },
+        "file": "candidate_028.json"
+      }
+    },
+    {
+      "case": 71,
+      "requests": 13,
+      "ik_rejected": 8,
+      "baseline": {
+        "case": 71,
+        "placement": {
+          "front_down": 0.0,
+          "rear_down": 0.0,
+          "front_forward": 0.0
+        },
+        "ik_max_foot_errors_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "native_execution": false,
+        "valid_expert_labels": false,
+        "ik_rejected": false,
+        "independently_verified": false,
+        "result": {
+          "accepted": false,
+          "completed_model_steps": 18,
+          "required_model_steps": 520,
+          "rank": [
+            1,
+            501.56875,
+            80,
+            0.49846619988873364
+          ],
+          "failure": {
+            "step": 18,
+            "reason": "path_constraints",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.014501334058351058
+            },
+            "first_ground_violation": {
+              "micro": 69,
+              "body": "Head_lower",
+              "gap_m": -8.272536588710411e-05
+            }
+          },
+          "terminal": {
+            "roll": -0.2673800410050302,
+            "pitch": 0.7816690421018035,
+            "horizontal": 0.3424832680434516,
+            "vertical_speed": 2.567306782514094,
+            "omega": 0.9973357278621771,
+            "joint_speed": 15.64604861784181,
+            "support_feet": 2,
+            "support_margin_m": -0.054102910940090926
+          },
+          "terminal_violations": {
+            "roll": 0.005580653205880803,
+            "pitch": 0.5198696543026542,
+            "horizontal": 0.042483268043451594,
+            "vertical_speed": 2.4673067825140937,
+            "joint_speed": 14.64604861784181,
+            "support_margin_m": 0.06410291094009092,
+            "trailing_window_s": 0.0
+          },
+          "trailing_model_window_s": 0.0,
+          "longest_model_window_s": 0.0,
+          "cost": 8.972391597997206,
+          "substeps": 160,
+          "wall_seconds": 3.679541466990486,
+          "control_tick": 280,
+          "original_episode_end_tick": 800,
+          "preceding_stable_ticks": 0,
+          "native_execution": false,
+          "valid_expert_labels": false
+        },
+        "file": "candidate_039.json"
+      },
+      "best": {
+        "case": 71,
+        "placement": {
+          "front_down": 0.05,
+          "rear_down": 0.04,
+          "front_forward": 0.03
+        },
+        "ik_max_foot_errors_m": [
+          1.0009779299120223e-07,
+          0.004046724625244637,
+          2.068877117022734e-08
+        ],
+        "native_execution": false,
+        "valid_expert_labels": false,
+        "ik_rejected": false,
+        "independently_verified": false,
+        "result": {
+          "accepted": false,
+          "completed_model_steps": 18,
+          "required_model_steps": 520,
+          "rank": [
+            1,
+            501.15,
+            80,
+            0.5360669611137667
+          ],
+          "failure": {
+            "step": 18,
+            "reason": "path_constraints",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.003346881097416793
+            },
+            "first_ground_violation": {
+              "micro": 136,
+              "body": "Head_lower",
+              "gap_m": -0.00010426614116295502
+            }
+          },
+          "terminal": {
+            "roll": -0.2990200046647825,
+            "pitch": 0.792161236547043,
+            "horizontal": 0.3843615657702335,
+            "vertical_speed": 2.3244436483329283,
+            "omega": 1.274274251489464,
+            "joint_speed": 12.826028992305512,
+            "support_feet": 2,
+            "support_margin_m": -0.011296495552655097
+          },
+          "terminal_violations": {
+            "roll": 0.037220616865633105,
+            "pitch": 0.5303618487478936,
+            "horizontal": 0.08436156577023352,
+            "vertical_speed": 2.224443648332928,
+            "omega": 0.27427425148946405,
+            "joint_speed": 11.826028992305512,
+            "support_margin_m": 0.021296495552655097,
+            "trailing_window_s": 0.0
+          },
+          "trailing_model_window_s": 0.0,
+          "longest_model_window_s": 0.0,
+          "cost": 9.649205300047802,
+          "substeps": 160,
+          "wall_seconds": 4.671078134095296,
+          "control_tick": 280,
+          "original_episode_end_tick": 800,
+          "preceding_stable_ticks": 0,
+          "native_execution": false,
+          "valid_expert_labels": false
+        },
+        "file": "candidate_047.json"
+      }
+    }
+  ],
+  "native_geometry": [
+    {
+      "case": 87,
+      "actual_original_student_samples": [
+        {
+          "tick": 280,
+          "root_height_m": 0.6984964609146118,
+          "forward_axis_vertical": -0.443862063293213,
+          "root_velocity_world": [
+            0.24469912731682741,
+            -0.2570304330421162,
+            -0.30973378904962795
+          ],
+          "omega_world": [
+            -2.4125332832336426,
+            0.7608862519264221,
+            1.606249809265137
+          ],
+          "foot_positions_world": [
+            [
+              0.8593924418571582,
+              -0.017806499684603676,
+              0.45293121104451406
+            ],
+            [
+              0.882703537579665,
+              -0.25662159125039063,
+              0.5390965938624349
+            ],
+            [
+              0.487740721402396,
+              -0.004674478224009647,
+              0.6307407208060016
+            ],
+            [
+              0.5394109171572483,
+              -0.2628214315996339,
+              0.6837754486798246
+            ]
+          ],
+          "foot_force_world": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "tick": 295,
+          "root_height_m": 0.5485445261001587,
+          "forward_axis_vertical": -0.6596678568506549,
+          "root_velocity_world": [
+            0.2803936303837376,
+            -0.3242639422941119,
+            -1.707408660075976
+          ],
+          "omega_world": [
+            -0.883054316043854,
+            1.5809955596923828,
+            1.1370559930801394
+          ],
+          "foot_positions_world": [
+            [
+              0.7085214049677487,
+              -0.27436504003607115,
+              0.2808366100781231
+            ],
+            [
+              0.9091343837007532,
+              -0.4414734754429063,
+              0.33437344577916317
+            ],
+            [
+              0.3983379560555198,
+              -0.1061922270032356,
+              0.6079611005474328
+            ],
+            [
+              0.5562760262663298,
+              -0.43330148586913664,
+              0.7322759105503223
+            ]
+          ],
+          "foot_force_world": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "tick": 300,
+          "root_height_m": 0.44926491379737854,
+          "forward_axis_vertical": -0.6860753300413852,
+          "root_velocity_world": [
+            0.17949621882072872,
+            -0.2973983415419825,
+            -2.249636283290208
+          ],
+          "omega_world": [
+            0.37474143505096436,
+            -0.12147057056426999,
+            -0.1437908411026001
+          ],
+          "foot_positions_world": [
+            [
+              0.727963077542105,
+              -0.299544993581119,
+              0.14850214091851363
+            ],
+            [
+              0.8858561367745998,
+              -0.44923545306487794,
+              0.22750337794758865
+            ],
+            [
+              0.4185555658953794,
+              -0.10769404432133409,
+              0.5326759998885393
+            ],
+            [
+              0.5976683992161289,
+              -0.4506934881081793,
+              0.6315027073714987
+            ]
+          ],
+          "foot_force_world": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "tick": 305,
+          "root_height_m": 0.3255505859851837,
+          "forward_axis_vertical": -0.6637770575512514,
+          "root_velocity_world": [
+            0.18926714236835723,
+            -0.28721389404561826,
+            -2.632585333622103
+          ],
+          "omega_world": [
+            1.4659080505371094,
+            -0.488821566104889,
+            -1.611828923225403
+          ],
+          "foot_positions_world": [
+            [
+              0.7484363886381734,
+              -0.28264961739862493,
+              0.021433360396055395
+            ],
+            [
+              0.8534035951282021,
+              -0.4169236434496014,
+              0.030945713237320205
+            ],
+            [
+              0.4287192236950979,
+              -0.11046042426748771,
+              0.3594866249020866
+            ],
+            [
+              0.5655257878857988,
+              -0.4620837489506812,
+              0.45941567583906906
+            ]
+          ],
+          "foot_force_world": [
+            [
+              0.0,
+              0.0,
+              88.33447265625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "tick": 310,
+          "root_height_m": 0.2748298645019531,
+          "forward_axis_vertical": -0.6208407587302452,
+          "root_velocity_world": [
+            -0.4083637204561143,
+            -0.20092689702986447,
+            -0.29447304172105376
+          ],
+          "omega_world": [
+            1.9252845048904415,
+            -1.4404170513153078,
+            -1.693729758262634
+          ],
+          "foot_positions_world": [
+            [
+              0.74723001824194,
+              -0.28508546970289883,
+              0.021346485607498106
+            ],
+            [
+              0.8461663752852807,
+              -0.4288889363041166,
+              0.021994112616448652
+            ],
+            [
+              0.4466506784690825,
+              -0.16627185230829833,
+              0.22147013131614174
+            ],
+            [
+              0.49584584406478655,
+              -0.3971226650467854,
+              0.27496620531427074
+            ]
+          ],
+          "foot_force_world": [
+            [
+              0.0,
+              0.0,
+              65.38933563232422
+            ],
+            [
+              0.0,
+              0.0,
+              60.83875274658203
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "case": 85,
+      "actual_original_student_samples": [
+        {
+          "tick": 280,
+          "root_height_m": 0.67478346824646,
+          "forward_axis_vertical": -0.4851128938917842,
+          "root_velocity_world": [
+            0.2249141249413562,
+            -0.28787803515945753,
+            -0.7586552505230482
+          ],
+          "omega_world": [
+            -2.4498252868652353,
+            0.9658208489418029,
+            2.1960456371307373
+          ],
+          "foot_positions_world": [
+            [
+              0.7124480770285416,
+              -0.12547860610204845,
+              0.32964883653960214
+            ],
+            [
+              0.7983973806681408,
+              -0.3528252113099536,
+              0.4890311466346409
+            ],
+            [
+              0.3239599058191031,
+              -0.13819189000005394,
+              0.6251556811296173
+            ],
+            [
+              0.4540372866052852,
+              -0.39193248625071025,
+              0.7177210956014443
+            ]
+          ],
+          "foot_force_world": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "tick": 295,
+          "root_height_m": 0.4527486562728882,
+          "forward_axis_vertical": -0.6021002462384736,
+          "root_velocity_world": [
+            0.07664593315954908,
+            -0.3756494044942628,
+            -2.202899721729929
+          ],
+          "omega_world": [
+            1.4938759803771973,
+            -0.11271404474973679,
+            -1.224658131599426
+          ],
+          "foot_positions_world": [
+            [
+              0.6789825073029541,
+              -0.2275681508771225,
+              0.10800333104786397
+            ],
+            [
+              0.7933939573855123,
+              -0.3891987191702395,
+              0.15049419368215816
+            ],
+            [
+              0.33115499666916837,
+              -0.14006919668681622,
+              0.49412741659409665
+            ],
+            [
+              0.48725840333311304,
+              -0.4983998366694402,
+              0.5670953682728467
+            ]
+          ],
+          "foot_force_world": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "tick": 300,
+          "root_height_m": 0.3329959809780121,
+          "forward_axis_vertical": -0.5954223830362301,
+          "root_velocity_world": [
+            0.20335439172571387,
+            -0.3468309708230909,
+            -2.489208281865319
+          ],
+          "omega_world": [
+            2.39184308052063,
+            0.8541370630264283,
+            -1.8002632856369023
+          ],
+          "foot_positions_world": [
+            [
+              0.6735519441925818,
+              -0.14743464211618462,
+              0.022007308763134004
+            ],
+            [
+              0.7365995324699913,
+              -0.3654000368773841,
+              0.021899452527314817
+            ],
+            [
+              0.3420221817423998,
+              -0.14292988041916357,
+              0.34546521984480594
+            ],
+            [
+              0.41891163073383664,
+              -0.4539403446946057,
+              0.338180682752491
+            ]
+          ],
+          "foot_force_world": [
+            [
+              0.0,
+              0.0,
+              105.97298431396484
+            ],
+            [
+              0.0,
+              0.0,
+              114.24821472167969
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "tick": 305,
+          "root_height_m": 0.2677645683288574,
+          "forward_axis_vertical": -0.587917426178852,
+          "root_velocity_world": [
+            -0.1954744910243182,
+            -0.40910718118514766,
+            -0.2173756620650476
+          ],
+          "omega_world": [
+            1.7657727003097532,
+            -0.5888704061508179,
+            -0.6174842715263368
+          ],
+          "foot_positions_world": [
+            [
+              0.669781706129165,
+              -0.15163811854061374,
+              0.021814007006166425
+            ],
+            [
+              0.7195600230506407,
+              -0.38392139080487,
+              0.021644892656603104
+            ],
+            [
+              0.36541706057125045,
+              -0.19316274889138407,
+              0.2360552987150154
+            ],
+            [
+              0.43114031486596477,
+              -0.38372791433311226,
+              0.18472610581388071
+            ]
+          ],
+          "foot_force_world": [
+            [
+              0.0,
+              0.0,
+              69.17408752441406
+            ],
+            [
+              0.0,
+              0.0,
+              61.608848571777344
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "tick": 310,
+          "root_height_m": 0.25586938858032227,
+          "forward_axis_vertical": -0.5411370773583194,
+          "root_velocity_world": [
+            -0.19768831482988558,
+            -0.33997738207177386,
+            -0.2540215311375331
+          ],
+          "omega_world": [
+            0.2868310809135436,
+            -1.1583460569381714,
+            1.3282705545425413
+          ],
+          "foot_positions_world": [
+            [
+              0.6394981499168431,
+              -0.10562000343243079,
+              0.02178336095256017
+            ],
+            [
+              0.7160898637026715,
+              -0.38980769426327627,
+              0.021620328081008666
+            ],
+            [
+              0.31694110902940165,
+              -0.20663062040566169,
+              0.23586811045921324
+            ],
+            [
+              0.38322848824826766,
+              -0.4531441024742815,
+              0.19348322527708275
+            ]
+          ],
+          "foot_force_world": [
+            [
+              0.0,
+              0.0,
+              43.6180534362793
+            ],
+            [
+              0.0,
+              0.0,
+              59.39472579956055
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "case": 96,
+      "actual_original_student_samples": [
+        {
+          "tick": 280,
+          "root_height_m": 0.676327645778656,
+          "forward_axis_vertical": -0.49204970979618495,
+          "root_velocity_world": [
+            0.20870604023129996,
+            -0.2936579670456242,
+            -0.7700430585120737
+          ],
+          "omega_world": [
+            -2.428117990493775,
+            0.9988461732864382,
+            2.168844699859619
+          ],
+          "foot_positions_world": [
+            [
+              0.6927142556876947,
+              -0.08995495337089388,
+              0.3385591625065272
+            ],
+            [
+              0.7738812243279438,
+              -0.34000412661113394,
+              0.4672546440120249
+            ],
+            [
+              0.31340757174510225,
+              -0.12236449591383519,
+              0.6458483561307025
+            ],
+            [
+              0.44659235428880845,
+              -0.38770187842426385,
+              0.7021707810753244
+            ]
+          ],
+          "foot_force_world": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "tick": 295,
+          "root_height_m": 0.45453161001205444,
+          "forward_axis_vertical": -0.6285168653281894,
+          "root_velocity_world": [
+            0.06552879180561652,
+            -0.3743677756206346,
+            -2.2019990474741773
+          ],
+          "omega_world": [
+            1.183289051055908,
+            -0.2012376338243485,
+            -0.9663404226303098
+          ],
+          "foot_positions_world": [
+            [
+              0.6507686791369123,
+              -0.21267665962008603,
+              0.11692189829607155
+            ],
+            [
+              0.7539027614543514,
+              -0.38193377817731206,
+              0.1370581260558041
+            ],
+            [
+              0.32686150222889254,
+              -0.1373578378600293,
+              0.5303595201861463
+            ],
+            [
+              0.48447899522828064,
+              -0.5045237236418489,
+              0.5664878432265223
+            ]
+          ],
+          "foot_force_world": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "tick": 300,
+          "root_height_m": 0.3347635567188263,
+          "forward_axis_vertical": -0.6152441496813683,
+          "root_velocity_world": [
+            0.1820077064033462,
+            -0.3485503882330842,
+            -2.480001824607164
+          ],
+          "omega_world": [
+            2.3776612281799316,
+            0.6666723489761351,
+            -1.7132692337036135
+          ],
+          "foot_positions_world": [
+            [
+              0.651714982733263,
+              -0.12823316427652734,
+              0.021983485821212956
+            ],
+            [
+              0.7158597555783919,
+              -0.34592531349722244,
+              0.02188781901180753
+            ],
+            [
+              0.33482012982227405,
+              -0.14248257674266354,
+              0.3735991095154728
+            ],
+            [
+              0.41799104569041395,
+              -0.4634970482930189,
+              0.33971126486456105
+            ]
+          ],
+          "foot_force_world": [
+            [
+              0.0,
+              0.0,
+              88.7396469116211
+            ],
+            [
+              0.0,
+              0.0,
+              139.27374267578125
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "tick": 305,
+          "root_height_m": 0.2685113549232483,
+          "forward_axis_vertical": -0.5923919716467861,
+          "root_velocity_world": [
+            -0.1557782053949489,
+            -0.5050856047512816,
+            -0.2452034766831992
+          ],
+          "omega_world": [
+            2.47898268699646,
+            -0.34574687480926525,
+            -0.8586753010749816
+          ],
+          "foot_positions_world": [
+            [
+              0.6470522883252701,
+              -0.11869815747201208,
+              0.021806772375124933
+            ],
+            [
+              0.7113724336778446,
+              -0.3472840910005938,
+              0.02171649829625527
+            ],
+            [
+              0.36191622419841724,
+              -0.19658907129543515,
+              0.25249807658506507
+            ],
+            [
+              0.4149432460372225,
+              -0.38639782409516676,
+              0.18372930550600472
+            ]
+          ],
+          "foot_force_world": [
+            [
+              0.0,
+              0.0,
+              26.553607940673828
+            ],
+            [
+              0.0,
+              0.0,
+              87.76563262939453
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "tick": 310,
+          "root_height_m": 0.2554546296596527,
+          "forward_axis_vertical": -0.5429315780753468,
+          "root_velocity_world": [
+            -0.1721893939988249,
+            -0.4045002570962034,
+            -0.2763790451877386
+          ],
+          "omega_world": [
+            0.9247491955757143,
+            -0.9853922128677367,
+            0.8680241107940676
+          ],
+          "foot_positions_world": [
+            [
+              0.683966512991132,
+              0.005637009359854242,
+              0.02279655949019324
+            ],
+            [
+              0.7114700581976705,
+              -0.3495441375414475,
+              0.02171369457472716
+            ],
+            [
+              0.31943041265949246,
+              -0.20250626827976137,
+              0.2587932641557355
+            ],
+            [
+              0.37587986867204287,
+              -0.443039396430287,
+              0.1850981207441337
+            ]
+          ],
+          "foot_force_world": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              85.72064971923828
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "case": 71,
+      "actual_original_student_samples": [
+        {
+          "tick": 280,
+          "root_height_m": 0.6431019306182861,
+          "forward_axis_vertical": -0.5785458836457198,
+          "root_velocity_world": [
+            0.2858468536710262,
+            -0.26534737453275775,
+            -1.0477720409114828
+          ],
+          "omega_world": [
+            -1.4031962156295776,
+            1.7927173376083372,
+            1.8726985454559324
+          ],
+          "foot_positions_world": [
+            [
+              0.6757617248115717,
+              -0.18383942704742717,
+              0.3236567117875665
+            ],
+            [
+              0.838443570769872,
+              -0.3833530074448128,
+              0.4436861408961307
+            ],
+            [
+              0.33170915189306316,
+              -0.16586991282016844,
+              0.6626207040280003
+            ],
+            [
+              0.489373573100679,
+              -0.43523595833775297,
+              0.7812156860867938
+            ]
+          ],
+          "foot_force_world": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "tick": 295,
+          "root_height_m": 0.374308317899704,
+          "forward_axis_vertical": -0.6485445132092009,
+          "root_velocity_world": [
+            0.11923585599945584,
+            -0.3334817207345321,
+            -2.5112354439093996
+          ],
+          "omega_world": [
+            1.9060245752334595,
+            0.38022753596305847,
+            -1.7027963399887085
+          ],
+          "foot_positions_world": [
+            [
+              0.6720118212374612,
+              -0.10355638792410711,
+              0.02194680431030699
+            ],
+            [
+              0.7421294633433634,
+              -0.32703889645496914,
+              0.021766209156470928
+            ],
+            [
+              0.3720506726959418,
+              -0.12613346977835813,
+              0.4348349704159414
+            ],
+            [
+              0.4880746111145353,
+              -0.46848627854803665,
+              0.44294084687723684
+            ]
+          ],
+          "foot_force_world": [
+            [
+              0.0,
+              0.0,
+              48.20945358276367
+            ],
+            [
+              0.0,
+              0.0,
+              51.517364501953125
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "tick": 300,
+          "root_height_m": 0.2803530693054199,
+          "forward_axis_vertical": -0.6389348129966186,
+          "root_velocity_world": [
+            -0.1877104194881154,
+            -0.46554798117622315,
+            -0.18370859827040986
+          ],
+          "omega_world": [
+            2.8948886394500732,
+            -0.02477773465216182,
+            -1.899270892143249
+          ],
+          "foot_positions_world": [
+            [
+              0.6720865968847598,
+              -0.11046941152327339,
+              0.021733286823297504
+            ],
+            [
+              0.7026472036133733,
+              -0.3833042885130074,
+              0.021178290486212087
+            ],
+            [
+              0.3920391669521225,
+              -0.1688521784248988,
+              0.28341728395834365
+            ],
+            [
+              0.46817237094965486,
+              -0.3882946444800476,
+              0.2324790096798887
+            ]
+          ],
+          "foot_force_world": [
+            [
+              0.0,
+              0.0,
+              76.15538787841797
+            ],
+            [
+              0.0,
+              0.0,
+              66.45507049560547
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "tick": 305,
+          "root_height_m": 0.26852595806121826,
+          "forward_axis_vertical": -0.5929154832951913,
+          "root_velocity_world": [
+            -0.1874638918385808,
+            -0.45033098767653623,
+            -0.26417288044426174
+          ],
+          "omega_world": [
+            1.5976308584213261,
+            -0.7379122972488403,
+            0.12008840590715408
+          ],
+          "foot_positions_world": [
+            [
+              0.6627171090996191,
+              -0.0555774261999189,
+              0.021838382213022728
+            ],
+            [
+              0.7018511091005525,
+              -0.38574314910240787,
+              0.02123500067933276
+            ],
+            [
+              0.37359855183824325,
+              -0.17348936591949235,
+              0.26299149694947066
+            ],
+            [
+              0.4105806885435748,
+              -0.39793003483650025,
+              0.2000871850531278
+            ]
+          ],
+          "foot_force_world": [
+            [
+              0.0,
+              0.0,
+              11.492462158203125
+            ],
+            [
+              0.0,
+              0.0,
+              47.465389251708984
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "tick": 310,
+          "root_height_m": 0.2551341950893402,
+          "forward_axis_vertical": -0.5412516997568755,
+          "root_velocity_world": [
+            -0.14317993788379982,
+            -0.41872422726770975,
+            -0.2695398834451689
+          ],
+          "omega_world": [
+            0.8496229648590086,
+            -0.9733729958534241,
+            1.061696410179138
+          ],
+          "foot_positions_world": [
+            [
+              0.7067232499135057,
+              0.02279355350946112,
+              0.02234423671501984
+            ],
+            [
+              0.701807633028878,
+              -0.3873906083115234,
+              0.021246521062679158
+            ],
+            [
+              0.321753451743492,
+              -0.20945716228051592,
+              0.283424934283885
+            ],
+            [
+              0.41326701595510495,
+              -0.48276713994323545,
+              0.2149430719710957
+            ]
+          ],
+          "foot_force_world": [
+            [
+              0.0,
+              0.0,
+              11.638713836669922
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "observer": {
+    "exact_replay": true,
+    "maximum_cross_environment_normal_force_n": 0.0,
+    "native_job_status": "SUCCEEDED",
+    "elapsed_s": 1266.5135786910541,
+    "strict_original_student_isolation_passed": false,
+    "physical_cause_identified": false
+  },
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_task_space_probes_20261108/result.json": "75b1e61c17ab77fe7a4155739ba4d347bf4d3d9c2dc74ccd2fce421ae67e5642",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_task_space_probes_20261108/status.json": "1204a1f66da391d418de23747fce28c8ec6f21c46570db54170da8f2e87a3b84",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_task_space_probes_20261108/measured_landing_geometry.json": "f624d91541e28b1fae167ce1e1f5c719b19f3f42a7d120575eb3f7a63883117f",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_native_all_partners_followup_20261108/all_partner_audit.json": "96269dd25d0acbceaa1f5593c53a4fd9bc3c37874018b790e18712499157dc6f",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_all_partners_all128_20261108_01/job.json": "b498f89724f4408ef119779e46a6d0b0ec0751534aa655f373314895692571f6",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/probe_task_space_landing_v1.py": "4a3f2ccc9159c9e041fa223966e139c848e1e2b3eb40135acd1658c4def2b599"
+  },
+  "native_candidate_execution": false,
+  "valid_expert_labels": false,
+  "formal_contract_changed": false
+}
