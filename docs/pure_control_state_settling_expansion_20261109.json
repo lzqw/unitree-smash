@@ -1,0 +1,246 @@
+{
+  "model_and_coverage": {
+    "passed": true,
+    "old_references_preserved": true,
+    "old_initial_matches_preserved": 42,
+    "causal_entries_checked": 110,
+    "new_matches": [
+      {
+        "case": 126,
+        "tick": 272,
+        "score": 1.1102230246251565e-14,
+        "first_command_error_rad": 0.0
+      }
+    ],
+    "capture_tick": 576,
+    "exact_paired_prefix_steps": 304,
+    "first_command_difference_rad": 0.36359075853000133,
+    "feedback_final_stable_s": 2.25,
+    "feedback_batch_state_at_preparation": "RUNNING_EXTENDED_REFERENCE_SETTLING",
+    "reference_open_loop_complete": false,
+    "requires_controller": "PureControlStateSettlingV23",
+    "native_execution": false,
+    "native_success": false,
+    "valid_expert_labels": false,
+    "old_native_success_preservation_not_inferred": true
+  },
+  "native_preparation": {
+    "pinned_files": 647,
+    "max_seconds": 7200,
+    "env_steps_cap": 102400,
+    "native_output": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_state_settling_expansion_all128_20261109_01",
+    "native_execution_started": false,
+    "deferred_pid": 227804,
+    "predecessor_deferred_pid": 221320,
+    "max_wait_seconds": 40000
+  },
+  "negative_checks": {
+    "results": [
+      {
+        "case": "hardware_effort",
+        "rejected": true,
+        "reason": "Changed physical/control setting interface"
+      },
+      {
+        "case": "wrong_controller",
+        "rejected": true,
+        "reason": "Reference requires V23"
+      },
+      {
+        "case": "changed_entry",
+        "rejected": true,
+        "reason": "Changed V23 native entry"
+      },
+      {
+        "case": "unbounded_duration",
+        "rejected": true,
+        "reason": "Changed declared native bounds"
+      }
+    ],
+    "native_execution": false
+  },
+  "configuration": {
+    "interface": {
+      "limits": [
+        [
+          -1.0471998453140259,
+          1.0471998453140259
+        ],
+        [
+          -1.0471998453140259,
+          1.0471998453140259
+        ],
+        [
+          -1.0471998453140259,
+          1.0471998453140259
+        ],
+        [
+          -1.0471998453140259,
+          1.0471998453140259
+        ],
+        [
+          -1.5707999467849731,
+          3.4906997680664062
+        ],
+        [
+          -1.5707999467849731,
+          3.4906997680664062
+        ],
+        [
+          -0.5235999226570129,
+          4.537899494171143
+        ],
+        [
+          -0.5235999226570129,
+          4.537899494171143
+        ],
+        [
+          -2.7227001190185547,
+          -0.8377599120140076
+        ],
+        [
+          -2.7227001190185547,
+          -0.8377599120140076
+        ],
+        [
+          -2.7227001190185547,
+          -0.8377599120140076
+        ],
+        [
+          -2.7227001190185547,
+          -0.8377599120140076
+        ],
+        [
+          -2.618000030517578,
+          2.167999744415283
+        ],
+        [
+          0.0,
+          3.1399998664855957
+        ],
+        [
+          -2.9669997692108154,
+          0.0
+        ],
+        [
+          -1.744999885559082,
+          1.744999885559082
+        ],
+        [
+          -1.21999990940094,
+          1.21999990940094
+        ],
+        [
+          -2.0943996906280518,
+          2.0943996906280518
+        ]
+      ],
+      "stiffness": [
+        25.0,
+        25.0,
+        25.0,
+        25.0,
+        25.0,
+        25.0,
+        25.0,
+        25.0,
+        25.0,
+        25.0,
+        25.0,
+        25.0,
+        80.0,
+        80.0,
+        80.0,
+        80.0,
+        80.0,
+        80.0
+      ],
+      "damping": [
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        4.0,
+        4.0,
+        4.0,
+        4.0,
+        4.0,
+        4.0
+      ],
+      "effort": [
+        23.5,
+        23.5,
+        23.5,
+        23.5,
+        23.5,
+        23.5,
+        23.5,
+        23.5,
+        23.5,
+        23.5,
+        23.5,
+        23.5,
+        100.0,
+        100.0,
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "velocity": [
+        30.0,
+        30.0,
+        30.0,
+        30.0,
+        30.0,
+        30.0,
+        30.0,
+        30.0,
+        30.0,
+        30.0,
+        30.0,
+        30.0,
+        5.0,
+        5.0,
+        5.0,
+        5.0,
+        5.0,
+        5.0
+      ],
+      "friction": 0.65
+    },
+    "method": "V23 state-driven support with one additional partial reference backed by complete model feedback",
+    "sequence_mpc": false,
+    "training": false,
+    "controller": "pure_control_state_settling_v23",
+    "software_arm_command_slew": null,
+    "original_hardware_unchanged": true,
+    "hip_mount_avoidance": true,
+    "moving_foot_reference": true,
+    "model_reference_library": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_state_settling_expansion_preparation_20261109/reference_library.json"
+  },
+  "formal_status": "FAILED",
+  "native_success": false,
+  "valid_expert_labels": false,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_state_settling_expansion_preparation_20261109/receipt.json": "dabbeee9b503dddba2619b69b8aeab4ddfbc45d8556f903c10aed71634ecef34",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_state_settling_expansion_native_preparation_20261109_01/plan.json": "2243d3575dcc7042d3c151c58143daa823850292226953bd4e148140c9cefbd0",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_state_settling_expansion_native_preparation_20261109_01/prepared_entry_check.json": "4b53055b68b929a5febdcfc1150bd4858e658775ab4d1f1ac81a4f059fc73a90",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_state_settling_expansion_native_preparation_20261109_01/recheck.json": "cef8f4e4813073c8815abc55acca1484ae0294070ff4ec9b17d471ca1e12a18f",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_state_settling_expansion_native_preparation_20261109_01/negative_checks.json": "14b532ae7376852ac9af231ee48a4924caac1688d0e34f2956a098e1ba066eb7",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_state_settling_expansion_native_preparation_20261109_01/controller.json": "44f491d14855abca5ce3ac864a51b4e2e713d59b3737301e4a11dc75b09cf0a4",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_state_settling_expansion_native_preparation_20261109_01/formal_verify.json": "ae2b5bbc540391cfed972e3b8764c4c9229b3e2cee247c029a8aa1075e69beea",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_state_settling_expansion_native_preparation_20261109_01/deferred_owner.json": "a5203dabe8abcbb4b7f04e4058119094a7d1371f2817e5b15678d591eb88dc78",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/build_state_settling_reference_bank_v1.py": "c27cdb700e74595c98f9979d36110903600265904735e6b339d391277bbb4b25",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/prepare_native_state_settling_expansion_v24.py": "75ad859f7559f8718fdfb92af157134fe2d4941b66f1ac1256635a980fa0ab07",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/run_after_deferred_native_v5.py": "7ce248b94fcd3e42fabde5e258e8f09806380c507739df2755c737b985b46690"
+  }
+}
