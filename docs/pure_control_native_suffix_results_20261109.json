@@ -398,7 +398,9 @@
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_suffix_review_20261109/formal_verify.json": "ae2b5bbc540391cfed972e3b8764c4c9229b3e2cee247c029a8aa1075e69beea",
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_suffix_native_preparation_20261109_01/native_audit.json": "921767663e5f6de8a70467bbb64fb29ab7d456af4e2ae5838b2ee3bdc6fcb58f",
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_suffix_all128_20261109_01/metrics.json": "00421364938d2bf1e19fec361382f93d89b62ab043180c9e2bb20df93bd2844f",
-    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_suffix_all128_20261109_01/job.json": "51288e67ac7bf98348324f6c398f087035c805849afe23541564b1bfe1e5ea08"
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_suffix_all128_20261109_01/job.json": "51288e67ac7bf98348324f6c398f087035c805849afe23541564b1bfe1e5ea08",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_extended_settling_factorial_20261109/result.json": "98336baa8ca59e2595f868ccefb7f9118fed38eb0f59ee4691e4634a3faf5be1",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_native_suffix_tracking_20261109/tracking.json": "d9787d95ce89a0314439150807faa05f8db96d45e6fdf7f2963634bc08589f58"
   },
   "model126_fidelity": {
     "state": "COMPLETED_STATE_SETTLING_FIDELITY_COMPARISON",
@@ -459,5 +461,245 @@
     },
     "state_rows_after_command": true,
     "native_success": false
+  },
+  "model126_completed_factorial": {
+    "state": "COMPLETED_VERIFIED_FOUR_WAY_MODEL_COMPARISON",
+    "pairs": [
+      {
+        "candidate_scoring_substeps": 16,
+        "common_steps": 408,
+        "exact_prefix_steps": 304,
+        "first_difference_tick": {
+          "target": 576,
+          "q": 576,
+          "v": 576
+        },
+        "capture_tick": 576,
+        "first_command_difference_rad": 0.36359075853000133,
+        "plan_end": {
+          "steps": 408,
+          "failure": {
+            "tick": 680,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.003114991198464055
+            },
+            "collision": {
+              "micro": 8,
+              "body": "RR_calf",
+              "gap_m": -1.7509087088007566e-05
+            }
+          },
+          "full_model_path": false,
+          "final_model_stable_s": 0.0
+        },
+        "state_settling": {
+          "steps": 528,
+          "failure": null,
+          "full_model_path": true,
+          "final_model_stable_s": 2.25
+        }
+      },
+      {
+        "candidate_scoring_substeps": 160,
+        "common_steps": 408,
+        "exact_prefix_steps": 304,
+        "first_difference_tick": {
+          "target": 576,
+          "q": 576,
+          "v": 576
+        },
+        "capture_tick": 576,
+        "first_command_difference_rad": 0.3402341722496016,
+        "plan_end": {
+          "steps": 408,
+          "failure": {
+            "tick": 680,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.0001986857189777494
+            },
+            "collision": {
+              "micro": 111,
+              "body": "RR_calf",
+              "gap_m": -6.040205143212005e-06
+            }
+          },
+          "full_model_path": false,
+          "final_model_stable_s": 0.0
+        },
+        "state_settling": {
+          "steps": 528,
+          "failure": null,
+          "full_model_path": true,
+          "final_model_stable_s": 2.25
+        }
+      }
+    ],
+    "physical_substeps": 160,
+    "all_input_hashes_verified": true,
+    "native_success": false,
+    "valid_expert_labels": false,
+    "training": false,
+    "state_rows_after_command": true,
+    "source_sha256": {
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_extended_reference_settling_20261109/result.json": "09911a307529181dea13dddd739f00f5e356fc2387700f8f4db451590497b012",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_extended_reference_settling_20261109/inputs.json": "504de55ade13133200ce1861019f1a015b7851841f40f4c4e51e00ede99155ec",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_extended_reference_settling_20261109/126_272_16_plan_end.json": "9e3cef4503d210f01638a4c86520675a32145f5f188784a6eadef15e400e35d4",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_extended_reference_settling_20261109/126_272_16_state_settling.json": "c1cec1883669c7c2c7a4971eed02fe255ed1a697d40b47afd943ed698a1d4ab9",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_extended_reference_settling_20261109/126_272_160_plan_end.json": "38817ac7db02989305be046abd63598f41d662913cfe52e93ca2da960af63be8",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_extended_reference_settling_20261109/126_272_160_state_settling.json": "10418a33b637070b87c51b2c1b184e16ccdb49b701391b0a6b57c5c42171d742"
+    }
+  },
+  "native_reference_tracking": {
+    "source_sha256": {
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_native_replanned_tracking_v1.py": "13e032fd0052dbb46632987dbfba55e0caa779542561fcaf81177674cea125ab",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_suffix_native_preparation_20261109_01/plan.json": "c1712289c2de96bc13484a28c8663c10757270e8713330500bd2d76350e3f592",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_suffix_native_preparation_20261109_01/controller.json": "5f4b02e0d3c85a76d055a76e162ab6248b7de45e022ecf507c339843f75b7c6c",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_suffix_native_preparation_20261109_01/native_audit.json": "921767663e5f6de8a70467bbb64fb29ab7d456af4e2ae5838b2ee3bdc6fcb58f",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_suffix_all128_20261109_01/job.json": "51288e67ac7bf98348324f6c398f087035c805849afe23541564b1bfe1e5ea08",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_native_suffix_preparation_20261109/reference_library.json": "caf75e496016e5b8cff6ca53466471cbbf747fcd48d50ac260efaca05de69241",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_suffix_all128_20261109_01/pure_control_commands.npz": "950951c3620b9ff32a507007136fd7621100230aaf122c7f7ecdfba9e25ea34e",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_suffix_all128_20261109_01/pure_control_diagnostics.jsonl": "9390fc54f38401dca360eb54b7bfd1cf97174e62494c10bc46958614b687a01e"
+    },
+    "tracking_error_is_not_one_step_prediction_error": true,
+    "pre_command_state_aligned_to_previous_reference_row": true,
+    "new_native_execution": false,
+    "formal_acceptance": false,
+    "training": false,
+    "cases": [
+      {
+        "case": 58,
+        "selected_source_key": "371580156cd7f070d2cddf46e4e3b2ab22515d002ab32acaa11b31e7b069f4f7",
+        "selection_tick": 442,
+        "reference_steps": 358,
+        "observed_reference_steps": 358,
+        "executed_replanned_steps": 358,
+        "sources": {
+          "predictive_reference_selection:planned": 87,
+          "predictive_reference_selection:state_joint_feedback": 203,
+          "predictive_reference_selection:half_wbc": 45,
+          "predictive_reference_selection:wbc": 23
+        },
+        "selected_candidates": {
+          "planned": 87,
+          "state_joint_feedback": 203,
+          "half_wbc": 45,
+          "wbc": 23
+        },
+        "tracking": {
+          "root_position_m": {
+            "count": 358,
+            "median": 0.006448322782168782,
+            "p95": 0.009456292850730087,
+            "maximum": 0.00983793972323959
+          },
+          "root_orientation_rad": {
+            "count": 358,
+            "median": 0.011323295059695229,
+            "p95": 0.020997611591016832,
+            "maximum": 0.021928578489110114
+          },
+          "joint_position_max_rad": {
+            "count": 358,
+            "median": 0.012615154222299974,
+            "p95": 0.030076865927943567,
+            "maximum": 0.035430950602612254
+          },
+          "root_velocity_world_m_s": {
+            "count": 358,
+            "median": 0.006635539333246074,
+            "p95": 0.026195169626408735,
+            "maximum": 0.03544749330455119
+          },
+          "joint_velocity_max_rad_s": {
+            "count": 358,
+            "median": 0.06030290934296226,
+            "p95": 0.22319227576752435,
+            "maximum": 0.6108851084986786
+          },
+          "command_from_plan_max_rad": {
+            "count": 358,
+            "median": 0.012251102084354648,
+            "p95": 0.13355024018766512,
+            "maximum": 0.22195493354841364
+          }
+        },
+        "no_recorded_nonfoot_ground_force": true,
+        "final_sampled_stable_s": 1.4200000762939453,
+        "head_before_takeover": true,
+        "command_deviation_over_2e_minus6_rad_ticks_count": 271,
+        "model_reference_contact_disagreement_ticks_count": 52,
+        "planned_rejections_count": 0,
+        "no_feasible_candidate_ticks_count": 0
+      },
+      {
+        "case": 123,
+        "selected_source_key": "88496e2d231e24a3723f5ce70f2531a29a34f17896d32935ec98fbc61ca3149b",
+        "selection_tick": 409,
+        "reference_steps": 389,
+        "observed_reference_steps": 389,
+        "executed_replanned_steps": 391,
+        "sources": {
+          "predictive_reference_selection:half_wbc": 28,
+          "predictive_reference_selection:wbc": 32,
+          "predictive_reference_selection:planned": 64,
+          "predictive_reference_selection:state_joint_feedback": 265,
+          "interval_qp": 2
+        },
+        "selected_candidates": {
+          "half_wbc": 28,
+          "wbc": 32,
+          "planned": 64,
+          "state_joint_feedback": 265,
+          "null": 2
+        },
+        "tracking": {
+          "root_position_m": {
+            "count": 389,
+            "median": 0.00235465224318916,
+            "p95": 0.004672730132373628,
+            "maximum": 0.0049715813932382
+          },
+          "root_orientation_rad": {
+            "count": 389,
+            "median": 0.006037771519988383,
+            "p95": 0.012466485500646326,
+            "maximum": 0.016689000078936728
+          },
+          "joint_position_max_rad": {
+            "count": 389,
+            "median": 0.007798241752181578,
+            "p95": 0.014804164520379692,
+            "maximum": 0.0245899749640357
+          },
+          "root_velocity_world_m_s": {
+            "count": 389,
+            "median": 0.006800411817579326,
+            "p95": 0.017517464723028137,
+            "maximum": 0.03693416632152029
+          },
+          "joint_velocity_max_rad_s": {
+            "count": 389,
+            "median": 0.05370367358730932,
+            "p95": 0.18701055077917747,
+            "maximum": 0.8134163730021999
+          },
+          "command_from_plan_max_rad": {
+            "count": 389,
+            "median": 0.0073340403923924935,
+            "p95": 0.1540241326929924,
+            "maximum": 0.3871133928003776
+          }
+        },
+        "no_recorded_nonfoot_ground_force": true,
+        "final_sampled_stable_s": 1.1399998664855957,
+        "head_before_takeover": true,
+        "command_deviation_over_2e_minus6_rad_ticks_count": 325,
+        "model_reference_contact_disagreement_ticks_count": 34,
+        "planned_rejections_count": 0,
+        "no_feasible_candidate_ticks_count": 0
+      }
+    ]
   }
 }
