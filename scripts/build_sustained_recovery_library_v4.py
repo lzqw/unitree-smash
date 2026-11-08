@@ -1,4 +1,4 @@
-"""Replace model references only after full finite-horizon stability checks.
+"""Build model references for explicit full-episode feedback evaluation.
 
 Keeps the original query states and all unchanged reference records. A stable
 model terminal window still needs full-episode feedback and native execution.
@@ -14,6 +14,8 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     for name in ['base-library','search','bank','output']:
         parser.add_argument('--'+name,type=Path,required=True)
+    parser.add_argument('--include-unstable-paths-for-diagnosis',action='store_true',
+        help='Include collision-free prefixes whose endpoint is not yet stable; never expert labels')
     args=parser.parse_args()
     read=lambda p:json.loads(Path(p).read_text())
     digest=lambda p:hashlib.sha256(Path(p).read_bytes()).hexdigest()
@@ -29,7 +31,7 @@ def main():
     pins={str(p.resolve()):digest(p) for p in [Path(__file__),args.base_library,args.bank,args.search/'result.json']}
     for path in sorted(args.search.glob('case_*.json')):
         result=read(path);fine=result['fine'];case=result['source_case']
-        if not fine['model_path_complete'] or fine['terminal_stable_s']<.8:
+        if not fine['model_path_complete'] or (fine['terminal_stable_s']<.8 and not args.include_unstable_paths_for_diagnosis):
             continue
         if case not in refs or result['query']!=bank[case] or refs[case]['query']!=bank[case]:
             raise ValueError('Reference initial state changed')
@@ -48,10 +50,12 @@ def main():
             query=bank[case],trajectory=trajectory,terminal=fine['terminal'],native_success=False,
             model_terminal_stable_s=fine['terminal_stable_s'],full_episode_feedback_verified=False)
         changed.append(case)
-    if not changed:raise ValueError('No candidate meets the declared finite-horizon stability check')
+    if not changed:raise ValueError('No candidate meets the declared model-path inclusion rule')
     result=dict(schema='model-recovery-reference-library-v2',control_dt_s=.01,
         references=[refs[k] for k in sorted(refs)],replaced_source_cases=changed,source_sha256=pins,
-        native_success=False,valid_expert_labels=False,training=False,full_episode_validation_required=True)
+        native_success=False,valid_expert_labels=False,training=False,full_episode_validation_required=True,
+        includes_unstable_endpoints_for_diagnosis=args.include_unstable_paths_for_diagnosis,
+        original_stability_requirement_unchanged=True)
     args.output.parent.mkdir(parents=True,exist_ok=True)
     args.output.write_text(json.dumps(result,indent=2,allow_nan=False)+'\n')
     print(json.dumps(dict(references=len(refs),replaced_source_cases=changed,native_success=False)))
