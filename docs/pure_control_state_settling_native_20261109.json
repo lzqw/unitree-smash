@@ -1,0 +1,74 @@
+{
+  "state": "WAITING_QUEUED_NATIVE_COMPLETION",
+  "deferred_owner_pid": 221320,
+  "predecessor_pid": 216266,
+  "native_execution_started": false,
+  "controller": "pure_control_state_settling_v23",
+  "causal_entries_checked": 110,
+  "maximum_entry_command_difference_rad": 0.0,
+  "native_max_seconds": 7200,
+  "declared_max_seconds": 7200,
+  "env_steps_cap": 102400,
+  "wait_max_seconds": 30000,
+  "child_max_seconds": 8400,
+  "input_pin_count": 623,
+  "negative_checks": {
+    "passed": true,
+    "checks": [
+      {
+        "test": "changed_hardware",
+        "returncode": 1,
+        "reason": "ValueError: Unexpected execution configuration change: interface"
+      },
+      {
+        "test": "second_writer",
+        "returncode": 1,
+        "reason": "ValueError: Only declared controller import may change"
+      },
+      {
+        "test": "failed_feedback",
+        "returncode": 1,
+        "reason": "ValueError: Feedback did not complete the original final stability window"
+      }
+    ]
+  },
+  "model_paths": [
+    {
+      "state_key": "27:274",
+      "mode": "state_settling",
+      "steps": 526,
+      "required_steps": 526,
+      "failure": null,
+      "full_model_path": true,
+      "final_model_stable_s": 3.9200000762939453,
+      "state_settling_capture_tick": 409,
+      "native_success": false,
+      "valid_expert_labels": false,
+      "worker_elapsed_s": 284.61845254781656
+    },
+    {
+      "state_key": "65:275",
+      "mode": "state_settling",
+      "steps": 525,
+      "required_steps": 525,
+      "failure": null,
+      "full_model_path": true,
+      "final_model_stable_s": 2.070000171661377,
+      "state_settling_capture_tick": 594,
+      "native_success": false,
+      "valid_expert_labels": false,
+      "worker_elapsed_s": 330.226639786968
+    }
+  ],
+  "post_entry_native_success_retention_unproven": true,
+  "formal_acceptance": false,
+  "training": false,
+  "valid_expert_labels": false,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_state_settling_native_preparation_20261109_01/plan.json": "492831ec9e1dec98e0357ac15dad60b0306762b92abff49de4b83ef6e2abade2",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_state_settling_native_preparation_20261109_01/controller.json": "b37af43355a1ea12ba2cd880088e9b6ca19f16e48dafc3d1f19231b139ef4869",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_state_settling_native_preparation_20261109_01/prepared_entry_check.json": "74649642c8a05e43471b64ffd93c7b9de8e3fc44bc392cf24d266610dc2554a7",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_state_settling_native_preparation_20261109_01/deferred_owner.json": "0394f2ab6ec85fdc2ae374f7c18445976cb242601726e225d7cc189e28202b28",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_state_settling_native_preparation_20261109_01/negative_checks/result.json": "97980e46245fc2ef72caae4b47a6ed0ee19ae492f4660db753456951d0a7e11a"
+  }
+}
