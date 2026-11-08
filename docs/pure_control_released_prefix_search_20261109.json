@@ -1,0 +1,126 @@
+{
+  "created_utc": "2026-11-08T23:12:16.386837+00:00",
+  "completed_search": {
+    "state": "COMPLETED_ACTUAL_RECOVERY_SEQUENCE_SEARCH",
+    "method": "fair_dense_checked_prefix_and_fine_only_suffix_search",
+    "all_candidates_substeps": 160,
+    "completed_candidates": 243,
+    "results": [
+      {
+        "state_key": "72:281",
+        "steps": 150,
+        "model_path_complete": false,
+        "terminal_stable_s": 0.0,
+        "failure": {
+          "step": 150,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.010992224214414495
+          },
+          "collision": {
+            "micro": 3,
+            "body": "FL_hip",
+            "gap_m": -6.258565342327771e-05
+          }
+        }
+      },
+      {
+        "state_key": "87:272",
+        "steps": 233,
+        "model_path_complete": false,
+        "terminal_stable_s": 0.0,
+        "failure": {
+          "step": 233,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.0019895272845341927
+          },
+          "collision": {
+            "micro": 49,
+            "body": "FR_thigh",
+            "gap_m": -1.4846683288660678e-05
+          }
+        }
+      },
+      {
+        "state_key": "114:272",
+        "steps": 108,
+        "model_path_complete": false,
+        "terminal_stable_s": 0.0,
+        "failure": {
+          "step": 108,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.004725159587609315
+          },
+          "collision": {
+            "micro": 36,
+            "body": "FR_hip",
+            "gap_m": -4.147198230203264e-05
+          }
+        }
+      }
+    ],
+    "wall_seconds": 2400.49981202092,
+    "scheduling": "round_robin_candidates_across_states",
+    "equal_cpu_time_guaranteed": false,
+    "per_state_compute": {
+      "72:281": {
+        "completed_candidates": 81,
+        "budget_limited": 7,
+        "worker_cpu_seconds": 3593.330365592001,
+        "worker_wall_seconds": 3593.5950627413113,
+        "maximum_queue_wait_seconds": 799.9180061209481
+      },
+      "87:272": {
+        "completed_candidates": 81,
+        "budget_limited": 6,
+        "worker_cpu_seconds": 2630.986156610001,
+        "worker_wall_seconds": 2631.166877544718,
+        "maximum_queue_wait_seconds": 829.5565552401822
+      },
+      "114:272": {
+        "completed_candidates": 81,
+        "budget_limited": 6,
+        "worker_cpu_seconds": 3074.3339776099983,
+        "worker_wall_seconds": 3074.5409897614736,
+        "maximum_queue_wait_seconds": 841.4645426650532
+      }
+    },
+    "native_success": false,
+    "valid_expert_labels": false
+  },
+  "selected_no_instantaneous_stable_state": [
+    72,
+    87,
+    114
+  ],
+  "new_search": {
+    "path": "reports/pure_control_released_prefix_search_20261109",
+    "observed_pid": 232152,
+    "state_at_publication": "RUNNING",
+    "first_command_free": true,
+    "fixed_recovery_prefix_steps": 0,
+    "all_candidates_substeps": 160,
+    "workers": 4,
+    "max_seconds": 2400,
+    "source_command_reconstruction_max_error_rad": {
+      "72:281": 8.881784197001252e-16,
+      "87:272": 8.881784197001252e-16,
+      "114:272": 8.881784197001252e-16
+    },
+    "native_rerun": false,
+    "training": false
+  },
+  "not_a_single_factor_comparison": true,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fair_dense_prefix_extension_20261109/result.json": "7e1198321504fe2e7dda932b81276f6dd47fe7f404016e201d56dcc489d9ecfc",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fair_dense_prefix_extension_20261109/inputs.json": "f113f8c31bbadade9a4810d3ed0026406b3c54a968e0556e111642c94fb3e95a",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_released_prefix_search_20261109/inputs.json": "a00e3374268a1cb1223caa279c5239d6e24a62acbe775ce06b813ad12dccdfd7",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_released_prefix_continuation_20261109/inputs.json": "505cb1131716fb8ae537e6d909f853d07c6c1be297164d13925609a263cfd650",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/search_released_prefix_recovery_v9.py": "2a3a4f57df9ea728005edb504b6c8ccb30797e386f59cf310d94e8ad554fa362",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/run_verified_recovery_feedback_v7.py": "884e0a022eae58ca01261827d7a5b8654ca1ee22b854f78c806153c20da65579"
+  },
+  "native_success": false,
+  "valid_expert_labels": false
+}
