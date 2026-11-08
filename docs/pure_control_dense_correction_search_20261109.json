@@ -1,0 +1,53 @@
+{
+  "created_utc": "2026-11-08T23:16:25.174373+00:00",
+  "reason": "Full-recovery sparse resampling changed previously checked early commands; preserve dense nominal while permitting smooth full18 corrections.",
+  "previous_resampling_max_error_rad": {
+    "72:281": 0.8131560549247696,
+    "87:272": 0.704130528114657,
+    "114:272": 0.49455211598822135
+  },
+  "checks": {
+    "checks": [
+      {
+        "state_key": "72:281",
+        "zero_correction_max_error_rad": 1.1102230246251565e-16,
+        "first_command_test_shift_rad": 0.010000000000000009,
+        "malformed_baseline_rejected": true
+      },
+      {
+        "state_key": "87:272",
+        "zero_correction_max_error_rad": 2.220446049250313e-16,
+        "first_command_test_shift_rad": 0.010000000000000009,
+        "malformed_baseline_rejected": true
+      },
+      {
+        "state_key": "114:272",
+        "zero_correction_max_error_rad": 2.220446049250313e-16,
+        "first_command_test_shift_rad": 0.010000000000000009,
+        "malformed_baseline_rejected": true
+      }
+    ],
+    "model_rollout_executed": false,
+    "native_success": false
+  },
+  "current_search": {
+    "output": "reports/pure_control_dense_correction_search_20261109",
+    "pid": 232733,
+    "workers": 4,
+    "max_seconds": 2400,
+    "substeps": 160,
+    "first_command_free": true,
+    "fixed_recovery_prefix_steps": 0
+  },
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_dense_correction_search_20261109/inputs.json": "a70913d333499b088742ebb6cd69f9b74e17a55514550423a2c9a1083aad6aad",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_dense_correction_checks_20261109/result.json": "9b33f9a45c06b341c828795647d42cd1c8695d77cf0ec5d3691de334bde4d2bd",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_dense_correction_continuation_20261109/inputs.json": "29958a499e8c1b203be54512e832803631ca90633048e6c8416d3bfbc7fa616b",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/dense_reference_correction_rollout_v1.py": "c77d4b40d7706167d117f068e385cce875c7dc83433e0e774a517bc527c9b642",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/search_dense_correction_recovery_v10.py": "35451ea90b990284e30b967b85332870599c4f87440a81f006064fa16ae8a57f",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/run_verified_recovery_feedback_v8.py": "8adf9234732eb4e3fd255de8aa0578f94d56fea86298caff5ac7d15e02e7a36c"
+  },
+  "native_success": false,
+  "training": false,
+  "valid_expert_labels": false
+}
