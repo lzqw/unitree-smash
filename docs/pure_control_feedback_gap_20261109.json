@@ -1808,10 +1808,38 @@
     "valid_expert_labels": false
   },
   "longer_115_full_model_status": {
-    "state": "RUNNING_NATIVE_PHASE_MODEL",
-    "pid": 180286,
-    "completed": 0,
-    "total": 1
+    "state": "COMPLETED_NATIVE_PHASE_MODEL",
+    "results": [
+      {
+        "source_case": 115,
+        "steps": 349,
+        "required_steps": 532,
+        "failure": {
+          "step": 349,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.0011148078032022866
+          },
+          "collision": {
+            "micro": 54,
+            "body": "RR_calf",
+            "gap_m": -9.272100111248557e-06
+          },
+          "command_source": "uncertified_posture_fallback"
+        },
+        "final_model_stable_s": 0.0,
+        "longest_model_stable_s": 0.09999990463256836,
+        "force_recording_exact_motion_checks": 2,
+        "contact_mask_difference_steps": 0,
+        "native_phase_code_used": true,
+        "forces_are_model_impulse_estimates": true,
+        "native_success": false,
+        "valid_expert_labels": false
+      }
+    ],
+    "wall_seconds": 310.49483857513405,
+    "native_success": false,
+    "valid_expert_labels": false
   },
   "native_status_snapshot": {
     "state": "RUNNING_NATIVE_PURE_CONTROL",
@@ -1856,7 +1884,8 @@
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_pure_control_native_step_v1.py": "b61b09aaac4458638073aa13946f5b409f6ef847bb26438dc7145f45638564e0",
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_actual_handoff_model_v1.py": "b3422a81da755e1d4704a18272b00694c6e6b56f1fc63161efdef73469274ddb",
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_contact_sampling_support_v1.py": "acba301f41a7936b4d399343dee4e71f6921895eca2cc62a3ea61bd78c831775",
-    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_native_step_alignment_20261109/formal_verify.json": "ae2b5bbc540391cfed972e3b8764c4c9229b3e2cee247c029a8aa1075e69beea"
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_native_step_alignment_20261109/formal_verify.json": "ae2b5bbc540391cfed972e3b8764c4c9229b3e2cee247c029a8aa1075e69beea",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_remaining_sustained_full_model_20261109/result.json": "508c37aee52efaf5117d849391c7c071c76483c6a3eabe036c1ae65caec984f2"
   },
   "formal_validation": {
     "goal_id": "G07",
@@ -1927,5 +1956,6 @@
       }
     },
     "scope": "Structure, hashes, dependencies and thresholds only; not simulation authenticity or GPU budget enforcement."
-  }
+  },
+  "followup_115_completed_utc": "2026-11-08T17:02:18.741373+00:00"
 }
