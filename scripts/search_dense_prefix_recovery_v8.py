@@ -57,10 +57,9 @@ def main():
     for f,h in read(a.search/'inputs.json')['source_sha256'].items():
         if hashlib.sha256(Path(f).read_bytes()).hexdigest()!=h:raise ValueError('Changed source '+f)
     parent=read(a.search/'inputs.json')
-    if not parent.get('knots_s'):raise ValueError('Explicit source knot times required')
     cfg=read(a.configuration)
     nominal=read(a.fixture_run/'native_command_inputs.json')['default_joint_position_rad']
-    records={};sources={};prefixes={};files=[Path(__file__),a.configuration,
+    records={};sources={};prefixes={};source_knots_by_key={};source_offsets={};files=[Path(__file__),a.configuration,
         a.fixture_run/'native_command_inputs.json',a.search/'inputs.json',a.search/'result.json',Path(cfg['model_reference_library'])]
     for item in a.prefixes:
         case,tick,count=map(int,item.split(':'));key=str(case)+':'+str(tick)
@@ -68,7 +67,20 @@ def main():
         if key in records or source['native_success'] or source['valid_expert_labels']:
             raise ValueError('Distinct model-only candidate required')
         fine=source['fine'];initial=source['initial_actual_state'];trace=fine['trajectory']
-        source_knots=np.asarray(parent['knots_s'][key],float)
+        offset=0.
+        if fine.get('nodes_describe_suffix_only'):
+            split=source['model_split_state'];old_count=int(fine['prefix_steps'])
+            if (old_count<=0 or count<old_count or split['tick']!=initial['tick']+old_count
+                    or len(trace)<old_count or split.get('state_origin')!='model_prefix_not_native'):
+                raise ValueError('Invalid combined reference boundary')
+            for field,trace_field in [('q','q'),('v','v'),('previous','target'),('ground_force','ground_force')]:
+                if not np.array_equal(split[field],trace[old_count-1][trace_field]):
+                    raise ValueError('Combined model boundary does not match checked prefix')
+            # The suffix planner uses this pinned deterministic knot schedule.
+            source_knots=knots_for(split);offset=old_count*.01
+        else:
+            if key not in parent.get('knots_s',{}):raise ValueError('Explicit source knot times required')
+            source_knots=np.asarray(parent['knots_s'][key],float)
         if len(source_knots)!=len(fine['nodes']) or np.any(np.diff(source_knots)<=0):
             raise ValueError('Source node count and declared knot times disagree')
         if fine['substeps']!=160 or not 20<=count<len(trace) or 800-tick-count<100:
@@ -80,6 +92,7 @@ def main():
             phase=last['phase'],case=case,tick=tick+count,
             time_s=float(np.float32(tick+count)*np.float32(.01)),state_origin='model_prefix_not_native')
         prefixes[key]=count;sources[key]=source;files.append(path)
+        source_knots_by_key[key]=source_knots;source_offsets[key]=offset
     initialize(cfg,nominal,records);c=WORK['c'];limits=c.interface.limits;span=np.diff(limits).ravel()
     norm=lambda q:np.clip(2*(np.asarray(q)-limits[:,0])/span-1,-1,1)
     if a.check_only:
@@ -99,7 +112,8 @@ def main():
     write('inputs.json',dict(source_sha256=pins,model_split_states=records,prefix_steps=prefixes,
         original_actual_initial_states={k:s['initial_actual_state'] for k,s in sources.items()},
         native_state_teleport=False,future_native_commands_used=False,training=False,
-        workers=4,max_seconds=a.max_seconds,source_knots_s=parent['knots_s'],all_candidates_substeps=160,physical_limits_changed=False,
+        workers=4,max_seconds=a.max_seconds,source_knots_s=source_knots_by_key,
+        source_curve_offsets_s=source_offsets,all_candidates_substeps=160,physical_limits_changed=False,
         prefix_checked_at_substeps=160,prefix_preservation='exact previously checked commands and predicted states',
         scheduling='round_robin_candidates_across_states',
         equal_cpu_time_guaranteed=False,progress_every_completed_candidates=8))
@@ -132,8 +146,8 @@ def main():
         proposals={key:[] for key in records}
         for key,record in records.items():
             knots=knots_for(record);source=sources[key]
-            old=PchipInterpolator(np.asarray(parent['knots_s'][key]),np.asarray(source['fine']['nodes']),axis=0)
-            original_tail=np.clip(old(knots+prefixes[key]*.01),-1,1)
+            old=PchipInterpolator(source_knots_by_key[key],np.asarray(source['fine']['nodes']),axis=0)
+            original_tail=np.clip(old(knots+prefixes[key]*.01-source_offsets[key]),-1,1)
             proposals[key].append(original_tail)
             q=np.asarray(record['q'])[c.model.q_indices];previous=np.asarray(record['previous'])
             for goal in [q,previous,np.asarray(nominal),.5*(q+nominal)]:

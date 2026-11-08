@@ -1,0 +1,180 @@
+{
+  "results": [
+    {
+      "state_key": "72:281",
+      "previous_steps": 102,
+      "new_steps": 114,
+      "required_steps": 519,
+      "prefix_steps": 50,
+      "model_path_complete": false,
+      "failure": {
+        "step": 114,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.009305003021725627
+        },
+        "collision": {
+          "micro": 15,
+          "body": "RL_thigh",
+          "gap_m": -1.114539096153111e-06
+        }
+      },
+      "final_stable_s": 0.0,
+      "longest_stable_s": 0.0,
+      "first_instant_stable_absolute_tick_after_integration": null
+    },
+    {
+      "state_key": "87:272",
+      "previous_steps": 109,
+      "new_steps": 135,
+      "required_steps": 528,
+      "prefix_steps": 50,
+      "model_path_complete": false,
+      "failure": {
+        "step": 135,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.008489617290628887
+        },
+        "collision": {
+          "micro": 88,
+          "body": "FL_hip",
+          "gap_m": -0.00010389417454309546
+        }
+      },
+      "final_stable_s": 0.0,
+      "longest_stable_s": 0.0,
+      "first_instant_stable_absolute_tick_after_integration": null
+    },
+    {
+      "state_key": "114:272",
+      "previous_steps": 67,
+      "new_steps": 98,
+      "required_steps": 528,
+      "prefix_steps": 30,
+      "model_path_complete": false,
+      "failure": {
+        "step": 98,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'link4', 'distance_m': -8.764230585206478e-05, 'exact': True, 'shape_index': 27, 'obstacle': 'net_segment_30'}\")"
+      },
+      "final_stable_s": 0.0,
+      "longest_stable_s": 0.0,
+      "first_instant_stable_absolute_tick_after_integration": null
+    },
+    {
+      "state_key": "126:272",
+      "previous_steps": 199,
+      "new_steps": 408,
+      "required_steps": 528,
+      "prefix_steps": 100,
+      "model_path_complete": false,
+      "failure": {
+        "step": 408,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.002336105385893036
+        },
+        "collision": {
+          "micro": 64,
+          "body": "RR_calf",
+          "gap_m": -3.488903889816569e-06
+        }
+      },
+      "final_stable_s": 0.0,
+      "longest_stable_s": 0.06999969482421875,
+      "first_instant_stable_absolute_tick_after_integration": 576
+    }
+  ],
+  "search": {
+    "state": "COMPLETED_ACTUAL_RECOVERY_SEQUENCE_SEARCH",
+    "method": "dense_checked_prefix_and_fine_only_suffix_search",
+    "all_candidates_substeps": 160,
+    "completed_candidates": 324,
+    "results": [
+      {
+        "state_key": "72:281",
+        "steps": 114,
+        "model_path_complete": false,
+        "terminal_stable_s": 0.0,
+        "failure": {
+          "step": 114,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.009305003021725627
+          },
+          "collision": {
+            "micro": 15,
+            "body": "RL_thigh",
+            "gap_m": -1.114539096153111e-06
+          }
+        }
+      },
+      {
+        "state_key": "87:272",
+        "steps": 135,
+        "model_path_complete": false,
+        "terminal_stable_s": 0.0,
+        "failure": {
+          "step": 135,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.008489617290628887
+          },
+          "collision": {
+            "micro": 88,
+            "body": "FL_hip",
+            "gap_m": -0.00010389417454309546
+          }
+        }
+      },
+      {
+        "state_key": "114:272",
+        "steps": 98,
+        "model_path_complete": false,
+        "terminal_stable_s": 0.0,
+        "failure": {
+          "step": 98,
+          "reason": "model_rejected",
+          "error": "ValueError(\"authored_net_collision:{'body': 'link4', 'distance_m': -8.764230585206478e-05, 'exact': True, 'shape_index': 27, 'obstacle': 'net_segment_30'}\")"
+        }
+      },
+      {
+        "state_key": "126:272",
+        "steps": 408,
+        "model_path_complete": false,
+        "terminal_stable_s": 0.0,
+        "failure": {
+          "step": 408,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.002336105385893036
+          },
+          "collision": {
+            "micro": 64,
+            "body": "RR_calf",
+            "gap_m": -3.488903889816569e-06
+          }
+        }
+      }
+    ],
+    "wall_seconds": 2401.040109224152,
+    "native_success": false,
+    "valid_expert_labels": false
+  },
+  "native_success": false,
+  "valid_expert_labels": false,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_dense_prefix_extension_20261109/result.json": "de6b182c9aaa0703f58e869369a122cce0f4043cd9982ae639130c51ceedee4b",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_dense_prefix_extension_20261109/inputs.json": "290a49f29d2023f17faeeba4ab27b99059e4d556190098d4001bf30a2d0ca894",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_dense_prefix_continuation_20261109/status.json": "f0f78277883249c350403731e9a4dc9601356bd649ef927f8b411e712b47a382",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_dense_prefix_extension_20261109/state_72_281.json": "315bcb232f7f9ec038dbf77b88672acb55bfda94a74464c096fa80a670431ad3",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_diverse_release_fine_search_20261109/state_72_281.json": "eedac6c8b752de954ba042486d6ae2c9a1b081002030e6ef7eaf5acebf7271d7",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_dense_prefix_extension_20261109/state_87_272.json": "03caa4c23ac252bbc0c2ed2623c0e84b82aa0393500917d703d037d61bd7f5f8",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_diverse_release_fine_search_20261109/state_87_272.json": "c3e47eaf0f5d714e483366f48f2d5e5df9341a9d02eb25832905c9276f48c4b4",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_dense_prefix_extension_20261109/state_114_272.json": "e9a581117ee150175751dfb13cc9b70ec2c90cb5c76cf89450a3ceaa6b80f28d",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_diverse_release_fine_search_20261109/state_114_272.json": "593d0d69ec51b02aa5a1645a77e4207e860c36d672d7099525f0101fdee1e096",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_dense_prefix_extension_20261109/state_126_272.json": "19475ed2f7a997a8a0ce16027d406096bf869dbf35693d5ded6242f09b6b5ddb",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_diverse_release_fine_search_20261109/state_126_272.json": "1c785d4e4cdae56a02cc86f537c55e5fc118a42ad15d9519bedc2b9e1547f283"
+  }
+}
