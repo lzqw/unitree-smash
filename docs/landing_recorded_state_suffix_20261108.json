@@ -1,0 +1,379 @@
+{
+  "scope": "Search the remaining recovery from a recorded actual native state.\n\nKeeps the original reference clock and state origin, but initializes dynamics\nfrom the observed q/v/contacts and actual previous command. Full-remainder\nshooting is an offline planning experiment; it is not online MPC execution.\nNo candidate is executable evidence or a positive demonstration without a\nground-start native replay of its exact preceding controller.\n",
+  "configuration": {
+    "source": "reports/landing_early_references_20261108/hip_mount_support_tail_refinement_v1.json",
+    "native_run": "reports/native_early_support_all128_20261108_02",
+    "suffix_check": "reports/landing_early_references_20261108/constrained_recovery_suffix_check_v1.json",
+    "output": "reports/landing_early_references_20261108/recorded_state350_suffix_search_v1.json",
+    "tick": 350,
+    "max_seconds": 1800.0,
+    "wait_pid": null,
+    "wait_start_ticks": null
+  },
+  "full_suffix_verified": true,
+  "best_label": "g2_fine_9",
+  "wall_seconds": 376.24883474595845,
+  "coarse_evaluations": 96,
+  "fine_evaluations": 13,
+  "expired_coarse": 0,
+  "expired_fine": 0,
+  "best_result": {
+    "accepted": true,
+    "completed_model_steps": 450,
+    "required_model_steps": 450,
+    "rank": [
+      0,
+      0.0,
+      0,
+      0.01900235858242918
+    ],
+    "failure": null,
+    "terminal": {
+      "roll": 0.053884780461541715,
+      "pitch": 0.009616834936837418,
+      "horizontal": 0.031623567438663694,
+      "vertical_speed": 0.0078649107531724,
+      "omega": 0.044456127170452366,
+      "joint_speed": 0.1693341742255258,
+      "support_feet": 4,
+      "support_margin_m": 0.10950331057778886
+    },
+    "terminal_violations": {},
+    "trailing_model_window_s": 3.11,
+    "longest_model_window_s": 3.11,
+    "cost": 8.551061362093131,
+    "substeps": 160,
+    "wall_seconds": 92.48465179209597,
+    "control_tick": 350,
+    "original_episode_end_tick": 800,
+    "preceding_stable_ticks": 0,
+    "native_execution": false,
+    "valid_expert_labels": false
+  },
+  "query": {
+    "q": [
+      0.988404393196106,
+      -0.23994457721710205,
+      0.32676833868026733,
+      -0.0057112358125198165,
+      -0.08904137092844917,
+      0.027432536000630253,
+      0.9956337037370975,
+      0.3041834235191345,
+      0.7320448756217957,
+      -1.1028308868408203,
+      0.15717513859272003,
+      0.8895739912986755,
+      -1.4311165809631348,
+      0.40529143810272217,
+      1.0828979015350342,
+      -1.4359815120697021,
+      0.1258215755224228,
+      1.4998748302459717,
+      -1.5018227100372314,
+      -1.4642809629440308,
+      1.1323919296264648,
+      -2.1919634342193604,
+      -1.3500758409500122,
+      -1.1470601558685303,
+      -0.6763936281204224
+    ],
+    "v": [
+      0.3468259748691664,
+      -0.18357097022713248,
+      -0.47465811846412154,
+      -0.6929880310824007,
+      0.4669530630611176,
+      -1.8628235272233182,
+      -0.5687907338142395,
+      2.2692904472351074,
+      0.7420215606689453,
+      0.5680124163627625,
+      1.6218783855438232,
+      0.6016986966133118,
+      -0.45579931139945984,
+      -1.079728126525879,
+      -0.2683415710926056,
+      -1.4805012941360474,
+      0.5133151412010193,
+      -0.45111843943595886,
+      0.003713882528245449,
+      0.3717579245567322,
+      0.16378718614578247,
+      0.020377570763230324,
+      0.02665616385638714,
+      0.005888502579182386
+    ],
+    "contacts": [
+      false,
+      false,
+      false,
+      true
+    ],
+    "target": [
+      0.3416049623385078,
+      0.1395486152509875,
+      0.4348642826501816,
+      0.1009588271737698,
+      0.7402884178530229,
+      0.946162275718553,
+      1.0897956752638542,
+      0.8691613996332226,
+      -1.1051432767097857,
+      -1.4164353969989172,
+      -1.4406302260801205,
+      -1.6523676185617688,
+      -1.4820296384241658,
+      1.1351800269001728,
+      -2.1917132754186355,
+      -1.3544278210247285,
+      -1.1542938305058073,
+      -0.6771833443752087
+    ],
+    "measured_foot_force_world_n": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        61.423683166503906
+      ]
+    ]
+  },
+  "adapter_check": {
+    "scope": "CPU replay: actual prefix inputs and predicted suffix states; not new native physics.",
+    "control_ticks": 800,
+    "feedback_commands": 520,
+    "suffix_commands": 450,
+    "maximum_prefix_normalized_action_error": 0.0,
+    "maximum_nominal_target_error_rad": 1.5991825663697057e-07,
+    "original_query_match": {
+      "passed": true,
+      "errors": {
+        "configuration_tangent": 1.0008417350437782e-07,
+        "velocity": 1.5565080069279702e-07,
+        "public": 0.0,
+        "previous_target_rad": 0.0
+      },
+      "tolerances": {
+        "configuration_tangent": 2e-05,
+        "velocity": 0.0002,
+        "public": 0.0005,
+        "previous_target_rad": 5e-06
+      },
+      "contacts_equal": true
+    },
+    "suffix_query_match": {
+      "control_tick": 350,
+      "passed": true,
+      "errors": {
+        "configuration_tangent": 0.0,
+        "velocity": 0.0,
+        "previous_target_rad": 0.0
+      },
+      "tolerances": {
+        "configuration_tangent": 2e-05,
+        "velocity": 0.0002,
+        "previous_target_rad": 5e-06
+      },
+      "contacts_equal": true
+    },
+    "nominal_commands_immutable": true,
+    "other_lanes_unchanged": true,
+    "mismatched_query_rejected_before_dispatch": true,
+    "native_execution": false,
+    "valid_expert_labels": false
+  },
+  "plan_sha256": "49dda5a6359eadfb79e0591f3a135f3ed810a3971b7c6975739af5f6b112ab8a",
+  "native_execution": false,
+  "valid_expert_labels": false,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_early_references_20261108/recorded_state350_suffix_search_v1.json": "30ff2e128fae72118055079d1dca16ea2bc853e803d0a433520a652f207356de",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_native_replanned_suffix_preparation_20261108/adapter_check.json": "944b59784cb9ea3493c0889c1151afc6c177d2746ed7fea7d7834fe4c4b1e1d8",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_native_replanned_suffix_followup_20261108/plan.json": "49dda5a6359eadfb79e0591f3a135f3ed810a3971b7c6975739af5f6b112ab8a",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_native_body_pairs46_followup_20261108_v2/body_pair_audit.json": "1bcc2cd69230b46289a5776bc4a5a10068ce103f19911daa7e9b32a5a429f763",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_body_pairs46_all128_20261108_02/job.json": "0802984f134f8e11c55a11ad367303a4a7407239863a5b24331ab5af0d5f7cf9",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_body_pairs46_all128_20261108_02/metrics.json": "536dfeba252d9a955891e85f5b71edb3269cc5d1c319f32ec5525ad6cc8d4693",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_native_body_pairs46_followup_20261108_v2/status.json": "191a24a55ea0b1f2af1c9b7ec3a74dc726c91b193bfbb6f8ecd58aef186f4a30"
+  },
+  "train46_pair_diagnostic": {
+    "scope": "Audit exact controller replay and summarize independently attributed pairs.",
+    "observer_exact_replay": true,
+    "filter_paths_verified": true,
+    "complete_recording": true,
+    "groups": [
+      {
+        "name": "model_error_window",
+        "samples": 1201,
+        "pairs": [
+          {
+            "sensor": "/World/envs/env_3/Robot/Go2/FL_hip",
+            "partner": "/World/envs/env_3/Robot/MountPlate",
+            "first_sample_s": 3.6465,
+            "peak_normal_force_n": 2089.097900390625,
+            "sample_count_over_1n": 203
+          },
+          {
+            "sensor": "/World/envs/env_3/Robot/MountPlate",
+            "partner": "/World/envs/env_3/Robot/Go2/FL_hip",
+            "first_sample_s": 3.6465,
+            "peak_normal_force_n": 2089.097900390625,
+            "sample_count_over_1n": 203
+          },
+          {
+            "sensor": "/World/envs/env_3/Robot/Go2/FL_foot",
+            "partner": "/World/Ground/geometry/mesh",
+            "first_sample_s": 3.5500000000000003,
+            "peak_normal_force_n": 199.1282501220703,
+            "sample_count_over_1n": 1200
+          },
+          {
+            "sensor": "/World/envs/env_3/Robot/Go2/FR_foot",
+            "partner": "/World/Ground/geometry/mesh",
+            "first_sample_s": 3.5500000000000003,
+            "peak_normal_force_n": 247.85107421875,
+            "sample_count_over_1n": 1201
+          },
+          {
+            "sensor": "/World/envs/env_3/Robot/Go2/RL_foot",
+            "partner": "/World/Ground/geometry/mesh",
+            "first_sample_s": 3.5500000000000003,
+            "peak_normal_force_n": 34.72708511352539,
+            "sample_count_over_1n": 462
+          },
+          {
+            "sensor": "/World/envs/env_3/Robot/Go2/RR_foot",
+            "partner": "/World/Ground/geometry/mesh",
+            "first_sample_s": 3.5500000000000003,
+            "peak_normal_force_n": 150.23489379882812,
+            "sample_count_over_1n": 1065
+          },
+          {
+            "sensor": "/World/envs/env_46/Robot/Go2/Head_lower",
+            "partner": "/World/Ground/geometry/mesh",
+            "first_sample_s": 3.77,
+            "peak_normal_force_n": 56869.88671875,
+            "sample_count_over_1n": 279
+          },
+          {
+            "sensor": "/World/envs/env_46/Robot/Go2/FL_foot",
+            "partner": "/World/Ground/geometry/mesh",
+            "first_sample_s": 3.5500000000000003,
+            "peak_normal_force_n": 1979.67041015625,
+            "sample_count_over_1n": 1154
+          },
+          {
+            "sensor": "/World/envs/env_46/Robot/Go2/FR_foot",
+            "partner": "/World/Ground/geometry/mesh",
+            "first_sample_s": 3.5500000000000003,
+            "peak_normal_force_n": 166.42483520507812,
+            "sample_count_over_1n": 1196
+          },
+          {
+            "sensor": "/World/envs/env_46/Robot/Go2/RR_foot",
+            "partner": "/World/Ground/geometry/mesh",
+            "first_sample_s": 3.5500000000000003,
+            "peak_normal_force_n": 321.6932067871094,
+            "sample_count_over_1n": 1094
+          }
+        ]
+      },
+      {
+        "name": "train46_isolation_window",
+        "samples": 801,
+        "pairs": [
+          {
+            "sensor": "/World/envs/env_3/Robot/Go2/FL_foot",
+            "partner": "/World/Ground/geometry/mesh",
+            "first_sample_s": 4.74,
+            "peak_normal_force_n": 11.618947982788086,
+            "sample_count_over_1n": 800
+          },
+          {
+            "sensor": "/World/envs/env_3/Robot/Go2/FR_foot",
+            "partner": "/World/Ground/geometry/mesh",
+            "first_sample_s": 4.74,
+            "peak_normal_force_n": 167.04690551757812,
+            "sample_count_over_1n": 801
+          },
+          {
+            "sensor": "/World/envs/env_3/Robot/Go2/RR_foot",
+            "partner": "/World/Ground/geometry/mesh",
+            "first_sample_s": 4.74,
+            "peak_normal_force_n": 41.29107666015625,
+            "sample_count_over_1n": 801
+          },
+          {
+            "sensor": "/World/envs/env_46/Robot/Go2/FL_hip",
+            "partner": "/World/envs/env_46/Robot/MountPlate",
+            "first_sample_s": 4.74,
+            "peak_normal_force_n": 310.3133850097656,
+            "sample_count_over_1n": 99
+          },
+          {
+            "sensor": "/World/envs/env_46/Robot/MountPlate",
+            "partner": "/World/envs/env_46/Robot/Go2/FL_hip",
+            "first_sample_s": 4.74,
+            "peak_normal_force_n": 310.3133850097656,
+            "sample_count_over_1n": 99
+          },
+          {
+            "sensor": "/World/envs/env_46/Robot/Go2/FR_thigh",
+            "partner": "/World/Ground/geometry/mesh",
+            "first_sample_s": 4.74125,
+            "peak_normal_force_n": 5982.97509765625,
+            "sample_count_over_1n": 242
+          },
+          {
+            "sensor": "/World/envs/env_46/Robot/Go2/FR_foot",
+            "partner": "/World/Ground/geometry/mesh",
+            "first_sample_s": 4.74,
+            "peak_normal_force_n": 553.8124389648438,
+            "sample_count_over_1n": 703
+          },
+          {
+            "sensor": "/World/envs/env_46/Robot/Go2/RR_foot",
+            "partner": "/World/Ground/geometry/mesh",
+            "first_sample_s": 4.78275,
+            "peak_normal_force_n": 2651.336181640625,
+            "sample_count_over_1n": 471
+          }
+        ]
+      }
+    ],
+    "valid_expert_labels": false,
+    "limitations": [
+      "Positive pair forces identify observed partners; sampled zeros do not prove absence of all contacts.",
+      "Only declared time windows and body pairs are covered.",
+      "Exact replay checks passivity against the same controller, not teacher quality or baseline isolation."
+    ],
+    "exact_replay_cases": 128,
+    "job": {
+      "status": "SUCCEEDED",
+      "elapsed_s": 1281.820788243087,
+      "charged_gpu_hours": 0.35606133006752416,
+      "charged_env_steps": 102400
+    },
+    "complete5": 27,
+    "conditional_recovery_count": 34,
+    "strict_pipeline_status": {
+      "state": "FAILED",
+      "pid": 53880,
+      "time": "2026-11-08T00:30:49.307631+00:00",
+      "error": "CalledProcessError(1, ['bash', 'scripts/python.sh', '/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_native_reference_tracking_preparation_20261108/audit_early_support.py', '--run', '/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_body_pairs46_all128_20261108_02', '--bundle', '/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_reference_tracking_bundle_20261108', '--output', '/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_native_body_pairs46_followup_20261108_v2/native_audit.json'])"
+    }
+  }
+}
