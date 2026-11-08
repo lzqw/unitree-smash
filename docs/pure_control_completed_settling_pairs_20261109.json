@@ -1,0 +1,274 @@
+{
+  "pairs": [
+    {
+      "state_key": "114:272",
+      "reference_steps": 67,
+      "common_steps": 67,
+      "exact_common_prefix_steps": 67,
+      "first_difference_tick": {
+        "target": null,
+        "q": null,
+        "v": null
+      },
+      "first_command_difference_rad": null,
+      "state_rows_are_after_command_integration": true,
+      "capture_tick": null,
+      "plan_end": {
+        "steps": 67,
+        "full_model_path": false,
+        "stable_s": 0.0,
+        "failure": {
+          "tick": 339,
+          "reason": "model_rejected",
+          "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -4.60601306869271e-06, 'exact': True, 'shape_index': 31, 'obstacle': 'net_segment_32'}\")"
+        }
+      },
+      "state_settling": {
+        "steps": 67,
+        "full_model_path": false,
+        "stable_s": 0.0,
+        "failure": {
+          "tick": 339,
+          "reason": "model_rejected",
+          "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -4.60601306869271e-06, 'exact': True, 'shape_index': 31, 'obstacle': 'net_segment_32'}\")"
+        }
+      }
+    },
+    {
+      "state_key": "126:272",
+      "reference_steps": 183,
+      "common_steps": 183,
+      "exact_common_prefix_steps": 183,
+      "first_difference_tick": {
+        "target": null,
+        "q": null,
+        "v": null
+      },
+      "first_command_difference_rad": null,
+      "state_rows_are_after_command_integration": true,
+      "capture_tick": null,
+      "plan_end": {
+        "steps": 183,
+        "full_model_path": false,
+        "stable_s": 0.0,
+        "failure": {
+          "tick": 455,
+          "reason": "model_rejected",
+          "error": "ValueError('foot_pair_clearance:{\"bodies\": [\"FL_foot\", \"FR_foot\"], \"constraint_type\": \"foot_pair_clearance\", \"gap_m\": -4.80123835095575e-06, \"planning_margin_m\": 0.0, \"prediction_geometry_call\": 241849, \"violation_m\": 4.80123835095575e-06}')"
+        }
+      },
+      "state_settling": {
+        "steps": 183,
+        "full_model_path": false,
+        "stable_s": 0.0,
+        "failure": {
+          "tick": 455,
+          "reason": "model_rejected",
+          "error": "ValueError('foot_pair_clearance:{\"bodies\": [\"FL_foot\", \"FR_foot\"], \"constraint_type\": \"foot_pair_clearance\", \"gap_m\": -4.80123835095575e-06, \"planning_margin_m\": 0.0, \"prediction_geometry_call\": 241849, \"violation_m\": 4.80123835095575e-06}')"
+        }
+      }
+    },
+    {
+      "state_key": "27:274",
+      "reference_steps": 371,
+      "common_steps": 371,
+      "exact_common_prefix_steps": 251,
+      "first_difference_tick": {
+        "target": 525,
+        "q": 525,
+        "v": 525
+      },
+      "first_command_difference_rad": 0.3607876087043572,
+      "state_rows_are_after_command_integration": true,
+      "capture_tick": 525,
+      "plan_end": {
+        "steps": 371,
+        "full_model_path": false,
+        "stable_s": 0.0,
+        "failure": {
+          "tick": 645,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.0016447314925987916
+          },
+          "collision": {
+            "micro": 135,
+            "body": "FR_hip",
+            "gap_m": -5.736852883649057e-05
+          }
+        }
+      },
+      "state_settling": {
+        "steps": 526,
+        "full_model_path": true,
+        "stable_s": 2.760000228881836,
+        "failure": null
+      }
+    },
+    {
+      "state_key": "65:275",
+      "reference_steps": 188,
+      "common_steps": 189,
+      "exact_common_prefix_steps": 189,
+      "first_difference_tick": {
+        "target": null,
+        "q": null,
+        "v": null
+      },
+      "first_command_difference_rad": null,
+      "state_rows_are_after_command_integration": true,
+      "capture_tick": null,
+      "plan_end": {
+        "steps": 189,
+        "full_model_path": false,
+        "stable_s": 0.0,
+        "failure": {
+          "tick": 464,
+          "reason": "model_rejected",
+          "error": "ValueError('foot_pair_clearance:{\"bodies\": [\"FL_foot\", \"FR_foot\"], \"constraint_type\": \"foot_pair_clearance\", \"gap_m\": -6.834356376682338e-06, \"planning_margin_m\": 0.0, \"prediction_geometry_call\": 261653, \"violation_m\": 6.834356376682338e-06}')"
+        }
+      },
+      "state_settling": {
+        "steps": 189,
+        "full_model_path": false,
+        "stable_s": 0.0,
+        "failure": {
+          "tick": 464,
+          "reason": "model_rejected",
+          "error": "ValueError('foot_pair_clearance:{\"bodies\": [\"FL_foot\", \"FR_foot\"], \"constraint_type\": \"foot_pair_clearance\", \"gap_m\": -6.834356376682338e-06, \"planning_margin_m\": 0.0, \"prediction_geometry_call\": 261653, \"violation_m\": 6.834356376682338e-06}')"
+        }
+      }
+    },
+    {
+      "state_key": "72:281",
+      "reference_steps": 102,
+      "common_steps": 103,
+      "exact_common_prefix_steps": 103,
+      "first_difference_tick": {
+        "target": null,
+        "q": null,
+        "v": null
+      },
+      "first_command_difference_rad": null,
+      "state_rows_are_after_command_integration": true,
+      "capture_tick": null,
+      "plan_end": {
+        "steps": 103,
+        "full_model_path": false,
+        "stable_s": 0.0,
+        "failure": {
+          "tick": 384,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.0074294620390725884
+          },
+          "collision": {
+            "micro": 0,
+            "body": "RL_calf",
+            "gap_m": -5.137013864474349e-06
+          }
+        }
+      },
+      "state_settling": {
+        "steps": 103,
+        "full_model_path": false,
+        "stable_s": 0.0,
+        "failure": {
+          "tick": 384,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.0074294620390725884
+          },
+          "collision": {
+            "micro": 0,
+            "body": "RL_calf",
+            "gap_m": -5.137013864474349e-06
+          }
+        }
+      }
+    },
+    {
+      "state_key": "87:272",
+      "reference_steps": 109,
+      "common_steps": 109,
+      "exact_common_prefix_steps": 109,
+      "first_difference_tick": {
+        "target": null,
+        "q": null,
+        "v": null
+      },
+      "first_command_difference_rad": null,
+      "state_rows_are_after_command_integration": true,
+      "capture_tick": null,
+      "plan_end": {
+        "steps": 109,
+        "full_model_path": false,
+        "stable_s": 0.0,
+        "failure": {
+          "tick": 381,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.009310550715446064
+          },
+          "collision": {
+            "micro": 63,
+            "body": "RL_thigh",
+            "gap_m": -7.87296499348833e-05
+          }
+        }
+      },
+      "state_settling": {
+        "steps": 109,
+        "full_model_path": false,
+        "stable_s": 0.0,
+        "failure": {
+          "tick": 381,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.009310550715446064
+          },
+          "collision": {
+            "micro": 63,
+            "body": "RL_thigh",
+            "gap_m": -7.87296499348833e-05
+          }
+        }
+      }
+    }
+  ],
+  "model_pairs": 6,
+  "plan_end_full_paths": 0,
+  "state_settling_full_paths": 1,
+  "native_success": false,
+  "valid_expert_labels": false,
+  "training": false,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_completed_settling_pairs_v1.py": "4e203801a3d5b01a64e594949bbc76899f08c71d41cfd9c99ccc524a95c17f5f",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_budget_replay_20261109/result.json": "706fa71ace58abc802d98d1f7fc87588bd934f9b2d7e2719c9c9f22e08c708d4",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_budget_replay_20261109/inputs.json": "33f843d483294e9138bc31ba4dfbf522db90c1dfea69d0e6478d5a51de7a9184",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_settling_20261109/114_272_plan_end.json": "82942dc6e6c71310846162f04acb4f371a3a10b71227fb91661fa58e88bb6385",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_settling_20261109/114_272_state_settling.json": "2341a171daa22127a5fa899efb665e7268f031934fa5f41907684ef711cfd9b0",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_settling_20261109/126_272_state_settling.json": "1bf70aff218523ada2e5558cdee87d8dc2e0cdee521f37273ed30e619d64be90",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_settling_20261109/27_274_state_settling.json": "ccb0f6a41776e1ec93d4015a4156bf88e6ae23f8811c1ca1378c18649dbb74a4",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_settling_20261109/126_272_plan_end.json": "76c644638487f4be8f1b02989a94d1c1949105d8a6aca60cf17da2e5e932537d",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_budget_replay_20261109/87_272_plan_end.json": "f991e1d48deb3c8e4f9fbed205553c0251c782354fdd3e3e0f1ec2432fdb666e",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_budget_replay_20261109/65_275_state_settling.json": "52e43746d6b5d176dd20a5915604282588ee2fedd563b384167b797c30d37281",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_budget_replay_20261109/72_281_state_settling.json": "49d212a6c965d1c73a9f76bc1d703cfa0080dbc6d0374e040ac509b663fc4256",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_budget_replay_20261109/65_275_plan_end.json": "6a54326efa07516dc2bf6186d051aaf0f0b7d4980d64e53f7715548c96fc9f96",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_budget_replay_20261109/87_272_state_settling.json": "ea30c03f02918512c23e4d6467ca36dac42bb9d3e4bc98e10223f1af9498a921",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_budget_replay_20261109/72_281_plan_end.json": "e1ceda8a7be51157c660a07688d19f14863fe895828e95e516615bda152d9948",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_budget_replay_20261109/27_274_plan_end.json": "0a3e2ebf1c4b4d53d9fcd2743514cd2d3330f253e144e84d420c362aa6938625",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_settling_20261109/candidate_snapshots/state_114_272.json": "03d2d4563e3e3f1d62c9788756b07d6f0aa72b86f9e33d78de5f22c3aef82aa4",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_settling_20261109/candidate_snapshots/state_126_272.json": "e229cd39cd753272f19444abdb63775c307c12d7cb5efce88a4d72a8204de791",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_settling_20261109/candidate_snapshots/state_27_274.json": "d2122f634c6373e742d0674438f22e82113902f246e726920e1b35b002db8118",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_settling_20261109/candidate_snapshots/state_65_275.json": "e35b61c4214cb66a6fa865d669f0733234bf05d3904ce3e8870ac1966e264978",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_settling_20261109/candidate_snapshots/state_72_281.json": "fc5c8f284bd1d78a511dae4cf32ec8b770e1ad87d0b24974356eb8c13ace74bd",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_settling_20261109/candidate_snapshots/state_87_272.json": "595645692fe0e6ca64b13125b4c4ca8782b877fb4ece5f1d2283951edae830ca"
+  },
+  "formal_verify": {
+    "path": "reports/pure_control_completed_settling_pairs_20261109/formal_verify.json",
+    "sha256": "ae2b5bbc540391cfed972e3b8764c4c9229b3e2cee247c029a8aa1075e69beea",
+    "exit_code": 2,
+    "passed": false
+  }
+}
