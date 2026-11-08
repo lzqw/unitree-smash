@@ -1,0 +1,47 @@
+{
+  "passed": true,
+  "case": 87,
+  "query_tick": 400,
+  "preserved_native_prefix_steps": 400,
+  "preserved_prefix_action_error": 0.0,
+  "first_command_mapping_error_rad": 0.0,
+  "cpu_service_ready": {
+    "ready": true,
+    "pid": 82965,
+    "cuda_visible_devices": "",
+    "isaac_modules_loaded": false,
+    "parent_death_group_cleanup": true,
+    "worker_sha256": "3aadf82e2915bff14f0e87c211e560520ad077db2fc0f47bb0b6d38e6f9c752d"
+  },
+  "cpu_service_result": {
+    "pid": 82965,
+    "request_id": 1,
+    "cuda_visible_devices": "",
+    "isaac_modules_loaded": false
+  },
+  "planner_seconds": 312.1138330469839,
+  "independent_replay_exact": true,
+  "planned_remaining_steps": 400,
+  "stages": [
+    "current_state_warm_prediction",
+    "coarse_candidates",
+    "fine_candidates"
+  ],
+  "new_native_execution": false,
+  "revised_commands_physically_executed": false,
+  "valid_expert_labels": false,
+  "service_cleanup_verified": true,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_foot_space_mpc_bundle_20261108/manifest.json": "17b19720d5d9f451d35cab4a2c208dc18efb2c906d1fdda049cc8f7776a26a4f",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_foot_space87_all128_20261108_01/sequence_native_trace.npz": "49ddbc1b00afd72e97923a93cbf54c194c74c090ef416fccd88d942ba1ce6229",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_foot_space87_all128_20261108_01/sequence_dispatch.npz": "d4473255457f6c586ab4216b3feab9aa0d7d2498ac293fb6527273b77993397e",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/check_foot_space_mpc_service_v1.py": "24fa267dfccf7d72afd5b568bcae241857349f619e093189a0f525dad010b9cb",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/native_foot_space_mpc_v1.py": "4ddb0629924f425f1ee19e092ead0c1a63aee16afc48a6e05e612c791da62a22",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/current_state_recovery_service_v3.py": "3aadf82e2915bff14f0e87c211e560520ad077db2fc0f47bb0b6d38e6f9c752d",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/current_state_recovery_planner_v3.py": "31dcf4c9b3bed3070a8fa6218cf4ed57ca69d146f0656327f226a2d3cf426ba0"
+  },
+  "native_followup_plan": "reports/landing_native_foot_space_mpc_followup_20261108/plan.json",
+  "native_followup_launched": false,
+  "formal_acceptance": false,
+  "original_student_isolation_audit": "FAILED; unchanged"
+}
