@@ -1,0 +1,2257 @@
+{
+  "timestamp_utc": "2026-11-08T18:30:58.975644+00:00",
+  "scope": "pure_control_diagnostic_no_RL_BC_distillation",
+  "native_best": {
+    "state": "COMPLETED_READ_ONLY_AUDIT",
+    "pid": 186232,
+    "time_utc": "2026-11-08T18:00:28.236290+00:00",
+    "summaries": {
+      "support": {
+        "owned_cases": 110,
+        "historical_complete5": 4,
+        "first_head_over1n_cases": 81,
+        "first_other_over1n_cases": 70,
+        "terminal_stance_entered_cases": [
+          12,
+          18,
+          30,
+          42,
+          50,
+          54,
+          58,
+          85,
+          90,
+          103,
+          123
+        ],
+        "clean_and_final_sampled_stable_08s_through_tick799": [
+          30,
+          50,
+          85,
+          90
+        ],
+        "sampled_stability_is_not_formal_acceptance": true,
+        "training": false,
+        "valid_expert_labels": false
+      },
+      "reference": {
+        "owned_cases": 110,
+        "matched_reference_cases": 40,
+        "same_source_matches": 40,
+        "different_source_matches": 0,
+        "reference_with_predictive_rejections": 2,
+        "actual_reference_clock_mismatch_steps": 0,
+        "clean_and_final_sampled_stable_08s": [
+          30,
+          50,
+          85,
+          90
+        ],
+        "strict_acceptance_not_automatically_inferred": true
+      }
+    },
+    "native_success_not_inferred_from_model": true,
+    "training": false
+  },
+  "postreference_commands": {
+    "results": [
+      {
+        "case": 12,
+        "reference_end_tick": 442,
+        "first_nonfoot_positive_force_tick": 503,
+        "counts": {
+          "commands": 61,
+          "qp_accepted": 61,
+          "interval_qp": 61
+        },
+        "largest_noncontact_foot_targets": [
+          {
+            "tick": 497,
+            "foot": "FL_foot",
+            "soft_target_distance_m": 0.2801871710478967,
+            "contacts": [
+              false,
+              true,
+              false,
+              false
+            ],
+            "solver_accepted": true,
+            "actual_foot_world": [
+              0.8965447755235993,
+              -0.1638362835409844,
+              0.03614367559753653
+            ],
+            "target_world": [
+              1.1572069754340109,
+              -0.06180481578078453,
+              0.02391060793699893
+            ]
+          },
+          {
+            "tick": 498,
+            "foot": "FL_foot",
+            "soft_target_distance_m": 0.2797880055620854,
+            "contacts": [
+              false,
+              true,
+              false,
+              false
+            ],
+            "solver_accepted": true,
+            "actual_foot_world": [
+              0.8955118570504653,
+              -0.15872979001638093,
+              0.03592502005094466
+            ],
+            "target_world": [
+              1.1570554111595062,
+              -0.060081017679103094,
+              0.023895178956039854
+            ]
+          },
+          {
+            "tick": 496,
+            "foot": "FL_foot",
+            "soft_target_distance_m": 0.27927057034031993,
+            "contacts": [
+              false,
+              true,
+              false,
+              false
+            ],
+            "solver_accepted": true,
+            "actual_foot_world": [
+              0.8985106847094609,
+              -0.16807940652502384,
+              0.03600742665360736
+            ],
+            "target_world": [
+              1.1572773737888125,
+              -0.06374415781518253,
+              0.023924051389495035
+            ]
+          }
+        ]
+      },
+      {
+        "case": 58,
+        "reference_end_tick": 442,
+        "first_nonfoot_positive_force_tick": 511,
+        "counts": {
+          "commands": 69,
+          "qp_accepted": 69,
+          "interval_qp": 69
+        },
+        "largest_noncontact_foot_targets": [
+          {
+            "tick": 456,
+            "foot": "RL_foot",
+            "soft_target_distance_m": 0.2327917429570384,
+            "contacts": [
+              true,
+              true,
+              false,
+              false
+            ],
+            "solver_accepted": true,
+            "actual_foot_world": [
+              0.49552353226855755,
+              -0.0703504535645391,
+              0.0221275628513444
+            ],
+            "target_world": [
+              0.7281835714798562,
+              -0.06255999757188918,
+              0.022908932545777957
+            ]
+          },
+          {
+            "tick": 457,
+            "foot": "RL_foot",
+            "soft_target_distance_m": 0.23137887708654745,
+            "contacts": [
+              true,
+              true,
+              false,
+              false
+            ],
+            "solver_accepted": true,
+            "actual_foot_world": [
+              0.4962379867491117,
+              -0.07031736228605982,
+              0.022131435953325507
+            ],
+            "target_world": [
+              0.7275639975366022,
+              -0.06543227903122158,
+              0.02290438910246559
+            ]
+          },
+          {
+            "tick": 458,
+            "foot": "RL_foot",
+            "soft_target_distance_m": 0.228382020073579,
+            "contacts": [
+              true,
+              true,
+              false,
+              false
+            ],
+            "solver_accepted": true,
+            "actual_foot_world": [
+              0.49805630134366685,
+              -0.07019317674186652,
+              0.022142319961463458
+            ],
+            "target_world": [
+              0.7264251317009766,
+              -0.06785836626139978,
+              0.02289933656843915
+            ]
+          }
+        ]
+      },
+      {
+        "case": 123,
+        "reference_end_tick": 345,
+        "first_nonfoot_positive_force_tick": 479,
+        "counts": {
+          "commands": 134,
+          "qp_accepted": 134,
+          "interval_qp": 134
+        },
+        "largest_noncontact_foot_targets": [
+          {
+            "tick": 436,
+            "foot": "RR_foot",
+            "soft_target_distance_m": 0.22424298490431954,
+            "contacts": [
+              true,
+              true,
+              false,
+              false
+            ],
+            "solver_accepted": true,
+            "actual_foot_world": [
+              0.541320443629864,
+              -0.3280725232266799,
+              0.022707103247939397
+            ],
+            "target_world": [
+              0.7532568917672781,
+              -0.25480860531441446,
+              0.023213622587058724
+            ]
+          },
+          {
+            "tick": 437,
+            "foot": "RR_foot",
+            "soft_target_distance_m": 0.22261206376550913,
+            "contacts": [
+              true,
+              true,
+              false,
+              false
+            ],
+            "solver_accepted": true,
+            "actual_foot_world": [
+              0.5419975958330635,
+              -0.327835728162692,
+              0.022711977232161867
+            ],
+            "target_world": [
+              0.751841001294796,
+              -0.25352808868807053,
+              0.02321281040968609
+            ]
+          },
+          {
+            "tick": 438,
+            "foot": "RR_foot",
+            "soft_target_distance_m": 0.2195329789694542,
+            "contacts": [
+              true,
+              true,
+              false,
+              false
+            ],
+            "solver_accepted": true,
+            "actual_foot_world": [
+              0.5437707940124642,
+              -0.32713757759894646,
+              0.02279618772106612
+            ],
+            "target_world": [
+              0.7502066465177801,
+              -0.2524462444131643,
+              0.02321140156565648
+            ]
+          }
+        ]
+      },
+      {
+        "case": 30,
+        "reference_end_tick": 597,
+        "first_nonfoot_positive_force_tick": null,
+        "counts": {
+          "commands": 203,
+          "qp_accepted": 203,
+          "interval_qp": 203
+        },
+        "largest_noncontact_foot_targets": [
+          {
+            "tick": 598,
+            "foot": "FR_foot",
+            "soft_target_distance_m": 0.12262148302790442,
+            "contacts": [
+              true,
+              false,
+              true,
+              true
+            ],
+            "solver_accepted": true,
+            "actual_foot_world": [
+              0.8958759894486132,
+              -0.360296071281854,
+              0.023783213848795545
+            ],
+            "target_world": [
+              0.7780792505408751,
+              -0.32623794293357367,
+              0.02376600696371932
+            ]
+          },
+          {
+            "tick": 599,
+            "foot": "FR_foot",
+            "soft_target_distance_m": 0.12174386437561775,
+            "contacts": [
+              true,
+              false,
+              true,
+              true
+            ],
+            "solver_accepted": true,
+            "actual_foot_world": [
+              0.8953187571108888,
+              -0.36021398149231737,
+              0.02378777809165529
+            ],
+            "target_world": [
+              0.7785917655513381,
+              -0.3256252881239288,
+              0.0237721054088553
+            ]
+          },
+          {
+            "tick": 600,
+            "foot": "FR_foot",
+            "soft_target_distance_m": 0.12014989214505505,
+            "contacts": [
+              true,
+              false,
+              true,
+              true
+            ],
+            "solver_accepted": true,
+            "actual_foot_world": [
+              0.8941678875686865,
+              -0.3599190004300879,
+              0.023791411762022485
+            ],
+            "target_world": [
+              0.779171913893569,
+              -0.3251063243579959,
+              0.02377707022662627
+            ]
+          }
+        ]
+      },
+      {
+        "case": 50,
+        "reference_end_tick": 435,
+        "first_nonfoot_positive_force_tick": null,
+        "counts": {
+          "commands": 365,
+          "qp_accepted": 365,
+          "interval_qp": 365
+        },
+        "largest_noncontact_foot_targets": [
+          {
+            "tick": 790,
+            "foot": "FR_foot",
+            "soft_target_distance_m": 0.10724870375201569,
+            "contacts": [
+              true,
+              false,
+              true,
+              true
+            ],
+            "solver_accepted": true,
+            "actual_foot_world": [
+              0.8937356693850531,
+              -0.4620317026851517,
+              0.023553346099443637
+            ],
+            "target_world": [
+              0.7975492563688863,
+              -0.41459276674484075,
+              0.023629269890658403
+            ]
+          },
+          {
+            "tick": 791,
+            "foot": "FR_foot",
+            "soft_target_distance_m": 0.10695402912266318,
+            "contacts": [
+              true,
+              false,
+              true,
+              true
+            ],
+            "solver_accepted": true,
+            "actual_foot_world": [
+              0.8924009958982618,
+              -0.46142601108217707,
+              0.023548800333386896
+            ],
+            "target_world": [
+              0.7965890985276258,
+              -0.41389456799300045,
+              0.02362995247790667
+            ]
+          },
+          {
+            "tick": 789,
+            "foot": "FR_foot",
+            "soft_target_distance_m": 0.10678057483634176,
+            "contacts": [
+              true,
+              false,
+              true,
+              true
+            ],
+            "solver_accepted": true,
+            "actual_foot_world": [
+              0.8945776767852636,
+              -0.4623982158710154,
+              0.02356596936732476
+            ],
+            "target_world": [
+              0.7986999910127596,
+              -0.4153922949248859,
+              0.023628653454566273
+            ]
+          }
+        ]
+      },
+      {
+        "case": 85,
+        "reference_end_tick": 428,
+        "first_nonfoot_positive_force_tick": null,
+        "counts": {
+          "commands": 372,
+          "qp_accepted": 372,
+          "interval_qp": 372
+        },
+        "largest_noncontact_foot_targets": [
+          {
+            "tick": 680,
+            "foot": "RR_foot",
+            "soft_target_distance_m": 0.09582008554701725,
+            "contacts": [
+              true,
+              true,
+              true,
+              false
+            ],
+            "solver_accepted": true,
+            "actual_foot_world": [
+              0.4260077525360214,
+              -0.4860408433134175,
+              0.023344634935272612
+            ],
+            "target_world": [
+              0.4886242477455072,
+              -0.41351041939179295,
+              0.02337509257102921
+            ]
+          },
+          {
+            "tick": 681,
+            "foot": "RR_foot",
+            "soft_target_distance_m": 0.09566114884703386,
+            "contacts": [
+              true,
+              true,
+              true,
+              false
+            ],
+            "solver_accepted": true,
+            "actual_foot_world": [
+              0.4266249351095643,
+              -0.48546030201477824,
+              0.023371511919915267
+            ],
+            "target_world": [
+              0.48886108269325645,
+              -0.4128124023672276,
+              0.02337459001481318
+            ]
+          },
+          {
+            "tick": 679,
+            "foot": "RR_foot",
+            "soft_target_distance_m": 0.09517310002747563,
+            "contacts": [
+              true,
+              true,
+              true,
+              false
+            ],
+            "solver_accepted": true,
+            "actual_foot_world": [
+              0.42581578864032776,
+              -0.4861497753389625,
+              0.023300917933176207
+            ],
+            "target_world": [
+              0.48831007366684587,
+              -0.4143697097430963,
+              0.023375018657480012
+            ]
+          }
+        ]
+      },
+      {
+        "case": 90,
+        "reference_end_tick": 440,
+        "first_nonfoot_positive_force_tick": null,
+        "counts": {
+          "commands": 360,
+          "qp_accepted": 360,
+          "interval_qp": 360
+        },
+        "largest_noncontact_foot_targets": [
+          {
+            "tick": 586,
+            "foot": "RL_foot",
+            "soft_target_distance_m": 0.10762890418078129,
+            "contacts": [
+              true,
+              true,
+              false,
+              true
+            ],
+            "solver_accepted": true,
+            "actual_foot_world": [
+              0.42403508356160013,
+              -0.2409567657848855,
+              0.02313133928770053
+            ],
+            "target_world": [
+              0.5287290804396589,
+              -0.26591632312093694,
+              0.023541863880355923
+            ]
+          },
+          {
+            "tick": 585,
+            "foot": "RL_foot",
+            "soft_target_distance_m": 0.10753055329377167,
+            "contacts": [
+              true,
+              true,
+              false,
+              true
+            ],
+            "solver_accepted": true,
+            "actual_foot_world": [
+              0.4237363458261074,
+              -0.24081195756924767,
+              0.023107823586427795
+            ],
+            "target_world": [
+              0.5283952283322251,
+              -0.26549290091817285,
+              0.0235428404165354
+            ]
+          },
+          {
+            "tick": 587,
+            "foot": "RL_foot",
+            "soft_target_distance_m": 0.1070321564529161,
+            "contacts": [
+              true,
+              true,
+              false,
+              true
+            ],
+            "solver_accepted": true,
+            "actual_foot_world": [
+              0.4249921114991593,
+              -0.24120082485267308,
+              0.023122718794834102
+            ],
+            "target_world": [
+              0.5290719514885431,
+              -0.26616268223797795,
+              0.023541166666690524
+            ]
+          }
+        ]
+      }
+    ],
+    "source_sha256": {
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_postreference_native_commands_v1.py": "0d08a6fe5bcff158d39a9f7fc7802feb9ad7bb07fc05dd779f81b09a5278cbb3",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_settled_stance_native_preparation_20261109_01/controller.json": "afe254b5992d0f05ec58725064ff4e557eba65c0bc0b6c9e537e5b5e29b1db9a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_settled_stance_all128_20261109_01/job.json": "53f0d6de00a0f596da09d71d381785597fef65e945caf94dd3a7e6b7c49066ab",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_settled_stance_all128_20261109_01/native_command_inputs.json": "f861d727c049c85d612cad7ce2a5be9a4bc3a85ab18ba38f5018dc871fca6f7c",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_settled_stance_all128_20261109_01/pure_control_commands.npz": "1ea4cdad8c973d5be22b431448191d1bc2d5d08c1f45a5453f7ff91a9d042218",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_settled_stance_all128_20261109_01/pure_control_diagnostics.jsonl": "c99d346b05a026c4fbfd500a06f51eed0793718ce1bb20aac10519423aff8f78",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_settled_stance_all128_20261109_01/pure_control_ground_forces.json": "44dfa51bed7cd1f62f89ede321bca2860d2ffbc855d26aaa376f95f304f79aa9",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_settled_stance_all128_20261109_01/pure_control_ground_forces.npz": "96b10d31454a043625488a733a4b1b96a9e6f169eafe61ab016f066b106d0807",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/loaded_pinocchio_model_v1.py": "2b303a32e57391ec7aaf3c3faf9d151f758477faf13ef6efae5bead979dcae82",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/whole_body_support_qp_v1.py": "b67cd1f1c8ebe973d3885773fbc9f3bf17cfd935e5e2210a4b7c0ea1ff331d6d",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frame_point_kinematics_v1.py": "60fac87ef04f83a22807217b04e7cbe40b536251b56f5a119dc012d1f2529fd8",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/reduced_whole_body_support_qp_v1.py": "e731a0bca8744d4639099dd2ff9be94840a9f0c953c64924fb2cfa9e7a9c80c7",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/continuous_support_qp_v1.py": "824a3d49711917803e9c82af63b1d142917d62c874ec8751325578a71b4af640",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/command_history_support_qp_v1.py": "1ac2221f85cbf3d468be4c265cc932845700d5f17a9eaaf37440998873689081",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/condensed_implicit_drive_v1.py": "a0f21e9b954db9e978ba428a3770fcb8cd666e08dd21aa27cedf0c0e5c5af629",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/implicit_support_prediction_v1.py": "b751fa0ea59edd1fe8fc62cf0ba3816e5583ecc76df7058ef3f5185a335a1e01",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_interval_qp_v1.py": "cbc3d59485da07153e8e3ae3a42de2231dff7c738a22a18b8ad74bd39dbb844f",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/authored_ground_clearance_v1.py": "ba54ef51a5cfd5c64937814c343d92057cd0e9e83dc4e435f1479049aa342630",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/event_recovery_manager_v1.py": "8fe16ba41ec3d2fc942dbf01686d4af3a5fde354dc6536726bab826b29b959e2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/dense_active_set_qp_v1.py": "cba063c6c594bfb42d1114dcafbaebc606d8c4b49b53ee65e764e3979b1bac4a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_recovery_v1.py": "119a6f073b32e4c7f577c2653314c2e441dbc3c13771e577031962b79281337f",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/full_authority_position_interface_v1.py": "88a371b4e72864952c7e7c3c2250ccd90603e3e7c0ef7c1579030cc9e89034ca",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/authored_net_clearance_v1.py": "386ed6042d439bde4366dec73a536d6a21a0eaf700152e7e4ca16aeef67f6526",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/foot_pair_clearance_kinematics_v1.py": "2e3caa0b3b791ad45f2e51eb1956f74b7cc4e310c15cad72cb23d8b023a60b11",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recovery_surface_constraints_v1.py": "5c546c5acbfd2e2d5f03578b21a10237162bb293013a825a71f25f92de7671eb",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_court_recovery_v4.py": "4666b83f6adf72c6cfab09703583815405703f9f0d5c76c22c7a97ad4604dbac",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_interval_self_collision_v2.py": "642610fc843e5d8dbf5f43e50994922e3d5565066466f708c18462a62be7f75d",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frictional_impulse_step_v1.py": "4e780bf218dd501a64f1885ab1697c3050d228580fc6cd3c7123d36fb18e2348",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frictional_speed_limited_step_v1.py": "6b5392e7dbdb2f4c95a48570d668a28e66fbd2ffd8eb7ae1bef04a8a01b01b92",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frictional_position_limited_step_v1.py": "07d976fa06b4c1e9e90792f463cb058be5c9a1af38170e22ff226c9680230413",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/hip_mount_collision_response_v1.py": "d7d9d9fff88f3e3a12a61962aadf41537192d930f6f5ee7b2e0a2c31b8ebc2e8",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/hip_mount_planning_constraints_v1.py": "2c63e83e930fed048e87d04fb5df6cde04c822f586f57207670520e7f83f508a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_self_collision_recovery_v5.py": "90d9a6b84c7b153b74e3d36c16a38bda59fa90cb14290e904fdc32e0807a5bf9",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_interval_moving_foot_v3.py": "daf71c5788dcb9a553a83fb2ebcda14e7a5e86a37d9965ed2c5fb0ab82adf363",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_moving_foot_recovery_v7.py": "d018a7f7ae1352feb4f7157114a05996564bc1490b768cef3a7201f4e8ea87ca",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recovery_reference_library_v1.py": "6c97dc2ba1b7c118cfc71c614157b2307dd15cc1f1cc75e2eeeee6570dc31735",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recorded_nonfoot_contact_history_v1.py": "b897ec590f76795a515f1e3ad14db1529f43117731f031f00d43dc556e5e599a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/summarize_precontact_prediction_v1.py": "b05936fc4345546c33bf14696bfbf6ed8967025799da23d87e0b04fc014ba227",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_sphere_touchdown_predictions_v1.py": "92b1905a21c544ff212a237104edb700ce6eb3b1414908cb14d80990b21a9a03",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/predict_self_contact_spheres_v2.py": "5e22b438815a60997f637bae461f69ec3c0a983f26d11e4abb94f5510ac8a446",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/foot_separation_path_constraint_v1.py": "8926324e99df4984bf7af09a686e813df57ebb8524408485633e430e1cd04f85",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_trajectory_recovery_v8.py": "fdbaf93a10c735c5736d3cf4f6dd2d912c43041e2cd6ce2144f63d9ba6005448",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_trajectory_recovery_v9.py": "a9d471bf6e674d5e4ec4f8625b34204f01544b0f4e0bcad1e0ec702869f8e042",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recovery_reference_library_v2.py": "2497e602cd60d3499477adeb1ad92631afc737c8b46e76c20020f71bdde4c232",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_long_trajectory_recovery_v11.py": "39b3596b3e711762fdfdddcb19967413396d15b6f659717e4eabff6b1724a5ac",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_reference_clock_v12.py": "47b155c960fe42b79d5e0d86046d78c14d04b9b18b382fd4f0c3bfac9cf592be"
+    },
+    "actual_native_rerun": false,
+    "soft_target_distance_is_not_proof_of_error": true,
+    "valid_expert_labels": false
+  },
+  "stance_decay": {
+    "results": [
+      {
+        "case": 12,
+        "first_nonfoot_positive_force_tick": 503,
+        "events": [
+          {
+            "tick": 442,
+            "state_precedes_command": true,
+            "stance_captured_now": true,
+            "stance_active": true,
+            "source": "interval_qp",
+            "accepted": true,
+            "rejection": null,
+            "roll_pitch_rad": [
+              -0.012358029552059781,
+              0.08092657371247187
+            ],
+            "velocity_world_m_s": [
+              -0.15369529557425854,
+              -0.051196092721141624,
+              -0.002236485077773168
+            ],
+            "angular_speed_rad_s": 0.30907772594969335,
+            "max_joint_speed_rad_s": 0.8995470404624939,
+            "contacts": [
+              false,
+              true,
+              true,
+              true
+            ],
+            "sampled_stable_s": 0.03000020980834961
+          },
+          {
+            "tick": 502,
+            "state_precedes_command": true,
+            "stance_captured_now": false,
+            "stance_active": true,
+            "source": "interval_qp",
+            "accepted": true,
+            "rejection": null,
+            "roll_pitch_rad": [
+              -0.6735044522217215,
+              -0.16212334569953968
+            ],
+            "velocity_world_m_s": [
+              -0.36744901231545046,
+              0.5159416461847598,
+              0.27007138940158043
+            ],
+            "angular_speed_rad_s": 8.106805569862408,
+            "max_joint_speed_rad_s": 26.148929595947266,
+            "contacts": [
+              false,
+              true,
+              false,
+              false
+            ],
+            "sampled_stable_s": 0.0
+          },
+          {
+            "tick": 503,
+            "state_precedes_command": true,
+            "stance_captured_now": false,
+            "stance_active": true,
+            "source": "uncertified_posture_fallback",
+            "accepted": false,
+            "rejection": "Interval command QP did not return a solved finite result",
+            "roll_pitch_rad": [
+              -0.720918975721762,
+              -0.09999446405247486
+            ],
+            "velocity_world_m_s": [
+              -0.3127646494580494,
+              0.5065237146437683,
+              0.17285520459163795
+            ],
+            "angular_speed_rad_s": 7.888530452286651,
+            "max_joint_speed_rad_s": 20.354116439819336,
+            "contacts": [
+              false,
+              true,
+              false,
+              false
+            ],
+            "sampled_stable_s": 0.0
+          }
+        ]
+      },
+      {
+        "case": 58,
+        "first_nonfoot_positive_force_tick": 511,
+        "events": [
+          {
+            "tick": 442,
+            "state_precedes_command": true,
+            "stance_captured_now": true,
+            "stance_active": true,
+            "source": "interval_qp",
+            "accepted": true,
+            "rejection": null,
+            "roll_pitch_rad": [
+              0.027986421132601927,
+              0.14456663040179749
+            ],
+            "velocity_world_m_s": [
+              0.22815592838081922,
+              0.08732660859830112,
+              -0.0031274753406093474
+            ],
+            "angular_speed_rad_s": 0.32089490063118903,
+            "max_joint_speed_rad_s": 0.697089433670044,
+            "contacts": [
+              true,
+              true,
+              true,
+              false
+            ],
+            "sampled_stable_s": 0.4100003242492676
+          },
+          {
+            "tick": 510,
+            "state_precedes_command": true,
+            "stance_captured_now": false,
+            "stance_active": true,
+            "source": "interval_qp",
+            "accepted": true,
+            "rejection": null,
+            "roll_pitch_rad": [
+              0.05348434267660871,
+              -0.11667956996871359
+            ],
+            "velocity_world_m_s": [
+              -1.4537727476823403,
+              -0.41600372565339433,
+              -0.7231328833827363
+            ],
+            "angular_speed_rad_s": 1.7545254084375237,
+            "max_joint_speed_rad_s": 6.005948543548584,
+            "contacts": [
+              true,
+              true,
+              false,
+              false
+            ],
+            "sampled_stable_s": 0.0
+          },
+          {
+            "tick": 511,
+            "state_precedes_command": true,
+            "stance_captured_now": false,
+            "stance_active": true,
+            "source": "uncertified_posture_fallback",
+            "accepted": false,
+            "rejection": "Interval command QP did not return a solved finite result",
+            "roll_pitch_rad": [
+              0.05550000677064206,
+              -0.1340114244133262
+            ],
+            "velocity_world_m_s": [
+              -1.4662347699734786,
+              -0.41009132439709595,
+              -0.8079429814890463
+            ],
+            "angular_speed_rad_s": 1.818854688756858,
+            "max_joint_speed_rad_s": 6.460949897766113,
+            "contacts": [
+              true,
+              true,
+              false,
+              false
+            ],
+            "sampled_stable_s": 0.0
+          }
+        ]
+      },
+      {
+        "case": 123,
+        "first_nonfoot_positive_force_tick": 479,
+        "events": [
+          {
+            "tick": 411,
+            "state_precedes_command": true,
+            "stance_captured_now": true,
+            "stance_active": true,
+            "source": "interval_qp",
+            "accepted": true,
+            "rejection": null,
+            "roll_pitch_rad": [
+              0.021210522828298894,
+              -0.0005121803115986347
+            ],
+            "velocity_world_m_s": [
+              0.09752322551524295,
+              -0.06265716708756933,
+              0.04295932298093752
+            ],
+            "angular_speed_rad_s": 0.07913809100884893,
+            "max_joint_speed_rad_s": 0.9841957688331604,
+            "contacts": [
+              true,
+              true,
+              false,
+              true
+            ],
+            "sampled_stable_s": 0.010000228881835938
+          },
+          {
+            "tick": 478,
+            "state_precedes_command": true,
+            "stance_captured_now": false,
+            "stance_active": true,
+            "source": "interval_qp",
+            "accepted": true,
+            "rejection": null,
+            "roll_pitch_rad": [
+              -0.05838482456682995,
+              -0.21938525664218073
+            ],
+            "velocity_world_m_s": [
+              -1.157269656147456,
+              -0.35287450754982486,
+              -0.4809123817148844
+            ],
+            "angular_speed_rad_s": 2.226098834656826,
+            "max_joint_speed_rad_s": 6.054402828216553,
+            "contacts": [
+              true,
+              true,
+              false,
+              false
+            ],
+            "sampled_stable_s": 0.0
+          },
+          {
+            "tick": 479,
+            "state_precedes_command": true,
+            "stance_captured_now": false,
+            "stance_active": true,
+            "source": "uncertified_posture_fallback",
+            "accepted": false,
+            "rejection": "Interval command QP did not return a solved finite result",
+            "roll_pitch_rad": [
+              -0.06973430684540287,
+              -0.23949854929234682
+            ],
+            "velocity_world_m_s": [
+              -1.1681169910577938,
+              -0.35330163328469416,
+              -0.5793532268192383
+            ],
+            "angular_speed_rad_s": 2.5027066169707446,
+            "max_joint_speed_rad_s": 6.041599750518799,
+            "contacts": [
+              true,
+              false,
+              false,
+              false
+            ],
+            "sampled_stable_s": 0.0
+          }
+        ]
+      },
+      {
+        "case": 30,
+        "first_nonfoot_positive_force_tick": null,
+        "events": [
+          {
+            "tick": 598,
+            "state_precedes_command": true,
+            "stance_captured_now": true,
+            "stance_active": true,
+            "source": "interval_qp",
+            "accepted": true,
+            "rejection": null,
+            "roll_pitch_rad": [
+              -0.04542845356769171,
+              -0.08390373481235565
+            ],
+            "velocity_world_m_s": [
+              -0.19259410654141454,
+              -0.006757506597812282,
+              -0.09138422375134912
+            ],
+            "angular_speed_rad_s": 0.2628419738363225,
+            "max_joint_speed_rad_s": 0.9966248869895935,
+            "contacts": [
+              true,
+              false,
+              true,
+              true
+            ],
+            "sampled_stable_s": 0.010000228881835938
+          },
+          {
+            "tick": 799,
+            "state_precedes_command": true,
+            "stance_captured_now": false,
+            "stance_active": true,
+            "source": "interval_qp",
+            "accepted": true,
+            "rejection": null,
+            "roll_pitch_rad": [
+              -0.04543128122784921,
+              -0.10345695490142359
+            ],
+            "velocity_world_m_s": [
+              0.00018158398727351904,
+              0.0005414943582309869,
+              0.0002695102597752096
+            ],
+            "angular_speed_rad_s": 0.03670834242607083,
+            "max_joint_speed_rad_s": 0.07876123487949371,
+            "contacts": [
+              true,
+              false,
+              true,
+              true
+            ],
+            "sampled_stable_s": 1.8299999237060547
+          }
+        ]
+      },
+      {
+        "case": 50,
+        "first_nonfoot_positive_force_tick": null,
+        "events": [
+          {
+            "tick": 435,
+            "state_precedes_command": true,
+            "stance_captured_now": true,
+            "stance_active": true,
+            "source": "interval_qp",
+            "accepted": true,
+            "rejection": null,
+            "roll_pitch_rad": [
+              -0.08993287444340954,
+              -0.007121105956841709
+            ],
+            "velocity_world_m_s": [
+              0.02005778361217072,
+              -0.08156670503082603,
+              -0.04055134208029969
+            ],
+            "angular_speed_rad_s": 0.4878159719900451,
+            "max_joint_speed_rad_s": 0.8794073462486267,
+            "contacts": [
+              true,
+              true,
+              true,
+              true
+            ],
+            "sampled_stable_s": 0.21000003814697266
+          },
+          {
+            "tick": 799,
+            "state_precedes_command": true,
+            "stance_captured_now": false,
+            "stance_active": true,
+            "source": "interval_qp",
+            "accepted": true,
+            "rejection": null,
+            "roll_pitch_rad": [
+              -0.09805313856095037,
+              -0.00661699075917108
+            ],
+            "velocity_world_m_s": [
+              -0.031884752462232685,
+              0.022147600816322784,
+              0.027190045794404115
+            ],
+            "angular_speed_rad_s": 0.046837453904033516,
+            "max_joint_speed_rad_s": 0.979451596736908,
+            "contacts": [
+              true,
+              false,
+              true,
+              true
+            ],
+            "sampled_stable_s": 3.8499999046325684
+          }
+        ]
+      },
+      {
+        "case": 85,
+        "first_nonfoot_positive_force_tick": null,
+        "events": [
+          {
+            "tick": 429,
+            "state_precedes_command": true,
+            "stance_captured_now": true,
+            "stance_active": true,
+            "source": "interval_qp",
+            "accepted": true,
+            "rejection": null,
+            "roll_pitch_rad": [
+              0.018827469907006705,
+              0.04511929767543292
+            ],
+            "velocity_world_m_s": [
+              -0.16054427367249732,
+              -0.004505688451539001,
+              -0.07598364524035232
+            ],
+            "angular_speed_rad_s": 0.7862967912139196,
+            "max_joint_speed_rad_s": 0.9765604734420776,
+            "contacts": [
+              true,
+              true,
+              true,
+              true
+            ],
+            "sampled_stable_s": 0.010000228881835938
+          },
+          {
+            "tick": 799,
+            "state_precedes_command": true,
+            "stance_captured_now": false,
+            "stance_active": true,
+            "source": "interval_qp",
+            "accepted": true,
+            "rejection": null,
+            "roll_pitch_rad": [
+              0.010790411687196948,
+              0.04069125176532697
+            ],
+            "velocity_world_m_s": [
+              -0.00015721954879474535,
+              0.0002682419206985322,
+              -0.00023829089158116745
+            ],
+            "angular_speed_rad_s": 0.03132534522130078,
+            "max_joint_speed_rad_s": 0.07524027675390244,
+            "contacts": [
+              true,
+              true,
+              true,
+              false
+            ],
+            "sampled_stable_s": 3.7100000381469727
+          }
+        ]
+      },
+      {
+        "case": 90,
+        "first_nonfoot_positive_force_tick": null,
+        "events": [
+          {
+            "tick": 443,
+            "state_precedes_command": true,
+            "stance_captured_now": true,
+            "stance_active": true,
+            "source": "interval_qp",
+            "accepted": true,
+            "rejection": null,
+            "roll_pitch_rad": [
+              0.0672954181678373,
+              0.09939461215343122
+            ],
+            "velocity_world_m_s": [
+              -0.017463641362848226,
+              -0.06655638239960754,
+              -0.09774424087488556
+            ],
+            "angular_speed_rad_s": 0.17654517302133,
+            "max_joint_speed_rad_s": 0.9472751021385193,
+            "contacts": [
+              true,
+              true,
+              true,
+              true
+            ],
+            "sampled_stable_s": 0.009999752044677734
+          },
+          {
+            "tick": 799,
+            "state_precedes_command": true,
+            "stance_captured_now": false,
+            "stance_active": true,
+            "source": "interval_qp",
+            "accepted": true,
+            "rejection": null,
+            "roll_pitch_rad": [
+              0.06582009671036171,
+              0.08282548195361578
+            ],
+            "velocity_world_m_s": [
+              -0.002107887183470288,
+              -0.00037880411794957697,
+              -0.00156945575561249
+            ],
+            "angular_speed_rad_s": 0.031514025057687016,
+            "max_joint_speed_rad_s": 0.056849680840969086,
+            "contacts": [
+              true,
+              true,
+              false,
+              true
+            ],
+            "sampled_stable_s": 3.5699996948242188
+          }
+        ]
+      }
+    ],
+    "source_sha256": {
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_native_stance_decay_v1.py": "fad5440fa44ce5593a54d147da9c994eb69b4b06922001a47902aa7a1c0ec0f3",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_settled_stance_all128_20261109_01/job.json": "53f0d6de00a0f596da09d71d381785597fef65e945caf94dd3a7e6b7c49066ab",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_settled_stance_all128_20261109_01/pure_control_commands.npz": "1ea4cdad8c973d5be22b431448191d1bc2d5d08c1f45a5453f7ff91a9d042218",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_settled_stance_all128_20261109_01/pure_control_diagnostics.jsonl": "c99d346b05a026c4fbfd500a06f51eed0793718ce1bb20aac10519423aff8f78",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_settled_stance_all128_20261109_01/pure_control_ground_forces.npz": "96b10d31454a043625488a733a4b1b96a9e6f169eafe61ab016f066b106d0807",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_settled_stance_all128_20261109_01/pure_control_ground_forces.json": "44dfa51bed7cd1f62f89ede321bca2860d2ffbc855d26aaa376f95f304f79aa9",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/loaded_pinocchio_model_v1.py": "2b303a32e57391ec7aaf3c3faf9d151f758477faf13ef6efae5bead979dcae82"
+    },
+    "native_rerun": false,
+    "causality_proven": false,
+    "acceptance_changed": false
+  },
+  "search": {
+    "state": "COMPLETED_ACTUAL_RECOVERY_SEQUENCE_SEARCH",
+    "completed_candidates": 468,
+    "results": [
+      {
+        "state_key": "12:470",
+        "steps": 94,
+        "model_path_complete": false,
+        "terminal_stable_s": 0.0,
+        "window_violation": 0.0,
+        "failure": {
+          "step": 94,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.009138464413126346
+          },
+          "collision": {
+            "micro": 22,
+            "body": "FL_thigh",
+            "gap_m": -1.4713366894809204e-05
+          }
+        }
+      },
+      {
+        "state_key": "58:470",
+        "steps": 62,
+        "model_path_complete": false,
+        "terminal_stable_s": 0.0,
+        "window_violation": 0.0,
+        "failure": {
+          "step": 62,
+          "reason": "model_rejected",
+          "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 4.74208180140101e-07, 'friction_cone': 0.0, 'tangent_fixed_point': 7.819678452848644e-08}, 'box_violation': 0.0, 'box_fixed_point': 0.0}\")"
+        }
+      },
+      {
+        "state_key": "123:450",
+        "steps": 126,
+        "model_path_complete": false,
+        "terminal_stable_s": 0.0,
+        "window_violation": 0.0,
+        "failure": {
+          "step": 126,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.002500637589595898
+          },
+          "collision": {
+            "micro": 9,
+            "body": "RL_calf",
+            "gap_m": -9.493694245243933e-06
+          }
+        }
+      }
+    ],
+    "wall_seconds": 631.1551138018258,
+    "native_success": false,
+    "valid_expert_labels": false
+  },
+  "search_models": [
+    {
+      "state_key": "123:450",
+      "coarse_candidates": 156,
+      "coarse_complete": 0,
+      "fine_results": [
+        {
+          "steps": 126,
+          "required_steps": 350,
+          "model_path_complete": false,
+          "failure": {
+            "step": 126,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.002500637589595898
+            },
+            "collision": {
+              "micro": 9,
+              "body": "RL_calf",
+              "gap_m": -9.493694245243933e-06
+            }
+          },
+          "terminal_stable_s": 0.0,
+          "longest_stable_s": 0.0,
+          "cost": 27.49661436899401,
+          "window_violation": 0.0,
+          "rank": [
+            1,
+            224,
+            1,
+            0.0,
+            -0.0,
+            27.49661436899401
+          ],
+          "substeps": 160,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "steps": 125,
+          "required_steps": 350,
+          "model_path_complete": false,
+          "failure": {
+            "step": 125,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.0033133205614996504
+            },
+            "collision": {
+              "micro": 1,
+              "body": "RL_calf",
+              "gap_m": -1.8191416331917593e-05
+            }
+          },
+          "terminal_stable_s": 0.0,
+          "longest_stable_s": 0.0,
+          "cost": 31.378374494547725,
+          "window_violation": 0.0,
+          "rank": [
+            1,
+            225,
+            1,
+            0.0,
+            -0.0,
+            31.378374494547725
+          ],
+          "substeps": 160,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "steps": 125,
+          "required_steps": 350,
+          "model_path_complete": false,
+          "failure": {
+            "step": 125,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.002896666444156079
+            },
+            "collision": {
+              "micro": 52,
+              "body": "Head_lower",
+              "gap_m": -7.50087476971556e-06
+            }
+          },
+          "terminal_stable_s": 0.0,
+          "longest_stable_s": 0.0,
+          "cost": 33.83756286029704,
+          "window_violation": 0.0,
+          "rank": [
+            1,
+            225,
+            1,
+            0.0,
+            -0.0,
+            33.83756286029704
+          ],
+          "substeps": 160,
+          "native_success": false,
+          "valid_expert_labels": false
+        }
+      ],
+      "best_control_nodes": [
+        [
+          -0.0045293058995685455,
+          -0.14569205087632575,
+          0.15467343482857504,
+          0.022877740324427187,
+          -0.08109127869594011,
+          -0.03271908754160904,
+          -0.42956335066443796,
+          -0.41092216223348343,
+          -0.010097242596112194,
+          0.14822143540025803,
+          0.22341435185749203,
+          0.13122125421756087,
+          0.10220763096001143,
+          -0.7332561981805075,
+          -0.36336638370871965,
+          -0.9819091029656133,
+          -0.6983194985301002,
+          -0.27904285633388604
+        ],
+        [
+          -0.024355976390143093,
+          -0.4000701937126388,
+          0.015512914684171075,
+          -0.22058526559453442,
+          -0.13611807243613636,
+          -0.07840431505895917,
+          -0.4534165086769219,
+          -0.4077659513341931,
+          0.4038407928721255,
+          0.23424012123160362,
+          0.5415505115554867,
+          0.3160720623141241,
+          -0.06450177286443809,
+          -0.4280349429300926,
+          -0.7057874968803506,
+          -0.9907296741552822,
+          -0.7725580981871598,
+          -0.3509898260419128
+        ],
+        [
+          0.09295354233242517,
+          -0.3523783171068738,
+          0.10250676757642292,
+          -0.15473361649774522,
+          -0.1424357146345007,
+          -0.04746656246281463,
+          -0.48317284888586653,
+          -0.3687367241809271,
+          0.3955877412386203,
+          0.2366866346349158,
+          0.5755274467412771,
+          0.3972035230448493,
+          -0.27390263948711185,
+          -0.3179164147381877,
+          -0.733650606153032,
+          -0.9787588659045822,
+          -0.8329141790476424,
+          -0.22721692136944988
+        ],
+        [
+          0.3844789856927833,
+          -0.11704589665703088,
+          0.3099747345374157,
+          0.11406229749967187,
+          -0.05688655420025937,
+          0.06545391208956411,
+          -0.47625297210719597,
+          -0.3676683104213665,
+          0.06645424461887316,
+          -0.03040108414550491,
+          0.28211024479689606,
+          0.15461004808705775,
+          -0.19040357731967314,
+          -0.3982483713471984,
+          -0.3604310354663479,
+          -0.5559715940509875,
+          -0.8364542037661377,
+          -0.03702009028603441
+        ],
+        [
+          0.12789007006882047,
+          -0.36218379766143494,
+          0.07975616414174266,
+          -0.2349945274604631,
+          -0.1442305112634356,
+          -0.03760061518913432,
+          -0.5876120242832499,
+          -0.49791269893919227,
+          0.6312253809268888,
+          0.22789548456858327,
+          0.6226307371703894,
+          0.6152929702512832,
+          -0.30655251985119353,
+          -0.38689086889710234,
+          -0.40322354792457316,
+          -0.3526921868113617,
+          -0.48479950297180274,
+          -0.11547970924742143
+        ],
+        [
+          -0.197300226539708,
+          -0.5949182696495895,
+          -0.15515856708346204,
+          -0.4900487549260105,
+          -0.03621682532149246,
+          0.07482512687468844,
+          -0.4622834310883588,
+          -0.4501900668111948,
+          0.15366153626242424,
+          -0.21094061987073898,
+          0.23688620533750224,
+          0.3661001784682676,
+          -0.37190071819868464,
+          -0.21154944923204885,
+          -0.2624725122856809,
+          -0.41622633161452127,
+          -0.6773776226980166,
+          -0.1768046000540627
+        ],
+        [
+          0.06078936487763178,
+          -0.38685284127721264,
+          0.09515615333965323,
+          -0.31551626338885524,
+          0.03861068679760355,
+          0.059461745245084505,
+          -0.43865133184472366,
+          -0.43838951155794736,
+          0.0371589698025198,
+          -0.1380100259830222,
+          0.10160491359203963,
+          0.04473242719133218,
+          -0.013549181440532458,
+          -0.04114473137495467,
+          -0.0379000341969502,
+          -0.2688925468961226,
+          -0.9004928943525295,
+          -0.2811616960918243
+        ],
+        [
+          0.42630753718150644,
+          -0.10976638518304367,
+          0.45338958773244203,
+          -0.08710733950432523,
+          0.04736027956344632,
+          0.07040655002186552,
+          -0.30231195785750203,
+          -0.3096341511192072,
+          -0.3104689214733929,
+          -0.31680518986636275,
+          -0.49105306880608346,
+          -0.3114966657761741,
+          -0.15388622105275931,
+          0.12508084728795044,
+          0.015255085043837872,
+          -0.5542677732894037,
+          -0.9765618760263125,
+          -0.37810772292675365
+        ],
+        [
+          0.40370381141938655,
+          -0.26335267622370645,
+          0.3054910146297809,
+          -0.10047272839815898,
+          -0.027615954565040637,
+          0.08964580253684722,
+          -0.29992324001053666,
+          -0.3409738563667367,
+          -0.23524394254622397,
+          -0.2727711158556225,
+          -0.2993112955817464,
+          0.08044020382600599,
+          -0.16101421772279195,
+          -0.026740641011311926,
+          -0.13935141555957603,
+          -0.6724871268680656,
+          -0.8789612338845697,
+          -0.13970648966087687
+        ],
+        [
+          0.34054032720934113,
+          -0.3859539034184855,
+          0.15547350612799807,
+          -0.0685968417686225,
+          -0.12698918043493496,
+          0.019484620843784807,
+          -0.43863915537958675,
+          -0.45281347554837154,
+          0.45152622196023384,
+          0.019572437923055203,
+          0.0532313603260316,
+          0.3942125781313912,
+          -0.020402758530875597,
+          -0.2115173426723939,
+          -0.44518300882246403,
+          -0.47599380701605704,
+          -0.815897442384809,
+          0.18131264437624983
+        ],
+        [
+          0.2532362542206292,
+          -0.35036629732031077,
+          0.1880234316859647,
+          -0.05468711785989111,
+          -0.08540246081452386,
+          0.10363273872484105,
+          -0.40733111975287634,
+          -0.4082911686262688,
+          0.09039013292085886,
+          -0.6121023171027746,
+          -0.4910573127494297,
+          -0.14546100781518517,
+          -0.17502271368133715,
+          -0.01900590790174384,
+          -0.7107591870947574,
+          -0.5638918598135011,
+          -0.983602414915615,
+          -0.1462527602856794
+        ],
+        [
+          0.06932132735028788,
+          -0.3114062972406686,
+          0.19729415191410027,
+          -0.08885298649455727,
+          -0.04869181074811836,
+          0.14734498817867797,
+          -0.4439716424144491,
+          -0.4062786089812943,
+          -0.05368123374998352,
+          -0.6960008834675576,
+          -0.4345268111082988,
+          -0.2401464485754655,
+          0.054091018801500516,
+          -0.08044218049680062,
+          -0.7631623727985177,
+          -0.5485584932897363,
+          -0.7700666711610196,
+          -0.05884411765741666
+        ]
+      ]
+    },
+    {
+      "state_key": "12:470",
+      "coarse_candidates": 156,
+      "coarse_complete": 0,
+      "fine_results": [
+        {
+          "steps": 94,
+          "required_steps": 330,
+          "model_path_complete": false,
+          "failure": {
+            "step": 94,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.009138464413126346
+            },
+            "collision": {
+              "micro": 22,
+              "body": "FL_thigh",
+              "gap_m": -1.4713366894809204e-05
+            }
+          },
+          "terminal_stable_s": 0.0,
+          "longest_stable_s": 0.0,
+          "cost": 396.49649667972716,
+          "window_violation": 0.0,
+          "rank": [
+            1,
+            236,
+            1,
+            0.0,
+            -0.0,
+            396.49649667972716
+          ],
+          "substeps": 160,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "steps": 94,
+          "required_steps": 330,
+          "model_path_complete": false,
+          "failure": {
+            "step": 94,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.004536752050571366
+            },
+            "collision": {
+              "micro": 75,
+              "body": "RL_thigh",
+              "gap_m": -2.5453257617305894e-05
+            }
+          },
+          "terminal_stable_s": 0.0,
+          "longest_stable_s": 0.0,
+          "cost": 434.64895880320944,
+          "window_violation": 0.0,
+          "rank": [
+            1,
+            236,
+            1,
+            0.0,
+            -0.0,
+            434.64895880320944
+          ],
+          "substeps": 160,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "steps": 94,
+          "required_steps": 330,
+          "model_path_complete": false,
+          "failure": {
+            "step": 94,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.008657404843805443
+            },
+            "collision": {
+              "micro": 56,
+              "body": "FL_thigh",
+              "gap_m": -4.250483730042047e-05
+            }
+          },
+          "terminal_stable_s": 0.0,
+          "longest_stable_s": 0.0,
+          "cost": 450.5254954030847,
+          "window_violation": 0.0,
+          "rank": [
+            1,
+            236,
+            1,
+            0.0,
+            -0.0,
+            450.5254954030847
+          ],
+          "substeps": 160,
+          "native_success": false,
+          "valid_expert_labels": false
+        }
+      ],
+      "best_control_nodes": [
+        [
+          -0.519813345343737,
+          -0.32076071094431924,
+          -0.506723965680558,
+          -0.36393934203909545,
+          -0.14241639776772416,
+          -0.26580358790147973,
+          -0.5758073495107183,
+          -0.6824019409775532,
+          0.48619413674935313,
+          0.9337527410324106,
+          0.9479225289837258,
+          0.9851681907858971,
+          -0.0034405119326541087,
+          -0.21216105858195122,
+          -0.8709789564875982,
+          0.0589965259563255,
+          -0.14405237741894453,
+          -0.14222463001898783
+        ],
+        [
+          -0.183345961407643,
+          -0.09061719586733878,
+          -0.13911930970820113,
+          -0.12905528033444438,
+          -0.04875496875979115,
+          -0.1882201703628169,
+          -0.5249341790808798,
+          -0.5931659138062171,
+          0.3377222465216952,
+          0.9815200300128815,
+          0.6874593446947614,
+          1.0,
+          -0.005405654509830924,
+          -0.3220367235232354,
+          -0.7218812216482084,
+          -0.09209956074116982,
+          -0.4695670636605106,
+          -0.0018822701827905018
+        ],
+        [
+          0.0845830404101163,
+          0.2134249670496034,
+          0.15057089742658133,
+          0.1100506385720955,
+          -0.06257158458057634,
+          -0.20693609622631817,
+          -0.5060423037520798,
+          -0.5925066609752857,
+          0.5104090767074246,
+          0.9807714113060786,
+          0.7046831260491646,
+          0.9914016602605755,
+          -0.04054728018898133,
+          -0.3386726994242324,
+          -0.5447783611213486,
+          -0.2554025540757501,
+          -0.9643540841196591,
+          0.009566451664671653
+        ],
+        [
+          -0.1006063390478833,
+          0.11571394180390403,
+          0.022333928340104187,
+          -0.11616810555810858,
+          -0.15216632865305324,
+          -0.19701026814569958,
+          -0.44487210760253004,
+          -0.5891817542524062,
+          0.5636154938991386,
+          0.7983335920728191,
+          0.5866271878445973,
+          0.9610639036600387,
+          -0.07391114827504489,
+          -0.11653019569127654,
+          -0.7470423910064189,
+          -0.09111567538278785,
+          -1.0,
+          -0.15787445531662453
+        ],
+        [
+          -0.059508921009859786,
+          0.04927036039851917,
+          0.22028531366127715,
+          -0.08080010799095783,
+          -0.14728235674154644,
+          -0.09821794813546333,
+          -0.3268323126890556,
+          -0.4804078108209708,
+          0.2477791523055012,
+          0.305704997444576,
+          -0.16369555392057059,
+          0.46016658712022707,
+          0.1215184099543726,
+          -0.0044968815462229205,
+          -0.9139275497676199,
+          0.34447116711477016,
+          -1.0,
+          0.023672174485232948
+        ],
+        [
+          0.24711909060175588,
+          0.05874113768890701,
+          0.28220778404362323,
+          0.05233048050446282,
+          -0.1011198014872467,
+          -0.045369228080032756,
+          -0.3596915757255566,
+          -0.3834699640890807,
+          0.27332762062786253,
+          0.047575431120742535,
+          -0.3210074172079442,
+          0.24279457466976861,
+          0.2091874783491955,
+          -0.04296880906302894,
+          -0.9905598296678172,
+          0.13390364114117193,
+          -0.9383871518331712,
+          0.1088523882963244
+        ],
+        [
+          0.40354742733037896,
+          0.17617361066176296,
+          0.286339205250776,
+          0.14084327622883713,
+          -0.006926179879888638,
+          0.044833004734426044,
+          -0.3514110643136253,
+          -0.36061133162214815,
+          0.09962275787482583,
+          -0.2710339124101277,
+          -0.30830262304522227,
+          -0.020396856203153343,
+          0.20492219074161797,
+          -0.3497038309355048,
+          -0.8241612251011802,
+          -0.09237823907707082,
+          -0.9179600449291658,
+          -0.042519398846285805
+        ],
+        [
+          0.08708443298355728,
+          -0.09757133862515394,
+          0.07661964358348254,
+          0.04938679117767257,
+          -0.11811209016405937,
+          -0.08765601094115155,
+          -0.2924961143864138,
+          -0.42832285615882376,
+          0.2277337111290894,
+          0.2038710984714504,
+          0.15314260360633272,
+          0.38419789713277336,
+          0.26011861957585436,
+          -0.022656788217616602,
+          -0.7056950750181378,
+          -0.1767625069143388,
+          -0.9252828895940698,
+          0.0021162812495172318
+        ],
+        [
+          0.04650651557679071,
+          -0.21505957505204729,
+          -0.008769953172455037,
+          -0.19498796040824729,
+          -0.07607299664876346,
+          -0.14931565422987023,
+          -0.242257295968232,
+          -0.42511714251063437,
+          0.20093520068307458,
+          0.3249047200597868,
+          0.03864073383077529,
+          0.5383318904749761,
+          0.084304133227091,
+          0.20302774434743967,
+          -0.9969451794916495,
+          0.07410956478678161,
+          -1.0,
+          0.013344773104627715
+        ],
+        [
+          0.21906481502198533,
+          0.11797700593283156,
+          0.20386622492367557,
+          -0.02765253789901274,
+          0.08540024192724915,
+          -0.029601947685486126,
+          -0.260263799558263,
+          -0.4121653967150073,
+          -0.24272465233304616,
+          0.04938518872503063,
+          -0.5375119143474466,
+          0.23110050101800664,
+          0.18763390343251843,
+          -0.4095167494658764,
+          -0.7084235044662994,
+          0.15172714132756449,
+          -1.0,
+          0.1673281432339416
+        ],
+        [
+          0.09947597269122616,
+          0.03020243960917736,
+          0.18235716029504778,
+          -0.00784826851957142,
+          -0.0013592720123209662,
+          -0.09043101341591221,
+          -0.28866973726591355,
+          -0.34919334942229896,
+          -0.0770949601709767,
+          0.10929533388444715,
+          -0.43147455855812283,
+          0.08071516216166788,
+          0.32372833134236884,
+          -0.7362869629536833,
+          -0.7461143033672488,
+          -0.07522447656597231,
+          -0.9803311475126931,
+          0.0755479908960834
+        ]
+      ]
+    },
+    {
+      "state_key": "58:470",
+      "coarse_candidates": 156,
+      "coarse_complete": 0,
+      "fine_results": [
+        {
+          "steps": 62,
+          "required_steps": 330,
+          "model_path_complete": false,
+          "failure": {
+            "step": 62,
+            "reason": "model_rejected",
+            "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 2.2626218491250683e-05, 'friction_cone': 0.0, 'tangent_fixed_point': 3.733797835372976e-06}, 'box_violation': 0.0, 'box_fixed_point': 0.0}\")"
+          },
+          "terminal_stable_s": 0.0,
+          "longest_stable_s": 0.0,
+          "cost": 50.00399424846141,
+          "window_violation": 0.0,
+          "rank": [
+            1,
+            268,
+            1,
+            0.0,
+            -0.0,
+            50.00399424846141
+          ],
+          "substeps": 160,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "steps": 62,
+          "required_steps": 330,
+          "model_path_complete": false,
+          "failure": {
+            "step": 62,
+            "reason": "model_rejected",
+            "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 4.74208180140101e-07, 'friction_cone': 0.0, 'tangent_fixed_point': 7.819678452848644e-08}, 'box_violation': 0.0, 'box_fixed_point': 0.0}\")"
+          },
+          "terminal_stable_s": 0.0,
+          "longest_stable_s": 0.0,
+          "cost": 49.798914398015825,
+          "window_violation": 0.0,
+          "rank": [
+            1,
+            268,
+            1,
+            0.0,
+            -0.0,
+            49.798914398015825
+          ],
+          "substeps": 160,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "steps": 62,
+          "required_steps": 330,
+          "model_path_complete": false,
+          "failure": {
+            "step": 62,
+            "reason": "model_rejected",
+            "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 1.3665935838291787e-05, 'friction_cone': 0.0, 'tangent_fixed_point': 2.2631269373865615e-06}, 'box_violation': 1.1102230246251565e-16, 'box_fixed_point': 0.0}\")"
+          },
+          "terminal_stable_s": 0.0,
+          "longest_stable_s": 0.0,
+          "cost": 49.80142494700072,
+          "window_violation": 0.0,
+          "rank": [
+            1,
+            268,
+            1,
+            0.0,
+            -0.0,
+            49.80142494700072
+          ],
+          "substeps": 160,
+          "native_success": false,
+          "valid_expert_labels": false
+        }
+      ],
+      "best_control_nodes": [
+        [
+          -0.6153634191984984,
+          -0.38337969235494707,
+          -0.5813191586412049,
+          0.19831191309245613,
+          -0.18765207371654527,
+          -0.06559952740236719,
+          -0.36031396695231205,
+          -0.35393245288003866,
+          -0.025093188508232944,
+          -0.07929022861679352,
+          -0.16066614262486378,
+          0.5157342052784948,
+          -0.10923638585482016,
+          -0.1296582105433643,
+          -0.35680511064223397,
+          0.3157966100763586,
+          -0.2939246537740834,
+          -0.35077009308898527
+        ],
+        [
+          -0.2986372339581391,
+          -0.3798148402496875,
+          -0.32505439451186807,
+          0.09061572971216601,
+          -0.09826202291165334,
+          0.009440542167921328,
+          -0.3725618412688089,
+          -0.39601220636485784,
+          0.3825587458105672,
+          -0.11433353140156147,
+          0.15794686197308475,
+          0.38035603818278,
+          -0.028300173236238707,
+          -0.16579152466830374,
+          -0.46650386565826674,
+          0.011783777023893771,
+          -0.3813405747446535,
+          -0.2680282562757701
+        ],
+        [
+          0.35323502781686855,
+          0.10426867931580702,
+          0.3107229886320995,
+          0.24071894272094815,
+          -0.0011761526362450633,
+          0.0022631254152392054,
+          -0.3714434756504258,
+          -0.3793075464512576,
+          0.0682970416295306,
+          0.04970404381891877,
+          0.20837358432408465,
+          -0.006097499376866954,
+          0.030922485966525665,
+          -0.12813050351456018,
+          -0.8171860104443887,
+          -0.129066020540149,
+          -0.8361875747490988,
+          -0.11809171317636509
+        ],
+        [
+          0.42295619849153815,
+          0.25092436328861506,
+          0.4314469952111289,
+          0.16763355003375346,
+          -0.01752264426634345,
+          -0.008932386037905013,
+          -0.3244558256829598,
+          -0.3451570888749271,
+          -0.09039524275966465,
+          0.22316252578358936,
+          0.20370787938162727,
+          0.13418515794052222,
+          0.08361379162294186,
+          -0.24905875884384676,
+          -0.9140665266046466,
+          -0.12434722735171275,
+          -0.763131362634395,
+          -0.15285029815051215
+        ],
+        [
+          0.30837614903962784,
+          -0.07730085865722698,
+          0.09379875236119573,
+          -0.09069326031543894,
+          0.0006698303394887389,
+          -0.011429876193081528,
+          -0.286496039899039,
+          -0.34080900391152075,
+          -0.35066670292290236,
+          0.05817860068099029,
+          0.09745355745208373,
+          0.054935806682456324,
+          0.11439967967921784,
+          -0.43963136331347746,
+          -0.8303806348431684,
+          -0.45090963904940856,
+          -0.5730619561407609,
+          -0.06961984718061287
+        ],
+        [
+          0.28419724878267033,
+          -0.22226422757868924,
+          -0.16547827609321106,
+          -0.16069690789800123,
+          -0.04566014450581218,
+          -0.06299722478844452,
+          -0.35693857229289344,
+          -0.33312445022811277,
+          -0.04677385418734549,
+          0.4220792319766462,
+          0.3024000254581873,
+          0.1578775829629722,
+          0.08983527272396022,
+          -0.5021979826386472,
+          -0.7773087960395003,
+          -0.2065873787231143,
+          -0.8227106631012353,
+          0.3399416893565653
+        ],
+        [
+          -0.0734181515216438,
+          -0.18488869625461318,
+          -0.1462148530256108,
+          -0.3395866705557295,
+          -0.13568893114523656,
+          -0.04789886078837831,
+          -0.4406922131441467,
+          -0.28289227385750615,
+          0.5210066879010283,
+          0.7100634816486115,
+          0.6572936025095084,
+          0.19058006297265817,
+          0.1587249471157067,
+          -0.36607505137388463,
+          -0.2208141025204786,
+          0.0865771706200804,
+          -0.8147481948302826,
+          0.3071379478541478
+        ],
+        [
+          -0.07599703698721946,
+          -0.14618205839204063,
+          -0.0016694249611729252,
+          -0.3461967343331105,
+          0.13465262801747616,
+          0.10112112496290496,
+          -0.33199930024745095,
+          -0.1861922667195049,
+          -0.4766334662749376,
+          -0.20929432695847108,
+          0.02418548581353788,
+          -0.7439911467847651,
+          0.33606540613296354,
+          -0.30722636554073973,
+          -0.5833644686812016,
+          -0.16997439596061006,
+          -0.5257299556277262,
+          0.05588692846217433
+        ],
+        [
+          -0.07589028401950425,
+          -0.19437955182356387,
+          -0.01671189722442771,
+          -0.3779884941250215,
+          0.03621677866487809,
+          -0.0008279805364502274,
+          -0.3617855120866476,
+          -0.30498900606029117,
+          -0.07464650695800785,
+          -0.05542850417899773,
+          0.26242461396621525,
+          -0.21815256180834985,
+          0.38150100332867726,
+          -0.3058618839971514,
+          -0.8192876268701784,
+          -0.43989778831100557,
+          -0.8704539292536201,
+          -0.07260581268159885
+        ],
+        [
+          -0.13988508205906036,
+          -0.3347078811713717,
+          -0.2635104795931959,
+          -0.3974713470287112,
+          -0.11699375102384202,
+          -0.11894374613002096,
+          -0.49544836614867044,
+          -0.4128445258733331,
+          0.61376423525384,
+          0.5333042283757645,
+          0.7853356379593883,
+          0.3907545304966349,
+          0.4603682538583985,
+          -0.22217140824207632,
+          -0.5033539517236463,
+          -0.1855022694879451,
+          -0.9547029143290912,
+          0.07523424070522294
+        ],
+        [
+          -0.15580479075674766,
+          -0.07343908802802618,
+          -0.21168429646085016,
+          -0.20444507613214596,
+          -0.07571286356747883,
+          0.009349024055160532,
+          -0.3672424161797709,
+          -0.3625569937237221,
+          0.36174708469701605,
+          -0.02720685236324482,
+          0.3537779771323744,
+          0.23356333775312302,
+          0.5348376708646733,
+          -0.011057454936460504,
+          -1.0,
+          -0.4404611843172232,
+          -0.9604882477150573,
+          0.20866876461987693
+        ]
+      ]
+    }
+  ],
+  "live_snapshot": {
+    "pure_control_foot_reference_native_preparation_20261109_01": {
+      "pinned_files": 553,
+      "changed_files": [],
+      "max_seconds": 5400,
+      "results_pending": true
+    },
+    "pure_control_preserved_stance_replanning_native_preparation_20261109_01": {
+      "pinned_files": 561,
+      "changed_files": [],
+      "max_seconds": 5400,
+      "results_pending": true
+    },
+    "pure_control_current_native_capture_search_20261109/status.json": {
+      "state": "SEARCHING_ACTUAL_RECOVERY_SEQUENCES",
+      "pid": 192405,
+      "completed_candidates": 0
+    },
+    "pure_control_foot_reference_all128_20261109_01/pure_control_progress.json": {
+      "control_tick": 320,
+      "owned_cases": 110,
+      "applied_steps": 4994,
+      "training": false
+    },
+    "pure_control_preserved_stance_replanning_native_preparation_20261109_01/serial_status.json": {
+      "state": "WAITING_VERIFIED_PREDECESSOR",
+      "pid": 190079,
+      "time": "2026-11-08T18:10:51.769508+00:00",
+      "predecessor_pid": 188615
+    }
+  },
+  "source_sha256": {
+    "reports/pure_control_current_native_tail_search_20261109/result.json": "fa3b7b0e0b8def283db42c4239628a4ae4c02c0c19a5dce6bb52f36547b58850",
+    "reports/pure_control_current_native_tail_search_20261109/inputs.json": "070bfa5212231eb79371fc1f967d5046b5c9fae3bcab3e54deb53c2e60cab454",
+    "reports/pure_control_current_native_tail_review_20261109/postreference_commands.json": "b1840db9647581c7a6dfc95e0ad41247999c5b79da02a4b68c41060c0f096540",
+    "reports/pure_control_current_native_tail_review_20261109/stance_decay.json": "4667f11133ee4628b8884f5d34201f204ba8884d37662d2c2cf19c8303611e47",
+    "reports/pure_control_settled_stance_completion_audit_20261109/status.json": "0cae63a4918c4eaaba99b190a0e86dcbbbc169e6232e79b57d899cc5d44557c7",
+    "scripts/search_current_native_recovery_v4.py": "5476f6b7aae2fe1c2264b6de14392f08b99f58150f4a33a9cba9e83ec24ec50c",
+    "scripts/audit_native_stance_decay_v1.py": "fad5440fa44ce5593a54d147da9c994eb69b4b06922001a47902aa7a1c0ec0f3",
+    "reports/pure_control_current_native_tail_search_20261109/state_123_450.json": "2ab0562c3ce2e8d3eb34994585b4c515f7714f3eccc1015ad02579f88b53b698",
+    "reports/pure_control_current_native_tail_search_20261109/state_12_470.json": "fd375adc93674404d735019c2d3f101480808a6bd2c2c6bea73f2e88862273d7",
+    "reports/pure_control_current_native_tail_search_20261109/state_58_470.json": "f04c9191945db6d25575fe852541a7674f82baa7188e38a78a62c563464f3955",
+    "reports/pure_control_foot_reference_native_preparation_20261109_01/plan.json": "2208c8f10b3e877e2709261d1349c7f1c87d6a426b7b52497934a46c67fb5a0d",
+    "reports/pure_control_preserved_stance_replanning_native_preparation_20261109_01/plan.json": "c16ed7ab6ae0a1aca2bbc49555df0d323e0bbd0e352a624c7b31d6b67eff89cb"
+  },
+  "formal_G07_status": "FAILED",
+  "acceptance_changed": false,
+  "native_success_not_inferred_from_model": true
+}
