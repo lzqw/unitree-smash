@@ -1,0 +1,1764 @@
+{
+  "snapshot_utc": "2026-11-08T16:34:00.055015+00:00",
+  "scope": "Completed native v12; pending v14 and expanded full-model continuation",
+  "native_job": {
+    "goal": "G07",
+    "budget_window": "g07-full-racket-unlimited-20261024",
+    "git_sha": "bc0e39f5f4805137de0c4b3b4489fe48df637b69",
+    "command": [
+      "bash",
+      "scripts/python.sh",
+      "-u",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_reference_clock_preparation_20261108_01/evaluate_pure_control.py",
+      "--output",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_reference_clock_all128_20261108_01",
+      "--checkpoint",
+      "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_env5120_01/policy.pt",
+      "--precision-receipt",
+      "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin_precision_after_aim_queue01/PRECISION_ADMISSION.json",
+      "--ground-xy-m",
+      "64",
+      "--record-first-episodes",
+      "--seed",
+      "882072",
+      "--persistent-recovery-trial",
+      "--allow-declared-controller-variant",
+      "--landing-blas-threads",
+      "1",
+      "--headless",
+      "--device",
+      "cuda:0",
+      "--pure-control-configuration",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_reference_clock_preparation_20261108_01/controller.json"
+    ],
+    "output": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_reference_clock_all128_20261108_01",
+    "gpu": 0,
+    "status": "SUCCEEDED",
+    "charged_gpu_hours": 1.2463977767588545,
+    "charged_env_steps": 102400,
+    "started_at": "2026-11-08T15:14:41.515136+00:00",
+    "pid": 166075,
+    "original_authorization": "g07-full-racket-unlimited-20261024",
+    "authorization_started_at": "2026-10-24T01:53:52.256487+00:00",
+    "authorization_deadline": null,
+    "child_pid": 166094,
+    "exit_code": 0,
+    "timed_out": false,
+    "receipt_present": true,
+    "elapsed_s": 4487.031996331876,
+    "finished_at": "2026-11-08T16:29:28.559850+00:00"
+  },
+  "native_summary": {
+    "owned_cases": 110,
+    "historical_complete5": 1,
+    "first_head_over1n_cases": 88,
+    "first_other_over1n_cases": 69,
+    "terminal_stance_entered_cases": [],
+    "clean_and_final_sampled_stable_08s_through_tick799": [],
+    "sampled_stability_is_not_formal_acceptance": true,
+    "training": false,
+    "valid_expert_labels": false
+  },
+  "reference_audit": {
+    "owned_cases": 110,
+    "matched_reference_cases": 31,
+    "same_source_matches": 31,
+    "different_source_matches": 0,
+    "reference_with_predictive_rejections": 3,
+    "actual_reference_clock_mismatch_steps": 0,
+    "clean_and_final_sampled_stable_08s": [],
+    "strict_acceptance_not_automatically_inferred": true
+  },
+  "historical_metrics": {
+    "complete5": 1,
+    "airborne_contacts": 74,
+    "conditional_recovery_count": 1,
+    "actual_racket_contacts": 110,
+    "crossed_net": 72,
+    "landed_target": 40,
+    "numerical_failures": 0
+  },
+  "ball5_except_recovery": 36,
+  "complete5_cases": [
+    50
+  ],
+  "native_failure_chain_summary": {
+    "owned_cases": 110,
+    "native_robot_net_faults": 24,
+    "sampled_net_penetration_cases": 16,
+    "native_head_after_cases": 88,
+    "native_other_after_cases": 69,
+    "clean_and_stable_sampled_cases": [
+      50
+    ],
+    "ball_prefix_comparison_pass_cases": 66,
+    "ball_prefix_comparison_mismatch_cases": [
+      2,
+      3,
+      6,
+      7,
+      10,
+      11,
+      12,
+      15,
+      16,
+      17,
+      18,
+      21,
+      24,
+      26,
+      32,
+      33,
+      34,
+      36,
+      38,
+      39,
+      40,
+      43,
+      45,
+      49,
+      51,
+      53,
+      54,
+      64,
+      65,
+      68,
+      74,
+      80,
+      81,
+      83,
+      84,
+      87,
+      90,
+      97,
+      98,
+      100,
+      103,
+      114,
+      120,
+      126
+    ]
+  },
+  "selected_native_cases": [
+    {
+      "case": 12,
+      "takeover_tick": 282,
+      "last_control_tick": 799,
+      "reference_source_case": 12,
+      "nominal_reference_end_tick": 442,
+      "first_head_after_takeover": null,
+      "first_other_nonfoot_after_takeover": {
+        "body": "RR_thigh",
+        "physics_frame": 95762,
+        "time_s": 5.985125,
+        "seconds_after_reference_end": 1.565125,
+        "preceding_control_observation": {
+          "tick": 598,
+          "time_s": 5.98,
+          "phase": "BUFFER_LOAD",
+          "command_source": "uncertified_posture_fallback",
+          "reference_active": false,
+          "terminal_stance_active": false,
+          "terminal_candidate_conditions": {},
+          "root_height_m": 0.2446330487728119,
+          "roll_pitch_rad": [
+            0.022839692608938943,
+            -0.18097730424138544
+          ],
+          "root_velocity_world_m_s": [
+            -0.8367460465104231,
+            0.20992879764113612,
+            -0.6112150954053792
+          ],
+          "angular_speed_rad_s": 3.6234567438455905,
+          "contact_mask": [
+            false,
+            true,
+            false,
+            true
+          ],
+          "measured_foot_force_world_n": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              8.35341739654541
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              63.414649963378906
+            ]
+          ],
+          "sampled_stable_s": 0.0
+        }
+      },
+      "reference_end_observation": {
+        "tick": 442,
+        "time_s": 4.42,
+        "phase": "SUSTAIN",
+        "command_source": "interval_qp",
+        "reference_active": false,
+        "terminal_stance_active": false,
+        "terminal_candidate_conditions": {},
+        "root_height_m": 0.30862125754356384,
+        "roll_pitch_rad": [
+          -0.013531026177541075,
+          0.08100338748718838
+        ],
+        "root_velocity_world_m_s": [
+          -0.15290519739084296,
+          -0.050424207508323216,
+          -0.003427669055097926
+        ],
+        "angular_speed_rad_s": 0.3090123334835228,
+        "contact_mask": [
+          false,
+          true,
+          true,
+          true
+        ],
+        "measured_foot_force_world_n": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            97.82417297363281
+          ],
+          [
+            0.0,
+            0.0,
+            100.87543487548828
+          ],
+          [
+            0.0,
+            0.0,
+            41.37436294555664
+          ]
+        ],
+        "sampled_stable_s": 0.039999961853027344
+      },
+      "terminal_stance_entry": null,
+      "phase_transitions": [
+        {
+          "tick": 282,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 306,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 332,
+          "phase": "SUSTAIN"
+        },
+        {
+          "tick": 598,
+          "phase": "BUFFER_LOAD"
+        }
+      ],
+      "after_reference_command_sources": {
+        "interval_qp": 155,
+        "uncertified_posture_fallback": 203
+      },
+      "no_recorded_nonfoot_ground_force": false,
+      "longest_sampled_stable_s": 0.40000009536743164,
+      "final_sampled_stable_s": 0.0
+    },
+    {
+      "case": 50,
+      "takeover_tick": 275,
+      "last_control_tick": 799,
+      "reference_source_case": 50,
+      "nominal_reference_end_tick": 435,
+      "first_head_after_takeover": null,
+      "first_other_nonfoot_after_takeover": null,
+      "reference_end_observation": {
+        "tick": 435,
+        "time_s": 4.3500000000000005,
+        "phase": "SUSTAIN",
+        "command_source": "interval_qp",
+        "reference_active": false,
+        "terminal_stance_active": false,
+        "terminal_candidate_conditions": {},
+        "root_height_m": 0.25841522216796875,
+        "roll_pitch_rad": [
+          -0.08969371687352551,
+          7.950806786956905e-05
+        ],
+        "root_velocity_world_m_s": [
+          0.01530917944710676,
+          -0.07913226160909494,
+          -0.043639389409527725
+        ],
+        "angular_speed_rad_s": 0.501518475839018,
+        "contact_mask": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "measured_foot_force_world_n": [
+          [
+            0.0,
+            0.0,
+            21.71766471862793
+          ],
+          [
+            0.0,
+            0.0,
+            59.59716033935547
+          ],
+          [
+            0.0,
+            0.0,
+            98.99005889892578
+          ],
+          [
+            0.0,
+            0.0,
+            39.9180908203125
+          ]
+        ],
+        "sampled_stable_s": 0.21000003814697266
+      },
+      "terminal_stance_entry": null,
+      "phase_transitions": [
+        {
+          "tick": 275,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 300,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 357,
+          "phase": "SUSTAIN"
+        }
+      ],
+      "after_reference_command_sources": {
+        "interval_qp": 365
+      },
+      "no_recorded_nonfoot_ground_force": true,
+      "longest_sampled_stable_s": 1.380000114440918,
+      "final_sampled_stable_s": 0.0
+    },
+    {
+      "case": 58,
+      "takeover_tick": 282,
+      "last_control_tick": 799,
+      "reference_source_case": 58,
+      "nominal_reference_end_tick": 442,
+      "first_head_after_takeover": {
+        "body": "Head_lower",
+        "physics_frame": 109808,
+        "time_s": 6.863,
+        "seconds_after_reference_end": 2.4430000000000005,
+        "preceding_control_observation": {
+          "tick": 686,
+          "time_s": 6.86,
+          "phase": "BUFFER_LOAD",
+          "command_source": "uncertified_posture_fallback",
+          "reference_active": false,
+          "terminal_stance_active": false,
+          "terminal_candidate_conditions": {},
+          "root_height_m": 0.18377482891082764,
+          "roll_pitch_rad": [
+            -0.2356722427760855,
+            0.2662029563753587
+          ],
+          "root_velocity_world_m_s": [
+            1.6113555660716978,
+            0.7243890317878219,
+            -0.5035612644997449
+          ],
+          "angular_speed_rad_s": 3.2864842029441568,
+          "contact_mask": [
+            false,
+            true,
+            true,
+            false
+          ],
+          "measured_foot_force_world_n": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              13.66051959991455
+            ],
+            [
+              0.0,
+              0.0,
+              2.6487014293670654
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "sampled_stable_s": 0.0
+        }
+      },
+      "first_other_nonfoot_after_takeover": {
+        "body": "RL_calf",
+        "physics_frame": 80779,
+        "time_s": 5.0486875,
+        "seconds_after_reference_end": 0.6286874999999998,
+        "preceding_control_observation": {
+          "tick": 504,
+          "time_s": 5.04,
+          "phase": "BUFFER_LOAD",
+          "command_source": "uncertified_posture_fallback",
+          "reference_active": false,
+          "terminal_stance_active": false,
+          "terminal_candidate_conditions": {},
+          "root_height_m": 0.2640421688556671,
+          "roll_pitch_rad": [
+            0.01976390532807338,
+            -0.27183565459869974
+          ],
+          "root_velocity_world_m_s": [
+            -1.42981452195201,
+            -0.39639036559358337,
+            -0.8977135829486631
+          ],
+          "angular_speed_rad_s": 2.1262953031534573,
+          "contact_mask": [
+            true,
+            true,
+            false,
+            false
+          ],
+          "measured_foot_force_world_n": [
+            [
+              0.0,
+              0.0,
+              4.035326957702637
+            ],
+            [
+              0.0,
+              0.0,
+              3.254822254180908
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "sampled_stable_s": 0.0
+        }
+      },
+      "reference_end_observation": {
+        "tick": 442,
+        "time_s": 4.42,
+        "phase": "SUSTAIN",
+        "command_source": "interval_qp",
+        "reference_active": false,
+        "terminal_stance_active": false,
+        "terminal_candidate_conditions": {},
+        "root_height_m": 0.3285832107067108,
+        "roll_pitch_rad": [
+          0.027986421132601937,
+          0.1445666304017975
+        ],
+        "root_velocity_world_m_s": [
+          0.22815592838081922,
+          0.08732660859830113,
+          -0.003127475340609354
+        ],
+        "angular_speed_rad_s": 0.32089490063118903,
+        "contact_mask": [
+          true,
+          true,
+          true,
+          false
+        ],
+        "measured_foot_force_world_n": [
+          [
+            0.0,
+            0.0,
+            48.57527160644531
+          ],
+          [
+            0.0,
+            0.0,
+            103.428466796875
+          ],
+          [
+            0.0,
+            0.0,
+            45.638328552246094
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "sampled_stable_s": 0.4100003242492676
+      },
+      "terminal_stance_entry": null,
+      "phase_transitions": [
+        {
+          "tick": 282,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 306,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 338,
+          "phase": "SUSTAIN"
+        },
+        {
+          "tick": 341,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 382,
+          "phase": "SUSTAIN"
+        },
+        {
+          "tick": 500,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 505,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 506,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 516,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 517,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 518,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 519,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 523,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 524,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 532,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 533,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 534,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 535,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 622,
+          "phase": "SUSTAIN"
+        },
+        {
+          "tick": 678,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 735,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 756,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 765,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 766,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 771,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 772,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 776,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 777,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 778,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 779,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 781,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 782,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 783,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 784,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 786,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 790,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 791,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 792,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 794,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 795,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 796,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 797,
+          "phase": "BUFFER_LOAD"
+        }
+      ],
+      "after_reference_command_sources": {
+        "interval_qp": 165,
+        "uncertified_posture_fallback": 193
+      },
+      "no_recorded_nonfoot_ground_force": false,
+      "longest_sampled_stable_s": 0.46000003814697266,
+      "final_sampled_stable_s": 0.0
+    },
+    {
+      "case": 64,
+      "takeover_tick": 280,
+      "last_control_tick": 799,
+      "reference_source_case": 64,
+      "nominal_reference_end_tick": 340,
+      "first_head_after_takeover": null,
+      "first_other_nonfoot_after_takeover": {
+        "body": "RR_calf",
+        "physics_frame": 61486,
+        "time_s": 3.8428750000000003,
+        "seconds_after_reference_end": 0.44287500000000035,
+        "preceding_control_observation": {
+          "tick": 384,
+          "time_s": 3.84,
+          "phase": "BUFFER_LOAD",
+          "command_source": "uncertified_posture_fallback",
+          "reference_active": false,
+          "terminal_stance_active": false,
+          "terminal_candidate_conditions": {},
+          "root_height_m": 0.23094773292541504,
+          "roll_pitch_rad": [
+            0.0771326649295647,
+            -0.3374284560693401
+          ],
+          "root_velocity_world_m_s": [
+            -0.848544176681872,
+            0.5838650973067236,
+            -1.2344991068990319
+          ],
+          "angular_speed_rad_s": 4.0133916035783095,
+          "contact_mask": [
+            true,
+            false,
+            false,
+            false
+          ],
+          "measured_foot_force_world_n": [
+            [
+              0.0,
+              0.0,
+              2.533827543258667
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "sampled_stable_s": 0.0
+        }
+      },
+      "reference_end_observation": {
+        "tick": 340,
+        "time_s": 3.4,
+        "phase": "BUFFER_LOAD",
+        "command_source": "interval_qp",
+        "reference_active": false,
+        "terminal_stance_active": false,
+        "terminal_candidate_conditions": {},
+        "root_height_m": 0.2165198028087616,
+        "roll_pitch_rad": [
+          -0.05077411261556455,
+          0.09321309754674963
+        ],
+        "root_velocity_world_m_s": [
+          -0.29778592843862806,
+          0.11840835738269209,
+          0.6416359604609764
+        ],
+        "angular_speed_rad_s": 1.9897104271354096,
+        "contact_mask": [
+          true,
+          true,
+          false,
+          true
+        ],
+        "measured_foot_force_world_n": [
+          [
+            0.0,
+            0.0,
+            164.2848663330078
+          ],
+          [
+            0.0,
+            0.0,
+            117.44715881347656
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            38.36260223388672
+          ]
+        ],
+        "sampled_stable_s": 0.0
+      },
+      "terminal_stance_entry": null,
+      "phase_transitions": [
+        {
+          "tick": 280,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 303,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 362,
+          "phase": "SUSTAIN"
+        },
+        {
+          "tick": 377,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 381,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 382,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 383,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 384,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 407,
+          "phase": "AIR_PREPARE"
+        }
+      ],
+      "after_reference_command_sources": {
+        "interval_qp": 50,
+        "uncertified_posture_fallback": 410
+      },
+      "no_recorded_nonfoot_ground_force": false,
+      "longest_sampled_stable_s": 0.0,
+      "final_sampled_stable_s": 0.0
+    },
+    {
+      "case": 118,
+      "takeover_tick": 278,
+      "last_control_tick": 799,
+      "reference_source_case": 118,
+      "nominal_reference_end_tick": 338,
+      "first_head_after_takeover": {
+        "body": "Head_lower",
+        "physics_frame": 69072,
+        "time_s": 4.317,
+        "seconds_after_reference_end": 0.9370000000000003,
+        "preceding_control_observation": {
+          "tick": 431,
+          "time_s": 4.3100000000000005,
+          "phase": "BUFFER_LOAD",
+          "command_source": "uncertified_posture_fallback",
+          "reference_active": false,
+          "terminal_stance_active": false,
+          "terminal_candidate_conditions": {},
+          "root_height_m": 0.15043222904205322,
+          "roll_pitch_rad": [
+            -0.22917962401882633,
+            0.12786831633793888
+          ],
+          "root_velocity_world_m_s": [
+            0.04316456575117397,
+            0.0798509277755875,
+            0.008164782202984788
+          ],
+          "angular_speed_rad_s": 4.530159060858802,
+          "contact_mask": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "measured_foot_force_world_n": [
+            [
+              0.0,
+              0.0,
+              161.62339782714844
+            ],
+            [
+              0.0,
+              0.0,
+              90.33221435546875
+            ],
+            [
+              0.0,
+              0.0,
+              81.13855743408203
+            ],
+            [
+              0.0,
+              0.0,
+              27.637699127197266
+            ]
+          ],
+          "sampled_stable_s": 0.0
+        }
+      },
+      "first_other_nonfoot_after_takeover": {
+        "body": "FL_thigh",
+        "physics_frame": 61304,
+        "time_s": 3.8315,
+        "seconds_after_reference_end": 0.45150000000000023,
+        "preceding_control_observation": {
+          "tick": 383,
+          "time_s": 3.83,
+          "phase": "BUFFER_LOAD",
+          "command_source": "uncertified_posture_fallback",
+          "reference_active": false,
+          "terminal_stance_active": false,
+          "terminal_candidate_conditions": {},
+          "root_height_m": 0.1650024652481079,
+          "roll_pitch_rad": [
+            -0.7072756876570166,
+            0.05555565601562361
+          ],
+          "root_velocity_world_m_s": [
+            -0.03476352704976893,
+            0.028609086055003424,
+            0.4694207489909375
+          ],
+          "angular_speed_rad_s": 8.177175369282159,
+          "contact_mask": [
+            true,
+            false,
+            true,
+            false
+          ],
+          "measured_foot_force_world_n": [
+            [
+              0.0,
+              0.0,
+              105.69973754882812
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              135.30935668945312
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "sampled_stable_s": 0.0
+        }
+      },
+      "reference_end_observation": {
+        "tick": 338,
+        "time_s": 3.38,
+        "phase": "SUSTAIN",
+        "command_source": "interval_qp",
+        "reference_active": false,
+        "terminal_stance_active": false,
+        "terminal_candidate_conditions": {},
+        "root_height_m": 0.2869980037212372,
+        "roll_pitch_rad": [
+          0.4252292382899501,
+          0.34530562291619316
+        ],
+        "root_velocity_world_m_s": [
+          -0.10463188016865091,
+          0.07308648884469303,
+          -0.05800739539248651
+        ],
+        "angular_speed_rad_s": 0.3385704882262153,
+        "contact_mask": [
+          true,
+          true,
+          false,
+          false
+        ],
+        "measured_foot_force_world_n": [
+          [
+            0.0,
+            0.0,
+            3.644148826599121
+          ],
+          [
+            0.0,
+            0.0,
+            133.37734985351562
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "sampled_stable_s": 0.0
+      },
+      "terminal_stance_entry": null,
+      "phase_transitions": [
+        {
+          "tick": 278,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 303,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 332,
+          "phase": "SUSTAIN"
+        },
+        {
+          "tick": 366,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 378,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 381,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 447,
+          "phase": "SUSTAIN"
+        },
+        {
+          "tick": 555,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 598,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 631,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 632,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 635,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 639,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 642,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 643,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 644,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 645,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 650,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 652,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 653,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 654,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 655,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 656,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 657,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 658,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 667,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 668,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 669,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 672,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 678,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 679,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 681,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 682,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 689,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 690,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 695,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 696,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 698,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 699,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 706,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 707,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 709,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 710,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 711,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 712,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 713,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 716,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 718,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 719,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 721,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 722,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 725,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 726,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 733,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 735,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 746,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 747,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 753,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 754,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 759,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 760,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 761,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 762,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 763,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 766,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 767,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 768,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 769,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 771,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 772,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 774,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 775,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 777,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 781,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 782,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 783,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 784,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 790,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 791,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 792,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 793,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 798,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 799,
+          "phase": "AIR_PREPARE"
+        }
+      ],
+      "after_reference_command_sources": {
+        "interval_qp": 221,
+        "uncertified_posture_fallback": 241
+      },
+      "no_recorded_nonfoot_ground_force": false,
+      "longest_sampled_stable_s": 0.0,
+      "final_sampled_stable_s": 0.0
+    },
+    {
+      "case": 123,
+      "takeover_tick": 285,
+      "last_control_tick": 799,
+      "reference_source_case": 123,
+      "nominal_reference_end_tick": 345,
+      "first_head_after_takeover": null,
+      "first_other_nonfoot_after_takeover": {
+        "body": "RL_calf",
+        "physics_frame": 88809,
+        "time_s": 5.5505625,
+        "seconds_after_reference_end": 2.1005624999999997,
+        "preceding_control_observation": {
+          "tick": 555,
+          "time_s": 5.55,
+          "phase": "BUFFER_LOAD",
+          "command_source": "uncertified_posture_fallback",
+          "reference_active": false,
+          "terminal_stance_active": false,
+          "terminal_candidate_conditions": {},
+          "root_height_m": 0.26749271154403687,
+          "roll_pitch_rad": [
+            -0.13603325724098428,
+            -0.2880883537933536
+          ],
+          "root_velocity_world_m_s": [
+            -0.9525750777894315,
+            -0.39483836869492245,
+            -0.8749740446495073
+          ],
+          "angular_speed_rad_s": 7.423681975188671,
+          "contact_mask": [
+            false,
+            false,
+            true,
+            false
+          ],
+          "measured_foot_force_world_n": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              46.49958038330078
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "sampled_stable_s": 0.0
+        }
+      },
+      "reference_end_observation": {
+        "tick": 345,
+        "time_s": 3.45,
+        "phase": "BUFFER_LOAD",
+        "command_source": "interval_qp",
+        "reference_active": false,
+        "terminal_stance_active": false,
+        "terminal_candidate_conditions": {},
+        "root_height_m": 0.2613353133201599,
+        "roll_pitch_rad": [
+          0.025352801730046427,
+          0.057914407649260216
+        ],
+        "root_velocity_world_m_s": [
+          -0.19143030691197777,
+          -0.18748258115223487,
+          0.03582870029433976
+        ],
+        "angular_speed_rad_s": 0.49855295526256654,
+        "contact_mask": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "measured_foot_force_world_n": [
+          [
+            0.0,
+            0.0,
+            148.02381896972656
+          ],
+          [
+            0.0,
+            0.0,
+            33.0506706237793
+          ],
+          [
+            0.0,
+            0.0,
+            22.74595069885254
+          ],
+          [
+            0.0,
+            0.0,
+            93.86869812011719
+          ]
+        ],
+        "sampled_stable_s": 0.0
+      },
+      "terminal_stance_entry": null,
+      "phase_transitions": [
+        {
+          "tick": 285,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 310,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 354,
+          "phase": "SUSTAIN"
+        },
+        {
+          "tick": 552,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 563,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 577,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 580,
+          "phase": "AIR_PREPARE"
+        },
+        {
+          "tick": 583,
+          "phase": "BUFFER_LOAD"
+        },
+        {
+          "tick": 629,
+          "phase": "SUSTAIN"
+        }
+      ],
+      "after_reference_command_sources": {
+        "interval_qp": 385,
+        "uncertified_posture_fallback": 70
+      },
+      "no_recorded_nonfoot_ground_force": false,
+      "longest_sampled_stable_s": 1.179999828338623,
+      "final_sampled_stable_s": 1.179999828338623
+    }
+  ],
+  "model_search": {
+    "state": "COMPLETED_COHORT_SEARCH",
+    "cases": 15,
+    "wall_seconds": 1148.4450292349793,
+    "fine_complete_cases": [
+      3,
+      8,
+      20,
+      38,
+      67,
+      71,
+      77,
+      95,
+      96,
+      98,
+      115
+    ],
+    "fine_stable_08s_cases": [],
+    "compute_budget_cases": [],
+    "native_success": false,
+    "full_episode_certified": false,
+    "valid_expert_labels": false
+  },
+  "model_search_failures": [
+    {
+      "case": 1,
+      "steps": 106,
+      "failure": {
+        "step": 106,
+        "reason": "model_rejected",
+        "error": "ValueError('foot_pair_clearance:{\"bodies\": [\"RL_foot\", \"RR_foot\"], \"constraint_type\": \"foot_pair_clearance\", \"gap_m\": -5.361513794037431e-05, \"planning_margin_m\": 0.0, \"prediction_geometry_call\": 187069, \"violation_m\": 5.361513794037431e-05}')"
+      }
+    },
+    {
+      "case": 57,
+      "steps": 151,
+      "failure": {
+        "step": 151,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -4.6144530446837195e-05, 'exact': True, 'shape_index': 37, 'obstacle': 'net_segment_40'}\")"
+      }
+    },
+    {
+      "case": 70,
+      "steps": 93,
+      "failure": {
+        "step": 93,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -7.304004376825889e-05, 'exact': True, 'shape_index': 44, 'obstacle': 'net_segment_38'}\")"
+      }
+    },
+    {
+      "case": 87,
+      "steps": 109,
+      "failure": {
+        "step": 109,
+        "reason": "model_rejected",
+        "error": "ValueError('foot_pair_clearance:{\"bodies\": [\"RL_foot\", \"RR_foot\"], \"constraint_type\": \"foot_pair_clearance\", \"gap_m\": -9.011978695218359e-06, \"planning_margin_m\": 0.0, \"prediction_geometry_call\": 271258, \"violation_m\": 9.011978695218359e-06}')"
+      }
+    }
+  ],
+  "expanded_model_library": {
+    "path": "reports/pure_control_uncovered_continuation_preparation_20261109/reference_library.json",
+    "references": 50,
+    "added_cases": [
+      3,
+      8,
+      20,
+      38,
+      67,
+      71,
+      95,
+      96,
+      98,
+      115
+    ],
+    "replaced_source_case": 77,
+    "queued_native_library_unchanged": true
+  },
+  "next_native_status": {
+    "state": "RUNNING_NATIVE_PURE_CONTROL",
+    "pid": 176574,
+    "time": "2026-11-08T16:30:51.893265+00:00"
+  },
+  "next_native_plan": "reports/pure_control_settled_stance_native_preparation_20261109_01/plan.json",
+  "expanded_model_status": {
+    "state": "RUNNING_NATIVE_PHASE_MODEL",
+    "pid": 176534,
+    "completed": 2,
+    "total": 11
+  },
+  "expanded_model_results_so_far": [
+    {
+      "source_case": 38,
+      "steps": 200,
+      "required_steps": 522,
+      "failure": {
+        "step": 200,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.004803538064562143
+        },
+        "collision": {
+          "micro": 99,
+          "body": "FL_hip",
+          "gap_m": -4.9713627716191366e-05
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "final_model_stable_s": 0.0,
+      "longest_model_stable_s": 0.0,
+      "force_recording_exact_motion_checks": 2,
+      "contact_mask_difference_steps": 1,
+      "native_phase_code_used": true,
+      "forces_are_model_impulse_estimates": true,
+      "native_success": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 71,
+      "steps": 209,
+      "required_steps": 536,
+      "failure": {
+        "step": 209,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.0031250031111072097
+        },
+        "collision": {
+          "micro": 7,
+          "body": "RR_calf",
+          "gap_m": -3.4809043788410626e-06
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "final_model_stable_s": 0.0,
+      "longest_model_stable_s": 0.0,
+      "force_recording_exact_motion_checks": 2,
+      "contact_mask_difference_steps": 1,
+      "native_phase_code_used": true,
+      "forces_are_model_impulse_estimates": true,
+      "native_success": false,
+      "valid_expert_labels": false
+    }
+  ],
+  "formal_verify": {
+    "goal_id": "G07",
+    "status": "FAILED",
+    "contract_sha256": "66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807",
+    "checks": {
+      "G00": {
+        "passed": false,
+        "errors": [
+          "Missing or empty artifact: reports/G00/native_train/checkpoint.pt"
+        ]
+      },
+      "G01": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G00",
+          "Path escapes workspace: assets/quadsmash_standard_v2.usd",
+          "Path escapes workspace: assets/vendor/piper_isaac_sim/piper_description/urdf/piper_no_gripper_description.urdf"
+        ]
+      },
+      "G02": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G01"
+        ]
+      },
+      "G03": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G02",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/train/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/train/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/reload/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/reload/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/interrupt/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/interrupt/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/resume_interrupt/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/resume_interrupt/continuation_reference.pt"
+        ]
+      },
+      "G04": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G03",
+          "Missing or empty artifact: artifacts/G04/policy.pt",
+          "Missing or empty artifact: artifacts/G04/autonomous_actor/actor.pt",
+          "Missing or empty artifact: artifacts/G04/autonomous_actor/interface.json"
+        ]
+      },
+      "G05": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G04"
+        ]
+      },
+      "G06": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G05"
+        ]
+      },
+      "G07": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G06",
+          "Missing or invalid evidence: [Errno 2] No such file or directory: '/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/G07/evidence.json'"
+        ]
+      }
+    },
+    "scope": "Structure, hashes, dependencies and thresholds only; not simulation authenticity or GPU budget enforcement."
+  },
+  "training": false,
+  "valid_expert_labels": false,
+  "strict_native_success_established": false,
+  "limitations": [
+    "Historical complete5 and sampled transient stability do not establish clean sustained recovery.",
+    "V9 to V12 changed reference timing and three reference durations; aggregate differences do not isolate one cause.",
+    "44 of 110 owned cases differ from the historical baseline in at least one audited ball-prefix field; initial contact flags and times agree, outgoing velocity agreement is not established.",
+    "A 1.6-second model path must pass full-episode feedback and native execution before any success claim."
+  ],
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_native_sustained_support_v1.py": "df0088df8f2b9d798a2d2e98f97b3041dca262706cd3416c4f2ee4cf67defd3e",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/build_uncovered_recovery_reference_v4.py": "90728712d510ad5bf5468ee3a784aadf2fdb16a8626ab92be8e5a9430ef7fa88",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_reference_clock_all128_20261108_01/job.json": "8cf93d58282adaf06c714d48b0fbc16ddfc68fbdb47a9fcc1ee8b36313fc1008",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_reference_clock_all128_20261108_01/metrics.json": "f79a4ba4739566d7ba6495c3c6efc1e266329b4b071a34290b2c2d6091ca6ced",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_sustained_support_audit_20261109/v12.json": "1b4386e5e0fdded0a54ce2fdf6a0bf7f722eab7b08f85ea5d184fd470b80924b",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_sustained_support_audit_20261109/reference_v12.json": "d374d140968e2cbd7b65945b53b9d0ed3f49c2f6256c1fd11d69d76d16546034",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_reference_clock_failure_chain_20261109/failure_chain.json": "075478c2a905c8069e105048eea352fc2faad4c535968abe808080e2b4462da0",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_uncovered_cohort_search_20261109/result.json": "cb33b08f77b18c96e62d9ccb0962d4fb80926a9da13180d9651a7c33bc22e9a0",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_sustained_support_audit_20261109/formal_verify.json": "ae2b5bbc540391cfed972e3b8764c4c9229b3e2cee247c029a8aa1075e69beea"
+  }
+}
