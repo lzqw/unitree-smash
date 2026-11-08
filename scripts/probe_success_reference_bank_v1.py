@@ -68,8 +68,10 @@ def main():
     try:
         check(plan['source_sha256']);owner=plan['wait_process'];began=time.monotonic()
         write('status.json',dict(state='WAITING_FOR_CPU_OWNER',pid=os.getpid(),owner=owner))
-        while identity(owner['pid']) is not None:
-            if identity(owner['pid'])!=owner['start_ticks']:raise ValueError('CPU owner identity changed')
+        while True:
+            current=identity(owner['pid'])
+            if current is None:break
+            if current!=owner['start_ticks']:raise ValueError('CPU owner identity changed')
             if time.monotonic()-began>7200:raise TimeoutError('Bounded CPU wait expired')
             time.sleep(5)
         check(plan['source_sha256'])
@@ -92,11 +94,15 @@ def main():
             if name.startswith('scripts.') and getattr(module,'__file__',None):
                 path=str(Path(module.__file__).resolve());pins[path]=sha(path)
         jobs=[];selection_rows=[]
-        with np.load(bank/'recovery_query_bank.npz',allow_pickle=False) as z:
+        with np.load(bank/'recovery_query_bank.npz',allow_pickle=False) as archive:
+            # NPZ indexing decompresses a whole member. Materialize this
+            # bounded bank once, not once for every donor/frame/field.
+            z={k:archive[k] for k in archive.files}
+            if sum(x.nbytes for x in z.values())>64*1024**2:raise ValueError('State-bank memory bound exceeded')
             indices=np.flatnonzero((z['control_ticks']>=280)&(z['control_ticks']<800))
             if not np.array_equal(z['control_ticks'][indices],np.arange(280,800)):raise ValueError('Incomplete suffix clock')
             def state_at(lane,index):
-                sample={k:z[k][index,lane].copy() for k in z.files if k!='control_ticks'}
+                sample={k:z[k][index,lane].copy() for k in z if k!='control_ticks'}
                 return state_from_sample(model,sample,meta['origins_world'][lane])
             donor_states={lane:state_at(lane,indices[0]) for lane in donors}
             for choice in selection['selected']:
