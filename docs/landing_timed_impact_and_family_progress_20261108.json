@@ -1,0 +1,92 @@
+{
+  "scope": "Pending passive successful-impact observation and declared recovery-family native trial.",
+  "date": "2026-11-08",
+  "baseline_complete5": 27,
+  "previous_assisted_complete5": 28,
+  "new_frozen_result": null,
+  "physics_and_scoring_changed": false,
+  "student_updated": false,
+  "valid_expert_labels": false,
+  "formal_acceptance": false,
+  "impact_state": {
+    "state": "RUNNING_NATIVE_REJECTED_PROPOSAL",
+    "pid": 105383,
+    "time": "2026-11-08T07:26:58.788884+00:00"
+  },
+  "followup_state": {
+    "state": "WAITING_FOR_LIVE_NATIVE",
+    "pid": 106504,
+    "time": "2026-11-08T07:37:22.632015+00:00",
+    "parent_pid": 105383
+  },
+  "family_interface_check": {
+    "passed": true,
+    "scope": "Check family dispatch on recorded queries; no simulated outcome is claimed.",
+    "cases": [
+      1,
+      3,
+      8,
+      9,
+      12,
+      18,
+      20,
+      30,
+      38,
+      42,
+      50,
+      54,
+      57,
+      58,
+      61,
+      67,
+      70,
+      71,
+      77,
+      85,
+      87,
+      90,
+      95,
+      96,
+      98,
+      115
+    ],
+    "recorded_query_ticks": [
+      280,
+      281,
+      282,
+      283,
+      284,
+      285
+    ],
+    "prefix_unchanged": true,
+    "unselected_actions_unchanged": true,
+    "first_transferred_command_difference_rad": 0.0,
+    "offline_worker_empty": true,
+    "native_execution": false,
+    "valid_expert_labels": false
+  },
+  "first_instrumentation_attempt": {
+    "status": "FAILED",
+    "reason": "Observer hooks installed inside existing wrappers but initially detached outside their stack order; explicitly stopped and superseded.",
+    "gpu_hours": 0.017573014748631977,
+    "actual_completed_full_episodes": false
+  },
+  "source_sha256": {
+    "scripts/native_timed_impact_observer_v1.py": "36b7b7e38e751b57236bef563414cb34ab8a2980ef783c2a2769f988508606dd",
+    "scripts/prepare_native_timed_impact_v2.py": "0ca7812cc18b9edf24714e761cd94b83da724670f833dbe3d77a6729bd40e9ea",
+    "scripts/audit_timed_impact_model_v1.py": "ebf8c050afb4139f895e759dbeeb12eb549c085919d6bbbdd388704561cb682f",
+    "scripts/native_timed_recovery_family_v1.py": "dfad00147d9337bf62d94e1909da376f0cd3c89e05b945cdccad357615c5b902",
+    "scripts/audit_native_timed_family_v1.py": "a13406ebdc335a0b45ae70455ab5ff3caab37c0a078cc95d3b9b2513d12d1650",
+    "scripts/prepare_native_timed_family_v1.py": "8e0500c62a157abadfb2414e04da22a55bc7a5e3173cf730773c8678b8ca2b1b",
+    "scripts/check_native_timed_family_v1.py": "2c7b911873cdbf837cf8303f1be859a45926cbbffe546f5b146e8ba53273d9f6",
+    "scripts/run_landing_recovery_followup_v1.py": "b361e4a177d8d02a7e08ef6efc562d6d0c7a570be90c60cde13450bc330b4d87",
+    "reports/landing_native_timed85_impact_preparation_20261108_02/plan.json": "8d50df551bd72a7d69c13e6e1d1de07d2962338b802451e934ecc9bf741b9e70",
+    "reports/landing_native_timed_family_preparation_20261108/plan.json": "42166bb00bcb29ce0d107ca535e4fe7562c1b4b9bf0d9172491ac58ad7e132f0",
+    "reports/landing_timed_impact_family_followup_20261108/plan.json": "ab582eab38e463a849ea523694033941b199790b0ae6d105a93fd4e3384f9406",
+    "reports/landing_native_timed_family_check_20261108/result.json": "031588b3aee04dc9e4e7f012c788f82c22b96b5582b50674762385e06c0683a7",
+    "reports/native_timed85_impact_all128_20261108_01/job.json": "0c633d5eab784c9b613f47e19633130fede0bcadd84481079718d230c4043bfc",
+    "scripts/audit_timed_impact_observation_v2.py": "090371987bdfdef846da50c9812b42c636f6bad792a08e3b8a3a0c7f0df99899",
+    "reports/landing_timed_impact_family_followup_20261108_02/plan.json": "03f38f5e16e208a4ebfe655fe78441a3ca3b1186c81a6daf17dd7dd39d5f42e7"
+  },
+  "first_episode_length_audit": "Require equal complete original first-episode lengths, including early terminations; waiting queue superseded before any CPU audit or second GPU job."
+}
