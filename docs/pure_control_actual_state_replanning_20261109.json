@@ -1,0 +1,1317 @@
+{
+  "snapshot_utc": "2026-11-08T17:36:03.847354+00:00",
+  "scope": "Pure-control recovery sequence search from actual native states",
+  "training": false,
+  "native_success": false,
+  "valid_expert_labels": false,
+  "search": {
+    "state": "COMPLETED_ACTUAL_RECOVERY_SEQUENCE_SEARCH",
+    "completed_candidates": 512,
+    "results": [
+      {
+        "state_key": "64:340",
+        "steps": 155,
+        "model_path_complete": false,
+        "terminal_stable_s": 0.0,
+        "failure": {
+          "step": 155,
+          "reason": "model_rejected",
+          "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.0003872422762629668, 'friction_cone': 0.0, 'tangent_fixed_point': 1.6194884771170148e-05}, 'box_violation': 0.0, 'box_fixed_point': 2.7755575615628914e-17}\")"
+        }
+      },
+      {
+        "state_key": "118:338",
+        "steps": 200,
+        "model_path_complete": true,
+        "terminal_stable_s": 1.3900001049041748,
+        "failure": null
+      },
+      {
+        "state_key": "12:550",
+        "steps": 200,
+        "model_path_complete": true,
+        "terminal_stable_s": 0.0,
+        "failure": null
+      },
+      {
+        "state_key": "58:470",
+        "steps": 59,
+        "model_path_complete": false,
+        "terminal_stable_s": 0.0,
+        "failure": {
+          "step": 59,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.005968217986526402
+          },
+          "collision": {
+            "micro": 82,
+            "body": "RR_calf",
+            "gap_m": -4.690323867294864e-05
+          }
+        }
+      }
+    ],
+    "wall_seconds": 507.9024530709721,
+    "native_success": false,
+    "valid_expert_labels": false
+  },
+  "feedback_status": {
+    "state": "COMPLETED_REPLANNED_FEEDBACK_MODEL",
+    "results": [
+      {
+        "state_key": "12:550",
+        "steps": 202,
+        "required_steps": 250,
+        "failure": {
+          "tick": 752,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 4.7911716859222464e-05
+          },
+          "collision": {
+            "micro": 16,
+            "body": "Head_lower",
+            "gap_m": -3.2727506410132334e-06
+          },
+          "source": "interval_qp"
+        },
+        "final_model_stable_s": 0.0,
+        "longest_model_stable_s": 0.0,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "state_key": "118:338",
+        "steps": 462,
+        "required_steps": 462,
+        "failure": null,
+        "final_model_stable_s": 3.999999761581421,
+        "longest_model_stable_s": 3.999999761581421,
+        "native_success": false,
+        "valid_expert_labels": false
+      }
+    ],
+    "excluded": [
+      {
+        "state_key": "58:470",
+        "reason": "No complete fine-model sequence"
+      },
+      {
+        "state_key": "64:340",
+        "reason": "No complete fine-model sequence"
+      }
+    ],
+    "wall_seconds": 264.87913505593315,
+    "native_success": false,
+    "valid_expert_labels": false
+  },
+  "state_results": [
+    {
+      "state_key": "118:338",
+      "actual_control_tick": 338,
+      "actual_phase": "SUSTAIN",
+      "actual_contacts": [
+        true,
+        true,
+        false,
+        false
+      ],
+      "fine": {
+        "steps": 200,
+        "required_steps": 200,
+        "model_path_complete": true,
+        "failure": null,
+        "terminal_stable_s": 1.3900001049041748,
+        "longest_stable_s": 1.3900001049041748,
+        "cost": 10.048179344380415,
+        "rank": [
+          0,
+          0,
+          0,
+          -1.3900001049041748,
+          10.048179344380415
+        ],
+        "substeps": 160,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      "fine_alternatives": [
+        {
+          "steps": 200,
+          "required_steps": 200,
+          "model_path_complete": true,
+          "failure": null,
+          "terminal_stable_s": 1.3900001049041748,
+          "longest_stable_s": 1.3900001049041748,
+          "cost": 10.048179344380415,
+          "rank": [
+            0,
+            0,
+            0,
+            -1.3900001049041748,
+            10.048179344380415
+          ],
+          "substeps": 160,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "steps": 200,
+          "required_steps": 200,
+          "model_path_complete": true,
+          "failure": null,
+          "terminal_stable_s": 0.9100003242492676,
+          "longest_stable_s": 0.9100003242492676,
+          "cost": 10.849386597131582,
+          "rank": [
+            0,
+            0,
+            0,
+            -0.9100003242492676,
+            10.849386597131582
+          ],
+          "substeps": 160,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "steps": 200,
+          "required_steps": 200,
+          "model_path_complete": true,
+          "failure": null,
+          "terminal_stable_s": 0.8700003623962402,
+          "longest_stable_s": 0.8700003623962402,
+          "cost": 12.384583886852276,
+          "rank": [
+            0,
+            0,
+            0,
+            -0.8700003623962402,
+            12.384583886852276
+          ],
+          "substeps": 160,
+          "native_success": false,
+          "valid_expert_labels": false
+        }
+      ]
+    },
+    {
+      "state_key": "12:550",
+      "actual_control_tick": 550,
+      "actual_phase": "SUSTAIN",
+      "actual_contacts": [
+        true,
+        true,
+        false,
+        true
+      ],
+      "fine": {
+        "steps": 200,
+        "required_steps": 200,
+        "model_path_complete": true,
+        "failure": null,
+        "terminal_stable_s": 0.0,
+        "longest_stable_s": 0.0,
+        "cost": 37.93960716471414,
+        "rank": [
+          0,
+          0,
+          1,
+          -0.0,
+          37.93960716471414
+        ],
+        "substeps": 160,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      "fine_alternatives": [
+        {
+          "steps": 200,
+          "required_steps": 200,
+          "model_path_complete": true,
+          "failure": null,
+          "terminal_stable_s": 0.0,
+          "longest_stable_s": 0.0,
+          "cost": 37.93960716471414,
+          "rank": [
+            0,
+            0,
+            1,
+            -0.0,
+            37.93960716471414
+          ],
+          "substeps": 160,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "steps": 188,
+          "required_steps": 200,
+          "model_path_complete": false,
+          "failure": {
+            "step": 188,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.0011631503069750061
+            },
+            "collision": {
+              "micro": 97,
+              "body": "FR_calf",
+              "gap_m": -8.465994444204969e-06
+            }
+          },
+          "terminal_stable_s": 0.0,
+          "longest_stable_s": 0.0,
+          "cost": 52.518438316411626,
+          "rank": [
+            1,
+            12,
+            1,
+            -0.0,
+            52.518438316411626
+          ],
+          "substeps": 160,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "steps": 187,
+          "required_steps": 200,
+          "model_path_complete": false,
+          "failure": {
+            "step": 187,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.0014892288145199554
+            },
+            "collision": {
+              "micro": 38,
+              "body": "FR_calf",
+              "gap_m": -5.025194709641287e-06
+            }
+          },
+          "terminal_stable_s": 0.0,
+          "longest_stable_s": 0.0,
+          "cost": 51.109893961431524,
+          "rank": [
+            1,
+            13,
+            1,
+            -0.0,
+            51.109893961431524
+          ],
+          "substeps": 160,
+          "native_success": false,
+          "valid_expert_labels": false
+        }
+      ]
+    },
+    {
+      "state_key": "58:470",
+      "actual_control_tick": 470,
+      "actual_phase": "SUSTAIN",
+      "actual_contacts": [
+        true,
+        true,
+        false,
+        false
+      ],
+      "fine": {
+        "steps": 59,
+        "required_steps": 200,
+        "model_path_complete": false,
+        "failure": {
+          "step": 59,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.005968217986526402
+          },
+          "collision": {
+            "micro": 82,
+            "body": "RR_calf",
+            "gap_m": -4.690323867294864e-05
+          }
+        },
+        "terminal_stable_s": 0.0,
+        "longest_stable_s": 0.0,
+        "cost": 226.7807145143598,
+        "rank": [
+          1,
+          141,
+          1,
+          -0.0,
+          226.7807145143598
+        ],
+        "substeps": 160,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      "fine_alternatives": [
+        {
+          "steps": 59,
+          "required_steps": 200,
+          "model_path_complete": false,
+          "failure": {
+            "step": 59,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.005968217986526402
+            },
+            "collision": {
+              "micro": 82,
+              "body": "RR_calf",
+              "gap_m": -4.690323867294864e-05
+            }
+          },
+          "terminal_stable_s": 0.0,
+          "longest_stable_s": 0.0,
+          "cost": 226.7807145143598,
+          "rank": [
+            1,
+            141,
+            1,
+            -0.0,
+            226.7807145143598
+          ],
+          "substeps": 160,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "steps": 57,
+          "required_steps": 200,
+          "model_path_complete": false,
+          "failure": {
+            "step": 57,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.0023411117197405223
+            },
+            "collision": {
+              "micro": 139,
+              "body": "RL_calf",
+              "gap_m": -4.148203603526572e-05
+            }
+          },
+          "terminal_stable_s": 0.0,
+          "longest_stable_s": 0.0,
+          "cost": 161.50284112389966,
+          "rank": [
+            1,
+            143,
+            1,
+            -0.0,
+            161.50284112389966
+          ],
+          "substeps": 160,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "steps": 57,
+          "required_steps": 200,
+          "model_path_complete": false,
+          "failure": {
+            "step": 57,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.01712827574068336
+            },
+            "collision": {
+              "micro": 3,
+              "body": "RL_calf",
+              "gap_m": -2.359199461682629e-05
+            }
+          },
+          "terminal_stable_s": 0.0,
+          "longest_stable_s": 0.0,
+          "cost": 136.8408113378759,
+          "rank": [
+            1,
+            143,
+            1,
+            -0.0,
+            136.8408113378759
+          ],
+          "substeps": 160,
+          "native_success": false,
+          "valid_expert_labels": false
+        }
+      ]
+    },
+    {
+      "state_key": "64:340",
+      "actual_control_tick": 340,
+      "actual_phase": "BUFFER_LOAD",
+      "actual_contacts": [
+        true,
+        true,
+        false,
+        true
+      ],
+      "fine": {
+        "steps": 155,
+        "required_steps": 200,
+        "model_path_complete": false,
+        "failure": {
+          "step": 155,
+          "reason": "model_rejected",
+          "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.0003872422762629668, 'friction_cone': 0.0, 'tangent_fixed_point': 1.6194884771170148e-05}, 'box_violation': 0.0, 'box_fixed_point': 2.7755575615628914e-17}\")"
+        },
+        "terminal_stable_s": 0.0,
+        "longest_stable_s": 0.0,
+        "cost": 61.34191824540615,
+        "rank": [
+          1,
+          45,
+          1,
+          -0.0,
+          61.34191824540615
+        ],
+        "substeps": 160,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      "fine_alternatives": [
+        {
+          "steps": 155,
+          "required_steps": 200,
+          "model_path_complete": false,
+          "failure": {
+            "step": 155,
+            "reason": "model_rejected",
+            "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.0003872422762629668, 'friction_cone': 0.0, 'tangent_fixed_point': 1.6194884771170148e-05}, 'box_violation': 0.0, 'box_fixed_point': 2.7755575615628914e-17}\")"
+          },
+          "terminal_stable_s": 0.0,
+          "longest_stable_s": 0.0,
+          "cost": 61.34191824540615,
+          "rank": [
+            1,
+            45,
+            1,
+            -0.0,
+            61.34191824540615
+          ],
+          "substeps": 160,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "steps": 154,
+          "required_steps": 200,
+          "model_path_complete": false,
+          "failure": {
+            "step": 154,
+            "reason": "model_rejected",
+            "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.0009264499806569404, 'friction_cone': 0.0, 'tangent_fixed_point': 0.00010137619091310501}, 'box_violation': 0.0, 'box_fixed_point': 0.0}\")"
+          },
+          "terminal_stable_s": 0.0,
+          "longest_stable_s": 0.0,
+          "cost": 137.7066498574621,
+          "rank": [
+            1,
+            46,
+            1,
+            -0.0,
+            137.7066498574621
+          ],
+          "substeps": 160,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "steps": 148,
+          "required_steps": 200,
+          "model_path_complete": false,
+          "failure": {
+            "step": 148,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.0034592890570361717
+            },
+            "collision": {
+              "micro": 9,
+              "body": "FR_thigh",
+              "gap_m": -1.1234856513581137e-05
+            }
+          },
+          "terminal_stable_s": 0.0,
+          "longest_stable_s": 0.0,
+          "cost": 49.087923028527456,
+          "rank": [
+            1,
+            52,
+            1,
+            -0.0,
+            49.087923028527456
+          ],
+          "substeps": 160,
+          "native_success": false,
+          "valid_expert_labels": false
+        }
+      ]
+    }
+  ],
+  "completed_feedback_results": [
+    {
+      "state_key": "12:550",
+      "steps": 202,
+      "required_steps": 250,
+      "failure": {
+        "tick": 752,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 4.7911716859222464e-05
+        },
+        "collision": {
+          "micro": 16,
+          "body": "Head_lower",
+          "gap_m": -3.2727506410132334e-06
+        },
+        "source": "interval_qp"
+      },
+      "final_model_stable_s": 0.0,
+      "longest_model_stable_s": 0.0,
+      "native_success": false,
+      "valid_expert_labels": false
+    },
+    {
+      "state_key": "118:338",
+      "steps": 462,
+      "required_steps": 462,
+      "failure": null,
+      "final_model_stable_s": 3.999999761581421,
+      "longest_model_stable_s": 3.999999761581421,
+      "native_success": false,
+      "valid_expert_labels": false
+    }
+  ],
+  "native_progress": {
+    "control_tick": 480,
+    "owned_cases": 110,
+    "applied_steps": 16673,
+    "training": false
+  },
+  "native_queue": {
+    "state": "WAITING_VERIFIED_PREDECESSOR",
+    "pid": 182502,
+    "time": "2026-11-08T17:11:56.381588+00:00",
+    "predecessor_pid": 176574
+  },
+  "feedback_queue": {
+    "state": "COMPLETED_FEEDBACK_MODEL",
+    "pid": 183625,
+    "time_utc": "2026-11-08T17:29:37.890428+00:00",
+    "result": {
+      "state": "COMPLETED_REPLANNED_FEEDBACK_MODEL",
+      "results": [
+        {
+          "state_key": "12:550",
+          "steps": 202,
+          "required_steps": 250,
+          "failure": {
+            "tick": 752,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 4.7911716859222464e-05
+            },
+            "collision": {
+              "micro": 16,
+              "body": "Head_lower",
+              "gap_m": -3.2727506410132334e-06
+            },
+            "source": "interval_qp"
+          },
+          "final_model_stable_s": 0.0,
+          "longest_model_stable_s": 0.0,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "state_key": "118:338",
+          "steps": 462,
+          "required_steps": 462,
+          "failure": null,
+          "final_model_stable_s": 3.999999761581421,
+          "longest_model_stable_s": 3.999999761581421,
+          "native_success": false,
+          "valid_expert_labels": false
+        }
+      ],
+      "excluded": [
+        {
+          "state_key": "58:470",
+          "reason": "No complete fine-model sequence"
+        },
+        {
+          "state_key": "64:340",
+          "reason": "No complete fine-model sequence"
+        }
+      ],
+      "wall_seconds": 264.87913505593315,
+      "native_success": false,
+      "valid_expert_labels": false
+    }
+  },
+  "formal_validation": {
+    "goal_id": "G07",
+    "status": "FAILED",
+    "contract_sha256": "66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807",
+    "checks": {
+      "G00": {
+        "passed": false,
+        "errors": [
+          "Missing or empty artifact: reports/G00/native_train/checkpoint.pt"
+        ]
+      },
+      "G01": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G00",
+          "Path escapes workspace: assets/quadsmash_standard_v2.usd",
+          "Path escapes workspace: assets/vendor/piper_isaac_sim/piper_description/urdf/piper_no_gripper_description.urdf"
+        ]
+      },
+      "G02": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G01"
+        ]
+      },
+      "G03": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G02",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/train/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/train/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/reload/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/reload/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/interrupt/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/interrupt/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/resume_interrupt/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/resume_interrupt/continuation_reference.pt"
+        ]
+      },
+      "G04": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G03",
+          "Missing or empty artifact: artifacts/G04/policy.pt",
+          "Missing or empty artifact: artifacts/G04/autonomous_actor/actor.pt",
+          "Missing or empty artifact: artifacts/G04/autonomous_actor/interface.json"
+        ]
+      },
+      "G05": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G04"
+        ]
+      },
+      "G06": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G05"
+        ]
+      },
+      "G07": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G06",
+          "Missing or invalid evidence: [Errno 2] No such file or directory: '/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/G07/evidence.json'"
+        ]
+      }
+    },
+    "scope": "Structure, hashes, dependencies and thresholds only; not simulation authenticity or GPU budget enforcement."
+  },
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_actual_state_sequence_search_20261109/inputs.json": "bae087e441d05bc7fdba0c9156f9af248262f52342eda808ba2de96867085df3",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_actual_state_sequence_search_20261109/result.json": "605029a76b625cac2761ef9fd7154b97256c50f93561087b0ee4006478c76490",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_actual_state_replanned_feedback_20261109/inputs.json": "532f8cc7d246e100ec6c5859167dc1fd61d1bfc9843a2bea847e5001b09b3057",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_actual_state_sequence_search_20261109/state_118_338.json": "ec74cb0f642192e1bcdaa45837f709ca4325bbe8112431b860ad642c63b64e14",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_actual_state_sequence_search_20261109/state_12_550.json": "75b2bc30db31d763d4f0dbed06fc6cbfaf6e582d0ef94e6fd2adc9672d0298c5",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_actual_state_sequence_search_20261109/state_58_470.json": "5bb15ff887aa99abb21f805513dceb93689e1602423d747a41949627bbe4495a",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_actual_state_sequence_search_20261109/state_64_340.json": "7eb590cbee63fc084541bf4b70a3ff3507cbf24e262c73fb66dba97763ea07f9",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_actual_state_replanned_feedback_20261109/state_118_338.json": "e94098b1b264cea852c44add962b9444856837cb91976e570d3dab61253014ea",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_actual_state_replanned_feedback_20261109/state_12_550.json": "cc35fd4fee03ede1c545a8ce799a76656f4cdeddc4b1a07093db9da022d821ec",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_settled_stance_all128_20261109_01/pure_control_progress.json": "d5489d7f22b4db9acc866f661e7c64ccc60d14ed2eb013fa17c474963773d2bb",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_foot_reference_native_preparation_20261109_01/serial_status.json": "ce05cfd72d459686f0107950ac5771349f21eb0a69936bb6e695d807a58fab4c",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_actual_state_replanned_queue_20261109/status.json": "db6fbacae6b14be7b050b15b4a7e70c29fa96050ca73a4e4c086b87cbe57dbd4",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_actual_state_sequence_search_20261109/formal_verify.json": "ae2b5bbc540391cfed972e3b8764c4c9229b3e2cee247c029a8aa1075e69beea",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/search_actual_recovery_sequence_v1.py": "a19d21f88c9179eab43efb9524cb10ecceedacec9cd42afff222deeab774aef8",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_replanned_recovery_feedback_v1.py": "f44a40d36a4426becbea6b07482aa79b7d1c6be4b4d840f4946fe9e3e6518e61",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/run_replanned_feedback_after_search_v1.py": "e12452530e5876045c04599e42574e4b01ba93df98b1302c3ad4bf5e139cf437",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_actual_state_replanned_feedback_20261109/result.json": "e19f8b32ca20abf47bdec7b358ef834ee971450ab9e1a809decbc0aaf0140f0f",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_actual_state_replanned_feedback_20261109/status.json": "e19f8b32ca20abf47bdec7b358ef834ee971450ab9e1a809decbc0aaf0140f0f",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_actual_state_replanning_preparation_20261109/reference_library.json": "1634c8cc0a73577e3259333cf6674e7b706b502a0ed8c06f45e9ae5e87fd3156",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_state_replanning_native_preparation_20261109_01/plan.json": "d694e40e2084b2e9780c531f6e55050dfd8b64bd74c084ed3a7adf861be78d10",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_state_replanning_native_preparation_20261109_01/controller.json": "75fa4a5e673e4b6291c3d0bdabbb42b593cb59db014f604b8577f35d45026212",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_state_replanning_native_preparation_20261109_01/preflight_check.json": "15338a3245a8b2551ebcf493a3edc894d59284c359d73a5356944c49c0d556fd",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_state_replanning_native_preparation_20261109_01/readiness.json": "70cfdd7fe6e8391e451e861ad5ac62e091804032a30aa7e25264e9f91b361fc6",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_actual_state_replanning_preparation_20261109/formal_verify.json": "ae2b5bbc540391cfed972e3b8764c4c9229b3e2cee247c029a8aa1075e69beea",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/build_actual_replanning_library_v1.py": "938a8990584cbb5a2a91de07c2a43a2c2e6530eeeb23c1b34288169c620438d8",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_state_replanning_v16.py": "fa7e67f2263b4cd0877584d2d474218f5f5826beeb1408e98819ec97a4fccdbf",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/native_pure_control_state_replanning_v16.py": "ee220af8d1cba6d5d5f1bea0e4cc3a12c38e737a732a17b9d752e3de20fb4824",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/check_state_replanning_v16.py": "e565e21ddc8ba30b69afcbb761cbf32267c5a5dfadb471698075b011fb79fe4c",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/check_native_state_replanning_v16.py": "8a4db3b7b21e0f767e764b6477a562bb7f52bfc190dd8dd763661463d61c07ff",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/prepare_native_state_replanning_v17.py": "22df7170a43243acc1a6eebded7651fb161e541c785c525118088abfc1539b7f"
+  },
+  "limitations": [
+    "CPU model predictions do not establish native recovery.",
+    "Only completed fine paths entered full-episode feedback checks.",
+    "No future native command/state was used as a planning target.",
+    "No native teleport, hardware change or new learning."
+  ],
+  "runtime_causal_check": {
+    "passed": true,
+    "checks": [
+      {
+        "source_case": 118,
+        "actual_replanning_tick": 338,
+        "prefix_steps": 60,
+        "maximum_prefix_change_rad": 0.0,
+        "maximum_native_readback_error_rad": 2.554844547031365e-07,
+        "covered_state_match_score": 1.1102230246251565e-14,
+        "first_replanned_command_source": "predictive_reference_selection:planned",
+        "first_replanned_vs_old_command_max_rad": 0.5877593488901791
+      }
+    ],
+    "source_sha256": {
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/check_state_replanning_v16.py": "e565e21ddc8ba30b69afcbb761cbf32267c5a5dfadb471698075b011fb79fe4c",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_reference_clock_all128_20261108_01/pure_control_commands.npz": "8d5ac86fc055a993ceb4822d80a164f1fc2cd6f15a22256138c473f3909c4678",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_reference_clock_all128_20261108_01/pure_control_diagnostics.jsonl": "34bc7c400501bfe895d92a171c2c5a4cd993f786c26e853baf2959241911a9d8",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_reference_clock_all128_20261108_01/native_command_inputs.json": "f861d727c049c85d612cad7ce2a5be9a4bc3a85ab18ba38f5018dc871fca6f7c",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_state_replanning_native_preparation_20261109_01/controller.json": "75fa4a5e673e4b6291c3d0bdabbb42b593cb59db014f604b8577f35d45026212",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_actual_state_replanning_preparation_20261109/reference_library.json": "1634c8cc0a73577e3259333cf6674e7b706b502a0ed8c06f45e9ae5e87fd3156",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/loaded_pinocchio_model_v1.py": "2b303a32e57391ec7aaf3c3faf9d151f758477faf13ef6efae5bead979dcae82",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/whole_body_support_qp_v1.py": "b67cd1f1c8ebe973d3885773fbc9f3bf17cfd935e5e2210a4b7c0ea1ff331d6d",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frame_point_kinematics_v1.py": "60fac87ef04f83a22807217b04e7cbe40b536251b56f5a119dc012d1f2529fd8",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/reduced_whole_body_support_qp_v1.py": "e731a0bca8744d4639099dd2ff9be94840a9f0c953c64924fb2cfa9e7a9c80c7",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/continuous_support_qp_v1.py": "824a3d49711917803e9c82af63b1d142917d62c874ec8751325578a71b4af640",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/command_history_support_qp_v1.py": "1ac2221f85cbf3d468be4c265cc932845700d5f17a9eaaf37440998873689081",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/condensed_implicit_drive_v1.py": "a0f21e9b954db9e978ba428a3770fcb8cd666e08dd21aa27cedf0c0e5c5af629",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/implicit_support_prediction_v1.py": "b751fa0ea59edd1fe8fc62cf0ba3816e5583ecc76df7058ef3f5185a335a1e01",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_interval_qp_v1.py": "cbc3d59485da07153e8e3ae3a42de2231dff7c738a22a18b8ad74bd39dbb844f",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/authored_ground_clearance_v1.py": "ba54ef51a5cfd5c64937814c343d92057cd0e9e83dc4e435f1479049aa342630",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/event_recovery_manager_v1.py": "8fe16ba41ec3d2fc942dbf01686d4af3a5fde354dc6536726bab826b29b959e2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/dense_active_set_qp_v1.py": "cba063c6c594bfb42d1114dcafbaebc606d8c4b49b53ee65e764e3979b1bac4a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_recovery_v1.py": "119a6f073b32e4c7f577c2653314c2e441dbc3c13771e577031962b79281337f",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/full_authority_position_interface_v1.py": "88a371b4e72864952c7e7c3c2250ccd90603e3e7c0ef7c1579030cc9e89034ca",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/authored_net_clearance_v1.py": "386ed6042d439bde4366dec73a536d6a21a0eaf700152e7e4ca16aeef67f6526",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/foot_pair_clearance_kinematics_v1.py": "2e3caa0b3b791ad45f2e51eb1956f74b7cc4e310c15cad72cb23d8b023a60b11",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recovery_surface_constraints_v1.py": "5c546c5acbfd2e2d5f03578b21a10237162bb293013a825a71f25f92de7671eb",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_court_recovery_v4.py": "4666b83f6adf72c6cfab09703583815405703f9f0d5c76c22c7a97ad4604dbac",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_interval_self_collision_v2.py": "642610fc843e5d8dbf5f43e50994922e3d5565066466f708c18462a62be7f75d",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frictional_impulse_step_v1.py": "4e780bf218dd501a64f1885ab1697c3050d228580fc6cd3c7123d36fb18e2348",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frictional_speed_limited_step_v1.py": "6b5392e7dbdb2f4c95a48570d668a28e66fbd2ffd8eb7ae1bef04a8a01b01b92",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frictional_position_limited_step_v1.py": "07d976fa06b4c1e9e90792f463cb058be5c9a1af38170e22ff226c9680230413",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/hip_mount_collision_response_v1.py": "d7d9d9fff88f3e3a12a61962aadf41537192d930f6f5ee7b2e0a2c31b8ebc2e8",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/hip_mount_planning_constraints_v1.py": "2c63e83e930fed048e87d04fb5df6cde04c822f586f57207670520e7f83f508a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_self_collision_recovery_v5.py": "90d9a6b84c7b153b74e3d36c16a38bda59fa90cb14290e904fdc32e0807a5bf9",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_interval_moving_foot_v3.py": "daf71c5788dcb9a553a83fb2ebcda14e7a5e86a37d9965ed2c5fb0ab82adf363",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_moving_foot_recovery_v7.py": "d018a7f7ae1352feb4f7157114a05996564bc1490b768cef3a7201f4e8ea87ca",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recovery_reference_library_v1.py": "6c97dc2ba1b7c118cfc71c614157b2307dd15cc1f1cc75e2eeeee6570dc31735",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recorded_nonfoot_contact_history_v1.py": "b897ec590f76795a515f1e3ad14db1529f43117731f031f00d43dc556e5e599a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/summarize_precontact_prediction_v1.py": "b05936fc4345546c33bf14696bfbf6ed8967025799da23d87e0b04fc014ba227",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_sphere_touchdown_predictions_v1.py": "92b1905a21c544ff212a237104edb700ce6eb3b1414908cb14d80990b21a9a03",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/predict_self_contact_spheres_v2.py": "5e22b438815a60997f637bae461f69ec3c0a983f26d11e4abb94f5510ac8a446",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/foot_separation_path_constraint_v1.py": "8926324e99df4984bf7af09a686e813df57ebb8524408485633e430e1cd04f85",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_trajectory_recovery_v8.py": "fdbaf93a10c735c5736d3cf4f6dd2d912c43041e2cd6ce2144f63d9ba6005448",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_trajectory_recovery_v9.py": "a9d471bf6e674d5e4ec4f8625b34204f01544b0f4e0bcad1e0ec702869f8e042",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recovery_reference_library_v2.py": "2497e602cd60d3499477adeb1ad92631afc737c8b46e76c20020f71bdde4c232",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_long_trajectory_recovery_v11.py": "39b3596b3e711762fdfdddcb19967413396d15b6f659717e4eabff6b1724a5ac",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_reference_clock_v12.py": "47b155c960fe42b79d5e0d86046d78c14d04b9b18b382fd4f0c3bfac9cf592be",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_terminal_stance_v13.py": "7eedccf0b544f930c968f59e7d575ed9c118c5d07921ec294ee344d9f38414e4",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_settled_stance_v14.py": "abfa89c7d3730521a6e4fab7d9e962896dbc37bd86f2689cb7a8c92cfa4ce385",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_stance_foot_reference_v15.py": "0b25ca20a3e3f0ada565615d5fe4703965f6a6719f55bad150a7ab80f57f14aa",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_state_replanning_v16.py": "fa7e67f2263b4cd0877584d2d474218f5f5826beeb1408e98819ec97a4fccdbf",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/parallel_landing_solver_v1.py": "4bc18476684fbc3a81eae8b1b63073c615ceafd73a23ccca2dde919564cfea33",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/interval_command_support_qp_v1.py": "7f9e47fdeb1f6cc420368d127f89cc1b726397752b0387f57b5bee1ea5915589",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/admitted_arm_support_qp_v1.py": "097d7022b16a28aa31f11081056092bd8b5b44172291b6bd3b1aba1dbe0a1c6e",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v1.py": "da2ff2e4ee1479bf3fc422c0b71f8831bffd9e5868d9a4e0665fd348ab659a59",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v2.py": "6d0ad9bc4fcd27a0f4f418e55b988341ffe809f14c132415281ec41621196ae2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v3.py": "d8c54679697e78678a898f5d36a27305f9252a5f2b09990d0b33ddcc25533300",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_command_history_mpc_v1.py": "466ba93dc473c7d2de93aae0d5d7848b390d72e8fe1ef779ff0818efad704d28",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_interval_command_mpc_v1.py": "545ecf58c66d0bbf07f889f8867ce36d75ca42fcd94ca77b5307666163630060",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_active_set_interval_mpc_v1.py": "4c111c5ce1d6d711cbe9e4362aad315e0f50f9c2cb363d9595409e0701c7ec8d",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_arm_feasibility_mpc_v1.py": "af9a08a8b442c43099faadbda887ed79b1e497b114cbd77e93b4cc8a2481f40b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_joint_damper_mpc_v1.py": "63b2eff24491e130f96681508524ccf124064469a285a6c82ed9dd498fa761f9",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_joint_sequence_proposal_v1.py": "42d8be1c82836a83e054c6cf7ca368f5bad9b35e298aabbeb0790bfb5b816857",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_sequence_linearization_v1.py": "acc515b9f7980645cdca835deb3ae8bfc4f20ee03eee90a53d9495f976b0ccf2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_differentiated_sequence_v1.py": "9b68faddbb7350b467f5f7a75c1b78cae58759f92c2d8e559b9cac433e6d229e",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_joint_sequence_proposal_v1.py": "b0896a4e9a95a4f46d84ef344e2d7e7384a4fce435b17c01bb456952053382a2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_settled_stance_model_v2.py": "5606c23dbb10c56db7d113b4ab3bf63d7b6ba3fbfc102253a444e8e2d937cde4",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_actual_handoff_model_v1.py": "871903d3bf525116e7c79df3b8f7f10e19f4c839fa3b08624723e0cc24b09b26"
+    },
+    "native_execution": false,
+    "valid_expert_labels": false,
+    "single_final_native_writer": true,
+    "entry_sha256": "926ebb6d5a6b752c836c50a2e8f27fb85db4380fe941445ab50be3b2ccf1aa15"
+  },
+  "planned_native_readiness": {
+    "state": "PREPARED_NOT_LAUNCHED",
+    "reason": "Existing native v14 run and v15 serial comparison remain separate",
+    "source_check_passed": true,
+    "native_execution": false,
+    "time_utc": "2026-11-08T17:36:03.847354+00:00"
+  },
+  "retained_model_candidate": {
+    "state_key": "118:338",
+    "actual_initial_state": {
+      "q": [
+        0.7699804902076721,
+        -0.1907748579978943,
+        0.2869980037212372,
+        0.17808489413245188,
+        0.19924673339356594,
+        0.11947622836046996,
+        0.9561966014217911,
+        0.10370073467493057,
+        0.5556896328926086,
+        -1.5669984817504883,
+        -0.5636365413665771,
+        1.196524739265442,
+        -2.023146867752075,
+        0.08264171332120895,
+        0.9109903573989868,
+        -1.4781728982925415,
+        -0.16035574674606323,
+        0.7212607264518738,
+        -1.5507251024246216,
+        -1.2643152475357056,
+        0.9933858513832092,
+        -2.004143714904785,
+        -1.5573779344558716,
+        -1.1545392274856567,
+        -0.7241972088813782
+      ],
+      "v": [
+        -0.05181668600871148,
+        0.060328525027560365,
+        -0.11545485368128208,
+        0.2947667132418022,
+        0.11425771537093066,
+        0.12119296489721809,
+        -1.1866776943206787,
+        1.4620152711868286,
+        -1.5824872255325317,
+        -0.8976234793663025,
+        -0.04134777933359146,
+        -0.16570639610290527,
+        1.2216506004333496,
+        -0.2603272795677185,
+        2.0101325511932373,
+        1.8767398595809937,
+        1.267111897468567,
+        -0.18621495366096497,
+        0.9872708320617676,
+        0.17664404213428497,
+        0.19676584005355835,
+        0.08562398701906204,
+        -0.35508474707603455,
+        -0.17952385544776917
+      ],
+      "previous": [
+        0.07525181770324707,
+        -0.22884541749954224,
+        0.11682569980621338,
+        -0.1603994369506836,
+        0.622667670249939,
+        0.605716347694397,
+        0.9310901761054993,
+        0.8439174294471741,
+        -1.5758472681045532,
+        -1.489147424697876,
+        -1.4352052211761475,
+        -1.5280135869979858,
+        -1.209305763244629,
+        0.9070520401000977,
+        -2.036153554916382,
+        -1.5485737323760986,
+        -1.1701557636260986,
+        -0.7346426248550415
+      ],
+      "ground_force": [
+        [
+          0.0,
+          0.0,
+          3.644148826599121
+        ],
+        [
+          0.0,
+          0.0,
+          133.37734985351562
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "case": 118,
+      "tick": 338,
+      "time_s": 3.379999876022339,
+      "phase": {
+        "phase": "SUSTAIN",
+        "changed": false,
+        "owns_final_recovery_command": true,
+        "release_time_s": 2.7799999713897705,
+        "first_ground_time_s": 3.0299999713897705,
+        "ground_contacts": [
+          true,
+          true,
+          false,
+          false
+        ],
+        "currently_loaded": [
+          false,
+          true,
+          false,
+          false
+        ],
+        "phase_settled_duration_s": 0.21000003814697266,
+        "control_sample_stable_duration_s": 0.0,
+        "formal_recovery_success_not_inferred": true
+      }
+    },
+    "normalized_command_knots": [
+      [
+        0.07186003515946005,
+        -0.21853079765392625,
+        0.1115600812289852,
+        -0.15316984400678968,
+        -0.13327363800935477,
+        -0.13997178026383472,
+        -0.42519400716473466,
+        -0.4596394311308024,
+        0.2168586002380657,
+        0.30885074204128626,
+        0.36608566474204496,
+        0.26761212645477506,
+        -0.41132706497349947,
+        -0.4222598225041939,
+        -0.3725336793389593,
+        -0.8874348618538446,
+        -0.9591441397734887,
+        -0.3507652470263414
+      ],
+      [
+        0.08201991075466708,
+        -0.25786344438399744,
+        0.1018179703932438,
+        -0.1416260826253004,
+        -0.12455256239693424,
+        -0.0779275562174343,
+        -0.42133665177113666,
+        -0.45699785283118677,
+        0.234831807906698,
+        0.19322860902473304,
+        0.34321757470082326,
+        0.26873727017055926,
+        -0.3082779684285166,
+        -0.37381330943680524,
+        -0.4422596843794193,
+        -0.728890446655718,
+        -0.9380200371288109,
+        -0.2666916736419821
+      ],
+      [
+        0.09725972414747752,
+        -0.3168624144791041,
+        0.08720480413963205,
+        -0.1243104405530665,
+        -0.11147094897830345,
+        0.015138779852166273,
+        -0.4155506186807396,
+        -0.4530354853817634,
+        0.2617916194096461,
+        0.019795409499903105,
+        0.30891543963899126,
+        0.27042498574423535,
+        -0.15370432361104236,
+        -0.30114353983572195,
+        -0.5468486919401094,
+        -0.49107382385852827,
+        -0.9063338831617941,
+        -0.14058131356544312
+      ],
+      [
+        0.09725972414747752,
+        -0.3168624144791041,
+        0.08720480413963205,
+        -0.1243104405530665,
+        -0.11147094897830345,
+        0.015138779852166273,
+        -0.4155506186807396,
+        -0.4530354853817634,
+        0.2617916194096461,
+        0.019795409499903105,
+        0.30891543963899126,
+        0.27042498574423535,
+        -0.15370432361104236,
+        -0.30114353983572195,
+        -0.5468486919401094,
+        -0.49107382385852827,
+        -0.9063338831617941,
+        -0.14058131356544312
+      ],
+      [
+        0.09725972414747752,
+        -0.3168624144791041,
+        0.08720480413963205,
+        -0.1243104405530665,
+        -0.11147094897830345,
+        0.015138779852166273,
+        -0.4155506186807396,
+        -0.4530354853817634,
+        0.2617916194096461,
+        0.019795409499903105,
+        0.30891543963899126,
+        0.27042498574423535,
+        -0.15370432361104236,
+        -0.30114353983572195,
+        -0.5468486919401094,
+        -0.49107382385852827,
+        -0.9063338831617941,
+        -0.14058131356544312
+      ],
+      [
+        0.09725972414747752,
+        -0.3168624144791041,
+        0.08720480413963205,
+        -0.1243104405530665,
+        -0.11147094897830345,
+        0.015138779852166273,
+        -0.4155506186807396,
+        -0.4530354853817634,
+        0.2617916194096461,
+        0.019795409499903105,
+        0.30891543963899126,
+        0.27042498574423535,
+        -0.15370432361104236,
+        -0.30114353983572195,
+        -0.5468486919401094,
+        -0.49107382385852827,
+        -0.9063338831617941,
+        -0.14058131356544312
+      ],
+      [
+        0.09725972414747752,
+        -0.3168624144791041,
+        0.08720480413963205,
+        -0.1243104405530665,
+        -0.11147094897830345,
+        0.015138779852166273,
+        -0.4155506186807396,
+        -0.4530354853817634,
+        0.2617916194096461,
+        0.019795409499903105,
+        0.30891543963899126,
+        0.27042498574423535,
+        -0.15370432361104236,
+        -0.30114353983572195,
+        -0.5468486919401094,
+        -0.49107382385852827,
+        -0.9063338831617941,
+        -0.14058131356544312
+      ],
+      [
+        0.09725972414747752,
+        -0.3168624144791041,
+        0.08720480413963205,
+        -0.1243104405530665,
+        -0.11147094897830345,
+        0.015138779852166273,
+        -0.4155506186807396,
+        -0.4530354853817634,
+        0.2617916194096461,
+        0.019795409499903105,
+        0.30891543963899126,
+        0.27042498574423535,
+        -0.15370432361104236,
+        -0.30114353983572195,
+        -0.5468486919401094,
+        -0.49107382385852827,
+        -0.9063338831617941,
+        -0.14058131356544312
+      ]
+    ],
+    "knot_times_s": [
+      0.0,
+      0.1,
+      0.25,
+      0.5,
+      0.8,
+      1.2,
+      1.6,
+      2.0
+    ],
+    "interpolation": "scipy.interpolate.PchipInterpolator, then original target joint-range clip",
+    "original_position_pd_interface": {
+      "limits": [
+        [
+          -1.0471998453140259,
+          1.0471998453140259
+        ],
+        [
+          -1.0471998453140259,
+          1.0471998453140259
+        ],
+        [
+          -1.0471998453140259,
+          1.0471998453140259
+        ],
+        [
+          -1.0471998453140259,
+          1.0471998453140259
+        ],
+        [
+          -1.5707999467849731,
+          3.4906997680664062
+        ],
+        [
+          -1.5707999467849731,
+          3.4906997680664062
+        ],
+        [
+          -0.5235999226570129,
+          4.537899494171143
+        ],
+        [
+          -0.5235999226570129,
+          4.537899494171143
+        ],
+        [
+          -2.7227001190185547,
+          -0.8377599120140076
+        ],
+        [
+          -2.7227001190185547,
+          -0.8377599120140076
+        ],
+        [
+          -2.7227001190185547,
+          -0.8377599120140076
+        ],
+        [
+          -2.7227001190185547,
+          -0.8377599120140076
+        ],
+        [
+          -2.618000030517578,
+          2.167999744415283
+        ],
+        [
+          0.0,
+          3.1399998664855957
+        ],
+        [
+          -2.9669997692108154,
+          0.0
+        ],
+        [
+          -1.744999885559082,
+          1.744999885559082
+        ],
+        [
+          -1.21999990940094,
+          1.21999990940094
+        ],
+        [
+          -2.0943996906280518,
+          2.0943996906280518
+        ]
+      ],
+      "stiffness": [
+        25.0,
+        25.0,
+        25.0,
+        25.0,
+        25.0,
+        25.0,
+        25.0,
+        25.0,
+        25.0,
+        25.0,
+        25.0,
+        25.0,
+        80.0,
+        80.0,
+        80.0,
+        80.0,
+        80.0,
+        80.0
+      ],
+      "damping": [
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        4.0,
+        4.0,
+        4.0,
+        4.0,
+        4.0,
+        4.0
+      ],
+      "effort": [
+        23.5,
+        23.5,
+        23.5,
+        23.5,
+        23.5,
+        23.5,
+        23.5,
+        23.5,
+        23.5,
+        23.5,
+        23.5,
+        23.5,
+        100.0,
+        100.0,
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "velocity": [
+        30.0,
+        30.0,
+        30.0,
+        30.0,
+        30.0,
+        30.0,
+        30.0,
+        30.0,
+        30.0,
+        30.0,
+        30.0,
+        30.0,
+        5.0,
+        5.0,
+        5.0,
+        5.0,
+        5.0,
+        5.0
+      ],
+      "friction": 0.65
+    },
+    "control_dt_s": 0.01,
+    "fine_substeps": 160,
+    "native_success": false,
+    "valid_expert_labels": false
+  }
+}
