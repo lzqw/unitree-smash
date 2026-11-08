@@ -494,7 +494,8 @@
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_failure_family_model_v1.py": "d6e11ba2f0f7ab5c3326efcb7a4186d31ae7c8f33e3410461932d282d76bae8e",
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_native_feedback_prediction_v1.py": "098faaa99bd89cbfc443c21bd41488927d0a7c3e39381945502cb67d7337a1e0",
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_failure_family_one_step_20261108.json": "5d3f9550164e37b1d5d5af9f80fd103d1952ceab40733a7bdd7ee44cbb6d3207",
-    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_family_joint_limit_events_v1.py": "a17bf6d38b2ef12ce4ca119b3fa0d4ab36626b105ec9012cb79f45c053ac2b25"
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_family_joint_limit_events_v1.py": "a17bf6d38b2ef12ce4ca119b3fa0d4ab36626b105ec9012cb79f45c053ac2b25",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/search_asymmetric_front_landing_v1.py": "e3ff45d5709e69ea5e4cd8aa6849efce762c05614e01588253e49c545edf2d8e"
   },
   "absolute_reference_search_started": true,
   "absolute_reference_search_final_result": {
@@ -920,5 +921,95 @@
     "result_sha256": "3c895a32bca1e48cd0cfe6e51dd42819c47d931d2e5e8ef91ca7453fb7f62638",
     "cause_proven": false,
     "source_hashes_reference": "source_sha256 (combined immutable input hashes)"
+  },
+  "asymmetric_front_search": {
+    "case": 85,
+    "accepted": false,
+    "proposed": 18,
+    "ik_accepted": 9,
+    "ik_rejected": 9,
+    "fine_candidates": 8,
+    "geometric_jacobian_error": 8.948941587760828e-11,
+    "baseline_reproduced": true,
+    "wall_seconds": 48.34053375897929,
+    "best": {
+      "accepted": false,
+      "completed_model_steps": 24,
+      "required_model_steps": 520,
+      "failure": {
+        "step": 24,
+        "reason": "path_constraints",
+        "violations": {
+          "joint_position_violation_rad": 0.08531179377781051,
+          "nonfoot_ground_violation_m": 0.010815206164768262
+        },
+        "first_ground_violation": {
+          "micro": 55,
+          "body": "FL_thigh",
+          "gap_m": -9.107520308146433e-05
+        }
+      },
+      "terminal": {
+        "roll": -0.3384933090582499,
+        "pitch": 0.6245427131794336,
+        "horizontal": 0.3803029188860211,
+        "vertical_speed": 1.5593480580664376,
+        "omega": 3.4004083405334944,
+        "joint_speed": 9.524128141294904,
+        "support_feet": 2,
+        "support_margin_m": -0.0897877086217509
+      }
+    },
+    "rejected_geometry": [
+      {
+        "level": 0.0,
+        "forward": 0.0,
+        "down": 0.03
+      },
+      {
+        "level": 0.0,
+        "forward": 0.04,
+        "down": 0.03
+      },
+      {
+        "level": 0.0,
+        "forward": 0.08,
+        "down": 0.03
+      },
+      {
+        "level": 0.5,
+        "forward": 0.0,
+        "down": 0.03
+      },
+      {
+        "level": 0.5,
+        "forward": 0.04,
+        "down": 0.03
+      },
+      {
+        "level": 0.5,
+        "forward": 0.08,
+        "down": 0.03
+      },
+      {
+        "level": 1.0,
+        "forward": 0.0,
+        "down": 0.03
+      },
+      {
+        "level": 1.0,
+        "forward": 0.04,
+        "down": 0.03
+      },
+      {
+        "level": 1.0,
+        "forward": 0.08,
+        "down": 0.03
+      }
+    ],
+    "result_sha256": "53f7a7e5b293eb0180c5cc9f6584a82ca882908cd5929fff837fc00cbe50a524",
+    "native_execution": false,
+    "valid_expert_labels": false,
+    "physical_impossibility_claim": false
   }
 }
