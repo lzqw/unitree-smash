@@ -1,0 +1,85 @@
+{
+  "observer_exact_replay": true,
+  "maximum_cross_environment_individual_normal_force_n": 0.0,
+  "cross_environment_pairs": [],
+  "physical_cause_identified": false,
+  "valid_expert_labels": false,
+  "limits": [
+    "Only five shuttles, TRAIN87 robot bodies, three time windows and normal forces are covered; net/friction forces are not covered.",
+    "Exact controller replay does not replace strict original-student isolation checks.",
+    "No maximum over bodies is interpreted as a sum or as friction-force measurement."
+  ],
+  "case_replay_count": 128,
+  "score": {
+    "before": {
+      "complete5": 27,
+      "air": 74,
+      "recovery": 34,
+      "ball5_except_recovery": 53,
+      "numerical_failures": 0
+    },
+    "after": {
+      "complete5": 28,
+      "air": 74,
+      "recovery": 35,
+      "ball5_except_recovery": 53,
+      "numerical_failures": 0
+    }
+  },
+  "success_changes": {
+    "before": 27,
+    "after": 28,
+    "retained": [
+      10,
+      16,
+      17,
+      23,
+      24,
+      25,
+      27,
+      28,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      39,
+      43,
+      45,
+      49,
+      51,
+      52,
+      55,
+      60,
+      63,
+      84,
+      94,
+      121,
+      126
+    ],
+    "lost": [],
+    "gained": [
+      87
+    ]
+  },
+  "job": {
+    "status": "SUCCEEDED",
+    "exit_code": 0,
+    "elapsed_s": 1259.349588333862,
+    "charged_gpu_hours": 0.3498193300927394,
+    "charged_env_steps": 102400,
+    "started_at": "2026-11-08T03:59:36.112502+00:00",
+    "finished_at": "2026-11-08T04:20:35.472005+00:00"
+  },
+  "strict_original_student_isolation": "FAILED: Untouched first episode length changed",
+  "formal_acceptance": false,
+  "source_sha256": {
+    "reports/landing_native_ball_partner_followup_20261108/ball_partner_audit.json": "8cc0f2deebdead2313c821073d3c407037d0c8f1f7f12e9e8d7e4814827edc3b",
+    "reports/landing_native_ball_partner_followup_20261108/comparison.json": "bc0991bbd3dc1028bd0c11ea7ddf4e1ef8622055e4ef3e4feff2688a34a9226a",
+    "reports/landing_native_ball_partner_followup_20261108/status.json": "e362341fdd604ae1209c7f8fdcd7a158437f206c4f3651a82d5f64dc38f4577b",
+    "reports/native_ball_partner_all128_20261108_01/job.json": "2a3c25c86e949ed92714303476dcd6a5a4aad9920477e3235af69f934e3f1362",
+    "reports/native_ball_partner_all128_20261108_01/ball_partner_observation.json": "059df214d7119962fd0b17dbf9201f7d8ecee59eff960ff5f15dd32d2acd0914",
+    "reports/native_ball_partner_all128_20261108_01/ball_partner_observation.npz": "02a3ab639e27418c5995c044efa60135b653938d095f361b1c958756582c16fb"
+  }
+}
