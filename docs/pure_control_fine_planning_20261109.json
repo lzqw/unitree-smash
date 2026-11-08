@@ -1357,5 +1357,669 @@
   "native_best_strict_landing_segment": 5,
   "denominator": 128,
   "whole_episode_clean_success_not_claimed": true,
-  "training": false
+  "training": false,
+  "fixed_prefix_followup": {
+    "recorded_at": "2026-11-08T20:36:29.283457+00:00",
+    "inputs": {
+      "source_sha256": {
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/search_fine_prefix_recovery_v6.py": "61e0bb2b8615df004bf3a58fc074c37d02f1bd830092f0e88a46c3f1c7fab685",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_foot_reference_native_preparation_20261109_01/controller.json": "a9c8f55e44c09ff04c36e5cadb8641810bd58240b84fad850912dba31eaf6d1d",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_foot_reference_all128_20261109_01/native_command_inputs.json": "f861d727c049c85d612cad7ce2a5be9a4bc3a85ab18ba38f5018dc871fca6f7c",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_diverse_release_sequence_search_20261109/inputs.json": "368a372fcd19667069f0c52e7fd794c7e02bfb74eb688e260ad973a0800fd80d",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_diverse_release_sequence_search_20261109/result.json": "6ce197285c3643a26b9eda07ef671178cdf6c598c0cbfcd4fe0e2a88dbde7708",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_sustained_path_preparation_20261108/reference_library.json": "f8bbd0498fd9dc52d9aa3174b4836ab2af0ed98a03f32a3215c8113907ca6ece",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_diverse_release_sequence_search_20261109/state_27_274.json": "b9945c81d70cb77ef25c6692918a5564b9d3b3ec6d58c34bf7502bc3c2719e70",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_diverse_release_sequence_search_20261109/state_65_275.json": "1fd20833b928ce8911a395f2a439c1d222e89305f26a9ced8bdae85262325392",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/loaded_pinocchio_model_v1.py": "2b303a32e57391ec7aaf3c3faf9d151f758477faf13ef6efae5bead979dcae82",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/whole_body_support_qp_v1.py": "b67cd1f1c8ebe973d3885773fbc9f3bf17cfd935e5e2210a4b7c0ea1ff331d6d",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frame_point_kinematics_v1.py": "60fac87ef04f83a22807217b04e7cbe40b536251b56f5a119dc012d1f2529fd8",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/reduced_whole_body_support_qp_v1.py": "e731a0bca8744d4639099dd2ff9be94840a9f0c953c64924fb2cfa9e7a9c80c7",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/continuous_support_qp_v1.py": "824a3d49711917803e9c82af63b1d142917d62c874ec8751325578a71b4af640",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/command_history_support_qp_v1.py": "1ac2221f85cbf3d468be4c265cc932845700d5f17a9eaaf37440998873689081",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/condensed_implicit_drive_v1.py": "a0f21e9b954db9e978ba428a3770fcb8cd666e08dd21aa27cedf0c0e5c5af629",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/implicit_support_prediction_v1.py": "b751fa0ea59edd1fe8fc62cf0ba3816e5583ecc76df7058ef3f5185a335a1e01",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_interval_qp_v1.py": "cbc3d59485da07153e8e3ae3a42de2231dff7c738a22a18b8ad74bd39dbb844f",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/authored_ground_clearance_v1.py": "ba54ef51a5cfd5c64937814c343d92057cd0e9e83dc4e435f1479049aa342630",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/event_recovery_manager_v1.py": "8fe16ba41ec3d2fc942dbf01686d4af3a5fde354dc6536726bab826b29b959e2",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/dense_active_set_qp_v1.py": "cba063c6c594bfb42d1114dcafbaebc606d8c4b49b53ee65e764e3979b1bac4a",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_recovery_v1.py": "119a6f073b32e4c7f577c2653314c2e441dbc3c13771e577031962b79281337f",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/full_authority_position_interface_v1.py": "88a371b4e72864952c7e7c3c2250ccd90603e3e7c0ef7c1579030cc9e89034ca",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/authored_net_clearance_v1.py": "386ed6042d439bde4366dec73a536d6a21a0eaf700152e7e4ca16aeef67f6526",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/foot_pair_clearance_kinematics_v1.py": "2e3caa0b3b791ad45f2e51eb1956f74b7cc4e310c15cad72cb23d8b023a60b11",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recovery_surface_constraints_v1.py": "5c546c5acbfd2e2d5f03578b21a10237162bb293013a825a71f25f92de7671eb",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_court_recovery_v4.py": "4666b83f6adf72c6cfab09703583815405703f9f0d5c76c22c7a97ad4604dbac",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_interval_self_collision_v2.py": "642610fc843e5d8dbf5f43e50994922e3d5565066466f708c18462a62be7f75d",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frictional_impulse_step_v1.py": "4e780bf218dd501a64f1885ab1697c3050d228580fc6cd3c7123d36fb18e2348",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frictional_speed_limited_step_v1.py": "6b5392e7dbdb2f4c95a48570d668a28e66fbd2ffd8eb7ae1bef04a8a01b01b92",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frictional_position_limited_step_v1.py": "07d976fa06b4c1e9e90792f463cb058be5c9a1af38170e22ff226c9680230413",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/hip_mount_collision_response_v1.py": "d7d9d9fff88f3e3a12a61962aadf41537192d930f6f5ee7b2e0a2c31b8ebc2e8",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/hip_mount_planning_constraints_v1.py": "2c63e83e930fed048e87d04fb5df6cde04c822f586f57207670520e7f83f508a",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_self_collision_recovery_v5.py": "90d9a6b84c7b153b74e3d36c16a38bda59fa90cb14290e904fdc32e0807a5bf9",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_interval_moving_foot_v3.py": "daf71c5788dcb9a553a83fb2ebcda14e7a5e86a37d9965ed2c5fb0ab82adf363",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_moving_foot_recovery_v7.py": "d018a7f7ae1352feb4f7157114a05996564bc1490b768cef3a7201f4e8ea87ca",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recovery_reference_library_v1.py": "6c97dc2ba1b7c118cfc71c614157b2307dd15cc1f1cc75e2eeeee6570dc31735",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recorded_nonfoot_contact_history_v1.py": "b897ec590f76795a515f1e3ad14db1529f43117731f031f00d43dc556e5e599a",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/summarize_precontact_prediction_v1.py": "b05936fc4345546c33bf14696bfbf6ed8967025799da23d87e0b04fc014ba227",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_sphere_touchdown_predictions_v1.py": "92b1905a21c544ff212a237104edb700ce6eb3b1414908cb14d80990b21a9a03",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/predict_self_contact_spheres_v2.py": "5e22b438815a60997f637bae461f69ec3c0a983f26d11e4abb94f5510ac8a446",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/foot_separation_path_constraint_v1.py": "8926324e99df4984bf7af09a686e813df57ebb8524408485633e430e1cd04f85",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_trajectory_recovery_v8.py": "fdbaf93a10c735c5736d3cf4f6dd2d912c43041e2cd6ce2144f63d9ba6005448",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_trajectory_recovery_v9.py": "a9d471bf6e674d5e4ec4f8625b34204f01544b0f4e0bcad1e0ec702869f8e042",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recovery_reference_library_v2.py": "2497e602cd60d3499477adeb1ad92631afc737c8b46e76c20020f71bdde4c232",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_long_trajectory_recovery_v11.py": "39b3596b3e711762fdfdddcb19967413396d15b6f659717e4eabff6b1724a5ac",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_reference_clock_v12.py": "47b155c960fe42b79d5e0d86046d78c14d04b9b18b382fd4f0c3bfac9cf592be",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_terminal_stance_v13.py": "7eedccf0b544f930c968f59e7d575ed9c118c5d07921ec294ee344d9f38414e4",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_settled_stance_v14.py": "abfa89c7d3730521a6e4fab7d9e962896dbc37bd86f2689cb7a8c92cfa4ce385",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/parallel_landing_solver_v1.py": "4bc18476684fbc3a81eae8b1b63073c615ceafd73a23ccca2dde919564cfea33",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/interval_command_support_qp_v1.py": "7f9e47fdeb1f6cc420368d127f89cc1b726397752b0387f57b5bee1ea5915589",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/admitted_arm_support_qp_v1.py": "097d7022b16a28aa31f11081056092bd8b5b44172291b6bd3b1aba1dbe0a1c6e",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v1.py": "da2ff2e4ee1479bf3fc422c0b71f8831bffd9e5868d9a4e0665fd348ab659a59",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v2.py": "6d0ad9bc4fcd27a0f4f418e55b988341ffe809f14c132415281ec41621196ae2",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v3.py": "d8c54679697e78678a898f5d36a27305f9252a5f2b09990d0b33ddcc25533300",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_command_history_mpc_v1.py": "466ba93dc473c7d2de93aae0d5d7848b390d72e8fe1ef779ff0818efad704d28",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_interval_command_mpc_v1.py": "545ecf58c66d0bbf07f889f8867ce36d75ca42fcd94ca77b5307666163630060",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_active_set_interval_mpc_v1.py": "4c111c5ce1d6d711cbe9e4362aad315e0f50f9c2cb363d9595409e0701c7ec8d",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_arm_feasibility_mpc_v1.py": "af9a08a8b442c43099faadbda887ed79b1e497b114cbd77e93b4cc8a2481f40b",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_joint_damper_mpc_v1.py": "63b2eff24491e130f96681508524ccf124064469a285a6c82ed9dd498fa761f9",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_joint_sequence_proposal_v1.py": "42d8be1c82836a83e054c6cf7ca368f5bad9b35e298aabbeb0790bfb5b816857",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_sequence_linearization_v1.py": "acc515b9f7980645cdca835deb3ae8bfc4f20ee03eee90a53d9495f976b0ccf2",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_differentiated_sequence_v1.py": "9b68faddbb7350b467f5f7a75c1b78cae58759f92c2d8e559b9cac433e6d229e",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_joint_sequence_proposal_v1.py": "b0896a4e9a95a4f46d84ef344e2d7e7384a4fce435b17c01bb456952053382a2",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_settled_stance_model_v2.py": "5606c23dbb10c56db7d113b4ab3bf63d7b6ba3fbfc102253a444e8e2d937cde4",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_actual_handoff_model_v1.py": "871903d3bf525116e7c79df3b8f7f10e19f4c839fa3b08624723e0cc24b09b26",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/search_actual_terminal_window_v3.py": "dc8bde8da7d7f515e14bac721cf2aea346414acca656994e447c1340240fe795",
+        "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/search_current_native_recovery_v4.py": "5476f6b7aae2fe1c2264b6de14392f08b99f58150f4a33a9cba9e83ec24ec50c"
+      },
+      "model_split_states": {
+        "27:274": {
+          "q": [
+            0.7156721847392751,
+            -0.20281873159176164,
+            0.3384316008981538,
+            0.04975450826910599,
+            0.0060482177184262255,
+            0.3991151305664934,
+            0.9155299124125987,
+            0.009896819665243032,
+            0.836377174082298,
+            -1.273496874561193,
+            -0.03174898928140088,
+            1.0670248424612458,
+            -1.3415132796663727,
+            -0.07538000384334924,
+            1.0742884877809185,
+            -1.2051564030735062,
+            -0.23520561501838338,
+            1.04015912810808,
+            -1.1966650316309597,
+            -1.6291234442712532,
+            0.31958630348991446,
+            -2.210859344701295,
+            -1.4544075741325944,
+            -1.1380611196025259,
+            -1.0677099409402526
+          ],
+          "v": [
+            0.12476719716863587,
+            0.08591737969040368,
+            -0.29638133216018764,
+            -1.077631883221908,
+            -0.9213161658844891,
+            0.7470159619941559,
+            0.5879190254817831,
+            1.9509997111224038,
+            -1.6327369636972486,
+            0.6591872996606176,
+            1.3027429699409607,
+            0.4866382417199045,
+            1.4606868896276333,
+            3.467040245991402,
+            -3.464988206676481,
+            1.1843699158010919,
+            3.412229159180212,
+            -2.5389759099955156,
+            2.831681330935262,
+            -1.721639939324355,
+            2.4681236482193643,
+            1.7717492230138083,
+            -0.2397493730336652,
+            0.24767140192462728
+          ],
+          "previous": [
+            -0.242252517527832,
+            -0.2828845383360797,
+            -0.0914497321778135,
+            -0.3100935781333011,
+            0.38702740367714034,
+            0.7380199069572072,
+            0.8484072539817498,
+            0.9847677441432373,
+            -1.1281529627968423,
+            -1.0620054299567774,
+            -0.9801492555009376,
+            -1.1981786378032486,
+            -1.5631513949837543,
+            0.4400078603692455,
+            -2.0299441817981223,
+            -1.3731504865685402,
+            -1.1495928713916788,
+            -1.0529314371120901
+          ],
+          "ground_force": [
+            [
+              -3.891693770583923,
+              -23.41734282860008,
+              92.60286922482491
+            ],
+            [
+              -24.557889460607527,
+              29.832039624277524,
+              94.46975155505277
+            ],
+            [
+              26.754701104234925,
+              1.1263391833300322,
+              94.06849727513291
+            ],
+            [
+              -8.077910448892927,
+              9.358791471032035,
+              26.287792316400335
+            ]
+          ],
+          "phase": {
+            "phase": "BUFFER_LOAD",
+            "changed": false,
+            "owns_final_recovery_command": true,
+            "release_time_s": 2.740000009536743,
+            "first_ground_time_s": 2.990000009536743,
+            "ground_contacts": [
+              true,
+              true,
+              true,
+              true
+            ],
+            "currently_loaded": [
+              true,
+              true,
+              true,
+              true
+            ],
+            "phase_settled_duration_s": 0.019999980926513672,
+            "control_sample_stable_duration_s": 0.0,
+            "formal_recovery_success_not_inferred": true
+          },
+          "case": 27,
+          "tick": 374,
+          "time_s": 3.740000009536743,
+          "state_origin": "model_prefix_not_native"
+        },
+        "65:275": {
+          "q": [
+            0.5916064024246211,
+            -0.1467434773578132,
+            0.33381649614480063,
+            -0.20913859682314756,
+            0.008445982372292639,
+            0.5366424269197113,
+            0.8174378375939875,
+            0.003993441714711366,
+            0.8441676501935231,
+            -1.993151030495011,
+            0.35795455280738975,
+            1.0006578078151422,
+            -1.1329749472291197,
+            0.31331081270812144,
+            0.6105705696208489,
+            -1.226936056003036,
+            0.4291069171054597,
+            0.6869178076740785,
+            -1.4431359555191952,
+            -0.30930386688981143,
+            0.7089924360655934,
+            -2.783391020516585,
+            -0.47103746678919,
+            -0.393623953432718,
+            -0.2792359787497376
+          ],
+          "v": [
+            0.21066714007308449,
+            0.21395479945897,
+            0.24162915136370156,
+            0.2522267624938066,
+            -0.5238871408575575,
+            0.5092026661884411,
+            -1.5853192965727714,
+            0.5900338541789212,
+            1.0754537250200582,
+            4.325709274696158,
+            1.3734448474762755,
+            1.8445974715643811,
+            -0.682917908482293,
+            0.3967950480026699,
+            0.531135219098874,
+            -0.5410382382831388,
+            0.02703993636700959,
+            -0.16086390327267985,
+            1.511529940368611,
+            0.3842433142566663,
+            -1.2586500084125245,
+            0.98990577693528,
+            -0.0028186618085564623,
+            0.47353242907877596
+          ],
+          "previous": [
+            0.012548889612029426,
+            0.550610523859778,
+            -0.029691186413518828,
+            0.40745759348031463,
+            0.7255233612335815,
+            0.9581070726245701,
+            0.5633522976326962,
+            0.7032574077046527,
+            -1.6237212449735272,
+            -1.1011109543811088,
+            -0.9386583399670074,
+            -1.4481880968390777,
+            -0.198275826082324,
+            0.8128385949696049,
+            -2.810871637702825,
+            -0.4242759357870733,
+            -0.3884460132446362,
+            -0.258614592193295
+          ],
+          "ground_force": [
+            [
+              0.22952443102082548,
+              -9.212536571792212,
+              66.85745445634862
+            ],
+            [
+              6.710047294017552,
+              -1.270886691425015,
+              10.506677242382947
+            ],
+            [
+              -5.063864780006094,
+              13.112356553312841,
+              63.93263975811275
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "phase": {
+            "phase": "SUSTAIN",
+            "changed": false,
+            "owns_final_recovery_command": true,
+            "release_time_s": 2.75,
+            "first_ground_time_s": 3.0,
+            "ground_contacts": [
+              true,
+              true,
+              true,
+              false
+            ],
+            "currently_loaded": [
+              true,
+              true,
+              true,
+              false
+            ],
+            "phase_settled_duration_s": 0.5100002288818359,
+            "control_sample_stable_duration_s": 0.0,
+            "formal_recovery_success_not_inferred": true
+          },
+          "case": 65,
+          "tick": 442,
+          "time_s": 4.420000076293945,
+          "state_origin": "model_prefix_not_native"
+        }
+      },
+      "prefix_steps": {
+        "27:274": 100,
+        "65:275": 167
+      },
+      "original_actual_initial_states": {
+        "27:274": {
+          "q": [
+            0.6916506886482239,
+            -0.09998995810747147,
+            0.7005031704902649,
+            0.03777401484720868,
+            0.2044930885029501,
+            0.035960040633534106,
+            0.9774776601204153,
+            -0.1215035617351532,
+            1.3945811986923218,
+            -2.684570074081421,
+            0.14030183851718903,
+            1.3346281051635742,
+            -2.678372383117676,
+            -0.13923442363739014,
+            1.1161167621612549,
+            -2.3753340244293213,
+            0.16509588062763214,
+            1.0961050987243652,
+            -2.3571314811706543,
+            -1.4477416276931763,
+            1.0597357749938965,
+            -2.141777515411377,
+            -1.4010299444198608,
+            -1.177808165550232,
+            -0.6683774590492249
+          ],
+          "v": [
+            -0.1551995636645486,
+            -0.2935509319046629,
+            0.4366529073115921,
+            -2.8723985630211355,
+            0.30473033222393037,
+            0.35702516309657195,
+            0.6142035126686096,
+            -0.5014247894287109,
+            -1.1418836116790771,
+            -0.9372311234474182,
+            0.009459191933274269,
+            0.4116746783256531,
+            -0.2391805201768875,
+            -0.8480850458145142,
+            -1.12666916847229,
+            -0.3204568028450012,
+            -0.04958534985780716,
+            -1.0510448217391968,
+            -2.088299512863159,
+            3.355164051055908,
+            3.419346570968628,
+            3.467054843902588,
+            -0.3717566430568695,
+            -2.331681966781616
+          ],
+          "previous": [
+            -0.12016355991363525,
+            0.05371904373168945,
+            -0.17667841911315918,
+            0.14606118202209473,
+            1.3904122114181519,
+            1.3895481824874878,
+            1.0740795135498047,
+            1.0887107849121094,
+            -2.707505941390991,
+            -2.686739921569824,
+            -2.4125120639801025,
+            -2.3939623832702637,
+            -1.552290678024292,
+            1.2795246839523315,
+            -1.944797396659851,
+            -1.2444238662719727,
+            -1.215775489807129,
+            -0.7833646535873413
+          ],
+          "ground_force": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "case": 27,
+          "tick": 274,
+          "time_s": 2.740000009536743,
+          "phase": {
+            "phase": "AIR_PREPARE",
+            "changed": true,
+            "owns_final_recovery_command": true,
+            "release_time_s": 2.740000009536743,
+            "first_ground_time_s": null,
+            "ground_contacts": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "currently_loaded": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "phase_settled_duration_s": 0.0,
+            "control_sample_stable_duration_s": 0.0,
+            "formal_recovery_success_not_inferred": true
+          }
+        },
+        "65:275": {
+          "q": [
+            0.6851754784584045,
+            -0.08659890294075012,
+            0.6947834491729736,
+            0.0002883464882112564,
+            0.1900605943278001,
+            0.019681559541688248,
+            0.9815750218674439,
+            -0.14789628982543945,
+            1.3768550157546997,
+            -2.6847381591796875,
+            0.11103548109531403,
+            1.3585622310638428,
+            -2.6864213943481445,
+            -0.18306303024291992,
+            1.0870057344436646,
+            -2.3700573444366455,
+            0.14462877810001373,
+            1.1015188694000244,
+            -2.362508535385132,
+            -1.4254517555236816,
+            1.2783952951431274,
+            -2.3148889541625977,
+            -1.2914401292800903,
+            -1.1860219240188599,
+            -0.5525464415550232
+          ],
+          "v": [
+            -0.13105223259308296,
+            -0.32735933246310966,
+            0.3960894649406445,
+            -1.6987213861218473,
+            0.35156573212031944,
+            0.2974394493290785,
+            1.3100523948669434,
+            -0.04399655759334564,
+            -1.3677918910980225,
+            0.5720439553260803,
+            -0.16671250760555267,
+            0.17878668010234833,
+            1.8632557392120361,
+            -0.24592843651771545,
+            -1.011350393295288,
+            -0.27262282371520996,
+            -0.5013712644577026,
+            -0.09683484584093094,
+            -1.0546566247940063,
+            1.3036603927612305,
+            3.2790615558624268,
+            3.9984402656555176,
+            -0.49303269386291504,
+            -3.7272982597351074
+          ],
+          "previous": [
+            -0.1089661717414856,
+            0.07705283164978027,
+            -0.1610417366027832,
+            0.13678467273712158,
+            1.3990565538406372,
+            1.3796943426132202,
+            1.0720093250274658,
+            1.06060791015625,
+            -2.716764450073242,
+            -2.6979379653930664,
+            -2.392244338989258,
+            -2.3674368858337402,
+            -1.4776309728622437,
+            1.3824838399887085,
+            -2.1320176124572754,
+            -1.10017728805542,
+            -1.21999990940094,
+            -0.73380446434021
+          ],
+          "ground_force": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "case": 65,
+          "tick": 275,
+          "time_s": 2.75,
+          "phase": {
+            "phase": "AIR_PREPARE",
+            "changed": true,
+            "owns_final_recovery_command": true,
+            "release_time_s": 2.75,
+            "first_ground_time_s": null,
+            "ground_contacts": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "currently_loaded": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "phase_settled_duration_s": 0.0,
+            "control_sample_stable_duration_s": 0.0,
+            "formal_recovery_success_not_inferred": true
+          }
+        }
+      },
+      "native_state_teleport": false,
+      "future_native_commands_used": false,
+      "training": false,
+      "workers": 4,
+      "max_seconds": 1800,
+      "all_candidates_substeps": 160,
+      "physical_limits_changed": false,
+      "prefix_checked_at_substeps": 160,
+      "prefix_preservation": "exact previously checked commands and predicted states"
+    },
+    "status": {
+      "state": "SEARCHING_FINE_PREFIX_CONTINUATIONS",
+      "pid": 210029,
+      "completed_candidates": 0
+    },
+    "continuation": {
+      "state": "WAITING_VERIFIED_CURRENT_SEARCH",
+      "pid": 210092,
+      "time_utc": "2026-11-08T20:35:13.975304+00:00",
+      "search_pid": 210029
+    },
+    "formal_verify": {
+      "goal_id": "G07",
+      "status": "FAILED",
+      "contract_sha256": "66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807",
+      "checks": {
+        "G00": {
+          "passed": false,
+          "errors": [
+            "Missing or empty artifact: reports/G00/native_train/checkpoint.pt"
+          ]
+        },
+        "G01": {
+          "passed": false,
+          "errors": [
+            "Dependency did not pass: G00",
+            "Path escapes workspace: assets/quadsmash_standard_v2.usd",
+            "Path escapes workspace: assets/vendor/piper_isaac_sim/piper_description/urdf/piper_no_gripper_description.urdf"
+          ]
+        },
+        "G02": {
+          "passed": false,
+          "errors": [
+            "Dependency did not pass: G01"
+          ]
+        },
+        "G03": {
+          "passed": false,
+          "errors": [
+            "Dependency did not pass: G02",
+            "Missing or empty artifact: reports/G03/native_20261022T041355_436993/train/checkpoint.pt",
+            "Missing or empty artifact: reports/G03/native_20261022T041355_436993/train/continuation_reference.pt",
+            "Missing or empty artifact: reports/G03/native_20261022T041355_436993/reload/checkpoint.pt",
+            "Missing or empty artifact: reports/G03/native_20261022T041355_436993/reload/continuation_reference.pt",
+            "Missing or empty artifact: reports/G03/native_20261022T041355_436993/interrupt/checkpoint.pt",
+            "Missing or empty artifact: reports/G03/native_20261022T041355_436993/interrupt/continuation_reference.pt",
+            "Missing or empty artifact: reports/G03/native_20261022T041355_436993/resume_interrupt/checkpoint.pt",
+            "Missing or empty artifact: reports/G03/native_20261022T041355_436993/resume_interrupt/continuation_reference.pt"
+          ]
+        },
+        "G04": {
+          "passed": false,
+          "errors": [
+            "Dependency did not pass: G03",
+            "Missing or empty artifact: artifacts/G04/policy.pt",
+            "Missing or empty artifact: artifacts/G04/autonomous_actor/actor.pt",
+            "Missing or empty artifact: artifacts/G04/autonomous_actor/interface.json"
+          ]
+        },
+        "G05": {
+          "passed": false,
+          "errors": [
+            "Dependency did not pass: G04"
+          ]
+        },
+        "G06": {
+          "passed": false,
+          "errors": [
+            "Dependency did not pass: G05"
+          ]
+        },
+        "G07": {
+          "passed": false,
+          "errors": [
+            "Dependency did not pass: G06",
+            "Missing or invalid evidence: [Errno 2] No such file or directory: '/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/G07/evidence.json'"
+          ]
+        }
+      },
+      "scope": "Structure, hashes, dependencies and thresholds only; not simulation authenticity or GPU budget enforcement."
+    },
+    "native_success": false,
+    "valid_expert_labels": false
+  }
 }
