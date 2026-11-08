@@ -1,0 +1,153 @@
+{
+  "cases": [
+    {
+      "case": 12,
+      "selected_source_key": "7adf54553dff45d3f5f0e099e3e50a9919a82b4499c1b39252f85a36fa10b2a1",
+      "selection_tick": 442,
+      "reference_steps": 358,
+      "observed_reference_steps": 358,
+      "executed_replanned_steps": 358,
+      "sources": {
+        "predictive_reference_selection:planned": 51,
+        "predictive_reference_selection:state_joint_feedback": 155,
+        "predictive_reference_selection:wbc": 114,
+        "predictive_reference_selection:half_wbc": 38
+      },
+      "selected_candidates": {
+        "planned": 51,
+        "state_joint_feedback": 155,
+        "wbc": 114,
+        "half_wbc": 38
+      },
+      "tracking": {
+        "root_position_m": {
+          "count": 358,
+          "median": 0.000966445962110903,
+          "p95": 0.0018698415461613248,
+          "maximum": 0.0019424989721720917
+        },
+        "root_orientation_rad": {
+          "count": 358,
+          "median": 0.0050077204111486,
+          "p95": 0.006771734989144102,
+          "maximum": 0.007297686675461982
+        },
+        "joint_position_max_rad": {
+          "count": 358,
+          "median": 0.006772340206751215,
+          "p95": 0.010059495881861912,
+          "maximum": 0.011262937726712163
+        },
+        "root_velocity_world_m_s": {
+          "count": 358,
+          "median": 0.0033505647915497575,
+          "p95": 0.0064899078324214855,
+          "maximum": 0.009429453860323952
+        },
+        "joint_velocity_max_rad_s": {
+          "count": 358,
+          "median": 0.036795463729492224,
+          "p95": 0.07143397243491498,
+          "maximum": 0.16660738844154793
+        },
+        "command_from_plan_max_rad": {
+          "count": 358,
+          "median": 0.008183441357530463,
+          "p95": 0.4328023481010361,
+          "maximum": 0.44603065773991935
+        }
+      },
+      "no_recorded_nonfoot_ground_force": true,
+      "final_sampled_stable_s": 3.3799996376037598,
+      "head_before_takeover": true,
+      "command_deviation_over_2e_minus6_rad_count": 307,
+      "model_reference_contact_disagreement_count": 80,
+      "no_feasible_candidate_count": 0,
+      "planned_rejection_count": 0
+    },
+    {
+      "case": 118,
+      "selected_source_key": "ec74cb0f642192e1bcdaa45837f709ca4325bbe8112431b860ad642c63b64e14",
+      "selection_tick": 338,
+      "reference_steps": 200,
+      "observed_reference_steps": 200,
+      "executed_replanned_steps": 462,
+      "sources": {
+        "predictive_reference_selection:planned": 51,
+        "predictive_reference_selection:state_joint_feedback": 126,
+        "predictive_reference_selection:half_wbc": 7,
+        "predictive_reference_selection:wbc": 16,
+        "interval_qp": 262
+      },
+      "selected_candidates": {
+        "planned": 51,
+        "state_joint_feedback": 126,
+        "half_wbc": 7,
+        "wbc": 16,
+        "null": 262
+      },
+      "tracking": {
+        "root_position_m": {
+          "count": 200,
+          "median": 0.0015643265006199877,
+          "p95": 0.0021270085125850847,
+          "maximum": 0.0025374514913139444
+        },
+        "root_orientation_rad": {
+          "count": 200,
+          "median": 0.004115279964718257,
+          "p95": 0.008302991251867878,
+          "maximum": 0.00849120468033529
+        },
+        "joint_position_max_rad": {
+          "count": 200,
+          "median": 0.011295993684861755,
+          "p95": 0.019827672397785153,
+          "maximum": 0.019998346491629404
+        },
+        "root_velocity_world_m_s": {
+          "count": 200,
+          "median": 0.003855227748160232,
+          "p95": 0.010073767628436356,
+          "maximum": 0.011438318181827263
+        },
+        "joint_velocity_max_rad_s": {
+          "count": 200,
+          "median": 0.04148171544157027,
+          "p95": 0.1061478537586538,
+          "maximum": 0.1498976240324834
+        },
+        "command_from_plan_max_rad": {
+          "count": 200,
+          "median": 0.00980335520940892,
+          "p95": 0.15483285048829729,
+          "maximum": 0.2637956983355901
+        }
+      },
+      "no_recorded_nonfoot_ground_force": true,
+      "final_sampled_stable_s": 3.4200000762939453,
+      "head_before_takeover": true,
+      "command_deviation_over_2e_minus6_rad_count": 149,
+      "model_reference_contact_disagreement_count": 52,
+      "no_feasible_candidate_count": 0,
+      "planned_rejection_count": 0
+    }
+  ],
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_native_replanned_tracking_v1.py": "13e032fd0052dbb46632987dbfba55e0caa779542561fcaf81177674cea125ab",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_capture_native_preparation_20261109_01/plan.json": "1b106fa2c2c3e9117cff64344e70f7bc0fcaa4e63052091466e98bb105a87541",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_capture_native_preparation_20261109_01/controller.json": "5988c85fc0457052969b327d5a4931ed65791d9643428047b68f1ce1deb921da",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_capture_native_preparation_20261109_01/native_audit.json": "0da2d41313ac52d8b70c80c7c4d1c9acbe2289963792d7857193b2b8499468a3",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_capture_all128_20261109_01/job.json": "fb38f61ea6d00b9464544920b0f57f17988892f6cfd373c7450745000356c148",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_native_capture_preparation_20261109/reference_library.json": "5269d9f2785ec6b343379905dcc027edc334cbc8598ae2dc92adc855c02a5b91",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_capture_all128_20261109_01/pure_control_commands.npz": "778985e3b5e3ed240c71728310ee5ea66a8c11f521f9b906189f84c096984a9c",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_capture_all128_20261109_01/pure_control_diagnostics.jsonl": "f0bc81eb14377f763bc2184d92ee728c4c94769592ad1ebd0687f99e70f9e0af"
+  },
+  "tracking_error_is_not_one_step_prediction_error": true,
+  "pre_command_state_aligned_to_previous_reference_row": true,
+  "new_native_execution": false,
+  "formal_acceptance": false,
+  "training": false,
+  "full_tracking_report": "reports/pure_control_native_replanned_tracking_20261109/tracking.json",
+  "full_tracking_report_sha256": "8a794f027cae3bdafd0ad84f3adead8795e13ccef933b66e2cd2b50bb894000a"
+}
