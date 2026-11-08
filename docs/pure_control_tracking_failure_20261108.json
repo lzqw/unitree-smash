@@ -1,0 +1,2464 @@
+{
+  "native_success": false,
+  "training": false,
+  "valid_expert_labels": false,
+  "v8_model_summary": {
+    "state": "COMPLETED_MODEL_REFERENCE_TRACKING",
+    "pid": 151962,
+    "results": {
+      "planned_then_feedback": {
+        "cases": 31,
+        "model_600ms": 31,
+        "model_1200ms": 8
+      },
+      "continuous_wbc": {
+        "cases": 31,
+        "model_600ms": 0,
+        "model_1200ms": 0
+      }
+    },
+    "wall_seconds": 65.20229033590294,
+    "native_success": false,
+    "valid_expert_labels": false
+  },
+  "v9_model_summary": {
+    "state": "COMPLETED_MODEL_REFERENCE_TRACKING",
+    "pid": 152267,
+    "results": {
+      "planned_then_feedback": {
+        "cases": 31,
+        "model_600ms": 31,
+        "model_1200ms": 8
+      },
+      "predictive_selection": {
+        "cases": 31,
+        "model_600ms": 31,
+        "model_1200ms": 8
+      }
+    },
+    "wall_seconds": 349.807902633911,
+    "native_success": false,
+    "valid_expert_labels": false
+  },
+  "v8_cases": [
+    {
+      "source_case": 10,
+      "source_key": "4f43c9573d9269fb8850864b6a133e97803d3d0408a1d046b8da163f3f7bf660",
+      "mode": "continuous_wbc",
+      "steps": 34,
+      "failure": {
+        "step": 34,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 1.1041318360854868e-05
+        },
+        "collision": {
+          "micro": 15,
+          "body": "Head_lower",
+          "gap_m": -1.1041318360854868e-05
+        },
+        "command_source": "interval_qp"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 10,
+      "source_key": "4f43c9573d9269fb8850864b6a133e97803d3d0408a1d046b8da163f3f7bf660",
+      "mode": "planned_then_feedback",
+      "steps": 72,
+      "failure": {
+        "step": 72,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.004290156457198255
+        },
+        "collision": {
+          "micro": 4,
+          "body": "Head_lower",
+          "gap_m": -9.600890458345834e-05
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 12,
+      "source_key": "411c045d19b944648bbf693d49272172897a4586b93a115d914d259963968bf2",
+      "mode": "continuous_wbc",
+      "steps": 35,
+      "failure": {
+        "step": 35,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0002990624523631063, 'exact': True, 'shape_index': 45, 'obstacle': 'net_segment_26'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 12,
+      "source_key": "411c045d19b944648bbf693d49272172897a4586b93a115d914d259963968bf2",
+      "mode": "planned_then_feedback",
+      "steps": 105,
+      "failure": {
+        "step": 105,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.002554057298986706, 'exact': True, 'shape_index': 49, 'obstacle': 'net_segment_27'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 19,
+      "source_key": "2a4e94201c66ddf51204f22ba268421e60920a02bbaab96b06bab8736a76faa7",
+      "mode": "continuous_wbc",
+      "steps": 36,
+      "failure": {
+        "step": 36,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -1.8712384898748012e-05, 'exact': True, 'shape_index': 45, 'obstacle': 'net_segment_27'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 19,
+      "source_key": "2a4e94201c66ddf51204f22ba268421e60920a02bbaab96b06bab8736a76faa7",
+      "mode": "planned_then_feedback",
+      "steps": 120,
+      "failure": null,
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 22,
+      "source_key": "5b27bfba5ad9de919a821dff74cd03a814e855993413a56ad1ee9993ce4821a6",
+      "mode": "continuous_wbc",
+      "steps": 35,
+      "failure": {
+        "step": 35,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.02083574792367223
+        },
+        "collision": {
+          "micro": 6,
+          "body": "Head_lower",
+          "gap_m": -0.0016778655905867884
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 22,
+      "source_key": "5b27bfba5ad9de919a821dff74cd03a814e855993413a56ad1ee9993ce4821a6",
+      "mode": "planned_then_feedback",
+      "steps": 85,
+      "failure": {
+        "step": 85,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0005055986485612961, 'exact': True, 'shape_index': 45, 'obstacle': 'net_segment_24'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 24,
+      "source_key": "8eac6b7bb53d7b69b4140948c0ebb86c31ac458ac28e032cb086954c7b73bbc7",
+      "mode": "continuous_wbc",
+      "steps": 36,
+      "failure": {
+        "step": 36,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.029431247169332618
+        },
+        "collision": {
+          "micro": 0,
+          "body": "Head_lower",
+          "gap_m": -0.0014134242784857726
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 24,
+      "source_key": "8eac6b7bb53d7b69b4140948c0ebb86c31ac458ac28e032cb086954c7b73bbc7",
+      "mode": "planned_then_feedback",
+      "steps": 83,
+      "failure": {
+        "step": 83,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.000995263874667353, 'exact': True, 'shape_index': 49, 'obstacle': 'net_segment_26'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 28,
+      "source_key": "3b408272f9072117dc04f57664375813e9b31eb123ca63149c7aa80b9fc3a24f",
+      "mode": "continuous_wbc",
+      "steps": 36,
+      "failure": {
+        "step": 36,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.02985095516668758
+        },
+        "collision": {
+          "micro": 0,
+          "body": "Head_lower",
+          "gap_m": -0.0015704300328651041
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 28,
+      "source_key": "3b408272f9072117dc04f57664375813e9b31eb123ca63149c7aa80b9fc3a24f",
+      "mode": "planned_then_feedback",
+      "steps": 90,
+      "failure": {
+        "step": 90,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -5.910305490742802e-05, 'exact': True, 'shape_index': 49, 'obstacle': 'net_segment_23'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 32,
+      "source_key": "4f98b382187be97de7d7f5bf561080bceb0e73d1990f0dcdc73a0677c0955653",
+      "mode": "continuous_wbc",
+      "steps": 34,
+      "failure": {
+        "step": 34,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.026961722328042018
+        },
+        "collision": {
+          "micro": 0,
+          "body": "Head_lower",
+          "gap_m": -0.0004027985653113353
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 32,
+      "source_key": "4f98b382187be97de7d7f5bf561080bceb0e73d1990f0dcdc73a0677c0955653",
+      "mode": "planned_then_feedback",
+      "steps": 96,
+      "failure": {
+        "step": 96,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.00588142500782822
+        },
+        "collision": {
+          "micro": 8,
+          "body": "Head_lower",
+          "gap_m": -0.00025003249977102737
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 33,
+      "source_key": "dbea6a747ab697c54b8fc7e21b649a569b629178e231d004a752c42eeebde142",
+      "mode": "continuous_wbc",
+      "steps": 34,
+      "failure": {
+        "step": 34,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.01607889959871931
+        },
+        "collision": {
+          "micro": 7,
+          "body": "Head_lower",
+          "gap_m": -0.0006078622324070942
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 33,
+      "source_key": "dbea6a747ab697c54b8fc7e21b649a569b629178e231d004a752c42eeebde142",
+      "mode": "planned_then_feedback",
+      "steps": 68,
+      "failure": {
+        "step": 68,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.00202913869917086
+        },
+        "collision": {
+          "micro": 12,
+          "body": "Head_lower",
+          "gap_m": -0.00013479783823083097
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 36,
+      "source_key": "d06a3a179ddc8e9553d41aeb102fe69b9d7990a5ee87edc5457a51dcf2da877c",
+      "mode": "continuous_wbc",
+      "steps": 35,
+      "failure": {
+        "step": 35,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.019734525917386718
+        },
+        "collision": {
+          "micro": 4,
+          "body": "Head_lower",
+          "gap_m": -0.0007537802991945258
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 36,
+      "source_key": "d06a3a179ddc8e9553d41aeb102fe69b9d7990a5ee87edc5457a51dcf2da877c",
+      "mode": "planned_then_feedback",
+      "steps": 120,
+      "failure": null,
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 43,
+      "source_key": "f6731d9a45f2b0769a8eb4cfb163ffd70c2ebf9a20a73cd0a69551000333b674",
+      "mode": "continuous_wbc",
+      "steps": 35,
+      "failure": {
+        "step": 35,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.023164162351972092
+        },
+        "collision": {
+          "micro": 3,
+          "body": "Head_lower",
+          "gap_m": -0.00027227874345835124
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 43,
+      "source_key": "f6731d9a45f2b0769a8eb4cfb163ffd70c2ebf9a20a73cd0a69551000333b674",
+      "mode": "planned_then_feedback",
+      "steps": 64,
+      "failure": {
+        "step": 64,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.010563742837539566
+        },
+        "collision": {
+          "micro": 1,
+          "body": "Head_lower",
+          "gap_m": -0.0005861391192952953
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 50,
+      "source_key": "d1a2bfc9373b3f081f8149164e24da0dce1930e4f86d73739f8fcbf634bdce6e",
+      "mode": "continuous_wbc",
+      "steps": 35,
+      "failure": {
+        "step": 35,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.020584228421258254
+        },
+        "collision": {
+          "micro": 5,
+          "body": "Head_lower",
+          "gap_m": -0.0002266428595176645
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 50,
+      "source_key": "d1a2bfc9373b3f081f8149164e24da0dce1930e4f86d73739f8fcbf634bdce6e",
+      "mode": "planned_then_feedback",
+      "steps": 71,
+      "failure": {
+        "step": 71,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.003172041728839961
+        },
+        "collision": {
+          "micro": 11,
+          "body": "Head_lower",
+          "gap_m": -0.0004928723303071134
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 55,
+      "source_key": "c4f8c2802564df65b92d19ce85a7c2519bf2e7f762028718e54e3de662ef3f64",
+      "mode": "continuous_wbc",
+      "steps": 34,
+      "failure": {
+        "step": 34,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.020777404533640347
+        },
+        "collision": {
+          "micro": 5,
+          "body": "Head_lower",
+          "gap_m": -0.0013914871816887026
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 55,
+      "source_key": "c4f8c2802564df65b92d19ce85a7c2519bf2e7f762028718e54e3de662ef3f64",
+      "mode": "planned_then_feedback",
+      "steps": 75,
+      "failure": {
+        "step": 75,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.001594500047198924
+        },
+        "collision": {
+          "micro": 8,
+          "body": "Head_lower",
+          "gap_m": -0.0001380758557324932
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 58,
+      "source_key": "27f9ee15790e8529a6b8ba96b113f7e8f3b512afd3cb11c33cde4aa359fe51e5",
+      "mode": "continuous_wbc",
+      "steps": 35,
+      "failure": {
+        "step": 35,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.017861858250934108
+        },
+        "collision": {
+          "micro": 6,
+          "body": "Head_lower",
+          "gap_m": -0.001136485268417732
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 58,
+      "source_key": "27f9ee15790e8529a6b8ba96b113f7e8f3b512afd3cb11c33cde4aa359fe51e5",
+      "mode": "planned_then_feedback",
+      "steps": 95,
+      "failure": {
+        "step": 95,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0012869865441536175, 'exact': True, 'shape_index': 48, 'obstacle': 'net_segment_30'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 60,
+      "source_key": "1dce1a503131d9a6723c7d6404ea48b869d9c25e1da1f28b1b9c45e2f3b2d8a5",
+      "mode": "continuous_wbc",
+      "steps": 35,
+      "failure": {
+        "step": 35,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.01739994491491375
+        },
+        "collision": {
+          "micro": 6,
+          "body": "Head_lower",
+          "gap_m": -0.0006814193396018214
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 60,
+      "source_key": "1dce1a503131d9a6723c7d6404ea48b869d9c25e1da1f28b1b9c45e2f3b2d8a5",
+      "mode": "planned_then_feedback",
+      "steps": 120,
+      "failure": null,
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 64,
+      "source_key": "fc1dec0db746123096c455e3a2b79061803b2651f6490e2bb5167c2ece36d315",
+      "mode": "continuous_wbc",
+      "steps": 34,
+      "failure": {
+        "step": 34,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.019541143111652268
+        },
+        "collision": {
+          "micro": 6,
+          "body": "Head_lower",
+          "gap_m": -0.00027111968366552025
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 64,
+      "source_key": "fc1dec0db746123096c455e3a2b79061803b2651f6490e2bb5167c2ece36d315",
+      "mode": "planned_then_feedback",
+      "steps": 120,
+      "failure": null,
+      "longest_model_stable_s": 0.02,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 68,
+      "source_key": "b03e194df76eae7fe0b5c078f7278a4091e8894eba321e479f14d9f009811174",
+      "mode": "continuous_wbc",
+      "steps": 35,
+      "failure": {
+        "step": 35,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.01038028649912505
+        },
+        "collision": {
+          "micro": 10,
+          "body": "base",
+          "gap_m": -3.587531913382125e-05
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 68,
+      "source_key": "b03e194df76eae7fe0b5c078f7278a4091e8894eba321e479f14d9f009811174",
+      "mode": "planned_then_feedback",
+      "steps": 92,
+      "failure": {
+        "step": 92,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.00016770147562652658, 'exact': True, 'shape_index': 48, 'obstacle': 'net_segment_29'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 74,
+      "source_key": "b247b313c35c7f2f79bf0dca42e6336b6c710532936aef9ca9a31610e42b8ed0",
+      "mode": "continuous_wbc",
+      "steps": 33,
+      "failure": {
+        "step": 33,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.011117315011190627
+        },
+        "collision": {
+          "micro": 10,
+          "body": "Head_lower",
+          "gap_m": -0.0011106980505336678
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 74,
+      "source_key": "b247b313c35c7f2f79bf0dca42e6336b6c710532936aef9ca9a31610e42b8ed0",
+      "mode": "planned_then_feedback",
+      "steps": 98,
+      "failure": {
+        "step": 98,
+        "reason": "model_rejected",
+        "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 4.2661232857454934e-07, 'friction_cone': 0.0, 'tangent_fixed_point': 1.1894585932870072e-07}, 'box_violation': 0.0, 'box_fixed_point': 0.0}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 75,
+      "source_key": "4794635d317bdd880fbcd4394cc657f2e768b5da03752499b29a2b974238530f",
+      "mode": "continuous_wbc",
+      "steps": 36,
+      "failure": {
+        "step": 36,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.023181421869191407
+        },
+        "collision": {
+          "micro": 5,
+          "body": "Head_lower",
+          "gap_m": -0.001693792610288361
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 75,
+      "source_key": "4794635d317bdd880fbcd4394cc657f2e768b5da03752499b29a2b974238530f",
+      "mode": "planned_then_feedback",
+      "steps": 71,
+      "failure": {
+        "step": 71,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.002356349268479771, 'exact': True, 'shape_index': 49, 'obstacle': 'net_segment_21'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 80,
+      "source_key": "2bea32faaeb6bb314a2b32189cdcb0479f546eb348f04f2ed472a7116b539469",
+      "mode": "continuous_wbc",
+      "steps": 34,
+      "failure": {
+        "step": 34,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.008971296379445985
+        },
+        "collision": {
+          "micro": 11,
+          "body": "Head_lower",
+          "gap_m": -0.001278969318638322
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 80,
+      "source_key": "2bea32faaeb6bb314a2b32189cdcb0479f546eb348f04f2ed472a7116b539469",
+      "mode": "planned_then_feedback",
+      "steps": 85,
+      "failure": {
+        "step": 85,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.0036238657988610715
+        },
+        "collision": {
+          "micro": 7,
+          "body": "Head_lower",
+          "gap_m": -9.269645854738384e-05
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 81,
+      "source_key": "5e351efdb8c7503ba7f26d2715ce1689ba8b73f0f9b8b42f21d6b1de6e8a9ea6",
+      "mode": "continuous_wbc",
+      "steps": 35,
+      "failure": {
+        "step": 35,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.014365687368962446
+        },
+        "collision": {
+          "micro": 8,
+          "body": "Head_lower",
+          "gap_m": -0.0008785273757678583
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 81,
+      "source_key": "5e351efdb8c7503ba7f26d2715ce1689ba8b73f0f9b8b42f21d6b1de6e8a9ea6",
+      "mode": "planned_then_feedback",
+      "steps": 83,
+      "failure": {
+        "step": 83,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0016754241090948451, 'exact': True, 'shape_index': 47, 'obstacle': 'net_segment_27'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 82,
+      "source_key": "a8e3c72dbcf98735c63616343e1207587e59c3e101166c32fcfc3d29caf78c8d",
+      "mode": "continuous_wbc",
+      "steps": 35,
+      "failure": {
+        "step": 35,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.010184732463108574
+        },
+        "collision": {
+          "micro": 10,
+          "body": "Head_lower",
+          "gap_m": -0.00030124129234314345
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 82,
+      "source_key": "a8e3c72dbcf98735c63616343e1207587e59c3e101166c32fcfc3d29caf78c8d",
+      "mode": "planned_then_feedback",
+      "steps": 103,
+      "failure": {
+        "step": 103,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0007955548931525675, 'exact': True, 'shape_index': 48, 'obstacle': 'net_segment_30'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 83,
+      "source_key": "a2489f5eef84824287f0b962af80195ed9247d3e6ac88406fb69bd127e5257a1",
+      "mode": "continuous_wbc",
+      "steps": 36,
+      "failure": {
+        "step": 36,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.029302646943477326
+        },
+        "collision": {
+          "micro": 2,
+          "body": "base",
+          "gap_m": -0.00014248104218970992
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 83,
+      "source_key": "a2489f5eef84824287f0b962af80195ed9247d3e6ac88406fb69bd127e5257a1",
+      "mode": "planned_then_feedback",
+      "steps": 87,
+      "failure": {
+        "step": 87,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.002386741651100493, 'exact': True, 'shape_index': 48, 'obstacle': 'net_segment_39'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 86,
+      "source_key": "8acd0ab6e9e6df638707d239a348c7741894c9612a812f746d23206055f89abc",
+      "mode": "continuous_wbc",
+      "steps": 32,
+      "failure": {
+        "step": 32,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 3.2250661973584616e-05
+        },
+        "collision": {
+          "micro": 15,
+          "body": "Head_lower",
+          "gap_m": -3.2250661973584616e-05
+        },
+        "command_source": "interval_qp"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 86,
+      "source_key": "8acd0ab6e9e6df638707d239a348c7741894c9612a812f746d23206055f89abc",
+      "mode": "planned_then_feedback",
+      "steps": 96,
+      "failure": {
+        "step": 96,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0002075844234284397, 'exact': True, 'shape_index': 48, 'obstacle': 'net_segment_34'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 94,
+      "source_key": "acee09a8de584a6f817f3f44cdffbf8aa453344dc8a44441a76abbf01fca29d6",
+      "mode": "continuous_wbc",
+      "steps": 35,
+      "failure": {
+        "step": 35,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.019316865229822525
+        },
+        "collision": {
+          "micro": 6,
+          "body": "Head_lower",
+          "gap_m": -0.0005537734203995698
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 94,
+      "source_key": "acee09a8de584a6f817f3f44cdffbf8aa453344dc8a44441a76abbf01fca29d6",
+      "mode": "planned_then_feedback",
+      "steps": 72,
+      "failure": {
+        "step": 72,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.007496292826028164
+        },
+        "collision": {
+          "micro": 2,
+          "body": "Head_lower",
+          "gap_m": -0.00024385364205357918
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 100,
+      "source_key": "a5e15e994779d6e064bbf7745d371977e61f0c048bb485397fcb84ce738e8c25",
+      "mode": "continuous_wbc",
+      "steps": 33,
+      "failure": {
+        "step": 33,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.02482668868918149
+        },
+        "collision": {
+          "micro": 3,
+          "body": "Head_lower",
+          "gap_m": -0.0009098035330204826
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 100,
+      "source_key": "a5e15e994779d6e064bbf7745d371977e61f0c048bb485397fcb84ce738e8c25",
+      "mode": "planned_then_feedback",
+      "steps": 89,
+      "failure": {
+        "step": 89,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.001055217241358787, 'exact': True, 'shape_index': 49, 'obstacle': 'net_segment_36'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 103,
+      "source_key": "075ef48996990b3c0376dd90ce89fad63758f5eb972105ad129f1dd1f9c4ed48",
+      "mode": "continuous_wbc",
+      "steps": 35,
+      "failure": {
+        "step": 35,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.023589714246257443
+        },
+        "collision": {
+          "micro": 4,
+          "body": "Head_lower",
+          "gap_m": -0.0009157722981669933
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 103,
+      "source_key": "075ef48996990b3c0376dd90ce89fad63758f5eb972105ad129f1dd1f9c4ed48",
+      "mode": "planned_then_feedback",
+      "steps": 120,
+      "failure": null,
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 118,
+      "source_key": "1f570570bddceedccc8db8b8462616fdbb5700d1aaaf756853de8c2fecc43377",
+      "mode": "continuous_wbc",
+      "steps": 35,
+      "failure": {
+        "step": 35,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.02443171833250392
+        },
+        "collision": {
+          "micro": 3,
+          "body": "Head_lower",
+          "gap_m": -0.0016012123388478988
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 118,
+      "source_key": "1f570570bddceedccc8db8b8462616fdbb5700d1aaaf756853de8c2fecc43377",
+      "mode": "planned_then_feedback",
+      "steps": 120,
+      "failure": null,
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 119,
+      "source_key": "13e40a0b8350f623e04001fda4a91663efd131f3cc5bbc77683c8d1b0b5ef919",
+      "mode": "continuous_wbc",
+      "steps": 35,
+      "failure": {
+        "step": 35,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.01477163483361995
+        },
+        "collision": {
+          "micro": 8,
+          "body": "Head_lower",
+          "gap_m": -0.001582103174465152
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 119,
+      "source_key": "13e40a0b8350f623e04001fda4a91663efd131f3cc5bbc77683c8d1b0b5ef919",
+      "mode": "planned_then_feedback",
+      "steps": 62,
+      "failure": {
+        "step": 62,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.006903450895572892
+        },
+        "collision": {
+          "micro": 0,
+          "body": "Head_lower",
+          "gap_m": -0.00030076859559678704
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 120,
+      "source_key": "3996f8049d623034e409ca8547997528da2ef777d3f2242544e4422bca3ced85",
+      "mode": "continuous_wbc",
+      "steps": 35,
+      "failure": {
+        "step": 35,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.022849325825508984
+        },
+        "collision": {
+          "micro": 5,
+          "body": "base",
+          "gap_m": -0.0015676736816744585
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 120,
+      "source_key": "3996f8049d623034e409ca8547997528da2ef777d3f2242544e4422bca3ced85",
+      "mode": "planned_then_feedback",
+      "steps": 120,
+      "failure": null,
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 121,
+      "source_key": "2d512965c97b6361d2770611b2c33c80ab10073a0125d6e1c4ffacab16ef427a",
+      "mode": "continuous_wbc",
+      "steps": 34,
+      "failure": {
+        "step": 34,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.01705130702369191
+        },
+        "collision": {
+          "micro": 7,
+          "body": "Head_lower",
+          "gap_m": -0.0013992776057633743
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 121,
+      "source_key": "2d512965c97b6361d2770611b2c33c80ab10073a0125d6e1c4ffacab16ef427a",
+      "mode": "planned_then_feedback",
+      "steps": 106,
+      "failure": {
+        "step": 106,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.011823707372921918
+        },
+        "collision": {
+          "micro": 0,
+          "body": "Head_lower",
+          "gap_m": -0.0005075565019883183
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 123,
+      "source_key": "abcad11be74fb0332038fd946fb9b54c2c8ea8aedf5417af00692e9bc7c2c226",
+      "mode": "continuous_wbc",
+      "steps": 36,
+      "failure": {
+        "step": 36,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.02551946107266069
+        },
+        "collision": {
+          "micro": 4,
+          "body": "base",
+          "gap_m": -0.0013756389240512645
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 123,
+      "source_key": "abcad11be74fb0332038fd946fb9b54c2c8ea8aedf5417af00692e9bc7c2c226",
+      "mode": "planned_then_feedback",
+      "steps": 120,
+      "failure": null,
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    }
+  ],
+  "v9_cases": [
+    {
+      "source_case": 22,
+      "source_key": "5b27bfba5ad9de919a821dff74cd03a814e855993413a56ad1ee9993ce4821a6",
+      "mode": "planned_then_feedback",
+      "steps": 85,
+      "failure": {
+        "step": 85,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0005055986485612961, 'exact': True, 'shape_index': 45, 'obstacle': 'net_segment_24'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 55,
+      "source_key": "c4f8c2802564df65b92d19ce85a7c2519bf2e7f762028718e54e3de662ef3f64",
+      "mode": "planned_then_feedback",
+      "steps": 75,
+      "failure": {
+        "step": 75,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.001594500047198924
+        },
+        "collision": {
+          "micro": 8,
+          "body": "Head_lower",
+          "gap_m": -0.0001380758557324932
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 118,
+      "source_key": "1f570570bddceedccc8db8b8462616fdbb5700d1aaaf756853de8c2fecc43377",
+      "mode": "planned_then_feedback",
+      "steps": 120,
+      "failure": null,
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 12,
+      "source_key": "411c045d19b944648bbf693d49272172897a4586b93a115d914d259963968bf2",
+      "mode": "planned_then_feedback",
+      "steps": 105,
+      "failure": {
+        "step": 105,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.002554057298986706, 'exact': True, 'shape_index': 49, 'obstacle': 'net_segment_27'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 68,
+      "source_key": "b03e194df76eae7fe0b5c078f7278a4091e8894eba321e479f14d9f009811174",
+      "mode": "planned_then_feedback",
+      "steps": 92,
+      "failure": {
+        "step": 92,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.00016770147562652658, 'exact': True, 'shape_index': 48, 'obstacle': 'net_segment_29'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 64,
+      "source_key": "fc1dec0db746123096c455e3a2b79061803b2651f6490e2bb5167c2ece36d315",
+      "mode": "planned_then_feedback",
+      "steps": 120,
+      "failure": null,
+      "longest_model_stable_s": 0.02,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 32,
+      "source_key": "4f98b382187be97de7d7f5bf561080bceb0e73d1990f0dcdc73a0677c0955653",
+      "mode": "planned_then_feedback",
+      "steps": 96,
+      "failure": {
+        "step": 96,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.00588142500782822
+        },
+        "collision": {
+          "micro": 8,
+          "body": "Head_lower",
+          "gap_m": -0.00025003249977102737
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 75,
+      "source_key": "4794635d317bdd880fbcd4394cc657f2e768b5da03752499b29a2b974238530f",
+      "mode": "planned_then_feedback",
+      "steps": 71,
+      "failure": {
+        "step": 71,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.002356349268479771, 'exact': True, 'shape_index': 49, 'obstacle': 'net_segment_21'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 58,
+      "source_key": "27f9ee15790e8529a6b8ba96b113f7e8f3b512afd3cb11c33cde4aa359fe51e5",
+      "mode": "planned_then_feedback",
+      "steps": 95,
+      "failure": {
+        "step": 95,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0012869865441536175, 'exact': True, 'shape_index': 48, 'obstacle': 'net_segment_30'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 24,
+      "source_key": "8eac6b7bb53d7b69b4140948c0ebb86c31ac458ac28e032cb086954c7b73bbc7",
+      "mode": "planned_then_feedback",
+      "steps": 83,
+      "failure": {
+        "step": 83,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.000995263874667353, 'exact': True, 'shape_index': 49, 'obstacle': 'net_segment_26'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 74,
+      "source_key": "b247b313c35c7f2f79bf0dca42e6336b6c710532936aef9ca9a31610e42b8ed0",
+      "mode": "planned_then_feedback",
+      "steps": 98,
+      "failure": {
+        "step": 98,
+        "reason": "model_rejected",
+        "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 4.2661232857454934e-07, 'friction_cone': 0.0, 'tangent_fixed_point': 1.1894585932870072e-07}, 'box_violation': 0.0, 'box_fixed_point': 0.0}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 81,
+      "source_key": "5e351efdb8c7503ba7f26d2715ce1689ba8b73f0f9b8b42f21d6b1de6e8a9ea6",
+      "mode": "planned_then_feedback",
+      "steps": 83,
+      "failure": {
+        "step": 83,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0016754241090948451, 'exact': True, 'shape_index': 47, 'obstacle': 'net_segment_27'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 86,
+      "source_key": "8acd0ab6e9e6df638707d239a348c7741894c9612a812f746d23206055f89abc",
+      "mode": "planned_then_feedback",
+      "steps": 96,
+      "failure": {
+        "step": 96,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0002075844234284397, 'exact': True, 'shape_index': 48, 'obstacle': 'net_segment_34'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 50,
+      "source_key": "d1a2bfc9373b3f081f8149164e24da0dce1930e4f86d73739f8fcbf634bdce6e",
+      "mode": "planned_then_feedback",
+      "steps": 71,
+      "failure": {
+        "step": 71,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.003172041728839961
+        },
+        "collision": {
+          "micro": 11,
+          "body": "Head_lower",
+          "gap_m": -0.0004928723303071134
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 103,
+      "source_key": "075ef48996990b3c0376dd90ce89fad63758f5eb972105ad129f1dd1f9c4ed48",
+      "mode": "planned_then_feedback",
+      "steps": 120,
+      "failure": null,
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 43,
+      "source_key": "f6731d9a45f2b0769a8eb4cfb163ffd70c2ebf9a20a73cd0a69551000333b674",
+      "mode": "planned_then_feedback",
+      "steps": 64,
+      "failure": {
+        "step": 64,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.010563742837539566
+        },
+        "collision": {
+          "micro": 1,
+          "body": "Head_lower",
+          "gap_m": -0.0005861391192952953
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 60,
+      "source_key": "1dce1a503131d9a6723c7d6404ea48b869d9c25e1da1f28b1b9c45e2f3b2d8a5",
+      "mode": "planned_then_feedback",
+      "steps": 120,
+      "failure": null,
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 100,
+      "source_key": "a5e15e994779d6e064bbf7745d371977e61f0c048bb485397fcb84ce738e8c25",
+      "mode": "planned_then_feedback",
+      "steps": 89,
+      "failure": {
+        "step": 89,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.001055217241358787, 'exact': True, 'shape_index': 49, 'obstacle': 'net_segment_36'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 119,
+      "source_key": "13e40a0b8350f623e04001fda4a91663efd131f3cc5bbc77683c8d1b0b5ef919",
+      "mode": "planned_then_feedback",
+      "steps": 62,
+      "failure": {
+        "step": 62,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.006903450895572892
+        },
+        "collision": {
+          "micro": 0,
+          "body": "Head_lower",
+          "gap_m": -0.00030076859559678704
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 19,
+      "source_key": "2a4e94201c66ddf51204f22ba268421e60920a02bbaab96b06bab8736a76faa7",
+      "mode": "planned_then_feedback",
+      "steps": 120,
+      "failure": null,
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 121,
+      "source_key": "2d512965c97b6361d2770611b2c33c80ab10073a0125d6e1c4ffacab16ef427a",
+      "mode": "planned_then_feedback",
+      "steps": 106,
+      "failure": {
+        "step": 106,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.011823707372921918
+        },
+        "collision": {
+          "micro": 0,
+          "body": "Head_lower",
+          "gap_m": -0.0005075565019883183
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 83,
+      "source_key": "a2489f5eef84824287f0b962af80195ed9247d3e6ac88406fb69bd127e5257a1",
+      "mode": "planned_then_feedback",
+      "steps": 87,
+      "failure": {
+        "step": 87,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.002386741651100493, 'exact': True, 'shape_index': 48, 'obstacle': 'net_segment_39'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 120,
+      "source_key": "3996f8049d623034e409ca8547997528da2ef777d3f2242544e4422bca3ced85",
+      "mode": "planned_then_feedback",
+      "steps": 120,
+      "failure": null,
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 36,
+      "source_key": "d06a3a179ddc8e9553d41aeb102fe69b9d7990a5ee87edc5457a51dcf2da877c",
+      "mode": "planned_then_feedback",
+      "steps": 120,
+      "failure": null,
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 10,
+      "source_key": "4f43c9573d9269fb8850864b6a133e97803d3d0408a1d046b8da163f3f7bf660",
+      "mode": "planned_then_feedback",
+      "steps": 72,
+      "failure": {
+        "step": 72,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.004290156457198255
+        },
+        "collision": {
+          "micro": 4,
+          "body": "Head_lower",
+          "gap_m": -9.600890458345834e-05
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 94,
+      "source_key": "acee09a8de584a6f817f3f44cdffbf8aa453344dc8a44441a76abbf01fca29d6",
+      "mode": "planned_then_feedback",
+      "steps": 72,
+      "failure": {
+        "step": 72,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.007496292826028164
+        },
+        "collision": {
+          "micro": 2,
+          "body": "Head_lower",
+          "gap_m": -0.00024385364205357918
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 33,
+      "source_key": "dbea6a747ab697c54b8fc7e21b649a569b629178e231d004a752c42eeebde142",
+      "mode": "planned_then_feedback",
+      "steps": 68,
+      "failure": {
+        "step": 68,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.00202913869917086
+        },
+        "collision": {
+          "micro": 12,
+          "body": "Head_lower",
+          "gap_m": -0.00013479783823083097
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 80,
+      "source_key": "2bea32faaeb6bb314a2b32189cdcb0479f546eb348f04f2ed472a7116b539469",
+      "mode": "planned_then_feedback",
+      "steps": 85,
+      "failure": {
+        "step": 85,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.0036238657988610715
+        },
+        "collision": {
+          "micro": 7,
+          "body": "Head_lower",
+          "gap_m": -9.269645854738384e-05
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 123,
+      "source_key": "abcad11be74fb0332038fd946fb9b54c2c8ea8aedf5417af00692e9bc7c2c226",
+      "mode": "planned_then_feedback",
+      "steps": 120,
+      "failure": null,
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 82,
+      "source_key": "a8e3c72dbcf98735c63616343e1207587e59c3e101166c32fcfc3d29caf78c8d",
+      "mode": "planned_then_feedback",
+      "steps": 103,
+      "failure": {
+        "step": 103,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0007955548931525675, 'exact': True, 'shape_index': 48, 'obstacle': 'net_segment_30'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 28,
+      "source_key": "3b408272f9072117dc04f57664375813e9b31eb123ca63149c7aa80b9fc3a24f",
+      "mode": "planned_then_feedback",
+      "steps": 90,
+      "failure": {
+        "step": 90,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -5.910305490742802e-05, 'exact': True, 'shape_index': 49, 'obstacle': 'net_segment_23'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 32,
+      "source_key": "4f98b382187be97de7d7f5bf561080bceb0e73d1990f0dcdc73a0677c0955653",
+      "mode": "predictive_selection",
+      "steps": 92,
+      "failure": {
+        "step": 92,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0006265483557750307, 'exact': True, 'shape_index': 48, 'obstacle': 'net_segment_24'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 22,
+      "source_key": "5b27bfba5ad9de919a821dff74cd03a814e855993413a56ad1ee9993ce4821a6",
+      "mode": "predictive_selection",
+      "steps": 84,
+      "failure": {
+        "step": 84,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0001886229377035223, 'exact': True, 'shape_index': 45, 'obstacle': 'net_segment_24'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 43,
+      "source_key": "f6731d9a45f2b0769a8eb4cfb163ffd70c2ebf9a20a73cd0a69551000333b674",
+      "mode": "predictive_selection",
+      "steps": 64,
+      "failure": {
+        "step": 64,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.008423685031863908
+        },
+        "collision": {
+          "micro": 4,
+          "body": "Head_lower",
+          "gap_m": -0.0005897824697205442
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 82,
+      "source_key": "a8e3c72dbcf98735c63616343e1207587e59c3e101166c32fcfc3d29caf78c8d",
+      "mode": "predictive_selection",
+      "steps": 102,
+      "failure": {
+        "step": 102,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0006940439579652376, 'exact': True, 'shape_index': 48, 'obstacle': 'net_segment_30'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 24,
+      "source_key": "8eac6b7bb53d7b69b4140948c0ebb86c31ac458ac28e032cb086954c7b73bbc7",
+      "mode": "predictive_selection",
+      "steps": 83,
+      "failure": {
+        "step": 83,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0008851578363722676, 'exact': True, 'shape_index': 49, 'obstacle': 'net_segment_26'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 121,
+      "source_key": "2d512965c97b6361d2770611b2c33c80ab10073a0125d6e1c4ffacab16ef427a",
+      "mode": "predictive_selection",
+      "steps": 108,
+      "failure": {
+        "step": 108,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.006756138109757115
+        },
+        "collision": {
+          "micro": 3,
+          "body": "Head_lower",
+          "gap_m": -0.00022205438662192822
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 120,
+      "source_key": "3996f8049d623034e409ca8547997528da2ef777d3f2242544e4422bca3ced85",
+      "mode": "predictive_selection",
+      "steps": 120,
+      "failure": null,
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 64,
+      "source_key": "fc1dec0db746123096c455e3a2b79061803b2651f6490e2bb5167c2ece36d315",
+      "mode": "predictive_selection",
+      "steps": 120,
+      "failure": null,
+      "longest_model_stable_s": 0.09,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 55,
+      "source_key": "c4f8c2802564df65b92d19ce85a7c2519bf2e7f762028718e54e3de662ef3f64",
+      "mode": "predictive_selection",
+      "steps": 61,
+      "failure": {
+        "step": 61,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.00019676951607879023
+        },
+        "collision": {
+          "micro": 12,
+          "body": "Head_lower",
+          "gap_m": -1.5262214895186976e-05
+        },
+        "command_source": "interval_qp"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 68,
+      "source_key": "b03e194df76eae7fe0b5c078f7278a4091e8894eba321e479f14d9f009811174",
+      "mode": "predictive_selection",
+      "steps": 96,
+      "failure": {
+        "step": 96,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0014189359098959959, 'exact': True, 'shape_index': 49, 'obstacle': 'net_segment_28'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 50,
+      "source_key": "d1a2bfc9373b3f081f8149164e24da0dce1930e4f86d73739f8fcbf634bdce6e",
+      "mode": "predictive_selection",
+      "steps": 71,
+      "failure": {
+        "step": 71,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.008856005471337983
+        },
+        "collision": {
+          "micro": 2,
+          "body": "Head_lower",
+          "gap_m": -0.00048099042709325024
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 100,
+      "source_key": "a5e15e994779d6e064bbf7745d371977e61f0c048bb485397fcb84ce738e8c25",
+      "mode": "predictive_selection",
+      "steps": 89,
+      "failure": {
+        "step": 89,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.010592450261691776
+        },
+        "collision": {
+          "micro": 2,
+          "body": "Head_lower",
+          "gap_m": -0.00017194699212463166
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 118,
+      "source_key": "1f570570bddceedccc8db8b8462616fdbb5700d1aaaf756853de8c2fecc43377",
+      "mode": "predictive_selection",
+      "steps": 120,
+      "failure": null,
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 58,
+      "source_key": "27f9ee15790e8529a6b8ba96b113f7e8f3b512afd3cb11c33cde4aa359fe51e5",
+      "mode": "predictive_selection",
+      "steps": 93,
+      "failure": {
+        "step": 93,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.004251866689483311
+        },
+        "collision": {
+          "micro": 10,
+          "body": "Head_lower",
+          "gap_m": -0.000281148169351611
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 81,
+      "source_key": "5e351efdb8c7503ba7f26d2715ce1689ba8b73f0f9b8b42f21d6b1de6e8a9ea6",
+      "mode": "predictive_selection",
+      "steps": 83,
+      "failure": {
+        "step": 83,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.003861910280699849, 'exact': True, 'shape_index': 47, 'obstacle': 'net_segment_27'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 36,
+      "source_key": "d06a3a179ddc8e9553d41aeb102fe69b9d7990a5ee87edc5457a51dcf2da877c",
+      "mode": "predictive_selection",
+      "steps": 120,
+      "failure": null,
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 83,
+      "source_key": "a2489f5eef84824287f0b962af80195ed9247d3e6ac88406fb69bd127e5257a1",
+      "mode": "predictive_selection",
+      "steps": 87,
+      "failure": {
+        "step": 87,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0020750711183205556, 'exact': True, 'shape_index': 48, 'obstacle': 'net_segment_39'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 12,
+      "source_key": "411c045d19b944648bbf693d49272172897a4586b93a115d914d259963968bf2",
+      "mode": "predictive_selection",
+      "steps": 94,
+      "failure": {
+        "step": 94,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.00010243061656582415, 'exact': True, 'shape_index': 48, 'obstacle': 'net_segment_28'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 94,
+      "source_key": "acee09a8de584a6f817f3f44cdffbf8aa453344dc8a44441a76abbf01fca29d6",
+      "mode": "predictive_selection",
+      "steps": 71,
+      "failure": {
+        "step": 71,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.006846684132061645
+        },
+        "collision": {
+          "micro": 3,
+          "body": "Head_lower",
+          "gap_m": -0.0003600480759222563
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 74,
+      "source_key": "b247b313c35c7f2f79bf0dca42e6336b6c710532936aef9ca9a31610e42b8ed0",
+      "mode": "predictive_selection",
+      "steps": 98,
+      "failure": {
+        "step": 98,
+        "reason": "model_rejected",
+        "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 5.959394329124734e-07, 'friction_cone': 0.0, 'tangent_fixed_point': 1.6098504984629614e-07}, 'box_violation': 0.0, 'box_fixed_point': 5.551115123125783e-17}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 10,
+      "source_key": "4f43c9573d9269fb8850864b6a133e97803d3d0408a1d046b8da163f3f7bf660",
+      "mode": "predictive_selection",
+      "steps": 70,
+      "failure": {
+        "step": 70,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.0035294628733091443
+        },
+        "collision": {
+          "micro": 6,
+          "body": "Head_lower",
+          "gap_m": -0.00027764678242027385
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 119,
+      "source_key": "13e40a0b8350f623e04001fda4a91663efd131f3cc5bbc77683c8d1b0b5ef919",
+      "mode": "predictive_selection",
+      "steps": 61,
+      "failure": {
+        "step": 61,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.005142295919024556
+        },
+        "collision": {
+          "micro": 7,
+          "body": "Head_lower",
+          "gap_m": -0.0003752819475761754
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 75,
+      "source_key": "4794635d317bdd880fbcd4394cc657f2e768b5da03752499b29a2b974238530f",
+      "mode": "predictive_selection",
+      "steps": 73,
+      "failure": {
+        "step": 73,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.010657788056575232
+        },
+        "collision": {
+          "micro": 0,
+          "body": "FR_hip",
+          "gap_m": -0.00046247628369670835
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 103,
+      "source_key": "075ef48996990b3c0376dd90ce89fad63758f5eb972105ad129f1dd1f9c4ed48",
+      "mode": "predictive_selection",
+      "steps": 120,
+      "failure": null,
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 80,
+      "source_key": "2bea32faaeb6bb314a2b32189cdcb0479f546eb348f04f2ed472a7116b539469",
+      "mode": "predictive_selection",
+      "steps": 84,
+      "failure": {
+        "step": 84,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.0033863535162054065
+        },
+        "collision": {
+          "micro": 8,
+          "body": "Head_lower",
+          "gap_m": -0.0003412292755222632
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 33,
+      "source_key": "dbea6a747ab697c54b8fc7e21b649a569b629178e231d004a752c42eeebde142",
+      "mode": "predictive_selection",
+      "steps": 69,
+      "failure": {
+        "step": 69,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.009829074046005325
+        },
+        "collision": {
+          "micro": 1,
+          "body": "Head_lower",
+          "gap_m": -0.0005569175837186191
+        },
+        "command_source": "uncertified_posture_fallback"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 86,
+      "source_key": "8acd0ab6e9e6df638707d239a348c7741894c9612a812f746d23206055f89abc",
+      "mode": "predictive_selection",
+      "steps": 99,
+      "failure": {
+        "step": 99,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.001840654474831972, 'exact': True, 'shape_index': 48, 'obstacle': 'net_segment_34'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 60,
+      "source_key": "1dce1a503131d9a6723c7d6404ea48b869d9c25e1da1f28b1b9c45e2f3b2d8a5",
+      "mode": "predictive_selection",
+      "steps": 120,
+      "failure": null,
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 19,
+      "source_key": "2a4e94201c66ddf51204f22ba268421e60920a02bbaab96b06bab8736a76faa7",
+      "mode": "predictive_selection",
+      "steps": 120,
+      "failure": null,
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 28,
+      "source_key": "3b408272f9072117dc04f57664375813e9b31eb123ca63149c7aa80b9fc3a24f",
+      "mode": "predictive_selection",
+      "steps": 83,
+      "failure": {
+        "step": 83,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.0011018748081271946, 'exact': True, 'shape_index': 49, 'obstacle': 'net_segment_25'}\")"
+      },
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    },
+    {
+      "source_case": 123,
+      "source_key": "abcad11be74fb0332038fd946fb9b54c2c8ea8aedf5417af00692e9bc7c2c226",
+      "mode": "predictive_selection",
+      "steps": 120,
+      "failure": null,
+      "longest_model_stable_s": 0.0,
+      "model_only": true,
+      "phase_uses_predicted_impulse_contacts": true,
+      "full_episode_certified": false,
+      "valid_expert_labels": false
+    }
+  ],
+  "v9_command_selection_counts_first600ms": {
+    "predictive_reference_selection:planned": 854,
+    "predictive_reference_selection:state_joint_feedback": 979,
+    "predictive_reference_selection:wbc": 6,
+    "predictive_reference_selection:half_wbc": 21
+  },
+  "v9_entry_check": {
+    "passed": true,
+    "references": 31,
+    "command_checks": 124
+  },
+  "canceled_v8_native_queue": {
+    "pid": 151286,
+    "state_before": {
+      "state": "WAITING_VERIFIED_PREDECESSOR",
+      "pid": 151286,
+      "time": "2026-11-08T13:24:25.922271+00:00",
+      "predecessor_pid": 150734
+    },
+    "reason": "31/31 model references lost before 600 ms under WBC tracking; replace unexecuted queue after controller correction",
+    "native_started": false,
+    "live_cmd": "/home/autodrive/Isaac/env_isaaclab/bin/python -u scripts/run_serial_pure_control_v1.py --after /home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_moving_foot_preparation_20261108_01 --plan /home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_trajectory_pipeline_20261108_02/native_preparation/plan.json "
+  },
+  "v7_native_status": {
+    "state": "RUNNING_NATIVE_PURE_CONTROL",
+    "pid": 150734,
+    "time": "2026-11-08T13:22:15.641415+00:00"
+  },
+  "v9_native_queue": {
+    "state": "WAITING_VERIFIED_PREDECESSOR",
+    "pid": 152512,
+    "time": "2026-11-08T13:33:54.349984+00:00",
+    "predecessor_pid": 150734
+  },
+  "sources": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_recovery_reference_tracking_v1.py": "ddeb02b912b61fe444fd1bb5b448793de5e51c618e78bd18441a14ea230fd7ec",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_recovery_reference_tracking_v2.py": "fe4ef1ba64416ce94bc3c5b554d3e137b12681c81854d55f1b2d1ba7793299a8",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_reference_selection_model_20261108/inputs.json": "a2b9634bb7e3211e630191c602de91a70ae69f266daa93f92350efc01a434b3e",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_reference_selection_model_20261108/result.json": "6287c1f1189f3dceab35755312f43bc6a387fa9e823296f225cf3369d58a265f",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_predictive_selection_checks_20261108/check.json": "09a308dbae7969d4fe076e79c1590ac3fe8dd95e3808e7546c5a5ec7741ee79e"
+  }
+}
