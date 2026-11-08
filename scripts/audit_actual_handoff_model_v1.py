@@ -40,7 +40,15 @@ def state_from_record(model, row):
 
 
 def evaluate(configuration,nominal,case,records,mode,deadline):
-    cls=PureControlReferenceClockV12 if mode=='v12' else PureControlSettledStanceV14
+    if mode == 'v15':
+        from scripts.pure_control_stance_foot_reference_v15 import PureControlStanceFootReferenceV15
+        cls = PureControlStanceFootReferenceV15
+    elif mode == 'v12':
+        cls = PureControlReferenceClockV12
+    elif mode == 'v14':
+        cls = PureControlSettledStanceV14
+    else:
+        raise ValueError('Unknown controller mode '+mode)
     c=cls(PositionPDInterface(**configuration['interface']),nominal,configuration['model_reference_library'])
     errors=[]
     for row in records[:-1]:
@@ -106,7 +114,12 @@ def main():
     for name in ['run','configuration','output']:
         p.add_argument('--'+name,type=Path,required=True)
     p.add_argument('--cases',type=int,nargs='+',required=True)
+    p.add_argument('--modes',nargs='+',choices=['v12','v14','v15'],default=['v12','v14'])
     args=p.parse_args();read=lambda f:json.loads(Path(f).read_text())
+    if 'v15' in args.modes:
+        # Include the optional controller in the immutable source manifest
+        # before spawning workers; legacy default modes are unchanged.
+        from scripts.pure_control_stance_foot_reference_v15 import PureControlStanceFootReferenceV15
     if args.output.exists() or read(args.run/'job.json')['status']!='SUCCEEDED':
         raise ValueError('Fresh audit and completed native source required')
     cfg=read(args.configuration);nominal=read(args.run/'native_command_inputs.json')['default_joint_position_rad']
@@ -138,13 +151,13 @@ def main():
     args.output.mkdir(parents=True)
     def write(name,data):
         f=args.output/name;t=f.with_suffix('.tmp');t.write_text(json.dumps(plain(data),indent=2,allow_nan=False)+'\n');t.replace(f)
-    write('inputs.json',dict(source_sha256=pins,cases=args.cases,workers=6,max_seconds=1800,
+    write('inputs.json',dict(source_sha256=pins,cases=args.cases,modes=args.modes,workers=6,max_seconds=1800,
         native_state_teleport=False,model_start='actual native end-of-reference with reconstructed controller memory'))
     started=time.monotonic();results=[]
-    write('status.json',dict(state='RUNNING_ACTUAL_HANDOFF_MODEL',pid=os.getpid(),completed=0,total=2*len(args.cases)))
+    write('status.json',dict(state='RUNNING_ACTUAL_HANDOFF_MODEL',pid=os.getpid(),completed=0,total=len(args.modes)*len(args.cases)))
     with ProcessPoolExecutor(max_workers=6,mp_context=mp.get_context('spawn')) as pool:
         jobs=[pool.submit(evaluate,cfg,nominal,lane,records[lane],mode,started+1800.)
-              for lane in args.cases for mode in ['v12','v14']]
+              for lane in args.cases for mode in args.modes]
         for future in as_completed(jobs):
             r=future.result();write('case_%03d_%s.json'%(r['case'],r['mode']),r)
             results.append({k:v for k,v in r.items() if k!='trajectory'})
