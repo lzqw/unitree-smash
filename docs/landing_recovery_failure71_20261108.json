@@ -1,0 +1,1149 @@
+{
+  "scope": "Completed TRAIN71 recovery failure and prediction/execution attribution; original task unchanged",
+  "created_at": "2026-11-08T17:48:28.666649+08:00",
+  "native_job": {
+    "status": "SUCCEEDED",
+    "exit_code": 0,
+    "elapsed_s": 1270.0510264660697,
+    "charged_gpu_hours": 0.3527919517961305,
+    "charged_env_steps": 102400,
+    "started_at": "2026-11-08T09:21:31.337752+00:00",
+    "finished_at": "2026-11-08T09:42:41.401482+00:00"
+  },
+  "metrics": {
+    "complete5": 27,
+    "airborne_contacts": 74,
+    "conditional_recovery_count": 34,
+    "actual_racket_contacts": 110,
+    "landed_target": 64,
+    "numerical_failures": 0
+  },
+  "stage_transitions": {
+    "complete5": {
+      "before": 27,
+      "after": 27,
+      "retained": [
+        10,
+        16,
+        17,
+        23,
+        24,
+        25,
+        27,
+        28,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        39,
+        43,
+        45,
+        49,
+        51,
+        52,
+        55,
+        60,
+        63,
+        84,
+        94,
+        121,
+        126
+      ],
+      "lost": [],
+      "gained": []
+    },
+    "air": {
+      "before": 74,
+      "after": 74,
+      "retained": [
+        1,
+        3,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        16,
+        17,
+        18,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        30,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        42,
+        43,
+        45,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        57,
+        58,
+        60,
+        61,
+        63,
+        64,
+        65,
+        67,
+        68,
+        70,
+        71,
+        72,
+        77,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        90,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        114,
+        115,
+        121,
+        125,
+        126
+      ],
+      "lost": [],
+      "gained": []
+    },
+    "recovery": {
+      "before": 34,
+      "after": 34,
+      "retained": [
+        6,
+        10,
+        16,
+        17,
+        21,
+        23,
+        24,
+        25,
+        27,
+        28,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        39,
+        43,
+        45,
+        49,
+        51,
+        52,
+        53,
+        55,
+        60,
+        63,
+        64,
+        72,
+        80,
+        81,
+        84,
+        94,
+        121,
+        126
+      ],
+      "lost": [],
+      "gained": []
+    },
+    "ball5_except_recovery": {
+      "before": 53,
+      "after": 53,
+      "retained": [
+        1,
+        3,
+        8,
+        9,
+        10,
+        12,
+        16,
+        17,
+        18,
+        20,
+        23,
+        24,
+        25,
+        27,
+        28,
+        30,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        42,
+        43,
+        45,
+        49,
+        50,
+        51,
+        52,
+        54,
+        55,
+        57,
+        58,
+        60,
+        61,
+        63,
+        67,
+        70,
+        71,
+        77,
+        84,
+        85,
+        87,
+        90,
+        94,
+        95,
+        96,
+        98,
+        115,
+        121,
+        126
+      ],
+      "lost": [],
+      "gained": []
+    }
+  },
+  "selected_case": 71,
+  "official_flight": {
+    "schema": "contact-flight-recovery-v1",
+    "bound": true,
+    "contact_flight_id": 8,
+    "rally_contact_time_s": 2.6327173709869385,
+    "airborne_string_time_s": 2.6327173709869385,
+    "contact_flight_takeoff_s": 2.4530045986175537,
+    "qualified_contact_landing": true,
+    "contact_flight_landing_s": 2.9069716930389404,
+    "contact_flight_com_rise_m": 0.27003756165504456,
+    "contact_flight_clear_s": 0.43899789452552795,
+    "stable_recovery": false,
+    "recovery_s": 0.0,
+    "body_landing": true,
+    "maximum_body_ground_force_n": 365482.5,
+    "terminal_root_height_m": 0.15273860096931458,
+    "success": false
+  },
+  "last_sample": {
+    "max_abs_roll_pitch_deg": 105.75600610095682,
+    "horizontal_root_speed_m_s": 0.0006929878810446301,
+    "angular_speed_rad_s": 0.047261605404572686,
+    "maximum_joint_speed_rad_s": 0.08985306322574615,
+    "supporting_foot_count": 0.0,
+    "roll_deg": -105.75600610095682,
+    "pitch_deg": 0.02292659441383454,
+    "active_kinematic_failures": [
+      "attitude",
+      "support"
+    ]
+  },
+  "sampled_stable_runs": [],
+  "first_nonfoot": {
+    "physics_frame": 56624,
+    "time_s": 3.539,
+    "bodies": [
+      "FL_hip"
+    ]
+  },
+  "head": {
+    "case": 71,
+    "complete5": false,
+    "ball5_except_recovery": true,
+    "first_sampled_head_force_above_1n_s": 2.185,
+    "first_sampled_head_force_after_qualified_landing_s": null,
+    "contact_flight_landing_s": 2.9069716930389404,
+    "original_first_nonfoot_force_s": 3.539,
+    "sampled_head_precedes_original_event": true,
+    "head_normal_force_peak_n": 477.78631591796875,
+    "individual_head_peak_normal_force_n": [
+      477.78631591796875,
+      0.0
+    ],
+    "sampled_exceedance_duration_after_landing_s": 0.0,
+    "lower_head_minimum_center_height_m": 0.046999476850032806
+  },
+  "prediction": {
+    "scope": "Compare native feedback with nominal and measured-state one-step predictions.\n\nNominal trajectory rows contain END states; native trace rows contain START\nstates. This audit deliberately compares nominal tick t with native tick t+1.\nOne-step replay uses the actual dispatched command and previous command,\nwithout replacing the measured state by the nominal reference. Neither kind\nof error is evidence of a physical impossibility or a valid expert label.\n",
+    "case": 71,
+    "nominal_state_semantics": "post-command at t+1",
+    "native_state_semantics": "pre-command at t",
+    "command_mapping_error_rad": 1.3955948219290804e-07,
+    "native_steps": 520,
+    "nominal_steps": 74,
+    "compared_steps": 74,
+    "nominal": {
+      "samples": 74,
+      "contact_mismatches": 9,
+      "errors": {
+        "root_position_m": {
+          "median": 0.005573574287834336,
+          "maximum": 0.023777035192743476
+        },
+        "root_attitude_rad": {
+          "median": 0.03175023818884731,
+          "maximum": 0.08115938331129789
+        },
+        "joint_position_max_rad": {
+          "median": 0.023312376394084566,
+          "maximum": 0.11776040659080755
+        },
+        "root_linear_velocity_max_m_s": {
+          "median": 0.025070536313322178,
+          "maximum": 1.4070743722921124
+        },
+        "root_angular_velocity_max_rad_s": {
+          "median": 0.12379065311321924,
+          "maximum": 3.013421741114308
+        },
+        "joint_velocity_max_rad_s": {
+          "median": 0.20302294592660042,
+          "maximum": 7.484464190577939
+        }
+      }
+    },
+    "one_step": {
+      "samples": 74,
+      "contact_mismatches": 4,
+      "errors": {
+        "root_position_m": {
+          "median": 1.2893934998984019e-05,
+          "maximum": 0.003044800835409429
+        },
+        "root_attitude_rad": {
+          "median": 0.00024216715824407415,
+          "maximum": 0.004554824947473615
+        },
+        "joint_position_max_rad": {
+          "median": 0.0002414907244753517,
+          "maximum": 0.04263400884751345
+        },
+        "root_linear_velocity_max_m_s": {
+          "median": 0.00024293608933738386,
+          "maximum": 1.4429217493578288
+        },
+        "root_angular_velocity_max_rad_s": {
+          "median": 0.002102222086778127,
+          "maximum": 2.6934839974852456
+        },
+        "joint_velocity_max_rad_s": {
+          "median": 0.02043309485546485,
+          "maximum": 7.310694445898491
+        }
+      }
+    },
+    "one_step_rejections": 0,
+    "original_model_failure": {
+      "step": 74,
+      "reason": "path_constraints",
+      "violations": {
+        "nonfoot_ground_violation_m": 0.004819625722264756
+      },
+      "first_ground_violation": {
+        "micro": 112,
+        "body": "FL_hip",
+        "gap_m": -4.7653388228333093e-05
+      }
+    },
+    "model_is_physx_equivalent": false,
+    "physical_impossibility_claimed": false,
+    "valid_expert_labels": false
+  },
+  "prediction_peak_intervals": [
+    {
+      "command_tick": 353,
+      "state_comparison_tick": 354,
+      "nominal_error": {
+        "root_position_m": 0.022642866139793116,
+        "root_attitude_rad": 0.08115938331129789,
+        "joint_position_max_rad": 0.08294693740638492,
+        "root_linear_velocity_max_m_s": 1.4070743722921124,
+        "root_angular_velocity_max_rad_s": 3.013421741114308,
+        "joint_velocity_max_rad_s": 7.484464190577939,
+        "contacts_equal": false
+      },
+      "nominal_vs_actual_command_max_rad": 0.00768531323280075,
+      "requested_minus_measured_joint_max_rad": 0.6545027921910105,
+      "actual_ground_contacts": [
+        true,
+        true,
+        true,
+        false
+      ],
+      "actual_ground_normal_force_n": [
+        [
+          0.0,
+          0.0,
+          67.93473815917969
+        ],
+        [
+          0.0,
+          0.0,
+          22.878808975219727
+        ],
+        [
+          0.0,
+          0.0,
+          85.40169525146484
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "one_step_error": {
+        "root_position_m": 0.003044800835409429,
+        "root_attitude_rad": 0.004554824947473615,
+        "joint_position_max_rad": 0.009641802334480531,
+        "root_linear_velocity_max_m_s": 1.4429217493578288,
+        "root_angular_velocity_max_rad_s": 2.6934839974852456,
+        "joint_velocity_max_rad_s": 7.310694445898491,
+        "contacts_equal": false
+      },
+      "one_step_diagnostics": {
+        "momentum_residual": 1.2241943569968328e-14,
+        "normal_complementarity": 1.9634020637917735e-07,
+        "friction_cone": 0.0,
+        "tangent_fixed_point": 9.457815097497352e-10,
+        "max_contact_iterations": 6,
+        "foot_penetration_m": 8.182964237948842e-07,
+        "joint_velocity_violation_rad_s": 0.0,
+        "joint_position_violation_rad": 0.0,
+        "motor_torque_violation_nm": 0.0,
+        "nonfoot_ground_violation_m": 0.0031509308139890113,
+        "velocity_limit_active_substeps": 0,
+        "maximum_velocity_limit_impulse_ns": 0.0,
+        "speed_constraint_residual": 0.0
+      },
+      "one_step_first_ground_violation": {
+        "micro": 129,
+        "body": "FL_hip",
+        "gap_m": -2.7865973876120553e-05
+      }
+    },
+    {
+      "command_tick": 322,
+      "state_comparison_tick": 323,
+      "nominal_error": {
+        "root_position_m": 0.00855277065534704,
+        "root_attitude_rad": 0.03809787551271385,
+        "joint_position_max_rad": 0.050958124732260135,
+        "root_linear_velocity_max_m_s": 0.042283723204513235,
+        "root_angular_velocity_max_rad_s": 0.1100614691058191,
+        "joint_velocity_max_rad_s": 5.929892057625617,
+        "contacts_equal": false
+      },
+      "nominal_vs_actual_command_max_rad": 0.018985190871338986,
+      "requested_minus_measured_joint_max_rad": 0.5190276300479013,
+      "actual_ground_contacts": [
+        true,
+        true,
+        false,
+        false
+      ],
+      "actual_ground_normal_force_n": [
+        [
+          0.0,
+          0.0,
+          53.36979675292969
+        ],
+        [
+          0.0,
+          0.0,
+          32.557037353515625
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "one_step_error": {
+        "root_position_m": 1.8074147119375706e-05,
+        "root_attitude_rad": 0.00028797317921179093,
+        "joint_position_max_rad": 0.01510857627365958,
+        "root_linear_velocity_max_m_s": 0.004758119967268937,
+        "root_angular_velocity_max_rad_s": 0.06855446595872527,
+        "joint_velocity_max_rad_s": 5.869456005620663,
+        "contacts_equal": false
+      },
+      "one_step_diagnostics": {
+        "momentum_residual": 1.1216721995666035e-14,
+        "normal_complementarity": 1.9911789338796643e-07,
+        "friction_cone": 0.0,
+        "tangent_fixed_point": 8.198656789820506e-10,
+        "max_contact_iterations": 15,
+        "foot_penetration_m": 0.0,
+        "joint_velocity_violation_rad_s": 0.0,
+        "joint_position_violation_rad": 0.0,
+        "motor_torque_violation_nm": 0.0,
+        "nonfoot_ground_violation_m": 0.0,
+        "velocity_limit_active_substeps": 0,
+        "maximum_velocity_limit_impulse_ns": 0.0,
+        "speed_constraint_residual": 0.0
+      },
+      "one_step_first_ground_violation": null
+    },
+    {
+      "command_tick": 323,
+      "state_comparison_tick": 324,
+      "nominal_error": {
+        "root_position_m": 0.00913680222593273,
+        "root_attitude_rad": 0.03901318319937662,
+        "joint_position_max_rad": 0.0981503808194597,
+        "root_linear_velocity_max_m_s": 0.04767754171396521,
+        "root_angular_velocity_max_rad_s": 0.1213757207621955,
+        "joint_velocity_max_rad_s": 4.5303553384576425,
+        "contacts_equal": false
+      },
+      "nominal_vs_actual_command_max_rad": 0.10472266809536435,
+      "requested_minus_measured_joint_max_rad": 0.5581097104394459,
+      "actual_ground_contacts": [
+        true,
+        false,
+        false,
+        false
+      ],
+      "actual_ground_normal_force_n": [
+        [
+          0.0,
+          0.0,
+          49.21599197387695
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "one_step_error": {
+        "root_position_m": 5.429086905806339e-05,
+        "root_attitude_rad": 0.0007409959835059719,
+        "joint_position_max_rad": 0.04263400884751345,
+        "root_linear_velocity_max_m_s": 0.008775172597387637,
+        "root_angular_velocity_max_rad_s": 0.12362166704126842,
+        "joint_velocity_max_rad_s": 5.280303996216565,
+        "contacts_equal": false
+      },
+      "one_step_diagnostics": {
+        "momentum_residual": 1.2472661792273243e-14,
+        "normal_complementarity": 1.996288710405178e-07,
+        "friction_cone": 0.0,
+        "tangent_fixed_point": 1.5446174612791796e-11,
+        "max_contact_iterations": 15,
+        "foot_penetration_m": 0.0,
+        "joint_velocity_violation_rad_s": 0.0,
+        "joint_position_violation_rad": 0.0,
+        "motor_torque_violation_nm": 0.0,
+        "nonfoot_ground_violation_m": 0.0,
+        "velocity_limit_active_substeps": 0,
+        "maximum_velocity_limit_impulse_ns": 0.0,
+        "speed_constraint_residual": 0.0
+      },
+      "one_step_first_ground_violation": null
+    },
+    {
+      "command_tick": 290,
+      "state_comparison_tick": 291,
+      "nominal_error": {
+        "root_position_m": 0.0001352858540378165,
+        "root_attitude_rad": 0.002905861330270156,
+        "joint_position_max_rad": 0.013584476917544941,
+        "root_linear_velocity_max_m_s": 0.009650986521994032,
+        "root_angular_velocity_max_rad_s": 0.14029838115629917,
+        "joint_velocity_max_rad_s": 2.944001213468926,
+        "contacts_equal": true
+      },
+      "nominal_vs_actual_command_max_rad": 9.094962005740115e-08,
+      "requested_minus_measured_joint_max_rad": 0.3370105110761834,
+      "actual_ground_contacts": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "actual_ground_normal_force_n": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "one_step_error": {
+        "root_position_m": 5.653001248735433e-05,
+        "root_attitude_rad": 0.0004633227510421646,
+        "joint_position_max_rad": 0.013498796324950435,
+        "root_linear_velocity_max_m_s": 0.011363016617238486,
+        "root_angular_velocity_max_rad_s": 0.1010986795105116,
+        "joint_velocity_max_rad_s": 2.934482287268957,
+        "contacts_equal": true
+      },
+      "one_step_diagnostics": {
+        "momentum_residual": 1.8044593597110747e-14,
+        "normal_complementarity": 1.5713688618357313e-07,
+        "friction_cone": 0.0,
+        "tangent_fixed_point": 1.1926223897340549e-18,
+        "max_contact_iterations": 9,
+        "foot_penetration_m": 0.0,
+        "joint_velocity_violation_rad_s": 0.0,
+        "joint_position_violation_rad": 0.0,
+        "motor_torque_violation_nm": 0.0,
+        "nonfoot_ground_violation_m": 0.0,
+        "velocity_limit_active_substeps": 0,
+        "maximum_velocity_limit_impulse_ns": 0.0,
+        "speed_constraint_residual": 0.0
+      },
+      "one_step_first_ground_violation": null
+    }
+  ],
+  "ground_feedback": {
+    "scope": "Audit continuous ground-only feedback without assuming an MPC solve schedule.\n\nSeparates contact observation, light load and loaded contact. It checks the\nactual observer/command clocks and retains every disagreement with the old\nnet-force flag. No disagreement is automatically labelled a failure cause.\n",
+    "passed": true,
+    "case": 71,
+    "control_records": 800,
+    "feedback_steps": 520,
+    "contact_change_ticks": [
+      0,
+      323,
+      324,
+      679
+    ],
+    "light_contact_foot_samples": 29,
+    "establishing_foot_samples": 3,
+    "ground_contact_transitions": 450,
+    "force_source": "ground only",
+    "five_newton_exclusion_used": false,
+    "task_scoring_changed": false,
+    "student_observation_changed": false,
+    "independent_geometric_contact_evidence": false,
+    "disagreements_prove_cause": false,
+    "valid_expert_labels": false
+  },
+  "ground_disagreements": [
+    {
+      "tick": 0,
+      "time_s": 0.0,
+      "original_force_flag": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "ground_force_flag": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "ground_normal_force_world_n": [
+        [
+          0.0,
+          0.0,
+          -473287.9375
+        ],
+        [
+          0.0,
+          0.0,
+          -1116367.875
+        ],
+        [
+          0.0,
+          0.0,
+          -1121416.125
+        ],
+        [
+          0.0,
+          0.0,
+          -993312.875
+        ]
+      ],
+      "original_net_normal_world_n": [
+        [
+          0.0,
+          0.0,
+          -473287.9375
+        ],
+        [
+          0.0,
+          0.0,
+          -1116367.875
+        ],
+        [
+          0.0,
+          0.0,
+          -1121416.125
+        ],
+        [
+          0.0,
+          0.0,
+          -993312.875
+        ]
+      ],
+      "light": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "loaded": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "establishing": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "feedback_active": false
+    },
+    {
+      "tick": 323,
+      "time_s": 3.23,
+      "original_force_flag": [
+        true,
+        true,
+        false,
+        false
+      ],
+      "ground_force_flag": [
+        true,
+        false,
+        false,
+        false
+      ],
+      "ground_normal_force_world_n": [
+        [
+          0.0,
+          0.0,
+          49.21599197387695
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "original_net_normal_world_n": [
+        [
+          11.0244779586792,
+          33.144710540771484,
+          48.822105407714844
+        ],
+        [
+          -11.0244779586792,
+          -33.144710540771484,
+          0.3938872516155243
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "light": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "loaded": [
+        true,
+        false,
+        false,
+        false
+      ],
+      "establishing": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "feedback_active": true
+    },
+    {
+      "tick": 324,
+      "time_s": 3.24,
+      "original_force_flag": [
+        true,
+        true,
+        false,
+        false
+      ],
+      "ground_force_flag": [
+        true,
+        false,
+        false,
+        false
+      ],
+      "ground_normal_force_world_n": [
+        [
+          0.0,
+          0.0,
+          49.29041290283203
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "original_net_normal_world_n": [
+        [
+          3.747476816177368,
+          30.37255096435547,
+          48.109764099121094
+        ],
+        [
+          -3.747476816177368,
+          -30.37255096435547,
+          1.1806479692459106
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "light": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "loaded": [
+        true,
+        false,
+        false,
+        false
+      ],
+      "establishing": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "feedback_active": true
+    },
+    {
+      "tick": 679,
+      "time_s": 6.79,
+      "original_force_flag": [
+        false,
+        false,
+        true,
+        false
+      ],
+      "ground_force_flag": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "ground_normal_force_world_n": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.9687231779098511
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "original_net_normal_world_n": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.9687231779098511
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "light": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "loaded": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "establishing": [
+        false,
+        false,
+        true,
+        false
+      ],
+      "feedback_active": true
+    }
+  ],
+  "feedback_layers": [
+    {
+      "layer": "LandingJointBrakingReferenceV1",
+      "recorded_steps": 520,
+      "diagnostic_active_steps": 0,
+      "maximum_increment_rad": 0.0
+    },
+    {
+      "layer": "SupportTransitionV1",
+      "recorded_steps": 520,
+      "diagnostic_active_steps": 0,
+      "maximum_increment_rad": 0.32230739837262623
+    },
+    {
+      "layer": "TerminalAttitudeFeedbackV1",
+      "recorded_steps": 520,
+      "diagnostic_active_steps": 260,
+      "maximum_increment_rad": 0.08000000000000007,
+      "error_world_rad": {
+        "median": 1.846055865250569,
+        "maximum": 1.8746251521612838
+      },
+      "configured_bound_rad": 0.08,
+      "steps_reaching_bound": 260
+    },
+    {
+      "layer": "LandingReferenceTrackingV1",
+      "recorded_steps": 520,
+      "diagnostic_active_steps": 260,
+      "maximum_increment_rad": 0.08000000000000007,
+      "position_error_world_m": {
+        "median": 0.6476893436000708,
+        "maximum": 0.7285285815740757
+      },
+      "attitude_error_world_rad": {
+        "median": 1.8534640786770673,
+        "maximum": 2.062838313013161
+      },
+      "configured_bound_rad": 0.08,
+      "steps_reaching_bound": 244
+    },
+    {
+      "layer": "SupportTailReference",
+      "recorded_steps": 520,
+      "diagnostic_active_steps": 0,
+      "maximum_increment_rad": 0.4392749206381483
+    },
+    {
+      "layer": "TimedEarlyReferenceV1",
+      "recorded_steps": 520,
+      "diagnostic_active_steps": 0,
+      "maximum_increment_rad": 0.0
+    }
+  ],
+  "feedback_exact_replay_max_rad": 2.220446049250313e-16,
+  "native_dispatch_integrity": true,
+  "strict_untouched_isolation_passed": false,
+  "differing_untouched": [
+    46,
+    82,
+    86,
+    120,
+    125
+  ],
+  "support_search": {
+    "accepted": false,
+    "completed_model_steps": 77,
+    "required_model_steps": 520,
+    "rank": [
+      1,
+      442.58125,
+      80,
+      0.5401650426705766
+    ],
+    "failure": {
+      "step": 77,
+      "reason": "path_constraints",
+      "violations": {
+        "nonfoot_ground_violation_m": 0.008695206135833605
+      },
+      "first_ground_violation": {
+        "micro": 67,
+        "body": "FL_hip",
+        "gap_m": -2.4051493317106543e-05
+      }
+    },
+    "terminal": {
+      "roll": -1.0510594570429403,
+      "pitch": 0.35161379025236134,
+      "horizontal": 0.9727672021204155,
+      "vertical_speed": 0.8457110310929485,
+      "omega": 4.668023449479412,
+      "joint_speed": 2.963007968975764,
+      "support_feet": 3,
+      "support_margin_m": -0.2287891901666603
+    },
+    "terminal_violations": {
+      "roll": 0.789260069243791,
+      "pitch": 0.08981440245321193,
+      "horizontal": 0.6727672021204154,
+      "vertical_speed": 0.7457110310929486,
+      "omega": 3.6680234494794117,
+      "joint_speed": 1.9630079689757638,
+      "support_margin_m": 0.2387891901666603,
+      "trailing_window_s": 0.0
+    },
+    "trailing_model_window_s": 0.0,
+    "longest_model_window_s": 0.0,
+    "cost": 41.5927082856344,
+    "substeps": 160,
+    "wall_seconds": 18.903168849181384,
+    "control_tick": 280,
+    "original_episode_end_tick": 800,
+    "preceding_stable_ticks": 0,
+    "native_execution": false,
+    "valid_expert_labels": false
+  },
+  "next_solve": {
+    "path": "reports/landing_joint_timed71_actual300_replan_20261108",
+    "state": {
+      "state": "OPTIMIZING_MEASURED_REMAINDER",
+      "tick": 300
+    },
+    "tick": 300,
+    "maximum_seconds": 600,
+    "new_native_execution": false
+  },
+  "formal_acceptance": false,
+  "valid_expert_labels": false,
+  "source_sha256": {
+    "reports/landing_joint_timed71_native_followup_20261108/response.json": "7ddb798f0d4278cbcc436a6dd6c02293b8818197b138d02322fcaaff7c04cc95",
+    "reports/landing_joint_timed71_native_followup_20261108/ground_feedback.json": "85f594d46c1408b08ca8ca7be3f6a128308936b5f11d6732a7ccc1907eaeb58e",
+    "reports/landing_joint_timed71_native_followup_20261108/feedback_layers.json": "6530ca3cbe130d02e3e339679a7825e4da6ccf8cf6580598480eec6013bde307",
+    "reports/landing_joint_timed71_native_followup_20261108/recovery_margins.json": "6a18df8639e14451b7c4ebdfdf9342a35176712215ca2f0bab5ade57650ddcd8",
+    "reports/landing_joint_timed71_native_followup_20261108/head_force_audit.json": "5bf5463f817b2cdc86aa4d9046c037d1c522f06c2258c7800e7ba48fc8862f1a",
+    "reports/landing_joint_timed71_native_followup_20261108/comparison.json": "b35880132fe47d94e832f849e4231000c54aff47ba9e5e0492eebf66c078f2ca",
+    "reports/native_joint_timed71_all128_20261108_02/job.json": "06082693a1d6af3750fc9c253dec440ea97b7614f5ece4c2cc2f3e030a4e7676",
+    "reports/native_joint_timed71_all128_20261108_02/metrics.json": "04a934d3e824c709c254e23491a56ae4b04be9fdf1f0c7e480f30f864349fb78",
+    "reports/native_joint_timed71_all128_20261108_02/first_nonfoot_contact_details.json": "686426d309d64378be30111c93798c361abf908ab656a9e710058510ef11a601",
+    "reports/native_joint_timed71_all128_20261108_02/contact_telemetry_metadata.json": "d5e3b9f1c9d61aa1a7c9e2a02daed94323e017b3387015fb548a23325b56bcc7",
+    "reports/landing_joint_timed71_support_20261108/result.json": "faab461592f580d9617f6fd6e6a0c3a6e09e70cb323307c75b0175231cfd432b",
+    "reports/landing_native_joint_timed71_preparation_20261108_02/native_audit.json": "433d8d30d65fccc4dba7a8e0dc889130a4cfff2ef4f5ae16d991f9f67c621c7d",
+    "reports/landing_native_timed85_repeat_diagnostics_20261108/feedback_layers.json": "b18b014842e7ac5574285662efe1f5414205f02d6c9e934b136d0b3d3464804d"
+  }
+}
