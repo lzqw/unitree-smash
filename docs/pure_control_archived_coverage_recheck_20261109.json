@@ -1,0 +1,166 @@
+{
+  "recorded_at_utc": "2026-11-08T23:29:54.011239+00:00",
+  "scope": "pure control; no RL, BC or distillation",
+  "coverage": {
+    "causal_releases": 110,
+    "original_matches": 40,
+    "proposed_matches": 47,
+    "old_selections_unchanged": true,
+    "new_matches": [
+      {
+        "case": 3,
+        "actual_tick": 277,
+        "match_score": 2.5298050691328438e-17,
+        "source_key": "29f3b16f11ad0f7440f482ac9fce0d376f4d5bf63e85180107dabb32fe2941fa",
+        "initial_difference_from_archive": {
+          "q": 0.00012159347534179688,
+          "v": 0.0022777318954467773,
+          "previous": 0.0
+        }
+      },
+      {
+        "case": 8,
+        "actual_tick": 272,
+        "match_score": 1.4456028966473393e-17,
+        "source_key": "eefd1009aeb63ce6de04f5ece20fdb5f57932576a601193b71d3ec768f3844be",
+        "initial_difference_from_archive": {
+          "q": 8.106231689453125e-06,
+          "v": 0.004572272300720215,
+          "previous": 0.0
+        }
+      },
+      {
+        "case": 20,
+        "actual_tick": 279,
+        "match_score": 1.4456028966473393e-17,
+        "source_key": "bb67cb16882b6cef72af7ad350bb60bd6a3c26cf9f9a116c0c716babb80fbc4e",
+        "initial_difference_from_archive": {
+          "q": 0.0,
+          "v": 0.0,
+          "previous": 0.0
+        }
+      },
+      {
+        "case": 67,
+        "actual_tick": 269,
+        "match_score": 5.782411586589357e-17,
+        "source_key": "480764ccd9ae8282e20ff2b5f9308bb730cc0708960834d478ac3658d67ec5b5",
+        "initial_difference_from_archive": {
+          "q": 3.403425216674805e-05,
+          "v": 0.0010716915130615234,
+          "previous": 0.0
+        }
+      },
+      {
+        "case": 95,
+        "actual_tick": 268,
+        "match_score": 5.782411586589357e-17,
+        "source_key": "7f09d4ae17955c808010512a783c3eb9a2a33def631bfe88acfcb7739e8b0aa3",
+        "initial_difference_from_archive": {
+          "q": 0.0,
+          "v": 0.0,
+          "previous": 0.0
+        }
+      },
+      {
+        "case": 96,
+        "actual_tick": 268,
+        "match_score": 1.734723475976807e-16,
+        "source_key": "b1b18dc313ab3f8bf116a905c60b6c3e05b714e79786fea6a5de1323e40360ee",
+        "initial_difference_from_archive": {
+          "q": 0.0,
+          "v": 0.0,
+          "previous": 0.0
+        }
+      },
+      {
+        "case": 98,
+        "actual_tick": 267,
+        "match_score": 0.0,
+        "source_key": "277fe185de58fc61bbea32eb2bf2c055fe812586c930b38fa0d7a1904bc0143a",
+        "initial_difference_from_archive": {
+          "q": 4.172325134277344e-07,
+          "v": 0.00027370452880859375,
+          "previous": 0.0
+        }
+      }
+    ],
+    "native_execution": false,
+    "training": false,
+    "valid_expert_labels": false
+  },
+  "entry_command_check": {
+    "passed": true,
+    "rows": [
+      {
+        "state_key": "20:279",
+        "maximum_command_error_rad": 0.0
+      },
+      {
+        "state_key": "3:277",
+        "maximum_command_error_rad": 0.0
+      },
+      {
+        "state_key": "67:269",
+        "maximum_command_error_rad": 0.0
+      },
+      {
+        "state_key": "8:272",
+        "maximum_command_error_rad": 0.0
+      },
+      {
+        "state_key": "95:268",
+        "maximum_command_error_rad": 0.0
+      },
+      {
+        "state_key": "96:268",
+        "maximum_command_error_rad": 0.0
+      },
+      {
+        "state_key": "98:267",
+        "maximum_command_error_rad": 0.0
+      }
+    ],
+    "native_execution": false,
+    "tests": "real matcher versus feedback evaluator first-command mapping"
+  },
+  "feedback_runtime_snapshot": {
+    "state": "RUNNING_ARCHIVED_REFERENCE_RECHECK",
+    "pid": 234435,
+    "completed": 0,
+    "total": 7,
+    "results": [],
+    "elapsed_s": 8.028000593185425e-06,
+    "native_success": false,
+    "valid_expert_labels": false
+  },
+  "state38_runtime_snapshot": {
+    "state": "RUNNING_EXTENDED_REFERENCE_SETTLING",
+    "pid": 233783,
+    "completed": 0,
+    "total": 4,
+    "results": [],
+    "elapsed_s": 6.67991116642952e-06,
+    "native_success": false,
+    "valid_expert_labels": false
+  },
+  "native_runtime_snapshot": {
+    "control_ticks": 300,
+    "requested_ticks": 800,
+    "first_episodes_complete": 0,
+    "formal_eligible": false,
+    "formal_acceptance": false
+  },
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_archived_initial_recheck_20261109/coverage.json": "c1da4f68ffde2a75029d408f49e37fabb8dd3896d617cb2aec90dd42629a0da4",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_archived_initial_recheck_20261109/entry_command_check.json": "722cd2f784fc63ac087243b3379fcbaed1e431a77ce957ae43c139dd20958c9b",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_archived_initial_recheck_20261109/inputs.json": "fe353f705d4a408a844bbede53d7b73541f4a4c15d993a45caf3776b653a947e",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_archived_initial_recheck_20261109/formal_verify.json": "ae2b5bbc540391cfed972e3b8764c4c9229b3e2cee247c029a8aa1075e69beea",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_uncovered38_settling_20261109/inputs.json": "82cb56765f0049b18738a15cd6bf3ca24613a6eeecdeed75dec7ecc17c8fd121",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/evaluate_archived_initial_references_v1.py": "30e2063300d70f5a42e7691a1faca8acf1576291a32f28413e5d894fa51d5465"
+  },
+  "new_native_success": false,
+  "provisional_library_deployed": false,
+  "formal_G07_status": "FAILED",
+  "goal_achieved": false
+}
