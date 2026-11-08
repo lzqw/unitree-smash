@@ -1,0 +1,163 @@
+{
+  "recorded_at_utc": "2026-11-08T23:35:58.377446+00:00",
+  "plan_end": {
+    "state_key": "38:278",
+    "mode": "plan_end",
+    "steps": 486,
+    "required_steps": 522,
+    "failure": {
+      "tick": 764,
+      "reason": "physical_path_violation",
+      "violations": {
+        "nonfoot_ground_violation_m": 0.011783336029739813
+      },
+      "collision": {
+        "micro": 8,
+        "body": "FR_hip",
+        "gap_m": -1.8807449804550402e-05
+      }
+    },
+    "full_model_path": false,
+    "final_model_stable_s": 0.0,
+    "state_settling_capture_tick": null,
+    "native_success": false,
+    "valid_expert_labels": false,
+    "candidate_scoring_substeps": 16,
+    "physical_substeps": 160,
+    "worker_wall_seconds": 572.9113438979257
+  },
+  "state_settling": {
+    "state_key": "38:278",
+    "mode": "state_settling",
+    "steps": 522,
+    "required_steps": 522,
+    "failure": null,
+    "full_model_path": true,
+    "final_model_stable_s": 3.1600003242492676,
+    "state_settling_capture_tick": 485,
+    "native_success": false,
+    "valid_expert_labels": false,
+    "candidate_scoring_substeps": 16,
+    "physical_substeps": 160,
+    "worker_wall_seconds": 558.1529082460329
+  },
+  "entry_receipt": {
+    "passed": true,
+    "old_references_preserved": true,
+    "old_initial_matches_preserved": 43,
+    "causal_entries_checked": 110,
+    "new_matches": [
+      {
+        "case": 38,
+        "tick": 278,
+        "score": 1.1102230246251565e-14,
+        "first_command_error_rad": 0.0
+      }
+    ],
+    "capture_tick": 485,
+    "exact_paired_prefix_steps": 207,
+    "first_command_difference_rad": 0.2510256031686806,
+    "feedback_final_stable_s": 3.1600003242492676,
+    "feedback_batch_state_at_preparation": "RUNNING_EXTENDED_REFERENCE_SETTLING",
+    "reference_open_loop_complete": false,
+    "requires_controller": "PureControlStateSettlingV23",
+    "native_execution": false,
+    "native_success": false,
+    "valid_expert_labels": false,
+    "old_native_success_preservation_not_inferred": true
+  },
+  "prepared_native": {
+    "passed": true,
+    "controller": "PureControlStateSettlingV23",
+    "reference_count": 44,
+    "new_matches": [
+      {
+        "case": 38,
+        "tick": 278,
+        "score": 1.1102230246251565e-14,
+        "first_command_error_rad": 0.0
+      }
+    ],
+    "reference_open_loop_complete": false,
+    "full_closed_loop_model_path": true,
+    "model_stable_s": 3.1600003242492676,
+    "hardware_and_prefix_unchanged": true,
+    "native_execution": false,
+    "native_success": false,
+    "valid_expert_labels": false,
+    "old_native_success_retention_unproven": true
+  },
+  "native_queue_snapshot": {
+    "state": "WAITING_QUEUED_NATIVE_COMPLETION",
+    "pid": 235390,
+    "time_utc": "2026-11-08T23:35:05.835024+00:00",
+    "predecessor_deferred_pid": 227804
+  },
+  "model_runtime_snapshot": {
+    "state": "RUNNING_EXTENDED_REFERENCE_SETTLING",
+    "pid": 233783,
+    "completed": 2,
+    "total": 4,
+    "results": [
+      {
+        "state_key": "38:278",
+        "mode": "state_settling",
+        "steps": 522,
+        "required_steps": 522,
+        "failure": null,
+        "full_model_path": true,
+        "final_model_stable_s": 3.1600003242492676,
+        "state_settling_capture_tick": 485,
+        "native_success": false,
+        "valid_expert_labels": false,
+        "candidate_scoring_substeps": 16,
+        "physical_substeps": 160,
+        "worker_wall_seconds": 558.1529082460329
+      },
+      {
+        "state_key": "38:278",
+        "mode": "plan_end",
+        "steps": 486,
+        "required_steps": 522,
+        "failure": {
+          "tick": 764,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.011783336029739813
+          },
+          "collision": {
+            "micro": 8,
+            "body": "FR_hip",
+            "gap_m": -1.8807449804550402e-05
+          }
+        },
+        "full_model_path": false,
+        "final_model_stable_s": 0.0,
+        "state_settling_capture_tick": null,
+        "native_success": false,
+        "valid_expert_labels": false,
+        "candidate_scoring_substeps": 16,
+        "physical_substeps": 160,
+        "worker_wall_seconds": 572.9113438979257
+      }
+    ],
+    "elapsed_s": 573.1817609318532,
+    "native_success": false,
+    "valid_expert_labels": false
+  },
+  "native_success": false,
+  "valid_expert_labels": false,
+  "training": false,
+  "formal_G07_status": "FAILED",
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_uncovered38_settling_20261109/inputs.json": "82cb56765f0049b18738a15cd6bf3ca24613a6eeecdeed75dec7ecc17c8fd121",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_uncovered38_settling_20261109/38_278_16_plan_end.json": "1dff4c292268d8e33b51a17cf89be3f68f51942bffd0e44225ad9b91ab5bcc57",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_uncovered38_settling_20261109/38_278_16_state_settling.json": "3d589c65752fd3c4b7f4874402e6717eb5cccb0f2e0b95736fe978d79459b7ee",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_state_settling_38_preparation_20261109/receipt.json": "f3fe4c97efd820c151e85c6bde544aa0dbaf17b7ff33b7c915a07338c83db9fa",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_state_settling_38_preparation_20261109/formal_verify.json": "ae2b5bbc540391cfed972e3b8764c4c9229b3e2cee247c029a8aa1075e69beea",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_state_settling_38_native_preparation_20261109_01/plan.json": "332e8681a3fae71e84eb2ad14fe167c3ada59c561fd63554bf4c1a2e8bc7dcf8",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_state_settling_38_native_preparation_20261109_01/prepared_entry_check.json": "dd6e7435876e022481e56259d76eb4b7bd069c584ca43751d56b35d41dbe7b8b",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_state_settling_38_native_preparation_20261109_01/deferred_owner.json": "63ed408df0eac6237682a320032f55e67541a58e9a7d498fd8b22bf215c71319",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/run_after_deferred_native_v6.py": "6d6aae39eec2f14fb9f1a812c80d24d99c6682a1830baf478f9858ff17f576da"
+  }
+}
