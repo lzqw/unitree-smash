@@ -1,0 +1,312 @@
+{
+  "recorded_at_utc": "2026-11-08T19:15:17.661535+00:00",
+  "method": "Frozen strike prefix, full18 offline recovery sequence planning, state-triggered reuse and continuous constrained feedback; no new RL/BC/distillation",
+  "native_baseline": {
+    "owned_cases": 110,
+    "historical_complete5": 4,
+    "first_head_over1n_cases": 81,
+    "first_other_over1n_cases": 70,
+    "terminal_stance_entered_cases": [
+      12,
+      18,
+      30,
+      42,
+      50,
+      54,
+      58,
+      85,
+      90,
+      103,
+      123
+    ],
+    "clean_and_final_sampled_stable_08s_through_tick799": [
+      30,
+      50,
+      85,
+      90
+    ],
+    "sampled_stability_is_not_formal_acceptance": true,
+    "training": false,
+    "valid_expert_labels": false
+  },
+  "nominal_query_feedback": [
+    {
+      "state_key": "58:442",
+      "complete_model_feedback": true,
+      "end_time_s": 8.0,
+      "previous_precommand_stable_s": 1.429999828338623,
+      "end_observation_stable_s": 1.440000057220459,
+      "model_terminal_window_passed": true,
+      "native_success": false,
+      "valid_expert_labels": false
+    },
+    {
+      "state_key": "123:411",
+      "complete_model_feedback": true,
+      "end_time_s": 8.0,
+      "previous_precommand_stable_s": 1.130000114440918,
+      "end_observation_stable_s": 1.140000343322754,
+      "model_terminal_window_passed": true,
+      "native_success": false,
+      "valid_expert_labels": false
+    }
+  ],
+  "first_actual_matches": [
+    {
+      "case": 58,
+      "actual_tick": 442,
+      "query_source_case": 58,
+      "original_query_tick": 442,
+      "score": 0.0,
+      "source_key": "371580156cd7f070d2cddf46e4e3b2ab22515d002ab32acaa11b31e7b069f4f7",
+      "native_success": false
+    },
+    {
+      "case": 123,
+      "actual_tick": 409,
+      "query_source_case": 123,
+      "original_query_tick": 411,
+      "score": 0.6963511308034261,
+      "source_key": "88496e2d231e24a3723f5ce70f2531a29a34f17896d32935ec98fbc61ca3149b",
+      "native_success": false
+    }
+  ],
+  "first_match_feedback": {
+    "state": "COMPLETED_FIRST_MATCH_FEEDBACK_MODEL",
+    "results": [
+      {
+        "case": 123,
+        "actual_first_match_tick": 409,
+        "query_source_case": 123,
+        "query_tick": 411,
+        "source_key": "88496e2d231e24a3723f5ce70f2531a29a34f17896d32935ec98fbc61ca3149b",
+        "match_score": 0.6963511308034261,
+        "reconstructed_prefix_steps": 124,
+        "maximum_native_prefix_readback_error_rad": 3.2770118041369756e-07,
+        "steps": 391,
+        "required_steps": 391,
+        "failure": null,
+        "end_time_s": 8.0,
+        "final_model_stable_s": 1.1600003242492676,
+        "model_terminal_window_passed": true,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "case": 58,
+        "actual_first_match_tick": 442,
+        "query_source_case": 58,
+        "query_tick": 442,
+        "source_key": "371580156cd7f070d2cddf46e4e3b2ab22515d002ab32acaa11b31e7b069f4f7",
+        "match_score": 0.0,
+        "reconstructed_prefix_steps": 160,
+        "maximum_native_prefix_readback_error_rad": 2.4174504348328796e-07,
+        "steps": 358,
+        "required_steps": 358,
+        "failure": null,
+        "end_time_s": 8.0,
+        "final_model_stable_s": 1.440000057220459,
+        "model_terminal_window_passed": true,
+        "native_success": false,
+        "valid_expert_labels": false
+      }
+    ],
+    "wall_seconds": 370.1111328289844,
+    "native_success": false,
+    "valid_expert_labels": false
+  },
+  "prepared_entry_check": {
+    "passed": true,
+    "checks": [
+      {
+        "case": 58,
+        "actual_first_match_tick": 442,
+        "query_source_case": 58,
+        "query_tick": 442,
+        "source_key": "371580156cd7f070d2cddf46e4e3b2ab22515d002ab32acaa11b31e7b069f4f7",
+        "match_score": 0.0,
+        "reconstructed_prefix_steps": 160,
+        "maximum_native_prefix_readback_error_rad": 2.4174504348328796e-07,
+        "steps": 358,
+        "required_steps": 358,
+        "failure": null,
+        "end_time_s": 8.0,
+        "final_model_stable_s": 1.440000057220459,
+        "model_terminal_window_passed": true,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "case": 123,
+        "actual_first_match_tick": 409,
+        "query_source_case": 123,
+        "query_tick": 411,
+        "source_key": "88496e2d231e24a3723f5ce70f2531a29a34f17896d32935ec98fbc61ca3149b",
+        "match_score": 0.6963511308034261,
+        "reconstructed_prefix_steps": 124,
+        "maximum_native_prefix_readback_error_rad": 3.2770118041369756e-07,
+        "steps": 391,
+        "required_steps": 391,
+        "failure": null,
+        "end_time_s": 8.0,
+        "final_model_stable_s": 1.1600003242492676,
+        "model_terminal_window_passed": true,
+        "native_success": false,
+        "valid_expert_labels": false
+      }
+    ],
+    "single_final_native_writer": true,
+    "native_execution": false,
+    "valid_expert_labels": false,
+    "trigger_uses_actual_state_not_case_or_time": true,
+    "entry_sha256": "1c020d86cd29462abcdabceffd6fec6e7cbfb9942331e1091a5322293908227b",
+    "model_pass_is_not_native_acceptance": true
+  },
+  "runtime_snapshot": {
+    "pure_control_foot_reference_native_preparation_20261109_01/status.json": {
+      "state": "RUNNING_NATIVE_PURE_CONTROL",
+      "pid": 188615,
+      "time": "2026-11-08T18:01:03.953780+00:00"
+    },
+    "pure_control_foot_reference_all128_20261109_01/pure_control_progress.json": {
+      "control_tick": 600,
+      "owned_cases": 110,
+      "applied_steps": 25313,
+      "training": false
+    },
+    "pure_control_current_capture_native_preparation_20261109_01/serial_status.json": {
+      "state": "WAITING_VERIFIED_PREDECESSOR",
+      "pid": 195899,
+      "time": "2026-11-08T18:56:23.440247+00:00",
+      "predecessor_pid": 188615
+    },
+    "pure_control_current_suffix_native_preparation_20261109_01/deferred_status.json": {
+      "state": "WAITING_QUEUED_NATIVE_COMPLETION",
+      "pid": 198409,
+      "time_utc": "2026-11-08T19:14:50.178037+00:00",
+      "predecessor_serial_pid": 195899
+    },
+    "pure_control_current_native_rebound_search_20261109/status.json": {
+      "state": "SEARCHING_ACTUAL_RECOVERY_SEQUENCES",
+      "pid": 198169,
+      "generation": 2,
+      "completed_candidates": 186,
+      "elapsed_s": 97.66651755012572
+    },
+    "pure_control_current_native_rebound_continuation_20261109/status.json": {
+      "state": "WAITING_VERIFIED_CURRENT_SEARCH",
+      "pid": 198218,
+      "time_utc": "2026-11-08T19:13:06.362039+00:00",
+      "search_pid": 198169
+    }
+  },
+  "new_native_results_available": false,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_first_match_recovery_feedback_v1.py": "89687d18d675fa6f5dca9a632a585834964a597c46740d3e70b615397d66c682",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/check_first_match_native_entry_v1.py": "4456f2a1a1af73e98e482ab34e826dbc21df699ebca1c0b87b9b3f98fa2547a9",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/prepare_native_first_match_replanning_v19.py": "482820bfdb50cffc468999937c23365cc1b89f56b349cfa200ab9c8170ba59a1",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/run_after_queued_native_v1.py": "db674bd73d50dbe11ee36574e5d7f3ea7ec26d3d773474d9f03f51aaf7235b65",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_native_suffix_firstmatch_feedback_20261109/inputs.json": "b62c005d8ea56ebe6d4c6f54e15c47165cbb1be14976a92c663c538dda5e0760",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_native_suffix_firstmatch_feedback_20261109/result.json": "a91e1d84223c32cbcd48b2012949b8d4843afb7ccaad7c8e3fa1dcdbf7cac939",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_suffix_native_preparation_20261109_01/plan.json": "c1712289c2de96bc13484a28c8663c10757270e8713330500bd2d76350e3f592",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_suffix_native_preparation_20261109_01/prepared_entry_check.json": "a0365a1dd64521bde1f88f4f275436a6d6bff3ce22ccb400a4de1b5f7d360ada",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_suffix_native_preparation_20261109_01/deferred_owner.json": "398216d64b16dce038683c22629e1de21befacd78ea55d830fab8782d1ba0ea7",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_suffix_native_preparation_20261109_01/formal_verify.json": "ae2b5bbc540391cfed972e3b8764c4c9229b3e2cee247c029a8aa1075e69beea",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_native_suffix_continuation_20261109/end_observation.json": "973b551dd9a6eee9ceb2c3e9bc9faf655cf9fbd9861b342ad4a9036c725fd02b",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_native_suffix_preparation_20261109/first_actual_matches.json": "54c4ea2eeabb9d9d54cd382357334ac45581b57af5a79d81d24bb9464c49ee5e",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_suffix_native_preparation_20261109_01/entry_negative_checks.json": "235eb5289aace473a6167543b9ed14c8222e1e70d75d2bbaa326b9e2f57e8ee2"
+  },
+  "formal_verification": {
+    "goal_id": "G07",
+    "status": "FAILED",
+    "contract_sha256": "66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807",
+    "checks": {
+      "G00": {
+        "passed": false,
+        "errors": [
+          "Missing or empty artifact: reports/G00/native_train/checkpoint.pt"
+        ]
+      },
+      "G01": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G00",
+          "Path escapes workspace: assets/quadsmash_standard_v2.usd",
+          "Path escapes workspace: assets/vendor/piper_isaac_sim/piper_description/urdf/piper_no_gripper_description.urdf"
+        ]
+      },
+      "G02": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G01"
+        ]
+      },
+      "G03": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G02",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/train/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/train/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/reload/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/reload/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/interrupt/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/interrupt/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/resume_interrupt/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/resume_interrupt/continuation_reference.pt"
+        ]
+      },
+      "G04": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G03",
+          "Missing or empty artifact: artifacts/G04/policy.pt",
+          "Missing or empty artifact: artifacts/G04/autonomous_actor/actor.pt",
+          "Missing or empty artifact: artifacts/G04/autonomous_actor/interface.json"
+        ]
+      },
+      "G05": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G04"
+        ]
+      },
+      "G06": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G05"
+        ]
+      },
+      "G07": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G06",
+          "Missing or invalid evidence: [Errno 2] No such file or directory: '/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/G07/evidence.json'"
+        ]
+      }
+    },
+    "scope": "Structure, hashes, dependencies and thresholds only; not simulation authenticity or GPU budget enforcement."
+  },
+  "original_hardware_and_acceptance_unchanged": true,
+  "native_success_not_inferred_from_model": true,
+  "valid_expert_labels": false,
+  "entry_negative_checks": {
+    "checks": [
+      {
+        "case": "hardware_changed",
+        "rejected": true,
+        "error": "ValueError: Hardware interface or frozen prefix differs from the model audit"
+      },
+      {
+        "case": "trigger_time_changed",
+        "rejected": true,
+        "error": "ValueError: Actual-trigger feedback failed: 123"
+      },
+      {
+        "case": "stability_failed",
+        "rejected": true,
+        "error": "ValueError: Actual-trigger feedback failed: 123"
+      }
+    ],
+    "native_execution": false
+  }
+}
