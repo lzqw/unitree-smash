@@ -1,0 +1,365 @@
+{
+  "time_utc": "2026-11-08T20:56:08.433602+00:00",
+  "first_departure": {
+    "state_key": "27:274",
+    "first_departure_step": 24,
+    "first_departure_tick": 298,
+    "maximum_command_change_rad": 0.7883839832471083,
+    "selected_source": "predictive_reference_selection:wbc",
+    "prior_states_equal": true,
+    "candidates": [
+      {
+        "name": "planned",
+        "substeps": 16,
+        "accepted": true,
+        "cost": 22.910124276154736,
+        "failure": null,
+        "stages": [
+          {
+            "offset": 0,
+            "tracking_cost": 22.909323603917244,
+            "maximum_velocity_error": 20.606617202819912,
+            "maximum_configuration_error": 0.0008709879479296134
+          },
+          {
+            "offset": 1,
+            "tracking_cost": 0.0008006722374934616,
+            "maximum_velocity_error": 0.09873505823483697,
+            "maximum_configuration_error": 0.0009092828149437349
+          }
+        ]
+      },
+      {
+        "name": "planned",
+        "substeps": 160,
+        "accepted": true,
+        "cost": 0.0,
+        "failure": null,
+        "stages": [
+          {
+            "offset": 0,
+            "tracking_cost": 0.0,
+            "maximum_velocity_error": 0.0,
+            "maximum_configuration_error": 0.0
+          },
+          {
+            "offset": 1,
+            "tracking_cost": 0.0,
+            "maximum_velocity_error": 0.0,
+            "maximum_configuration_error": 0.0
+          }
+        ]
+      },
+      {
+        "name": "selected_feedback",
+        "substeps": 16,
+        "accepted": true,
+        "cost": 5.482726053792527,
+        "failure": null,
+        "stages": [
+          {
+            "offset": 0,
+            "tracking_cost": 5.309442421317875,
+            "maximum_velocity_error": 8.980444186781916,
+            "maximum_configuration_error": 0.11269782953042407
+          },
+          {
+            "offset": 1,
+            "tracking_cost": 0.17328363247465306,
+            "maximum_velocity_error": 0.7846679004174746,
+            "maximum_configuration_error": 0.015212324914483627
+          }
+        ]
+      },
+      {
+        "name": "selected_feedback",
+        "substeps": 160,
+        "accepted": true,
+        "cost": 5.154317427829232,
+        "failure": null,
+        "stages": [
+          {
+            "offset": 0,
+            "tracking_cost": 4.991637613368042,
+            "maximum_velocity_error": 8.599569573432124,
+            "maximum_configuration_error": 0.11321865904996187
+          },
+          {
+            "offset": 1,
+            "tracking_cost": 0.1626798144611903,
+            "maximum_velocity_error": 0.7139062137749512,
+            "maximum_configuration_error": 0.014342471556766462
+          }
+        ]
+      },
+      {
+        "name": "half_selected",
+        "substeps": 16,
+        "accepted": true,
+        "cost": 15.061666297513067,
+        "failure": null,
+        "stages": [
+          {
+            "offset": 0,
+            "tracking_cost": 15.016870292372753,
+            "maximum_velocity_error": 16.051753018908084,
+            "maximum_configuration_error": 0.055582489066337004
+          },
+          {
+            "offset": 1,
+            "tracking_cost": 0.0447960051403138,
+            "maximum_velocity_error": 0.43071466135750924,
+            "maximum_configuration_error": 0.006817810706954662
+          }
+        ]
+      },
+      {
+        "name": "half_selected",
+        "substeps": 160,
+        "accepted": true,
+        "cost": 14.736192955175596,
+        "failure": null,
+        "stages": [
+          {
+            "offset": 0,
+            "tracking_cost": 14.696301311249192,
+            "maximum_velocity_error": 15.84998883164386,
+            "maximum_configuration_error": 0.05576509880548386
+          },
+          {
+            "offset": 1,
+            "tracking_cost": 0.039891643926404624,
+            "maximum_velocity_error": 0.3414793957718233,
+            "maximum_configuration_error": 0.007198243936239246
+          }
+        ]
+      }
+    ],
+    "native_success": false,
+    "valid_expert_labels": false
+  },
+  "selector_checks": {
+    "command_checks": [
+      {
+        "controller": "PureControlStanceFootReferenceV15",
+        "tick": 298,
+        "delta_to_planned_rad": 0.7883839832471083,
+        "selected": "wbc",
+        "candidates": [
+          {
+            "name": "planned",
+            "accepted": true,
+            "cost": 22.910124276154736,
+            "prediction_intervals": 2,
+            "native_certified": false
+          },
+          {
+            "name": "state_joint_feedback",
+            "accepted": true,
+            "cost": 22.910124276154736,
+            "prediction_intervals": 2,
+            "native_certified": false
+          },
+          {
+            "name": "wbc",
+            "accepted": true,
+            "cost": 5.482726053792527,
+            "prediction_intervals": 2,
+            "native_certified": false
+          },
+          {
+            "name": "half_wbc",
+            "accepted": true,
+            "cost": 15.061666297513067,
+            "prediction_intervals": 2,
+            "native_certified": false
+          }
+        ]
+      },
+      {
+        "controller": "PureControlFinePlanEndV24",
+        "tick": 298,
+        "delta_to_planned_rad": 0.0,
+        "selected": "planned",
+        "candidates": [
+          {
+            "name": "planned",
+            "accepted": true,
+            "cost": 0.0,
+            "prediction_intervals": 2,
+            "substeps": 160,
+            "native_certified": false
+          },
+          {
+            "name": "state_joint_feedback",
+            "accepted": false,
+            "pruned_nonnegative_cost_lower_bound": true,
+            "model_rejected": false,
+            "native_certified": false
+          },
+          {
+            "name": "wbc",
+            "accepted": false,
+            "pruned_nonnegative_cost_lower_bound": true,
+            "model_rejected": false,
+            "native_certified": false
+          },
+          {
+            "name": "half_wbc",
+            "accepted": false,
+            "pruned_nonnegative_cost_lower_bound": true,
+            "model_rejected": false,
+            "native_certified": false
+          }
+        ]
+      }
+    ],
+    "perturbation_check": {
+      "recomputed_all_four_at_160_substeps": true,
+      "zero_cost_cache_reset": true
+    },
+    "scope": "model command selection only, not native recovery"
+  },
+  "preceding_paired_status": {
+    "state": "RUNNING_STATE_SETTLING_FEEDBACK",
+    "pid": 211873,
+    "completed": 7,
+    "total": 12,
+    "results": [
+      {
+        "state_key": "114:272",
+        "mode": "state_settling",
+        "steps": 67,
+        "required_steps": 528,
+        "failure": {
+          "tick": 339,
+          "reason": "model_rejected",
+          "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -4.60601306869271e-06, 'exact': True, 'shape_index': 31, 'obstacle': 'net_segment_32'}\")"
+        },
+        "full_model_path": false,
+        "final_model_stable_s": 0.0,
+        "state_settling_capture_tick": null,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "state_key": "114:272",
+        "mode": "plan_end",
+        "steps": 67,
+        "required_steps": 528,
+        "failure": {
+          "tick": 339,
+          "reason": "model_rejected",
+          "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -4.60601306869271e-06, 'exact': True, 'shape_index': 31, 'obstacle': 'net_segment_32'}\")"
+        },
+        "full_model_path": false,
+        "final_model_stable_s": 0.0,
+        "state_settling_capture_tick": null,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "state_key": "27:274",
+        "mode": "plan_end",
+        "steps": 56,
+        "required_steps": 526,
+        "failure": {
+          "tick": 330,
+          "reason": "model_rejected",
+          "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -5.8846654890710656e-05, 'exact': True, 'shape_index': 47, 'obstacle': 'net_segment_28'}\")"
+        },
+        "full_model_path": false,
+        "final_model_stable_s": 0.0,
+        "state_settling_capture_tick": null,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "state_key": "27:274",
+        "mode": "state_settling",
+        "steps": 56,
+        "required_steps": 526,
+        "failure": {
+          "tick": 330,
+          "reason": "model_rejected",
+          "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -5.8846654890710656e-05, 'exact': True, 'shape_index': 47, 'obstacle': 'net_segment_28'}\")"
+        },
+        "full_model_path": false,
+        "final_model_stable_s": 0.0,
+        "state_settling_capture_tick": null,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "state_key": "65:275",
+        "mode": "state_settling",
+        "steps": 189,
+        "required_steps": 525,
+        "failure": {
+          "tick": 464,
+          "reason": "model_rejected",
+          "error": "ValueError('foot_pair_clearance:{\"bodies\": [\"FL_foot\", \"FR_foot\"], \"constraint_type\": \"foot_pair_clearance\", \"gap_m\": -6.834356376682338e-06, \"planning_margin_m\": 0.0, \"prediction_geometry_call\": 54293, \"violation_m\": 6.834356376682338e-06}')"
+        },
+        "full_model_path": false,
+        "final_model_stable_s": 0.0,
+        "state_settling_capture_tick": null,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "state_key": "65:275",
+        "mode": "plan_end",
+        "steps": 189,
+        "required_steps": 525,
+        "failure": {
+          "tick": 464,
+          "reason": "model_rejected",
+          "error": "ValueError('foot_pair_clearance:{\"bodies\": [\"FL_foot\", \"FR_foot\"], \"constraint_type\": \"foot_pair_clearance\", \"gap_m\": -6.834356376682338e-06, \"planning_margin_m\": 0.0, \"prediction_geometry_call\": 54293, \"violation_m\": 6.834356376682338e-06}')"
+        },
+        "full_model_path": false,
+        "final_model_stable_s": 0.0,
+        "state_settling_capture_tick": null,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "state_key": "126:272",
+        "mode": "state_settling",
+        "steps": 183,
+        "required_steps": 528,
+        "failure": {
+          "tick": 455,
+          "reason": "model_rejected",
+          "error": "ValueError('foot_pair_clearance:{\"bodies\": [\"FL_foot\", \"FR_foot\"], \"constraint_type\": \"foot_pair_clearance\", \"gap_m\": -1.0780456179554365e-05, \"planning_margin_m\": 0.0, \"prediction_geometry_call\": 52721, \"violation_m\": 1.0780456179554365e-05}')"
+        },
+        "full_model_path": false,
+        "final_model_stable_s": 0.0,
+        "state_settling_capture_tick": null,
+        "native_success": false,
+        "valid_expert_labels": false
+      }
+    ]
+  },
+  "fine_paired_status": {
+    "state": "RUNNING_FINE_SELECTOR_SETTLING_FEEDBACK",
+    "pid": 212820,
+    "completed": 0,
+    "total": 12
+  },
+  "native_progress": {
+    "control_tick": 520,
+    "owned_cases": 110,
+    "applied_steps": 19553,
+    "training": false
+  },
+  "source_sha256": {
+    "scripts/audit_recovery_selector_fidelity_v1.py": "e295c8c0c5121749c2e1d206fd095ffb545c20dd0d72747548bea310b15de95d",
+    "scripts/pure_control_fine_selector_v24.py": "8ab93c26b2ac6f4719f649312d775fa663fe149cc5159e90800b24f4749d09f0",
+    "scripts/evaluate_state_settling_feedback_v2.py": "4f84293a1a37493e28d5cf965830b34c191e546a1fa52a4a4917aa4859478ede",
+    "reports/pure_control_selector_fidelity_20261109/first_departure.json": "76469f2e73f7a3e8bcc7e651bc3131b42ff8d23318b69ce9f6891dafba3c6362",
+    "reports/pure_control_selector_fidelity_20261109/selector_checks.json": "32b9ca462eccf07b679050c56c5aefe6ed876c2a1ced15a512dbda9d21d38e4b"
+  },
+  "formal_G07_status": "FAILED",
+  "formal_G07_reason": "Historical missing checkpoints, external asset paths and missing G07 evidence; contract unchanged",
+  "native_success_improvement": false
+}
