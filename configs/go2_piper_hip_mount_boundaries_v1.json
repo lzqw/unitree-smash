@@ -1,0 +1,59 @@
+{
+  "angular_boundaries": [
+    {
+      "hip": "FL_hip",
+      "joint": "FL_hip_joint",
+      "physical_joint_limits_rad": [
+        -1.0471998453140259,
+        1.0471998453140259
+      ],
+      "authored_intersection_boundaries": [
+        {
+          "angle_rad": 0.5690785047187993,
+          "overlap_on_lower_side": false
+        }
+      ],
+      "coordinate_invariance_max_error_m": 1.8735013540549517e-16
+    },
+    {
+      "hip": "FR_hip",
+      "joint": "FR_hip_joint",
+      "physical_joint_limits_rad": [
+        -1.0471998453140259,
+        1.0471998453140259
+      ],
+      "authored_intersection_boundaries": [
+        {
+          "angle_rad": -0.5690785231394163,
+          "overlap_on_lower_side": true
+        }
+      ],
+      "coordinate_invariance_max_error_m": 1.1102230246251565e-16
+    },
+    {
+      "hip": "RL_hip",
+      "joint": "RL_hip_joint",
+      "physical_joint_limits_rad": [
+        -1.0471998453140259,
+        1.0471998453140259
+      ],
+      "authored_intersection_boundaries": [],
+      "coordinate_invariance_max_error_m": 1.3877787807814457e-16
+    },
+    {
+      "hip": "RR_hip",
+      "joint": "RR_hip_joint",
+      "physical_joint_limits_rad": [
+        -1.0471998453140259,
+        1.0471998453140259
+      ],
+      "authored_intersection_boundaries": [],
+      "coordinate_invariance_max_error_m": 8.326672684688674e-17
+    }
+  ],
+  "geometry_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/configs/go2_piper_authored_ground_geometry_v1.json": "e39c41e9b69e481aeac8907c2dfacb9f593cf54e00c8fb822696638ef083167b"
+  },
+  "scope": "Authored hip/mount self-collision boundaries; not replacement motor joint limits",
+  "source_model_inputs": "reports/landing_joint_timed71_actual300_replan_20261108/inputs.json"
+}

@@ -1,0 +1,2183 @@
+{
+  "time_utc": "2026-11-08T12:37:46.404038+00:00",
+  "scope": "Pure control only; no RL/BC; original assets and hardware",
+  "attempts": 70,
+  "prediction_returns": 54,
+  "baseline_returns": 62,
+  "paired": {
+    "cases": 54,
+    "errors": {
+      "angular_velocity_error_rad_s": {
+        "before_median": 1.036499386281594,
+        "after_median": 0.8633028340379224,
+        "before_maximum": 4.639627927357811,
+        "after_maximum": 5.595724280385066
+      },
+      "maximum_joint_velocity_error_rad_s": {
+        "before_median": 1.6240736369582833,
+        "after_median": 1.3778176834831655,
+        "before_maximum": 19.629955922599034,
+        "after_maximum": 19.629955922599034
+      },
+      "linear_velocity_error_m_s": {
+        "before_median": 0.09424277661605898,
+        "after_median": 0.08181415072028633,
+        "before_maximum": 1.7784521021228672,
+        "after_maximum": 1.7664331071879427
+      }
+    }
+  },
+  "clean_paired": {
+    "cases": 14,
+    "errors": {
+      "angular_velocity_error_rad_s": {
+        "before_median": 0.9573575351839263,
+        "after_median": 0.010136526284753249,
+        "before_maximum": 2.8519472839139826,
+        "after_maximum": 0.13647446520843576
+      },
+      "maximum_joint_velocity_error_rad_s": {
+        "before_median": 2.256940834405145,
+        "after_median": 0.02992469475420112,
+        "before_maximum": 4.761480497681833,
+        "after_maximum": 4.214371125534548
+      },
+      "linear_velocity_error_m_s": {
+        "before_median": 0.06831500793208528,
+        "after_median": 0.0006084983538118768,
+        "before_maximum": 0.2654881519916226,
+        "after_maximum": 0.0153547862172663
+      }
+    }
+  },
+  "records": [
+    {
+      "case": 2,
+      "control_tick": 310,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.5256552696228027,
+        -0.5241729617118835
+      ],
+      "angular_velocity_error_rad_s": 1.053025472446904,
+      "maximum_joint_velocity_error_rad_s": 1.7391967637128847,
+      "linear_velocity_error_m_s": 0.13396315197811812,
+      "measured_ground_impulse_error_ns": [
+        0.048067234640306156,
+        0.13826217173564848,
+        -0.09499975721138165
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 1.053025472446904,
+        "maximum_joint_velocity_error_rad_s": 1.7391967637128847,
+        "linear_velocity_error_m_s": 0.13396315197811812
+      }
+    },
+    {
+      "case": 3,
+      "control_tick": 314,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.4498271048069,
+        -0.39516687393188477
+      ],
+      "angular_velocity_error_rad_s": 0.9891221262624346,
+      "maximum_joint_velocity_error_rad_s": 1.1600381765027499,
+      "linear_velocity_error_m_s": 0.08892474965045306,
+      "measured_ground_impulse_error_ns": [
+        0.025183008663511863,
+        -0.04667489024242877,
+        -0.06717119306467145
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 0.9891221262624346,
+        "maximum_joint_velocity_error_rad_s": 1.1600381765027499,
+        "linear_velocity_error_m_s": 0.08892474965045306
+      }
+    },
+    {
+      "case": 5,
+      "control_tick": 313,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.5030656456947327,
+        -0.435998797416687
+      ],
+      "angular_velocity_error_rad_s": 1.1326193334262875,
+      "maximum_joint_velocity_error_rad_s": 1.3866711223232193,
+      "linear_velocity_error_m_s": 0.11225806840148315,
+      "measured_ground_impulse_error_ns": [
+        0.04954544948367756,
+        0.06670562811230152,
+        -0.08769718037249685
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 1.1326193334262875,
+        "maximum_joint_velocity_error_rad_s": 1.3866711223232193,
+        "linear_velocity_error_m_s": 0.11225806840148315
+      }
+    },
+    {
+      "case": 6,
+      "control_tick": 308,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.5336344838142395,
+        -0.5172536373138428
+      ],
+      "angular_velocity_error_rad_s": 0.3102262243547403,
+      "maximum_joint_velocity_error_rad_s": 3.511346816178839,
+      "linear_velocity_error_m_s": 0.04420865985758908,
+      "measured_ground_impulse_error_ns": [
+        -0.03268481974552462,
+        0.01410735936788804,
+        0.03486146907727461
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 0.04969724955294508,
+        "maximum_joint_velocity_error_rad_s": 0.2521177719376806,
+        "linear_velocity_error_m_s": 0.04787237298943611
+      }
+    },
+    {
+      "case": 7,
+      "control_tick": 308,
+      "predicted": false,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.5691446661949158,
+        -0.5572600960731506
+      ],
+      "model_rejection": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -1.794026843627422e-06, 'exact': True, 'shape_index': 45, 'obstacle': 'net_segment_27'}\")",
+      "baseline": {
+        "predicted": false
+      }
+    },
+    {
+      "case": 8,
+      "control_tick": 310,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.5495434403419495,
+        -0.45355579257011414
+      ],
+      "angular_velocity_error_rad_s": 0.9449246547268341,
+      "maximum_joint_velocity_error_rad_s": 1.3853779264173847,
+      "linear_velocity_error_m_s": 0.08984259550080141,
+      "measured_ground_impulse_error_ns": [
+        -0.009082585999972803,
+        0.05060023166397515,
+        -0.06749463117221133
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 0.9449246547268341,
+        "maximum_joint_velocity_error_rad_s": 1.3853779264173847,
+        "linear_velocity_error_m_s": 0.08984259550080141
+      }
+    },
+    {
+      "case": 9,
+      "control_tick": 308,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.5535761117935181,
+        -0.5555981993675232
+      ],
+      "angular_velocity_error_rad_s": 0.2561233242697108,
+      "maximum_joint_velocity_error_rad_s": 0.7309740443313228,
+      "linear_velocity_error_m_s": 0.04897088147133104,
+      "measured_ground_impulse_error_ns": [
+        -0.01625143291029363,
+        -0.023682230027816775,
+        0.023500364551767294
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 0.2561233242697108,
+        "maximum_joint_velocity_error_rad_s": 0.7309740443313228,
+        "linear_velocity_error_m_s": 0.04897088147133104
+      }
+    },
+    {
+      "case": 11,
+      "control_tick": 307,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": true,
+      "initial_front_hip_rad": [
+        0.5691440105438232,
+        -0.5691443085670471
+      ],
+      "angular_velocity_error_rad_s": 0.011058193613826229,
+      "maximum_joint_velocity_error_rad_s": 0.04099447239709875,
+      "linear_velocity_error_m_s": 0.000344312804295636,
+      "measured_ground_impulse_error_ns": [
+        -0.002246862125810545,
+        0.0022814514686206877,
+        0.0035123595918045147
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 2.303371345424653,
+        "maximum_joint_velocity_error_rad_s": 4.0567889021655175,
+        "linear_velocity_error_m_s": 0.21836809167192112
+      }
+    },
+    {
+      "case": 13,
+      "control_tick": 311,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.4352811872959137,
+        -0.4739835858345032
+      ],
+      "angular_velocity_error_rad_s": 1.3816938237131287,
+      "maximum_joint_velocity_error_rad_s": 2.187838417701056,
+      "linear_velocity_error_m_s": 0.10979907484574537,
+      "measured_ground_impulse_error_ns": [
+        0.005072555539860357,
+        0.10393020821867793,
+        -0.09408757362472997
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 1.3816938237131287,
+        "maximum_joint_velocity_error_rad_s": 2.187838417701056,
+        "linear_velocity_error_m_s": 0.10979907484574537
+      }
+    },
+    {
+      "case": 15,
+      "control_tick": 309,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.42410728335380554,
+        -0.5046429634094238
+      ],
+      "angular_velocity_error_rad_s": 1.313202889700278,
+      "maximum_joint_velocity_error_rad_s": 1.9645842163455525,
+      "linear_velocity_error_m_s": 0.10474770285173383,
+      "measured_ground_impulse_error_ns": [
+        -0.09081851380140249,
+        0.09458874986341359,
+        -0.03907471681563601
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 1.313202889700278,
+        "maximum_joint_velocity_error_rad_s": 1.9645842163455525,
+        "linear_velocity_error_m_s": 0.10474770285173383
+      }
+    },
+    {
+      "case": 16,
+      "control_tick": 310,
+      "predicted": false,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.4921196699142456,
+        -0.5364854335784912
+      ],
+      "model_rejection": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.016315667972804704, 'friction_cone': 0.0, 'tangent_fixed_point': 0.002157564611080076}, 'box_violation': 0.03228941922411721, 'box_fixed_point': 0.00019805151877461125}\")",
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 3.2435933860345796,
+        "maximum_joint_velocity_error_rad_s": 10.02512426949887,
+        "linear_velocity_error_m_s": 0.8362606621430988
+      }
+    },
+    {
+      "case": 17,
+      "control_tick": 310,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.52520352602005,
+        -0.43426966667175293
+      ],
+      "angular_velocity_error_rad_s": 0.8127542318696506,
+      "maximum_joint_velocity_error_rad_s": 1.7769158949130448,
+      "linear_velocity_error_m_s": 0.0803216708578947,
+      "measured_ground_impulse_error_ns": [
+        -0.1397612575725033,
+        -0.006641840822804279,
+        0.015418635109245571
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 0.8127542318696506,
+        "maximum_joint_velocity_error_rad_s": 1.7769158949130448,
+        "linear_velocity_error_m_s": 0.0803216708578947
+      }
+    },
+    {
+      "case": 20,
+      "control_tick": 316,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.5405023694038391,
+        -0.4024678170681
+      ],
+      "angular_velocity_error_rad_s": 1.1551562389339018,
+      "maximum_joint_velocity_error_rad_s": 1.3702574405489465,
+      "linear_velocity_error_m_s": 0.10102674122460768,
+      "measured_ground_impulse_error_ns": [
+        0.06797622758167643,
+        -0.08032257900198508,
+        -0.11066898194213426
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 1.1551562389339018,
+        "maximum_joint_velocity_error_rad_s": 1.3702574405489465,
+        "linear_velocity_error_m_s": 0.10102674122460768
+      }
+    },
+    {
+      "case": 21,
+      "control_tick": 310,
+      "predicted": false,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.5207154154777527,
+        -0.562945544719696
+      ],
+      "model_rejection": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.00030338482481617746, 'friction_cone': 0.0, 'tangent_fixed_point': 4.135219929779499e-05}, 'box_violation': 0.0005691285789587025, 'box_fixed_point': 3.446413033222906e-06}\")",
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 3.4052033708709857,
+        "maximum_joint_velocity_error_rad_s": 9.736944882038388,
+        "linear_velocity_error_m_s": 1.1042725706624816
+      }
+    },
+    {
+      "case": 23,
+      "control_tick": 311,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.5244689583778381,
+        -0.43398743867874146
+      ],
+      "angular_velocity_error_rad_s": 0.8303088061256371,
+      "maximum_joint_velocity_error_rad_s": 1.400462114407741,
+      "linear_velocity_error_m_s": 0.07435198157949607,
+      "measured_ground_impulse_error_ns": [
+        -0.09538803026337787,
+        0.02901888204313463,
+        -0.013794555443681578
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 0.8303088061256371,
+        "maximum_joint_velocity_error_rad_s": 1.400462114407741,
+        "linear_velocity_error_m_s": 0.07435198157949607
+      }
+    },
+    {
+      "case": 26,
+      "control_tick": 310,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.43792450428009033,
+        -0.39893054962158203
+      ],
+      "angular_velocity_error_rad_s": 0.8005351202389972,
+      "maximum_joint_velocity_error_rad_s": 1.0267649871694031,
+      "linear_velocity_error_m_s": 0.07725801689629357,
+      "measured_ground_impulse_error_ns": [
+        0.023696354865497538,
+        -0.04475952049309084,
+        -0.05883607887636977
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 0.8005351202389972,
+        "maximum_joint_velocity_error_rad_s": 1.0267649871694031,
+        "linear_velocity_error_m_s": 0.07725801689629357
+      }
+    },
+    {
+      "case": 27,
+      "control_tick": 310,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.39885684847831726,
+        -0.3919394612312317
+      ],
+      "angular_velocity_error_rad_s": 0.03655416266121024,
+      "maximum_joint_velocity_error_rad_s": 0.08501198509845581,
+      "linear_velocity_error_m_s": 0.007167053281027026,
+      "measured_ground_impulse_error_ns": [
+        -0.003723737302022606,
+        0.008129445494776177,
+        -0.0006601691142651411
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 0.03655416266121024,
+        "maximum_joint_velocity_error_rad_s": 0.08501198509845581,
+        "linear_velocity_error_m_s": 0.007167053281027026
+      }
+    },
+    {
+      "case": 28,
+      "control_tick": 313,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.4983595609664917,
+        -0.5322769284248352
+      ],
+      "angular_velocity_error_rad_s": 1.1838923937414798,
+      "maximum_joint_velocity_error_rad_s": 1.965048815651258,
+      "linear_velocity_error_m_s": 0.12692649864444241,
+      "measured_ground_impulse_error_ns": [
+        0.07772581017393576,
+        0.08038517101409287,
+        -0.08341242194657283
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 1.1838923937414798,
+        "maximum_joint_velocity_error_rad_s": 1.965048815651258,
+        "linear_velocity_error_m_s": 0.12692649864444241
+      }
+    },
+    {
+      "case": 29,
+      "control_tick": 317,
+      "predicted": false,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.5691440105438232,
+        -0.5594211220741272
+      ],
+      "model_rejection": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -1.2723024493069973e-06, 'exact': True, 'shape_index': 47, 'obstacle': 'net_segment_27'}\")",
+      "baseline": {
+        "predicted": false
+      }
+    },
+    {
+      "case": 30,
+      "control_tick": 311,
+      "predicted": false,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.5503738522529602,
+        -0.5164461731910706
+      ],
+      "model_rejection": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.00025791321234409133, 'exact': True, 'shape_index': 48, 'obstacle': 'net_segment_27'}\")",
+      "baseline": {
+        "predicted": false
+      }
+    },
+    {
+      "case": 31,
+      "control_tick": 309,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.4817359745502472,
+        -0.3474463224411011
+      ],
+      "angular_velocity_error_rad_s": 0.7606010955046851,
+      "maximum_joint_velocity_error_rad_s": 0.9048512609602748,
+      "linear_velocity_error_m_s": 0.07045932774215966,
+      "measured_ground_impulse_error_ns": [
+        -0.10398683486375818,
+        -0.0119764509847603,
+        0.010060730859275502
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 0.7606010955046851,
+        "maximum_joint_velocity_error_rad_s": 0.9048512609602748,
+        "linear_velocity_error_m_s": 0.07045932774215966
+      }
+    },
+    {
+      "case": 32,
+      "control_tick": 312,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": true,
+      "initial_front_hip_rad": [
+        0.5681565403938293,
+        -0.5691434741020203
+      ],
+      "angular_velocity_error_rad_s": 0.027587712833465165,
+      "maximum_joint_velocity_error_rad_s": 0.023850999628782787,
+      "linear_velocity_error_m_s": 0.0006056842300896586,
+      "measured_ground_impulse_error_ns": [
+        0.00016703791942807023,
+        0.0006835073885989029,
+        9.297719634204782e-06
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 2.8519472839139826,
+        "maximum_joint_velocity_error_rad_s": 4.761480497681833,
+        "linear_velocity_error_m_s": 0.2654881519916226
+      }
+    },
+    {
+      "case": 33,
+      "control_tick": 308,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.3540937304496765,
+        -0.41679197549819946
+      ],
+      "angular_velocity_error_rad_s": 1.1547687965568965,
+      "maximum_joint_velocity_error_rad_s": 2.0404228840233025,
+      "linear_velocity_error_m_s": 0.10655179954491141,
+      "measured_ground_impulse_error_ns": [
+        -0.010785901169069023,
+        0.12964256439933441,
+        -0.08822902648978914
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 1.1547687965568965,
+        "maximum_joint_velocity_error_rad_s": 2.0404228840233025,
+        "linear_velocity_error_m_s": 0.10655179954491141
+      }
+    },
+    {
+      "case": 34,
+      "control_tick": 309,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.4172581136226654,
+        -0.5197857618331909
+      ],
+      "angular_velocity_error_rad_s": 1.1717963438703973,
+      "maximum_joint_velocity_error_rad_s": 19.629955922599034,
+      "linear_velocity_error_m_s": 0.08370480269763901,
+      "measured_ground_impulse_error_ns": [
+        -0.3011818993185793,
+        -0.03861010882390997,
+        -0.7005104481275926
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 1.1717963438703973,
+        "maximum_joint_velocity_error_rad_s": 19.629955922599034,
+        "linear_velocity_error_m_s": 0.08370480269763901
+      }
+    },
+    {
+      "case": 35,
+      "control_tick": 308,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.5183741450309753,
+        -0.4906935691833496
+      ],
+      "angular_velocity_error_rad_s": 0.1368239890336081,
+      "maximum_joint_velocity_error_rad_s": 0.42438125898839374,
+      "linear_velocity_error_m_s": 0.04011295894531522,
+      "measured_ground_impulse_error_ns": [
+        -0.02550125698762959,
+        -0.009528558568899337,
+        0.016897670681369714
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 0.1368239890336081,
+        "maximum_joint_velocity_error_rad_s": 0.42438125898839374,
+        "linear_velocity_error_m_s": 0.04011295894531522
+      }
+    },
+    {
+      "case": 36,
+      "control_tick": 312,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": true,
+      "initial_front_hip_rad": [
+        0.5691434741020203,
+        -0.5691428184509277
+      ],
+      "angular_velocity_error_rad_s": 0.014275269991674971,
+      "maximum_joint_velocity_error_rad_s": 0.052016924596301806,
+      "linear_velocity_error_m_s": 0.00015175515696717052,
+      "measured_ground_impulse_error_ns": [
+        -0.0031405550036010532,
+        0.0023234265178839753,
+        0.0043904435754447135
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 1.582742491363222,
+        "maximum_joint_velocity_error_rad_s": 4.432407637141297,
+        "linear_velocity_error_m_s": 0.16343587238664792
+      }
+    },
+    {
+      "case": 37,
+      "control_tick": 308,
+      "predicted": false,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.5691431760787964,
+        -0.5528855323791504
+      ],
+      "model_rejection": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -2.513109897184229e-06, 'exact': True, 'shape_index': 47, 'obstacle': 'net_segment_27'}\")",
+      "baseline": {
+        "predicted": false
+      }
+    },
+    {
+      "case": 38,
+      "control_tick": 315,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.5132780075073242,
+        -0.5691447854042053
+      ],
+      "angular_velocity_error_rad_s": 5.595724280385066,
+      "maximum_joint_velocity_error_rad_s": 10.928985657422094,
+      "linear_velocity_error_m_s": 1.7664331071879427,
+      "measured_ground_impulse_error_ns": [
+        -0.2331903112963385,
+        -0.5930923394035652,
+        0.35460356094509926
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 4.639627927357811,
+        "maximum_joint_velocity_error_rad_s": 8.500882425423015,
+        "linear_velocity_error_m_s": 1.7784521021228672
+      }
+    },
+    {
+      "case": 39,
+      "control_tick": 310,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": true,
+      "initial_front_hip_rad": [
+        0.5691442489624023,
+        -0.5691439509391785
+      ],
+      "angular_velocity_error_rad_s": 0.026123792871756694,
+      "maximum_joint_velocity_error_rad_s": 0.04143171772017673,
+      "linear_velocity_error_m_s": 0.0008055883522184736,
+      "measured_ground_impulse_error_ns": [
+        -0.0008065726108654192,
+        -0.0022245402020839578,
+        0.0010565128341202268
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 1.3624461033575708,
+        "maximum_joint_velocity_error_rad_s": 2.199938819268119,
+        "linear_velocity_error_m_s": 0.11286448164209807
+      }
+    },
+    {
+      "case": 41,
+      "control_tick": 312,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.5099327564239502,
+        -0.4108003079891205
+      ],
+      "angular_velocity_error_rad_s": 0.9327681389719328,
+      "maximum_joint_velocity_error_rad_s": 1.13105337925164,
+      "linear_velocity_error_m_s": 0.09495175280342484,
+      "measured_ground_impulse_error_ns": [
+        0.08585660051129951,
+        -0.01609072174388937,
+        -0.08195513374148344
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 0.9327681389719328,
+        "maximum_joint_velocity_error_rad_s": 1.13105337925164,
+        "linear_velocity_error_m_s": 0.09495175280342484
+      }
+    },
+    {
+      "case": 42,
+      "control_tick": 305,
+      "predicted": false,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.5691443681716919,
+        -0.5691438913345337
+      ],
+      "model_rejection": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -1.4024793177913608e-06, 'exact': True, 'shape_index': 47, 'obstacle': 'net_segment_27'}\")",
+      "baseline": {
+        "predicted": false
+      }
+    },
+    {
+      "case": 43,
+      "control_tick": 313,
+      "predicted": false,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.5171675682067871,
+        -0.5317299365997314
+      ],
+      "model_rejection": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.0006269735180421954, 'friction_cone': 0.0, 'tangent_fixed_point': 3.9981528757365714e-05}, 'box_violation': 0.0011386331786358284, 'box_fixed_point': 6.947686857572757e-06}\")",
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 3.2986521413064005,
+        "maximum_joint_velocity_error_rad_s": 9.638354416326534,
+        "linear_velocity_error_m_s": 0.9373237570890998
+      }
+    },
+    {
+      "case": 46,
+      "control_tick": 306,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.46304428577423096,
+        -0.39585936069488525
+      ],
+      "angular_velocity_error_rad_s": 0.7450475339827627,
+      "maximum_joint_velocity_error_rad_s": 1.0014791048922702,
+      "linear_velocity_error_m_s": 0.0636177849093209,
+      "measured_ground_impulse_error_ns": [
+        0.03550834673415071,
+        -0.0388754970880552,
+        -0.051831610423040075
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 0.7450475339827627,
+        "maximum_joint_velocity_error_rad_s": 1.0014791048922702,
+        "linear_velocity_error_m_s": 0.0636177849093209
+      }
+    },
+    {
+      "case": 47,
+      "control_tick": 310,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.41299426555633545,
+        -0.4715021550655365
+      ],
+      "angular_velocity_error_rad_s": 1.256597270016928,
+      "maximum_joint_velocity_error_rad_s": 2.2620906874579436,
+      "linear_velocity_error_m_s": 0.09625907435309182,
+      "measured_ground_impulse_error_ns": [
+        0.0023317363155975768,
+        0.14674587431884412,
+        -0.09000639223222517
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 1.256597270016928,
+        "maximum_joint_velocity_error_rad_s": 2.2620906874579436,
+        "linear_velocity_error_m_s": 0.09625907435309182
+      }
+    },
+    {
+      "case": 48,
+      "control_tick": 309,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.5458117127418518,
+        -0.5565472841262817
+      ],
+      "angular_velocity_error_rad_s": 1.3556587480058977,
+      "maximum_joint_velocity_error_rad_s": 2.8090797304533766,
+      "linear_velocity_error_m_s": 0.22898517300137403,
+      "measured_ground_impulse_error_ns": [
+        -0.014293826310684654,
+        0.00029392235204328543,
+        0.004521630035661861
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 1.1204380672686205,
+        "maximum_joint_velocity_error_rad_s": 2.588850711582289,
+        "linear_velocity_error_m_s": 0.23450598157373553
+      }
+    },
+    {
+      "case": 49,
+      "control_tick": 314,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.518826425075531,
+        -0.4024093449115753
+      ],
+      "angular_velocity_error_rad_s": 1.1007864916581316,
+      "maximum_joint_velocity_error_rad_s": 1.4983557667305196,
+      "linear_velocity_error_m_s": 0.10684806209606437,
+      "measured_ground_impulse_error_ns": [
+        0.1055175001751647,
+        0.04491833906423537,
+        -0.13475137725290498
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 1.1007864916581316,
+        "maximum_joint_velocity_error_rad_s": 1.4983557667305196,
+        "linear_velocity_error_m_s": 0.10684806209606437
+      }
+    },
+    {
+      "case": 51,
+      "control_tick": 309,
+      "predicted": false,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.5326346755027771,
+        -0.5434564352035522
+      ],
+      "model_rejection": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.016222249138351685, 'friction_cone': 0.0, 'tangent_fixed_point': 0.002299282360016086}, 'box_violation': 0.0362737073827315, 'box_fixed_point': 0.00021584932646856458}\")",
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 3.895897554950932,
+        "maximum_joint_velocity_error_rad_s": 11.828296687549226,
+        "linear_velocity_error_m_s": 0.9963749154458841
+      }
+    },
+    {
+      "case": 52,
+      "control_tick": 306,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": true,
+      "initial_front_hip_rad": [
+        0.4421371519565582,
+        -0.3559442162513733
+      ],
+      "angular_velocity_error_rad_s": 0.13647446520843576,
+      "maximum_joint_velocity_error_rad_s": 4.214371125534548,
+      "linear_velocity_error_m_s": 0.0153547862172663,
+      "measured_ground_impulse_error_ns": [
+        0.06390890372387559,
+        -0.19175685415295046,
+        0.05181056137945106
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 0.13647446520843576,
+        "maximum_joint_velocity_error_rad_s": 4.214371125534548,
+        "linear_velocity_error_m_s": 0.0153547862172663
+      }
+    },
+    {
+      "case": 54,
+      "control_tick": 311,
+      "predicted": false,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.5234678983688354,
+        -0.5691424012184143
+      ],
+      "model_rejection": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.030709623774114903, 'friction_cone': 0.0, 'tangent_fixed_point': 0.004127035038575144}, 'box_violation': 0.058507112328632524, 'box_fixed_point': 0.00036220502282335865}\")",
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 3.6971125887046288,
+        "maximum_joint_velocity_error_rad_s": 10.273414242187778,
+        "linear_velocity_error_m_s": 1.1650191454667516
+      }
+    },
+    {
+      "case": 56,
+      "control_tick": 312,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.4034608006477356,
+        -0.32451775670051575
+      ],
+      "angular_velocity_error_rad_s": 0.685093335032535,
+      "maximum_joint_velocity_error_rad_s": 0.9871222803467679,
+      "linear_velocity_error_m_s": 0.09353380042869314,
+      "measured_ground_impulse_error_ns": [
+        -0.07002164498733886,
+        0.039718859129805884,
+        -0.01777148203645007
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 0.685093335032535,
+        "maximum_joint_velocity_error_rad_s": 0.9871222803467679,
+        "linear_velocity_error_m_s": 0.09353380042869314
+      }
+    },
+    {
+      "case": 57,
+      "control_tick": 307,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.5034605860710144,
+        -0.5165181756019592
+      ],
+      "angular_velocity_error_rad_s": 1.3224501565310902,
+      "maximum_joint_velocity_error_rad_s": 2.0673673554775753,
+      "linear_velocity_error_m_s": 0.1262074655140188,
+      "measured_ground_impulse_error_ns": [
+        0.02110008702419175,
+        0.2652057488475949,
+        -0.10504125448199986
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 1.3224501565310902,
+        "maximum_joint_velocity_error_rad_s": 2.0673673554775753,
+        "linear_velocity_error_m_s": 0.1262074655140188
+      }
+    },
+    {
+      "case": 59,
+      "control_tick": 310,
+      "predicted": false,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.5110817551612854,
+        -0.5690361857414246
+      ],
+      "model_rejection": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.011297108821338497, 'friction_cone': 0.0, 'tangent_fixed_point': 0.0019410157262247374}, 'box_violation': 0.023838282624579765, 'box_fixed_point': 0.0001430115124860798}\")",
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 1.1803249705544065,
+        "maximum_joint_velocity_error_rad_s": 2.7680762347415264,
+        "linear_velocity_error_m_s": 0.13229127047819708
+      }
+    },
+    {
+      "case": 61,
+      "control_tick": 316,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": true,
+      "initial_front_hip_rad": [
+        0.40751177072525024,
+        -0.5691436529159546
+      ],
+      "angular_velocity_error_rad_s": 0.006319096436194416,
+      "maximum_joint_velocity_error_rad_s": 0.007295884878944392,
+      "linear_velocity_error_m_s": 0.0004920346981850568,
+      "measured_ground_impulse_error_ns": [
+        -0.0011292826575216575,
+        -2.2549943987648646e-05,
+        0.0008702135891707208
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 0.006319096436194416,
+        "maximum_joint_velocity_error_rad_s": 0.007295884878944392,
+        "linear_velocity_error_m_s": 0.0004920346981850568
+      }
+    },
+    {
+      "case": 64,
+      "control_tick": 315,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.3886813521385193,
+        -0.4396446645259857
+      ],
+      "angular_velocity_error_rad_s": 0.23627242923251957,
+      "maximum_joint_velocity_error_rad_s": 0.3494752165598376,
+      "linear_velocity_error_m_s": 0.032446075140668766,
+      "measured_ground_impulse_error_ns": [
+        0.02692759360494379,
+        0.026540474955299542,
+        -0.037468573186584475
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 0.23627242923251957,
+        "maximum_joint_velocity_error_rad_s": 0.3494752165598376,
+        "linear_velocity_error_m_s": 0.032446075140668766
+      }
+    },
+    {
+      "case": 67,
+      "control_tick": 306,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.5162761807441711,
+        -0.5263068675994873
+      ],
+      "angular_velocity_error_rad_s": 1.0466181162934816,
+      "maximum_joint_velocity_error_rad_s": 1.6294161710194395,
+      "linear_velocity_error_m_s": 0.11757119918438974,
+      "measured_ground_impulse_error_ns": [
+        0.031909741769753364,
+        0.14788258607326266,
+        -0.08373463137135029
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 1.0466181162934816,
+        "maximum_joint_velocity_error_rad_s": 1.6294161710194395,
+        "linear_velocity_error_m_s": 0.11757119918438974
+      }
+    },
+    {
+      "case": 69,
+      "control_tick": 311,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.48415467143058777,
+        -0.41153237223625183
+      ],
+      "angular_velocity_error_rad_s": 0.975764362604838,
+      "maximum_joint_velocity_error_rad_s": 1.1853197958652475,
+      "linear_velocity_error_m_s": 0.08330663058267795,
+      "measured_ground_impulse_error_ns": [
+        -0.025975496908899887,
+        -0.0015609661503183658,
+        -0.05254935872518729
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 0.975764362604838,
+        "maximum_joint_velocity_error_rad_s": 1.1853197958652475,
+        "linear_velocity_error_m_s": 0.08330663058267795
+      }
+    },
+    {
+      "case": 70,
+      "control_tick": 300,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.5430612564086914,
+        -0.5439838767051697
+      ],
+      "angular_velocity_error_rad_s": 1.116127702884926,
+      "maximum_joint_velocity_error_rad_s": 1.814502401695691,
+      "linear_velocity_error_m_s": 0.15298359293553437,
+      "measured_ground_impulse_error_ns": [
+        0.04623801146715811,
+        0.11235962829463741,
+        -0.0785119684718496
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 1.116127702884926,
+        "maximum_joint_velocity_error_rad_s": 1.814502401695691,
+        "linear_velocity_error_m_s": 0.15298359293553437
+      }
+    },
+    {
+      "case": 71,
+      "control_tick": 299,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": true,
+      "initial_front_hip_rad": [
+        0.5434659719467163,
+        -0.5641608834266663
+      ],
+      "angular_velocity_error_rad_s": 0.00849235622257084,
+      "maximum_joint_velocity_error_rad_s": 0.041444281725530274,
+      "linear_velocity_error_m_s": 0.0003396737235878101,
+      "measured_ground_impulse_error_ns": [
+        0.0022935494242892207,
+        -0.0017689511412822823,
+        0.0014225136815082529
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 1.173576144879957,
+        "maximum_joint_velocity_error_rad_s": 2.313942849542171,
+        "linear_velocity_error_m_s": 0.07894103361786237
+      }
+    },
+    {
+      "case": 75,
+      "control_tick": 312,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.45433905720710754,
+        -0.4041157364845276
+      ],
+      "angular_velocity_error_rad_s": 0.061051720418270505,
+      "maximum_joint_velocity_error_rad_s": 0.080140720628283,
+      "linear_velocity_error_m_s": 0.010230046213295992,
+      "measured_ground_impulse_error_ns": [
+        0.00691657948795088,
+        0.004587732539163336,
+        -0.006698413003188852
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 0.061051720418270505,
+        "maximum_joint_velocity_error_rad_s": 0.080140720628283,
+        "linear_velocity_error_m_s": 0.010230046213295992
+      }
+    },
+    {
+      "case": 77,
+      "control_tick": 304,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.5252359509468079,
+        -0.5577417016029358
+      ],
+      "angular_velocity_error_rad_s": 1.3792163575424485,
+      "maximum_joint_velocity_error_rad_s": 2.2808973889762534,
+      "linear_velocity_error_m_s": 0.1685140005602142,
+      "measured_ground_impulse_error_ns": [
+        0.025346586562784323,
+        0.11134551040700735,
+        -0.07630597639092707
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 1.2085307811502624,
+        "maximum_joint_velocity_error_rad_s": 2.087014916368501,
+        "linear_velocity_error_m_s": 0.17637567507816748
+      }
+    },
+    {
+      "case": 81,
+      "control_tick": 312,
+      "predicted": false,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.5461628437042236,
+        -0.5500155687332153
+      ],
+      "model_rejection": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.012743655299473744, 'friction_cone': 0.0, 'tangent_fixed_point': 0.0018091922087846157}, 'box_violation': 0.027599045525702692, 'box_fixed_point': 0.00016549990939368486}\")",
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 3.7575578542043497,
+        "maximum_joint_velocity_error_rad_s": 10.16401045371105,
+        "linear_velocity_error_m_s": 0.8175863441664846
+      }
+    },
+    {
+      "case": 84,
+      "control_tick": 311,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.257270485162735,
+        -0.39929336309432983
+      ],
+      "angular_velocity_error_rad_s": 0.863688799144706,
+      "maximum_joint_velocity_error_rad_s": 1.6187311028971272,
+      "linear_velocity_error_m_s": 0.07663044419134071,
+      "measured_ground_impulse_error_ns": [
+        0.04228868106687281,
+        0.12832430529220007,
+        -0.08393724550086823
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 0.863688799144706,
+        "maximum_joint_velocity_error_rad_s": 1.6187311028971272,
+        "linear_velocity_error_m_s": 0.07663044419134071
+      }
+    },
+    {
+      "case": 85,
+      "control_tick": 305,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.5204229354858398,
+        -0.5240132212638855
+      ],
+      "angular_velocity_error_rad_s": 1.2218884838244923,
+      "maximum_joint_velocity_error_rad_s": 2.2493148956107856,
+      "linear_velocity_error_m_s": 0.1374374830522839,
+      "measured_ground_impulse_error_ns": [
+        0.051090816748005086,
+        0.17287755098368696,
+        -0.10755773063090235
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 1.2218884838244923,
+        "maximum_joint_velocity_error_rad_s": 2.2493148956107856,
+        "linear_velocity_error_m_s": 0.1374374830522839
+      }
+    },
+    {
+      "case": 87,
+      "control_tick": 311,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": true,
+      "initial_front_hip_rad": [
+        0.4824570417404175,
+        -0.5691429972648621
+      ],
+      "angular_velocity_error_rad_s": 0.009214858955680267,
+      "maximum_joint_velocity_error_rad_s": 0.019955987390390117,
+      "linear_velocity_error_m_s": 0.0006394794252793725,
+      "measured_ground_impulse_error_ns": [
+        -0.00283527822752061,
+        -0.0008032595118353525,
+        0.001969240009088935
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 0.00885411708395006,
+        "maximum_joint_velocity_error_rad_s": 0.024368581316379742,
+        "linear_velocity_error_m_s": 0.0006045072135730665
+      }
+    },
+    {
+      "case": 91,
+      "control_tick": 305,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": true,
+      "initial_front_hip_rad": [
+        0.5450701713562012,
+        -0.5691429972648621
+      ],
+      "angular_velocity_error_rad_s": 0.005454795076078035,
+      "maximum_joint_velocity_error_rad_s": 0.021202607121889372,
+      "linear_velocity_error_m_s": 0.0003214437285224942,
+      "measured_ground_impulse_error_ns": [
+        0.0019392982817746651,
+        -0.0018163192422033791,
+        0.0009030070400002366
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 0.8464497853632886,
+        "maximum_joint_velocity_error_rad_s": 1.8274880779440523,
+        "linear_velocity_error_m_s": 0.057688982246308196
+      }
+    },
+    {
+      "case": 93,
+      "control_tick": 312,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.500702440738678,
+        -0.41821008920669556
+      ],
+      "angular_velocity_error_rad_s": 0.8981703635823208,
+      "maximum_joint_velocity_error_rad_s": 1.3586535397279143,
+      "linear_velocity_error_m_s": 0.06312802059864904,
+      "measured_ground_impulse_error_ns": [
+        0.04979380788283373,
+        -0.10113820087494022,
+        -0.0704406753785094
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 0.8981703635823208,
+        "maximum_joint_velocity_error_rad_s": 1.3586535397279143,
+        "linear_velocity_error_m_s": 0.06312802059864904
+      }
+    },
+    {
+      "case": 95,
+      "control_tick": 306,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": true,
+      "initial_front_hip_rad": [
+        0.47991475462913513,
+        -0.5669507384300232
+      ],
+      "angular_velocity_error_rad_s": 0.008388120969645337,
+      "maximum_joint_velocity_error_rad_s": 0.009550036924769856,
+      "linear_velocity_error_m_s": 0.000624199499422129,
+      "measured_ground_impulse_error_ns": [
+        -0.0016586088084019623,
+        -0.0013222731058913362,
+        0.0012105470383116934
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 0.008388120969645337,
+        "maximum_joint_velocity_error_rad_s": 0.009550036924769856,
+        "linear_velocity_error_m_s": 0.000624199499422129
+      }
+    },
+    {
+      "case": 96,
+      "control_tick": 306,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": true,
+      "initial_front_hip_rad": [
+        0.5137850642204285,
+        -0.5687749981880188
+      ],
+      "angular_velocity_error_rad_s": 0.007486133179848036,
+      "maximum_joint_velocity_error_rad_s": 0.019882923368896854,
+      "linear_velocity_error_m_s": 0.0004860340010934471,
+      "measured_ground_impulse_error_ns": [
+        -0.001678886236632704,
+        -0.0031332840282336516,
+        0.001340829078688266
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 0.007486133179848036,
+        "maximum_joint_velocity_error_rad_s": 0.019882923368896854,
+        "linear_velocity_error_m_s": 0.0004860340010934471
+      }
+    },
+    {
+      "case": 98,
+      "control_tick": 305,
+      "predicted": false,
+      "no_nonfoot_ground_or_net_interval": true,
+      "initial_front_hip_rad": [
+        0.5690873265266418,
+        -0.569270670413971
+      ],
+      "model_rejection": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.11601666364674657, 'friction_cone': 0.0, 'tangent_fixed_point': 0.016716292124787202}, 'box_violation': 0.269947868631248, 'box_fixed_point': 0.001615172450538438}\")",
+      "baseline": {
+        "predicted": false
+      }
+    },
+    {
+      "case": 99,
+      "control_tick": 305,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.5452287793159485,
+        -0.5442416667938232
+      ],
+      "angular_velocity_error_rad_s": 1.36395200579961,
+      "maximum_joint_velocity_error_rad_s": 2.353054788608711,
+      "linear_velocity_error_m_s": 0.18417608402856492,
+      "measured_ground_impulse_error_ns": [
+        0.04849329268955849,
+        0.12621215768035227,
+        -0.0919791116598121
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 1.3452290871455805,
+        "maximum_joint_velocity_error_rad_s": 2.2931756198580153,
+        "linear_velocity_error_m_s": 0.18748981469217638
+      }
+    },
+    {
+      "case": 101,
+      "control_tick": 297,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": true,
+      "initial_front_hip_rad": [
+        0.5508195161819458,
+        -0.5495041608810425
+      ],
+      "angular_velocity_error_rad_s": 0.014591675714275434,
+      "maximum_joint_velocity_error_rad_s": 0.08048869375338441,
+      "linear_velocity_error_m_s": 0.0017069355272329697,
+      "measured_ground_impulse_error_ns": [
+        -0.004860813077503634,
+        0.017004463082868404,
+        0.008636467714604024
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 1.068265285004564,
+        "maximum_joint_velocity_error_rad_s": 3.5098551166017846,
+        "linear_velocity_error_m_s": 0.10158299754756105
+      }
+    },
+    {
+      "case": 102,
+      "control_tick": 306,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.4743000566959381,
+        -0.41286543011665344
+      ],
+      "angular_velocity_error_rad_s": 0.8629168689311388,
+      "maximum_joint_velocity_error_rad_s": 2.2197991031184423,
+      "linear_velocity_error_m_s": 0.08724808202655952,
+      "measured_ground_impulse_error_ns": [
+        -0.28287197945749576,
+        0.1991178862146875,
+        0.06775623247144491
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 0.8629168689311388,
+        "maximum_joint_velocity_error_rad_s": 2.2197991031184423,
+        "linear_velocity_error_m_s": 0.08724808202655952
+      }
+    },
+    {
+      "case": 109,
+      "control_tick": 313,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.4395984709262848,
+        -0.518419623374939
+      ],
+      "angular_velocity_error_rad_s": 1.324241924645998,
+      "maximum_joint_velocity_error_rad_s": 1.5737078141225427,
+      "linear_velocity_error_m_s": 0.11820591374545164,
+      "measured_ground_impulse_error_ns": [
+        0.06957148859794238,
+        0.049041277519817794,
+        -0.14041631869618243
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 1.324241924645998,
+        "maximum_joint_velocity_error_rad_s": 1.5737078141225427,
+        "linear_velocity_error_m_s": 0.11820591374545164
+      }
+    },
+    {
+      "case": 111,
+      "control_tick": 304,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.41183748841285706,
+        -0.451576828956604
+      ],
+      "angular_velocity_error_rad_s": 1.2797584776123583,
+      "maximum_joint_velocity_error_rad_s": 2.126330846991195,
+      "linear_velocity_error_m_s": 0.1076076179442571,
+      "measured_ground_impulse_error_ns": [
+        0.0008111276273077284,
+        0.2571027021945986,
+        -0.10614003795128246
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 1.2797584776123583,
+        "maximum_joint_velocity_error_rad_s": 2.126330846991195,
+        "linear_velocity_error_m_s": 0.1076076179442571
+      }
+    },
+    {
+      "case": 112,
+      "control_tick": 309,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.5110689997673035,
+        -0.5074130296707153
+      ],
+      "angular_velocity_error_rad_s": 1.0263806562697066,
+      "maximum_joint_velocity_error_rad_s": 1.569847722350442,
+      "linear_velocity_error_m_s": 0.11381191951577668,
+      "measured_ground_impulse_error_ns": [
+        0.08752353046805861,
+        0.1317796585915607,
+        -0.13216853581471955
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 1.0263806562697066,
+        "maximum_joint_velocity_error_rad_s": 1.569847722350442,
+        "linear_velocity_error_m_s": 0.11381191951577668
+      }
+    },
+    {
+      "case": 114,
+      "control_tick": 311,
+      "predicted": false,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.534217119216919,
+        -0.5117279887199402
+      ],
+      "model_rejection": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -1.358203938792591e-05, 'exact': True, 'shape_index': 47, 'obstacle': 'net_segment_27'}\")",
+      "baseline": {
+        "predicted": false
+      }
+    },
+    {
+      "case": 115,
+      "control_tick": 307,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": true,
+      "initial_front_hip_rad": [
+        0.4634709358215332,
+        -0.5691419839859009
+      ],
+      "angular_velocity_error_rad_s": 0.008446656982628085,
+      "maximum_joint_velocity_error_rad_s": 0.011973641887655262,
+      "linear_velocity_error_m_s": 0.000611312477534095,
+      "measured_ground_impulse_error_ns": [
+        -0.0017748825453871575,
+        -0.001208864171912627,
+        0.0016819444668350059
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 0.008306216283744013,
+        "maximum_joint_velocity_error_rad_s": 0.012024734427567907,
+        "linear_velocity_error_m_s": 0.0005825575046137595
+      }
+    },
+    {
+      "case": 119,
+      "control_tick": 300,
+      "predicted": true,
+      "no_nonfoot_ground_or_net_interval": true,
+      "initial_front_hip_rad": [
+        0.5548844933509827,
+        -0.5685552954673767
+      ],
+      "angular_velocity_error_rad_s": 0.029372640638644826,
+      "maximum_joint_velocity_error_rad_s": 0.03599838987961945,
+      "linear_velocity_error_m_s": 0.001008992311679678,
+      "measured_ground_impulse_error_ns": [
+        -0.004513922900055423,
+        0.012078295490720037,
+        -0.0016402959557635377
+      ],
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 1.7343581527650094,
+        "maximum_joint_velocity_error_rad_s": 3.035860165729605,
+        "linear_velocity_error_m_s": 0.1141719035696234
+      }
+    },
+    {
+      "case": 121,
+      "control_tick": 311,
+      "predicted": false,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.5064375996589661,
+        -0.5535349249839783
+      ],
+      "model_rejection": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.009919200753017776, 'friction_cone': 0.0, 'tangent_fixed_point': 0.0015151504699967289}, 'box_violation': 0.01740294262614088, 'box_fixed_point': 0.0001115624296044726}\")",
+      "baseline": {
+        "predicted": true,
+        "angular_velocity_error_rad_s": 3.9043366338628127,
+        "maximum_joint_velocity_error_rad_s": 6.763377471732964,
+        "linear_velocity_error_m_s": 1.1250041600065226
+      }
+    },
+    {
+      "case": 125,
+      "control_tick": 308,
+      "predicted": false,
+      "no_nonfoot_ground_or_net_interval": false,
+      "initial_front_hip_rad": [
+        0.5623343586921692,
+        -0.5565664768218994
+      ],
+      "model_rejection": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -1.2431251026857534e-06, 'exact': True, 'shape_index': 45, 'obstacle': 'net_segment_28'}\")",
+      "baseline": {
+        "predicted": false
+      }
+    }
+  ],
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/compare_self_contact_prediction_v1.py": "ffc68730fd4eacc0c5300689b7878710aee9c17447980f1244c7d66ece2ed3ed",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_contact_detail_audit_20261108_01/one_step_ground.json": "0ae73632b4cfb1ce913e2bd6c7b4a22404ec0b44293f6fabe4fa644bfc109d81",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_joint_timed71_actual300_replan_20261108/inputs.json": "1deff1fd65b92e5b608cc3d6cb8d50f5a626cb1ad6d9bfa5600a5d3b5297f4cb",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_contact_detail_all128_20261108_01/pure_control_commands.npz": "6f092b69be0d19dfb2055f215e7ce9b69857743c04e75a56c33bf9db575f2a16",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_contact_detail_all128_20261108_01/landing_contact_detail.npz": "0128d86682f529888a28b7540307759ac6eaf7817936bb07dabd43d450540789",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/hip_mount_collision_response_v1.py": "d7d9d9fff88f3e3a12a61962aadf41537192d930f6f5ee7b2e0a2c31b8ebc2e8",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/predict_self_contact_spheres_v2.py": "5e22b438815a60997f637bae461f69ec3c0a983f26d11e4abb94f5510ac8a446",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/configs/go2_piper_hip_mount_boundaries_v1.json": "18931e752c48882d583469e885884e89b5f134fc0c5c1b105940f5d23978860f"
+  },
+  "raw_report_sha256": "8b6262609fc5d1bcd589c0740acdbd2595820f71c9a9b93e9e26e0c86d7c8b7d",
+  "tests": {
+    "command": "bash scripts/python.sh -m pytest -q tests/test_hip_mount_collision_response_v1.py tests/test_hip_mount_planning_constraints_v1.py",
+    "passed": 4
+  },
+  "v5_entry_checks": {
+    "passed": true,
+    "native_execution": false,
+    "landing_success_not_inferred": true,
+    "records": [
+      {
+        "predicted_minimum_hip_mount_gap_rad": 0.6812056519920192,
+        "case": 71,
+        "tick": 264,
+        "derivative_error": 1.4799494962858262e-11,
+        "maximum_arm_target_change_rad": 0.11187918360199989,
+        "solver_accepted": true,
+        "rejection": null,
+        "mapping": {
+          "owner": "controller",
+          "requested_target_rad": [
+            -0.10477113093111995,
+            0.1753900562066109,
+            -0.09582961838774912,
+            0.178967446344654,
+            1.347619592438314,
+            1.2779099797924731,
+            1.0896491042851246,
+            1.0553580836319554,
+            -2.6914058737834528,
+            -2.6666634686167203,
+            -2.346169445348839,
+            -2.3301304828058593,
+            -1.7417311144086807,
+            1.0896962148431295,
+            -1.9319273319348262,
+            -1.2495386693486115,
+            -1.21999990940094,
+            -0.973979507347255
+          ],
+          "final_target_rad": [
+            -0.10477113093111995,
+            0.1753900562066109,
+            -0.09582961838774912,
+            0.178967446344654,
+            1.347619592438314,
+            1.2779099797924731,
+            1.0896491042851246,
+            1.0553580836319554,
+            -2.6914058737834528,
+            -2.6666634686167203,
+            -2.346169445348839,
+            -2.3301304828058593,
+            -1.7417311144086807,
+            1.0896962148431295,
+            -1.9319273319348262,
+            -1.2495386693486115,
+            -1.21999990940094,
+            -0.973979507347255
+          ],
+          "command_mapping_delta_rad": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "software_command_slew_limit": null,
+          "measured_joint_position_used_to_bound_target": false,
+          "student_residual_added_after_controller": false,
+          "native_motor_and_joint_limits_unchanged": true
+        }
+      },
+      {
+        "predicted_minimum_hip_mount_gap_rad": 0.6866709410134028,
+        "case": 11,
+        "tick": 274,
+        "derivative_error": 2.391625786302143e-11,
+        "maximum_arm_target_change_rad": 0.10331491969805673,
+        "solver_accepted": true,
+        "rejection": null,
+        "mapping": {
+          "owner": "controller",
+          "requested_target_rad": [
+            -0.1064085878838042,
+            0.1591661834848051,
+            -0.08439766812464039,
+            0.15423370732730424,
+            1.3451934786207285,
+            1.2956350273387045,
+            1.0850697864715286,
+            1.0576647865361675,
+            -2.71493762004093,
+            -2.6689464053265404,
+            -2.379380572466422,
+            -2.3373762141605745,
+            -1.4940295129690213,
+            1.2075875566126733,
+            -2.085420600804583,
+            -1.1682917934934898,
+            -1.21999990940094,
+            -0.7970685608116597
+          ],
+          "final_target_rad": [
+            -0.1064085878838042,
+            0.1591661834848051,
+            -0.08439766812464039,
+            0.15423370732730424,
+            1.3451934786207285,
+            1.2956350273387045,
+            1.0850697864715286,
+            1.0576647865361675,
+            -2.71493762004093,
+            -2.6689464053265404,
+            -2.379380572466422,
+            -2.3373762141605745,
+            -1.4940295129690213,
+            1.2075875566126733,
+            -2.085420600804583,
+            -1.1682917934934898,
+            -1.21999990940094,
+            -0.7970685608116597
+          ],
+          "command_mapping_delta_rad": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "software_command_slew_limit": null,
+          "measured_joint_position_used_to_bound_target": false,
+          "student_residual_added_after_controller": false,
+          "native_motor_and_joint_limits_unchanged": true
+        }
+      },
+      {
+        "predicted_minimum_hip_mount_gap_rad": 0.686273781307254,
+        "case": 32,
+        "tick": 280,
+        "derivative_error": 1.6717960349410532e-11,
+        "maximum_arm_target_change_rad": 0.03769359151153173,
+        "solver_accepted": true,
+        "rejection": null,
+        "mapping": {
+          "owner": "controller",
+          "requested_target_rad": [
+            -0.1118182758191738,
+            0.13827930976402267,
+            -0.10363754253360616,
+            0.1256328945965334,
+            1.3532169324400607,
+            1.322213472595663,
+            1.0724764313642134,
+            1.0458328369952241,
+            -2.7198542397596865,
+            -2.695374609937752,
+            -2.358885801161303,
+            -2.320512999073798,
+            -1.39312369309075,
+            1.1714526697036782,
+            -1.9445545347139925,
+            -1.3384376911687104,
+            -1.21999990940094,
+            -0.7668287020609266
+          ],
+          "final_target_rad": [
+            -0.1118182758191738,
+            0.13827930976402267,
+            -0.10363754253360616,
+            0.1256328945965334,
+            1.3532169324400607,
+            1.322213472595663,
+            1.0724764313642134,
+            1.0458328369952241,
+            -2.7198542397596865,
+            -2.695374609937752,
+            -2.358885801161303,
+            -2.320512999073798,
+            -1.39312369309075,
+            1.1714526697036782,
+            -1.9445545347139925,
+            -1.3384376911687104,
+            -1.21999990940094,
+            -0.7668287020609266
+          ],
+          "command_mapping_delta_rad": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "software_command_slew_limit": null,
+          "measured_joint_position_used_to_bound_target": false,
+          "student_residual_added_after_controller": false,
+          "native_motor_and_joint_limits_unchanged": true
+        }
+      },
+      {
+        "predicted_minimum_hip_mount_gap_rad": 0.685264662013222,
+        "case": 52,
+        "tick": 270,
+        "derivative_error": 3.0878660739475094e-11,
+        "maximum_arm_target_change_rad": 0.10963672608985653,
+        "solver_accepted": true,
+        "rejection": null,
+        "mapping": {
+          "owner": "controller",
+          "requested_target_rad": [
+            -0.107783311978149,
+            0.15486857359382467,
+            -0.09603548281344143,
+            0.16598249204621807,
+            1.3459599115755185,
+            1.289215575006419,
+            1.0869025871987021,
+            1.0644065649005148,
+            -2.7146665828447816,
+            -2.660132344674085,
+            -2.388459276338228,
+            -2.3517674353426594,
+            -1.5934821595594644,
+            1.171419439605334,
+            -1.938847610527335,
+            -1.2056029520388263,
+            -1.21999990940094,
+            -0.9813900765925234
+          ],
+          "final_target_rad": [
+            -0.107783311978149,
+            0.15486857359382467,
+            -0.09603548281344143,
+            0.16598249204621807,
+            1.3459599115755185,
+            1.289215575006419,
+            1.0869025871987021,
+            1.0644065649005148,
+            -2.7146665828447816,
+            -2.660132344674085,
+            -2.388459276338228,
+            -2.3517674353426594,
+            -1.5934821595594644,
+            1.171419439605334,
+            -1.938847610527335,
+            -1.2056029520388263,
+            -1.21999990940094,
+            -0.9813900765925234
+          ],
+          "command_mapping_delta_rad": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "software_command_slew_limit": null,
+          "measured_joint_position_used_to_bound_target": false,
+          "student_residual_added_after_controller": false,
+          "native_motor_and_joint_limits_unchanged": true
+        }
+      },
+      {
+        "predicted_minimum_hip_mount_gap_rad": 0.6843611779016844,
+        "case": 101,
+        "tick": 264,
+        "derivative_error": 1.676153660312707e-11,
+        "maximum_arm_target_change_rad": 0.07539766388170732,
+        "solver_accepted": true,
+        "rejection": null,
+        "mapping": {
+          "owner": "controller",
+          "requested_target_rad": [
+            -0.13456747545411862,
+            0.15510917350922776,
+            -0.12106364746114154,
+            0.1619389705426838,
+            1.3354260711979924,
+            1.2990522063587582,
+            1.0699869624528089,
+            1.0720492210441845,
+            -2.687796488709852,
+            -2.669534422147483,
+            -2.346234289050249,
+            -2.3374606291468525,
+            -1.623667992084807,
+            1.2713975374198674,
+            -2.1715926795992067,
+            -1.3784361895186668,
+            -1.21999990940094,
+            -0.7583564119727693
+          ],
+          "final_target_rad": [
+            -0.13456747545411862,
+            0.15510917350922776,
+            -0.12106364746114154,
+            0.1619389705426838,
+            1.3354260711979924,
+            1.2990522063587582,
+            1.0699869624528089,
+            1.0720492210441845,
+            -2.687796488709852,
+            -2.669534422147483,
+            -2.346234289050249,
+            -2.3374606291468525,
+            -1.623667992084807,
+            1.2713975374198674,
+            -2.1715926795992067,
+            -1.3784361895186668,
+            -1.21999990940094,
+            -0.7583564119727693
+          ],
+          "command_mapping_delta_rad": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "software_command_slew_limit": null,
+          "measured_joint_position_used_to_bound_target": false,
+          "student_residual_added_after_controller": false,
+          "native_motor_and_joint_limits_unchanged": true
+        }
+      },
+      {
+        "predicted_minimum_hip_mount_gap_rad": 0.6827035578293196,
+        "case": 58,
+        "tick": 282,
+        "derivative_error": 1.8633337928175564e-11,
+        "maximum_arm_target_change_rad": 0.08357329060603225,
+        "solver_accepted": true,
+        "rejection": null,
+        "mapping": {
+          "owner": "controller",
+          "requested_target_rad": [
+            -0.0947859333138314,
+            0.14987199432249548,
+            -0.08703647204562368,
+            0.13103515996042908,
+            1.3567389001072252,
+            1.3279452800185645,
+            1.0736511807851947,
+            1.0586139569490178,
+            -2.7168598741166567,
+            -2.692487806114777,
+            -2.3628735212878844,
+            -2.331942161846153,
+            -1.2862809564099158,
+            1.2342037470145122,
+            -1.9774393462408342,
+            -1.3837578019757326,
+            -1.21999990940094,
+            -1.0402312745412232
+          ],
+          "final_target_rad": [
+            -0.0947859333138314,
+            0.14987199432249548,
+            -0.08703647204562368,
+            0.13103515996042908,
+            1.3567389001072252,
+            1.3279452800185645,
+            1.0736511807851947,
+            1.0586139569490178,
+            -2.7168598741166567,
+            -2.692487806114777,
+            -2.3628735212878844,
+            -2.331942161846153,
+            -1.2862809564099158,
+            1.2342037470145122,
+            -1.9774393462408342,
+            -1.3837578019757326,
+            -1.21999990940094,
+            -1.0402312745412232
+          ],
+          "command_mapping_delta_rad": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "software_command_slew_limit": null,
+          "measured_joint_position_used_to_bound_target": false,
+          "student_residual_added_after_controller": false,
+          "native_motor_and_joint_limits_unchanged": true
+        }
+      }
+    ],
+    "source_sha256": {
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/check_pure_control_self_collision_v5.py": "3017fa57ecc17764d33be2379135feff6b6fe2c32da44aa1d4e178d3efd4b904",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_self_collision_preparation_20261108_01/controller.json": "82f0b609ee0613e6fa4f5ce841091b6fac9c3409e12f1080b508bb7505764489",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_native_all128_20261108_01/pure_control_commands.npz": "6f092b69be0d19dfb2055f215e7ce9b69857743c04e75a56c33bf9db575f2a16"
+    }
+  },
+  "native_v4_status": {
+    "state": "RUNNING_NATIVE_PURE_CONTROL",
+    "pid": 141755,
+    "time": "2026-11-08T12:14:09.014108+00:00"
+  },
+  "native_v4_progress": {
+    "control_tick": 600,
+    "owned_cases": 110,
+    "applied_steps": 10638,
+    "training": false
+  },
+  "native_v5_queue": {
+    "state": "WAITING_VERIFIED_PREDECESSOR",
+    "pid": 144604,
+    "time": "2026-11-08T12:34:04.695692+00:00",
+    "predecessor_pid": 141755
+  },
+  "response_search": {
+    "state": "RUNNING_RELEASE_BANK_MODEL_SEARCH",
+    "completed": 36,
+    "total": 110,
+    "fine_full_horizon": 0
+  },
+  "geometry_search": {
+    "state": "RUNNING_RELEASE_BANK_MODEL_SEARCH",
+    "completed": 2,
+    "total": 110,
+    "fine_full_horizon": 0
+  },
+  "stable_landing_improvement_proven": false,
+  "valid_expert_labels": false,
+  "formal_goal_verifier": {
+    "goal_id": "G07",
+    "status": "FAILED",
+    "contract_sha256": "66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807",
+    "checks": {
+      "G00": {
+        "passed": false,
+        "errors": [
+          "Missing or empty artifact: reports/G00/native_train/checkpoint.pt"
+        ]
+      },
+      "G01": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G00",
+          "Path escapes workspace: assets/quadsmash_standard_v2.usd",
+          "Path escapes workspace: assets/vendor/piper_isaac_sim/piper_description/urdf/piper_no_gripper_description.urdf"
+        ]
+      },
+      "G02": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G01"
+        ]
+      },
+      "G03": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G02",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/train/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/train/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/reload/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/reload/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/interrupt/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/interrupt/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/resume_interrupt/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/resume_interrupt/continuation_reference.pt"
+        ]
+      },
+      "G04": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G03",
+          "Missing or empty artifact: artifacts/G04/policy.pt",
+          "Missing or empty artifact: artifacts/G04/autonomous_actor/actor.pt",
+          "Missing or empty artifact: artifacts/G04/autonomous_actor/interface.json"
+        ]
+      },
+      "G05": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G04"
+        ]
+      },
+      "G06": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G05"
+        ]
+      },
+      "G07": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G06",
+          "Missing or invalid evidence: [Errno 2] No such file or directory: '/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/G07/evidence.json'"
+        ]
+      }
+    },
+    "scope": "Structure, hashes, dependencies and thresholds only; not simulation authenticity or GPU budget enforcement."
+  }
+}
