@@ -1,0 +1,325 @@
+{
+  "created_utc": "2026-11-08T21:27:08.071056+00:00",
+  "native_run": "reports/pure_control_current_capture_all128_20261109_01",
+  "native_job": {
+    "status": "SUCCEEDED",
+    "started_at": "2026-11-08T19:33:56.024305+00:00",
+    "finished_at": "2026-11-08T21:23:56.403886+00:00",
+    "elapsed_s": 6600.366424022941,
+    "charged_gpu_hours": 1.8334351177841504,
+    "charged_env_steps": 102400
+  },
+  "landing_segment_cases": [
+    12,
+    30,
+    50,
+    85,
+    90,
+    118
+  ],
+  "complete5_cases": [
+    12,
+    30,
+    50,
+    85,
+    90
+  ],
+  "case118_task_outcome": {
+    "training_index": 118,
+    "air": false,
+    "recovery": false,
+    "complete5": false,
+    "ball5_except_recovery": false,
+    "complete8": false,
+    "rejection_reasons": [
+      "legal_airborne_strings",
+      "same_flight_stable_recovery",
+      "actual_net_and_target"
+    ]
+  },
+  "versus_v14": {
+    "old_clean_stable": [
+      30,
+      50,
+      85,
+      90
+    ],
+    "new_clean_stable": [
+      12,
+      30,
+      50,
+      85,
+      90,
+      118
+    ],
+    "retained": [
+      30,
+      50,
+      85,
+      90
+    ],
+    "lost": [],
+    "added": [
+      12,
+      118
+    ],
+    "old_historical_complete5": 4,
+    "new_historical_complete5": 5,
+    "action_difference_before_stance": [
+      10,
+      24,
+      28,
+      32,
+      33,
+      43,
+      67,
+      71,
+      75,
+      81,
+      82,
+      83,
+      86,
+      94,
+      100,
+      118,
+      119,
+      121
+    ]
+  },
+  "versus_v15": {
+    "old_clean_stable": [
+      30,
+      42,
+      50,
+      85,
+      90
+    ],
+    "new_clean_stable": [
+      12,
+      30,
+      50,
+      85,
+      90,
+      118
+    ],
+    "retained": [
+      30,
+      50,
+      85,
+      90
+    ],
+    "lost": [
+      42
+    ],
+    "added": [
+      12,
+      118
+    ],
+    "old_historical_complete5": 5,
+    "new_historical_complete5": 5,
+    "action_difference_before_stance": [
+      10,
+      24,
+      28,
+      32,
+      33,
+      43,
+      71,
+      75,
+      81,
+      82,
+      83,
+      86,
+      94,
+      100,
+      118,
+      119,
+      121
+    ]
+  },
+  "selected_comparisons": {
+    "12": {
+      "case": 12,
+      "old": {
+        "control_owned": true,
+        "clean": false,
+        "final_stable_s": 0.0,
+        "longest_stable_s": 0.15000009536743164,
+        "last_control_tick": 799,
+        "first_head_over1n": null,
+        "first_other_over1n": {
+          "body": "Racket",
+          "time_s": 5.350125,
+          "physics_frame": 85602
+        }
+      },
+      "new": {
+        "control_owned": true,
+        "clean": true,
+        "final_stable_s": 3.3799996376037598,
+        "longest_stable_s": 3.3799996376037598,
+        "last_control_tick": 799,
+        "first_head_over1n": null,
+        "first_other_over1n": null
+      },
+      "common_observations": 518,
+      "only_old_ticks": [],
+      "only_new_ticks": [],
+      "first_stance_tick_either": 442,
+      "first_command_difference": {
+        "tick": 442,
+        "maximum_command_difference_rad": 0.21987984802429505,
+        "old_source": "interval_qp",
+        "new_source": "predictive_reference_selection:planned",
+        "old_stance": true,
+        "new_stance": false
+      },
+      "first_state_difference": {
+        "tick": 443,
+        "maximum_q_difference": 0.010844528675079346,
+        "maximum_v_difference": 1.1180857717990875
+      },
+      "maximum_difference_before_either_stance": {
+        "command_rad": 0.0,
+        "q": 0.0,
+        "v": 0.0
+      },
+      "old_clean_stable": false,
+      "new_clean_stable": true
+    },
+    "42": {
+      "case": 42,
+      "old": {
+        "control_owned": true,
+        "clean": true,
+        "final_stable_s": 3.6299996376037598,
+        "longest_stable_s": 3.6299996376037598,
+        "last_control_tick": 799,
+        "first_head_over1n": null,
+        "first_other_over1n": null
+      },
+      "new": {
+        "control_owned": true,
+        "clean": false,
+        "final_stable_s": 0.0,
+        "longest_stable_s": 1.4099998474121094,
+        "last_control_tick": 799,
+        "first_head_over1n": null,
+        "first_other_over1n": {
+          "body": "FL_thigh",
+          "time_s": 7.2904375,
+          "physics_frame": 116647
+        }
+      },
+      "common_observations": 529,
+      "only_old_ticks": [],
+      "only_new_ticks": [],
+      "first_stance_tick_either": 437,
+      "first_command_difference": {
+        "tick": 437,
+        "maximum_command_difference_rad": 0.18247091736255583,
+        "old_source": "interval_qp",
+        "new_source": "interval_qp",
+        "old_stance": true,
+        "new_stance": true
+      },
+      "first_state_difference": {
+        "tick": 438,
+        "maximum_q_difference": 0.0009911656379699707,
+        "maximum_v_difference": 0.18105393648147583
+      },
+      "maximum_difference_before_either_stance": {
+        "command_rad": 0.0,
+        "q": 0.0,
+        "v": 0.0
+      },
+      "old_clean_stable": true,
+      "new_clean_stable": false
+    },
+    "118": {
+      "case": 118,
+      "old": {
+        "control_owned": true,
+        "clean": false,
+        "final_stable_s": 0.0,
+        "longest_stable_s": 0.0,
+        "last_control_tick": 799,
+        "first_head_over1n": {
+          "body": "Head_lower",
+          "time_s": 4.317,
+          "physics_frame": 69072
+        },
+        "first_other_over1n": {
+          "body": "FL_thigh",
+          "time_s": 3.8315,
+          "physics_frame": 61304
+        }
+      },
+      "new": {
+        "control_owned": true,
+        "clean": true,
+        "final_stable_s": 3.4200000762939453,
+        "longest_stable_s": 3.4200000762939453,
+        "last_control_tick": 799,
+        "first_head_over1n": null,
+        "first_other_over1n": null
+      },
+      "common_observations": 522,
+      "only_old_ticks": [],
+      "only_new_ticks": [],
+      "first_stance_tick_either": 538,
+      "first_command_difference": {
+        "tick": 338,
+        "maximum_command_difference_rad": 0.5877593488901791,
+        "old_source": "interval_qp",
+        "new_source": "predictive_reference_selection:planned",
+        "old_stance": false,
+        "new_stance": false
+      },
+      "first_state_difference": {
+        "tick": 339,
+        "maximum_q_difference": 0.01263648271560669,
+        "maximum_v_difference": 1.3377828896045685
+      },
+      "maximum_difference_before_either_stance": {
+        "command_rad": 1.5568861970185202,
+        "q": 1.5217288732528687,
+        "v": 30.46146386861801
+      },
+      "old_clean_stable": false,
+      "new_clean_stable": true
+    }
+  },
+  "first_replanning": {
+    "118": {
+      "replanning_time_s": 3.379999876022339,
+      "replanning_source_key": "ec74cb0f642192e1bcdaa45837f709ca4325bbe8112431b860ad642c63b64e14",
+      "replanning_state_match_score": 1.1102230246251565e-14,
+      "tick": 338
+    },
+    "12": {
+      "replanning_time_s": 4.420000076293945,
+      "replanning_source_key": "7adf54553dff45d3f5f0e099e3e50a9919a82b4499c1b39252f85a36fa10b2a1",
+      "replanning_state_match_score": 0.0,
+      "tick": 442
+    }
+  },
+  "all_landing_passes_had_pre_takeover_head_contact": true,
+  "whole_episode_clean_success_claimed": false,
+  "formal_acceptance": false,
+  "training": false,
+  "valid_expert_labels": false,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_capture_review_20261109/support.json": "cc67cc223cc0ca5dd6845027a2204058f6742627f373c7cc81efbb0916daa563",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_capture_review_20261109/versus_v14.json": "f826de0e423539f3c818cadb608a9ed190160d4302f4ffce6859affc3f745d47",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_capture_review_20261109/versus_v15.json": "a3cb12c7918600443c3fe4cfd700918ff65fd12735b52dbfe85b9b66b628228e",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_capture_all128_20261109_01/metrics.json": "eb99f2bc84520821a5c0a4a660a423aac14140ce0af2811400c4bd442aa3dd62",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_capture_all128_20261109_01/job.json": "fb38f61ea6d00b9464544920b0f57f17988892f6cfd373c7450745000356c148",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_capture_native_preparation_20261109_01/native_audit.json": "0da2d41313ac52d8b70c80c7c4d1c9acbe2289963792d7857193b2b8499468a3"
+  },
+  "continued_jobs": [
+    "pure_control_current_suffix_native_preparation_20261109_01",
+    "pure_control_preserved_foot_native_preparation_20261109_02",
+    "pure_control_initial_expansion_native_preparation_20261109_01"
+  ]
+}
