@@ -1,0 +1,2081 @@
+{
+  "timestamp_utc": "2026-11-08T18:58:03.724048+00:00",
+  "search": {
+    "state": "COMPLETED_ACTUAL_RECOVERY_SEQUENCE_SEARCH",
+    "completed_candidates": 468,
+    "results": [
+      {
+        "state_key": "12:442",
+        "steps": 358,
+        "model_path_complete": true,
+        "terminal_stable_s": 3.3899998664855957,
+        "window_violation": 0.0,
+        "failure": null
+      },
+      {
+        "state_key": "58:442",
+        "steps": 262,
+        "model_path_complete": false,
+        "terminal_stable_s": 0.0,
+        "window_violation": 0.0,
+        "failure": {
+          "step": 262,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.0018129850222447057
+          },
+          "collision": {
+            "micro": 9,
+            "body": "FL_calf",
+            "gap_m": -7.237939016763867e-06
+          }
+        }
+      },
+      {
+        "state_key": "123:411",
+        "steps": 253,
+        "model_path_complete": false,
+        "terminal_stable_s": 0.0,
+        "window_violation": 0.0,
+        "failure": {
+          "step": 253,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.000885440537442328
+          },
+          "collision": {
+            "micro": 123,
+            "body": "FR_thigh",
+            "gap_m": -1.742689080569404e-06
+          }
+        }
+      }
+    ],
+    "wall_seconds": 874.2398337270133,
+    "native_success": false,
+    "valid_expert_labels": false
+  },
+  "capture_feedback": {
+    "state": "COMPLETED_CURRENT_FEEDBACK_AND_END_CHECK",
+    "pid": 193889,
+    "time_utc": "2026-11-08T18:48:30.052207+00:00",
+    "result": {
+      "state": "COMPLETED_REPLANNED_FEEDBACK_MODEL",
+      "results": [
+        {
+          "state_key": "12:442",
+          "steps": 358,
+          "required_steps": 358,
+          "failure": null,
+          "final_model_stable_s": 3.3799996376037598,
+          "longest_model_stable_s": 3.3799996376037598,
+          "native_success": false,
+          "valid_expert_labels": false
+        }
+      ],
+      "excluded": [
+        {
+          "state_key": "123:411",
+          "reason": "No complete fine-model sequence"
+        },
+        {
+          "state_key": "58:442",
+          "reason": "No complete fine-model sequence"
+        }
+      ],
+      "wall_seconds": 253.96582861803472,
+      "native_success": false,
+      "valid_expert_labels": false
+    },
+    "end_observation": [
+      {
+        "state_key": "12:442",
+        "complete_model_feedback": true,
+        "end_time_s": 8.0,
+        "previous_precommand_stable_s": 3.3799996376037598,
+        "end_observation_stable_s": 3.3899998664855957,
+        "model_terminal_window_passed": true,
+        "native_success": false,
+        "valid_expert_labels": false
+      }
+    ],
+    "native_success": false,
+    "valid_expert_labels": false
+  },
+  "prefix_check": {
+    "passed": true,
+    "checks": [
+      {
+        "source_case": 12,
+        "actual_replanning_tick": 442,
+        "prefix_steps": 160,
+        "maximum_prefix_change_rad": 0.0,
+        "maximum_native_readback_error_rad": 2.670187050912709e-07,
+        "covered_state_match_score": 0.0,
+        "first_replanned_command_source": "predictive_reference_selection:planned",
+        "first_replanned_vs_old_command_max_rad": 0.20962670449696202
+      },
+      {
+        "source_case": 118,
+        "actual_replanning_tick": 338,
+        "prefix_steps": 60,
+        "maximum_prefix_change_rad": 0.0,
+        "maximum_native_readback_error_rad": 2.554844547031365e-07,
+        "covered_state_match_score": 1.1102230246251565e-14,
+        "first_replanned_command_source": "predictive_reference_selection:planned",
+        "first_replanned_vs_old_command_max_rad": 0.5877593488901791
+      }
+    ],
+    "source_sha256": {
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/check_preserved_stance_replanning_v17.py": "321c42d12dbe3018e936b2e7a4feef99f12545fb2e12b5491129f03bab8bd24d",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_settled_stance_all128_20261109_01/pure_control_commands.npz": "1ea4cdad8c973d5be22b431448191d1bc2d5d08c1f45a5453f7ff91a9d042218",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_settled_stance_all128_20261109_01/pure_control_diagnostics.jsonl": "c99d346b05a026c4fbfd500a06f51eed0793718ce1bb20aac10519423aff8f78",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_settled_stance_all128_20261109_01/native_command_inputs.json": "f861d727c049c85d612cad7ce2a5be9a4bc3a85ab18ba38f5018dc871fca6f7c",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_settled_stance_native_preparation_20261109_01/controller.json": "afe254b5992d0f05ec58725064ff4e557eba65c0bc0b6c9e537e5b5e29b1db9a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_native_capture_preparation_20261109/reference_library.json": "5269d9f2785ec6b343379905dcc027edc334cbc8598ae2dc92adc855c02a5b91",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/loaded_pinocchio_model_v1.py": "2b303a32e57391ec7aaf3c3faf9d151f758477faf13ef6efae5bead979dcae82",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/whole_body_support_qp_v1.py": "b67cd1f1c8ebe973d3885773fbc9f3bf17cfd935e5e2210a4b7c0ea1ff331d6d",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frame_point_kinematics_v1.py": "60fac87ef04f83a22807217b04e7cbe40b536251b56f5a119dc012d1f2529fd8",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/reduced_whole_body_support_qp_v1.py": "e731a0bca8744d4639099dd2ff9be94840a9f0c953c64924fb2cfa9e7a9c80c7",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/continuous_support_qp_v1.py": "824a3d49711917803e9c82af63b1d142917d62c874ec8751325578a71b4af640",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/command_history_support_qp_v1.py": "1ac2221f85cbf3d468be4c265cc932845700d5f17a9eaaf37440998873689081",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/condensed_implicit_drive_v1.py": "a0f21e9b954db9e978ba428a3770fcb8cd666e08dd21aa27cedf0c0e5c5af629",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/implicit_support_prediction_v1.py": "b751fa0ea59edd1fe8fc62cf0ba3816e5583ecc76df7058ef3f5185a335a1e01",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_interval_qp_v1.py": "cbc3d59485da07153e8e3ae3a42de2231dff7c738a22a18b8ad74bd39dbb844f",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/authored_ground_clearance_v1.py": "ba54ef51a5cfd5c64937814c343d92057cd0e9e83dc4e435f1479049aa342630",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/event_recovery_manager_v1.py": "8fe16ba41ec3d2fc942dbf01686d4af3a5fde354dc6536726bab826b29b959e2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/dense_active_set_qp_v1.py": "cba063c6c594bfb42d1114dcafbaebc606d8c4b49b53ee65e764e3979b1bac4a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_recovery_v1.py": "119a6f073b32e4c7f577c2653314c2e441dbc3c13771e577031962b79281337f",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/full_authority_position_interface_v1.py": "88a371b4e72864952c7e7c3c2250ccd90603e3e7c0ef7c1579030cc9e89034ca",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/authored_net_clearance_v1.py": "386ed6042d439bde4366dec73a536d6a21a0eaf700152e7e4ca16aeef67f6526",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/foot_pair_clearance_kinematics_v1.py": "2e3caa0b3b791ad45f2e51eb1956f74b7cc4e310c15cad72cb23d8b023a60b11",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recovery_surface_constraints_v1.py": "5c546c5acbfd2e2d5f03578b21a10237162bb293013a825a71f25f92de7671eb",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_court_recovery_v4.py": "4666b83f6adf72c6cfab09703583815405703f9f0d5c76c22c7a97ad4604dbac",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_interval_self_collision_v2.py": "642610fc843e5d8dbf5f43e50994922e3d5565066466f708c18462a62be7f75d",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frictional_impulse_step_v1.py": "4e780bf218dd501a64f1885ab1697c3050d228580fc6cd3c7123d36fb18e2348",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frictional_speed_limited_step_v1.py": "6b5392e7dbdb2f4c95a48570d668a28e66fbd2ffd8eb7ae1bef04a8a01b01b92",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frictional_position_limited_step_v1.py": "07d976fa06b4c1e9e90792f463cb058be5c9a1af38170e22ff226c9680230413",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/hip_mount_collision_response_v1.py": "d7d9d9fff88f3e3a12a61962aadf41537192d930f6f5ee7b2e0a2c31b8ebc2e8",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/hip_mount_planning_constraints_v1.py": "2c63e83e930fed048e87d04fb5df6cde04c822f586f57207670520e7f83f508a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_self_collision_recovery_v5.py": "90d9a6b84c7b153b74e3d36c16a38bda59fa90cb14290e904fdc32e0807a5bf9",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_interval_moving_foot_v3.py": "daf71c5788dcb9a553a83fb2ebcda14e7a5e86a37d9965ed2c5fb0ab82adf363",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_moving_foot_recovery_v7.py": "d018a7f7ae1352feb4f7157114a05996564bc1490b768cef3a7201f4e8ea87ca",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recovery_reference_library_v1.py": "6c97dc2ba1b7c118cfc71c614157b2307dd15cc1f1cc75e2eeeee6570dc31735",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recorded_nonfoot_contact_history_v1.py": "b897ec590f76795a515f1e3ad14db1529f43117731f031f00d43dc556e5e599a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/summarize_precontact_prediction_v1.py": "b05936fc4345546c33bf14696bfbf6ed8967025799da23d87e0b04fc014ba227",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_sphere_touchdown_predictions_v1.py": "92b1905a21c544ff212a237104edb700ce6eb3b1414908cb14d80990b21a9a03",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/predict_self_contact_spheres_v2.py": "5e22b438815a60997f637bae461f69ec3c0a983f26d11e4abb94f5510ac8a446",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/foot_separation_path_constraint_v1.py": "8926324e99df4984bf7af09a686e813df57ebb8524408485633e430e1cd04f85",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_trajectory_recovery_v8.py": "fdbaf93a10c735c5736d3cf4f6dd2d912c43041e2cd6ce2144f63d9ba6005448",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_trajectory_recovery_v9.py": "a9d471bf6e674d5e4ec4f8625b34204f01544b0f4e0bcad1e0ec702869f8e042",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recovery_reference_library_v2.py": "2497e602cd60d3499477adeb1ad92631afc737c8b46e76c20020f71bdde4c232",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_long_trajectory_recovery_v11.py": "39b3596b3e711762fdfdddcb19967413396d15b6f659717e4eabff6b1724a5ac",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_reference_clock_v12.py": "47b155c960fe42b79d5e0d86046d78c14d04b9b18b382fd4f0c3bfac9cf592be",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_terminal_stance_v13.py": "7eedccf0b544f930c968f59e7d575ed9c118c5d07921ec294ee344d9f38414e4",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_settled_stance_v14.py": "abfa89c7d3730521a6e4fab7d9e962896dbc37bd86f2689cb7a8c92cfa4ce385",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_stance_foot_reference_v15.py": "0b25ca20a3e3f0ada565615d5fe4703965f6a6719f55bad150a7ab80f57f14aa",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_preserved_stance_replanning_v17.py": "db7e1e2f1014b233e937eca059c966c720f644e54d1fa5b2069c6d5fe6f4de79",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/parallel_landing_solver_v1.py": "4bc18476684fbc3a81eae8b1b63073c615ceafd73a23ccca2dde919564cfea33",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/interval_command_support_qp_v1.py": "7f9e47fdeb1f6cc420368d127f89cc1b726397752b0387f57b5bee1ea5915589",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/admitted_arm_support_qp_v1.py": "097d7022b16a28aa31f11081056092bd8b5b44172291b6bd3b1aba1dbe0a1c6e",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v1.py": "da2ff2e4ee1479bf3fc422c0b71f8831bffd9e5868d9a4e0665fd348ab659a59",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v2.py": "6d0ad9bc4fcd27a0f4f418e55b988341ffe809f14c132415281ec41621196ae2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v3.py": "d8c54679697e78678a898f5d36a27305f9252a5f2b09990d0b33ddcc25533300",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_command_history_mpc_v1.py": "466ba93dc473c7d2de93aae0d5d7848b390d72e8fe1ef779ff0818efad704d28",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_interval_command_mpc_v1.py": "545ecf58c66d0bbf07f889f8867ce36d75ca42fcd94ca77b5307666163630060",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_active_set_interval_mpc_v1.py": "4c111c5ce1d6d711cbe9e4362aad315e0f50f9c2cb363d9595409e0701c7ec8d",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_arm_feasibility_mpc_v1.py": "af9a08a8b442c43099faadbda887ed79b1e497b114cbd77e93b4cc8a2481f40b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_joint_damper_mpc_v1.py": "63b2eff24491e130f96681508524ccf124064469a285a6c82ed9dd498fa761f9",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_joint_sequence_proposal_v1.py": "42d8be1c82836a83e054c6cf7ca368f5bad9b35e298aabbeb0790bfb5b816857",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_sequence_linearization_v1.py": "acc515b9f7980645cdca835deb3ae8bfc4f20ee03eee90a53d9495f976b0ccf2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_differentiated_sequence_v1.py": "9b68faddbb7350b467f5f7a75c1b78cae58759f92c2d8e559b9cac433e6d229e",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_joint_sequence_proposal_v1.py": "b0896a4e9a95a4f46d84ef344e2d7e7384a4fce435b17c01bb456952053382a2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_settled_stance_model_v2.py": "5606c23dbb10c56db7d113b4ab3bf63d7b6ba3fbfc102253a444e8e2d937cde4",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_actual_handoff_model_v1.py": "871903d3bf525116e7c79df3b8f7f10e19f4c839fa3b08624723e0cc24b09b26"
+    },
+    "native_execution": false,
+    "valid_expert_labels": false
+  },
+  "actual_matches": {
+    "matches": [
+      {
+        "case": 12,
+        "actual_tick": 442,
+        "query_source_case": 12,
+        "original_query_tick": 442,
+        "score": 0.0,
+        "source_key": "7adf54553dff45d3f5f0e099e3e50a9919a82b4499c1b39252f85a36fa10b2a1",
+        "native_success": false
+      },
+      {
+        "case": 118,
+        "actual_tick": 338,
+        "query_source_case": 118,
+        "original_query_tick": 338,
+        "score": 1.1102230246251565e-14,
+        "source_key": "ec74cb0f642192e1bcdaa45837f709ca4325bbe8112431b860ad642c63b64e14",
+        "native_success": false
+      }
+    ],
+    "unmatched": [
+      {
+        "case": 0,
+        "eligible_observations": 0
+      },
+      {
+        "case": 1,
+        "eligible_observations": 0
+      },
+      {
+        "case": 2,
+        "eligible_observations": 0
+      },
+      {
+        "case": 3,
+        "eligible_observations": 0
+      },
+      {
+        "case": 5,
+        "eligible_observations": 0
+      },
+      {
+        "case": 6,
+        "eligible_observations": 0
+      },
+      {
+        "case": 7,
+        "eligible_observations": 0
+      },
+      {
+        "case": 8,
+        "eligible_observations": 0
+      },
+      {
+        "case": 9,
+        "eligible_observations": 370
+      },
+      {
+        "case": 10,
+        "eligible_observations": 460
+      },
+      {
+        "case": 11,
+        "eligible_observations": 0
+      },
+      {
+        "case": 13,
+        "eligible_observations": 0
+      },
+      {
+        "case": 15,
+        "eligible_observations": 0
+      },
+      {
+        "case": 16,
+        "eligible_observations": 0
+      },
+      {
+        "case": 17,
+        "eligible_observations": 0
+      },
+      {
+        "case": 18,
+        "eligible_observations": 366
+      },
+      {
+        "case": 19,
+        "eligible_observations": 462
+      },
+      {
+        "case": 20,
+        "eligible_observations": 0
+      },
+      {
+        "case": 21,
+        "eligible_observations": 0
+      },
+      {
+        "case": 22,
+        "eligible_observations": 460
+      },
+      {
+        "case": 23,
+        "eligible_observations": 0
+      },
+      {
+        "case": 24,
+        "eligible_observations": 464
+      },
+      {
+        "case": 25,
+        "eligible_observations": 0
+      },
+      {
+        "case": 26,
+        "eligible_observations": 0
+      },
+      {
+        "case": 27,
+        "eligible_observations": 0
+      },
+      {
+        "case": 28,
+        "eligible_observations": 465
+      },
+      {
+        "case": 29,
+        "eligible_observations": 0
+      },
+      {
+        "case": 30,
+        "eligible_observations": 203
+      },
+      {
+        "case": 31,
+        "eligible_observations": 0
+      },
+      {
+        "case": 32,
+        "eligible_observations": 460
+      },
+      {
+        "case": 33,
+        "eligible_observations": 468
+      },
+      {
+        "case": 34,
+        "eligible_observations": 0
+      },
+      {
+        "case": 35,
+        "eligible_observations": 0
+      },
+      {
+        "case": 36,
+        "eligible_observations": 463
+      },
+      {
+        "case": 37,
+        "eligible_observations": 0
+      },
+      {
+        "case": 38,
+        "eligible_observations": 0
+      },
+      {
+        "case": 39,
+        "eligible_observations": 0
+      },
+      {
+        "case": 40,
+        "eligible_observations": 0
+      },
+      {
+        "case": 41,
+        "eligible_observations": 0
+      },
+      {
+        "case": 42,
+        "eligible_observations": 369
+      },
+      {
+        "case": 43,
+        "eligible_observations": 465
+      },
+      {
+        "case": 45,
+        "eligible_observations": 0
+      },
+      {
+        "case": 46,
+        "eligible_observations": 0
+      },
+      {
+        "case": 47,
+        "eligible_observations": 0
+      },
+      {
+        "case": 48,
+        "eligible_observations": 0
+      },
+      {
+        "case": 49,
+        "eligible_observations": 0
+      },
+      {
+        "case": 50,
+        "eligible_observations": 365
+      },
+      {
+        "case": 51,
+        "eligible_observations": 0
+      },
+      {
+        "case": 52,
+        "eligible_observations": 0
+      },
+      {
+        "case": 53,
+        "eligible_observations": 0
+      },
+      {
+        "case": 54,
+        "eligible_observations": 367
+      },
+      {
+        "case": 55,
+        "eligible_observations": 463
+      },
+      {
+        "case": 56,
+        "eligible_observations": 0
+      },
+      {
+        "case": 57,
+        "eligible_observations": 0
+      },
+      {
+        "case": 58,
+        "eligible_observations": 358
+      },
+      {
+        "case": 59,
+        "eligible_observations": 0
+      },
+      {
+        "case": 60,
+        "eligible_observations": 461
+      },
+      {
+        "case": 61,
+        "eligible_observations": 205
+      },
+      {
+        "case": 62,
+        "eligible_observations": 0
+      },
+      {
+        "case": 63,
+        "eligible_observations": 0
+      },
+      {
+        "case": 64,
+        "eligible_observations": 460
+      },
+      {
+        "case": 65,
+        "eligible_observations": 0
+      },
+      {
+        "case": 67,
+        "eligible_observations": 0
+      },
+      {
+        "case": 68,
+        "eligible_observations": 456
+      },
+      {
+        "case": 69,
+        "eligible_observations": 0
+      },
+      {
+        "case": 70,
+        "eligible_observations": 0
+      },
+      {
+        "case": 71,
+        "eligible_observations": 0
+      },
+      {
+        "case": 72,
+        "eligible_observations": 0
+      },
+      {
+        "case": 73,
+        "eligible_observations": 0
+      },
+      {
+        "case": 74,
+        "eligible_observations": 457
+      },
+      {
+        "case": 75,
+        "eligible_observations": 467
+      },
+      {
+        "case": 77,
+        "eligible_observations": 374
+      },
+      {
+        "case": 79,
+        "eligible_observations": 0
+      },
+      {
+        "case": 80,
+        "eligible_observations": 462
+      },
+      {
+        "case": 81,
+        "eligible_observations": 466
+      },
+      {
+        "case": 82,
+        "eligible_observations": 457
+      },
+      {
+        "case": 83,
+        "eligible_observations": 458
+      },
+      {
+        "case": 84,
+        "eligible_observations": 0
+      },
+      {
+        "case": 85,
+        "eligible_observations": 372
+      },
+      {
+        "case": 86,
+        "eligible_observations": 453
+      },
+      {
+        "case": 87,
+        "eligible_observations": 0
+      },
+      {
+        "case": 90,
+        "eligible_observations": 360
+      },
+      {
+        "case": 91,
+        "eligible_observations": 0
+      },
+      {
+        "case": 93,
+        "eligible_observations": 0
+      },
+      {
+        "case": 94,
+        "eligible_observations": 462
+      },
+      {
+        "case": 95,
+        "eligible_observations": 0
+      },
+      {
+        "case": 96,
+        "eligible_observations": 0
+      },
+      {
+        "case": 97,
+        "eligible_observations": 0
+      },
+      {
+        "case": 98,
+        "eligible_observations": 0
+      },
+      {
+        "case": 99,
+        "eligible_observations": 0
+      },
+      {
+        "case": 100,
+        "eligible_observations": 457
+      },
+      {
+        "case": 101,
+        "eligible_observations": 0
+      },
+      {
+        "case": 102,
+        "eligible_observations": 0
+      },
+      {
+        "case": 103,
+        "eligible_observations": 461
+      },
+      {
+        "case": 106,
+        "eligible_observations": 0
+      },
+      {
+        "case": 107,
+        "eligible_observations": 0
+      },
+      {
+        "case": 109,
+        "eligible_observations": 0
+      },
+      {
+        "case": 111,
+        "eligible_observations": 0
+      },
+      {
+        "case": 112,
+        "eligible_observations": 0
+      },
+      {
+        "case": 114,
+        "eligible_observations": 0
+      },
+      {
+        "case": 115,
+        "eligible_observations": 0
+      },
+      {
+        "case": 119,
+        "eligible_observations": 474
+      },
+      {
+        "case": 120,
+        "eligible_observations": 457
+      },
+      {
+        "case": 121,
+        "eligible_observations": 467
+      },
+      {
+        "case": 123,
+        "eligible_observations": 455
+      },
+      {
+        "case": 125,
+        "eligible_observations": 0
+      },
+      {
+        "case": 126,
+        "eligible_observations": 0
+      },
+      {
+        "case": 127,
+        "eligible_observations": 0
+      }
+    ],
+    "source_sha256": {
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_actual_replan_trigger_states_v1.py": "c922f40340102db3f37dba7b005678f786b10915bd3428717633b985a7560348",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_settled_stance_all128_20261109_01/job.json": "53f0d6de00a0f596da09d71d381785597fef65e945caf94dd3a7e6b7c49066ab",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_settled_stance_all128_20261109_01/pure_control_commands.npz": "1ea4cdad8c973d5be22b431448191d1bc2d5d08c1f45a5453f7ff91a9d042218",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_settled_stance_all128_20261109_01/pure_control_diagnostics.jsonl": "c99d346b05a026c4fbfd500a06f51eed0793718ce1bb20aac10519423aff8f78",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_sustained_path_preparation_20261108/reference_library.json": "f8bbd0498fd9dc52d9aa3174b4836ab2af0ed98a03f32a3215c8113907ca6ece",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_native_capture_preparation_20261109/reference_library.json": "5269d9f2785ec6b343379905dcc027edc334cbc8598ae2dc92adc855c02a5b91",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/loaded_pinocchio_model_v1.py": "2b303a32e57391ec7aaf3c3faf9d151f758477faf13ef6efae5bead979dcae82",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recovery_reference_library_v1.py": "6c97dc2ba1b7c118cfc71c614157b2307dd15cc1f1cc75e2eeeee6570dc31735",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recovery_reference_library_v2.py": "2497e602cd60d3499477adeb1ad92631afc737c8b46e76c20020f71bdde4c232",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/whole_body_support_qp_v1.py": "b67cd1f1c8ebe973d3885773fbc9f3bf17cfd935e5e2210a4b7c0ea1ff331d6d",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frame_point_kinematics_v1.py": "60fac87ef04f83a22807217b04e7cbe40b536251b56f5a119dc012d1f2529fd8",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/reduced_whole_body_support_qp_v1.py": "e731a0bca8744d4639099dd2ff9be94840a9f0c953c64924fb2cfa9e7a9c80c7",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/continuous_support_qp_v1.py": "824a3d49711917803e9c82af63b1d142917d62c874ec8751325578a71b4af640",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/command_history_support_qp_v1.py": "1ac2221f85cbf3d468be4c265cc932845700d5f17a9eaaf37440998873689081",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/condensed_implicit_drive_v1.py": "a0f21e9b954db9e978ba428a3770fcb8cd666e08dd21aa27cedf0c0e5c5af629",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/implicit_support_prediction_v1.py": "b751fa0ea59edd1fe8fc62cf0ba3816e5583ecc76df7058ef3f5185a335a1e01",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_interval_qp_v1.py": "cbc3d59485da07153e8e3ae3a42de2231dff7c738a22a18b8ad74bd39dbb844f",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/authored_ground_clearance_v1.py": "ba54ef51a5cfd5c64937814c343d92057cd0e9e83dc4e435f1479049aa342630",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/event_recovery_manager_v1.py": "8fe16ba41ec3d2fc942dbf01686d4af3a5fde354dc6536726bab826b29b959e2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/dense_active_set_qp_v1.py": "cba063c6c594bfb42d1114dcafbaebc606d8c4b49b53ee65e764e3979b1bac4a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_recovery_v1.py": "119a6f073b32e4c7f577c2653314c2e441dbc3c13771e577031962b79281337f",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/full_authority_position_interface_v1.py": "88a371b4e72864952c7e7c3c2250ccd90603e3e7c0ef7c1579030cc9e89034ca",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/authored_net_clearance_v1.py": "386ed6042d439bde4366dec73a536d6a21a0eaf700152e7e4ca16aeef67f6526",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/foot_pair_clearance_kinematics_v1.py": "2e3caa0b3b791ad45f2e51eb1956f74b7cc4e310c15cad72cb23d8b023a60b11",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recovery_surface_constraints_v1.py": "5c546c5acbfd2e2d5f03578b21a10237162bb293013a825a71f25f92de7671eb",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_court_recovery_v4.py": "4666b83f6adf72c6cfab09703583815405703f9f0d5c76c22c7a97ad4604dbac",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_interval_self_collision_v2.py": "642610fc843e5d8dbf5f43e50994922e3d5565066466f708c18462a62be7f75d",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frictional_impulse_step_v1.py": "4e780bf218dd501a64f1885ab1697c3050d228580fc6cd3c7123d36fb18e2348",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frictional_speed_limited_step_v1.py": "6b5392e7dbdb2f4c95a48570d668a28e66fbd2ffd8eb7ae1bef04a8a01b01b92",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frictional_position_limited_step_v1.py": "07d976fa06b4c1e9e90792f463cb058be5c9a1af38170e22ff226c9680230413",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/hip_mount_collision_response_v1.py": "d7d9d9fff88f3e3a12a61962aadf41537192d930f6f5ee7b2e0a2c31b8ebc2e8",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/hip_mount_planning_constraints_v1.py": "2c63e83e930fed048e87d04fb5df6cde04c822f586f57207670520e7f83f508a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_self_collision_recovery_v5.py": "90d9a6b84c7b153b74e3d36c16a38bda59fa90cb14290e904fdc32e0807a5bf9",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_interval_moving_foot_v3.py": "daf71c5788dcb9a553a83fb2ebcda14e7a5e86a37d9965ed2c5fb0ab82adf363",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_moving_foot_recovery_v7.py": "d018a7f7ae1352feb4f7157114a05996564bc1490b768cef3a7201f4e8ea87ca",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recorded_nonfoot_contact_history_v1.py": "b897ec590f76795a515f1e3ad14db1529f43117731f031f00d43dc556e5e599a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/summarize_precontact_prediction_v1.py": "b05936fc4345546c33bf14696bfbf6ed8967025799da23d87e0b04fc014ba227",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_sphere_touchdown_predictions_v1.py": "92b1905a21c544ff212a237104edb700ce6eb3b1414908cb14d80990b21a9a03",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/predict_self_contact_spheres_v2.py": "5e22b438815a60997f637bae461f69ec3c0a983f26d11e4abb94f5510ac8a446",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/foot_separation_path_constraint_v1.py": "8926324e99df4984bf7af09a686e813df57ebb8524408485633e430e1cd04f85",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_trajectory_recovery_v8.py": "fdbaf93a10c735c5736d3cf4f6dd2d912c43041e2cd6ce2144f63d9ba6005448",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_trajectory_recovery_v9.py": "a9d471bf6e674d5e4ec4f8625b34204f01544b0f4e0bcad1e0ec702869f8e042",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_long_trajectory_recovery_v11.py": "39b3596b3e711762fdfdddcb19967413396d15b6f659717e4eabff6b1724a5ac",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_reference_clock_v12.py": "47b155c960fe42b79d5e0d86046d78c14d04b9b18b382fd4f0c3bfac9cf592be",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_terminal_stance_v13.py": "7eedccf0b544f930c968f59e7d575ed9c118c5d07921ec294ee344d9f38414e4",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_settled_stance_v14.py": "abfa89c7d3730521a6e4fab7d9e962896dbc37bd86f2689cb7a8c92cfa4ce385",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/parallel_landing_solver_v1.py": "4bc18476684fbc3a81eae8b1b63073c615ceafd73a23ccca2dde919564cfea33",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/interval_command_support_qp_v1.py": "7f9e47fdeb1f6cc420368d127f89cc1b726397752b0387f57b5bee1ea5915589",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/admitted_arm_support_qp_v1.py": "097d7022b16a28aa31f11081056092bd8b5b44172291b6bd3b1aba1dbe0a1c6e",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v1.py": "da2ff2e4ee1479bf3fc422c0b71f8831bffd9e5868d9a4e0665fd348ab659a59",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v2.py": "6d0ad9bc4fcd27a0f4f418e55b988341ffe809f14c132415281ec41621196ae2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v3.py": "d8c54679697e78678a898f5d36a27305f9252a5f2b09990d0b33ddcc25533300",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_command_history_mpc_v1.py": "466ba93dc473c7d2de93aae0d5d7848b390d72e8fe1ef779ff0818efad704d28",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_interval_command_mpc_v1.py": "545ecf58c66d0bbf07f889f8867ce36d75ca42fcd94ca77b5307666163630060",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_active_set_interval_mpc_v1.py": "4c111c5ce1d6d711cbe9e4362aad315e0f50f9c2cb363d9595409e0701c7ec8d",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_arm_feasibility_mpc_v1.py": "af9a08a8b442c43099faadbda887ed79b1e497b114cbd77e93b4cc8a2481f40b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_joint_damper_mpc_v1.py": "63b2eff24491e130f96681508524ccf124064469a285a6c82ed9dd498fa761f9",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_joint_sequence_proposal_v1.py": "42d8be1c82836a83e054c6cf7ca368f5bad9b35e298aabbeb0790bfb5b816857",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_sequence_linearization_v1.py": "acc515b9f7980645cdca835deb3ae8bfc4f20ee03eee90a53d9495f976b0ccf2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_differentiated_sequence_v1.py": "9b68faddbb7350b467f5f7a75c1b78cae58759f92c2d8e559b9cac433e6d229e",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_joint_sequence_proposal_v1.py": "b0896a4e9a95a4f46d84ef344e2d7e7384a4fce435b17c01bb456952053382a2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_settled_stance_model_v2.py": "5606c23dbb10c56db7d113b4ab3bf63d7b6ba3fbfc102253a444e8e2d937cde4",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_actual_handoff_model_v1.py": "871903d3bf525116e7c79df3b8f7f10e19f4c839fa3b08624723e0cc24b09b26"
+    },
+    "old_history_scan_not_new_closed_loop": true,
+    "native_success": false,
+    "valid_expert_labels": false
+  },
+  "suffix_search": {
+    "state": "COMPLETED_ACTUAL_RECOVERY_SEQUENCE_SEARCH",
+    "method": "checked_model_prefix_and_optimized_suffix",
+    "completed_candidates": 258,
+    "results": [
+      {
+        "state_key": "58:442",
+        "steps": 358,
+        "model_path_complete": true,
+        "terminal_stable_s": 1.440000057220459,
+        "failure": null
+      },
+      {
+        "state_key": "123:411",
+        "steps": 389,
+        "model_path_complete": true,
+        "terminal_stable_s": 1.140000343322754,
+        "failure": null
+      }
+    ],
+    "wall_seconds": 407.08987491298467,
+    "native_success": false,
+    "valid_expert_labels": false
+  },
+  "suffix_feedback_snapshot": {
+    "state": "RUNNING_CURRENT_PLAN_FEEDBACK",
+    "pid": 195941,
+    "time_utc": "2026-11-08T18:56:43.633926+00:00"
+  },
+  "plans": [
+    {
+      "source": "reports/pure_control_current_native_capture_search_20261109/state_123_411.json",
+      "state_key": "123:411",
+      "model_path_complete": false,
+      "failure": {
+        "step": 253,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.000885440537442328
+        },
+        "collision": {
+          "micro": 123,
+          "body": "FR_thigh",
+          "gap_m": -1.742689080569404e-06
+        }
+      },
+      "steps": 253,
+      "required_steps": 389,
+      "terminal_stable_s": 0.0,
+      "control_nodes": [
+        [
+          -0.19624136677690204,
+          -0.0373253552047143,
+          -0.018691563586558577,
+          0.20733974828451493,
+          -0.12534034194583177,
+          -0.018488232817088054,
+          -0.4453260248979277,
+          -0.42319621300022897,
+          0.8247756638103578,
+          0.5794972614987447,
+          0.18030909104818588,
+          0.5502902380235095,
+          0.026513397488763274,
+          -0.08072298693080632,
+          -0.650323194263971,
+          -0.17727338620114777,
+          -0.8808268178249673,
+          0.031946962282384514
+        ],
+        [
+          -0.07655884085181783,
+          -0.045898914505655794,
+          0.04224098346796109,
+          0.09436635187547908,
+          -0.10252880506068357,
+          -0.03591226330053812,
+          -0.4287614913491719,
+          -0.41548703017230537,
+          0.6159945982306415,
+          0.4663455743232265,
+          0.2517239163224109,
+          0.4682116855458727,
+          0.07426684507109553,
+          -0.14715374570267614,
+          -0.6977656587717995,
+          -0.13564972350048426,
+          -0.8753062613170411,
+          0.04930356980367244
+        ],
+        [
+          0.08855806416535697,
+          -0.07746818490671631,
+          0.10616494035432561,
+          -0.09396622436150233,
+          -0.062364483910774725,
+          -0.05957028555081163,
+          -0.3998182784113183,
+          -0.4000621009970255,
+          0.30021769027186984,
+          0.29398836284377067,
+          0.3105565803329503,
+          0.31852862615667993,
+          0.1432335921947362,
+          -0.23947853319450924,
+          -0.7444002537646547,
+          -0.07607912266497835,
+          -0.8809007310661006,
+          0.06861327361651998
+        ],
+        [
+          0.08611536519977527,
+          -0.09885660356711168,
+          0.09170903040811484,
+          -0.10009916091768443,
+          -0.05951176778304566,
+          -0.06246166771163737,
+          -0.3997120794589182,
+          -0.40217025186101824,
+          0.3038184579161216,
+          0.30903465168843014,
+          0.303360859981355,
+          0.31640191954697083,
+          0.13330414912803581,
+          -0.22590228797499198,
+          -0.726121698963761,
+          -0.10487875647546306,
+          -0.8824132712155384,
+          0.057608638735048706
+        ],
+        [
+          0.12180040231969189,
+          -0.08785543415461365,
+          0.035843791226067304,
+          0.008504830647190188,
+          -0.09711845168945393,
+          0.04171618323699207,
+          -0.3810480470811379,
+          -0.3780016345544634,
+          0.2593987746444089,
+          -0.0682686973516288,
+          0.2139512228215466,
+          0.18006067825183375,
+          0.30778929817264444,
+          -0.4214192776474116,
+          -0.6194321686947709,
+          0.011104729806494174,
+          -0.8280944679481587,
+          0.09812086801091849
+        ],
+        [
+          0.06323399712806864,
+          -0.12743723014885,
+          0.11678433218686164,
+          -0.05419771056501254,
+          -0.06878685752499135,
+          0.04699594353760368,
+          -0.43398253307410156,
+          -0.36204221768646855,
+          0.16181176931644584,
+          -0.0509256767801006,
+          0.24169587126512254,
+          0.1950814731929853,
+          0.3923283644848217,
+          -0.19031393072678443,
+          -0.9776733717454008,
+          -0.1145442726545546,
+          -1.0,
+          0.1359499797812424
+        ],
+        [
+          0.011693176152917144,
+          -0.343739437557968,
+          -0.05736057576034256,
+          -0.23071666377390382,
+          -0.02275755888048289,
+          0.019285294060896616,
+          -0.44667083052246637,
+          -0.3681990590795886,
+          0.09778176015692355,
+          0.16862060518664806,
+          0.19631181126595054,
+          0.1175680346200432,
+          0.37579628757953837,
+          -0.17755773494798882,
+          -0.9974482174657131,
+          -0.1356442462779488,
+          -1.0,
+          0.19683520562348245
+        ],
+        [
+          0.17118729256419743,
+          -0.1713537852749063,
+          -0.03177377179416943,
+          -0.1873036793828909,
+          -0.03198422968235309,
+          0.03668368420426691,
+          -0.40723031044910857,
+          -0.3431676911268233,
+          0.21545851538938707,
+          0.07217438238140939,
+          0.003685866631072919,
+          -0.02683410374929128,
+          0.2500141449094713,
+          -0.24310795851709324,
+          -0.8549526789740548,
+          -0.24759873929014256,
+          -1.0,
+          0.191669217333751
+        ],
+        [
+          0.19284199480664743,
+          -0.0878312744607822,
+          0.0759952138771632,
+          -0.15016564915832423,
+          -0.020427499073651753,
+          0.07967550066131286,
+          -0.3646958939726807,
+          -0.27274569984375463,
+          0.061611342560348545,
+          -0.27711108750676955,
+          -0.16584444451921906,
+          -0.2754112521673094,
+          0.12426428950196954,
+          -0.2035999089779916,
+          -0.5197881336602488,
+          -0.20045000952769162,
+          -0.894047805296544,
+          0.10504607008307554
+        ],
+        [
+          -0.04652642660340446,
+          -0.40771310779264913,
+          -0.09034821697975984,
+          -0.207666421084961,
+          -0.05763718961972288,
+          -0.011589625947730164,
+          -0.33977321815254047,
+          -0.3155984401196401,
+          0.30744021058288495,
+          -0.036012856873451314,
+          -0.018640433343923946,
+          -0.0612705257949737,
+          0.1474404759923708,
+          -0.1161455866532707,
+          -0.3019867036914116,
+          -0.14509062669582345,
+          -0.5230776058154172,
+          0.1925141403110112
+        ],
+        [
+          -0.05173869024816734,
+          -0.17123249813461822,
+          0.14253156856761956,
+          -0.01186103977596204,
+          -0.00688465518633238,
+          -0.050800240395590404,
+          -0.35763847548647915,
+          -0.38776061499551806,
+          0.1924303752793602,
+          0.1304969468785218,
+          0.1791660110528279,
+          0.11854985865320097,
+          0.14511437726031925,
+          -0.013482243852927815,
+          -0.5831771932583094,
+          0.03190748697025039,
+          -0.864662069806305,
+          0.09341200286555129
+        ],
+        [
+          -0.18501745244477655,
+          -0.1490044873358249,
+          0.08633019614893421,
+          -0.15275611418932172,
+          0.06267769541292165,
+          -0.03252903897074757,
+          -0.38464359908451584,
+          -0.4018779771455152,
+          0.06763322118441607,
+          0.3086800269428266,
+          0.294938186790887,
+          0.05160724917340959,
+          0.21204006750003054,
+          -0.2684722234604127,
+          -0.8519426083647829,
+          0.27218470167020203,
+          -0.9049246859431487,
+          -0.028587220721516735
+        ]
+      ],
+      "nodes_describe_suffix_only": false,
+      "prefix_steps": 0,
+      "native_success": false
+    },
+    {
+      "source": "reports/pure_control_current_native_capture_search_20261109/state_12_442.json",
+      "state_key": "12:442",
+      "model_path_complete": true,
+      "failure": null,
+      "steps": 358,
+      "required_steps": 358,
+      "terminal_stable_s": 3.3899998664855957,
+      "control_nodes": [
+        [
+          0.16135737759601945,
+          0.271713956428314,
+          0.014478655401060908,
+          0.10596131834667574,
+          -0.0681563633447934,
+          -0.095576329776439,
+          -0.5294668420089862,
+          -0.4920073517174966,
+          0.4250704710041998,
+          0.7098448439594156,
+          0.7926570223357194,
+          0.5951677851374614,
+          0.19606178839759705,
+          -0.34570099501052937,
+          -0.5755912301597211,
+          -0.1475060020848487,
+          -0.9138065436142354,
+          0.044426950934791765
+        ],
+        [
+          0.17804043795997737,
+          0.2787426886380812,
+          0.00806878795898471,
+          0.12255860801351436,
+          -0.06717311178748149,
+          -0.09300767904930346,
+          -0.5274466097969671,
+          -0.48778285936841603,
+          0.4108928920950646,
+          0.6878859901679175,
+          0.7653718153702532,
+          0.584855733137434,
+          0.20691764120591805,
+          -0.35391922797657366,
+          -0.574457357144165,
+          -0.1657236222297949,
+          -0.9153689084836937,
+          0.036940217096486275
+        ],
+        [
+          0.17993702793560257,
+          0.295327224137463,
+          0.007504522336180123,
+          0.13487892124483333,
+          -0.06602190684332682,
+          -0.08902704584626527,
+          -0.5227252341051616,
+          -0.48879201563305935,
+          0.41718796210231446,
+          0.678947257166388,
+          0.7566227157139653,
+          0.5783648998240877,
+          0.20919903531973918,
+          -0.3627077888059691,
+          -0.5752704882167213,
+          -0.17829834333318292,
+          -0.8978792773883564,
+          0.03204843413593147
+        ],
+        [
+          0.1593982066048936,
+          0.28976062268614616,
+          0.011020858458231711,
+          0.12065613007625957,
+          -0.06362543421567944,
+          -0.08821533624375344,
+          -0.5206876649105036,
+          -0.4951451876605307,
+          0.42453165321801356,
+          0.6882329194831895,
+          0.7621801653405418,
+          0.590067574541109,
+          0.2015110492908016,
+          -0.36751521606780546,
+          -0.5748484599527512,
+          -0.17120410156604043,
+          -0.8841868000252612,
+          0.025831742992334334
+        ],
+        [
+          0.16761353217236147,
+          0.2867855418523669,
+          0.01790459736672483,
+          0.129076184696234,
+          -0.06304503256588327,
+          -0.0930279678427896,
+          -0.523083353513069,
+          -0.4946696568446325,
+          0.4207194544913707,
+          0.675275520228056,
+          0.7529665997079594,
+          0.5860070609833405,
+          0.19216479950184728,
+          -0.364042850919468,
+          -0.5543854928539355,
+          -0.18688083355441626,
+          -0.8949429550828881,
+          0.007502039211136123
+        ],
+        [
+          0.18491163120906073,
+          0.2925864709182962,
+          0.02372574057768736,
+          0.14136685623285614,
+          -0.06460780548246041,
+          -0.09028612687317444,
+          -0.5220172079747223,
+          -0.48935987073762155,
+          0.41113503282390207,
+          0.6732052469982899,
+          0.7512180919690102,
+          0.5579908452143898,
+          0.1949223471871562,
+          -0.3268528375689068,
+          -0.5590023390653406,
+          -0.20142271606373152,
+          -0.903147728435192,
+          0.022280259016096277
+        ],
+        [
+          0.18253873780415816,
+          0.28840457802994357,
+          0.015218230883870752,
+          0.1332451416508532,
+          -0.06388560665899591,
+          -0.08530788963295385,
+          -0.5150143100080514,
+          -0.48430373068079197,
+          0.3849377245060679,
+          0.6641385951176977,
+          0.7421656837359937,
+          0.533988326537017,
+          0.20282994904643767,
+          -0.3251204381065693,
+          -0.5774906501238078,
+          -0.18659611526015069,
+          -0.8899761011127265,
+          0.03405986953465692
+        ],
+        [
+          0.17172814140615328,
+          0.292197003831969,
+          0.01336281022884108,
+          0.12094941817062933,
+          -0.06576038082441257,
+          -0.09097495832732949,
+          -0.5164710788532698,
+          -0.4894724040327827,
+          0.40836900870563897,
+          0.6814320505693815,
+          0.7552360193282973,
+          0.5617934594902985,
+          0.18979125504895614,
+          -0.3455216680905245,
+          -0.5894432979870359,
+          -0.17246334082501694,
+          -0.8795558062054073,
+          0.01774471767888235
+        ],
+        [
+          0.16059515648775355,
+          0.27246298552780635,
+          0.006260700386925299,
+          0.11066853756447563,
+          -0.06157546912731758,
+          -0.09052080013512824,
+          -0.5193462963735201,
+          -0.4929827189991183,
+          0.40850721301683607,
+          0.6810832043660118,
+          0.7471401968566102,
+          0.5670783252864307,
+          0.19703198126922836,
+          -0.3579078604889359,
+          -0.5736716658270836,
+          -0.18742376468515778,
+          -0.8896176475816578,
+          0.0012832559813601395
+        ],
+        [
+          0.16278218240362485,
+          0.26822766855215874,
+          0.007348712171315856,
+          0.12312003556263663,
+          -0.057388804146943244,
+          -0.08700336746902593,
+          -0.5151464364403684,
+          -0.48538115263614356,
+          0.3725678798477266,
+          0.6720949422816471,
+          0.74466467630897,
+          0.5356815577917469,
+          0.1927625981800488,
+          -0.3738593821137118,
+          -0.5607869112952146,
+          -0.1967287542237794,
+          -0.8782248651509377,
+          0.00905304414159017
+        ],
+        [
+          0.1523282113771378,
+          0.2794462492603118,
+          -0.0028961295061518955,
+          0.117334745763751,
+          -0.05853011065366258,
+          -0.09022331728585539,
+          -0.5182981536618152,
+          -0.4900794105745367,
+          0.38096357392468727,
+          0.7019323370724679,
+          0.7730374581161181,
+          0.5549220775128284,
+          0.19119891088915064,
+          -0.3771483031385538,
+          -0.5780566555703923,
+          -0.17004209742981546,
+          -0.8869463477525101,
+          0.009881424602900672
+        ],
+        [
+          0.16432833266064384,
+          0.2903210801243338,
+          -0.00147356712425609,
+          0.11760045394475792,
+          -0.058547283781331165,
+          -0.0913317399210055,
+          -0.5209264968536079,
+          -0.49445482891759296,
+          0.4023803333560469,
+          0.7004724975924972,
+          0.7762398105310544,
+          0.5700656912049578,
+          0.19470180703059742,
+          -0.3650363535405229,
+          -0.5938574868950163,
+          -0.16589619152394566,
+          -0.882196710699385,
+          0.015285036549193531
+        ]
+      ],
+      "nodes_describe_suffix_only": false,
+      "prefix_steps": 0,
+      "native_success": false
+    },
+    {
+      "source": "reports/pure_control_current_native_capture_search_20261109/state_58_442.json",
+      "state_key": "58:442",
+      "model_path_complete": false,
+      "failure": {
+        "step": 262,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.0018129850222447057
+        },
+        "collision": {
+          "micro": 9,
+          "body": "FL_calf",
+          "gap_m": -7.237939016763867e-06
+        }
+      },
+      "steps": 262,
+      "required_steps": 358,
+      "terminal_stable_s": 0.0,
+      "control_nodes": [
+        [
+          0.17198324169171797,
+          0.01859177109377648,
+          -0.11044545207777579,
+          0.1275441548511617,
+          -0.16947813606364637,
+          -0.16103835431481697,
+          -0.5801129996732317,
+          -0.4933143234827003,
+          0.6254055947815544,
+          1.0,
+          1.0,
+          0.8025798526462726,
+          -0.054181837428234236,
+          -0.38543907029783214,
+          -1.0,
+          -0.18148440313251668,
+          -0.9900543634029582,
+          0.2830171339464117
+        ],
+        [
+          -0.026430712207754253,
+          -0.006599947702931555,
+          -0.14313542247868932,
+          0.0672878452999292,
+          -0.18700775019732016,
+          -0.22910878842841406,
+          -0.5903287126283767,
+          -0.5283267380905263,
+          0.8057020144740162,
+          1.0,
+          1.0,
+          0.9162609953300072,
+          -0.05075502337724527,
+          -0.14393927107740753,
+          -0.9583196094592268,
+          -0.0548248498571039,
+          -0.986561698844107,
+          0.23981729306826438
+        ],
+        [
+          -0.20487138242320724,
+          0.09978926789838535,
+          -0.03780186216922713,
+          0.055885027571663116,
+          -0.1100003741510362,
+          -0.17283181532593136,
+          -0.5412900033786288,
+          -0.4481392893771553,
+          0.5841639928392286,
+          0.673984622098633,
+          0.9062306537000279,
+          0.42873896284435387,
+          0.03862349267132327,
+          -0.16608826238715696,
+          -0.6953206682838059,
+          0.06876117784537616,
+          -0.8523951727179611,
+          0.043050234619390504
+        ],
+        [
+          0.040417310333876535,
+          0.26330038916784565,
+          0.21297639352838493,
+          0.20895120873441442,
+          0.0008629125713724151,
+          -0.029845155917199093,
+          -0.4478444275590974,
+          -0.3024768391037526,
+          0.16609677409109463,
+          0.08763134242331166,
+          0.4445917920620396,
+          -0.2199213067579977,
+          0.003477929140229874,
+          -0.3428711296446581,
+          -0.8984948705288871,
+          -0.030385336736585694,
+          -0.5159466248297607,
+          -0.09177003330992117
+        ],
+        [
+          0.17385136148571095,
+          0.07734070420797665,
+          0.24629587616199525,
+          0.16738934318131357,
+          -0.04146768621999628,
+          -0.06714841078302312,
+          -0.46306156638259083,
+          -0.3564506444365253,
+          0.39141135019158035,
+          0.38933141282614087,
+          0.7271852706669082,
+          0.29330945976569894,
+          0.058626781939759544,
+          -0.37994409024650994,
+          -0.7513558841783624,
+          -0.16424400469755016,
+          -0.4230001305397322,
+          -0.045442940813544386
+        ],
+        [
+          0.10112038442820796,
+          -0.0428266361109113,
+          0.0741802478283884,
+          -0.1404330322346621,
+          -0.06023294481039777,
+          -0.058591440920100234,
+          -0.430696429827112,
+          -0.37754136425333135,
+          0.20732121665882225,
+          0.24006097973291335,
+          0.46572836801155626,
+          0.33883469337233113,
+          0.007593532235527077,
+          -0.4449146769589607,
+          -0.7683772124985743,
+          0.154289521779664,
+          -0.6334173709184279,
+          0.09181856758775338
+        ],
+        [
+          0.08326578606234784,
+          -0.09716202715095011,
+          -0.08663001577299086,
+          -0.29292512081092065,
+          -0.0901758198867137,
+          -0.12924363578213102,
+          -0.4121334874739478,
+          -0.4160248689784353,
+          0.5949494070884652,
+          0.5944447430508326,
+          0.4690758054628803,
+          0.4463769030592137,
+          0.06190000326226107,
+          -0.20571878108339703,
+          -0.960099034317879,
+          0.28709746288507937,
+          -0.893332968857793,
+          0.18772645344103805
+        ],
+        [
+          0.04995655459441782,
+          -0.12119439006945892,
+          0.07137655191413508,
+          -0.16360815539353496,
+          -0.15197381066190885,
+          -0.1800104934596018,
+          -0.44177167893654606,
+          -0.46289572826276176,
+          0.9601767294520024,
+          0.8852612690549422,
+          0.7540265584929382,
+          0.6893398601593947,
+          0.24348320209443328,
+          -0.14598978234457208,
+          -1.0,
+          0.02659819522945097,
+          -0.7705184884644872,
+          0.19451476653157143
+        ],
+        [
+          0.05653168127225943,
+          -0.007550880545066285,
+          0.1906211598476829,
+          -0.06026520975804246,
+          -0.02896291323036899,
+          -0.05573568890058245,
+          -0.3639500183260405,
+          -0.3813741218484065,
+          0.06196139230703587,
+          0.14739340417005364,
+          0.15509922966839412,
+          0.01995604732281863,
+          0.08168105678669307,
+          -0.11424309463393452,
+          -1.0,
+          -0.07483465726249013,
+          -0.6731545564793708,
+          0.06366487125639257
+        ],
+        [
+          -0.060872699538250676,
+          -0.14526852923049524,
+          0.07504613768263264,
+          -0.24185841240139894,
+          -0.023313712777697084,
+          -0.043425391572737816,
+          -0.3855409772006741,
+          -0.3705149625707156,
+          0.05569738608755509,
+          0.06476349869711892,
+          0.1933637380143313,
+          0.1063372711224207,
+          -0.03059686490842641,
+          -0.17804648794321726,
+          -0.8805814314980854,
+          -0.20136993335577938,
+          -0.8879195264421414,
+          -0.10919334036403246
+        ],
+        [
+          -0.1179470991092808,
+          -0.10848321976498196,
+          -0.028532071917405772,
+          -0.2852148264300625,
+          -0.11452403702594739,
+          -0.15198794512083436,
+          -0.439900960677317,
+          -0.35258549503713904,
+          0.6979552943611713,
+          0.3707344206804668,
+          0.33878287227884535,
+          0.6343281818386914,
+          0.10113045741076805,
+          -0.35319584000576665,
+          -0.8029029549779377,
+          -0.21281734853066878,
+          -0.9828298648493297,
+          0.14675681300855742
+        ],
+        [
+          0.13049490504711506,
+          0.05259882576566735,
+          0.044896385665688536,
+          -0.11140577060066643,
+          -0.07507604568606083,
+          -0.13154428118784234,
+          -0.41988513427568763,
+          -0.29874715241407235,
+          0.39059030181195276,
+          0.4425670059980502,
+          -0.01313906096516414,
+          0.3581062205667585,
+          0.3087421377751284,
+          -0.3926145488410719,
+          -0.782493876363719,
+          -0.1666650841281735,
+          -0.990668722887012,
+          0.291117686754949
+        ]
+      ],
+      "nodes_describe_suffix_only": false,
+      "prefix_steps": 0,
+      "native_success": false
+    },
+    {
+      "source": "reports/pure_control_current_native_suffix_search_20261109/state_123_411.json",
+      "state_key": "123:411",
+      "model_path_complete": true,
+      "failure": null,
+      "steps": 389,
+      "required_steps": 389,
+      "terminal_stable_s": 1.140000343322754,
+      "control_nodes": [
+        [
+          0.04546998936145706,
+          -0.15167678172833268,
+          0.08458303621071177,
+          -0.08553042595475431,
+          -0.06189612374606009,
+          0.04457397821838504,
+          -0.4314181322692974,
+          -0.3650495692431988,
+          0.12430171493350821,
+          -0.08624134746959033,
+          0.20654457157006934,
+          0.19390471535401937,
+          0.41733560992022023,
+          -0.16936606571735818,
+          -0.9853186979973741,
+          -0.10789222847254716,
+          -1.0,
+          0.15678216977691917
+        ],
+        [
+          0.058329918145474474,
+          -0.14332201328435434,
+          0.08750158593322682,
+          -0.09141190174046541,
+          -0.06914663491947584,
+          -0.0046296654487011065,
+          -0.423026717712386,
+          -0.38088077683305727,
+          0.22130198464119477,
+          0.09103967341523804,
+          0.2914900594229707,
+          0.26888208613452413,
+          0.30493239274146067,
+          -0.21193370246132862,
+          -0.8920559761336442,
+          -0.08187270396880171,
+          -0.949423054676804,
+          0.09449358113427847
+        ],
+        [
+          0.13701474231573219,
+          -0.06214611502245112,
+          0.10792651237125245,
+          -0.06017126623570276,
+          -0.05300154248961521,
+          -0.04044209206054587,
+          -0.3850565639744316,
+          -0.3636359144112997,
+          0.2026184005399164,
+          0.1720721938361378,
+          0.19274359167531935,
+          0.19769288432005785,
+          0.18519282559301556,
+          -0.2355343488469496,
+          -0.7450438442486969,
+          -0.05809735313505043,
+          -0.8772310700058433,
+          0.03440637105943631
+        ],
+        [
+          0.12100854332568603,
+          -0.061443163248829036,
+          0.127797216280701,
+          -0.08030017828896353,
+          -0.05139779437975499,
+          -0.04934808570106586,
+          -0.380482496579539,
+          -0.35426256899268904,
+          0.21127406655589265,
+          0.1880712778906277,
+          0.15845725588641546,
+          0.16245216550644365,
+          0.14909688778928512,
+          -0.21700222637789834,
+          -0.7236950134342012,
+          -0.1500537843263547,
+          -0.8464590206550104,
+          0.096285905021367
+        ],
+        [
+          0.10409617223762416,
+          -0.0967274341517213,
+          0.08852457726791861,
+          -0.0849587179360331,
+          -0.06106866946643717,
+          -0.05440875058003336,
+          -0.3996344736711021,
+          -0.3791499189472268,
+          0.31114053126901947,
+          0.2520244006886171,
+          0.27223058372918046,
+          0.21894976619949727,
+          0.0782954060916975,
+          -0.2400940603231143,
+          -0.7509878824607786,
+          -0.14519935642540704,
+          -0.8791695865431497,
+          0.08423269253793284
+        ],
+        [
+          0.08529708590417077,
+          -0.10159783859513481,
+          0.07064787905795303,
+          -0.08060976038330725,
+          -0.051232434162322336,
+          -0.055851664816484195,
+          -0.3943340671899669,
+          -0.38870047808065217,
+          0.2738359713640541,
+          0.25621368510897136,
+          0.244647711348149,
+          0.2676161788876494,
+          0.07228594571297278,
+          -0.25306362234439783,
+          -0.743791036986349,
+          -0.06322561378214132,
+          -0.9002673855546045,
+          0.039462717776212665
+        ],
+        [
+          0.06338986342439537,
+          -0.09956012317615363,
+          0.07117322668395323,
+          -0.10706544372087434,
+          -0.07493861224854018,
+          -0.07825389926243531,
+          -0.40168820437305075,
+          -0.4036321412408121,
+          0.3333888564909627,
+          0.31566878934810233,
+          0.27559994934853005,
+          0.3644490149990285,
+          0.08735183162735052,
+          -0.22070435109788078,
+          -0.7138113331834696,
+          -0.05967450056266367,
+          -0.9641090474119762,
+          0.07069593929803913
+        ],
+        [
+          0.09731671292868294,
+          -0.09606352521179819,
+          0.06811536939017099,
+          -0.11345000046715127,
+          -0.07245901735012292,
+          -0.053712623848839416,
+          -0.4060073156818891,
+          -0.4072511594331622,
+          0.3683040955300633,
+          0.30411418134765617,
+          0.3409149572593375,
+          0.3612637325643714,
+          0.09636261538013881,
+          -0.19679661887149855,
+          -0.7295231072953471,
+          -0.09031599972241056,
+          -0.9516157510827022,
+          0.11807074241522575
+        ],
+        [
+          0.10732639578443917,
+          -0.10101476436268325,
+          0.07423833516674443,
+          -0.10734492393058058,
+          -0.06389830255710852,
+          -0.04008773410244286,
+          -0.40769005550631215,
+          -0.41050958917616065,
+          0.3265998030029627,
+          0.28803096032823006,
+          0.3651858097719311,
+          0.35752397926660856,
+          0.12510860175847197,
+          -0.2300926826934413,
+          -0.7643376414970269,
+          -0.08049802693324981,
+          -0.8846315542217732,
+          0.06349343041524452
+        ],
+        [
+          0.06462724198148352,
+          -0.1483579496536924,
+          0.0493936963047358,
+          -0.13427787184868578,
+          -0.07786135386329882,
+          -0.06740563767703497,
+          -0.42198554117919906,
+          -0.41883294631933204,
+          0.3856601883296907,
+          0.3083793122269195,
+          0.4053633777689424,
+          0.4306329378661156,
+          0.13747832151941394,
+          -0.22354562436459333,
+          -0.7653587588001334,
+          -0.0763117199053072,
+          -0.840641513583971,
+          0.036711347837671174
+        ],
+        [
+          0.10024081293603568,
+          -0.09622225255613974,
+          0.11674124361187725,
+          -0.10044870294238206,
+          -0.08308058133424037,
+          -0.08591589648590033,
+          -0.4211369809695886,
+          -0.42278338502789986,
+          0.42247663941488317,
+          0.4073189167162168,
+          0.4378746520162752,
+          0.44674055427544146,
+          0.1365629497453707,
+          -0.1856038871048741,
+          -0.7166087251727942,
+          -0.13230572129246657,
+          -0.8230587125172943,
+          0.05293536430342112
+        ]
+      ],
+      "nodes_describe_suffix_only": true,
+      "prefix_steps": 120,
+      "native_success": false
+    },
+    {
+      "source": "reports/pure_control_current_native_suffix_search_20261109/state_58_442.json",
+      "state_key": "58:442",
+      "model_path_complete": true,
+      "failure": null,
+      "steps": 358,
+      "required_steps": 358,
+      "terminal_stable_s": 1.440000057220459,
+      "control_nodes": [
+        [
+          0.09189899389254609,
+          -0.10947122831445957,
+          -0.030269119179224598,
+          -0.20388307016327645,
+          -0.1006390055604552,
+          -0.12029818304778436,
+          -0.4022997494405513,
+          -0.39534998696398327,
+          0.6231141016977869,
+          0.5653711714595079,
+          0.4572474514494934,
+          0.37945465295844605,
+          0.15400182784362576,
+          -0.22622954432322093,
+          -0.9724207859527666,
+          0.17276315328764907,
+          -0.8722584142351958,
+          0.2291784695702889
+        ],
+        [
+          0.08259366830236722,
+          -0.09840901818036743,
+          0.023859682657522044,
+          -0.1824594122757914,
+          -0.10928022813775723,
+          -0.12229003676183421,
+          -0.418993102636745,
+          -0.4187704568799169,
+          0.6044683915526597,
+          0.5614950434370151,
+          0.4993908677455516,
+          0.44075681656656285,
+          0.10889921659346058,
+          -0.2252175370989696,
+          -0.902218783766793,
+          0.06812356612455846,
+          -0.8431230587491594,
+          0.1691949046162513
+        ],
+        [
+          0.07752990842880086,
+          -0.11389105238801656,
+          0.07637737118498643,
+          -0.1480097540204105,
+          -0.0919303631708148,
+          -0.08618366744418549,
+          -0.4231183280719118,
+          -0.4257485058809383,
+          0.44570445767746314,
+          0.39277010275364516,
+          0.4396212235831382,
+          0.4272626251520574,
+          0.07967107370716864,
+          -0.25713443852365436,
+          -0.7692816659166981,
+          -0.07982424624040774,
+          -0.852613071655835,
+          0.10413047477183447
+        ],
+        [
+          0.07450067960054844,
+          -0.14234441392322467,
+          0.07345088101542509,
+          -0.14097118474250178,
+          -0.0810690735991582,
+          -0.0716806607432486,
+          -0.4072116540321915,
+          -0.41891280287722715,
+          0.4326861464669007,
+          0.3488937714463799,
+          0.38292871309082843,
+          0.4335772191675963,
+          0.1301959101802384,
+          -0.254768431826762,
+          -0.7743318698187429,
+          -0.11439614441647915,
+          -0.885520164134951,
+          0.06935193920342
+        ],
+        [
+          0.07907545377029081,
+          -0.13254663419119928,
+          0.06492842544153289,
+          -0.13909221642341915,
+          -0.06054660096700321,
+          -0.06884129563548175,
+          -0.38957822148156496,
+          -0.4024356634018796,
+          0.3323434430462406,
+          0.3183533289455003,
+          0.29108730166114394,
+          0.3493782793437041,
+          0.11709305516515489,
+          -0.2763016240470888,
+          -0.7784110087494343,
+          -0.1164555785186775,
+          -0.8463535326818988,
+          0.018953968997746366
+        ],
+        [
+          0.07776754288251113,
+          -0.13651122114316172,
+          0.027687376737822886,
+          -0.15965228964762546,
+          -0.05159310484108114,
+          -0.06720904880484606,
+          -0.39462480403092204,
+          -0.38552529273491626,
+          0.25726683326104743,
+          0.30041586873234394,
+          0.2703458064266959,
+          0.25731315391615156,
+          0.086057654652308,
+          -0.24218129735750737,
+          -0.7225107988213347,
+          -0.07715739683083711,
+          -0.8625419854309688,
+          0.03724049469537635
+        ],
+        [
+          0.0726489362083184,
+          -0.14423549821428666,
+          0.03062971463465515,
+          -0.13805252280601546,
+          -0.06056225152924105,
+          -0.06517768499340318,
+          -0.4047054227207351,
+          -0.39703517397302535,
+          0.3116602605426518,
+          0.3089168298406697,
+          0.30202715331822544,
+          0.2744960894916204,
+          0.09205264745602265,
+          -0.21142455420799505,
+          -0.7187933423677288,
+          -0.06876753464044719,
+          -0.9135323850946957,
+          0.02987183463313351
+        ],
+        [
+          0.08399329287240107,
+          -0.1176392996157402,
+          0.09256703315269993,
+          -0.08911792830110946,
+          -0.05920376332682435,
+          -0.06691813274294353,
+          -0.4046323081490952,
+          -0.405052463820932,
+          0.31033992008242167,
+          0.2973454588762245,
+          0.32310335676578705,
+          0.34018519849153894,
+          0.10127153598568059,
+          -0.22086850485672266,
+          -0.7540960516630199,
+          -0.0363258718482943,
+          -0.8663209148305087,
+          0.06284681383165805
+        ],
+        [
+          0.07682499462520685,
+          -0.1085771311879985,
+          0.11072656387920332,
+          -0.08793610472685501,
+          -0.0742226163004243,
+          -0.07293584893896203,
+          -0.4118970722174915,
+          -0.41585814815684335,
+          0.3469132759931775,
+          0.36583701809552494,
+          0.38702294898091283,
+          0.416446534061663,
+          0.15234812343003878,
+          -0.18643446136407532,
+          -0.6918960347335011,
+          -0.08116705694593805,
+          -0.8094832150939804,
+          0.12157068864094814
+        ]
+      ],
+      "nodes_describe_suffix_only": true,
+      "prefix_steps": 180,
+      "native_success": false
+    }
+  ],
+  "queue_snapshot": {
+    "state": "WAITING_VERIFIED_PREDECESSOR",
+    "pid": 195899,
+    "time": "2026-11-08T18:56:23.440247+00:00",
+    "predecessor_pid": 188615
+  },
+  "replacement": {
+    "state": "CANCELLED_SUPERSEDED_BEFORE_NATIVE_START",
+    "time_utc": "2026-11-08T18:56:17.798788+00:00",
+    "pid": 190079,
+    "reason": "Replace unstarted 118-only trial with independently checked 12+118 candidate; running v15 remains unchanged.",
+    "old_plan_sha256": "c16ed7ab6ae0a1aca2bbc49555df0d323e0bbd0e352a624c7b31d6b67eff89cb",
+    "replacement_plan": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_capture_native_preparation_20261109_01/plan.json",
+    "replacement_sha256": "1b106fa2c2c3e9117cff64344e70f7bc0fcaa4e63052091466e98bb105a87541",
+    "original_native_job_started": false,
+    "predecessor_still_running": true
+  },
+  "native_snapshot": {
+    "control_tick": 400,
+    "owned_cases": 110,
+    "applied_steps": 10913,
+    "training": false
+  },
+  "native_plan_pin_count": 561,
+  "changed_pins": [],
+  "formal_verification": {
+    "goal_id": "G07",
+    "status": "FAILED",
+    "contract_sha256": "66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807",
+    "checks": {
+      "G00": {
+        "passed": false,
+        "errors": [
+          "Missing or empty artifact: reports/G00/native_train/checkpoint.pt"
+        ]
+      },
+      "G01": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G00",
+          "Path escapes workspace: assets/quadsmash_standard_v2.usd",
+          "Path escapes workspace: assets/vendor/piper_isaac_sim/piper_description/urdf/piper_no_gripper_description.urdf"
+        ]
+      },
+      "G02": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G01"
+        ]
+      },
+      "G03": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G02",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/train/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/train/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/reload/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/reload/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/interrupt/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/interrupt/continuation_reference.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/resume_interrupt/checkpoint.pt",
+          "Missing or empty artifact: reports/G03/native_20261022T041355_436993/resume_interrupt/continuation_reference.pt"
+        ]
+      },
+      "G04": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G03",
+          "Missing or empty artifact: artifacts/G04/policy.pt",
+          "Missing or empty artifact: artifacts/G04/autonomous_actor/actor.pt",
+          "Missing or empty artifact: artifacts/G04/autonomous_actor/interface.json"
+        ]
+      },
+      "G05": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G04"
+        ]
+      },
+      "G06": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G05"
+        ]
+      },
+      "G07": {
+        "passed": false,
+        "errors": [
+          "Dependency did not pass: G06",
+          "Missing or invalid evidence: [Errno 2] No such file or directory: '/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/G07/evidence.json'"
+        ]
+      }
+    },
+    "scope": "Structure, hashes, dependencies and thresholds only; not simulation authenticity or GPU budget enforcement."
+  },
+  "source_sha256": {
+    "reports/pure_control_current_native_capture_search_20261109/result.json": "67201e8eb62d58f40dc8a7fd184ec1cc94aa92f6e0f23add76da7ac412103245",
+    "reports/pure_control_current_native_capture_search_20261109/inputs.json": "bb0ac0e0f3ed8e819ed3315809676e92825517389b72890c8c19844069700ba3",
+    "reports/pure_control_current_native_capture_preparation_20261109/prefix_check.json": "63ce36c857148ef19eaf87bcee6d76d9469c4cd3340b7dbeeca424bdbea63103",
+    "reports/pure_control_current_native_capture_preparation_20261109/first_actual_matches.json": "c037f597bd0d8e4d4fcfa842f3ea2d37574fbb1157540344429512aecd4f1a4e",
+    "reports/pure_control_current_native_capture_preparation_20261109/formal_verify.json": "ae2b5bbc540391cfed972e3b8764c4c9229b3e2cee247c029a8aa1075e69beea",
+    "reports/pure_control_current_native_suffix_search_20261109/result.json": "255c62b194278c6e1bcf1e1d813e1751e7c877dc8e9c7be3529d230670804ffa",
+    "reports/pure_control_current_native_suffix_search_20261109/inputs.json": "5430e01b044f87372213cbb31224c5b5562b376f33094c7d6a32657f1ec22d70",
+    "reports/pure_control_current_capture_native_preparation_20261109_01/plan.json": "1b106fa2c2c3e9117cff64344e70f7bc0fcaa4e63052091466e98bb105a87541",
+    "reports/pure_control_current_capture_native_preparation_20261109_01/superseded_queue_receipt.json": "67b175f4a004206ebaf00a907ffda80a5f4f424e777e439b1992e04175e1711e",
+    "scripts/search_model_prefix_recovery_v5.py": "1e9810c8f3a70f5c42809294516c76fe81519da0820d877d6ceb2f8712d7b01a",
+    "reports/pure_control_current_native_capture_continuation_20261109/end_observation.json": "82cac02b1f990ef8a6401a13ce842fd7fc87a6b913accafed52b017c468e32e3",
+    "reports/pure_control_current_native_capture_search_20261109/state_123_411.json": "88d43eb7141d98a0103395b3de0d8d0679a610bb27c5def5ccbb5a38888ac09d",
+    "reports/pure_control_current_native_capture_search_20261109/state_12_442.json": "7adf54553dff45d3f5f0e099e3e50a9919a82b4499c1b39252f85a36fa10b2a1",
+    "reports/pure_control_current_native_capture_search_20261109/state_58_442.json": "1b488b3955415c6077c6fd6f53bd6b3160d3b3368379d7910d43c110b8852681",
+    "reports/pure_control_current_native_suffix_search_20261109/state_123_411.json": "88496e2d231e24a3723f5ce70f2531a29a34f17896d32935ec98fbc61ca3149b",
+    "reports/pure_control_current_native_suffix_search_20261109/state_58_442.json": "371580156cd7f070d2cddf46e4e3b2ab22515d002ab32acaa11b31e7b069f4f7"
+  },
+  "no_RL_BC_or_distillation": true,
+  "native_success_not_inferred": true
+}
