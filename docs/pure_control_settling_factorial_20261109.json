@@ -1,0 +1,85 @@
+{
+  "case27": {
+    "same_actual_initial_state": true,
+    "first_action_difference": {
+      "tick": 409,
+      "command_max_rad": 0.3261711403083394
+    },
+    "first_post_step_state_difference": {
+      "tick": 409,
+      "post_step_q_max": 0.0020077905220889924,
+      "post_step_v_max": 0.39014274654670067
+    },
+    "maximum_any_prefix_difference": 0.0,
+    "plan_end_stable_s": 2.7400002479553223,
+    "state_driven_stable_s": 3.9200000762939453,
+    "capture_tick": 409
+  },
+  "full_paired_summary": {
+    "state": "COMPLETED_FINE_SELECTOR_SETTLING_FEEDBACK",
+    "results": [
+      {
+        "state_key": "27:274",
+        "mode": "state_settling",
+        "steps": 526,
+        "required_steps": 526,
+        "failure": null,
+        "full_model_path": true,
+        "final_model_stable_s": 3.9200000762939453,
+        "state_settling_capture_tick": 409,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "state_key": "65:275",
+        "mode": "state_settling",
+        "steps": 525,
+        "required_steps": 525,
+        "failure": null,
+        "full_model_path": true,
+        "final_model_stable_s": 2.070000171661377,
+        "state_settling_capture_tick": 594,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "state_key": "27:274",
+        "mode": "plan_end",
+        "steps": 526,
+        "required_steps": 526,
+        "failure": null,
+        "full_model_path": true,
+        "final_model_stable_s": 2.7400002479553223,
+        "state_settling_capture_tick": null,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "state_key": "65:275",
+        "mode": "plan_end",
+        "steps": 485,
+        "required_steps": 525,
+        "failure": {
+          "tick": 760,
+          "reason": "compute_budget"
+        },
+        "full_model_path": false,
+        "final_model_stable_s": 1.25,
+        "state_settling_capture_tick": null,
+        "native_success": false,
+        "valid_expert_labels": false
+      }
+    ],
+    "wall_seconds": 1802.4748607710935,
+    "native_success": false,
+    "valid_expert_labels": false
+  },
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fixed_prefix_fine_feedback_20261109/27_274_plan_end.json": "c327810600c40f6607d5fb53a2a0431b46927daff5fd0a72abe26371a218b7e3",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fixed_prefix_fine_feedback_20261109/27_274_state_settling.json": "0651974d0ec6f98c7d1e2bb6096143c8ec199ae9b388ec0d5090f8e20c327922",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fixed_prefix_fine_feedback_20261109/result.json": "eafd51358d54dcdb0df99359c5cebdb0649e2410959568537c57a446635fd6bd",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fixed_prefix_fine_feedback_20261109/inputs.json": "33469311ad57872d3a2fbcc9d723e914cc9b20363e191508e61ce62f698401d2"
+  },
+  "native_success": false,
+  "valid_expert_labels": false
+}
