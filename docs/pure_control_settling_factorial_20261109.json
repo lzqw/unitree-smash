@@ -15,7 +15,24 @@
     "state_driven_stable_s": 3.9200000762939453,
     "capture_tick": 409
   },
-  "full_paired_summary": {
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fixed_prefix_fine_feedback_20261109/27_274_plan_end.json": "c327810600c40f6607d5fb53a2a0431b46927daff5fd0a72abe26371a218b7e3",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fixed_prefix_fine_feedback_20261109/27_274_state_settling.json": "0651974d0ec6f98c7d1e2bb6096143c8ec199ae9b388ec0d5090f8e20c327922",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fixed_prefix_fine_feedback_20261109/result.json": "eafd51358d54dcdb0df99359c5cebdb0649e2410959568537c57a446635fd6bd",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fixed_prefix_fine_feedback_20261109/inputs.json": "33469311ad57872d3a2fbcc9d723e914cc9b20363e191508e61ce62f698401d2",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_coarse_settling_counterfactual_20261109/result.json": "2dcf3f3d86a27c7d30b85557d6f7d877c137810567ed867bbb5d401678fba9e4",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_coarse_settling_counterfactual_20261109/inputs.json": "220bafd9aef7b323f507d5a5d6c3eee26aac4a22b702342172609f43a8cd5bbe",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_coarse_settling_counterfactual_20261109/paired_fidelity.json": "462e2d12059e1d917344b93f802652c8db6383c75d31e99300e9a61d56130db9",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_coarse_settling_counterfactual_20261109/27_274.json": "b3eb7ae104176b534b7133e73556566d9161c6001d5363230145e9fa35dab858",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_coarse_settling_counterfactual_20261109/65_275.json": "6ec8a6043da2034abde1f6ceefa5655d3950d219f36de16fa5407ce21debb867",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fixed_prefix_fine_feedback_20261109/65_275_state_settling.json": "0a8e3e8a48bfce86f8b066232304d2222ceceed131636ac599bcba64d1ab99bf",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fixed_prefix_budget_replay_20261109/result.json": "3b3acadc92bf74d1e3f8e7932b845f26d44e42597ff132ef5fda7f1673129e08",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_complete_reference_pairs_20261109/result.json": "68270a4aab42d9443c8314b706653a721bddc32c22f82edaec71445a4c6c31bd",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_complete_reference_pairs_20261109/formal_verify.json": "ae2b5bbc540391cfed972e3b8764c4c9229b3e2cee247c029a8aa1075e69beea"
+  },
+  "native_success": false,
+  "valid_expert_labels": false,
+  "original_budget_limited_summary": {
     "state": "COMPLETED_FINE_SELECTOR_SETTLING_FEEDBACK",
     "results": [
       {
@@ -74,12 +91,194 @@
     "native_success": false,
     "valid_expert_labels": false
   },
-  "source_sha256": {
-    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fixed_prefix_fine_feedback_20261109/27_274_plan_end.json": "c327810600c40f6607d5fb53a2a0431b46927daff5fd0a72abe26371a218b7e3",
-    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fixed_prefix_fine_feedback_20261109/27_274_state_settling.json": "0651974d0ec6f98c7d1e2bb6096143c8ec199ae9b388ec0d5090f8e20c327922",
-    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fixed_prefix_fine_feedback_20261109/result.json": "eafd51358d54dcdb0df99359c5cebdb0649e2410959568537c57a446635fd6bd",
-    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fixed_prefix_fine_feedback_20261109/inputs.json": "33469311ad57872d3a2fbcc9d723e914cc9b20363e191508e61ce62f698401d2"
+  "full_paired_summary": {
+    "state": "COMPLETED_BUDGET_ONLY_REPLAY",
+    "results": [
+      {
+        "state_key": "27:274",
+        "mode": "state_settling",
+        "steps": 526,
+        "required_steps": 526,
+        "failure": null,
+        "full_model_path": true,
+        "final_model_stable_s": 3.9200000762939453,
+        "state_settling_capture_tick": 409,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "state_key": "65:275",
+        "mode": "state_settling",
+        "steps": 525,
+        "required_steps": 525,
+        "failure": null,
+        "full_model_path": true,
+        "final_model_stable_s": 2.070000171661377,
+        "state_settling_capture_tick": 594,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "state_key": "27:274",
+        "mode": "plan_end",
+        "steps": 526,
+        "required_steps": 526,
+        "failure": null,
+        "full_model_path": true,
+        "final_model_stable_s": 2.7400002479553223,
+        "state_settling_capture_tick": null,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "state_key": "65:275",
+        "mode": "plan_end",
+        "steps": 525,
+        "required_steps": 525,
+        "failure": null,
+        "full_model_path": true,
+        "final_model_stable_s": 1.6500000953674316,
+        "state_settling_capture_tick": null,
+        "native_success": false,
+        "valid_expert_labels": false,
+        "worker_elapsed_s": 1749.529929190874,
+        "worker_compute_allowance_s": 2400
+      }
+    ],
+    "wall_seconds": 1749.744131501997,
+    "native_success": false,
+    "valid_expert_labels": false,
+    "training": false
   },
-  "native_success": false,
-  "valid_expert_labels": false
+  "completed_pair_audit": {
+    "pairs": [
+      {
+        "state_key": "27:274",
+        "reference_steps": 526,
+        "common_steps": 526,
+        "exact_common_prefix_steps": 135,
+        "first_difference_tick": {
+          "target": 409,
+          "q": 409,
+          "v": 409
+        },
+        "first_command_difference_rad": 0.3261711403083394,
+        "state_rows_are_after_command_integration": true,
+        "capture_tick": 409,
+        "plan_end": {
+          "steps": 526,
+          "full_model_path": true,
+          "stable_s": 2.7400002479553223,
+          "failure": null
+        },
+        "state_settling": {
+          "steps": 526,
+          "full_model_path": true,
+          "stable_s": 3.9200000762939453,
+          "failure": null
+        }
+      },
+      {
+        "state_key": "65:275",
+        "reference_steps": 525,
+        "common_steps": 525,
+        "exact_common_prefix_steps": 319,
+        "first_difference_tick": {
+          "target": 594,
+          "q": 594,
+          "v": 594
+        },
+        "first_command_difference_rad": 0.22982858246079071,
+        "state_rows_are_after_command_integration": true,
+        "capture_tick": 594,
+        "plan_end": {
+          "steps": 525,
+          "full_model_path": true,
+          "stable_s": 1.6500000953674316,
+          "failure": null
+        },
+        "state_settling": {
+          "steps": 525,
+          "full_model_path": true,
+          "stable_s": 2.070000171661377,
+          "failure": null
+        }
+      }
+    ],
+    "model_pairs": 2,
+    "plan_end_full_paths": 2,
+    "state_settling_full_paths": 2,
+    "native_success": false,
+    "valid_expert_labels": false,
+    "training": false,
+    "source_sha256": {
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_completed_settling_pairs_v1.py": "4e203801a3d5b01a64e594949bbc76899f08c71d41cfd9c99ccc524a95c17f5f",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fixed_prefix_budget_replay_20261109/result.json": "3b3acadc92bf74d1e3f8e7932b845f26d44e42597ff132ef5fda7f1673129e08",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fixed_prefix_budget_replay_20261109/inputs.json": "b4b82de43eb4f93df8a9207587b9aca616e63ad47fe597c52d2ce6ffa49aeb40",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fixed_prefix_fine_feedback_20261109/27_274_state_settling.json": "0651974d0ec6f98c7d1e2bb6096143c8ec199ae9b388ec0d5090f8e20c327922",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fixed_prefix_fine_feedback_20261109/65_275_state_settling.json": "0a8e3e8a48bfce86f8b066232304d2222ceceed131636ac599bcba64d1ab99bf",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fixed_prefix_fine_feedback_20261109/27_274_plan_end.json": "c327810600c40f6607d5fb53a2a0431b46927daff5fd0a72abe26371a218b7e3",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fixed_prefix_budget_replay_20261109/65_275_plan_end.json": "8658f9f3b44bdefee5ecc98bf6df9f661d8a3b14f4813e4fdb8537d24efa9c77",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fixed_prefix_fine_feedback_20261109/candidate_snapshots/state_27_274.json": "eefbef41a62e4334aa506d505661b00c1f092b5ea392f90d8321d89d9ca450bd",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fixed_prefix_fine_feedback_20261109/candidate_snapshots/state_65_275.json": "96525ebe3bb1ebfe0042f1907572e11904010f4ea6c73159e513b1b24e4130d8"
+    }
+  },
+  "coarse_fine_rechecked": [
+    {
+      "state_key": "27:274",
+      "steps": 526,
+      "maximum_differences": {
+        "q": 0.0,
+        "v": 0.0,
+        "target": 0.0
+      }
+    },
+    {
+      "state_key": "65:275",
+      "steps": 525,
+      "maximum_differences": {
+        "q": 0.0,
+        "v": 0.0,
+        "target": 0.0
+      }
+    }
+  ],
+  "coarse_summary": {
+    "state": "COMPLETED_COARSE_SETTLING_COUNTERFACTUAL",
+    "results": [
+      {
+        "state_key": "27:274",
+        "mode": "state_settling",
+        "steps": 526,
+        "required_steps": 526,
+        "failure": null,
+        "full_model_path": true,
+        "final_model_stable_s": 3.9200000762939453,
+        "state_settling_capture_tick": 409,
+        "native_success": false,
+        "valid_expert_labels": false,
+        "worker_elapsed_s": 284.61845254781656
+      },
+      {
+        "state_key": "65:275",
+        "mode": "state_settling",
+        "steps": 525,
+        "required_steps": 525,
+        "failure": null,
+        "full_model_path": true,
+        "final_model_stable_s": 2.070000171661377,
+        "state_settling_capture_tick": 594,
+        "native_success": false,
+        "valid_expert_labels": false,
+        "worker_elapsed_s": 330.226639786968
+      }
+    ],
+    "wall_seconds": 330.45426791813225,
+    "native_success": false,
+    "valid_expert_labels": false
+  },
+  "formal_verification": {
+    "status": "FAILED",
+    "exit_code": 2
+  }
 }
