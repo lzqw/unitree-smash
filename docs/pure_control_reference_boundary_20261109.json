@@ -1,0 +1,289 @@
+{
+  "entries": [
+    {
+      "state_key": "114:272",
+      "mode": "plan_end",
+      "reference_steps": 67,
+      "executed_steps": 67,
+      "full_model_path": false,
+      "common_reference_steps": 67,
+      "maximum_command_difference_during_reference": 0.0,
+      "first_command_difference_step": null,
+      "failure_location": "after_reference_end",
+      "failure": {
+        "tick": 339,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -4.60601306869271e-06, 'exact': True, 'shape_index': 31, 'obstacle': 'net_segment_32'}\")"
+      },
+      "capture_tick": null,
+      "final_model_stable_s": 0.0,
+      "first_after_reference_command_source": null,
+      "reference_end_stable_s": 0.0
+    },
+    {
+      "state_key": "114:272",
+      "mode": "state_settling",
+      "reference_steps": 67,
+      "executed_steps": 67,
+      "full_model_path": false,
+      "common_reference_steps": 67,
+      "maximum_command_difference_during_reference": 0.0,
+      "first_command_difference_step": null,
+      "failure_location": "after_reference_end",
+      "failure": {
+        "tick": 339,
+        "reason": "model_rejected",
+        "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -4.60601306869271e-06, 'exact': True, 'shape_index': 31, 'obstacle': 'net_segment_32'}\")"
+      },
+      "capture_tick": null,
+      "final_model_stable_s": 0.0,
+      "first_after_reference_command_source": null,
+      "reference_end_stable_s": 0.0
+    },
+    {
+      "state_key": "126:272",
+      "mode": "state_settling",
+      "reference_steps": 183,
+      "executed_steps": 183,
+      "full_model_path": false,
+      "common_reference_steps": 183,
+      "maximum_command_difference_during_reference": 0.0,
+      "first_command_difference_step": null,
+      "failure_location": "after_reference_end",
+      "failure": {
+        "tick": 455,
+        "reason": "model_rejected",
+        "error": "ValueError('foot_pair_clearance:{\"bodies\": [\"FL_foot\", \"FR_foot\"], \"constraint_type\": \"foot_pair_clearance\", \"gap_m\": -4.80123835095575e-06, \"planning_margin_m\": 0.0, \"prediction_geometry_call\": 241849, \"violation_m\": 4.80123835095575e-06}')"
+      },
+      "capture_tick": null,
+      "final_model_stable_s": 0.0,
+      "first_after_reference_command_source": null,
+      "reference_end_stable_s": 0.0
+    },
+    {
+      "state_key": "27:274",
+      "mode": "state_settling",
+      "reference_steps": 371,
+      "executed_steps": 526,
+      "full_model_path": true,
+      "common_reference_steps": 371,
+      "maximum_command_difference_during_reference": 0.9377574668967098,
+      "first_command_difference_step": 251,
+      "failure_location": "not_failed",
+      "failure": null,
+      "capture_tick": 525,
+      "final_model_stable_s": 2.760000228881836,
+      "first_after_reference_command_source": "interval_qp",
+      "reference_end_stable_s": 0.0
+    },
+    {
+      "state_key": "126:272",
+      "mode": "plan_end",
+      "reference_steps": 183,
+      "executed_steps": 183,
+      "full_model_path": false,
+      "common_reference_steps": 183,
+      "maximum_command_difference_during_reference": 0.0,
+      "first_command_difference_step": null,
+      "failure_location": "after_reference_end",
+      "failure": {
+        "tick": 455,
+        "reason": "model_rejected",
+        "error": "ValueError('foot_pair_clearance:{\"bodies\": [\"FL_foot\", \"FR_foot\"], \"constraint_type\": \"foot_pair_clearance\", \"gap_m\": -4.80123835095575e-06, \"planning_margin_m\": 0.0, \"prediction_geometry_call\": 241849, \"violation_m\": 4.80123835095575e-06}')"
+      },
+      "capture_tick": null,
+      "final_model_stable_s": 0.0,
+      "first_after_reference_command_source": null,
+      "reference_end_stable_s": 0.0
+    },
+    {
+      "state_key": "87:272",
+      "mode": "plan_end",
+      "reference_steps": 109,
+      "executed_steps": 109,
+      "full_model_path": false,
+      "common_reference_steps": 109,
+      "maximum_command_difference_during_reference": 0.0,
+      "first_command_difference_step": null,
+      "failure_location": "after_reference_end",
+      "failure": {
+        "tick": 381,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.009310550715446064
+        },
+        "collision": {
+          "micro": 63,
+          "body": "RL_thigh",
+          "gap_m": -7.87296499348833e-05
+        }
+      },
+      "capture_tick": null,
+      "final_model_stable_s": 0.0,
+      "first_after_reference_command_source": null,
+      "reference_end_stable_s": 0.0
+    },
+    {
+      "state_key": "65:275",
+      "mode": "state_settling",
+      "reference_steps": 188,
+      "executed_steps": 189,
+      "full_model_path": false,
+      "common_reference_steps": 188,
+      "maximum_command_difference_during_reference": 0.0,
+      "first_command_difference_step": null,
+      "failure_location": "after_reference_end",
+      "failure": {
+        "tick": 464,
+        "reason": "model_rejected",
+        "error": "ValueError('foot_pair_clearance:{\"bodies\": [\"FL_foot\", \"FR_foot\"], \"constraint_type\": \"foot_pair_clearance\", \"gap_m\": -6.834356376682338e-06, \"planning_margin_m\": 0.0, \"prediction_geometry_call\": 261653, \"violation_m\": 6.834356376682338e-06}')"
+      },
+      "capture_tick": null,
+      "final_model_stable_s": 0.0,
+      "first_after_reference_command_source": "interval_qp",
+      "reference_end_stable_s": 0.0
+    },
+    {
+      "state_key": "72:281",
+      "mode": "state_settling",
+      "reference_steps": 102,
+      "executed_steps": 103,
+      "full_model_path": false,
+      "common_reference_steps": 102,
+      "maximum_command_difference_during_reference": 0.0,
+      "first_command_difference_step": null,
+      "failure_location": "after_reference_end",
+      "failure": {
+        "tick": 384,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.0074294620390725884
+        },
+        "collision": {
+          "micro": 0,
+          "body": "RL_calf",
+          "gap_m": -5.137013864474349e-06
+        }
+      },
+      "capture_tick": null,
+      "final_model_stable_s": 0.0,
+      "first_after_reference_command_source": "interval_qp",
+      "reference_end_stable_s": 0.0
+    },
+    {
+      "state_key": "65:275",
+      "mode": "plan_end",
+      "reference_steps": 188,
+      "executed_steps": 189,
+      "full_model_path": false,
+      "common_reference_steps": 188,
+      "maximum_command_difference_during_reference": 0.0,
+      "first_command_difference_step": null,
+      "failure_location": "after_reference_end",
+      "failure": {
+        "tick": 464,
+        "reason": "model_rejected",
+        "error": "ValueError('foot_pair_clearance:{\"bodies\": [\"FL_foot\", \"FR_foot\"], \"constraint_type\": \"foot_pair_clearance\", \"gap_m\": -6.834356376682338e-06, \"planning_margin_m\": 0.0, \"prediction_geometry_call\": 261653, \"violation_m\": 6.834356376682338e-06}')"
+      },
+      "capture_tick": null,
+      "final_model_stable_s": 0.0,
+      "first_after_reference_command_source": "interval_qp",
+      "reference_end_stable_s": 0.0
+    },
+    {
+      "state_key": "87:272",
+      "mode": "state_settling",
+      "reference_steps": 109,
+      "executed_steps": 109,
+      "full_model_path": false,
+      "common_reference_steps": 109,
+      "maximum_command_difference_during_reference": 0.0,
+      "first_command_difference_step": null,
+      "failure_location": "after_reference_end",
+      "failure": {
+        "tick": 381,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.009310550715446064
+        },
+        "collision": {
+          "micro": 63,
+          "body": "RL_thigh",
+          "gap_m": -7.87296499348833e-05
+        }
+      },
+      "capture_tick": null,
+      "final_model_stable_s": 0.0,
+      "first_after_reference_command_source": null,
+      "reference_end_stable_s": 0.0
+    }
+  ],
+  "pending": [
+    [
+      "27:274",
+      "plan_end"
+    ],
+    [
+      "72:281",
+      "plan_end"
+    ]
+  ],
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_settling_20261109/114_272_plan_end.json": "82942dc6e6c71310846162f04acb4f371a3a10b71227fb91661fa58e88bb6385",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_settling_20261109/candidate_snapshots/state_114_272.json": "03d2d4563e3e3f1d62c9788756b07d6f0aa72b86f9e33d78de5f22c3aef82aa4",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_settling_20261109/114_272_state_settling.json": "2341a171daa22127a5fa899efb665e7268f031934fa5f41907684ef711cfd9b0",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_settling_20261109/126_272_state_settling.json": "1bf70aff218523ada2e5558cdee87d8dc2e0cdee521f37273ed30e619d64be90",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_settling_20261109/candidate_snapshots/state_126_272.json": "e229cd39cd753272f19444abdb63775c307c12d7cb5efce88a4d72a8204de791",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_settling_20261109/27_274_state_settling.json": "ccb0f6a41776e1ec93d4015a4156bf88e6ae23f8811c1ca1378c18649dbb74a4",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_settling_20261109/candidate_snapshots/state_27_274.json": "d2122f634c6373e742d0674438f22e82113902f246e726920e1b35b002db8118",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_settling_20261109/126_272_plan_end.json": "76c644638487f4be8f1b02989a94d1c1949105d8a6aca60cf17da2e5e932537d",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_budget_replay_20261109/87_272_plan_end.json": "f991e1d48deb3c8e4f9fbed205553c0251c782354fdd3e3e0f1ec2432fdb666e",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_settling_20261109/candidate_snapshots/state_87_272.json": "595645692fe0e6ca64b13125b4c4ca8782b877fb4ece5f1d2283951edae830ca",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_budget_replay_20261109/65_275_state_settling.json": "52e43746d6b5d176dd20a5915604282588ee2fedd563b384167b797c30d37281",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_settling_20261109/candidate_snapshots/state_65_275.json": "e35b61c4214cb66a6fa865d669f0733234bf05d3904ce3e8870ac1966e264978",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_budget_replay_20261109/72_281_state_settling.json": "49d212a6c965d1c73a9f76bc1d703cfa0080dbc6d0374e040ac509b663fc4256",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_settling_20261109/candidate_snapshots/state_72_281.json": "fc5c8f284bd1d78a511dae4cf32ec8b770e1ad87d0b24974356eb8c13ace74bd",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_budget_replay_20261109/65_275_plan_end.json": "6a54326efa07516dc2bf6186d051aaf0f0b7d4980d64e53f7715548c96fc9f96",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_budget_replay_20261109/87_272_state_settling.json": "ea30c03f02918512c23e4d6467ca36dac42bb9d3e4bc98e10223f1af9498a921",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_reference_boundary_failures_v1.py": "9de6bd585e94afdf42fb44a227dfafc35c12d12080ecfdd5d7806540f44e67ad",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_reference_boundary_audit_20261109/observed_status.json": "7d33efb7c9356d614a45533000d70642778ad0ab264aa1e7aff365efadff5feb",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_settling_20261109/inputs.json": "8891226b767f268996e970b7fe8b212fa147e17626bef3afa9e93e047950f3dc",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_fine_selector_settling_20261109/result.json": "243ead7f01587320bc76bb7a65fd07d773fd030017ee353c9d1c2b84f3f1dd47",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_coarse_settling_counterfactual_20261109/paired_fidelity.json": "462e2d12059e1d917344b93f802652c8db6383c75d31e99300e9a61d56130db9"
+  },
+  "native_execution": false,
+  "valid_expert_labels": false,
+  "batch_complete": false,
+  "interpretation": "An incomplete reference is not a complete landing demonstration.",
+  "coarse_settling_comparison": {
+    "results": [
+      {
+        "state_key": "27:274",
+        "steps": 526,
+        "maximum_differences": {
+          "q": 0.0,
+          "v": 0.0,
+          "target": 0.0
+        },
+        "coarse_stable_s": 3.9200000762939453,
+        "fine_stable_s": 3.9200000762939453,
+        "capture_tick": 409,
+        "coarse_worker_seconds": 284.61845254781656
+      },
+      {
+        "state_key": "65:275",
+        "steps": 525,
+        "maximum_differences": {
+          "q": 0.0,
+          "v": 0.0,
+          "target": 0.0
+        },
+        "coarse_stable_s": 2.070000171661377,
+        "fine_stable_s": 2.070000171661377,
+        "capture_tick": 594,
+        "coarse_worker_seconds": 330.226639786968
+      }
+    ],
+    "native_success": false
+  }
+}
