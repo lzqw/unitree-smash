@@ -28,10 +28,14 @@
 
 这支持把新候选送入原生批量验证，但还不证明它们在PhysX中成功，也不构成未知初态泛化证据。
 
-## 正在进行的保留检查
+## 完整命令保留与原生排队
 
-已启动原五个严格落地段案例的完整记录重放，使用扩展后的初始库、原V15控制器、每步真实记录的状态与上一命令，核对最终请求与基线命令是否一致。检查覆盖至tick799，并保留原关节范围和同一物理接口。
+原五个严格落地段案例的完整记录重放已通过。使用扩展后的初始库、原V15控制器、每步真实记录的状态与上一命令，共检查2629条恢复请求至tick799，最大差为4.0686×10⁻¹⁰ rad。原关节范围和物理接口未改变。
 
-它属于固定历史上的命令保留检查，不是新的物理执行。通过后还需形成明确的原生入口检查及有限时长的TRAIN128作业；当前尚未启动或排队这项新增原生实验，也未修改此前在运行的作业。
+这属于固定历史上的命令保留检查，不是新的物理执行。新增原生入口还核对了完整模型反馈、8秒末观测、两条真实入口命令、唯一最终动作写入者，以及与原V15配置相同的执行设置。负例检查确认：改变硬件接口、增加第二写入者、遗漏42号成功案例，均会被拒绝。
 
-程序：[合并初始参考](../scripts/merge_initial_recovery_library_v1.py)、[入口覆盖与命令核对](../scripts/check_initial_library_coverage_v1.py)、[完整历史保留检查](../scripts/check_initial_library_preservation_v1.py)。[紧凑证据和运行状态](pure_control_initial_expansion_20261109.json)。大体积参考轨迹仍留在本机。
+原生TRAIN128作业现已排入现有串行队列，在已排队的V20四参考对照完成后执行。新增作业单次上限7200秒，命令参数与计划声明一致；协调器等待上限24000秒，前序失败时不自动重试或启动。当前仍在等待，没有占用第二个GPU作业，也没有改动前序输入。准备目录为`reports/pure_control_initial_expansion_native_preparation_20261109_01`，原生输出将写入`reports/pure_control_initial_expansion_all128_20261109_01`。
+
+正式G07结构校验仍因历史缺失检查点、外部资产路径与缺失证据失败，验收契约未改。
+
+程序：[合并初始参考](../scripts/merge_initial_recovery_library_v1.py)、[入口覆盖与命令核对](../scripts/check_initial_library_coverage_v1.py)、[完整历史保留检查](../scripts/check_initial_library_preservation_v1.py)、[原生入口验收](../scripts/check_initial_library_native_entry_v1.py)、[原生准备](../scripts/prepare_native_initial_library_v1.py)、[串行等待](../scripts/run_after_deferred_native_v3.py)。[紧凑证据和运行状态](pure_control_initial_expansion_20261109.json)。大体积参考轨迹仍留在本机。

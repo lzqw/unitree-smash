@@ -1,5 +1,5 @@
 {
-  "time_utc": "2026-11-08T21:18:38.460007+00:00",
+  "time_utc": "2026-11-08T21:22:37.607920+00:00",
   "coverage": {
     "passed": true,
     "causal_release_count": 110,
@@ -56,50 +56,9 @@
     "native_success": false,
     "valid_expert_labels": false
   },
-  "preservation_processes": [
-    {
-      "pid": 215466,
-      "state": "S",
-      "start_ticks": "179880316",
-      "command": [
-        "timeout",
-        "1350",
-        "bash",
-        "scripts/python.sh",
-        "-u",
-        "scripts/check_initial_library_preservation_v1.py",
-        "--baseline",
-        "reports/pure_control_stance_comparison_review_20261109/best_verified_v15.json",
-        "--configuration",
-        "reports/pure_control_foot_reference_native_preparation_20261109_01/controller.json",
-        "--library",
-        "reports/pure_control_initial_expansion_preparation_20261109/reference_library.json",
-        "--output",
-        "reports/pure_control_initial_expansion_preparation_20261109/preservation.json"
-      ]
-    },
-    {
-      "pid": 215470,
-      "state": "S",
-      "start_ticks": "179880317",
-      "command": [
-        "/home/autodrive/Isaac/env_isaaclab/bin/python",
-        "-u",
-        "scripts/check_initial_library_preservation_v1.py",
-        "--baseline",
-        "reports/pure_control_stance_comparison_review_20261109/best_verified_v15.json",
-        "--configuration",
-        "reports/pure_control_foot_reference_native_preparation_20261109_01/controller.json",
-        "--library",
-        "reports/pure_control_initial_expansion_preparation_20261109/reference_library.json",
-        "--output",
-        "reports/pure_control_initial_expansion_preparation_20261109/preservation.json"
-      ]
-    }
-  ],
   "original_reference_count": 40,
   "expanded_reference_count": 42,
-  "native_job_prepared": false,
+  "native_job_prepared": true,
   "native_success": false,
   "valid_expert_labels": false,
   "source_sha256": {
@@ -109,5 +68,85 @@
     "scripts/merge_initial_recovery_library_v1.py": "791fa9d61d4cec75154cd8fff254f4bd65fa353847d3e600b3d848e088dae26e",
     "scripts/check_initial_library_coverage_v1.py": "35ac4363bea34633a0f05dabb63630015f5da5253bdb10b570b3bdabc93e4600",
     "scripts/check_initial_library_preservation_v1.py": "fe9450dbb47a12e8985cee6d81c884c182aa316b12244326b51ec6263b19c666"
-  }
+  },
+  "preservation_completed": {
+    "passed": true,
+    "checks": [
+      {
+        "case": 30,
+        "first_tick": 277,
+        "last_tick": 799,
+        "commands_checked": 523,
+        "maximum_request_error_rad": 2.8556157438686114e-10,
+        "initial_library_expanded": true
+      },
+      {
+        "case": 42,
+        "first_tick": 271,
+        "last_tick": 799,
+        "commands_checked": 529,
+        "maximum_request_error_rad": 4.068566594739309e-10,
+        "initial_library_expanded": true
+      },
+      {
+        "case": 50,
+        "first_tick": 275,
+        "last_tick": 799,
+        "commands_checked": 525,
+        "maximum_request_error_rad": 3.616280608298439e-10,
+        "initial_library_expanded": true
+      },
+      {
+        "case": 85,
+        "first_tick": 268,
+        "last_tick": 799,
+        "commands_checked": 532,
+        "maximum_request_error_rad": 2.2942470145892457e-10,
+        "initial_library_expanded": true
+      },
+      {
+        "case": 90,
+        "first_tick": 280,
+        "last_tick": 799,
+        "commands_checked": 520,
+        "maximum_request_error_rad": 2.129929566052624e-10,
+        "initial_library_expanded": true
+      }
+    ],
+    "native_execution": false,
+    "native_success": false,
+    "valid_expert_labels": false,
+    "scope": "Full V15 native command-history preservation after initial-bank expansion; not new physics"
+  },
+  "native_queue": {
+    "state": "WAITING_QUEUED_NATIVE_COMPLETION",
+    "pid": 216266,
+    "time_utc": "2026-11-08T21:21:55.430152+00:00",
+    "predecessor_deferred_pid": 203697
+  },
+  "negative_admission_checks": {
+    "checks": [
+      {
+        "name": "changed_interface",
+        "rejected": true,
+        "exit_code": 1,
+        "error": "ValueError: Changed execution setting: interface"
+      },
+      {
+        "name": "second_writer",
+        "rejected": true,
+        "exit_code": 1,
+        "error": "ValueError: Native entry differs from verified V15"
+      },
+      {
+        "name": "missing_success",
+        "rejected": true,
+        "exit_code": 1,
+        "error": "ValueError: Missing protected success"
+      }
+    ],
+    "native_execution": false
+  },
+  "declared_max_native_seconds": 7200,
+  "formal_G07_status": "FAILED"
 }
