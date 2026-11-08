@@ -1,0 +1,2219 @@
+{
+  "created_utc": "2026-11-08T11:59:31.420041+00:00",
+  "scope": "Pure-control landing; no new RL/BC/distillation",
+  "release_bank_search": {
+    "result": {
+      "state": "COMPLETED_MODEL_SEARCH",
+      "cases": 110,
+      "wall_seconds": 1725.149686204968,
+      "fine_full_horizon_cases": [],
+      "budget_unprocessed_cases": [],
+      "native_execution": false,
+      "valid_expert_labels": false,
+      "full_episode_certified": false
+    },
+    "coarse_candidate_count": 1650,
+    "fine_failure_counts": {
+      "contact_solver_not_converged": 25,
+      "physical_path_violation": 81,
+      "authored_net_collision": 4
+    },
+    "first_nonfoot_ground_bodies": {
+      "Head_lower": 81
+    },
+    "fine_steps": [
+      34,
+      35,
+      35,
+      35,
+      36,
+      34,
+      34,
+      35,
+      35,
+      33,
+      38,
+      33,
+      35,
+      34,
+      34,
+      34,
+      34,
+      34,
+      34,
+      34,
+      33,
+      35,
+      34,
+      34,
+      36,
+      34,
+      34,
+      35,
+      35,
+      35,
+      33,
+      34,
+      34,
+      35,
+      35,
+      34,
+      35,
+      40,
+      36,
+      34,
+      34,
+      34,
+      35,
+      35,
+      36,
+      35,
+      35,
+      34,
+      34,
+      34,
+      34,
+      34,
+      34,
+      34,
+      34,
+      33,
+      35,
+      34,
+      36,
+      35,
+      35,
+      33,
+      35,
+      34,
+      33,
+      35,
+      33,
+      34,
+      34,
+      34,
+      33,
+      34,
+      35,
+      36,
+      34,
+      35,
+      33,
+      33,
+      34,
+      34,
+      33,
+      34,
+      35,
+      34,
+      35,
+      34,
+      34,
+      34,
+      34,
+      35,
+      34,
+      33,
+      38,
+      34,
+      34,
+      34,
+      34,
+      34,
+      34,
+      34,
+      35,
+      34,
+      34,
+      34,
+      33,
+      34,
+      33,
+      35,
+      35,
+      35
+    ],
+    "case_details": [
+      {
+        "case": 0,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "prediction_rejected",
+          "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.001054130127101871, 'friction_cone': 0.0, 'tangent_fixed_point': 0.0002487921329636933}, 'box_violation': 4.118801413710571e-06, 'box_fixed_point': 1.7920545491989515e-08}\")",
+          "collision": null
+        }
+      },
+      {
+        "case": 1,
+        "fine_steps": 35,
+        "fine_failure": {
+          "step": 35,
+          "reason": "prediction_rejected",
+          "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.00027790663352789124, 'friction_cone': 0.0, 'tangent_fixed_point': 5.63784259854927e-05}, 'box_violation': 2.205474391558937e-06, 'box_fixed_point': 4.519065048558257e-08}\")",
+          "collision": null
+        }
+      },
+      {
+        "case": 2,
+        "fine_steps": 35,
+        "fine_failure": {
+          "step": 35,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.0072716618952912634
+          },
+          "first_ground_violation": {
+            "micro": 122,
+            "body": "Head_lower",
+            "gap_m": -0.00011104590387368829
+          }
+        }
+      },
+      {
+        "case": 3,
+        "fine_steps": 35,
+        "fine_failure": {
+          "step": 35,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.005473965456488476
+          },
+          "first_ground_violation": {
+            "micro": 131,
+            "body": "Head_lower",
+            "gap_m": -0.00013250630431787397
+          }
+        }
+      },
+      {
+        "case": 5,
+        "fine_steps": 36,
+        "fine_failure": {
+          "step": 36,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.019814007638129613
+          },
+          "first_ground_violation": {
+            "micro": 57,
+            "body": "Head_lower",
+            "gap_m": -4.934374416738774e-05
+          }
+        }
+      },
+      {
+        "case": 6,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.02020964086229317
+          },
+          "first_ground_violation": {
+            "micro": 54,
+            "body": "Head_lower",
+            "gap_m": -0.00018179759108293003
+          }
+        }
+      },
+      {
+        "case": 7,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.007366737583480908
+          },
+          "first_ground_violation": {
+            "micro": 121,
+            "body": "Head_lower",
+            "gap_m": -3.68963029018024e-05
+          }
+        }
+      },
+      {
+        "case": 8,
+        "fine_steps": 35,
+        "fine_failure": {
+          "step": 35,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.019240485364846342
+          },
+          "first_ground_violation": {
+            "micro": 59,
+            "body": "Head_lower",
+            "gap_m": -0.00015084308256947676
+          }
+        }
+      },
+      {
+        "case": 9,
+        "fine_steps": 35,
+        "fine_failure": {
+          "step": 35,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.012043003149718338
+          },
+          "first_ground_violation": {
+            "micro": 98,
+            "body": "Head_lower",
+            "gap_m": -0.0001312084575344069
+          }
+        }
+      },
+      {
+        "case": 10,
+        "fine_steps": 33,
+        "fine_failure": {
+          "step": 33,
+          "reason": "prediction_rejected",
+          "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.0009915303449474777, 'friction_cone': 0.0, 'tangent_fixed_point': 0.00019876853584621657}, 'box_violation': 1.9761969838327786e-14, 'box_fixed_point': 0.0}\")",
+          "collision": null
+        }
+      },
+      {
+        "case": 11,
+        "fine_steps": 38,
+        "fine_failure": {
+          "step": 38,
+          "reason": "prediction_rejected",
+          "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.00017348822614656574, 'exact': True, 'shape_index': 48, 'obstacle': 'net_segment_26'}\")",
+          "collision": null
+        }
+      },
+      {
+        "case": 12,
+        "fine_steps": 33,
+        "fine_failure": {
+          "step": 33,
+          "reason": "prediction_rejected",
+          "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.002296896126765091, 'friction_cone': 0.0, 'tangent_fixed_point': 0.00041660797603748634}, 'box_violation': 2.053838130677832e-07, 'box_fixed_point': 8.936167361639491e-10}\")",
+          "collision": null
+        }
+      },
+      {
+        "case": 13,
+        "fine_steps": 35,
+        "fine_failure": {
+          "step": 35,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.015432371073993076
+          },
+          "first_ground_violation": {
+            "micro": 79,
+            "body": "Head_lower",
+            "gap_m": -8.405537535241536e-06
+          }
+        }
+      },
+      {
+        "case": 15,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.0038040627822605727
+          },
+          "first_ground_violation": {
+            "micro": 139,
+            "body": "Head_lower",
+            "gap_m": -2.1804375777693952e-05
+          }
+        }
+      },
+      {
+        "case": 16,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.012323014080689323
+          },
+          "first_ground_violation": {
+            "micro": 96,
+            "body": "Head_lower",
+            "gap_m": -4.3207548189386213e-05
+          }
+        }
+      },
+      {
+        "case": 17,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.010734663981982515
+          },
+          "first_ground_violation": {
+            "micro": 102,
+            "body": "Head_lower",
+            "gap_m": -4.8728841068164386e-05
+          }
+        }
+      },
+      {
+        "case": 18,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.016609959649938374
+          },
+          "first_ground_violation": {
+            "micro": 74,
+            "body": "Head_lower",
+            "gap_m": -1.4075223645805546e-05
+          }
+        }
+      },
+      {
+        "case": 19,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "prediction_rejected",
+          "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.003983543288512692, 'friction_cone': 0.0, 'tangent_fixed_point': 0.0007824246783609823}, 'box_violation': 0.00033284928647780987, 'box_fixed_point': 1.7796451867377328e-06}\")",
+          "collision": null
+        }
+      },
+      {
+        "case": 20,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.012215394426653384
+          },
+          "first_ground_violation": {
+            "micro": 97,
+            "body": "Head_lower",
+            "gap_m": -0.00016722315684609967
+          }
+        }
+      },
+      {
+        "case": 21,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.011125443972763438
+          },
+          "first_ground_violation": {
+            "micro": 102,
+            "body": "Head_lower",
+            "gap_m": -4.231790398416535e-05
+          }
+        }
+      },
+      {
+        "case": 22,
+        "fine_steps": 33,
+        "fine_failure": {
+          "step": 33,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.01574094591247345
+          },
+          "first_ground_violation": {
+            "micro": 79,
+            "body": "Head_lower",
+            "gap_m": -0.00017700863756380664
+          }
+        }
+      },
+      {
+        "case": 23,
+        "fine_steps": 35,
+        "fine_failure": {
+          "step": 35,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.023662931142117413
+          },
+          "first_ground_violation": {
+            "micro": 42,
+            "body": "Head_lower",
+            "gap_m": -7.85757603549847e-05
+          }
+        }
+      },
+      {
+        "case": 24,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.017903661265599016
+          },
+          "first_ground_violation": {
+            "micro": 66,
+            "body": "Head_lower",
+            "gap_m": -0.00017445553055843444
+          }
+        }
+      },
+      {
+        "case": 25,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.011594915677263715
+          },
+          "first_ground_violation": {
+            "micro": 99,
+            "body": "Head_lower",
+            "gap_m": -5.9893030490837385e-06
+          }
+        }
+      },
+      {
+        "case": 26,
+        "fine_steps": 36,
+        "fine_failure": {
+          "step": 36,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.02809343202583172
+          },
+          "first_ground_violation": {
+            "micro": 21,
+            "body": "Head_lower",
+            "gap_m": -5.666052292221946e-05
+          }
+        }
+      },
+      {
+        "case": 27,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.011765144125335095
+          },
+          "first_ground_violation": {
+            "micro": 99,
+            "body": "Head_lower",
+            "gap_m": -0.00013247171535059332
+          }
+        }
+      },
+      {
+        "case": 28,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.014059253961799786
+          },
+          "first_ground_violation": {
+            "micro": 87,
+            "body": "Head_lower",
+            "gap_m": -0.0001691586660190897
+          }
+        }
+      },
+      {
+        "case": 29,
+        "fine_steps": 35,
+        "fine_failure": {
+          "step": 35,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.0012274058210899191
+          },
+          "first_ground_violation": {
+            "micro": 153,
+            "body": "Head_lower",
+            "gap_m": -4.387897022713194e-05
+          }
+        }
+      },
+      {
+        "case": 30,
+        "fine_steps": 35,
+        "fine_failure": {
+          "step": 35,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.01530135870408704
+          },
+          "first_ground_violation": {
+            "micro": 81,
+            "body": "Head_lower",
+            "gap_m": -0.00013725515839147634
+          }
+        }
+      },
+      {
+        "case": 31,
+        "fine_steps": 35,
+        "fine_failure": {
+          "step": 35,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.015379654627664233
+          },
+          "first_ground_violation": {
+            "micro": 80,
+            "body": "Head_lower",
+            "gap_m": -7.267268063156085e-05
+          }
+        }
+      },
+      {
+        "case": 32,
+        "fine_steps": 33,
+        "fine_failure": {
+          "step": 33,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.013708826732545046
+          },
+          "first_ground_violation": {
+            "micro": 89,
+            "body": "Head_lower",
+            "gap_m": -0.0001222269882806687
+          }
+        }
+      },
+      {
+        "case": 33,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.015558286377128111
+          },
+          "first_ground_violation": {
+            "micro": 79,
+            "body": "Head_lower",
+            "gap_m": -3.425995003296378e-05
+          }
+        }
+      },
+      {
+        "case": 34,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.016492017979326215
+          },
+          "first_ground_violation": {
+            "micro": 74,
+            "body": "Head_lower",
+            "gap_m": -1.2068479952845323e-05
+          }
+        }
+      },
+      {
+        "case": 35,
+        "fine_steps": 35,
+        "fine_failure": {
+          "step": 35,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.022919289899240802
+          },
+          "first_ground_violation": {
+            "micro": 41,
+            "body": "Head_lower",
+            "gap_m": -0.00011937238163321762
+          }
+        }
+      },
+      {
+        "case": 36,
+        "fine_steps": 35,
+        "fine_failure": {
+          "step": 35,
+          "reason": "prediction_rejected",
+          "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.0001485061192099124, 'friction_cone': 0.0, 'tangent_fixed_point': 3.124964004908026e-05}, 'box_violation': 0.0, 'box_fixed_point': 0.0}\")",
+          "collision": null
+        }
+      },
+      {
+        "case": 37,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.011765436547802502
+          },
+          "first_ground_violation": {
+            "micro": 99,
+            "body": "Head_lower",
+            "gap_m": -0.00012449626172623962
+          }
+        }
+      },
+      {
+        "case": 38,
+        "fine_steps": 35,
+        "fine_failure": {
+          "step": 35,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.011143938496575176
+          },
+          "first_ground_violation": {
+            "micro": 102,
+            "body": "Head_lower",
+            "gap_m": -7.027533600094393e-05
+          }
+        }
+      },
+      {
+        "case": 39,
+        "fine_steps": 40,
+        "fine_failure": {
+          "step": 40,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.009257270002303856
+          },
+          "first_ground_violation": {
+            "micro": 72,
+            "body": "Head_lower",
+            "gap_m": -8.485303938424171e-05
+          }
+        }
+      },
+      {
+        "case": 40,
+        "fine_steps": 36,
+        "fine_failure": {
+          "step": 36,
+          "reason": "prediction_rejected",
+          "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.0004597693224113186, 'friction_cone': 0.0, 'tangent_fixed_point': 0.00010918221661837535}, 'box_violation': 1.9946065847875616e-06, 'box_fixed_point': 8.678259000305388e-09}\")",
+          "collision": null
+        }
+      },
+      {
+        "case": 41,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.006860393554828086
+          },
+          "first_ground_violation": {
+            "micro": 123,
+            "body": "Head_lower",
+            "gap_m": -7.621315512276045e-05
+          }
+        }
+      },
+      {
+        "case": 42,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.020227540370423194
+          },
+          "first_ground_violation": {
+            "micro": 53,
+            "body": "Head_lower",
+            "gap_m": -9.957580955897993e-05
+          }
+        }
+      },
+      {
+        "case": 43,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.013671295535726283
+          },
+          "first_ground_violation": {
+            "micro": 88,
+            "body": "Head_lower",
+            "gap_m": -3.21247837542088e-05
+          }
+        }
+      },
+      {
+        "case": 45,
+        "fine_steps": 35,
+        "fine_failure": {
+          "step": 35,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.012250213616552881
+          },
+          "first_ground_violation": {
+            "micro": 96,
+            "body": "Head_lower",
+            "gap_m": -7.394478691104961e-05
+          }
+        }
+      },
+      {
+        "case": 46,
+        "fine_steps": 35,
+        "fine_failure": {
+          "step": 35,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.010896734750746803
+          },
+          "first_ground_violation": {
+            "micro": 102,
+            "body": "Head_lower",
+            "gap_m": -0.0001445697335891935
+          }
+        }
+      },
+      {
+        "case": 47,
+        "fine_steps": 36,
+        "fine_failure": {
+          "step": 36,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.02848333800198643
+          },
+          "first_ground_violation": {
+            "micro": 12,
+            "body": "Head_lower",
+            "gap_m": -0.0001397776923601629
+          }
+        }
+      },
+      {
+        "case": 48,
+        "fine_steps": 35,
+        "fine_failure": {
+          "step": 35,
+          "reason": "prediction_rejected",
+          "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -3.0449733542472525e-05, 'exact': True, 'shape_index': 47, 'obstacle': 'net_segment_31'}\")",
+          "collision": null
+        }
+      },
+      {
+        "case": 49,
+        "fine_steps": 35,
+        "fine_failure": {
+          "step": 35,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.014320339410190772
+          },
+          "first_ground_violation": {
+            "micro": 85,
+            "body": "Head_lower",
+            "gap_m": -0.00014446564020227648
+          }
+        }
+      },
+      {
+        "case": 50,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.00032032803468650534
+          },
+          "first_ground_violation": {
+            "micro": 158,
+            "body": "Head_lower",
+            "gap_m": -0.00012668652181678508
+          }
+        }
+      },
+      {
+        "case": 51,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.01748106810044322
+          },
+          "first_ground_violation": {
+            "micro": 69,
+            "body": "Head_lower",
+            "gap_m": -0.00014067580243605493
+          }
+        }
+      },
+      {
+        "case": 52,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.02452608386005116
+          },
+          "first_ground_violation": {
+            "micro": 32,
+            "body": "Head_lower",
+            "gap_m": -0.00014264621151661994
+          }
+        }
+      },
+      {
+        "case": 53,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.007915301712008868
+          },
+          "first_ground_violation": {
+            "micro": 118,
+            "body": "Head_lower",
+            "gap_m": -1.7157399454098554e-06
+          }
+        }
+      },
+      {
+        "case": 54,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.011934999878714728
+          },
+          "first_ground_violation": {
+            "micro": 97,
+            "body": "Head_lower",
+            "gap_m": -6.432971109935487e-05
+          }
+        }
+      },
+      {
+        "case": 55,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.012903206062862542
+          },
+          "first_ground_violation": {
+            "micro": 93,
+            "body": "Head_lower",
+            "gap_m": -4.5868171096793975e-06
+          }
+        }
+      },
+      {
+        "case": 56,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.011619637890616194
+          },
+          "first_ground_violation": {
+            "micro": 99,
+            "body": "Head_lower",
+            "gap_m": -3.086686057764132e-05
+          }
+        }
+      },
+      {
+        "case": 57,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.007328350524397981
+          },
+          "first_ground_violation": {
+            "micro": 121,
+            "body": "Head_lower",
+            "gap_m": -0.00018177712928842127
+          }
+        }
+      },
+      {
+        "case": 58,
+        "fine_steps": 33,
+        "fine_failure": {
+          "step": 33,
+          "reason": "prediction_rejected",
+          "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.001808120252761114, 'friction_cone': 0.0, 'tangent_fixed_point': 0.0003346322842037175}, 'box_violation': 6.019840235182983e-07, 'box_fixed_point': 2.619292338579271e-09}\")",
+          "collision": null
+        }
+      },
+      {
+        "case": 59,
+        "fine_steps": 35,
+        "fine_failure": {
+          "step": 35,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.019433429085661105
+          },
+          "first_ground_violation": {
+            "micro": 59,
+            "body": "Head_lower",
+            "gap_m": -0.00015662152461483336
+          }
+        }
+      },
+      {
+        "case": 60,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.024540826161198674
+          },
+          "first_ground_violation": {
+            "micro": 32,
+            "body": "Head_lower",
+            "gap_m": -2.8079452152322826e-05
+          }
+        }
+      },
+      {
+        "case": 61,
+        "fine_steps": 36,
+        "fine_failure": {
+          "step": 36,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.012478280965513587
+          },
+          "first_ground_violation": {
+            "micro": 95,
+            "body": "Head_lower",
+            "gap_m": -9.62192556527991e-05
+          }
+        }
+      },
+      {
+        "case": 62,
+        "fine_steps": 35,
+        "fine_failure": {
+          "step": 35,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.019377010958026256
+          },
+          "first_ground_violation": {
+            "micro": 58,
+            "body": "Head_lower",
+            "gap_m": -0.00013920401491327589
+          }
+        }
+      },
+      {
+        "case": 63,
+        "fine_steps": 35,
+        "fine_failure": {
+          "step": 35,
+          "reason": "prediction_rejected",
+          "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 5.808541677509993e-05, 'friction_cone': 0.0, 'tangent_fixed_point': 1.9146797339608668e-05}, 'box_violation': 5.156674429684927e-07, 'box_fixed_point': 2.2596409188224698e-09}\")",
+          "collision": null
+        }
+      },
+      {
+        "case": 64,
+        "fine_steps": 33,
+        "fine_failure": {
+          "step": 33,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.005454407713049017
+          },
+          "first_ground_violation": {
+            "micro": 131,
+            "body": "Head_lower",
+            "gap_m": -0.00014535470141934653
+          }
+        }
+      },
+      {
+        "case": 65,
+        "fine_steps": 35,
+        "fine_failure": {
+          "step": 35,
+          "reason": "prediction_rejected",
+          "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.00010511153454118016, 'friction_cone': 0.0, 'tangent_fixed_point': 2.7059221260117283e-05}, 'box_violation': 1.0840395248123968e-10, 'box_fixed_point': 4.716227408607665e-13}\")",
+          "collision": null
+        }
+      },
+      {
+        "case": 67,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.02732556513258759
+          },
+          "first_ground_violation": {
+            "micro": 19,
+            "body": "Head_lower",
+            "gap_m": -0.00018812667376889858
+          }
+        }
+      },
+      {
+        "case": 68,
+        "fine_steps": 33,
+        "fine_failure": {
+          "step": 33,
+          "reason": "prediction_rejected",
+          "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.0003441719648833441, 'friction_cone': 0.0, 'tangent_fixed_point': 5.892281680419664e-05}, 'box_violation': 9.540979117872439e-15, 'box_fixed_point': 0.0}\")",
+          "collision": null
+        }
+      },
+      {
+        "case": 69,
+        "fine_steps": 35,
+        "fine_failure": {
+          "step": 35,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.02659799465802644
+          },
+          "first_ground_violation": {
+            "micro": 26,
+            "body": "Head_lower",
+            "gap_m": -0.00012179314194417368
+          }
+        }
+      },
+      {
+        "case": 70,
+        "fine_steps": 33,
+        "fine_failure": {
+          "step": 33,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.0018636080744120348
+          },
+          "first_ground_violation": {
+            "micro": 149,
+            "body": "Head_lower",
+            "gap_m": -2.764305786205623e-05
+          }
+        }
+      },
+      {
+        "case": 71,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.010009881847841975
+          },
+          "first_ground_violation": {
+            "micro": 107,
+            "body": "Head_lower",
+            "gap_m": -0.0001545116977280797
+          }
+        }
+      },
+      {
+        "case": 72,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "prediction_rejected",
+          "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.0006079168515711331, 'friction_cone': 0.0, 'tangent_fixed_point': 0.00011330250484831161}, 'box_violation': 0.0, 'box_fixed_point': 0.0}\")",
+          "collision": null
+        }
+      },
+      {
+        "case": 73,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "prediction_rejected",
+          "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.001082595124316299, 'friction_cone': 0.0, 'tangent_fixed_point': 0.00023786854393481605}, 'box_violation': 2.8637560944844154e-07, 'box_fixed_point': 1.2458771792012158e-09}\")",
+          "collision": null
+        }
+      },
+      {
+        "case": 74,
+        "fine_steps": 33,
+        "fine_failure": {
+          "step": 33,
+          "reason": "prediction_rejected",
+          "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.004444546066736166, 'friction_cone': 0.0, 'tangent_fixed_point': 0.00080748943562714}, 'box_violation': 0.00042105466341268993, 'box_fixed_point': 1.9634442816537923e-06}\")",
+          "collision": null
+        }
+      },
+      {
+        "case": 75,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.011356356596802633
+          },
+          "first_ground_violation": {
+            "micro": 101,
+            "body": "Head_lower",
+            "gap_m": -0.00014344573218290357
+          }
+        }
+      },
+      {
+        "case": 77,
+        "fine_steps": 35,
+        "fine_failure": {
+          "step": 35,
+          "reason": "prediction_rejected",
+          "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -6.574066728371082e-05, 'exact': True, 'shape_index': 45, 'obstacle': 'net_segment_30'}\")",
+          "collision": null
+        }
+      },
+      {
+        "case": 79,
+        "fine_steps": 36,
+        "fine_failure": {
+          "step": 36,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.014015457774931586
+          },
+          "first_ground_violation": {
+            "micro": 86,
+            "body": "Head_lower",
+            "gap_m": -0.00010364879226389123
+          }
+        }
+      },
+      {
+        "case": 80,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.01867291660350421
+          },
+          "first_ground_violation": {
+            "micro": 63,
+            "body": "Head_lower",
+            "gap_m": -1.9372988834670535e-06
+          }
+        }
+      },
+      {
+        "case": 81,
+        "fine_steps": 35,
+        "fine_failure": {
+          "step": 35,
+          "reason": "prediction_rejected",
+          "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.04506834744611865, 'friction_cone': 0.0, 'tangent_fixed_point': 0.007738532671023535}, 'box_violation': 0.00015660145522566893, 'box_fixed_point': 3.164118001885985e-06}\")",
+          "collision": null
+        }
+      },
+      {
+        "case": 82,
+        "fine_steps": 33,
+        "fine_failure": {
+          "step": 33,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.0013094315865826989
+          },
+          "first_ground_violation": {
+            "micro": 153,
+            "body": "Head_lower",
+            "gap_m": -0.00015779328129532366
+          }
+        }
+      },
+      {
+        "case": 83,
+        "fine_steps": 33,
+        "fine_failure": {
+          "step": 33,
+          "reason": "prediction_rejected",
+          "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.003931398904001071, 'friction_cone': 0.0, 'tangent_fixed_point': 0.0007345769872753038}, 'box_violation': 0.00042325114838703826, 'box_fixed_point': 1.933440571089129e-06}\")",
+          "collision": null
+        }
+      },
+      {
+        "case": 84,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.0037109308777428934
+          },
+          "first_ground_violation": {
+            "micro": 139,
+            "body": "Head_lower",
+            "gap_m": -1.604424931626186e-05
+          }
+        }
+      },
+      {
+        "case": 85,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.027768224957334102
+          },
+          "first_ground_violation": {
+            "micro": 16,
+            "body": "Head_lower",
+            "gap_m": -0.0001733515737969843
+          }
+        }
+      },
+      {
+        "case": 86,
+        "fine_steps": 33,
+        "fine_failure": {
+          "step": 33,
+          "reason": "prediction_rejected",
+          "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.005386289367919517, 'friction_cone': 0.0, 'tangent_fixed_point': 0.000975429284983953}, 'box_violation': 0.00036889049621624537, 'box_fixed_point': 2.142296705906488e-06}\")",
+          "collision": null
+        }
+      },
+      {
+        "case": 87,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.005251321442846971
+          },
+          "first_ground_violation": {
+            "micro": 132,
+            "body": "Head_lower",
+            "gap_m": -0.00012682939726905984
+          }
+        }
+      },
+      {
+        "case": 90,
+        "fine_steps": 35,
+        "fine_failure": {
+          "step": 35,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.009339830836949267
+          },
+          "first_ground_violation": {
+            "micro": 112,
+            "body": "Head_lower",
+            "gap_m": -0.00019388600581894677
+          }
+        }
+      },
+      {
+        "case": 91,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.009449582423651917
+          },
+          "first_ground_violation": {
+            "micro": 110,
+            "body": "Head_lower",
+            "gap_m": -0.00017483092289623942
+          }
+        }
+      },
+      {
+        "case": 93,
+        "fine_steps": 35,
+        "fine_failure": {
+          "step": 35,
+          "reason": "prediction_rejected",
+          "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.00043758038291485946, 'friction_cone': 0.0, 'tangent_fixed_point': 9.615538528606749e-05}, 'box_violation': 1.7408893384640578e-06, 'box_fixed_point': 7.678620850271045e-09}\")",
+          "collision": null
+        }
+      },
+      {
+        "case": 94,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "prediction_rejected",
+          "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.002303049603099794, 'friction_cone': 0.0, 'tangent_fixed_point': 0.00048692810477835025}, 'box_violation': 0.00020974291708419912, 'box_fixed_point': 1.1710986653583333e-06}\")",
+          "collision": null
+        }
+      },
+      {
+        "case": 95,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.027545694493986292
+          },
+          "first_ground_violation": {
+            "micro": 16,
+            "body": "Head_lower",
+            "gap_m": -6.094100803465119e-05
+          }
+        }
+      },
+      {
+        "case": 96,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.023324714562921615
+          },
+          "first_ground_violation": {
+            "micro": 39,
+            "body": "Head_lower",
+            "gap_m": -0.0001268812255561108
+          }
+        }
+      },
+      {
+        "case": 97,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.011422497821902702
+          },
+          "first_ground_violation": {
+            "micro": 100,
+            "body": "Head_lower",
+            "gap_m": -5.087380909971073e-06
+          }
+        }
+      },
+      {
+        "case": 98,
+        "fine_steps": 35,
+        "fine_failure": {
+          "step": 35,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.02137108213769366
+          },
+          "first_ground_violation": {
+            "micro": 48,
+            "body": "Head_lower",
+            "gap_m": -0.00011644383217722376
+          }
+        }
+      },
+      {
+        "case": 99,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.023981392974995644
+          },
+          "first_ground_violation": {
+            "micro": 37,
+            "body": "Head_lower",
+            "gap_m": -0.0001097174939691109
+          }
+        }
+      },
+      {
+        "case": 100,
+        "fine_steps": 33,
+        "fine_failure": {
+          "step": 33,
+          "reason": "prediction_rejected",
+          "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.0003377136892197541, 'friction_cone': 0.0, 'tangent_fixed_point': 8.189561452809357e-05}, 'box_violation': 1.684188699613287e-07, 'box_fixed_point': 2.4459680035516726e-09}\")",
+          "collision": null
+        }
+      },
+      {
+        "case": 101,
+        "fine_steps": 38,
+        "fine_failure": {
+          "step": 38,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.015562799672780667
+          },
+          "first_ground_violation": {
+            "micro": 18,
+            "body": "Head_lower",
+            "gap_m": -1.6678593860140756e-05
+          }
+        }
+      },
+      {
+        "case": 102,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.014535725674736585
+          },
+          "first_ground_violation": {
+            "micro": 82,
+            "body": "Head_lower",
+            "gap_m": -3.63013457511871e-05
+          }
+        }
+      },
+      {
+        "case": 103,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "prediction_rejected",
+          "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.004169705437391258, 'friction_cone': 0.0, 'tangent_fixed_point': 0.0008222207489847477}, 'box_violation': 0.0003730278758400374, 'box_fixed_point': 1.9083689295415485e-06}\")",
+          "collision": null
+        }
+      },
+      {
+        "case": 106,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.023515292134373686
+          },
+          "first_ground_violation": {
+            "micro": 39,
+            "body": "Head_lower",
+            "gap_m": -0.00016607863702532144
+          }
+        }
+      },
+      {
+        "case": 107,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.015140655267906464
+          },
+          "first_ground_violation": {
+            "micro": 81,
+            "body": "Head_lower",
+            "gap_m": -9.042722868714964e-05
+          }
+        }
+      },
+      {
+        "case": 109,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.008314862826172983
+          },
+          "first_ground_violation": {
+            "micro": 117,
+            "body": "Head_lower",
+            "gap_m": -0.00014878417718874187
+          }
+        }
+      },
+      {
+        "case": 111,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.02416636779958957
+          },
+          "first_ground_violation": {
+            "micro": 30,
+            "body": "Head_lower",
+            "gap_m": -7.662290080136941e-05
+          }
+        }
+      },
+      {
+        "case": 112,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.014726474245566903
+          },
+          "first_ground_violation": {
+            "micro": 84,
+            "body": "Head_lower",
+            "gap_m": -8.093366068023106e-05
+          }
+        }
+      },
+      {
+        "case": 114,
+        "fine_steps": 35,
+        "fine_failure": {
+          "step": 35,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.027942383536856817
+          },
+          "first_ground_violation": {
+            "micro": 14,
+            "body": "Head_lower",
+            "gap_m": -1.7845079177229717e-05
+          }
+        }
+      },
+      {
+        "case": 115,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "prediction_rejected",
+          "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -1.9392265615182647e-05, 'exact': True, 'shape_index': 41, 'obstacle': 'net_segment_31'}\")",
+          "collision": null
+        }
+      },
+      {
+        "case": 118,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "prediction_rejected",
+          "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 6.152664891700965e-05, 'friction_cone': 0.0, 'tangent_fixed_point': 1.571297635605262e-05}, 'box_violation': 0.0, 'box_fixed_point': 0.0}\")",
+          "collision": null
+        }
+      },
+      {
+        "case": 119,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.029181291269021845
+          },
+          "first_ground_violation": {
+            "micro": 9,
+            "body": "Head_lower",
+            "gap_m": -0.00012668092058200353
+          }
+        }
+      },
+      {
+        "case": 120,
+        "fine_steps": 33,
+        "fine_failure": {
+          "step": 33,
+          "reason": "prediction_rejected",
+          "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.0060177452039908985, 'friction_cone': 0.0, 'tangent_fixed_point': 0.0010232266034257975}, 'box_violation': 0.000393838446050232, 'box_fixed_point': 2.3392022197865625e-06}\")",
+          "collision": null
+        }
+      },
+      {
+        "case": 121,
+        "fine_steps": 34,
+        "fine_failure": {
+          "step": 34,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.014983145028971898
+          },
+          "first_ground_violation": {
+            "micro": 82,
+            "body": "Head_lower",
+            "gap_m": -7.780344368212705e-05
+          }
+        }
+      },
+      {
+        "case": 123,
+        "fine_steps": 33,
+        "fine_failure": {
+          "step": 33,
+          "reason": "prediction_rejected",
+          "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.0009632280163813789, 'friction_cone': 0.0, 'tangent_fixed_point': 0.00015470929236782727}, 'box_violation': 0.0, 'box_fixed_point': 0.0}\")",
+          "collision": null
+        }
+      },
+      {
+        "case": 125,
+        "fine_steps": 35,
+        "fine_failure": {
+          "step": 35,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.012990398394292876
+          },
+          "first_ground_violation": {
+            "micro": 92,
+            "body": "Head_lower",
+            "gap_m": -4.1929840199031454e-05
+          }
+        }
+      },
+      {
+        "case": 126,
+        "fine_steps": 35,
+        "fine_failure": {
+          "step": 35,
+          "reason": "prediction_rejected",
+          "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.006846462637881245, 'friction_cone': 0.0, 'tangent_fixed_point': 0.0006532040651978654}, 'box_violation': 2.1520629079674336e-05, 'box_fixed_point': 8.103079440213712e-07}\")",
+          "collision": null
+        }
+      },
+      {
+        "case": 127,
+        "fine_steps": 35,
+        "fine_failure": {
+          "step": 35,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.01775850420086343
+          },
+          "first_ground_violation": {
+            "micro": 68,
+            "body": "Head_lower",
+            "gap_m": -0.00011401918427479674
+          }
+        }
+      }
+    ]
+  },
+  "impulse_balance": {
+    "records": [
+      {
+        "case": 11,
+        "tick": 307,
+        "model_mass_kg": 20.709991288604215,
+        "native_ground_normal_impulse_ns": [
+          [
+            0.0,
+            0.0,
+            2.831054449081421
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "model_ground_impulse_ns": [
+          [
+            -0.062028816313949464,
+            -0.6413711621075115,
+            1.7535329591682272
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "native_linear_momentum_change_ns": [
+          -0.14902682910945497,
+          1.8338887229213254,
+          0.7988119712100641
+        ],
+        "model_linear_momentum_change_ns": [
+          -0.06175400097564543,
+          -0.6387619837681919,
+          -0.279060679951904
+        ],
+        "native_vertical_balance_residual_ns": -0.0005923324592829182,
+        "model_linear_balance_residual_ns": [
+          0.00027481533830403526,
+          0.0026091783393196177,
+          -0.0009434937080572414
+        ],
+        "native_horizontal_external_impulse_inferred_ns": [
+          -0.14902682910945497,
+          1.8338887229213254
+        ],
+        "first_foot_pair_min_gap_m": 0.45795500465109273,
+        "next_foot_pair_min_gap_m": 0.46436125528394023,
+        "model_velocity_error": 2.303371345424653,
+        "native_no_nonfoot_ground_in_interval": true,
+        "native_no_robot_net_fault_entire_episode": true,
+        "unmeasured_self_collision_not_excluded": true
+      },
+      {
+        "case": 32,
+        "tick": 312,
+        "model_mass_kg": 20.709991288604215,
+        "native_ground_normal_impulse_ns": [
+          [
+            0.0,
+            0.0,
+            3.272054672241211
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "model_ground_impulse_ns": [
+          [
+            -0.4353375685849626,
+            -1.118159609500763,
+            2.023835942108995
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "native_linear_momentum_change_ns": [
+          -0.44653061741677824,
+          1.8800429357944695,
+          1.2473853072434693
+        ],
+        "model_linear_momentum_change_ns": [
+          -0.43412656592003085,
+          -1.1162136182459284,
+          -0.0085700962109172
+        ],
+        "native_vertical_balance_residual_ns": 0.006980780414332255,
+        "model_linear_balance_residual_ns": [
+          0.0012110026649317374,
+          0.0019459912548347447,
+          -0.0007558929078381738
+        ],
+        "native_horizontal_external_impulse_inferred_ns": [
+          -0.44653061741677824,
+          1.8800429357944695
+        ],
+        "first_foot_pair_min_gap_m": 0.4138909261217402,
+        "next_foot_pair_min_gap_m": 0.4197423708250753,
+        "model_velocity_error": 2.8519472839139826,
+        "native_no_nonfoot_ground_in_interval": true,
+        "native_no_robot_net_fault_entire_episode": true,
+        "unmeasured_self_collision_not_excluded": true
+      },
+      {
+        "case": 36,
+        "tick": 312,
+        "model_mass_kg": 20.709991288604215,
+        "native_ground_normal_impulse_ns": [
+          [
+            0.0,
+            0.0,
+            2.807222843170166
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "model_ground_impulse_ns": [
+          [
+            -0.38286958994005243,
+            -0.13596912009265252,
+            1.9482410336520053
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "native_linear_momentum_change_ns": [
+          -0.37872367866795553,
+          1.7844711592166238,
+          0.7757088437402047
+        ],
+        "model_linear_momentum_change_ns": [
+          -0.3823437261769813,
+          -0.1330298509064356,
+          -0.08419092824549068
+        ],
+        "native_vertical_balance_residual_ns": 0.00013614598211253437,
+        "model_linear_balance_residual_ns": [
+          0.0005258637630711216,
+          0.002939269186216925,
+          -0.0007818164854220822
+        ],
+        "native_horizontal_external_impulse_inferred_ns": [
+          -0.37872367866795553,
+          1.7844711592166238
+        ],
+        "first_foot_pair_min_gap_m": 0.41578352517579914,
+        "next_foot_pair_min_gap_m": 0.42592383680184476,
+        "model_velocity_error": 1.582742491363222,
+        "native_no_nonfoot_ground_in_interval": true,
+        "native_no_robot_net_fault_entire_episode": true,
+        "unmeasured_self_collision_not_excluded": true
+      },
+      {
+        "case": 39,
+        "tick": 310,
+        "model_mass_kg": 20.709991288604215,
+        "native_ground_normal_impulse_ns": [
+          [
+            0.0,
+            0.0,
+            2.323620080947876
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "model_ground_impulse_ns": [
+          [
+            -0.28407589974779507,
+            -0.8502259375851823,
+            1.803311380645571
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "native_linear_momentum_change_ns": [
+          -0.29726660484293954,
+          0.3581927560510598,
+          0.2927534331125514
+        ],
+        "model_linear_momentum_change_ns": [
+          -0.2840119339213858,
+          -0.8478232602898563,
+          -0.22942388927025092
+        ],
+        "native_vertical_balance_residual_ns": 0.0007834975767493368,
+        "model_linear_balance_residual_ns": [
+          6.396582640927351e-05,
+          0.00240267729532595,
+          -0.0010851245037479806
+        ],
+        "native_horizontal_external_impulse_inferred_ns": [
+          -0.29726660484293954,
+          0.3581927560510598
+        ],
+        "first_foot_pair_min_gap_m": 0.43244487278830035,
+        "next_foot_pair_min_gap_m": 0.43743118323085484,
+        "model_velocity_error": 1.3624461033575708,
+        "native_no_nonfoot_ground_in_interval": true,
+        "native_no_robot_net_fault_entire_episode": true,
+        "unmeasured_self_collision_not_excluded": true
+      },
+      {
+        "case": 52,
+        "tick": 306,
+        "model_mass_kg": 20.709991288604215,
+        "native_ground_normal_impulse_ns": [
+          [
+            0.0,
+            0.0,
+            1.2656726837158203
+          ],
+          [
+            0.0,
+            0.0,
+            1.0977811813354492
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "model_ground_impulse_ns": [
+          [
+            -0.080286605553784,
+            -0.6969015772931392,
+            1.2670333972316128
+          ],
+          [
+            -0.46220045057646636,
+            0.2363117415537324,
+            1.1482311184594334
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "native_linear_momentum_change_ns": [
+          -0.5721385012775748,
+          -0.27597670965497656,
+          0.3317178507858074
+        ],
+        "model_linear_momentum_change_ns": [
+          -0.5440344950950085,
+          -0.459706842907206,
+          0.3829770915364463
+        ],
+        "native_vertical_balance_residual_ns": -8.586885338823791e-05,
+        "model_linear_balance_residual_ns": [
+          -0.0015474389647580633,
+          0.0008829928322007796,
+          -0.0006372787425257265
+        ],
+        "native_horizontal_external_impulse_inferred_ns": [
+          -0.5721385012775748,
+          -0.27597670965497656
+        ],
+        "first_foot_pair_min_gap_m": 0.3268301844767341,
+        "next_foot_pair_min_gap_m": 0.3660012820747434,
+        "model_velocity_error": 0.13647446520843576,
+        "native_no_nonfoot_ground_in_interval": true,
+        "native_no_robot_net_fault_entire_episode": true,
+        "unmeasured_self_collision_not_excluded": true
+      },
+      {
+        "case": 101,
+        "tick": 297,
+        "model_mass_kg": 20.709991288604215,
+        "native_ground_normal_impulse_ns": [
+          [
+            0.0,
+            0.0,
+            2.5567498207092285
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "model_ground_impulse_ns": [
+          [
+            -0.5484438950339215,
+            -0.36562487374205455,
+            2.078785335109412
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "native_linear_momentum_change_ns": [
+          -0.6096485231639797,
+          0.6289739226006708,
+          0.5252256996038369
+        ],
+        "model_linear_momentum_change_ns": [
+          -0.548527964110316,
+          -0.36334200730189714,
+          0.046122383884579676
+        ],
+        "native_vertical_balance_residual_ns": 0.00012602430668229303,
+        "model_linear_balance_residual_ns": [
+          -8.406907639446626e-05,
+          0.002282866440157405,
+          -0.0010128058127585327
+        ],
+        "native_horizontal_external_impulse_inferred_ns": [
+          -0.6096485231639797,
+          0.6289739226006708
+        ],
+        "first_foot_pair_min_gap_m": 0.46445651894197537,
+        "next_foot_pair_min_gap_m": 0.4712023774464741,
+        "model_velocity_error": 1.068265285004564,
+        "native_no_nonfoot_ground_in_interval": true,
+        "native_no_robot_net_fault_entire_episode": true,
+        "unmeasured_self_collision_not_excluded": true
+      }
+    ],
+    "normal_force_only": true,
+    "native_friction_directly_measured": false,
+    "source_sha256": {
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_native_all128_20261108_01/pure_control_commands.npz": "6f092b69be0d19dfb2055f215e7ce9b69857743c04e75a56c33bf9db575f2a16",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_native_all128_20261108_01/pure_control_ground_forces.npz": "9d77fda0864ae019601b4ecb7c4e90bdf266fd7799cf8b093cc0b6eb8241dfe0",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_failure_chain_20261108/first_ground_native_prediction.json": "76ab81aff38b92631d751ee44497e4a997f99ff1cc3582c408cd5098412c7298",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_joint_timed71_actual300_replan_20261108/inputs.json": "1deff1fd65b92e5b608cc3d6cb8d50f5a626cb1ad6d9bfa5600a5d3b5297f4cb",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_landing_impulse_balance_v1.py": "a88a577114fadcf765beb9ff57a0abd71cdc75c34eee44f86a209dcf1d01381a"
+    }
+  },
+  "native_diagnostic_status": {
+    "state": "RUNNING_NATIVE_PURE_CONTROL",
+    "pid": 138148,
+    "time": "2026-11-08T11:49:53.074852+00:00"
+  },
+  "native_progress_snapshot": {
+    "control_tick": 320,
+    "owned_cases": 110,
+    "applied_steps": 4627,
+    "training": false
+  },
+  "followup_status": {
+    "state": "WAITING_NATIVE_COMPLETION",
+    "time": "2026-11-08T11:56:05.090739+00:00",
+    "pid": 139214
+  },
+  "new_native_result_available": false,
+  "unrestricted_interface": {
+    "implemented": true,
+    "native_executed": false,
+    "physical_limits_unchanged": true,
+    "replaces": "Previous-command arm software slew only in a future separately versioned trial"
+  },
+  "source_sha256": {
+    "reports/pure_control_failure_chain_20261108/clean_ground_impulse_balance.json": "d67e0f2025dd8ecd9ca35d5a796b0aa97a4a06898fe9787ba07489e7ca7d5c9a",
+    "reports/pure_control_release_bank_search_20261108/result.json": "e86217484e04a424f1e58508baba76cd62318ea37e171b1c623c74457e34bf1a",
+    "reports/pure_control_contact_detail_preparation_20261108_01/plan.json": "bb3036fe4e68d19b03e0cb0e88a2faac0cb42c327dc6f8e22d07327b251899b6",
+    "scripts/summarize_pure_control_contact_gap_v1.py": "403fb0e9822393aa0033588c317c4f7248cfce1ee2bd6c564f3d92b324cd347c"
+  },
+  "current_running_run_uses_original_controller_and_arm_slew": true,
+  "results_are_not_expert_labels": true
+}
