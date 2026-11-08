@@ -1,0 +1,517 @@
+{
+  "timestamp": "2026-11-08T03:40:27.512379+00:00",
+  "model_domain": {
+    "cases": 24,
+    "verified": 1,
+    "skipped": [
+      {
+        "case": 12,
+        "reason": "not_observed_first_episode_post_hit_flight_at_tick280"
+      },
+      {
+        "case": 58,
+        "reason": "not_observed_first_episode_post_hit_flight_at_tick280"
+      }
+    ],
+    "first_ground_failure_counts": {
+      "FL_hip": 1,
+      "RR_calf": 7,
+      "Head_lower": 12,
+      "RL_calf": 1,
+      "joint_limit_only": 2
+    },
+    "rows": [
+      {
+        "case": 1,
+        "verified_model": false,
+        "completed_model_steps": 82,
+        "trailing_model_window_s": 0.0,
+        "failure": {
+          "step": 82,
+          "reason": "path_constraints",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.014194415669976257
+          },
+          "first_ground_violation": {
+            "micro": 22,
+            "body": "FL_hip",
+            "gap_m": -2.0647547344113115e-05
+          }
+        }
+      },
+      {
+        "case": 3,
+        "verified_model": false,
+        "completed_model_steps": 74,
+        "trailing_model_window_s": 0.0,
+        "failure": {
+          "step": 74,
+          "reason": "path_constraints",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.006120466517349573
+          },
+          "first_ground_violation": {
+            "micro": 61,
+            "body": "RR_calf",
+            "gap_m": -1.0407742382435511e-05
+          }
+        }
+      },
+      {
+        "case": 8,
+        "verified_model": false,
+        "completed_model_steps": 35,
+        "trailing_model_window_s": 0.0,
+        "failure": {
+          "step": 35,
+          "reason": "path_constraints",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.0001296291621993434
+          },
+          "first_ground_violation": {
+            "micro": 90,
+            "body": "Head_lower",
+            "gap_m": -2.933887647160738e-06
+          }
+        }
+      },
+      {
+        "case": 9,
+        "verified_model": false,
+        "completed_model_steps": 30,
+        "trailing_model_window_s": 0.0,
+        "failure": {
+          "step": 30,
+          "reason": "path_constraints",
+          "violations": {
+            "joint_position_violation_rad": 0.04025697390387295,
+            "nonfoot_ground_violation_m": 0.005878172277163543
+          },
+          "first_ground_violation": {
+            "micro": 33,
+            "body": "Head_lower",
+            "gap_m": -3.676981866154033e-05
+          }
+        }
+      },
+      {
+        "case": 18,
+        "verified_model": false,
+        "completed_model_steps": 72,
+        "trailing_model_window_s": 0.0,
+        "failure": {
+          "step": 72,
+          "reason": "path_constraints",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.004636658878525143
+          },
+          "first_ground_violation": {
+            "micro": 79,
+            "body": "RR_calf",
+            "gap_m": -3.150747705660435e-05
+          }
+        }
+      },
+      {
+        "case": 20,
+        "verified_model": false,
+        "completed_model_steps": 85,
+        "trailing_model_window_s": 0.0,
+        "failure": {
+          "step": 85,
+          "reason": "path_constraints",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.004042751208460364
+          },
+          "first_ground_violation": {
+            "micro": 109,
+            "body": "RL_calf",
+            "gap_m": -3.330874277510283e-05
+          }
+        }
+      },
+      {
+        "case": 30,
+        "verified_model": false,
+        "completed_model_steps": 75,
+        "trailing_model_window_s": 0.0,
+        "failure": {
+          "step": 75,
+          "reason": "path_constraints",
+          "violations": {
+            "joint_position_violation_rad": 0.010840703233300886
+          },
+          "first_ground_violation": null
+        }
+      },
+      {
+        "case": 38,
+        "verified_model": false,
+        "completed_model_steps": 78,
+        "trailing_model_window_s": 0.0,
+        "failure": {
+          "step": 78,
+          "reason": "path_constraints",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.0030313498446163205
+          },
+          "first_ground_violation": {
+            "micro": 111,
+            "body": "RR_calf",
+            "gap_m": -2.453287485317153e-05
+          }
+        }
+      },
+      {
+        "case": 42,
+        "verified_model": false,
+        "completed_model_steps": 30,
+        "trailing_model_window_s": 0.0,
+        "failure": {
+          "step": 30,
+          "reason": "path_constraints",
+          "violations": {
+            "joint_position_violation_rad": 0.04824644740868589,
+            "nonfoot_ground_violation_m": 0.001589461069957901
+          },
+          "first_ground_violation": {
+            "micro": 119,
+            "body": "Head_lower",
+            "gap_m": -1.1446804951395495e-05
+          }
+        }
+      },
+      {
+        "case": 50,
+        "verified_model": false,
+        "completed_model_steps": 74,
+        "trailing_model_window_s": 0.0,
+        "failure": {
+          "step": 74,
+          "reason": "path_constraints",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.0087685883354139
+          },
+          "first_ground_violation": {
+            "micro": 48,
+            "body": "RR_calf",
+            "gap_m": -4.859544267233479e-05
+          }
+        }
+      },
+      {
+        "case": 54,
+        "verified_model": false,
+        "completed_model_steps": 70,
+        "trailing_model_window_s": 0.0,
+        "failure": {
+          "step": 70,
+          "reason": "path_constraints",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.0010450446272408254
+          },
+          "first_ground_violation": {
+            "micro": 149,
+            "body": "RR_calf",
+            "gap_m": -6.055411823423229e-05
+          }
+        }
+      },
+      {
+        "case": 57,
+        "verified_model": false,
+        "completed_model_steps": 26,
+        "trailing_model_window_s": 0.0,
+        "failure": {
+          "step": 26,
+          "reason": "path_constraints",
+          "violations": {
+            "joint_position_violation_rad": 0.004025592933141642,
+            "nonfoot_ground_violation_m": 0.01050359473540359
+          },
+          "first_ground_violation": {
+            "micro": 32,
+            "body": "Head_lower",
+            "gap_m": -8.547175563575204e-06
+          }
+        }
+      },
+      {
+        "case": 61,
+        "verified_model": false,
+        "completed_model_steps": 73,
+        "trailing_model_window_s": 0.0,
+        "failure": {
+          "step": 73,
+          "reason": "path_constraints",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.005788765483900088
+          },
+          "first_ground_violation": {
+            "micro": 97,
+            "body": "RR_calf",
+            "gap_m": -1.4008524875323142e-06
+          }
+        }
+      },
+      {
+        "case": 67,
+        "verified_model": false,
+        "completed_model_steps": 25,
+        "trailing_model_window_s": 0.0,
+        "failure": {
+          "step": 25,
+          "reason": "path_constraints",
+          "violations": {
+            "joint_position_violation_rad": 0.07096368481047621,
+            "nonfoot_ground_violation_m": 0.007121323346372242
+          },
+          "first_ground_violation": {
+            "micro": 74,
+            "body": "Head_lower",
+            "gap_m": -8.702445158560723e-05
+          }
+        }
+      },
+      {
+        "case": 70,
+        "verified_model": false,
+        "completed_model_steps": 16,
+        "trailing_model_window_s": 0.0,
+        "failure": {
+          "step": 16,
+          "reason": "path_constraints",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.004625885456836912
+          },
+          "first_ground_violation": {
+            "micro": 129,
+            "body": "Head_lower",
+            "gap_m": -6.448665697990352e-05
+          }
+        }
+      },
+      {
+        "case": 71,
+        "verified_model": false,
+        "completed_model_steps": 18,
+        "trailing_model_window_s": 0.0,
+        "failure": {
+          "step": 18,
+          "reason": "path_constraints",
+          "violations": {
+            "joint_position_violation_rad": 0.015776675915575744,
+            "nonfoot_ground_violation_m": 0.002837877352495785
+          },
+          "first_ground_violation": {
+            "micro": 139,
+            "body": "Head_lower",
+            "gap_m": -0.00012248769129188236
+          }
+        }
+      },
+      {
+        "case": 77,
+        "verified_model": false,
+        "completed_model_steps": 21,
+        "trailing_model_window_s": 0.0,
+        "failure": {
+          "step": 21,
+          "reason": "path_constraints",
+          "violations": {
+            "joint_position_violation_rad": 0.031045411166862547
+          },
+          "first_ground_violation": null
+        }
+      },
+      {
+        "case": 85,
+        "verified_model": false,
+        "completed_model_steps": 23,
+        "trailing_model_window_s": 0.0,
+        "failure": {
+          "step": 23,
+          "reason": "path_constraints",
+          "violations": {
+            "joint_position_violation_rad": 0.031350336727678396,
+            "nonfoot_ground_violation_m": 0.0014542543817786108
+          },
+          "first_ground_violation": {
+            "micro": 145,
+            "body": "Head_lower",
+            "gap_m": -5.1992873361716985e-05
+          }
+        }
+      },
+      {
+        "case": 87,
+        "verified_model": true,
+        "completed_model_steps": 520,
+        "trailing_model_window_s": 2.58,
+        "failure": null
+      },
+      {
+        "case": 90,
+        "verified_model": false,
+        "completed_model_steps": 81,
+        "trailing_model_window_s": 0.0,
+        "failure": {
+          "step": 81,
+          "reason": "path_constraints",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.00589774733898696
+          },
+          "first_ground_violation": {
+            "micro": 72,
+            "body": "RR_calf",
+            "gap_m": -5.848548442813871e-05
+          }
+        }
+      },
+      {
+        "case": 95,
+        "verified_model": false,
+        "completed_model_steps": 23,
+        "trailing_model_window_s": 0.0,
+        "failure": {
+          "step": 23,
+          "reason": "path_constraints",
+          "violations": {
+            "joint_position_violation_rad": 0.02746070180775595,
+            "nonfoot_ground_violation_m": 0.003674184269635797
+          },
+          "first_ground_violation": {
+            "micro": 124,
+            "body": "Head_lower",
+            "gap_m": -0.00010041679095461331
+          }
+        }
+      },
+      {
+        "case": 96,
+        "verified_model": false,
+        "completed_model_steps": 23,
+        "trailing_model_window_s": 0.0,
+        "failure": {
+          "step": 23,
+          "reason": "path_constraints",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.006005936563824879
+          },
+          "first_ground_violation": {
+            "micro": 105,
+            "body": "Head_lower",
+            "gap_m": -0.00010935657069018057
+          }
+        }
+      },
+      {
+        "case": 98,
+        "verified_model": false,
+        "completed_model_steps": 23,
+        "trailing_model_window_s": 0.0,
+        "failure": {
+          "step": 23,
+          "reason": "path_constraints",
+          "violations": {
+            "joint_position_violation_rad": 0.027983496749175885,
+            "nonfoot_ground_violation_m": 0.017004200699180856
+          },
+          "first_ground_violation": {
+            "micro": 6,
+            "body": "Head_lower",
+            "gap_m": -4.428436060575913e-05
+          }
+        }
+      },
+      {
+        "case": 115,
+        "verified_model": false,
+        "completed_model_steps": 24,
+        "trailing_model_window_s": 0.0,
+        "failure": {
+          "step": 24,
+          "reason": "path_constraints",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.0027026451587484207
+          },
+          "first_ground_violation": {
+            "micro": 131,
+            "body": "Head_lower",
+            "gap_m": -5.287076369074606e-05
+          }
+        }
+      }
+    ],
+    "native_execution": false
+  },
+  "one_step_diagnostic": {
+    "case": 3,
+    "intervals": 97,
+    "completed": 97,
+    "summary": {
+      "root_position_error_m": {
+        "maximum": 3.2241451065281065e-05,
+        "median": 1.6097179772993297e-05
+      },
+      "root_rotation_error_rad": {
+        "maximum": 0.0004934847322561002,
+        "median": 0.00023401215229207383
+      },
+      "root_linear_velocity_error_m_s": {
+        "maximum": 0.0015178456129833116,
+        "median": 0.00018598553342701383
+      },
+      "root_angular_velocity_error_rad_s": {
+        "maximum": 0.00898286930198967,
+        "median": 0.0015786403056026756
+      },
+      "maximum_joint_position_error_rad": {
+        "maximum": 0.004585781345082474,
+        "median": 0.0002394793404981721
+      },
+      "maximum_joint_velocity_error_rad_s": {
+        "maximum": 0.8290734865337354,
+        "median": 0.011898329788522233
+      }
+    },
+    "actual_history_error_rad": 0.0,
+    "source_run": "reports/native_all_partners_all128_20261108_01",
+    "strict_isolation_audit": "FAILED; not waived",
+    "new_native_execution": false
+  },
+  "train87_native": {
+    "progress": {
+      "control_ticks": 300,
+      "requested_ticks": 800,
+      "first_episodes_complete": 0,
+      "formal_eligible": false,
+      "formal_acceptance": false
+    },
+    "query_match": {
+      "passed": true,
+      "errors": {
+        "configuration_tangent": 1.1102230246251565e-16,
+        "velocity": 0.0,
+        "public": 0.0,
+        "previous_target_rad": 0.0
+      },
+      "tolerances": {
+        "configuration_tangent": 2e-05,
+        "velocity": 0.0002,
+        "public": 0.0005,
+        "previous_target_rad": 5e-06
+      },
+      "contacts_equal": true
+    },
+    "final_outcome": null
+  },
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_foot_space87_domain_20261108/result.json": "0e3b2516583978b6dadf9504109f6f03a5da8b4e19bb8638d23a9721bdf25593",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_existing_feedback_one_step_audit_20261108.json": "d6f7e6c96d7c8e9b2847985a63aa0e30a0db5b1404afd06b2a33c213949bd869",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_foot_space87_all128_20261108_01/sequence_query_match.json": "2e853bfb10580d13188a00f2fd299c678155b7bc762f4972e35b4f89d58a60a1",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_native_feedback_prediction_v1.py": "098faaa99bd89cbfc443c21bd41488927d0a7c3e39381945502cb67d7337a1e0"
+  },
+  "student_baseline_complete5": 27,
+  "valid_expert_labels": false
+}
