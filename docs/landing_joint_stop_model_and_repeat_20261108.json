@@ -1,0 +1,982 @@
+{
+  "date": "2026-11-08",
+  "scope": "Fixed TRAIN128 development; auxiliary execution and offline prediction, no student update.",
+  "baseline_complete5": 27,
+  "assisted_complete5": 28,
+  "assisted_repeat_complete5": 28,
+  "new_success_cases": [
+    85
+  ],
+  "old_successes_lost": [],
+  "strict_untouched_isolation_passed": false,
+  "untouched_different_cases": [
+    46,
+    82,
+    125
+  ],
+  "student_learning_improved": false,
+  "native_position_stop_mpc_executed": false,
+  "formal_acceptance": false,
+  "physical_constraints_changed": false,
+  "full_suffix_acceptance_function_ast_unchanged": true,
+  "unit_tests_passed": 7,
+  "evidence": {
+    "landing_position_stop_prediction_20261108": {
+      "path": "reports/landing_position_stop_prediction_20261108/result.json",
+      "sha256": "3b34932981a0e698e57e20d5d3fcb12e5049169095b55e2c649889f70bedc1d4",
+      "scope": "Paired measured-command predictions with and without coupled position stops.",
+      "wall_seconds": 29.168685687007383,
+      "summary": {
+        "all": {
+          "count": 105,
+          "errors": {
+            "root_position_error_m": {
+              "old": {
+                "maximum": 0.00012494063805829073,
+                "median": 1.3249844079318723e-05
+              },
+              "stops": {
+                "maximum": 0.00012494063805829073,
+                "median": 1.3226731658321514e-05
+              }
+            },
+            "root_rotation_error_rad": {
+              "old": {
+                "maximum": 0.0008758330512924007,
+                "median": 0.00024207619532250056
+              },
+              "stops": {
+                "maximum": 0.0008758330512924007,
+                "median": 0.00024326138328123839
+              }
+            },
+            "joint_position_error_rad": {
+              "old": {
+                "maximum": 0.025514285433576617,
+                "median": 0.0002988665277112723
+              },
+              "stops": {
+                "maximum": 0.025514285433576617,
+                "median": 0.000272635561633372
+              }
+            },
+            "joint_velocity_error_rad_s": {
+              "old": {
+                "maximum": 4.629723032179639,
+                "median": 0.03646874607671746
+              },
+              "stops": {
+                "maximum": 4.629723032179639,
+                "median": 0.030776170397127434
+              }
+            },
+            "calf_velocity_error_rad_s": {
+              "old": {
+                "maximum": 1.3122708077925256,
+                "median": 0.005822449254074158
+              },
+              "stops": {
+                "maximum": 0.881106450196445,
+                "median": 0.005000473417978324
+              }
+            }
+          }
+        },
+        "position_stop_active": {
+          "count": 10,
+          "errors": {
+            "root_position_error_m": {
+              "old": {
+                "maximum": 6.0264350384901775e-05,
+                "median": 7.524006585261376e-06
+              },
+              "stops": {
+                "maximum": 3.7119317440180216e-05,
+                "median": 8.445061195657773e-06
+              }
+            },
+            "root_rotation_error_rad": {
+              "old": {
+                "maximum": 0.0008536268446809327,
+                "median": 0.00020713563273572308
+              },
+              "stops": {
+                "maximum": 0.000836579585120541,
+                "median": 0.00021176760806126358
+              }
+            },
+            "joint_position_error_rad": {
+              "old": {
+                "maximum": 0.011796167012420034,
+                "median": 0.006581996962201131
+              },
+              "stops": {
+                "maximum": 0.006317746543197389,
+                "median": 0.00028377002326207545
+              }
+            },
+            "joint_velocity_error_rad_s": {
+              "old": {
+                "maximum": 1.3122708077925256,
+                "median": 0.8230686338761083
+              },
+              "stops": {
+                "maximum": 0.5978487331965879,
+                "median": 0.043814686562380196
+              }
+            },
+            "calf_velocity_error_rad_s": {
+              "old": {
+                "maximum": 1.3122708077925256,
+                "median": 0.8230686338761083
+              },
+              "stops": {
+                "maximum": 0.07811067253351212,
+                "median": 0.012046121060848233
+              }
+            }
+          }
+        }
+      },
+      "inactive_exact": 95,
+      "completed": 105
+    },
+    "landing_position_stop_mpc85_20261108": {
+      "path": "reports/landing_position_stop_mpc85_20261108/result.json",
+      "sha256": "020f04ff8b376ddd55e3a240d62b6a2afe83262b3b40e81a5c4cf972767c9661",
+      "scope": "Solve a complete timed recovery suffix from one measured original-run state.",
+      "wall_seconds": 480.24753064499237,
+      "decision": {
+        "accepted": false,
+        "control_tick": 400,
+        "reason": "No independently verified full-remainder plan from the current state",
+        "wall_seconds": 480.2022431958467,
+        "real_time_guarantee": false
+      },
+      "best_rejected_keys": [
+        "plan",
+        "result"
+      ]
+    },
+    "landing_position_limited_suffixes_20261108": {
+      "path": "reports/landing_position_limited_suffixes_20261108/result.json",
+      "sha256": "251b97b7eee8965cb6a5f1497323bde70c3e2d4709ef22acd22ad2deaae977ca",
+      "scope": "Test coupled position-stop predictions from measured recovery states.\n\nOffline diagnosis of horizon drift, not a new native MPC execution. The\nreference clock, executed command history and full remaining recovery checks\nare retained. No optimizer may replace the supplied measured starting state.\n",
+      "wall_seconds": 200.99980860901996,
+      "rows": [
+        {
+          "tick": 280,
+          "accepted": false,
+          "completed_model_steps": 197,
+          "required_model_steps": 520,
+          "failure": {
+            "step": 197,
+            "reason": "path_constraints",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.0016603791573666475
+            },
+            "first_ground_violation": {
+              "micro": 86,
+              "body": "FR_calf",
+              "gap_m": -1.0173915849105361e-05
+            }
+          },
+          "independent_replay_exact": false
+        },
+        {
+          "tick": 320,
+          "accepted": false,
+          "completed_model_steps": 113,
+          "required_model_steps": 480,
+          "failure": {
+            "step": 113,
+            "reason": "path_constraints",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.00010307398967610015
+            },
+            "first_ground_violation": {
+              "micro": 142,
+              "body": "FR_thigh",
+              "gap_m": -1.4516069569703305e-06
+            }
+          },
+          "independent_replay_exact": false
+        },
+        {
+          "tick": 400,
+          "accepted": false,
+          "completed_model_steps": 32,
+          "required_model_steps": 400,
+          "failure": {
+            "step": 32,
+            "reason": "path_constraints",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.00019914824655112295
+            },
+            "first_ground_violation": {
+              "micro": 142,
+              "body": "FR_thigh",
+              "gap_m": -1.1144183848760258e-05
+            }
+          },
+          "independent_replay_exact": false
+        },
+        {
+          "tick": 500,
+          "accepted": true,
+          "completed_model_steps": 300,
+          "required_model_steps": 300,
+          "failure": null,
+          "independent_replay_exact": true
+        },
+        {
+          "tick": 600,
+          "accepted": true,
+          "completed_model_steps": 200,
+          "required_model_steps": 200,
+          "failure": null,
+          "independent_replay_exact": true
+        },
+        {
+          "tick": 700,
+          "accepted": true,
+          "completed_model_steps": 100,
+          "required_model_steps": 100,
+          "failure": null,
+          "independent_replay_exact": true
+        }
+      ]
+    },
+    "landing_position_stop_service_20261108": {
+      "path": "reports/landing_position_stop_service_20261108/result.json",
+      "sha256": "39a9bb707ef1737d44f59a36beb5e15c89d4cdafbfa5a45bbde43cbaaac4af25",
+      "scope": null,
+      "wall_seconds": null,
+      "passed": true,
+      "first_command_exact": true,
+      "ready": {
+        "ready": true,
+        "pid": 102974,
+        "cuda_visible_devices": "",
+        "isaac_modules_loaded": false,
+        "parent_death_group_cleanup": true,
+        "worker_sha256": "4dc1bf0fba54830f998bfae3ffb4e7065bfbc26be3271dda3e546e50d21b81a6"
+      },
+      "service_exit_code": 0
+    },
+    "landing_executed_nominal85_20261108": {
+      "path": "reports/landing_executed_nominal85_20261108/result.json",
+      "sha256": "14ae7184bc8192d1fd92cc5cf7516299883e24b5ab53b455bbca90320f702676",
+      "scope": "Full-tail predictions around a twice-executed successful recovery reference.",
+      "wall_seconds": 152.2443901989609,
+      "rows": [
+        {
+          "tick": 280,
+          "accepted": false,
+          "completed_model_steps": 90,
+          "required_model_steps": 520,
+          "failure": {
+            "step": 90,
+            "reason": "path_constraints",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.005121078363246337
+            },
+            "first_ground_violation": {
+              "micro": 79,
+              "body": "Head_lower",
+              "gap_m": -1.3136361044469025e-05
+            }
+          },
+          "independent_replay_exact": false
+        },
+        {
+          "tick": 400,
+          "accepted": false,
+          "completed_model_steps": 31,
+          "required_model_steps": 400,
+          "failure": {
+            "step": 31,
+            "reason": "path_constraints",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.0003197921411624005
+            },
+            "first_ground_violation": {
+              "micro": 140,
+              "body": "FR_thigh",
+              "gap_m": -1.5921784350142465e-05
+            }
+          },
+          "independent_replay_exact": false
+        },
+        {
+          "tick": 500,
+          "accepted": true,
+          "completed_model_steps": 300,
+          "required_model_steps": 300,
+          "failure": null,
+          "independent_replay_exact": true
+        }
+      ]
+    },
+    "landing_recorded_openloop85_20261108": {
+      "path": "reports/landing_recorded_openloop85_20261108/result.json",
+      "sha256": "76251abf0b79e25a2067a2fdabf408386f5d59b10d8057d881f40362a786b3be",
+      "scope": "Predict recorded actual commands without state-feedback corrections; diagnosis only.",
+      "wall_seconds": 156.99588464200497,
+      "rows": [
+        {
+          "tick": 280,
+          "accepted": false,
+          "completed_model_steps": 96,
+          "required_model_steps": 520,
+          "failure": {
+            "step": 96,
+            "reason": "path_constraints",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.0016644119998139167
+            },
+            "first_ground_violation": {
+              "micro": 133,
+              "body": "Head_lower",
+              "gap_m": -2.8654228720031982e-05
+            }
+          },
+          "independent_replay_exact": false
+        },
+        {
+          "tick": 400,
+          "accepted": false,
+          "completed_model_steps": 31,
+          "required_model_steps": 400,
+          "failure": {
+            "step": 31,
+            "reason": "path_constraints",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.0014815214894582929
+            },
+            "first_ground_violation": {
+              "micro": 75,
+              "body": "FR_thigh",
+              "gap_m": -1.2962589784171197e-05
+            }
+          },
+          "independent_replay_exact": false
+        },
+        {
+          "tick": 500,
+          "accepted": true,
+          "completed_model_steps": 300,
+          "required_model_steps": 300,
+          "failure": null,
+          "independent_replay_exact": true
+        }
+      ]
+    },
+    "recorded_command_drift": {
+      "path": "reports/landing_recorded_openloop85_20261108/drift_audit.json",
+      "sha256": "70c371965cba3c46600ff4b01f5b1ccd081abee5012138fd55fa56fd59b2f92a",
+      "audits": [
+        {
+          "start_tick": 280,
+          "compared_steps": 96,
+          "maximum": {
+            "command_error_rad": 0.0,
+            "root_position_error_m": 0.22867502012515806,
+            "root_rotation_error_rad": 0.481418307365256,
+            "joint_position_error_rad": 0.8742347854594235,
+            "joint_velocity_error_rad_s": 10.876855453640635
+          },
+          "first_threshold_crossing": {
+            "root_position_error_m": 310,
+            "joint_position_error_rad": 295
+          },
+          "diagnostic_thresholds": {
+            "root_position_error_m": 0.01,
+            "joint_position_error_rad": 0.1
+          },
+          "failure": {
+            "step": 96,
+            "reason": "path_constraints",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.0016644119998139167
+            },
+            "first_ground_violation": {
+              "micro": 133,
+              "body": "Head_lower",
+              "gap_m": -2.8654228720031982e-05
+            }
+          }
+        },
+        {
+          "start_tick": 400,
+          "compared_steps": 31,
+          "maximum": {
+            "command_error_rad": 0.0,
+            "root_position_error_m": 0.0051065935235044295,
+            "root_rotation_error_rad": 0.12716284901551508,
+            "joint_position_error_rad": 0.17050949449602731,
+            "joint_velocity_error_rad_s": 2.9747878524623963
+          },
+          "first_threshold_crossing": {
+            "root_position_error_m": null,
+            "joint_position_error_rad": 429
+          },
+          "diagnostic_thresholds": {
+            "root_position_error_m": 0.01,
+            "joint_position_error_rad": 0.1
+          },
+          "failure": {
+            "step": 31,
+            "reason": "path_constraints",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.0014815214894582929
+            },
+            "first_ground_violation": {
+              "micro": 75,
+              "body": "FR_thigh",
+              "gap_m": -1.2962589784171197e-05
+            }
+          }
+        },
+        {
+          "start_tick": 500,
+          "compared_steps": 299,
+          "maximum": {
+            "command_error_rad": 0.0,
+            "root_position_error_m": 0.03192670788892786,
+            "root_rotation_error_rad": 0.1378262598342586,
+            "joint_position_error_rad": 0.2156190406015619,
+            "joint_velocity_error_rad_s": 1.4674719690627303
+          },
+          "first_threshold_crossing": {
+            "root_position_error_m": 564,
+            "joint_position_error_rad": 573
+          },
+          "diagnostic_thresholds": {
+            "root_position_error_m": 0.01,
+            "joint_position_error_rad": 0.1
+          },
+          "failure": null
+        }
+      ]
+    },
+    "paired_student": {
+      "path": "reports/landing_native_timed85_repeat_diagnostics_20261108/paired_student.json",
+      "sha256": "12fe050b7131be8cad71fe3add1bf36282903d9f64f2b426faed2c1ef8ca8f89",
+      "result": {
+        "stage_transitions": {
+          "complete5": {
+            "before": 27,
+            "after": 28,
+            "retained": [
+              10,
+              16,
+              17,
+              23,
+              24,
+              25,
+              27,
+              28,
+              32,
+              33,
+              34,
+              35,
+              36,
+              37,
+              39,
+              43,
+              45,
+              49,
+              51,
+              52,
+              55,
+              60,
+              63,
+              84,
+              94,
+              121,
+              126
+            ],
+            "lost": [],
+            "gained": [
+              85
+            ]
+          },
+          "air": {
+            "before": 74,
+            "after": 74,
+            "retained": [
+              1,
+              3,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              16,
+              17,
+              18,
+              20,
+              21,
+              22,
+              23,
+              24,
+              25,
+              26,
+              27,
+              28,
+              30,
+              32,
+              33,
+              34,
+              35,
+              36,
+              37,
+              38,
+              39,
+              40,
+              42,
+              43,
+              45,
+              49,
+              50,
+              51,
+              52,
+              53,
+              54,
+              55,
+              57,
+              58,
+              60,
+              61,
+              63,
+              64,
+              65,
+              67,
+              68,
+              70,
+              71,
+              72,
+              77,
+              80,
+              81,
+              82,
+              83,
+              84,
+              85,
+              86,
+              87,
+              90,
+              94,
+              95,
+              96,
+              97,
+              98,
+              99,
+              114,
+              115,
+              121,
+              125,
+              126
+            ],
+            "lost": [],
+            "gained": []
+          },
+          "recovery": {
+            "before": 34,
+            "after": 35,
+            "retained": [
+              6,
+              10,
+              16,
+              17,
+              21,
+              23,
+              24,
+              25,
+              27,
+              28,
+              32,
+              33,
+              34,
+              35,
+              36,
+              37,
+              39,
+              43,
+              45,
+              49,
+              51,
+              52,
+              53,
+              55,
+              60,
+              63,
+              64,
+              72,
+              80,
+              81,
+              84,
+              94,
+              121,
+              126
+            ],
+            "lost": [],
+            "gained": [
+              85
+            ]
+          },
+          "ball5_except_recovery": {
+            "before": 53,
+            "after": 54,
+            "retained": [
+              1,
+              3,
+              8,
+              9,
+              10,
+              12,
+              16,
+              17,
+              18,
+              20,
+              23,
+              24,
+              25,
+              27,
+              28,
+              30,
+              32,
+              33,
+              34,
+              35,
+              36,
+              37,
+              38,
+              39,
+              42,
+              43,
+              45,
+              49,
+              50,
+              51,
+              52,
+              54,
+              55,
+              57,
+              58,
+              60,
+              61,
+              63,
+              67,
+              70,
+              71,
+              77,
+              84,
+              85,
+              87,
+              90,
+              94,
+              95,
+              96,
+              98,
+              115,
+              121,
+              126
+            ],
+            "lost": [],
+            "gained": [
+              82
+            ]
+          }
+        },
+        "paired_initial_max_error": {
+          "root_state_local": 0.0,
+          "joint_position_rad": 0.0,
+          "joint_velocity_rad_s": 0.0
+        },
+        "formal_acceptance": false,
+        "generalization_test": false
+      }
+    },
+    "paired_repeat": {
+      "path": "reports/landing_native_timed85_repeat_diagnostics_20261108/paired_repeat.json",
+      "sha256": "9f2bd16d039d1c63345b2a0c32093d46db4c2403c2677ed18a5251e58fcb7bdc",
+      "result": {
+        "stage_transitions": {
+          "complete5": {
+            "before": 28,
+            "after": 28,
+            "retained": [
+              10,
+              16,
+              17,
+              23,
+              24,
+              25,
+              27,
+              28,
+              32,
+              33,
+              34,
+              35,
+              36,
+              37,
+              39,
+              43,
+              45,
+              49,
+              51,
+              52,
+              55,
+              60,
+              63,
+              84,
+              85,
+              94,
+              121,
+              126
+            ],
+            "lost": [],
+            "gained": []
+          },
+          "air": {
+            "before": 74,
+            "after": 74,
+            "retained": [
+              1,
+              3,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              16,
+              17,
+              18,
+              20,
+              21,
+              22,
+              23,
+              24,
+              25,
+              26,
+              27,
+              28,
+              30,
+              32,
+              33,
+              34,
+              35,
+              36,
+              37,
+              38,
+              39,
+              40,
+              42,
+              43,
+              45,
+              49,
+              50,
+              51,
+              52,
+              53,
+              54,
+              55,
+              57,
+              58,
+              60,
+              61,
+              63,
+              64,
+              65,
+              67,
+              68,
+              70,
+              71,
+              72,
+              77,
+              80,
+              81,
+              82,
+              83,
+              84,
+              85,
+              86,
+              87,
+              90,
+              94,
+              95,
+              96,
+              97,
+              98,
+              99,
+              114,
+              115,
+              121,
+              125,
+              126
+            ],
+            "lost": [],
+            "gained": []
+          },
+          "recovery": {
+            "before": 35,
+            "after": 35,
+            "retained": [
+              6,
+              10,
+              16,
+              17,
+              21,
+              23,
+              24,
+              25,
+              27,
+              28,
+              32,
+              33,
+              34,
+              35,
+              36,
+              37,
+              39,
+              43,
+              45,
+              49,
+              51,
+              52,
+              53,
+              55,
+              60,
+              63,
+              64,
+              72,
+              80,
+              81,
+              84,
+              85,
+              94,
+              121,
+              126
+            ],
+            "lost": [],
+            "gained": []
+          },
+          "ball5_except_recovery": {
+            "before": 54,
+            "after": 54,
+            "retained": [
+              1,
+              3,
+              8,
+              9,
+              10,
+              12,
+              16,
+              17,
+              18,
+              20,
+              23,
+              24,
+              25,
+              27,
+              28,
+              30,
+              32,
+              33,
+              34,
+              35,
+              36,
+              37,
+              38,
+              39,
+              42,
+              43,
+              45,
+              49,
+              50,
+              51,
+              52,
+              54,
+              55,
+              57,
+              58,
+              60,
+              61,
+              63,
+              67,
+              70,
+              71,
+              77,
+              82,
+              84,
+              85,
+              87,
+              90,
+              94,
+              95,
+              96,
+              98,
+              115,
+              121,
+              126
+            ],
+            "lost": [],
+            "gained": []
+          }
+        },
+        "paired_initial_max_error": {
+          "root_state_local": 0.0,
+          "joint_position_rad": 0.0,
+          "joint_velocity_rad_s": 0.0
+        },
+        "formal_acceptance": false,
+        "generalization_test": false
+      }
+    },
+    "repeat_trace_85": {
+      "path": "reports/landing_native_timed85_repeat_diagnostics_20261108/repeat_trace_85.json",
+      "sha256": "71c0d71c9cde457ca7dc7ae20a3e67a9a32d693c6ba4573f6c7cfa4bafa77b0b",
+      "result": {
+        "comparisons": [
+          {
+            "run": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_timed85_all128_20261108_02",
+            "case": 85,
+            "compared_samples": 800,
+            "maximum_public_error": 0.0,
+            "maximum_action_error": 0.0,
+            "first_observation_difference_tick": null,
+            "first_action_difference_tick": null,
+            "first_observation_over_existing_audit_tolerance_tick": null,
+            "first_action_over_existing_audit_tolerance_tick": null
+          }
+        ],
+        "valid_expert_labels": false
+      }
+    }
+  },
+  "implementation_sha256": {
+    "scripts/frictional_position_limited_step_v1.py": "07d976fa06b4c1e9e90792f463cb058be5c9a1af38170e22ff226c9680230413",
+    "scripts/predict_position_limited_spheres_v1.py": "5aad6f1564ac05644602cacdb2807522ae9a1b0fd99f036d5b2e56b10c2177a2",
+    "scripts/position_limited_recovery_suffix_v1.py": "00a3476a12f9333c1699354203708a55a9878640c8254d48403c39705808e099",
+    "scripts/audit_position_stop_prediction_v1.py": "fe888b2382c927c01c4952c0e5a1a1bda1e7ca5f64389b1503c8ce7e6ba53e6d",
+    "scripts/check_position_limited_suffix_v1.py": "215e95b0dc1ef97efcbd222cc4a365632441e25ea8dbbb0ea2243b5392d1345f",
+    "scripts/current_state_timed_recovery_planner_v4.py": "02103e4b604c7ca25cec28a5dc127adbf534f5ba0fd76441ae1e3d0118710bf2",
+    "scripts/solve_native_timed_position_suffix_v1.py": "5b19f07bd3502ce32b42973c52fcd7773d439d4dbf1c4fec073c1acbc7cda21b",
+    "scripts/current_state_timed_recovery_service_v4.py": "4dc1bf0fba54830f998bfae3ffb4e7065bfbc26be3271dda3e546e50d21b81a6",
+    "scripts/check_timed_mpc_service_v1.py": "cf855ef238157a2c5547c8753a9f2eb5312eead476bc8499db7e63de87eae7fb",
+    "scripts/native_timed_position_mpc_v1.py": "5fe1e0400d414d3d04cffcb8a5ac02a77d05bcf9d98f7ab37e64250878e9518c",
+    "scripts/run_native_timed_mpc_v1.py": "23c481b25072ac8220cf5faaf39be201e30c959a8e8bb7bd2e2b8249993bf354",
+    "scripts/prepare_native_timed_position_mpc_v1.py": "022608d86c219257c98099258ee5271753153dff83085cc4aa46646c9c693d38",
+    "scripts/executed_nominal_recovery_v1.py": "3c2f0a6281883d2dcb1beff9a3e2178b2da5789689416de249fce61d50c8efb0",
+    "scripts/check_executed_nominal_recovery_v1.py": "708257284ef6606abcf5e7cdaf5a6e48543a5230ad71a4e19a6658136216d1e3",
+    "scripts/check_recorded_openloop_prediction_v1.py": "73a8a33e1df54761d8e8837a7c22e6d11eeaec2e391ba66b909698ea19633d31",
+    "scripts/audit_recorded_command_drift_v1.py": "991f2d11654f444313f0dd9804c6843c990d9f8869d000036a3cb84a8115264c",
+    "tests/test_position_limited_impulse_v1.py": "0de12fb46ad06852d169a4f18afb217a0ffb08fe379d2f247fcd6ad5b8203acd"
+  }
+}
