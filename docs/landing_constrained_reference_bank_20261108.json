@@ -1,0 +1,154 @@
+{
+  "scope": "Compare feasible full-episode references from the same observed model state.\n\nSelection uses predicted constraints and cost, not subsequent native outcomes.\nThis offline finite-candidate planning test is not online receding-horizon MPC,\na certified recovery region, or native teacher evidence.\n",
+  "configuration": {
+    "source": "reports/landing_early_references_20261108/constrained_support_domain_v1.json",
+    "output": "reports/landing_early_references_20261108/constrained_support_bank_v1.json",
+    "max_seconds": 1800.0,
+    "workers": 4
+  },
+  "choices": [
+    {
+      "probe": "orientation_world_1_-1",
+      "candidate": null,
+      "model_feasible": false,
+      "independently_reproduced": false
+    },
+    {
+      "probe": "orientation_world_0_+1",
+      "candidate": null,
+      "model_feasible": false,
+      "independently_reproduced": false
+    },
+    {
+      "probe": "orientation_world_0_-1",
+      "candidate": null,
+      "model_feasible": false,
+      "independently_reproduced": false
+    },
+    {
+      "probe": "orientation_world_1_+1",
+      "candidate": null,
+      "model_feasible": false,
+      "independently_reproduced": false
+    },
+    {
+      "probe": "linear_velocity_world_0_-1",
+      "candidate": null,
+      "model_feasible": false,
+      "independently_reproduced": false
+    },
+    {
+      "probe": "linear_velocity_world_0_+1",
+      "candidate": null,
+      "model_feasible": false,
+      "independently_reproduced": false
+    },
+    {
+      "probe": "linear_velocity_world_1_-1",
+      "candidate": null,
+      "model_feasible": false,
+      "independently_reproduced": false
+    },
+    {
+      "probe": "linear_velocity_world_1_+1",
+      "candidate": null,
+      "model_feasible": false,
+      "independently_reproduced": false
+    },
+    {
+      "probe": "nominal",
+      "candidate": "g4_fine_26",
+      "model_feasible": true,
+      "independently_reproduced": true
+    },
+    {
+      "probe": "angular_velocity_world_0_-1",
+      "candidate": null,
+      "model_feasible": false,
+      "independently_reproduced": false
+    },
+    {
+      "probe": "angular_velocity_world_0_+1",
+      "candidate": null,
+      "model_feasible": false,
+      "independently_reproduced": false
+    },
+    {
+      "probe": "angular_velocity_world_1_-1",
+      "candidate": null,
+      "model_feasible": false,
+      "independently_reproduced": false
+    },
+    {
+      "probe": "angular_velocity_world_1_+1",
+      "candidate": null,
+      "model_feasible": false,
+      "independently_reproduced": false
+    }
+  ],
+  "baseline_accepted": 1,
+  "bank_verified_accepted": 1,
+  "probe_count": 13,
+  "reused_predictions": 13,
+  "new_predictions": 52,
+  "expired_new_predictions": 0,
+  "wall_seconds": 540.8359512791503,
+  "native_execution": false,
+  "valid_expert_labels": false,
+  "limitations": [
+    "Selection is based only on forward-model feasibility and cost at the supplied current state.",
+    "All five references come from one nominal recovery family, not arbitrary recovery plans.",
+    "This offline comparison does not demonstrate online replanning or native robustness."
+  ],
+  "per_candidate": {
+    "g3_fine_16": {
+      "completed": 13,
+      "accepted": 1,
+      "failures": {
+        "path_constraints": 10,
+        "authored_hip_mount_constraint": 2,
+        "accepted": 1
+      }
+    },
+    "g4_fine_11": {
+      "completed": 13,
+      "accepted": 1,
+      "failures": {
+        "path_constraints": 10,
+        "authored_hip_mount_constraint": 2,
+        "accepted": 1
+      }
+    },
+    "g4_fine_26": {
+      "completed": 13,
+      "accepted": 1,
+      "failures": {
+        "path_constraints": 10,
+        "authored_hip_mount_constraint": 2,
+        "accepted": 1
+      }
+    },
+    "g4_fine_38": {
+      "completed": 13,
+      "accepted": 1,
+      "failures": {
+        "path_constraints": 11,
+        "authored_hip_mount_constraint": 1,
+        "accepted": 1
+      }
+    },
+    "g4_fine_37": {
+      "completed": 13,
+      "accepted": 1,
+      "failures": {
+        "path_constraints": 11,
+        "authored_hip_mount_constraint": 1,
+        "accepted": 1
+      }
+    }
+  },
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_early_references_20261108/constrained_support_bank_v1.json": "e979cccc1248f73e7d37391e7c098cba449be761c2a58bbb2aa416e94f20aa4f",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/probe_constrained_support_bank_v1.py": "2be07bb4eeeb64910d25a144e4f6b3c9d189394bd484c92ee9bdf832aee3eee8"
+  }
+}

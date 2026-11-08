@@ -1,0 +1,135 @@
+{
+  "scope": "Execute full-resolution suffix equivalence and changed-state checks.\n\nUses completed model evidence as the regression oracle; never resets native\nphysics. A successful check validates clock/state semantics, not recovery\nrobustness, MPC optimization, or a teacher demonstration.\n",
+  "all_checks_passed": true,
+  "wall_seconds": 94.30217664293014,
+  "native_execution": false,
+  "online_mpc": false,
+  "valid_expert_labels": false,
+  "rows": [
+    {
+      "control_tick": 350,
+      "changed_state": false,
+      "original_suffix_exact": true,
+      "first_changed_control_tick": null,
+      "input_and_history_preserved": true,
+      "result": {
+        "accepted": true,
+        "completed_model_steps": 450,
+        "required_model_steps": 450,
+        "rank": [
+          0,
+          0.0,
+          0,
+          0.02453849302901514
+        ],
+        "failure": null,
+        "terminal": {
+          "roll": 0.0025111590592114268,
+          "pitch": -0.05358078583343724,
+          "horizontal": 0.0108254369551576,
+          "vertical_speed": 0.0033524539418225696,
+          "omega": 0.03776987041716233,
+          "joint_speed": 0.053280156940664014,
+          "support_feet": 4,
+          "support_margin_m": 0.13637615178503484
+        },
+        "terminal_violations": {},
+        "trailing_model_window_s": 3.11,
+        "longest_model_window_s": 3.11,
+        "cost": 11.042321863056813,
+        "substeps": 160,
+        "wall_seconds": 92.84911443991587,
+        "control_tick": 350,
+        "original_episode_end_tick": 800,
+        "preceding_stable_ticks": 0,
+        "native_execution": false,
+        "valid_expert_labels": false
+      }
+    },
+    {
+      "control_tick": 700,
+      "changed_state": false,
+      "original_suffix_exact": true,
+      "first_changed_control_tick": null,
+      "input_and_history_preserved": true,
+      "result": {
+        "accepted": true,
+        "completed_model_steps": 100,
+        "required_model_steps": 100,
+        "rank": [
+          0,
+          0.0,
+          0,
+          0.0010260150248505998
+        ],
+        "failure": null,
+        "terminal": {
+          "roll": 0.0025111590592114268,
+          "pitch": -0.05358078583343724,
+          "horizontal": 0.0108254369551576,
+          "vertical_speed": 0.0033524539418225696,
+          "omega": 0.03776987041716233,
+          "joint_speed": 0.053280156940664014,
+          "support_feet": 4,
+          "support_margin_m": 0.13637615178503484
+        },
+        "terminal_violations": {},
+        "trailing_model_window_s": 3.11,
+        "longest_model_window_s": 3.11,
+        "cost": 0.10260150248505998,
+        "substeps": 160,
+        "wall_seconds": 18.688084463123232,
+        "control_tick": 700,
+        "original_episode_end_tick": 800,
+        "preceding_stable_ticks": 211,
+        "native_execution": false,
+        "valid_expert_labels": false
+      }
+    },
+    {
+      "control_tick": 350,
+      "changed_state": true,
+      "original_suffix_exact": false,
+      "first_changed_control_tick": 350,
+      "input_and_history_preserved": true,
+      "result": {
+        "accepted": true,
+        "completed_model_steps": 450,
+        "required_model_steps": 450,
+        "rank": [
+          0,
+          0.0,
+          0,
+          0.025079570088446045
+        ],
+        "failure": null,
+        "terminal": {
+          "roll": 0.007127200822535996,
+          "pitch": -0.05763250797840493,
+          "horizontal": 0.010791586096337737,
+          "vertical_speed": 0.0035344898990560605,
+          "omega": 0.03694386771986075,
+          "joint_speed": 0.053898468015253165,
+          "support_feet": 4,
+          "support_margin_m": 0.13302817910480705
+        },
+        "terminal_violations": {},
+        "trailing_model_window_s": 3.1,
+        "longest_model_window_s": 3.1,
+        "cost": 11.28580653980072,
+        "substeps": 160,
+        "wall_seconds": 93.68273861310445,
+        "control_tick": 350,
+        "original_episode_end_tick": 800,
+        "preceding_stable_ticks": 0,
+        "native_execution": false,
+        "valid_expert_labels": false
+      }
+    }
+  ],
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_early_references_20261108/constrained_recovery_suffix_check_v1.json": "001abeca7a220d9ee367705ea37af99bd88279f4f86f1b3be1366973b35b5006",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/constrained_recovery_suffix_v1.py": "cd7e0543e6abcb7fa4f4ab8d52a627887c365852d176dafbdf31314ef97c5a62",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/check_constrained_recovery_suffix_v1.py": "6a1f657bbfbf28b84073c147e012667c39a1ac1ca37fe6f6b17a3a37682d281c"
+  }
+}
