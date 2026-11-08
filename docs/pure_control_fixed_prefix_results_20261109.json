@@ -1,0 +1,551 @@
+{
+  "time_utc": "2026-11-08T21:10:13.335032+00:00",
+  "completed": {
+    "pure_control_diverse_release_fine_search_20261109": {
+      "state": "COMPLETED_ACTUAL_RECOVERY_SEQUENCE_SEARCH",
+      "results": [
+        {
+          "state_key": "72:281",
+          "steps": 102,
+          "model_path_complete": false,
+          "terminal_stable_s": 0.0,
+          "window_violation": 0.0,
+          "failure": {
+            "step": 102,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.0022549332958648974
+            },
+            "collision": {
+              "micro": 122,
+              "body": "RL_calf",
+              "gap_m": -3.865224001385094e-05
+            }
+          }
+        },
+        {
+          "state_key": "87:272",
+          "steps": 109,
+          "model_path_complete": false,
+          "terminal_stable_s": 0.0,
+          "window_violation": 0.0,
+          "failure": {
+            "step": 109,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.0010461062932209247
+            },
+            "collision": {
+              "micro": 141,
+              "body": "RL_thigh",
+              "gap_m": -1.6977899506512295e-05
+            }
+          }
+        },
+        {
+          "state_key": "114:272",
+          "steps": 67,
+          "model_path_complete": false,
+          "terminal_stable_s": 0.0,
+          "window_violation": 0.0,
+          "failure": {
+            "step": 67,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -2.066802602000012e-05, 'exact': True, 'shape_index': 31, 'obstacle': 'net_segment_32'}\")"
+          }
+        },
+        {
+          "state_key": "65:275",
+          "steps": 207,
+          "model_path_complete": false,
+          "terminal_stable_s": 0.0,
+          "window_violation": 0.0,
+          "failure": {
+            "step": 207,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.0023278076944265626
+            },
+            "collision": {
+              "micro": 80,
+              "body": "RL_calf",
+              "gap_m": -1.9962882504826265e-05
+            }
+          }
+        },
+        {
+          "state_key": "27:274",
+          "steps": 402,
+          "model_path_complete": false,
+          "terminal_stable_s": 0.0,
+          "window_violation": 0.0,
+          "failure": {
+            "step": 402,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.00012662588967879418, 'exact': True, 'shape_index': 31, 'obstacle': 'net_segment_34'}\")"
+          }
+        },
+        {
+          "state_key": "126:272",
+          "steps": 199,
+          "model_path_complete": false,
+          "terminal_stable_s": 0.0,
+          "window_violation": 0.0,
+          "failure": {
+            "step": 199,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.0019932178508711984
+            },
+            "collision": {
+              "micro": 121,
+              "body": "RL_thigh",
+              "gap_m": -2.8744603026709115e-05
+            }
+          }
+        }
+      ],
+      "completed_candidates": 294,
+      "all_candidates_substeps": 160,
+      "wall_seconds": 3000.5953764398582,
+      "native_success": false,
+      "valid_expert_labels": false
+    },
+    "pure_control_diverse_fixed_prefix_fine_20261109": {
+      "state": "COMPLETED_ACTUAL_RECOVERY_SEQUENCE_SEARCH",
+      "method": "checked_prefix_and_fine_only_suffix_search",
+      "all_candidates_substeps": 160,
+      "completed_candidates": 66,
+      "results": [
+        {
+          "state_key": "27:274",
+          "steps": 526,
+          "model_path_complete": true,
+          "terminal_stable_s": 2.7400002479553223,
+          "failure": null
+        },
+        {
+          "state_key": "65:275",
+          "steps": 525,
+          "model_path_complete": true,
+          "terminal_stable_s": 1.6500000953674316,
+          "failure": null
+        }
+      ],
+      "wall_seconds": 1811.166793079814,
+      "native_success": false,
+      "valid_expert_labels": false
+    },
+    "pure_control_state_settling_feedback_20261109": {
+      "state": "COMPLETED_STATE_SETTLING_FEEDBACK",
+      "results": [
+        {
+          "state_key": "114:272",
+          "mode": "state_settling",
+          "steps": 67,
+          "required_steps": 528,
+          "failure": {
+            "tick": 339,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -4.60601306869271e-06, 'exact': True, 'shape_index': 31, 'obstacle': 'net_segment_32'}\")"
+          },
+          "full_model_path": false,
+          "final_model_stable_s": 0.0,
+          "state_settling_capture_tick": null,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "state_key": "114:272",
+          "mode": "plan_end",
+          "steps": 67,
+          "required_steps": 528,
+          "failure": {
+            "tick": 339,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -4.60601306869271e-06, 'exact': True, 'shape_index': 31, 'obstacle': 'net_segment_32'}\")"
+          },
+          "full_model_path": false,
+          "final_model_stable_s": 0.0,
+          "state_settling_capture_tick": null,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "state_key": "27:274",
+          "mode": "plan_end",
+          "steps": 56,
+          "required_steps": 526,
+          "failure": {
+            "tick": 330,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -5.8846654890710656e-05, 'exact': True, 'shape_index': 47, 'obstacle': 'net_segment_28'}\")"
+          },
+          "full_model_path": false,
+          "final_model_stable_s": 0.0,
+          "state_settling_capture_tick": null,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "state_key": "27:274",
+          "mode": "state_settling",
+          "steps": 56,
+          "required_steps": 526,
+          "failure": {
+            "tick": 330,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -5.8846654890710656e-05, 'exact': True, 'shape_index': 47, 'obstacle': 'net_segment_28'}\")"
+          },
+          "full_model_path": false,
+          "final_model_stable_s": 0.0,
+          "state_settling_capture_tick": null,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "state_key": "65:275",
+          "mode": "state_settling",
+          "steps": 189,
+          "required_steps": 525,
+          "failure": {
+            "tick": 464,
+            "reason": "model_rejected",
+            "error": "ValueError('foot_pair_clearance:{\"bodies\": [\"FL_foot\", \"FR_foot\"], \"constraint_type\": \"foot_pair_clearance\", \"gap_m\": -6.834356376682338e-06, \"planning_margin_m\": 0.0, \"prediction_geometry_call\": 54293, \"violation_m\": 6.834356376682338e-06}')"
+          },
+          "full_model_path": false,
+          "final_model_stable_s": 0.0,
+          "state_settling_capture_tick": null,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "state_key": "65:275",
+          "mode": "plan_end",
+          "steps": 189,
+          "required_steps": 525,
+          "failure": {
+            "tick": 464,
+            "reason": "model_rejected",
+            "error": "ValueError('foot_pair_clearance:{\"bodies\": [\"FL_foot\", \"FR_foot\"], \"constraint_type\": \"foot_pair_clearance\", \"gap_m\": -6.834356376682338e-06, \"planning_margin_m\": 0.0, \"prediction_geometry_call\": 54293, \"violation_m\": 6.834356376682338e-06}')"
+          },
+          "full_model_path": false,
+          "final_model_stable_s": 0.0,
+          "state_settling_capture_tick": null,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "state_key": "126:272",
+          "mode": "state_settling",
+          "steps": 183,
+          "required_steps": 528,
+          "failure": {
+            "tick": 455,
+            "reason": "model_rejected",
+            "error": "ValueError('foot_pair_clearance:{\"bodies\": [\"FL_foot\", \"FR_foot\"], \"constraint_type\": \"foot_pair_clearance\", \"gap_m\": -1.0780456179554365e-05, \"planning_margin_m\": 0.0, \"prediction_geometry_call\": 52721, \"violation_m\": 1.0780456179554365e-05}')"
+          },
+          "full_model_path": false,
+          "final_model_stable_s": 0.0,
+          "state_settling_capture_tick": null,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "state_key": "87:272",
+          "mode": "plan_end",
+          "steps": 109,
+          "required_steps": 528,
+          "failure": {
+            "tick": 381,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.009284773429172936
+            },
+            "collision": {
+              "micro": 63,
+              "body": "RL_thigh",
+              "gap_m": -5.416937134621047e-05
+            }
+          },
+          "full_model_path": false,
+          "final_model_stable_s": 0.0,
+          "state_settling_capture_tick": null,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "state_key": "72:281",
+          "mode": "plan_end",
+          "steps": 103,
+          "required_steps": 519,
+          "failure": {
+            "tick": 384,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.0074294620390725884
+            },
+            "collision": {
+              "micro": 0,
+              "body": "RL_calf",
+              "gap_m": -5.137013864474349e-06
+            }
+          },
+          "full_model_path": false,
+          "final_model_stable_s": 0.0,
+          "state_settling_capture_tick": null,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "state_key": "87:272",
+          "mode": "state_settling",
+          "steps": 109,
+          "required_steps": 528,
+          "failure": {
+            "tick": 381,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.009284773429172936
+            },
+            "collision": {
+              "micro": 63,
+              "body": "RL_thigh",
+              "gap_m": -5.416937134621047e-05
+            }
+          },
+          "full_model_path": false,
+          "final_model_stable_s": 0.0,
+          "state_settling_capture_tick": null,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "state_key": "72:281",
+          "mode": "state_settling",
+          "steps": 103,
+          "required_steps": 519,
+          "failure": {
+            "tick": 384,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.0074294620390725884
+            },
+            "collision": {
+              "micro": 0,
+              "body": "RL_calf",
+              "gap_m": -5.137013864474349e-06
+            }
+          },
+          "full_model_path": false,
+          "final_model_stable_s": 0.0,
+          "state_settling_capture_tick": null,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "state_key": "126:272",
+          "mode": "plan_end",
+          "steps": 183,
+          "required_steps": 528,
+          "failure": {
+            "tick": 455,
+            "reason": "model_rejected",
+            "error": "ValueError('foot_pair_clearance:{\"bodies\": [\"FL_foot\", \"FR_foot\"], \"constraint_type\": \"foot_pair_clearance\", \"gap_m\": -1.0780456179554365e-05, \"planning_margin_m\": 0.0, \"prediction_geometry_call\": 52721, \"violation_m\": 1.0780456179554365e-05}')"
+          },
+          "full_model_path": false,
+          "final_model_stable_s": 0.0,
+          "state_settling_capture_tick": null,
+          "native_success": false,
+          "valid_expert_labels": false
+        }
+      ],
+      "wall_seconds": 898.2979836529121,
+      "native_success": false,
+      "valid_expert_labels": false
+    },
+    "paired_nonactivation_audit": {
+      "state": "COMPLETED_PAIRED_NONACTIVATION_AUDIT",
+      "all_six_pairs_identical": true,
+      "all_six_without_capture": true,
+      "checks": [
+        {
+          "state_key": "114:272",
+          "steps": 67,
+          "failure": {
+            "tick": 339,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -4.60601306869271e-06, 'exact': True, 'shape_index': 31, 'obstacle': 'net_segment_32'}\")"
+          },
+          "maxima": {
+            "q": 0.0,
+            "v": 0.0,
+            "target": 0.0
+          },
+          "no_settling_capture": true
+        },
+        {
+          "state_key": "126:272",
+          "steps": 183,
+          "failure": {
+            "tick": 455,
+            "reason": "model_rejected",
+            "error": "ValueError('foot_pair_clearance:{\"bodies\": [\"FL_foot\", \"FR_foot\"], \"constraint_type\": \"foot_pair_clearance\", \"gap_m\": -1.0780456179554365e-05, \"planning_margin_m\": 0.0, \"prediction_geometry_call\": 52721, \"violation_m\": 1.0780456179554365e-05}')"
+          },
+          "maxima": {
+            "q": 0.0,
+            "v": 0.0,
+            "target": 0.0
+          },
+          "no_settling_capture": true
+        },
+        {
+          "state_key": "27:274",
+          "steps": 56,
+          "failure": {
+            "tick": 330,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -5.8846654890710656e-05, 'exact': True, 'shape_index': 47, 'obstacle': 'net_segment_28'}\")"
+          },
+          "maxima": {
+            "q": 0.0,
+            "v": 0.0,
+            "target": 0.0
+          },
+          "no_settling_capture": true
+        },
+        {
+          "state_key": "65:275",
+          "steps": 189,
+          "failure": {
+            "tick": 464,
+            "reason": "model_rejected",
+            "error": "ValueError('foot_pair_clearance:{\"bodies\": [\"FL_foot\", \"FR_foot\"], \"constraint_type\": \"foot_pair_clearance\", \"gap_m\": -6.834356376682338e-06, \"planning_margin_m\": 0.0, \"prediction_geometry_call\": 54293, \"violation_m\": 6.834356376682338e-06}')"
+          },
+          "maxima": {
+            "q": 0.0,
+            "v": 0.0,
+            "target": 0.0
+          },
+          "no_settling_capture": true
+        },
+        {
+          "state_key": "72:281",
+          "steps": 103,
+          "failure": {
+            "tick": 384,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.0074294620390725884
+            },
+            "collision": {
+              "micro": 0,
+              "body": "RL_calf",
+              "gap_m": -5.137013864474349e-06
+            }
+          },
+          "maxima": {
+            "q": 0.0,
+            "v": 0.0,
+            "target": 0.0
+          },
+          "no_settling_capture": true
+        },
+        {
+          "state_key": "87:272",
+          "steps": 109,
+          "failure": {
+            "tick": 381,
+            "reason": "physical_path_violation",
+            "violations": {
+              "nonfoot_ground_violation_m": 0.009284773429172936
+            },
+            "collision": {
+              "micro": 63,
+              "body": "RL_thigh",
+              "gap_m": -5.416937134621047e-05
+            }
+          },
+          "maxima": {
+            "q": 0.0,
+            "v": 0.0,
+            "target": 0.0
+          },
+          "no_settling_capture": true
+        }
+      ],
+      "source_result_sha256": "ecf485022617529c60048f13f85bda368575385cf988a064e90d522f552b4432",
+      "native_success": false
+    }
+  },
+  "ongoing": {
+    "pure_control_fixed_prefix_fine_feedback_20261109": {
+      "state": "RUNNING_FINE_SELECTOR_SETTLING_FEEDBACK",
+      "pid": 214570,
+      "completed": 0,
+      "total": 4
+    },
+    "pure_control_diverse_fixed_prefix_feedback_20261109": {
+      "state": "RUNNING_REPLANNED_FEEDBACK_MODEL",
+      "pid": 214187,
+      "completed": 0,
+      "total": 2
+    },
+    "pure_control_fine_selector_settling_20261109": {
+      "state": "RUNNING_FINE_SELECTOR_SETTLING_FEEDBACK",
+      "pid": 212820,
+      "completed": 2,
+      "total": 12,
+      "results": [
+        {
+          "state_key": "114:272",
+          "mode": "plan_end",
+          "steps": 67,
+          "required_steps": 528,
+          "failure": {
+            "tick": 339,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -4.60601306869271e-06, 'exact': True, 'shape_index': 31, 'obstacle': 'net_segment_32'}\")"
+          },
+          "full_model_path": false,
+          "final_model_stable_s": 0.0,
+          "state_settling_capture_tick": null,
+          "native_success": false,
+          "valid_expert_labels": false
+        },
+        {
+          "state_key": "114:272",
+          "mode": "state_settling",
+          "steps": 67,
+          "required_steps": 528,
+          "failure": {
+            "tick": 339,
+            "reason": "model_rejected",
+            "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -4.60601306869271e-06, 'exact': True, 'shape_index': 31, 'obstacle': 'net_segment_32'}\")"
+          },
+          "full_model_path": false,
+          "final_model_stable_s": 0.0,
+          "state_settling_capture_tick": null,
+          "native_success": false,
+          "valid_expert_labels": false
+        }
+      ]
+    }
+  },
+  "source_sha256": {
+    "reports/pure_control_diverse_release_fine_search_20261109/result.json": "dcfb7259722f55da9952c3853e6b011d4060899fb7d110d2083cac665e7fc653",
+    "reports/pure_control_diverse_fixed_prefix_fine_20261109/result.json": "eb3ba87e3556393582006ca764e0570fefbf4b44abff6d72e7dc5d5ca7ce0c9f",
+    "reports/pure_control_state_settling_feedback_20261109/result.json": "ecf485022617529c60048f13f85bda368575385cf988a064e90d522f552b4432",
+    "reports/pure_control_state_settling_feedback_20261109/paired_nonactivation_audit.json": "cebcfff6beb44ff4fcad35246787146a3bd0b5a4a6970f241979788588540501"
+  },
+  "native_progress": {
+    "control_tick": 640,
+    "owned_cases": 110,
+    "applied_steps": 28193,
+    "training": false
+  },
+  "new_native_success": false,
+  "new_expert_labels": false,
+  "formal_G07_status": "FAILED",
+  "formal_G07_reason": "Historical missing evidence and external asset paths; acceptance unchanged"
+}
