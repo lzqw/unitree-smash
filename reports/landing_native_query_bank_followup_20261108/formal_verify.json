@@ -1,0 +1,70 @@
+{
+  "goal_id": "G07",
+  "status": "FAILED",
+  "contract_sha256": "66f15e988eef11fa43e16787e86a0d5d5cec4f6e5801793b3a00b2c42e3cf807",
+  "checks": {
+    "G00": {
+      "passed": false,
+      "errors": [
+        "Missing or empty artifact: reports/G00/native_train/checkpoint.pt"
+      ]
+    },
+    "G01": {
+      "passed": false,
+      "errors": [
+        "Dependency did not pass: G00",
+        "Path escapes workspace: assets/quadsmash_standard_v2.usd",
+        "Path escapes workspace: assets/vendor/piper_isaac_sim/piper_description/urdf/piper_no_gripper_description.urdf"
+      ]
+    },
+    "G02": {
+      "passed": false,
+      "errors": [
+        "Dependency did not pass: G01"
+      ]
+    },
+    "G03": {
+      "passed": false,
+      "errors": [
+        "Dependency did not pass: G02",
+        "Missing or empty artifact: reports/G03/native_20261022T041355_436993/train/checkpoint.pt",
+        "Missing or empty artifact: reports/G03/native_20261022T041355_436993/train/continuation_reference.pt",
+        "Missing or empty artifact: reports/G03/native_20261022T041355_436993/reload/checkpoint.pt",
+        "Missing or empty artifact: reports/G03/native_20261022T041355_436993/reload/continuation_reference.pt",
+        "Missing or empty artifact: reports/G03/native_20261022T041355_436993/interrupt/checkpoint.pt",
+        "Missing or empty artifact: reports/G03/native_20261022T041355_436993/interrupt/continuation_reference.pt",
+        "Missing or empty artifact: reports/G03/native_20261022T041355_436993/resume_interrupt/checkpoint.pt",
+        "Missing or empty artifact: reports/G03/native_20261022T041355_436993/resume_interrupt/continuation_reference.pt"
+      ]
+    },
+    "G04": {
+      "passed": false,
+      "errors": [
+        "Dependency did not pass: G03",
+        "Missing or empty artifact: artifacts/G04/policy.pt",
+        "Missing or empty artifact: artifacts/G04/autonomous_actor/actor.pt",
+        "Missing or empty artifact: artifacts/G04/autonomous_actor/interface.json"
+      ]
+    },
+    "G05": {
+      "passed": false,
+      "errors": [
+        "Dependency did not pass: G04"
+      ]
+    },
+    "G06": {
+      "passed": false,
+      "errors": [
+        "Dependency did not pass: G05"
+      ]
+    },
+    "G07": {
+      "passed": false,
+      "errors": [
+        "Dependency did not pass: G06",
+        "Missing or invalid evidence: [Errno 2] No such file or directory: '/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/G07/evidence.json'"
+      ]
+    }
+  },
+  "scope": "Structure, hashes, dependencies and thresholds only; not simulation authenticity or GPU budget enforcement."
+}
