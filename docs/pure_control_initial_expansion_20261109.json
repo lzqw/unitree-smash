@@ -1,0 +1,113 @@
+{
+  "time_utc": "2026-11-08T21:18:38.460007+00:00",
+  "coverage": {
+    "passed": true,
+    "causal_release_count": 110,
+    "matched_before": 40,
+    "matched_after": 42,
+    "unchanged_old_matches": 40,
+    "remaining_unmatched": 68,
+    "new_matches": [
+      {
+        "case": 27,
+        "actual_tick": 274,
+        "source_key": "eefbef41a62e4334aa506d505661b00c1f092b5ea392f90d8321d89d9ca450bd",
+        "match_score": 1.1102230246251565e-14,
+        "first_command_error_rad": 0.0,
+        "feedback_state_key": "27:274"
+      },
+      {
+        "case": 65,
+        "actual_tick": 275,
+        "source_key": "96525ebe3bb1ebfe0042f1907572e11904010f4ea6c73159e513b1b24e4130d8",
+        "match_score": 0.0,
+        "first_command_error_rad": 0.0,
+        "feedback_state_key": "65:275"
+      }
+    ],
+    "native_success": false,
+    "runtime_gate_uses_case_ids": false,
+    "native_execution": false
+  },
+  "end_check": {
+    "results": [
+      {
+        "state_key": "65:275",
+        "complete_model_feedback": true,
+        "end_time_s": 8.0,
+        "previous_precommand_stable_s": 1.6399998664855957,
+        "end_observation_stable_s": 1.6500000953674316,
+        "model_terminal_window_passed": true,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "state_key": "27:274",
+        "complete_model_feedback": true,
+        "end_time_s": 8.0,
+        "previous_precommand_stable_s": 2.7300000190734863,
+        "end_observation_stable_s": 2.7400002479553223,
+        "model_terminal_window_passed": true,
+        "native_success": false,
+        "valid_expert_labels": false
+      }
+    ],
+    "acceptance_changed": false,
+    "native_success": false,
+    "valid_expert_labels": false
+  },
+  "preservation_processes": [
+    {
+      "pid": 215466,
+      "state": "S",
+      "start_ticks": "179880316",
+      "command": [
+        "timeout",
+        "1350",
+        "bash",
+        "scripts/python.sh",
+        "-u",
+        "scripts/check_initial_library_preservation_v1.py",
+        "--baseline",
+        "reports/pure_control_stance_comparison_review_20261109/best_verified_v15.json",
+        "--configuration",
+        "reports/pure_control_foot_reference_native_preparation_20261109_01/controller.json",
+        "--library",
+        "reports/pure_control_initial_expansion_preparation_20261109/reference_library.json",
+        "--output",
+        "reports/pure_control_initial_expansion_preparation_20261109/preservation.json"
+      ]
+    },
+    {
+      "pid": 215470,
+      "state": "S",
+      "start_ticks": "179880317",
+      "command": [
+        "/home/autodrive/Isaac/env_isaaclab/bin/python",
+        "-u",
+        "scripts/check_initial_library_preservation_v1.py",
+        "--baseline",
+        "reports/pure_control_stance_comparison_review_20261109/best_verified_v15.json",
+        "--configuration",
+        "reports/pure_control_foot_reference_native_preparation_20261109_01/controller.json",
+        "--library",
+        "reports/pure_control_initial_expansion_preparation_20261109/reference_library.json",
+        "--output",
+        "reports/pure_control_initial_expansion_preparation_20261109/preservation.json"
+      ]
+    }
+  ],
+  "original_reference_count": 40,
+  "expanded_reference_count": 42,
+  "native_job_prepared": false,
+  "native_success": false,
+  "valid_expert_labels": false,
+  "source_sha256": {
+    "reports/pure_control_initial_expansion_preparation_20261109/new_references.json": "4187619257dcd05eb062063c4178b58a490b7c1da54f6fe7689d4eedd522bb05",
+    "reports/pure_control_initial_expansion_preparation_20261109/reference_library.json": "0d19ed0ec0ee8a68a3667e6d83311fb340d78a188b197394262fec3e175d2b03",
+    "reports/pure_control_initial_expansion_preparation_20261109/coverage.json": "8df0cb19817220fdab4b0d0fbcf1850023f48c4fc02f836ccbbf3a63de7bb7bf",
+    "scripts/merge_initial_recovery_library_v1.py": "791fa9d61d4cec75154cd8fff254f4bd65fa353847d3e600b3d848e088dae26e",
+    "scripts/check_initial_library_coverage_v1.py": "35ac4363bea34633a0f05dabb63630015f5da5253bdb10b570b3bdabc93e4600",
+    "scripts/check_initial_library_preservation_v1.py": "fe9450dbb47a12e8985cee6d81c884c182aa316b12244326b51ec6263b19c666"
+  }
+}
