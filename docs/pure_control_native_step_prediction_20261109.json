@@ -1,0 +1,812 @@
+{
+  "selection": [
+    {
+      "case": 30,
+      "first_nonfoot_positive_force_tick": null,
+      "reference_end_tick": 597,
+      "evaluated_intervals": 168
+    },
+    {
+      "case": 42,
+      "first_nonfoot_positive_force_tick": 729,
+      "reference_end_tick": 431,
+      "evaluated_intervals": 139
+    },
+    {
+      "case": 58,
+      "first_nonfoot_positive_force_tick": null,
+      "reference_end_tick": 800,
+      "evaluated_intervals": 214
+    },
+    {
+      "case": 123,
+      "first_nonfoot_positive_force_tick": null,
+      "reference_end_tick": 798,
+      "evaluated_intervals": 196
+    }
+  ],
+  "predictions": 1434,
+  "completed": 1434,
+  "groups": [
+    {
+      "case": 30,
+      "substeps": 16,
+      "scope": "all_selected",
+      "sampled_intervals": 168,
+      "errors": {
+        "root_position_error_m": {
+          "median": 1.3970204870597409e-05,
+          "p95": 3.6225727373911854e-05,
+          "maximum": 4.284104818713649e-05
+        },
+        "root_rotation_error_rad": {
+          "median": 0.00021888230739928137,
+          "p95": 0.00039351004091692666,
+          "maximum": 0.0004384361771204713
+        },
+        "root_linear_velocity_error_m_s": {
+          "median": 0.00019611410836608347,
+          "p95": 0.0009115306577547744,
+          "maximum": 0.0023781185978242604
+        },
+        "root_angular_velocity_error_rad_s": {
+          "median": 0.002585755191809159,
+          "p95": 0.005344275066328423,
+          "maximum": 0.01310928711758903
+        },
+        "max_joint_position_error_rad": {
+          "median": 0.0003044970420404969,
+          "p95": 0.0007177760658589217,
+          "maximum": 0.0013432094074218304
+        },
+        "max_joint_velocity_error_rad_s": {
+          "median": 0.02534860827093255,
+          "p95": 0.09448983635171168,
+          "maximum": 0.3161995444120366
+        }
+      },
+      "worst_joint_velocity_record": {
+        "tick": 344,
+        "worst_joint": "FR_calf_joint",
+        "max_joint_velocity_error_rad_s": 0.3161995444120366,
+        "contacts": [
+          true,
+          true,
+          true,
+          false
+        ],
+        "next_contacts": [
+          true,
+          false,
+          false,
+          false
+        ],
+        "first_ground_violation": null
+      },
+      "contact_label_mismatch_feet": 33
+    },
+    {
+      "case": 30,
+      "substeps": 160,
+      "scope": "all_selected",
+      "sampled_intervals": 168,
+      "errors": {
+        "root_position_error_m": {
+          "median": 1.3509303645939481e-05,
+          "p95": 2.930999312092762e-05,
+          "maximum": 3.6231999631664844e-05
+        },
+        "root_rotation_error_rad": {
+          "median": 0.00022972515471364415,
+          "p95": 0.00039714466926096906,
+          "maximum": 0.0004433393409519877
+        },
+        "root_linear_velocity_error_m_s": {
+          "median": 0.00016951559464800664,
+          "p95": 0.0003988868879937681,
+          "maximum": 0.0006545227733659361
+        },
+        "root_angular_velocity_error_rad_s": {
+          "median": 0.0020680888739197014,
+          "p95": 0.004336372491189067,
+          "maximum": 0.006618906909901761
+        },
+        "max_joint_position_error_rad": {
+          "median": 0.0002914315457958061,
+          "p95": 0.000713841265203552,
+          "maximum": 0.0016826405430882124
+        },
+        "max_joint_velocity_error_rad_s": {
+          "median": 0.023767963516422803,
+          "p95": 0.08418438570739968,
+          "maximum": 0.30114950519053674
+        }
+      },
+      "worst_joint_velocity_record": {
+        "tick": 344,
+        "worst_joint": "FR_calf_joint",
+        "max_joint_velocity_error_rad_s": 0.30114950519053674,
+        "contacts": [
+          true,
+          true,
+          true,
+          false
+        ],
+        "next_contacts": [
+          true,
+          false,
+          false,
+          false
+        ],
+        "first_ground_violation": null
+      },
+      "contact_label_mismatch_feet": 32
+    },
+    {
+      "case": 42,
+      "substeps": 16,
+      "scope": "all_selected",
+      "sampled_intervals": 139,
+      "errors": {
+        "root_position_error_m": {
+          "median": 1.560688685861457e-05,
+          "p95": 3.0074643726059108e-05,
+          "maximum": 0.0002888040648981397
+        },
+        "root_rotation_error_rad": {
+          "median": 0.0002299030318960042,
+          "p95": 0.00042052555247797167,
+          "maximum": 0.0020532625625223045
+        },
+        "root_linear_velocity_error_m_s": {
+          "median": 0.0002229333215025892,
+          "p95": 0.0010056808994194121,
+          "maximum": 0.046067745768276915
+        },
+        "root_angular_velocity_error_rad_s": {
+          "median": 0.0026618311329957454,
+          "p95": 0.01042788255312635,
+          "maximum": 0.2251211866694145
+        },
+        "max_joint_position_error_rad": {
+          "median": 0.0003541507889637252,
+          "p95": 0.0014733931632489369,
+          "maximum": 0.023301795864139385
+        },
+        "max_joint_velocity_error_rad_s": {
+          "median": 0.02743618349953003,
+          "p95": 0.2134006994281116,
+          "maximum": 3.0605584137767643
+        }
+      },
+      "worst_joint_velocity_record": {
+        "tick": 728,
+        "worst_joint": "RL_thigh_joint",
+        "max_joint_velocity_error_rad_s": 3.0605584137767643,
+        "contacts": [
+          true,
+          false,
+          true,
+          true
+        ],
+        "next_contacts": [
+          false,
+          false,
+          true,
+          false
+        ],
+        "first_ground_violation": {
+          "micro": 7,
+          "body": "FL_calf",
+          "gap_m": -0.00011106742665615947
+        }
+      },
+      "contact_label_mismatch_feet": 20
+    },
+    {
+      "case": 42,
+      "substeps": 160,
+      "scope": "all_selected",
+      "sampled_intervals": 139,
+      "errors": {
+        "root_position_error_m": {
+          "median": 1.383426810939484e-05,
+          "p95": 2.6807711077188413e-05,
+          "maximum": 0.0003377379250610431
+        },
+        "root_rotation_error_rad": {
+          "median": 0.00023861749023175837,
+          "p95": 0.00041164345760393294,
+          "maximum": 0.0018352233583883374
+        },
+        "root_linear_velocity_error_m_s": {
+          "median": 0.00015033630447709603,
+          "p95": 0.0008442215221762426,
+          "maximum": 0.04447669406098577
+        },
+        "root_angular_velocity_error_rad_s": {
+          "median": 0.0020213289461660194,
+          "p95": 0.005626442838855399,
+          "maximum": 0.24802045315800358
+        },
+        "max_joint_position_error_rad": {
+          "median": 0.00034242530389061443,
+          "p95": 0.0013558711436430838,
+          "maximum": 0.023011441869226434
+        },
+        "max_joint_velocity_error_rad_s": {
+          "median": 0.02082730383787365,
+          "p95": 0.19799919136808136,
+          "maximum": 2.351291369916254
+        }
+      },
+      "worst_joint_velocity_record": {
+        "tick": 728,
+        "worst_joint": "RL_thigh_joint",
+        "max_joint_velocity_error_rad_s": 2.351291369916254,
+        "contacts": [
+          true,
+          false,
+          true,
+          true
+        ],
+        "next_contacts": [
+          false,
+          false,
+          true,
+          false
+        ],
+        "first_ground_violation": {
+          "micro": 80,
+          "body": "FL_calf",
+          "gap_m": -1.8927915005684248e-05
+        }
+      },
+      "contact_label_mismatch_feet": 19
+    },
+    {
+      "case": 58,
+      "substeps": 16,
+      "scope": "all_selected",
+      "sampled_intervals": 214,
+      "errors": {
+        "root_position_error_m": {
+          "median": 1.6257623533253232e-05,
+          "p95": 3.097508200534893e-05,
+          "maximum": 0.00012322360634963939
+        },
+        "root_rotation_error_rad": {
+          "median": 0.00022314479238291838,
+          "p95": 0.00035062994661404174,
+          "maximum": 0.0005200696054113291
+        },
+        "root_linear_velocity_error_m_s": {
+          "median": 0.0002775520250599585,
+          "p95": 0.001142552363108355,
+          "maximum": 0.004982078152394049
+        },
+        "root_angular_velocity_error_rad_s": {
+          "median": 0.0029608509518447602,
+          "p95": 0.010969808250593693,
+          "maximum": 0.050774178645146315
+        },
+        "max_joint_position_error_rad": {
+          "median": 0.0003900711350631747,
+          "p95": 0.0018963075574691222,
+          "maximum": 0.009578340965606634
+        },
+        "max_joint_velocity_error_rad_s": {
+          "median": 0.03108251430757014,
+          "p95": 0.19809018883850327,
+          "maximum": 0.4335894815965866
+        }
+      },
+      "worst_joint_velocity_record": {
+        "tick": 528,
+        "worst_joint": "FL_thigh_joint",
+        "max_joint_velocity_error_rad_s": 0.4335894815965866,
+        "contacts": [
+          false,
+          true,
+          true,
+          false
+        ],
+        "next_contacts": [
+          false,
+          true,
+          true,
+          false
+        ],
+        "first_ground_violation": null
+      },
+      "contact_label_mismatch_feet": 75
+    },
+    {
+      "case": 58,
+      "substeps": 16,
+      "scope": "after_replanning",
+      "sampled_intervals": 140,
+      "errors": {
+        "root_position_error_m": {
+          "median": 1.7069716372046646e-05,
+          "p95": 2.7404815248339713e-05,
+          "maximum": 3.3569141162620984e-05
+        },
+        "root_rotation_error_rad": {
+          "median": 0.0002216112037542321,
+          "p95": 0.0003521644666020292,
+          "maximum": 0.0003983932364687224
+        },
+        "root_linear_velocity_error_m_s": {
+          "median": 0.0002668625742409122,
+          "p95": 0.0008000174409443847,
+          "maximum": 0.00204292601950812
+        },
+        "root_angular_velocity_error_rad_s": {
+          "median": 0.002770896440756753,
+          "p95": 0.009046426407406985,
+          "maximum": 0.02736342704263441
+        },
+        "max_joint_position_error_rad": {
+          "median": 0.0004150785428825854,
+          "p95": 0.002097648655973048,
+          "maximum": 0.0039578569225167115
+        },
+        "max_joint_velocity_error_rad_s": {
+          "median": 0.036796249327312874,
+          "p95": 0.2551993491155826,
+          "maximum": 0.4335894815965866
+        }
+      },
+      "worst_joint_velocity_record": {
+        "tick": 528,
+        "worst_joint": "FL_thigh_joint",
+        "max_joint_velocity_error_rad_s": 0.4335894815965866,
+        "contacts": [
+          false,
+          true,
+          true,
+          false
+        ],
+        "next_contacts": [
+          false,
+          true,
+          true,
+          false
+        ],
+        "first_ground_violation": null
+      },
+      "contact_label_mismatch_feet": 63
+    },
+    {
+      "case": 58,
+      "substeps": 160,
+      "scope": "all_selected",
+      "sampled_intervals": 214,
+      "errors": {
+        "root_position_error_m": {
+          "median": 1.434272998575261e-05,
+          "p95": 2.4533595834292187e-05,
+          "maximum": 7.558817405710451e-05
+        },
+        "root_rotation_error_rad": {
+          "median": 0.00022617458068998944,
+          "p95": 0.0003533539112670609,
+          "maximum": 0.0004034118820392962
+        },
+        "root_linear_velocity_error_m_s": {
+          "median": 0.00016244986427476764,
+          "p95": 0.0005912523030499437,
+          "maximum": 0.0038435224554713592
+        },
+        "root_angular_velocity_error_rad_s": {
+          "median": 0.0021582197651070717,
+          "p95": 0.009059942082483539,
+          "maximum": 0.04463642522772281
+        },
+        "max_joint_position_error_rad": {
+          "median": 0.0003593746900524275,
+          "p95": 0.0020352763364295365,
+          "maximum": 0.009779640857049278
+        },
+        "max_joint_velocity_error_rad_s": {
+          "median": 0.02795403758885434,
+          "p95": 0.19307365736215634,
+          "maximum": 0.4655008859591634
+        }
+      },
+      "worst_joint_velocity_record": {
+        "tick": 528,
+        "worst_joint": "FL_thigh_joint",
+        "max_joint_velocity_error_rad_s": 0.4655008859591634,
+        "contacts": [
+          false,
+          true,
+          true,
+          false
+        ],
+        "next_contacts": [
+          false,
+          true,
+          true,
+          false
+        ],
+        "first_ground_violation": null
+      },
+      "contact_label_mismatch_feet": 74
+    },
+    {
+      "case": 58,
+      "substeps": 160,
+      "scope": "after_replanning",
+      "sampled_intervals": 140,
+      "errors": {
+        "root_position_error_m": {
+          "median": 1.4624271230481204e-05,
+          "p95": 2.4354421657676193e-05,
+          "maximum": 2.988765061635818e-05
+        },
+        "root_rotation_error_rad": {
+          "median": 0.00022318563425106918,
+          "p95": 0.0003547347627439192,
+          "maximum": 0.0004034118820392962
+        },
+        "root_linear_velocity_error_m_s": {
+          "median": 0.00015396351503270763,
+          "p95": 0.0005387166983250426,
+          "maximum": 0.002043716474039616
+        },
+        "root_angular_velocity_error_rad_s": {
+          "median": 0.002097214349229682,
+          "p95": 0.007229294931812858,
+          "maximum": 0.025696093381489826
+        },
+        "max_joint_position_error_rad": {
+          "median": 0.0004019731237128177,
+          "p95": 0.002096450200816865,
+          "maximum": 0.004004807745519701
+        },
+        "max_joint_velocity_error_rad_s": {
+          "median": 0.03284598359413074,
+          "p95": 0.2290844404254639,
+          "maximum": 0.4655008859591634
+        }
+      },
+      "worst_joint_velocity_record": {
+        "tick": 528,
+        "worst_joint": "FL_thigh_joint",
+        "max_joint_velocity_error_rad_s": 0.4655008859591634,
+        "contacts": [
+          false,
+          true,
+          true,
+          false
+        ],
+        "next_contacts": [
+          false,
+          true,
+          true,
+          false
+        ],
+        "first_ground_violation": null
+      },
+      "contact_label_mismatch_feet": 63
+    },
+    {
+      "case": 123,
+      "substeps": 16,
+      "scope": "all_selected",
+      "sampled_intervals": 196,
+      "errors": {
+        "root_position_error_m": {
+          "median": 1.580391808286241e-05,
+          "p95": 3.273911749886772e-05,
+          "maximum": 7.76217116506336e-05
+        },
+        "root_rotation_error_rad": {
+          "median": 0.00023728198181443465,
+          "p95": 0.00038108586394850613,
+          "maximum": 0.00044525571153126585
+        },
+        "root_linear_velocity_error_m_s": {
+          "median": 0.00018080527198758732,
+          "p95": 0.0006750953961626852,
+          "maximum": 0.01088856164508643
+        },
+        "root_angular_velocity_error_rad_s": {
+          "median": 0.0017162478375360541,
+          "p95": 0.004028973890095603,
+          "maximum": 0.07296529421245967
+        },
+        "max_joint_position_error_rad": {
+          "median": 0.0003085208719109944,
+          "p95": 0.0007141693763916268,
+          "maximum": 0.007944937086972817
+        },
+        "max_joint_velocity_error_rad_s": {
+          "median": 0.02463398834329006,
+          "p95": 0.09900374212908442,
+          "maximum": 2.0149464373078105
+        }
+      },
+      "worst_joint_velocity_record": {
+        "tick": 313,
+        "worst_joint": "RL_hip_joint",
+        "max_joint_velocity_error_rad_s": 2.0149464373078105,
+        "contacts": [
+          true,
+          true,
+          false,
+          false
+        ],
+        "next_contacts": [
+          true,
+          true,
+          true,
+          false
+        ],
+        "first_ground_violation": null
+      },
+      "contact_label_mismatch_feet": 34
+    },
+    {
+      "case": 123,
+      "substeps": 16,
+      "scope": "after_replanning",
+      "sampled_intervals": 144,
+      "errors": {
+        "root_position_error_m": {
+          "median": 1.5593388126292137e-05,
+          "p95": 2.5088032518064506e-05,
+          "maximum": 3.319142372672591e-05
+        },
+        "root_rotation_error_rad": {
+          "median": 0.00023999058950861107,
+          "p95": 0.00038983307307996826,
+          "maximum": 0.00044525571153126585
+        },
+        "root_linear_velocity_error_m_s": {
+          "median": 0.00015757705130942389,
+          "p95": 0.00046112325734832827,
+          "maximum": 0.0006670495018615539
+        },
+        "root_angular_velocity_error_rad_s": {
+          "median": 0.0014375930251676922,
+          "p95": 0.0035913800541018943,
+          "maximum": 0.005328580327354265
+        },
+        "max_joint_position_error_rad": {
+          "median": 0.0002430009742300232,
+          "p95": 0.0005800616292251814,
+          "maximum": 0.0011764820746182902
+        },
+        "max_joint_velocity_error_rad_s": {
+          "median": 0.019697134673601235,
+          "p95": 0.08041227234806357,
+          "maximum": 0.14206159773998106
+        }
+      },
+      "worst_joint_velocity_record": {
+        "tick": 548,
+        "worst_joint": "FL_calf_joint",
+        "max_joint_velocity_error_rad_s": 0.14206159773998106,
+        "contacts": [
+          true,
+          true,
+          false,
+          true
+        ],
+        "next_contacts": [
+          false,
+          true,
+          false,
+          true
+        ],
+        "first_ground_violation": null
+      },
+      "contact_label_mismatch_feet": 21
+    },
+    {
+      "case": 123,
+      "substeps": 160,
+      "scope": "all_selected",
+      "sampled_intervals": 196,
+      "errors": {
+        "root_position_error_m": {
+          "median": 1.3795394991281906e-05,
+          "p95": 2.4798524346518325e-05,
+          "maximum": 4.645733120719876e-05
+        },
+        "root_rotation_error_rad": {
+          "median": 0.0002360714604053656,
+          "p95": 0.0003782067150495824,
+          "maximum": 0.0004441772361582447
+        },
+        "root_linear_velocity_error_m_s": {
+          "median": 0.00016027290464814615,
+          "p95": 0.0005159421662439226,
+          "maximum": 0.00949452493789224
+        },
+        "root_angular_velocity_error_rad_s": {
+          "median": 0.001297363109804568,
+          "p95": 0.0035337834381548947,
+          "maximum": 0.06769587209987626
+        },
+        "max_joint_position_error_rad": {
+          "median": 0.000274585893292989,
+          "p95": 0.0006688572538032234,
+          "maximum": 0.00792403368468092
+        },
+        "max_joint_velocity_error_rad_s": {
+          "median": 0.02181573836448586,
+          "p95": 0.09360343156296018,
+          "maximum": 2.008916718559898
+        }
+      },
+      "worst_joint_velocity_record": {
+        "tick": 313,
+        "worst_joint": "RL_hip_joint",
+        "max_joint_velocity_error_rad_s": 2.008916718559898,
+        "contacts": [
+          true,
+          true,
+          false,
+          false
+        ],
+        "next_contacts": [
+          true,
+          true,
+          true,
+          false
+        ],
+        "first_ground_violation": null
+      },
+      "contact_label_mismatch_feet": 35
+    },
+    {
+      "case": 123,
+      "substeps": 160,
+      "scope": "after_replanning",
+      "sampled_intervals": 144,
+      "errors": {
+        "root_position_error_m": {
+          "median": 1.4711336076204269e-05,
+          "p95": 2.4634694071740137e-05,
+          "maximum": 3.003023254702583e-05
+        },
+        "root_rotation_error_rad": {
+          "median": 0.00023906178493738543,
+          "p95": 0.00039021127392161836,
+          "maximum": 0.0004441772361582447
+        },
+        "root_linear_velocity_error_m_s": {
+          "median": 0.00015333461351773513,
+          "p95": 0.0004801329163766544,
+          "maximum": 0.000700134467154399
+        },
+        "root_angular_velocity_error_rad_s": {
+          "median": 0.0012362370095525073,
+          "p95": 0.0033002230025316642,
+          "maximum": 0.004676578945487098
+        },
+        "max_joint_position_error_rad": {
+          "median": 0.00024831784576670457,
+          "p95": 0.0006172004799684381,
+          "maximum": 0.0013486073856294745
+        },
+        "max_joint_velocity_error_rad_s": {
+          "median": 0.019678656821395107,
+          "p95": 0.08250670966145057,
+          "maximum": 0.15305968180564022
+        }
+      },
+      "worst_joint_velocity_record": {
+        "tick": 548,
+        "worst_joint": "FL_calf_joint",
+        "max_joint_velocity_error_rad_s": 0.15305968180564022,
+        "contacts": [
+          true,
+          true,
+          false,
+          true
+        ],
+        "next_contacts": [
+          false,
+          true,
+          false,
+          true
+        ],
+        "first_ground_violation": null
+      },
+      "contact_label_mismatch_feet": 22
+    }
+  ],
+  "wall_seconds": 72.45849240594544,
+  "actual_readback_targets_used": true,
+  "model_substep_variants": [
+    16,
+    160
+  ],
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_suffix_step_prediction_20261109/result.json": "d3292d8db058eddeb8b6720611a80ef67c8f0d7a2a43f08ff9ff60f7c00cd45e"
+  },
+  "original_source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_pure_control_native_step_v1.py": "b61b09aaac4458638073aa13946f5b409f6ef847bb26438dc7145f45638564e0",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_suffix_native_preparation_20261109_01/controller.json": "5f4b02e0d3c85a76d055a76e162ab6248b7de45e022ecf507c339843f75b7c6c",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_sustained_path_preparation_20261108/reference_library.json": "f8bbd0498fd9dc52d9aa3174b4836ab2af0ed98a03f32a3215c8113907ca6ece",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_suffix_all128_20261109_01/job.json": "51288e67ac7bf98348324f6c398f087035c805849afe23541564b1bfe1e5ea08",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_suffix_all128_20261109_01/native_command_inputs.json": "f861d727c049c85d612cad7ce2a5be9a4bc3a85ab18ba38f5018dc871fca6f7c",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_suffix_all128_20261109_01/pure_control_commands.npz": "950951c3620b9ff32a507007136fd7621100230aaf122c7f7ecdfba9e25ea34e",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_suffix_all128_20261109_01/pure_control_diagnostics.jsonl": "9390fc54f38401dca360eb54b7bfd1cf97174e62494c10bc46958614b687a01e",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_suffix_all128_20261109_01/pure_control_ground_forces.json": "97d6e8de2a8e3dddec6178031870c349bcf2a7ec6b3f58f2b983d559a57101ce",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_current_suffix_all128_20261109_01/pure_control_ground_forces.npz": "ff268387ce4914d2603481e020afe00740c005d990d1f9fd6d7c5d53198ccb64",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/loaded_pinocchio_model_v1.py": "2b303a32e57391ec7aaf3c3faf9d151f758477faf13ef6efae5bead979dcae82",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/whole_body_support_qp_v1.py": "b67cd1f1c8ebe973d3885773fbc9f3bf17cfd935e5e2210a4b7c0ea1ff331d6d",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frame_point_kinematics_v1.py": "60fac87ef04f83a22807217b04e7cbe40b536251b56f5a119dc012d1f2529fd8",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/reduced_whole_body_support_qp_v1.py": "e731a0bca8744d4639099dd2ff9be94840a9f0c953c64924fb2cfa9e7a9c80c7",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/continuous_support_qp_v1.py": "824a3d49711917803e9c82af63b1d142917d62c874ec8751325578a71b4af640",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/command_history_support_qp_v1.py": "1ac2221f85cbf3d468be4c265cc932845700d5f17a9eaaf37440998873689081",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/condensed_implicit_drive_v1.py": "a0f21e9b954db9e978ba428a3770fcb8cd666e08dd21aa27cedf0c0e5c5af629",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/implicit_support_prediction_v1.py": "b751fa0ea59edd1fe8fc62cf0ba3816e5583ecc76df7058ef3f5185a335a1e01",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_interval_qp_v1.py": "cbc3d59485da07153e8e3ae3a42de2231dff7c738a22a18b8ad74bd39dbb844f",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/authored_ground_clearance_v1.py": "ba54ef51a5cfd5c64937814c343d92057cd0e9e83dc4e435f1479049aa342630",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/event_recovery_manager_v1.py": "8fe16ba41ec3d2fc942dbf01686d4af3a5fde354dc6536726bab826b29b959e2",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/dense_active_set_qp_v1.py": "cba063c6c594bfb42d1114dcafbaebc606d8c4b49b53ee65e764e3979b1bac4a",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_recovery_v1.py": "119a6f073b32e4c7f577c2653314c2e441dbc3c13771e577031962b79281337f",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/full_authority_position_interface_v1.py": "88a371b4e72864952c7e7c3c2250ccd90603e3e7c0ef7c1579030cc9e89034ca",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/authored_net_clearance_v1.py": "386ed6042d439bde4366dec73a536d6a21a0eaf700152e7e4ca16aeef67f6526",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/foot_pair_clearance_kinematics_v1.py": "2e3caa0b3b791ad45f2e51eb1956f74b7cc4e310c15cad72cb23d8b023a60b11",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recovery_surface_constraints_v1.py": "5c546c5acbfd2e2d5f03578b21a10237162bb293013a825a71f25f92de7671eb",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_court_recovery_v4.py": "4666b83f6adf72c6cfab09703583815405703f9f0d5c76c22c7a97ad4604dbac",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_interval_self_collision_v2.py": "642610fc843e5d8dbf5f43e50994922e3d5565066466f708c18462a62be7f75d",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frictional_impulse_step_v1.py": "4e780bf218dd501a64f1885ab1697c3050d228580fc6cd3c7123d36fb18e2348",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frictional_speed_limited_step_v1.py": "6b5392e7dbdb2f4c95a48570d668a28e66fbd2ffd8eb7ae1bef04a8a01b01b92",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frictional_position_limited_step_v1.py": "07d976fa06b4c1e9e90792f463cb058be5c9a1af38170e22ff226c9680230413",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/hip_mount_collision_response_v1.py": "d7d9d9fff88f3e3a12a61962aadf41537192d930f6f5ee7b2e0a2c31b8ebc2e8",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/hip_mount_planning_constraints_v1.py": "2c63e83e930fed048e87d04fb5df6cde04c822f586f57207670520e7f83f508a",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_self_collision_recovery_v5.py": "90d9a6b84c7b153b74e3d36c16a38bda59fa90cb14290e904fdc32e0807a5bf9",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_interval_moving_foot_v3.py": "daf71c5788dcb9a553a83fb2ebcda14e7a5e86a37d9965ed2c5fb0ab82adf363",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_moving_foot_recovery_v7.py": "d018a7f7ae1352feb4f7157114a05996564bc1490b768cef3a7201f4e8ea87ca",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recovery_reference_library_v1.py": "6c97dc2ba1b7c118cfc71c614157b2307dd15cc1f1cc75e2eeeee6570dc31735",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recorded_nonfoot_contact_history_v1.py": "b897ec590f76795a515f1e3ad14db1529f43117731f031f00d43dc556e5e599a",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/summarize_precontact_prediction_v1.py": "b05936fc4345546c33bf14696bfbf6ed8967025799da23d87e0b04fc014ba227",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_sphere_touchdown_predictions_v1.py": "92b1905a21c544ff212a237104edb700ce6eb3b1414908cb14d80990b21a9a03",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/predict_self_contact_spheres_v2.py": "5e22b438815a60997f637bae461f69ec3c0a983f26d11e4abb94f5510ac8a446",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/foot_separation_path_constraint_v1.py": "8926324e99df4984bf7af09a686e813df57ebb8524408485633e430e1cd04f85",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_trajectory_recovery_v8.py": "fdbaf93a10c735c5736d3cf4f6dd2d912c43041e2cd6ce2144f63d9ba6005448",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_trajectory_recovery_v9.py": "a9d471bf6e674d5e4ec4f8625b34204f01544b0f4e0bcad1e0ec702869f8e042",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recovery_reference_library_v2.py": "2497e602cd60d3499477adeb1ad92631afc737c8b46e76c20020f71bdde4c232",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_long_trajectory_recovery_v11.py": "39b3596b3e711762fdfdddcb19967413396d15b6f659717e4eabff6b1724a5ac",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_reference_clock_v12.py": "47b155c960fe42b79d5e0d86046d78c14d04b9b18b382fd4f0c3bfac9cf592be",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_terminal_stance_v13.py": "7eedccf0b544f930c968f59e7d575ed9c118c5d07921ec294ee344d9f38414e4",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_settled_stance_v14.py": "abfa89c7d3730521a6e4fab7d9e962896dbc37bd86f2689cb7a8c92cfa4ce385",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/parallel_landing_solver_v1.py": "4bc18476684fbc3a81eae8b1b63073c615ceafd73a23ccca2dde919564cfea33",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/interval_command_support_qp_v1.py": "7f9e47fdeb1f6cc420368d127f89cc1b726397752b0387f57b5bee1ea5915589",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/admitted_arm_support_qp_v1.py": "097d7022b16a28aa31f11081056092bd8b5b44172291b6bd3b1aba1dbe0a1c6e",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v1.py": "da2ff2e4ee1479bf3fc422c0b71f8831bffd9e5868d9a4e0665fd348ab659a59",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v2.py": "6d0ad9bc4fcd27a0f4f418e55b988341ffe809f14c132415281ec41621196ae2",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v3.py": "d8c54679697e78678a898f5d36a27305f9252a5f2b09990d0b33ddcc25533300",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_command_history_mpc_v1.py": "466ba93dc473c7d2de93aae0d5d7848b390d72e8fe1ef779ff0818efad704d28",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_interval_command_mpc_v1.py": "545ecf58c66d0bbf07f889f8867ce36d75ca42fcd94ca77b5307666163630060",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_active_set_interval_mpc_v1.py": "4c111c5ce1d6d711cbe9e4362aad315e0f50f9c2cb363d9595409e0701c7ec8d",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_arm_feasibility_mpc_v1.py": "af9a08a8b442c43099faadbda887ed79b1e497b114cbd77e93b4cc8a2481f40b",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_joint_damper_mpc_v1.py": "63b2eff24491e130f96681508524ccf124064469a285a6c82ed9dd498fa761f9",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_joint_sequence_proposal_v1.py": "42d8be1c82836a83e054c6cf7ca368f5bad9b35e298aabbeb0790bfb5b816857",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_sequence_linearization_v1.py": "acc515b9f7980645cdca835deb3ae8bfc4f20ee03eee90a53d9495f976b0ccf2",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_differentiated_sequence_v1.py": "9b68faddbb7350b467f5f7a75c1b78cae58759f92c2d8e559b9cac433e6d229e",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_joint_sequence_proposal_v1.py": "b0896a4e9a95a4f46d84ef344e2d7e7384a4fce435b17c01bb456952053382a2",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_settled_stance_model_v2.py": "5606c23dbb10c56db7d113b4ab3bf63d7b6ba3fbfc102253a444e8e2d937cde4"
+  },
+  "native_rerun": false,
+  "training": false,
+  "acceptance_changed": false,
+  "valid_expert_labels": false,
+  "limitations": [
+    "Sampled intervals before the first positive nonfoot ground-force interval, not independent trials.",
+    "Net and other contacts may still affect native motion; errors do not uniquely identify PD parameters.",
+    "Native sensor reports normal force; model final-microstep estimates are diagnostic.",
+    "No threshold or physical parameter is changed by this read-only audit.",
+    "Final normal-force contact labels do not replay all native force-hysteresis microsteps.",
+    "All intervals are 10ms local predictions; no long-horizon or unseen-state accuracy is established."
+  ]
+}
