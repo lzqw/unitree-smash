@@ -1,0 +1,700 @@
+{
+  "model_probes": {
+    "probe_count": 13,
+    "accepted_model_probes": 11,
+    "compute_expired_probes": 0,
+    "nominal_exact": true,
+    "wall_seconds": 279.0955889162142,
+    "native_execution": false,
+    "query_admission_widened": false,
+    "valid_expert_labels": false,
+    "limitations": [
+      "Finite single-axis model probes exclude combined, joint, actuator and sensor uncertainties.",
+      "A different initial epoch from previous tick280 probes prevents direct causal attribution.",
+      "Fixed-plan results do not measure the full replanning controller."
+    ],
+    "source_sha256": {
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/search_whole_body_early_landing_v2.py": "29a7c9c01880d8a5506a91203e199f8936fe600bf0cb8c1cc00c0763bf3c819d",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_early_references_20261108/tick280_fine160.json": "330995168563aa33d16c4c9365c792e2b5fa08c54fc00250103360433b21d277",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_episode_sequence3_20261107/manifest.json": "a5903bdbf7a652d17500ac2e805d85cd4b618be2a7a258d96052af18a628df2a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_fullcommand_native_response_20261107/sphere_crossings_v3.json": "518b4868a6de07776d701957eb0c7da654456f0e22d511ebef56b0bcce8e295b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/configs/go2_piper_authored_ground_geometry_v1.json": "e39c41e9b69e481aeac8907c2dfacb9f593cf54e00c8fb822696638ef083167b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/configs/evaluation_protocol_v2.json": "421497aa51eecac023c70b200e8a75ecafff01527dcf215665d5d96c1e8266a8",
+      "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/native_command_inputs.json": "f861d727c049c85d612cad7ce2a5be9a4bc3a85ab18ba38f5018dc871fca6f7c",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/configs/go2_piper_racket_landing_model_v1.json": "8c8997368ab98b3f2befa9908f537d76990dc2a1099ca30d8e6c1823de814e88",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/parallel_landing_solver_v1.py": "4bc18476684fbc3a81eae8b1b63073c615ceafd73a23ccca2dde919564cfea33",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/loaded_pinocchio_model_v1.py": "2b303a32e57391ec7aaf3c3faf9d151f758477faf13ef6efae5bead979dcae82",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/authored_ground_clearance_v1.py": "ba54ef51a5cfd5c64937814c343d92057cd0e9e83dc4e435f1479049aa342630",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/recorded_nonfoot_contact_history_v1.py": "b897ec590f76795a515f1e3ad14db1529f43117731f031f00d43dc556e5e599a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/summarize_precontact_prediction_v1.py": "b05936fc4345546c33bf14696bfbf6ed8967025799da23d87e0b04fc014ba227",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_sphere_touchdown_predictions_v1.py": "92b1905a21c544ff212a237104edb700ce6eb3b1414908cb14d80990b21a9a03",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frictional_impulse_step_v1.py": "4e780bf218dd501a64f1885ab1697c3050d228580fc6cd3c7123d36fb18e2348",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/predict_frictional_spheres_v1.py": "d406a568a61014cbee9bde4c91d3cebd8f997f9afa9e663dfbd99cea2d1941fa",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/terminal_attitude_feedback_v1.py": "47db5797915d6c1fa776d9cc7a295a85e29e91adcba81fabc439c6e0978db209",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/feedback_tail_rollout_v1.py": "535672ced97a7ff19c58b34c192b29ed082769bbea8153078bbaf2e8a449af6b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/condensed_implicit_drive_v1.py": "a0f21e9b954db9e978ba428a3770fcb8cd666e08dd21aa27cedf0c0e5c5af629",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/implicit_support_prediction_v1.py": "b751fa0ea59edd1fe8fc62cf0ba3816e5583ecc76df7058ef3f5185a335a1e01",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/dense_active_set_qp_v1.py": "cba063c6c594bfb42d1114dcafbaebc606d8c4b49b53ee65e764e3979b1bac4a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/whole_body_support_qp_v1.py": "b67cd1f1c8ebe973d3885773fbc9f3bf17cfd935e5e2210a4b7c0ea1ff331d6d",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/frame_point_kinematics_v1.py": "60fac87ef04f83a22807217b04e7cbe40b536251b56f5a119dc012d1f2529fd8",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/reduced_whole_body_support_qp_v1.py": "e731a0bca8744d4639099dd2ff9be94840a9f0c953c64924fb2cfa9e7a9c80c7",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/continuous_support_qp_v1.py": "824a3d49711917803e9c82af63b1d142917d62c874ec8751325578a71b4af640",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/command_history_support_qp_v1.py": "1ac2221f85cbf3d468be4c265cc932845700d5f17a9eaaf37440998873689081",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/interval_command_support_qp_v1.py": "7f9e47fdeb1f6cc420368d127f89cc1b726397752b0387f57b5bee1ea5915589",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/admitted_arm_support_qp_v1.py": "097d7022b16a28aa31f11081056092bd8b5b44172291b6bd3b1aba1dbe0a1c6e",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v1.py": "da2ff2e4ee1479bf3fc422c0b71f8831bffd9e5868d9a4e0665fd348ab659a59",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v2.py": "6d0ad9bc4fcd27a0f4f418e55b988341ffe809f14c132415281ec41621196ae2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_support_mpc_v3.py": "d8c54679697e78678a898f5d36a27305f9252a5f2b09990d0b33ddcc25533300",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_command_history_mpc_v1.py": "466ba93dc473c7d2de93aae0d5d7848b390d72e8fe1ef779ff0818efad704d28",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_interval_command_mpc_v1.py": "545ecf58c66d0bbf07f889f8867ce36d75ca42fcd94ca77b5307666163630060",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_active_set_interval_mpc_v1.py": "4c111c5ce1d6d711cbe9e4362aad315e0f50f9c2cb363d9595409e0701c7ec8d",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_arm_feasibility_mpc_v1.py": "af9a08a8b442c43099faadbda887ed79b1e497b114cbd77e93b4cc8a2481f40b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_joint_damper_mpc_v1.py": "63b2eff24491e130f96681508524ccf124064469a285a6c82ed9dd498fa761f9",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_joint_sequence_proposal_v1.py": "42d8be1c82836a83e054c6cf7ca368f5bad9b35e298aabbeb0790bfb5b816857",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_sequence_linearization_v1.py": "acc515b9f7980645cdca835deb3ae8bfc4f20ee03eee90a53d9495f976b0ccf2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_differentiated_sequence_v1.py": "9b68faddbb7350b467f5f7a75c1b78cae58759f92c2d8e559b9cac433e6d229e",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_joint_sequence_proposal_v1.py": "b0896a4e9a95a4f46d84ef344e2d7e7384a4fce435b17c01bb456952053382a2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/search_early_landing_trajectory_v1.py": "fd812e8c4ed7d5680d3e8f5594022590d8ccbfc8fbe67cc3ff31f0d0bbbd18cd",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_full_command_interval_mpc_v1.py": "a32da1e8fa837b9a4e40b1614a97fe7b2cdebde18fd1b3083350e2d81558932b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_minimum_command_mpc_v1.py": "c2e2c28234f3f1625c96e75ced68e94fe6e413ae833014d81ccaff5879979c7b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_feasible_command_cost_mpc_v1.py": "daeac9ec076b81bb88e601f72560b1c7135942d15266aa0876e71fb43b61ba32",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_early_references_20261108/search_fullbody_tick280_v1.json": "a7d51fdba396ffa080ccab64965adeb091f0034847240d950b80f7a28b77f935",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/search_landing_support_tail_v3.py": "a81ea7a73a87714534a1978198cd285487f4575250b3f1f24f83ffa175f1177a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_early_references_20261108/search_support_tail_v1.json": "cc034660cef2c4be6e4dd19fa576f52abb87bb432fbe305cfd74d939cc0ebed6",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/refine_landing_support_tail_v4.py": "ea39b8207ae0effe71e8876616369e143c8c1408d792ba24cdff351087af2e03",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_early_references_20261108/refine_support_tail_fine160_v1.json": "49333f062c8b677bf37eb3a16fe53a59f22513968b8f61505c14b446b435d1e7",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/perturb_early_support_domain_v1.py": "526b1b5411603d596c04cd66cd16f4b888422fa6e91d0fe7d25b584b910cb481",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_early_references_20261108/support_tail_domain_probes_v1.json": "d3b399a87a8f07a1585a25126758e17ed17ce2076494bf3d119156a901d9bbc4",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/evaluate_landing_reference_tracking_v1.py": "4dfb275c60142900eae97c44c7fd01ee951797231a4799ec61d50a6e49af42cd",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/landing_reference_tracking_v1.py": "9ba85a60f6540e9a9526d764555727c0e96a3fef8ca147b50907935864f33777",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_early_references_20261108/support_reference_tracking_probes_v1.json": "d19acbed4420cd696c12c93cd7eeb7cc9759add8c8d8239ceca57d7701dd9253",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/search_preserved_early_support_v1.py": "87fd33d712de9b7d0c602a63d070efd94daee5edee70c17ede7a980cf4fac6b3",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/refine_multistate_support_v1.py": "532285432b4a6caceb293294014b823f7060d5314e283ad2da09cfd919ba42b8",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/export_early_support_tail_v1.py": "f5f9ea97767f70b6a433804cbf87a72cef6dd824370e7f211e727f2009a79fc7",
+      "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_frozen128_seed882072_01/fixed_policy_traces/case_003.npz": "37320a97164425d38e36b9188ce81b83fa0d9a26b13d650352a9d53dc3359c2c",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_early_support_bundle_20261108/manifest.json": "6995475169166ea3bc223269a0c58d78f87c449ee625eaa1a89c2a9cdd5ca3a2",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_early_support_all128_20261108_02/sequence_native_trace.npz": "c39a776c64fa52266db034ea45084bbef398a4b6f684805003fc1e715ecdfa70",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_early_support_all128_20261108_02/job.json": "f099e998e70f0060ba34bdc997a1d50c2b9d77baaa77200f6e31b7affafaa906",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_early_references_20261108/preserved_early_support_search_v1.json": "4fd4097ed7858dcd21fdec4a23b19b5b7143850b6ee57078c0047c1a8fdb588c",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_authored_hip_mount_v1.py": "644d0dbd4aead923da426305800a89087735903f61227ed0de26008d056b1761",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/authored_hip_mount_clearance_v1.py": "4ae9d61c8952c3bdad615d9f1dfadb7c9ce0a10f3e7e248ee05e2d23f331dc57",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_native_early_support_followup_20261108_v2/authored_hip_mount_audit.json": "d53d84eb5461bfbe9366f63916c36152873982f0c8a0854b76acda9d56f8bb96",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/search_hip_mount_constrained_recovery_v1.py": "5dca6c9a5ee2b52362ef1207dd0d0340d7419db3f6f836795b0ad00cb84b7ade",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/hip_mount_path_constraint_v1.py": "9ef5b05bdc70f3a9053ca9d37123a9a40bd567279f95cd60c0abdcd459f12e3a",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_early_references_20261108/hip_mount_constrained_search_v1.json": "b68a3b0f8856de27d94d5a950529120f6d31f292da2fc52b5730b202a9967c41",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/refine_hip_mount_support_tail_v1.py": "c252a7882dff323d96379e7c5447c7cfb3b3f9821778dddbcfdd40104f1afc6b",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_early_references_20261108/hip_mount_support_tail_refinement_v1.json": "a4692de9d1b7da58e85176c794b9645af2eef9643a2f8281b24163542f0c2365",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/check_constrained_recovery_suffix_v1.py": "6a1f657bbfbf28b84073c147e012667c39a1ac1ca37fe6f6b17a3a37682d281c",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/constrained_recovery_suffix_v1.py": "cd7e0543e6abcb7fa4f4ab8d52a627887c365852d176dafbdf31314ef97c5a62",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_early_references_20261108/constrained_recovery_suffix_check_v1.json": "001abeca7a220d9ee367705ea37af99bd88279f4f86f1b3be1366973b35b5006",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/solve_recorded_recovery_suffix_v1.py": "3bb13e901fd5b81cda309658a14b281ada9a7d5dfc4045690fe2c0b1c0864dd0",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_early_support_all128_20261108_02/sequence_native_result.json": "60a7b6db19512efcb091e6d0169011eac055dc54a48792d870588b459715abe9",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_early_support_all128_20261108_02/INPUTS.json": "7b0ae92ce184c9d4bd06291ce01721c7078e1da36a26e421f9cbf507e67d48f4",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_early_references_20261108/recorded_state350_suffix_search_v1.json": "30ff2e128fae72118055079d1dca16ea2bc853e803d0a433520a652f207356de",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/prepare_native_early_support_v1.py": "1c54f429dbe8914b24a83be560d3b8a93dd92944e993b4497ec14e5283a02e40",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/prepare_native_reference_tracking_v1.py": "a90ded7f733c17233a814a22df9f9d81cdb7476536775ef496095f7500042d8e",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/prepare_native_refined_tracking_v1.py": "c58a0b48bebfa3a5da94f617bcbe7c0805d11e08b92c91a7fc8bcf9a4c92ab7c",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/prepare_native_constrained_tracking_v1.py": "4df92fef72d8d25d873edea6b5ae4d4a6e1cb1a2201a9fd5facc6619dc8e8810",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/probe_constrained_support_domain_v1.py": "31026d45933362884a54f28687e2baa19faa2fa9a21c47e9034bf7af20cd4c25",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/prepare_native_replanned_suffix_v1.py": "8320947fc0c5f43b01e7b9c62a2475337733cfbca41c56cb43b91828ae760cda",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/current_state_recovery_planner_v1.py": "b7aac157f1d629161de4abe8854b4dbe1a6e06443d4e0cd6cc617c26bcd6793c",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/probe_actual_state_suffix_domain_v1.py": "a36d6d0ab578cd3194e76737dda5f87d572c03c1f246ed2781c586d6d4b88ba6"
+    }
+  },
+  "rows": [
+    {
+      "probe": {
+        "name": "orientation_1_-1",
+        "kind": "orientation",
+        "world_axis": 1,
+        "amount": -0.008726646259971648,
+        "unit": "rad"
+      },
+      "accepted": false,
+      "completed_model_steps": 22,
+      "failure": {
+        "step": 22,
+        "reason": "authored_hip_mount_constraint",
+        "error": "ValueError('authored_hip_mount_constraint:{\"configuration_rad\": 0.5490804511292112, \"hip\": \"FL_hip\", \"partner\": \"MountPlate\", \"planning_boundary_rad\": 0.5490785047187993, \"prediction_geometry_call\": 3672, \"violation_rad\": 1.946410411957089e-06}')",
+        "collision": {
+          "hip": "FL_hip",
+          "partner": "MountPlate",
+          "configuration_rad": 0.5490804511292112,
+          "planning_boundary_rad": 0.5490785047187993,
+          "violation_rad": 1.946410411957089e-06,
+          "prediction_geometry_call": 3672
+        }
+      },
+      "terminal": {
+        "roll": -0.012738396092278736,
+        "pitch": 0.057760252051961634,
+        "horizontal": 0.2719930704913736,
+        "vertical_speed": 0.04532241081185549,
+        "omega": 0.8538959990463004,
+        "joint_speed": 2.1482561016642965,
+        "support_feet": 4,
+        "support_margin_m": 0.08018765545764985
+      },
+      "terminal_violations": {
+        "joint_speed": 1.1482561016642965,
+        "trailing_window_s": 0.0
+      }
+    },
+    {
+      "probe": {
+        "name": "orientation_0_+1",
+        "kind": "orientation",
+        "world_axis": 0,
+        "amount": 0.008726646259971648,
+        "unit": "rad"
+      },
+      "accepted": true,
+      "completed_model_steps": 450,
+      "failure": null,
+      "terminal": {
+        "roll": 0.06808179074365715,
+        "pitch": 0.010610712745980513,
+        "horizontal": 0.035654509192187545,
+        "vertical_speed": 0.007968719935483714,
+        "omega": 0.057290642242231786,
+        "joint_speed": 0.18434437156739433,
+        "support_feet": 4,
+        "support_margin_m": 0.0991828938943567
+      },
+      "terminal_violations": {}
+    },
+    {
+      "probe": {
+        "name": "orientation_0_-1",
+        "kind": "orientation",
+        "world_axis": 0,
+        "amount": -0.008726646259971648,
+        "unit": "rad"
+      },
+      "accepted": true,
+      "completed_model_steps": 450,
+      "failure": null,
+      "terminal": {
+        "roll": 0.0393698987001467,
+        "pitch": 0.00881710014572378,
+        "horizontal": 0.026588416078873623,
+        "vertical_speed": 0.007280980898258929,
+        "omega": 0.04344125416914432,
+        "joint_speed": 0.14338036949730418,
+        "support_feet": 4,
+        "support_margin_m": 0.12060041035675353
+      },
+      "terminal_violations": {}
+    },
+    {
+      "probe": {
+        "name": "nominal",
+        "kind": "nominal"
+      },
+      "accepted": true,
+      "completed_model_steps": 450,
+      "failure": null,
+      "terminal": {
+        "roll": 0.053884780461541715,
+        "pitch": 0.009616834936837418,
+        "horizontal": 0.031623567438663694,
+        "vertical_speed": 0.0078649107531724,
+        "omega": 0.044456127170452366,
+        "joint_speed": 0.1693341742255258,
+        "support_feet": 4,
+        "support_margin_m": 0.10950331057778886
+      },
+      "terminal_violations": {}
+    },
+    {
+      "probe": {
+        "name": "linear_velocity_0_-1",
+        "kind": "linear_velocity",
+        "world_axis": 0,
+        "amount": -0.02,
+        "unit": "m/s"
+      },
+      "accepted": false,
+      "completed_model_steps": 22,
+      "failure": {
+        "step": 22,
+        "reason": "authored_hip_mount_constraint",
+        "error": "ValueError('authored_hip_mount_constraint:{\"configuration_rad\": 0.549078911327154, \"hip\": \"FL_hip\", \"partner\": \"MountPlate\", \"planning_boundary_rad\": 0.5490785047187993, \"prediction_geometry_call\": 3605, \"violation_rad\": 4.066083547638044e-07}')",
+        "collision": {
+          "hip": "FL_hip",
+          "partner": "MountPlate",
+          "configuration_rad": 0.549078911327154,
+          "planning_boundary_rad": 0.5490785047187993,
+          "violation_rad": 4.066083547638044e-07,
+          "prediction_geometry_call": 3605
+        }
+      },
+      "terminal": {
+        "roll": -0.009050990511006248,
+        "pitch": 0.05556027488756064,
+        "horizontal": 0.2670813913548552,
+        "vertical_speed": 0.046602883289890214,
+        "omega": 0.7797594166101632,
+        "joint_speed": 2.0856531063007457,
+        "support_feet": 4,
+        "support_margin_m": 0.07901274295521987
+      },
+      "terminal_violations": {
+        "joint_speed": 1.0856531063007457,
+        "trailing_window_s": 0.0
+      }
+    },
+    {
+      "probe": {
+        "name": "orientation_1_+1",
+        "kind": "orientation",
+        "world_axis": 1,
+        "amount": 0.008726646259971648,
+        "unit": "rad"
+      },
+      "accepted": true,
+      "completed_model_steps": 450,
+      "failure": null,
+      "terminal": {
+        "roll": 0.056234247804001665,
+        "pitch": 0.010337501940182733,
+        "horizontal": 0.03218305375540161,
+        "vertical_speed": 0.008066086417465328,
+        "omega": 0.047365319922902875,
+        "joint_speed": 0.17156564311078332,
+        "support_feet": 4,
+        "support_margin_m": 0.10715971790051038
+      },
+      "terminal_violations": {}
+    },
+    {
+      "probe": {
+        "name": "linear_velocity_0_+1",
+        "kind": "linear_velocity",
+        "world_axis": 0,
+        "amount": 0.02,
+        "unit": "m/s"
+      },
+      "accepted": true,
+      "completed_model_steps": 450,
+      "failure": null,
+      "terminal": {
+        "roll": 0.038334761679534604,
+        "pitch": 0.0038238516255808134,
+        "horizontal": 0.02729705590662247,
+        "vertical_speed": 0.007713811898386276,
+        "omega": 0.050055592775010836,
+        "joint_speed": 0.13964558453240053,
+        "support_feet": 4,
+        "support_margin_m": 0.11756575643257691
+      },
+      "terminal_violations": {}
+    },
+    {
+      "probe": {
+        "name": "linear_velocity_1_-1",
+        "kind": "linear_velocity",
+        "world_axis": 1,
+        "amount": -0.02,
+        "unit": "m/s"
+      },
+      "accepted": true,
+      "completed_model_steps": 450,
+      "failure": null,
+      "terminal": {
+        "roll": 0.0602649000614386,
+        "pitch": 0.00812611774619379,
+        "horizontal": 0.03245970690400489,
+        "vertical_speed": 0.008368860257412207,
+        "omega": 0.0498006551204094,
+        "joint_speed": 0.17341509527116533,
+        "support_feet": 4,
+        "support_margin_m": 0.10472582213739819
+      },
+      "terminal_violations": {}
+    },
+    {
+      "probe": {
+        "name": "linear_velocity_1_+1",
+        "kind": "linear_velocity",
+        "world_axis": 1,
+        "amount": 0.02,
+        "unit": "m/s"
+      },
+      "accepted": true,
+      "completed_model_steps": 450,
+      "failure": null,
+      "terminal": {
+        "roll": 0.04410851812092825,
+        "pitch": 0.009923921005216047,
+        "horizontal": 0.02772398969019124,
+        "vertical_speed": 0.007169555107918105,
+        "omega": 0.039258388036613585,
+        "joint_speed": 0.15351813766650552,
+        "support_feet": 4,
+        "support_margin_m": 0.11676512470621445
+      },
+      "terminal_violations": {}
+    },
+    {
+      "probe": {
+        "name": "angular_velocity_0_-1",
+        "kind": "angular_velocity",
+        "world_axis": 0,
+        "amount": -0.02,
+        "unit": "rad/s"
+      },
+      "accepted": true,
+      "completed_model_steps": 450,
+      "failure": null,
+      "terminal": {
+        "roll": 0.050714963999287946,
+        "pitch": 0.008924232408817344,
+        "horizontal": 0.030542668806727215,
+        "vertical_speed": 0.007748265352236313,
+        "omega": 0.039710132680751214,
+        "joint_speed": 0.16462089378127864,
+        "support_feet": 4,
+        "support_margin_m": 0.11140764860268523
+      },
+      "terminal_violations": {}
+    },
+    {
+      "probe": {
+        "name": "angular_velocity_0_+1",
+        "kind": "angular_velocity",
+        "world_axis": 0,
+        "amount": 0.02,
+        "unit": "rad/s"
+      },
+      "accepted": true,
+      "completed_model_steps": 450,
+      "failure": null,
+      "terminal": {
+        "roll": 0.05666234383693378,
+        "pitch": 0.009488330085795993,
+        "horizontal": 0.032358498540566584,
+        "vertical_speed": 0.008155556285388539,
+        "omega": 0.04839829439907225,
+        "joint_speed": 0.172924959986004,
+        "support_feet": 4,
+        "support_margin_m": 0.10752483939692915
+      },
+      "terminal_violations": {}
+    },
+    {
+      "probe": {
+        "name": "angular_velocity_1_-1",
+        "kind": "angular_velocity",
+        "world_axis": 1,
+        "amount": -0.02,
+        "unit": "rad/s"
+      },
+      "accepted": true,
+      "completed_model_steps": 450,
+      "failure": null,
+      "terminal": {
+        "roll": 0.056266745641762046,
+        "pitch": 0.01032922675323304,
+        "horizontal": 0.03214932682257348,
+        "vertical_speed": 0.008000955869567181,
+        "omega": 0.04746003870228291,
+        "joint_speed": 0.17226760483955378,
+        "support_feet": 4,
+        "support_margin_m": 0.10837192736916747
+      },
+      "terminal_violations": {}
+    },
+    {
+      "probe": {
+        "name": "angular_velocity_1_+1",
+        "kind": "angular_velocity",
+        "world_axis": 1,
+        "amount": 0.02,
+        "unit": "rad/s"
+      },
+      "accepted": true,
+      "completed_model_steps": 450,
+      "failure": null,
+      "terminal": {
+        "roll": 0.05132029594908936,
+        "pitch": 0.008919372019271217,
+        "horizontal": 0.031054731649534394,
+        "vertical_speed": 0.00783104515663301,
+        "omega": 0.04054939262745839,
+        "joint_speed": 0.1665928701786406,
+        "support_feet": 4,
+        "support_margin_m": 0.11073764592240887
+      },
+      "terminal_violations": {}
+    }
+  ],
+  "residual_authority": {
+    "scope": "Necessary leg-command representability bound on a completed native trace.\n\nFor a fixed base command, the clamped residual mixer can move a leg target\nby at most 2*scale relative to any other bounded residual. Exceeding that\nbound proves this recorded teacher target cannot be exactly reproduced by\nchanging only the residual. Passing it does not prove representability.\nArm commands are excluded because their limiter has history.\n",
+    "native_run": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_replanned_suffix_all128_20261108_01",
+    "source_sha256": {
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_recovery_residual_authority_v1.py": "4b584d16360549f7720e6a8ce89f49b400aa807b9032b70aefad28a5cb36ab59",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/control/full_racket_residual_v4.py": "7bf70fd5bf149910c9e0a9e186b001562b9fc910195b86becbbfe61a35d9290a",
+      "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_env5120_01/policy.pt": "8f510fe9f218beef791ac21675a19ed25d11f510a83fe247cddf2893bee08399",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_replanned_suffix_all128_20261108_01/job.json": "f5b922009e97023293b56b603437cad9e7b8a778d533cc13ae82bec81a3567a4",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_replanned_suffix_all128_20261108_01/native_command_inputs.json": "f861d727c049c85d612cad7ce2a5be9a4bc3a85ab18ba38f5018dc871fca6f7c",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_replanned_suffix_all128_20261108_01/sequence_native_result.json": "fd23f3f71d528854cb344246f9c9b47a60437d19855340b62243552554dd3c37",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_replanned_suffix_all128_20261108_01/sequence_native_trace.npz": "a6c2f7c0328829ca94f162b41897ddc7afff8d3225c8a0d98402929db5d43b3f",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_replanned_suffix_all128_20261108_01/sequence_dispatch.npz": "c26fe77c36c32486be982392d85424712e05e4d820e2ef4299d0b23e1f369a5b"
+    },
+    "control_steps": 520,
+    "residual_joint_scale_rad": [
+      0.4,
+      0.4,
+      0.4,
+      0.4,
+      0.4,
+      0.4,
+      0.4,
+      0.4,
+      0.4,
+      0.4,
+      0.4,
+      0.4,
+      0.4,
+      0.4,
+      0.4,
+      0.4,
+      0.4,
+      0.4
+    ],
+    "maximum_action_decode_error_rad": 0.0,
+    "steps_proven_outside_fixed_base_residual_authority": 28,
+    "maximum_leg_command_difference_rad": 0.985965406711049,
+    "maximum_unavoidable_command_error_lower_bound_rad": 0.185965406711049,
+    "violations": [
+      {
+        "control_tick": 318,
+        "joint_index": 8,
+        "command_difference_rad": 0.8065590918938526,
+        "two_residual_scales_rad": 0.8,
+        "unavoidable_error_lower_bound_rad": 0.006559091893852509
+      },
+      {
+        "control_tick": 319,
+        "joint_index": 8,
+        "command_difference_rad": 0.9073089555005058,
+        "two_residual_scales_rad": 0.8,
+        "unavoidable_error_lower_bound_rad": 0.10730895550050579
+      },
+      {
+        "control_tick": 320,
+        "joint_index": 8,
+        "command_difference_rad": 0.9302421368771938,
+        "two_residual_scales_rad": 0.8,
+        "unavoidable_error_lower_bound_rad": 0.13024213687719377
+      },
+      {
+        "control_tick": 321,
+        "joint_index": 8,
+        "command_difference_rad": 0.9414399554277644,
+        "two_residual_scales_rad": 0.8,
+        "unavoidable_error_lower_bound_rad": 0.14143995542776433
+      },
+      {
+        "control_tick": 322,
+        "joint_index": 8,
+        "command_difference_rad": 0.8944605294205807,
+        "two_residual_scales_rad": 0.8,
+        "unavoidable_error_lower_bound_rad": 0.0944605294205807
+      },
+      {
+        "control_tick": 323,
+        "joint_index": 8,
+        "command_difference_rad": 0.9361515848456783,
+        "two_residual_scales_rad": 0.8,
+        "unavoidable_error_lower_bound_rad": 0.13615158484567824
+      },
+      {
+        "control_tick": 324,
+        "joint_index": 8,
+        "command_difference_rad": 0.9225328228214984,
+        "two_residual_scales_rad": 0.8,
+        "unavoidable_error_lower_bound_rad": 0.12253282282149836
+      },
+      {
+        "control_tick": 325,
+        "joint_index": 8,
+        "command_difference_rad": 0.9425324022379389,
+        "two_residual_scales_rad": 0.8,
+        "unavoidable_error_lower_bound_rad": 0.14253240223793884
+      },
+      {
+        "control_tick": 326,
+        "joint_index": 8,
+        "command_difference_rad": 0.985965406711049,
+        "two_residual_scales_rad": 0.8,
+        "unavoidable_error_lower_bound_rad": 0.185965406711049
+      },
+      {
+        "control_tick": 327,
+        "joint_index": 8,
+        "command_difference_rad": 0.9437450086473813,
+        "two_residual_scales_rad": 0.8,
+        "unavoidable_error_lower_bound_rad": 0.14374500864738127
+      },
+      {
+        "control_tick": 328,
+        "joint_index": 8,
+        "command_difference_rad": 0.958744005058664,
+        "two_residual_scales_rad": 0.8,
+        "unavoidable_error_lower_bound_rad": 0.15874400505866393
+      },
+      {
+        "control_tick": 329,
+        "joint_index": 8,
+        "command_difference_rad": 0.9125983372433151,
+        "two_residual_scales_rad": 0.8,
+        "unavoidable_error_lower_bound_rad": 0.11259833724331503
+      },
+      {
+        "control_tick": 330,
+        "joint_index": 8,
+        "command_difference_rad": 0.9517445820062171,
+        "two_residual_scales_rad": 0.8,
+        "unavoidable_error_lower_bound_rad": 0.1517445820062171
+      },
+      {
+        "control_tick": 331,
+        "joint_index": 8,
+        "command_difference_rad": 0.9141877133733232,
+        "two_residual_scales_rad": 0.8,
+        "unavoidable_error_lower_bound_rad": 0.11418771337332312
+      },
+      {
+        "control_tick": 332,
+        "joint_index": 8,
+        "command_difference_rad": 0.8453284545849975,
+        "two_residual_scales_rad": 0.8,
+        "unavoidable_error_lower_bound_rad": 0.04532845458499746
+      },
+      {
+        "control_tick": 333,
+        "joint_index": 8,
+        "command_difference_rad": 0.80767636831734,
+        "two_residual_scales_rad": 0.8,
+        "unavoidable_error_lower_bound_rad": 0.007676368317339977
+      },
+      {
+        "control_tick": 334,
+        "joint_index": 8,
+        "command_difference_rad": 0.8824760840029935,
+        "two_residual_scales_rad": 0.8,
+        "unavoidable_error_lower_bound_rad": 0.08247608400299344
+      },
+      {
+        "control_tick": 363,
+        "joint_index": 8,
+        "command_difference_rad": 0.8063879248536612,
+        "two_residual_scales_rad": 0.8,
+        "unavoidable_error_lower_bound_rad": 0.006387924853661131
+      },
+      {
+        "control_tick": 365,
+        "joint_index": 8,
+        "command_difference_rad": 0.8465500490897568,
+        "two_residual_scales_rad": 0.8,
+        "unavoidable_error_lower_bound_rad": 0.046550049089756795
+      },
+      {
+        "control_tick": 366,
+        "joint_index": 8,
+        "command_difference_rad": 0.8437221696006745,
+        "two_residual_scales_rad": 0.8,
+        "unavoidable_error_lower_bound_rad": 0.04372216960067443
+      },
+      {
+        "control_tick": 367,
+        "joint_index": 8,
+        "command_difference_rad": 0.8431660873785365,
+        "two_residual_scales_rad": 0.8,
+        "unavoidable_error_lower_bound_rad": 0.043166087378536444
+      },
+      {
+        "control_tick": 368,
+        "joint_index": 8,
+        "command_difference_rad": 0.849710038700799,
+        "two_residual_scales_rad": 0.8,
+        "unavoidable_error_lower_bound_rad": 0.04971003870079893
+      },
+      {
+        "control_tick": 369,
+        "joint_index": 8,
+        "command_difference_rad": 0.8857272466059065,
+        "two_residual_scales_rad": 0.8,
+        "unavoidable_error_lower_bound_rad": 0.08572724660590647
+      },
+      {
+        "control_tick": 370,
+        "joint_index": 8,
+        "command_difference_rad": 0.8572313330375838,
+        "two_residual_scales_rad": 0.8,
+        "unavoidable_error_lower_bound_rad": 0.057231333037583765
+      },
+      {
+        "control_tick": 371,
+        "joint_index": 8,
+        "command_difference_rad": 0.8642586753611088,
+        "two_residual_scales_rad": 0.8,
+        "unavoidable_error_lower_bound_rad": 0.06425867536110874
+      },
+      {
+        "control_tick": 372,
+        "joint_index": 8,
+        "command_difference_rad": 0.8276474105311493,
+        "two_residual_scales_rad": 0.8,
+        "unavoidable_error_lower_bound_rad": 0.027647410531149275
+      },
+      {
+        "control_tick": 373,
+        "joint_index": 8,
+        "command_difference_rad": 0.815688019429258,
+        "two_residual_scales_rad": 0.8,
+        "unavoidable_error_lower_bound_rad": 0.015688019429257904
+      },
+      {
+        "control_tick": 374,
+        "joint_index": 8,
+        "command_difference_rad": 0.8042206141947759,
+        "two_residual_scales_rad": 0.8,
+        "unavoidable_error_lower_bound_rad": 0.004220614194775818
+      }
+    ],
+    "native_rerun": false,
+    "expert_labels_created": false,
+    "limitations": [
+      "Only legs and the same recorded base-controller output are considered.",
+      "Within this conservative bound does not prove a feasible residual label exists.",
+      "Different learned actions may recover without matching these teacher commands.",
+      "This does not establish physical safety, robust recovery, or teacher admission."
+    ]
+  },
+  "native_planning_snapshot": [
+    {
+      "control_tick": 400,
+      "accepted": true,
+      "wall_seconds": 152.08400357794017,
+      "independent_replay_exact": true,
+      "stages": [
+        "current_state_warm_prediction"
+      ]
+    }
+  ],
+  "native_run_final_result_available": false,
+  "artifact_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_early_references_20261108/actual_state_suffix_domain_v1.json": "f1e59138d04c0e88465ce59373fecb1b7ffda8172777d4f0d7f33e239f20561a",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/landing_early_references_20261108/replanned_suffix_residual_authority_v1.json": "537b683643b13549394c6247d52eb3c02e738c81db2decb388d7a1b90cad0c36",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/native_current_state_all128_20261108_01/current_state_planning.json": "78fc8f4d252b21fc7013899aedb6ecdb575cc0360a9050807ec397852b0460fa"
+  },
+  "storage": {
+    "reclaimed_bytes": 1247629312,
+    "merged_identical_paths": 85,
+    "groups": 71,
+    "all_original_paths_preserved": true
+  }
+}
