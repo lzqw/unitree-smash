@@ -57,6 +57,13 @@ class PureControlIntervalQPBaseV1(CommandHistorySupportQP):
         def task(matrix,bias,target,weight):
             nonlocal H,g
             H+=weight*matrix.T@matrix;g+=weight*matrix.T@(bias-target)
+        if cfg.command_continuity_weight > 0.:
+            # The decision variable below is an absolute joint target.  Add
+            # continuity directly in that same coordinate system, using the
+            # last command actually seen by the native interface.  This is a
+            # QP objective term, not a post-solve blend with another plan.
+            task(np.eye(18), np.zeros(18), interface.previous_command,
+                 cfg.command_continuity_weight)
         task(am,ab,np.zeros(24),cfg.acceleration_regularization)
         task(com_jac@am,com_jac@ab+com_bias,reference['com_acceleration'],cfg.com_weight)
         task(am[3:6],ab[3:6],reference['angular_acceleration_body'],cfg.orientation_weight)

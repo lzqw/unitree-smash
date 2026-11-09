@@ -32,6 +32,11 @@ class SupportSettings:
     posture_weight: float = .20
     acceleration_regularization: float = 1e-5
     torque_regularization: float = 1e-4
+    # Optional command continuity cost in the native absolute-position target
+    # space.  Zero preserves all historical controllers; landing variants can
+    # enable it so continuity is solved inside the QP rather than applied by
+    # averaging two already-solved commands afterward.
+    command_continuity_weight: float = 0.
     force_regularization: float = 1e-5
     force_distribution_weight: float = 0.
     force_wrench_weight: float = 0.
@@ -126,6 +131,7 @@ class WholeBodySupportQP:
                     (name not in ('swing_foot_weight', 'nonfoot_clearance_weight',
                                   'force_distribution_weight',
                                   'force_wrench_weight',
+                                  'command_continuity_weight',
                                   'swing_foot_capture_gain') and value == 0)):
                 raise ValueError('Finite nonnegative control settings required; all non-swing terms must be positive')
         if settings.swing_foot_capture_max_m <= 0.:
