@@ -76,3 +76,30 @@
 - 静态检查：`scripts/check_native_state_driven_adaptive_mpc_v1.py`
 - 结果：`reports/pure_control_state_driven_adaptive_mpc_all128_20261109_01/metrics.json`
 - 作业：SUCCEEDED，约 3229 秒，0.897 GPU 小时
+
+## 固定 0.32 s 窗口、每 8 tick 重规划对照（2026-11-09）
+
+为隔离重规划频率的影响，完成了与固定 v1 完全相同的 0.32 s 局部预测窗口，只将重规划间隔从 16 个控制 tick（0.16 s）改为 8 个 tick（0.08 s）。本轮仍执行完整 8 s 的 TRAIN128 原生评估，未改变关节、速度、力矩、摩擦、碰撞或成功判定。
+
+| 指标 | 固定窗口 v1：16 tick | stride8 对照：8 tick |
+|---|---:|---:|
+| complete5（5 m/s 主指标） | **37/128（28.91%）** | **19/128（14.84%）** |
+| 合格空中触球 | 74/128 | 74/128 |
+| 条件恢复 | **49/74（66.22%）** | **24/74（32.43%）** |
+| 实际球拍接触 | 110/128 | 110/128 |
+| 越网 | 73/128 | 72/128 |
+| 目标落点 | 60/128 | 59/128 |
+| 数值故障 | 0 | 0 |
+
+stride8 共执行 102,400 个环境步，作业成功，耗时约 3356 秒、0.932 GPU 小时。相对固定 v1 的 37 个成功案例，它保留 14 个、丢失 23 个并新增 5 个。虽然计算量更大、重规划更频繁，完整成功和条件恢复都明显下降。
+
+这说明当前近似接触／加载模型下，更频繁地重规划会破坏已经形成的 0.32 s 恢复序列；不能把“更新更快”直接等同于“反馈更好”。因此当前应继续保留固定 0.32 s、每 16 tick 重规划的 v1（37/128）作为最佳版本，stride8 作为负面对照。后续若要提高反馈频率，应先解决计划交接、命令连续性和预测模型一致性，再重新评估，而不是继续单独缩短 stride。
+
+本轮证据：
+
+- 控制器：`scripts/pure_control_state_driven_long_mpc_v1_stride8.py`
+- 原生适配：`scripts/native_pure_control_state_driven_long_mpc_v1_stride8.py`
+- 计划生成：`scripts/prepare_native_pure_control_state_driven_long_mpc_v1_stride8.py`
+- 静态检查：`scripts/check_native_state_driven_long_mpc_v1_stride8.py`
+- 结果：`reports/pure_control_state_driven_long_mpc_stride8_all128_20261109_01/native/metrics.json`
+- 作业记录：`reports/pure_control_state_driven_long_mpc_stride8_all128_20261109_01/native/job.json`
