@@ -58,7 +58,7 @@ def main():
                 scope=__doc__, entry_sha256=sha(entry), source_sha256=pins,
                 reference_library_required=False, train_case_required=False,
                 native_execution=False,
-                check_command=['bash', 'scripts/python.sh', 'scripts/check_native_state_driven_mpc_v1.py',
+                check_command=['bash', 'scripts/python.sh', 'scripts/check_native_state_driven_long_mpc_v1.py',
                                '--entry', str(entry.resolve()), '--configuration', str(config.resolve()),
                                '--output', str((a.output / 'entry_check.json').resolve())])
     (a.output / 'plan.json').write_text(json.dumps(plan, indent=2) + '\n')
