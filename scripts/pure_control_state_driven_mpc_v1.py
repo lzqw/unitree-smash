@@ -36,8 +36,11 @@ class PureControlStateDrivenMPCV1(PureControlCourtRecoveryV4):
         # legs and body are still free to be solved jointly by the QP.
         for candidate in (measured, blended):
             candidate[12:] = np.clip(base[12:], low[12:], high[12:])
-        return [('state_nominal', base), ('state_damped', measured),
-                ('state_blended', blended)]
+        # Keep the online search bounded: the controller remains state-driven
+        # and library-independent, while avoiding three full CPU QPs per lane
+        # at the same control tick.  The measured/damped target is folded into
+        # the blended candidate rather than evaluated as a third branch.
+        return [('state_nominal', base), ('state_blended', blended)]
 
     @staticmethod
     def _risk(predicted, geometry, target, previous):
@@ -58,7 +61,11 @@ class PureControlStateDrivenMPCV1(PureControlCourtRecoveryV4):
         predicted = copy.deepcopy(state)
         previous = predicted.previous_command_target.copy()
         last = None
-        for _ in range(2):
+        # One physical prediction is sufficient for this 10 ms receding
+        # horizon; the next tick re-reads the native state and replans.  This
+        # preserves the full episode window while keeping the CPU solve
+        # bounded for the 128-lane native evaluation.
+        for _ in range(1):
             last = predict_self_contact_spheres(
                 self.model, self.interface, predicted, target,
                 self.geometry.spheres, substeps=8, geometry=self.geometry)
@@ -73,7 +80,7 @@ class PureControlStateDrivenMPCV1(PureControlCourtRecoveryV4):
         return predicted, dict(accepted=True,
                                score=self._risk(predicted, self.geometry, target, previous),
                                min_gap_m=float(np.min(self.geometry.evaluate(predicted.q)[0])),
-                               prediction_steps=2)
+                               prediction_steps=1)
 
     def command(self, state, phase, time_s):
         if phase not in ['AIR_PREPARE', 'BUFFER_LOAD', 'SUSTAIN']:
