@@ -22,7 +22,7 @@ def main():
         missing.append('configuration.controller=state_driven_long_mpc_v2')
     impl = (Path(__file__).resolve().parents[1] / 'scripts' /
             'pure_control_state_driven_long_mpc_v2.py').read_text()
-    for marker in ('horizon_steps = 64', 'reference_library'):
+    for marker in ('horizon_steps = 64', 'PureControlStateDrivenLongMPCV1'):
         if marker not in impl: missing.append('implementation.' + marker)
     result = dict(passed=not missing, missing=missing,
                   native_execution=False, physical_limits_changed=False,
