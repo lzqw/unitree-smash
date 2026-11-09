@@ -119,8 +119,99 @@
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_released_prefix_search_20261109/inputs.json": "a00e3374268a1cb1223caa279c5239d6e24a62acbe775ce06b813ad12dccdfd7",
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_released_prefix_continuation_20261109/inputs.json": "505cb1131716fb8ae537e6d909f853d07c6c1be297164d13925609a263cfd650",
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/search_released_prefix_recovery_v9.py": "2a3a4f57df9ea728005edb504b6c8ccb30797e386f59cf310d94e8ad554fa362",
-    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/run_verified_recovery_feedback_v7.py": "884e0a022eae58ca01261827d7a5b8654ca1ee22b854f78c806153c20da65579"
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/run_verified_recovery_feedback_v7.py": "884e0a022eae58ca01261827d7a5b8654ca1ee22b854f78c806153c20da65579",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_released_prefix_search_20261109/result.json": "2e28b708e857145e1bc5c43d306247e7fb3eb9a16e06a92f06a271c628168243"
   },
   "native_success": false,
-  "valid_expert_labels": false
+  "valid_expert_labels": false,
+  "completed_search_result": {
+    "state": "COMPLETED_ACTUAL_RECOVERY_SEQUENCE_SEARCH",
+    "method": "released_prefix_full18_fine_recovery_search",
+    "all_candidates_substeps": 160,
+    "completed_candidates": 315,
+    "results": [
+      {
+        "state_key": "72:281",
+        "steps": 106,
+        "model_path_complete": false,
+        "terminal_stable_s": 0.0,
+        "failure": {
+          "step": 106,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.010647710697473755
+          },
+          "collision": {
+            "micro": 27,
+            "body": "RL_calf",
+            "gap_m": -7.877744747244488e-05
+          }
+        }
+      },
+      {
+        "state_key": "87:272",
+        "steps": 122,
+        "model_path_complete": false,
+        "terminal_stable_s": 0.0,
+        "failure": {
+          "step": 122,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 8.374149702704628e-05
+          },
+          "collision": {
+            "micro": 157,
+            "body": "RR_calf",
+            "gap_m": -2.685264979566948e-05
+          }
+        }
+      },
+      {
+        "state_key": "114:272",
+        "steps": 118,
+        "model_path_complete": false,
+        "terminal_stable_s": 0.0,
+        "failure": {
+          "step": 118,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.009061944096886683
+          },
+          "collision": {
+            "micro": 2,
+            "body": "RR_calf",
+            "gap_m": -5.153066159577051e-05
+          }
+        }
+      }
+    ],
+    "wall_seconds": 2401.1705990678165,
+    "scheduling": "round_robin_candidates_across_states",
+    "equal_cpu_time_guaranteed": false,
+    "per_state_compute": {
+      "72:281": {
+        "completed_candidates": 105,
+        "budget_limited": 14,
+        "worker_cpu_seconds": 4427.207058857999,
+        "worker_wall_seconds": 4427.369310779264,
+        "maximum_queue_wait_seconds": 744.9622881759424
+      },
+      "87:272": {
+        "completed_candidates": 105,
+        "budget_limited": 14,
+        "worker_cpu_seconds": 1835.5666490649983,
+        "worker_wall_seconds": 1835.6401756498963,
+        "maximum_queue_wait_seconds": 753.9000199239235
+      },
+      "114:272": {
+        "completed_candidates": 105,
+        "budget_limited": 15,
+        "worker_cpu_seconds": 3189.235863840999,
+        "worker_wall_seconds": 3189.3793076463044,
+        "maximum_queue_wait_seconds": 770.9837011669297
+      }
+    },
+    "native_success": false,
+    "valid_expert_labels": false
+  }
 }

@@ -158,6 +158,122 @@
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_state_settling_38_native_preparation_20261109_01/plan.json": "332e8681a3fae71e84eb2ad14fe167c3ada59c561fd63554bf4c1a2e8bc7dcf8",
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_state_settling_38_native_preparation_20261109_01/prepared_entry_check.json": "dd6e7435876e022481e56259d76eb4b7bd069c584ca43751d56b35d41dbe7b8b",
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_state_settling_38_native_preparation_20261109_01/deferred_owner.json": "63ed408df0eac6237682a320032f55e67541a58e9a7d498fd8b22bf215c71319",
-    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/run_after_deferred_native_v6.py": "6d6aae39eec2f14fb9f1a812c80d24d99c6682a1830baf478f9858ff17f576da"
-  }
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/run_after_deferred_native_v6.py": "6d6aae39eec2f14fb9f1a812c80d24d99c6682a1830baf478f9858ff17f576da",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_uncovered38_settling_20261109/result.json": "b902a88cc063f5cb2f7f60972a4b34a2377b4b926faf0b8ab6e619ce5d722888",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_uncovered38_settling_20261109/paired_completion_check.json": "97e22e1f9d53882fcf679338eb89a3493d9c8d75737d27c0c97bdc56362d16b2"
+  },
+  "completed_factorial": {
+    "state": "COMPLETED_EXTENDED_REFERENCE_SETTLING",
+    "results": [
+      {
+        "state_key": "38:278",
+        "mode": "state_settling",
+        "steps": 522,
+        "required_steps": 522,
+        "failure": null,
+        "full_model_path": true,
+        "final_model_stable_s": 3.1600003242492676,
+        "state_settling_capture_tick": 485,
+        "native_success": false,
+        "valid_expert_labels": false,
+        "candidate_scoring_substeps": 16,
+        "physical_substeps": 160,
+        "worker_wall_seconds": 558.1529082460329
+      },
+      {
+        "state_key": "38:278",
+        "mode": "plan_end",
+        "steps": 486,
+        "required_steps": 522,
+        "failure": {
+          "tick": 764,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.011783336029739813
+          },
+          "collision": {
+            "micro": 8,
+            "body": "FR_hip",
+            "gap_m": -1.8807449804550402e-05
+          }
+        },
+        "full_model_path": false,
+        "final_model_stable_s": 0.0,
+        "state_settling_capture_tick": null,
+        "native_success": false,
+        "valid_expert_labels": false,
+        "candidate_scoring_substeps": 16,
+        "physical_substeps": 160,
+        "worker_wall_seconds": 572.9113438979257
+      },
+      {
+        "state_key": "38:278",
+        "mode": "state_settling",
+        "steps": 522,
+        "required_steps": 522,
+        "failure": null,
+        "full_model_path": true,
+        "final_model_stable_s": 3.1600003242492676,
+        "state_settling_capture_tick": 485,
+        "native_success": false,
+        "valid_expert_labels": false,
+        "candidate_scoring_substeps": 160,
+        "physical_substeps": 160,
+        "worker_wall_seconds": 1326.6868334768806
+      },
+      {
+        "state_key": "38:278",
+        "mode": "plan_end",
+        "steps": 476,
+        "required_steps": 522,
+        "failure": {
+          "tick": 754,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.0034584438485057017
+          },
+          "collision": {
+            "micro": 113,
+            "body": "FR_hip",
+            "gap_m": -5.655491928346912e-05
+          }
+        },
+        "full_model_path": false,
+        "final_model_stable_s": 0.0,
+        "state_settling_capture_tick": null,
+        "native_success": false,
+        "valid_expert_labels": false,
+        "candidate_scoring_substeps": 160,
+        "physical_substeps": 160,
+        "worker_wall_seconds": 2207.136608123081
+      }
+    ],
+    "elapsed_s": 2207.444841874996,
+    "native_success": false,
+    "valid_expert_labels": false
+  },
+  "completed_pair_checks": {
+    "passed": true,
+    "comparisons": [
+      {
+        "scoring_substeps": 16,
+        "identical_prefix_steps": 207,
+        "identical_initial": true,
+        "prefix_states_identical": true,
+        "first_changed_tick": 485,
+        "command_difference_rad": 0.2510256031686806
+      },
+      {
+        "scoring_substeps": 160,
+        "identical_prefix_steps": 207,
+        "identical_initial": true,
+        "prefix_states_identical": true,
+        "first_changed_tick": 485,
+        "command_difference_rad": 0.2489536218642922
+      }
+    ],
+    "verified_source_count": 79,
+    "native_execution": false
+  },
+  "updated_utc": "2026-11-09T00:01:20.792773+00:00"
 }

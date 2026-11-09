@@ -20,3 +20,7 @@
 这些是参数化和启动证据，尚非新的模型恢复成绩，更不是原生成功。当前GPU0继续运行V15基底＋四条恢复参考组合；其输入未更改。
 
 新文件：`dense_reference_correction_rollout_v1.py`、`search_dense_correction_recovery_v10.py`、`run_verified_recovery_feedback_v8.py`。检查与源哈希见[JSON](pure_control_dense_correction_search_20261109.json)，大轨迹与逐步参考留在本地。正式G07验收仍未通过。
+
+## 终局补充
+
+V10已结束：243个候选，29个计算预算截断；最终无完整模型路径。72、87保留原片段长度，114延长到123步但球拍触网。 两组完整搜索及后续闭环结果见[后续报告](pure_control_clearance_objective_20261109.md)。未启动失败候选的原生执行或教师学习。

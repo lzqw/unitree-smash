@@ -33,3 +33,7 @@
 新实现位于`search_released_prefix_recovery_v9.py`与`run_verified_recovery_feedback_v7.py`。未修改现有GPU作业、已排队控制器或它们固定的源文件。GPU0继续验证保留V15支撑能力并合并四条恢复参考的版本。
 
 本轮交付是扩大控制搜索权限并继续实际求解，不是宣称有限搜索失败已经证明不可恢复。紧凑结果、资源范围与来源哈希见[JSON](pure_control_released_prefix_search_20261109.json)。大模型轨迹留在本地。
+
+## 终局补充
+
+V9已结束：315个候选，43个计算预算截断；最终三条仍失败，完整模型路径为0。 两组完整搜索及后续闭环结果见[后续报告](pure_control_clearance_objective_20261109.md)。未启动失败候选的原生执行或教师学习。

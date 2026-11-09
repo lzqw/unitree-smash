@@ -1,0 +1,1192 @@
+{
+  "time_utc": "2026-11-08T23:57:26.290121+00:00",
+  "scope": "Pure-control model experiments; unchanged native queue and physical success criteria",
+  "released_prefix_result": {
+    "state": "COMPLETED_ACTUAL_RECOVERY_SEQUENCE_SEARCH",
+    "method": "released_prefix_full18_fine_recovery_search",
+    "all_candidates_substeps": 160,
+    "completed_candidates": 315,
+    "results": [
+      {
+        "state_key": "72:281",
+        "steps": 106,
+        "model_path_complete": false,
+        "terminal_stable_s": 0.0,
+        "failure": {
+          "step": 106,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.010647710697473755
+          },
+          "collision": {
+            "micro": 27,
+            "body": "RL_calf",
+            "gap_m": -7.877744747244488e-05
+          }
+        }
+      },
+      {
+        "state_key": "87:272",
+        "steps": 122,
+        "model_path_complete": false,
+        "terminal_stable_s": 0.0,
+        "failure": {
+          "step": 122,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 8.374149702704628e-05
+          },
+          "collision": {
+            "micro": 157,
+            "body": "RR_calf",
+            "gap_m": -2.685264979566948e-05
+          }
+        }
+      },
+      {
+        "state_key": "114:272",
+        "steps": 118,
+        "model_path_complete": false,
+        "terminal_stable_s": 0.0,
+        "failure": {
+          "step": 118,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.009061944096886683
+          },
+          "collision": {
+            "micro": 2,
+            "body": "RR_calf",
+            "gap_m": -5.153066159577051e-05
+          }
+        }
+      }
+    ],
+    "wall_seconds": 2401.1705990678165,
+    "scheduling": "round_robin_candidates_across_states",
+    "equal_cpu_time_guaranteed": false,
+    "per_state_compute": {
+      "72:281": {
+        "completed_candidates": 105,
+        "budget_limited": 14,
+        "worker_cpu_seconds": 4427.207058857999,
+        "worker_wall_seconds": 4427.369310779264,
+        "maximum_queue_wait_seconds": 744.9622881759424
+      },
+      "87:272": {
+        "completed_candidates": 105,
+        "budget_limited": 14,
+        "worker_cpu_seconds": 1835.5666490649983,
+        "worker_wall_seconds": 1835.6401756498963,
+        "maximum_queue_wait_seconds": 753.9000199239235
+      },
+      "114:272": {
+        "completed_candidates": 105,
+        "budget_limited": 15,
+        "worker_cpu_seconds": 3189.235863840999,
+        "worker_wall_seconds": 3189.3793076463044,
+        "maximum_queue_wait_seconds": 770.9837011669297
+      }
+    },
+    "native_success": false,
+    "valid_expert_labels": false
+  },
+  "dense_correction_result": {
+    "state": "COMPLETED_ACTUAL_RECOVERY_SEQUENCE_SEARCH",
+    "method": "dense_nominal_full18_correction_search",
+    "all_candidates_substeps": 160,
+    "completed_candidates": 243,
+    "results": [
+      {
+        "state_key": "72:281",
+        "steps": 150,
+        "model_path_complete": false,
+        "terminal_stable_s": 0.0,
+        "failure": {
+          "step": 150,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.010992224214445845
+          },
+          "collision": {
+            "micro": 3,
+            "body": "FL_hip",
+            "gap_m": -6.258565345325373e-05
+          }
+        }
+      },
+      {
+        "state_key": "87:272",
+        "steps": 233,
+        "model_path_complete": false,
+        "terminal_stable_s": 0.0,
+        "failure": {
+          "step": 233,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.00198952728811147
+          },
+          "collision": {
+            "micro": 49,
+            "body": "FR_thigh",
+            "gap_m": -1.4846686604064185e-05
+          }
+        }
+      },
+      {
+        "state_key": "114:272",
+        "steps": 123,
+        "model_path_complete": false,
+        "terminal_stable_s": 0.0,
+        "failure": {
+          "step": 123,
+          "reason": "model_rejected",
+          "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -8.513372728674584e-05, 'exact': True, 'shape_index': 127, 'obstacle': 'net_segment_31'}\")"
+        }
+      }
+    ],
+    "wall_seconds": 2400.3835991469678,
+    "scheduling": "round_robin_candidates_across_states",
+    "equal_cpu_time_guaranteed": false,
+    "per_state_compute": {
+      "72:281": {
+        "completed_candidates": 81,
+        "budget_limited": 10,
+        "worker_cpu_seconds": 5170.968795174002,
+        "worker_wall_seconds": 5171.167452152818,
+        "maximum_queue_wait_seconds": 1124.3480468031485
+      },
+      "87:272": {
+        "completed_candidates": 81,
+        "budget_limited": 9,
+        "worker_cpu_seconds": 2088.234076593,
+        "worker_wall_seconds": 2088.325853956165,
+        "maximum_queue_wait_seconds": 1144.0588548809756
+      },
+      "114:272": {
+        "completed_candidates": 81,
+        "budget_limited": 10,
+        "worker_cpu_seconds": 2189.967154124001,
+        "worker_wall_seconds": 2190.054709039163,
+        "maximum_queue_wait_seconds": 1148.7970582500566
+      }
+    },
+    "native_success": false,
+    "valid_expert_labels": false
+  },
+  "remaining_surface_margins": [
+    {
+      "state_key": "96:268",
+      "samples": 533,
+      "minimum_head": {
+        "tick": 314,
+        "time_s": 3.14,
+        "head": {
+          "body": "Head_lower",
+          "gap_m": 0.0014718674057993056,
+          "rate_m_s": -0.011115713066551958,
+          "shape_index": 12
+        },
+        "nonfoot": {
+          "body": "Head_lower",
+          "gap_m": 0.0014718674057993056,
+          "rate_m_s": -0.011115713066551958,
+          "shape_index": 12
+        },
+        "nearest_obstacle": {
+          "body": "Racket::net",
+          "gap_m": 0.20054045048846442,
+          "rate_m_s": 0.0,
+          "shape_index": 151
+        }
+      },
+      "minimum_nonfoot": {
+        "tick": 314,
+        "time_s": 3.14,
+        "head": {
+          "body": "Head_lower",
+          "gap_m": 0.0014718674057993056,
+          "rate_m_s": -0.011115713066551958,
+          "shape_index": 12
+        },
+        "nonfoot": {
+          "body": "Head_lower",
+          "gap_m": 0.0014718674057993056,
+          "rate_m_s": -0.011115713066551958,
+          "shape_index": 12
+        },
+        "nearest_obstacle": {
+          "body": "Racket::net",
+          "gap_m": 0.20054045048846442,
+          "rate_m_s": 0.0,
+          "shape_index": 151
+        }
+      },
+      "initial": {
+        "tick": 268,
+        "time_s": 2.68,
+        "head": {
+          "body": "Head_lower",
+          "gap_m": 0.47634079174134963,
+          "rate_m_s": 0.360662369430204,
+          "shape_index": 12
+        },
+        "nonfoot": {
+          "body": "Head_lower",
+          "gap_m": 0.47634079174134963,
+          "rate_m_s": 0.360662369430204,
+          "shape_index": 12
+        },
+        "nearest_obstacle": {
+          "body": "RL_foot::RR_foot",
+          "gap_m": 0.18604506088855588,
+          "rate_m_s": 0.14678281951797142,
+          "shape_index": 157
+        }
+      },
+      "final": {
+        "tick": 800,
+        "time_s": 8.0,
+        "head": {
+          "body": "Head_lower",
+          "gap_m": 0.20744921563900734,
+          "rate_m_s": 2.141215078763762e-05,
+          "shape_index": 12
+        },
+        "nonfoot": {
+          "body": "FL_calf",
+          "gap_m": 0.019888906051701905,
+          "rate_m_s": 2.3923050767664167e-06,
+          "shape_index": 5
+        },
+        "nearest_obstacle": {
+          "body": "FL_foot::FR_foot",
+          "gap_m": 0.16818377116109326,
+          "rate_m_s": -2.8399144562869786e-07,
+          "shape_index": 152
+        }
+      },
+      "model_stable_s": 2.4800000190734863,
+      "command_sources": {
+        "predictive_reference_selection:planned": 160,
+        "interval_qp": 372
+      },
+      "source_feedback": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_archived_initial_recheck_20261109/state_96_268.json"
+    },
+    {
+      "state_key": "98:267",
+      "samples": 534,
+      "minimum_head": {
+        "tick": 315,
+        "time_s": 3.15,
+        "head": {
+          "body": "Head_lower",
+          "gap_m": 0.01663078804322047,
+          "rate_m_s": -0.015511004703663369,
+          "shape_index": 12
+        },
+        "nonfoot": {
+          "body": "Head_lower",
+          "gap_m": 0.01663078804322047,
+          "rate_m_s": -0.015511004703663369,
+          "shape_index": 12
+        },
+        "nearest_obstacle": {
+          "body": "Racket::net",
+          "gap_m": 0.1355547110684479,
+          "rate_m_s": 0.0727137380724931,
+          "shape_index": 151
+        }
+      },
+      "minimum_nonfoot": {
+        "tick": 325,
+        "time_s": 3.25,
+        "head": {
+          "body": "Head_lower",
+          "gap_m": 0.04567973797098489,
+          "rate_m_s": 0.5366686378588293,
+          "shape_index": 12
+        },
+        "nonfoot": {
+          "body": "FR_calf",
+          "gap_m": 0.01646260921293677,
+          "rate_m_s": 0.0035620155247548246,
+          "shape_index": 10
+        },
+        "nearest_obstacle": {
+          "body": "Racket::net",
+          "gap_m": 0.17328506909495903,
+          "rate_m_s": 1.0073343550312783,
+          "shape_index": 151
+        }
+      },
+      "initial": {
+        "tick": 267,
+        "time_s": 2.67,
+        "head": {
+          "body": "Head_lower",
+          "gap_m": 0.4659669456607827,
+          "rate_m_s": 0.46076322286238286,
+          "shape_index": 12
+        },
+        "nonfoot": {
+          "body": "Head_lower",
+          "gap_m": 0.4659669456607827,
+          "rate_m_s": 0.46076322286238286,
+          "shape_index": 12
+        },
+        "nearest_obstacle": {
+          "body": "RL_foot::RR_foot",
+          "gap_m": 0.18711615147213007,
+          "rate_m_s": 0.17381155878948867,
+          "shape_index": 157
+        }
+      },
+      "final": {
+        "tick": 800,
+        "time_s": 8.0,
+        "head": {
+          "body": "Head_lower",
+          "gap_m": 0.15388432999422053,
+          "rate_m_s": -9.987718340016994e-06,
+          "shape_index": 12
+        },
+        "nonfoot": {
+          "body": "FR_calf",
+          "gap_m": 0.021093430315611436,
+          "rate_m_s": 3.036050558370528e-06,
+          "shape_index": 10
+        },
+        "nearest_obstacle": {
+          "body": "FL_foot::FR_foot",
+          "gap_m": 0.2067629503723335,
+          "rate_m_s": 1.931307767540503e-06,
+          "shape_index": 152
+        }
+      },
+      "model_stable_s": 3.700000286102295,
+      "command_sources": {
+        "predictive_reference_selection:planned": 46,
+        "predictive_reference_selection:state_joint_feedback": 78,
+        "predictive_reference_selection:wbc": 16,
+        "predictive_reference_selection:half_wbc": 20,
+        "interval_qp": 373
+      },
+      "source_feedback": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_archived_initial_recheck_20261109/state_98_267.json"
+    }
+  ],
+  "margin_experiment": {
+    "states": [
+      "8:272",
+      "67:269",
+      "96:268"
+    ],
+    "workers": 3,
+    "max_seconds": 2000,
+    "physical_substeps": 160,
+    "scoring_substeps": 16,
+    "zero_weight_entry_checks": [
+      {
+        "state_key": "8:272",
+        "maximum_request_error_rad": 0.0
+      },
+      {
+        "state_key": "67:269",
+        "maximum_request_error_rad": 0.0
+      },
+      {
+        "state_key": "96:268",
+        "maximum_request_error_rad": 0.0
+      }
+    ],
+    "cost_semantics_checked": true,
+    "soft_margin_m": 0.01,
+    "approach_s": 0.05,
+    "weight": 10.0,
+    "native_execution": false,
+    "training": false,
+    "acceptance_changed": false,
+    "physical_interface_unchanged": true,
+    "baseline_feedback": [
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_archived_initial_recheck_20261109/state_8_272.json",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_archived_initial_recheck_20261109/state_67_269.json",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_archived_initial_recheck_20261109/state_96_268.json"
+    ]
+  },
+  "margin_status": {
+    "state": "COMPLETED_CLEARANCE_REFERENCE_FEEDBACK",
+    "results": [
+      {
+        "state_key": "67:269",
+        "mode": "clearance",
+        "steps": 45,
+        "required_steps": 531,
+        "failure": {
+          "tick": 314,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 1.4407227633413122e-05
+          },
+          "collision": {
+            "micro": 21,
+            "body": "Head_lower",
+            "gap_m": -2.5536592316646733e-06
+          }
+        },
+        "full_model_path": false,
+        "final_model_stable_s": 0.0,
+        "state_settling_capture_tick": null,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "state_key": "96:268",
+        "mode": "clearance",
+        "steps": 43,
+        "required_steps": 532,
+        "failure": {
+          "tick": 311,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.0051471627455517005
+          },
+          "collision": {
+            "micro": 0,
+            "body": "Head_lower",
+            "gap_m": -7.005677907623298e-06
+          }
+        },
+        "full_model_path": false,
+        "final_model_stable_s": 0.0,
+        "state_settling_capture_tick": null,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "state_key": "8:272",
+        "mode": "clearance",
+        "steps": 45,
+        "required_steps": 528,
+        "failure": {
+          "tick": 317,
+          "reason": "model_rejected",
+          "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.00173992381064636, 'friction_cone': 0.0, 'tangent_fixed_point': 0.0002227455221361918}, 'box_violation': 4.570809597481684e-08, 'box_fixed_point': 2.0838253345090152e-10}\")"
+        },
+        "full_model_path": false,
+        "final_model_stable_s": 0.0,
+        "state_settling_capture_tick": null,
+        "native_success": false,
+        "valid_expert_labels": false
+      }
+    ],
+    "elapsed_s": 40.810029982123524,
+    "native_execution": false,
+    "native_success": false,
+    "valid_expert_labels": false
+  },
+  "difficult_feedback_status": {
+    "state": "COMPLETED_STATE_SETTLING_FEEDBACK",
+    "results": [
+      {
+        "state_key": "114:272",
+        "mode": "plan_end",
+        "steps": 108,
+        "required_steps": 528,
+        "failure": {
+          "tick": 380,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.00940087803986632
+          },
+          "collision": {
+            "micro": 12,
+            "body": "FR_hip",
+            "gap_m": -4.075475487377855e-06
+          }
+        },
+        "full_model_path": false,
+        "final_model_stable_s": 0.0,
+        "state_settling_capture_tick": null,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "state_key": "114:272",
+        "mode": "state_settling",
+        "steps": 108,
+        "required_steps": 528,
+        "failure": {
+          "tick": 380,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.00940087803986632
+          },
+          "collision": {
+            "micro": 12,
+            "body": "FR_hip",
+            "gap_m": -4.075475487377855e-06
+          }
+        },
+        "full_model_path": false,
+        "final_model_stable_s": 0.0,
+        "state_settling_capture_tick": null,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "state_key": "72:281",
+        "mode": "plan_end",
+        "steps": 150,
+        "required_steps": 519,
+        "failure": {
+          "tick": 431,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.010724525470897084
+          },
+          "collision": {
+            "micro": 3,
+            "body": "FL_hip",
+            "gap_m": -6.20285725718428e-05
+          }
+        },
+        "full_model_path": false,
+        "final_model_stable_s": 0.0,
+        "state_settling_capture_tick": null,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "state_key": "72:281",
+        "mode": "state_settling",
+        "steps": 150,
+        "required_steps": 519,
+        "failure": {
+          "tick": 431,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.010724525470897084
+          },
+          "collision": {
+            "micro": 3,
+            "body": "FL_hip",
+            "gap_m": -6.20285725718428e-05
+          }
+        },
+        "full_model_path": false,
+        "final_model_stable_s": 0.0,
+        "state_settling_capture_tick": null,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "state_key": "87:272",
+        "mode": "plan_end",
+        "steps": 233,
+        "required_steps": 528,
+        "failure": {
+          "tick": 505,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.003164339289102147
+          },
+          "collision": {
+            "micro": 7,
+            "body": "FR_thigh",
+            "gap_m": -1.4422205565328694e-05
+          }
+        },
+        "full_model_path": false,
+        "final_model_stable_s": 0.0,
+        "state_settling_capture_tick": null,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "state_key": "87:272",
+        "mode": "state_settling",
+        "steps": 233,
+        "required_steps": 528,
+        "failure": {
+          "tick": 505,
+          "reason": "physical_path_violation",
+          "violations": {
+            "nonfoot_ground_violation_m": 0.003164339289102147
+          },
+          "collision": {
+            "micro": 7,
+            "body": "FR_thigh",
+            "gap_m": -1.4422205565328694e-05
+          }
+        },
+        "full_model_path": false,
+        "final_model_stable_s": 0.0,
+        "state_settling_capture_tick": null,
+        "native_success": false,
+        "valid_expert_labels": false
+      }
+    ],
+    "wall_seconds": 372.5332823898643,
+    "native_success": false,
+    "valid_expert_labels": false
+  },
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_released_prefix_search_20261109/inputs.json": "a00e3374268a1cb1223caa279c5239d6e24a62acbe775ce06b813ad12dccdfd7",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_released_prefix_search_20261109/result.json": "2e28b708e857145e1bc5c43d306247e7fb3eb9a16e06a92f06a271c628168243",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_dense_correction_search_20261109/inputs.json": "a70913d333499b088742ebb6cd69f9b74e17a55514550423a2c9a1083aad6aad",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_dense_correction_search_20261109/result.json": "3db5d0033d85804ccd65918a6eec638d22858830bcb4a3f17efd52a49dbca9a2",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_completed_feedback_clearance_20261109/remaining_ground_only.json": "1922307112657d8d5c4bf72052d2d45ac75f7ca6950aabd30c900856ccd0530e",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_clearance_reference_feedback_20261109/inputs.json": "78c34d670e209a3305b4e3682862f8569cf9457c02c08987f382ff9612939a73",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_clearance_reference_feedback_20261109/formal_verify.json": "ae2b5bbc540391cfed972e3b8764c4c9229b3e2cee247c029a8aa1075e69beea",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_difficult_reference_feedback_20261109/inputs.json": "7d6d92ea93f4c63970338235ea98444b9d707919125ee6e49a513fde2ffd8f16",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_clearance_reference_v25.py": "5dba7cc9f82bec379b4f0f3e7582c8809e2c0ed21b670e94756228be175b73ff",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/evaluate_clearance_reference_feedback_v1.py": "1f6402f0e75e709e6a019091c2b3bace767bdcfc7ca66373ebc9f361201b366d",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_clearance_reference_feedback_20261109/result.json": "725684c4877cefae0c4a72dbc1d8c4978b5c6e4c858a19c9b2aca3b19d39d0ca",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_clearance_reference_feedback_20261109/baseline_comparison.json": "7250b66fb043b875c1d40a312f3fe67b3e282f1970bf30ef75216af249912adf",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_clearance_first_choice_v1.py": "221c32af868c234f1579974cd013c0bbb665ad856e6d4dd40574489e36eb01bc",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_difficult_reference_feedback_20261109/result.json": "d35efb4490e53d1c11a645ef527fc913b18614d83d66f49e98d00798da7a62e5",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_uncovered38_settling_20261109/result.json": "b902a88cc063f5cb2f7f60972a4b34a2377b4b926faf0b8ab6e619ce5d722888",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_uncovered38_settling_20261109/paired_completion_check.json": "97e22e1f9d53882fcf679338eb89a3493d9c8d75737d27c0c97bdc56362d16b2",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_clearance_reference_feedback_20261109/first_choice_horizon.json": "462faf6f92c484e98b911c5fec0ef68f3bc90446371c75d3ce4c7269883aa30f",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_clearance_reference_feedback_20261109/first_choice_surface_costs.json": "a15b7a3b339695a46a4a41441fb15c31edc4c9d2f690bae49490a30f9d401d34",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_dynamic_clearance_feedback_20261109/inputs.json": "f92793ecde88b46989b148e943ada3a7516ef1b8d43d2d2dadf9ca1881b2a487",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_dynamic_clearance_feedback_20261109/formal_verify.json": "ae2b5bbc540391cfed972e3b8764c4c9229b3e2cee247c029a8aa1075e69beea",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/pure_control_dynamic_clearance_v26.py": "1b42d35a9b15157045101e69882dc7db9435d80256d7041e3950b85ebcdf2a4f",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/evaluate_dynamic_clearance_feedback_v1.py": "2086d3ef12757ec66bc65d45711822f0d1cb28732b6435029f9601577b626db4"
+  },
+  "training": false,
+  "native_success_added": false,
+  "formal_goal_status": "FAILED",
+  "margin_baseline_comparison": [
+    {
+      "state_key": "8:272",
+      "same_actual_initial_state": true,
+      "baseline_steps": 528,
+      "baseline_stable_s": 3.619999885559082,
+      "new_steps": 45,
+      "new_failure": {
+        "tick": 317,
+        "reason": "model_rejected",
+        "error": "ValueError(\"Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 0.00173992381064636, 'friction_cone': 0.0, 'tangent_fixed_point': 0.0002227455221361918}, 'box_violation': 4.570809597481684e-08, 'box_fixed_point': 2.0838253345090152e-10}\")"
+      },
+      "first_changed_command": {
+        "tick": 294,
+        "maximum_difference_rad": 0.05721356582149548,
+        "new_source": "predictive_reference_selection:wbc",
+        "baseline_source": "predictive_reference_selection:planned"
+      },
+      "shared_observed_steps": 45,
+      "changed_command_steps": 22
+    },
+    {
+      "state_key": "67:269",
+      "same_actual_initial_state": true,
+      "baseline_steps": 531,
+      "baseline_stable_s": 3.6399998664855957,
+      "new_steps": 45,
+      "new_failure": {
+        "tick": 314,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 1.4407227633413122e-05
+        },
+        "collision": {
+          "micro": 21,
+          "body": "Head_lower",
+          "gap_m": -2.5536592316646733e-06
+        }
+      },
+      "first_changed_command": {
+        "tick": 290,
+        "maximum_difference_rad": 0.060986582393038,
+        "new_source": "predictive_reference_selection:wbc",
+        "baseline_source": "predictive_reference_selection:planned"
+      },
+      "shared_observed_steps": 45,
+      "changed_command_steps": 22
+    },
+    {
+      "state_key": "96:268",
+      "same_actual_initial_state": true,
+      "baseline_steps": 532,
+      "baseline_stable_s": 2.4800000190734863,
+      "new_steps": 43,
+      "new_failure": {
+        "tick": 311,
+        "reason": "physical_path_violation",
+        "violations": {
+          "nonfoot_ground_violation_m": 0.0051471627455517005
+        },
+        "collision": {
+          "micro": 0,
+          "body": "Head_lower",
+          "gap_m": -7.005677907623298e-06
+        }
+      },
+      "first_changed_command": {
+        "tick": 289,
+        "maximum_difference_rad": 0.06871047928355734,
+        "new_source": "predictive_reference_selection:wbc",
+        "baseline_source": "predictive_reference_selection:planned"
+      },
+      "shared_observed_steps": 43,
+      "changed_command_steps": 18
+    }
+  ],
+  "margin_candidate_rejected": true,
+  "updated_utc": "2026-11-09T00:04:53.358863+00:00",
+  "first_choice_horizon": [
+    {
+      "state_key": "8:272",
+      "first_changed_tick": 294,
+      "rollouts": [
+        {
+          "label": "baseline_first",
+          "steps": 40,
+          "failure": null,
+          "first_prediction": {
+            "offset": 0,
+            "end_time_s": 0.01,
+            "head_gap_m": 0.30631660228705887,
+            "surface_cost": 10.72866846666036,
+            "cumulative_objective": 107.28668719616195,
+            "first_prediction_q_error": 0.0,
+            "first_prediction_v_error": 0.0
+          },
+          "last_prediction": {
+            "offset": 39,
+            "end_time_s": 0.4,
+            "head_gap_m": 0.05860588444096333,
+            "surface_cost": 0.0,
+            "cumulative_objective": 2128.782761431917
+          }
+        },
+        {
+          "label": "clearance_first",
+          "steps": 40,
+          "failure": null,
+          "first_prediction": {
+            "offset": 0,
+            "end_time_s": 0.01,
+            "head_gap_m": 0.3062533779168421,
+            "surface_cost": 6.325044386368276,
+            "cumulative_objective": 63.55794743003877,
+            "first_prediction_q_error": 0.0,
+            "first_prediction_v_error": 0.0
+          },
+          "last_prediction": {
+            "offset": 39,
+            "end_time_s": 0.4,
+            "head_gap_m": 0.0655778161085005,
+            "surface_cost": 0.0,
+            "cumulative_objective": 2179.285120057575
+          }
+        }
+      ]
+    },
+    {
+      "state_key": "67:269",
+      "first_changed_tick": 290,
+      "rollouts": [
+        {
+          "label": "baseline_first",
+          "steps": 40,
+          "failure": null,
+          "first_prediction": {
+            "offset": 0,
+            "end_time_s": 0.01,
+            "head_gap_m": 0.3001974305419728,
+            "surface_cost": 6.057305818804426,
+            "cumulative_objective": 60.57305840620966,
+            "first_prediction_q_error": 0.0,
+            "first_prediction_v_error": 0.0
+          },
+          "last_prediction": {
+            "offset": 39,
+            "end_time_s": 0.4,
+            "head_gap_m": 0.11846112066940874,
+            "surface_cost": 0.0,
+            "cumulative_objective": 1786.5294525954064
+          }
+        },
+        {
+          "label": "clearance_first",
+          "steps": 40,
+          "failure": null,
+          "first_prediction": {
+            "offset": 0,
+            "end_time_s": 0.01,
+            "head_gap_m": 0.3002968942372268,
+            "surface_cost": 3.143702501980876,
+            "cumulative_objective": 31.662763043900792,
+            "first_prediction_q_error": 0.0,
+            "first_prediction_v_error": 0.0
+          },
+          "last_prediction": {
+            "offset": 39,
+            "end_time_s": 0.4,
+            "head_gap_m": 0.1191810379860307,
+            "surface_cost": 0.0,
+            "cumulative_objective": 1768.2830999202913
+          }
+        }
+      ]
+    },
+    {
+      "state_key": "96:268",
+      "first_changed_tick": 289,
+      "rollouts": [
+        {
+          "label": "baseline_first",
+          "steps": 40,
+          "failure": null,
+          "first_prediction": {
+            "offset": 0,
+            "end_time_s": 0.01,
+            "head_gap_m": 0.29802388461584056,
+            "surface_cost": 6.224554192385951,
+            "cumulative_objective": 62.24554192385951,
+            "first_prediction_q_error": 0.0,
+            "first_prediction_v_error": 0.0
+          },
+          "last_prediction": {
+            "offset": 39,
+            "end_time_s": 0.4,
+            "head_gap_m": 0.12025889248677818,
+            "surface_cost": 0.0,
+            "cumulative_objective": 2628.5226959909533
+          }
+        },
+        {
+          "label": "clearance_first",
+          "steps": 40,
+          "failure": null,
+          "first_prediction": {
+            "offset": 0,
+            "end_time_s": 0.01,
+            "head_gap_m": 0.29806166638199677,
+            "surface_cost": 2.750481271788707,
+            "cumulative_objective": 27.82646987033707,
+            "first_prediction_q_error": 0.0,
+            "first_prediction_v_error": 0.0
+          },
+          "last_prediction": {
+            "offset": 39,
+            "end_time_s": 0.4,
+            "head_gap_m": 0.13065756002702753,
+            "surface_cost": 0.0,
+            "cumulative_objective": 2529.4031901671087
+          }
+        }
+      ]
+    }
+  ],
+  "first_choice_surface_costs": [
+    {
+      "state_key": "8:272",
+      "tick": 294,
+      "surfaces": [
+        {
+          "controller": "baseline",
+          "total_cost": 10.72866846666036,
+          "top": [
+            {
+              "body": "FL_calf",
+              "gap_m": 0.07090704056162406,
+              "rate_m_s": -1.873233734920727,
+              "linear_approach_gap_m": -0.022754646184412308,
+              "soft_cost": 10.72866846666036
+            },
+            {
+              "body": "base",
+              "gap_m": 0.4192100596607336,
+              "rate_m_s": -1.8114477361988675,
+              "linear_approach_gap_m": 0.3286376728507902,
+              "soft_cost": 0.0
+            },
+            {
+              "body": "FL_hip",
+              "gap_m": 0.38906440471349923,
+              "rate_m_s": -1.8476788900687293,
+              "linear_approach_gap_m": 0.2966804602100628,
+              "soft_cost": 0.0
+            },
+            {
+              "body": "FL_thigh",
+              "gap_m": 0.23483570099576798,
+              "rate_m_s": -1.7307894273263251,
+              "linear_approach_gap_m": 0.14829622962945171,
+              "soft_cost": 0.0
+            }
+          ],
+          "normal_forces_n": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "controller": "clearance",
+          "total_cost": 6.325044386368276,
+          "top": [
+            {
+              "body": "FL_calf",
+              "gap_m": 0.07193579589864252,
+              "rate_m_s": -1.7417087364650539,
+              "linear_approach_gap_m": -0.015149640924610186,
+              "soft_cost": 6.325044386368276
+            },
+            {
+              "body": "base",
+              "gap_m": 0.4191557775940188,
+              "rate_m_s": -1.8186506255470793,
+              "linear_approach_gap_m": 0.32822324631666483,
+              "soft_cost": 0.0
+            },
+            {
+              "body": "FL_hip",
+              "gap_m": 0.388966397306094,
+              "rate_m_s": -1.8615864022750168,
+              "linear_approach_gap_m": 0.29588707719234314,
+              "soft_cost": 0.0
+            },
+            {
+              "body": "FL_thigh",
+              "gap_m": 0.2351297766377331,
+              "rate_m_s": -1.6833296394598427,
+              "linear_approach_gap_m": 0.15096329466474095,
+              "soft_cost": 0.0
+            }
+          ],
+          "normal_forces_n": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ]
+    },
+    {
+      "state_key": "67:269",
+      "tick": 290,
+      "surfaces": [
+        {
+          "controller": "baseline",
+          "total_cost": 6.057305818804426,
+          "top": [
+            {
+              "body": "FL_calf",
+              "gap_m": 0.07221039815363398,
+              "rate_m_s": -1.7364398522795623,
+              "linear_approach_gap_m": -0.014611594460344143,
+              "soft_cost": 6.057305818804426
+            },
+            {
+              "body": "base",
+              "gap_m": 0.4103166479471848,
+              "rate_m_s": -1.871519746310389,
+              "linear_approach_gap_m": 0.31674066063166534,
+              "soft_cost": 0.0
+            },
+            {
+              "body": "FL_hip",
+              "gap_m": 0.39243517321545773,
+              "rate_m_s": -1.6228500069898923,
+              "linear_approach_gap_m": 0.3112926728659631,
+              "soft_cost": 0.0
+            },
+            {
+              "body": "FL_thigh",
+              "gap_m": 0.24095940155474221,
+              "rate_m_s": -1.6761979107518301,
+              "linear_approach_gap_m": 0.15714950601715072,
+              "soft_cost": 0.0
+            }
+          ],
+          "normal_forces_n": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "controller": "clearance",
+          "total_cost": 3.143702501980876,
+          "top": [
+            {
+              "body": "FL_calf",
+              "gap_m": 0.0730941324012267,
+              "rate_m_s": -1.6164924336752333,
+              "linear_approach_gap_m": -0.007730489282534975,
+              "soft_cost": 3.143702501980876
+            },
+            {
+              "body": "base",
+              "gap_m": 0.41038653579016904,
+              "rate_m_s": -1.8588175252172767,
+              "linear_approach_gap_m": 0.3174456595293052,
+              "soft_cost": 0.0
+            },
+            {
+              "body": "FL_hip",
+              "gap_m": 0.39251868086915215,
+              "rate_m_s": -1.6065779803785016,
+              "linear_approach_gap_m": 0.31218978185022705,
+              "soft_cost": 0.0
+            },
+            {
+              "body": "FL_thigh",
+              "gap_m": 0.2413584946974604,
+              "rate_m_s": -1.6132244741685238,
+              "linear_approach_gap_m": 0.1606972709890342,
+              "soft_cost": 0.0
+            }
+          ],
+          "normal_forces_n": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ]
+    },
+    {
+      "state_key": "96:268",
+      "tick": 289,
+      "surfaces": [
+        {
+          "controller": "baseline",
+          "total_cost": 6.224554192385951,
+          "top": [
+            {
+              "body": "FL_calf",
+              "gap_m": 0.07337578099018752,
+              "rate_m_s": -1.7330927301246575,
+              "linear_approach_gap_m": -0.013278855516045365,
+              "soft_cost": 5.419051141369157
+            },
+            {
+              "body": "FR_calf",
+              "gap_m": 0.11677421534270468,
+              "rate_m_s": -2.3149839504210705,
+              "linear_approach_gap_m": 0.001025017821651153,
+              "soft_cost": 0.8055030510167942
+            },
+            {
+              "body": "base",
+              "gap_m": 0.40860657771767983,
+              "rate_m_s": -1.8748378928762268,
+              "linear_approach_gap_m": 0.3148646830738685,
+              "soft_cost": 0.0
+            },
+            {
+              "body": "FL_hip",
+              "gap_m": 0.40302437106457667,
+              "rate_m_s": -1.6984928757166127,
+              "linear_approach_gap_m": 0.318099727278746,
+              "soft_cost": 0.0
+            }
+          ],
+          "normal_forces_n": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "controller": "clearance",
+          "total_cost": 2.750481271788707,
+          "top": [
+            {
+              "body": "FL_calf",
+              "gap_m": 0.0743104142414551,
+              "rate_m_s": -1.6178997843758165,
+              "linear_approach_gap_m": -0.006584574977335736,
+              "soft_cost": 2.750481271788707
+            },
+            {
+              "body": "base",
+              "gap_m": 0.40862431814956834,
+              "rate_m_s": -1.871887489795008,
+              "linear_approach_gap_m": 0.31502994365981796,
+              "soft_cost": 0.0
+            },
+            {
+              "body": "FL_hip",
+              "gap_m": 0.40286036094507577,
+              "rate_m_s": -1.7268265496759032,
+              "linear_approach_gap_m": 0.31651903346128063,
+              "soft_cost": 0.0
+            },
+            {
+              "body": "FL_thigh",
+              "gap_m": 0.25024376240719204,
+              "rate_m_s": -1.510808705195899,
+              "linear_approach_gap_m": 0.1747033271473971,
+              "soft_cost": 0.0
+            }
+          ],
+          "normal_forces_n": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ]
+    }
+  ],
+  "dynamic_clearance_inputs": {
+    "states": [
+      "8:272",
+      "67:269",
+      "96:268"
+    ],
+    "workers": 3,
+    "max_seconds": 2400,
+    "physical_substeps": 160,
+    "scoring_substeps": 16,
+    "zero_weight_entry_checks": [
+      {
+        "state_key": "8:272",
+        "maximum_request_error_rad": 0.0
+      },
+      {
+        "state_key": "67:269",
+        "maximum_request_error_rad": 0.0
+      },
+      {
+        "state_key": "96:268",
+        "maximum_request_error_rad": 0.0
+      }
+    ],
+    "cost_semantics_checked": true,
+    "soft_margin_m": 0.01,
+    "approach_s": 0.0,
+    "dynamic_prediction_s": 0.05,
+    "weight": 10.0,
+    "native_execution": false,
+    "training": false,
+    "acceptance_changed": false,
+    "physical_interface_unchanged": true,
+    "baseline_feedback": [
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_archived_initial_recheck_20261109/state_8_272.json",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_archived_initial_recheck_20261109/state_67_269.json",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_archived_initial_recheck_20261109/state_96_268.json"
+    ]
+  },
+  "dynamic_clearance_status": {
+    "state": "RUNNING_DYNAMIC_CLEARANCE_FEEDBACK",
+    "pid": 240534,
+    "completed": 0,
+    "total": 3,
+    "results": [],
+    "elapsed_s": 3.7460122257471085e-06,
+    "native_success": false
+  }
+}
