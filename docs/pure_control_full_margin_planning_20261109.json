@@ -92,7 +92,11 @@
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_full_margin_feedback_v1.py": "07a15da2d7280a15bbf905916340d1eb366065913ee836d89e64a08562c2b1ff",
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/run_full_margin_continuation_v1.py": "8f0be0d3ac8fcb43c5478e18ab9e41f51fb7348677c922425b335254480ed099",
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_full_recovery_margin_search_20261109/result.json": "f9f14d93a40c26d73a906c1ecd1c06b297e3c9306a7f6ad2df15e6d8346ff692",
-    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_full_recovery_margin_search_20261109/status.json": "08836f6191ea636835007d62b30ba303f250f7983f89a78770678a2928f14acc"
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_full_recovery_margin_search_20261109/status.json": "08836f6191ea636835007d62b30ba303f250f7983f89a78770678a2928f14acc",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_full_margin_continuation_20261109/status.json": "a72d76d98927e848590184422f9e992e8bacb949808e4afdf169fdfd0d6e6576",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_full_margin_continuation_20261109/end_observation.json": "ee5b468149db78dfacb56753284e3702fc661dec22d0c863002515f5fc1fb614",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_full_margin_feedback_20261109/clearance_comparison.json": "a2586fb2ba31fb594f10d3866d1f5d52eea36bf1e48e6e4a39e102fc6e4940c4",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_full_margin_feedback_20261109/nominal_comparison.json": "5615820488919e79a54c8bc301f8a15b975ad25698d3cc81cfb9208424593503"
   },
   "formal_goal_status": "FAILED",
   "native_success": false,
@@ -123,7 +127,7 @@
     ],
     "native_execution": false
   },
-  "updated_utc": "2026-11-09T00:53:55.777368+00:00",
+  "updated_utc": "2026-11-09T01:03:13.006773+00:00",
   "first_retained_candidate": {
     "time_utc": "2026-11-09T00:21:13.688316+00:00",
     "state_key": "67:269",
@@ -170,9 +174,54 @@
     "feedback_execution_pending": true
   },
   "conditional_feedback_status": {
-    "state": "RUNNING_IMPROVED_PLAN_FEEDBACK",
+    "state": "COMPLETED_MARGIN_FEEDBACK_AND_END_CHECK",
     "pid": 242571,
-    "time_utc": "2026-11-09T00:52:22.179229+00:00"
+    "time_utc": "2026-11-09T00:59:07.145359+00:00",
+    "result": {
+      "state": "COMPLETED_REPLANNED_FEEDBACK_MODEL",
+      "results": [
+        {
+          "state_key": "67:269",
+          "mode": "plan_end",
+          "steps": 531,
+          "required_steps": 531,
+          "failure": null,
+          "full_model_path": true,
+          "final_model_stable_s": 3.5999999046325684,
+          "state_settling_capture_tick": null,
+          "native_success": false,
+          "valid_expert_labels": false
+        }
+      ],
+      "excluded": [
+        {
+          "state_key": "8:272",
+          "reason": "No verified complete model margin improvement"
+        },
+        {
+          "state_key": "96:268",
+          "reason": "No verified complete model margin improvement"
+        }
+      ],
+      "elapsed_s": 404.03349421801977,
+      "phase_logging": "post_interval",
+      "native_success": false,
+      "valid_expert_labels": false
+    },
+    "end_observation": [
+      {
+        "state_key": "67:269",
+        "complete_model_feedback": true,
+        "end_time_s": 8.0,
+        "previous_precommand_stable_s": 3.5999999046325684,
+        "end_observation_stable_s": 3.5999999046325684,
+        "model_terminal_window_passed": true,
+        "native_success": false,
+        "valid_expert_labels": false
+      }
+    ],
+    "native_success": false,
+    "valid_expert_labels": false
   },
   "conditional_feedback_inputs": {
     "search_pid": 241576,
@@ -249,5 +298,221 @@
     "native_success": false,
     "valid_expert_labels": false
   },
-  "verified_search_sources": 106
+  "verified_search_sources": 106,
+  "completed_feedback_clearance": [
+    {
+      "state_key": "67:269",
+      "samples": 532,
+      "minimum_head": {
+        "tick": 314,
+        "time_s": 3.14,
+        "head": {
+          "body": "Head_lower",
+          "gap_m": 0.004614671754734054,
+          "rate_m_s": -0.04454258594146679,
+          "shape_index": 12
+        },
+        "nonfoot": {
+          "body": "Head_lower",
+          "gap_m": 0.004614671754734054,
+          "rate_m_s": -0.04454258594146679,
+          "shape_index": 12
+        },
+        "nearest_obstacle": {
+          "body": "Racket::net",
+          "gap_m": 0.20124308388128923,
+          "rate_m_s": 0.0,
+          "shape_index": 151
+        }
+      },
+      "minimum_nonfoot": {
+        "tick": 314,
+        "time_s": 3.14,
+        "head": {
+          "body": "Head_lower",
+          "gap_m": 0.004614671754734054,
+          "rate_m_s": -0.04454258594146679,
+          "shape_index": 12
+        },
+        "nonfoot": {
+          "body": "Head_lower",
+          "gap_m": 0.004614671754734054,
+          "rate_m_s": -0.04454258594146679,
+          "shape_index": 12
+        },
+        "nearest_obstacle": {
+          "body": "Racket::net",
+          "gap_m": 0.20124308388128923,
+          "rate_m_s": 0.0,
+          "shape_index": 151
+        }
+      },
+      "initial": {
+        "tick": 269,
+        "time_s": 2.69,
+        "head": {
+          "body": "Head_lower",
+          "gap_m": 0.47453847770341157,
+          "rate_m_s": 0.35653777969260336,
+          "shape_index": 12
+        },
+        "nonfoot": {
+          "body": "Head_lower",
+          "gap_m": 0.47453847770341157,
+          "rate_m_s": 0.35653777969260336,
+          "shape_index": 12
+        },
+        "nearest_obstacle": {
+          "body": "RL_foot::RR_foot",
+          "gap_m": 0.18977778239450369,
+          "rate_m_s": 0.05749830670651298,
+          "shape_index": 157
+        }
+      },
+      "final": {
+        "tick": 800,
+        "time_s": 8.0,
+        "head": {
+          "body": "Head_lower",
+          "gap_m": 0.16802783094762358,
+          "rate_m_s": 9.16887723089372e-07,
+          "shape_index": 12
+        },
+        "nonfoot": {
+          "body": "FL_calf",
+          "gap_m": 0.0190713017772179,
+          "rate_m_s": 2.0584048486610655e-07,
+          "shape_index": 5
+        },
+        "nearest_obstacle": {
+          "body": "RL_foot::RR_foot",
+          "gap_m": 0.3336419752123647,
+          "rate_m_s": -4.1790472546697746e-08,
+          "shape_index": 157
+        }
+      },
+      "model_stable_s": 3.6399998664855957,
+      "command_sources": {
+        "predictive_reference_selection:planned": 84,
+        "predictive_reference_selection:state_joint_feedback": 76,
+        "interval_qp": 371
+      },
+      "source_feedback": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_archived_initial_recheck_20261109/state_67_269.json"
+    },
+    {
+      "state_key": "67:269",
+      "samples": 532,
+      "minimum_head": {
+        "tick": 314,
+        "time_s": 3.14,
+        "head": {
+          "body": "Head_lower",
+          "gap_m": 0.010334548245636024,
+          "rate_m_s": 0.03797270018367915,
+          "shape_index": 12
+        },
+        "nonfoot": {
+          "body": "Head_lower",
+          "gap_m": 0.010334548245636024,
+          "rate_m_s": 0.03797270018367915,
+          "shape_index": 12
+        },
+        "nearest_obstacle": {
+          "body": "Racket::net",
+          "gap_m": 0.20079479454382793,
+          "rate_m_s": 0.0,
+          "shape_index": 151
+        }
+      },
+      "minimum_nonfoot": {
+        "tick": 314,
+        "time_s": 3.14,
+        "head": {
+          "body": "Head_lower",
+          "gap_m": 0.010334548245636024,
+          "rate_m_s": 0.03797270018367915,
+          "shape_index": 12
+        },
+        "nonfoot": {
+          "body": "Head_lower",
+          "gap_m": 0.010334548245636024,
+          "rate_m_s": 0.03797270018367915,
+          "shape_index": 12
+        },
+        "nearest_obstacle": {
+          "body": "Racket::net",
+          "gap_m": 0.20079479454382793,
+          "rate_m_s": 0.0,
+          "shape_index": 151
+        }
+      },
+      "initial": {
+        "tick": 269,
+        "time_s": 2.69,
+        "head": {
+          "body": "Head_lower",
+          "gap_m": 0.47453847770341157,
+          "rate_m_s": 0.35653777969260336,
+          "shape_index": 12
+        },
+        "nonfoot": {
+          "body": "Head_lower",
+          "gap_m": 0.47453847770341157,
+          "rate_m_s": 0.35653777969260336,
+          "shape_index": 12
+        },
+        "nearest_obstacle": {
+          "body": "RL_foot::RR_foot",
+          "gap_m": 0.18977778239450369,
+          "rate_m_s": 0.05749830670651298,
+          "shape_index": 157
+        }
+      },
+      "final": {
+        "tick": 800,
+        "time_s": 8.0,
+        "head": {
+          "body": "Head_lower",
+          "gap_m": 0.14387677132765542,
+          "rate_m_s": 0.0010013522456243733,
+          "shape_index": 12
+        },
+        "nonfoot": {
+          "body": "FL_calf",
+          "gap_m": 0.02609511490474964,
+          "rate_m_s": -0.00041867346022512845,
+          "shape_index": 5
+        },
+        "nearest_obstacle": {
+          "body": "RL_foot::RR_foot",
+          "gap_m": 0.2675335647791087,
+          "rate_m_s": 1.5140926154856224e-05,
+          "shape_index": 157
+        }
+      },
+      "model_stable_s": 3.5999999046325684,
+      "command_sources": {
+        "predictive_reference_selection:planned": 531
+      },
+      "source_feedback": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_full_margin_feedback_20261109/state_67_269.json"
+    }
+  ],
+  "nominal_feedback_comparison": {
+    "target": {
+      "maximum_difference": 0.0,
+      "changed_steps": 0,
+      "first_changed_tick": null
+    },
+    "q": {
+      "maximum_difference": 0.0,
+      "changed_steps": 0,
+      "first_changed_tick": null
+    },
+    "v": {
+      "maximum_difference": 0.0,
+      "changed_steps": 0,
+      "first_changed_tick": null
+    }
+  },
+  "feedback_interpretation": "All 531 commands selected planned; exact nominal q/v/actions. Full model execution checked, no perturbation or native robustness evidence."
 }

@@ -995,7 +995,13 @@
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_sustained_path_preparation_20261108/reference_library.json": "f8bbd0498fd9dc52d9aa3174b4836ab2af0ed98a03f32a3215c8113907ca6ece",
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_preserved_foot_replanning_preparation_20261109/reference_library.json": "3291906b9116804122e3bd37340b532004baca9a4077f61be0f4ac6a773348b1",
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_preserved_foot_completion_review_20261109/exact_preserved_history.json": "a3a4397dd0a69264c91aa26b9a5513e1a124356996b695394954f4b7a9bdac0c",
-    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_combined49_preparation_20261109/preservation.json": "7b1587433d60aa747e95e21c133ed5ec779741e43c6ce6c0de0c0fe9b3bee75b"
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_combined49_preparation_20261109/preservation.json": "7b1587433d60aa747e95e21c133ed5ec779741e43c6ce6c0de0c0fe9b3bee75b",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_combined49_feedback_20261109/result.json": "337618aed58605ed23a4d70e81652f2de088fcde8210e714e9c69a77dcb803ad",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_combined49_native_preparation_20261109_01/plan.json": "ad08b4cceaa20c9fb03a243f70f0276d85ea13c14f954791e42071656f1b6224",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_combined49_native_preparation_20261109_01/prepared_entry_check.json": "1279d83de148c187ab9a2d5e814c7db31b6d6592b79571516acc6d8581ead0d4",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_combined49_native_preparation_20261109_01/prequeue_recheck.json": "1279d83de148c187ab9a2d5e814c7db31b6d6592b79571516acc6d8581ead0d4",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_combined49_preparation_20261109/incomplete_feedback_admission_check.json": "8de58a7a119f5d3d81d60bd3d0e27eb8406fc68f6b3f6538682efa612e279406",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/prepare_combined_initial_native_v1.py": "ecb11e542ab8f495420cf344b3d97c64e6d99a3cf68e96bda3d18746462508f9"
   },
   "exact_preserved_history": {
     "checks": [
@@ -1160,5 +1166,149 @@
     ],
     "verified_source_count": 69,
     "native_execution": false
-  }
+  },
+  "combined49_completed_feedback": {
+    "state": "COMPLETED_COMBINED_INITIAL_FEEDBACK",
+    "results": [
+      {
+        "state_key": "3:277",
+        "expected_initial_reference": "29f3b16f11ad0f7440f482ac9fce0d376f4d5bf63e85180107dabb32fe2941fa",
+        "steps": 523,
+        "required_steps": 523,
+        "full_model_path": true,
+        "failure": null,
+        "end_time_s": 8.0,
+        "final_model_stable_s": 3.5900001525878906,
+        "model_terminal_window_passed": true,
+        "replanned_steps": 0,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "state_key": "8:272",
+        "expected_initial_reference": "eefd1009aeb63ce6de04f5ece20fdb5f57932576a601193b71d3ec768f3844be",
+        "steps": 528,
+        "required_steps": 528,
+        "full_model_path": true,
+        "failure": null,
+        "end_time_s": 8.0,
+        "final_model_stable_s": 3.619999885559082,
+        "model_terminal_window_passed": true,
+        "replanned_steps": 0,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "state_key": "65:275",
+        "expected_initial_reference": "96525ebe3bb1ebfe0042f1907572e11904010f4ea6c73159e513b1b24e4130d8",
+        "steps": 525,
+        "required_steps": 525,
+        "full_model_path": true,
+        "failure": null,
+        "end_time_s": 8.0,
+        "final_model_stable_s": 1.6500000953674316,
+        "model_terminal_window_passed": true,
+        "replanned_steps": 0,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "state_key": "27:274",
+        "expected_initial_reference": "eefbef41a62e4334aa506d505661b00c1f092b5ea392f90d8321d89d9ca450bd",
+        "steps": 526,
+        "required_steps": 526,
+        "full_model_path": true,
+        "failure": null,
+        "end_time_s": 8.0,
+        "final_model_stable_s": 2.7400002479553223,
+        "model_terminal_window_passed": true,
+        "replanned_steps": 0,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "state_key": "20:279",
+        "expected_initial_reference": "bb67cb16882b6cef72af7ad350bb60bd6a3c26cf9f9a116c0c716babb80fbc4e",
+        "steps": 521,
+        "required_steps": 521,
+        "full_model_path": true,
+        "failure": null,
+        "end_time_s": 8.0,
+        "final_model_stable_s": 3.5900001525878906,
+        "model_terminal_window_passed": true,
+        "replanned_steps": 0,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "state_key": "67:269",
+        "expected_initial_reference": "480764ccd9ae8282e20ff2b5f9308bb730cc0708960834d478ac3658d67ec5b5",
+        "steps": 531,
+        "required_steps": 531,
+        "full_model_path": true,
+        "failure": null,
+        "end_time_s": 8.0,
+        "final_model_stable_s": 3.6399998664855957,
+        "model_terminal_window_passed": true,
+        "replanned_steps": 0,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "state_key": "95:268",
+        "expected_initial_reference": "7f09d4ae17955c808010512a783c3eb9a2a33def631bfe88acfcb7739e8b0aa3",
+        "steps": 532,
+        "required_steps": 532,
+        "full_model_path": true,
+        "failure": null,
+        "end_time_s": 8.0,
+        "final_model_stable_s": 4.050000190734863,
+        "model_terminal_window_passed": true,
+        "replanned_steps": 0,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "state_key": "96:268",
+        "expected_initial_reference": "b1b18dc313ab3f8bf116a905c60b6c3e05b714e79786fea6a5de1323e40360ee",
+        "steps": 532,
+        "required_steps": 532,
+        "full_model_path": true,
+        "failure": null,
+        "end_time_s": 8.0,
+        "final_model_stable_s": 2.4800000190734863,
+        "model_terminal_window_passed": true,
+        "replanned_steps": 0,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "state_key": "98:267",
+        "expected_initial_reference": "277fe185de58fc61bbea32eb2bf2c055fe812586c930b38fa0d7a1904bc0143a",
+        "steps": 533,
+        "required_steps": 533,
+        "full_model_path": true,
+        "failure": null,
+        "end_time_s": 8.0,
+        "final_model_stable_s": 3.700000286102295,
+        "model_terminal_window_passed": true,
+        "replanned_steps": 0,
+        "native_success": false,
+        "valid_expert_labels": false
+      }
+    ],
+    "elapsed_s": 922.5711679889355,
+    "native_success": false,
+    "valid_expert_labels": false
+  },
+  "combined49_native_preparation": {
+    "plan": "reports/pure_control_combined49_native_preparation_20261109_01/plan.json",
+    "prepared": true,
+    "independently_rechecked": true,
+    "queued": false,
+    "native_execution": false,
+    "native_success": false,
+    "valid_expert_labels": false
+  },
+  "updated_utc": "2026-11-09T01:04:26.658748+00:00"
 }
