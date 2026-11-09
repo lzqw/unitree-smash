@@ -105,7 +105,8 @@
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_margin_disturbance_20261109_02/inputs.json": "8730312a5b20e18df63e17cf7eafa4b27059121a648f6e2a4d067e7f025b4e55",
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_margin_disturbance_schema_check_20261109/result.json": "e24d75c62835fa64725f9737fb5b899d6c28df79cf61c0a90c42ddbeccb0bc22",
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_margin_disturbance_20261109/reproduced_worker_error.json": "a0bd4612ce47ab84648db78574c105856cfe25abb1cbc13e21e1a52044a5300a",
-    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_margin_disturbance_20261109/status.json": "4a058b8cb3c6aebec4d37e7796137fa8e6b1827955b4ce315613a1db94c62c18"
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_margin_disturbance_20261109/status.json": "4a058b8cb3c6aebec4d37e7796137fa8e6b1827955b4ce315613a1db94c62c18",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_margin_disturbance_20261109_02/first_disturbance_effect_check.json": "a4bd4f6c69311b1ed7fc8b5fe97a1ce5ce6bc6cc7c4882f2f1fcb2c5e90e7811"
   },
   "formal_goal_status": "FAILED",
   "native_success": false,
@@ -136,7 +137,7 @@
     ],
     "native_execution": false
   },
-  "updated_utc": "2026-11-09T01:23:49.522022+00:00",
+  "updated_utc": "2026-11-09T01:30:19.241070+00:00",
   "first_retained_candidate": {
     "time_utc": "2026-11-09T00:21:13.688316+00:00",
     "state_key": "67:269",
@@ -564,7 +565,7 @@
   "disturbance_v2_snapshot": {
     "state": "RUNNING_PAIRED_MARGIN_DISTURBANCE",
     "pid": 252200,
-    "completed": 2,
+    "completed": 7,
     "total": 12,
     "results": [
       {
@@ -595,6 +596,86 @@
         "model_terminal_window_passed": true,
         "maximum_command_difference_rad": 0.0,
         "first_command_difference_tick": null,
+        "native_execution": false,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "plan": "optimized",
+        "mode": "feedback",
+        "pitch_delta_rad_s": 0.0,
+        "steps": 531,
+        "full_model_path": true,
+        "failure": null,
+        "end_time_s": 8.0,
+        "final_model_stable_s": 3.5999999046325684,
+        "model_terminal_window_passed": true,
+        "maximum_command_difference_rad": 0.0,
+        "first_command_difference_tick": null,
+        "native_execution": false,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "plan": "baseline",
+        "mode": "fixed",
+        "pitch_delta_rad_s": -0.05,
+        "steps": 531,
+        "full_model_path": true,
+        "failure": null,
+        "end_time_s": 8.0,
+        "final_model_stable_s": 3.6399998664855957,
+        "model_terminal_window_passed": true,
+        "maximum_command_difference_rad": 0.0,
+        "first_command_difference_tick": null,
+        "native_execution": false,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "plan": "baseline",
+        "mode": "feedback",
+        "pitch_delta_rad_s": 0.0,
+        "steps": 531,
+        "full_model_path": true,
+        "failure": null,
+        "end_time_s": 8.0,
+        "final_model_stable_s": 3.6399998664855957,
+        "model_terminal_window_passed": true,
+        "maximum_command_difference_rad": 0.0,
+        "first_command_difference_tick": null,
+        "native_execution": false,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "plan": "optimized",
+        "mode": "fixed",
+        "pitch_delta_rad_s": -0.05,
+        "steps": 531,
+        "full_model_path": true,
+        "failure": null,
+        "end_time_s": 8.0,
+        "final_model_stable_s": 3.630000114440918,
+        "model_terminal_window_passed": true,
+        "maximum_command_difference_rad": 0.0,
+        "first_command_difference_tick": null,
+        "native_execution": false,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "plan": "baseline",
+        "mode": "feedback",
+        "pitch_delta_rad_s": -0.05,
+        "steps": 531,
+        "full_model_path": true,
+        "failure": null,
+        "end_time_s": 8.0,
+        "final_model_stable_s": 3.6399998664855957,
+        "model_terminal_window_passed": true,
+        "maximum_command_difference_rad": 0.23599038685002366,
+        "first_command_difference_tick": 301,
         "native_execution": false,
         "native_success": false,
         "valid_expert_labels": false
@@ -655,5 +736,28 @@
     "training": false,
     "hardware_changed": false,
     "acceptance_changed": false
+  },
+  "first_disturbance_effect_check": {
+    "scope": "Observed model response to negative world pitch-rate impulse, fixed identical commands",
+    "prefix_identical_through_299": true,
+    "first_perturbed_step": {
+      "tick": 300,
+      "maximum_configuration_component_difference": 0.00047541217572422134,
+      "maximum_velocity_component_difference": 0.048022372524367696,
+      "maximum_force_component_difference_n": 0.13944875586500416
+    },
+    "maximum_q_difference": 0.1345737924211412,
+    "maximum_v_difference": 2.0345554605690124,
+    "terminal_difference": {
+      "tick": 799,
+      "maximum_configuration_component_difference": 0.06060785340302055,
+      "maximum_velocity_component_difference": 0.00309950379107482,
+      "maximum_force_component_difference_n": 5.758554431587328
+    },
+    "source_sha256": {
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_margin_disturbance_20261109_02/baseline_fixed_0.0.json": "9c6e7dccd4c2c8b3ccbc25cedc74b090c0a0a1436cf2a364d9b7244158faca54",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_margin_disturbance_20261109_02/baseline_fixed_-0.05.json": "6ba829a9f8585388b91153f65dd276ecb086752a05ec323ba4dbbb25859e0350"
+    },
+    "native_execution": false
   }
 }
