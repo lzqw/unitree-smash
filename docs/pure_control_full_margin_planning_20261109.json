@@ -85,7 +85,12 @@
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_full_recovery_margin_search_20261109/formal_verify.json": "ae2b5bbc540391cfed972e3b8764c4c9229b3e2cee247c029a8aa1075e69beea",
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/full_recovery_margin_rollout_v1.py": "39e228fc0a933a5874869c323094fcbadc25b5f7cc57ca9a8480ca4686c1dc27",
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/search_full_recovery_margin_v1.py": "0d0867f31fa1ee54af51858e32d30ef97b11ce67a35a197cdf51e887bfa6fac2",
-    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_full_recovery_margin_search_20261109/seed_check.json": "b9e5114f1d335396b021b4cf92df78c76f344764735e4c2e501fab62e6151b59"
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_full_recovery_margin_search_20261109/seed_check.json": "b9e5114f1d335396b021b4cf92df78c76f344764735e4c2e501fab62e6151b59",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_full_margin_candidate_review_20261109/summary.json": "d8579c2d3616cda924b69a3e7b6624e571a37aaa52a74af0ba5b8e8adba798e2",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_full_margin_continuation_20261109/inputs.json": "ee17caeaf80cd785ff00c79d1149e1e0598cd718da40283084b77927dcae32ce",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_full_margin_continuation_20261109/formal_verify.json": "ae2b5bbc540391cfed972e3b8764c4c9229b3e2cee247c029a8aa1075e69beea",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_full_margin_feedback_v1.py": "07a15da2d7280a15bbf905916340d1eb366065913ee836d89e64a08562c2b1ff",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/run_full_margin_continuation_v1.py": "8f0be0d3ac8fcb43c5478e18ab9e41f51fb7348677c922425b335254480ed099"
   },
   "formal_goal_status": "FAILED",
   "native_success": false,
@@ -116,5 +121,65 @@
     ],
     "native_execution": false
   },
-  "updated_utc": "2026-11-09T00:16:50.561970+00:00"
+  "updated_utc": "2026-11-09T00:22:34.245979+00:00",
+  "first_retained_candidate": {
+    "time_utc": "2026-11-09T00:21:13.688316+00:00",
+    "state_key": "67:269",
+    "source_search_still_running": true,
+    "source_candidate_path": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_full_recovery_margin_search_20261109/state_67_269.json",
+    "source_candidate_sha256": "6d6c62a6222911c523bd210950685d03edc5181d8b783b7aa7895d77fa517830",
+    "immutable_snapshot": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_full_margin_candidate_review_20261109/candidate_67_269.json",
+    "steps": 531,
+    "end_time_s": 8.0,
+    "terminal_stable_s": 3.5999999046325684,
+    "minimum_nonfoot_m": 0.010334548245636024,
+    "minimum_head_m": 0.010334548245636024,
+    "minimum_location": {
+      "step": 44,
+      "body": "Head_lower"
+    },
+    "margin_penalty": 0.0,
+    "changed_commands": 531,
+    "first_changed_tick": 269,
+    "max_command_difference_rad": 0.08374765238435278,
+    "max_command_by_joint_rad": [
+      0.03281314050327827,
+      0.032195605692713555,
+      0.011959489311146501,
+      0.04032074690278886,
+      0.04112373493111271,
+      0.021887281443571993,
+      0.036226435028412274,
+      0.08374765238435278,
+      0.02089755951646821,
+      0.03624398708660226,
+      0.05061816354915294,
+      0.03675754220552818,
+      0.018731292617144762,
+      0.021099925045617196,
+      0.022817019481936818,
+      0.040012234487662335,
+      0.032676575079943815,
+      0.04477987329861466
+    ],
+    "native_execution": false,
+    "native_success": false,
+    "valid_expert_labels": false,
+    "feedback_execution_pending": true
+  },
+  "conditional_feedback_status": {
+    "state": "WAITING_EXACT_MARGIN_SEARCH",
+    "pid": 242571,
+    "time_utc": "2026-11-09T00:19:52.088579+00:00",
+    "search_pid": 241576
+  },
+  "conditional_feedback_inputs": {
+    "search_pid": 241576,
+    "search_start_ticks": "180939043",
+    "max_wait_seconds": 3300,
+    "max_feedback_seconds": 2150,
+    "max_end_check_seconds": 120,
+    "native_execution": false,
+    "training": false
+  }
 }

@@ -29,3 +29,15 @@
 输出：`reports/pure_control_full_recovery_margin_search_20261109`。正式G07仍FAILED，验收契约未改。准备阶段头部接触仍独立记录，落地段收益不能冒充整回合无碰地。
 
 [完整物理回放与排序](../scripts/full_recovery_margin_rollout_v1.py)、[整段优化入口](../scripts/search_full_recovery_margin_v1.py)、[紧凑检查与来源](pure_control_full_margin_planning_20261109.json)。完整命令与轨迹保留本地。
+
+## 搜索中的首个改进候选与后续验证
+
+已保存TRAIN67当前最佳候选的不可变快照：完整531步到8秒，终点连续模型稳定约3.60秒；最低头部及非足部采样净空由原4.615毫米增至10.335毫米，最低点仍为头部。全部531条命令有变化，最大关节目标差约0.08375 rad，第一条恢复命令即允许调整。该差值是搜索结果，不是新增幅度限制。
+
+这是模型规划中的改进，不是原生落地成绩或反馈鲁棒性证明。原搜索继续运行，最终候选可能改变；快照位于`reports/pure_control_full_margin_candidate_review_20261109/candidate_67_269.json`，其内容和来源哈希单独保留。
+
+已启动有条件的CPU后续流程，验证正在运行的精确搜索PID身份与输入哈希。只对完整稳定且最低非足部采样净空提高超过1微米的最终候选，执行原V15完整反馈和8秒终点稳定重算；未改善则结束，无重试、GPU自动启动或教师标签。1微米只是排除数值平局的候选差异门槛，不是成功要求、有效收益保证或碰撞容差。
+
+协调流程最多等待3300秒，反馈子流程2150秒（内部2000秒），终点复算120秒，外层5700秒保护。等待阶段已实际运行；最终候选筛选、完整反馈及终点复算尚未执行，不能宣称已验证通过。反馈时另存快照，并明确控制点描述的是逐步基准上的修正，防止后续把它误读成独立绝对角度样条。
+
+[有条件协调器](../scripts/run_full_margin_continuation_v1.py)、[改进候选完整反馈](../scripts/audit_full_margin_feedback_v1.py)。协调目录为`reports/pure_control_full_margin_continuation_20261109`，反馈预定目录为`reports/pure_control_full_margin_feedback_20261109`。原生组合评估继续，仍需等待完整结果。
