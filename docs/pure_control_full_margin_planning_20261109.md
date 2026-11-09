@@ -41,3 +41,9 @@
 协调流程最多等待3300秒，反馈子流程2150秒（内部2000秒），终点复算120秒，外层5700秒保护。等待阶段已实际运行；最终候选筛选、完整反馈及终点复算尚未执行，不能宣称已验证通过。反馈时另存快照，并明确控制点描述的是逐步基准上的修正，防止后续把它误读成独立绝对角度样条。
 
 [有条件协调器](../scripts/run_full_margin_continuation_v1.py)、[改进候选完整反馈](../scripts/audit_full_margin_feedback_v1.py)。协调目录为`reports/pure_control_full_margin_continuation_20261109`，反馈预定目录为`reports/pure_control_full_margin_feedback_20261109`。原生组合评估继续，仍需等待完整结果。
+
+## 原生评估后的独立核验
+
+为正在运行的V20组合评估接入[完成后落地审计](../scripts/audit_native_landing_after_completion_v2.py)。它核对精确原生进程、计划路径和输入哈希；只有完整作业SUCCEEDED且最终命令仲裁检查通过，才调用现有受力／持续支撑审计。不重启仿真，不启动学习，不提升控制器版本。等待上限3600秒、审计600秒、外层4300秒。
+
+审计分别保留历史complete5与落地段无非足部受力、末端连续稳定结果；1 N只用于定位诊断事件，不能把低于1 N的真实非足部接触改判为无接触。连续稳定统计明确标记为控制采样至tick799，不称为连续时间认证。准备阶段碰头仍须单列，不能将落地段通过称为整回合无碰地。当前仅完成启动及等待身份核对，审计输出尚未生成；目录为`reports/pure_control_preserved_foot_completion_review_20261109`。
