@@ -1,0 +1,198 @@
+{
+  "updated_utc": "2026-11-09T01:23:49.521354+00:00",
+  "native_baseline": "pure_control_preserved_foot_all128_20261109_02",
+  "head_event_threshold_n": 1,
+  "strict_clean_contact_criterion_unchanged": true,
+  "summary": {
+    "unmatched": {
+      "owned_cases": 70,
+      "head_contact_cases": 60,
+      "head_after_nominal_reference_end": 0,
+      "last_precontact_sources": {
+        "uncertified_posture_fallback": 57,
+        "interval_qp": 3
+      }
+    },
+    "matched": {
+      "owned_cases": 40,
+      "head_contact_cases": 20,
+      "head_after_nominal_reference_end": 17,
+      "last_precontact_sources": {
+        "interval_qp": 3,
+        "uncertified_posture_fallback": 16,
+        "predictive_reference_selection:wbc": 1
+      }
+    }
+  },
+  "command_sources": {
+    "uncertified_posture_fallback": 73,
+    "interval_qp": 6,
+    "predictive_reference_selection:wbc": 1
+  },
+  "timing": {
+    "unmatched": {
+      "cases_without_recorded_ground_before_head": 33,
+      "head_delay_from_first_control_ground_s": {
+        "min": 0.0006250953674316051,
+        "median": 0.012250076293945256,
+        "max": 0.3316875095367431
+      }
+    },
+    "matched": {
+      "cases_without_recorded_ground_before_head": 0,
+      "head_delay_from_first_control_ground_s": {
+        "min": 0.1511249809265136,
+        "median": 0.6089375333786013,
+        "max": 2.66650002861023
+      }
+    }
+  },
+  "fallback_solver_status_counts": {
+    "primal infeasible": 62,
+    "solved": 11
+  },
+  "selected_sequence_states": {
+    "10:320": {
+      "case": 10,
+      "tick": 320,
+      "phase": {
+        "phase": "BUFFER_LOAD",
+        "changed": false,
+        "owns_final_recovery_command": true,
+        "release_time_s": 2.799999952316284,
+        "first_ground_time_s": 3.049999952316284,
+        "ground_contacts": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "currently_loaded": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "phase_settled_duration_s": 0.019999980926513672,
+        "control_sample_stable_duration_s": 0.0,
+        "formal_recovery_success_not_inferred": true
+      }
+    },
+    "55:317": {
+      "case": 55,
+      "tick": 317,
+      "phase": {
+        "phase": "BUFFER_LOAD",
+        "changed": false,
+        "owns_final_recovery_command": true,
+        "release_time_s": 2.7699999809265137,
+        "first_ground_time_s": 3.0299999713897705,
+        "ground_contacts": [
+          true,
+          true,
+          true,
+          false
+        ],
+        "currently_loaded": [
+          true,
+          true,
+          true,
+          false
+        ],
+        "phase_settled_duration_s": 0.0,
+        "control_sample_stable_duration_s": 0.0,
+        "formal_recovery_success_not_inferred": true
+      }
+    },
+    "82:323": {
+      "case": 82,
+      "tick": 323,
+      "phase": {
+        "phase": "BUFFER_LOAD",
+        "changed": false,
+        "owns_final_recovery_command": true,
+        "release_time_s": 2.8299999237060547,
+        "first_ground_time_s": 3.069999933242798,
+        "ground_contacts": [
+          true,
+          true,
+          true,
+          false
+        ],
+        "currently_loaded": [
+          true,
+          true,
+          true,
+          false
+        ],
+        "phase_settled_duration_s": 0.0,
+        "control_sample_stable_duration_s": 0.0,
+        "formal_recovery_success_not_inferred": true
+      }
+    }
+  },
+  "search_runtime_snapshot": {
+    "state": "SEARCHING_ACTUAL_RECOVERY_SEQUENCES",
+    "pid": 251774,
+    "generation": 6,
+    "completed_candidates": 474,
+    "elapsed_s": 215.90061878599226
+  },
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_preserved_foot_completion_review_20261109/head_failure_sources.json": "1163c1cd6f4f3564c95bf845679d1717ba0155ae4dcc4c95218c78c9a0cf81eb",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_reference_exit_sequence_search_20261109/inputs.json": "23d359f41d01d10cd2687cd9c5f195b94f21944783b7317d21c5241bfa41143b",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_native_head_failure_sources_v1.py": "e83efdb2140d40e913d2d7321a8c73a4b7f01399dc760d5ff5cda4fb8cc4af77",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/search_current_native_recovery_v4.py": "5476f6b7aae2fe1c2264b6de14392f08b99f58150f4a33a9cba9e83ec24ec50c",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_reference_exit_sequence_search_20261109/result.json": "96d7699aa356ad31d7edb9a4fc770ca3e54183b90ee99b1991d2403bd4560069",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_reference_exit_sequence_search_20261109/completion_check.json": "200b79b55cffddaa2e796de6a474c23bbb621326160b8ba26efc36f3258267c3"
+  },
+  "native_success_claimed": false,
+  "causal_attribution": false,
+  "completed_search": {
+    "state": "COMPLETED_ACTUAL_RECOVERY_SEQUENCE_SEARCH",
+    "completed_candidates": 474,
+    "results": [
+      {
+        "state_key": "10:320",
+        "steps": 40,
+        "model_path_complete": false,
+        "terminal_stable_s": 0.0,
+        "window_violation": 0.0,
+        "failure": {
+          "step": 40,
+          "reason": "model_rejected",
+          "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -4.6346731363992866e-05, 'exact': True, 'shape_index': 31, 'obstacle': 'net_segment_29'}\")"
+        }
+      },
+      {
+        "state_key": "55:317",
+        "steps": 58,
+        "model_path_complete": false,
+        "terminal_stable_s": 0.0,
+        "window_violation": 0.0,
+        "failure": {
+          "step": 58,
+          "reason": "model_rejected",
+          "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -0.00030778377881867346, 'exact': True, 'shape_index': 49, 'obstacle': 'net_segment_25'}\")"
+        }
+      },
+      {
+        "state_key": "82:323",
+        "steps": 63,
+        "model_path_complete": false,
+        "terminal_stable_s": 0.0,
+        "window_violation": 0.0,
+        "failure": {
+          "step": 63,
+          "reason": "model_rejected",
+          "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -7.390042696140027e-05, 'exact': True, 'shape_index': 31, 'obstacle': 'net_segment_33'}\")"
+        }
+      }
+    ],
+    "wall_seconds": 287.84892733907327,
+    "native_success": false,
+    "valid_expert_labels": false
+  },
+  "completion_verified_sources": 70,
+  "formal_verifier_exit": 2
+}

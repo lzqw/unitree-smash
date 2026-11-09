@@ -100,7 +100,12 @@
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_margin_disturbance_20261109/inputs.json": "4cca0bbe37393ffa8c81cfbe39395991bd9cb7c72be555be3e936a7f18ab3907",
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_margin_disturbance_20261109/launch_receipt.json": "ac55e4f6104498029afac9d01a02034055da794304f9c18d39c9adedd54a9660",
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_margin_disturbance_20261109/formal_verify.json": "bebfe459d469b65780eb5cc1f99e4826e5241459d921546599af7576c543fdb4",
-    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_full_margin_disturbance_v1.py": "812b5657835bf4ecdee8c40c4ddf3e2ecfcfb7207d459d15b6cec7b5441c6ec4"
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_full_margin_disturbance_v1.py": "812b5657835bf4ecdee8c40c4ddf3e2ecfcfb7207d459d15b6cec7b5441c6ec4",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_full_margin_disturbance_v2.py": "ea06709882be0f2a13902d9fe5b6f3520d8992847993c97d9795c1ba087cb45d",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_margin_disturbance_20261109_02/inputs.json": "8730312a5b20e18df63e17cf7eafa4b27059121a648f6e2a4d067e7f025b4e55",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_margin_disturbance_schema_check_20261109/result.json": "e24d75c62835fa64725f9737fb5b899d6c28df79cf61c0a90c42ddbeccb0bc22",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_margin_disturbance_20261109/reproduced_worker_error.json": "a0bd4612ce47ab84648db78574c105856cfe25abb1cbc13e21e1a52044a5300a",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_margin_disturbance_20261109/status.json": "4a058b8cb3c6aebec4d37e7796137fa8e6b1827955b4ce315613a1db94c62c18"
   },
   "formal_goal_status": "FAILED",
   "native_success": false,
@@ -131,7 +136,7 @@
     ],
     "native_execution": false
   },
-  "updated_utc": "2026-11-09T01:12:01.093109+00:00",
+  "updated_utc": "2026-11-09T01:23:49.522022+00:00",
   "first_retained_candidate": {
     "time_utc": "2026-11-09T00:21:13.688316+00:00",
     "state_key": "67:269",
@@ -544,5 +549,111 @@
     "completed": 0,
     "total": 12,
     "results": []
+  },
+  "disturbance_v1_failure": {
+    "state": "FAILED_TRAJECTORY_SCHEMA",
+    "pid": 250942,
+    "exit_code": 1,
+    "error": "KeyError: 'contacts'",
+    "confirmed_process_absent": true,
+    "time_utc": "2026-11-09T01:17:57.494299+00:00",
+    "evidence": "reproduced_worker_error.json",
+    "native_execution": false,
+    "no_physical_conclusion": true
+  },
+  "disturbance_v2_snapshot": {
+    "state": "RUNNING_PAIRED_MARGIN_DISTURBANCE",
+    "pid": 252200,
+    "completed": 2,
+    "total": 12,
+    "results": [
+      {
+        "plan": "optimized",
+        "mode": "fixed",
+        "pitch_delta_rad_s": 0.0,
+        "steps": 531,
+        "full_model_path": true,
+        "failure": null,
+        "end_time_s": 8.0,
+        "final_model_stable_s": 3.5999999046325684,
+        "model_terminal_window_passed": true,
+        "maximum_command_difference_rad": 0.0,
+        "first_command_difference_tick": null,
+        "native_execution": false,
+        "native_success": false,
+        "valid_expert_labels": false
+      },
+      {
+        "plan": "baseline",
+        "mode": "fixed",
+        "pitch_delta_rad_s": 0.0,
+        "steps": 531,
+        "full_model_path": true,
+        "failure": null,
+        "end_time_s": 8.0,
+        "final_model_stable_s": 3.6399998664855957,
+        "model_terminal_window_passed": true,
+        "maximum_command_difference_rad": 0.0,
+        "first_command_difference_tick": null,
+        "native_execution": false,
+        "native_success": false,
+        "valid_expert_labels": false
+      }
+    ]
+  },
+  "disturbance_v2_schema_check": {
+    "passed": true,
+    "checks": [
+      {
+        "plan": "baseline",
+        "executed_model_steps": 2,
+        "ended_reason": "compute_budget",
+        "source_sha256": "8c3a10e4dbe74ce9ce8486dbb6a733d0883444073d1778f532a3f0bf35cfe60b"
+      },
+      {
+        "plan": "optimized",
+        "executed_model_steps": 5,
+        "ended_reason": "compute_budget",
+        "source_sha256": "be1ad2a87311d85f71ed4e520455b97c46e6371c1a3d0b16af3dd6bdb992797b"
+      }
+    ],
+    "scope": "Actual feedback and model step work after contact-schema conversion; not a full recovery test",
+    "source_sha256": {
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_full_margin_disturbance_v2.py": "ea06709882be0f2a13902d9fe5b6f3520d8992847993c97d9795c1ba087cb45d"
+    },
+    "native_execution": false
+  },
+  "disturbance_v2_inputs": {
+    "scope": "Paired model-only disturbance tests of full nominal landing sequences.\n\nBoth plans start at the same recorded release. A declared artificial angular\nvelocity change at tick 300 probes sensitivity; it is not a native reset,\nphysical task episode, or evidence of an external-force recovery method.\nCompare fixed commands with the existing V15 observed-state candidate selector.\nThe predictor and plant share a model, so native robustness remains unproved.\n",
+    "workers": 4,
+    "max_seconds": 2000,
+    "disturbance_tick": 300,
+    "world_pitch_deltas_rad_s": [
+      0.0,
+      -0.05,
+      0.05
+    ],
+    "physical_substeps": 160,
+    "scoring_substeps": 16,
+    "reference_selection_forced": true,
+    "forced_selection_scope": "Same nominal reference isolated in paired model diagnostic",
+    "reference_schema_checks": [
+      {
+        "plan": "baseline",
+        "steps": 531,
+        "only_added_contacts_and_step": true,
+        "actual_reference_reader_passed": true
+      },
+      {
+        "plan": "optimized",
+        "steps": 531,
+        "only_added_contacts_and_step": true,
+        "actual_reference_reader_passed": true
+      }
+    ],
+    "native_execution": false,
+    "training": false,
+    "hardware_changed": false,
+    "acceptance_changed": false
   }
 }
