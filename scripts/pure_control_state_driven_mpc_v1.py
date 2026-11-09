@@ -21,10 +21,19 @@ class PureControlStateDrivenMPCV1(PureControlCourtRecoveryV4):
     """Generate and score recovery actions from the current state only."""
 
     def _base_reference(self, state):
-        decay = np.exp(-max(0., self.elapsed) / .5)
-        reference = self.nominal.copy()
-        if self.initial_arm is not None:
-            reference[12:] = self.nominal[12:] + decay * (self.initial_arm - self.nominal[12:])
+        # Start from the measured full-body configuration.  Pulling an
+        # airborne robot directly toward the default standing posture was the
+        # main failure mode of the first native trial: the QP was feasible but
+        # commanded a large, state-independent jump in posture.  A short
+        # velocity-damping horizon is state-driven and keeps the current
+        # reachable leg/arm geometry while the swing-foot task handles
+        # touchdown placement.
+        reference = state.joint_position.copy()
+        reference -= .08 * np.clip(state.joint_velocity, -3., 3.)
+        if state.contacts.any() and self.initial_arm is not None:
+            settle = np.clip((self.elapsed - .12) / .8, 0., 1.)
+            reference[12:] = ((1. - settle) * state.joint_position[12:]
+                              + settle * self.nominal[12:])
         return reference
 
     def _candidate_references(self, state):
