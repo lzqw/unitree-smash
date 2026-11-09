@@ -178,3 +178,26 @@ stride8 共执行 102,400 个环境步，作业成功，耗时约 3356 秒、0.9
 - 配置：`reports/pure_control_state_driven_long_mpc_qp_continuity_native_preparation_20261109_01/controller.json`
 - 独立种子结果：`reports/pure_control_state_driven_long_mpc_qp_continuity_all128_seed882073_20261109_01/native/metrics.json`
 - 完成标记：`reports/pure_control_state_driven_long_mpc_qp_continuity_all128_seed882073_20261109_01/native/completed.json`
+
+## 首个承载目标保持 0.08 s 对照（2026-11-09）
+
+为检验 rollout 是否过早把首个可行支撑目标拉向 terminal posture，增加了一个仅改变目标推进时序的变体：保持首个 QP 目标 8 个预测节点（0.08 s），之后在剩余节点中向终态收敛。预测窗口、重规划周期、QP 内连续性代价、执行器、物理参数和 8 s 原生评估均保持不变。
+
+| 指标 | QP 内连续性基线 | 首目标保持 0.08 s |
+|---|---:|---:|
+| complete5（5 m/s 主指标） | **40/128（31.25%）** | **21/128（16.41%）** |
+| 合格空中触球 | 74/128 | 74/128 |
+| 条件恢复 | **52/74（70.27%）** | **32/74（43.24%）** |
+| 实际球拍接触 | 110/128 | 110/128 |
+| 越网 | 73/128 | 71/128 |
+| 目标落点 | 60/128 | 59/128 |
+| 数值故障 | 0 | 0 |
+
+逐案例比较显示，保持式变体保留基线 40 个成功中的 18 个，丢失 22 个，仅新增 3 个（TRAIN57、90、96）。因此“先保持首目标、后收敛”在当前近似接触模型和执行接口下明显破坏了已形成的恢复序列，不能替换 0.32 s 固定 rollout。它也说明当前收益不是简单来自把腿部目标保持得更久；后续应优先改进接触/加载预测和统一序列优化，而不是继续增加保持时长。
+
+本轮证据：
+
+- 控制器：`scripts/pure_control_state_driven_long_mpc_v1_qp_continuity_hold.py`
+- 原生适配：`scripts/native_pure_control_state_driven_long_mpc_v1_qp_continuity_hold.py`
+- 入口：`reports/pure_control_state_driven_long_mpc_qp_continuity_hold_native_preparation_20261109_01/evaluate_pure_control.py`
+- 结果：`reports/pure_control_state_driven_long_mpc_qp_continuity_hold_all128_20261109_01/native/metrics.json`
