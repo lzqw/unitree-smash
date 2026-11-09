@@ -96,7 +96,11 @@
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_full_margin_continuation_20261109/status.json": "a72d76d98927e848590184422f9e992e8bacb949808e4afdf169fdfd0d6e6576",
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_full_margin_continuation_20261109/end_observation.json": "ee5b468149db78dfacb56753284e3702fc661dec22d0c863002515f5fc1fb614",
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_full_margin_feedback_20261109/clearance_comparison.json": "a2586fb2ba31fb594f10d3866d1f5d52eea36bf1e48e6e4a39e102fc6e4940c4",
-    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_full_margin_feedback_20261109/nominal_comparison.json": "5615820488919e79a54c8bc301f8a15b975ad25698d3cc81cfb9208424593503"
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_full_margin_feedback_20261109/nominal_comparison.json": "5615820488919e79a54c8bc301f8a15b975ad25698d3cc81cfb9208424593503",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_margin_disturbance_20261109/inputs.json": "4cca0bbe37393ffa8c81cfbe39395991bd9cb7c72be555be3e936a7f18ab3907",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_margin_disturbance_20261109/launch_receipt.json": "ac55e4f6104498029afac9d01a02034055da794304f9c18d39c9adedd54a9660",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_margin_disturbance_20261109/formal_verify.json": "bebfe459d469b65780eb5cc1f99e4826e5241459d921546599af7576c543fdb4",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_full_margin_disturbance_v1.py": "812b5657835bf4ecdee8c40c4ddf3e2ecfcfb7207d459d15b6cec7b5441c6ec4"
   },
   "formal_goal_status": "FAILED",
   "native_success": false,
@@ -127,7 +131,7 @@
     ],
     "native_execution": false
   },
-  "updated_utc": "2026-11-09T01:03:13.006773+00:00",
+  "updated_utc": "2026-11-09T01:12:01.093109+00:00",
   "first_retained_candidate": {
     "time_utc": "2026-11-09T00:21:13.688316+00:00",
     "state_key": "67:269",
@@ -514,5 +518,31 @@
       "first_changed_tick": null
     }
   },
-  "feedback_interpretation": "All 531 commands selected planned; exact nominal q/v/actions. Full model execution checked, no perturbation or native robustness evidence."
+  "feedback_interpretation": "All 531 commands selected planned; exact nominal q/v/actions. Full model execution checked, no perturbation or native robustness evidence.",
+  "disturbance_experiment": {
+    "scope": "Paired model-only disturbance tests of full nominal landing sequences.\n\nBoth plans start at the same recorded release. A declared artificial angular\nvelocity change at tick 300 probes sensitivity; it is not a native reset,\nphysical task episode, or evidence of an external-force recovery method.\nCompare fixed commands with the existing V15 observed-state candidate selector.\nThe predictor and plant share a model, so native robustness remains unproved.\n",
+    "workers": 4,
+    "max_seconds": 2000,
+    "disturbance_tick": 300,
+    "world_pitch_deltas_rad_s": [
+      0.0,
+      -0.05,
+      0.05
+    ],
+    "physical_substeps": 160,
+    "scoring_substeps": 16,
+    "reference_selection_forced": true,
+    "forced_selection_scope": "Same nominal reference isolated in paired model diagnostic",
+    "native_execution": false,
+    "training": false,
+    "hardware_changed": false,
+    "acceptance_changed": false
+  },
+  "disturbance_runtime_snapshot": {
+    "state": "RUNNING_PAIRED_MARGIN_DISTURBANCE",
+    "pid": 250942,
+    "completed": 0,
+    "total": 12,
+    "results": []
+  }
 }
