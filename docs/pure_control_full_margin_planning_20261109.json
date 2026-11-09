@@ -1,0 +1,120 @@
+{
+  "time_utc": "2026-11-09T00:16:21.252495+00:00",
+  "scope": "Full model sequence optimization from actual native release, no native deployment or learning",
+  "inputs": {
+    "states": [
+      "8:272",
+      "67:269",
+      "96:268"
+    ],
+    "workers": 4,
+    "max_seconds": 2400,
+    "physical_substeps": 160,
+    "surface_sample_period_s": 0.01,
+    "margin_preference_m": 0.01,
+    "objective_order": [
+      "complete physical path and original stability",
+      "sampled nonfoot margin",
+      "integrated margin penalty",
+      "motion cost"
+    ],
+    "first_command_free": true,
+    "full18_authority": true,
+    "native_teleport": false,
+    "future_native_commands_used": false,
+    "training": false,
+    "acceptance_changed": false,
+    "physical_limits_changed": false
+  },
+  "parameterization_check": {
+    "passed": true,
+    "checks": [
+      {
+        "state_key": "8:272",
+        "commands": 528,
+        "zero_correction_error_rad": 2.7755575615628914e-16,
+        "first_command_test_delta_rad": 0.009999999999999995
+      },
+      {
+        "state_key": "67:269",
+        "commands": 531,
+        "zero_correction_error_rad": 5.551115123125783e-16,
+        "first_command_test_delta_rad": 0.009999999999999995
+      },
+      {
+        "state_key": "96:268",
+        "commands": 532,
+        "zero_correction_error_rad": 5.551115123125783e-16,
+        "first_command_test_delta_rad": 0.009999999999999995
+      }
+    ],
+    "full_physics_replay_pending": true,
+    "native_execution": false
+  },
+  "runtime_snapshot": {
+    "state": "RUNNING_FULL_RECOVERY_MARGIN_SEARCH",
+    "pid": 241576,
+    "generation": 1,
+    "elapsed_s": 257.1102072650101,
+    "per_state": {
+      "8:272": {
+        "candidates": 2,
+        "complete_stable": 1,
+        "best_margin_m": 0.002007044878510736,
+        "budget_limited": 0
+      },
+      "67:269": {
+        "candidates": 1,
+        "complete_stable": 1,
+        "best_margin_m": 0.004614671754733027,
+        "budget_limited": 0
+      },
+      "96:268": {
+        "candidates": 1,
+        "complete_stable": 1,
+        "best_margin_m": 0.0014718674058012,
+        "budget_limited": 0
+      }
+    },
+    "native_success": false,
+    "valid_expert_labels": false
+  },
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_full_recovery_margin_search_20261109/inputs.json": "f8bb94fa6ec052e7914bab94d02d67463afedf00fcb09ee1699e1a940db82db1",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_full_recovery_margin_search_20261109/parameterization_check.json": "5982701d76a013787212d843a8aa9cb1b2094f4eee6def071685f639e8c35c84",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_full_recovery_margin_search_20261109/formal_verify.json": "ae2b5bbc540391cfed972e3b8764c4c9229b3e2cee247c029a8aa1075e69beea",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/full_recovery_margin_rollout_v1.py": "39e228fc0a933a5874869c323094fcbadc25b5f7cc57ca9a8480ca4686c1dc27",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/search_full_recovery_margin_v1.py": "0d0867f31fa1ee54af51858e32d30ef97b11ce67a35a197cdf51e887bfa6fac2",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_full_recovery_margin_search_20261109/seed_check.json": "b9e5114f1d335396b021b4cf92df78c76f344764735e4c2e501fab62e6151b59"
+  },
+  "formal_goal_status": "FAILED",
+  "native_success": false,
+  "complete_seed_replay": {
+    "passed": true,
+    "checks": [
+      {
+        "state_key": "8:272",
+        "command_error_rad": 2.7755575615628914e-16,
+        "q_error": 1.0895728763671286e-12,
+        "v_error": 3.069600129634864e-11,
+        "minimum_nonfoot_m": 0.002007044878510736
+      },
+      {
+        "state_key": "67:269",
+        "command_error_rad": 5.551115123125783e-16,
+        "q_error": 3.310685059432217e-13,
+        "v_error": 2.0366597297538647e-11,
+        "minimum_nonfoot_m": 0.004614671754733027
+      },
+      {
+        "state_key": "96:268",
+        "command_error_rad": 5.551115123125783e-16,
+        "q_error": 3.399418524452358e-10,
+        "v_error": 2.26822555182693e-09,
+        "minimum_nonfoot_m": 0.0014718674058012
+      }
+    ],
+    "native_execution": false
+  },
+  "updated_utc": "2026-11-09T00:16:50.561970+00:00"
+}
