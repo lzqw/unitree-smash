@@ -106,7 +106,12 @@
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_margin_disturbance_schema_check_20261109/result.json": "e24d75c62835fa64725f9737fb5b899d6c28df79cf61c0a90c42ddbeccb0bc22",
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_margin_disturbance_20261109/reproduced_worker_error.json": "a0bd4612ce47ab84648db78574c105856cfe25abb1cbc13e21e1a52044a5300a",
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_margin_disturbance_20261109/status.json": "4a058b8cb3c6aebec4d37e7796137fa8e6b1827955b4ce315613a1db94c62c18",
-    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_margin_disturbance_20261109_02/first_disturbance_effect_check.json": "a4bd4f6c69311b1ed7fc8b5fe97a1ce5ce6bc6cc7c4882f2f1fcb2c5e90e7811"
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_margin_disturbance_20261109_02/first_disturbance_effect_check.json": "a4bd4f6c69311b1ed7fc8b5fe97a1ce5ce6bc6cc7c4882f2f1fcb2c5e90e7811",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_margin_disturbance_20261109_02/result.json": "70fcb2ecd57905762a5630988ed81ab9b866639f453e731f3456ca7cc3872a61",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_margin_disturbance_20261109_02/paired_audit.json": "1b10acacfbccf7df2a07408877ca2aa84be9f3624580a7823bf63b9a6f97aee3",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_margin_disturbance_20261109_02/positive_feedback_command_check.json": "988d8cdfcc7dc4af66614715637e1382e10f3b10fdf84fa2e210329d1faf3df7",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_margin_disturbance_20261109_02/completion_formal_verify.json": "56f6737499d7430dc19f83acdc9f5b5d50a6b87d162361e7aba990c81cf15328",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_completed_margin_disturbance_v1.py": "87b8d8aa18dd60ff04b93be981ee6f3b63877c8e5e9c8c8aa0d8910e25f61b84"
   },
   "formal_goal_status": "FAILED",
   "native_success": false,
@@ -137,7 +142,7 @@
     ],
     "native_execution": false
   },
-  "updated_utc": "2026-11-09T01:30:19.241070+00:00",
+  "updated_utc": "2026-11-09T01:42:21.406328+00:00",
   "first_retained_candidate": {
     "time_utc": "2026-11-09T00:21:13.688316+00:00",
     "state_key": "67:269",
@@ -757,6 +762,332 @@
     "source_sha256": {
       "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_margin_disturbance_20261109_02/baseline_fixed_0.0.json": "9c6e7dccd4c2c8b3ccbc25cedc74b090c0a0a1436cf2a364d9b7244158faca54",
       "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_margin_disturbance_20261109_02/baseline_fixed_-0.05.json": "6ba829a9f8585388b91153f65dd276ecb086752a05ec323ba4dbbb25859e0350"
+    },
+    "native_execution": false
+  },
+  "completed_disturbance_result": {
+    "state": "COMPLETED_PAIRED_MARGIN_DISTURBANCE",
+    "worker_exceptions": 0,
+    "elapsed_s": 1208.9493667699862,
+    "same_predictor_and_plant": true,
+    "native_execution": false,
+    "native_success": false,
+    "valid_expert_labels": false
+  },
+  "completed_disturbance_audit": {
+    "scope": "Compare completed fixed/feedback model disturbance branches without promotion.\n\nChecks same-plan histories before the artificial impulse and the actual issued\ncommands. One source state and three perturbations are not 12 independent cases.\n",
+    "branches": [
+      {
+        "plan": "optimized",
+        "mode": "fixed",
+        "pitch_delta_rad_s": 0.0,
+        "checked_steps": 531,
+        "model_complete_and_stable": true,
+        "failure": null,
+        "final_stable_s": 3.5999999046325684,
+        "maximum_checked_command_change_rad": 0.0,
+        "first_checked_change_tick": null
+      },
+      {
+        "plan": "baseline",
+        "mode": "fixed",
+        "pitch_delta_rad_s": 0.0,
+        "checked_steps": 531,
+        "model_complete_and_stable": true,
+        "failure": null,
+        "final_stable_s": 3.6399998664855957,
+        "maximum_checked_command_change_rad": 0.0,
+        "first_checked_change_tick": null
+      },
+      {
+        "plan": "optimized",
+        "mode": "feedback",
+        "pitch_delta_rad_s": 0.0,
+        "checked_steps": 531,
+        "model_complete_and_stable": true,
+        "failure": null,
+        "final_stable_s": 3.5999999046325684,
+        "maximum_checked_command_change_rad": 0.0,
+        "first_checked_change_tick": null
+      },
+      {
+        "plan": "baseline",
+        "mode": "fixed",
+        "pitch_delta_rad_s": -0.05,
+        "checked_steps": 531,
+        "model_complete_and_stable": true,
+        "failure": null,
+        "final_stable_s": 3.6399998664855957,
+        "maximum_checked_command_change_rad": 0.0,
+        "first_checked_change_tick": null
+      },
+      {
+        "plan": "baseline",
+        "mode": "feedback",
+        "pitch_delta_rad_s": 0.0,
+        "checked_steps": 531,
+        "model_complete_and_stable": true,
+        "failure": null,
+        "final_stable_s": 3.6399998664855957,
+        "maximum_checked_command_change_rad": 0.0,
+        "first_checked_change_tick": null
+      },
+      {
+        "plan": "optimized",
+        "mode": "fixed",
+        "pitch_delta_rad_s": -0.05,
+        "checked_steps": 531,
+        "model_complete_and_stable": true,
+        "failure": null,
+        "final_stable_s": 3.630000114440918,
+        "maximum_checked_command_change_rad": 0.0,
+        "first_checked_change_tick": null
+      },
+      {
+        "plan": "baseline",
+        "mode": "feedback",
+        "pitch_delta_rad_s": -0.05,
+        "checked_steps": 531,
+        "model_complete_and_stable": true,
+        "failure": null,
+        "final_stable_s": 3.6399998664855957,
+        "maximum_checked_command_change_rad": 0.23599038685002366,
+        "first_checked_change_tick": 301
+      },
+      {
+        "plan": "baseline",
+        "mode": "fixed",
+        "pitch_delta_rad_s": 0.05,
+        "checked_steps": 531,
+        "model_complete_and_stable": true,
+        "failure": null,
+        "final_stable_s": 3.6500000953674316,
+        "maximum_checked_command_change_rad": 0.0,
+        "first_checked_change_tick": null
+      },
+      {
+        "plan": "optimized",
+        "mode": "fixed",
+        "pitch_delta_rad_s": 0.05,
+        "checked_steps": 359,
+        "model_complete_and_stable": false,
+        "failure": {
+          "tick": 628,
+          "reason": "model_rejected",
+          "error": "ValueError(\"authored_net_collision:{'body': 'Racket', 'distance_m': -3.2769955330292505e-05, 'exact': True, 'shape_index': 38, 'obstacle': 'net_segment_34'}\")"
+        },
+        "final_stable_s": 0.0,
+        "maximum_checked_command_change_rad": 0.0,
+        "first_checked_change_tick": null
+      },
+      {
+        "plan": "optimized",
+        "mode": "feedback",
+        "pitch_delta_rad_s": -0.05,
+        "checked_steps": 531,
+        "model_complete_and_stable": true,
+        "failure": null,
+        "final_stable_s": 3.5999999046325684,
+        "maximum_checked_command_change_rad": 0.36248358249773305,
+        "first_checked_change_tick": 301
+      },
+      {
+        "plan": "baseline",
+        "mode": "feedback",
+        "pitch_delta_rad_s": 0.05,
+        "checked_steps": 531,
+        "model_complete_and_stable": true,
+        "failure": null,
+        "final_stable_s": 3.6399998664855957,
+        "maximum_checked_command_change_rad": 0.6493126870880497,
+        "first_checked_change_tick": 301
+      },
+      {
+        "plan": "optimized",
+        "mode": "feedback",
+        "pitch_delta_rad_s": 0.05,
+        "checked_steps": 531,
+        "model_complete_and_stable": true,
+        "failure": null,
+        "final_stable_s": 3.5900001525878906,
+        "maximum_checked_command_change_rad": 0.29249873565974616,
+        "first_checked_change_tick": 301
+      }
+    ],
+    "paired_results": [
+      {
+        "plan": "baseline",
+        "pitch_delta_rad_s": 0.0,
+        "fixed_passed": true,
+        "feedback_passed": true,
+        "feedback_rescued": false,
+        "feedback_lost": false
+      },
+      {
+        "plan": "baseline",
+        "pitch_delta_rad_s": -0.05,
+        "fixed_passed": true,
+        "feedback_passed": true,
+        "feedback_rescued": false,
+        "feedback_lost": false
+      },
+      {
+        "plan": "baseline",
+        "pitch_delta_rad_s": 0.05,
+        "fixed_passed": true,
+        "feedback_passed": true,
+        "feedback_rescued": false,
+        "feedback_lost": false
+      },
+      {
+        "plan": "optimized",
+        "pitch_delta_rad_s": 0.0,
+        "fixed_passed": true,
+        "feedback_passed": true,
+        "feedback_rescued": false,
+        "feedback_lost": false
+      },
+      {
+        "plan": "optimized",
+        "pitch_delta_rad_s": -0.05,
+        "fixed_passed": true,
+        "feedback_passed": true,
+        "feedback_rescued": false,
+        "feedback_lost": false
+      },
+      {
+        "plan": "optimized",
+        "pitch_delta_rad_s": 0.05,
+        "fixed_passed": false,
+        "feedback_passed": true,
+        "feedback_rescued": true,
+        "feedback_lost": false
+      }
+    ],
+    "pre_disturbance_checks": [
+      {
+        "plan": "baseline",
+        "mode": "fixed",
+        "pitch_delta_rad_s": 0.0,
+        "checked_prefix_steps": 31,
+        "maximum_component_difference": 0.0
+      },
+      {
+        "plan": "baseline",
+        "mode": "fixed",
+        "pitch_delta_rad_s": -0.05,
+        "checked_prefix_steps": 31,
+        "maximum_component_difference": 0.0
+      },
+      {
+        "plan": "baseline",
+        "mode": "fixed",
+        "pitch_delta_rad_s": 0.05,
+        "checked_prefix_steps": 31,
+        "maximum_component_difference": 0.0
+      },
+      {
+        "plan": "baseline",
+        "mode": "feedback",
+        "pitch_delta_rad_s": 0.0,
+        "checked_prefix_steps": 31,
+        "maximum_component_difference": 0.0
+      },
+      {
+        "plan": "baseline",
+        "mode": "feedback",
+        "pitch_delta_rad_s": -0.05,
+        "checked_prefix_steps": 31,
+        "maximum_component_difference": 0.0
+      },
+      {
+        "plan": "baseline",
+        "mode": "feedback",
+        "pitch_delta_rad_s": 0.05,
+        "checked_prefix_steps": 31,
+        "maximum_component_difference": 0.0
+      },
+      {
+        "plan": "optimized",
+        "mode": "fixed",
+        "pitch_delta_rad_s": 0.0,
+        "checked_prefix_steps": 31,
+        "maximum_component_difference": 0.0
+      },
+      {
+        "plan": "optimized",
+        "mode": "fixed",
+        "pitch_delta_rad_s": -0.05,
+        "checked_prefix_steps": 31,
+        "maximum_component_difference": 0.0
+      },
+      {
+        "plan": "optimized",
+        "mode": "fixed",
+        "pitch_delta_rad_s": 0.05,
+        "checked_prefix_steps": 31,
+        "maximum_component_difference": 0.0
+      },
+      {
+        "plan": "optimized",
+        "mode": "feedback",
+        "pitch_delta_rad_s": 0.0,
+        "checked_prefix_steps": 31,
+        "maximum_component_difference": 0.0
+      },
+      {
+        "plan": "optimized",
+        "mode": "feedback",
+        "pitch_delta_rad_s": -0.05,
+        "checked_prefix_steps": 31,
+        "maximum_component_difference": 0.0
+      },
+      {
+        "plan": "optimized",
+        "mode": "feedback",
+        "pitch_delta_rad_s": 0.05,
+        "checked_prefix_steps": 31,
+        "maximum_component_difference": 0.0
+      }
+    ],
+    "source_states": 1,
+    "native_execution": false,
+    "shared_model_not_native_robustness": true,
+    "valid_expert_labels": false
+  },
+  "positive_feedback_command_check": {
+    "scope": "Executed model command differences, not a causal decomposition of recovery",
+    "first_changed_tick": 301,
+    "maximum_change": {
+      "tick": 375,
+      "joint": "FR_thigh_joint",
+      "signed_delta_rad": -0.29249873565974616
+    },
+    "by_joint_max_abs_rad": {
+      "FL_hip_joint": 0.09052266549570122,
+      "FR_hip_joint": 0.20702667018379556,
+      "RL_hip_joint": 0.21684365382516552,
+      "RR_hip_joint": 0.06945728472561111,
+      "FL_thigh_joint": 0.09426229425803045,
+      "FR_thigh_joint": 0.29249873565974616,
+      "RL_thigh_joint": 0.07943283343310059,
+      "RR_thigh_joint": 0.05066142772417559,
+      "FL_calf_joint": 0.12882945413884683,
+      "FR_calf_joint": 0.07019119872346424,
+      "RL_calf_joint": 0.13302197955178396,
+      "RR_calf_joint": 0.10111064503400935,
+      "joint1": 0.002351461017470635,
+      "joint2": 0.01933489283334766,
+      "joint3": 0.009007470555426611,
+      "joint4": 0.0005072354328429229,
+      "joint5": 0.001620231297053576,
+      "joint6": 0.0005355596693700226
+    },
+    "source_counts": {
+      "predictive_reference_selection:planned": 72,
+      "predictive_reference_selection:state_joint_feedback": 122,
+      "predictive_reference_selection:half_wbc": 273,
+      "predictive_reference_selection:wbc": 64
     },
     "native_execution": false
   }

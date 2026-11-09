@@ -1,0 +1,44 @@
+{
+  "title": "pure-control landing failure analysis",
+  "date": "2026-11-09",
+  "scope": "Go2 + PiPER + racket; pure-control recovery only; no new RL/BC/distillation",
+  "native_best": {
+    "v20_landing_segment_clean_stable": 9,
+    "complete5": 7,
+    "total": 128,
+    "note": "landing segment only; all 9 had pre-takeover head contact"
+  },
+  "model_search": {
+    "states": ["10:320", "55:317", "82:323"],
+    "coarse": 483,
+    "fine": 12,
+    "outcomes": {
+      "head_or_nonfoot": 5,
+      "racket_net": 5,
+      "contact_solver_nonconvergence": 2
+    },
+    "native_execution": false
+  },
+  "paired_feedback": {
+    "branches": 12,
+    "source_states": 1,
+    "optimized_positive_disturbance": "optimized fixed +0.05 failed at 6.28s racket/net; optimized feedback completed 8s, terminal stable 3.59s",
+    "native_execution": false
+  },
+  "primary_causes": [
+    "post-touchdown support is not sustained",
+    "QP/model output and implicit-PD position interface are not fully equivalent",
+    "contact transition and impact/load establishment are approximated",
+    "head-clearance and racket/net constraints compete across whole-body momentum",
+    "some failures occur before certified recovery control or after the reference tail ends"
+  ],
+  "next_actions": [
+    "remove uncertified posture fallback as default recovery command",
+    "share one prediction/replay/terminal-transition function",
+    "optimize full command trajectory across airborne preparation, touchdown loading, and sustained support",
+    "use head and racket clearance plus support viability as joint hard constraints",
+    "validate one class in native Isaac before any learning"
+  ],
+  "formal_goal_status": "FAILED",
+  "native_execution": false
+}
