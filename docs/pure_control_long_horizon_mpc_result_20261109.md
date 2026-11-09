@@ -103,3 +103,28 @@ stride8 共执行 102,400 个环境步，作业成功，耗时约 3356 秒、0.9
 - 静态检查：`scripts/check_native_state_driven_long_mpc_v1_stride8.py`
 - 结果：`reports/pure_control_state_driven_long_mpc_stride8_all128_20261109_01/native/metrics.json`
 - 作业记录：`reports/pure_control_state_driven_long_mpc_stride8_all128_20261109_01/native/job.json`
+
+## 计划交接连续性对照（2026-11-09）
+
+在固定 v1 的 0.32 s 预测窗口和每 16 个 tick 重规划基础上，增加了 4 步新旧计划交接过渡，测试重新规划时的命令连续性是否能避免恢复动作被打断。其余物理限制、执行器、碰撞和 8 s 完整任务判定均保持不变。
+
+| 指标 | 固定 v1 | 4 步交接过渡 |
+|---|---:|---:|
+| complete5（5 m/s 主指标） | **37/128（28.91%）** | **30/128（23.44%）** |
+| 合格空中触球 | 74/128 | 74/128 |
+| 条件恢复 | **49/74（66.22%）** | **41/74（55.41%）** |
+| 实际球拍接触 | 110/128 | 110/128 |
+| 越网 | 73/128 | 73/128 |
+| 目标落点 | 60/128 | 60/128 |
+| 数值故障 | 0 | 0 |
+
+连续交接版本相对 v1 保留 29 个成功、丢失 8 个并新增 1 个（TRAIN27）。因此，平滑交接没有改善当前近似模型下的恢复，反而降低了条件恢复和完整成功。说明旧计划与新计划之间的差异并非单纯的命令跳变问题；将新旧目标短时间平均，可能把两个各自可行的恢复动作混成不可行的中间动作。
+
+当前最佳仍为固定 v1（0.32 s、每 16 tick 重规划、37/128）。stride8（19/128）和连续交接（30/128）均作为负面对照保留。后续不再继续简单增加交接平均步数；若要改进重规划，应在统一动力学／接触预测中重新优化交接序列，而不是对关节目标做逐点线性混合。
+
+本轮证据：
+
+- 控制器：`scripts/pure_control_state_driven_long_mpc_v1_continuous.py`
+- 原生适配：`scripts/native_pure_control_state_driven_long_mpc_v1_continuous.py`
+- 结果：`reports/pure_control_state_driven_long_mpc_continuous_all128_20261109_01/native/metrics.json`
+- 作业记录：`reports/pure_control_state_driven_long_mpc_continuous_all128_20261109_01/native/job.json`
