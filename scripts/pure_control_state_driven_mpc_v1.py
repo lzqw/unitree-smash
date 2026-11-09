@@ -89,6 +89,10 @@ class PureControlStateDrivenMPCV1(PureControlCourtRecoveryV4):
             raise ValueError('Reset controller on episode changes')
         candidates = []
         original_previous = state.previous_command_target.copy()
+        # Full-authority position targets still require the actual command
+        # history for interface bookkeeping.  Bind it before constructing
+        # state-derived candidates; this is not a trajectory-library input.
+        self.interface.bind_previous_command(original_previous)
         for name, reference in self._candidate_references(state):
             state.previous_command_target = original_previous.copy()
             plan = self.solve(state, reference)
