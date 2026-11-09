@@ -66,9 +66,18 @@ class PureControlStateDrivenMPCV1(PureControlCourtRecoveryV4):
         # preserves the full episode window while keeping the CPU solve
         # bounded for the 128-lane native evaluation.
         for _ in range(1):
-            last = predict_self_contact_spheres(
-                self.model, self.interface, predicted, target,
-                self.geometry.spheres, substeps=8, geometry=self.geometry)
+            try:
+                last = predict_self_contact_spheres(
+                    self.model, self.interface, predicted, target,
+                    self.geometry.spheres, substeps=8, geometry=self.geometry)
+            except (ValueError, FloatingPointError) as exc:
+                # A local contact fixed point that does not converge is a
+                # rejected candidate, not a reason to abort the whole native
+                # episode.  The caller will keep the last admitted command and
+                # re-solve from the next measured state.
+                return None, dict(accepted=False,
+                                  rejection='contact_prediction_not_converged',
+                                  error=str(exc))
             diagnostics = last['diagnostics']
             if (diagnostics.get('nonfoot_ground_violation_m', 0.) > 1e-6 or
                     diagnostics.get('joint_position_violation_rad', 0.) > 3e-4 or
@@ -133,6 +142,7 @@ class PureControlStateDrivenMPCV1(PureControlCourtRecoveryV4):
         surfaces = self.geometry.evaluate(state.q)[0]
         diagnostic = dict(
             controller='pure_control_state_driven_mpc_v1',
+            solver_accepted=bool(feasible),
             source=source,
             selected_candidate=chosen_name,
             candidates=[{k: v for k, v in item.items() if k not in ('target', 'plan')} for item in candidates],
