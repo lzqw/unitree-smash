@@ -48,3 +48,31 @@
 - 静态检查：`scripts/check_native_state_driven_long_mpc_v1.py`
 - 结果：`reports/pure_control_state_driven_long_mpc_all128_20261109_03/metrics.json`
 - Git 提交：`ce4c690`
+
+## 自适应阶段时域对照（2026-11-09）
+
+随后完成了 `pure_control_state_driven_adaptive_mpc_v1` 的完整 TRAIN128、8 秒原生评估。该版本按阶段使用不同局部窗口：`AIR_PREPARE=0.40 s`、`BUFFER_LOAD=0.24 s`、`SUSTAIN=0.12 s`，每 8 个控制 tick 重规划。
+
+| 指标 | 固定 0.32 s 长时域 v1 | 自适应阶段时域 v1 |
+|---|---:|---:|
+| complete5（5 m/s 主指标） | **37/128（28.91%）** | **3/128（2.34%）** |
+| 合格空中触球 | 74/128 | 74/128 |
+| 条件恢复 | **49/74（66.22%）** | **4/74（5.41%）** |
+| 实际球拍接触 | 110/128 | 110/128 |
+| 越网 | 73/128 | 71/128 |
+| 目标落点 | 60/128 | 58/128 |
+| 数值故障 | 0 | 0 |
+| GPU 用量 | 0.696 GPU 小时 | 0.897 GPU 小时 |
+
+该对照仍然从球拍与球分离后的实际状态接管，未读取 TRAIN 编号、失败名单或轨迹库，且完整执行 8 秒回合。自适应版本的接触和求解流程可以运行，但在当前近似接触/加载模型下，阶段性缩短窗口没有保留固定 0.32 s 版本形成的恢复序列，导致条件恢复和 complete5 大幅下降。它不能证明更长时域原则无效，说明当前控制器更依赖一个覆盖触地与初始加载的稳定局部窗口。
+
+因此当前控制结论是：**固定 0.32 s 长时域 v1（37/128）仍为最佳版本；0.64 s 固定窗口（2/128）和本次自适应窗口（3/128）均作为负面对照保留。** 后续应先分析 v1 的逐案例接触建立、承重建立和球侧交集，再设计非均匀窗口；不能仅按阶段改变 horizon 或 replan stride。
+
+自适应结果证据：
+
+- 控制器：`scripts/pure_control_state_driven_adaptive_mpc_v1.py`
+- 原生适配：`scripts/native_pure_control_state_driven_adaptive_mpc_v1.py`
+- 计划生成：`scripts/prepare_native_state_driven_adaptive_mpc_v1.py`
+- 静态检查：`scripts/check_native_state_driven_adaptive_mpc_v1.py`
+- 结果：`reports/pure_control_state_driven_adaptive_mpc_all128_20261109_01/metrics.json`
+- 作业：SUCCEEDED，约 3229 秒，0.897 GPU 小时
