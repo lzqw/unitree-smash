@@ -128,3 +128,29 @@ stride8 共执行 102,400 个环境步，作业成功，耗时约 3356 秒、0.9
 - 原生适配：`scripts/native_pure_control_state_driven_long_mpc_v1_continuous.py`
 - 结果：`reports/pure_control_state_driven_long_mpc_continuous_all128_20261109_01/native/metrics.json`
 - 作业记录：`reports/pure_control_state_driven_long_mpc_continuous_all128_20261109_01/native/job.json`
+
+## QP 内命令连续性对照（2026-11-09）
+
+上一版把新旧计划在求解后做线性平均，结果下降到 30/128。为了避免这种后处理改变可行性，本轮将最终绝对关节目标与上一条实际命令之间的二次代价直接加入 interval QP，保持固定 0.32 s 预测窗口、每 16 tick 重规划和原生 8 s 评估。默认权重为零，只有本控制器变体启用，物理限制和任务判定未改变。
+
+| 指标 | 固定 v1 | QP 内连续性 |
+|---|---:|---:|
+| complete5（5 m/s 主指标） | **37/128（28.91%）** | **40/128（31.25%）** |
+| 合格空中触球 | 74/128 | 74/128 |
+| 条件恢复 | **49/74（66.22%）** | **52/74（70.27%）** |
+| 实际球拍接触 | 110/128 | 110/128 |
+| 越网 | 73/128 | 73/128 |
+| 目标落点 | 60/128 | 60/128 |
+| 数值故障 | 0 | 0 |
+
+相对固定 v1，QP 内连续性版本保留 35 个成功、丢失 2 个并新增 5 个（TRAIN27、45、49、84、121）。这说明连续性代价放在求解目标中比事后线性混合有效：它在满足动力学、接触和执行器约束的同时抑制命令突变，而不会把两个动作平均成未验证的中间动作。
+
+该结果是固定 TRAIN128 开发面板上的控制辅助成绩，仍保留基础控制器和持久恢复辅助；不能直接称为独立 RL 已学会。当前应保留 QP 内连续性 40/128 为新的最佳控制候选，并继续用逐案例旧成功回归和未见状态评估确认其稳定性。
+
+本轮证据：
+
+- 控制器：`scripts/pure_control_state_driven_long_mpc_v1_qp_continuity.py`
+- 原生适配：`scripts/native_pure_control_state_driven_long_mpc_v1_qp_continuity.py`
+- QP 修改：`scripts/pure_control_interval_qp_v1.py`、`scripts/whole_body_support_qp_v1.py`
+- 结果：`reports/pure_control_state_driven_long_mpc_qp_continuity_all128_20261109_01/native/metrics.json`
+- 作业记录：`reports/pure_control_state_driven_long_mpc_qp_continuity_all128_20261109_01/native/job.json`
