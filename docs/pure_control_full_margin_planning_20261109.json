@@ -90,7 +90,9 @@
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_full_margin_continuation_20261109/inputs.json": "ee17caeaf80cd785ff00c79d1149e1e0598cd718da40283084b77927dcae32ce",
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_full_margin_continuation_20261109/formal_verify.json": "ae2b5bbc540391cfed972e3b8764c4c9229b3e2cee247c029a8aa1075e69beea",
     "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/audit_full_margin_feedback_v1.py": "07a15da2d7280a15bbf905916340d1eb366065913ee836d89e64a08562c2b1ff",
-    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/run_full_margin_continuation_v1.py": "8f0be0d3ac8fcb43c5478e18ab9e41f51fb7348677c922425b335254480ed099"
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/scripts/run_full_margin_continuation_v1.py": "8f0be0d3ac8fcb43c5478e18ab9e41f51fb7348677c922425b335254480ed099",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_full_recovery_margin_search_20261109/result.json": "f9f14d93a40c26d73a906c1ecd1c06b297e3c9306a7f6ad2df15e6d8346ff692",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_full_recovery_margin_search_20261109/status.json": "08836f6191ea636835007d62b30ba303f250f7983f89a78770678a2928f14acc"
   },
   "formal_goal_status": "FAILED",
   "native_success": false,
@@ -121,7 +123,7 @@
     ],
     "native_execution": false
   },
-  "updated_utc": "2026-11-09T00:22:34.245979+00:00",
+  "updated_utc": "2026-11-09T00:53:55.777368+00:00",
   "first_retained_candidate": {
     "time_utc": "2026-11-09T00:21:13.688316+00:00",
     "state_key": "67:269",
@@ -168,10 +170,9 @@
     "feedback_execution_pending": true
   },
   "conditional_feedback_status": {
-    "state": "WAITING_EXACT_MARGIN_SEARCH",
+    "state": "RUNNING_IMPROVED_PLAN_FEEDBACK",
     "pid": 242571,
-    "time_utc": "2026-11-09T00:19:52.088579+00:00",
-    "search_pid": 241576
+    "time_utc": "2026-11-09T00:52:22.179229+00:00"
   },
   "conditional_feedback_inputs": {
     "search_pid": 241576,
@@ -181,5 +182,72 @@
     "max_end_check_seconds": 120,
     "native_execution": false,
     "training": false
-  }
+  },
+  "completed_search_result": {
+    "state": "COMPLETED_FULL_RECOVERY_MARGIN_SEARCH",
+    "results": [
+      {
+        "state_key": "8:272",
+        "candidates": 33,
+        "complete_stable": 1,
+        "baseline_minimum_nonfoot_m": 0.002007044878510736,
+        "best_minimum_nonfoot_m": 0.002007044878510736,
+        "complete_stable_model": true,
+        "terminal_stable_s": 3.619999885559082,
+        "improved": false
+      },
+      {
+        "state_key": "67:269",
+        "candidates": 33,
+        "complete_stable": 10,
+        "baseline_minimum_nonfoot_m": 0.004614671754733027,
+        "best_minimum_nonfoot_m": 0.010334548245636024,
+        "complete_stable_model": true,
+        "terminal_stable_s": 3.5999999046325684,
+        "improved": true
+      },
+      {
+        "state_key": "96:268",
+        "candidates": 33,
+        "complete_stable": 1,
+        "baseline_minimum_nonfoot_m": 0.0014718674058012,
+        "best_minimum_nonfoot_m": 0.0014718674058012,
+        "complete_stable_model": true,
+        "terminal_stable_s": 2.4800000190734863,
+        "improved": false
+      }
+    ],
+    "elapsed_s": 2401.1374588289764,
+    "native_success": false,
+    "valid_expert_labels": false
+  },
+  "completed_search_status": {
+    "state": "COMPLETED_FULL_RECOVERY_MARGIN_SEARCH",
+    "pid": 241576,
+    "generation": 4,
+    "elapsed_s": 2401.1375971499365,
+    "per_state": {
+      "8:272": {
+        "candidates": 33,
+        "complete_stable": 1,
+        "best_margin_m": 0.002007044878510736,
+        "budget_limited": 4
+      },
+      "67:269": {
+        "candidates": 33,
+        "complete_stable": 10,
+        "best_margin_m": 0.010334548245636024,
+        "budget_limited": 5
+      },
+      "96:268": {
+        "candidates": 33,
+        "complete_stable": 1,
+        "best_margin_m": 0.0014718674058012,
+        "budget_limited": 4
+      }
+    },
+    "native_success": false,
+    "valid_expert_labels": false
+  },
+  "verified_search_sources": 106
 }
