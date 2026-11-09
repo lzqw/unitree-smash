@@ -1,0 +1,1084 @@
+{
+  "time_utc": "2026-11-09T00:42:19.137266+00:00",
+  "scope": "Landing segment only; all nine have pre-takeover head contact",
+  "best": {
+    "version": "pure_control_preserved_foot_replanning_v20",
+    "clean_stable_cases": [
+      12,
+      30,
+      42,
+      50,
+      58,
+      85,
+      90,
+      118,
+      123
+    ],
+    "scope": "Landing segment only; all nine have pre-takeover head contact",
+    "historical_complete5": 7,
+    "native_run": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_preserved_foot_all128_20261109_02",
+    "configuration": "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_preserved_foot_native_preparation_20261109_02/controller.json",
+    "source_sha256": {
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_preserved_foot_native_preparation_20261109_02/plan.json": "31ad94fbfc352c7b4b8dcd218f63b78381c133cd78b5823ddcac6b2463bb2e54",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_preserved_foot_native_preparation_20261109_02/controller.json": "4920756954b0e8ea4158a0f23f1c3f475339db862626cda3f8e04975737f2396",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_preserved_foot_native_preparation_20261109_02/native_audit.json": "a0ef79a3d644da600ae317ac77a24d6118911358b6305e5378710a622cd60c3f",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_preserved_foot_all128_20261109_02/job.json": "93691f631f449af6270ea00b6c60f8fc88fb634719af0f7324993a4a3d707ebb",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_preserved_foot_all128_20261109_02/metrics.json": "5e16b04dd05513de58bdf53368900737175253fc6f4930236fb0cf83ba4f2c21",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_preserved_foot_all128_20261109_02/completed.json": "c4a2cdc51b7afa8f30801dae79e3db905be163f9c7bc5e5a8e2f496c01538989",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_preserved_foot_all128_20261109_02/sequence_entry_provenance.json": "cec7f4fd73275ad9438cb9bbbf5d7b263ae2d412808cc1f98b4b690f90ffba96",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_preserved_foot_completion_review_20261109/support.json": "0229afa93a9ce4eafd4924e9aae317ef49621cd76307353b875d267814040591",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_preserved_foot_completion_review_20261109/versus_v15.json": "9be4d0e966ef74b7549f8d3e8cf59f996ab4769ccb855ab05e54a23be081fef9",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_preserved_foot_completion_review_20261109/formal_verify.json": "ae2b5bbc540391cfed972e3b8764c4c9229b3e2cee247c029a8aa1075e69beea",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_sustained_path_preparation_20261108/reference_library.json": "f8bbd0498fd9dc52d9aa3174b4836ab2af0ed98a03f32a3215c8113907ca6ece",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_preserved_foot_replanning_preparation_20261109/reference_library.json": "3291906b9116804122e3bd37340b532004baca9a4077f61be0f4ac6a773348b1"
+    },
+    "not_formal_acceptance": true,
+    "training": false
+  },
+  "comparison": {
+    "old_clean_stable": [
+      30,
+      42,
+      50,
+      85,
+      90
+    ],
+    "new_clean_stable": [
+      12,
+      30,
+      42,
+      50,
+      58,
+      85,
+      90,
+      118,
+      123
+    ],
+    "retained": [
+      30,
+      42,
+      50,
+      85,
+      90
+    ],
+    "lost": [],
+    "added": [
+      12,
+      58,
+      118,
+      123
+    ],
+    "old_historical_complete5": 5,
+    "new_historical_complete5": 7,
+    "action_difference_before_stance": [
+      10,
+      24,
+      28,
+      32,
+      33,
+      43,
+      71,
+      75,
+      81,
+      82,
+      83,
+      86,
+      94,
+      100,
+      118,
+      119,
+      121,
+      123
+    ]
+  },
+  "new_cases": [
+    {
+      "case": 12,
+      "old": {
+        "control_owned": true,
+        "clean": false,
+        "final_stable_s": 0.0,
+        "longest_stable_s": 0.15000009536743164,
+        "last_control_tick": 799,
+        "first_head_over1n": null,
+        "first_other_over1n": {
+          "body": "Racket",
+          "time_s": 5.350125,
+          "physics_frame": 85602
+        }
+      },
+      "new": {
+        "control_owned": true,
+        "clean": true,
+        "final_stable_s": 3.3799996376037598,
+        "longest_stable_s": 3.3799996376037598,
+        "last_control_tick": 799,
+        "first_head_over1n": null,
+        "first_other_over1n": null
+      },
+      "common_observations": 518,
+      "only_old_ticks": [],
+      "only_new_ticks": [],
+      "first_stance_tick_either": 442,
+      "first_command_difference": {
+        "tick": 442,
+        "maximum_command_difference_rad": 0.21987984802429505,
+        "old_source": "interval_qp",
+        "new_source": "predictive_reference_selection:planned",
+        "old_stance": true,
+        "new_stance": false
+      },
+      "first_state_difference": {
+        "tick": 443,
+        "maximum_q_difference": 0.010844528675079346,
+        "maximum_v_difference": 1.1180857717990875
+      },
+      "maximum_difference_before_either_stance": {
+        "command_rad": 0.0,
+        "q": 0.0,
+        "v": 0.0
+      },
+      "old_clean_stable": false,
+      "new_clean_stable": true
+    },
+    {
+      "case": 58,
+      "old": {
+        "control_owned": true,
+        "clean": false,
+        "final_stable_s": 0.0,
+        "longest_stable_s": 0.6500000953674316,
+        "last_control_tick": 799,
+        "first_head_over1n": null,
+        "first_other_over1n": {
+          "body": "RR_calf",
+          "time_s": 5.1213750000000005,
+          "physics_frame": 81942
+        }
+      },
+      "new": {
+        "control_owned": true,
+        "clean": true,
+        "final_stable_s": 1.4200000762939453,
+        "longest_stable_s": 1.4200000762939453,
+        "last_control_tick": 799,
+        "first_head_over1n": null,
+        "first_other_over1n": null
+      },
+      "common_observations": 518,
+      "only_old_ticks": [],
+      "only_new_ticks": [],
+      "first_stance_tick_either": 442,
+      "first_command_difference": {
+        "tick": 442,
+        "maximum_command_difference_rad": 0.45852783356834287,
+        "old_source": "interval_qp",
+        "new_source": "predictive_reference_selection:planned",
+        "old_stance": true,
+        "new_stance": false
+      },
+      "first_state_difference": {
+        "tick": 443,
+        "maximum_q_difference": 0.0909644365310669,
+        "maximum_v_difference": 13.256872326135635
+      },
+      "maximum_difference_before_either_stance": {
+        "command_rad": 0.0,
+        "q": 0.0,
+        "v": 0.0
+      },
+      "old_clean_stable": false,
+      "new_clean_stable": true
+    },
+    {
+      "case": 118,
+      "old": {
+        "control_owned": true,
+        "clean": false,
+        "final_stable_s": 0.0,
+        "longest_stable_s": 0.0,
+        "last_control_tick": 799,
+        "first_head_over1n": {
+          "body": "Head_lower",
+          "time_s": 4.317,
+          "physics_frame": 69072
+        },
+        "first_other_over1n": {
+          "body": "FL_thigh",
+          "time_s": 3.8315,
+          "physics_frame": 61304
+        }
+      },
+      "new": {
+        "control_owned": true,
+        "clean": true,
+        "final_stable_s": 3.4200000762939453,
+        "longest_stable_s": 3.4200000762939453,
+        "last_control_tick": 799,
+        "first_head_over1n": null,
+        "first_other_over1n": null
+      },
+      "common_observations": 522,
+      "only_old_ticks": [],
+      "only_new_ticks": [],
+      "first_stance_tick_either": 538,
+      "first_command_difference": {
+        "tick": 338,
+        "maximum_command_difference_rad": 0.5877593488901791,
+        "old_source": "interval_qp",
+        "new_source": "predictive_reference_selection:planned",
+        "old_stance": false,
+        "new_stance": false
+      },
+      "first_state_difference": {
+        "tick": 339,
+        "maximum_q_difference": 0.01263648271560669,
+        "maximum_v_difference": 1.3377828896045685
+      },
+      "maximum_difference_before_either_stance": {
+        "command_rad": 1.5568861970185202,
+        "q": 1.5217288732528687,
+        "v": 30.46146386861801
+      },
+      "old_clean_stable": false,
+      "new_clean_stable": true
+    },
+    {
+      "case": 123,
+      "old": {
+        "control_owned": true,
+        "clean": false,
+        "final_stable_s": 0.0,
+        "longest_stable_s": 0.25,
+        "last_control_tick": 799,
+        "first_head_over1n": null,
+        "first_other_over1n": {
+          "body": "RL_thigh",
+          "time_s": 4.740875,
+          "physics_frame": 75854
+        }
+      },
+      "new": {
+        "control_owned": true,
+        "clean": true,
+        "final_stable_s": 1.1399998664855957,
+        "longest_stable_s": 1.1399998664855957,
+        "last_control_tick": 799,
+        "first_head_over1n": null,
+        "first_other_over1n": null
+      },
+      "common_observations": 515,
+      "only_old_ticks": [],
+      "only_new_ticks": [],
+      "first_stance_tick_either": 411,
+      "first_command_difference": {
+        "tick": 409,
+        "maximum_command_difference_rad": 0.06370490869565447,
+        "old_source": "interval_qp",
+        "new_source": "predictive_reference_selection:half_wbc",
+        "old_stance": false,
+        "new_stance": false
+      },
+      "first_state_difference": {
+        "tick": 410,
+        "maximum_q_difference": 0.00932537205517292,
+        "maximum_v_difference": 1.0750476121902466
+      },
+      "maximum_difference_before_either_stance": {
+        "command_rad": 0.0870580689798659,
+        "q": 0.00932537205517292,
+        "v": 1.0750476121902466
+      },
+      "old_clean_stable": false,
+      "new_clean_stable": true
+    }
+  ],
+  "preserved_cases": [
+    {
+      "case": 30,
+      "old": {
+        "control_owned": true,
+        "clean": true,
+        "final_stable_s": 2.0199999809265137,
+        "longest_stable_s": 2.0199999809265137,
+        "last_control_tick": 799,
+        "first_head_over1n": null,
+        "first_other_over1n": null
+      },
+      "new": {
+        "control_owned": true,
+        "clean": true,
+        "final_stable_s": 2.0199999809265137,
+        "longest_stable_s": 2.0199999809265137,
+        "last_control_tick": 799,
+        "first_head_over1n": null,
+        "first_other_over1n": null
+      },
+      "common_observations": 523,
+      "only_old_ticks": [],
+      "only_new_ticks": [],
+      "first_stance_tick_either": 598,
+      "first_command_difference": null,
+      "first_state_difference": null,
+      "maximum_difference_before_either_stance": {
+        "command_rad": 0.0,
+        "q": 0.0,
+        "v": 0.0
+      },
+      "old_clean_stable": true,
+      "new_clean_stable": true
+    },
+    {
+      "case": 42,
+      "old": {
+        "control_owned": true,
+        "clean": true,
+        "final_stable_s": 3.6299996376037598,
+        "longest_stable_s": 3.6299996376037598,
+        "last_control_tick": 799,
+        "first_head_over1n": null,
+        "first_other_over1n": null
+      },
+      "new": {
+        "control_owned": true,
+        "clean": true,
+        "final_stable_s": 3.6299996376037598,
+        "longest_stable_s": 3.6299996376037598,
+        "last_control_tick": 799,
+        "first_head_over1n": null,
+        "first_other_over1n": null
+      },
+      "common_observations": 529,
+      "only_old_ticks": [],
+      "only_new_ticks": [],
+      "first_stance_tick_either": 437,
+      "first_command_difference": null,
+      "first_state_difference": null,
+      "maximum_difference_before_either_stance": {
+        "command_rad": 0.0,
+        "q": 0.0,
+        "v": 0.0
+      },
+      "old_clean_stable": true,
+      "new_clean_stable": true
+    },
+    {
+      "case": 50,
+      "old": {
+        "control_owned": true,
+        "clean": true,
+        "final_stable_s": 3.8499999046325684,
+        "longest_stable_s": 3.8499999046325684,
+        "last_control_tick": 799,
+        "first_head_over1n": null,
+        "first_other_over1n": null
+      },
+      "new": {
+        "control_owned": true,
+        "clean": true,
+        "final_stable_s": 3.8499999046325684,
+        "longest_stable_s": 3.8499999046325684,
+        "last_control_tick": 799,
+        "first_head_over1n": null,
+        "first_other_over1n": null
+      },
+      "common_observations": 525,
+      "only_old_ticks": [],
+      "only_new_ticks": [],
+      "first_stance_tick_either": 435,
+      "first_command_difference": null,
+      "first_state_difference": null,
+      "maximum_difference_before_either_stance": {
+        "command_rad": 0.0,
+        "q": 0.0,
+        "v": 0.0
+      },
+      "old_clean_stable": true,
+      "new_clean_stable": true
+    },
+    {
+      "case": 85,
+      "old": {
+        "control_owned": true,
+        "clean": true,
+        "final_stable_s": 3.7100000381469727,
+        "longest_stable_s": 3.7100000381469727,
+        "last_control_tick": 799,
+        "first_head_over1n": null,
+        "first_other_over1n": null
+      },
+      "new": {
+        "control_owned": true,
+        "clean": true,
+        "final_stable_s": 3.7100000381469727,
+        "longest_stable_s": 3.7100000381469727,
+        "last_control_tick": 799,
+        "first_head_over1n": null,
+        "first_other_over1n": null
+      },
+      "common_observations": 532,
+      "only_old_ticks": [],
+      "only_new_ticks": [],
+      "first_stance_tick_either": 429,
+      "first_command_difference": null,
+      "first_state_difference": null,
+      "maximum_difference_before_either_stance": {
+        "command_rad": 0.0,
+        "q": 0.0,
+        "v": 0.0
+      },
+      "old_clean_stable": true,
+      "new_clean_stable": true
+    },
+    {
+      "case": 90,
+      "old": {
+        "control_owned": true,
+        "clean": true,
+        "final_stable_s": 3.5699996948242188,
+        "longest_stable_s": 3.5699996948242188,
+        "last_control_tick": 799,
+        "first_head_over1n": null,
+        "first_other_over1n": null
+      },
+      "new": {
+        "control_owned": true,
+        "clean": true,
+        "final_stable_s": 3.5699996948242188,
+        "longest_stable_s": 3.5699996948242188,
+        "last_control_tick": 799,
+        "first_head_over1n": null,
+        "first_other_over1n": null
+      },
+      "common_observations": 520,
+      "only_old_ticks": [],
+      "only_new_ticks": [],
+      "first_stance_tick_either": 443,
+      "first_command_difference": null,
+      "first_state_difference": null,
+      "maximum_difference_before_either_stance": {
+        "command_rad": 0.0,
+        "q": 0.0,
+        "v": 0.0
+      },
+      "old_clean_stable": true,
+      "new_clean_stable": true
+    }
+  ],
+  "successful_outcomes": [
+    {
+      "case": 12,
+      "outcome": {
+        "training_index": 12,
+        "air": true,
+        "recovery": true,
+        "complete5": true,
+        "ball5_except_recovery": true,
+        "complete8": false,
+        "rejection_reasons": []
+      },
+      "head_before": {
+        "peak_n": 122819.9140625,
+        "any_nonzero": true,
+        "any_over1n": true,
+        "physics_steps_over1n": 1726
+      },
+      "stable_s": 3.3799996376037598
+    },
+    {
+      "case": 30,
+      "outcome": {
+        "training_index": 30,
+        "air": true,
+        "recovery": true,
+        "complete5": true,
+        "ball5_except_recovery": true,
+        "complete8": false,
+        "rejection_reasons": []
+      },
+      "head_before": {
+        "peak_n": 71655.609375,
+        "any_nonzero": true,
+        "any_over1n": true,
+        "physics_steps_over1n": 1500
+      },
+      "stable_s": 2.0199999809265137
+    },
+    {
+      "case": 42,
+      "outcome": {
+        "training_index": 42,
+        "air": true,
+        "recovery": true,
+        "complete5": true,
+        "ball5_except_recovery": true,
+        "complete8": false,
+        "rejection_reasons": []
+      },
+      "head_before": {
+        "peak_n": 139404.40625,
+        "any_nonzero": true,
+        "any_over1n": true,
+        "physics_steps_over1n": 1469
+      },
+      "stable_s": 3.6299996376037598
+    },
+    {
+      "case": 50,
+      "outcome": {
+        "training_index": 50,
+        "air": true,
+        "recovery": true,
+        "complete5": true,
+        "ball5_except_recovery": true,
+        "complete8": false,
+        "rejection_reasons": []
+      },
+      "head_before": {
+        "peak_n": 117365.9609375,
+        "any_nonzero": true,
+        "any_over1n": true,
+        "physics_steps_over1n": 1510
+      },
+      "stable_s": 3.8499999046325684
+    },
+    {
+      "case": 58,
+      "outcome": {
+        "training_index": 58,
+        "air": true,
+        "recovery": true,
+        "complete5": true,
+        "ball5_except_recovery": true,
+        "complete8": false,
+        "rejection_reasons": []
+      },
+      "head_before": {
+        "peak_n": 135929.984375,
+        "any_nonzero": true,
+        "any_over1n": true,
+        "physics_steps_over1n": 1783
+      },
+      "stable_s": 1.4200000762939453
+    },
+    {
+      "case": 85,
+      "outcome": {
+        "training_index": 85,
+        "air": true,
+        "recovery": true,
+        "complete5": true,
+        "ball5_except_recovery": true,
+        "complete8": false,
+        "rejection_reasons": []
+      },
+      "head_before": {
+        "peak_n": 84641.25,
+        "any_nonzero": true,
+        "any_over1n": true,
+        "physics_steps_over1n": 1539
+      },
+      "stable_s": 3.7100000381469727
+    },
+    {
+      "case": 90,
+      "outcome": {
+        "training_index": 90,
+        "air": true,
+        "recovery": true,
+        "complete5": true,
+        "ball5_except_recovery": true,
+        "complete8": false,
+        "rejection_reasons": []
+      },
+      "head_before": {
+        "peak_n": 147059.046875,
+        "any_nonzero": true,
+        "any_over1n": true,
+        "physics_steps_over1n": 1583
+      },
+      "stable_s": 3.5699996948242188
+    },
+    {
+      "case": 118,
+      "outcome": {
+        "training_index": 118,
+        "air": false,
+        "recovery": false,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "complete8": false,
+        "rejection_reasons": [
+          "legal_airborne_strings",
+          "same_flight_stable_recovery",
+          "actual_net_and_target"
+        ]
+      },
+      "head_before": {
+        "peak_n": 156041.796875,
+        "any_nonzero": true,
+        "any_over1n": true,
+        "physics_steps_over1n": 1745
+      },
+      "stable_s": 3.4200000762939453
+    },
+    {
+      "case": 123,
+      "outcome": {
+        "training_index": 123,
+        "air": false,
+        "recovery": false,
+        "complete5": false,
+        "ball5_except_recovery": false,
+        "complete8": false,
+        "rejection_reasons": [
+          "legal_airborne_strings",
+          "same_flight_stable_recovery",
+          "no_rule_fault",
+          "actual_net_and_target",
+          "event_order"
+        ]
+      },
+      "head_before": {
+        "peak_n": 156159.25,
+        "any_nonzero": true,
+        "any_over1n": true,
+        "physics_steps_over1n": 1818
+      },
+      "stable_s": 1.1399998664855957
+    }
+  ],
+  "ball_side_set_unchanged": true,
+  "ball5_except_recovery_cases": [
+    3,
+    8,
+    9,
+    10,
+    12,
+    16,
+    18,
+    20,
+    24,
+    27,
+    28,
+    30,
+    33,
+    34,
+    36,
+    38,
+    42,
+    43,
+    50,
+    52,
+    54,
+    55,
+    57,
+    58,
+    60,
+    61,
+    67,
+    71,
+    77,
+    82,
+    84,
+    85,
+    90,
+    94,
+    95,
+    96,
+    98,
+    115,
+    121
+  ],
+  "contact_partition": {
+    "no_nonfoot_force": 16,
+    "head_only": 30,
+    "both_head_and_other": 50,
+    "not_taken_over": 18,
+    "other_only": 14
+  },
+  "metrics": {
+    "airborne_contacts": 74,
+    "actual_racket_contacts": 110,
+    "crossed_net": 73,
+    "landed_target": 43,
+    "complete5": 7,
+    "numerical_failures": 0
+  },
+  "execution": {
+    "passed_dispatch_integrity": true,
+    "unchanged_commands_outside_ownership": true,
+    "max_command_error_rad": 2.1700353336484568e-07,
+    "full_ground_initialized_episodes": true
+  },
+  "resource": {
+    "elapsed_s": 6280.040512582986,
+    "charged_gpu_hours": 1.7444556979397183,
+    "charged_env_steps": 102400,
+    "finished_at": "2026-11-09T00:38:54.708127+00:00",
+    "git_sha": "36421b6fd1a55fe6a894ceb5bf24358b93cc9c92"
+  },
+  "other_changed_cases": [
+    {
+      "case": 10,
+      "first_command": {
+        "tick": 356,
+        "maximum_command_difference_rad": 0.007557552522483135,
+        "old_source": "interval_qp",
+        "new_source": "interval_qp",
+        "old_stance": false,
+        "new_stance": false
+      },
+      "first_state": {
+        "tick": 356,
+        "maximum_q_difference": 0.00014829635620117188,
+        "maximum_v_difference": 0.02124929428100586
+      }
+    },
+    {
+      "case": 24,
+      "first_command": {
+        "tick": 405,
+        "maximum_command_difference_rad": 0.047123760080551136,
+        "old_source": "interval_qp",
+        "new_source": "interval_qp",
+        "old_stance": false,
+        "new_stance": false
+      },
+      "first_state": {
+        "tick": 405,
+        "maximum_q_difference": 1.239776611328125e-05,
+        "maximum_v_difference": 0.005526065826416016
+      }
+    },
+    {
+      "case": 28,
+      "first_command": {
+        "tick": 364,
+        "maximum_command_difference_rad": 0.003548140761289287,
+        "old_source": "interval_qp",
+        "new_source": "interval_qp",
+        "old_stance": false,
+        "new_stance": false
+      },
+      "first_state": {
+        "tick": 364,
+        "maximum_q_difference": 0.0001252889633178711,
+        "maximum_v_difference": 0.018162250518798828
+      }
+    },
+    {
+      "case": 32,
+      "first_command": {
+        "tick": 379,
+        "maximum_command_difference_rad": 0.04753950281764385,
+        "old_source": "interval_qp",
+        "new_source": "interval_qp",
+        "old_stance": false,
+        "new_stance": false
+      },
+      "first_state": {
+        "tick": 379,
+        "maximum_q_difference": 2.7805566787719727e-05,
+        "maximum_v_difference": 0.024273574352264404
+      }
+    },
+    {
+      "case": 33,
+      "first_command": {
+        "tick": 357,
+        "maximum_command_difference_rad": 0.0010464069875708581,
+        "old_source": "interval_qp",
+        "new_source": "interval_qp",
+        "old_stance": false,
+        "new_stance": false
+      },
+      "first_state": {
+        "tick": 357,
+        "maximum_q_difference": 0.00016009807586669922,
+        "maximum_v_difference": 0.013143062591552734
+      }
+    },
+    {
+      "case": 43,
+      "first_command": {
+        "tick": 363,
+        "maximum_command_difference_rad": 0.005737937688827577,
+        "old_source": "uncertified_posture_fallback",
+        "new_source": "uncertified_posture_fallback",
+        "old_stance": false,
+        "new_stance": false
+      },
+      "first_state": {
+        "tick": 363,
+        "maximum_q_difference": 0.0016051903367042542,
+        "maximum_v_difference": 0.28689688444137573
+      }
+    },
+    {
+      "case": 71,
+      "first_command": {
+        "tick": 398,
+        "maximum_command_difference_rad": 0.00038487166166305264,
+        "old_source": "uncertified_posture_fallback",
+        "new_source": "uncertified_posture_fallback",
+        "old_stance": false,
+        "new_stance": false
+      },
+      "first_state": {
+        "tick": 398,
+        "maximum_q_difference": 7.158517837524414e-05,
+        "maximum_v_difference": 0.01924358308315277
+      }
+    },
+    {
+      "case": 75,
+      "first_command": {
+        "tick": 346,
+        "maximum_command_difference_rad": 2.7737617492681887e-05,
+        "old_source": "uncertified_posture_fallback",
+        "new_source": "uncertified_posture_fallback",
+        "old_stance": false,
+        "new_stance": false
+      },
+      "first_state": {
+        "tick": 346,
+        "maximum_q_difference": 1.341104507446289e-06,
+        "maximum_v_difference": 0.001386880874633789
+      }
+    },
+    {
+      "case": 81,
+      "first_command": {
+        "tick": 363,
+        "maximum_command_difference_rad": 0.007705934047699037,
+        "old_source": "uncertified_posture_fallback",
+        "new_source": "uncertified_posture_fallback",
+        "old_stance": false,
+        "new_stance": false
+      },
+      "first_state": {
+        "tick": 363,
+        "maximum_q_difference": 0.0011410713195800781,
+        "maximum_v_difference": 0.38529670238494873
+      }
+    },
+    {
+      "case": 82,
+      "first_command": {
+        "tick": 392,
+        "maximum_command_difference_rad": 0.1943504324693741,
+        "old_source": "interval_qp",
+        "new_source": "interval_qp",
+        "old_stance": false,
+        "new_stance": false
+      },
+      "first_state": {
+        "tick": 392,
+        "maximum_q_difference": 1.966021955013275e-05,
+        "maximum_v_difference": 0.0756983757019043
+      }
+    },
+    {
+      "case": 83,
+      "first_command": {
+        "tick": 369,
+        "maximum_command_difference_rad": 0.00010227203369139737,
+        "old_source": "uncertified_posture_fallback",
+        "new_source": "uncertified_posture_fallback",
+        "old_stance": false,
+        "new_stance": false
+      },
+      "first_state": {
+        "tick": 369,
+        "maximum_q_difference": 3.123283386230469e-05,
+        "maximum_v_difference": 0.0051136016845703125
+      }
+    },
+    {
+      "case": 86,
+      "first_command": {
+        "tick": 387,
+        "maximum_command_difference_rad": 0.00031315445041135703,
+        "old_source": "interval_qp",
+        "new_source": "interval_qp",
+        "old_stance": false,
+        "new_stance": false
+      },
+      "first_state": {
+        "tick": 387,
+        "maximum_q_difference": 7.510185241699219e-06,
+        "maximum_v_difference": 0.005623221397399902
+      }
+    },
+    {
+      "case": 94,
+      "first_command": {
+        "tick": 368,
+        "maximum_command_difference_rad": 0.0005411463975906194,
+        "old_source": "uncertified_posture_fallback",
+        "new_source": "uncertified_posture_fallback",
+        "old_stance": false,
+        "new_stance": false
+      },
+      "first_state": {
+        "tick": 368,
+        "maximum_q_difference": 8.726119995117188e-05,
+        "maximum_v_difference": 0.02705731987953186
+      }
+    },
+    {
+      "case": 100,
+      "first_command": {
+        "tick": 384,
+        "maximum_command_difference_rad": 0.0004301190376281294,
+        "old_source": "uncertified_posture_fallback",
+        "new_source": "uncertified_posture_fallback",
+        "old_stance": false,
+        "new_stance": false
+      },
+      "first_state": {
+        "tick": 384,
+        "maximum_q_difference": 6.0498714447021484e-06,
+        "maximum_v_difference": 0.02150595188140869
+      }
+    },
+    {
+      "case": 119,
+      "first_command": {
+        "tick": 356,
+        "maximum_command_difference_rad": 0.02121883803160851,
+        "old_source": "interval_qp",
+        "new_source": "interval_qp",
+        "old_stance": false,
+        "new_stance": false
+      },
+      "first_state": {
+        "tick": 356,
+        "maximum_q_difference": 6.282329559326172e-05,
+        "maximum_v_difference": 0.01661396026611328
+      }
+    },
+    {
+      "case": 121,
+      "first_command": {
+        "tick": 378,
+        "maximum_command_difference_rad": 0.0010965180397033425,
+        "old_source": "uncertified_posture_fallback",
+        "new_source": "uncertified_posture_fallback",
+        "old_stance": false,
+        "new_stance": false
+      },
+      "first_state": {
+        "tick": 378,
+        "maximum_q_difference": 3.218650817871094e-05,
+        "maximum_v_difference": 0.05482590198516846
+      }
+    }
+  ],
+  "formal_goal_status": "FAILED",
+  "native_full_episode_clean": false,
+  "online_sequence_mpc": false,
+  "training": false,
+  "valid_expert_labels": false,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_preserved_foot_native_preparation_20261109_02/plan.json": "31ad94fbfc352c7b4b8dcd218f63b78381c133cd78b5823ddcac6b2463bb2e54",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_preserved_foot_native_preparation_20261109_02/controller.json": "4920756954b0e8ea4158a0f23f1c3f475339db862626cda3f8e04975737f2396",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_preserved_foot_native_preparation_20261109_02/native_audit.json": "a0ef79a3d644da600ae317ac77a24d6118911358b6305e5378710a622cd60c3f",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_preserved_foot_all128_20261109_02/job.json": "93691f631f449af6270ea00b6c60f8fc88fb634719af0f7324993a4a3d707ebb",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_preserved_foot_all128_20261109_02/metrics.json": "5e16b04dd05513de58bdf53368900737175253fc6f4930236fb0cf83ba4f2c21",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_preserved_foot_all128_20261109_02/completed.json": "c4a2cdc51b7afa8f30801dae79e3db905be163f9c7bc5e5a8e2f496c01538989",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_preserved_foot_all128_20261109_02/sequence_entry_provenance.json": "cec7f4fd73275ad9438cb9bbbf5d7b263ae2d412808cc1f98b4b690f90ffba96",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_preserved_foot_completion_review_20261109/support.json": "0229afa93a9ce4eafd4924e9aae317ef49621cd76307353b875d267814040591",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_preserved_foot_completion_review_20261109/versus_v15.json": "9be4d0e966ef74b7549f8d3e8cf59f996ab4769ccb855ab05e54a23be081fef9",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_preserved_foot_completion_review_20261109/formal_verify.json": "ae2b5bbc540391cfed972e3b8764c4c9229b3e2cee247c029a8aa1075e69beea",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_sustained_path_preparation_20261108/reference_library.json": "f8bbd0498fd9dc52d9aa3174b4836ab2af0ed98a03f32a3215c8113907ca6ece",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_preserved_foot_replanning_preparation_20261109/reference_library.json": "3291906b9116804122e3bd37340b532004baca9a4077f61be0f4ac6a773348b1",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_preserved_foot_completion_review_20261109/exact_preserved_history.json": "a3a4397dd0a69264c91aa26b9a5513e1a124356996b695394954f4b7a9bdac0c"
+  },
+  "exact_preserved_history": {
+    "checks": [
+      {
+        "case": 30,
+        "steps": 523,
+        "last_tick": 799,
+        "exact": {
+          "final": true,
+          "q": true,
+          "v": true
+        },
+        "maximum_difference": {
+          "final": 0.0,
+          "q": 0.0,
+          "v": 0.0
+        }
+      },
+      {
+        "case": 42,
+        "steps": 529,
+        "last_tick": 799,
+        "exact": {
+          "final": true,
+          "q": true,
+          "v": true
+        },
+        "maximum_difference": {
+          "final": 0.0,
+          "q": 0.0,
+          "v": 0.0
+        }
+      },
+      {
+        "case": 50,
+        "steps": 525,
+        "last_tick": 799,
+        "exact": {
+          "final": true,
+          "q": true,
+          "v": true
+        },
+        "maximum_difference": {
+          "final": 0.0,
+          "q": 0.0,
+          "v": 0.0
+        }
+      },
+      {
+        "case": 85,
+        "steps": 532,
+        "last_tick": 799,
+        "exact": {
+          "final": true,
+          "q": true,
+          "v": true
+        },
+        "maximum_difference": {
+          "final": 0.0,
+          "q": 0.0,
+          "v": 0.0
+        }
+      },
+      {
+        "case": 90,
+        "steps": 520,
+        "last_tick": 799,
+        "exact": {
+          "final": true,
+          "q": true,
+          "v": true
+        },
+        "maximum_difference": {
+          "final": 0.0,
+          "q": 0.0,
+          "v": 0.0
+        }
+      }
+    ],
+    "all_exact": true,
+    "source_sha256": {
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_foot_reference_all128_20261109_01/pure_control_commands.npz": "6fbfcd7b80b61bf63b8b462b22a56dfc774580e6032e9c5db4a5cd43ed70fd25",
+      "/home/autodrive/LZQW/unitree_smash_contact_recovery/reports/pure_control_preserved_foot_all128_20261109_02/pure_control_commands.npz": "c837b8ab72bb60d34c7c9e586fc9fb5e3c7e0c9f831092e97d4f2ec3bdd38c87"
+    },
+    "scope": "Recorded recovery commands and states only; no new physics"
+  }
+}
