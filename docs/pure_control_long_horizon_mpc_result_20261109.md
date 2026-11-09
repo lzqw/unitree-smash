@@ -154,3 +154,25 @@ stride8 共执行 102,400 个环境步，作业成功，耗时约 3356 秒、0.9
 - QP 修改：`scripts/pure_control_interval_qp_v1.py`、`scripts/whole_body_support_qp_v1.py`
 - 结果：`reports/pure_control_state_driven_long_mpc_qp_continuity_all128_20261109_01/native/metrics.json`
 - 作业记录：`reports/pure_control_state_driven_long_mpc_qp_continuity_all128_20261109_01/native/job.json`
+
+## QP 内命令连续性独立种子复测（2026-11-09）
+
+为检验 40/128 是否只来自单个评估种子，使用相同控制器、相同冻结策略、相同 TRAIN128 面板和完整 8 s 原生执行，仅将随机种子改为 `882073`。本轮没有改变物理参数、成功判定或控制器配置，也没有把中途统计当作最终结果。
+
+| 指标 | 首次 QP 内连续性评估 | 独立种子 882073 |
+|---|---:|---:|
+| complete5（5 m/s 主指标） | **40/128（31.25%）** | **40/128（31.25%）** |
+| 合格空中触球 | 74/128 | 74/128 |
+| 条件恢复 | 52/74（70.27%） | 52/74（70.27%） |
+| 实际球拍接触 | 110/128 | 110/128 |
+| 越网 | 73/128 | 73/128 |
+| 目标落点 | 60/128 | 60/128 |
+| 数值故障 | 0 | 0 |
+
+独立种子完整执行了 102,400 个环境步，作业成功，记录了全部 128 个 TRAIN 案例。两个种子在汇总指标上完全一致，说明该控制器在这个固定开发面板上具有较好的复现性；这仍然不是未见来球、初态扰动或正式泛化评测，也不能把控制辅助成绩称为纯 RL 已学会的能力。
+
+本轮证据：
+
+- 配置：`reports/pure_control_state_driven_long_mpc_qp_continuity_native_preparation_20261109_01/controller.json`
+- 独立种子结果：`reports/pure_control_state_driven_long_mpc_qp_continuity_all128_seed882073_20261109_01/native/metrics.json`
+- 完成标记：`reports/pure_control_state_driven_long_mpc_qp_continuity_all128_seed882073_20261109_01/native/completed.json`
