@@ -22,7 +22,7 @@ from scripts.event_recovery_manager_v1 import RecoveryCommandArbiterV1
 
 
 def main():
-    outdir = WORKTREE / 'reports/corrected_sequence_repair_preflight_20261110'
+    outdir = WORKTREE / 'reports/execution_consistent_repair_preflight_20261110'
     outdir.mkdir(parents=True, exist_ok=True)
     root = MAIN / 'reports/pure_control_state_driven_long_mpc_qp_continuity_all128_20261109_01/native'
     config = json.loads((WORKTREE / 'reports/pure_control_state_driven_long_mpc_qp_continuity_repair_native_preparation_20261110_01/controller.json').read_text())
@@ -58,7 +58,9 @@ def main():
     terminal[12:] = candidate._base_reference(state)[12:]
     qp = np.asarray(plans[0]['joint_position_target'])
     first = 31/32 * qp + 1/32 * terminal
-    mapping_delta = float(np.max(abs(final-requested)))
+    requested_final_delta = float(np.max(abs(final-requested)))
+    predicted_final = np.asarray(diagnostic['execution_preview']['predicted_final_target'])
+    mapping_delta = float(np.max(abs(final-predicted_final)))
 
     previous = candidate.interface.previous_command.copy()
     phase, elapsed = candidate.phase, candidate.elapsed
@@ -87,8 +89,10 @@ def main():
         workers_independent=independent, live_history_and_clock_unchanged=unchanged,
         original_qp_target=qp.tolist(), original_rollout_first_target=first.tolist(),
         corrected_requested_target=requested.tolist(), final_mapped_target=final.tolist(),
+        predicted_final_target=predicted_final.tolist(),
         previous_actual_target=state.previous_command_target.tolist(),
         requested_vs_original_first_delta_rad=float(np.max(abs(requested-first))),
+        requested_vs_final_delta_rad=requested_final_delta,
         predicted_vs_final_delta_rad=mapping_delta,
         prediction_execution_consistent=mapping_delta <= 2e-6,
         overall_pass=independent and unchanged and mapping_delta <= 2e-6,

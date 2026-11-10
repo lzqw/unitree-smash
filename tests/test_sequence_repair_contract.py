@@ -105,11 +105,15 @@ class RepairContractTests(unittest.TestCase):
         sequence, diagnostic = self.run_rollout(predictor)
         expected_first = 31/32 * self.qp + 1/32 * self.terminal
         np.testing.assert_array_equal(sequence[0], expected_first)
-        np.testing.assert_array_equal(predictor.calls[3], expected_first)
+        final, _ = subject.preview_recovery_execution(
+            self.controller.interface.limits, expected_first, self.state.previous_command_target)
+        np.testing.assert_array_equal(predictor.calls[3], final)
         self.assertEqual(len(sequence), 32)
         self.assertEqual(len(predictor.calls), 3 + 32)
         self.assertTrue(diagnostic['sequence_repaired'])
         self.assertTrue(diagnostic['repair_attempted'])
+        self.assertEqual(diagnostic['first_request_max_delta_rad'], 0.)
+        self.assertEqual(diagnostic['first_final_max_delta_rad'], 0.)
 
     def test_successful_trial_does_not_mutate_live_history_or_clock(self):
         self.run_rollout(Predictor(fail_call=3))
@@ -164,6 +168,35 @@ class RepairContractTests(unittest.TestCase):
         np.testing.assert_array_equal(target, expected)
         self.assertEqual(diagnostic['source'], 'state_driven_long_command_hold')
         self.assertFalse(diagnostic['solver_accepted'])
+
+    def test_preview_triggered_and_not_triggered_match_original_executor(self):
+        from scripts.event_recovery_manager_v1 import RecoveryCommandArbiterV1
+        for requested in [np.full(18, -.18), np.full(18, 1.6)]:
+            history = self.state.previous_command_target.copy()
+            expected, _ = RecoveryCommandArbiterV1(self.controller.interface.limits).select(
+                None, requested, history, owns_recovery=True)
+            actual, _ = subject.preview_recovery_execution(self.controller.interface.limits, requested, history)
+            np.testing.assert_array_equal(actual, expected)
+            np.testing.assert_array_equal(history, self.state.previous_command_target)
+
+    def test_multistep_prediction_advances_final_not_requested_history(self):
+        predictor = Predictor()
+        with patch.object(subject, 'predict_self_contact_spheres', predictor):
+            state = copy.deepcopy(self.state)
+            for _ in range(4):
+                state = self.controller._predict_request(state, np.full(18, 1.6))['state']
+        for k, actual in enumerate(predictor.calls):
+            np.testing.assert_allclose(actual[12:], -.2 + .1*(k+1), atol=1e-15, rtol=0.)
+        np.testing.assert_array_equal(self.state.previous_command_target, np.full(18, -.2))
+
+    def test_preview_candidates_do_not_share_history(self):
+        predictor = Predictor()
+        with patch.object(subject, 'predict_self_contact_spheres', predictor):
+            a = self.controller._predict_request(copy.deepcopy(self.state), np.full(18, 1.6))
+            self.controller._predict_request(a['state'], np.full(18, -1.6))
+            b = self.controller._predict_request(copy.deepcopy(self.state), np.full(18, 1.6))
+        np.testing.assert_array_equal(a['predicted_final_target'], b['predicted_final_target'])
+        self.assert_live_unchanged()
 
 
 if __name__ == '__main__':
