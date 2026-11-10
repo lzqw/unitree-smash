@@ -1,0 +1,35 @@
+--- scripts/pure_control_state_driven_long_mpc_v1_qp_continuity_repair.py
++++ scripts/pure_control_state_driven_long_mpc_v1_qp_continuity_repair.py
+@@ -46,0 +47,9 @@
++    def _make_repair_worker(self):
++        # Rebuild native model/geometry scratch data: FCL transforms cannot be
++        # deep-copied safely. Only scalar/array controller context is copied.
++        worker = type(self)(copy.deepcopy(self.interface), self.nominal.copy())
++        worker.settings = copy.deepcopy(self.settings)
++        for name in ('started', 'initial_arm', 'initial_preload', 'phase', 'elapsed'):
++            setattr(worker, name, copy.deepcopy(getattr(self, name)))
++        return worker
++
+@@ -67,3 +76,2 @@
+-            # The reference is recomputed from the predicted state.  The
+-            # terminal reference is retained only as a soft posture preference
+-            # through the existing QP; it is never forced as a hard endpoint.
++            # Recompute the existing soft posture preference at the predicted
++            # state. No hard terminal posture or fixed interpolation is imposed.
+@@ -162,2 +170,12 @@
+-        repaired, repair_diag = self._repair_after_first(
+-            state, first_target, terminal_reference)
++        # Solves bind command history and mutate model/geometry scratch data.
++        # Keep those side effects off the live controller even on rejection.
++        try:
++            worker = self._make_repair_worker()
++            repaired, repair_diag = worker._repair_after_first(
++                state, sequence[0], terminal_reference)
++        except Exception as exc:
++            # Only the optional repair is caught; interrupts still propagate.
++            # No candidate command is returned after any solver/worker error.
++            repaired = None
++            repair_diag = dict(repair_rejection='repair_exception',
++                               error_type=type(exc).__name__, error=str(exc))
+@@ -164,0 +183 @@
++            repair_diag['repair_attempted'] = True

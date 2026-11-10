@@ -1,0 +1,102 @@
+F..EFF
+======================================================================
+ERROR: test_numerical_trial_exception_falls_back_without_state_changes (__main__.RepairContractTests.test_numerical_trial_exception_falls_back_without_state_changes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/autodrive/LZQW/unitree_smash_contact_recovery_9cb_baseline/tests/test_sequence_repair_contract.py", line 125, in test_numerical_trial_exception_falls_back_without_state_changes
+    sequence, diagnostic = self.run_rollout(Predictor(fail_call=3))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_contact_recovery_9cb_baseline/tests/test_sequence_repair_contract.py", line 74, in run_rollout
+    return self.controller._rollout(self.state, self.qp, self.terminal)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_contact_recovery_9cb_baseline/scripts/pure_control_state_driven_long_mpc_v1_qp_continuity_repair.py", line 162, in _rollout
+    repaired, repair_diag = self._repair_after_first(
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_contact_recovery_9cb_baseline/scripts/pure_control_state_driven_long_mpc_v1_qp_continuity_repair.py", line 74, in _repair_after_first
+    plan = self.solve(predicted, reference)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_contact_recovery_9cb_baseline/tests/test_sequence_repair_contract.py", line 44, in solve
+    raise ValueError('injected numerical rejection')
+ValueError: injected numerical rejection
+
+======================================================================
+FAIL: test_failed_future_qp_returns_no_partial_plan (__main__.RepairContractTests.test_failed_future_qp_returns_no_partial_plan)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/autodrive/LZQW/unitree_smash_contact_recovery_9cb_baseline/tests/test_sequence_repair_contract.py", line 121, in test_failed_future_qp_returns_no_partial_plan
+    self.assert_live_unchanged()
+  File "/home/autodrive/LZQW/unitree_smash_contact_recovery_9cb_baseline/tests/test_sequence_repair_contract.py", line 77, in assert_live_unchanged
+    np.testing.assert_array_equal(self.controller.interface.previous_command, np.full(18, -.2))
+  File "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/numpy/testing/_private/utils.py", line 920, in assert_array_equal
+    assert_array_compare(operator.__eq__, x, y, err_msg=err_msg,
+  File "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/contextlib.py", line 81, in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/numpy/testing/_private/utils.py", line 797, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError: 
+Arrays are not equal
+
+Mismatched elements: 18 / 18 (100%)
+Max absolute difference: 1.
+Max relative difference: 5.
+ x: array([0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8,
+       0.8, 0.8, 0.8, 0.8, 0.8])
+ y: array([-0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2,
+       -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2])
+
+======================================================================
+FAIL: test_repair_preserves_actual_interpolated_first_command (__main__.RepairContractTests.test_repair_preserves_actual_interpolated_first_command)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/autodrive/LZQW/unitree_smash_contact_recovery_9cb_baseline/tests/test_sequence_repair_contract.py", line 104, in test_repair_preserves_actual_interpolated_first_command
+    np.testing.assert_array_equal(sequence[0], expected_first)
+  File "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/numpy/testing/_private/utils.py", line 920, in assert_array_equal
+    assert_array_compare(operator.__eq__, x, y, err_msg=err_msg,
+  File "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/contextlib.py", line 81, in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/numpy/testing/_private/utils.py", line 797, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError: 
+Arrays are not equal
+
+Mismatched elements: 18 / 18 (100%)
+Max absolute difference: 0.0375
+Max relative difference: 0.04918033
+ x: array([0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8,
+       0.8, 0.8, 0.8, 0.8, 0.8])
+ y: array([0.7625, 0.7625, 0.7625, 0.7625, 0.7625, 0.7625, 0.7625, 0.7625,
+       0.7625, 0.7625, 0.7625, 0.7625, 0.7625, 0.7625, 0.7625, 0.7625,
+       0.7625, 0.7625])
+
+======================================================================
+FAIL: test_successful_trial_does_not_mutate_live_history_or_clock (__main__.RepairContractTests.test_successful_trial_does_not_mutate_live_history_or_clock)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/autodrive/LZQW/unitree_smash_contact_recovery_9cb_baseline/tests/test_sequence_repair_contract.py", line 113, in test_successful_trial_does_not_mutate_live_history_or_clock
+    self.assert_live_unchanged()
+  File "/home/autodrive/LZQW/unitree_smash_contact_recovery_9cb_baseline/tests/test_sequence_repair_contract.py", line 77, in assert_live_unchanged
+    np.testing.assert_array_equal(self.controller.interface.previous_command, np.full(18, -.2))
+  File "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/numpy/testing/_private/utils.py", line 920, in assert_array_equal
+    assert_array_compare(operator.__eq__, x, y, err_msg=err_msg,
+  File "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/contextlib.py", line 81, in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/numpy/testing/_private/utils.py", line 797, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError: 
+Arrays are not equal
+
+Mismatched elements: 18 / 18 (100%)
+Max absolute difference: 0.43
+Max relative difference: 2.15
+ x: array([0.23, 0.23, 0.23, 0.23, 0.23, 0.23, 0.23, 0.23, 0.23, 0.23, 0.23,
+       0.23, 0.23, 0.23, 0.23, 0.23, 0.23, 0.23])
+ y: array([-0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2,
+       -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2])
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.014s
+
+FAILED (failures=3, errors=1)
