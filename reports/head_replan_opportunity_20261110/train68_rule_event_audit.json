@@ -1,0 +1,97 @@
+{
+  "source": "FullRacketEnv native net-force view: last filter is shuttle; norm > .001 N",
+  "predicate": "active & accumulated shuttle_net_contact & own_side & vx<=0 & vz<0 (after hit)",
+  "exact_native_net_contact_time_s": null,
+  "exact_native_fault_time_s": null,
+  "limitation": "No per-physics-step shuttle/net force or fault-transition archive was saved. Brackets below are inferred from 100 Hz measured ball states, not exact native event timestamps.",
+  "measured_velocity_reversal_bracket_s": [
+    2.92,
+    2.93
+  ],
+  "falling_return_predicate_transition_bracket_s": [
+    3.29,
+    3.3000000000000003
+  ],
+  "reversal_samples": [
+    {
+      "tick": 292,
+      "time_s": 2.92,
+      "x": 1.4483794720218395,
+      "y": 0.03164900554713507,
+      "z": 1.5575413117396484,
+      "vx": 4.342385049906765,
+      "vy": 1.2951132642289105,
+      "vz": -1.9205091262879403
+    },
+    {
+      "tick": 293,
+      "time_s": 2.93,
+      "x": 1.4798666211518003,
+      "y": 0.04403957831818406,
+      "z": 1.5515084560688988,
+      "vx": -0.6156250390205552,
+      "vy": 1.069359829847064,
+      "vz": 3.658594842857195
+    }
+  ],
+  "falling_return_samples": [
+    {
+      "tick": 329,
+      "time_s": 3.29,
+      "x": 1.2610474726827774,
+      "y": 0.42414857505424286,
+      "z": 2.220557662350894,
+      "vx": -0.602725258525329,
+      "vy": 1.0469589220863313,
+      "vz": 0.07998934008238695
+    },
+    {
+      "tick": 330,
+      "time_s": 3.3000000000000003,
+      "x": 1.2550202721477828,
+      "y": 0.4346161014240518,
+      "z": 2.220864264163574,
+      "vx": -0.6025440613937536,
+      "vy": 1.0466346403410896,
+      "vz": -0.018120357631131387
+    }
+  ],
+  "net_plane_x_m": 1.5,
+  "flags": {
+    "robot_net_fault": false,
+    "body_ball_fault": false,
+    "wrong_side_fault": false,
+    "double_hit_fault": false,
+    "racket_invasion_fault": false,
+    "body_over_net_fault": false,
+    "under_net_obstruction_fault": false,
+    "engineering_body_crossing": false,
+    "bad_return_fault": false,
+    "net_blocked_fault": true,
+    "shuttle_net_contact": true
+  },
+  "contact_flight_recovery": {
+    "schema": "contact-flight-recovery-v1",
+    "bound": true,
+    "contact_flight_id": 6,
+    "rally_contact_time_s": 2.8334195613861084,
+    "airborne_string_time_s": 2.8334195613861084,
+    "contact_flight_takeoff_s": 2.635991334915161,
+    "qualified_contact_landing": true,
+    "contact_flight_landing_s": 3.1429545879364014,
+    "contact_flight_com_rise_m": 0.2449868619441986,
+    "contact_flight_clear_s": 0.4929971992969513,
+    "stable_recovery": true,
+    "recovery_s": 4.062888145446777,
+    "body_landing": false,
+    "maximum_body_ground_force_n": 0.0,
+    "terminal_root_height_m": 0.2979600429534912,
+    "success": true
+  },
+  "conditional_recovery_unchanged": false,
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/tasks/stand/full_racket_env_v4.py": "2771eec47b6c34512279f1492f9f1f836f26c4cbb9c161dae0329c0670acb1a7",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery/quadsmash/physics/rally_rules_v4.py": "80960adcc3cc6ebc0bbf58060aea6e208e74a9f28a62bb2f4a66140db4a98bed",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery_9cb_baseline/reports/pure_control_state_driven_long_mpc_qp_continuity_repair_all128_corrected_20261110_03/native/fixed_policy_traces/case_068.npz": "b3014cb719682a5cf40e17cfa0059b55f3f3dd431e7cc1d0c5251e027ac1b4ab"
+  }
+}
