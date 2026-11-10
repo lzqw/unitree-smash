@@ -1,0 +1,2027 @@
+{
+  "label": "Sequence repair and execution-interface-consistent prediction; combined correction, not single-factor ablation",
+  "official_baseline": "9cb7983: 52/74",
+  "historical57_role": "Diagnostic only; original source and result contain known defects",
+  "command_consistency": {
+    "checked_rows": 55931,
+    "missing_preview_rows": [],
+    "max_request_vs_final_delta_rad": 0.7048724025409996,
+    "limit_active_rows": 236,
+    "max_prediction_preview_vs_native_arbiter_delta_rad": 0.0,
+    "max_final_vs_recorded_dispatch_roundtrip_delta_rad": 1.81456591530349e-07,
+    "max_actual_history_vs_previous_final_delta_rad": 3.481062076371444e-07,
+    "max_reconstructed_plan_branch_final_vs_actual_delta_rad": 2.622604373669901e-07,
+    "unchanged_precision_tolerance_rad": 2e-06,
+    "repaired_first_targets": [
+      {
+        "lane": 70,
+        "tick": 263,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 98,
+        "tick": 267,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 115,
+        "tick": 268,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 87,
+        "tick": 272,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 41,
+        "tick": 274,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 0,
+        "tick": 313,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 36,
+        "tick": 313,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 55,
+        "tick": 313,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 19,
+        "tick": 314,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 60,
+        "tick": 314,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 106,
+        "tick": 314,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 22,
+        "tick": 315,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 32,
+        "tick": 315,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 94,
+        "tick": 315,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 72,
+        "tick": 317,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 73,
+        "tick": 318,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 67,
+        "tick": 321,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 6,
+        "tick": 322,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 59,
+        "tick": 324,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 126,
+        "tick": 324,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 13,
+        "tick": 327,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 63,
+        "tick": 327,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 97,
+        "tick": 327,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 39,
+        "tick": 328,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 56,
+        "tick": 328,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 109,
+        "tick": 328,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 107,
+        "tick": 329,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 3,
+        "tick": 330,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 20,
+        "tick": 331,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 62,
+        "tick": 331,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 103,
+        "tick": 332,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 90,
+        "tick": 333,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 12,
+        "tick": 334,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 83,
+        "tick": 334,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 111,
+        "tick": 335,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 46,
+        "tick": 337,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 39,
+        "tick": 338,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 82,
+        "tick": 339,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 107,
+        "tick": 339,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 111,
+        "tick": 341,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 53,
+        "tick": 342,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 23,
+        "tick": 343,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 63,
+        "tick": 343,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 65,
+        "tick": 343,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 97,
+        "tick": 343,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 93,
+        "tick": 344,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 109,
+        "tick": 344,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 65,
+        "tick": 345,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 109,
+        "tick": 345,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 20,
+        "tick": 346,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 63,
+        "tick": 346,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 126,
+        "tick": 346,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 103,
+        "tick": 348,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 90,
+        "tick": 349,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 12,
+        "tick": 350,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 93,
+        "tick": 350,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 100,
+        "tick": 351,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 100,
+        "tick": 353,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 39,
+        "tick": 354,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 71,
+        "tick": 354,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 12,
+        "tick": 355,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 107,
+        "tick": 355,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 53,
+        "tick": 358,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 23,
+        "tick": 359,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 97,
+        "tick": 359,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 65,
+        "tick": 361,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 109,
+        "tick": 361,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 20,
+        "tick": 362,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 103,
+        "tick": 364,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 90,
+        "tick": 365,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 93,
+        "tick": 366,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 100,
+        "tick": 369,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 39,
+        "tick": 370,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 107,
+        "tick": 371,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 53,
+        "tick": 374,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 86,
+        "tick": 375,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 65,
+        "tick": 377,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 103,
+        "tick": 380,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 90,
+        "tick": 381,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 93,
+        "tick": 382,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 100,
+        "tick": 385,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 107,
+        "tick": 387,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 90,
+        "tick": 397,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 100,
+        "tick": 401,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 90,
+        "tick": 413,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 100,
+        "tick": 417,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      },
+      {
+        "lane": 100,
+        "tick": 433,
+        "request_delta_rad": 0.0,
+        "final_delta_rad": 0.0
+      }
+    ],
+    "repair_first_target_checks_pass": true,
+    "all_pass": true,
+    "physical_execution_check": "Unchanged verify_applied checked post-step actuator targets at <=2e-6 throughout native run; no overwrite exception.",
+    "limitation": "Command mapping agreement does not prove predicted mechanical response equals PhysX response."
+  },
+  "input_contract_equal_except_controller": {
+    "policy_sha256": true,
+    "protocol_sha256": true,
+    "training_suite": true,
+    "source_checkpoint_protocol_sha256": true,
+    "execution_worktree": true,
+    "origin_precision_receipt_sha256": true,
+    "origin_spacing_m": true,
+    "training_indices": true,
+    "reset_noise_amplitudes": true,
+    "reset_noise_seed": true,
+    "controller_trial": true,
+    "ground_extent_diagnostic": true,
+    "learned_recovery_command_head": true,
+    "learned_recovery_command_head_sha256": true,
+    "extra_recovery_teacher_enabled": true,
+    "learned_recovery_mpc_correction": true,
+    "landing_mpc_causal_posthit_only": true,
+    "student_sampling_log_prob_available": true,
+    "correction_collection_is_ppo_buffer": true,
+    "recovery_assistance_execution": true,
+    "landing_trial": true,
+    "support_trial": true,
+    "support_config": true,
+    "support_disabled": true,
+    "record_all_first_episode_actions": true,
+    "residual_actor_enabled": true,
+    "landing_mpc_cases": true,
+    "landing_mpc_horizon_steps": true,
+    "landing_mpc_allow_first_step": true,
+    "landing_mpc_min_risk_score_drop": true,
+    "landing_mpc_min_start_risk_score": true,
+    "landing_mpc_hold_steps": true,
+    "landing_mpc_hold_first_action": true,
+    "landing_mpc_executor_replay": true,
+    "landing_mpc_command_rate_scale": true,
+    "landing_mpc_support_margin": true,
+    "landing_mpc_torque_overlay": true,
+    "landing_mpc_touchdown_recovery": true,
+    "landing_mpc_force_post_touchdown": true,
+    "landing_mpc_latched_post_touchdown_ticks": true,
+    "landing_mpc_contact_force_threshold": true,
+    "landing_mpc_contact_release_threshold": true,
+    "landing_mpc_contact_release_ticks": true,
+    "landing_mpc_mode_validation_force": true,
+    "landing_mpc_mode_validation_ticks": true,
+    "landing_mpc_hold_tracking_error_release_rad": true,
+    "landing_mpc_predict_touchdown_contacts": true,
+    "landing_mpc_contact_mode_fallback": true,
+    "landing_mpc_contact_mode_sequence_search": true,
+    "landing_mpc_contact_mode_sequence_max_candidates": true,
+    "landing_mpc_touchdown_mode_height_scale": true,
+    "landing_mpc_capture_foot_gain": true,
+    "landing_mpc_capture_foot_max_offset": true,
+    "landing_mpc_leg_posture_blend": true,
+    "landing_mpc_arm_posture_blend": true,
+    "landing_mpc_touchdown_height_tolerance": true,
+    "landing_mpc_touchdown_vertical_speed_limit": true,
+    "landing_mpc_touchdown_impact_projection": true,
+    "landing_mpc_force_distribution_weight": true,
+    "landing_mpc_force_wrench_weight": true,
+    "landing_mpc_swing_foot_weight": true,
+    "landing_mpc_swing_foot_kp": true,
+    "landing_mpc_swing_foot_kd": true,
+    "landing_mpc_swing_foot_clearance": true,
+    "landing_mpc_nonfoot_clearance_weight": true,
+    "landing_mpc_nonfoot_clearance_hard": true,
+    "landing_mpc_nonfoot_clearance_m": true,
+    "landing_mpc_nonfoot_clearance_kp": true,
+    "landing_mpc_nonfoot_clearance_kd": true,
+    "landing_mpc_continuous_reference": true,
+    "landing_mpc_load_aware_support": true,
+    "landing_mpc_load_force_floor": true,
+    "landing_mpc_free_arm": true,
+    "landing_mpc_command_history_interface": true,
+    "landing_mpc_implicit_command_qp": true,
+    "landing_mpc_interval_command_qp": true,
+    "landing_mpc_interval_active_set": true,
+    "landing_mpc_full_command_damper": true,
+    "landing_mpc_minimum_command_cost": true,
+    "landing_mpc_command_change_weight": true,
+    "reactive_vhsip_cases": true,
+    "reactive_vhsip_post_touchdown_only": true,
+    "reactive_vhsip_capture_model": true,
+    "reactive_vhsip_settling_s": true,
+    "reactive_vhsip_capture_gain": true,
+    "reactive_vhsip_blend_s": true,
+    "causal_release_full_control": true,
+    "case_time_conditioned_diagnostic": true,
+    "expert_bank": true,
+    "offline_trace_finetune_candidate": true,
+    "reset_noise": true,
+    "scope": true,
+    "formal_cases_read": true,
+    "formal_acceptance": true
+  },
+  "changed_input_fields": [],
+  "prefix_summary": {
+    "takeover_tick_equal": {
+      "equal": 128,
+      "total": 128,
+      "different": []
+    },
+    "contact_time_s_equal": {
+      "equal": 128,
+      "total": 128,
+      "different": []
+    },
+    "release_time_s_equal": {
+      "equal": 127,
+      "total": 128,
+      "different": [
+        26
+      ]
+    },
+    "first_string_time_s_equal": {
+      "equal": 128,
+      "total": 128,
+      "different": []
+    },
+    "outgoing_velocity_mps_equal": {
+      "equal": 92,
+      "total": 128,
+      "different": [
+        1,
+        3,
+        6,
+        13,
+        17,
+        18,
+        23,
+        24,
+        25,
+        26,
+        27,
+        30,
+        32,
+        36,
+        38,
+        39,
+        40,
+        43,
+        45,
+        47,
+        49,
+        50,
+        53,
+        54,
+        57,
+        60,
+        61,
+        68,
+        80,
+        81,
+        83,
+        87,
+        90,
+        94,
+        98,
+        126
+      ]
+    },
+    "prefix_max_command_delta": 0.2783113718032837,
+    "takeover_q_max_delta": 0.00012320280075073242,
+    "takeover_v_max_delta": 0.019789457321166992,
+    "takeover_previous_max_delta": 1.0013580322265625e-05
+  },
+  "historical57_comparison": {
+    "air": {
+      "retained": [
+        1,
+        3,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        16,
+        17,
+        18,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        30,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        42,
+        43,
+        45,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        57,
+        58,
+        60,
+        61,
+        63,
+        64,
+        65,
+        67,
+        68,
+        70,
+        71,
+        72,
+        77,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        90,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        114,
+        115,
+        121,
+        125,
+        126
+      ],
+      "lost": [],
+      "gained": []
+    },
+    "ball5_except_recovery": {
+      "retained": [
+        1,
+        3,
+        8,
+        9,
+        10,
+        16,
+        18,
+        20,
+        23,
+        24,
+        25,
+        27,
+        28,
+        30,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        42,
+        43,
+        45,
+        49,
+        50,
+        51,
+        52,
+        54,
+        55,
+        57,
+        58,
+        60,
+        61,
+        63,
+        67,
+        77,
+        84,
+        85,
+        90,
+        94,
+        95,
+        96,
+        121,
+        126
+      ],
+      "lost": [],
+      "gained": [
+        82
+      ]
+    },
+    "recovery": {
+      "retained": [
+        1,
+        3,
+        6,
+        7,
+        8,
+        9,
+        10,
+        16,
+        17,
+        18,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        30,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        40,
+        42,
+        43,
+        45,
+        49,
+        50,
+        51,
+        52,
+        54,
+        55,
+        58,
+        60,
+        61,
+        64,
+        67,
+        72,
+        77,
+        80,
+        81,
+        82,
+        84,
+        85,
+        86,
+        94,
+        95,
+        99,
+        114,
+        121,
+        125
+      ],
+      "lost": [
+        20,
+        68
+      ],
+      "gained": []
+    },
+    "complete5": {
+      "retained": [
+        1,
+        3,
+        8,
+        9,
+        10,
+        16,
+        18,
+        23,
+        24,
+        25,
+        27,
+        28,
+        30,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        42,
+        43,
+        45,
+        49,
+        50,
+        51,
+        52,
+        54,
+        55,
+        58,
+        60,
+        61,
+        67,
+        77,
+        84,
+        85,
+        94,
+        95,
+        121
+      ],
+      "lost": [
+        20
+      ],
+      "gained": [
+        82
+      ]
+    }
+  },
+  "historical57_task_sets": {
+    "air": [
+      1,
+      3,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      16,
+      17,
+      18,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      30,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      42,
+      43,
+      45,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      57,
+      58,
+      60,
+      61,
+      63,
+      64,
+      65,
+      67,
+      68,
+      70,
+      71,
+      72,
+      77,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      90,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99,
+      114,
+      115,
+      121,
+      125,
+      126
+    ],
+    "ball5_except_recovery": [
+      1,
+      3,
+      8,
+      9,
+      10,
+      16,
+      18,
+      20,
+      23,
+      24,
+      25,
+      27,
+      28,
+      30,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      42,
+      43,
+      45,
+      49,
+      50,
+      51,
+      52,
+      54,
+      55,
+      57,
+      58,
+      60,
+      61,
+      63,
+      67,
+      77,
+      84,
+      85,
+      90,
+      94,
+      95,
+      96,
+      121,
+      126
+    ],
+    "recovery": [
+      1,
+      3,
+      6,
+      7,
+      8,
+      9,
+      10,
+      16,
+      17,
+      18,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      30,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      40,
+      42,
+      43,
+      45,
+      49,
+      50,
+      51,
+      52,
+      54,
+      55,
+      58,
+      60,
+      61,
+      64,
+      67,
+      68,
+      72,
+      77,
+      80,
+      81,
+      82,
+      84,
+      85,
+      86,
+      94,
+      95,
+      99,
+      114,
+      121,
+      125
+    ],
+    "complete5": [
+      1,
+      3,
+      8,
+      9,
+      10,
+      16,
+      18,
+      20,
+      23,
+      24,
+      25,
+      27,
+      28,
+      30,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      42,
+      43,
+      45,
+      49,
+      50,
+      51,
+      52,
+      54,
+      55,
+      58,
+      60,
+      61,
+      67,
+      77,
+      84,
+      85,
+      94,
+      95,
+      121
+    ]
+  },
+  "focus_vs_historical57": {
+    "historical57": {
+      "20": {
+        "outcome": {
+          "training_index": 20,
+          "air": true,
+          "recovery": true,
+          "complete5": true,
+          "ball5_except_recovery": true,
+          "complete8": false,
+          "rejection_reasons": []
+        },
+        "contact_flight_recovery": {
+          "schema": "contact-flight-recovery-v1",
+          "bound": true,
+          "contact_flight_id": 4,
+          "rally_contact_time_s": 2.782010316848755,
+          "airborne_string_time_s": 2.782010316848755,
+          "contact_flight_takeoff_s": 2.592994451522827,
+          "qualified_contact_landing": true,
+          "contact_flight_landing_s": 3.1169564723968506,
+          "contact_flight_com_rise_m": 0.27233606576919556,
+          "contact_flight_clear_s": 0.5079970359802246,
+          "stable_recovery": true,
+          "recovery_s": 3.9728944301605225,
+          "body_landing": false,
+          "maximum_body_ground_force_n": 0.0,
+          "terminal_root_height_m": 0.30735093355178833,
+          "success": true
+        },
+        "flags": {
+          "launched": true,
+          "in_play": false,
+          "had_contact": true,
+          "legal_initial_contact": true,
+          "string_hit": true,
+          "airborne_string_hit": true,
+          "frame_hit": false,
+          "released": true,
+          "crossed_net": true,
+          "landed_legal_court": true,
+          "landed_target": true,
+          "ground_seen": true,
+          "robot_net_fault": false,
+          "body_ball_fault": false,
+          "wrong_side_fault": false,
+          "double_hit_fault": false,
+          "racket_invasion_fault": false,
+          "body_over_net_fault": false,
+          "under_net_obstruction_fault": false,
+          "engineering_body_crossing": false,
+          "bad_return_fault": false,
+          "net_blocked_fault": false,
+          "shuttle_net_contact": false,
+          "followthrough_crossed": false,
+          "followthrough_finished": false,
+          "complete_smash": false,
+          "recovery_success": true,
+          "ground_init": true
+        },
+        "outgoing_velocity_mps": [
+          5.0911335945129395,
+          -0.18693968653678894,
+          -2.7673676013946533
+        ],
+        "outgoing_speed_mps": 5.7976642852815745,
+        "first_landing_m": [
+          3.1071949005126953,
+          0.01111008133739233,
+          0.025066716596484184
+        ],
+        "contact_time_s": 2.782010316848755,
+        "release_time_s": 2.782447576522827
+      },
+      "23": {
+        "outcome": {
+          "training_index": 23,
+          "air": true,
+          "recovery": true,
+          "complete5": true,
+          "ball5_except_recovery": true,
+          "complete8": false,
+          "rejection_reasons": []
+        },
+        "contact_flight_recovery": {
+          "schema": "contact-flight-recovery-v1",
+          "bound": true,
+          "contact_flight_id": 3,
+          "rally_contact_time_s": 2.7400333881378174,
+          "airborne_string_time_s": 2.7400333881378174,
+          "contact_flight_takeoff_s": 2.550997495651245,
+          "qualified_contact_landing": true,
+          "contact_flight_landing_s": 3.0729596614837646,
+          "contact_flight_com_rise_m": 0.27791932225227356,
+          "contact_flight_clear_s": 0.5129969716072083,
+          "stable_recovery": true,
+          "recovery_s": 3.5649240016937256,
+          "body_landing": false,
+          "maximum_body_ground_force_n": 0.0,
+          "terminal_root_height_m": 0.29707106947898865,
+          "success": true
+        },
+        "flags": {
+          "launched": true,
+          "in_play": false,
+          "had_contact": true,
+          "legal_initial_contact": true,
+          "string_hit": true,
+          "airborne_string_hit": true,
+          "frame_hit": false,
+          "released": true,
+          "crossed_net": true,
+          "landed_legal_court": true,
+          "landed_target": true,
+          "ground_seen": true,
+          "robot_net_fault": false,
+          "body_ball_fault": false,
+          "wrong_side_fault": false,
+          "double_hit_fault": false,
+          "racket_invasion_fault": false,
+          "body_over_net_fault": false,
+          "under_net_obstruction_fault": false,
+          "engineering_body_crossing": false,
+          "bad_return_fault": false,
+          "net_blocked_fault": false,
+          "shuttle_net_contact": false,
+          "followthrough_crossed": false,
+          "followthrough_finished": false,
+          "complete_smash": false,
+          "recovery_success": true,
+          "ground_init": true
+        },
+        "outgoing_velocity_mps": [
+          5.904725551605225,
+          -0.1754671037197113,
+          -2.104243755340576
+        ],
+        "outgoing_speed_mps": 6.270918140604071,
+        "first_landing_m": [
+          3.5865485668182373,
+          -0.04735841229557991,
+          0.02504241280257702
+        ],
+        "contact_time_s": 2.7400333881378174,
+        "release_time_s": 2.740408182144165
+      },
+      "26": {
+        "outcome": {
+          "training_index": 26,
+          "air": true,
+          "recovery": true,
+          "complete5": false,
+          "ball5_except_recovery": false,
+          "complete8": false,
+          "rejection_reasons": [
+            "speed_threshold"
+          ]
+        },
+        "contact_flight_recovery": {
+          "schema": "contact-flight-recovery-v1",
+          "bound": true,
+          "contact_flight_id": 5,
+          "rally_contact_time_s": 2.7249791622161865,
+          "airborne_string_time_s": 2.7249791622161865,
+          "contact_flight_takeoff_s": 2.5439980030059814,
+          "qualified_contact_landing": true,
+          "contact_flight_landing_s": 3.0709598064422607,
+          "contact_flight_com_rise_m": 0.2774769961833954,
+          "contact_flight_clear_s": 0.5109969973564148,
+          "stable_recovery": true,
+          "recovery_s": 4.092885971069336,
+          "body_landing": false,
+          "maximum_body_ground_force_n": 0.0,
+          "terminal_root_height_m": 0.300138920545578,
+          "success": true
+        },
+        "flags": {
+          "launched": true,
+          "in_play": false,
+          "had_contact": true,
+          "legal_initial_contact": true,
+          "string_hit": true,
+          "airborne_string_hit": true,
+          "frame_hit": false,
+          "released": true,
+          "crossed_net": true,
+          "landed_legal_court": true,
+          "landed_target": true,
+          "ground_seen": true,
+          "robot_net_fault": false,
+          "body_ball_fault": false,
+          "wrong_side_fault": false,
+          "double_hit_fault": false,
+          "racket_invasion_fault": false,
+          "body_over_net_fault": false,
+          "under_net_obstruction_fault": false,
+          "engineering_body_crossing": false,
+          "bad_return_fault": false,
+          "net_blocked_fault": false,
+          "shuttle_net_contact": false,
+          "followthrough_crossed": false,
+          "followthrough_finished": false,
+          "complete_smash": false,
+          "recovery_success": true,
+          "ground_init": true
+        },
+        "outgoing_velocity_mps": [
+          4.470974445343018,
+          1.0732852220535278,
+          -1.8981961011886597
+        ],
+        "outgoing_speed_mps": 4.97440469778612,
+        "first_landing_m": [
+          3.1486401557922363,
+          0.39721953868865967,
+          0.025033704936504364
+        ],
+        "contact_time_s": 2.7249791622161865,
+        "release_time_s": 2.725541353225708
+      },
+      "82": {
+        "outcome": {
+          "training_index": 82,
+          "air": true,
+          "recovery": true,
+          "complete5": false,
+          "ball5_except_recovery": false,
+          "complete8": false,
+          "rejection_reasons": [
+            "released_downward_forward"
+          ]
+        },
+        "contact_flight_recovery": {
+          "schema": "contact-flight-recovery-v1",
+          "bound": true,
+          "contact_flight_id": 5,
+          "rally_contact_time_s": 2.8203017711639404,
+          "airborne_string_time_s": 2.8203017711639404,
+          "contact_flight_takeoff_s": 2.621992349624634,
+          "qualified_contact_landing": true,
+          "contact_flight_landing_s": 3.128955602645874,
+          "contact_flight_com_rise_m": 0.2532735764980316,
+          "contact_flight_clear_s": 0.4889972507953644,
+          "stable_recovery": true,
+          "recovery_s": 4.055888652801514,
+          "body_landing": false,
+          "maximum_body_ground_force_n": 0.0,
+          "terminal_root_height_m": 0.2983287274837494,
+          "success": true
+        },
+        "flags": {
+          "launched": true,
+          "in_play": false,
+          "had_contact": true,
+          "legal_initial_contact": true,
+          "string_hit": true,
+          "airborne_string_hit": true,
+          "frame_hit": false,
+          "released": true,
+          "crossed_net": true,
+          "landed_legal_court": true,
+          "landed_target": true,
+          "ground_seen": true,
+          "robot_net_fault": false,
+          "body_ball_fault": false,
+          "wrong_side_fault": false,
+          "double_hit_fault": false,
+          "racket_invasion_fault": false,
+          "body_over_net_fault": false,
+          "under_net_obstruction_fault": false,
+          "engineering_body_crossing": false,
+          "bad_return_fault": false,
+          "net_blocked_fault": false,
+          "shuttle_net_contact": false,
+          "followthrough_crossed": false,
+          "followthrough_finished": false,
+          "complete_smash": false,
+          "recovery_success": true,
+          "ground_init": true
+        },
+        "outgoing_velocity_mps": [
+          5.45417594909668,
+          1.3063390254974365,
+          -0.8990973830223083
+        ],
+        "outgoing_speed_mps": 5.680046922112512,
+        "first_landing_m": [
+          3.829486846923828,
+          0.7071772813796997,
+          0.025006769225001335
+        ],
+        "contact_time_s": 2.8203017711639404,
+        "release_time_s": 2.8208014965057373
+      },
+      "83": {
+        "outcome": {
+          "training_index": 83,
+          "air": true,
+          "recovery": false,
+          "complete5": false,
+          "ball5_except_recovery": false,
+          "complete8": false,
+          "rejection_reasons": [
+            "same_flight_stable_recovery",
+            "actual_net_and_target"
+          ]
+        },
+        "contact_flight_recovery": {
+          "schema": "contact-flight-recovery-v1",
+          "bound": true,
+          "contact_flight_id": 5,
+          "rally_contact_time_s": 2.8097450733184814,
+          "airborne_string_time_s": 2.8097450733184814,
+          "contact_flight_takeoff_s": 2.6099932193756104,
+          "qualified_contact_landing": true,
+          "contact_flight_landing_s": 3.1219561100006104,
+          "contact_flight_com_rise_m": 0.2623646855354309,
+          "contact_flight_clear_s": 0.5019971132278442,
+          "stable_recovery": false,
+          "recovery_s": 0.0,
+          "body_landing": true,
+          "maximum_body_ground_force_n": 380309.03125,
+          "terminal_root_height_m": 0.14359964430332184,
+          "success": false
+        },
+        "flags": {
+          "launched": true,
+          "in_play": false,
+          "had_contact": true,
+          "legal_initial_contact": true,
+          "string_hit": true,
+          "airborne_string_hit": true,
+          "frame_hit": false,
+          "released": true,
+          "crossed_net": true,
+          "landed_legal_court": true,
+          "landed_target": false,
+          "ground_seen": true,
+          "robot_net_fault": false,
+          "body_ball_fault": false,
+          "wrong_side_fault": false,
+          "double_hit_fault": false,
+          "racket_invasion_fault": false,
+          "body_over_net_fault": false,
+          "under_net_obstruction_fault": false,
+          "engineering_body_crossing": false,
+          "bad_return_fault": false,
+          "net_blocked_fault": false,
+          "shuttle_net_contact": false,
+          "followthrough_crossed": false,
+          "followthrough_finished": false,
+          "complete_smash": false,
+          "recovery_success": false,
+          "ground_init": true
+        },
+        "outgoing_velocity_mps": [
+          5.229883193969727,
+          2.121248483657837,
+          -1.515153169631958
+        ],
+        "outgoing_speed_mps": 5.843548791567795,
+        "first_landing_m": [
+          3.4976301193237305,
+          1.1174970865249634,
+          0.025199422612786293
+        ],
+        "contact_time_s": 2.8097450733184814,
+        "release_time_s": 2.8101823329925537
+      }
+    },
+    "candidate": {
+      "20": {
+        "outcome": {
+          "training_index": 20,
+          "air": true,
+          "recovery": false,
+          "complete5": false,
+          "ball5_except_recovery": true,
+          "complete8": false,
+          "rejection_reasons": [
+            "same_flight_stable_recovery"
+          ]
+        },
+        "contact_flight_recovery": {
+          "schema": "contact-flight-recovery-v1",
+          "bound": true,
+          "contact_flight_id": 4,
+          "rally_contact_time_s": 2.782010316848755,
+          "airborne_string_time_s": 2.782010316848755,
+          "contact_flight_takeoff_s": 2.592994451522827,
+          "qualified_contact_landing": true,
+          "contact_flight_landing_s": 3.1169564723968506,
+          "contact_flight_com_rise_m": 0.27233606576919556,
+          "contact_flight_clear_s": 0.5079970359802246,
+          "stable_recovery": false,
+          "recovery_s": 0.0,
+          "body_landing": true,
+          "maximum_body_ground_force_n": 259302.78125,
+          "terminal_root_height_m": 0.14935441315174103,
+          "success": false
+        },
+        "flags": {
+          "launched": true,
+          "in_play": false,
+          "had_contact": true,
+          "legal_initial_contact": true,
+          "string_hit": true,
+          "airborne_string_hit": true,
+          "frame_hit": false,
+          "released": true,
+          "crossed_net": true,
+          "landed_legal_court": true,
+          "landed_target": true,
+          "ground_seen": true,
+          "robot_net_fault": false,
+          "body_ball_fault": false,
+          "wrong_side_fault": false,
+          "double_hit_fault": false,
+          "racket_invasion_fault": false,
+          "body_over_net_fault": false,
+          "under_net_obstruction_fault": false,
+          "engineering_body_crossing": false,
+          "bad_return_fault": false,
+          "net_blocked_fault": false,
+          "shuttle_net_contact": false,
+          "followthrough_crossed": false,
+          "followthrough_finished": false,
+          "complete_smash": false,
+          "recovery_success": false,
+          "ground_init": true
+        },
+        "outgoing_velocity_mps": [
+          5.0911335945129395,
+          -0.18693968653678894,
+          -2.7673676013946533
+        ],
+        "outgoing_speed_mps": 5.7976642852815745,
+        "first_landing_m": [
+          3.1071949005126953,
+          0.01111008133739233,
+          0.025066716596484184
+        ],
+        "contact_time_s": 2.782010316848755,
+        "release_time_s": 2.782447576522827
+      },
+      "23": {
+        "outcome": {
+          "training_index": 23,
+          "air": true,
+          "recovery": true,
+          "complete5": true,
+          "ball5_except_recovery": true,
+          "complete8": false,
+          "rejection_reasons": []
+        },
+        "contact_flight_recovery": {
+          "schema": "contact-flight-recovery-v1",
+          "bound": true,
+          "contact_flight_id": 3,
+          "rally_contact_time_s": 2.7400333881378174,
+          "airborne_string_time_s": 2.7400333881378174,
+          "contact_flight_takeoff_s": 2.550997495651245,
+          "qualified_contact_landing": true,
+          "contact_flight_landing_s": 3.0729596614837646,
+          "contact_flight_com_rise_m": 0.27791520953178406,
+          "contact_flight_clear_s": 0.5129969716072083,
+          "stable_recovery": true,
+          "recovery_s": 4.00289249420166,
+          "body_landing": false,
+          "maximum_body_ground_force_n": 0.0,
+          "terminal_root_height_m": 0.2974996566772461,
+          "success": true
+        },
+        "flags": {
+          "launched": true,
+          "in_play": false,
+          "had_contact": true,
+          "legal_initial_contact": true,
+          "string_hit": true,
+          "airborne_string_hit": true,
+          "frame_hit": false,
+          "released": true,
+          "crossed_net": true,
+          "landed_legal_court": true,
+          "landed_target": true,
+          "ground_seen": true,
+          "robot_net_fault": false,
+          "body_ball_fault": false,
+          "wrong_side_fault": false,
+          "double_hit_fault": false,
+          "racket_invasion_fault": false,
+          "body_over_net_fault": false,
+          "under_net_obstruction_fault": false,
+          "engineering_body_crossing": false,
+          "bad_return_fault": false,
+          "net_blocked_fault": false,
+          "shuttle_net_contact": false,
+          "followthrough_crossed": false,
+          "followthrough_finished": false,
+          "complete_smash": false,
+          "recovery_success": true,
+          "ground_init": true
+        },
+        "outgoing_velocity_mps": [
+          5.901893138885498,
+          -0.09929432719945908,
+          -1.7893757820129395
+        ],
+        "outgoing_speed_mps": 6.1679873277668245,
+        "first_landing_m": [
+          3.7088136672973633,
+          -0.017834940925240517,
+          0.025121774524450302
+        ],
+        "contact_time_s": 2.7400333881378174,
+        "release_time_s": 2.740408182144165
+      },
+      "26": {
+        "outcome": {
+          "training_index": 26,
+          "air": true,
+          "recovery": true,
+          "complete5": false,
+          "ball5_except_recovery": false,
+          "complete8": false,
+          "rejection_reasons": [
+            "speed_threshold"
+          ]
+        },
+        "contact_flight_recovery": {
+          "schema": "contact-flight-recovery-v1",
+          "bound": true,
+          "contact_flight_id": 5,
+          "rally_contact_time_s": 2.7249791622161865,
+          "airborne_string_time_s": 2.7249791622161865,
+          "contact_flight_takeoff_s": 2.5439980030059814,
+          "qualified_contact_landing": true,
+          "contact_flight_landing_s": 3.0709598064422607,
+          "contact_flight_com_rise_m": 0.2774769961833954,
+          "contact_flight_clear_s": 0.5109969973564148,
+          "stable_recovery": true,
+          "recovery_s": 4.092885971069336,
+          "body_landing": false,
+          "maximum_body_ground_force_n": 0.0,
+          "terminal_root_height_m": 0.3002608120441437,
+          "success": true
+        },
+        "flags": {
+          "launched": true,
+          "in_play": false,
+          "had_contact": true,
+          "legal_initial_contact": true,
+          "string_hit": true,
+          "airborne_string_hit": true,
+          "frame_hit": false,
+          "released": true,
+          "crossed_net": true,
+          "landed_legal_court": true,
+          "landed_target": true,
+          "ground_seen": true,
+          "robot_net_fault": false,
+          "body_ball_fault": false,
+          "wrong_side_fault": false,
+          "double_hit_fault": false,
+          "racket_invasion_fault": false,
+          "body_over_net_fault": false,
+          "under_net_obstruction_fault": false,
+          "engineering_body_crossing": false,
+          "bad_return_fault": false,
+          "net_blocked_fault": false,
+          "shuttle_net_contact": false,
+          "followthrough_crossed": false,
+          "followthrough_finished": false,
+          "complete_smash": false,
+          "recovery_success": true,
+          "ground_init": true
+        },
+        "outgoing_velocity_mps": [
+          4.470974445343018,
+          1.0732852220535278,
+          -1.8981961011886597
+        ],
+        "outgoing_speed_mps": 4.97440469778612,
+        "first_landing_m": [
+          3.1486401557922363,
+          0.39721953868865967,
+          0.025033704936504364
+        ],
+        "contact_time_s": 2.7249791622161865,
+        "release_time_s": 2.725541353225708
+      },
+      "82": {
+        "outcome": {
+          "training_index": 82,
+          "air": true,
+          "recovery": true,
+          "complete5": true,
+          "ball5_except_recovery": true,
+          "complete8": false,
+          "rejection_reasons": []
+        },
+        "contact_flight_recovery": {
+          "schema": "contact-flight-recovery-v1",
+          "bound": true,
+          "contact_flight_id": 5,
+          "rally_contact_time_s": 2.8203017711639404,
+          "airborne_string_time_s": 2.8203017711639404,
+          "contact_flight_takeoff_s": 2.621992349624634,
+          "qualified_contact_landing": true,
+          "contact_flight_landing_s": 3.128955602645874,
+          "contact_flight_com_rise_m": 0.25327935814857483,
+          "contact_flight_clear_s": 0.4889972507953644,
+          "stable_recovery": true,
+          "recovery_s": 3.9298975467681885,
+          "body_landing": false,
+          "maximum_body_ground_force_n": 0.0,
+          "terminal_root_height_m": 0.2950398623943329,
+          "success": true
+        },
+        "flags": {
+          "launched": true,
+          "in_play": false,
+          "had_contact": true,
+          "legal_initial_contact": true,
+          "string_hit": true,
+          "airborne_string_hit": true,
+          "frame_hit": false,
+          "released": true,
+          "crossed_net": true,
+          "landed_legal_court": true,
+          "landed_target": true,
+          "ground_seen": true,
+          "robot_net_fault": false,
+          "body_ball_fault": false,
+          "wrong_side_fault": false,
+          "double_hit_fault": false,
+          "racket_invasion_fault": false,
+          "body_over_net_fault": false,
+          "under_net_obstruction_fault": false,
+          "engineering_body_crossing": false,
+          "bad_return_fault": false,
+          "net_blocked_fault": false,
+          "shuttle_net_contact": false,
+          "followthrough_crossed": false,
+          "followthrough_finished": false,
+          "complete_smash": false,
+          "recovery_success": true,
+          "ground_init": true
+        },
+        "outgoing_velocity_mps": [
+          5.504062175750732,
+          1.2934074401855469,
+          -1.2153867483139038
+        ],
+        "outgoing_speed_mps": 5.783145181372698,
+        "first_landing_m": [
+          3.7171411514282227,
+          0.6683357954025269,
+          0.02507588267326355
+        ],
+        "contact_time_s": 2.8203017711639404,
+        "release_time_s": 2.8207390308380127
+      },
+      "83": {
+        "outcome": {
+          "training_index": 83,
+          "air": true,
+          "recovery": false,
+          "complete5": false,
+          "ball5_except_recovery": false,
+          "complete8": false,
+          "rejection_reasons": [
+            "same_flight_stable_recovery",
+            "actual_net_and_target"
+          ]
+        },
+        "contact_flight_recovery": {
+          "schema": "contact-flight-recovery-v1",
+          "bound": true,
+          "contact_flight_id": 5,
+          "rally_contact_time_s": 2.8097450733184814,
+          "airborne_string_time_s": 2.8097450733184814,
+          "contact_flight_takeoff_s": 2.6099932193756104,
+          "qualified_contact_landing": true,
+          "contact_flight_landing_s": 3.1219561100006104,
+          "contact_flight_com_rise_m": 0.2623646855354309,
+          "contact_flight_clear_s": 0.5019971132278442,
+          "stable_recovery": false,
+          "recovery_s": 0.0,
+          "body_landing": true,
+          "maximum_body_ground_force_n": 50188.734375,
+          "terminal_root_height_m": 0.14213933050632477,
+          "success": false
+        },
+        "flags": {
+          "launched": true,
+          "in_play": false,
+          "had_contact": true,
+          "legal_initial_contact": true,
+          "string_hit": true,
+          "airborne_string_hit": true,
+          "frame_hit": false,
+          "released": true,
+          "crossed_net": true,
+          "landed_legal_court": true,
+          "landed_target": false,
+          "ground_seen": true,
+          "robot_net_fault": false,
+          "body_ball_fault": false,
+          "wrong_side_fault": false,
+          "double_hit_fault": false,
+          "racket_invasion_fault": false,
+          "body_over_net_fault": false,
+          "under_net_obstruction_fault": false,
+          "engineering_body_crossing": false,
+          "bad_return_fault": false,
+          "net_blocked_fault": false,
+          "shuttle_net_contact": false,
+          "followthrough_crossed": false,
+          "followthrough_finished": false,
+          "complete_smash": false,
+          "recovery_success": false,
+          "ground_init": true
+        },
+        "outgoing_velocity_mps": [
+          5.229883193969727,
+          2.121248483657837,
+          -1.515153169631958
+        ],
+        "outgoing_speed_mps": 5.843548791567795,
+        "first_landing_m": [
+          3.4976301193237305,
+          1.1174970865249634,
+          0.025199422612786293
+        ],
+        "contact_time_s": 2.8097450733184814,
+        "release_time_s": 2.8101823329925537
+      }
+    }
+  },
+  "baseline_vs_candidate": {
+    "baseline": {
+      "qualified_air_hit": {
+        "numerator": 74,
+        "denominator": 128,
+        "percentage": 57.8125,
+        "checked": true
+      },
+      "ball_except_recovery": {
+        "numerator": 49,
+        "denominator": 128,
+        "percentage": 38.28125,
+        "checked": true
+      },
+      "conditional_recovery_fixed74": {
+        "numerator": 52,
+        "denominator": 74,
+        "percentage": 70.27027027027027,
+        "checked": true
+      },
+      "complete5": {
+        "numerator": 40,
+        "denominator": 128,
+        "percentage": 31.25,
+        "checked": true
+      },
+      "recovery_without_post_takeover_head_contact": {
+        "numerator": 0,
+        "denominator": 74,
+        "percentage": 0.0,
+        "checked": true
+      },
+      "recovery_without_post_takeover_nonfoot_contact": {
+        "numerator": 0,
+        "denominator": 74,
+        "percentage": 0.0,
+        "checked": true
+      },
+      "numerical_failure_episodes": {
+        "numerator": 0,
+        "denominator": 128,
+        "percentage": 0.0,
+        "checked": true
+      },
+      "numerical_failure_total": 0
+    },
+    "candidate": {
+      "qualified_air_hit": {
+        "numerator": 74,
+        "denominator": 128,
+        "percentage": 57.8125,
+        "checked": true
+      },
+      "ball_except_recovery": {
+        "numerator": 46,
+        "denominator": 128,
+        "percentage": 35.9375,
+        "checked": true
+      },
+      "conditional_recovery_fixed74": {
+        "numerator": 55,
+        "denominator": 74,
+        "percentage": 74.32432432432432,
+        "checked": true
+      },
+      "complete5": {
+        "numerator": 39,
+        "denominator": 128,
+        "percentage": 30.46875,
+        "checked": true
+      },
+      "recovery_without_post_takeover_head_contact": {
+        "numerator": 0,
+        "denominator": 74,
+        "percentage": 0.0,
+        "checked": true
+      },
+      "recovery_without_post_takeover_nonfoot_contact": {
+        "numerator": 0,
+        "denominator": 74,
+        "percentage": 0.0,
+        "checked": true
+      },
+      "numerical_failure_episodes": {
+        "numerator": 0,
+        "denominator": 128,
+        "percentage": 0.0,
+        "checked": true
+      },
+      "numerical_failure_total": 0
+    }
+  },
+  "native_evaluations_this_authorization": 1,
+  "additional_seed_or_baseline_run": false,
+  "complete_evidence_sha256": {
+    "completed.json": "c4a2cdc51b7afa8f30801dae79e3db905be163f9c7bc5e5a8e2f496c01538989",
+    "metrics.json": "a6bc10cca713305a1592ef7c9ad77dbea95e7740b622d23f80b907e471baaec9",
+    "episodes.json": "07dfa6127d88f4000716bf6db91a405e099a6a894d6264507c9731e925f0edae",
+    "pure_control_commands.npz": "d716724b8da906e054dce04f6a3854bdd15f1db4520a919cd8077f58a42b4884",
+    "pure_control_diagnostics.jsonl": "40701a84bdc03e04f226377ca6b5d65ef8187fe8ba0879f3d29b4a474c937ead",
+    "sequence_dispatch.npz": "b8a9e7bcfe9bd5bffbd0bc3f3ed1453afb7179627188d21b235e983196ad380f",
+    "pure_control_ground_forces.npz": "695afacbf36d73988b27ca8a432eb581df7ae6abf37adf25cf026d927b7768d4",
+    "INPUTS.json": "b036551fed888cd9aa491f3c7abb406aea0367a13ceccc6d71e4f0c8c2e7e1d6"
+  }
+}

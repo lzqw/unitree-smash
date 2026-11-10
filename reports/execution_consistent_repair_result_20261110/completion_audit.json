@@ -1,0 +1,78 @@
+{
+  "scope": "Bounded single corrected evaluation, incorporating latest user authorization for prediction-side existing limiter; not full G07 acceptance",
+  "previous_goal_turn_classification": "progress",
+  "requirements": [
+    {
+      "requirement": "CPU原8项及限幅/多步/隔离检查通过",
+      "status": "verified",
+      "evidence": "../execution_consistent_repair_preflight_20261110/cpu_tests.log"
+    },
+    {
+      "requirement": "TRAIN71请求差允许非零、预测最终与实际最终差为0",
+      "status": "verified",
+      "evidence": "../execution_consistent_repair_preflight_20261110/preflight_result.json"
+    },
+    {
+      "requirement": "运行源版本与启动前完全一致；旧57原始源码独立保留",
+      "status": "verified",
+      "evidence": "runtime_source_unchanged.json; ../execution_consistent_repair_preflight_20261110/historical57_provenance.json"
+    },
+    {
+      "requirement": "仅一次128环境、原种子、原顺序及8秒102400步运行，退出0",
+      "status": "verified",
+      "evidence": "../pure_control_state_driven_long_mpc_qp_continuity_repair_all128_corrected_20261110_03/job.json; native/completed.json"
+    },
+    {
+      "requirement": "原执行接口及参数保持；正常/修复共用映射，所有下发一致性通过",
+      "status": "verified",
+      "evidence": "execution_audit.json"
+    },
+    {
+      "requirement": "87条成功修复均32节点通过、首请求与首最终命令保持",
+      "status": "verified",
+      "evidence": "full_repair_acceptance_check.json"
+    },
+    {
+      "requirement": "原通过路径与失败fallback由原继承方法保持；未采用候选隔离",
+      "status": "verified",
+      "evidence": "../execution_consistent_repair_preflight_20261110/cpu_tests.log; source commit7251b5f"
+    },
+    {
+      "requirement": "固定74例及原52保留/丢失/新增完整输出",
+      "status": "verified",
+      "evidence": "SUMMARY.json; case_comparison_128.csv"
+    },
+    {
+      "requirement": "七项分子分母百分比、接管前后接触审计齐全，原评分未改",
+      "status": "verified",
+      "evidence": "native_comparison.json; REPORT.md"
+    },
+    {
+      "requirement": "逐案例初始/接管前状态和事件核对并披露差异，不声称逐位复现",
+      "status": "verified",
+      "evidence": "initial_and_prefix_audit.json; native_comparison.json"
+    },
+    {
+      "requirement": "complete5集合变化与TRAIN20/23/26/83/68原因核对",
+      "status": "verified",
+      "evidence": "REPORT.md; case_comparison_128.csv"
+    },
+    {
+      "requirement": "失败入口、修复尝试/通过/执行、碰撞前回退和加载及稳定窗口保存",
+      "status": "verified",
+      "evidence": "native_comparison.json; pre_collision_command_and_load.csv"
+    },
+    {
+      "requirement": "运行耗时、NF0、完整命令配置与原始结果保存；本轮结束不再运行",
+      "status": "verified",
+      "evidence": "SUMMARY.json; REPORT.md"
+    }
+  ],
+  "native_runs_in_this_source_version": 1,
+  "performance_target_is_verification_not_forcing_57": true,
+  "formal_project_G07_passed": false,
+  "formal_project_verifier_limitations": "Missing historical checkpoint and worktree asset symlink path contract; preserved without modifying gate",
+  "missing_dense_predicted_state_trace_disclosed": true,
+  "cross_run_bitwise_equivalence_not_claimed": true,
+  "no_further_native_run": true
+}

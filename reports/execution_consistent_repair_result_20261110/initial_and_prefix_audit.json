@@ -1,0 +1,800 @@
+{
+  "initial_state": {
+    "link_poses": {
+      "shape": [
+        128,
+        28,
+        7
+      ],
+      "max_abs_delta": 0.0,
+      "exact_equal": true
+    },
+    "ball_position_m": {
+      "shape": [
+        128,
+        3
+      ],
+      "max_abs_delta": 0.0,
+      "exact_equal": true
+    },
+    "episode_clock_s": {
+      "shape": [
+        128
+      ],
+      "max_abs_delta": 0.0,
+      "exact_equal": true
+    }
+  },
+  "prefix_by_case": {
+    "0": {
+      "compared_first_episode_ticks": 278,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 278
+    },
+    "1": {
+      "compared_first_episode_ticks": 274,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 274
+    },
+    "2": {
+      "compared_first_episode_ticks": 272,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 272
+    },
+    "3": {
+      "compared_first_episode_ticks": 277,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 277
+    },
+    "4": {
+      "compared_first_episode_ticks": 800,
+      "normalized_command_max_delta": 0.0014237165451049805,
+      "first_nonzero_delta_tick": 622,
+      "takeover_tick": 800
+    },
+    "5": {
+      "compared_first_episode_ticks": 273,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 273
+    },
+    "6": {
+      "compared_first_episode_ticks": 270,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 270
+    },
+    "7": {
+      "compared_first_episode_ticks": 273,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 273
+    },
+    "8": {
+      "compared_first_episode_ticks": 272,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 272
+    },
+    "9": {
+      "compared_first_episode_ticks": 270,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 270
+    },
+    "10": {
+      "compared_first_episode_ticks": 280,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 280
+    },
+    "11": {
+      "compared_first_episode_ticks": 274,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 274
+    },
+    "12": {
+      "compared_first_episode_ticks": 282,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 282
+    },
+    "13": {
+      "compared_first_episode_ticks": 274,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 274
+    },
+    "14": {
+      "compared_first_episode_ticks": 800,
+      "normalized_command_max_delta": 0.002046048641204834,
+      "first_nonzero_delta_tick": 622,
+      "takeover_tick": 800
+    },
+    "15": {
+      "compared_first_episode_ticks": 272,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 272
+    },
+    "16": {
+      "compared_first_episode_ticks": 272,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 272
+    },
+    "17": {
+      "compared_first_episode_ticks": 273,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 273
+    },
+    "18": {
+      "compared_first_episode_ticks": 274,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 274
+    },
+    "19": {
+      "compared_first_episode_ticks": 278,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 278
+    },
+    "20": {
+      "compared_first_episode_ticks": 279,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 279
+    },
+    "21": {
+      "compared_first_episode_ticks": 272,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 272
+    },
+    "22": {
+      "compared_first_episode_ticks": 280,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 280
+    },
+    "23": {
+      "compared_first_episode_ticks": 275,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 275
+    },
+    "24": {
+      "compared_first_episode_ticks": 276,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 276
+    },
+    "25": {
+      "compared_first_episode_ticks": 275,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 275
+    },
+    "26": {
+      "compared_first_episode_ticks": 273,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 273
+    },
+    "27": {
+      "compared_first_episode_ticks": 274,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 274
+    },
+    "28": {
+      "compared_first_episode_ticks": 275,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 275
+    },
+    "29": {
+      "compared_first_episode_ticks": 280,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 280
+    },
+    "30": {
+      "compared_first_episode_ticks": 277,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 277
+    },
+    "31": {
+      "compared_first_episode_ticks": 271,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 271
+    },
+    "32": {
+      "compared_first_episode_ticks": 280,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 280
+    },
+    "33": {
+      "compared_first_episode_ticks": 272,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 272
+    },
+    "34": {
+      "compared_first_episode_ticks": 272,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 272
+    },
+    "35": {
+      "compared_first_episode_ticks": 269,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 269
+    },
+    "36": {
+      "compared_first_episode_ticks": 277,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 277
+    },
+    "37": {
+      "compared_first_episode_ticks": 273,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 273
+    },
+    "38": {
+      "compared_first_episode_ticks": 278,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 278
+    },
+    "39": {
+      "compared_first_episode_ticks": 276,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 276
+    },
+    "40": {
+      "compared_first_episode_ticks": 279,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 279
+    },
+    "41": {
+      "compared_first_episode_ticks": 273,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 273
+    },
+    "42": {
+      "compared_first_episode_ticks": 271,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 271
+    },
+    "43": {
+      "compared_first_episode_ticks": 275,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 275
+    },
+    "44": {
+      "compared_first_episode_ticks": 549,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 800
+    },
+    "45": {
+      "compared_first_episode_ticks": 274,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 274
+    },
+    "46": {
+      "compared_first_episode_ticks": 268,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 268
+    },
+    "47": {
+      "compared_first_episode_ticks": 272,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 272
+    },
+    "48": {
+      "compared_first_episode_ticks": 271,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 271
+    },
+    "49": {
+      "compared_first_episode_ticks": 275,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 275
+    },
+    "50": {
+      "compared_first_episode_ticks": 275,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 275
+    },
+    "51": {
+      "compared_first_episode_ticks": 271,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 271
+    },
+    "52": {
+      "compared_first_episode_ticks": 270,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 270
+    },
+    "53": {
+      "compared_first_episode_ticks": 276,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 276
+    },
+    "54": {
+      "compared_first_episode_ticks": 273,
+      "normalized_command_max_delta": 5.781650543212891e-06,
+      "first_nonzero_delta_tick": 272,
+      "takeover_tick": 273
+    },
+    "55": {
+      "compared_first_episode_ticks": 277,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 277
+    },
+    "56": {
+      "compared_first_episode_ticks": 276,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 276
+    },
+    "57": {
+      "compared_first_episode_ticks": 269,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 269
+    },
+    "58": {
+      "compared_first_episode_ticks": 282,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 282
+    },
+    "59": {
+      "compared_first_episode_ticks": 271,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 271
+    },
+    "60": {
+      "compared_first_episode_ticks": 279,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 279
+    },
+    "61": {
+      "compared_first_episode_ticks": 275,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 275
+    },
+    "62": {
+      "compared_first_episode_ticks": 277,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 277
+    },
+    "63": {
+      "compared_first_episode_ticks": 276,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 276
+    },
+    "64": {
+      "compared_first_episode_ticks": 280,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 280
+    },
+    "65": {
+      "compared_first_episode_ticks": 275,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 275
+    },
+    "66": {
+      "compared_first_episode_ticks": 800,
+      "normalized_command_max_delta": 0.0012503862380981445,
+      "first_nonzero_delta_tick": 622,
+      "takeover_tick": 800
+    },
+    "67": {
+      "compared_first_episode_ticks": 269,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 269
+    },
+    "68": {
+      "compared_first_episode_ticks": 284,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 284
+    },
+    "69": {
+      "compared_first_episode_ticks": 274,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 274
+    },
+    "70": {
+      "compared_first_episode_ticks": 263,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 263
+    },
+    "71": {
+      "compared_first_episode_ticks": 264,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 264
+    },
+    "72": {
+      "compared_first_episode_ticks": 281,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 281
+    },
+    "73": {
+      "compared_first_episode_ticks": 283,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 283
+    },
+    "74": {
+      "compared_first_episode_ticks": 283,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 283
+    },
+    "75": {
+      "compared_first_episode_ticks": 273,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 273
+    },
+    "76": {
+      "compared_first_episode_ticks": 800,
+      "normalized_command_max_delta": 0.0015746355056762695,
+      "first_nonzero_delta_tick": 622,
+      "takeover_tick": 800
+    },
+    "77": {
+      "compared_first_episode_ticks": 266,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 266
+    },
+    "78": {
+      "compared_first_episode_ticks": 800,
+      "normalized_command_max_delta": 0.2783113718032837,
+      "first_nonzero_delta_tick": 622,
+      "takeover_tick": 800
+    },
+    "79": {
+      "compared_first_episode_ticks": 282,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 282
+    },
+    "80": {
+      "compared_first_episode_ticks": 278,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 278
+    },
+    "81": {
+      "compared_first_episode_ticks": 274,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 274
+    },
+    "82": {
+      "compared_first_episode_ticks": 283,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 283
+    },
+    "83": {
+      "compared_first_episode_ticks": 282,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 282
+    },
+    "84": {
+      "compared_first_episode_ticks": 274,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 274
+    },
+    "85": {
+      "compared_first_episode_ticks": 268,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 268
+    },
+    "86": {
+      "compared_first_episode_ticks": 287,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 287
+    },
+    "87": {
+      "compared_first_episode_ticks": 272,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 272
+    },
+    "88": {
+      "compared_first_episode_ticks": 800,
+      "normalized_command_max_delta": 0.0009909272193908691,
+      "first_nonzero_delta_tick": 622,
+      "takeover_tick": 800
+    },
+    "89": {
+      "compared_first_episode_ticks": 800,
+      "normalized_command_max_delta": 0.0007765032351016998,
+      "first_nonzero_delta_tick": 622,
+      "takeover_tick": 800
+    },
+    "90": {
+      "compared_first_episode_ticks": 280,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 280
+    },
+    "91": {
+      "compared_first_episode_ticks": 269,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 269
+    },
+    "92": {
+      "compared_first_episode_ticks": 800,
+      "normalized_command_max_delta": 0.0015236735343933105,
+      "first_nonzero_delta_tick": 622,
+      "takeover_tick": 800
+    },
+    "93": {
+      "compared_first_episode_ticks": 275,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 275
+    },
+    "94": {
+      "compared_first_episode_ticks": 278,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 278
+    },
+    "95": {
+      "compared_first_episode_ticks": 268,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 268
+    },
+    "96": {
+      "compared_first_episode_ticks": 268,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 268
+    },
+    "97": {
+      "compared_first_episode_ticks": 275,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 275
+    },
+    "98": {
+      "compared_first_episode_ticks": 267,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 267
+    },
+    "99": {
+      "compared_first_episode_ticks": 268,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 268
+    },
+    "100": {
+      "compared_first_episode_ticks": 283,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 283
+    },
+    "101": {
+      "compared_first_episode_ticks": 264,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 264
+    },
+    "102": {
+      "compared_first_episode_ticks": 268,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 268
+    },
+    "103": {
+      "compared_first_episode_ticks": 279,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 279
+    },
+    "104": {
+      "compared_first_episode_ticks": 800,
+      "normalized_command_max_delta": 0.0010889768600463867,
+      "first_nonzero_delta_tick": 622,
+      "takeover_tick": 800
+    },
+    "105": {
+      "compared_first_episode_ticks": 800,
+      "normalized_command_max_delta": 0.000744938850402832,
+      "first_nonzero_delta_tick": 622,
+      "takeover_tick": 800
+    },
+    "106": {
+      "compared_first_episode_ticks": 278,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 278
+    },
+    "107": {
+      "compared_first_episode_ticks": 277,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 277
+    },
+    "108": {
+      "compared_first_episode_ticks": 800,
+      "normalized_command_max_delta": 0.0010579228401184082,
+      "first_nonzero_delta_tick": 622,
+      "takeover_tick": 800
+    },
+    "109": {
+      "compared_first_episode_ticks": 276,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 276
+    },
+    "110": {
+      "compared_first_episode_ticks": 800,
+      "normalized_command_max_delta": 0.001330491155385971,
+      "first_nonzero_delta_tick": 622,
+      "takeover_tick": 800
+    },
+    "111": {
+      "compared_first_episode_ticks": 267,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 267
+    },
+    "112": {
+      "compared_first_episode_ticks": 272,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 272
+    },
+    "113": {
+      "compared_first_episode_ticks": 800,
+      "normalized_command_max_delta": 0.0013416409492492676,
+      "first_nonzero_delta_tick": 622,
+      "takeover_tick": 800
+    },
+    "114": {
+      "compared_first_episode_ticks": 272,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 272
+    },
+    "115": {
+      "compared_first_episode_ticks": 268,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 268
+    },
+    "116": {
+      "compared_first_episode_ticks": 800,
+      "normalized_command_max_delta": 0.0011870265007019043,
+      "first_nonzero_delta_tick": 622,
+      "takeover_tick": 800
+    },
+    "117": {
+      "compared_first_episode_ticks": 800,
+      "normalized_command_max_delta": 0.0012203976511955261,
+      "first_nonzero_delta_tick": 622,
+      "takeover_tick": 800
+    },
+    "118": {
+      "compared_first_episode_ticks": 278,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 278
+    },
+    "119": {
+      "compared_first_episode_ticks": 266,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 266
+    },
+    "120": {
+      "compared_first_episode_ticks": 283,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 283
+    },
+    "121": {
+      "compared_first_episode_ticks": 273,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 273
+    },
+    "122": {
+      "compared_first_episode_ticks": 800,
+      "normalized_command_max_delta": 0.05457884073257446,
+      "first_nonzero_delta_tick": 622,
+      "takeover_tick": 800
+    },
+    "123": {
+      "compared_first_episode_ticks": 285,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 285
+    },
+    "124": {
+      "compared_first_episode_ticks": 800,
+      "normalized_command_max_delta": 0.001149982213973999,
+      "first_nonzero_delta_tick": 622,
+      "takeover_tick": 800
+    },
+    "125": {
+      "compared_first_episode_ticks": 271,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 271
+    },
+    "126": {
+      "compared_first_episode_ticks": 272,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 272
+    },
+    "127": {
+      "compared_first_episode_ticks": 273,
+      "normalized_command_max_delta": 0.0,
+      "first_nonzero_delta_tick": null,
+      "takeover_tick": 273
+    }
+  },
+  "primary74_max_normalized_delta": 5.781650543212891e-06,
+  "all128_max_normalized_delta": 0.2783113718032837
+}
