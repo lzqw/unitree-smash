@@ -163,16 +163,60 @@ def ground_audit(run, first):
     for lane, row in first.items():
         mask = (np.arange(len(peaks)) >= row['tick']) & first_episode[:, lane]
         sub = peaks[mask, lane]
+        pre = peaks[(np.arange(len(peaks)) < row['tick']) & first_episode[:, lane], lane]
         nonfeet = [i for i, name in enumerate(body_names) if name not in feet]
         touched = [i for i in nonfeet if np.any(sub[:, i] > 1.)]
+        touched_pre = [i for i in nonfeet if np.any(pre[:, i] > 1.)]
         hits = frames[mask, lane][:, nonfeet]
         valid_hits = hits[hits >= row['tick'] * 160]
         result[lane] = dict(
             scope='post_takeover up to episode end; diagnostic >1N paired normal force; original metric unchanged',
             nonfoot_bodies_over1n=[body_names[i] for i in touched],
             head_contact=any('head' in body_names[i].lower() for i in touched),
+            pre_takeover_nonfoot_bodies_over1n=[body_names[i] for i in touched_pre],
+            pre_takeover_head_contact=any('head' in body_names[i].lower() for i in touched_pre),
             first_post_takeover_nonfoot_force_s=float(valid_hits.min() / 16000.) if len(valid_hits) else None,
             peak_nonfoot_normal_n=float(np.max(sub[:, nonfeet], initial=0.)))
+    return result
+
+
+def task_sets(run):
+    return {field: sorted(i for i, row in run['outcomes'].items() if row[field])
+            for field in ['air', 'ball5_except_recovery', 'recovery', 'complete5']}
+
+
+def seven_metrics(run, fixed, ground):
+    sets = task_sets(run)
+    recovered = set(sets['recovery']) & fixed
+    evidence_complete = fixed <= set(ground)
+    pairs = {
+        'qualified_air_hit': (len(sets['air']), 128),
+        'ball_except_recovery': (len(sets['ball5_except_recovery']), 128),
+        'conditional_recovery_fixed74': (len(recovered), 74),
+        'complete5': (len(sets['complete5']), 128),
+        'recovery_without_post_takeover_head_contact': (
+            sum(not ground[i]['head_contact'] for i in recovered) if evidence_complete else None, 74),
+        'recovery_without_post_takeover_nonfoot_contact': (
+            sum(not ground[i]['nonfoot_bodies_over1n'] for i in recovered) if evidence_complete else None, 74),
+        'numerical_failure_episodes': (sum(e['numerical_failures'] > 0 for e in run['episodes'].values()), 128),
+    }
+    result = {k: dict(numerator=n, denominator=den, percentage=100*n/den if n is not None else None,
+                      checked=n is not None) for k, (n, den) in pairs.items()}
+    result['numerical_failure_total'] = run['metrics']['numerical_failures']
+    return result
+
+
+def case_details(run, indices):
+    result = {}
+    for i in sorted(indices):
+        e = run['episodes'][i]
+        result[i] = dict(outcome=run['outcomes'][i],
+            contact_flight_recovery=e['contact_flight_recovery'],
+            flags={k:v for k,v in e.items() if isinstance(v,bool)},
+            outgoing_velocity_mps=e['outgoing_velocity_mps'],
+            outgoing_speed_mps=float(np.linalg.norm(e['outgoing_velocity_mps'])),
+            first_landing_m=e['first_landing_m'],
+            contact_time_s=e['contact_time_s'], release_time_s=e['release_time_s'])
     return result
 
 
@@ -181,6 +225,7 @@ def main():
     parser.add_argument('--baseline', type=Path, required=True)
     parser.add_argument('--candidate', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--candidate-scope', default='Executed candidate has known first-command and mutable-history contract defects; not a valid single-factor result')
     args = parser.parse_args()
     a = load_run(args.baseline); b = load_run(args.candidate)
     fixed = {i for i, row in a['outcomes'].items() if row['air']}
@@ -189,16 +234,25 @@ def main():
     if len(fixed) != 74 or len(old) != 52:
         raise ValueError('Expected frozen 9cb7983 52/74 baseline')
     ad, af, ac = diagnostics(a, fixed); bd, bf, bc = diagnostics(b, fixed)
+    ag = ground_audit(a, af); bg = ground_audit(b, bf)
+    aset = task_sets(a); bset = task_sets(b)
+    focus = {20,23,26,83} | (set(aset['complete5']) ^ set(bset['complete5']))
     out = dict(
         fixed74=sorted(fixed), baseline_recovery=len(old), candidate_recovery=len(new),
         retained=sorted(old & new), lost=sorted(old-new), rescued=sorted(new-old), net=len(new)-len(old),
-        candidate_scope='Executed candidate has known first-command and mutable-history contract defects; not a valid single-factor result',
+        candidate_scope=args.candidate_scope,
+        task_sets={'baseline':aset, 'candidate':bset},
+        task_set_changes={key:dict(retained=sorted(set(aset[key]) & set(bset[key])),
+                                  lost=sorted(set(aset[key])-set(bset[key])),
+                                  gained=sorted(set(bset[key])-set(aset[key]))) for key in aset},
+        seven_metrics={'baseline':seven_metrics(a,fixed,ag),'candidate':seven_metrics(b,fixed,bg)},
+        complete5_and_focus_case_details={'baseline':case_details(a,focus),'candidate':case_details(b,focus)},
         native_metrics={name:{k:r['metrics'][k] for k in ['complete5','airborne_contacts','conditional_recovery_count',
                         'crossed_net','landed_target','numerical_failures','actual_control_env_steps']}
                         for name,r in [('baseline',a),('candidate',b)]},
         diagnostics={'baseline':ad,'candidate':bd},
         prefix=prefix_check(a,b,af,bf,ac,bc),
-        ground_audit={'baseline':ground_audit(a,af),'candidate':ground_audit(b,bf)},
+        ground_audit={'baseline':ag,'candidate':bg},
         inputs={'baseline':read(args.baseline/'INPUTS.json'),'candidate':read(args.candidate/'INPUTS.json')},
         source_evidence={name:{f:sha(r['root']/f) for f in ['metrics.json','episodes.json','completed.json','pure_control_diagnostics.jsonl']}
                          for name,r in [('baseline',a),('candidate',b)]},

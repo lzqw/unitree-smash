@@ -130,6 +130,41 @@ class RepairContractTests(unittest.TestCase):
         self.assertEqual(diagnostic['repair']['repair_rejection'], 'repair_exception')
         self.assert_live_unchanged()
 
+    def test_previous_rejected_trial_cannot_change_next_candidate(self):
+        self.controller.reject_future = True
+        self.run_rollout(Predictor(fail_call=3))
+        self.controller.reject_future = False
+        after, _ = self.run_rollout(Predictor(fail_call=3))
+        fresh = FixtureController()
+        with patch.object(subject, 'predict_self_contact_spheres', Predictor(fail_call=3)):
+            clean, _ = fresh._rollout(self.state, self.qp, self.terminal)
+        np.testing.assert_array_equal(after, clean)
+        self.assert_live_unchanged()
+
+    def test_failed_repair_command_is_exact_original_fallback(self):
+        c = self.controller
+        c.started = 0.
+        c.initial_arm = np.zeros(6)
+        c.initial_preload = np.zeros(18)
+        c.nominal = self.terminal.copy()
+        c._plan = []
+        c._last_plan_tick = -1000
+        c._last_phase = 'BUFFER_LOAD'
+        c.interface.bind_previous_command = lambda target: None
+        c.interface.admitted_target_bounds = lambda q, dt: (np.full(18, -2.), np.full(18, 2.))
+        self.state.joint_position = np.zeros(18)
+        self.state.joint_velocity = np.linspace(-9., 9., 18)
+        expected = np.clip(self.state.previous_command_target - .01 * np.clip(
+            self.state.joint_velocity, -5., 5.), -2., 2.)
+        with patch.object(c, 'solve', return_value=dict(accepted=True, joint_position_target=self.qp)), \
+                patch.object(c, '_repair_after_first', return_value=(None, dict(repair_rejection='fixture'))), \
+                patch.object(c, '_make_repair_worker', return_value=c), \
+                patch.object(subject, 'predict_self_contact_spheres', Predictor(fail_call=3)):
+            target, diagnostic = c.command(self.state, 'BUFFER_LOAD', .2)
+        np.testing.assert_array_equal(target, expected)
+        self.assertEqual(diagnostic['source'], 'state_driven_long_command_hold')
+        self.assertFalse(diagnostic['solver_accepted'])
+
 
 if __name__ == '__main__':
     unittest.main()
