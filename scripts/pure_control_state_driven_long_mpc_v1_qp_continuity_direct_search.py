@@ -19,7 +19,16 @@ from scripts.pure_control_state_driven_long_mpc_v1_qp_continuity_repair import (
 class PureControlStateDrivenLongMPCV1QPContinuityDirectSearch(
         PureControlStateDrivenLongMPCV1QPContinuityRepair):
     direct_leg_scales = (2.25, 3.0)
+    # A rejected full-sequence search remains valid only for the current
+    # fallback episode. Repeating the identical 32-node search every 10 ms
+    # does not change the candidate and can starve the native rollout.
+    direct_search_retry_ticks = 32
     controller_name = 'pure_control_state_driven_long_mpc_v1_qp_continuity_direct_search'
+
+    def __init__(self, interface, nominal_posture):
+        super().__init__(interface, nominal_posture)
+        self._direct_search_last_attempt_tick = -10**9
+        self._direct_search_last_phase = None
 
     def _direct_goals(self, state):
         base = np.asarray(self._base_reference(state), dtype=float)
@@ -61,7 +70,22 @@ class PureControlStateDrivenLongMPCV1QPContinuityDirectSearch(
         # preview and native arbiter at the outer interface.
         target, diagnostic = super().command(state, phase, time_s)
         if diagnostic.get('solver_accepted'):
+            self._direct_search_last_phase = phase
             return target, diagnostic
+
+        if phase != self._direct_search_last_phase:
+            self._direct_search_last_attempt_tick = -10**9
+            self._direct_search_last_phase = phase
+        if self._tick - self._direct_search_last_attempt_tick < self.direct_search_retry_ticks:
+            diagnostic = dict(diagnostic)
+            diagnostic.update(
+                direct_search_attempted=False,
+                direct_search_deferred=True,
+                direct_search_retry_ticks=self.direct_search_retry_ticks,
+            )
+            return target, diagnostic
+
+        self._direct_search_last_attempt_tick = self._tick
 
         attempts = []
         selected = None
