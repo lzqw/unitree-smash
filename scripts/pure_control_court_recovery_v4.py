@@ -24,12 +24,32 @@ def authored_feet(asset,digest,feet):
     return record['spheres']
 
 
+def _pinned_asset_digest(source_sha256, asset):
+    """Resolve a pinned asset by content when an old worktree path is recorded.
+
+    The asset bytes and hash remain authoritative; only the absolute path key is
+    made portable across worktrees. Ambiguous or mismatched content still fails.
+    """
+    asset = Path(asset)
+    actual = hashlib.sha256(asset.read_bytes()).hexdigest()
+    exact = source_sha256.get(str(asset))
+    if exact is not None:
+        if exact != actual:
+            raise ValueError('Changed original robot asset')
+        return exact
+    matches = [expected for recorded, expected in source_sha256.items()
+               if Path(recorded).name == asset.name and expected == actual]
+    if len(matches) != 1:
+        raise ValueError('No unique pinned digest for current-worktree asset: '+str(asset))
+    return matches[0]
+
+
 class PureControlCourtRecoveryV4(PureControlRecoveryV1):
     def __init__(self,interface,nominal_posture):
         super().__init__(interface,nominal_posture)
         self.interface=FullAuthorityPositionPDInterfaceV1(interface)
         asset=ROOT/'assets/quadsmash_full_racket_v4_r3.usd'
-        digest=self.model.record['source_sha256'][str(asset)]
+        digest=_pinned_asset_digest(self.model.record['source_sha256'], asset)
         spheres=authored_feet(str(asset),digest,tuple(self.model.feet))
         self.geometry=RecoverySurfaceConstraintsV1(self.geometry,spheres)
 
