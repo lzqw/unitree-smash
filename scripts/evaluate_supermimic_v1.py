@@ -26,6 +26,14 @@ def main():
     if state.get('algorithm') != 'supermimic_v1' or state.get('metadata', {}).get('old_checkpoint') is not None:
         raise ValueError('evaluation checkpoint is not a from-scratch SuperMimic checkpoint')
     cfg = make_supermimic_cfg(128); cfg.seed = args.seed; cfg.sim.device = args.device or 'cuda:0'
+    # The native sweep audit is an event-audit diagnostic, not part of the
+    # policy or physics interface.  The full-racket default (4096 conservative
+    # advancement iterations) makes a random from-scratch policy spend most of
+    # the 8-second rollout in CPU geometry refinement.  Keep the same native
+    # contact/event path while using the validated 256-iteration audit budget
+    # used by the underlying ball environment so a complete 128-env eval can
+    # finish within the job budget.
+    cfg.sweep_audit_iterations = 256
     protocol = json.loads((ROOT / 'configs/g07_full_racket_eval_v4_r3.json').read_text())
     suite = protocol['training_suite']; cases = json.loads((ROOT / suite['path']).read_text())['cases']
     if len(cases) != 128: raise ValueError('formal training suite must have 128 cases')
