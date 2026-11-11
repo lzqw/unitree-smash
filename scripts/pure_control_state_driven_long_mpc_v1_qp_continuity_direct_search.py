@@ -10,6 +10,7 @@ fallback.  The search does not use case IDs or a reference library.
 import copy
 import numpy as np
 
+from scripts.preview_recovery_execution_v1 import preview_recovery_execution
 from scripts.pure_control_state_driven_long_mpc_v1_qp_continuity_repair import (
     PureControlStateDrivenLongMPCV1QPContinuityRepair,
 )
@@ -98,6 +99,13 @@ class PureControlStateDrivenLongMPCV1QPContinuityDirectSearch(
                           direct_search_selected_score=float(result['score']),
                           direct_search_sequence_complete=True,
                           direct_search_executed=True)
+        selected_final, _ = preview_recovery_execution(
+            self.interface.limits, target, state.previous_command_target)
+        diagnostic['execution_preview'] = dict(
+            requested_target=target.tolist(),
+            predicted_final_target=selected_final.tolist(),
+            previous_final_target=state.previous_command_target.tolist(),
+            preview_only=True, actual_arbiter_unchanged=True)
         return target, diagnostic
 
 
