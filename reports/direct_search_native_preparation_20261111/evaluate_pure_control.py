@@ -15,8 +15,9 @@ import sys
 import traceback
 import io
 import importlib.util
+import subprocess
 
-ROOT = Path('/home/autodrive/LZQW/unitree_smash_contact_recovery')
+ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from isaaclab.app import AppLauncher
 
@@ -178,6 +179,36 @@ from scripts.origin0_launcher_parser_v4 import add_origin0_launcher_args
 add_origin0_launcher_args(parser,AppLauncher)
 args = parser.parse_args()
 app = AppLauncher(args).app
+
+# Formal-entry provenance check. This runs after Isaac application startup but
+# before any environment reset/step. It must fail closed rather than silently
+# falling back to an older repair adapter or another worktree.
+args.output.mkdir(parents=True, exist_ok=True)
+from scripts.native_pure_control_state_driven_long_mpc_v1_qp_continuity_direct_search import (
+    NativePureControlStateDrivenLongMPCV1QPContinuityDirectSearch,
+)
+_entry_module = sys.modules[NativePureControlStateDrivenLongMPCV1QPContinuityDirectSearch.__module__]
+_entry_file = Path(_entry_module.__file__).resolve()
+_entry_sha = subprocess.run(
+    ['git', '-C', str(ROOT), 'rev-parse', 'HEAD'],
+    check=True, capture_output=True, text=True,
+).stdout.strip()
+_entry_check = {
+    'status': 'PASS',
+    'root': str(ROOT),
+    'cwd': str(Path.cwd()),
+    'git_sha': _entry_sha,
+    'module': _entry_module.__name__,
+    'class': NativePureControlStateDrivenLongMPCV1QPContinuityDirectSearch.__name__,
+    'file': str(_entry_file),
+    'expected_file': str((ROOT / 'scripts/native_pure_control_state_driven_long_mpc_v1_qp_continuity_direct_search.py').resolve()),
+    'repair_module_loaded_for_adapter': 'scripts.native_pure_control_state_driven_long_mpc_v1_qp_continuity_repair' in sys.modules,
+}
+if _entry_module.__name__ != 'scripts.native_pure_control_state_driven_long_mpc_v1_qp_continuity_direct_search':
+    raise ImportError('formal entry loaded a non-direct-search adapter module')
+if _entry_file != Path(_entry_check['expected_file']):
+    raise ImportError(f'formal entry loaded adapter from unexpected path: {_entry_file}')
+(args.output / 'entry_preflight.json').write_text(json.dumps(_entry_check, indent=2) + '\n')
 if args.landing_blas_threads:
     import os
     os.environ["OPENBLAS_NUM_THREADS"] = str(args.landing_blas_threads)
