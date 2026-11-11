@@ -1,0 +1,232 @@
+{
+  "status": "CPU_DIAGNOSTIC_COMPLETE",
+  "native_evaluations": 0,
+  "fixed74": [
+    1,
+    3,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    16,
+    17,
+    18,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    30,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    42,
+    43,
+    45,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    57,
+    58,
+    60,
+    61,
+    63,
+    64,
+    65,
+    67,
+    68,
+    70,
+    71,
+    72,
+    77,
+    80,
+    81,
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    90,
+    94,
+    95,
+    96,
+    97,
+    98,
+    99,
+    114,
+    115,
+    121,
+    125,
+    126
+  ],
+  "first_persistent_fallback_states": 74,
+  "prediction_nodes": 2759,
+  "solve_records": 1424,
+  "prediction_exceptions": [],
+  "geometry_objects": [
+    {
+      "kind": "ground",
+      "body": "Head_lower",
+      "count": 82
+    },
+    {
+      "kind": "authored_net",
+      "body": "Racket::net",
+      "count": 4
+    }
+  ],
+  "geometry_node_counts": [
+    {
+      "kind": "ground",
+      "body": "Head_lower",
+      "node": 18,
+      "count": 43
+    },
+    {
+      "kind": "ground",
+      "body": "Head_lower",
+      "node": 19,
+      "count": 15
+    },
+    {
+      "kind": "ground",
+      "body": "Head_lower",
+      "node": 17,
+      "count": 10
+    },
+    {
+      "kind": "ground",
+      "body": "Head_lower",
+      "node": 37,
+      "count": 6
+    },
+    {
+      "kind": "ground",
+      "body": "Head_lower",
+      "node": 39,
+      "count": 2
+    },
+    {
+      "kind": "ground",
+      "body": "Head_lower",
+      "node": 20,
+      "count": 2
+    },
+    {
+      "kind": "ground",
+      "body": "Head_lower",
+      "node": 35,
+      "count": 1
+    },
+    {
+      "kind": "authored_net",
+      "body": "Racket::net",
+      "node": 15,
+      "count": 1
+    },
+    {
+      "kind": "authored_net",
+      "body": "Racket::net",
+      "node": 16,
+      "count": 1
+    },
+    {
+      "kind": "ground",
+      "body": "Head_lower",
+      "node": 34,
+      "count": 1
+    },
+    {
+      "kind": "authored_net",
+      "body": "Racket::net",
+      "node": 11,
+      "count": 1
+    },
+    {
+      "kind": "ground",
+      "body": "Head_lower",
+      "node": 40,
+      "count": 1
+    },
+    {
+      "kind": "authored_net",
+      "body": "Racket::net",
+      "node": 12,
+      "count": 1
+    },
+    {
+      "kind": "ground",
+      "body": "Head_lower",
+      "node": 33,
+      "count": 1
+    }
+  ],
+  "solver_status": {
+    "solved": 1368,
+    "primal infeasible": 56
+  },
+  "positive_residual_fields": [
+    {
+      "scope": "residuals",
+      "field": "independent_velocity",
+      "count": 1368
+    },
+    {
+      "scope": "residuals",
+      "field": "independent_joint_position",
+      "count": 1368
+    },
+    {
+      "scope": "residuals",
+      "field": "independent_manifold_position",
+      "count": 1368
+    },
+    {
+      "scope": "residuals",
+      "field": "dynamics_contact_residual_max",
+      "count": 1368
+    },
+    {
+      "scope": "residuals",
+      "field": "joint_velocity_violation_rad_s",
+      "count": 526
+    },
+    {
+      "scope": "residuals",
+      "field": "all_interval_constraints",
+      "count": 437
+    },
+    {
+      "scope": "residuals",
+      "field": "joint_position_violation_rad",
+      "count": 2
+    }
+  ],
+  "checker_contract": "Existing geometry check is diagnostic only; original collision, actuator, friction and contact rules unchanged.",
+  "contact_model": "State.contacts is measured foot support; inactive feet have force constrained exactly zero in the QP.",
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery_9cb_baseline/scripts/audit_fallback_conflicts_cpu_v1.py": "935f7e35c0ccd34eceaac1737a133071dc4ea3d893fe3cfc90a6c3f6cfb4282d",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery_9cb_baseline/scripts/whole_body_support_qp_v1.py": "06ea6f6d55e585fe462e904a5cb3381ffd8d522e238f4a5d96ad4337a9d90900",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery_9cb_baseline/scripts/pure_control_interval_qp_v1.py": "f46519860b02ab945c583fc8ee204e709a1f94fdfd9130a41e51773bc7ba871d",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery_9cb_baseline/scripts/recovery_surface_constraints_v1.py": "5c546c5acbfd2e2d5f03578b21a10237162bb293013a825a71f25f92de7671eb",
+    "/home/autodrive/LZQW/unitree_smash_contact_recovery_9cb_baseline/scripts/predict_self_contact_spheres_v2.py": "5e22b438815a60997f637bae461f69ec3c0a983f26d11e4abb94f5510ac8a446"
+  }
+}
