@@ -1393,7 +1393,7 @@ def main():
         default = env.robot.data.default_joint_pos[0, env.joint_ids]
         limits = env.robot.data.joint_pos_limits[0, env.joint_ids]
         from scripts.native_landing_contact_observer_v2 import NativeLandingContactObserverV2 as NativePureControlObservationV1
-        from scripts.native_pure_control_state_driven_long_mpc_v1_qp_continuity_repair import NativePureControlStateDrivenLongMPCV1QPContinuityDirectSearch as NativePureControlRecoveryV1
+        from scripts.native_pure_control_state_driven_long_mpc_v1_qp_continuity_direct_search import NativePureControlStateDrivenLongMPCV1QPContinuityDirectSearch as NativePureControlRecoveryV1
         pure_observer=NativePureControlObservationV1(env,args.output)
         native_replay=NativePureControlRecoveryV1(env,limits,default,
             args.pure_control_configuration,args.output,pure_observer)
