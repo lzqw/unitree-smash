@@ -91,6 +91,7 @@ def quaternion_matrix(wxyz):
 class RacketPlaneGeometry:
     def __init__(self,config,court):
         self.court=court;self.primitives=[]
+        self._torch_cache={}
         for part in parts(config):
             if part['name']=='Clamp' or not part['collision']:continue
             if part['kind']=='string_prism':
@@ -98,6 +99,64 @@ class RacketPlaneGeometry:
                     self.primitives.append(dict(name=f'Collider/strip_{i:02d}',kind='box',
                         center=np.array(strip['center']),half=np.array(strip['size'])/2))
             else:self.primitives.append(dict(part))
+
+    def _torch_primitives(self, device, dtype):
+        """Cache primitive constants for a GPU broad-phase query."""
+        key=(str(device),str(dtype))
+        cached=self._torch_cache.get(key)
+        if cached is not None:return cached
+        import torch
+        centers=[];halves=[];axes=[];lengths=[];radii=[];kinds=[]
+        for primitive in self.primitives:
+            kind=primitive['kind']
+            centers.append(np.asarray(primitive['center'],dtype=np.float32))
+            if kind=='box':
+                halves.append(np.asarray(primitive['half'],dtype=np.float32))
+                axes.append([0.,0.,0.]);lengths.append(0.);radii.append(0.);kinds.append(0)
+            else:
+                halves.append([0.,0.,0.])
+                axes.append(np.asarray(primitive['axis'],dtype=np.float32));lengths.append(float(primitive['length'])/2)
+                radii.append(float(primitive['radius']));kinds.append(1)
+        cached={
+            'centers':torch.as_tensor(np.asarray(centers),device=device,dtype=dtype),
+            'halves':torch.as_tensor(np.asarray(halves),device=device,dtype=dtype),
+            'axes':torch.as_tensor(np.asarray(axes),device=device,dtype=dtype),
+            'lengths':torch.as_tensor(lengths,device=device,dtype=dtype),
+            'radii':torch.as_tensor(radii,device=device,dtype=dtype),
+            'kinds':torch.as_tensor(kinds,device=device,dtype=torch.bool),
+        }
+        self._torch_cache[key]=cached
+        return cached
+
+    @staticmethod
+    def _quat_matrix(quaternion):
+        import torch
+        q=quaternion/(quaternion.square().sum(-1,keepdim=True).clamp_min(1e-12).sqrt())
+        w,x,y,z=q.unbind(-1)
+        return torch.stack((
+            1-2*(y*y+z*z), 2*(x*y-z*w), 2*(x*z+y*w),
+            2*(x*y+z*w), 1-2*(x*x+z*z), 2*(y*z-x*w),
+            2*(x*z-y*w), 2*(y*z+x*w), 1-2*(x*x+y*y)),-1).reshape(*q.shape[:-1],3,3)
+
+    def gpu_broadphase_over_net(self, position, quaternion):
+        """Conservative GPU broad phase; exact CPU witnesses remain authoritative."""
+        import torch
+        constants=self._torch_primitives(position.device,position.dtype)
+        rotation=self._quat_matrix(quaternion)
+        center=position[:,None,:]+torch.einsum('nij,pj->npi',rotation,constants['centers'])
+        box_extent=torch.einsum('nijk,pk->npj',rotation.abs(),constants['halves'])
+        axis_world=torch.einsum('nijk,pk->npj',rotation,constants['axes'])
+        curved_extent=axis_world.abs()*constants['lengths'][None,:,None]+constants['radii'][None,:,None]
+        extent=torch.where(constants['kinds'][None,:,None],curved_extent,box_extent)
+        low,high=center-extent,center+extent
+        court=self.court
+        plane=float(court['net_plane_x_m'])+1e-6
+        half=float(court['net_width_m'])/2
+        tops=[segment_top(i,court) for i in range(court['net_profile_segments'])]
+        min_top=float(min(tops))
+        overlap=((high[...,0]>plane)&(high[...,2]>=min_top)&
+                 (high[...,1]>-half)&(low[...,1]<half)).any(-1)
+        return overlap
 
     def first_above_net_overlap(self,position,quaternion):
         """Return one actual primitive/volume witness, or None."""

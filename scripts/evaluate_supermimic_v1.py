@@ -79,6 +79,9 @@ def main():
         'checkpoint_sha256': hashlib.sha256(args.checkpoint.read_bytes()).hexdigest(),
         'asset_version': load_racket().get('version'), 'formal_protocol': 'g07_full_racket_eval_v4_r3',
         'physics_sim_device': physics_device, 'gpu_dynamics_enabled': gpu_dynamics,
+        'racket_plane_gpu_broadphase_calls': int(getattr(env, 'racket_plane_gpu_broadphase_calls', 0)),
+        'racket_plane_gpu_broadphase_candidates': int(getattr(env, 'racket_plane_gpu_broadphase_candidates', 0)),
+        'racket_plane_cpu_exact_queries': int(getattr(env, 'racket_plane_query_calls', 0)),
     }
     fields = sorted({k for r in rows for k in r});
     with (args.output / 'episodes.csv').open('w', newline='') as f:
