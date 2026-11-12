@@ -57,6 +57,8 @@ def main():
         trainer = SuperMimicTrainer(obs['policy'].shape[-1], 18, env.device)
         trainer.actor.load_state_dict(state['actor'], strict=True)
     done_seen = torch.zeros(128, dtype=torch.bool, device=env.device)
+    first = {}
+    record_cursor = 0
     start = time.perf_counter(); numerical = 0
     with torch.inference_mode():
         for tick in range(800):
@@ -65,10 +67,17 @@ def main():
             obs, reward, done, info = wrapper.step(action)
             numerical += int((~torch.isfinite(obs['policy'])).any().item())
             done_seen |= done.bool()
+            # Consume completed episode records online so a policy that falls
+            # repeatedly cannot grow an unbounded Python list until shutdown.
+            new_records = env.rally_records[record_cursor:]
+            record_cursor = len(env.rally_records)
+            for record in new_records:
+                first.setdefault(int(record['env_id']), record)
+            if record_cursor > 256:
+                del env.rally_records[:record_cursor]
+                record_cursor = 0
             if (tick + 1) % 100 == 0:
                 print(f'SUPERMIMIC_EVAL_PROGRESS tick={tick + 1}/800 done={int(done_seen.sum())}', flush=True)
-    first = {}
-    for row in env.rally_records: first.setdefault(int(row['env_id']), row)
     if len(first) != 128: raise RuntimeError(f'only {len(first)}/128 first episodes completed')
     # Keep the formal artifact compact.  Rally rows may contain large nested
     # diagnostic arrays; serializing those after a long GPU run can dominate
