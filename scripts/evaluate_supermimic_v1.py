@@ -86,6 +86,31 @@ def main():
             del env.rally_records[:record_cursor]
             record_cursor = 0
 
+    def snapshot_live_terminal_records():
+        """Snapshot terminal state before any deferred reset mutates buffers."""
+        if not bool(done_seen.all().item()):
+            return
+        recovery = env.rally_recovery_success
+        complete = env.rally.complete(recovery)
+        faulted = env.rally.faulted()
+        for i in range(128):
+            if i in first:
+                continue
+            first[i] = {
+                'env_id': i,
+                'episode_index': int(env.episode_index[i].item()),
+                'airborne_string_hit': bool(env.rally.airborne_string_hit[i].item()),
+                'legal_initial_contact': bool(env.rally.legal_initial_contact[i].item()),
+                'crossed_net': bool(env.rally.crossed_net[i].item()),
+                'landed_target': bool(env.rally.landed_target[i].item()),
+                'recovery_success': bool(recovery[i].item()),
+                'complete_smash': bool(complete[i].item()),
+                'numerical_failures': int((env.sweep_misses[i] + env.sweep_unresolved[i]).item()),
+                'head_contact': False,
+                'body_ground_seen': bool(env.body_ground_seen[i].item()),
+                'rally_fault': bool(faulted[i].item()),
+            }
+
     start = time.perf_counter(); numerical = 0
     with torch.inference_mode():
         for tick in range(801):
@@ -107,8 +132,8 @@ def main():
                 # that callback explicitly without advancing PhysX so the
                 # formal 8.0 s rollout remains exactly 800 control ticks.
                 if len(first) != 128 and bool(done_seen.all().item()):
-                    env._reset_idx(torch.where(done_seen)[0])
                     consume_rally_records()
+                    snapshot_live_terminal_records()
                 if len(first) != 128:
                     raise RuntimeError(f'only {len(first)}/128 first episodes completed')
                 rows = [dict(first[i], case_id=cases[i].get('case_id', i), source_case_index=i) for i in range(128)]
