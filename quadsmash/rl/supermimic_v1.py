@@ -84,36 +84,38 @@ class ReplayBatch:
 
 
 class EventReplay:
-    """GPU replay with ordinary/current-rare/history-rare sampling."""
+    """Device-resident replay with ordinary/current-rare/history-rare sampling.
+
+    Isaac observations already live on the learner device.  Keeping the ring
+    buffer on that same device removes the high-frequency simulator→CPU→GPU
+    copy that otherwise dominates small native rollouts.  Checkpointing can
+    optionally materialize a CPU copy at a low-frequency save boundary.
+    """
     def __init__(self, capacity: int, obs_dim: int, action_dim: int, device: torch.device):
         self.capacity, self.device = capacity, device
-        # Isaac owns CUDA tensors on its simulation stream.  Keeping the ring
-        # buffer in pinned host memory avoids an unsafe advanced-index write
-        # into simulator-owned CUDA allocations; batches are copied to the
-        # learner device only when sampled.
-        self.storage_device = torch.device("cpu")
-        self.obs = torch.empty((capacity, obs_dim), device=self.storage_device, pin_memory=True)
-        self.action = torch.empty((capacity, action_dim), device=self.storage_device, pin_memory=True)
-        self.next_obs = torch.empty((capacity, obs_dim), device=self.storage_device, pin_memory=True)
-        self.reward = torch.empty((capacity, 1), device=self.storage_device, pin_memory=True)
-        self.done = torch.empty((capacity, 1), device=self.storage_device, pin_memory=True)
-        self.rare = torch.zeros(capacity, dtype=torch.bool, device=self.storage_device)
+        self.storage_device = device
+        self.obs = torch.empty((capacity, obs_dim), device=device)
+        self.action = torch.empty((capacity, action_dim), device=device)
+        self.next_obs = torch.empty((capacity, obs_dim), device=device)
+        self.reward = torch.empty((capacity, 1), device=device)
+        self.done = torch.empty((capacity, 1), device=device)
+        self.rare = torch.zeros(capacity, dtype=torch.bool, device=device)
         self.ptr = 0
         self.size = 0
-        self.rare_history = torch.zeros(capacity, dtype=torch.bool, device=self.storage_device)
+        self.rare_history = torch.zeros(capacity, dtype=torch.bool, device=device)
 
     def add(self, obs, action, next_obs, reward, done, rare):
         n = obs.shape[0]
-        idx = (torch.arange(n, device=self.storage_device) + self.ptr) % self.capacity
-        obs_cpu, action_cpu = obs.detach().to(self.storage_device), action.detach().to(self.storage_device)
-        next_cpu = next_obs.detach().to(self.storage_device)
-        reward_cpu = reward.detach().reshape(-1, 1).to(self.storage_device)
-        done_cpu = done.detach().reshape(-1, 1).to(self.storage_device)
-        rare_cpu = rare.detach().reshape(-1).to(self.storage_device, dtype=torch.bool)
+        idx = (torch.arange(n, device=self.device) + self.ptr) % self.capacity
+        obs_dev, action_dev = obs.detach(), action.detach()
+        next_dev = next_obs.detach()
+        reward_dev = reward.detach().reshape(-1, 1)
+        done_dev = done.detach().reshape(-1, 1)
+        rare_dev = rare.detach().reshape(-1).to(dtype=torch.bool)
         overwritten = self.rare[idx]
         self.rare_history[idx] = overwritten
-        self.obs[idx], self.action[idx], self.next_obs[idx] = obs_cpu, action_cpu, next_cpu
-        self.reward[idx], self.done[idx], self.rare[idx] = reward_cpu, done_cpu.float(), rare_cpu
+        self.obs[idx], self.action[idx], self.next_obs[idx] = obs_dev, action_dev, next_dev
+        self.reward[idx], self.done[idx], self.rare[idx] = reward_dev, done_dev.float(), rare_dev
         self.ptr = int((self.ptr + n) % self.capacity)
         self.size = min(self.capacity, self.size + n)
 
@@ -123,7 +125,7 @@ class EventReplay:
     def sample(self, batch_size: int) -> ReplayBatch:
         if self.size < batch_size:
             raise RuntimeError(f"replay has {self.size} transitions, needs {batch_size}")
-        active = torch.arange(self.size, device=self.storage_device)
+        active = torch.arange(self.size, device=self.device)
         current = active[self.rare[: self.size]]
         historical = active[self.rare_history[: self.size]]
         ordinary = active[~self.rare[: self.size] & ~self.rare_history[: self.size]]
@@ -133,14 +135,34 @@ class EventReplay:
         for pool, count in zip(pools, counts):
             if pool.numel() == 0:
                 pool = active
-            chosen.append(pool[torch.randint(pool.numel(), (count,), device=self.storage_device)])
+            chosen.append(pool[torch.randint(pool.numel(), (count,), device=self.device)])
         idx = torch.cat(chosen)
-        idx = idx[torch.randperm(idx.numel(), device=self.storage_device)]
-        return ReplayBatch(self.obs[idx].to(self.device, non_blocking=True),
-                           self.action[idx].to(self.device, non_blocking=True),
-                           self.next_obs[idx].to(self.device, non_blocking=True),
-                           self.reward[idx].to(self.device, non_blocking=True),
-                           self.done[idx].to(self.device, non_blocking=True))
+        idx = idx[torch.randperm(idx.numel(), device=self.device)]
+        return ReplayBatch(self.obs[idx], self.action[idx], self.next_obs[idx],
+                           self.reward[idx], self.done[idx])
+
+    def state_dict(self, include_data: bool = False) -> dict:
+        state = {'capacity': self.capacity, 'ptr': self.ptr, 'size': self.size}
+        if include_data:
+            # Materialize only at an explicit low-frequency checkpoint boundary.
+            state.update(obs=self.obs[:self.size].cpu(), action=self.action[:self.size].cpu(),
+                         next_obs=self.next_obs[:self.size].cpu(), reward=self.reward[:self.size].cpu(),
+                         done=self.done[:self.size].cpu(), rare=self.rare[:self.size].cpu(),
+                         rare_history=self.rare_history[:self.size].cpu())
+        return state
+
+    def load_state_dict(self, state: dict) -> None:
+        if not state or 'obs' not in state:
+            return
+        n = min(int(state.get('size', state['obs'].shape[0])), self.capacity)
+        self.obs[:n].copy_(state['obs'][:n].to(self.device))
+        self.action[:n].copy_(state['action'][:n].to(self.device))
+        self.next_obs[:n].copy_(state['next_obs'][:n].to(self.device))
+        self.reward[:n].copy_(state['reward'][:n].to(self.device))
+        self.done[:n].copy_(state['done'][:n].to(self.device))
+        self.rare[:n].copy_(state['rare'][:n].to(self.device))
+        self.rare_history[:n].copy_(state['rare_history'][:n].to(self.device))
+        self.size, self.ptr = n, int(state.get('ptr', n % self.capacity))
 
 
 class SuperMimicTrainer:
@@ -222,13 +244,29 @@ class SuperMimicTrainer:
         self.update_steps += 1
         return {"imagine_update": True, "actor_loss": float(actor_loss.detach()), "critic_loss": float(critic_loss.detach()), "imagined_return": float(returns.mean().detach())}
 
-    def save(self, path: Path, metadata: dict):
+    def save(self, path: Path, metadata: dict, *, include_replay: bool = False):
         path.parent.mkdir(parents=True, exist_ok=True)
         torch.save({"algorithm": "supermimic_v1", "random_initialization": True,
                     "actor": self.actor.state_dict(), "critic": self.critic.state_dict(),
                     "world_model": self.world.state_dict(), "actor_opt": self.actor_opt.state_dict(),
                     "critic_opt": self.critic_opt.state_dict(), "world_opt": self.world_opt.state_dict(),
-                    "update_steps": self.update_steps, "metadata": metadata}, path)
+                    "update_steps": self.update_steps, "replay": self.replay.state_dict(include_replay),
+                    "metadata": metadata | {'replay_persisted': bool(include_replay)},
+                    }, path)
+
+    def load(self, path: Path, *, restore_replay: bool = True) -> dict:
+        state = torch.load(path, map_location=self.device, weights_only=False)
+        if state.get('algorithm') != 'supermimic_v1' or state.get('metadata', {}).get('old_checkpoint') is not None:
+            raise ValueError('resume checkpoint is not an independent SuperMimic checkpoint')
+        self.actor.load_state_dict(state['actor']); self.critic.load_state_dict(state['critic'])
+        self.world.load_state_dict(state['world_model'])
+        if state.get('actor_opt'): self.actor_opt.load_state_dict(state['actor_opt'])
+        if state.get('critic_opt'): self.critic_opt.load_state_dict(state['critic_opt'])
+        if state.get('world_opt'): self.world_opt.load_state_dict(state['world_opt'])
+        self.update_steps = int(state.get('update_steps', 0))
+        if restore_replay and state.get('replay', {}).get('obs') is not None:
+            self.replay.load_state_dict(state['replay'])
+        return state
 
     def load_actor(self, path: Path):
         state = torch.load(path, map_location=self.device, weights_only=False)
