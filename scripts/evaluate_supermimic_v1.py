@@ -59,6 +59,33 @@ def main():
     done_seen = torch.zeros(128, dtype=torch.bool, device=env.device)
     first = {}
     record_cursor = 0
+
+    def consume_rally_records():
+        """Copy completed rally records without changing simulation state."""
+        nonlocal record_cursor
+        new_records = env.rally_records[record_cursor:]
+        record_cursor = len(env.rally_records)
+        for record in new_records:
+            env_id = int(record['env_id'])
+            if env_id not in first:
+                first[env_id] = {
+                    'env_id': env_id,
+                    'episode_index': int(record.get('episode_index', -1)),
+                    'airborne_string_hit': bool(record.get('airborne_string_hit', False)),
+                    'legal_initial_contact': bool(record.get('legal_initial_contact', False)),
+                    'crossed_net': bool(record.get('crossed_net', False)),
+                    'landed_target': bool(record.get('landed_target', False)),
+                    'recovery_success': bool(record.get('recovery_success', False)),
+                    'complete_smash': bool(record.get('complete_smash', False)),
+                    'numerical_failures': int(record.get('numerical_failures', 0)),
+                    'head_contact': bool(record.get('head_contact', False)),
+                    'body_ground_seen': bool(record.get('body_ground_seen', False)),
+                    'rally_fault': bool(record.get('rally_fault', False)),
+                }
+        if record_cursor > 256:
+            del env.rally_records[:record_cursor]
+            record_cursor = 0
+
     start = time.perf_counter(); numerical = 0
     with torch.inference_mode():
         for tick in range(801):
@@ -69,32 +96,19 @@ def main():
             done_seen |= done.bool()
             # Consume completed episode records online so a policy that falls
             # repeatedly cannot grow an unbounded Python list until shutdown.
-            new_records = env.rally_records[record_cursor:]
-            record_cursor = len(env.rally_records)
-            for record in new_records:
-                if int(record['env_id']) not in first:
-                    first[int(record['env_id'])] = {
-                        'env_id': int(record.get('env_id', -1)),
-                        'episode_index': int(record.get('episode_index', -1)),
-                        'airborne_string_hit': bool(record.get('airborne_string_hit', False)),
-                        'legal_initial_contact': bool(record.get('legal_initial_contact', False)),
-                        'crossed_net': bool(record.get('crossed_net', False)),
-                        'landed_target': bool(record.get('landed_target', False)),
-                        'recovery_success': bool(record.get('recovery_success', False)),
-                        'complete_smash': bool(record.get('complete_smash', False)),
-                        'numerical_failures': int(record.get('numerical_failures', 0)),
-                        'head_contact': bool(record.get('head_contact', False)),
-                        'body_ground_seen': bool(record.get('body_ground_seen', False)),
-                        'rally_fault': bool(record.get('rally_fault', False)),
-                    }
-            if record_cursor > 256:
-                del env.rally_records[:record_cursor]
-                record_cursor = 0
+            consume_rally_records()
             if (tick + 1) % 100 == 0:
                 print(f'SUPERMIMIC_EVAL_PROGRESS tick={tick + 1}/800 done={int(done_seen.sum())}', flush=True)
                 (args.output / f'episodes_snapshot_{tick + 1:04d}.json').write_text(
                     json.dumps({str(k): v for k, v in first.items()}, indent=2) + '\n')
             if tick == 800:
+                # DirectRLEnv exposes done on the terminal step and may defer
+                # the environment reset callback until the next call. Flush
+                # that callback explicitly without advancing PhysX so the
+                # formal 8.0 s rollout remains exactly 800 control ticks.
+                if len(first) != 128 and bool(done_seen.all().item()):
+                    env._reset_idx(torch.where(done_seen)[0])
+                    consume_rally_records()
                 if len(first) != 128:
                     raise RuntimeError(f'only {len(first)}/128 first episodes completed')
                 rows = [dict(first[i], case_id=cases[i].get('case_id', i), source_case_index=i) for i in range(128)]
