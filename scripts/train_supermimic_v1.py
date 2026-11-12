@@ -26,6 +26,8 @@ parser.add_argument('--init-policy-checkpoint', type=Path, default=None,
 parser.add_argument('--checkpoint-every', type=int, default=100)
 parser.add_argument('--persist-replay', action='store_true',
                     help='materialize the GPU replay ring only at checkpoints')
+parser.add_argument('--resume-without-replay', action='store_true',
+                    help='restore actor/world/optimizers but intentionally rebuild replay from new native transitions')
 AppLauncher.add_app_launcher_args(parser)
 args = parser.parse_args()
 app = AppLauncher(args).app
@@ -88,13 +90,14 @@ def main():
         if contract_error > 2e-6:
             raise RuntimeError(f'PPO initialization action contract failed: {contract_error}')
     if args.resume is not None:
-        prior = trainer.load(args.resume, restore_replay=True)
+        prior = trainer.load(args.resume, restore_replay=not args.resume_without_replay)
         prior_meta = prior.get('metadata', {})
         if prior_meta.get('old_checkpoint') is not None or prior.get('algorithm') != 'supermimic_v1':
             raise ValueError('resume must be a from-scratch SuperMimic checkpoint')
         manifest['resumed_from'] = str(args.resume.resolve())
         manifest['resume_update_steps'] = int(prior.get('update_steps', 0))
         manifest['replay_resumed'] = bool(prior.get('replay', {}).get('obs') is not None)
+        manifest['replay_rebuilt_after_resume'] = bool(args.resume_without_replay)
     (args.output / 'training_manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
     total_steps = 0; started = time.perf_counter(); stop = False
     def halt(*_):
