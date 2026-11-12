@@ -31,7 +31,7 @@ Output directory: `reports/supermimic_v1_native_eval_20261112_detached3`
 - Checkpoint: `reports/supermimic_v1_smoke11/checkpoint.pt`.
 - Sweep audit: 256 iterations, preserving the native contact/event path while avoiding the 4096-iteration full-racket diagnostic budget.
 - Start snapshot and source hashes are saved in the output directory.
-- At the latest status snapshot the evaluator was still running after about 7 hours, with no `native/completed.json`, `metrics.json`, or `episodes.csv`; therefore no evaluation score is valid yet.
+- The detached evaluator later terminated without producing `native/completed.json`, `metrics.json`, or `episodes.csv`. The wrapper recorded `status=FAILED`, `exit_code=0`, `timed_out=false`, `charged_env_steps=102400`, `charged_gpu_hours=7.6674`, and `receipt_present=false`; the orphaned child was then stopped. This is an incomplete evaluation and has no valid score.
 - The earlier timed-out/interactive evaluations remain historical failures and are not combined with this run.
 
 ## GPU and process snapshot
@@ -45,11 +45,11 @@ Latest `nvidia-smi` snapshot while the evaluator was active:
 - SuperMimic evaluator allocation: approximately 1.46 GB
 - The evaluation is CPU/PhysX/event-audit bound; low GPU utilization is expected for this native evaluation path.
 - Unrelated teacher-only evaluation processes were terminated to protect resources. CUDA MPS and the desktop service were left intact.
-- No MPC process is launched by this branch.
+- No MPC process was detected in the final process snapshot; no MPC process was stopped.
 
 ## Next execution order
 
-1. Let the current detached evaluation finish or reach its declared 8-hour limit. A score is accepted only when the completion artifact exists.
+1. The detached evaluation has ended as an incomplete/failed run; preserve its logs and do not treat it as a score.
 2. After GPU release, launch GPU-first checkpoint-resume training with a fresh output directory, GPU replay, CUDA timing, and periodic persisted checkpoints.
 3. Use measured native/model/imagination timings and peak memory to adjust environment count, imagination batch, and replay capacity without changing physics or the formal 128-environment evaluation protocol.
 4. Freeze a trained checkpoint and run one complete 128-environment native evaluation, reporting qualified contact, ball-side completion, recovery, complete5, numerical failures, and intervention counts.
