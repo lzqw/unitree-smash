@@ -19,7 +19,7 @@ args = parser.parse_args(); app = AppLauncher(args).app
 
 import torch
 from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper
-from quadsmash.rl.supermimic_v1 import SuperMimicTrainer
+from quadsmash.rl.supermimic_v1 import SuperMimicTrainer, PPOInitializedActor
 from quadsmash.tasks.stand.supermimic_env_v1 import SuperMimicEnvV1, make_supermimic_cfg
 from quadsmash.tasks.stand.full_racket_env_v4 import load_racket
 
@@ -28,7 +28,7 @@ def main():
     args.output.mkdir(parents=True, exist_ok=True)
     state = torch.load(args.checkpoint, map_location='cpu', weights_only=False)
     if state.get('algorithm') != 'supermimic_v1' or state.get('metadata', {}).get('old_checkpoint') is not None:
-        raise ValueError('evaluation checkpoint is not a from-scratch SuperMimic checkpoint')
+        raise ValueError('evaluation checkpoint is not a SuperMimic checkpoint')
     cfg = make_supermimic_cfg(128); cfg.seed = args.seed; cfg.sim.device = args.physics_device
     # The native sweep audit is an event-audit diagnostic, not part of the
     # policy or physics interface.  The full-racket default (4096 conservative
@@ -47,8 +47,15 @@ def main():
     gpu_dynamics = bool(SimulationManager.is_gpu_dynamics_enabled())
     print(f'SUPERMIMIC_PHYSICS_CONFIG device={physics_device} gpu_dynamics={gpu_dynamics}', flush=True)
     wrapper = RslRlVecEnvWrapper(env, clip_actions=None)
-    obs, _ = wrapper.reset(); trainer = SuperMimicTrainer(obs['policy'].shape[-1], 18, env.device)
-    trainer.actor.load_state_dict(state['actor'])
+    obs, _ = wrapper.reset()
+    kind = state.get('metadata', {}).get('actor_kind', 'supermimic_random')
+    if kind == PPOInitializedActor.actor_kind:
+        actor = PPOInitializedActor(obs['policy'].shape[-1], 18).to(env.device)
+        actor.load_state_dict(state['actor'], strict=True)
+        trainer = SuperMimicTrainer(obs['policy'].shape[-1], 18, env.device, actor=actor, actor_kind=kind)
+    else:
+        trainer = SuperMimicTrainer(obs['policy'].shape[-1], 18, env.device)
+        trainer.actor.load_state_dict(state['actor'], strict=True)
     done_seen = torch.zeros(128, dtype=torch.bool, device=env.device)
     start = time.perf_counter(); numerical = 0
     with torch.inference_mode():
@@ -67,7 +74,9 @@ def main():
     recover = [bool(r.get('recovery_success')) for r in rows]
     complete = [bool(r.get('complete_smash')) for r in rows]
     metrics = {
-        'algorithm': 'supermimic_v1', 'random_initialization': True,
+        'algorithm': 'supermimic_v1', 'random_initialization': bool(state.get('random_initialization', True)),
+        'actor_kind': kind,
+        'init_policy_checkpoint': state.get('metadata', {}).get('init_policy_checkpoint'),
         'num_envs': 128, 'control_ticks': 800, 'episode_seconds': 8.0,
         'qualified_airborne_string_contact': sum(contact),
         'ball_side_complete_except_recovery': sum(ball_ok),

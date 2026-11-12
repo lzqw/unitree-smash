@@ -143,9 +143,14 @@ class RacketPlaneGeometry:
         import torch
         constants=self._torch_primitives(position.device,position.dtype)
         rotation=self._quat_matrix(quaternion)
-        center=position[:,None,:]+torch.einsum('nij,pj->npi',rotation,constants['centers'])
-        box_extent=torch.einsum('nijk,pk->npj',rotation.abs(),constants['halves'])
-        axis_world=torch.einsum('nijk,pk->npj',rotation,constants['axes'])
+        # Explicit batched matmul avoids ambiguous einsum rank parsing on
+        # torch versions used by Isaac; all outputs are [env, primitive, 3].
+        center=position[:,None,:]+torch.matmul(
+            rotation[:,None,:,:], constants['centers'][None,:,:,None]).squeeze(-1)
+        box_extent=torch.matmul(
+            rotation.abs()[:,None,:,:], constants['halves'][None,:,:,None]).squeeze(-1)
+        axis_world=torch.matmul(
+            rotation[:,None,:,:], constants['axes'][None,:,:,None]).squeeze(-1)
         curved_extent=axis_world.abs()*constants['lengths'][None,:,None]+constants['radii'][None,:,None]
         extent=torch.where(constants['kinds'][None,:,None],curved_extent,box_extent)
         low,high=center-extent,center+extent

@@ -17,9 +17,12 @@ parser.add_argument('--batch-size', type=int, default=2048)
 parser.add_argument('--world-updates', type=int, default=3)
 parser.add_argument('--imagine-horizon', type=int, default=32)
 parser.add_argument('--replay-capacity', type=int, default=250000)
-parser.add_argument('--model-warmup-iterations', type=int, default=1000)
+parser.add_argument('--model-warmup-iterations', type=int, default=0,
+                    help='optional explicit warmup; default immediately alternates native/model/imagined updates')
 parser.add_argument('--resume', type=Path, default=None,
-                    help='resume a SuperMimic checkpoint; never accepts PPO/teacher/MPC weights')
+                    help='resume a SuperMimic checkpoint; independent of init-policy-checkpoint')
+parser.add_argument('--init-policy-checkpoint', type=Path, default=None,
+                    help='strictly load an existing native PPO actor as the initial policy')
 parser.add_argument('--checkpoint-every', type=int, default=100)
 parser.add_argument('--persist-replay', action='store_true',
                     help='materialize the GPU replay ring only at checkpoints')
@@ -29,7 +32,7 @@ app = AppLauncher(args).app
 
 import torch
 from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper
-from quadsmash.rl.supermimic_v1 import SuperMimicTrainer
+from quadsmash.rl.supermimic_v1 import SuperMimicTrainer, load_ppo_initialized_actor
 from quadsmash.tasks.stand.supermimic_env_v1 import SuperMimicEnvV1, make_supermimic_cfg
 
 
@@ -55,16 +58,35 @@ def main():
     wrapped = RslRlVecEnvWrapper(env, clip_actions=None)
     obs, _ = wrapped.reset()
     obs_tensor = obs['policy']
-    trainer = SuperMimicTrainer(obs_tensor.shape[-1], 18, env.device,
-        imagine_horizon=args.imagine_horizon, replay_capacity=args.replay_capacity)
+    init_meta = None
+    if args.init_policy_checkpoint is not None:
+        actor, init_meta = load_ppo_initialized_actor(args.init_policy_checkpoint, env.device)
+        trainer = SuperMimicTrainer(obs_tensor.shape[-1], 18, env.device,
+            imagine_horizon=args.imagine_horizon, replay_capacity=args.replay_capacity,
+            actor=actor, actor_kind=init_meta['actor_kind'])
+    else:
+        trainer = SuperMimicTrainer(obs_tensor.shape[-1], 18, env.device,
+            imagine_horizon=args.imagine_horizon, replay_capacity=args.replay_capacity)
     manifest = {
-        'algorithm': 'supermimic_v1', 'random_initialization': True,
+        'algorithm': 'supermimic_v1', 'random_initialization': args.init_policy_checkpoint is None,
         'old_checkpoint': None, 'teacher': None, 'mpc': None, 'bc': None,
         'num_envs': args.num_envs, 'iterations': args.iterations,
         'control_dt_s': 0.01, 'episode_seconds': 8.0,
         'obs_dim': int(obs_tensor.shape[-1]), 'action_dim': 18,
         'seed': args.seed, 'event_reward_version': 'supermimic-native-v1',
+        'init_policy_checkpoint': init_meta,
+        'critic_initialization': 'random_refit',
+        'old_normalizer_frozen_contract': bool(init_meta is not None),
     }
+    if init_meta is not None:
+        with torch.no_grad():
+            before = trainer.action(obs_tensor, sample=False)
+            after = trainer.actor(obs_tensor, sample=False)[0].clamp(-1.0, 1.0)
+        contract_error = float((before - after).abs().max().detach())
+        manifest['zero_update_action_max_abs_error'] = contract_error
+        manifest['zero_update_action_contract'] = 'exact PPO actor + frozen native normalizer + native joint-limit mapping'
+        if contract_error > 2e-6:
+            raise RuntimeError(f'PPO initialization action contract failed: {contract_error}')
     if args.resume is not None:
         prior = trainer.load(args.resume, restore_replay=True)
         prior_meta = prior.get('metadata', {})
@@ -90,12 +112,18 @@ def main():
         sync_cuda(env.device)
         t_native = time.perf_counter() - t0
         nxt = next_obs['policy']
+        # Preserve the true pre-reset terminal observation for model fitting.
+        final_valid = getattr(env, 'final_observation_valid', torch.zeros(env.num_envs, dtype=torch.bool, device=env.device))
+        final_obs = getattr(env, 'final_observation', nxt)
+        transition_next = nxt.clone()
+        if bool(final_valid.any()):
+            transition_next[final_valid] = final_obs[final_valid]
         event = (env.rally.in_play | env.rally.had_contact | env.observed_airborne | env.body_ground_seen | done).detach()
         # Clone the simulator-owned tensors before writing the replay.  This
         # creates an explicit CUDA dependency boundary and prevents Isaac's
         # observation buffers from aliasing the learner's ring buffer.
         t0 = time.perf_counter()
-        trainer.replay.add(obs_tensor.detach().clone(), action.detach().clone(), nxt.detach().clone(),
+        trainer.replay.add(obs_tensor.detach().clone(), action.detach().clone(), transition_next.detach().clone(),
                             reward.detach().clone(), done.detach().clone(), event.clone())
         t_transfer += time.perf_counter() - t0
         obs_tensor = nxt

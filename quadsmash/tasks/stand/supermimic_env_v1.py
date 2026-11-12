@@ -28,9 +28,11 @@ class SuperMimicEnvV1(FullRacketEnvV4):
         self._record_action(actions)
         self.action_clip_count += (actions.abs() > 1).sum(1)
         limits = self.robot.data.joint_pos_limits[:, self.joint_ids]
-        center = self.robot.data.default_joint_pos[:, self.joint_ids]
-        span = torch.maximum(center - limits[..., 0], limits[..., 1] - center)
-        targets = (center + self.last_action * span).clamp(limits[..., 0], limits[..., 1])
+        # Preserve the native PPO action contract exactly: -1/+1 map to the
+        # lower/upper legal joint limits.  This is intentionally not a new
+        # center/span action meaning.
+        targets = (limits[..., 0] + 0.5 * (self.last_action + 1.0) *
+                   (limits[..., 1] - limits[..., 0])).clamp(limits[..., 0], limits[..., 1])
         self.targets.copy_(self.robot.data.default_joint_pos)
         self.targets[:, self.joint_ids] = targets
         self._contact_bonus.zero_()
