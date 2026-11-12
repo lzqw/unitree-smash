@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """One frozen 128-environment, 8-second native evaluation for SuperMimic."""
 from __future__ import annotations
-import argparse, csv, hashlib, json, time
+import argparse, csv, hashlib, json, time, os
 from pathlib import Path
 from isaaclab.app import AppLauncher
 
@@ -92,6 +92,41 @@ def main():
                 record_cursor = 0
             if (tick + 1) % 100 == 0:
                 print(f'SUPERMIMIC_EVAL_PROGRESS tick={tick + 1}/800 done={int(done_seen.sum())}', flush=True)
+            if tick == 799:
+                if len(first) != 128:
+                    raise RuntimeError(f'only {len(first)}/128 first episodes completed')
+                rows = [dict(first[i], case_id=cases[i].get('case_id', i), source_case_index=i) for i in range(128)]
+                contact = [bool(r.get('airborne_string_hit') and r.get('legal_initial_contact')) for r in rows]
+                ball_ok = [bool(c and r.get('crossed_net') and r.get('landed_target') and not r.get('rally_fault', False)) for c, r in zip(contact, rows)]
+                recover = [bool(r.get('recovery_success')) for r in rows]
+                complete = [bool(r.get('complete_smash')) for r in rows]
+                metrics = {
+                    'algorithm': 'supermimic_v1', 'random_initialization': bool(state.get('random_initialization', True)),
+                    'actor_kind': kind, 'init_policy_checkpoint': state.get('metadata', {}).get('init_policy_checkpoint'),
+                    'num_envs': 128, 'control_ticks': 800, 'episode_seconds': 8.0,
+                    'qualified_airborne_string_contact': sum(contact),
+                    'ball_side_complete_except_recovery': sum(ball_ok), 'recovery_success': sum(recover),
+                    'complete5': sum(complete),
+                    'recovery_given_airborne_string_contact': sum(r for c, r in zip(contact, recover) if c) / max(1, sum(contact)),
+                    'numerical_failures': numerical + sum(int(r.get('numerical_failures', 0)) for r in rows),
+                    'mpc_interventions': 0, 'teacher_interventions': 0, 'bc_data': None,
+                    'elapsed_s': time.perf_counter() - start,
+                    'checkpoint_sha256': hashlib.sha256(args.checkpoint.read_bytes()).hexdigest(),
+                    'asset_version': load_racket().get('version'), 'formal_protocol': 'g07_full_racket_eval_v4_r3',
+                    'physics_sim_device': physics_device, 'gpu_dynamics_enabled': gpu_dynamics,
+                    'racket_plane_gpu_broadphase_calls': int(getattr(env, 'racket_plane_gpu_broadphase_calls', 0)),
+                    'racket_plane_gpu_broadphase_candidates': int(getattr(env, 'racket_plane_gpu_broadphase_candidates', 0)),
+                    'racket_plane_cpu_exact_queries': int(getattr(env, 'racket_plane_query_calls', 0)),
+                }
+                fields = sorted({k for r in rows for k in r})
+                with (args.output / 'episodes.csv').open('w', newline='') as f:
+                    w = csv.DictWriter(f, fieldnames=fields); w.writeheader(); w.writerows(rows)
+                (args.output / 'metrics.json').write_text(json.dumps(metrics, indent=2) + '\n')
+                (args.output / 'completed.json').write_text(json.dumps({'control_ticks': 800, 'episodes': 128, 'formal': True}, indent=2) + '\n')
+                print('SUPERMIMIC_EVAL_RESULT=' + json.dumps(metrics, sort_keys=True), flush=True)
+                # Kit shutdown can block after a complete 128-env run; the
+                # formal artifacts are already durable at this point.
+                os._exit(0)
     if len(first) != 128: raise RuntimeError(f'only {len(first)}/128 first episodes completed')
     # Keep the formal artifact compact.  Rally rows may contain large nested
     # diagnostic arrays; serializing those after a long GPU run can dominate
