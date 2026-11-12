@@ -70,7 +70,19 @@ def main():
     first = {}
     for row in env.rally_records: first.setdefault(int(row['env_id']), row)
     if len(first) != 128: raise RuntimeError(f'only {len(first)}/128 first episodes completed')
-    rows = [dict(first[i], case_id=cases[i].get('case_id', i), source_case_index=i) for i in range(128)]
+    # Keep the formal artifact compact.  Rally rows may contain large nested
+    # diagnostic arrays; serializing those after a long GPU run can dominate
+    # shutdown and hide the actual result. Core scalar event fields are enough
+    # for this frozen evaluation, while raw traces remain in the native logs.
+    scalar_keys = ('env_id', 'episode_index', 'airborne_string_hit', 'legal_initial_contact',
+                   'crossed_net', 'landed_target', 'rally_fault', 'recovery_success',
+                   'complete_smash', 'numerical_failures', 'head_contact', 'body_ground_seen')
+    rows = []
+    for i in range(128):
+        source = first[i]
+        row = {key: source.get(key) for key in scalar_keys if key in source}
+        row.update(case_id=cases[i].get('case_id', i), source_case_index=i)
+        rows.append(row)
     contact = [bool(r.get('airborne_string_hit') and r.get('legal_initial_contact')) for r in rows]
     ball_ok = [bool(c and r.get('crossed_net') and r.get('landed_target') and not r.get('rally_fault', False)) for c, r in zip(contact, rows)]
     recover = [bool(r.get('recovery_success')) for r in rows]
