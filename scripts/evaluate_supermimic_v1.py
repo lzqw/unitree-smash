@@ -10,6 +10,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--checkpoint', type=Path, required=True)
 parser.add_argument('--output', type=Path, required=True)
 parser.add_argument('--seed', type=int, default=882072)
+parser.add_argument('--sweep-audit-iterations', type=int, default=0,
+                    help='extra swept geometry audit iterations; 0 keeps native physics/event path without the expensive diagnostic sweep')
 AppLauncher.add_app_launcher_args(parser)
 args = parser.parse_args(); app = AppLauncher(args).app
 
@@ -33,7 +35,7 @@ def main():
     # contact/event path while using the validated 256-iteration audit budget
     # used by the underlying ball environment so a complete 128-env eval can
     # finish within the job budget.
-    cfg.sweep_audit_iterations = 256
+    cfg.sweep_audit_iterations = max(0, int(args.sweep_audit_iterations))
     protocol = json.loads((ROOT / 'configs/g07_full_racket_eval_v4_r3.json').read_text())
     suite = protocol['training_suite']; cases = json.loads((ROOT / suite['path']).read_text())['cases']
     if len(cases) != 128: raise ValueError('formal training suite must have 128 cases')
