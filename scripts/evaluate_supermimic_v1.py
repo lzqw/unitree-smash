@@ -12,6 +12,8 @@ parser.add_argument('--output', type=Path, required=True)
 parser.add_argument('--seed', type=int, default=882072)
 parser.add_argument('--sweep-audit-iterations', type=int, default=0,
                     help='extra swept geometry audit iterations; 0 keeps native physics/event path without the expensive diagnostic sweep')
+parser.add_argument('--physics-device', default='cuda:0',
+                    help='Isaac/PhysX simulation device; cuda:0 enables GPU Dynamics')
 AppLauncher.add_app_launcher_args(parser)
 args = parser.parse_args(); app = AppLauncher(args).app
 
@@ -27,7 +29,7 @@ def main():
     state = torch.load(args.checkpoint, map_location='cpu', weights_only=False)
     if state.get('algorithm') != 'supermimic_v1' or state.get('metadata', {}).get('old_checkpoint') is not None:
         raise ValueError('evaluation checkpoint is not a from-scratch SuperMimic checkpoint')
-    cfg = make_supermimic_cfg(128); cfg.seed = args.seed; cfg.sim.device = args.device or 'cuda:0'
+    cfg = make_supermimic_cfg(128); cfg.seed = args.seed; cfg.sim.device = args.physics_device
     # The native sweep audit is an event-audit diagnostic, not part of the
     # policy or physics interface.  The full-racket default (4096 conservative
     # advancement iterations) makes a random from-scratch policy spend most of
@@ -40,6 +42,10 @@ def main():
     suite = protocol['training_suite']; cases = json.loads((ROOT / suite['path']).read_text())['cases']
     if len(cases) != 128: raise ValueError('formal training suite must have 128 cases')
     env = SuperMimicEnvV1(cfg, cases=cases)
+    from isaacsim.core.simulation_manager import SimulationManager
+    physics_device = SimulationManager.get_physics_sim_device()
+    gpu_dynamics = bool(SimulationManager.is_gpu_dynamics_enabled())
+    print(f'SUPERMIMIC_PHYSICS_CONFIG device={physics_device} gpu_dynamics={gpu_dynamics}', flush=True)
     wrapper = RslRlVecEnvWrapper(env, clip_actions=None)
     obs, _ = wrapper.reset(); trainer = SuperMimicTrainer(obs['policy'].shape[-1], 18, env.device)
     trainer.actor.load_state_dict(state['actor'])
@@ -72,6 +78,7 @@ def main():
         'elapsed_s': time.perf_counter() - start,
         'checkpoint_sha256': hashlib.sha256(args.checkpoint.read_bytes()).hexdigest(),
         'asset_version': load_racket().get('version'), 'formal_protocol': 'g07_full_racket_eval_v4_r3',
+        'physics_sim_device': physics_device, 'gpu_dynamics_enabled': gpu_dynamics,
     }
     fields = sorted({k for r in rows for k in r});
     with (args.output / 'episodes.csv').open('w', newline='') as f:
