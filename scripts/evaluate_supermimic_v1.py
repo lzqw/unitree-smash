@@ -65,6 +65,8 @@ def main():
             obs, reward, done, info = wrapper.step(action)
             numerical += int((~torch.isfinite(obs['policy'])).any().item())
             done_seen |= done.bool()
+            if (tick + 1) % 100 == 0:
+                print(f'SUPERMIMIC_EVAL_PROGRESS tick={tick + 1}/800 done={int(done_seen.sum())}', flush=True)
     first = {}
     for row in env.rally_records: first.setdefault(int(row['env_id']), row)
     if len(first) != 128: raise RuntimeError(f'only {len(first)}/128 first episodes completed')

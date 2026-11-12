@@ -372,7 +372,10 @@ class SuperMimicTrainer:
                     }, path)
 
     def load(self, path: Path, *, restore_replay: bool = True) -> dict:
-        state = torch.load(path, map_location=self.device, weights_only=False)
+        # Deserialize on CPU first; mapping the large optimizer/world-model
+        # checkpoint directly into a live Isaac CUDA context can block Kit
+        # startup. State tensors are moved explicitly below.
+        state = torch.load(path, map_location="cpu", weights_only=False)
         if state.get('algorithm') != 'supermimic_v1' or state.get('metadata', {}).get('old_checkpoint') is not None:
             raise ValueError('resume checkpoint is not an independent SuperMimic checkpoint')
         expected_kind = state.get('metadata', {}).get('actor_kind', 'supermimic_random')
@@ -383,6 +386,10 @@ class SuperMimicTrainer:
         if state.get('actor_opt'): self.actor_opt.load_state_dict(state['actor_opt'])
         if state.get('critic_opt'): self.critic_opt.load_state_dict(state['critic_opt'])
         if state.get('world_opt'): self.world_opt.load_state_dict(state['world_opt'])
+        for optimizer in (self.actor_opt, self.critic_opt, self.world_opt):
+            for slot in optimizer.state.values():
+                for key, value in list(slot.items()):
+                    if torch.is_tensor(value): slot[key] = value.to(self.device)
         self.update_steps = int(state.get('update_steps', 0))
         if restore_replay and state.get('replay', {}).get('obs') is not None:
             self.replay.load_state_dict(state['replay'])
