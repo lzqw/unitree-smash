@@ -61,7 +61,7 @@ def main():
     record_cursor = 0
     start = time.perf_counter(); numerical = 0
     with torch.inference_mode():
-        for tick in range(800):
+        for tick in range(801):
             action = trainer.action(obs['policy'], sample=False)
             numerical += int((~torch.isfinite(action)).any().item())
             obs, reward, done, info = wrapper.step(action)
@@ -94,7 +94,7 @@ def main():
                 print(f'SUPERMIMIC_EVAL_PROGRESS tick={tick + 1}/800 done={int(done_seen.sum())}', flush=True)
                 (args.output / f'episodes_snapshot_{tick + 1:04d}.json').write_text(
                     json.dumps({str(k): v for k, v in first.items()}, indent=2) + '\n')
-            if tick == 799:
+            if tick == 800:
                 if len(first) != 128:
                     raise RuntimeError(f'only {len(first)}/128 first episodes completed')
                 rows = [dict(first[i], case_id=cases[i].get('case_id', i), source_case_index=i) for i in range(128)]
