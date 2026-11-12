@@ -33,6 +33,11 @@ from quadsmash.rl.supermimic_v1 import SuperMimicTrainer
 from quadsmash.tasks.stand.supermimic_env_v1 import SuperMimicEnvV1, make_supermimic_cfg
 
 
+def sync_cuda(device):
+    if torch.cuda.is_available() and torch.device(device).type == 'cuda':
+        torch.cuda.synchronize(device)
+
+
 def main():
     torch.manual_seed(args.seed)
     args.output.mkdir(parents=True, exist_ok=True)
@@ -78,10 +83,11 @@ def main():
         if stop: break
         if torch.cuda.is_available(): torch.cuda.reset_peak_memory_stats(env.device)
         t_iter = time.perf_counter(); t_transfer = 0.0
-        t0 = time.perf_counter()
+        sync_cuda(env.device); t0 = time.perf_counter()
         with torch.no_grad():
             action = trainer.action(obs_tensor, sample=True)
         next_obs, reward, done, info = wrapped.step(action)
+        sync_cuda(env.device)
         t_native = time.perf_counter() - t0
         nxt = next_obs['policy']
         event = (env.rally.in_play | env.rally.had_contact | env.observed_airborne | env.body_ground_seen | done).detach()
@@ -94,14 +100,15 @@ def main():
         t_transfer += time.perf_counter() - t0
         obs_tensor = nxt
         total_steps += env.num_envs
-        t0 = time.perf_counter()
+        sync_cuda(env.device); t0 = time.perf_counter()
         model_stats = trainer.fit_world(args.world_updates, args.batch_size)
+        sync_cuda(env.device)
         t_world = time.perf_counter() - t0
-        t0 = time.perf_counter()
+        sync_cuda(env.device); t0 = time.perf_counter()
         imagine_stats = ({'imagine_update': False, 'model_warmup': True}
                           if iteration + 1 <= args.model_warmup_iterations
                           else trainer.imagine_update(args.batch_size))
-        t_imagine = time.perf_counter() - t0
+        sync_cuda(env.device); t_imagine = time.perf_counter() - t0
         peak_alloc = (torch.cuda.max_memory_allocated(env.device) if torch.cuda.is_available() else 0)
         peak_reserved = (torch.cuda.max_memory_reserved(env.device) if torch.cuda.is_available() else 0)
         row = {'iteration': iteration + 1, 'native_steps': total_steps, 'replay_size': len(trainer.replay),
