@@ -92,6 +92,8 @@ def main():
                 record_cursor = 0
             if (tick + 1) % 100 == 0:
                 print(f'SUPERMIMIC_EVAL_PROGRESS tick={tick + 1}/800 done={int(done_seen.sum())}', flush=True)
+                (args.output / f'episodes_snapshot_{tick + 1:04d}.json').write_text(
+                    json.dumps({str(k): v for k, v in first.items()}, indent=2) + '\n')
             if tick == 799:
                 if len(first) != 128:
                     raise RuntimeError(f'only {len(first)}/128 first episodes completed')
