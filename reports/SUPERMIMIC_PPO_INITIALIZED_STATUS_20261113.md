@@ -59,9 +59,33 @@ scripts/train_supermimic_v1.py --headless \
 ```
 
 The first 800 iterations are the complete-panel warmup. Only after that point
-can the SuperMimic actor update; formal 128-case evaluation will be run from a
-completed frozen checkpoint and will retain the original 8 s episode and
-complete5 definitions.
+can the SuperMimic actor update. The run completed 1,200 iterations / 153,600
+native transitions in 1,968 s. The mean native collection time was 1.56 s per
+128-environment tick, the mean world-model update time was 0.035 s, the mean
+imagination/BPTT time after actor updates was 0.035 s, and peak allocated GPU
+memory was 4.84 GB.
+
+The completed frozen evaluation is in
+`reports/supermimic_residual_ppo_eval_20261113_retry/metrics.json`. It used the
+same 128 cases, seed `882072`, GPU PhysX (`cuda:0`), 800 control ticks, and no
+MPC, teacher, or BC. It completed all 128 episodes in 1,156 s with:
+
+| metric | result |
+|---|---:|
+| qualified airborne string contact | 0/128 |
+| ball-side complete except recovery | 0/128 |
+| recovery success | 0/128 |
+| complete5 | 0/128 |
+| numerical failures | 0 |
+
+This is a valid negative result for this initialization/training run. It does
+not establish a task-wide upper bound: the source residual policy is marked
+`formal_acceptance=false`, and its first 8-second panel did not contain a
+qualified contact. The result does show that the current SuperMimic update
+budget and world-model fit did not recover the earlier 27/128 policy capability
+under the exact full-racket residual execution contract. The source policy and
+the final trained actor therefore need a separate action/normalization audit
+before more actor updates are trusted.
 
 The source PPO policy is not an online teacher: it is only the initialization
 and frozen physical base/mixer contract. No MPC, BC, recovery-head takeover,

@@ -32,7 +32,19 @@
     "report": "reports/supermimic_residual_ppo_warmup_20261113/profile_summary.json"
   },
   "formal_eval": {
-    "status": "pending_after_training",
+    "status": "completed_negative",
+    "checkpoint": "reports/supermimic_residual_ppo_train_20261113/checkpoint_actor_only.pt",
+    "seed": 882072,
+    "num_envs": 128,
+    "control_ticks": 800,
+    "qualified_airborne_string_contact": 0,
+    "ball_side_complete_except_recovery": 0,
+    "recovery_success": 0,
+    "complete5": 0,
+    "numerical_failures": 0,
+    "elapsed_s": 1156.2911857180297,
+    "gpu_dynamics_enabled": true,
+    "report": "reports/supermimic_residual_ppo_eval_20261113_retry/metrics.json",
     "mpc": false,
     "teacher": false,
     "bc": false
