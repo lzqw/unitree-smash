@@ -1,0 +1,58 @@
+{
+  "status": "passed",
+  "device": "cpu",
+  "config": {
+    "control_dt_s": 0.01,
+    "episode_s": 8.0,
+    "imagination_s": 0.64,
+    "world_window_s": 0.16,
+    "reference_dt_s": 0.02,
+    "gamma_reference": 0.99,
+    "lambda_reference": 0.95,
+    "discount_mode": "physical_time",
+    "imagination_steps": 64,
+    "world_transitions": 16,
+    "world_states": 17,
+    "gamma_effective": 0.99498743710662,
+    "lambda_effective": 0.9746794344808963,
+    "episode_ticks": 800
+  },
+  "empty_fit_world": {
+    "world_updates": 0,
+    "world_waiting": "Need 16 consecutive transitions per lane",
+    "world_window_steps": 16
+  },
+  "empty_imagine": {
+    "imagine_update": false,
+    "reason": "no completed world update"
+  },
+  "short_window_fit_world": {
+    "world_updates": 0,
+    "world_waiting": "Need 16 consecutive transitions per lane",
+    "world_window_steps": 16
+  },
+  "short_window_imagine": {
+    "imagine_update": false,
+    "reason": "no completed world update"
+  },
+  "full_fit_world": {
+    "world_updates": 1,
+    "world_loss": 93.70467376708984,
+    "world_window_steps": 16
+  },
+  "full_imagine": {
+    "imagine_update": true,
+    "imagined_return": 1.4695053100585938,
+    "actor_loss": -1.4695053100585938,
+    "actor_grad_norm": 14.49380111694336,
+    "critic_loss": 59.27617731690407,
+    "actor_updates_total": 1,
+    "critic_updates_total": 2,
+    "world_updates_total": 1,
+    "imagination_steps": 64,
+    "imagination_s": 0.64
+  },
+  "actor_param_delta_norm": 0.0018795267678797245,
+  "actor_updates_total": 1,
+  "world_updates_total": 1
+}
