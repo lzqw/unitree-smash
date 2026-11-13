@@ -17,7 +17,7 @@ def make_supermimic_cfg(num_envs: int, physics_dt: float = 6.25e-5):
 
 
 class SuperMimicEnvV1(FullRacketEnvV4):
-    """Absolute 18-joint targets with native event-locked reward shaping."""
+    """Schema-specific 18-joint targets with native event-locked rewards."""
     algorithm_family = "supermimic-native-world-model-v1"
 
     def __init__(self, *args, residual_policy_checkpoint=None, **kwargs):
@@ -27,6 +27,7 @@ class SuperMimicEnvV1(FullRacketEnvV4):
         self._sm_residual_limits = None
         self._sm_requested_action = None
         self._sm_final_action = None
+        self._sm_joint_targets = None
         super().__init__(*args, **kwargs)
         self._sm_prev = {}
         self._sm_reset_events()
@@ -38,25 +39,24 @@ class SuperMimicEnvV1(FullRacketEnvV4):
             self._sm_residual_controller.reset()
 
     def _pre_physics_step(self, actions):
-        """Use the exact native jump-event-v1 command contract.
+        """Keep residual-v4 and legacy jump-event action contracts separate.
 
-        The PPO checkpoint was trained with phase-dependent bounded position
-        targets around the default pose.  Mapping the same action to the full
-        joint limits changes the physical policy even when the network weights
-        are identical, so this branch intentionally mirrors JumpEnv.
+        A residual-v4 mixer already emits a normalized full-range command.
+        Decode it with FullRacketEnvV4, never with default+phase_scale*action.
+        The legacy direct jump-event branch below retains its own contract.
         """
         self._sm_requested_action = actions.detach().clone()
         if self._sm_residual_controller is not None:
-            # The trainable actor emits the residual request. The frozen
-            # full-racket base and native residual mixer produce the exact
-            # normalized final command consumed by the original executor.
             public = observe_native(self)
             base = self._sm_residual_controller.base.action(
                 public, self._sm_residual_default, self._sm_residual_limits)
-            actions = self._sm_residual_controller.mixer.action(
+            final = self._sm_residual_controller.mixer.action(
                 base, actions, public['policy'], self._sm_residual_default,
-                self._sm_residual_limits)
-            actions = actions.detach()
+                self._sm_residual_limits).detach()
+            self._sm_final_action = final.clone()
+            FullRacketEnvV4._pre_physics_step(self, final)
+            self._sm_joint_targets = self.targets[:, self.joint_ids].detach().clone()
+            return
         self._sm_final_action = actions.detach().clone()
         self.action_delta.copy_((actions.clamp(-1, 1) - self.last_action).square().sum(1))
         self._record_action(actions)
@@ -73,6 +73,7 @@ class SuperMimicEnvV1(FullRacketEnvV4):
         self.target_limit_count += ((self.targets < limits[:, :, 0]) |
                                     (self.targets > limits[:, :, 1])).sum(1)
         self.targets.clamp_(min=limits[:, :, 0], max=limits[:, :, 1])
+        self._sm_joint_targets = self.targets[:, self.joint_ids].detach().clone()
         self._contact_bonus.zero_()
         if self._v4_ready and self.cases is not None:
             clock = self.episode_length_buf.float() * self.step_dt
@@ -82,7 +83,6 @@ class SuperMimicEnvV1(FullRacketEnvV4):
                 self.initialize_rally_launch(ids)
 
     def _sm_reset_events(self, ids=None):
-        n = self.num_envs if ids is None else ids.numel()
         device = self.device
         if ids is None:
             ids = torch.arange(self.num_envs, device=device)
@@ -94,9 +94,6 @@ class SuperMimicEnvV1(FullRacketEnvV4):
 
     def _get_rewards(self):
         """Progress rates plus one-shot physical events, all from native flags."""
-        # JumpEnv uses this latch to decide whether a reset corresponds to a
-        # completed episode.  The SuperMimic reward must preserve that
-        # lifecycle contract instead of replacing it with a parallel counter.
         self._episode_has_stepped[:] = True
         d = self.robot.data
         rally = self.rally
@@ -119,8 +116,6 @@ class SuperMimicEnvV1(FullRacketEnvV4):
         self._sm_jump |= event_jump; self._sm_contact |= event_contact; self._sm_cross |= event_cross
         self._sm_target |= event_target; self._sm_recovery |= event_recovery; self._sm_body |= event_body
         self._sm_frame |= event_frame; self._sm_fault |= event_fault
-        # Bounded progress toward the live racket/ball event; it is not used as
-        # an official event label and vanishes after contact or failure.
         ball = self.shuttle.data.root_pos_w
         tool = d.body_link_pos_w[:, self.racket_body_id]
         proximity = torch.exp(-((ball - tool).norm(dim=1) / 0.18).square())
@@ -133,12 +128,9 @@ class SuperMimicEnvV1(FullRacketEnvV4):
         continuous = (0.5 * stable_quality - 2.0 * risk - 0.05 * self.action_delta
                       - 0.02 * d.applied_torque.square().sum(1) / 1000.0
                       + 0.8 * approach) * self.step_dt
-        # The current task contract is the 5 m/s attack threshold.  Keep this
-        # event separate from RallyRulesV4's historical 8 m/s attack helper.
         complete5 = target & self.rally_recovery_success & (~faulted) & self.reset_time_outs & (~self.reset_terminated)
         reward = continuous + 2.0 * event_jump.float() + 20.0 * event_contact.float() + 5.0 * event_cross.float()
         reward = reward + 15.0 * event_target.float() + 10.0 * event_recovery.float() + 20.0 * complete5.float()
-        net_violation = rally.net_blocked_fault | rally.robot_net_fault | rally.body_over_net_fault
         reward = reward - 4.0 * event_frame.float() - 5.0 * ((~contact) & (phase > 3.0)).float() * self.step_dt
         reward = reward - 15.0 * event_fault.float() - 40.0 * event_body.float()
         return torch.nan_to_num(reward, nan=-40.0, posinf=40.0, neginf=-40.0)
