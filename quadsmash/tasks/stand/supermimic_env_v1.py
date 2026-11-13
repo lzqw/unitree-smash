@@ -6,6 +6,7 @@ import torch
 from .full_racket_env_v4 import FullRacketEnvV4, full_racket_cfg
 from .observation_contract import observe_native
 from quadsmash.control.full_racket_residual_v4 import FullRacketResidualControllerV4
+from quadsmash.rl.action_contract import decode_full_racket_normalized_action
 
 
 def make_supermimic_cfg(num_envs: int, physics_dt: float = 6.25e-5):
@@ -27,10 +28,12 @@ class SuperMimicEnvV1(FullRacketEnvV4):
         self._sm_residual_limits = None
         self._sm_requested_action = None
         self._sm_final_action = None
+        self._sm_action_contract = 'jump-event-v1'
         super().__init__(*args, **kwargs)
         self._sm_prev = {}
         self._sm_reset_events()
         if residual_policy_checkpoint is not None:
+            self._sm_action_contract = 'full-racket-residual-v4'
             self._sm_residual_controller = FullRacketResidualControllerV4(
                 residual_policy_checkpoint, self.num_envs, self.device)
             self._sm_residual_default = self.robot.data.default_joint_pos[0, self.joint_ids].clone()
@@ -61,15 +64,22 @@ class SuperMimicEnvV1(FullRacketEnvV4):
         self.action_delta.copy_((actions.clamp(-1, 1) - self.last_action).square().sum(1))
         self._record_action(actions)
         self.action_clip_count += (actions.abs() > 1).sum(1)
-        phase = (self.episode_length_buf.float() * self.step_dt).unsqueeze(1)
-        leg_scale = torch.where(phase < .8, self.cfg.leg_action_scale_crouch,
-                                self.cfg.leg_action_scale_push)
-        scale = torch.cat((leg_scale.expand(-1, 12),
-                           torch.full((self.num_envs, 6), self.cfg.arm_action_scale,
-                                      device=self.device)), 1)
         self.targets.copy_(self.robot.data.default_joint_pos)
-        self.targets[:, self.joint_ids] += scale * self.last_action
         limits = self.robot.data.joint_pos_limits
+        if self._sm_action_contract == 'full-racket-residual-v4':
+            # full-racket-residual-v4 already emits the complete normalized
+            # joint command consumed by FullRacketEnvV4.  Do not route it
+            # through JumpEnv's phase-dependent 0.25/0.55/0.12 offsets.
+            self.targets[:, self.joint_ids] = decode_full_racket_normalized_action(
+                self.last_action, limits[:, self.joint_ids])
+        else:
+            phase = (self.episode_length_buf.float() * self.step_dt).unsqueeze(1)
+            leg_scale = torch.where(phase < .8, self.cfg.leg_action_scale_crouch,
+                                    self.cfg.leg_action_scale_push)
+            scale = torch.cat((leg_scale.expand(-1, 12),
+                               torch.full((self.num_envs, 6), self.cfg.arm_action_scale,
+                                          device=self.device)), 1)
+            self.targets[:, self.joint_ids] += scale * self.last_action
         self.target_limit_count += ((self.targets < limits[:, :, 0]) |
                                     (self.targets > limits[:, :, 1])).sum(1)
         self.targets.clamp_(min=limits[:, :, 0], max=limits[:, :, 1])

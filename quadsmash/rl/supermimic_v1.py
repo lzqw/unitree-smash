@@ -392,10 +392,10 @@ class EventReplay:
 class SuperMimicTrainer:
     """Native collection + world-model fitting + imagined actor/critic updates."""
     def __init__(self, obs_dim: int, action_dim: int, device: torch.device, *, lr=2e-4,
-                 gamma=0.998, imagine_horizon=32, replay_capacity=250_000,
+                 gamma=0.998, gae_lambda=0.95, imagine_horizon=96, replay_capacity=250_000,
                  model_warmup_steps=1000, actor: Optional[nn.Module] = None,
                  actor_kind: str = "supermimic_random"):
-        self.device, self.gamma, self.horizon = device, gamma, imagine_horizon
+        self.device, self.gamma, self.gae_lambda, self.horizon = device, gamma, gae_lambda, imagine_horizon
         self.actor = (actor if actor is not None else SuperMimicActor(obs_dim, action_dim)).to(device)
         self.actor_kind = actor_kind
         self.critic = SuperMimicCritic(obs_dim).to(device)
@@ -416,7 +416,8 @@ class SuperMimicTrainer:
             return {"world_updates": 0, "world_loss": None}
         losses = []
         for _ in range(updates):
-            windows = self.replay.sample_windows(batch_size, min(4, self.horizon))
+            # 16 control steps at 100 Hz = 0.16 s model-training windows.
+            windows = self.replay.sample_windows(batch_size, min(16, self.horizon))
             loss = torch.zeros((), device=self.device)
             survival = torch.ones((windows[0].obs.shape[0], 1), device=self.device)
             predicted_obs = windows[0].obs
@@ -452,7 +453,7 @@ class SuperMimicTrainer:
         for p in self.world.parameters(): p.requires_grad_(False)
         for p in self.critic.parameters(): p.requires_grad_(False)
         imagined = start
-        rewards, states, survival, entropies = [], [], [], []
+        rewards, states, survival, entropies, values = [], [], [], [], []
         for _ in range(self.horizon):
             action, _, entropy = self.actor(imagined, sample=False)
             action = action.clamp(-1.0, 1.0)
@@ -460,22 +461,31 @@ class SuperMimicTrainer:
             states.append(imagined)
             rewards.append(reward)
             entropies.append(entropy)
+            values.append(self.critic(imagined))
             alive = (1.0 - terminal.sigmoid()).clamp(0.0, 1.0)
             survival.append(alive)
             imagined = (imagined + delta).clamp(-20.0, 20.0)
-        # Keep critic parameters frozen but retain dV/ds for actor BPTT.
+        # Keep critic parameters frozen but retain dV/ds for actor BPTT.  The
+        # official actor objective is the return from the rollout start, not an
+        # average of every suffix return.  GAE supplies the critic targets.
         bootstrap = self.critic(imagined)
-        returns = bootstrap
-        targets = []
-        for reward, alive in reversed(list(zip(rewards, survival))):
-            returns = reward + self.gamma * alive * returns
-            targets.append(returns)
-        targets.reverse()
-        actor_loss = -torch.stack(targets).mean() - entropy_weight * torch.cat(entropies, -1).mean()
+        next_values = values[1:] + [bootstrap]
+        gae = torch.zeros_like(bootstrap)
+        advantages = [None] * self.horizon
+        targets = [None] * self.horizon
+        for k in reversed(range(self.horizon)):
+            delta_k = rewards[k] + self.gamma * survival[k] * next_values[k] - values[k]
+            gae = delta_k + self.gamma * self.gae_lambda * survival[k] * gae
+            advantages[k] = gae
+            targets[k] = advantages[k] + values[k]
+        actor_loss = -targets[0].mean() - entropy_weight * entropies[0].mean()
+        actor_before = torch.cat([p.detach().reshape(-1) for p in self.actor.parameters() if p.requires_grad])
         self.actor_opt.zero_grad(set_to_none=True)
         actor_loss.backward()
-        nn.utils.clip_grad_norm_(self.actor.parameters(), 10.0)
+        actor_grad_norm = nn.utils.clip_grad_norm_(self.actor.parameters(), 10.0)
         self.actor_opt.step()
+        actor_after = torch.cat([p.detach().reshape(-1) for p in self.actor.parameters() if p.requires_grad])
+        actor_param_delta = (actor_after - actor_before).norm()
         for p, flag in zip(self.world.parameters(), old_flags): p.requires_grad_(flag)
         for p, flag in zip(self.critic.parameters(), critic_flags): p.requires_grad_(flag)
         # Re-forward the detached imagination for critic-only optimization;
@@ -490,7 +500,13 @@ class SuperMimicTrainer:
         nn.utils.clip_grad_norm_(self.critic.parameters(), 10.0)
         self.critic_opt.step()
         self.update_steps += 1
-        return {"imagine_update": True, "actor_loss": float(actor_loss.detach()), "critic_loss": float(critic_loss.detach()), "imagined_return": float(targets[0].mean().detach())}
+        return {"imagine_update": True, "actor_loss": float(actor_loss.detach()),
+                "critic_loss": float(critic_loss.detach()),
+                "imagined_return": float(targets[0].mean().detach()),
+                "actor_grad_norm": float(actor_grad_norm.detach()),
+                "actor_param_delta_norm": float(actor_param_delta.detach()),
+                "actor_param_norm": float(actor_after.norm().detach()),
+                "gae_lambda": float(self.gae_lambda)}
 
     def save(self, path: Path, metadata: dict, *, include_replay: bool = False):
         path.parent.mkdir(parents=True, exist_ok=True)

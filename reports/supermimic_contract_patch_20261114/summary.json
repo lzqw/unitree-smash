@@ -1,0 +1,22 @@
+{
+  "status": "code_patch_and_cpu_validation_only",
+  "training_started": false,
+  "formal_evaluation_started": false,
+  "model_window_steps": 16,
+  "model_window_seconds": 0.16,
+  "imagination_horizon_steps": 96,
+  "imagination_horizon_seconds": 0.96,
+  "native_saved_state_full_chain_replay": "pending",
+  "performance_result": null,
+  "cpu_tests": {
+    "action_contract": "passed",
+    "gae_and_bptt": "passed",
+    "py_compile": "passed"
+  },
+  "source_checkpoint": {
+    "schema": "full-racket-residual-ppo-v4",
+    "sha256": "772608a1c42ec78c09cdf3bd8b7bfe3fed1738d1273cde9d09610022553aa21b",
+    "formal_acceptance": false,
+    "native_execution": true
+  }
+}

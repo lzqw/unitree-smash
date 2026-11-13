@@ -15,7 +15,8 @@ parser.add_argument('--num-envs', type=int, default=512)
 parser.add_argument('--seed', type=int, default=20261111)
 parser.add_argument('--batch-size', type=int, default=2048)
 parser.add_argument('--world-updates', type=int, default=3)
-parser.add_argument('--imagine-horizon', type=int, default=32)
+parser.add_argument('--imagine-horizon', type=int, default=96,
+                    help='GPU imagination horizon; 96 control steps = 0.96 s at 100 Hz')
 parser.add_argument('--replay-capacity', type=int, default=250000)
 parser.add_argument('--model-warmup-iterations', type=int, default=0,
                     help='additional iteration gate; actor still waits for actor-warmup-steps')
@@ -89,6 +90,10 @@ def main():
         'actor_warmup_steps': int(args.actor_warmup_steps),
         'episode_seconds_contract': 8.0,
         'control_ticks_per_episode_contract': 800,
+        'model_window_steps': 16,
+        'model_window_seconds': 0.16,
+        'imagine_horizon_steps': int(args.imagine_horizon),
+        'imagine_horizon_seconds': float(args.imagine_horizon) * 0.01,
         'physical_action_contract': {
             'learner_action': 'residual_request_or_native_action',
             'final_action_source': 'SuperMimicEnvV1._sm_final_action',
@@ -97,14 +102,18 @@ def main():
         },
     }
     if init_meta is not None:
-        with torch.no_grad():
-            before = trainer.action(obs_tensor, sample=False)
-            after = trainer.actor(obs_tensor, sample=False)[0].clamp(-1.0, 1.0)
-        contract_error = float((before - after).abs().max().detach())
-        manifest['zero_update_action_max_abs_error'] = contract_error
-        manifest['zero_update_action_contract'] = 'exact PPO actor + frozen native normalizer + jump-event-v1 phase-scaled target mapping'
-        if contract_error > 2e-6:
-            raise RuntimeError(f'PPO initialization action contract failed: {contract_error}')
+        # Do not compare trainer.action() with the same trainer.actor() and
+        # call that an execution-contract test.  The meaningful check needs
+        # identical saved simulator states and controller memory replayed
+        # through the old complete chain and this new entry point.  That
+        # native replay is deliberately a separate CPU/Isaac validation step;
+        # this learner records the pending status instead of manufacturing a
+        # zero-to-zero result.
+        manifest['initialization_contract_validation'] = {
+            'status': 'native_saved_state_full_chain_replay_pending',
+            'scope': ['prepare', 'jump', 'contact', 'recovery'],
+            'request_vs_final_difference_is_not_mapping_error': True,
+        }
     resumed_native_steps = 0
     if args.resume is not None:
         prior = trainer.load(args.resume, restore_replay=not args.resume_without_replay)

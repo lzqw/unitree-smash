@@ -72,6 +72,19 @@ def main():
     first = {}
     record_cursor = 0
 
+    def event_value(record, key):
+        """Return a terminal event without turning missing data into false."""
+        return record[key] if key in record else None
+
+    def terminal_metadata(record, *, source):
+        return {
+            'record_source': source,
+            'termination_time_s': event_value(record, 'termination_time_s'),
+            'event_fields_complete': all(
+                key in record for key in ('head_contact', 'body_ground_seen', 'rally_fault')
+            ),
+        }
+
     def consume_rally_records():
         """Copy completed rally records without changing simulation state."""
         nonlocal record_cursor
@@ -91,10 +104,11 @@ def main():
                     'complete_smash': bool(record.get('complete_smash', False)),
                     'complete5': bool(record.get('complete5', False)),
                     'numerical_failures': int(record.get('numerical_failures', 0)),
-                    'head_contact': bool(record.get('head_contact', False)),
-                    'body_ground_seen': bool(record.get('body_ground_seen', False)),
-                    'rally_fault': bool(record.get('rally_fault', False)),
+                    'head_contact': event_value(record, 'head_contact'),
+                    'body_ground_seen': event_value(record, 'body_ground_seen'),
+                    'rally_fault': event_value(record, 'rally_fault'),
                 }
+                first[env_id].update(terminal_metadata(record, source='rally_record'))
         if record_cursor > 256:
             del env.rally_records[:record_cursor]
             record_cursor = 0
@@ -120,9 +134,14 @@ def main():
                 'complete_smash': bool(complete[i].item()),
                 'complete5': bool(env.rally.complete5(recovery)[i].item()),
                 'numerical_failures': int((env.sweep_misses[i] + env.sweep_unresolved[i]).item()),
-                'head_contact': False,
+                # No live head-contact tensor exists in this environment.  Do
+                # not silently turn an unavailable terminal event into False.
+                'head_contact': None,
                 'body_ground_seen': bool(env.body_ground_seen[i].item()),
                 'rally_fault': bool(faulted[i].item()),
+                'record_source': 'live_terminal_snapshot',
+                'termination_time_s': float(env.episode_length_buf[i].item() * env.step_dt),
+                'event_fields_complete': False,
             }
 
     start = time.perf_counter(); numerical = 0
@@ -150,7 +169,7 @@ def main():
             raise RuntimeError(f'only {len(first)}/128 first episodes completed')
         rows = [dict(first[i], case_id=cases[i].get('case_id', i), source_case_index=i) for i in range(128)]
         contact = [bool(r.get('airborne_string_hit') and r.get('legal_initial_contact')) for r in rows]
-        ball_ok = [bool(c and r.get('crossed_net') and r.get('landed_target') and not r.get('rally_fault', False)) for c, r in zip(contact, rows)]
+        ball_ok = [bool(c and r.get('crossed_net') and r.get('landed_target') and r.get('rally_fault') is False) for c, r in zip(contact, rows)]
         recover = [bool(r.get('recovery_success')) for r in rows]
         complete = [bool(r.get('complete5', r.get('complete_smash', False))) for r in rows]
         metrics = {
@@ -170,6 +189,9 @@ def main():
                     'racket_plane_gpu_broadphase_calls': int(getattr(env, 'racket_plane_gpu_broadphase_calls', 0)),
                     'racket_plane_gpu_broadphase_candidates': int(getattr(env, 'racket_plane_gpu_broadphase_candidates', 0)),
                     'racket_plane_cpu_exact_queries': int(getattr(env, 'racket_plane_query_calls', 0)),
+                    'missing_terminal_event_fields': sorted({key for r in rows for key in ('head_contact', 'body_ground_seen', 'rally_fault') if r.get(key) is None}),
+                    'terminal_record_sources': sorted({str(r.get('record_source')) for r in rows}),
+                    'terminal_record_incomplete_count': sum(not bool(r.get('event_fields_complete', False)) for r in rows),
                 }
         fields = sorted({k for r in rows for k in r})
         with (args.output / 'episodes.csv').open('w', newline='') as f:
@@ -193,7 +215,7 @@ def main():
         row.update(case_id=cases[i].get('case_id', i), source_case_index=i)
         rows.append(row)
     contact = [bool(r.get('airborne_string_hit') and r.get('legal_initial_contact')) for r in rows]
-    ball_ok = [bool(c and r.get('crossed_net') and r.get('landed_target') and not r.get('rally_fault', False)) for c, r in zip(contact, rows)]
+    ball_ok = [bool(c and r.get('crossed_net') and r.get('landed_target') and r.get('rally_fault') is False) for c, r in zip(contact, rows)]
     recover = [bool(r.get('recovery_success')) for r in rows]
     complete = [bool(r.get('complete5', r.get('complete_smash', False))) for r in rows]
     metrics = {

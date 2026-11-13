@@ -1,0 +1,33 @@
+{
+  "path": "/home/autodrive/LZQW/unitree_smash_contact_recovery_9cb_baseline/artifacts/ppo_full_racket_residual_v4/policy.pt",
+  "sha256": "772608a1c42ec78c09cdf3bd8b7bfe3fed1738d1273cde9d09610022553aa21b",
+  "schema": "full-racket-residual-ppo-v4",
+  "native_execution": true,
+  "formal_acceptance": false,
+  "residual_training_metadata": {
+    "completed_updates": 32,
+    "actual_control_env_steps": 1572864,
+    "num_envs": 512,
+    "base_policy_sha256": "51a8b19b17e19e60bd7482c7bcb7ed1d4e8b7f50b9317cac3c49007089e8b62d",
+    "actor_jit_sha256": "30ae7361decaa17827b32f91153a5626bf7e6f3e9a39bc118c4a67ec17de88b4",
+    "initialization": {
+      "mode": "canonical_learner_fork_on_fresh_ground",
+      "previous_num_envs": 128,
+      "num_envs": 512,
+      "initial_iteration": 8,
+      "previous_learner_control_env_steps": 131072,
+      "policy_optimizer_normalizers_rng_preserved": true,
+      "old_physical_state_restored": false,
+      "old_environment_counters_restored": false,
+      "current_job_steps_start_at_zero": true
+    },
+    "actor_input": "Current public794D observation only; no critic, case IDs or future labels."
+  },
+  "base_controller": {
+    "schema": "full-racket-ball-cem-v4",
+    "backbone_schema": null,
+    "backbone_formal_acceptance": null,
+    "dataset_sha256": "2debce5dd07e056850eeca661a808f9df1c078975723cc236af24729e4fd594d"
+  },
+  "source_capability_status": "not_revalidated_this_turn"
+}
