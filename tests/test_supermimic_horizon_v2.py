@@ -12,6 +12,7 @@ from torch import nn
 from quadsmash.rl.supermimic_timebase_v2 import Timebase, seconds_to_steps, bptt_return, gae_returns, full_range_targets
 from quadsmash.rl.supermimic_sequence_replay_v2 import SequenceReplay, NotEnoughSequenceData
 from quadsmash.rl.supermimic_horizon_learner_v2 import HorizonTrainer
+from quadsmash.rl.supermimic_v1 import SuperMimicWorldModel
 
 torch.set_num_threads(1)
 
@@ -202,6 +203,20 @@ def test_full_range_action_decoder_not_small_residual():
     q=torch.tensor([[-1.,0.,1.]])
     lim=torch.tensor([[-2.,2.],[-1.,3.],[-4.,4.]])
     torch.testing.assert_close(full_range_targets(q,lim),torch.tensor([[-2.,1.,4.]]))
+
+
+def test_structured_world_model_shifts_history_deterministically():
+    model = SuperMimicWorldModel(794, 18, structured_history=True)
+    for parameter in model.parameters():
+        parameter.data.zero_()
+    obs = torch.arange(2 * 794, dtype=torch.float32).reshape(2, 794)
+    action = torch.zeros(2, 18)
+    delta, _, _ = model(obs, action)
+    next_obs = obs + delta
+    history = obs[:, :759].reshape(2, 11, 69)
+    expected_history = torch.cat((history[:, :1], history[:, :-1]), dim=1)
+    torch.testing.assert_close(next_obs[:, :759].reshape(2, 11, 69), expected_history)
+    torch.testing.assert_close(next_obs[:, 759:], obs[:, 759:])
 
 
 def test_actual_environment_method_delegates_residual_to_full_range():

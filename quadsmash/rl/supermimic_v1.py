@@ -36,18 +36,47 @@ class MLP(nn.Module):
 
 
 class SuperMimicWorldModel(nn.Module):
-    """Predict observation delta, reward and terminal probability."""
-    def __init__(self, obs_dim: int, action_dim: int = 18):
+    """Predict task transitions while preserving the native history contract.
+
+    The native 794D observation contains eleven 69D frames.  Treating all
+    759 history values as independently predicted physical state lets the
+    imagination model invent inconsistent histories.  For the full-racket
+    contract, this model predicts only the next frame and the non-history
+    tail; the history shift itself is deterministic and identical to
+    ``PolicyHistory.observe``.  The public forward interface remains
+    ``(delta, reward, terminal_logit)`` so the existing learner can use the
+    structured transition without an algorithm rewrite.
+    """
+    def __init__(self, obs_dim: int, action_dim: int = 18, *, structured_history: bool = True):
         super().__init__()
         self.obs_dim = obs_dim
         self.action_dim = action_dim
-        self.body = MLP(obs_dim + action_dim, (1024, 1024, 1024), obs_dim + 2)
+        self.structured_history = bool(structured_history and obs_dim == 794)
+        self.history_length = 11
+        self.frame_dim = 69
+        self.history_dim = self.history_length * self.frame_dim
+        self.tail_dim = obs_dim - self.history_dim
+        output_dim = (self.frame_dim + self.tail_dim + 2) if self.structured_history else obs_dim + 2
+        self.body = MLP(obs_dim + action_dim, (1024, 1024, 1024), output_dim)
 
     def forward(self, obs: torch.Tensor, action: torch.Tensor):
         out = self.body(torch.cat((obs, action), dim=-1))
-        delta = out[..., : self.obs_dim]
-        reward = out[..., self.obs_dim : self.obs_dim + 1]
-        terminal_logit = out[..., self.obs_dim + 1 :]
+        if self.structured_history:
+            frame_delta = out[..., :self.frame_dim]
+            tail_delta = out[..., self.frame_dim:self.frame_dim + self.tail_dim]
+            history = obs[..., :self.history_dim].reshape(
+                *obs.shape[:-1], self.history_length, self.frame_dim)
+            next_frame = history[..., 0, :] + frame_delta
+            next_history = torch.cat((next_frame.unsqueeze(-2), history[..., :-1, :]), dim=-2)
+            next_tail = obs[..., self.history_dim:] + tail_delta
+            next_obs = torch.cat((next_history.reshape(*obs.shape[:-1], self.history_dim), next_tail), dim=-1)
+            delta = next_obs - obs
+            reward = out[..., self.frame_dim + self.tail_dim:self.frame_dim + self.tail_dim + 1]
+            terminal_logit = out[..., self.frame_dim + self.tail_dim + 1:]
+        else:
+            delta = out[..., : self.obs_dim]
+            reward = out[..., self.obs_dim : self.obs_dim + 1]
+            terminal_logit = out[..., self.obs_dim + 1 :]
         return delta, reward, terminal_logit
 
 
