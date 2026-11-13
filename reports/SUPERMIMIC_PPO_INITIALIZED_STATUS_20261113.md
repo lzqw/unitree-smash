@@ -81,11 +81,16 @@ MPC, teacher, or BC. It completed all 128 episodes in 1,156 s with:
 This is a valid negative result for this initialization/training run. It does
 not establish a task-wide upper bound: the source residual policy is marked
 `formal_acceptance=false`, and its first 8-second panel did not contain a
-qualified contact. The result does show that the current SuperMimic update
-budget and world-model fit did not recover the earlier 27/128 policy capability
-under the exact full-racket residual execution contract. The source policy and
-the final trained actor therefore need a separate action/normalization audit
-before more actor updates are trusted.
+qualified contact. A same-seed, same-protocol 128-environment evaluation of the
+initial residual policy is recorded in
+`reports/supermimic_residual_ppo_init_eval_20261113/metrics.json` and also
+returned 0/128. The result does show that this particular SuperMimic run did
+not recover the earlier 27/128 policy capability under the exact full-racket
+residual execution contract; it is a zero-to-zero comparison, not evidence of
+an actor improvement. The source policy is a native-executed but
+`formal_acceptance=false` artifact, so a stronger accepted PPO initialization
+or a corrected action-contract audit is required before interpreting later
+SuperMimic updates as task progress.
 
 The source PPO policy is not an online teacher: it is only the initialization
 and frozen physical base/mixer contract. No MPC, BC, recovery-head takeover,
