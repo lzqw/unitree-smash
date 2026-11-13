@@ -114,7 +114,7 @@ class HorizonTrainer:
                     reference_action = self.reference_actor(obs, sample=False)[0].clamp(-1., 1.)
                 anchor_penalty = (action - reference_action).square().mean(-1, keepdim=True)
             else:
-                anchor_penalty = torch.zeros_like(reward if 'reward' in locals() else action[..., :1])
+                anchor_penalty = torch.zeros_like(action[..., :1])
             anchors.append(anchor_penalty)
             delta, reward, terminal = self.world(obs, action)
             next_obs = obs + delta
