@@ -1,8 +1,9 @@
 """A compact SuperMimic-style model-based learner for the full-racket task.
 
-This module deliberately does not import PPO, old checkpoints, teachers, MPC, or
-demonstration data.  It uses native transitions to fit a latent-free one-step
-world model, then performs differentiable imagined rollouts through that model.
+The learner can start from a strictly checked native PPO actor, but does not
+use PPO updates, teachers, MPC, or demonstration data during SuperMimic
+updates. It uses native transitions to fit a latent-free one-step world model,
+then performs differentiable imagined rollouts through that model.
 The implementation is intentionally explicit so every transition can be audited.
 """
 from __future__ import annotations

@@ -1,0 +1,42 @@
+{
+  "date": "2026-11-13",
+  "branch": "baseline-9cb7983-restore",
+  "algorithm": "supermimic_v1",
+  "task": {
+    "asset_version": "full-racket-court-v4-r3",
+    "episode_seconds": 8.0,
+    "control_hz": 100,
+    "control_ticks": 800,
+    "num_envs": 128,
+    "complete_contract": "complete5"
+  },
+  "formal_eval": {
+    "path": "reports/supermimic_ppo_init_zero_fixed_eval_20261113/metrics.json",
+    "ticks_completed": 800,
+    "qualified_airborne_string_contact": 0,
+    "ball_side_complete_except_recovery": 0,
+    "recovery_success": 0,
+    "complete5": 0,
+    "numerical_failures": 7041,
+    "mpc_interventions": 0,
+    "teacher_interventions": 0,
+    "elapsed_s": 1222.3472992009483,
+    "physics_sim_device": "cuda:0",
+    "gpu_dynamics_enabled": true,
+    "racket_plane_cpu_exact_queries": 0
+  },
+  "diagnosis": {
+    "status": "initialization_contract_mismatch",
+    "checkpoint": "reports/G07/train_high_attack_all01/checkpoint.pt",
+    "checkpoint_sha256": "7e3f7cb6dc5d0c70962d4ec6f72f587955a425ecb9ff8db02bbf5077d0db6510",
+    "do_not_use_as_algorithm_upper_bound": true
+  },
+  "tests": {
+    "python_compile": "pass",
+    "gpu_replay_window": "pass",
+    "gpu_world_model_fit": "pass",
+    "gpu_imagination_update": "pass",
+    "smoke_8env": "pass",
+    "smoke_128env": "pass"
+  }
+}

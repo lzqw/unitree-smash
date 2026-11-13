@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Train the independent SuperMimic-style full-body policy from scratch."""
+"""Train the SuperMimic-style full-body policy with optional PPO warm start."""
 from __future__ import annotations
 
 import argparse, hashlib, json, signal, time
@@ -94,6 +94,7 @@ def main():
         manifest['zero_update_action_contract'] = 'exact PPO actor + frozen native normalizer + jump-event-v1 phase-scaled target mapping'
         if contract_error > 2e-6:
             raise RuntimeError(f'PPO initialization action contract failed: {contract_error}')
+    resumed_native_steps = 0
     if args.resume is not None:
         prior = trainer.load(args.resume, restore_replay=not args.resume_without_replay)
         prior_meta = prior.get('metadata', {})
@@ -103,8 +104,9 @@ def main():
         manifest['resume_update_steps'] = int(prior.get('update_steps', 0))
         manifest['replay_resumed'] = bool(prior.get('replay', {}).get('obs') is not None)
         manifest['replay_rebuilt_after_resume'] = bool(args.resume_without_replay)
+        resumed_native_steps = int(prior.get('metadata', {}).get('native_steps', 0))
     (args.output / 'training_manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
-    total_steps = 0; started = time.perf_counter(); stop = False
+    total_steps = resumed_native_steps; started = time.perf_counter(); stop = False
     def halt(*_):
         nonlocal stop; stop = True
     signal.signal(signal.SIGINT, halt); signal.signal(signal.SIGTERM, halt)
