@@ -38,6 +38,8 @@ def main():
     parser.add_argument('--world-lr', type=float, default=2e-4)
     parser.add_argument('--critic-lr', type=float, default=2e-4)
     parser.add_argument('--policy-anchor-coeff', type=float, default=0.05)
+    parser.add_argument('--actor-warmup-episodes', type=int, default=1,
+                        help='Require this many completed native episodes before imagined actor/critic updates')
     parser.add_argument('--replay-capacity', type=int, default=250000)
     parser.add_argument('--checkpoint-every', type=int, default=500)
     parser.add_argument('--persist-replay', action='store_true')
@@ -58,6 +60,8 @@ def main():
         parser.error('Counts must be positive')
     if args.convergence_min_iterations < 1 or args.convergence_window < 1 or args.convergence_patience < 1:
         parser.error('Convergence counts must be positive')
+    if args.actor_warmup_episodes < 0:
+        parser.error('actor-warmup-episodes must be non-negative')
     if args.convergence_relative_tolerance <= 0 or args.convergence_return_absolute_tolerance <= 0 or args.convergence_max_grad_norm <= 0:
         parser.error('Convergence tolerances must be positive')
     args.output = args.output.expanduser().resolve()
@@ -306,7 +310,19 @@ def main():
             wm = trainer.fit_world(args.world_updates, args.world_batch)
             sync(); wm_end = time.perf_counter()
             # No 800-tick/full-panel gate. Fit a real complete model window first.
-            actor_stats = trainer.imagine_update(args.imagination_batch) if wm.get('world_updates', 0) else {'imagine_update': False}
+            native_episodes = int(native_event_totals['episodes'])
+            if (wm.get('world_updates', 0)
+                    and native_episodes >= args.actor_warmup_episodes):
+                actor_stats = trainer.imagine_update(args.imagination_batch)
+            elif wm.get('world_updates', 0):
+                actor_stats = {
+                    'imagine_update': False,
+                    'reason': 'native_episode_warmup',
+                    'native_episodes': native_episodes,
+                    'required_native_episodes': args.actor_warmup_episodes,
+                }
+            else:
+                actor_stats = {'imagine_update': False, 'reason': 'world_model_warmup'}
             sync(); learn_end = time.perf_counter()
             metadata.update(native_steps=total_native, iterations_completed=total_iterations)
             row = {'iteration': total_iterations, 'native_steps': total_native, 'replay_size': len(replay),
@@ -317,6 +333,11 @@ def main():
                    'native_reward_mean': float(reward.mean().item()),
                    'native_reward_positive_fraction': float((reward > 0).float().mean().item()),
                    'native_done_count': int(done.sum().item()),
+                   'native_episode_warmup': {
+                       'completed_episodes': int(native_event_totals['episodes']),
+                       'required_episodes': int(args.actor_warmup_episodes),
+                       'actor_updates_allowed': bool(native_event_totals['episodes'] >= args.actor_warmup_episodes),
+                   },
                    'native_event_totals': dict(native_event_totals)}
             if total_iterations % args.checkpoint_every == 0:
                 trainer.save(args.output/f'checkpoint_{total_iterations:06d}.pt', metadata, args.persist_replay)
