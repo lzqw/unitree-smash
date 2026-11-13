@@ -219,6 +219,7 @@ def main():
         record_cursor = len(env.rally_records)
         native_event_totals = {
             'episodes': 0, 'qualified_airborne_string_contact': 0,
+            'full_episodes': 0,
             'ball_side_complete_except_recovery': 0, 'recovery_success': 0,
             'complete5': 0, 'frame_hit': 0, 'nonfoot_contact': 0,
             'body_ground_seen': 0, 'rally_fault': 0,
@@ -268,6 +269,7 @@ def main():
                                and record.get('string_hit', False)
                                and record.get('airborne_string_hit', False))
                 native_event_totals['episodes'] += 1
+                native_event_totals['full_episodes'] += int(record.get('episode_timeout', False))
                 native_event_totals['qualified_airborne_string_contact'] += int(contact)
                 native_event_totals['ball_side_complete_except_recovery'] += int(
                     contact and record.get('released', False)
@@ -310,7 +312,7 @@ def main():
             wm = trainer.fit_world(args.world_updates, args.world_batch)
             sync(); wm_end = time.perf_counter()
             # No 800-tick/full-panel gate. Fit a real complete model window first.
-            native_episodes = int(native_event_totals['episodes'])
+            native_episodes = int(native_event_totals['full_episodes'])
             if (wm.get('world_updates', 0)
                     and native_episodes >= args.actor_warmup_episodes):
                 actor_stats = trainer.imagine_update(args.imagination_batch)
