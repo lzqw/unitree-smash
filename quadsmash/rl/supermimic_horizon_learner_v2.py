@@ -67,6 +67,7 @@ class HorizonTrainer:
         self.world_opt = torch.optim.Adam(world.parameters(), lr=lr if world_lr is None else world_lr)
         self.critic_opt = torch.optim.Adam(critic.parameters(), lr=lr if critic_lr is None else critic_lr)
         self.world_updates = self.actor_updates = self.critic_updates = 0
+        self.last_critic_loss = None
 
     @torch.no_grad()
     def action(self, obs, sample=True):
@@ -204,11 +205,12 @@ class HorizonTrainer:
                 optimizer_step(self.critic_opt, self.critic.parameters())
                 self.critic_updates += 1
                 losses.append(loss_sum)
+        self.last_critic_loss = sum(losses) / len(losses)
         return {"imagine_update": True, "imagined_return": ret_sum / batch_size,
                 "actor_loss": -ret_sum / batch_size if update_actor else None,
                 "actor_grad_norm": float(actor_norm), "actor_updated": bool(update_actor),
                 "policy_anchor_penalty": anchor_sum / batch_size,
-                "critic_loss": sum(losses) / len(losses), "actor_updates_total": self.actor_updates,
+                "critic_loss": self.last_critic_loss, "actor_updates_total": self.actor_updates,
                 "critic_updates_total": self.critic_updates, "world_updates_total": self.world_updates,
                 "imagination_steps": self.timebase.imagination_steps, "imagination_s": self.timebase.imagination_s}
 

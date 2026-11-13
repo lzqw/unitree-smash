@@ -39,6 +39,8 @@ def main():
     parser.add_argument('--critic-lr', type=float, default=2e-4)
     parser.add_argument('--critic-warmup-updates', type=int, default=200,
                         help='Critic optimizer updates required before actor BPTT updates')
+    parser.add_argument('--actor-max-critic-loss', type=float, default=50.0,
+                        help='Actor remains frozen until the previous critic loss is below this value')
     parser.add_argument('--policy-anchor-coeff', type=float, default=0.05)
     parser.add_argument('--actor-warmup-episodes', type=int, default=1,
                         help='Require this many completed native episodes before imagined actor/critic updates')
@@ -72,6 +74,8 @@ def main():
         parser.error('Invalid terminated-episode warmup gate')
     if args.critic_warmup_updates < 0:
         parser.error('critic-warmup-updates must be non-negative')
+    if args.actor_max_critic_loss <= 0:
+        parser.error('actor-max-critic-loss must be positive')
     if args.convergence_relative_tolerance <= 0 or args.convergence_return_absolute_tolerance <= 0 or args.convergence_max_grad_norm <= 0:
         parser.error('Convergence tolerances must be positive')
     args.output = args.output.expanduser().resolve()
@@ -336,13 +340,18 @@ def main():
                 and float(world_loss) <= args.actor_warmup_max_world_loss)
             actor_gate_ready = full_ready or fallback_ready
             if wm.get('world_updates', 0) and actor_gate_ready:
+                critic_ready = (
+                    trainer.critic_updates >= args.critic_warmup_updates
+                    and trainer.last_critic_loss is not None
+                    and float(trainer.last_critic_loss) <= args.actor_max_critic_loss)
                 actor_stats = trainer.imagine_update(
                     args.imagination_batch,
-                    update_actor=(trainer.critic_updates >= args.critic_warmup_updates),
+                    update_actor=critic_ready,
                 )
                 actor_stats['critic_warmup_updates_required'] = int(args.critic_warmup_updates)
+                actor_stats['actor_max_critic_loss'] = float(args.actor_max_critic_loss)
                 actor_stats['actor_gate_reason'] = (
-                    'critic_ready' if trainer.critic_updates >= args.critic_warmup_updates
+                    'critic_ready' if critic_ready
                     else 'critic_warmup')
             elif wm.get('world_updates', 0):
                 actor_stats = {
