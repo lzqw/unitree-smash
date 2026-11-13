@@ -148,3 +148,10 @@ class RallyRulesV4:
 
     def complete(self,recovery):
         return self.attack() & self.landed_target & recovery & (~self.faulted())
+
+    def complete5(self, recovery):
+        """Current development success contract: legal 5 m/s attack."""
+        speed = self.outgoing_velocity.norm(dim=-1)
+        attack5 = (self.released & self.legal_initial_contact & self.airborne_string_hit
+                   & (speed >= 5.) & (self.outgoing_velocity[:, 0] > 0))
+        return attack5 & self.landed_target & recovery & (~self.faulted())

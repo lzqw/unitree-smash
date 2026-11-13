@@ -93,9 +93,11 @@ class PPOInitializedActor(nn.Module):
         std = self.log_std.clamp(-8.0, 1.0).exp().expand_as(mean)
         dist = Normal(mean, std)
         raw = dist.rsample() if sample else mean
-        action = torch.tanh(raw)
+        # Native PPO emits an unconstrained Gaussian action and the
+        # environment clamps it at the action boundary.  Keeping this exact
+        # contract is required for zero-update compatibility with jump-event-v1.
+        action = raw
         log_prob = dist.log_prob(raw).sum(-1, keepdim=True)
-        log_prob -= torch.log1p(-action.square() + 1e-6).sum(-1, keepdim=True)
         return action, log_prob, dist.entropy().sum(-1, keepdim=True)
 
 
@@ -184,11 +186,25 @@ class EventReplay:
         self.reward = torch.empty((capacity, 1), device=device)
         self.done = torch.empty((capacity, 1), device=device)
         self.rare = torch.zeros(capacity, dtype=torch.bool, device=device)
+        self.stream = torch.full((capacity,), -1, dtype=torch.long, device=device)
+        self.episode = torch.full((capacity,), -1, dtype=torch.long, device=device)
+        self.prev = torch.full((capacity,), -1, dtype=torch.long, device=device)
+        self.next = torch.full((capacity,), -1, dtype=torch.long, device=device)
+        self.last_by_stream: dict[int, int] = {}
+        archive_capacity = max(1024, capacity // 4)
+        self.archive_capacity = archive_capacity
+        self.archive_obs = torch.empty((archive_capacity, obs_dim), device=device)
+        self.archive_action = torch.empty((archive_capacity, action_dim), device=device)
+        self.archive_next_obs = torch.empty((archive_capacity, obs_dim), device=device)
+        self.archive_reward = torch.empty((archive_capacity, 1), device=device)
+        self.archive_done = torch.empty((archive_capacity, 1), device=device)
+        self.archive_rare = torch.zeros(archive_capacity, dtype=torch.bool, device=device)
+        self.archive_ptr = 0
         self.ptr = 0
         self.size = 0
         self.rare_history = torch.zeros(capacity, dtype=torch.bool, device=device)
 
-    def add(self, obs, action, next_obs, reward, done, rare):
+    def add(self, obs, action, next_obs, reward, done, rare, *, stream=None, episode=None):
         n = obs.shape[0]
         idx = (torch.arange(n, device=self.device) + self.ptr) % self.capacity
         obs_dev, action_dev = obs.detach(), action.detach()
@@ -197,9 +213,39 @@ class EventReplay:
         done_dev = done.detach().reshape(-1, 1)
         rare_dev = rare.detach().reshape(-1).to(dtype=torch.bool)
         overwritten = self.rare[idx]
-        self.rare_history[idx] = overwritten
+        # Preserve overwritten rare transitions in a separate archive instead
+        # of retaining a boolean attached to the newly written slot.
+        rare_idx = torch.where(overwritten)[0].detach().cpu().tolist()
+        for j in rare_idx:
+            dst = self.archive_ptr % self.archive_capacity
+            src = int(idx[j].item())
+            self.archive_obs[dst].copy_(self.obs[src])
+            self.archive_action[dst].copy_(self.action[src])
+            self.archive_next_obs[dst].copy_(self.next_obs[src])
+            self.archive_reward[dst].copy_(self.reward[src])
+            self.archive_done[dst].copy_(self.done[src])
+            self.archive_rare[dst] = True
+            self.archive_ptr += 1
+        self.rare_history[idx] = False
         self.obs[idx], self.action[idx], self.next_obs[idx] = obs_dev, action_dev, next_dev
         self.reward[idx], self.done[idx], self.rare[idx] = reward_dev, done_dev.float(), rare_dev
+        if stream is None:
+            stream = torch.arange(n, device=self.device)
+        if episode is None:
+            episode = torch.zeros(n, dtype=torch.long, device=self.device)
+        stream = stream.detach().to(self.device, dtype=torch.long).reshape(-1)
+        episode = episode.detach().to(self.device, dtype=torch.long).reshape(-1)
+        self.stream[idx] = stream
+        self.episode[idx] = episode
+        self.prev[idx] = -1
+        self.next[idx] = -1
+        for j in range(n):
+            slot = int(idx[j].item()); sid = int(stream[j].item())
+            previous = self.last_by_stream.get(sid, -1)
+            if previous >= 0 and bool(self.episode[previous].item() == int(episode[j].item())):
+                self.prev[slot] = previous
+                self.next[previous] = slot
+            self.last_by_stream[sid] = slot
         self.ptr = int((self.ptr + n) % self.capacity)
         self.size = min(self.capacity, self.size + n)
 
@@ -214,12 +260,25 @@ class EventReplay:
         historical = active[self.rare_history[: self.size]]
         ordinary = active[~self.rare[: self.size] & ~self.rare_history[: self.size]]
         counts = [batch_size // 2, batch_size // 4, batch_size - (batch_size // 2 + batch_size // 4)]
-        pools = [ordinary, current, historical]
         chosen = []
-        for pool, count in zip(pools, counts):
+        for pool, count in zip((ordinary, current), counts[:2]):
             if pool.numel() == 0:
                 pool = active
             chosen.append(pool[torch.randint(pool.numel(), (count,), device=self.device)])
+        historical_count = counts[2]
+        archive_size = min(self.archive_ptr, self.archive_capacity)
+        if archive_size:
+            hist_idx = torch.randint(archive_size, (historical_count,), device=self.device)
+            hist = ReplayBatch(self.archive_obs[hist_idx], self.archive_action[hist_idx],
+                               self.archive_next_obs[hist_idx], self.archive_reward[hist_idx],
+                               self.archive_done[hist_idx])
+            main_idx = torch.cat(chosen)
+            main = ReplayBatch(self.obs[main_idx], self.action[main_idx], self.next_obs[main_idx],
+                               self.reward[main_idx], self.done[main_idx])
+            return ReplayBatch(torch.cat((main.obs, hist.obs)), torch.cat((main.action, hist.action)),
+                               torch.cat((main.next_obs, hist.next_obs)), torch.cat((main.reward, hist.reward)),
+                               torch.cat((main.done, hist.done)))
+        chosen.append(active[torch.randint(active.numel(), (historical_count,), device=self.device)])
         idx = torch.cat(chosen)
         idx = idx[torch.randperm(idx.numel(), device=self.device)]
         return ReplayBatch(self.obs[idx], self.action[idx], self.next_obs[idx],
@@ -230,18 +289,22 @@ class EventReplay:
         horizon = max(1, int(horizon))
         if self.size < batch_size + horizon - 1:
             return [self.sample(batch_size)]
-        starts = torch.randint(0, self.size - horizon + 1, (batch_size,), device=self.device)
-        offsets = torch.arange(horizon, device=self.device)[None, :]
-        idx = starts[:, None] + offsets
-        # Keep windows that do not cross a terminal transition.  A retry is
-        # unnecessary; masking the rare invalid tail preserves throughput.
-        valid = (self.done[idx[:, :-1], 0] < 0.5).all(-1)
-        if not bool(valid.any()):
+        starts = torch.randint(0, self.size, (batch_size * 4,), device=self.device)
+        idx = torch.full((starts.numel(), horizon), -1, dtype=torch.long, device=self.device)
+        idx[:, 0] = starts
+        for k in range(1, horizon):
+            prior = idx[:, k - 1]
+            idx[:, k] = torch.where(prior >= 0, self.next[prior.clamp_min(0)], torch.full_like(prior, -1))
+        valid = (idx >= 0).all(-1)
+        valid &= (self.stream[idx.clamp_min(0)] == self.stream[idx[:, :1].clamp_min(0)]).all(-1)
+        valid &= (self.episode[idx.clamp_min(0)] == self.episode[idx[:, :1].clamp_min(0)]).all(-1)
+        valid &= (self.done[idx[:, :-1].clamp_min(0), 0] < 0.5).all(-1)
+        valid_idx = idx[valid][:batch_size]
+        if valid_idx.shape[0] < max(1, batch_size // 2):
             return [self.sample(batch_size)]
-        idx = idx[valid]
-        return [ReplayBatch(self.obs[idx[:, k]], self.action[idx[:, k]],
-                            self.next_obs[idx[:, k]], self.reward[idx[:, k]],
-                            self.done[idx[:, k]]) for k in range(horizon)]
+        return [ReplayBatch(self.obs[valid_idx[:, k]], self.action[valid_idx[:, k]],
+                            self.next_obs[valid_idx[:, k]], self.reward[valid_idx[:, k]],
+                            self.done[valid_idx[:, k]]) for k in range(horizon)]
 
     def state_dict(self, include_data: bool = False) -> dict:
         state = {'capacity': self.capacity, 'ptr': self.ptr, 'size': self.size}
@@ -250,7 +313,9 @@ class EventReplay:
             state.update(obs=self.obs[:self.size].cpu(), action=self.action[:self.size].cpu(),
                          next_obs=self.next_obs[:self.size].cpu(), reward=self.reward[:self.size].cpu(),
                          done=self.done[:self.size].cpu(), rare=self.rare[:self.size].cpu(),
-                         rare_history=self.rare_history[:self.size].cpu())
+                         rare_history=self.rare_history[:self.size].cpu(),
+                         stream=self.stream[:self.size].cpu(), episode=self.episode[:self.size].cpu(),
+                         prev=self.prev[:self.size].cpu(), next=self.next[:self.size].cpu())
         return state
 
     def load_state_dict(self, state: dict) -> None:
@@ -264,6 +329,11 @@ class EventReplay:
         self.done[:n].copy_(state['done'][:n].to(self.device))
         self.rare[:n].copy_(state['rare'][:n].to(self.device))
         self.rare_history[:n].copy_(state['rare_history'][:n].to(self.device))
+        if 'stream' in state:
+            self.stream[:n].copy_(state['stream'][:n].to(self.device))
+            self.episode[:n].copy_(state['episode'][:n].to(self.device))
+            self.prev[:n].copy_(state['prev'][:n].to(self.device))
+            self.next[:n].copy_(state['next'][:n].to(self.device))
         self.size, self.ptr = n, int(state.get('ptr', n % self.capacity))
 
 
@@ -297,12 +367,19 @@ class SuperMimicTrainer:
             windows = self.replay.sample_windows(batch_size, min(4, self.horizon))
             loss = torch.zeros((), device=self.device)
             survival = torch.ones((windows[0].obs.shape[0], 1), device=self.device)
+            predicted_obs = windows[0].obs
             for b in windows:
-                delta, reward, terminal = self.world(b.obs, b.action)
-                loss = loss + survival * ((delta - (b.next_obs - b.obs)).square().mean(-1, keepdim=True)
-                    + 0.5 * (reward - b.reward).square()
-                    + 0.1 * (terminal - b.done).square())
-                survival = survival * (1.0 - terminal.sigmoid().detach())
+                delta, reward, terminal = self.world(predicted_obs, b.action)
+                # The world model is trained autoregressively from its own
+                # predicted state; use the recorded next state only as target.
+                target_delta = b.next_obs - predicted_obs.detach()
+                wm_loss = (delta - target_delta).square().mean(-1, keepdim=True)
+                wm_loss = wm_loss + 0.5 * (reward - b.reward).square()
+                wm_loss = wm_loss + 0.1 * torch.nn.functional.binary_cross_entropy_with_logits(
+                    terminal, b.done, reduction='none')
+                loss = loss + survival * wm_loss
+                predicted_obs = predicted_obs + delta
+                survival = survival * (1.0 - b.done).detach()
             loss = loss.mean() / len(windows)
             self.world_opt.zero_grad(set_to_none=True)
             loss.backward()
@@ -319,22 +396,23 @@ class SuperMimicTrainer:
         # its input Jacobian, i.e. gradients flow through predictions but the
         # model is not updated by imagined loss.
         old_flags = [p.requires_grad for p in self.world.parameters()]
+        critic_flags = [p.requires_grad for p in self.critic.parameters()]
         for p in self.world.parameters(): p.requires_grad_(False)
+        for p in self.critic.parameters(): p.requires_grad_(False)
         imagined = start
         rewards, states, survival, entropies = [], [], [], []
         for _ in range(self.horizon):
             action, _, entropy = self.actor(imagined, sample=False)
+            action = action.clamp(-1.0, 1.0)
             delta, reward, terminal = self.world(imagined, action)
             states.append(imagined)
             rewards.append(reward)
             entropies.append(entropy)
             alive = (1.0 - terminal.sigmoid()).clamp(0.0, 1.0)
-            survival.append(alive.detach())
+            survival.append(alive)
             imagined = (imagined + delta).clamp(-20.0, 20.0)
-        # Survival weights terminate returns without corrupting the imagined
-        # state itself.  The critic is bootstrapped from a detached final state.
-        with torch.no_grad():
-            bootstrap = self.critic(imagined.detach())
+        # Keep critic parameters frozen but retain dV/ds for actor BPTT.
+        bootstrap = self.critic(imagined)
         returns = bootstrap
         targets = []
         for reward, alive in reversed(list(zip(rewards, survival))):
@@ -347,6 +425,7 @@ class SuperMimicTrainer:
         nn.utils.clip_grad_norm_(self.actor.parameters(), 10.0)
         self.actor_opt.step()
         for p, flag in zip(self.world.parameters(), old_flags): p.requires_grad_(flag)
+        for p, flag in zip(self.critic.parameters(), critic_flags): p.requires_grad_(flag)
         # Re-forward the detached imagination for critic-only optimization;
         # actor/world graphs never leak into this update.
         self.critic_opt.zero_grad(set_to_none=True)

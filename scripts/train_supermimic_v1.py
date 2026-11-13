@@ -18,7 +18,9 @@ parser.add_argument('--world-updates', type=int, default=3)
 parser.add_argument('--imagine-horizon', type=int, default=32)
 parser.add_argument('--replay-capacity', type=int, default=250000)
 parser.add_argument('--model-warmup-iterations', type=int, default=0,
-                    help='optional explicit warmup; default immediately alternates native/model/imagined updates')
+                    help='additional iteration gate; actor still waits for actor-warmup-steps')
+parser.add_argument('--actor-warmup-steps', type=int, default=102400,
+                    help='native transitions before actor updates; 102400 = one 8 s, 128-env panel')
 parser.add_argument('--resume', type=Path, default=None,
                     help='resume a SuperMimic checkpoint; independent of init-policy-checkpoint')
 parser.add_argument('--init-policy-checkpoint', type=Path, default=None,
@@ -79,6 +81,9 @@ def main():
         'init_policy_checkpoint': init_meta,
         'critic_initialization': 'random_refit',
         'old_normalizer_frozen_contract': bool(init_meta is not None),
+        'actor_warmup_steps': int(args.actor_warmup_steps),
+        'episode_seconds_contract': 8.0,
+        'control_ticks_per_episode_contract': 800,
     }
     if init_meta is not None:
         with torch.no_grad():
@@ -86,7 +91,7 @@ def main():
             after = trainer.actor(obs_tensor, sample=False)[0].clamp(-1.0, 1.0)
         contract_error = float((before - after).abs().max().detach())
         manifest['zero_update_action_max_abs_error'] = contract_error
-        manifest['zero_update_action_contract'] = 'exact PPO actor + frozen native normalizer + native joint-limit mapping'
+        manifest['zero_update_action_contract'] = 'exact PPO actor + frozen native normalizer + jump-event-v1 phase-scaled target mapping'
         if contract_error > 2e-6:
             raise RuntimeError(f'PPO initialization action contract failed: {contract_error}')
     if args.resume is not None:
@@ -111,6 +116,8 @@ def main():
         sync_cuda(env.device); t0 = time.perf_counter()
         with torch.no_grad():
             action = trainer.action(obs_tensor, sample=True)
+        episode_before = env.episode_index.detach().clone()
+        stream_ids = torch.arange(env.num_envs, device=env.device, dtype=torch.long)
         next_obs, reward, done, info = wrapped.step(action)
         sync_cuda(env.device)
         t_native = time.perf_counter() - t0
@@ -127,7 +134,8 @@ def main():
         # observation buffers from aliasing the learner's ring buffer.
         t0 = time.perf_counter()
         trainer.replay.add(obs_tensor.detach().clone(), action.detach().clone(), transition_next.detach().clone(),
-                            reward.detach().clone(), done.detach().clone(), event.clone())
+                            reward.detach().clone(), done.detach().clone(), event.clone(),
+                            stream=stream_ids, episode=episode_before)
         t_transfer += time.perf_counter() - t0
         obs_tensor = nxt
         total_steps += env.num_envs
@@ -136,9 +144,14 @@ def main():
         sync_cuda(env.device)
         t_world = time.perf_counter() - t0
         sync_cuda(env.device); t0 = time.perf_counter()
-        imagine_stats = ({'imagine_update': False, 'model_warmup': True}
-                          if iteration + 1 <= args.model_warmup_iterations
+        actor_ready = (total_steps >= int(args.actor_warmup_steps) and
+                       len(env.rally_records) >= env.num_envs)
+        imagine_stats = ({'imagine_update': False, 'model_warmup': True,
+                          'actor_warmup': not actor_ready}
+                          if (iteration + 1 <= args.model_warmup_iterations or not actor_ready)
                           else trainer.imagine_update(args.batch_size))
+        if not actor_ready:
+            imagine_stats.update({'actor_warmup': True})
         sync_cuda(env.device); t_imagine = time.perf_counter() - t0
         peak_alloc = (torch.cuda.max_memory_allocated(env.device) if torch.cuda.is_available() else 0)
         peak_reserved = (torch.cuda.max_memory_reserved(env.device) if torch.cuda.is_available() else 0)
@@ -153,7 +166,9 @@ def main():
                'gpu_peak_allocated_bytes': int(peak_alloc),
                'gpu_peak_reserved_bytes': int(peak_reserved),
                'learner_device': str(env.device), **model_stats, **imagine_stats,
-               'native_complete_records': len(env.rally_records)}
+               'actor_ready': bool(actor_ready),
+               'native_episode_records': len(env.rally_records),
+               'native_complete5_records': sum(bool(r.get('complete5', False)) for r in env.rally_records)}
         records.append(row)
         t0 = time.perf_counter()
         if (iteration + 1) % 10 == 0 or iteration == 0:

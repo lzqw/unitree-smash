@@ -77,6 +77,7 @@ def main():
                     'landed_target': bool(record.get('landed_target', False)),
                     'recovery_success': bool(record.get('recovery_success', False)),
                     'complete_smash': bool(record.get('complete_smash', False)),
+                    'complete5': bool(record.get('complete5', False)),
                     'numerical_failures': int(record.get('numerical_failures', 0)),
                     'head_contact': bool(record.get('head_contact', False)),
                     'body_ground_seen': bool(record.get('body_ground_seen', False)),
@@ -105,6 +106,7 @@ def main():
                 'landed_target': bool(env.rally.landed_target[i].item()),
                 'recovery_success': bool(recovery[i].item()),
                 'complete_smash': bool(complete[i].item()),
+                'complete5': bool(env.rally.complete5(recovery)[i].item()),
                 'numerical_failures': int((env.sweep_misses[i] + env.sweep_unresolved[i]).item()),
                 'head_contact': False,
                 'body_ground_seen': bool(env.body_ground_seen[i].item()),
@@ -113,7 +115,7 @@ def main():
 
     start = time.perf_counter(); numerical = 0
     with torch.inference_mode():
-        for tick in range(801):
+        for tick in range(800):
             action = trainer.action(obs['policy'], sample=False)
             numerical += int((~torch.isfinite(action)).any().item())
             obs, reward, done, info = wrapper.step(action)
@@ -126,22 +128,20 @@ def main():
                 print(f'SUPERMIMIC_EVAL_PROGRESS tick={tick + 1}/800 done={int(done_seen.sum())}', flush=True)
                 (args.output / f'episodes_snapshot_{tick + 1:04d}.json').write_text(
                     json.dumps({str(k): v for k, v in first.items()}, indent=2) + '\n')
-            if tick == 800:
-                # DirectRLEnv exposes done on the terminal step and may defer
-                # the environment reset callback until the next call. Flush
-                # that callback explicitly without advancing PhysX so the
-                # formal 8.0 s rollout remains exactly 800 control ticks.
-                if len(first) != 128 and bool(done_seen.all().item()):
-                    consume_rally_records()
-                    snapshot_live_terminal_records()
-                if len(first) != 128:
-                    raise RuntimeError(f'only {len(first)}/128 first episodes completed')
-                rows = [dict(first[i], case_id=cases[i].get('case_id', i), source_case_index=i) for i in range(128)]
-                contact = [bool(r.get('airborne_string_hit') and r.get('legal_initial_contact')) for r in rows]
-                ball_ok = [bool(c and r.get('crossed_net') and r.get('landed_target') and not r.get('rally_fault', False)) for c, r in zip(contact, rows)]
-                recover = [bool(r.get('recovery_success')) for r in rows]
-                complete = [bool(r.get('complete_smash')) for r in rows]
-                metrics = {
+        # Keep the formal rollout at exactly 800 control steps.  Terminal
+        # callbacks may be deferred by DirectRLEnv, so consume records first
+        # and then snapshot the live terminal tensors without another step.
+        consume_rally_records()
+        if len(first) != 128 and bool(done_seen.all().item()):
+            snapshot_live_terminal_records()
+        if len(first) != 128:
+            raise RuntimeError(f'only {len(first)}/128 first episodes completed')
+        rows = [dict(first[i], case_id=cases[i].get('case_id', i), source_case_index=i) for i in range(128)]
+        contact = [bool(r.get('airborne_string_hit') and r.get('legal_initial_contact')) for r in rows]
+        ball_ok = [bool(c and r.get('crossed_net') and r.get('landed_target') and not r.get('rally_fault', False)) for c, r in zip(contact, rows)]
+        recover = [bool(r.get('recovery_success')) for r in rows]
+        complete = [bool(r.get('complete5', r.get('complete_smash', False))) for r in rows]
+        metrics = {
                     'algorithm': 'supermimic_v1', 'random_initialization': bool(state.get('random_initialization', True)),
                     'actor_kind': kind, 'init_policy_checkpoint': state.get('metadata', {}).get('init_policy_checkpoint'),
                     'num_envs': 128, 'control_ticks': 800, 'episode_seconds': 8.0,
@@ -159,23 +159,21 @@ def main():
                     'racket_plane_gpu_broadphase_candidates': int(getattr(env, 'racket_plane_gpu_broadphase_candidates', 0)),
                     'racket_plane_cpu_exact_queries': int(getattr(env, 'racket_plane_query_calls', 0)),
                 }
-                fields = sorted({k for r in rows for k in r})
-                with (args.output / 'episodes.csv').open('w', newline='') as f:
-                    w = csv.DictWriter(f, fieldnames=fields); w.writeheader(); w.writerows(rows)
-                (args.output / 'metrics.json').write_text(json.dumps(metrics, indent=2) + '\n')
-                (args.output / 'completed.json').write_text(json.dumps({'control_ticks': 800, 'episodes': 128, 'formal': True}, indent=2) + '\n')
-                print('SUPERMIMIC_EVAL_RESULT=' + json.dumps(metrics, sort_keys=True), flush=True)
-                # Kit shutdown can block after a complete 128-env run; the
-                # formal artifacts are already durable at this point.
-                os._exit(0)
-    if len(first) != 128: raise RuntimeError(f'only {len(first)}/128 first episodes completed')
-    # Keep the formal artifact compact.  Rally rows may contain large nested
-    # diagnostic arrays; serializing those after a long GPU run can dominate
-    # shutdown and hide the actual result. Core scalar event fields are enough
-    # for this frozen evaluation, while raw traces remain in the native logs.
+        fields = sorted({k for r in rows for k in r})
+        with (args.output / 'episodes.csv').open('w', newline='') as f:
+            w = csv.DictWriter(f, fieldnames=fields); w.writeheader(); w.writerows(rows)
+        (args.output / 'metrics.json').write_text(json.dumps(metrics, indent=2) + '\n')
+        (args.output / 'completed.json').write_text(json.dumps({'control_ticks': 800, 'episodes': 128, 'formal': True}, indent=2) + '\n')
+        print('SUPERMIMIC_EVAL_RESULT=' + json.dumps(metrics, sort_keys=True), flush=True)
+        # Kit shutdown can block after a complete 128-env run; the
+        # formal artifacts are already durable at this point.
+        os._exit(0)
+    # Keep the formal artifact compact.  This fallback is retained only for
+    # defensive use if a future wrapper exits the loop before the terminal
+    # snapshot path above; normal 800-tick evaluation exits at the branch above.
     scalar_keys = ('env_id', 'episode_index', 'airborne_string_hit', 'legal_initial_contact',
                    'crossed_net', 'landed_target', 'rally_fault', 'recovery_success',
-                   'complete_smash', 'numerical_failures', 'head_contact', 'body_ground_seen')
+                   'complete_smash', 'complete5', 'numerical_failures', 'head_contact', 'body_ground_seen')
     rows = []
     for i in range(128):
         source = first[i]
@@ -185,7 +183,7 @@ def main():
     contact = [bool(r.get('airborne_string_hit') and r.get('legal_initial_contact')) for r in rows]
     ball_ok = [bool(c and r.get('crossed_net') and r.get('landed_target') and not r.get('rally_fault', False)) for c, r in zip(contact, rows)]
     recover = [bool(r.get('recovery_success')) for r in rows]
-    complete = [bool(r.get('complete_smash')) for r in rows]
+    complete = [bool(r.get('complete5', r.get('complete_smash', False))) for r in rows]
     metrics = {
         'algorithm': 'supermimic_v1', 'random_initialization': bool(state.get('random_initialization', True)),
         'actor_kind': kind,

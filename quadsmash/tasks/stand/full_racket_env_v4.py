@@ -281,6 +281,7 @@ class FullRacketEnvV4(BallEnv):
                 row={name:bool(getattr(self.rally,name)[i]) for name in self.rally.flags}
                 row.update(env_id=i,episode_index=int(self.episode_index[i]),
                     complete_smash=bool(self.rally.complete(self.rally_recovery_success)[i]),
+                    complete5=bool(self.rally.complete5(self.rally_recovery_success)[i]),
                     recovery_success=bool(self.rally_recovery_success[i]),contact_count=int(self.rally.contact_count[i]),
                     contact_point_m=self.rally.contact_point[i].cpu().tolist(),
                     outgoing_velocity_mps=self.rally.outgoing_velocity[i].cpu().tolist(),

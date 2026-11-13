@@ -19,22 +19,28 @@ class SuperMimicEnvV1(FullRacketEnvV4):
     algorithm_family = "supermimic-native-world-model-v1"
 
     def _pre_physics_step(self, actions):
-        """Map a complete normalized target to legal joint limits around the
-        native standing pose.  Zero is the standing pose; +/-1 still spans
-        the complete legal interval on each joint side.  This is the new
-        branch's absolute target interface, not a residual or old policy.
+        """Use the exact native jump-event-v1 command contract.
+
+        The PPO checkpoint was trained with phase-dependent bounded position
+        targets around the default pose.  Mapping the same action to the full
+        joint limits changes the physical policy even when the network weights
+        are identical, so this branch intentionally mirrors JumpEnv.
         """
         self.action_delta.copy_((actions.clamp(-1, 1) - self.last_action).square().sum(1))
         self._record_action(actions)
         self.action_clip_count += (actions.abs() > 1).sum(1)
-        limits = self.robot.data.joint_pos_limits[:, self.joint_ids]
-        # Preserve the native PPO action contract exactly: -1/+1 map to the
-        # lower/upper legal joint limits.  This is intentionally not a new
-        # center/span action meaning.
-        targets = (limits[..., 0] + 0.5 * (self.last_action + 1.0) *
-                   (limits[..., 1] - limits[..., 0])).clamp(limits[..., 0], limits[..., 1])
+        phase = (self.episode_length_buf.float() * self.step_dt).unsqueeze(1)
+        leg_scale = torch.where(phase < .8, self.cfg.leg_action_scale_crouch,
+                                self.cfg.leg_action_scale_push)
+        scale = torch.cat((leg_scale.expand(-1, 12),
+                           torch.full((self.num_envs, 6), self.cfg.arm_action_scale,
+                                      device=self.device)), 1)
         self.targets.copy_(self.robot.data.default_joint_pos)
-        self.targets[:, self.joint_ids] = targets
+        self.targets[:, self.joint_ids] += scale * self.last_action
+        limits = self.robot.data.joint_pos_limits
+        self.target_limit_count += ((self.targets < limits[:, :, 0]) |
+                                    (self.targets > limits[:, :, 1])).sum(1)
+        self.targets.clamp_(min=limits[:, :, 0], max=limits[:, :, 1])
         self._contact_bonus.zero_()
         if self._v4_ready and self.cases is not None:
             clock = self.episode_length_buf.float() * self.step_dt
@@ -53,13 +59,18 @@ class SuperMimicEnvV1(FullRacketEnvV4):
         device = self.device
         if ids is None:
             ids = torch.arange(self.num_envs, device=device)
-        for name in ("_sm_jump", "_sm_contact", "_sm_cross", "_sm_target", "_sm_recovery", "_sm_body"):
+        for name in ("_sm_jump", "_sm_contact", "_sm_cross", "_sm_target", "_sm_recovery",
+                     "_sm_body", "_sm_frame", "_sm_fault"):
             if not hasattr(self, name):
                 setattr(self, name, torch.zeros(self.num_envs, dtype=torch.bool, device=device))
             getattr(self, name)[ids] = False
 
     def _get_rewards(self):
         """Progress rates plus one-shot physical events, all from native flags."""
+        # JumpEnv uses this latch to decide whether a reset corresponds to a
+        # completed episode.  The SuperMimic reward must preserve that
+        # lifecycle contract instead of replacing it with a parallel counter.
+        self._episode_has_stepped[:] = True
         d = self.robot.data
         rally = self.rally
         phase = self.episode_length_buf.float() * self.step_dt
@@ -75,8 +86,12 @@ class SuperMimicEnvV1(FullRacketEnvV4):
         event_target = target & ~self._sm_target
         event_recovery = recover & ~self._sm_recovery
         event_body = body & ~self._sm_body
+        faulted = rally.faulted()
+        event_fault = faulted & ~self._sm_fault
+        event_frame = rally.frame_hit & ~event_contact & ~self._sm_frame
         self._sm_jump |= event_jump; self._sm_contact |= event_contact; self._sm_cross |= event_cross
         self._sm_target |= event_target; self._sm_recovery |= event_recovery; self._sm_body |= event_body
+        self._sm_frame |= event_frame; self._sm_fault |= event_fault
         # Bounded progress toward the live racket/ball event; it is not used as
         # an official event label and vanishes after contact or failure.
         ball = self.shuttle.data.root_pos_w
@@ -91,12 +106,14 @@ class SuperMimicEnvV1(FullRacketEnvV4):
         continuous = (0.5 * stable_quality - 2.0 * risk - 0.05 * self.action_delta
                       - 0.02 * d.applied_torque.square().sum(1) / 1000.0
                       + 0.8 * approach) * self.step_dt
-        complete = target & self.rally_recovery_success & (~rally.faulted()) & self.reset_time_outs & (~self.reset_terminated)
+        # The current task contract is the 5 m/s attack threshold.  Keep this
+        # event separate from RallyRulesV4's historical 8 m/s attack helper.
+        complete5 = target & self.rally_recovery_success & (~faulted) & self.reset_time_outs & (~self.reset_terminated)
         reward = continuous + 2.0 * event_jump.float() + 20.0 * event_contact.float() + 5.0 * event_cross.float()
-        reward = reward + 15.0 * event_target.float() + 10.0 * event_recovery.float() + 20.0 * complete.float()
+        reward = reward + 15.0 * event_target.float() + 10.0 * event_recovery.float() + 20.0 * complete5.float()
         net_violation = rally.net_blocked_fault | rally.robot_net_fault | rally.body_over_net_fault
-        reward = reward - 4.0 * (rally.frame_hit & ~event_contact).float() - 5.0 * ((~contact) & (phase > 3.0)).float() * self.step_dt
-        reward = reward - 15.0 * net_violation.float() - 40.0 * event_body.float()
+        reward = reward - 4.0 * event_frame.float() - 5.0 * ((~contact) & (phase > 3.0)).float() * self.step_dt
+        reward = reward - 15.0 * event_fault.float() - 40.0 * event_body.float()
         return torch.nan_to_num(reward, nan=-40.0, posinf=40.0, neginf=-40.0)
 
     @torch.inference_mode()
