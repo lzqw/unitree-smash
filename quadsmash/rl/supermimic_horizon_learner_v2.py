@@ -46,7 +46,7 @@ class HorizonTrainer:
                  reference_actor=None, policy_anchor_coeff=0.0,
                  actor_microbatch=128, critic_epochs=5,
                  critic_minibatches=4, max_step_reward=100., actor_kind="unknown",
-                 observation_clock_index=None):
+                 observation_clock_index=None, autoregressive_world_fit=False):
         self.actor, self.world, self.critic, self.replay = actor, world, critic, replay
         self.timebase, self.actor_kind = timebase, actor_kind
         self.reference_actor = reference_actor
@@ -63,6 +63,7 @@ class HorizonTrainer:
         self.critic_epochs, self.critic_minibatches = critic_epochs, critic_minibatches
         self.v_max = max_step_reward / (1.0 - timebase.gamma)
         self.observation_clock_index = observation_clock_index
+        self.autoregressive_world_fit = bool(autoregressive_world_fit)
         self.actor_opt = torch.optim.Adam(actor.parameters(), lr=lr if actor_lr is None else actor_lr, betas=(.9, .95))
         self.world_opt = torch.optim.Adam(world.parameters(), lr=lr if world_lr is None else world_lr)
         self.critic_opt = torch.optim.Adam(critic.parameters(), lr=lr if critic_lr is None else critic_lr)
@@ -92,11 +93,13 @@ class HorizonTrainer:
                 loss = loss + (predicted_next - transition["next_obs"]).square().mean()
                 loss = loss + .5 * (reward - transition["reward"]).square().mean()
                 loss = loss + .1 * nn.functional.binary_cross_entropy_with_logits(done_logit, transition["done"])
-                # Use teacher forcing between loss terms.  The imagination
-                # update remains autoregressive; this prevents early model
-                # errors from exploding the supervised 32-step fit before a
-                # complete native episode is available.
-                prediction = transition["next_obs"].detach()
+                # The default fit is teacher-forced.  For long-horizon
+                # experiments, optionally train on the same autoregressive
+                # state distribution used by imagination.  This is an
+                # explicit opt-in because it costs more memory and must be
+                # validated against the native event stream.
+                prediction = (predicted_next if self.autoregressive_world_fit
+                              else transition["next_obs"].detach())
             loss = loss / len(window)
             if not torch.isfinite(loss):
                 raise FloatingPointError("Nonfinite world-model loss")

@@ -54,6 +54,8 @@ def main():
     parser.add_argument('--resume', type=Path)
     parser.add_argument('--imagination-seconds', type=float)
     parser.add_argument('--world-window-seconds', type=float)
+    parser.add_argument('--world-autoregressive-fit', action='store_true',
+                        help='Fit the world model on its own multi-step predictions instead of only teacher-forced states')
     parser.add_argument('--auto-stop-convergence', action='store_true')
     parser.add_argument('--convergence-min-iterations', type=int, default=2000)
     parser.add_argument('--convergence-window', type=int, default=200)
@@ -206,7 +208,8 @@ def main():
                                  reference_actor=reference_actor,
                                  policy_anchor_coeff=args.policy_anchor_coeff,
                                  actor_microbatch=args.actor_microbatch, actor_kind=init_meta['actor_kind'],
-                                 observation_clock_index=775 if obs.shape[-1] == 794 else None)
+                                 observation_clock_index=775 if obs.shape[-1] == 794 else None,
+                                 autoregressive_world_fit=args.world_autoregressive_fit)
         stage('TRAINER_READY', obs_dim=int(obs.shape[-1]), action_dim=18)
         metadata = {'init_policy_checkpoint': init_meta, 'old_checkpoint': None, 'mpc': None, 'teacher': None,
                     'bc': None, 'num_envs': args.num_envs, 'seed': args.seed,
@@ -327,6 +330,7 @@ def main():
             total_iterations += 1
             sync(); collect_end = time.perf_counter()
             wm = trainer.fit_world(args.world_updates, args.world_batch)
+            wm['autoregressive_world_fit'] = bool(args.world_autoregressive_fit)
             sync(); wm_end = time.perf_counter()
             # No 800-tick/full-panel gate. Fit a real complete model window first.
             full_episodes = int(native_event_totals['full_episodes'])
