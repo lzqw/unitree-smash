@@ -34,6 +34,10 @@ def main():
     parser.add_argument('--world-updates', type=int, default=3)
     parser.add_argument('--imagination-batch', type=int, default=2048)
     parser.add_argument('--actor-microbatch', type=int, default=128)
+    parser.add_argument('--actor-lr', type=float, default=5e-5)
+    parser.add_argument('--world-lr', type=float, default=2e-4)
+    parser.add_argument('--critic-lr', type=float, default=2e-4)
+    parser.add_argument('--policy-anchor-coeff', type=float, default=0.05)
     parser.add_argument('--replay-capacity', type=int, default=250000)
     parser.add_argument('--checkpoint-every', type=int, default=500)
     parser.add_argument('--persist-replay', action='store_true')
@@ -172,11 +176,17 @@ def main():
         stage('AFTER_RESET', obs_shape=list(obs['policy'].shape))
         obs = obs['policy']
         actor, init_meta = load_ppo_initialized_actor(args.init_policy_checkpoint, env.device)
+        reference_actor, reference_meta = load_ppo_initialized_actor(args.init_policy_checkpoint, env.device)
+        if reference_meta['sha256'] != init_meta['sha256'] or reference_meta['actor_kind'] != init_meta['actor_kind']:
+            raise RuntimeError('Reference actor does not match initialized actor source')
         replay = SequenceReplay(args.replay_capacity, args.num_envs, obs.shape[-1], 18, env.device)
         if replay.slots < timebase.world_steps:
             raise ValueError('Replay too short for configured physical-time window')
         trainer = HorizonTrainer(actor, SuperMimicWorldModel(obs.shape[-1], 18, structured_history=True).to(env.device),
                                  SuperMimicCritic(obs.shape[-1]).to(env.device), replay, timebase,
+                                 actor_lr=args.actor_lr, world_lr=args.world_lr, critic_lr=args.critic_lr,
+                                 reference_actor=reference_actor,
+                                 policy_anchor_coeff=args.policy_anchor_coeff,
                                  actor_microbatch=args.actor_microbatch, actor_kind=init_meta['actor_kind'],
                                  observation_clock_index=775 if obs.shape[-1] == 794 else None)
         stage('TRAINER_READY', obs_dim=int(obs.shape[-1]), action_dim=18)
@@ -184,6 +194,8 @@ def main():
                     'bc': None, 'num_envs': args.num_envs, 'seed': args.seed,
                     'timebase': timebase.manifest(), 'init_source_sha256': hashlib.sha256(args.init_policy_checkpoint.read_bytes()).hexdigest(),
                     'world_representation': 'structured_native_history_v1_next_frame_plus_tail',
+                    'policy_anchor': {'source': init_meta, 'coefficient': args.policy_anchor_coeff},
+                    'learning_rates': {'actor': args.actor_lr, 'world': args.world_lr, 'critic': args.critic_lr},
                     'formal_evaluation_started': False}
         convergence_history = deque(maxlen=max(2 * args.convergence_window, 2))
         convergence_stable_windows = 0

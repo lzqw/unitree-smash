@@ -42,11 +42,20 @@ class HorizonTrainer:
     version = "task-timebase-v2"
 
     def __init__(self, actor, world, critic, replay, timebase: Timebase, *,
-                 lr=2e-4, actor_microbatch=128, critic_epochs=5,
+                 lr=2e-4, actor_lr=None, world_lr=None, critic_lr=None,
+                 reference_actor=None, policy_anchor_coeff=0.0,
+                 actor_microbatch=128, critic_epochs=5,
                  critic_minibatches=4, max_step_reward=100., actor_kind="unknown",
                  observation_clock_index=None):
         self.actor, self.world, self.critic, self.replay = actor, world, critic, replay
         self.timebase, self.actor_kind = timebase, actor_kind
+        self.reference_actor = reference_actor
+        if self.reference_actor is not None:
+            self.reference_actor.eval()
+            self.reference_actor.requires_grad_(False)
+        self.policy_anchor_coeff = float(policy_anchor_coeff)
+        if self.policy_anchor_coeff < 0:
+            raise ValueError("policy_anchor_coeff must be non-negative")
         self.device = next(actor.parameters()).device
         if actor_microbatch < 1 or critic_epochs < 1 or critic_minibatches < 1 or max_step_reward <= 0:
             raise ValueError("Invalid optimizer configuration")
@@ -54,9 +63,9 @@ class HorizonTrainer:
         self.critic_epochs, self.critic_minibatches = critic_epochs, critic_minibatches
         self.v_max = max_step_reward / (1.0 - timebase.gamma)
         self.observation_clock_index = observation_clock_index
-        self.actor_opt = torch.optim.Adam(actor.parameters(), lr=lr, betas=(.9, .95))
-        self.world_opt = torch.optim.Adam(world.parameters(), lr=lr)
-        self.critic_opt = torch.optim.Adam(critic.parameters(), lr=lr)
+        self.actor_opt = torch.optim.Adam(actor.parameters(), lr=lr if actor_lr is None else actor_lr, betas=(.9, .95))
+        self.world_opt = torch.optim.Adam(world.parameters(), lr=lr if world_lr is None else world_lr)
+        self.critic_opt = torch.optim.Adam(critic.parameters(), lr=lr if critic_lr is None else critic_lr)
         self.world_updates = self.actor_updates = self.critic_updates = 0
 
     @torch.no_grad()
@@ -96,10 +105,17 @@ class HorizonTrainer:
     def _rollout(self, initial, elapsed):
         cfg = self.timebase
         obs = initial
-        states, rewards, dones, valid = [], [], [], []
+        states, rewards, dones, valid, anchors = [], [], [], [], []
         for k in range(cfg.imagination_steps):
             active = elapsed + k * cfg.control_dt_s < cfg.episode_s - 1e-7
             action = self.actor(obs, sample=False)[0].clamp(-1., 1.)
+            if self.reference_actor is not None and self.policy_anchor_coeff > 0:
+                with torch.no_grad():
+                    reference_action = self.reference_actor(obs, sample=False)[0].clamp(-1., 1.)
+                anchor_penalty = (action - reference_action).square().mean(-1, keepdim=True)
+            else:
+                anchor_penalty = torch.zeros_like(reward if 'reward' in locals() else action[..., :1])
+            anchors.append(anchor_penalty)
             delta, reward, terminal = self.world(obs, action)
             next_obs = obs + delta
             # The real observation clock is deterministic; the model cannot
@@ -120,7 +136,7 @@ class HorizonTrainer:
             raise FloatingPointError("Nonfinite imagination return; no silent state clipping")
         # All critic data are detached before the actor optimizer changes theta.
         return ret, (torch.stack(states), torch.stack(rewards).detach(),
-                     torch.stack(dones).detach(), obs.detach(), torch.stack(valid))
+                     torch.stack(dones).detach(), obs.detach(), torch.stack(valid)), torch.stack(anchors).sum(0)
 
     def imagine_update(self, batch_size):
         if self.world_updates == 0:
@@ -129,15 +145,18 @@ class HorizonTrainer:
         self.actor.train()
         self.actor_opt.zero_grad(set_to_none=True)
         ret_sum = 0.
+        anchor_sum = 0.
         critic_batches = []
         with frozen(self.world, self.critic):
             for begin in range(0, batch_size, self.actor_microbatch):
                 end = min(begin + self.actor_microbatch, batch_size)
-                ret, trajectory = self._rollout(batch["obs"][begin:end].detach(), batch["elapsed"][begin:end])
+                ret, trajectory, anchor_penalty = self._rollout(
+                    batch["obs"][begin:end].detach(), batch["elapsed"][begin:end])
                 # One optimizer step for the full logical batch. Never detach
                 # between time steps; microbatching partitions B, not horizon H.
-                (-ret.sum() / batch_size).backward()
+                ((-ret + self.policy_anchor_coeff * anchor_penalty).sum() / batch_size).backward()
                 ret_sum += float(ret.detach().sum())
+                anchor_sum += float(anchor_penalty.detach().sum())
                 critic_batches.append(trajectory)
             actor_norm = optimizer_step(self.actor_opt, self.actor.parameters(), element_clip=.1)
         self.actor_updates += 1
@@ -171,6 +190,7 @@ class HorizonTrainer:
                 losses.append(loss_sum)
         return {"imagine_update": True, "imagined_return": ret_sum / batch_size,
                 "actor_loss": -ret_sum / batch_size, "actor_grad_norm": float(actor_norm),
+                "policy_anchor_penalty": anchor_sum / batch_size,
                 "critic_loss": sum(losses) / len(losses), "actor_updates_total": self.actor_updates,
                 "critic_updates_total": self.critic_updates, "world_updates_total": self.world_updates,
                 "imagination_steps": self.timebase.imagination_steps, "imagination_s": self.timebase.imagination_s}

@@ -183,16 +183,16 @@ def test_microbatch_accumulation_matches_full_batch_gradient():
     a=make_trainer(.64,8); b=copy.deepcopy(a)
     start=torch.randn(8,4); elapsed=torch.zeros(8,1)
     a.actor_opt.zero_grad(); b.actor_opt.zero_grad()
-    ra,_=a._rollout(start,elapsed); (-ra.mean()).backward()
+    ra,_,_=a._rollout(start,elapsed); (-ra.mean()).backward()
     for i in range(0,8,2):
-        rb,_=b._rollout(start[i:i+2],elapsed[i:i+2]); (-rb.sum()/8).backward()
+        rb,_,_=b._rollout(start[i:i+2],elapsed[i:i+2]); (-rb.sum()/8).backward()
     for p,q in zip(a.actor.parameters(),b.actor.parameters()):
         torch.testing.assert_close(p.grad,q.grad,atol=2e-6,rtol=2e-5)
 
 
 def test_elapsed_episode_end_masks_late_reward():
     t=make_trainer(.64)
-    _,trajectory=t._rollout(torch.zeros(2,4),torch.tensor([[7.99],[7.98]]))
+    _,trajectory,_=t._rollout(torch.zeros(2,4),torch.tensor([[7.99],[7.98]]))
     states,rewards,dones,last,valid=trajectory
     assert valid[:,0].sum()==1 and valid[:,1].sum()==2
     assert torch.all(rewards[2:]==0)
@@ -217,6 +217,19 @@ def test_structured_world_model_shifts_history_deterministically():
     expected_history = torch.cat((history[:, :1], history[:, :-1]), dim=1)
     torch.testing.assert_close(next_obs[:, :759].reshape(2, 11, 69), expected_history)
     torch.testing.assert_close(next_obs[:, 759:], obs[:, 759:])
+
+
+def test_policy_anchor_is_reported_and_reference_stays_frozen():
+    torch.manual_seed(4)
+    reference = Actor()
+    trainer = HorizonTrainer(Actor(), World(), nn.Linear(4, 1), make_replay(), Timebase(imagination_s=.32, world_window_s=.04),
+                             reference_actor=reference, policy_anchor_coeff=.05,
+                             actor_microbatch=4, critic_epochs=1, critic_minibatches=2)
+    trainer.fit_world(1, 8)
+    before = [p.detach().clone() for p in reference.parameters()]
+    stats = trainer.imagine_update(8)
+    assert stats['imagine_update'] and stats['policy_anchor_penalty'] >= 0
+    assert all(torch.equal(a, b) for a, b in zip(before, reference.parameters()))
 
 
 def test_actual_environment_method_delegates_residual_to_full_range():
