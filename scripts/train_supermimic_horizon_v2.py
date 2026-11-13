@@ -260,7 +260,10 @@ def main():
             last_tick = local_iteration
             episode = env.episode_index.detach().clone()
             elapsed = env.episode_length_buf.float().clone() * env.step_dt
-            action = trainer.action(current, sample=(local_iteration != 0 or args.resume is not None))
+            # Preserve the initialized policy's deterministic physical behavior
+            # while collecting the first complete native episodes.  Exploration
+            # starts only after an imagined actor update is actually enabled.
+            action = trainer.action(current, sample=(trainer.actor_updates > 0 or args.resume is not None))
             nxt, reward, done, info = wrapper.step(action)
             new_records = env.rally_records[record_cursor:]
             record_cursor += len(new_records)
@@ -336,9 +339,10 @@ def main():
                    'native_reward_positive_fraction': float((reward > 0).float().mean().item()),
                    'native_done_count': int(done.sum().item()),
                    'native_episode_warmup': {
-                       'completed_episodes': int(native_event_totals['episodes']),
+                       'completed_episodes': int(native_event_totals['full_episodes']),
+                       'terminated_episodes': int(native_event_totals['episodes']),
                        'required_episodes': int(args.actor_warmup_episodes),
-                       'actor_updates_allowed': bool(native_event_totals['episodes'] >= args.actor_warmup_episodes),
+                       'actor_updates_allowed': bool(native_event_totals['full_episodes'] >= args.actor_warmup_episodes),
                    },
                    'native_event_totals': dict(native_event_totals)}
             if total_iterations % args.checkpoint_every == 0:
