@@ -40,7 +40,7 @@ def main():
     parser.add_argument('--policy-anchor-coeff', type=float, default=0.05)
     parser.add_argument('--actor-warmup-episodes', type=int, default=1,
                         help='Require this many completed native episodes before imagined actor/critic updates')
-    parser.add_argument('--actor-warmup-terminated-episodes', type=int, default=8,
+    parser.add_argument('--actor-warmup-terminated-episodes', type=int, default=128,
                         help='Fallback gate when no full timeout is observed')
     parser.add_argument('--actor-warmup-max-world-loss', type=float, default=0.75,
                         help='Maximum world loss for the terminated-episode fallback gate')
