@@ -19,7 +19,8 @@ args = parser.parse_args(); app = AppLauncher(args).app
 
 import torch
 from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper
-from quadsmash.rl.supermimic_v1 import SuperMimicTrainer, PPOInitializedActor
+from quadsmash.rl.supermimic_v1 import (SuperMimicTrainer, PPOInitializedActor,
+                                         ResidualPPOInitializedActor)
 from quadsmash.tasks.stand.supermimic_env_v1 import SuperMimicEnvV1, make_supermimic_cfg
 from quadsmash.tasks.stand.full_racket_env_v4 import load_racket
 
@@ -41,7 +42,11 @@ def main():
     protocol = json.loads((ROOT / 'configs/g07_full_racket_eval_v4_r3.json').read_text())
     suite = protocol['training_suite']; cases = json.loads((ROOT / suite['path']).read_text())['cases']
     if len(cases) != 128: raise ValueError('formal training suite must have 128 cases')
-    env = SuperMimicEnvV1(cfg, cases=cases)
+    residual_policy = None
+    init_meta = state.get('metadata', {}).get('init_policy_checkpoint') or {}
+    if init_meta.get('native_schema') == 'full-racket-residual-ppo-v4':
+        residual_policy = torch.load(init_meta['path'], map_location='cpu', weights_only=False)
+    env = SuperMimicEnvV1(cfg, cases=cases, residual_policy_checkpoint=residual_policy)
     from isaacsim.core.simulation_manager import SimulationManager
     physics_device = SimulationManager.get_physics_sim_device()
     gpu_dynamics = bool(SimulationManager.is_gpu_dynamics_enabled())
@@ -51,6 +56,13 @@ def main():
     kind = state.get('metadata', {}).get('actor_kind', 'supermimic_random')
     if kind == PPOInitializedActor.actor_kind:
         actor = PPOInitializedActor(obs['policy'].shape[-1], 18).to(env.device)
+        actor.load_state_dict(state['actor'], strict=True)
+        trainer = SuperMimicTrainer(obs['policy'].shape[-1], 18, env.device, actor=actor, actor_kind=kind)
+    elif kind == ResidualPPOInitializedActor.actor_kind:
+        if residual_policy is None:
+            raise ValueError('Residual SuperMimic checkpoint is missing its source policy')
+        from quadsmash.rl.supermimic_v1 import load_ppo_initialized_actor
+        actor, _ = load_ppo_initialized_actor(Path(init_meta['path']), env.device)
         actor.load_state_dict(state['actor'], strict=True)
         trainer = SuperMimicTrainer(obs['policy'].shape[-1], 18, env.device, actor=actor, actor_kind=kind)
     else:

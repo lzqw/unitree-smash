@@ -4,6 +4,8 @@ from __future__ import annotations
 import torch
 
 from .full_racket_env_v4 import FullRacketEnvV4, full_racket_cfg
+from .observation_contract import observe_native
+from quadsmash.control.full_racket_residual_v4 import FullRacketResidualControllerV4
 
 
 def make_supermimic_cfg(num_envs: int, physics_dt: float = 6.25e-5):
@@ -18,6 +20,23 @@ class SuperMimicEnvV1(FullRacketEnvV4):
     """Absolute 18-joint targets with native event-locked reward shaping."""
     algorithm_family = "supermimic-native-world-model-v1"
 
+    def __init__(self, *args, residual_policy_checkpoint=None, **kwargs):
+        self._sm_residual_policy_checkpoint = residual_policy_checkpoint
+        self._sm_residual_controller = None
+        self._sm_residual_default = None
+        self._sm_residual_limits = None
+        self._sm_requested_action = None
+        self._sm_final_action = None
+        super().__init__(*args, **kwargs)
+        self._sm_prev = {}
+        self._sm_reset_events()
+        if residual_policy_checkpoint is not None:
+            self._sm_residual_controller = FullRacketResidualControllerV4(
+                residual_policy_checkpoint, self.num_envs, self.device)
+            self._sm_residual_default = self.robot.data.default_joint_pos[0, self.joint_ids].clone()
+            self._sm_residual_limits = self.robot.data.joint_pos_limits[0, self.joint_ids].clone()
+            self._sm_residual_controller.reset()
+
     def _pre_physics_step(self, actions):
         """Use the exact native jump-event-v1 command contract.
 
@@ -26,6 +45,19 @@ class SuperMimicEnvV1(FullRacketEnvV4):
         joint limits changes the physical policy even when the network weights
         are identical, so this branch intentionally mirrors JumpEnv.
         """
+        self._sm_requested_action = actions.detach().clone()
+        if self._sm_residual_controller is not None:
+            # The trainable actor emits the residual request. The frozen
+            # full-racket base and native residual mixer produce the exact
+            # normalized final command consumed by the original executor.
+            public = observe_native(self)
+            base = self._sm_residual_controller.base.action(
+                public, self._sm_residual_default, self._sm_residual_limits)
+            actions = self._sm_residual_controller.mixer.action(
+                base, actions, public['policy'], self._sm_residual_default,
+                self._sm_residual_limits)
+            actions = actions.detach()
+        self._sm_final_action = actions.detach().clone()
         self.action_delta.copy_((actions.clamp(-1, 1) - self.last_action).square().sum(1))
         self._record_action(actions)
         self.action_clip_count += (actions.abs() > 1).sum(1)
@@ -48,11 +80,6 @@ class SuperMimicEnvV1(FullRacketEnvV4):
                               (clock >= self.court_config['rally_preparation_seconds'] - 1e-6))[0]
             if len(ids):
                 self.initialize_rally_launch(ids)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._sm_prev = {}
-        self._sm_reset_events()
 
     def _sm_reset_events(self, ids=None):
         n = self.num_envs if ids is None else ids.numel()
@@ -120,3 +147,5 @@ class SuperMimicEnvV1(FullRacketEnvV4):
     def _reset_idx(self, ids):
         super()._reset_idx(ids)
         self._sm_reset_events(ids)
+        if self._sm_residual_controller is not None:
+            self._sm_residual_controller.reset(ids)

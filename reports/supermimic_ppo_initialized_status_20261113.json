@@ -1,0 +1,40 @@
+{
+  "date": "2026-11-13",
+  "branch": "baseline-9cb7983-restore",
+  "algorithm": "ppo_initialized_supermimic_v1",
+  "init_policy": {
+    "path": "artifacts/ppo_full_racket_residual_v4/policy.pt",
+    "sha256": "772608a1c42ec78c09cdf3bd8b7bfe3fed1738d1273cde9d09610022553aa21b",
+    "schema": "full-racket-residual-ppo-v4",
+    "obs_dim": 794,
+    "action_dim": 18,
+    "actor_kind": "native_residual_jit_794_256_128_64",
+    "execution_policy": "frozen_full_racket_base_plus_native_residual_mixer"
+  },
+  "episode_contract": {
+    "seconds": 8.0,
+    "control_dt_s": 0.01,
+    "ticks": 800,
+    "actor_warmup_native_steps": 102400
+  },
+  "initialization_check": {
+    "zero_update_action_max_abs_error": 0.0,
+    "status": "passed",
+    "report": "reports/supermimic_residual_contract_init_20261113/training_manifest.json"
+  },
+  "native_collection_smoke": {
+    "num_envs": 128,
+    "iterations": 8,
+    "native_steps": 1024,
+    "device": "cuda:0",
+    "mean_iteration_s": 1.5444462535,
+    "peak_gpu_allocated_bytes": 2060032512,
+    "report": "reports/supermimic_residual_ppo_warmup_20261113/profile_summary.json"
+  },
+  "formal_eval": {
+    "status": "pending_after_training",
+    "mpc": false,
+    "teacher": false,
+    "bc": false
+  }
+}

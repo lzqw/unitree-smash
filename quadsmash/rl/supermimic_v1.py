@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import json
+import io
 from pathlib import Path
 from typing import Optional
 import hashlib
@@ -102,10 +103,60 @@ class PPOInitializedActor(nn.Module):
         return action, log_prob, dist.entropy().sum(-1, keepdim=True)
 
 
+class ResidualPPOInitializedActor(nn.Module):
+    """Trainable wrapper around the measured full-racket residual actor.
+
+    The native residual checkpoint is a TorchScript actor with a frozen base
+    controller and a normalized 18D residual request.  The environment applies
+    the original base+mixer execution contract before PhysX.  Keeping the
+    residual request as the learner action lets replay/world-model training use
+    the same public action interface while preserving the physical executor.
+    """
+    actor_kind = "native_residual_jit_794_256_128_64"
+
+    def __init__(self, actor_module: nn.Module, action_dim: int = 18):
+        super().__init__()
+        self.actor = actor_module
+        self.log_std = nn.Parameter(torch.full((action_dim,), -3.0))
+
+    def forward(self, obs: torch.Tensor, sample: bool = False):
+        mean = self.actor(obs)
+        std = self.log_std.clamp(-8.0, 1.0).exp().expand_as(mean)
+        dist = Normal(mean, std)
+        raw = dist.rsample() if sample else mean
+        action = raw.clamp(-1.0, 1.0)
+        log_prob = dist.log_prob(raw).sum(-1, keepdim=True)
+        return action, log_prob, dist.entropy().sum(-1, keepdim=True)
+
+
 def load_ppo_initialized_actor(path: Path, device: torch.device):
     """Load the native PPO actor with strict, auditable interface checks."""
     path = Path(path)
     state = torch.load(path, map_location="cpu", weights_only=False)
+    if state.get('schema') == 'full-racket-residual-ppo-v4':
+        blob = state.get('residual_actor_jit')
+        if not isinstance(blob, (bytes, bytearray)):
+            raise ValueError('Residual PPO policy has no embedded TorchScript actor')
+        actor_module = torch.jit.load(io.BytesIO(blob), map_location=device)
+        actor = ResidualPPOInitializedActor(actor_module).to(device)
+        actor.eval()
+        interface = dict(schema='quadsmash-native-training-v2', observation_size=794,
+                         history_length=11, joints=state.get('base_controller', {}).get('seed', {}).get('joints', []),
+                         policy_dt=0.01,
+                         action_family='bounded-residual-joint-targets-full-racket-v4')
+        if not interface['joints']:
+            interface['joints'] = [
+                'FL_hip_joint','FR_hip_joint','RL_hip_joint','RR_hip_joint',
+                'FL_thigh_joint','FR_thigh_joint','RL_thigh_joint','RR_thigh_joint',
+                'FL_calf_joint','FR_calf_joint','RL_calf_joint','RR_calf_joint',
+                'joint1','joint2','joint3','joint4','joint5','joint6']
+        return actor, {
+            'path': str(path.resolve()), 'sha256': hashlib.sha256(path.read_bytes()).hexdigest(),
+            'native_schema': state.get('schema'), 'training_signature': state.get('residual_training_metadata', {}).get('training_signature'),
+            'interface': interface, 'learning_rate': state.get('residual_training_metadata', {}).get('learning_rate'),
+            'actor_kind': actor.actor_kind, 'obs_dim': 794, 'action_dim': 18,
+            'execution_policy': 'frozen_full_racket_base_plus_native_residual_mixer',
+        }
     model = state.get("model_state_dict")
     native = state.get("native", {})
     if not isinstance(model, dict):

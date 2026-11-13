@@ -58,7 +58,12 @@ def main():
     suite = protocol['training_suite']
     base_cases = json.loads((ROOT / suite['path']).read_text())['cases']
     cases = [base_cases[i % len(base_cases)] for i in range(args.num_envs)]
-    env = SuperMimicEnvV1(cfg, cases=cases)
+    residual_policy = None
+    if args.init_policy_checkpoint is not None:
+        probe = torch.load(args.init_policy_checkpoint, map_location='cpu', weights_only=False)
+        if probe.get('schema') == 'full-racket-residual-ppo-v4':
+            residual_policy = probe
+    env = SuperMimicEnvV1(cfg, cases=cases, residual_policy_checkpoint=residual_policy)
     wrapped = RslRlVecEnvWrapper(env, clip_actions=None)
     obs, _ = wrapped.reset()
     obs_tensor = obs['policy']
@@ -84,6 +89,12 @@ def main():
         'actor_warmup_steps': int(args.actor_warmup_steps),
         'episode_seconds_contract': 8.0,
         'control_ticks_per_episode_contract': 800,
+        'physical_action_contract': {
+            'learner_action': 'residual_request_or_native_action',
+            'final_action_source': 'SuperMimicEnvV1._sm_final_action',
+            'request_final_delta_logged': True,
+            'native_execution': True,
+        },
     }
     if init_meta is not None:
         with torch.no_grad():
@@ -123,6 +134,9 @@ def main():
         next_obs, reward, done, info = wrapped.step(action)
         sync_cuda(env.device)
         t_native = time.perf_counter() - t0
+        requested_action = getattr(env, '_sm_requested_action', action)
+        final_action = getattr(env, '_sm_final_action', action)
+        execution_delta = (final_action - requested_action).abs()
         nxt = next_obs['policy']
         # Preserve the true pre-reset terminal observation for model fitting.
         final_valid = getattr(env, 'final_observation_valid', torch.zeros(env.num_envs, dtype=torch.bool, device=env.device))
@@ -170,7 +184,9 @@ def main():
                'learner_device': str(env.device), **model_stats, **imagine_stats,
                'actor_ready': bool(actor_ready),
                'native_episode_records': len(env.rally_records),
-               'native_complete5_records': sum(bool(r.get('complete5', False)) for r in env.rally_records)}
+               'native_complete5_records': sum(bool(r.get('complete5', False)) for r in env.rally_records),
+               'requested_final_action_max_abs': float(execution_delta.max().detach()),
+               'requested_final_action_mean_abs': float(execution_delta.mean().detach())}
         records.append(row)
         t0 = time.perf_counter()
         if (iteration + 1) % 10 == 0 or iteration == 0:
