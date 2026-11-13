@@ -143,12 +143,16 @@ class HorizonTrainer:
         return ret, (torch.stack(states), torch.stack(rewards).detach(),
                      torch.stack(dones).detach(), obs.detach(), torch.stack(valid)), torch.stack(anchors).sum(0)
 
-    def imagine_update(self, batch_size):
+    def imagine_update(self, batch_size, *, update_actor=True):
         if self.world_updates == 0:
             return {"imagine_update": False, "reason": "no completed world update"}
         batch = self.replay.sample_starts(batch_size)
         self.actor.train()
-        self.actor_opt.zero_grad(set_to_none=True)
+        actor_flags = [p.requires_grad for p in self.actor.parameters()]
+        if not update_actor:
+            self.actor.requires_grad_(False)
+        else:
+            self.actor_opt.zero_grad(set_to_none=True)
         ret_sum = 0.
         anchor_sum = 0.
         critic_batches = []
@@ -159,12 +163,19 @@ class HorizonTrainer:
                     batch["obs"][begin:end].detach(), batch["elapsed"][begin:end])
                 # One optimizer step for the full logical batch. Never detach
                 # between time steps; microbatching partitions B, not horizon H.
-                ((-ret + self.policy_anchor_coeff * anchor_penalty).sum() / batch_size).backward()
+                if update_actor:
+                    ((-ret + self.policy_anchor_coeff * anchor_penalty).sum() / batch_size).backward()
                 ret_sum += float(ret.detach().sum())
                 anchor_sum += float(anchor_penalty.detach().sum())
                 critic_batches.append(trajectory)
-            actor_norm = optimizer_step(self.actor_opt, self.actor.parameters(), element_clip=.1)
-        self.actor_updates += 1
+            if update_actor:
+                actor_norm = optimizer_step(self.actor_opt, self.actor.parameters(), element_clip=.1)
+            else:
+                actor_norm = torch.zeros((), device=self.device)
+        for p, flag in zip(self.actor.parameters(), actor_flags):
+            p.requires_grad_(flag)
+        if update_actor:
+            self.actor_updates += 1
         states = torch.cat([b[0] for b in critic_batches], dim=1)
         rewards = torch.cat([b[1] for b in critic_batches], dim=1)
         dones = torch.cat([b[2] for b in critic_batches], dim=1)
@@ -194,7 +205,8 @@ class HorizonTrainer:
                 self.critic_updates += 1
                 losses.append(loss_sum)
         return {"imagine_update": True, "imagined_return": ret_sum / batch_size,
-                "actor_loss": -ret_sum / batch_size, "actor_grad_norm": float(actor_norm),
+                "actor_loss": -ret_sum / batch_size if update_actor else None,
+                "actor_grad_norm": float(actor_norm), "actor_updated": bool(update_actor),
                 "policy_anchor_penalty": anchor_sum / batch_size,
                 "critic_loss": sum(losses) / len(losses), "actor_updates_total": self.actor_updates,
                 "critic_updates_total": self.critic_updates, "world_updates_total": self.world_updates,
