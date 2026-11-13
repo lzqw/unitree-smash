@@ -40,6 +40,10 @@ def main():
     parser.add_argument('--policy-anchor-coeff', type=float, default=0.05)
     parser.add_argument('--actor-warmup-episodes', type=int, default=1,
                         help='Require this many completed native episodes before imagined actor/critic updates')
+    parser.add_argument('--actor-warmup-terminated-episodes', type=int, default=8,
+                        help='Fallback gate when no full timeout is observed')
+    parser.add_argument('--actor-warmup-max-world-loss', type=float, default=0.75,
+                        help='Maximum world loss for the terminated-episode fallback gate')
     parser.add_argument('--replay-capacity', type=int, default=250000)
     parser.add_argument('--checkpoint-every', type=int, default=500)
     parser.add_argument('--persist-replay', action='store_true')
@@ -62,6 +66,8 @@ def main():
         parser.error('Convergence counts must be positive')
     if args.actor_warmup_episodes < 0:
         parser.error('actor-warmup-episodes must be non-negative')
+    if args.actor_warmup_terminated_episodes < 0 or args.actor_warmup_max_world_loss <= 0:
+        parser.error('Invalid terminated-episode warmup gate')
     if args.convergence_relative_tolerance <= 0 or args.convergence_return_absolute_tolerance <= 0 or args.convergence_max_grad_norm <= 0:
         parser.error('Convergence tolerances must be positive')
     args.output = args.output.expanduser().resolve()
@@ -315,15 +321,25 @@ def main():
             wm = trainer.fit_world(args.world_updates, args.world_batch)
             sync(); wm_end = time.perf_counter()
             # No 800-tick/full-panel gate. Fit a real complete model window first.
-            native_episodes = int(native_event_totals['full_episodes'])
-            if (wm.get('world_updates', 0)
-                    and native_episodes >= args.actor_warmup_episodes):
+            full_episodes = int(native_event_totals['full_episodes'])
+            terminated_episodes = int(native_event_totals['episodes'])
+            world_loss = wm.get('world_loss')
+            full_ready = full_episodes >= args.actor_warmup_episodes
+            fallback_ready = (
+                args.actor_warmup_terminated_episodes > 0
+                and terminated_episodes >= args.actor_warmup_terminated_episodes
+                and world_loss is not None
+                and float(world_loss) <= args.actor_warmup_max_world_loss)
+            actor_gate_ready = full_ready or fallback_ready
+            if wm.get('world_updates', 0) and actor_gate_ready:
                 actor_stats = trainer.imagine_update(args.imagination_batch)
             elif wm.get('world_updates', 0):
                 actor_stats = {
                     'imagine_update': False,
                     'reason': 'native_episode_warmup',
-                    'native_episodes': native_episodes,
+                    'native_episodes': full_episodes,
+                    'terminated_episodes': terminated_episodes,
+                    'fallback_ready': fallback_ready,
                     'required_native_episodes': args.actor_warmup_episodes,
                 }
             else:
@@ -342,7 +358,11 @@ def main():
                        'completed_episodes': int(native_event_totals['full_episodes']),
                        'terminated_episodes': int(native_event_totals['episodes']),
                        'required_episodes': int(args.actor_warmup_episodes),
-                       'actor_updates_allowed': bool(native_event_totals['full_episodes'] >= args.actor_warmup_episodes),
+                       'fallback_required_terminated_episodes': int(args.actor_warmup_terminated_episodes),
+                       'fallback_max_world_loss': float(args.actor_warmup_max_world_loss),
+                       'actor_updates_allowed': bool(actor_gate_ready),
+                       'gate_reason': ('full_timeout' if full_ready else
+                                       'terminated_episode_fallback' if fallback_ready else 'waiting'),
                    },
                    'native_event_totals': dict(native_event_totals)}
             if total_iterations % args.checkpoint_every == 0:
