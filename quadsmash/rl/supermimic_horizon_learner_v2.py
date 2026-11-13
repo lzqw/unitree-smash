@@ -85,12 +85,17 @@ class HorizonTrainer:
             loss = prediction.new_zeros(())
             for transition in window:
                 delta, reward, done_logit = self.world(prediction, transition["action"])
-                prediction = prediction + delta
-                # The target is data. Do not detach the predicted input inside
-                # an artificial delta target: that changes multi-step gradients.
-                loss = loss + (prediction - transition["next_obs"]).square().mean()
+                predicted_next = prediction + delta
+                # The target is data. The supervised fit uses true next-state
+                # inputs between terms; imagined rollouts remain autoregressive.
+                loss = loss + (predicted_next - transition["next_obs"]).square().mean()
                 loss = loss + .5 * (reward - transition["reward"]).square().mean()
                 loss = loss + .1 * nn.functional.binary_cross_entropy_with_logits(done_logit, transition["done"])
+                # Use teacher forcing between loss terms.  The imagination
+                # update remains autoregressive; this prevents early model
+                # errors from exploding the supervised 32-step fit before a
+                # complete native episode is available.
+                prediction = transition["next_obs"].detach()
             loss = loss / len(window)
             if not torch.isfinite(loss):
                 raise FloatingPointError("Nonfinite world-model loss")
