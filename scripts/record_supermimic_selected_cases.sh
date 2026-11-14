@@ -27,12 +27,13 @@ if [ "${#INDICES[@]}" -eq 0 ]; then
   INDICES=(0 32 64 96)
 fi
 STAMP=$(date +%Y%m%d_%H%M%S)
-BASE=/home/autodrive/LZQW/video/selected_cases_${STAMP}
+BASE=/home/autodrive/LZQW/video/selected_cases_${STAMP}_$$
 mkdir -p "$BASE"
 
 for index in "${INDICES[@]}"; do
   out="$BASE/case_${index}"
   mkdir -p "$out"
+  log="$BASE/case_${index}.log"
   set +e
   CUDA_VISIBLE_DEVICES=0 \
   QUADSMASH_PYTHON="$PY" \
@@ -46,7 +47,7 @@ for index in "${INDICES[@]}"; do
     --rendering_mode performance \
     --kit_args="--renderer/multiGpu/enabled=false" \
     --headless --enable_cameras --device cuda:0 \
-    2>&1 | tee "$out/run.log"
+    2>&1 | tee "$log"
   status=${PIPESTATUS[0]}
   set -e
   printf '{"training_index":%s,"exit_code":%s,"output":"%s"}\n' "$index" "$status" "$out" >> "$BASE/manifest.jsonl"
