@@ -6,6 +6,7 @@ import torch
 from .full_racket_env_v4 import FullRacketEnvV4, full_racket_cfg
 from .observation_contract import observe_native
 from quadsmash.control.full_racket_residual_v4 import FullRacketResidualControllerV4
+from quadsmash.control.g07_shared_target_residual_v1 import make_g07_residual_controller
 
 
 def make_supermimic_cfg(num_envs: int, physics_dt: float = 6.25e-5):
@@ -20,7 +21,7 @@ class SuperMimicEnvV1(FullRacketEnvV4):
     """Schema-specific 18-joint targets with native event-locked rewards."""
     algorithm_family = "supermimic-native-world-model-v1"
 
-    def __init__(self, *args, residual_policy_checkpoint=None, **kwargs):
+    def __init__(self, *args, residual_policy_checkpoint=None, g07_execution_root=None, **kwargs):
         self._sm_residual_policy_checkpoint = residual_policy_checkpoint
         self._sm_residual_controller = None
         self._sm_residual_default = None
@@ -28,12 +29,18 @@ class SuperMimicEnvV1(FullRacketEnvV4):
         self._sm_requested_action = None
         self._sm_final_action = None
         self._sm_joint_targets = None
+        self._sm_g07_execution_root = g07_execution_root
         super().__init__(*args, **kwargs)
         self._sm_prev = {}
         self._sm_reset_events()
         if residual_policy_checkpoint is not None:
-            self._sm_residual_controller = FullRacketResidualControllerV4(
-                residual_policy_checkpoint, self.num_envs, self.device)
+            if residual_policy_checkpoint.get('schema') == 'g07-shared-target-residual-ppo-v1':
+                self._sm_residual_controller = make_g07_residual_controller(
+                    residual_policy_checkpoint, self.num_envs, self.device,
+                    execution_root=g07_execution_root)
+            else:
+                self._sm_residual_controller = FullRacketResidualControllerV4(
+                    residual_policy_checkpoint, self.num_envs, self.device)
             self._sm_residual_default = self.robot.data.default_joint_pos[0, self.joint_ids].clone()
             self._sm_residual_limits = self.robot.data.joint_pos_limits[0, self.joint_ids].clone()
             self._sm_residual_controller.reset()
@@ -48,11 +55,16 @@ class SuperMimicEnvV1(FullRacketEnvV4):
         self._sm_requested_action = actions.detach().clone()
         if self._sm_residual_controller is not None:
             public = observe_native(self)
-            base = self._sm_residual_controller.base.action(
-                public, self._sm_residual_default, self._sm_residual_limits)
-            final = self._sm_residual_controller.mixer.action(
-                base, actions, public['policy'], self._sm_residual_default,
-                self._sm_residual_limits).detach()
+            if hasattr(self._sm_residual_controller, 'apply_residual'):
+                final = self._sm_residual_controller.apply_residual(
+                    public, actions, self._sm_residual_default,
+                    self._sm_residual_limits).detach()
+            else:
+                base = self._sm_residual_controller.base.action(
+                    public, self._sm_residual_default, self._sm_residual_limits)
+                final = self._sm_residual_controller.mixer.action(
+                    base, actions, public['policy'], self._sm_residual_default,
+                    self._sm_residual_limits).detach()
             self._sm_final_action = final.clone()
             FullRacketEnvV4._pre_physics_step(self, final)
             self._sm_joint_targets = self.targets[:, self.joint_ids].detach().clone()

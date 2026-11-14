@@ -162,7 +162,7 @@ def load_ppo_initialized_actor(path: Path, device: torch.device):
     """Load the native PPO actor with strict, auditable interface checks."""
     path = Path(path)
     state = torch.load(path, map_location="cpu", weights_only=False)
-    if state.get('schema') == 'full-racket-residual-ppo-v4':
+    if state.get('schema') in ('full-racket-residual-ppo-v4', 'g07-shared-target-residual-ppo-v1'):
         blob = state.get('residual_actor_jit')
         if not isinstance(blob, (bytes, bytearray)):
             raise ValueError('Residual PPO policy has no embedded TorchScript actor')
@@ -184,7 +184,11 @@ def load_ppo_initialized_actor(path: Path, device: torch.device):
             'native_schema': state.get('schema'), 'training_signature': state.get('residual_training_metadata', {}).get('training_signature'),
             'interface': interface, 'learning_rate': state.get('residual_training_metadata', {}).get('learning_rate'),
             'actor_kind': actor.actor_kind, 'obs_dim': 794, 'action_dim': 18,
-            'execution_policy': 'frozen_full_racket_base_plus_native_residual_mixer',
+            'execution_policy': ('frozen_g07_shared_target_base_plus_native_residual_mixer'
+                                 if state.get('schema') == 'g07-shared-target-residual-ppo-v1'
+                                 else 'frozen_full_racket_base_plus_native_residual_mixer'),
+            'g07_execution_root': '/home/autodrive/LZQW/unitree_smash'
+            if state.get('schema') == 'g07-shared-target-residual-ppo-v1' else None,
         }
     model = state.get("model_state_dict")
     native = state.get("native", {})

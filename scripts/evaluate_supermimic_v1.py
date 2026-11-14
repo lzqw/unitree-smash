@@ -44,9 +44,12 @@ def main():
     if len(cases) != 128: raise ValueError('formal training suite must have 128 cases')
     residual_policy = None
     init_meta = state.get('metadata', {}).get('init_policy_checkpoint') or {}
-    if init_meta.get('native_schema') == 'full-racket-residual-ppo-v4':
+    if init_meta.get('native_schema') in ('full-racket-residual-ppo-v4', 'g07-shared-target-residual-ppo-v1'):
         residual_policy = torch.load(init_meta['path'], map_location='cpu', weights_only=False)
-    env = SuperMimicEnvV1(cfg, cases=cases, residual_policy_checkpoint=residual_policy)
+    env = SuperMimicEnvV1(
+        cfg, cases=cases, residual_policy_checkpoint=residual_policy,
+        g07_execution_root=init_meta.get('g07_execution_root'),
+    )
     from isaacsim.core.simulation_manager import SimulationManager
     physics_device = SimulationManager.get_physics_sim_device()
     gpu_dynamics = bool(SimulationManager.is_gpu_dynamics_enabled())

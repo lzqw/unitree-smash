@@ -26,6 +26,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--init-policy-checkpoint', type=Path, required=True)
+    parser.add_argument('--g07-execution-root', type=Path, default=None,
+                        help='Root containing the immutable measured G07 execution sources')
     parser.add_argument('--timebase-config', type=Path, default=ROOT/'configs/supermimic_task_horizon_v2.json')
     parser.add_argument('--iterations', type=int, default=40000)
     parser.add_argument('--num-envs', type=int, default=512)
@@ -162,6 +164,7 @@ def main():
         from quadsmash.tasks.stand.supermimic_env_v1 import SuperMimicEnvV1, make_supermimic_cfg
         from quadsmash.tasks.stand.observation_contract import observe_native
         from quadsmash.control.full_racket_residual_v4 import FullRacketResidualControllerV4
+        from quadsmash.control.g07_shared_target_residual_v1 import make_g07_residual_controller
         stage('IMPORTS_OK')
 
         torch.manual_seed(args.seed)
@@ -173,8 +176,8 @@ def main():
             temporal['world_window_s'] = args.world_window_seconds
         timebase = Timebase(**temporal)
         source = torch.load(args.init_policy_checkpoint, map_location='cpu', weights_only=False)
-        if source.get('schema') != 'full-racket-residual-ppo-v4':
-            raise ValueError('This first v2 entry requires the audited full-racket residual contract')
+        if source.get('schema') not in ('full-racket-residual-ppo-v4', 'g07-shared-target-residual-ppo-v1'):
+            raise ValueError('Require an audited native residual policy contract')
         stage('SOURCE_LOADED', source=str(args.init_policy_checkpoint.resolve()),
               source_sha256=hashlib.sha256(args.init_policy_checkpoint.read_bytes()).hexdigest())
         cfg = make_supermimic_cfg(args.num_envs)
@@ -188,7 +191,8 @@ def main():
         cases0 = json.loads((ROOT/protocol['training_suite']['path']).read_text())['cases']
         cases = [cases0[i % len(cases0)] for i in range(args.num_envs)]
         stage('BEFORE_ENV', num_envs=args.num_envs, device=str(cfg.sim.device))
-        env = SuperMimicEnvV1(cfg, cases=cases, residual_policy_checkpoint=source)
+        env = SuperMimicEnvV1(cfg, cases=cases, residual_policy_checkpoint=source,
+                              g07_execution_root=args.g07_execution_root)
         stage('AFTER_ENV')
         wrapper = RslRlVecEnvWrapper(env, clip_actions=None)
         stage('BEFORE_RESET')
@@ -196,6 +200,10 @@ def main():
         stage('AFTER_RESET', obs_shape=list(obs['policy'].shape))
         obs = obs['policy']
         actor, init_meta = load_ppo_initialized_actor(args.init_policy_checkpoint, env.device)
+        if source.get('schema') == 'g07-shared-target-residual-ppo-v1':
+            init_meta['g07_execution_root'] = str(
+                (args.g07_execution_root or Path('/home/autodrive/LZQW/unitree_smash')).resolve()
+            )
         reference_actor, reference_meta = load_ppo_initialized_actor(args.init_policy_checkpoint, env.device)
         if reference_meta['sha256'] != init_meta['sha256'] or reference_meta['actor_kind'] != init_meta['actor_kind']:
             raise RuntimeError('Reference actor does not match initialized actor source')
@@ -248,7 +256,11 @@ def main():
             total_native = int(prior.get('native_steps', 0))
             total_iterations = int(prior.get('iterations_completed', 0))
         # Independent old controller, not another call to the same new actor.
-        reference = FullRacketResidualControllerV4(source, args.num_envs, env.device)
+        if source.get('schema') == 'g07-shared-target-residual-ppo-v1':
+            reference = make_g07_residual_controller(
+                source, args.num_envs, env.device, execution_root=args.g07_execution_root)
+        else:
+            reference = FullRacketResidualControllerV4(source, args.num_envs, env.device)
         reference.reset()
         reference_targets = None
         if not args.resume:
