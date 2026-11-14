@@ -1,0 +1,38 @@
+{
+  "schema": "supermimic-learning-effectiveness-audit-v1",
+  "training": {
+    "output": "reports/supermimic_anchor5_lr1e6_resume3_20261114_0910",
+    "iterations_completed": 897,
+    "native_steps_total": 459264,
+    "actor_updates_total": 19,
+    "world_updates_total": 802,
+    "critic_updates_total": 1960,
+    "actor_lr": 1e-6,
+    "policy_anchor_coeff": 5.0,
+    "world_window_s": 0.96,
+    "imagination_s": 3.2,
+    "world_autoregressive_fit": true,
+    "native_reward_mean_last": -0.0114606,
+    "native_reward_positive_fraction_last": 0.0,
+    "formal_task_events_in_local_segment": 0
+  },
+  "same_evaluator": {
+    "zero_update_reset": {
+      "checkpoint": "reports/supermimic_anchor_reset_checkpoint_20261114/checkpoint.pt",
+      "qualified_airborne_string_contact": 22,
+      "ball_side_complete_except_recovery": 3,
+      "complete5": 2,
+      "recovery_success": 67,
+      "numerical_failures": 39993
+    },
+    "trained": {
+      "checkpoint": "reports/supermimic_anchor5_lr1e6_resume3_20261114_0910/checkpoint.pt",
+      "qualified_airborne_string_contact": 22,
+      "ball_side_complete_except_recovery": 7,
+      "complete5": 7,
+      "recovery_success": 69,
+      "numerical_failures": 37462
+    }
+  },
+  "decision": "reject_as_new_best; evaluator_contract_calibration_required"
+}
