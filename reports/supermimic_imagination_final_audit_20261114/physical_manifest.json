@@ -1,0 +1,223 @@
+{
+  "source_checkpoint": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_env5120_01/policy.pt",
+  "source_sha256": "8f510fe9f218beef791ac21675a19ed25d11f510a83fe247cddf2893bee08399",
+  "task_contract": {
+    "version": "supermimic-source-task-contract-v2",
+    "source_policy_sha256": "8f510fe9f218beef791ac21675a19ed25d11f510a83fe247cddf2893bee08399",
+    "protocol_path": "configs/g07_full_racket_eval_v5_contact_recovery_origin0.json",
+    "protocol_sha256": "bfe6f2bef675bb4716e4970e6400eb86dd50b06e799e848030eb2a29ed84a309",
+    "suite": {
+      "path": "reports/G07_full_racket_v4/protocol_frozen01/training_cases.json",
+      "sha256": "2f9bf380d938a87418c4fa7da087e86d0da43f27a2ee6492bff7d7f1c3ff7c30",
+      "count": 128
+    },
+    "asset": {
+      "path": "assets/quadsmash_full_racket_v4_r3.usd",
+      "sha256": "c2264fcece90b042c7c6a1cac7d516af83972729d0402947e3a519041e184cf2"
+    },
+    "environment_spacing_m": 0.0,
+    "ground_size_m": [
+      64.0,
+      64.0,
+      0.1
+    ],
+    "contact_flight_recovery": "contact-flight-recovery-v1",
+    "control_dt_s": 0.01,
+    "physics_dt_s": 6.25e-05,
+    "episode_s": 8.0,
+    "precision_receipt_sha256": "0623405122424761a548fb51f3b43708cc887737e10067de4f1804c92487b032",
+    "sweep_audit": {
+      "maximum_iterations": 4096,
+      "tolerance_m": 1e-06
+    },
+    "extra_online_mpc": false,
+    "historical_base_and_recovery_assistance_preserved": true
+  },
+  "body_names": [
+    "base",
+    "FL_hip",
+    "FR_hip",
+    "Head_upper",
+    "RL_hip",
+    "RR_hip",
+    "MountPlate",
+    "FL_thigh",
+    "FR_thigh",
+    "Head_lower",
+    "RL_thigh",
+    "RR_thigh",
+    "base_link",
+    "FL_calf",
+    "FR_calf",
+    "RL_calf",
+    "RR_calf",
+    "link1",
+    "FL_foot",
+    "FR_foot",
+    "RL_foot",
+    "RR_foot",
+    "link2",
+    "link3",
+    "link4",
+    "link5",
+    "link6",
+    "Racket"
+  ],
+  "control_dt_s": 0.01,
+  "num_envs": 128,
+  "seed": 882072,
+  "runtime_commit": "382b28540f9eee291bb7ff3a007422b5e85a14da",
+  "schema": "supermimic-native-physical-transition-v1",
+  "joint_names": [
+    "FL_hip_joint",
+    "FR_hip_joint",
+    "RL_hip_joint",
+    "RR_hip_joint",
+    "FL_thigh_joint",
+    "FR_thigh_joint",
+    "RL_thigh_joint",
+    "RR_thigh_joint",
+    "FL_calf_joint",
+    "FR_calf_joint",
+    "RL_calf_joint",
+    "RR_calf_joint",
+    "joint1",
+    "joint2",
+    "joint3",
+    "joint4",
+    "joint5",
+    "joint6"
+  ],
+  "scope": "native data only; executor memory completeness not certified",
+  "substep_contact_traces": false,
+  "control_ticks": 800,
+  "transitions": 102400,
+  "chunks": [
+    {
+      "file": "chunk_00000.pt",
+      "ticks": 32,
+      "sha256": "59a8744c799afc1d08a3a2b4da13c9958877a2c82e172d8c0170c652b107448f"
+    },
+    {
+      "file": "chunk_00001.pt",
+      "ticks": 32,
+      "sha256": "f31b9d28680afcbbcb06302dfb88c257b1703c0400f60cc2b9d73d3de420a685"
+    },
+    {
+      "file": "chunk_00002.pt",
+      "ticks": 32,
+      "sha256": "4f89c02c3f3dae0e50d0a7ed6832aefe4773b2b90ad397a3c7e1e3458295f23e"
+    },
+    {
+      "file": "chunk_00003.pt",
+      "ticks": 32,
+      "sha256": "b60466cc5992bd8484da4f3cdc0fabf63b4f64ac8cc79ce4856ac7f04e0fa7c0"
+    },
+    {
+      "file": "chunk_00004.pt",
+      "ticks": 32,
+      "sha256": "7375b6edb9173bd1647e3b115b0b804c2aa4d9ce315df3a4286f66b61c515992"
+    },
+    {
+      "file": "chunk_00005.pt",
+      "ticks": 32,
+      "sha256": "5852198cd89a509e9cabe11a5cbde3222173c112383a6e32aa074b158b679909"
+    },
+    {
+      "file": "chunk_00006.pt",
+      "ticks": 32,
+      "sha256": "8704dd8af13ee46bd9c6e0c0ec7ff3fb13001f995d9ddb4830b9dc5c89066945"
+    },
+    {
+      "file": "chunk_00007.pt",
+      "ticks": 32,
+      "sha256": "0fe53b95fdcff4d20c7e7d93cdc2c6bc2568d457923ac49b8db8f371926e26f3"
+    },
+    {
+      "file": "chunk_00008.pt",
+      "ticks": 32,
+      "sha256": "622370bc4f228988fe9a1374eb474d9d15121276b8dcfaeb33411e203bfefb99"
+    },
+    {
+      "file": "chunk_00009.pt",
+      "ticks": 32,
+      "sha256": "ab69d641f9b24f6942e80a10837ba63ddcf91fa2d4a1fa3d7fe3d0c14764bf67"
+    },
+    {
+      "file": "chunk_00010.pt",
+      "ticks": 32,
+      "sha256": "ee5c0875237e8ff65485b0974a612fde2ab583df2e301d28e7a13c853c6b0207"
+    },
+    {
+      "file": "chunk_00011.pt",
+      "ticks": 32,
+      "sha256": "e07ac1afd8650b3276dcc9108e1b0c1d7e2c7d0d622d462afe312f07eea04da5"
+    },
+    {
+      "file": "chunk_00012.pt",
+      "ticks": 32,
+      "sha256": "f9931a619c4343973cf54ec7907684ad549118a84500a1b7b74952ce1bc8109b"
+    },
+    {
+      "file": "chunk_00013.pt",
+      "ticks": 32,
+      "sha256": "b1950ad8ea8626c4dc0bdce8a88e680dd0476482525520ee4dcea85ff8fbde8e"
+    },
+    {
+      "file": "chunk_00014.pt",
+      "ticks": 32,
+      "sha256": "6845f233e11a832460e9874aa9461ca70b1fe87446ca7c6dff8d6a50c34bcd91"
+    },
+    {
+      "file": "chunk_00015.pt",
+      "ticks": 32,
+      "sha256": "f3244041fc349094c1f7d4638323fb9d9dce6c8255f95cfb253cdf08d6f323e4"
+    },
+    {
+      "file": "chunk_00016.pt",
+      "ticks": 32,
+      "sha256": "89741fd94ed10055061ad9a8f08da7a6a80ecda9ce51b5a5cf777b5ea2a02a9a"
+    },
+    {
+      "file": "chunk_00017.pt",
+      "ticks": 32,
+      "sha256": "a6b64a26e28f463798ef90668685c88942b84877be012b17a6bb9ccf64304319"
+    },
+    {
+      "file": "chunk_00018.pt",
+      "ticks": 32,
+      "sha256": "0d4f6af620ca1ed96ac691ca18f3ac877fa5230ac599cfd167f7d708cae5a8d9"
+    },
+    {
+      "file": "chunk_00019.pt",
+      "ticks": 32,
+      "sha256": "aaa94fa399a09b11bd0c0d623afa32f6fe0edbd7109f104bd3862a39581f7044"
+    },
+    {
+      "file": "chunk_00020.pt",
+      "ticks": 32,
+      "sha256": "84a95c1eafdf2ebf0bf39af5778c52079bfb11261a66b871ffb8587cf58e8f85"
+    },
+    {
+      "file": "chunk_00021.pt",
+      "ticks": 32,
+      "sha256": "a97b49e1aadc41d827d12c6b279f75b197d06f4d02d6e28ee8a0c302203598fd"
+    },
+    {
+      "file": "chunk_00022.pt",
+      "ticks": 32,
+      "sha256": "f4e313f849c6e0ef018dcb048815b868cb3db3b49f70877289ee8c45474d4860"
+    },
+    {
+      "file": "chunk_00023.pt",
+      "ticks": 32,
+      "sha256": "9192590d67b4fc9aa071bb9cdc818a24584feb9b8778c6589acf939f668d0d40"
+    },
+    {
+      "file": "chunk_00024.pt",
+      "ticks": 32,
+      "sha256": "230a12673c91063481bf409571000d843f2da976cca5b420246d9519d88460e9"
+    }
+  ],
+  "pending_transition": false
+}

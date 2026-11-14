@@ -1,0 +1,28 @@
+{
+  "child_returncode": -6,
+  "simulation_completed": true,
+  "shutdown_diagnostic_completed": false,
+  "run_kind": "formal_128",
+  "cleanup_finished": true,
+  "process_completed_cleanly": false,
+  "diagnostic_exit_code": 134,
+  "command": [
+    "/home/autodrive/Isaac/env_isaaclab/bin/python",
+    "-u",
+    "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/scripts/evaluate_supermimic_v1.py",
+    "--init-policy-checkpoint",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_env5120_01/policy.pt",
+    "--g07-execution-root",
+    "/home/autodrive/LZQW/unitree_smash",
+    "--output",
+    "/tmp/supermimic_physical_capture_fix_20261114_Rtntwh/run",
+    "--seed",
+    "882072",
+    "--headless",
+    "--device",
+    "cuda:0",
+    "--physics-device",
+    "cuda:0",
+    "--record-physical-transitions"
+  ]
+}

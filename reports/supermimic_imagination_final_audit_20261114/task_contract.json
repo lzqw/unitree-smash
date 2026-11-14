@@ -1,0 +1,32 @@
+{
+  "version": "supermimic-source-task-contract-v2",
+  "source_policy_sha256": "8f510fe9f218beef791ac21675a19ed25d11f510a83fe247cddf2893bee08399",
+  "protocol_path": "configs/g07_full_racket_eval_v5_contact_recovery_origin0.json",
+  "protocol_sha256": "bfe6f2bef675bb4716e4970e6400eb86dd50b06e799e848030eb2a29ed84a309",
+  "suite": {
+    "path": "reports/G07_full_racket_v4/protocol_frozen01/training_cases.json",
+    "sha256": "2f9bf380d938a87418c4fa7da087e86d0da43f27a2ee6492bff7d7f1c3ff7c30",
+    "count": 128
+  },
+  "asset": {
+    "path": "assets/quadsmash_full_racket_v4_r3.usd",
+    "sha256": "c2264fcece90b042c7c6a1cac7d516af83972729d0402947e3a519041e184cf2"
+  },
+  "environment_spacing_m": 0.0,
+  "ground_size_m": [
+    64.0,
+    64.0,
+    0.1
+  ],
+  "contact_flight_recovery": "contact-flight-recovery-v1",
+  "control_dt_s": 0.01,
+  "physics_dt_s": 6.25e-05,
+  "episode_s": 8.0,
+  "precision_receipt_sha256": "0623405122424761a548fb51f3b43708cc887737e10067de4f1804c92487b032",
+  "sweep_audit": {
+    "maximum_iterations": 4096,
+    "tolerance_m": 1e-06
+  },
+  "extra_online_mpc": false,
+  "historical_base_and_recovery_assistance_preserved": true
+}
