@@ -20,8 +20,21 @@ def main():
     for name in ('archive','packed-data','physical-checkpoint','ball-checkpoint','task-checkpoint','safety-mapping','output'):
         parser.add_argument('--'+name,type=Path,required=True)
     parser.add_argument('--resume-training',type=Path)
+    parser.add_argument('--actor-update-budget',type=int,default=256)
+    parser.add_argument('--reference-policy-checkpoint',type=Path)
+    parser.add_argument('--bad-policy-checkpoint',type=Path)
+    parser.add_argument('--video-dir',type=Path)
+    parser.add_argument('--command-delta-budget',type=float,default=0.005)
+    parser.add_argument('--target-delta-budget-rad',type=float,default=0.04)
     AppLauncher.add_app_launcher_args(parser);args=parser.parse_args()
+    if args.actor_update_budget < 1: parser.error('actor-update-budget must be positive')
     args.output=args.output.resolve();args.output.mkdir(parents=True,exist_ok=False)
+    if args.video_dir is not None:
+        args.video_dir=args.video_dir.resolve();args.video_dir.mkdir(parents=True,exist_ok=True)
+        (args.output/'video_request.json').write_text(json.dumps({
+            'directory':str(args.video_dir),'headless':bool(getattr(args,'headless',False)),
+            'status':'directory prepared; native viewport capture is explicit and must be provided by the Isaac camera/recorder extension'
+        },indent=2)+'\n')
     write(args.output/'startup.json',dict(argv=sys.argv,cwd=os.getcwd(),executable=sys.executable,
         commit=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
         dirty_diff=subprocess.check_output(['git','diff'],text=True),script_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()))
@@ -68,7 +81,9 @@ def run(args):
         critic_starts=[start_cache[t] for t in CRITIC_TICKS]
         def as_state(row):return PhysicalImaginationStateV1.from_record(row,executor_template=template,launch=launch,device='cuda:0')
         timebase=Timebase(**json.loads((ROOT/'configs/supermimic_task_horizon_v2.json').read_text()))
-        trainer=PhysicalHorizonTrainer(actor,adapter,as_state(starts[1]),timebase)
+        trainer=PhysicalHorizonTrainer(actor,adapter,as_state(starts[1]),timebase,
+            command_delta_budget=args.command_delta_budget,
+            target_delta_budget_rad=args.target_delta_budget_rad)
         replay_archives=[];critic_coverage_blocks=0
         if args.resume_training:
             resumed=torch.load(args.resume_training,map_location='cuda:0',weights_only=False)
@@ -115,11 +130,19 @@ def run(args):
         archive=TrainingArchive(args.output/'native_transitions',metadata=dict(manifest,control_ticks=0,transitions=0,chunks=[],
             scope='Mixed-policy training transitions, NOT frozen evaluation',actor_update_budget=256),chunk_ticks=1000000)
         archive.attach_task_sequence(env);env.physical_transition_archive=archive
-        config=dict(actor_update_budget=256,native_ticks_per_actor_update=4,world_updates_per_actor_update=1,
+        def file_sha(path):
+            return hashlib.sha256(Path(path).read_bytes()).hexdigest() if path else None
+        reference_path=args.reference_policy_checkpoint or source_path
+        if file_sha(reference_path)!=manifest['source_sha256']:
+            raise ValueError('Reference policy checkpoint does not match the verified source actor')
+        bad_meta=dict(path=str(args.bad_policy_checkpoint.resolve()),sha256=file_sha(args.bad_policy_checkpoint)) if args.bad_policy_checkpoint else None
+        config=dict(actor_update_budget=args.actor_update_budget,native_ticks_per_actor_update=4,world_updates_per_actor_update=1,
             world_batch=128,imagination_batch=128,timebase=timebase.manifest(),actor_lr=5e-5,world_lr=2e-4,critic_lr=2e-4,
             policy_anchor=.05,critic_warmup_updates=200,critic_max_loss=50.,max_critic_only_blocks=32,
+            command_delta_budget=args.command_delta_budget,target_delta_budget_rad=args.target_delta_budget_rad,
             actor_whitelist=APPROACH_NAMES,source_sha256=manifest['source_sha256'],packed_data_sha256=packed_sha,
             initialization_native_return=expected['native_return_mean'],extra_mpc=0,
+            reference_policy=dict(path=str(reference_path),sha256=file_sha(reference_path)),bad_policy=bad_meta,
             sampling='actor: initial/fresh approach; critic: overlapping full-episode current starts, reverse-time order',
             actor_start_ticks=APPROACH_TICKS,critic_start_ticks=CRITIC_TICKS,critic_coverage_period=len(CRITIC_TICKS))
         write(args.output/'config.json',config)
@@ -130,7 +153,8 @@ def run(args):
             atomic_torch_save(dict(algorithm='supermimic_v1',adapter_schema=adapter.schema,actor=actor.state_dict(),
                 critic=trainer.critic.state_dict(),world=adapter.state_dict(),actor_optimizer=trainer.actor_opt.state_dict(),
                 world_optimizer=trainer.world_opt.state_dict(),critic_optimizer=trainer.critic_opt.state_dict(),
-                actor_updates=trainer.actor_updates,world_updates=trainer.world_updates,critic_updates=trainer.critic_updates,
+                actor_updates=trainer.actor_updates,actor_attempts=trainer.actor_attempts,
+                rejected_actor_updates=trainer.rejected_actor_updates,world_updates=trainer.world_updates,critic_updates=trainer.critic_updates,
                 native_ticks=tick,metadata=metadata,config=config,last_critic_loss=trainer.last_critic_loss,
                 critic_coverage_blocks=critic_coverage_blocks,
                 replay_archives=replay_archives+[str(archive.directory)],replay_rng=replay.generator.get_state(),
@@ -166,7 +190,10 @@ def run(args):
         while critic_coverage_blocks<len(critic_starts):cover_critic()
         ensure_critic()
         cursor=0;completed_returns=[];completed_discounted=[];phase='LEARNING'
-        while trainer.actor_updates<256:
+        max_attempts=max(args.actor_update_budget*8,args.actor_update_budget+8)
+        while trainer.actor_updates<args.actor_update_budget:
+            if trainer.actor_attempts>=max_attempts:
+                raise RuntimeError('Execution-space budget rejected too many actor updates')
             check_stop();cover_critic();ensure_critic()
             if shutil.disk_usage(args.output).free<8*1024**3:raise RuntimeError('Disk guard: less than8GiB free')
             started=time.perf_counter()
@@ -191,8 +218,8 @@ def run(args):
             row=pool[trainer.actor_updates%len(pool)];state=as_state(row)
             check_stop()
             stats=trainer.imagine_update(state)
-            if not any(v>0 for v in stats['parameter_max_changes'].values()):
-                raise RuntimeError('Actor optimizer step made no approach parameter change')
+            if stats['update_accepted'] and not any(v>0 for v in stats['parameter_max_changes'].values()):
+                raise RuntimeError('Accepted actor optimizer step made no approach parameter change')
             with torch.no_grad():
                 request=actor(state.observation,sample=False)[0]
                 preview,_,_=adapter.executor.forward(state.observation,request,state.clock_goal_context['joint_default'][0],
@@ -209,9 +236,10 @@ def run(args):
             write(args.output/'progress.json',record)
             with (args.output/'training_history.jsonl').open('a') as f:f.write(json.dumps(record)+'\n')
             print('PHYSICAL_LEARNING='+json.dumps(record),flush=True)
-            if trainer.actor_updates%32==0:save(f'checkpoint_{trainer.actor_updates:04d}.pt')
-        archive.flush();save('candidate_0256.pt')
+            if trainer.actor_updates and trainer.actor_updates%32==0:save(f'checkpoint_{trainer.actor_updates:04d}.pt')
+        archive.flush();save(f'candidate_{args.actor_update_budget:04d}.pt')
         write(args.output/'training_completed.json',dict(actor_updates=trainer.actor_updates,native_ticks=tick,
+             actor_attempts=trainer.actor_attempts,rejected_actor_updates=trainer.rejected_actor_updates,
              world_updates=trainer.world_updates,critic_updates=trainer.critic_updates,formal_evaluation=False))
         stage(args.output,'TRAINING_FINISHED',actor_updates=trainer.actor_updates)
     except BaseException as error:

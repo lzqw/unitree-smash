@@ -3,6 +3,7 @@
 This task adaptation is not a claim of reproducing SuperMimic's G1 model.
 No PPO objective or demonstration target is used for actor gradients.
 """
+import copy
 import time
 from pathlib import Path
 import torch
@@ -15,7 +16,8 @@ from .supermimic_physical_dataset_v1 import valid_windows
 
 
 class PhysicalHorizonTrainer:
-    def __init__(self,actor,adapter,initial_state,timebase):
+    def __init__(self,actor,adapter,initial_state,timebase,*,command_delta_budget=0.005,
+                 target_delta_budget_rad=0.04):
         self.actor,self.adapter,self.timebase=actor,adapter,timebase
         width=adapter.critic_input(initial_state).shape[-1]
         self.critic=MLP(width,(512,256,128),1).to(initial_state.physical.device)
@@ -32,6 +34,12 @@ class PhysicalHorizonTrainer:
         self.actor_updates=self.world_updates=self.critic_updates=0
         self.last_critic_loss=None
         self.anchor_coeff=.05;self.v_max=100./(1-timebase.gamma)
+        if command_delta_budget <= 0 or target_delta_budget_rad <= 0:
+            raise ValueError('Execution update budgets must be positive')
+        self.command_delta_budget=float(command_delta_budget)
+        self.target_delta_budget_rad=float(target_delta_budget_rad)
+        self.actor_attempts=0
+        self.rejected_actor_updates=0
         self.frozen_actor_hash=self.frozen_hash()
 
     def frozen_hash(self):
@@ -41,12 +49,18 @@ class PhysicalHorizonTrainer:
         cfg=self.timebase;state=initial_state.branch()
         states=[];rewards=[];dones=[];valid=[];anchors=[]
         before={k:p.detach().clone() for k,p in self.actor.named_parameters() if p.requires_grad}
+        actor_state_before={k:v.detach().clone() for k,v in self.actor.state_dict().items()}
+        optimizer_state_before=copy.deepcopy(self.actor_opt.state_dict())
         with torch.no_grad():
             context=initial_state.clock_goal_context
             initial_request=self.actor(initial_state.observation,sample=False)[0]
             initial_preview,_,_=self.adapter.executor.forward(initial_state.observation,initial_request,
                 context['joint_default'][0],context['limits'],initial_state.executor_memory)
             initial_command=initial_preview.final_joint_targets.clone()
+            reference_request=self.reference(initial_state.observation,sample=False)[0]
+            reference_preview,_,_=self.adapter.executor.forward(initial_state.observation,reference_request,
+                context['joint_default'][0],context['limits'],initial_state.executor_memory)
+            reference_command=reference_preview.final_joint_targets.clone()
         before_models=tensor_digest(self.adapter.state_dict().items())
         self.actor_opt.zero_grad(set_to_none=True);started=time.perf_counter()
         with frozen(self.adapter,self.critic), torch.set_grad_enabled(update_actor):
@@ -65,6 +79,7 @@ class PhysicalHorizonTrainer:
             loss=-ret.mean()+self.anchor_coeff*torch.stack(anchors).sum(0).mean()
             if not torch.isfinite(loss):raise FloatingPointError('Nonfinite physical BPTT objective')
             if update_actor:
+                self.actor_attempts+=1
                 loss.backward()
                 parameters=[p for p in self.actor.parameters() if p.requires_grad]
                 gradient=optimizer_step(self.actor_opt,parameters,element_clip=.1)
@@ -96,9 +111,28 @@ class PhysicalHorizonTrainer:
             updated_preview,_,_=self.adapter.executor.forward(initial_state.observation,updated_request,
                 context['joint_default'][0],context['limits'],initial_state.executor_memory)
             command_change=float((updated_preview.final_joint_targets-initial_command).abs().max())
-        return dict(actor_updates=self.actor_updates,critic_updates=self.critic_updates,world_updates=self.world_updates,
+            reference_command_delta=float((updated_preview.final_joint_targets-reference_command).abs().max())
+            reference_request_delta=float((updated_request-reference_request).abs().max())
+        accepted=True
+        if update_actor and (reference_request_delta>self.command_delta_budget or
+                             reference_command_delta>self.target_delta_budget_rad):
+            self.actor.load_state_dict(actor_state_before,strict=True)
+            self.actor_opt.load_state_dict(optimizer_state_before)
+            self.rejected_actor_updates+=1
+            self.actor_updates-=1
+            accepted=False
+            delta={k:0.0 for k in before}
+            command_change=0.0
+            request_change=0.0
+        else:
+            request_change=float((updated_request-initial_request).abs().max())
+        return dict(actor_updates=self.actor_updates,actor_attempts=self.actor_attempts,
+            rejected_actor_updates=self.rejected_actor_updates,update_accepted=accepted,
+            command_delta_budget=self.command_delta_budget,target_delta_budget_rad=self.target_delta_budget_rad,
+            critic_updates=self.critic_updates,world_updates=self.world_updates,
             imagined_return_mean=float(ret.detach().mean()),actor_gradient=float(gradient),parameter_max_changes=delta,
-            final_command_max_change=command_change,request_max_change=float((updated_request-initial_request).abs().max()),
+            final_command_max_change=command_change,request_max_change=request_change,
+            reference_final_command_delta=reference_command_delta,reference_request_delta=reference_request_delta,
             critic_loss=self.last_critic_loss,bptt_seconds=bptt_seconds,critic_seconds=time.perf_counter()-started,
             model_runtime_state_sha256=before_models,imagined_steps=len(rewards),
             imagined_start_elapsed_min=float(initial_state.clock_goal_context['elapsed'].min()),

@@ -1,0 +1,30 @@
+{
+  "schema": "supermimic-native-return-calibration-v1",
+  "reference_policy": {
+    "path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_env5120_01/policy.pt",
+    "sha256": "8f510fe9f218beef791ac21675a19ed25d11f510a83fe247cddf2893bee08399",
+    "native_return_mean": -12.52678434973663,
+    "qualified_airborne_string_contact": 74,
+    "ball_side_complete_except_recovery": 53,
+    "conditional_recovery": "34/74",
+    "complete5": 27
+  },
+  "bad_policy": {
+    "sha256": "b17416c68f7ceb69489c4b33bb8932959a289d3edf7b87039ed5538db0bd1898",
+    "native_return_mean": -20.813213545543356,
+    "qualified_airborne_string_contact": 77,
+    "ball_side_complete_except_recovery": 39,
+    "conditional_recovery": "26/77",
+    "complete5": 17
+  },
+  "update": {
+    "actor_updates": 16,
+    "imagination_s": 0.64,
+    "world_window_s": 0.16,
+    "command_delta_budget": 0.005,
+    "target_delta_budget_rad": 0.04,
+    "actor_whitelist": ["actor.approach.0", "actor.approach.2", "actor.approach.4"],
+    "native_reward_and_scoring_unchanged": true,
+    "online_mpc": false
+  }
+}
