@@ -1,0 +1,45 @@
+2026-11-14T02:33:31Z [5,924ms] [Info] [isaaclab.assets.articulation.articulation] Number of bodies: 28
+2026-11-14T02:33:31Z [5,924ms] [Info] [isaaclab.assets.articulation.articulation] Body names: ['base', 'FL_hip', 'FR_hip', 'Head_upper', 'RL_hip', 'RR_hip', 'MountPlate', 'FL_thigh', 'FR_thigh', 'Head_lower', 'RL_thigh', 'RR_thigh', 'base_link', 'FL_calf', 'FR_calf', 'RL_calf', 'RR_calf', 'link1', 'FL_foot', 'FR_foot', 'RL_foot', 'RR_foot', 'link2', 'link3', 'link4', 'link5', 'link6', 'Racket']
+2026-11-14T02:33:31Z [5,924ms] [Info] [isaaclab.assets.articulation.articulation] Number of joints: 18
+2026-11-14T02:33:31Z [5,924ms] [Info] [isaaclab.assets.articulation.articulation] Joint names: ['FL_hip_joint', 'FR_hip_joint', 'RL_hip_joint', 'RR_hip_joint', 'FL_thigh_joint', 'FR_thigh_joint', 'RL_thigh_joint', 'RR_thigh_joint', 'FL_calf_joint', 'FR_calf_joint', 'RL_calf_joint', 'RR_calf_joint', 'joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6']
+2026-11-14T02:33:31Z [5,924ms] [Info] [isaaclab.assets.articulation.articulation] Number of fixed tendons: 0
+2026-11-14T02:33:31Z [6,024ms] [Info] [isaaclab.assets.articulation.articulation] Actuator collection: legs with model 'ImplicitActuator' (type: implicit) and joint names: ['FL_hip_joint', 'FR_hip_joint', 'RL_hip_joint', 'RR_hip_joint', 'FL_thigh_joint', 'FR_thigh_joint', 'RL_thigh_joint', 'RR_thigh_joint', 'FL_calf_joint', 'FR_calf_joint', 'RL_calf_joint', 'RR_calf_joint'] [tensor([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11], device='cuda:0')].
+2026-11-14T02:33:31Z [6,028ms] [Info] [isaaclab.assets.articulation.articulation] Actuator collection: arm with model 'ImplicitActuator' (type: implicit) and joint names: ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6'] [tensor([12, 13, 14, 15, 16, 17], device='cuda:0')].
+2026-11-14T02:33:31Z [6,034ms] [Info] [isaaclab.assets.articulation.articulation] Simulation parameters for joints in /World/envs/env_.*/Robot:
++----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+|                                                  Simulation Joint Information (Prim path: /World/envs/env_.*/Robot)                                                  |
++-------+----------------+-----------+---------+----------+-----------------+------------------+------------------+------------------+-----------------+---------------+
+| Index | Name           | Stiffness | Damping | Armature | Static Friction | Dynamic Friction | Viscous Friction | Position Limits  | Velocity Limits | Effort Limits |
++-------+----------------+-----------+---------+----------+-----------------+------------------+------------------+------------------+-----------------+---------------+
+|   0   | FL_hip_joint   |   25.000  |  0.500  |  0.000   |      0.000      |      0.000       |      0.000       | [-1.047, 1.047]  |      30.000     |     23.500    |
+|   1   | FR_hip_joint   |   25.000  |  0.500  |  0.000   |      0.000      |      0.000       |      0.000       | [-1.047, 1.047]  |      30.000     |     23.500    |
+|   2   | RL_hip_joint   |   25.000  |  0.500  |  0.000   |      0.000      |      0.000       |      0.000       | [-1.047, 1.047]  |      30.000     |     23.500    |
+|   3   | RR_hip_joint   |   25.000  |  0.500  |  0.000   |      0.000      |      0.000       |      0.000       | [-1.047, 1.047]  |      30.000     |     23.500    |
+|   4   | FL_thigh_joint |   25.000  |  0.500  |  0.000   |      0.000      |      0.000       |      0.000       | [-1.571, 3.491]  |      30.000     |     23.500    |
+|   5   | FR_thigh_joint |   25.000  |  0.500  |  0.000   |      0.000      |      0.000       |      0.000       | [-1.571, 3.491]  |      30.000     |     23.500    |
+|   6   | RL_thigh_joint |   25.000  |  0.500  |  0.000   |      0.000      |      0.000       |      0.000       | [-0.524, 4.538]  |      30.000     |     23.500    |
+|   7   | RR_thigh_joint |   25.000  |  0.500  |  0.000   |      0.000      |      0.000       |      0.000       | [-0.524, 4.538]  |      30.000     |     23.500    |
+|   8   | FL_calf_joint  |   25.000  |  0.500  |  0.000   |      0.000      |      0.000       |      0.000       | [-2.723, -0.838] |      30.000     |     23.500    |
+|   9   | FR_calf_joint  |   25.000  |  0.500  |  0.000   |      0.000      |      0.000       |      0.000       | [-2.723, -0.838] |      30.000     |     23.500    |
+|   10  | RL_calf_joint  |   25.000  |  0.500  |  0.000   |      0.000      |      0.000       |      0.000       | [-2.723, -0.838] |      30.000     |     23.500    |
+|   11  | RR_calf_joint  |   25.000  |  0.500  |  0.000   |      0.000      |      0.000       |      0.000       | [-2.723, -0.838] |      30.000     |     23.500    |
+|   12  | joint1         |   80.000  |  4.000  |  0.000   |      0.000      |      0.000       |      0.000       | [-2.618, 2.168]  |      5.000      |    100.000    |
+|   13  | joint2         |   80.000  |  4.000  |  0.000   |      0.000      |      0.000       |      0.000       |  [0.000, 3.140]  |      5.000      |    100.000    |
+|   14  | joint3         |   80.000  |  4.000  |  0.000   |      0.000      |      0.000       |      0.000       | [-2.967, 0.000]  |      5.000      |    100.000    |
+|   15  | joint4         |   80.000  |  4.000  |  0.000   |      0.000      |      0.000       |      0.000       | [-1.745, 1.745]  |      5.000      |    100.000    |
+|   16  | joint5         |   80.000  |  4.000  |  0.000   |      0.000      |      0.000       |      0.000       | [-1.220, 1.220]  |      5.000      |    100.000    |
+|   17  | joint6         |   80.000  |  4.000  |  0.000   |      0.000      |      0.000       |      0.000       | [-2.094, 2.094]  |      5.000      |    100.000    |
++-------+----------------+-----------+---------+----------+-----------------+------------------+------------------+------------------+-----------------+---------------+
+2026-11-14T02:33:31Z [6,076ms] [Info] [isaaclab.assets.rigid_object.rigid_object] Rigid body initialized at: /World/envs/env_.*/Shuttle with root '/World/envs/env_.*/Shuttle'.
+2026-11-14T02:33:31Z [6,076ms] [Info] [isaaclab.assets.rigid_object.rigid_object] Number of instances: 128
+2026-11-14T02:33:31Z [6,076ms] [Info] [isaaclab.assets.rigid_object.rigid_object] Number of bodies: 1
+2026-11-14T02:33:31Z [6,076ms] [Info] [isaaclab.assets.rigid_object.rigid_object] Body names: ['Shuttle']
+2026-11-14T02:33:31Z [6,146ms] [Info] [isaacsim.core.simulation_manager.plugin] onResume: Stored initial time data
+2026-11-14T02:33:32Z [6,828ms] [Warning] [isaaclab.assets.rigid_object.rigid_object] The external wrench frame has been changed from False to True. This may lead to unexpected behavior.
+2026-11-14T02:55:35Z [1,329,946ms] [Info] [simulation_app.simulation_app] SimulationApp.close: Closing application
+2026-11-14T02:55:35Z [1,329,946ms] [Info] [simulation_app.simulation_app] SimulationApp.close: Replicator shutdown finished
+2026-11-14T02:55:35Z [1,329,946ms] [Info] [isaacsim.core.simulation_manager.plugin] onStop: Cleared time samples
+2026-11-14T02:55:35Z [1,330,026ms] [Info] [omni.physx.plugin] Using CUDA device ordinal 0.
+2026-11-14T02:55:35Z [1,330,044ms] [Info] [simulation_app.simulation_app] SimulationApp.close: Stage closed
+2026-11-14T02:55:35Z [1,330,044ms] [Info] [omni.kit.app.plugin] [1330.063s] Simulation App Shutting Down
+2026-11-14T02:55:35Z [1,330,045ms] [Info] [simulation_app.simulation_app] SimulationApp.close: shutting down app and releasing framework

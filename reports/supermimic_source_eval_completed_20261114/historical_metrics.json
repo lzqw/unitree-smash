@@ -1,0 +1,1793 @@
+{
+  "episodes": 128,
+  "distinct_TRAIN_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63,
+    64,
+    65,
+    66,
+    67,
+    68,
+    69,
+    70,
+    71,
+    72,
+    73,
+    74,
+    75,
+    76,
+    77,
+    78,
+    79,
+    80,
+    81,
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    94,
+    95,
+    96,
+    97,
+    98,
+    99,
+    100,
+    101,
+    102,
+    103,
+    104,
+    105,
+    106,
+    107,
+    108,
+    109,
+    110,
+    111,
+    112,
+    113,
+    114,
+    115,
+    116,
+    117,
+    118,
+    119,
+    120,
+    121,
+    122,
+    123,
+    124,
+    125,
+    126,
+    127
+  ],
+  "distinct_cases": 128,
+  "complete": 0,
+  "complete_success_rate": 0.0,
+  "airborne_contacts": 74,
+  "airborne_contact_rate": 0.578125,
+  "conditional_recovery_count": 34,
+  "conditional_recovery_rate": 0.4594594594594595,
+  "numerical_failures": 0,
+  "actual_racket_contacts": 110,
+  "attack_outgoing": 0,
+  "crossed_net": 71,
+  "landed_legal_court": 71,
+  "landed_target": 64,
+  "fault_counts": {
+    "robot_net_fault": 0,
+    "body_ball_fault": 0,
+    "wrong_side_fault": 0,
+    "double_hit_fault": 0,
+    "racket_invasion_fault": 0,
+    "body_over_net_fault": 0,
+    "under_net_obstruction_fault": 0,
+    "engineering_body_crossing": 0,
+    "bad_return_fault": 5,
+    "net_blocked_fault": 12
+  },
+  "formal_eligible": false,
+  "formal_acceptance": false,
+  "formal_cases_read": false,
+  "scope": "Frozen TRAIN cases only; diagnostic performance of one fixed policy, not an A/B panel score.",
+  "complete5": 27,
+  "complete5_success_rate": 0.2109375,
+  "primary_metric": "complete5",
+  "primary_speed_threshold_mps": 5.0,
+  "complete5_case_outcomes": [
+    {
+      "training_index": 0,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "no_rule_fault",
+        "actual_net_and_target",
+        "event_order",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 1,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery"
+      ]
+    },
+    {
+      "training_index": 2,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "actual_net_and_target"
+      ]
+    },
+    {
+      "training_index": 3,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery"
+      ]
+    },
+    {
+      "training_index": 4,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "released_downward_forward",
+        "actual_net_and_target",
+        "event_order",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 5,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "released_downward_forward",
+        "actual_net_and_target"
+      ]
+    },
+    {
+      "training_index": 6,
+      "air": true,
+      "recovery": true,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "actual_net_and_target"
+      ]
+    },
+    {
+      "training_index": 7,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 8,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery"
+      ]
+    },
+    {
+      "training_index": 9,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery"
+      ]
+    },
+    {
+      "training_index": 10,
+      "air": true,
+      "recovery": true,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": []
+    },
+    {
+      "training_index": 11,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery",
+        "no_rule_fault",
+        "actual_net_and_target",
+        "event_order"
+      ]
+    },
+    {
+      "training_index": 12,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery"
+      ]
+    },
+    {
+      "training_index": 13,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "released_downward_forward",
+        "actual_net_and_target"
+      ]
+    },
+    {
+      "training_index": 14,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "released_downward_forward",
+        "actual_net_and_target",
+        "event_order",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 15,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "released_downward_forward",
+        "actual_net_and_target"
+      ]
+    },
+    {
+      "training_index": 16,
+      "air": true,
+      "recovery": true,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": []
+    },
+    {
+      "training_index": 17,
+      "air": true,
+      "recovery": true,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": []
+    },
+    {
+      "training_index": 18,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery"
+      ]
+    },
+    {
+      "training_index": 19,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "no_rule_fault",
+        "released_downward_forward",
+        "actual_net_and_target",
+        "event_order",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 20,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery"
+      ]
+    },
+    {
+      "training_index": 21,
+      "air": true,
+      "recovery": true,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "actual_net_and_target"
+      ]
+    },
+    {
+      "training_index": 22,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery",
+        "no_rule_fault",
+        "actual_net_and_target",
+        "event_order",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 23,
+      "air": true,
+      "recovery": true,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": []
+    },
+    {
+      "training_index": 24,
+      "air": true,
+      "recovery": true,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": []
+    },
+    {
+      "training_index": 25,
+      "air": true,
+      "recovery": true,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": []
+    },
+    {
+      "training_index": 26,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 27,
+      "air": true,
+      "recovery": true,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": []
+    },
+    {
+      "training_index": 28,
+      "air": true,
+      "recovery": true,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": []
+    },
+    {
+      "training_index": 29,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "released_downward_forward",
+        "actual_net_and_target"
+      ]
+    },
+    {
+      "training_index": 30,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery"
+      ]
+    },
+    {
+      "training_index": 31,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "no_rule_fault",
+        "actual_net_and_target",
+        "event_order"
+      ]
+    },
+    {
+      "training_index": 32,
+      "air": true,
+      "recovery": true,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": []
+    },
+    {
+      "training_index": 33,
+      "air": true,
+      "recovery": true,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": []
+    },
+    {
+      "training_index": 34,
+      "air": true,
+      "recovery": true,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": []
+    },
+    {
+      "training_index": 35,
+      "air": true,
+      "recovery": true,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": []
+    },
+    {
+      "training_index": 36,
+      "air": true,
+      "recovery": true,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": []
+    },
+    {
+      "training_index": 37,
+      "air": true,
+      "recovery": true,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": []
+    },
+    {
+      "training_index": 38,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery"
+      ]
+    },
+    {
+      "training_index": 39,
+      "air": true,
+      "recovery": true,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": []
+    },
+    {
+      "training_index": 40,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 41,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "no_rule_fault",
+        "released_downward_forward",
+        "actual_net_and_target",
+        "event_order"
+      ]
+    },
+    {
+      "training_index": 42,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery"
+      ]
+    },
+    {
+      "training_index": 43,
+      "air": true,
+      "recovery": true,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": []
+    },
+    {
+      "training_index": 44,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "released_downward_forward",
+        "actual_net_and_target",
+        "event_order",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 45,
+      "air": true,
+      "recovery": true,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": []
+    },
+    {
+      "training_index": 46,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "no_rule_fault",
+        "actual_net_and_target",
+        "event_order"
+      ]
+    },
+    {
+      "training_index": 47,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "released_downward_forward",
+        "actual_net_and_target"
+      ]
+    },
+    {
+      "training_index": 48,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "no_rule_fault",
+        "released_downward_forward",
+        "actual_net_and_target",
+        "event_order"
+      ]
+    },
+    {
+      "training_index": 49,
+      "air": true,
+      "recovery": true,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": []
+    },
+    {
+      "training_index": 50,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery"
+      ]
+    },
+    {
+      "training_index": 51,
+      "air": true,
+      "recovery": true,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": []
+    },
+    {
+      "training_index": 52,
+      "air": true,
+      "recovery": true,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": []
+    },
+    {
+      "training_index": 53,
+      "air": true,
+      "recovery": true,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 54,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery"
+      ]
+    },
+    {
+      "training_index": 55,
+      "air": true,
+      "recovery": true,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": []
+    },
+    {
+      "training_index": 56,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "no_rule_fault",
+        "actual_net_and_target",
+        "event_order"
+      ]
+    },
+    {
+      "training_index": 57,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery"
+      ]
+    },
+    {
+      "training_index": 58,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery"
+      ]
+    },
+    {
+      "training_index": 59,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "actual_net_and_target"
+      ]
+    },
+    {
+      "training_index": 60,
+      "air": true,
+      "recovery": true,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": []
+    },
+    {
+      "training_index": 61,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery"
+      ]
+    },
+    {
+      "training_index": 62,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "actual_net_and_target"
+      ]
+    },
+    {
+      "training_index": 63,
+      "air": true,
+      "recovery": true,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": []
+    },
+    {
+      "training_index": 64,
+      "air": true,
+      "recovery": true,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "actual_net_and_target"
+      ]
+    },
+    {
+      "training_index": 65,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 66,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "released_downward_forward",
+        "actual_net_and_target",
+        "event_order",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 67,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery"
+      ]
+    },
+    {
+      "training_index": 68,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery",
+        "no_rule_fault",
+        "actual_net_and_target",
+        "event_order",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 69,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "actual_net_and_target"
+      ]
+    },
+    {
+      "training_index": 70,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery"
+      ]
+    },
+    {
+      "training_index": 71,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery"
+      ]
+    },
+    {
+      "training_index": 72,
+      "air": true,
+      "recovery": true,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 73,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "released_downward_forward",
+        "actual_net_and_target"
+      ]
+    },
+    {
+      "training_index": 74,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "actual_net_and_target"
+      ]
+    },
+    {
+      "training_index": 75,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "no_rule_fault",
+        "actual_net_and_target",
+        "event_order"
+      ]
+    },
+    {
+      "training_index": 76,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "released_downward_forward",
+        "actual_net_and_target",
+        "event_order",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 77,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery"
+      ]
+    },
+    {
+      "training_index": 78,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "released_downward_forward",
+        "actual_net_and_target",
+        "event_order",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 79,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "released_downward_forward",
+        "actual_net_and_target"
+      ]
+    },
+    {
+      "training_index": 80,
+      "air": true,
+      "recovery": true,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 81,
+      "air": true,
+      "recovery": true,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "actual_net_and_target",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 82,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery",
+        "released_downward_forward"
+      ]
+    },
+    {
+      "training_index": 83,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery",
+        "actual_net_and_target"
+      ]
+    },
+    {
+      "training_index": 84,
+      "air": true,
+      "recovery": true,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": []
+    },
+    {
+      "training_index": 85,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery"
+      ]
+    },
+    {
+      "training_index": 86,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 87,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery"
+      ]
+    },
+    {
+      "training_index": 88,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "released_downward_forward",
+        "actual_net_and_target",
+        "event_order",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 89,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "released_downward_forward",
+        "actual_net_and_target",
+        "event_order",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 90,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery"
+      ]
+    },
+    {
+      "training_index": 91,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "released_downward_forward",
+        "actual_net_and_target"
+      ]
+    },
+    {
+      "training_index": 92,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "released_downward_forward",
+        "actual_net_and_target",
+        "event_order",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 93,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "no_rule_fault",
+        "actual_net_and_target",
+        "event_order"
+      ]
+    },
+    {
+      "training_index": 94,
+      "air": true,
+      "recovery": true,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": []
+    },
+    {
+      "training_index": 95,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery"
+      ]
+    },
+    {
+      "training_index": 96,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery"
+      ]
+    },
+    {
+      "training_index": 97,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery",
+        "actual_net_and_target",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 98,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery"
+      ]
+    },
+    {
+      "training_index": 99,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery",
+        "actual_net_and_target"
+      ]
+    },
+    {
+      "training_index": 100,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "actual_net_and_target",
+        "event_order",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 101,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "no_rule_fault",
+        "released_downward_forward",
+        "actual_net_and_target",
+        "event_order"
+      ]
+    },
+    {
+      "training_index": 102,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "no_rule_fault",
+        "released_downward_forward",
+        "actual_net_and_target",
+        "event_order"
+      ]
+    },
+    {
+      "training_index": 103,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "released_downward_forward",
+        "actual_net_and_target"
+      ]
+    },
+    {
+      "training_index": 104,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "released_downward_forward",
+        "actual_net_and_target",
+        "event_order",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 105,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "released_downward_forward",
+        "actual_net_and_target",
+        "event_order",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 106,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "no_rule_fault",
+        "actual_net_and_target",
+        "event_order",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 107,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "actual_net_and_target",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 108,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "released_downward_forward",
+        "actual_net_and_target",
+        "event_order",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 109,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "actual_net_and_target",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 110,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "released_downward_forward",
+        "actual_net_and_target",
+        "event_order",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 111,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "released_downward_forward",
+        "actual_net_and_target"
+      ]
+    },
+    {
+      "training_index": 112,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "no_rule_fault",
+        "actual_net_and_target",
+        "event_order"
+      ]
+    },
+    {
+      "training_index": 113,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "released_downward_forward",
+        "actual_net_and_target",
+        "event_order",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 114,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 115,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery"
+      ]
+    },
+    {
+      "training_index": 116,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "released_downward_forward",
+        "actual_net_and_target",
+        "event_order",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 117,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "released_downward_forward",
+        "actual_net_and_target",
+        "event_order",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 118,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "actual_net_and_target"
+      ]
+    },
+    {
+      "training_index": 119,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "actual_net_and_target",
+        "event_order"
+      ]
+    },
+    {
+      "training_index": 120,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "actual_net_and_target"
+      ]
+    },
+    {
+      "training_index": 121,
+      "air": true,
+      "recovery": true,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": []
+    },
+    {
+      "training_index": 122,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "released_downward_forward",
+        "actual_net_and_target",
+        "event_order",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 123,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "no_rule_fault",
+        "actual_net_and_target",
+        "event_order"
+      ]
+    },
+    {
+      "training_index": 124,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "released_downward_forward",
+        "actual_net_and_target",
+        "event_order",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 125,
+      "air": true,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "same_flight_stable_recovery",
+        "speed_threshold"
+      ]
+    },
+    {
+      "training_index": 126,
+      "air": true,
+      "recovery": true,
+      "complete5": true,
+      "ball5_except_recovery": true,
+      "complete8": false,
+      "rejection_reasons": []
+    },
+    {
+      "training_index": 127,
+      "air": false,
+      "recovery": false,
+      "complete5": false,
+      "ball5_except_recovery": false,
+      "complete8": false,
+      "rejection_reasons": [
+        "legal_airborne_strings",
+        "same_flight_stable_recovery",
+        "released_downward_forward",
+        "actual_net_and_target",
+        "event_order",
+        "speed_threshold"
+      ]
+    }
+  ],
+  "legacy_complete_field_speed_threshold_mps": 8.0,
+  "fixed_policy_recording": {
+    "episodes": 128,
+    "samples": 98552,
+    "original_complete_expert_episodes": 0,
+    "manifest": "fixed_policy_traces/manifest.json",
+    "manifest_sha256": "7bb60d0022e5dfc7f66153807259e255c4b4391afe1436660ba2d306b79d4e5e"
+  },
+  "policy_sha256": "8f510fe9f218beef791ac21675a19ed25d11f510a83fe247cddf2893bee08399",
+  "protocol_sha256": "bfe6f2bef675bb4716e4970e6400eb86dd50b06e799e848030eb2a29ed84a309",
+  "noise_level": "none",
+  "noise_seed": 882072,
+  "actual_control_env_steps": 102400,
+  "controller_trial": true,
+  "support_disabled": false,
+  "recovery_assistance_execution": "reset-persistent-recovery-assistance-v1",
+  "landing_config": null,
+  "support_config": null,
+  "residual_actor_enabled": true,
+  "ground_extent_diagnostic": {
+    "original_configured_m": [
+      4096.0,
+      4096.0,
+      0.1
+    ],
+    "requested_m": [
+      64.0,
+      64.0,
+      0.1
+    ]
+  }
+}
