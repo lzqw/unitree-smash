@@ -1,0 +1,118 @@
+{
+  "source_checkpoint": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_env5120_01/policy.pt",
+  "source_sha256": "8f510fe9f218beef791ac21675a19ed25d11f510a83fe247cddf2893bee08399",
+  "task_contract": {
+    "version": "supermimic-source-task-contract-v2",
+    "source_policy_sha256": "8f510fe9f218beef791ac21675a19ed25d11f510a83fe247cddf2893bee08399",
+    "protocol_path": "configs/g07_full_racket_eval_v5_contact_recovery_origin0.json",
+    "protocol_sha256": "bfe6f2bef675bb4716e4970e6400eb86dd50b06e799e848030eb2a29ed84a309",
+    "suite": {
+      "path": "reports/G07_full_racket_v4/protocol_frozen01/training_cases.json",
+      "sha256": "2f9bf380d938a87418c4fa7da087e86d0da43f27a2ee6492bff7d7f1c3ff7c30",
+      "count": 128
+    },
+    "asset": {
+      "path": "assets/quadsmash_full_racket_v4_r3.usd",
+      "sha256": "c2264fcece90b042c7c6a1cac7d516af83972729d0402947e3a519041e184cf2"
+    },
+    "environment_spacing_m": 0.0,
+    "ground_size_m": [
+      64.0,
+      64.0,
+      0.1
+    ],
+    "contact_flight_recovery": "contact-flight-recovery-v1",
+    "control_dt_s": 0.01,
+    "physics_dt_s": 6.25e-05,
+    "episode_s": 8.0,
+    "precision_receipt_sha256": "0623405122424761a548fb51f3b43708cc887737e10067de4f1804c92487b032",
+    "sweep_audit": {
+      "maximum_iterations": 4096,
+      "tolerance_m": 1e-06
+    },
+    "extra_online_mpc": false,
+    "historical_base_and_recovery_assistance_preserved": true
+  },
+  "body_names": [
+    "base",
+    "FL_hip",
+    "FR_hip",
+    "Head_upper",
+    "RL_hip",
+    "RR_hip",
+    "MountPlate",
+    "FL_thigh",
+    "FR_thigh",
+    "Head_lower",
+    "RL_thigh",
+    "RR_thigh",
+    "base_link",
+    "FL_calf",
+    "FR_calf",
+    "RL_calf",
+    "RR_calf",
+    "link1",
+    "FL_foot",
+    "FR_foot",
+    "RL_foot",
+    "RR_foot",
+    "link2",
+    "link3",
+    "link4",
+    "link5",
+    "link6",
+    "Racket"
+  ],
+  "control_dt_s": 0.01,
+  "num_envs": 128,
+  "seed": 882072,
+  "runtime_commit": "382b28540f9eee291bb7ff3a007422b5e85a14da",
+  "schema": "supermimic-native-physical-transition-v1",
+  "joint_names": [
+    "FL_hip_joint",
+    "FR_hip_joint",
+    "RL_hip_joint",
+    "RR_hip_joint",
+    "FL_thigh_joint",
+    "FR_thigh_joint",
+    "RL_thigh_joint",
+    "RR_thigh_joint",
+    "FL_calf_joint",
+    "FR_calf_joint",
+    "RL_calf_joint",
+    "RR_calf_joint",
+    "joint1",
+    "joint2",
+    "joint3",
+    "joint4",
+    "joint5",
+    "joint6"
+  ],
+  "scope": "native data only; executor memory completeness not certified",
+  "substep_contact_traces": false,
+  "control_ticks": 128,
+  "transitions": 16384,
+  "chunks": [
+    {
+      "file": "chunk_00000.pt",
+      "ticks": 32,
+      "sha256": "59a8744c799afc1d08a3a2b4da13c9958877a2c82e172d8c0170c652b107448f"
+    },
+    {
+      "file": "chunk_00001.pt",
+      "ticks": 32,
+      "sha256": "f31b9d28680afcbbcb06302dfb88c257b1703c0400f60cc2b9d73d3de420a685"
+    },
+    {
+      "file": "chunk_00002.pt",
+      "ticks": 32,
+      "sha256": "4f89c02c3f3dae0e50d0a7ed6832aefe4773b2b90ad397a3c7e1e3458295f23e"
+    },
+    {
+      "file": "chunk_00003.pt",
+      "ticks": 32,
+      "sha256": "b60466cc5992bd8484da4f3cdc0fabf63b4f64ac8cc79ce4856ac7f04e0fa7c0"
+    }
+  ],
+  "pending_transition": false
+}

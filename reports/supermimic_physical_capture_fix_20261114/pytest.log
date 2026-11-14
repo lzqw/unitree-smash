@@ -1,0 +1,30 @@
+......F
+=================================== FAILURES ===================================
+_______ test_real_controller_memory_capture_before_and_after_cpu_action ________
+
+    @pytest.mark.skipif(not SOURCE.exists(), reason='Original controller checkpoint not mounted')
+    def test_real_controller_memory_capture_before_and_after_cpu_action():
+        from quadsmash.control.g07_shared_target_residual_v1 import make_g07_residual_controller
+        controller = make_g07_residual_controller(
+            torch.load(SOURCE, map_location='cpu', weights_only=False), 2, 'cpu')
+        before = capture_controller(controller)
+        controller.action({'policy': torch.zeros(2, 794)}, torch.zeros(18),
+                          torch.stack((-torch.ones(18), torch.ones(18)), -1))
+        after = capture_controller(controller)
+        assert 'controller/last_base_action' in after['tensors']
+        assert 'controller/mixer/arm_rate/target' in after['tensors']
+        assert 'controller/mixer/nonzero_seen' in after['tensors']
+        # Cross-check every construction-time tensor from the previous independent
+        # inventory, not just the outer mixer. New lazy states are also retained.
+        inventory = json.loads((Path(__file__).resolve().parents[1]/
+            'reports/supermimic_execution_preview_cpu_20261114/controller_memory_inventory.json').read_text())
+        for entry in inventory['attributes']:
+>           if entry['kind'] == 'tensor':
+               ^^^^^^^^^^^^^
+E           KeyError: 'kind'
+
+tests/test_supermimic_physical_capture.py:123: KeyError
+=========================== short test summary info ============================
+FAILED tests/test_supermimic_physical_capture.py::test_real_controller_memory_capture_before_and_after_cpu_action
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 6 passed in 0.89s
