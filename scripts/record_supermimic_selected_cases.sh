@@ -26,6 +26,8 @@ for index in "${INDICES[@]}"; do
     --training-index "$index" \
     --execution-root /home/autodrive/LZQW/unitree_smash \
     --fps 30 --width 640 --height 360 \
+    --rendering_mode performance \
+    --kit_args="--renderer/multiGpu/enabled=false" \
     --headless --enable_cameras --device cuda:0 \
     2>&1 | tee "$out/run.log"
   status=${PIPESTATUS[0]}
