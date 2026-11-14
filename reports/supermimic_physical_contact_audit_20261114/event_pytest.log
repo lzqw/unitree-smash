@@ -1,0 +1,42 @@
+......................................F
+=================================== FAILURES ===================================
+_______ test_actual_environment_method_delegates_residual_to_full_range ________
+
+    def test_actual_environment_method_delegates_residual_to_full_range():
+        # Execute the modified method, with a lightweight parent implementing the
+        # original FullRacketEnvV4 formula. This is not an Isaac/PhysX runtime test.
+        path=Path(__file__).parents[1]/'quadsmash/tasks/stand/supermimic_env_v1.py'
+        tree=ast.parse(path.read_text())
+        cls=next(n for n in tree.body if isinstance(n,ast.ClassDef))
+        method=next(n for n in cls.body if isinstance(n,ast.FunctionDef) and n.name=='_pre_physics_step')
+        method.decorator_list=[]
+        class Parent:
+            @staticmethod
+            def _pre_physics_step(obj,final):
+                obj.targets=full_range_targets(final,obj._sm_residual_limits)
+        scope={'torch':torch,'FullRacketEnvV4':Parent,'observe_native':lambda obj:{'policy':torch.zeros(2,794)}}
+        exec(compile(ast.Module(body=[method],type_ignores=[]),'<environment-method>','exec'),scope)
+        final=torch.linspace(-1,1,18).repeat(2,1)
+        limits=torch.stack((torch.full((18,),-2.),torch.full((18,),2.)),-1)
+        obj=SimpleNamespace(_sm_residual_controller=SimpleNamespace(
+            base=SimpleNamespace(action=lambda *a:torch.zeros(2,18)),
+            mixer=SimpleNamespace(action=lambda *a:final)),
+            _sm_residual_default=torch.zeros(18),_sm_residual_limits=limits,joint_ids=list(range(18)))
+>       scope['_pre_physics_step'](obj,torch.zeros(2,18))
+
+tests/test_supermimic_horizon_v2.py:283: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = namespace(_sm_residual_controller=namespace(base=namespace(action=<function test_actual_environment_method_delegates_r...., 0., 0., 0., 0., 0., 0., 0., 0.],
+        [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]]))
+actions = tensor([[0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+        [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]])
+
+>   ???
+E   AttributeError: 'types.SimpleNamespace' object has no attribute 'physical_transition_archive'
+
+<environment-method>:91: AttributeError
+=========================== short test summary info ============================
+FAILED tests/test_supermimic_horizon_v2.py::test_actual_environment_method_delegates_residual_to_full_range
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 38 passed in 1.68s

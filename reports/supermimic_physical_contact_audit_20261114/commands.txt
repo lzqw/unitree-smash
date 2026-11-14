@@ -1,0 +1,2 @@
+CUDA_VISIBLE_DEVICES="" QUADSMASH_PYTHON=/home/autodrive/Isaac/env_isaaclab/bin/python bash scripts/python.sh -m pytest tests/test_supermimic_event_hazard.py tests/test_supermimic_horizon_v2.py tests/test_supermimic_shuttle_flight.py -q -ra --maxfail=1
+CUDA_VISIBLE_DEVICES="" QUADSMASH_PYTHON=/home/autodrive/Isaac/env_isaaclab/bin/python bash scripts/python.sh scripts/audit_supermimic_shuttle_flight.py /tmp/supermimic_physical_capture_fix_20261114_Rtntwh/run/physical_transitions --output <new_output.json>
