@@ -9,7 +9,8 @@ import numpy as np
 import moderngl
 import imageio.v2 as imageio
 from PIL import Image,ImageDraw,ImageFont
-p=argparse.ArgumentParser();p.add_argument('--input',type=Path,required=True);p.add_argument('--output',type=Path);p.add_argument('--normal-only',action='store_true');a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--input',type=Path,required=True);p.add_argument('--output',type=Path);p.add_argument('--normal-only',action='store_true');p.add_argument('--fps',type=int,default=50);a=p.parse_args()
+if a.fps <= 0: p.error('--fps must be positive')
 meta=json.load(open(a.input/'geometry.json'));data=np.load(a.input/'geometry.npz');poses=np.load(a.input/'link_poses.npy');trace=json.load(open(a.input/'trajectory.json'));metrics=json.load(open(a.input/'metrics.json'))
 learned=metrics.get('controller','').startswith('learned')
 net_corrected=metrics.get('net_geometry_version') in {'environment-local-net-v2','environment-local-profiled-net-v3'}
@@ -99,7 +100,7 @@ def draw(index,slow=False):
  d.text((24,632),f"本回合{out_text}｜{margin_text}｜{landing_text}",font=small,fill='white')
  face='是' if e.get('effective_face_contact') else '否'
  yes=lambda value:'是' if value else '否'
- valid=bool(e.get('complete_smash') and not e.get('robot_net_contact') and not e.get('numerical_failures'))
+ valid=bool(e.get('complete5', e.get('complete_smash')) and not e.get('robot_net_contact') and not e.get('numerical_failures'))
  d.text((24,658),f"本回合完整：{yes(valid)}｜机器人碰网：{yes(e.get('robot_net_contact'))}｜稳定恢复：{yes(e.get('recovery_success'))}｜有效拍面：{face}",font=small,fill=(220,225,235))
  population='正式单面板' if metrics.get('formal_panel_recording') else '开发整组'
  conclusion='完整结论见双面板400回合报告' if metrics.get('formal_panel_recording') else '非正式400回合验收'
@@ -110,12 +111,12 @@ def draw(index,slow=False):
  return np.asarray(img)
 out=a.output or a.input/('G07_near_net_learned_replay.mp4' if learned else 'G07_near_net_teacher_replay.mp4')
 contact_index=min(range(len(trace)),key=lambda i:abs(trace[i]['time_s']-(metrics['best'].get('contact_time_s') or 1.48)))
-with imageio.get_writer(str(out),fps=50,codec='libx264',quality=8,macro_block_size=8,output_params=['-movflags','+faststart']) as writer:
+with imageio.get_writer(str(out),fps=a.fps,codec='libx264',quality=8,macro_block_size=8,output_params=['-movflags','+faststart']) as writer:
  for slow in ((False,) if a.normal_only else (False,True)):
   for i in range(len(poses)):
    frame=draw(i,slow);writer.append_data(frame)
    if slow:writer.append_data(frame)
    if not slow and i in (0,contact_index,max(0,contact_index-5),min(len(poses)-1,contact_index+10)):imageio.imwrite(a.input/f'preview_{i:03d}.jpg',frame)
 imageio.imwrite(a.input/'poster.jpg',draw(contact_index))
-(a.input/'video.json').write_text(json.dumps(dict(path=str(out),frames=len(poses)*(1 if a.normal_only else 3),fps=50,duration_s=len(poses)*(.02 if a.normal_only else .06),resolution=[width,height],renderer=ctx.info['GL_RENDERER'],motion='Measured 50 Hz link poses and ball positions, no invented motion',development_recording=not metrics.get('formal_panel_recording',False),formal_acceptance=False,selected_lane=metrics['selected_video_lane'],segments=['normal speed'] if a.normal_only else ['normal speed','half speed replay']),indent=2)+'\n')
+(a.input/'video.json').write_text(json.dumps(dict(path=str(out),frames=len(poses)*(1 if a.normal_only else 3),fps=a.fps,duration_s=len(poses)/a.fps*(1 if a.normal_only else 3),resolution=[width,height],renderer=ctx.info['GL_RENDERER'],motion=f'Measured {a.fps:g} Hz link poses and ball positions, no invented motion',development_recording=not metrics.get('formal_panel_recording',False),formal_acceptance=False,selected_lane=metrics['selected_video_lane'],segments=['normal speed'] if a.normal_only else ['normal speed','half speed replay']),indent=2)+'\n')
 print(out,flush=True)
