@@ -28,6 +28,7 @@ def main():
     parser.add_argument('--init-policy-checkpoint', type=Path, required=True)
     parser.add_argument('--g07-execution-root', type=Path, default=None,
                         help='Root containing the immutable measured G07 execution sources')
+    parser.add_argument('--precision-receipt', type=Path)
     parser.add_argument('--timebase-config', type=Path, default=ROOT/'configs/supermimic_task_horizon_v2.json')
     parser.add_argument('--iterations', type=int, default=40000)
     parser.add_argument('--num-envs', type=int, default=512)
@@ -161,6 +162,8 @@ def main():
         from quadsmash.rl.supermimic_timebase_v2 import Timebase, full_range_targets
         from quadsmash.rl.supermimic_sequence_replay_v2 import SequenceReplay
         from quadsmash.rl.supermimic_horizon_learner_v2 import HorizonTrainer
+        from quadsmash.rl.supermimic_task_contract import (
+            resolve_task_contract, make_task_cfg, require_resume_contract, summarize_episode)
         from quadsmash.tasks.stand.supermimic_env_v1 import SuperMimicEnvV1, make_supermimic_cfg
         from quadsmash.tasks.stand.observation_contract import observe_native
         from quadsmash.control.full_racket_residual_v4 import FullRacketResidualControllerV4
@@ -180,19 +183,24 @@ def main():
             raise ValueError('Require an audited native residual policy contract')
         stage('SOURCE_LOADED', source=str(args.init_policy_checkpoint.resolve()),
               source_sha256=hashlib.sha256(args.init_policy_checkpoint.read_bytes()).hexdigest())
-        cfg = make_supermimic_cfg(args.num_envs)
+        task_contract, protocol, cases0, receipt = resolve_task_contract(
+            source, args.init_policy_checkpoint, execution_root=args.g07_execution_root,
+            precision_receipt=args.precision_receipt)
+        if args.resume:
+            require_resume_contract(torch.load(args.resume, map_location='cpu', weights_only=False), task_contract)
+        cfg = make_task_cfg(args.num_envs, task_contract, protocol, receipt)
         cfg.seed, cfg.sim.device = args.seed, args.device or 'cuda:0'
         cfg.sweep_audit_iterations = 0
         if abs(cfg.sim.dt * cfg.decimation - timebase.control_dt_s) > 1e-10:
             raise ValueError('Timebase does not match the real environment; physics is not changed automatically')
         if abs(cfg.episode_length_s - timebase.episode_s) > 1e-10:
             raise ValueError('Episode contract mismatch')
-        protocol = json.loads((ROOT/'configs/g07_full_racket_eval_v4_r3.json').read_text())
-        cases0 = json.loads((ROOT/protocol['training_suite']['path']).read_text())['cases']
         cases = [cases0[i % len(cases0)] for i in range(args.num_envs)]
         stage('BEFORE_ENV', num_envs=args.num_envs, device=str(cfg.sim.device))
         env = SuperMimicEnvV1(cfg, cases=cases, residual_policy_checkpoint=source,
-                              g07_execution_root=args.g07_execution_root)
+                              g07_execution_root=args.g07_execution_root,
+                              contact_flight_recovery=task_contract['contact_flight_recovery'])
+        (args.output/'task_contract.json').write_text(json.dumps(task_contract, indent=2)+'\n')
         stage('AFTER_ENV')
         wrapper = RslRlVecEnvWrapper(env, clip_actions=None)
         stage('BEFORE_RESET')
@@ -224,6 +232,7 @@ def main():
                                  autoregressive_world_fit=args.world_autoregressive_fit)
         stage('TRAINER_READY', obs_dim=int(obs.shape[-1]), action_dim=18)
         metadata = {'init_policy_checkpoint': init_meta, 'old_checkpoint': None, 'mpc': None, 'teacher': None,
+                    'task_contract': task_contract,
                     'bc': None, 'num_envs': args.num_envs, 'seed': args.seed,
                     'timebase': timebase.manifest(), 'init_source_sha256': hashlib.sha256(args.init_policy_checkpoint.read_bytes()).hexdigest(),
                     'world_representation': 'structured_native_history_v1_next_frame_plus_tail_plus_event_latches',
@@ -251,7 +260,7 @@ def main():
             'episodes': 0, 'qualified_airborne_string_contact': 0,
             'full_episodes': 0,
             'ball_side_complete_except_recovery': 0, 'recovery_success': 0,
-            'complete5': 0, 'frame_hit': 0, 'nonfoot_contact': 0,
+            'complete5': 0, 'frame_hit': 0, 'nonfoot_contact': None,
             'body_ground_seen': 0, 'rally_fault': 0,
         }
         if args.resume:
@@ -303,30 +312,20 @@ def main():
             new_records = env.rally_records[record_cursor:]
             record_cursor += len(new_records)
             for record in new_records:
-                contact = bool(record.get('legal_initial_contact', False)
-                               and record.get('string_hit', False)
-                               and record.get('airborne_string_hit', False))
+                measured = summarize_episode(record)
+                contact = bool(measured['qualified_airborne_string_contact'])
                 native_event_totals['episodes'] += 1
                 native_event_totals['full_episodes'] += int(record.get('episode_timeout', False))
                 native_event_totals['qualified_airborne_string_contact'] += int(contact)
                 native_event_totals['ball_side_complete_except_recovery'] += int(
-                    contact and record.get('released', False)
-                    and record.get('crossed_net', False)
-                    and record.get('landed_target', False))
+                    measured['ball_side_complete_except_recovery'])
                 native_event_totals['recovery_success'] += int(record.get('recovery_success', False))
                 native_event_totals['complete5'] += int(record.get('complete5', False))
                 native_event_totals['frame_hit'] += int(record.get('frame_hit', False))
-                recovery = record.get('contact_flight_recovery') or {}
-                # The current episode record exposes body/non-foot landing,
-                # not a head-specific collision label. Keep this explicitly
-                # named so the training log cannot overclaim head contact.
-                native_event_totals['nonfoot_contact'] += int(recovery.get('body_landing', False))
-                native_event_totals['body_ground_seen'] += int(record.get('ground_seen', False))
-                native_event_totals['rally_fault'] += int(any(
-                    bool(record.get(key, False)) for key in (
-                        'robot_net_fault', 'body_ball_fault', 'wrong_side_fault',
-                        'double_hit_fault', 'racket_invasion_fault', 'body_over_net_fault',
-                        'under_net_obstruction_fault', 'bad_return_fault', 'net_blocked_fault')))
+                native_event_totals['body_ground_seen'] += int(measured['body_ground_seen'])
+                native_event_totals['rally_fault'] += int(measured['rally_fault'])
+                with (args.output/'native_episodes.jsonl').open('a') as stream:
+                    stream.write(json.dumps(record)+'\n')
             if local_iteration == 0:
                 stage('FIRST_STEP_OK', reward_finite=bool(torch.isfinite(reward).all().item()),
                       done_count=int(done.sum().item()))

@@ -179,10 +179,31 @@ class SuperMimicEnvV1(FullRacketEnvV4):
 
     @torch.inference_mode()
     def _reset_idx(self, ids):
+        terminal = {}
+        if self._inside_step and self._v4_ready and ids.numel():
+            qualified = (self.rally.legal_initial_contact & self.rally.string_hit
+                         & self.rally.airborne_string_hit)
+            ball_ok = self.rally.complete5(torch.ones_like(self.rally_recovery_success))
+            faults = self.rally.faulted()
+            for i in ids[self._episode_has_stepped[ids]].cpu().tolist():
+                terminal[(i, int(self.episode_index[i]))] = dict(
+                    qualified_airborne_string_contact=bool(qualified[i]),
+                    ball_side_complete_except_recovery=bool(ball_ok[i]),
+                    body_ground_seen=bool(self.body_ground_seen[i]),
+                    rally_fault=bool(faults[i]),
+                    head_contact=None, independent_nonfoot_contact=None,
+                    event_source='native_pre_reset_rally_and_contact_flight_v1',
+                    terminal_control_tick=int(self.common_step_counter))
+        record_start = len(self.rally_records) if self._v4_ready else 0
         if self._inside_step and ids.numel():
             self._sm_final_event_state[ids] = self.supermimic_event_state()[ids]
             self._sm_final_event_state_valid[ids] = True
         super()._reset_idx(ids)
+        for row in self.rally_records[record_start:]:
+            key = (row['env_id'], row['episode_index'])
+            if key not in terminal:
+                raise RuntimeError('Completed episode has no pre-reset task evidence')
+            row.update(terminal[key])
         if not self._inside_step:
             self._sm_final_event_state_valid[ids] = False
         self._sm_reset_events(ids)
