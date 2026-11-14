@@ -1,0 +1,1253 @@
+{
+  "source": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_env5120_01/policy.pt",
+  "source_sha256": "8f510fe9f218beef791ac21675a19ed25d11f510a83fe247cddf2893bee08399",
+  "count": 2,
+  "native_steps": 0,
+  "scope": "Construction-time inventory only; lazy runtime states and contact caches not exhaustively captured. No training or dynamics evidence.",
+  "attributes": [
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.gains",
+      "kind": "list",
+      "length": 2
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.walk.actor",
+      "kind": "network",
+      "class": "RecursiveScriptModule"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.walk.last_raw",
+      "kind": "tensor",
+      "shape": [
+        2,
+        12
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.walk.reached",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.bool"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.walk.tick",
+      "kind": "int",
+      "value": 0
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.standing.actor",
+      "kind": "network",
+      "class": "RecursiveScriptModule"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.standing.last_raw",
+      "kind": "tensor",
+      "shape": [
+        2,
+        12
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.standing.reached",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.bool"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.standing.tick",
+      "kind": "int",
+      "value": 0
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.standing.standing_ticks",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.int64"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.standing.side_aware_roll_feedback",
+      "kind": "bool",
+      "value": false
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.strike",
+      "kind": "network",
+      "class": "PiecewiseAffinePolicy"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.walk_seed",
+      "kind": "tensor",
+      "shape": [
+        15
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.standing_seed",
+      "kind": "tensor",
+      "shape": [
+        5
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.arm",
+      "kind": "tensor",
+      "shape": [
+        6
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.arm_velocity",
+      "kind": "tensor",
+      "shape": [
+        6
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.pitch_basis",
+      "kind": "tensor",
+      "shape": [
+        6
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.smooth_recovery_arm",
+      "kind": "bool",
+      "value": true
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.walk_heading_gain",
+      "kind": "float",
+      "value": 0.0
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.lateral_residual_feedback",
+      "kind": "bool",
+      "value": true
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.nominal_pitch",
+      "kind": "float",
+      "value": 0.20725145290511404
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.leg_event_time_gain",
+      "kind": "float",
+      "value": 1.0
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.leg_recovery_blend.seconds",
+      "kind": "float",
+      "value": 0.08
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.leg_recovery_blend.started",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.bool"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.leg_recovery_blend.start_time",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.leg_recovery_blend.start_leg",
+      "kind": "tensor",
+      "shape": [
+        2,
+        12
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.kinematics",
+      "kind": "network",
+      "class": "FullRacketKinematicsV4"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.task_eye",
+      "kind": "tensor",
+      "shape": [
+        1,
+        6,
+        6
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.face_sign",
+      "kind": "int",
+      "value": 1
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.contact_offset",
+      "kind": "tensor",
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.target_world",
+      "kind": "tensor",
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.normal_world",
+      "kind": "tensor",
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.velocity_world",
+      "kind": "tensor",
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.velocity_world_override",
+      "kind": "NoneType",
+      "value": null
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.preparation",
+      "kind": "NoneType",
+      "value": null
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.joint_preparation",
+      "kind": "network",
+      "class": "FullRacketJointPreparation"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.face_feedback",
+      "kind": "network",
+      "class": "FullRacketFaceFeedback"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.arm_target_rate.rate",
+      "kind": "float",
+      "value": 5.0
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.arm_target_rate.control_dt",
+      "kind": "float",
+      "value": 0.01
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.arm_target_rate.target",
+      "kind": "tensor",
+      "shape": [
+        2,
+        6
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.arm_target_rate.clock",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.arm_target_rate.initialized",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.bool"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.last_arm_targets_before_slew",
+      "kind": "NoneType",
+      "value": null
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher.last_arm_targets_after_slew",
+      "kind": "NoneType",
+      "value": null
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.base",
+      "kind": "tensor",
+      "shape": [
+        38
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.parameters",
+      "kind": "tensor",
+      "shape": [
+        2,
+        38
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.event_time",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.planned",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.bool"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.logs",
+      "kind": "list",
+      "length": 0
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.prepose_gain",
+      "kind": "float",
+      "value": 0.1
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.height_intercept",
+      "kind": "NoneType",
+      "value": null
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.target_offset_world",
+      "kind": "tensor",
+      "shape": [
+        2,
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.event_velocity_world",
+      "kind": "NoneType",
+      "value": null
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.actor",
+      "kind": "network",
+      "class": "ScaledResidualActor"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.mixer.scale",
+      "kind": "tensor",
+      "shape": [
+        18
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.mixer.arm_rate.rate",
+      "kind": "float",
+      "value": 5.0
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.mixer.arm_rate.control_dt",
+      "kind": "float",
+      "value": 0.01
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.mixer.arm_rate.target",
+      "kind": "tensor",
+      "shape": [
+        2,
+        6
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.mixer.arm_rate.clock",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.mixer.arm_rate.initialized",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.bool"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.mixer.nonzero_seen",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.bool"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.mixer.last_requested",
+      "kind": "NoneType",
+      "value": null
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.mixer.last_actual",
+      "kind": "NoneType",
+      "value": null
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.actor",
+      "kind": "network",
+      "class": "ScaledResidualActor"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.mixer.scale",
+      "kind": "tensor",
+      "shape": [
+        18
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.mixer.arm_rate.rate",
+      "kind": "float",
+      "value": 5.0
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.mixer.arm_rate.control_dt",
+      "kind": "float",
+      "value": 0.01
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.mixer.arm_rate.target",
+      "kind": "tensor",
+      "shape": [
+        2,
+        6
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.mixer.arm_rate.clock",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.mixer.arm_rate.initialized",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.bool"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.mixer.nonzero_seen",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.bool"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.mixer.last_requested",
+      "kind": "NoneType",
+      "value": null
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.mixer.last_actual",
+      "kind": "NoneType",
+      "value": null
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.reference",
+      "alias_of": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.count",
+      "kind": "int",
+      "value": 2
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.device",
+      "kind": "str",
+      "value": "cpu"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.population",
+      "kind": "tensor",
+      "shape": [
+        2,
+        38
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.reference",
+      "alias_of": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.aim_uv_m",
+      "kind": "list",
+      "length": 2
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.source.original_aim_uv_m",
+      "kind": "list",
+      "length": 2
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.reference",
+      "alias_of": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.count",
+      "kind": "int",
+      "value": 2
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.device",
+      "kind": "str",
+      "value": "cpu"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.source.runtime_parameters",
+      "kind": "tensor",
+      "shape": [
+        2,
+        38
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.reference",
+      "alias_of": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.layers",
+      "kind": "list",
+      "length": 2
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.source.runtime_parameters",
+      "kind": "tensor",
+      "shape": [
+        2,
+        38
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.reference",
+      "alias_of": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.source.runtime_matrices",
+      "kind": "list",
+      "length": 2
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.reference",
+      "alias_of": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.teacher",
+      "alias_of": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.gain",
+      "kind": "float",
+      "value": 0.5
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.start",
+      "kind": "float",
+      "value": 2.0
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.rate.rate",
+      "kind": "float",
+      "value": 5.0
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.rate.control_dt",
+      "kind": "float",
+      "value": 0.01
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.rate.target",
+      "kind": "tensor",
+      "shape": [
+        2,
+        6
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.rate.clock",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.rate.initialized",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.bool"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.valid_plan",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.bool"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.ever_active",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.bool"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.plan_cursor",
+      "kind": "int",
+      "value": 0
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.eye",
+      "kind": "tensor",
+      "shape": [
+        1,
+        6,
+        6
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.source.last_diagnostic",
+      "kind": "NoneType",
+      "value": null
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.reference",
+      "alias_of": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.teacher",
+      "alias_of": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.velocity",
+      "kind": "tensor",
+      "shape": [
+        6
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.source.last_diagnostic",
+      "kind": "NoneType",
+      "value": null
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.reference",
+      "alias_of": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.clock",
+      "kind": "tensor",
+      "shape": [
+        800
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.table",
+      "kind": "tensor",
+      "shape": [
+        800,
+        18
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.group",
+      "kind": "str",
+      "value": "legs"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.alignment",
+      "kind": "str",
+      "value": "planned"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.gain",
+      "kind": "float",
+      "value": 1.0
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.reference_event",
+      "kind": "float",
+      "value": 2.747239351272583
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.reference_public_hit",
+      "kind": "float",
+      "value": 2.7300000190734863
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.mixer.scale",
+      "kind": "tensor",
+      "shape": [
+        18
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.mixer.arm_rate.rate",
+      "kind": "float",
+      "value": 5.0
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.mixer.arm_rate.control_dt",
+      "kind": "float",
+      "value": 0.01
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.mixer.arm_rate.target",
+      "kind": "tensor",
+      "shape": [
+        2,
+        6
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.mixer.arm_rate.clock",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.mixer.arm_rate.initialized",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.bool"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.mixer.nonzero_seen",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.bool"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.mixer.last_requested",
+      "kind": "NoneType",
+      "value": null
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.mixer.last_actual",
+      "kind": "NoneType",
+      "value": null
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.air_hit_seen",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.bool"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.first_public_hit_clock",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.source.last_request",
+      "kind": "NoneType",
+      "value": null
+    },
+    {
+      "path": "controller.base.source.source.source.source.requester.model.names",
+      "kind": "list",
+      "length": 28
+    },
+    {
+      "path": "controller.base.source.source.source.source.requester.model.root",
+      "kind": "int",
+      "value": 0
+    },
+    {
+      "path": "controller.base.source.source.source.source.requester.model.edges",
+      "kind": "list",
+      "length": 27
+    },
+    {
+      "path": "controller.base.source.source.source.source.requester.cap",
+      "kind": "float",
+      "value": 5.0
+    },
+    {
+      "path": "controller.base.source.source.source.source.requester.horizon_s",
+      "kind": "float",
+      "value": 0.03
+    },
+    {
+      "path": "controller.base.source.source.source.source.requester.position_scale_rad",
+      "kind": "float",
+      "value": 0.15
+    },
+    {
+      "path": "controller.base.source.source.source.source.requester.original_leg_velocity_limit_rad_s",
+      "kind": "float",
+      "value": 30.0
+    },
+    {
+      "path": "controller.base.source.source.source.source.requester.regularization",
+      "kind": "float",
+      "value": 0.05
+    },
+    {
+      "path": "controller.base.source.source.source.source.mixer.scale",
+      "kind": "tensor",
+      "shape": [
+        18
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.mixer.arm_rate.rate",
+      "kind": "float",
+      "value": 5.0
+    },
+    {
+      "path": "controller.base.source.source.source.source.mixer.arm_rate.control_dt",
+      "kind": "float",
+      "value": 0.01
+    },
+    {
+      "path": "controller.base.source.source.source.source.mixer.arm_rate.target",
+      "kind": "tensor",
+      "shape": [
+        2,
+        6
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.mixer.arm_rate.clock",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.source.mixer.arm_rate.initialized",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.bool"
+    },
+    {
+      "path": "controller.base.source.source.source.source.mixer.nonzero_seen",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.bool"
+    },
+    {
+      "path": "controller.base.source.source.source.source.mixer.last_requested",
+      "kind": "NoneType",
+      "value": null
+    },
+    {
+      "path": "controller.base.source.source.source.source.mixer.last_actual",
+      "kind": "NoneType",
+      "value": null
+    },
+    {
+      "path": "controller.base.source.source.source.source.last_diagnostic",
+      "kind": "NoneType",
+      "value": null
+    },
+    {
+      "path": "controller.base.source.source.source.reference",
+      "alias_of": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base"
+    },
+    {
+      "path": "controller.base.source.source.source.teacher",
+      "alias_of": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher"
+    },
+    {
+      "path": "controller.base.source.source.source.requester.model.names",
+      "kind": "list",
+      "length": 28
+    },
+    {
+      "path": "controller.base.source.source.source.requester.model.root",
+      "kind": "int",
+      "value": 0
+    },
+    {
+      "path": "controller.base.source.source.source.requester.model.edges",
+      "kind": "list",
+      "length": 27
+    },
+    {
+      "path": "controller.base.source.source.source.requester.gain",
+      "kind": "float",
+      "value": 0.0
+    },
+    {
+      "path": "controller.base.source.source.source.requester.leg_cap",
+      "kind": "float",
+      "value": 0.0
+    },
+    {
+      "path": "controller.base.source.source.source.requester.preview_s",
+      "kind": "float",
+      "value": 0.03
+    },
+    {
+      "path": "controller.base.source.source.source.requester.scale_rad",
+      "kind": "float",
+      "value": 0.15
+    },
+    {
+      "path": "controller.base.source.source.source.mixer.scale",
+      "kind": "tensor",
+      "shape": [
+        18
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.mixer.arm_rate.rate",
+      "kind": "float",
+      "value": 5.0
+    },
+    {
+      "path": "controller.base.source.source.source.mixer.arm_rate.control_dt",
+      "kind": "float",
+      "value": 0.01
+    },
+    {
+      "path": "controller.base.source.source.source.mixer.arm_rate.target",
+      "kind": "tensor",
+      "shape": [
+        2,
+        6
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.mixer.arm_rate.clock",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.source.source.mixer.arm_rate.initialized",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.bool"
+    },
+    {
+      "path": "controller.base.source.source.source.mixer.nonzero_seen",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.bool"
+    },
+    {
+      "path": "controller.base.source.source.source.mixer.last_requested",
+      "kind": "NoneType",
+      "value": null
+    },
+    {
+      "path": "controller.base.source.source.source.mixer.last_actual",
+      "kind": "NoneType",
+      "value": null
+    },
+    {
+      "path": "controller.base.source.source.source.valid_plan",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.bool"
+    },
+    {
+      "path": "controller.base.source.source.source.plan_cursor",
+      "kind": "int",
+      "value": 0
+    },
+    {
+      "path": "controller.base.source.source.source.last_diagnostic",
+      "kind": "NoneType",
+      "value": null
+    },
+    {
+      "path": "controller.base.source.source.requester.model.names",
+      "kind": "list",
+      "length": 28
+    },
+    {
+      "path": "controller.base.source.source.requester.model.root",
+      "kind": "int",
+      "value": 0
+    },
+    {
+      "path": "controller.base.source.source.requester.model.edges",
+      "kind": "list",
+      "length": 27
+    },
+    {
+      "path": "controller.base.source.source.requester.feet",
+      "kind": "list",
+      "length": 4
+    },
+    {
+      "path": "controller.base.source.source.requester.legs",
+      "kind": "list",
+      "length": 4
+    },
+    {
+      "path": "controller.base.source.source.requester.gain",
+      "kind": "float",
+      "value": 1.0
+    },
+    {
+      "path": "controller.base.source.source.requester.horizontal",
+      "kind": "bool",
+      "value": true
+    },
+    {
+      "path": "controller.base.source.source.requester.rotation_position_gain",
+      "kind": "float",
+      "value": 0.2
+    },
+    {
+      "path": "controller.base.source.source.requester.rotation_velocity_gain_s",
+      "kind": "float",
+      "value": 0.02
+    },
+    {
+      "path": "controller.base.source.source.requester.horizontal_velocity_gain_s",
+      "kind": "float",
+      "value": 0.025
+    },
+    {
+      "path": "controller.base.source.source.requester.maximum_virtual_rotation_rad",
+      "kind": "float",
+      "value": 0.08
+    },
+    {
+      "path": "controller.base.source.source.requester.maximum_virtual_translation_m",
+      "kind": "float",
+      "value": 0.02
+    },
+    {
+      "path": "controller.base.source.source.requester.maximum_joint_delta_rad",
+      "kind": "float",
+      "value": 0.15
+    },
+    {
+      "path": "controller.base.source.source.requester.velocity_preview_s",
+      "kind": "float",
+      "value": 0.03
+    },
+    {
+      "path": "controller.base.source.source.requester.jacobian_regularization_m_per_rad",
+      "kind": "float",
+      "value": 0.03
+    },
+    {
+      "path": "controller.base.source.source.hit_seen",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.bool"
+    },
+    {
+      "path": "controller.base.source.source.last_diagnostic",
+      "kind": "NoneType",
+      "value": null
+    },
+    {
+      "path": "controller.base.source.reference",
+      "alias_of": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base"
+    },
+    {
+      "path": "controller.base.source.teacher",
+      "alias_of": "controller.base.source.source.source.source.source.source.source.source.source.source.source.source.source.base.base.teacher"
+    },
+    {
+      "path": "controller.base.source.bias",
+      "kind": "tensor",
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.base.source.changed",
+      "kind": "bool",
+      "value": true
+    },
+    {
+      "path": "controller.base.source.valid_plan",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.bool"
+    },
+    {
+      "path": "controller.base.source.plan_cursor",
+      "kind": "int",
+      "value": 0
+    },
+    {
+      "path": "controller.base.source.last_diagnostic",
+      "kind": "NoneType",
+      "value": null
+    },
+    {
+      "path": "controller.base.source._inside_action",
+      "kind": "bool",
+      "value": false
+    },
+    {
+      "path": "controller.base.source._original_offset",
+      "kind": "NoneType",
+      "value": null
+    },
+    {
+      "path": "controller.base.source._teacher_calls",
+      "kind": "int",
+      "value": 0
+    },
+    {
+      "path": "controller.actor",
+      "kind": "network",
+      "class": "RecursiveScriptModule"
+    },
+    {
+      "path": "controller.mixer.scale",
+      "kind": "tensor",
+      "shape": [
+        18
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.mixer.arm_rate.rate",
+      "kind": "float",
+      "value": 10.0
+    },
+    {
+      "path": "controller.mixer.arm_rate.control_dt",
+      "kind": "float",
+      "value": 0.01
+    },
+    {
+      "path": "controller.mixer.arm_rate.target",
+      "kind": "tensor",
+      "shape": [
+        2,
+        6
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.mixer.arm_rate.clock",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "path": "controller.mixer.arm_rate.initialized",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.bool"
+    },
+    {
+      "path": "controller.mixer.nonzero_seen",
+      "kind": "tensor",
+      "shape": [
+        2
+      ],
+      "dtype": "torch.bool"
+    },
+    {
+      "path": "controller.mixer.last_requested",
+      "kind": "NoneType",
+      "value": null
+    },
+    {
+      "path": "controller.mixer.last_actual",
+      "kind": "NoneType",
+      "value": null
+    }
+  ]
+}
