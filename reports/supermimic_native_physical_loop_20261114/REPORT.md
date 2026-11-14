@@ -45,3 +45,22 @@ candidate scores.
 The first 13 recoverable actor updates sampled imagined starts at native ticks 224/240/256/272 only. This did not expose the contextual critic to terminal success reward. Actor approach sampling remains unchanged; critic-only updates now use overlapping 64-step windows with current-state starts at 768,720,...,0, covering all 800 native ticks. The terminal window stops at the true 8-second boundary. No future archive labels enter these rollouts. Window length, losses, reward, learning rates and action permissions are unchanged. Forty related CPU tests passed.
 
 Block 03 was deliberately interrupted at a boundary with 13 actor updates and 56 native ticks durably saved. Isaac cleanup subsequently segfaulted (exit 139); this is not a clean process exit. Resume uses the saved actor/model/critic/optimizers/replay/RNG and counters, rather than discarding updates. The separate failed block 02 performed 8 updates but left no recoverable policy weights; those compute costs remain separately recorded.
+
+## Final finite physical-loop result
+
+The bounded block resumed from the durable block-03 checkpoint at 13 actor updates and completed the fixed budget: 256 actor updates, 256 world-model updates, and 10,560 critic updates. Only the six `actor.approach.{0,2,4}` parameter tensors were trainable; base/recovery remained unchanged on every actor step. The native training monitor completed 130 mixed-policy episodes and ended at mean raw return -33.489 (mixed policy, not a frozen score), below the initialization native mean -12.52678435.
+
+The single frozen 128-lane evaluation completed all 800 control ticks and wrote 128 terminal records. Isaac cleanup then aborted during interpreter finalization with SIGABRT/exit 134; `process_result.json` records this separately and the metrics are complete. Candidate SHA256 is b17416c68f7ceb69489c4b33bb8932959a289d3edf7b87039ed5538db0bd1898.
+
+| metric | initialization | candidate | change |
+|---|---:|---:|---:|
+| raw native return mean | -12.526784 | -20.813214 | -8.286429 |
+| qualified airborne string contact | 74/128 (57.81%) | 77/128 (60.16%) | +3 |
+| ball-side complete except recovery | 53/128 (41.41%) | 39/128 (30.47%) | -14 |
+| conditional recovery | 34/74 (45.95%) | 26/77 (33.77%) | denominator changed by measured contacts |
+| complete5 | 27/128 (21.09%) | 17/128 (13.28%) | -10 |
+| numerical failures | 0 | 0 | 0 |
+
+The paired per-case audit has 54 positive return deltas and 74 negative deltas; 24 of the original 74 qualified-contact cases recover under the candidate. The candidate is therefore **not an improvement** and is rejected for deployment. It demonstrates that the physical loop and actor gradient chain execute, but approach-only updates destabilize the learned batting/task chain under this finite budget. The full return and paired case files are in `paired_initial_vs_candidate_0256/`.
+
+Head and independent all-nonfoot contact labels remain unavailable in this environment and are reported as unknown, never as false. No online MPC or extra teacher was used.
