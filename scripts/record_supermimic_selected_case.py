@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import io
 import json
 import sys
 from pathlib import Path
@@ -22,6 +23,11 @@ from isaaclab.app import AppLauncher
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--checkpoint', type=Path, required=True)
+parser.add_argument(
+    '--supermimic-checkpoint', type=Path,
+    help='Optional supermimic_v1 actor checkpoint. --checkpoint remains the '
+         'verified native G07 execution-contract checkpoint.',
+)
 parser.add_argument('--output', type=Path, required=True)
 parser.add_argument('--training-index', type=int, required=True)
 parser.add_argument('--seed', type=int, default=882072)
@@ -85,6 +91,51 @@ try:
     controller = make_g07_residual_controller(
         source, 1, env.device, execution_root=args.execution_root
     )
+    policy_meta = {
+        'policy_kind': 'native_g07',
+        'policy_checkpoint': str(checkpoint),
+        'policy_checkpoint_sha256': digest(checkpoint),
+    }
+    if args.supermimic_checkpoint is not None:
+        candidate_path = args.supermimic_checkpoint.resolve()
+        candidate = torch.load(candidate_path, map_location='cpu', weights_only=False)
+        if candidate.get('algorithm') != 'supermimic_v1':
+            raise ValueError(
+                f'Expected algorithm=supermimic_v1, got {candidate.get("algorithm")!r}'
+            )
+        actor_state = candidate.get('actor')
+        if not isinstance(actor_state, dict):
+            raise ValueError('SuperMimic checkpoint has no actor state_dict')
+        # The native export already contains the exact gated base/recovery/
+        # approach module.  Reuse that class and load the trainable actor
+        # strictly after removing only the learner's ``actor.`` namespace.
+        native_actor = torch.jit.load(
+            io.BytesIO(source['residual_actor_jit']), map_location=env.device
+        ).eval()
+        exported_state = {
+            key[len('actor.'):]: value
+            for key, value in actor_state.items()
+            if key.startswith('actor.')
+        }
+        expected_keys = set(native_actor.state_dict().keys())
+        if set(exported_state) != expected_keys:
+            missing = sorted(expected_keys - set(exported_state))
+            extra = sorted(set(exported_state) - expected_keys)
+            raise ValueError(f'SuperMimic/native actor schema mismatch; missing={missing}, extra={extra}')
+        native_actor.load_state_dict(exported_state, strict=True)
+        if not all(torch.isfinite(value).all() for value in exported_state.values()):
+            raise ValueError('SuperMimic actor contains nonfinite parameters')
+        controller.actor = native_actor
+        policy_meta = {
+            'policy_kind': 'supermimic_actor_on_native_g07_executor',
+            'policy_checkpoint': str(candidate_path),
+            'policy_checkpoint_sha256': digest(candidate_path),
+            'execution_checkpoint': str(checkpoint),
+            'execution_checkpoint_sha256': digest(checkpoint),
+            'algorithm': candidate.get('algorithm'),
+            'actor_updates': candidate.get('actor_updates'),
+            'native_ticks': candidate.get('native_ticks'),
+        }
     observation, _ = wrapped.reset()
     controller.reset()
     default = env.robot.data.default_joint_pos[0, env.joint_ids]
@@ -121,6 +172,7 @@ try:
         schema='supermimic-selected-case-video-v1',
         checkpoint=str(checkpoint),
         checkpoint_sha256=digest(checkpoint),
+        policy=policy_meta,
         training_index=args.training_index,
         case_id=case.get('case_id'),
         seed=args.seed,
