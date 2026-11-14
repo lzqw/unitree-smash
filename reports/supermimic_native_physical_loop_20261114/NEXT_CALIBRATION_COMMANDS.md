@@ -38,3 +38,12 @@ bash scripts/python.sh scripts/train_supermimic_physical_block.py \
 
 No `--headless` flag is intentional. The process uses the original 128 Isaac
 environments and fixed 8 s task. It does not launch formal evaluation.
+
+The first headful attempt stopped before `AFTER_APP`: Isaac Sim 5.1 crashed
+in `librtx.scenedb.plugin.so` during RTX startup with
+`/renderer/multiGpu/enabled=True`. No task code or checkpoint loading ran.
+For the next attempt, keep the viewport enabled but add
+`--rendering_mode performance` and
+`--kit_args "--renderer/multiGpu/enabled=false"`. These change only the Kit
+rendering startup path; PhysX, task physics, rewards, control frequency and
+the learning algorithm remain unchanged.
