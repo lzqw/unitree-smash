@@ -30,6 +30,7 @@ class PhysicalHorizonTrainer:
         self.world_opt=torch.optim.Adam(adapter.parameters(),lr=2e-4)
         self.critic_opt=torch.optim.Adam(self.critic.parameters(),lr=2e-4)
         self.actor_updates=self.world_updates=self.critic_updates=0
+        self.last_critic_loss=None
         self.anchor_coeff=.05;self.v_max=100./(1-timebase.gamma)
         self.frozen_actor_hash=self.frozen_hash()
 
@@ -87,6 +88,7 @@ class PhysicalHorizonTrainer:
                 loss.backward();optimizer_step(self.critic_opt,self.critic.parameters())
                 self.critic_updates+=1;losses.append(float(loss.detach()))
         delta={k:float((p.detach()-before[k]).abs().max()) for k,p in self.actor.named_parameters() if p.requires_grad}
+        self.last_critic_loss=sum(losses)/len(losses)
         with torch.no_grad():
             updated_request=self.actor(initial_state.observation,sample=False)[0]
             updated_preview,_,_=self.adapter.executor.forward(initial_state.observation,updated_request,
@@ -95,7 +97,8 @@ class PhysicalHorizonTrainer:
         return dict(actor_updates=self.actor_updates,critic_updates=self.critic_updates,world_updates=self.world_updates,
             imagined_return_mean=float(ret.detach().mean()),actor_gradient=float(gradient),parameter_max_changes=delta,
             final_command_max_change=command_change,request_max_change=float((updated_request-initial_request).abs().max()),
-            critic_loss=sum(losses)/len(losses),bptt_seconds=bptt_seconds,critic_seconds=time.perf_counter()-started,
+            critic_loss=self.last_critic_loss,bptt_seconds=bptt_seconds,critic_seconds=time.perf_counter()-started,
+            model_runtime_state_sha256=before_models,
             frozen_base_recovery_unchanged=True,model_unchanged_during_actor=True)
 
     def fit_world_window(self,window,launch):

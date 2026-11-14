@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/scripts/train_supermimic_physical_block.py", line 67, in run
+    trainer=PhysicalHorizonTrainer(actor,adapter,as_state(starts[1]),timebase)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_learner_v1.py", line 21, in __init__
+    self.reference=copy.deepcopy(actor).eval().requires_grad_(False)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/torch/nn/modules/module.py", line 2896, in requires_grad_
+    p.requires_grad_(requires_grad)
+RuntimeError: you can only change requires_grad flags of leaf variables. If you want to use a computed variable in a subgraph that doesn't require differentiation use var_no_grad = var.detach().

@@ -32,11 +32,17 @@ class PhysicalLoopReplay:
         for key,tensor in self.data.items():tensor[:self.count].copy_(package['tensors'][key])
         self.generator=torch.Generator().manual_seed(20261114)
         self.new_starts=[]
+        self.streams=torch.zeros(capacity_ticks,dtype=torch.long)
+        self.current_stream=1
+
+    def new_stream(self):
+        self.current_stream+=1
 
     def append(self,row):
         if self.count>=self.capacity:raise RuntimeError('Finite replay capacity reached; no hidden reset/discard')
         record=row_tensors(row,self.schema)
         for key,tensor in self.data.items():tensor[self.count].copy_(record[key].detach().cpu())
+        self.streams[self.count]=self.current_stream
         self.count+=1
         elapsed=row['before']['physical']['elapsed_s']
         # State sampling preference, never a runtime control gate/case list.
@@ -47,6 +53,8 @@ class PhysicalLoopReplay:
     def window(self,steps=16,batch=128,iteration=0,device='cuda:0'):
         d={k:v[:self.count] for k,v in self.data.items()}
         valid=valid_windows(d['episode'],d['terminated'],d['timeout'],steps)
+        stream=self.streams[:self.count].unfold(0,steps,1)
+        valid&=(stream==stream[:,:1]).all(-1)[:,None]
         pools={'uniform':valid.nonzero()}
         for i in range(8):
             event=(d['next_event_state'][...,i]>d['event_state'][...,i]).unfold(0,steps,1).any(-1)&valid

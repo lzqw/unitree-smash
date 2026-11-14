@@ -1,0 +1,43 @@
+{
+  "actor_update_budget": 256,
+  "native_ticks_per_actor_update": 4,
+  "world_updates_per_actor_update": 1,
+  "world_batch": 128,
+  "imagination_batch": 128,
+  "timebase": {
+    "control_dt_s": 0.01,
+    "episode_s": 8.0,
+    "imagination_s": 0.64,
+    "world_window_s": 0.16,
+    "reference_dt_s": 0.02,
+    "gamma_reference": 0.99,
+    "lambda_reference": 0.95,
+    "discount_mode": "physical_time",
+    "imagination_steps": 64,
+    "world_transitions": 16,
+    "world_states": 17,
+    "gamma_effective": 0.99498743710662,
+    "lambda_effective": 0.9746794344808963,
+    "episode_ticks": 800
+  },
+  "actor_lr": 5e-05,
+  "world_lr": 0.0002,
+  "critic_lr": 0.0002,
+  "policy_anchor": 0.05,
+  "critic_warmup_updates": 200,
+  "critic_max_loss": 50.0,
+  "max_critic_only_blocks": 32,
+  "actor_whitelist": [
+    "actor.approach.0.weight",
+    "actor.approach.0.bias",
+    "actor.approach.2.weight",
+    "actor.approach.2.bias",
+    "actor.approach.4.weight",
+    "actor.approach.4.bias"
+  ],
+  "source_sha256": "8f510fe9f218beef791ac21675a19ed25d11f510a83fe247cddf2893bee08399",
+  "packed_data_sha256": "23a2a79dd902315f329a7a03f18c2cf19d6baee52634c30d838182133662a071",
+  "initialization_native_return": -12.526784349736634,
+  "extra_mpc": 0,
+  "sampling": "initial current starts at ticks224/240/256/272; alternate refreshed native approach starts once available"
+}

@@ -4,7 +4,7 @@
 No automatic evaluation, parameter scan, reference trajectory or online MPC.
 Fresh native interaction continues across learner updates; no 800-tick wait.
 """
-import argparse,hashlib,json,os,shutil,subprocess,sys,time,traceback
+import argparse,hashlib,json,os,shutil,subprocess,sys,time,traceback,signal
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -19,6 +19,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     for name in ('archive','packed-data','physical-checkpoint','ball-checkpoint','task-checkpoint','safety-mapping','output'):
         parser.add_argument('--'+name,type=Path,required=True)
+    parser.add_argument('--resume-training',type=Path)
     AppLauncher.add_app_launcher_args(parser);args=parser.parse_args()
     args.output=args.output.resolve();args.output.mkdir(parents=True,exist_ok=False)
     write(args.output/'startup.json',dict(argv=sys.argv,cwd=os.getcwd(),executable=sys.executable,
@@ -27,6 +28,10 @@ def main():
     from quadsmash.rl.supermimic_run_lifecycle import execute_scoped_native,stage
     stage(args.output,'BEFORE_APP');app=AppLauncher(args,fast_shutdown=False).app
     stage(args.output,'AFTER_APP')
+    args.stop_request={'signal':None}
+    def request_stop(signum,frame):args.stop_request['signal']=signal.Signals(signum).name
+    # Override Kit's handler: it shuts down plugins before Python can save.
+    signal.signal(signal.SIGINT,request_stop);signal.signal(signal.SIGTERM,request_stop)
     execute_scoped_native(args.output,lambda:run(args),app)
 
 
@@ -38,6 +43,7 @@ def run(args):
     from quadsmash.rl.supermimic_physical_loop_replay_v1 import PhysicalLoopReplay,current_start
     from quadsmash.rl.supermimic_physical_imagination_state_v1 import PhysicalImaginationStateV1
     from quadsmash.rl.supermimic_physical_capture_v1 import PhysicalTransitionArchive
+    from quadsmash.rl.supermimic_physical_run_guard_v1 import critic_ready,atomic_torch_save
     from quadsmash.rl.supermimic_timebase_v2 import Timebase
     from quadsmash.rl.supermimic_task_contract import resolve_task_contract,make_task_cfg,zero_panel_reset_noise
     from quadsmash.rl.supermimic_terminal_scoring import score_terminal_episode
@@ -65,6 +71,28 @@ def run(args):
         def as_state(row):return PhysicalImaginationStateV1.from_record(row,executor_template=template,launch=launch,device='cuda:0')
         timebase=Timebase(**json.loads((ROOT/'configs/supermimic_task_horizon_v2.json').read_text()))
         trainer=PhysicalHorizonTrainer(actor,adapter,as_state(starts[1]),timebase)
+        replay_archives=[]
+        if args.resume_training:
+            resumed=torch.load(args.resume_training,map_location='cuda:0',weights_only=False)
+            if resumed['adapter_schema']!=adapter.schema or resumed['metadata']['physical_imagination']!=adapter.manifest:
+                raise ValueError('Resume physical model/execution source mismatch')
+            actor.load_state_dict(resumed['actor'],strict=True);adapter.load_state_dict(resumed['world'],strict=True)
+            trainer.critic.load_state_dict(resumed['critic'],strict=True)
+            trainer.actor_opt.load_state_dict(resumed['actor_optimizer']);trainer.world_opt.load_state_dict(resumed['world_optimizer'])
+            trainer.critic_opt.load_state_dict(resumed['critic_optimizer'])
+            for name in ('actor_updates','world_updates','critic_updates','last_critic_loss'):setattr(trainer,name,resumed[name])
+            tick=int(resumed['native_ticks'])
+            if trainer.frozen_hash()!=trainer.frozen_actor_hash:raise ValueError('Resume changed frozen actor parameters')
+            replay_archives=resumed['replay_archives']
+            for directory in replay_archives:
+                directory=Path(directory);receipt=json.loads((directory/'manifest.json').read_text())
+                for item in receipt['chunks']:
+                    path=directory/item['file']
+                    if hashlib.sha256(path.read_bytes()).hexdigest()!=item['sha256']:raise ValueError('Resume archive hash mismatch')
+                    for row in torch.load(path,map_location='cpu',weights_only=True)['rows']:replay.append(row)
+                replay.new_stream()
+            replay.generator.set_state(resumed['replay_rng'].cpu())
+            torch.set_rng_state(resumed['torch_rng'].cpu());torch.cuda.set_rng_state(resumed['cuda_rng'].cpu())
         source_path=Path(manifest['source_checkpoint']);source=torch.load(source_path,map_location='cpu',weights_only=False)
         execution_root=Path('/home/autodrive/LZQW/unitree_smash')
         contract,protocol,cases,receipt=resolve_task_contract(source,source_path,execution_root=execution_root)
@@ -76,6 +104,9 @@ def run(args):
             residual_policy_checkpoint=source,g07_execution_root=execution_root,
             native_return_gamma=timebase.gamma,contact_flight_recovery=contract['contact_flight_recovery'])
         wrapper=RslRlVecEnvWrapper(env,clip_actions=None);obs,_=wrapper.reset()
+        if args.resume_training:
+            # Environment seeding must not overwrite the resumed learner RNG.
+            torch.set_rng_state(resumed['torch_rng'].cpu());torch.cuda.set_rng_state(resumed['cuda_rng'].cpu())
         stage(args.output,'AFTER_RESET')
         class TrainingArchive(PhysicalTransitionArchive):
             def finish_record(self,*values):
@@ -95,27 +126,38 @@ def run(args):
         metadata=dict(init_policy_checkpoint=dict(path=str(source_path),sha256=manifest['source_sha256'],g07_execution_root=str(execution_root)),
                       task_contract=contract,physical_imagination=adapter.manifest)
         def save(name):
-            torch.save(dict(algorithm='supermimic_v1',adapter_schema=adapter.schema,actor=actor.state_dict(),
+            archive.flush()  # Checkpoint never points beyond durable replay.
+            atomic_torch_save(dict(algorithm='supermimic_v1',adapter_schema=adapter.schema,actor=actor.state_dict(),
                 critic=trainer.critic.state_dict(),world=adapter.state_dict(),actor_optimizer=trainer.actor_opt.state_dict(),
                 world_optimizer=trainer.world_opt.state_dict(),critic_optimizer=trainer.critic_opt.state_dict(),
                 actor_updates=trainer.actor_updates,world_updates=trainer.world_updates,critic_updates=trainer.critic_updates,
-                native_ticks=tick,metadata=metadata,config=config),args.output/name)
+                native_ticks=tick,metadata=metadata,config=config,last_critic_loss=trainer.last_critic_loss,
+                replay_archives=replay_archives+[str(archive.directory)],replay_rng=replay.generator.get_state(),
+                torch_rng=torch.get_rng_state(),cuda_rng=torch.cuda.get_rng_state()),args.output/name)
+        def check_stop():
+            if args.stop_request['signal'] is not None:raise InterruptedError(args.stop_request['signal'])
+        def ensure_critic():
+            for retry in range(32):
+                if critic_ready(trainer.critic_updates,trainer.last_critic_loss):return
+                check_stop()
+                state=as_state(starts[retry%len(starts)])
+                stats=trainer.imagine_update(state,update_actor=False)
+                print('PHYSICAL_CRITIC='+json.dumps(stats),flush=True)
+                with (args.output/'critic_history.jsonl').open('a') as f:f.write(json.dumps(stats)+'\n')
+                save('latest.pt')
+            if not critic_ready(trainer.critic_updates,trainer.last_critic_loss):
+                raise RuntimeError('Contextual critic quality gate did not pass within finite32-block budget')
         # A already supplies complete native episodes. This warmup concerns the
         # new contextual critic, not recollecting a fresh 800 ticks each update.
-        phase='CRITIC';critic_loss=None
-        for warmup in range(32):
-            state=as_state(starts[warmup%len(starts)])
-            stats=trainer.imagine_update(state,update_actor=False);critic_loss=stats['critic_loss']
-            print('PHYSICAL_CRITIC='+json.dumps(stats),flush=True)
-            with (args.output/'critic_history.jsonl').open('a') as f:f.write(json.dumps(stats)+'\n')
-            if trainer.critic_updates>=200 and critic_loss is not None and critic_loss<=50.:break
-        else:raise RuntimeError('Contextual critic quality gate did not pass within finite32-block budget')
+        phase='CRITIC';ensure_critic()
         cursor=0;completed_returns=[];completed_discounted=[];phase='LEARNING'
         while trainer.actor_updates<256:
+            check_stop();ensure_critic()
             if shutil.disk_usage(args.output).free<8*1024**3:raise RuntimeError('Disk guard: less than8GiB free')
             started=time.perf_counter()
             with torch.inference_mode():
                 for _ in range(4):
+                    check_stop()
                     action=actor(obs['policy'],sample=False)[0]
                     obs,reward,done,info=wrapper.step(action);tick+=1
                     if not torch.isfinite(obs['policy']).all():raise FloatingPointError('Nonfinite native observation')
@@ -127,10 +169,12 @@ def run(args):
                         with (args.output/'native_episodes.jsonl').open('a') as f:f.write(json.dumps(record)+'\n')
                     cursor=len(env.rally_records)
             collect_s=time.perf_counter()-started
+            check_stop()
             window,lanes,sampling=replay.window(timebase.world_steps,128,trainer.actor_updates)
             world_stats=trainer.fit_world_window(window,launch[lanes]);del window
             pool=replay.new_starts if replay.new_starts and trainer.actor_updates%2 else starts
             row=pool[trainer.actor_updates%len(pool)];state=as_state(row)
+            check_stop()
             stats=trainer.imagine_update(state)
             if not any(v>0 for v in stats['parameter_max_changes'].values()):
                 raise RuntimeError('Actor optimizer step made no approach parameter change')
@@ -146,6 +190,7 @@ def run(args):
                 raw_return_scope='completed mixed-policy monitoring; incomplete episodes excluded',
                 peak_gpu_bytes=torch.cuda.max_memory_allocated(),model_calls=adapter.calls,window_sampling=sampling,
                 imagined_start_source='fresh_native' if pool is replay.new_starts else 'initialization_archive')
+            save('latest.pt')
             write(args.output/'progress.json',record)
             with (args.output/'training_history.jsonl').open('a') as f:f.write(json.dumps(record)+'\n')
             print('PHYSICAL_LEARNING='+json.dumps(record),flush=True)
