@@ -36,6 +36,8 @@ class SuperMimicEnvV1(FullRacketEnvV4):
         self._sm_final_action = None
         self._sm_joint_targets = None
         self._sm_g07_execution_root = g07_execution_root
+        # Opt-in read-only capture, attached after native reset by the caller.
+        self.physical_transition_archive = None
         super().__init__(*args, **kwargs)
         self._sm_final_event_state = torch.zeros(
             (self.num_envs, len(self.event_state_names)), dtype=torch.float32, device=self.device)
@@ -86,13 +88,19 @@ class SuperMimicEnvV1(FullRacketEnvV4):
         self._sm_requested_action = actions.detach().clone()
         if self._sm_residual_controller is not None:
             public = observe_native(self)
+            if self.physical_transition_archive is not None:
+                self.physical_transition_archive.begin(self, actions, public['policy'])
             if hasattr(self._sm_residual_controller, 'apply_residual'):
                 final = self._sm_residual_controller.apply_residual(
                     public, actions, self._sm_residual_default,
                     self._sm_residual_limits).detach()
+                if self.physical_transition_archive is not None:
+                    self._sm_base_action = self._sm_residual_controller.last_base_action.detach().clone()
             else:
                 base = self._sm_residual_controller.base.action(
                     public, self._sm_residual_default, self._sm_residual_limits)
+                if self.physical_transition_archive is not None:
+                    self._sm_base_action = base.detach().clone()
                 final = self._sm_residual_controller.mixer.action(
                     base, actions, public['policy'], self._sm_residual_default,
                     self._sm_residual_limits).detach()
@@ -176,7 +184,12 @@ class SuperMimicEnvV1(FullRacketEnvV4):
         reward = reward + 15.0 * event_target.float() + 10.0 * event_recovery.float() + 20.0 * complete5.float()
         reward = reward - 4.0 * event_frame.float() - 5.0 * ((~contact) & (phase > 3.0)).float() * self.step_dt
         reward = reward - 15.0 * event_fault.float() - 40.0 * event_body.float()
-        return torch.nan_to_num(reward, nan=-40.0, posinf=40.0, neginf=-40.0)
+        reward = torch.nan_to_num(reward, nan=-40.0, posinf=40.0, neginf=-40.0)
+        if self.physical_transition_archive is not None:
+            # DirectRLEnv obtains reward before resetting terminated lanes.
+            # Capturing after wrapper.step would join terminal states to resets.
+            self.physical_transition_archive.finish(self, reward)
+        return reward
 
     @torch.inference_mode()
     def _reset_idx(self, ids):

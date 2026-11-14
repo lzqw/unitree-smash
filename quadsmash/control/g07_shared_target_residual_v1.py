@@ -138,6 +138,9 @@ class G07SharedTargetResidualControllerV1:
         if observation["policy"].shape[-1] != 794:
             raise ValueError("G07 actor requires the native 794D public observation")
         base = self.base.action(observation, default, limits)
+        # Diagnostic output of the existing computation, never an extra
+        # controller invocation or a substitute for executor memory.
+        self.last_base_action = base.detach().clone()
         return self.mixer.action(base, residual, observation["policy"], default, limits)
 
     @torch.inference_mode()

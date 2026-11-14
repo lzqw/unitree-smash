@@ -1,0 +1,83 @@
+"""Archive integrity only; synthetic fixtures do not verify native physics."""
+import hashlib
+import json
+from types import SimpleNamespace
+
+import pytest
+import torch
+
+from quadsmash.rl.supermimic_physical_capture_v1 import (
+    PhysicalTransitionArchive, capture_controller)
+
+
+def state(tick, episode=0):
+    return dict(control_tick=tick, episode_index=torch.tensor([episode, episode]),
+                physical={'joint_position': torch.full((2, 18), float(tick))})
+
+
+def test_terminal_state_and_actual_command_survive_reset_and_chunk_save(tmp_path):
+    archive = PhysicalTransitionArchive(tmp_path/'data', metadata={}, chunk_ticks=2)
+    requested = torch.full((2, 18), .8)
+    final = torch.full((2, 18), .3)
+    targets = torch.full((2, 18), .15)
+    before, after = state(799), state(800)
+    memory = {'tensors': {'clock': torch.tensor([7.99, 7.99])}}
+    archive.begin_record(before, requested, torch.zeros(2, 794), memory)
+    archive.finish_record(after, final, targets, torch.tensor([1., 2.]),
+                          torch.tensor([False, True]), torch.tensor([True, False]), memory)
+    # Native buffers are reset/mutated immediately after reward capture.
+    for x in (requested, final, targets, after['physical']['joint_position'],
+              memory['tensors']['clock']):
+        x.zero_()
+    after['episode_index'].add_(1)
+    archive.flush()
+    manifest = json.loads((tmp_path/'data/manifest.json').read_text())
+    path = tmp_path/'data'/manifest['chunks'][0]['file']
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == manifest['chunks'][0]['sha256']
+    row = torch.load(path, weights_only=True)['rows'][0]
+    assert row['after']['physical']['joint_position'].eq(800).all()
+    assert row['after']['episode_index'].eq(0).all()
+    assert row['requested_action'].eq(.8).all()
+    assert row['final_action'].eq(.3).all()
+    assert row['final_joint_targets'].eq(.15).all()
+    assert row['timeout'].tolist() == [True, False]
+    assert row['terminated'].tolist() == [False, True]
+    assert manifest['transitions'] == 2 and not manifest['pending_transition']
+
+
+@pytest.mark.parametrize('after,match', [(state(2), 'Nonconsecutive'),
+                                       (state(1, 1), 'crossed reset')])
+def test_reject_nonconsecutive_or_post_reset_targets(tmp_path, after, match):
+    archive = PhysicalTransitionArchive(tmp_path/'data', metadata={})
+    archive.begin_record(state(0), torch.zeros(2, 18), torch.zeros(2, 794), {})
+    with pytest.raises(RuntimeError, match=match):
+        archive.finish_record(after, torch.zeros(2, 18), torch.zeros(2, 18),
+                              torch.zeros(2), torch.zeros(2), torch.zeros(2), {})
+    assert archive.transitions == 0
+
+
+def test_controller_memory_isolated_with_aliases_and_omissions():
+    child = SimpleNamespace(previous=torch.tensor([.2]), clock=17)
+    controller = SimpleNamespace(first=child, second=child,
+                                 actor=torch.nn.Linear(2, 2), logs=[{'debug': 'skip'}],
+                                 unknown=object())
+    controller.loop = controller
+    captured = capture_controller(controller)
+    child.previous.zero_()
+    assert captured['tensors']['controller/first/previous'].item() == pytest.approx(.2)
+    assert captured['values']['controller/first/clock'] == 17
+    assert captured['aliases']['controller/second'] == 'controller/first'
+    assert captured['aliases']['controller/loop'] == 'controller'
+    assert captured['omitted']['controller/actor'] == 'network:Linear'
+    assert captured['omitted']['controller/unknown'] == 'builtins.object'
+
+
+def test_refuse_overwrite_and_missing_begin_or_end(tmp_path):
+    archive = PhysicalTransitionArchive(tmp_path/'data', metadata={})
+    with pytest.raises(FileExistsError):
+        PhysicalTransitionArchive(tmp_path/'data', metadata={})
+    with pytest.raises(RuntimeError, match='No physical transition begin'):
+        archive.finish_record(state(1), None, None, None, None, None, None)
+    archive.begin_record(state(0), torch.zeros(2, 18), torch.zeros(2, 794), {})
+    with pytest.raises(RuntimeError, match='no pre-reset end'):
+        archive.begin_record(state(0), torch.zeros(2, 18), torch.zeros(2, 794), {})

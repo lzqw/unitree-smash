@@ -39,6 +39,8 @@ def main():
     parser.add_argument('--sweep-audit-iterations', type=int, default=None,
                         help='Inherit source audit by default; only an identical explicit value is accepted')
     parser.add_argument('--physics-device', default='cuda:0')
+    parser.add_argument('--record-physical-transitions', action='store_true',
+                        help='Read-only pre-reset physical/executor archive; no model/actor updates')
     AppLauncher.add_app_launcher_args(parser)
     parser.add_argument('--shutdown-diagnostic-ticks', type=int, default=None,
                         help='Lifecycle-only partial run on original 128 lanes; never writes scores/completed.json')
@@ -146,6 +148,17 @@ def _run_native(args, stop_request):
         if trained is not None:
             actor.load_state_dict(trained['actor'], strict=True)
         actor.eval()
+        if args.record_physical_transitions:
+            from quadsmash.rl.supermimic_physical_capture_v1 import PhysicalTransitionArchive
+            if env._sm_residual_controller is None:
+                raise ValueError('Physical capture requires the initialized residual execution contract')
+            env.physical_transition_archive = PhysicalTransitionArchive(
+                args.output/'physical_transitions', metadata=dict(
+                    source_checkpoint=str(source_path), source_sha256=hashlib.sha256(source_path.read_bytes()).hexdigest(),
+                    task_contract=contract, body_names=list(env.robot.body_names),
+                    control_dt_s=float(env.step_dt), num_envs=env.num_envs,
+                    seed=args.seed, runtime_commit=subprocess.check_output(
+                        ['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()))
         reference = None
         if trained is None:
             reference = (make_g07_residual_controller(source,128,env.device,execution_root)
@@ -215,6 +228,8 @@ def _run_native(args, stop_request):
                     write_json(args.output/'progress.json',progress)
                     write_json(args.output/'command_consistency.json',mapping)
                     print('SUPERMIMIC_EVAL_PROGRESS='+json.dumps(progress),flush=True)
+        if env.physical_transition_archive is not None:
+            env.physical_transition_archive.flush()
         if args.shutdown_diagnostic_ticks is not None:
             write_json(args.output/'command_consistency.json', mapping)
             write_json(args.output/'shutdown_diagnostic.json', dict(
