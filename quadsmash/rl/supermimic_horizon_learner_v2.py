@@ -11,6 +11,7 @@ import torch
 from torch import nn
 from .supermimic_timebase_v2 import Timebase, seconds_to_steps, bptt_return, gae_returns
 from .supermimic_sequence_replay_v2 import SequenceReplay, NotEnoughSequenceData
+from .supermimic_event_hazard_v1 import SEMANTICS, event_hazard_loss, advance_event_latches
 
 
 @contextmanager
@@ -101,8 +102,8 @@ class HorizonTrainer:
                 loss = loss + .5 * (reward - transition["reward"]).square().mean()
                 loss = loss + .1 * nn.functional.binary_cross_entropy_with_logits(done_logit, transition["done"])
                 if self.event_dim:
-                    loss = loss + .1 * nn.functional.binary_cross_entropy_with_logits(
-                        next_event_logits, transition["next_event_state"].clamp(0., 1.))
+                    loss = loss + .1 * event_hazard_loss(
+                        next_event_logits, transition["event_state"], transition["next_event_state"])
                 # The default fit is teacher-forced.  For long-horizon
                 # experiments, optionally train on the same autoregressive
                 # state distribution used by imagination.  This is an
@@ -111,7 +112,7 @@ class HorizonTrainer:
                 prediction = (predicted_next if self.autoregressive_world_fit
                               else transition["next_obs"].detach())
                 if self.event_dim:
-                    predicted_event = prediction_event + (1. - prediction_event) * next_event_logits.sigmoid()
+                    predicted_event = advance_event_latches(prediction_event, next_event_logits)
                     prediction_event = (predicted_event if self.autoregressive_world_fit
                                         else transition["next_event_state"].detach()).clamp(0., 1.)
             loss = loss / len(window)
@@ -145,7 +146,7 @@ class HorizonTrainer:
                       if self.event_dim else self.world(obs, action))
             if self.event_dim:
                 delta, reward, terminal, next_event_logits = output
-                event_state = (event_state + (1. - event_state) * next_event_logits.sigmoid()).clamp(0., 1.)
+                event_state = advance_event_latches(event_state, next_event_logits)
             else:
                 delta, reward, terminal = output
             next_obs = obs + delta
@@ -252,8 +253,7 @@ class HorizonTrainer:
                       if self.event_dim else self.world(prediction, transition["action"]))
             if self.event_dim:
                 delta, _, _, next_event_logits = output
-                prediction_event = (prediction_event + (1. - prediction_event)
-                                    * next_event_logits.sigmoid()).clamp(0., 1.)
+                prediction_event = advance_event_latches(prediction_event, next_event_logits)
             else:
                 delta, _, _ = output
             prediction = prediction + delta
@@ -266,6 +266,7 @@ class HorizonTrainer:
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
         torch.save({"algorithm": "supermimic_v1", "learner_version": self.version,
+                    "event_model_semantics": SEMANTICS if self.event_dim else "none",
                     "random_initialization": False, "actor": self.actor.state_dict(),
                     "critic": self.critic.state_dict(), "world_model": self.world.state_dict(),
                     "actor_opt": self.actor_opt.state_dict(), "critic_opt": self.critic_opt.state_dict(),
@@ -279,6 +280,8 @@ class HorizonTrainer:
         state = torch.load(path, map_location="cpu", weights_only=False)
         if state.get("learner_version") != self.version or state.get("timebase") != self.timebase.manifest():
             raise ValueError("Resume requires the same corrected action/timebase contract; old replay must not be reused")
+        if self.event_dim and state.get("event_model_semantics") != SEMANTICS:
+            raise ValueError("Event model semantics changed; do not resume legacy absolute-latch model/optimizer")
         if state["metadata"].get("actor_kind") != self.actor_kind:
             raise ValueError("Actor kind mismatch")
         for name, key in (("actor", "actor"), ("world", "world_model"), ("critic", "critic")):

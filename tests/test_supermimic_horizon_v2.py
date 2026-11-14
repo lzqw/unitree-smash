@@ -279,7 +279,8 @@ def test_actual_environment_method_delegates_residual_to_full_range():
     obj=SimpleNamespace(_sm_residual_controller=SimpleNamespace(
         base=SimpleNamespace(action=lambda *a:torch.zeros(2,18)),
         mixer=SimpleNamespace(action=lambda *a:final)),
-        _sm_residual_default=torch.zeros(18),_sm_residual_limits=limits,joint_ids=list(range(18)))
+        _sm_residual_default=torch.zeros(18),_sm_residual_limits=limits,joint_ids=list(range(18)),
+        physical_transition_archive=None)
     scope['_pre_physics_step'](obj,torch.zeros(2,18))
     torch.testing.assert_close(obj._sm_joint_targets,2*final)
 
