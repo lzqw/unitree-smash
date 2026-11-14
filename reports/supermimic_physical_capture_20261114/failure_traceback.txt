@@ -1,0 +1,46 @@
+Traceback (most recent call last):
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/scripts/evaluate_supermimic_v1.py", line 192, in _run_native
+    obs, _, done, _ = wrapper.step(action)
+                      ^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/Isaac/IsaacLab/source/isaaclab_rl/isaaclab_rl/rsl_rl/vecenv_wrapper.py", line 157, in step
+    obs_dict, rew, terminated, truncated, extras = self.env.step(actions)
+                                                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/tasks/stand/supermimic_env_v1.py", line 76, in step
+    result = super().step(actions)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/tasks/stand/coupled_env.py", line 174, in step
+    result=super().step(actions)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/Isaac/IsaacLab/source/isaaclab/isaaclab/envs/direct_rl_env.py", line 343, in step
+    self._pre_physics_step(action)
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/tasks/stand/supermimic_env_v1.py", line 92, in _pre_physics_step
+    self.physical_transition_archive.begin(self, actions, public['policy'])
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 128, in begin
+    capture_controller(env._sm_residual_controller))
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 68, in capture_controller
+    visit(controller, 'controller')
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 64, in visit
+    visit(item, path + '/' + key)
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 64, in visit
+    visit(item, path + '/' + key)
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 64, in visit
+    visit(item, path + '/' + key)
+  [Previous line repeated 8 more times]
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 55, in visit
+    visit(item, path + '/' + key)
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 64, in visit
+    visit(item, path + '/' + key)
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 64, in visit
+    visit(item, path + '/' + key)
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 64, in visit
+    visit(item, path + '/' + key)
+  [Previous line repeated 7 more times]
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 55, in visit
+    visit(item, path + '/' + key)
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 59, in visit
+    elif hasattr(obj, '__dict__'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/trimesh/exceptions.py", line 30, in __getattribute__
+    raise super().__getattribute__("exception")
+ImportError: missing `pip install pycollada`

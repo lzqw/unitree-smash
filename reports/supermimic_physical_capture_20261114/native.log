@@ -1,0 +1,173 @@
+[INFO][AppLauncher]: Using device: cuda:0
+[INFO][AppLauncher]: Loading experience file: /home/autodrive/Isaac/IsaacLab/apps/isaaclab.python.headless.kit
+Loading user config located at: '/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/isaacsim/kit/data/Kit/Isaac-Sim/5.1/user.config.json'
+[Info] [carb] Logging to file: /home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/isaacsim/kit/logs/Kit/Isaac-Sim/5.1/kit_20261114_120631.log
+2026-11-14T04:06:31Z [0ms] [Warning] [carb.crashreporter-breakpad.plugin] [previous crash] preventing upload of minidump due to user opt-out: '/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/isaacsim/kit/data/Kit/Isaac-Sim/5.1/69f25773-9578-4b83-cb0a628d-f3361cda.dmp'
+2026-11-14T04:06:31Z [59ms] [Warning] [omni.usd_config.extension] Enable omni.materialx.libs extension to use MaterialX
+2026-11-14T04:06:31Z [303ms] [Warning] [carb] Acquiring non optional plugin interface which is not listed as dependency: [omni::physx::IPhysxBenchmarks v1.0] (plugin: <default plugin>), by client: omni.physics.physx.plugin. Add it to CARB_PLUGIN_IMPL_DEPS() macro of a client.
+2026-11-14T04:06:31Z [415ms] [Warning] [omni.isaac.dynamic_control] omni.isaac.dynamic_control is deprecated as of Isaac Sim 4.5. No action is needed from end-users.
+2026-11-14T04:06:34Z [3,529ms] [Warning] [carb.cudainterop.plugin] CUDA_VISIBLE_DEVICES environment variable is set.
+2026-11-14T04:06:34Z [3,529ms] [Warning] [carb.cudainterop.plugin] Note CUDA device enumeration and Omniverse device enumeration are different.
+2026-11-14T04:06:34Z [3,529ms] [Warning] [carb.cudainterop.plugin] Setting CUDA_VISIBLE_DEVICES can lead to undesired behavior or crashes.
+
+|---------------------------------------------------------------------------------------------|
+| Driver Version: 595.91.07     | Graphics API: Vulkan
+|=============================================================================================|
+| GPU | Name                             | Active | LDA | GPU Memory | Vendor-ID | LUID       |
+|     |                                  |        |     |            | Device-ID | UUID       |
+|     |                                  |        |     |            | Bus-ID    |            |
+|---------------------------------------------------------------------------------------------|
+| 0   | NVIDIA GeForce RTX 5080          | Yes: 0 |     | 16303   MB | 10de      | 0          |
+|     |                                  |        |     |            | 2c02      | ac315b09.. |
+|     |                                  |        |     |            | 1         |            |
+|=============================================================================================|
+| OS: 24.04.4 LTS (Noble Numbat) ubuntu, Version: 24.04.4, Kernel: 7.0.0-38-generic
+| XServer Vendor: The X.Org Foundation, XServer Version: 12101011 (1.21.1.11)
+| Processor: Intel(R) Core(TM) i9-14900KF
+| Bare Metal Cores: 24 | Bare Metal Logical Cores: 48
+| Available Cores:  32 
+|---------------------------------------------------------------------------------------------|
+| Total Memory (MB): 64065 | Free Memory: 51414
+| Total Page/Swap (MB): 8191 | Free Page/Swap: 1330
+|---------------------------------------------------------------------------------------------|
+2026-11-14T04:06:35Z [3,814ms] [Warning] [gpu.foundation.plugin] CPU performance profile is set to powersave. This profile sets the CPU to the lowest frequency reducing performance.
+2026-11-14T04:06:35Z [3,823ms] [Warning] [gpu.foundation.plugin] IOMMU is enabled.
+Setting seed: 882072
+[INFO]: Base environment:
+	Environment device    : cuda:0
+	Environment seed      : 882072
+	Physics step-size     : 6.25e-05
+	Rendering step-size   : 0.01
+	Environment step-size : 0.01
+[INFO]: Time taken for scene creation : 1.333851 seconds
+[INFO]: Scene manager:  <class InteractiveScene>
+	Number of environments: 128
+	Environment spacing   : 0.0
+	Source prim name      : /World/envs/env_0
+	Global prim paths     : ['/World/Ground']
+	Replicate physics     : True
+[INFO]: Starting the simulation. This may take a few seconds. Please wait...
+[INFO]: Time taken for simulation start : 0.657748 seconds
+[INFO]: Completed setting up the environment...
+/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py:38: FutureWarning: `torch.distributed.reduce_op` is deprecated, please use `torch.distributed.ReduceOp` instead
+  if isinstance(obj, torch.Tensor):
+/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py:40: FutureWarning: `torch.distributed.reduce_op` is deprecated, please use `torch.distributed.ReduceOp` instead
+  elif obj is None or isinstance(obj, (bool, int, float, str)):
+/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py:42: FutureWarning: `torch.distributed.reduce_op` is deprecated, please use `torch.distributed.ReduceOp` instead
+  elif isinstance(obj, (Path, torch.device)):
+/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py:44: FutureWarning: `torch.distributed.reduce_op` is deprecated, please use `torch.distributed.ReduceOp` instead
+  elif isinstance(obj, torch.nn.Module):
+/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py:50: FutureWarning: `torch.distributed.reduce_op` is deprecated, please use `torch.distributed.ReduceOp` instead
+  if isinstance(obj, dict):
+/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py:56: FutureWarning: `torch.distributed.reduce_op` is deprecated, please use `torch.distributed.ReduceOp` instead
+  elif isinstance(obj, (list, tuple)):
+/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py:59: FutureWarning: `torch.distributed.reduce_op` is deprecated, please use `torch.distributed.ReduceOp` instead
+  elif hasattr(obj, '__dict__'):
+/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py:60: FutureWarning: `torch.distributed.reduce_op` is deprecated, please use `torch.distributed.ReduceOp` instead
+  for key, item in vars(obj).items():
+Traceback (most recent call last):
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/scripts/evaluate_supermimic_v1.py", line 192, in _run_native
+    obs, _, done, _ = wrapper.step(action)
+                      ^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/Isaac/IsaacLab/source/isaaclab_rl/isaaclab_rl/rsl_rl/vecenv_wrapper.py", line 157, in step
+    obs_dict, rew, terminated, truncated, extras = self.env.step(actions)
+                                                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/tasks/stand/supermimic_env_v1.py", line 76, in step
+    result = super().step(actions)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/tasks/stand/coupled_env.py", line 174, in step
+    result=super().step(actions)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/Isaac/IsaacLab/source/isaaclab/isaaclab/envs/direct_rl_env.py", line 343, in step
+    self._pre_physics_step(action)
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/tasks/stand/supermimic_env_v1.py", line 92, in _pre_physics_step
+    self.physical_transition_archive.begin(self, actions, public['policy'])
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 128, in begin
+    capture_controller(env._sm_residual_controller))
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 68, in capture_controller
+    visit(controller, 'controller')
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 64, in visit
+    visit(item, path + '/' + key)
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 64, in visit
+    visit(item, path + '/' + key)
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 64, in visit
+    visit(item, path + '/' + key)
+  [Previous line repeated 8 more times]
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 55, in visit
+    visit(item, path + '/' + key)
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 64, in visit
+    visit(item, path + '/' + key)
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 64, in visit
+    visit(item, path + '/' + key)
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 64, in visit
+    visit(item, path + '/' + key)
+  [Previous line repeated 7 more times]
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 55, in visit
+    visit(item, path + '/' + key)
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 59, in visit
+    elif hasattr(obj, '__dict__'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/trimesh/exceptions.py", line 30, in __getattribute__
+    raise super().__getattribute__("exception")
+ImportError: missing `pip install pycollada`
+
+Traceback (most recent call last):
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/scripts/evaluate_supermimic_v1.py", line 292, in <module>
+    main()
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/scripts/evaluate_supermimic_v1.py", line 77, in main
+    execute_scoped_native(args.output, lambda: _run_native(args, stop_request), app)
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_run_lifecycle.py", line 41, in execute_scoped_native
+    run()
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/scripts/evaluate_supermimic_v1.py", line 77, in <lambda>
+    execute_scoped_native(args.output, lambda: _run_native(args, stop_request), app)
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/scripts/evaluate_supermimic_v1.py", line 192, in _run_native
+    obs, _, done, _ = wrapper.step(action)
+                      ^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/Isaac/IsaacLab/source/isaaclab_rl/isaaclab_rl/rsl_rl/vecenv_wrapper.py", line 157, in step
+    obs_dict, rew, terminated, truncated, extras = self.env.step(actions)
+                                                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/tasks/stand/supermimic_env_v1.py", line 76, in step
+    result = super().step(actions)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/tasks/stand/coupled_env.py", line 174, in step
+    result=super().step(actions)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/Isaac/IsaacLab/source/isaaclab/isaaclab/envs/direct_rl_env.py", line 343, in step
+    self._pre_physics_step(action)
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/tasks/stand/supermimic_env_v1.py", line 92, in _pre_physics_step
+    self.physical_transition_archive.begin(self, actions, public['policy'])
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 128, in begin
+    capture_controller(env._sm_residual_controller))
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 68, in capture_controller
+    visit(controller, 'controller')
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 64, in visit
+    visit(item, path + '/' + key)
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 64, in visit
+    visit(item, path + '/' + key)
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 64, in visit
+    visit(item, path + '/' + key)
+  [Previous line repeated 8 more times]
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 55, in visit
+    visit(item, path + '/' + key)
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 64, in visit
+    visit(item, path + '/' + key)
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 64, in visit
+    visit(item, path + '/' + key)
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 64, in visit
+    visit(item, path + '/' + key)
+  [Previous line repeated 7 more times]
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 55, in visit
+    visit(item, path + '/' + key)
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_physical_capture_v1.py", line 59, in visit
+    elif hasattr(obj, '__dict__'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/trimesh/exceptions.py", line 30, in __getattribute__
+    raise super().__getattribute__("exception")
+ImportError: missing `pip install pycollada`
+Fatal Python error: PyThreadState_Get: the function must be called with the GIL held, but the GIL is released (the current Python thread state is NULL)
+Python runtime state: finalizing (tstate=0x000056739d0a7098)
+
+SUPERMIMIC_PROCESS_RESULT={"child_returncode": -6, "simulation_completed": false, "shutdown_diagnostic_completed": false, "run_kind": "formal_128", "cleanup_finished": true, "process_completed_cleanly": false, "diagnostic_exit_code": 134, "command": ["/home/autodrive/Isaac/env_isaaclab/bin/python", "-u", "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/scripts/evaluate_supermimic_v1.py", "--init-policy-checkpoint", "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_env5120_01/policy.pt", "--g07-execution-root", "/home/autodrive/LZQW/unitree_smash", "--output", "/tmp/supermimic_physical_capture_20261114_2pWibX/run", "--seed", "882072", "--headless", "--device", "cuda:0", "--physics-device", "cuda:0", "--record-physical-transitions"]}
