@@ -10,7 +10,6 @@ cd "$ROOT"
 mkdir -p /home/autodrive/LZQW/video
 
 set +e
-CUDA_VISIBLE_DEVICES=0 \
 QUADSMASH_PYTHON="$PY" \
 bash scripts/python.sh scripts/train_supermimic_physical_block.py \
   --archive "$CAPTURE/run/physical_transitions" \

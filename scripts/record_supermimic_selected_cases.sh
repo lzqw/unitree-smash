@@ -35,7 +35,6 @@ for index in "${INDICES[@]}"; do
   mkdir -p "$out"
   log="$BASE/case_${index}.log"
   set +e
-  CUDA_VISIBLE_DEVICES=0 \
   QUADSMASH_PYTHON="$PY" \
   bash "$ROOT/scripts/python.sh" "$ROOT/scripts/record_supermimic_selected_case.py" \
     --checkpoint "$CHECKPOINT" \
