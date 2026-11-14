@@ -1,0 +1,233 @@
+
+scripts/train_supermimic_horizon_v2.py
+218:             raise RuntimeError('Reference actor does not match initialized actor source')
+219:         event_dim = len(getattr(env, 'event_state_names', ()))
+220:         replay = SequenceReplay(args.replay_capacity, args.num_envs, obs.shape[-1], 18, env.device,
+221:                                 event_dim=event_dim)
+222:         if replay.slots < timebase.world_steps:
+223:             raise ValueError('Replay too short for configured physical-time window')
+224:         trainer = HorizonTrainer(actor, SuperMimicWorldModel(
+225:                                     obs.shape[-1], 18, structured_history=True,
+226:                                     event_dim=event_dim).to(env.device),
+227:                                  SuperMimicCritic(obs.shape[-1]).to(env.device), replay, timebase,
+228:                                  actor_lr=args.actor_lr, world_lr=args.world_lr, critic_lr=args.critic_lr,
+229:                                  reference_actor=reference_actor,
+230:                                  policy_anchor_coeff=args.policy_anchor_coeff,
+231:                                  actor_microbatch=args.actor_microbatch, actor_kind=init_meta['actor_kind'],
+232:                                  observation_clock_index=775 if obs.shape[-1] == 794 else None,
+233:                                  autoregressive_world_fit=args.world_autoregressive_fit)
+234:         stage('TRAINER_READY', obs_dim=int(obs.shape[-1]), action_dim=18)
+235:         metadata = {'init_policy_checkpoint': init_meta, 'old_checkpoint': None, 'mpc': None, 'teacher': None,
+236:                     'task_contract': task_contract,
+237:                     'bc': None, 'num_envs': args.num_envs, 'seed': args.seed,
+238:                     'timebase': timebase.manifest(), 'init_source_sha256': hashlib.sha256(args.init_policy_checkpoint.read_bytes()).hexdigest(),
+239:                     'world_representation': 'structured_native_history_v1_next_frame_plus_tail_plus_event_latches',
+240:                     'world_event_state': list(getattr(env, 'event_state_names', ())),
+
+scripts/train_supermimic_horizon_v2.py
+355:             wm['autoregressive_world_fit'] = bool(args.world_autoregressive_fit)
+356:             sync(); wm_end = time.perf_counter()
+357:             # No 800-tick/full-panel gate. Fit a real complete model window first.
+358:             full_episodes = int(native_event_totals['full_episodes'])
+359:             terminated_episodes = int(native_event_totals['episodes'])
+360:             world_loss = wm.get('world_loss')
+361:             full_ready = full_episodes >= args.actor_warmup_episodes
+362:             fallback_ready = (
+363:                 args.actor_warmup_terminated_episodes > 0
+364:                 and terminated_episodes >= args.actor_warmup_terminated_episodes
+365:                 and world_loss is not None
+366:                 and float(world_loss) <= args.actor_warmup_max_world_loss)
+367:             actor_gate_ready = full_ready or fallback_ready
+368:             if wm.get('world_updates', 0) and actor_gate_ready:
+369:                 critic_ready = (
+370:                     trainer.critic_updates >= args.critic_warmup_updates
+371:                     and trainer.last_critic_loss is not None
+372:                     and float(trainer.last_critic_loss) <= args.actor_max_critic_loss)
+373:                 actor_stats = trainer.imagine_update(
+374:                     args.imagination_batch,
+375:                     update_actor=critic_ready,
+
+quadsmash/rl/supermimic_horizon_learner_v2.py
+80:         self.world.train()
+81:         losses = []
+82:         for _ in range(updates):
+83:             try:
+84:                 window = self.replay.sample_windows(batch_size, self.timebase.world_steps)
+85:             except NotEnoughSequenceData as error:
+86:                 return {"world_updates": len(losses), "world_waiting": str(error),
+87:                         "world_window_steps": self.timebase.world_steps}
+88:             prediction = window[0]["obs"]
+89:             prediction_event = window[0].get("event_state") if self.event_dim else None
+90:             loss = prediction.new_zeros(())
+91:             for transition in window:
+92:                 output = (self.world(prediction, transition["action"], prediction_event)
+93:                           if self.event_dim else self.world(prediction, transition["action"]))
+94:                 if self.event_dim:
+95:                     delta, reward, done_logit, next_event_logits = output
+96:                 else:
+97:                     delta, reward, done_logit = output
+98:                 predicted_next = prediction + delta
+99:                 # The target is data. The supervised fit uses true next-state
+100:                 # inputs between terms; imagined rollouts remain autoregressive.
+101:                 loss = loss + (predicted_next - transition["next_obs"]).square().mean()
+102:                 loss = loss + .5 * (reward - transition["reward"]).square().mean()
+103:                 loss = loss + .1 * nn.functional.binary_cross_entropy_with_logits(done_logit, transition["done"])
+104:                 if self.event_dim:
+105:                     loss = loss + .1 * event_hazard_loss(
+106:                         next_event_logits, transition["event_state"], transition["next_event_state"])
+107:                 # The default fit is teacher-forced.  For long-horizon
+108:                 # experiments, optionally train on the same autoregressive
+109:                 # state distribution used by imagination.  This is an
+110:                 # explicit opt-in because it costs more memory and must be
+111:                 # validated against the native event stream.
+112:                 prediction = (predicted_next if self.autoregressive_world_fit
+113:                               else transition["next_obs"].detach())
+114:                 if self.event_dim:
+115:                     predicted_event = advance_event_latches(prediction_event, next_event_logits)
+116:                     prediction_event = (predicted_event if self.autoregressive_world_fit
+117:                                         else transition["next_event_state"].detach()).clamp(0., 1.)
+118:             loss = loss / len(window)
+
+quadsmash/rl/supermimic_horizon_learner_v2.py
+130:         cfg = self.timebase
+131:         obs = initial
+132:         event_state = (initial_event.clamp(0., 1.)
+133:                        if self.event_dim and initial_event is not None else None)
+134:         states, rewards, dones, valid, anchors = [], [], [], [], []
+135:         for k in range(cfg.imagination_steps):
+136:             active = elapsed + k * cfg.control_dt_s < cfg.episode_s - 1e-7
+137:             action = self.actor(obs, sample=False)[0].clamp(-1., 1.)
+138:             if self.reference_actor is not None and self.policy_anchor_coeff > 0:
+139:                 with torch.no_grad():
+140:                     reference_action = self.reference_actor(obs, sample=False)[0].clamp(-1., 1.)
+141:                 anchor_penalty = (action - reference_action).square().mean(-1, keepdim=True)
+142:             else:
+143:                 anchor_penalty = torch.zeros_like(action[..., :1])
+144:             anchors.append(anchor_penalty)
+145:             output = (self.world(obs, action, event_state)
+146:                       if self.event_dim else self.world(obs, action))
+147:             if self.event_dim:
+148:                 delta, reward, terminal, next_event_logits = output
+149:                 event_state = advance_event_latches(event_state, next_event_logits)
+150:             else:
+151:                 delta, reward, terminal = output
+152:             next_obs = obs + delta
+153:             # The real observation clock is deterministic; the model cannot
+154:             # gain reward by slowing down episode time.
+155:             if self.observation_clock_index is not None:
+156:                 next_obs = next_obs.clone()
+157:                 next_obs[:, self.observation_clock_index:self.observation_clock_index+1] = elapsed + (k+1)*cfg.control_dt_s
+158:             at_end = elapsed + (k + 1) * cfg.control_dt_s >= cfg.episode_s - 1e-7
+159:             done = torch.where(at_end, torch.ones_like(terminal), terminal.sigmoid())
+160:             states.append(obs.detach())
+161:             rewards.append(torch.where(active, reward, torch.zeros_like(reward)))
+162:             dones.append(done)
+163:             valid.append(active)
+164:             obs = torch.where(active, next_obs, obs)
+165:         values = self.critic(obs).clamp(max=self.v_max)
+166:         ret = bptt_return(torch.stack(rewards), torch.stack(dones), values, cfg.gamma)
+167:         if not torch.isfinite(ret).all():
+168:             raise FloatingPointError("Nonfinite imagination return; no silent state clipping")
+169:         # All critic data are detached before the actor optimizer changes theta.
+170:         return ret, (torch.stack(states), torch.stack(rewards).detach(),
+171:                      torch.stack(dones).detach(), obs.detach(), torch.stack(valid)), torch.stack(anchors).sum(0)
+
+quadsmash/rl/supermimic_v1.py
+38: class SuperMimicWorldModel(nn.Module):
+39:     """Predict task transitions while preserving the native history contract.
+40:
+41:     The native 794D observation contains eleven 69D frames.  Treating all
+42:     759 history values as independently predicted physical state lets the
+43:     imagination model invent inconsistent histories.  For the full-racket
+44:     contract, this model predicts only the next frame and the non-history
+45:     tail; the history shift itself is deterministic and identical to
+46:     ``PolicyHistory.observe``.  The public forward interface remains
+47:     ``(delta, reward, terminal_logit)`` so the existing learner can use the
+48:     structured transition without an algorithm rewrite.
+49:     """
+50:     def __init__(self, obs_dim: int, action_dim: int = 18, *, structured_history: bool = True,
+51:                  event_dim: int = 0):
+52:         super().__init__()
+53:         self.obs_dim = obs_dim
+54:         self.action_dim = action_dim
+55:         self.event_dim = int(event_dim)
+56:         if self.event_dim < 0:
+57:             raise ValueError("event_dim must be non-negative")
+58:         self.structured_history = bool(structured_history and obs_dim == 794)
+59:         self.history_length = 11
+60:         self.frame_dim = 69
+61:         self.history_dim = self.history_length * self.frame_dim
+62:         self.tail_dim = obs_dim - self.history_dim
+63:         output_dim = (self.frame_dim + self.tail_dim + 2 + self.event_dim
+64:                       if self.structured_history else obs_dim + 2 + self.event_dim)
+65:         self.body = MLP(obs_dim + action_dim + self.event_dim, (1024, 1024, 1024), output_dim)
+66:
+67:     def forward(self, obs: torch.Tensor, action: torch.Tensor, event_state=None):
+68:         if self.event_dim:
+69:             if event_state is None or event_state.shape[-1] != self.event_dim:
+70:                 raise ValueError("event_state is required for an event-aware world model")
+71:             model_input = torch.cat((obs, action, event_state), dim=-1)
+72:         else:
+73:             model_input = torch.cat((obs, action), dim=-1)
+74:         out = self.body(model_input)
+75:         if self.structured_history:
+76:             frame_delta = out[..., :self.frame_dim]
+77:             tail_delta = out[..., self.frame_dim:self.frame_dim + self.tail_dim]
+78:             history = obs[..., :self.history_dim].reshape(
+79:                 *obs.shape[:-1], self.history_length, self.frame_dim)
+80:             next_frame = history[..., 0, :] + frame_delta
+81:             next_history = torch.cat((next_frame.unsqueeze(-2), history[..., :-1, :]), dim=-2)
+82:             next_tail = obs[..., self.history_dim:] + tail_delta
+83:             next_obs = torch.cat((next_history.reshape(*obs.shape[:-1], self.history_dim), next_tail), dim=-1)
+84:             delta = next_obs - obs
+85:             reward = out[..., self.frame_dim + self.tail_dim:self.frame_dim + self.tail_dim + 1]
+86:             terminal_logit = out[..., self.frame_dim + self.tail_dim + 1:self.frame_dim + self.tail_dim + 2]
+87:             next_event_logits = out[..., self.frame_dim + self.tail_dim + 2:]
+88:         else:
+89:             delta = out[..., : self.obs_dim]
+90:             reward = out[..., self.obs_dim : self.obs_dim + 1]
+
+quadsmash/tasks/stand/supermimic_env_v1.py
+145:
+146:     def _get_rewards(self):
+147:         """Progress rates plus one-shot physical events, all from native flags."""
+148:         self._episode_has_stepped[:] = True
+149:         d = self.robot.data
+150:         rally = self.rally
+151:         phase = self.episode_length_buf.float() * self.step_dt
+152:         contact = rally.legal_initial_contact & rally.string_hit & rally.airborne_string_hit
+153:         attack = contact & rally.released & (rally.outgoing_velocity.norm(dim=1) >= 5.0) & (rally.outgoing_velocity[:, 0] > 0)
+154:         cross = attack & rally.crossed_net
+155:         target = cross & rally.landed_target
+156:         recover = contact & self.rally_recovery_success
+157:         body = self.body_ground_seen
+158:         event_jump = self.flight_qualified & ~self._sm_jump
+159:         event_contact = contact & ~self._sm_contact
+160:         event_cross = cross & ~self._sm_cross
+161:         event_target = target & ~self._sm_target
+162:         event_recovery = recover & ~self._sm_recovery
+163:         event_body = body & ~self._sm_body
+164:         faulted = rally.faulted()
+165:         event_fault = faulted & ~self._sm_fault
+166:         event_frame = rally.frame_hit & ~event_contact & ~self._sm_frame
+167:         self._sm_jump |= event_jump; self._sm_contact |= event_contact; self._sm_cross |= event_cross
+168:         self._sm_target |= event_target; self._sm_recovery |= event_recovery; self._sm_body |= event_body
+169:         self._sm_frame |= event_frame; self._sm_fault |= event_fault
+170:         ball = self.shuttle.data.root_pos_w
+171:         tool = d.body_link_pos_w[:, self.racket_body_id]
+172:         proximity = torch.exp(-((ball - tool).norm(dim=1) / 0.18).square())
+173:         approach = proximity * (rally.in_play & ~rally.had_contact & ~body).float()
+174:         head_gap = d.body_pos_w[:, self.safety_body_ids, 2].min(1).values.clamp_min(0.)
+175:         risk = torch.exp(-head_gap / 0.04)
+176:         stable_quality = recover.float() * torch.exp(-4.0 * d.projected_gravity_b[:, :2].square().sum(1)
+177:             -0.4 * d.root_com_lin_vel_w[:, :2].square().sum(1)
+178:             -0.2 * d.root_com_ang_vel_w.square().sum(1))
+179:         continuous = (0.5 * stable_quality - 2.0 * risk - 0.05 * self.action_delta
+180:                       - 0.02 * d.applied_torque.square().sum(1) / 1000.0
+181:                       + 0.8 * approach) * self.step_dt
+182:         complete5 = target & self.rally_recovery_success & (~faulted) & self.reset_time_outs & (~self.reset_terminated)
+183:         reward = continuous + 2.0 * event_jump.float() + 20.0 * event_contact.float() + 5.0 * event_cross.float()
+184:         reward = reward + 15.0 * event_target.float() + 10.0 * event_recovery.float() + 20.0 * complete5.float()
+185:         reward = reward - 4.0 * event_frame.float() - 5.0 * ((~contact) & (phase > 3.0)).float() * self.step_dt
+186:         reward = reward - 15.0 * event_fault.float() - 40.0 * event_body.float()
+187:         reward = torch.nan_to_num(reward, nan=-40.0, posinf=40.0, neginf=-40.0)
