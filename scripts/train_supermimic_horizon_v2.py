@@ -207,10 +207,14 @@ def main():
         reference_actor, reference_meta = load_ppo_initialized_actor(args.init_policy_checkpoint, env.device)
         if reference_meta['sha256'] != init_meta['sha256'] or reference_meta['actor_kind'] != init_meta['actor_kind']:
             raise RuntimeError('Reference actor does not match initialized actor source')
-        replay = SequenceReplay(args.replay_capacity, args.num_envs, obs.shape[-1], 18, env.device)
+        event_dim = len(getattr(env, 'event_state_names', ()))
+        replay = SequenceReplay(args.replay_capacity, args.num_envs, obs.shape[-1], 18, env.device,
+                                event_dim=event_dim)
         if replay.slots < timebase.world_steps:
             raise ValueError('Replay too short for configured physical-time window')
-        trainer = HorizonTrainer(actor, SuperMimicWorldModel(obs.shape[-1], 18, structured_history=True).to(env.device),
+        trainer = HorizonTrainer(actor, SuperMimicWorldModel(
+                                    obs.shape[-1], 18, structured_history=True,
+                                    event_dim=event_dim).to(env.device),
                                  SuperMimicCritic(obs.shape[-1]).to(env.device), replay, timebase,
                                  actor_lr=args.actor_lr, world_lr=args.world_lr, critic_lr=args.critic_lr,
                                  reference_actor=reference_actor,
@@ -222,7 +226,8 @@ def main():
         metadata = {'init_policy_checkpoint': init_meta, 'old_checkpoint': None, 'mpc': None, 'teacher': None,
                     'bc': None, 'num_envs': args.num_envs, 'seed': args.seed,
                     'timebase': timebase.manifest(), 'init_source_sha256': hashlib.sha256(args.init_policy_checkpoint.read_bytes()).hexdigest(),
-                    'world_representation': 'structured_native_history_v1_next_frame_plus_tail',
+                    'world_representation': 'structured_native_history_v1_next_frame_plus_tail_plus_event_latches',
+                    'world_event_state': list(getattr(env, 'event_state_names', ())),
                     'policy_anchor': {'source': init_meta, 'coefficient': args.policy_anchor_coeff},
                     'learning_rates': {'actor': args.actor_lr, 'world': args.world_lr, 'critic': args.critic_lr},
                     'formal_evaluation_started': False}
@@ -289,6 +294,7 @@ def main():
             last_tick = local_iteration
             episode = env.episode_index.detach().clone()
             elapsed = env.episode_length_buf.float().clone() * env.step_dt
+            event_state = env.supermimic_event_state().detach().clone()
             # Preserve the initialized policy's deterministic physical behavior
             # while collecting the first complete native episodes.  Exploration
             # starts only after an imagined actor update is actually enabled.
@@ -334,7 +340,11 @@ def main():
             true_next = nxt['policy'].detach().clone()
             valid = env.final_observation_valid
             true_next[valid] = env.final_observation[valid]
-            replay.add(current, action, true_next, reward, done, elapsed, episode)
+            next_event_state = env.supermimic_event_state().detach().clone()
+            final_event_valid = env.final_event_state_valid
+            next_event_state[final_event_valid] = env.final_event_state[final_event_valid]
+            replay.add(current, action, true_next, reward, done, elapsed, episode,
+                       event_state=event_state, next_event_state=next_event_state)
             if local_iteration == 0:
                 stage('FIRST_REPLAY_WRITE', replay_size=len(replay))
             obs = nxt['policy']

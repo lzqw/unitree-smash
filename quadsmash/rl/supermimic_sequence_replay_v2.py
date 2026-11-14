@@ -8,15 +8,19 @@ class NotEnoughSequenceData(RuntimeError):
 
 
 class SequenceReplay:
-    def __init__(self, capacity, num_envs, obs_dim, action_dim, device):
+    def __init__(self, capacity, num_envs, obs_dim, action_dim, device, event_dim=0):
         if capacity < 2 * num_envs:
             raise ValueError("Replay needs at least two time slots per environment")
         self.slots, self.num_envs = capacity // num_envs, num_envs
         self.device, self.capacity = torch.device(device), (capacity // num_envs) * num_envs
-        self.obs_dim, self.action_dim = obs_dim, action_dim
+        self.obs_dim, self.action_dim, self.event_dim = obs_dim, action_dim, int(event_dim)
+        if self.event_dim < 0:
+            raise ValueError("event_dim must be non-negative")
         self.ptr = self.ticks_written = self.session = 0
         spec = {"obs": (obs_dim,), "next_obs": (obs_dim,), "action": (action_dim,),
                 "reward": (1,), "done": (1,), "elapsed": (1,)}
+        if self.event_dim:
+            spec.update(event_state=(self.event_dim,), next_event_state=(self.event_dim,))
         self.data = {k: torch.empty((self.slots, num_envs, *shape), device=device) for k, shape in spec.items()}
         self.episode = torch.full((self.slots, num_envs), -1, dtype=torch.long, device=device)
         self.sessions = torch.full((self.slots,), -1, dtype=torch.long, device=device)
@@ -26,10 +30,14 @@ class SequenceReplay:
         return min(self.ticks_written, self.slots) * self.num_envs
 
     @torch.no_grad()
-    def add(self, obs, action, next_obs, reward, done, elapsed, episode):
-        n = obs.shape[0]
+    def add(self, obs, action, next_obs, reward, done, elapsed, episode,
+            event_state=None, next_event_state=None):
         arrays = dict(obs=obs, action=action, next_obs=next_obs, reward=reward.reshape(-1, 1),
                       done=done.reshape(-1, 1), elapsed=elapsed.reshape(-1, 1))
+        if self.event_dim:
+            if event_state is None or next_event_state is None:
+                raise ValueError("event_state and next_event_state are required")
+            arrays.update(event_state=event_state, next_event_state=next_event_state)
         for key, value in arrays.items():
             if value.shape != self.data[key][self.ptr].shape:
                 raise ValueError(f"Replay shape mismatch: {key}")
@@ -98,7 +106,7 @@ class SequenceReplay:
 
     def state_dict(self):
         valid_slots = min(self.ticks_written, self.slots)
-        return {"capacity": self.capacity, "num_envs": self.num_envs,
+        return {"capacity": self.capacity, "num_envs": self.num_envs, "event_dim": self.event_dim,
                 "ptr": self.ptr, "ticks_written": self.ticks_written, "session": self.session,
                 "data": {k: v[:valid_slots].cpu() for k, v in self.data.items()},
                 "episode": self.episode[:valid_slots].cpu(),
@@ -107,6 +115,8 @@ class SequenceReplay:
     def load_state_dict(self, state):
         if state["capacity"] != self.capacity or state["num_envs"] != self.num_envs:
             raise ValueError("Resume replay layout mismatch")
+        if int(state.get("event_dim", 0)) != self.event_dim:
+            raise ValueError("Resume replay event-state layout mismatch")
         count = min(state["ticks_written"], self.slots)
         for key in self.data:
             self.data[key][:count].copy_(state["data"][key].to(self.device))

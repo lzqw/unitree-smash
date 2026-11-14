@@ -219,6 +219,34 @@ def test_structured_world_model_shifts_history_deterministically():
     torch.testing.assert_close(next_obs[:, 759:], obs[:, 759:])
 
 
+def test_event_aware_world_model_has_explicit_latch_output():
+    model = SuperMimicWorldModel(794, 18, structured_history=True, event_dim=8)
+    obs = torch.zeros(2, 794)
+    action = torch.zeros(2, 18)
+    event = torch.zeros(2, 8)
+    delta, reward, terminal, next_event_logits = model(obs, action, event)
+    assert delta.shape == obs.shape
+    assert reward.shape == (2, 1)
+    assert terminal.shape == (2, 1)
+    assert next_event_logits.shape == (2, 8)
+
+
+def test_event_aware_replay_preserves_state_boundaries():
+    replay = SequenceReplay(40, 1, 4, 18, 'cpu', event_dim=2)
+    for tick in range(20):
+        x = torch.full((1, 4), float(tick))
+        event = torch.tensor([[float(tick >= 3), float(tick >= 7)]])
+        replay.add(x, torch.zeros(1, 18), x + 1, torch.zeros(1), torch.zeros(1),
+                   torch.tensor([tick * .01]), torch.zeros(1, dtype=torch.long),
+                   event_state=event,
+                   next_event_state=torch.tensor([[float(tick + 1 >= 3), float(tick + 1 >= 7)]]))
+    window = replay.sample_windows(2, 8)
+    assert all('event_state' in row and 'next_event_state' in row for row in window)
+    for row in window:
+        assert row['event_state'].shape[-1] == 2
+        assert torch.all(row['next_event_state'] >= row['event_state'])
+
+
 def test_policy_anchor_is_reported_and_reference_stays_frozen():
     torch.manual_seed(4)
     reference = Actor()

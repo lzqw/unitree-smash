@@ -20,6 +20,11 @@ def make_supermimic_cfg(num_envs: int, physics_dt: float = 6.25e-5):
 class SuperMimicEnvV1(FullRacketEnvV4):
     """Schema-specific 18-joint targets with native event-locked rewards."""
     algorithm_family = "supermimic-native-world-model-v1"
+    # These latches make one-shot native event rewards Markov for the world
+    # model without changing the actor's public 794D observation contract.
+    event_state_names = (
+        "jump", "contact", "cross", "target", "recovery", "body", "frame", "fault"
+    )
 
     def __init__(self, *args, residual_policy_checkpoint=None, g07_execution_root=None, **kwargs):
         self._sm_residual_policy_checkpoint = residual_policy_checkpoint
@@ -31,6 +36,9 @@ class SuperMimicEnvV1(FullRacketEnvV4):
         self._sm_joint_targets = None
         self._sm_g07_execution_root = g07_execution_root
         super().__init__(*args, **kwargs)
+        self._sm_final_event_state = torch.zeros(
+            (self.num_envs, len(self.event_state_names)), dtype=torch.float32, device=self.device)
+        self._sm_final_event_state_valid = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
         self._sm_prev = {}
         self._sm_reset_events()
         if residual_policy_checkpoint is not None:
@@ -44,6 +52,28 @@ class SuperMimicEnvV1(FullRacketEnvV4):
             self._sm_residual_default = self.robot.data.default_joint_pos[0, self.joint_ids].clone()
             self._sm_residual_limits = self.robot.data.joint_pos_limits[0, self.joint_ids].clone()
             self._sm_residual_controller.reset()
+
+    def supermimic_event_state(self):
+        """Return native one-shot event latches before/after a control tick."""
+        return torch.stack((
+            self._sm_jump, self._sm_contact, self._sm_cross, self._sm_target,
+            self._sm_recovery, self._sm_body, self._sm_frame, self._sm_fault,
+        ), dim=-1).to(dtype=torch.float32)
+
+    @property
+    def final_event_state(self):
+        return self._sm_final_event_state
+
+    @property
+    def final_event_state_valid(self):
+        return self._sm_final_event_state_valid
+
+    def step(self, actions):
+        self._sm_final_event_state_valid.zero_()
+        result = super().step(actions)
+        self.extras["final_event_state"] = self._sm_final_event_state
+        self.extras["final_event_state_valid"] = self._sm_final_event_state_valid
+        return result
 
     def _pre_physics_step(self, actions):
         """Keep residual-v4 and legacy jump-event action contracts separate.
@@ -149,7 +179,12 @@ class SuperMimicEnvV1(FullRacketEnvV4):
 
     @torch.inference_mode()
     def _reset_idx(self, ids):
+        if self._inside_step and ids.numel():
+            self._sm_final_event_state[ids] = self.supermimic_event_state()[ids]
+            self._sm_final_event_state_valid[ids] = True
         super()._reset_idx(ids)
+        if not self._inside_step:
+            self._sm_final_event_state_valid[ids] = False
         self._sm_reset_events(ids)
         if self._sm_residual_controller is not None:
             self._sm_residual_controller.reset(ids)

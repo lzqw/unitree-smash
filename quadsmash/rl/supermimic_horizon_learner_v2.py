@@ -49,6 +49,7 @@ class HorizonTrainer:
                  observation_clock_index=None, autoregressive_world_fit=False):
         self.actor, self.world, self.critic, self.replay = actor, world, critic, replay
         self.timebase, self.actor_kind = timebase, actor_kind
+        self.event_dim = int(getattr(world, "event_dim", 0))
         self.reference_actor = reference_actor
         if self.reference_actor is not None:
             self.reference_actor.eval()
@@ -84,15 +85,24 @@ class HorizonTrainer:
                 return {"world_updates": len(losses), "world_waiting": str(error),
                         "world_window_steps": self.timebase.world_steps}
             prediction = window[0]["obs"]
+            prediction_event = window[0].get("event_state") if self.event_dim else None
             loss = prediction.new_zeros(())
             for transition in window:
-                delta, reward, done_logit = self.world(prediction, transition["action"])
+                output = (self.world(prediction, transition["action"], prediction_event)
+                          if self.event_dim else self.world(prediction, transition["action"]))
+                if self.event_dim:
+                    delta, reward, done_logit, next_event_logits = output
+                else:
+                    delta, reward, done_logit = output
                 predicted_next = prediction + delta
                 # The target is data. The supervised fit uses true next-state
                 # inputs between terms; imagined rollouts remain autoregressive.
                 loss = loss + (predicted_next - transition["next_obs"]).square().mean()
                 loss = loss + .5 * (reward - transition["reward"]).square().mean()
                 loss = loss + .1 * nn.functional.binary_cross_entropy_with_logits(done_logit, transition["done"])
+                if self.event_dim:
+                    loss = loss + .1 * nn.functional.binary_cross_entropy_with_logits(
+                        next_event_logits, transition["next_event_state"].clamp(0., 1.))
                 # The default fit is teacher-forced.  For long-horizon
                 # experiments, optionally train on the same autoregressive
                 # state distribution used by imagination.  This is an
@@ -100,6 +110,10 @@ class HorizonTrainer:
                 # validated against the native event stream.
                 prediction = (predicted_next if self.autoregressive_world_fit
                               else transition["next_obs"].detach())
+                if self.event_dim:
+                    predicted_event = prediction_event + (1. - prediction_event) * next_event_logits.sigmoid()
+                    prediction_event = (predicted_event if self.autoregressive_world_fit
+                                        else transition["next_event_state"].detach()).clamp(0., 1.)
             loss = loss / len(window)
             if not torch.isfinite(loss):
                 raise FloatingPointError("Nonfinite world-model loss")
@@ -111,9 +125,11 @@ class HorizonTrainer:
         return {"world_updates": len(losses), "world_loss": float(torch.stack(losses).mean()) if losses else None,
                 "world_window_steps": self.timebase.world_steps}
 
-    def _rollout(self, initial, elapsed):
+    def _rollout(self, initial, elapsed, initial_event=None):
         cfg = self.timebase
         obs = initial
+        event_state = (initial_event.clamp(0., 1.)
+                       if self.event_dim and initial_event is not None else None)
         states, rewards, dones, valid, anchors = [], [], [], [], []
         for k in range(cfg.imagination_steps):
             active = elapsed + k * cfg.control_dt_s < cfg.episode_s - 1e-7
@@ -125,7 +141,13 @@ class HorizonTrainer:
             else:
                 anchor_penalty = torch.zeros_like(action[..., :1])
             anchors.append(anchor_penalty)
-            delta, reward, terminal = self.world(obs, action)
+            output = (self.world(obs, action, event_state)
+                      if self.event_dim else self.world(obs, action))
+            if self.event_dim:
+                delta, reward, terminal, next_event_logits = output
+                event_state = (event_state + (1. - event_state) * next_event_logits.sigmoid()).clamp(0., 1.)
+            else:
+                delta, reward, terminal = output
             next_obs = obs + delta
             # The real observation clock is deterministic; the model cannot
             # gain reward by slowing down episode time.
@@ -164,7 +186,8 @@ class HorizonTrainer:
             for begin in range(0, batch_size, self.actor_microbatch):
                 end = min(begin + self.actor_microbatch, batch_size)
                 ret, trajectory, anchor_penalty = self._rollout(
-                    batch["obs"][begin:end].detach(), batch["elapsed"][begin:end])
+                    batch["obs"][begin:end].detach(), batch["elapsed"][begin:end],
+                    batch["event_state"][begin:end].detach() if self.event_dim else None)
                 # One optimizer step for the full logical batch. Never detach
                 # between time steps; microbatching partitions B, not horizon H.
                 if update_actor:
@@ -222,9 +245,17 @@ class HorizonTrainer:
         steps = seconds_to_steps(seconds, self.timebase.control_dt_s, "validation horizon")
         window = self.replay.sample_windows(batch_size, steps)
         prediction = window[0]["obs"]
+        prediction_event = window[0].get("event_state") if self.event_dim else None
         mse = []
         for transition in window:
-            delta, _, _ = self.world(prediction, transition["action"])
+            output = (self.world(prediction, transition["action"], prediction_event)
+                      if self.event_dim else self.world(prediction, transition["action"]))
+            if self.event_dim:
+                delta, _, _, next_event_logits = output
+                prediction_event = (prediction_event + (1. - prediction_event)
+                                    * next_event_logits.sigmoid()).clamp(0., 1.)
+            else:
+                delta, _, _ = output
             prediction = prediction + delta
             mse.append(float((prediction - transition["next_obs"]).square().mean()))
         return {"requested_seconds": seconds, "steps": steps, "actual_seconds": steps*self.timebase.control_dt_s,

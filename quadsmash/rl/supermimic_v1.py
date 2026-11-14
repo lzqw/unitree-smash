@@ -47,20 +47,31 @@ class SuperMimicWorldModel(nn.Module):
     ``(delta, reward, terminal_logit)`` so the existing learner can use the
     structured transition without an algorithm rewrite.
     """
-    def __init__(self, obs_dim: int, action_dim: int = 18, *, structured_history: bool = True):
+    def __init__(self, obs_dim: int, action_dim: int = 18, *, structured_history: bool = True,
+                 event_dim: int = 0):
         super().__init__()
         self.obs_dim = obs_dim
         self.action_dim = action_dim
+        self.event_dim = int(event_dim)
+        if self.event_dim < 0:
+            raise ValueError("event_dim must be non-negative")
         self.structured_history = bool(structured_history and obs_dim == 794)
         self.history_length = 11
         self.frame_dim = 69
         self.history_dim = self.history_length * self.frame_dim
         self.tail_dim = obs_dim - self.history_dim
-        output_dim = (self.frame_dim + self.tail_dim + 2) if self.structured_history else obs_dim + 2
-        self.body = MLP(obs_dim + action_dim, (1024, 1024, 1024), output_dim)
+        output_dim = (self.frame_dim + self.tail_dim + 2 + self.event_dim
+                      if self.structured_history else obs_dim + 2 + self.event_dim)
+        self.body = MLP(obs_dim + action_dim + self.event_dim, (1024, 1024, 1024), output_dim)
 
-    def forward(self, obs: torch.Tensor, action: torch.Tensor):
-        out = self.body(torch.cat((obs, action), dim=-1))
+    def forward(self, obs: torch.Tensor, action: torch.Tensor, event_state=None):
+        if self.event_dim:
+            if event_state is None or event_state.shape[-1] != self.event_dim:
+                raise ValueError("event_state is required for an event-aware world model")
+            model_input = torch.cat((obs, action, event_state), dim=-1)
+        else:
+            model_input = torch.cat((obs, action), dim=-1)
+        out = self.body(model_input)
         if self.structured_history:
             frame_delta = out[..., :self.frame_dim]
             tail_delta = out[..., self.frame_dim:self.frame_dim + self.tail_dim]
@@ -72,11 +83,15 @@ class SuperMimicWorldModel(nn.Module):
             next_obs = torch.cat((next_history.reshape(*obs.shape[:-1], self.history_dim), next_tail), dim=-1)
             delta = next_obs - obs
             reward = out[..., self.frame_dim + self.tail_dim:self.frame_dim + self.tail_dim + 1]
-            terminal_logit = out[..., self.frame_dim + self.tail_dim + 1:]
+            terminal_logit = out[..., self.frame_dim + self.tail_dim + 1:self.frame_dim + self.tail_dim + 2]
+            next_event_logits = out[..., self.frame_dim + self.tail_dim + 2:]
         else:
             delta = out[..., : self.obs_dim]
             reward = out[..., self.obs_dim : self.obs_dim + 1]
-            terminal_logit = out[..., self.obs_dim + 1 :]
+            terminal_logit = out[..., self.obs_dim + 1:self.obs_dim + 2]
+            next_event_logits = out[..., self.obs_dim + 2:]
+        if self.event_dim:
+            return delta, reward, terminal_logit, next_event_logits
         return delta, reward, terminal_logit
 
 
