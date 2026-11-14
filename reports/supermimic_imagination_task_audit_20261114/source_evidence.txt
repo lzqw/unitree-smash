@@ -1,7 +1,7 @@
 FILE quadsmash/rl/supermimic_horizon_learner_v2.py SHA256 29a871391a05929e34667c246e2ada85085e6695d6de96188b188544d1bb8de6
 75:     def action(self, obs, sample=True):
 76:         return self.actor(obs, sample=sample)[0].clamp(-1., 1.)
-77: 
+77:
 78:     def fit_world(self, updates, batch_size):
 79:         self.world.train()
 80:         losses = []
@@ -51,7 +51,7 @@ FILE quadsmash/rl/supermimic_horizon_learner_v2.py SHA256 29a871391a05929e34667c
 124:             losses.append(loss.detach())
 125:         return {"world_updates": len(losses), "world_loss": float(torch.stack(losses).mean()) if losses else None,
 126:                 "world_window_steps": self.timebase.world_steps}
-127: 
+127:
 128:     def _rollout(self, initial, elapsed, initial_event=None):
 129:         cfg = self.timebase
 130:         obs = initial
@@ -96,11 +96,11 @@ FILE quadsmash/rl/supermimic_horizon_learner_v2.py SHA256 29a871391a05929e34667c
 FILE quadsmash/rl/supermimic_v1.py SHA256 bce5e9ccdca49f5ccf3bb267c49a36da2f5d3fce8b4dc45cb474375fa25e95ac
 34:     def forward(self, x: torch.Tensor) -> torch.Tensor:
 35:         return self.net(x)
-36: 
-37: 
+36:
+37:
 38: class SuperMimicWorldModel(nn.Module):
 39:     """Predict task transitions while preserving the native history contract.
-40: 
+40:
 41:     The native 794D observation contains eleven 69D frames.  Treating all
 42:     759 history values as independently predicted physical state lets the
 43:     imagination model invent inconsistent histories.  For the full-racket
@@ -126,7 +126,7 @@ FILE quadsmash/rl/supermimic_v1.py SHA256 bce5e9ccdca49f5ccf3bb267c49a36da2f5d3f
 63:         output_dim = (self.frame_dim + self.tail_dim + 2 + self.event_dim
 64:                       if self.structured_history else obs_dim + 2 + self.event_dim)
 65:         self.body = MLP(obs_dim + action_dim + self.event_dim, (1024, 1024, 1024), output_dim)
-66: 
+66:
 67:     def forward(self, obs: torch.Tensor, action: torch.Tensor, event_state=None):
 68:         if self.event_dim:
 69:             if event_state is None or event_state.shape[-1] != self.event_dim:
@@ -156,14 +156,14 @@ FILE quadsmash/rl/supermimic_v1.py SHA256 bce5e9ccdca49f5ccf3bb267c49a36da2f5d3f
 93:         if self.event_dim:
 94:             return delta, reward, terminal_logit, next_event_logits
 95:         return delta, reward, terminal_logit
-96: 
-97: 
+96:
+97:
 98: class SuperMimicActor(nn.Module):
 99:     def __init__(self, obs_dim: int, action_dim: int = 18):
 100:         super().__init__()
 101:         self.mean = MLP(obs_dim, (512, 256, 128), action_dim)
 102:         self.log_std = nn.Parameter(torch.full((action_dim,), -1.4))
-103: 
+103:
 104:     def forward(self, obs: torch.Tensor, sample: bool = False):
 FILE scripts/train_supermimic_horizon_v2.py SHA256 3a97fb82c928c4c6ff9b671ac96fbb79e4ede91ac9eaa62fc89833131f0e9de8
 180:             raise ValueError('Require an audited native residual policy contract')
@@ -276,8 +276,8 @@ FILE quadsmash/tasks/stand/supermimic_env_v1.py SHA256 6af5fd5728d41ea3d247224a7
 15:     cfg.sim.render_interval = cfg.decimation
 16:     cfg.scene.num_envs = num_envs
 17:     return cfg
-18: 
-19: 
+18:
+19:
 20: class SuperMimicEnvV1(FullRacketEnvV4):
 21:     """Schema-specific 18-joint targets with native event-locked rewards."""
 22:     algorithm_family = "supermimic-native-world-model-v1"
@@ -286,7 +286,7 @@ FILE quadsmash/tasks/stand/supermimic_env_v1.py SHA256 6af5fd5728d41ea3d247224a7
 25:     event_state_names = (
 26:         "jump", "contact", "cross", "target", "recovery", "body", "frame", "fault"
 27:     )
-28: 
+28:
 29:     def __init__(self, *args, residual_policy_checkpoint=None, g07_execution_root=None, **kwargs):
 30:         self._sm_residual_policy_checkpoint = residual_policy_checkpoint
 31:         self._sm_residual_controller = None
@@ -355,8 +355,8 @@ FILE quadsmash/tasks/stand/supermimic_env_v1.py SHA256 6af5fd5728d41ea3d247224a7
 177:         reward = reward - 15.0 * event_fault.float() - 40.0 * event_body.float()
 178:         return torch.nan_to_num(reward, nan=-40.0, posinf=40.0, neginf=-40.0)
 FILE quadsmash/tasks/stand/full_racket_env_v4.py SHA256 3bc575ffa45d7bcb3542e80c7c8d7f8215bb99e219e68567f59c15e988e6edbc
-18: 
-19: 
+18:
+19:
 20: def full_racket_cfg(num_envs=16,physics_dt=.0000625):
 21:     cfg=BallEnvCfg();racket,court=load_racket(),load_court()
 22:     cfg.robot.spawn.usd_path=str(ROOT/racket['output_asset'])
@@ -373,8 +373,8 @@ FILE quadsmash/tasks/stand/full_racket_env_v4.py SHA256 3bc575ffa45d7bcb3542e80c
 33:     cfg.event_goal_normal=(1.,0.,0.)
 34:     cfg.sweep_audit_iterations=4096
 35:     return apply_neutral_arm_reset(cfg)
-36: 
-37: 
+36:
+37:
 38: class FullRacketEnvV4(BallEnv):
 39:     action_family='absolute-joint-limits-full-racket-v4'
 40:     def __init__(self,cfg,*,cases=None,contact_flight_recovery=None,**kwargs):
@@ -415,15 +415,15 @@ FILE quadsmash/physics/rally_rules_v4.py SHA256 ee89970918f3680f44f6e2b18ea28b8b
 140:         self.landed_target |= valid & legal_court & target
 141:         self.ground_seen |= first_landing
 142:         self.in_play &= (~self.faulted()) & (~first_landing)
-143: 
+143:
 144:     def attack(self):
 145:         speed = self.outgoing_velocity.norm(dim=-1)
 146:         return (self.released & self.legal_initial_contact & self.airborne_string_hit
 147:                 & (speed>=8.) & (self.outgoing_velocity[:,0]>0) & (self.outgoing_velocity[:,2]<=-1.))
-148: 
+148:
 149:     def complete(self,recovery):
 150:         return self.attack() & self.landed_target & recovery & (~self.faulted())
-151: 
+151:
 152:     def complete5(self, recovery):
 153:         """Current development success contract: legal 5 m/s attack."""
 154:         speed = self.outgoing_velocity.norm(dim=-1)
