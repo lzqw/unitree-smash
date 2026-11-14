@@ -1,0 +1,63 @@
+{
+  "scope": "Read-only persistence comparison on identical held-out windows; not a deployment predictor",
+  "persistence": {
+    "1": {
+      "count": 1280,
+      "positive_fraction": 0.46484375,
+      "probability_mean": 0.47734373807907104,
+      "probability_p05": 0.0,
+      "probability_p95": 1.0,
+      "brier": 0.04843749850988388,
+      "accuracy": 0.9515625238418579,
+      "true_positive": 572,
+      "true_negative": 646,
+      "false_positive": 39,
+      "false_negative": 23,
+      "recall_positive": 0.9613445378151261,
+      "recall_negative": 0.9430656934306569
+    },
+    "16": {
+      "count": 1280,
+      "positive_fraction": 0.3960937559604645,
+      "probability_mean": 0.47734373807907104,
+      "probability_p05": 0.0,
+      "probability_p95": 1.0,
+      "brier": 0.17656250298023224,
+      "accuracy": 0.823437511920929,
+      "true_positive": 446,
+      "true_negative": 608,
+      "false_positive": 165,
+      "false_negative": 61,
+      "recall_positive": 0.8796844181459567,
+      "recall_negative": 0.7865459249676585
+    },
+    "64": {
+      "count": 1280,
+      "positive_fraction": 0.4749999940395355,
+      "probability_mean": 0.47734373807907104,
+      "probability_p05": 0.0,
+      "probability_p95": 1.0,
+      "brier": 0.27421873807907104,
+      "accuracy": 0.725781261920929,
+      "true_positive": 434,
+      "true_negative": 495,
+      "false_positive": 177,
+      "false_negative": 174,
+      "recall_positive": 0.7138157894736842,
+      "recall_negative": 0.7366071428571429
+    }
+  },
+  "overlapping_training_window_counts": {
+    "jump": 1588,
+    "qualified_contact": 912,
+    "cross": 736,
+    "target": 640,
+    "recovery": 480,
+    "body_ground": 737,
+    "frame": 400,
+    "fault": 208,
+    "foot_transition": 48364,
+    "any_task_event": 4548,
+    "all_valid": 75195
+  }
+}

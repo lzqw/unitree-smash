@@ -1,0 +1,92 @@
+{
+  "scope": "Frozen model diagnosis, held-out recorded-control windows, no parameter update",
+  "outcomes": {
+    "1": {
+      "foot": {
+        "count": 1280,
+        "positive_fraction": 0.46484375,
+        "probability_mean": 0.5495373606681824,
+        "probability_p05": 0.39105093479156494,
+        "probability_p95": 0.6987907290458679,
+        "brier": 0.26312536001205444,
+        "accuracy": 0.48906251788139343,
+        "true_positive": 423,
+        "true_negative": 203,
+        "false_positive": 482,
+        "false_negative": 172,
+        "recall_positive": 0.7109243697478992,
+        "recall_negative": 0.29635036496350364
+      },
+      "ball_by_recorded_first_contact_event": {
+        "False": {
+          "count": 318,
+          "position_component_mae_m": 0.0003378860710654408
+        },
+        "True": {
+          "count": 2,
+          "position_component_mae_m": 0.018801752477884293
+        }
+      }
+    },
+    "16": {
+      "foot": {
+        "count": 1280,
+        "positive_fraction": 0.3960937559604645,
+        "probability_mean": 0.5473974347114563,
+        "probability_p05": 0.397799015045166,
+        "probability_p95": 0.6748270988464355,
+        "brier": 0.2670998275279999,
+        "accuracy": 0.44921875,
+        "true_positive": 369,
+        "true_negative": 206,
+        "false_positive": 567,
+        "false_negative": 138,
+        "recall_positive": 0.727810650887574,
+        "recall_negative": 0.2664941785252264
+      },
+      "ball_by_recorded_first_contact_event": {
+        "False": {
+          "count": 290,
+          "position_component_mae_m": 0.029399868100881577
+        },
+        "True": {
+          "count": 30,
+          "position_component_mae_m": 0.10957913845777512
+        }
+      }
+    },
+    "64": {
+      "foot": {
+        "count": 1280,
+        "positive_fraction": 0.4749999940395355,
+        "probability_mean": 0.548613965511322,
+        "probability_p05": 0.4046752452850342,
+        "probability_p95": 0.6686919927597046,
+        "brier": 0.2511892020702362,
+        "accuracy": 0.51171875,
+        "true_positive": 478,
+        "true_negative": 177,
+        "false_positive": 495,
+        "false_negative": 130,
+        "recall_positive": 0.7861842105263158,
+        "recall_negative": 0.26339285714285715
+      },
+      "ball_by_recorded_first_contact_event": {
+        "False": {
+          "count": 234,
+          "position_component_mae_m": 0.17400343716144562
+        },
+        "True": {
+          "count": 86,
+          "position_component_mae_m": 0.6056117415428162
+        }
+      }
+    }
+  },
+  "dynamics_loss": 30.195459365844727,
+  "contact_bce": 0.7273221611976624,
+  "dynamics_gradient_norm": 504.5872497558594,
+  "weighted_contact_gradient_norm": 0.2605268359184265,
+  "actor_updates": 0,
+  "world_updates_added": 0
+}
