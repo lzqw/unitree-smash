@@ -163,7 +163,8 @@ def main():
         from quadsmash.rl.supermimic_sequence_replay_v2 import SequenceReplay
         from quadsmash.rl.supermimic_horizon_learner_v2 import HorizonTrainer
         from quadsmash.rl.supermimic_task_contract import (
-            resolve_task_contract, make_task_cfg, require_resume_contract, summarize_episode)
+            resolve_task_contract, make_task_cfg, require_resume_contract)
+        from quadsmash.rl.supermimic_terminal_scoring import score_terminal_episode
         from quadsmash.tasks.stand.supermimic_env_v1 import SuperMimicEnvV1, make_supermimic_cfg
         from quadsmash.tasks.stand.observation_contract import observe_native
         from quadsmash.control.full_racket_residual_v4 import FullRacketResidualControllerV4
@@ -186,6 +187,7 @@ def main():
         task_contract, protocol, cases0, receipt = resolve_task_contract(
             source, args.init_policy_checkpoint, execution_root=args.g07_execution_root,
             precision_receipt=args.precision_receipt)
+        scoring_protocol = dict(protocol, _root=str(ROOT))
         if args.resume:
             require_resume_contract(torch.load(args.resume, map_location='cpu', weights_only=False), task_contract)
         cfg = make_task_cfg(args.num_envs, task_contract, protocol, receipt)
@@ -311,15 +313,15 @@ def main():
             new_records = env.rally_records[record_cursor:]
             record_cursor += len(new_records)
             for record in new_records:
-                measured = summarize_episode(record)
+                measured = score_terminal_episode(record, scoring_protocol)
                 contact = bool(measured['qualified_airborne_string_contact'])
                 native_event_totals['episodes'] += 1
                 native_event_totals['full_episodes'] += int(record.get('episode_timeout', False))
                 native_event_totals['qualified_airborne_string_contact'] += int(contact)
                 native_event_totals['ball_side_complete_except_recovery'] += int(
                     measured['ball_side_complete_except_recovery'])
-                native_event_totals['recovery_success'] += int(record.get('recovery_success', False))
-                native_event_totals['complete5'] += int(record.get('complete5', False))
+                native_event_totals['recovery_success'] += int(measured['recovery_success'])
+                native_event_totals['complete5'] += int(measured['complete5'])
                 native_event_totals['frame_hit'] += int(record.get('frame_hit', False))
                 native_event_totals['body_ground_seen'] += int(measured['body_ground_seen'])
                 native_event_totals['rally_fault'] += int(measured['rally_fault'])

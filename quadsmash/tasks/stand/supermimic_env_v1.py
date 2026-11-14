@@ -7,6 +7,7 @@ from .full_racket_env_v4 import FullRacketEnvV4, full_racket_cfg
 from .observation_contract import observe_native
 from quadsmash.control.full_racket_residual_v4 import FullRacketResidualControllerV4
 from quadsmash.control.g07_shared_target_residual_v1 import make_g07_residual_controller
+from quadsmash.rl.supermimic_terminal_scoring import attach_reset_jump_records
 
 
 def make_supermimic_cfg(num_envs: int, physics_dt: float = 6.25e-5):
@@ -195,15 +196,23 @@ class SuperMimicEnvV1(FullRacketEnvV4):
                     event_source='native_pre_reset_rally_and_contact_flight_v1',
                     terminal_control_tick=int(self.common_step_counter))
         record_start = len(self.rally_records) if self._v4_ready else 0
+        jump_start = len(self.episode_records) if self._v4_ready else 0
         if self._inside_step and ids.numel():
             self._sm_final_event_state[ids] = self.supermimic_event_state()[ids]
             self._sm_final_event_state_valid[ids] = True
         super()._reset_idx(ids)
+        # Both lists were populated before the parent reset cleared physics
+        # metrics. Join only this reset batch, not the latest record per lane.
+        attach_reset_jump_records(self.rally_records[record_start:],
+                                  self.episode_records[jump_start:])
         for row in self.rally_records[record_start:]:
             key = (row['env_id'], row['episode_index'])
             if key not in terminal:
                 raise RuntimeError('Completed episode has no pre-reset task evidence')
             row.update(terminal[key])
+            row['ground_init'] = True  # This env uses the native ground reset, no state teleport.
+            row['case_id'] = (self.cases[row['env_id']]['case_id']
+                              if self.cases is not None else f"lane-{row['env_id']}")
         if not self._inside_step:
             self._sm_final_event_state_valid[ids] = False
         self._sm_reset_events(ids)

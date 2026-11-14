@@ -14,6 +14,7 @@ import sys
 import time
 import traceback
 import signal
+import faulthandler
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -54,9 +55,18 @@ def main():
                    dirty_diff=subprocess.check_output(['git','diff','--no-ext-diff'],cwd=ROOT,text=True),
                    executable=sys.executable, pid=os.getpid())
     write_json(args.output/'startup.json', startup)
+    from quadsmash.rl.supermimic_run_lifecycle import stage as lifecycle_stage, close_native
+    fault_stream = (args.output/'native_fault.log').open('a')
+    faulthandler.enable(file=fault_stream, all_threads=True)
+    lifecycle_stage(args.output, 'BEFORE_APP')
+    primary_failed = False
     try:
         # Keep caught Python exceptions visible through shutdown.
         app = AppLauncher(args, fast_shutdown=False).app
+        # Kit may replace signal handlers during initialization. Re-arm the
+        # fatal fault reporter after AppLauncher, retaining the file until close.
+        faulthandler.enable(file=fault_stream, all_threads=True)
+        lifecycle_stage(args.output, 'AFTER_APP')
         def request_stop(signum, frame):
             nonlocal stop_requested
             stop_requested = signal.Signals(signum).name
@@ -70,8 +80,9 @@ def main():
         from isaacsim.core.simulation_manager import SimulationManager
         from quadsmash.rl.supermimic_v1 import load_ppo_initialized_actor
         from quadsmash.rl.supermimic_task_contract import (
-            resolve_task_contract, make_task_cfg, require_resume_contract, summarize_episode,
+            resolve_task_contract, make_task_cfg, require_resume_contract,
             zero_panel_reset_noise, validate_sweep_contract)
+        from quadsmash.rl.supermimic_terminal_scoring import score_terminal_episode
         from quadsmash.rl.supermimic_timebase_v2 import full_range_targets
         from quadsmash.tasks.stand.supermimic_env_v1 import SuperMimicEnvV1
         from quadsmash.tasks.stand.full_racket_eval_env_v4 import FrozenPanelEnv
@@ -97,6 +108,7 @@ def main():
         source = torch.load(source_path, map_location='cpu', weights_only=False)
         contract, protocol, cases, receipt = resolve_task_contract(
             source, source_path, execution_root=execution_root, precision_receipt=args.precision_receipt)
+        scoring_protocol = dict(protocol, _root=str(ROOT))
         if trained is not None:
             require_resume_contract(trained, contract)
         write_json(args.output/'task_contract.json', contract)
@@ -171,7 +183,7 @@ def main():
                 for record in env.rally_records[cursor:]:
                     lane=int(record['env_id'])
                     if lane not in first:
-                        measured=summarize_episode(record)
+                        measured=score_terminal_episode(record, scoring_protocol)
                         if measured['episode_index'] != 0:
                             raise RuntimeError('Missing first episode; refusing later episode substitution')
                         first[lane]=measured
@@ -197,6 +209,8 @@ def main():
             qualified_airborne_string_contact=n,
             ball_side_complete_except_recovery=sum(r['ball_side_complete_except_recovery'] for r in rows),
             recovery_success=sum(r['recovery_success'] for r in rows),
+            physical_recovery_success=sum(r['physical_recovery_success'] for r in rows),
+            scoring_schema='historical-independent-complete5-v1',
             conditional_recovery_count=recovery,conditional_recovery_denominator=n,
             recovery_given_airborne_string_contact=recovery/n if n else None,
             complete5=sum(r['complete5'] for r in rows),
@@ -214,8 +228,10 @@ def main():
         write_json(args.output/'command_consistency.json',mapping)
         write_json(args.output/'completed.json',dict(control_ticks=800,episodes=128,formal_acceptance=False))
         stage='FINISHED'
+        lifecycle_stage(args.output, 'SIMULATION_FINISHED', control_ticks=800, episodes=128)
         print('SUPERMIMIC_EVAL_RESULT='+json.dumps(metrics),flush=True)
     except BaseException as error:
+        primary_failed = True
         text=traceback.format_exc()
         (args.output/'failure_traceback.txt').write_text(text)
         write_json(args.output/'failure.json',dict(stage=stage,ticks_completed=ticks_completed,
@@ -226,16 +242,11 @@ def main():
         print(text,file=sys.stderr,flush=True)
         raise
     finally:
-        if env is not None:
-            try:
-                env.close()
-            except BaseException:
-                (args.output/'env_cleanup_failure.txt').write_text(traceback.format_exc())
-        if app is not None:
-            try:
-                app.close()
-            except BaseException:
-                (args.output/'app_cleanup_failure.txt').write_text(traceback.format_exc())
+        try:
+            close_native(args.output, env, app, primary_failed=primary_failed)
+        finally:
+            faulthandler.disable()
+            fault_stream.close()
 
 
 if __name__=='__main__':
