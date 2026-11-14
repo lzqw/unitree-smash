@@ -136,4 +136,7 @@ def summarize_episode(row):
     # Historical body-contact criterion is NOT an independent all-body audit.
     result['independent_nonfoot_contact'] = row.get('independent_nonfoot_contact')
     result['event_source'] = row.get('event_source', 'unknown')
+    # Preserve measured terminal returns; old records remain explicitly unknown.
+    for name in ('native_episode_return', 'native_episode_length_steps', 'native_return_definition'):
+        result[name] = row.get(name)
     return result

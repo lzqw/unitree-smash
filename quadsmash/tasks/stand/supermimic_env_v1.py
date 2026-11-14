@@ -8,6 +8,7 @@ from .observation_contract import observe_native
 from quadsmash.control.full_racket_residual_v4 import FullRacketResidualControllerV4
 from quadsmash.control.g07_shared_target_residual_v1 import make_g07_residual_controller
 from quadsmash.rl.supermimic_terminal_scoring import attach_reset_jump_records
+from quadsmash.rl.supermimic_native_metrics import NativeReturnAccumulator
 
 
 def make_supermimic_cfg(num_envs: int, physics_dt: float = 6.25e-5):
@@ -38,10 +39,12 @@ class SuperMimicEnvV1(FullRacketEnvV4):
         self._sm_g07_execution_root = g07_execution_root
         # Opt-in read-only capture, attached after native reset by the caller.
         self.physical_transition_archive = None
+        self._sm_native_returns = None
         super().__init__(*args, **kwargs)
         self._sm_final_event_state = torch.zeros(
             (self.num_envs, len(self.event_state_names)), dtype=torch.float32, device=self.device)
         self._sm_final_event_state_valid = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
+        self._sm_native_returns = NativeReturnAccumulator(self.num_envs, self.device)
         self._sm_prev = {}
         self._sm_reset_events()
         if residual_policy_checkpoint is not None:
@@ -185,6 +188,7 @@ class SuperMimicEnvV1(FullRacketEnvV4):
         reward = reward - 4.0 * event_frame.float() - 5.0 * ((~contact) & (phase > 3.0)).float() * self.step_dt
         reward = reward - 15.0 * event_fault.float() - 40.0 * event_body.float()
         reward = torch.nan_to_num(reward, nan=-40.0, posinf=40.0, neginf=-40.0)
+        self._sm_native_returns.add(reward)
         if self.physical_transition_archive is not None:
             # DirectRLEnv obtains reward before resetting terminated lanes.
             # Capturing after wrapper.step would join terminal states to resets.
@@ -199,6 +203,7 @@ class SuperMimicEnvV1(FullRacketEnvV4):
                          & self.rally.airborne_string_hit)
             ball_ok = self.rally.complete5(torch.ones_like(self.rally_recovery_success))
             faults = self.rally.faulted()
+            return_records = self._sm_native_returns.records(ids)
             for i in ids[self._episode_has_stepped[ids]].cpu().tolist():
                 terminal[(i, int(self.episode_index[i]))] = dict(
                     qualified_airborne_string_contact=bool(qualified[i]),
@@ -207,7 +212,8 @@ class SuperMimicEnvV1(FullRacketEnvV4):
                     rally_fault=bool(faults[i]),
                     head_contact=None, independent_nonfoot_contact=None,
                     event_source='native_pre_reset_rally_and_contact_flight_v1',
-                    terminal_control_tick=int(self.common_step_counter))
+                    terminal_control_tick=int(self.common_step_counter),
+                    **return_records[i])
         record_start = len(self.rally_records) if self._v4_ready else 0
         jump_start = len(self.episode_records) if self._v4_ready else 0
         if self._inside_step and ids.numel():
@@ -229,5 +235,7 @@ class SuperMimicEnvV1(FullRacketEnvV4):
         if not self._inside_step:
             self._sm_final_event_state_valid[ids] = False
         self._sm_reset_events(ids)
+        if self._sm_native_returns is not None:
+            self._sm_native_returns.reset(ids)
         if self._sm_residual_controller is not None:
             self._sm_residual_controller.reset(ids)

@@ -244,9 +244,10 @@ def _run_native(args, stop_request):
         if len(first)!=128:
             raise RuntimeError(f'Only {len(first)}/128 pre-reset records; no live-state backfill permitted')
         rows=[dict(first[i],source_case_index=i,case_id=cases[i].get('case_id',i)) for i in range(128)]
-        contact=[r['qualified_airborne_string_contact'] for r in rows]
-        n=sum(contact)
-        recovery=sum(r['recovery_success'] for r,c in zip(rows,contact) if c)
+        from quadsmash.rl.supermimic_native_metrics import summarize_native_episodes
+        native_summary = summarize_native_episodes(rows)
+        n=native_summary['conditional_recovery_denominator']
+        recovery=native_summary['conditional_recovery_count']
         metrics=dict(evaluation_scope='TRAIN128 development, not A/B acceptance',
             num_envs=128,control_ticks=800,episode_seconds=8.,
             qualified_airborne_string_contact=n,
@@ -266,6 +267,9 @@ def _run_native(args, stop_request):
             task_contract=contract,source=init_meta,actor_updated=trained is not None,
             elapsed_s=time.perf_counter()-start,physics=physics,
             evaluated_checkpoint_sha256=hashlib.sha256((args.checkpoint or source_path).read_bytes()).hexdigest())
+        metrics['native_episode_metrics'] = native_summary
+        metrics['conditional_recovery_scope'] = native_summary['conditional_recovery_scope']
+        metrics['native_episode_return_mean'] = native_summary['native_episode_return_mean']
         write_json(args.output/'episodes_summary.json',rows)
         write_json(args.output/'metrics.json',metrics)
         write_json(args.output/'command_consistency.json',mapping)

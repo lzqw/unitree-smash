@@ -165,6 +165,7 @@ def main():
         from quadsmash.rl.supermimic_task_contract import (
             resolve_task_contract, make_task_cfg, require_resume_contract)
         from quadsmash.rl.supermimic_terminal_scoring import score_terminal_episode
+        from quadsmash.rl.supermimic_native_metrics import NativeEpisodeStatistics
         from quadsmash.tasks.stand.supermimic_env_v1 import SuperMimicEnvV1, make_supermimic_cfg
         from quadsmash.tasks.stand.observation_contract import observe_native
         from quadsmash.control.full_racket_residual_v4 import FullRacketResidualControllerV4
@@ -256,6 +257,7 @@ def main():
         }
         (args.output/'convergence_config.json').write_text(json.dumps(convergence_config, indent=2)+'\n')
         total_native = total_iterations = 0
+        native_statistics = NativeEpisodeStatistics()
         record_cursor = len(env.rally_records)
         native_event_totals = {
             'episodes': 0, 'qualified_airborne_string_contact': 0,
@@ -312,8 +314,11 @@ def main():
             nxt, reward, done, info = wrapper.step(action)
             new_records = env.rally_records[record_cursor:]
             record_cursor += len(new_records)
+            iteration_statistics = NativeEpisodeStatistics()
             for record in new_records:
                 measured = score_terminal_episode(record, scoring_protocol)
+                native_statistics.add(measured)
+                iteration_statistics.add(measured)
                 contact = bool(measured['qualified_airborne_string_contact'])
                 native_event_totals['episodes'] += 1
                 native_event_totals['full_episodes'] += int(record.get('episode_timeout', False))
@@ -391,7 +396,11 @@ def main():
             else:
                 actor_stats = {'imagine_update': False, 'reason': 'world_model_warmup'}
             sync(); learn_end = time.perf_counter()
-            metadata.update(native_steps=total_native, iterations_completed=total_iterations)
+            native_summary = native_statistics.snapshot()
+            iteration_summary = iteration_statistics.snapshot()
+            metadata.update(native_steps=total_native, iterations_completed=total_iterations,
+                            native_episode_metrics=native_summary,
+                            native_episode_metrics_scope='current_process_completed_episodes; fresh native reset on resume')
             row = {'iteration': total_iterations, 'native_steps': total_native, 'replay_size': len(replay),
                    'native_collect_s': collect_end-tick_start, 'world_update_s': wm_end-collect_end,
                    'imagination_bptt_s': learn_end-wm_end, **wm, **actor_stats,
@@ -400,6 +409,11 @@ def main():
                    'native_reward_mean': float(reward.mean().item()),
                    'native_reward_positive_fraction': float((reward > 0).float().mean().item()),
                    'native_done_count': int(done.sum().item()),
+                   'native_episode_return_mean': iteration_summary['native_episode_return_mean'],
+                   'native_episode_return_mean_cumulative': native_summary['native_episode_return_mean'],
+                   'native_episode_metrics_this_iteration': iteration_summary,
+                   'native_episode_metrics': native_summary,
+                   'native_episode_metrics_scope': 'current_process_completed_episodes',
                    'native_episode_warmup': {
                        'completed_episodes': int(native_event_totals['full_episodes']),
                        'terminated_episodes': int(native_event_totals['episodes']),
@@ -472,7 +486,7 @@ def main():
                             convergence_record['stop'] = True
                 with (args.output/'convergence_history.jsonl').open('a') as stream:
                     stream.write(json.dumps(convergence_record)+'\n')
-            if total_iterations % 10 == 0 or local_iteration == 0:
+            if new_records or total_iterations % 10 == 0 or local_iteration == 0:
                 print('SUPERMIMIC_V2_PROGRESS='+json.dumps(row), flush=True)
                 (args.output/'progress.json').write_text(json.dumps(row, indent=2)+'\n')
             if convergence_stop_reason == 'converged':
@@ -483,6 +497,12 @@ def main():
                   'actor_updates': trainer.actor_updates, 'elapsed_s': time.perf_counter()-start,
                   'formal_success_rate': None,
                   'convergence': convergence_config if args.auto_stop_convergence else None}
+        status['native_episode_metrics'] = native_statistics.snapshot()
+        status['native_episode_metrics_scope'] = 'current_process_completed_episodes'
+        partial = env._sm_native_returns.records(torch.arange(env.num_envs, device=env.device))
+        partial_rows = [dict(v, env_id=i, episode_index=int(env.episode_index[i]),
+                             completed=False) for i,v in partial.items() if v['native_episode_length_steps'] > 0]
+        (args.output/'native_partial_episodes.json').write_text(json.dumps(partial_rows, indent=2)+'\n')
         (args.output/'training_status.json').write_text(json.dumps(status, indent=2)+'\n')
         stage('SMOKE_FINISHED', iterations=total_iterations, native_steps=total_native,
               actor_updates=trainer.actor_updates, world_updates=trainer.world_updates,

@@ -71,3 +71,15 @@ def test_reset_batch_join_handles_different_order_and_copies():
 def test_cannot_join_missing_or_ambiguous_evidence(rallies,jumps):
     with pytest.raises(ValueError):
         attach_reset_jump_records(rallies,jumps)
+
+
+def test_return_metadata_survives_independent_scoring_without_redefinition():
+    from quadsmash.rl.supermimic_native_metrics import RETURN_DEFINITION
+    row,protocol=source(10)
+    row.update(native_episode_return=12.345,native_episode_length_steps=800,native_return_definition=RETURN_DEFINITION)
+    result=score_terminal_episode(row,protocol)
+    assert result['native_episode_return']==12.345
+    assert result['native_episode_length_steps']==800
+    assert result['native_return_definition']==RETURN_DEFINITION
+    del row['native_episode_return']
+    assert score_terminal_episode(row,protocol)['native_episode_return'] is None
