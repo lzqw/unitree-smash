@@ -5,6 +5,7 @@ from pathlib import Path
 import time
 import traceback
 import gc
+import sys
 
 
 def stage(output, name, **fields):
@@ -45,6 +46,7 @@ def execute_scoped_native(output, run, app):
         traceback.clear_frames(error.__traceback__)
         raise
     finally:
+        release_kit_stat_cache(output)
         stage(output, 'BEFORE_NATIVE_GC')
         collected = gc.collect()
         stage(output, 'AFTER_NATIVE_GC', collected=collected)
@@ -53,6 +55,33 @@ def execute_scoped_native(output, run, app):
             count = capture_retained_exceptions(output)
             stage(output, 'RETAINED_EXCEPTION_AUDIT_FINISHED', count=count)
         close_native(output, None, app, primary_failed=failed)
+
+
+def release_kit_stat_cache(output):
+    """Reset the identified import cache while PhysX/Kit are still alive.
+
+    Kit caches OSError instances and re-raises them. Their traceback frames can
+    keep an already closed environment's tensor views alive until interpreter
+    shutdown. Use Kit's existing reset API; do not mutate exception frames or
+    patch installed code. Do not import Kit in CPU/non-Kit processes.
+    """
+    module = sys.modules.get('omni.ext._impl.stat_cache')
+    if module is None:
+        stage(output, 'KIT_STAT_CACHE_NOT_LOADED')
+        return
+    cache = getattr(module, '_stat_cache', None)
+    reset = getattr(module, 'reset_stat_cache', None)
+    if not isinstance(cache, dict) or not callable(reset):
+        raise RuntimeError('Installed Kit stat-cache API changed; refusing silent cleanup bypass')
+    before = len(cache)
+    errors_before = sum(isinstance(value, tuple) and len(value) == 2
+                        and isinstance(value[1], BaseException) for value in cache.values())
+    stage(output, 'BEFORE_KIT_STAT_CACHE_RESET', entries=before, exceptions=errors_before)
+    reset()
+    after = len(module._stat_cache)
+    stage(output, 'AFTER_KIT_STAT_CACHE_RESET', entries=after)
+    if after:
+        raise RuntimeError('Kit stat-cache reset retained entries; see lifecycle evidence')
 
 
 def close_native(output, env, app, *, primary_failed):

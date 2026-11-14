@@ -86,3 +86,35 @@ def test_shutdown_diagnostic_cannot_be_reported_as_formal_evaluation(tmp_path):
     assert not inspect_process_result(tmp_path, 0, shutdown_diagnostic_ticks=11)['process_completed_cleanly']
     (tmp_path/'metrics.json').write_text('{}')
     assert not inspect_process_result(tmp_path, 0, shutdown_diagnostic_ticks=10)['process_completed_cleanly']
+
+
+def test_kit_error_cache_is_reset_before_collect_and_app_close(tmp_path, monkeypatch):
+    import sys
+    import types
+    import weakref
+    from quadsmash.rl.supermimic_run_lifecycle import execute_scoped_native
+    cache = {}
+    refs = []
+    class NativeResource:
+        pass
+    def run():
+        native = NativeResource()
+        refs.append(weakref.ref(native))
+        try:
+            raise FileNotFoundError('negative import lookup')
+        except FileNotFoundError as error:
+            cache['missing'] = (None, error)
+    reset_calls = []
+    def reset():
+        reset_calls.append(True)
+        cache.clear()
+    module = types.SimpleNamespace(_stat_cache=cache, reset_stat_cache=reset)
+    monkeypatch.setitem(sys.modules, 'omni.ext._impl.stat_cache', module)
+    class App:
+        def close(self):
+            assert reset_calls == [True]
+            assert refs[0]() is None
+    execute_scoped_native(tmp_path, run, App())
+    events = [json.loads(line) for line in (tmp_path/'lifecycle.jsonl').read_text().splitlines()]
+    assert next(e for e in events if e['stage']=='BEFORE_KIT_STAT_CACHE_RESET')['exceptions'] == 1
+    assert next(e for e in events if e['stage']=='AFTER_KIT_STAT_CACHE_RESET')['entries'] == 0
