@@ -8,10 +8,31 @@ from dataclasses import fields
 import hashlib
 import json
 from pathlib import Path
+import types
 
+import numpy as np
 import torch
 
 from .supermimic_physical_observation_v1 import capture_native_inputs, JOINT_NAMES
+
+# Names from the hash-verified historical source factories. Do not traverse
+# arbitrary library instances or modules reachable from a controller attribute.
+SOURCE_STATE_TYPES = frozenset((
+    'checked_shared_target_core.SharedTargetController',
+    'checked_public_stance_core.StanceRecoveryController',
+    'cpu_checked_momentum_strike_core.MomentumStrikeController',
+    'checked_air_countermotion_core.AirCountermotionController',
+    'air_preserved_actual_recovery_prior.RecoveryPriorController',
+    'preserved_windowed_swing_factory.WindowedSwingController',
+    'window_preserved_lateral_factory.EarlyLateralController',
+    'preserved_measured_swing_factory.MeasuredSwingController',
+    'checked_air_countermotion_core.LegCountermotionRequest',
+    'countermotion_known_model.KnownModel',
+    'cpu_checked_momentum_strike_core.PublicStrikeRequest',
+    'public_strike_known_model.KnownModel',
+    'checked_public_stance_core.StanceLegRequest',
+    'stance_known_model.KnownModel',
+))
 
 
 def tensor_tree_copy(value, *, cpu=False):
@@ -31,42 +52,56 @@ def capture_controller(controller):
     Network weights live in the pinned source checkpoint. Their presence is
     recorded but they are not duplicated at every control tick.
     """
-    tensors, values, aliases, omitted = {}, {}, {}, {}
+    tensors, values, aliases, omitted, object_types = {}, {}, {}, {}, {}
     seen = {}
 
     def visit(obj, path):
-        if isinstance(obj, torch.Tensor):
+        # isinstance may consult a proxy's __class__. Only inspect its actual
+        # Python type here; never invoke arbitrary __getattribute__ hooks.
+        cls = type(obj)
+        qualified = cls.__module__ + '.' + cls.__name__
+        if issubclass(cls, torch.Tensor):
             tensors[path] = obj.detach().clone()
-        elif obj is None or isinstance(obj, (bool, int, float, str)):
+        elif cls in (type(None), bool, int, float, str):
             values[path] = obj
-        elif isinstance(obj, (Path, torch.device)):
+        elif issubclass(cls, np.ndarray):
+            tensors[path] = torch.from_numpy(obj.copy())
+        elif issubclass(cls, np.generic):
+            values[path] = obj.item()
+        elif issubclass(cls, (Path, torch.device)):
             values[path] = str(obj)
-        elif isinstance(obj, torch.nn.Module):
-            omitted[path] = 'network:' + type(obj).__name__
+        elif issubclass(cls, torch.nn.Module):
+            omitted[path] = 'network:' + cls.__name__
+        elif issubclass(cls, (types.ModuleType, type, types.FunctionType,
+                             types.MethodType, types.BuiltinFunctionType)):
+            omitted[path] = 'code:' + qualified
         elif id(obj) in seen:
             aliases[path] = seen[id(obj)]
         else:
             seen[id(obj)] = path
-            if isinstance(obj, dict):
+            if cls is dict:
                 for key, item in obj.items():
                     if not isinstance(key, str):
                         omitted[path] = 'non-string dictionary keys'
                         return
                     visit(item, path + '/' + key)
-            elif isinstance(obj, (list, tuple)):
+            elif cls in (list, tuple):
                 for i, item in enumerate(obj):
                     visit(item, path + '/' + str(i))
-            elif hasattr(obj, '__dict__'):
-                for key, item in vars(obj).items():
+            elif (cls is types.SimpleNamespace or cls.__module__.startswith('quadsmash.control.')
+                  or qualified in SOURCE_STATE_TYPES):
+                object_types[path] = qualified
+                for key, item in object.__getattribute__(obj, '__dict__').items():
                     if key == 'logs':
                         omitted[path + '/' + key] = 'diagnostic logs'
                     else:
                         visit(item, path + '/' + key)
             else:
-                omitted[path] = type(obj).__module__ + '.' + type(obj).__name__
+                omitted[path] = qualified
 
     visit(controller, 'controller')
-    return dict(tensors=tensors, values=values, aliases=aliases, omitted=omitted)
+    return dict(tensors=tensors, values=values, aliases=aliases,
+                omitted=omitted, object_types=object_types)
 
 
 @torch.no_grad()

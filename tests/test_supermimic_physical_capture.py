@@ -2,6 +2,8 @@
 import hashlib
 import json
 from types import SimpleNamespace
+import types
+from pathlib import Path
 
 import pytest
 import torch
@@ -81,3 +83,46 @@ def test_refuse_overwrite_and_missing_begin_or_end(tmp_path):
     archive.begin_record(state(0), torch.zeros(2, 18), torch.zeros(2, 794), {})
     with pytest.raises(RuntimeError, match='no pre-reset end'):
         archive.begin_record(state(0), torch.zeros(2, 18), torch.zeros(2, 794), {})
+
+
+def test_no_dynamic_attributes_or_library_module_graph_is_visited():
+    class ExplosiveProxy:
+        def __getattribute__(self, name):
+            raise ImportError('optional dependency must never be queried')
+    module = types.ModuleType('optional_library')
+    module.placeholder = ExplosiveProxy()
+    root = SimpleNamespace(module=module, proxy=ExplosiveProxy(),
+                           callback=lambda: None, state=torch.tensor([1.]))
+    snapshot = capture_controller(root)
+    assert snapshot['omitted']['controller/module'] == 'code:builtins.module'
+    assert snapshot['omitted']['controller/proxy'].endswith('.ExplosiveProxy')
+    assert len(snapshot['tensors']) == 1
+
+
+SOURCE = Path('/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/'
+              'frozen_v2_smooth_approach16_env5120_01/policy.pt')
+
+
+@pytest.mark.skipif(not SOURCE.exists(), reason='Original controller checkpoint not mounted')
+def test_real_controller_memory_capture_before_and_after_cpu_action():
+    from quadsmash.control.g07_shared_target_residual_v1 import make_g07_residual_controller
+    controller = make_g07_residual_controller(
+        torch.load(SOURCE, map_location='cpu', weights_only=False), 2, 'cpu')
+    before = capture_controller(controller)
+    controller.action({'policy': torch.zeros(2, 794)}, torch.zeros(18),
+                      torch.stack((-torch.ones(18), torch.ones(18)), -1))
+    after = capture_controller(controller)
+    assert 'controller/last_base_action' in after['tensors']
+    assert 'controller/mixer/arm_rate/target' in after['tensors']
+    assert 'controller/mixer/nonzero_seen' in after['tensors']
+    # Cross-check every construction-time tensor from the previous independent
+    # inventory, not just the outer mixer. New lazy states are also retained.
+    inventory = json.loads((Path(__file__).resolve().parents[1]/
+        'reports/supermimic_execution_preview_cpu_20261114/controller_memory_inventory.json').read_text())
+    for entry in inventory['attributes']:
+        if entry.get('kind') == 'tensor':
+            assert entry['path'].replace('.', '/') in before['tensors']
+    for snapshot in (before, after):
+        assert len(snapshot['object_types']) >= 20
+        assert all(reason.startswith(('network:', 'code:')) or reason == 'diagnostic logs'
+                   for reason in snapshot['omitted'].values()), snapshot['omitted']
