@@ -1,0 +1,449 @@
+commit c34280a4fb802994f79b8352eba28bdbba301bb6
+Author:     lzqw <62225740+lzqw@users.noreply.github.com>
+AuthorDate: Sat Nov 14 14:18:16 2026 +0800
+Commit:     lzqw <62225740+lzqw@users.noreply.github.com>
+CommitDate: Sat Nov 14 14:18:16 2026 +0800
+
+    Record native episode returns and dynamic contact recovery denominators
+
+diff --git a/quadsmash/rl/supermimic_native_metrics.py b/quadsmash/rl/supermimic_native_metrics.py
+new file mode 100644
+index 0000000..b19f58b
+--- /dev/null
++++ b/quadsmash/rl/supermimic_native_metrics.py
+@@ -0,0 +1,98 @@
++"""Measured native episode returns and dynamic task denominators.
++
++No model reward, predicted events, reference-case membership, or scoring-rule
++changes. Partial episodes never enter completed-episode statistics.
++"""
++import math
++import torch
++
++RETURN_DEFINITION = 'undiscounted_sum_of_native_control_step_rewards_v1'
++
++
++class NativeReturnAccumulator:
++    def __init__(self, count, device):
++        self.returns = torch.zeros(count, device=device, dtype=torch.float64)
++        self.steps = torch.zeros(count, device=device, dtype=torch.long)
++
++    @torch.no_grad()
++    def add(self, reward):
++        value = reward.detach().reshape(-1)
++        if value.shape != self.returns.shape:
++            raise ValueError('Native reward lane shape mismatch')
++        # Rewards already include their own dt/event scaling. Do not multiply
++        # by dt or gamma again. Float64 accumulation reduces long-sum drift.
++        self.returns.add_(value.to(dtype=self.returns.dtype))
++        self.steps.add_(1)
++
++    @torch.no_grad()
++    def records(self, ids):
++        ids = torch.as_tensor(ids, device=self.returns.device, dtype=torch.long).reshape(-1)
++        totals = self.returns[ids].cpu().tolist()
++        steps = self.steps[ids].cpu().tolist()
++        return {int(i):dict(native_episode_return=float(value),
++                           native_episode_length_steps=int(n),
++                           native_return_definition=RETURN_DEFINITION)
++                for i,value,n in zip(ids.cpu().tolist(),totals,steps)}
++
++    @torch.no_grad()
++    def reset(self, ids):
++        self.returns[ids] = 0.
++        self.steps[ids] = 0
++
++
++class NativeEpisodeStatistics:
++    """O(1) streaming summary; each input is one independently scored terminal."""
++    def __init__(self):
++        self.episodes = self.contacts = self.recoveries = self.ball_ok = self.complete = 0
++        self.return_count = 0
++        self.return_mean = self.return_m2 = 0.
++        self.return_min = self.return_max = self.last_return = None
++
++    def add(self, row):
++        required=('qualified_airborne_string_contact','recovery_success',
++                  'ball_side_complete_except_recovery','complete5')
++        if any(k not in row or row[k] is None for k in required):
++            raise ValueError('Missing measured terminal task evidence')
++        value=row.get('native_episode_return')
++        if value is not None:
++            if (not math.isfinite(float(value)) or row.get('native_episode_length_steps',0)<=0
++                    or row.get('native_return_definition') != RETURN_DEFINITION):
++                raise ValueError('Invalid native terminal return evidence')
++        contact=bool(row['qualified_airborne_string_contact'])
++        self.episodes += 1
++        self.contacts += int(contact)
++        self.recoveries += int(contact and bool(row['recovery_success']))
++        self.ball_ok += int(bool(row['ball_side_complete_except_recovery']))
++        self.complete += int(bool(row['complete5']))
++        if value is not None:
++            value=float(value);self.return_count += 1
++            delta=value-self.return_mean;self.return_mean += delta/self.return_count
++            self.return_m2 += delta*(value-self.return_mean)
++            self.return_min=value if self.return_min is None else min(self.return_min,value)
++            self.return_max=value if self.return_max is None else max(self.return_max,value)
++            self.last_return=value
++
++    def snapshot(self):
++        n=self.episodes;c=self.contacts
++        return dict(completed_episodes=n,
++            qualified_airborne_string_contact=self.contacts,
++            qualified_airborne_string_contact_rate=self.contacts/n if n else None,
++            ball_side_complete_except_recovery=self.ball_ok,
++            ball_side_complete_except_recovery_rate=self.ball_ok/n if n else None,
++            conditional_recovery_count=self.recoveries,
++            conditional_recovery_denominator=c,
++            recovery_given_airborne_string_contact=self.recoveries/c if c else None,
++            conditional_recovery_scope='actual_qualified_contacts_in_these_completed_episodes',
++            complete5=self.complete,complete5_rate=self.complete/n if n else None,
++            native_episode_return_observed_count=self.return_count,
++            native_episode_return_missing_count=n-self.return_count,
++            native_episode_return_mean=self.return_mean if self.return_count else None,
++            native_episode_return_std=math.sqrt(max(0.,self.return_m2/self.return_count)) if self.return_count else None,
++            native_episode_return_min=self.return_min,native_episode_return_max=self.return_max,
++            native_episode_return_last=self.last_return,native_return_definition=RETURN_DEFINITION)
++
++
++def summarize_native_episodes(rows):
++    stats=NativeEpisodeStatistics()
++    for row in rows:stats.add(row)
++    return stats.snapshot()
+diff --git a/quadsmash/rl/supermimic_task_contract.py b/quadsmash/rl/supermimic_task_contract.py
+index 8e137ad..4cccb59 100644
+--- a/quadsmash/rl/supermimic_task_contract.py
++++ b/quadsmash/rl/supermimic_task_contract.py
+@@ -136,4 +136,7 @@ def summarize_episode(row):
+     # Historical body-contact criterion is NOT an independent all-body audit.
+     result['independent_nonfoot_contact'] = row.get('independent_nonfoot_contact')
+     result['event_source'] = row.get('event_source', 'unknown')
++    # Preserve measured terminal returns; old records remain explicitly unknown.
++    for name in ('native_episode_return', 'native_episode_length_steps', 'native_return_definition'):
++        result[name] = row.get(name)
+     return result
+diff --git a/quadsmash/tasks/stand/supermimic_env_v1.py b/quadsmash/tasks/stand/supermimic_env_v1.py
+index 8339d3b..4bf666a 100644
+--- a/quadsmash/tasks/stand/supermimic_env_v1.py
++++ b/quadsmash/tasks/stand/supermimic_env_v1.py
+@@ -8,6 +8,7 @@ from .observation_contract import observe_native
+ from quadsmash.control.full_racket_residual_v4 import FullRacketResidualControllerV4
+ from quadsmash.control.g07_shared_target_residual_v1 import make_g07_residual_controller
+ from quadsmash.rl.supermimic_terminal_scoring import attach_reset_jump_records
++from quadsmash.rl.supermimic_native_metrics import NativeReturnAccumulator
+ 
+ 
+ def make_supermimic_cfg(num_envs: int, physics_dt: float = 6.25e-5):
+@@ -38,10 +39,12 @@ class SuperMimicEnvV1(FullRacketEnvV4):
+         self._sm_g07_execution_root = g07_execution_root
+         # Opt-in read-only capture, attached after native reset by the caller.
+         self.physical_transition_archive = None
++        self._sm_native_returns = None
+         super().__init__(*args, **kwargs)
+         self._sm_final_event_state = torch.zeros(
+             (self.num_envs, len(self.event_state_names)), dtype=torch.float32, device=self.device)
+         self._sm_final_event_state_valid = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
++        self._sm_native_returns = NativeReturnAccumulator(self.num_envs, self.device)
+         self._sm_prev = {}
+         self._sm_reset_events()
+         if residual_policy_checkpoint is not None:
+@@ -185,6 +188,7 @@ class SuperMimicEnvV1(FullRacketEnvV4):
+         reward = reward - 4.0 * event_frame.float() - 5.0 * ((~contact) & (phase > 3.0)).float() * self.step_dt
+         reward = reward - 15.0 * event_fault.float() - 40.0 * event_body.float()
+         reward = torch.nan_to_num(reward, nan=-40.0, posinf=40.0, neginf=-40.0)
++        self._sm_native_returns.add(reward)
+         if self.physical_transition_archive is not None:
+             # DirectRLEnv obtains reward before resetting terminated lanes.
+             # Capturing after wrapper.step would join terminal states to resets.
+@@ -199,6 +203,7 @@ class SuperMimicEnvV1(FullRacketEnvV4):
+                          & self.rally.airborne_string_hit)
+             ball_ok = self.rally.complete5(torch.ones_like(self.rally_recovery_success))
+             faults = self.rally.faulted()
++            return_records = self._sm_native_returns.records(ids)
+             for i in ids[self._episode_has_stepped[ids]].cpu().tolist():
+                 terminal[(i, int(self.episode_index[i]))] = dict(
+                     qualified_airborne_string_contact=bool(qualified[i]),
+@@ -207,7 +212,8 @@ class SuperMimicEnvV1(FullRacketEnvV4):
+                     rally_fault=bool(faults[i]),
+                     head_contact=None, independent_nonfoot_contact=None,
+                     event_source='native_pre_reset_rally_and_contact_flight_v1',
+-                    terminal_control_tick=int(self.common_step_counter))
++                    terminal_control_tick=int(self.common_step_counter),
++                    **return_records[i])
+         record_start = len(self.rally_records) if self._v4_ready else 0
+         jump_start = len(self.episode_records) if self._v4_ready else 0
+         if self._inside_step and ids.numel():
+@@ -229,5 +235,7 @@ class SuperMimicEnvV1(FullRacketEnvV4):
+         if not self._inside_step:
+             self._sm_final_event_state_valid[ids] = False
+         self._sm_reset_events(ids)
++        if self._sm_native_returns is not None:
++            self._sm_native_returns.reset(ids)
+         if self._sm_residual_controller is not None:
+             self._sm_residual_controller.reset(ids)
+diff --git a/scripts/evaluate_supermimic_v1.py b/scripts/evaluate_supermimic_v1.py
+index 9c76f63..05556c7 100644
+--- a/scripts/evaluate_supermimic_v1.py
++++ b/scripts/evaluate_supermimic_v1.py
+@@ -244,9 +244,10 @@ def _run_native(args, stop_request):
+         if len(first)!=128:
+             raise RuntimeError(f'Only {len(first)}/128 pre-reset records; no live-state backfill permitted')
+         rows=[dict(first[i],source_case_index=i,case_id=cases[i].get('case_id',i)) for i in range(128)]
+-        contact=[r['qualified_airborne_string_contact'] for r in rows]
+-        n=sum(contact)
+-        recovery=sum(r['recovery_success'] for r,c in zip(rows,contact) if c)
++        from quadsmash.rl.supermimic_native_metrics import summarize_native_episodes
++        native_summary = summarize_native_episodes(rows)
++        n=native_summary['conditional_recovery_denominator']
++        recovery=native_summary['conditional_recovery_count']
+         metrics=dict(evaluation_scope='TRAIN128 development, not A/B acceptance',
+             num_envs=128,control_ticks=800,episode_seconds=8.,
+             qualified_airborne_string_contact=n,
+@@ -266,6 +267,9 @@ def _run_native(args, stop_request):
+             task_contract=contract,source=init_meta,actor_updated=trained is not None,
+             elapsed_s=time.perf_counter()-start,physics=physics,
+             evaluated_checkpoint_sha256=hashlib.sha256((args.checkpoint or source_path).read_bytes()).hexdigest())
++        metrics['native_episode_metrics'] = native_summary
++        metrics['conditional_recovery_scope'] = native_summary['conditional_recovery_scope']
++        metrics['native_episode_return_mean'] = native_summary['native_episode_return_mean']
+         write_json(args.output/'episodes_summary.json',rows)
+         write_json(args.output/'metrics.json',metrics)
+         write_json(args.output/'command_consistency.json',mapping)
+diff --git a/scripts/summarize_supermimic_native_returns.py b/scripts/summarize_supermimic_native_returns.py
+new file mode 100644
+index 0000000..adccf94
+--- /dev/null
++++ b/scripts/summarize_supermimic_native_returns.py
+@@ -0,0 +1,54 @@
++#!/usr/bin/env python3
++"""Recover returns from immutable native rewards, never from imagined rewards.
++
++Joins only independently scored terminal episodes present in the supplied
++summary. Other completed/partial episodes are counted but never backfilled
++with another episode's score. Does not start Isaac or an optimizer.
++"""
++import argparse,hashlib,json,subprocess
++from pathlib import Path
++import torch
++from quadsmash.rl.supermimic_native_metrics import NativeReturnAccumulator,summarize_native_episodes
++
++
++def main():
++    p=argparse.ArgumentParser(description=__doc__)
++    p.add_argument('--dataset',type=Path,required=True);p.add_argument('--dataset-sha256',required=True)
++    p.add_argument('--episodes',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
++    a=p.parse_args();a.output.mkdir(parents=True,exist_ok=False)
++    actual=hashlib.sha256(a.dataset.read_bytes()).hexdigest()
++    if actual!=a.dataset_sha256:raise ValueError('Native dataset hash changed')
++    data=torch.load(a.dataset,map_location='cpu',weights_only=True)['tensors']
++    source=json.loads(a.episodes.read_text())
++    lookup={(int(r['env_id']),int(r['episode_index'])):r for r in source}
++    if len(lookup)!=len(source):raise ValueError('Duplicate scored episode')
++    n=data['reward'].shape[1];acc=NativeReturnAccumulator(n,'cpu');matched=[];terminal_count=0
++    for tick in range(len(data['reward'])):
++        if tick:
++            expected=data['episode'][tick-1]+(data['terminated'][tick-1]|data['timeout'][tick-1]).long()
++            if not torch.equal(expected,data['episode'][tick]):raise ValueError('Episode boundary not contiguous')
++        acc.add(data['reward'][tick])
++        done=data['terminated'][tick]|data['timeout'][tick];ids=torch.where(done)[0]
++        values=acc.records(ids);terminal_count+=len(ids)
++        for i,value in values.items():
++            key=(i,int(data['episode'][tick,i]))
++            if key in lookup:
++                row=dict(lookup.pop(key),**value,return_source='reconstructed_from_saved_native_rewards',
++                         return_terminal_archive_tick=tick)
++                matched.append(row)
++        acc.reset(ids)
++    if lookup:raise ValueError('Missing terminal native rewards for '+str(list(lookup)))
++    matched.sort(key=lambda row:(row['env_id'],row['episode_index']))
++    summary=summarize_native_episodes(matched)
++    summary.update(scope='Historical native reward reconstruction; no new evaluation or policy update',
++        dataset=str(a.dataset.resolve()),dataset_sha256=actual,scored_episodes=str(a.episodes.resolve()),
++        scored_episodes_sha256=hashlib.sha256(a.episodes.read_bytes()).hexdigest(),
++        archive_control_ticks=len(data['reward']),archive_terminal_episodes=terminal_count,
++        unscored_terminal_episodes=terminal_count-len(matched),partial_lanes=int((acc.steps>0).sum()),
++        commit=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip())
++    (a.output/'episodes_with_returns.json').write_text(json.dumps(matched,indent=2,allow_nan=False)+'\n')
++    (a.output/'metrics.json').write_text(json.dumps(summary,indent=2,allow_nan=False)+'\n')
++    print(json.dumps(summary,indent=2,allow_nan=False))
++
++
++if __name__=='__main__':main()
+diff --git a/scripts/train_supermimic_horizon_v2.py b/scripts/train_supermimic_horizon_v2.py
+index f489086..30df92c 100644
+--- a/scripts/train_supermimic_horizon_v2.py
++++ b/scripts/train_supermimic_horizon_v2.py
+@@ -165,6 +165,7 @@ def main():
+         from quadsmash.rl.supermimic_task_contract import (
+             resolve_task_contract, make_task_cfg, require_resume_contract)
+         from quadsmash.rl.supermimic_terminal_scoring import score_terminal_episode
++        from quadsmash.rl.supermimic_native_metrics import NativeEpisodeStatistics
+         from quadsmash.tasks.stand.supermimic_env_v1 import SuperMimicEnvV1, make_supermimic_cfg
+         from quadsmash.tasks.stand.observation_contract import observe_native
+         from quadsmash.control.full_racket_residual_v4 import FullRacketResidualControllerV4
+@@ -256,6 +257,7 @@ def main():
+         }
+         (args.output/'convergence_config.json').write_text(json.dumps(convergence_config, indent=2)+'\n')
+         total_native = total_iterations = 0
++        native_statistics = NativeEpisodeStatistics()
+         record_cursor = len(env.rally_records)
+         native_event_totals = {
+             'episodes': 0, 'qualified_airborne_string_contact': 0,
+@@ -312,8 +314,11 @@ def main():
+             nxt, reward, done, info = wrapper.step(action)
+             new_records = env.rally_records[record_cursor:]
+             record_cursor += len(new_records)
++            iteration_statistics = NativeEpisodeStatistics()
+             for record in new_records:
+                 measured = score_terminal_episode(record, scoring_protocol)
++                native_statistics.add(measured)
++                iteration_statistics.add(measured)
+                 contact = bool(measured['qualified_airborne_string_contact'])
+                 native_event_totals['episodes'] += 1
+                 native_event_totals['full_episodes'] += int(record.get('episode_timeout', False))
+@@ -391,7 +396,11 @@ def main():
+             else:
+                 actor_stats = {'imagine_update': False, 'reason': 'world_model_warmup'}
+             sync(); learn_end = time.perf_counter()
+-            metadata.update(native_steps=total_native, iterations_completed=total_iterations)
++            native_summary = native_statistics.snapshot()
++            iteration_summary = iteration_statistics.snapshot()
++            metadata.update(native_steps=total_native, iterations_completed=total_iterations,
++                            native_episode_metrics=native_summary,
++                            native_episode_metrics_scope='current_process_completed_episodes; fresh native reset on resume')
+             row = {'iteration': total_iterations, 'native_steps': total_native, 'replay_size': len(replay),
+                    'native_collect_s': collect_end-tick_start, 'world_update_s': wm_end-collect_end,
+                    'imagination_bptt_s': learn_end-wm_end, **wm, **actor_stats,
+@@ -400,6 +409,11 @@ def main():
+                    'native_reward_mean': float(reward.mean().item()),
+                    'native_reward_positive_fraction': float((reward > 0).float().mean().item()),
+                    'native_done_count': int(done.sum().item()),
++                   'native_episode_return_mean': iteration_summary['native_episode_return_mean'],
++                   'native_episode_return_mean_cumulative': native_summary['native_episode_return_mean'],
++                   'native_episode_metrics_this_iteration': iteration_summary,
++                   'native_episode_metrics': native_summary,
++                   'native_episode_metrics_scope': 'current_process_completed_episodes',
+                    'native_episode_warmup': {
+                        'completed_episodes': int(native_event_totals['full_episodes']),
+                        'terminated_episodes': int(native_event_totals['episodes']),
+@@ -472,7 +486,7 @@ def main():
+                             convergence_record['stop'] = True
+                 with (args.output/'convergence_history.jsonl').open('a') as stream:
+                     stream.write(json.dumps(convergence_record)+'\n')
+-            if total_iterations % 10 == 0 or local_iteration == 0:
++            if new_records or total_iterations % 10 == 0 or local_iteration == 0:
+                 print('SUPERMIMIC_V2_PROGRESS='+json.dumps(row), flush=True)
+                 (args.output/'progress.json').write_text(json.dumps(row, indent=2)+'\n')
+             if convergence_stop_reason == 'converged':
+@@ -483,6 +497,12 @@ def main():
+                   'actor_updates': trainer.actor_updates, 'elapsed_s': time.perf_counter()-start,
+                   'formal_success_rate': None,
+                   'convergence': convergence_config if args.auto_stop_convergence else None}
++        status['native_episode_metrics'] = native_statistics.snapshot()
++        status['native_episode_metrics_scope'] = 'current_process_completed_episodes'
++        partial = env._sm_native_returns.records(torch.arange(env.num_envs, device=env.device))
++        partial_rows = [dict(v, env_id=i, episode_index=int(env.episode_index[i]),
++                             completed=False) for i,v in partial.items() if v['native_episode_length_steps'] > 0]
++        (args.output/'native_partial_episodes.json').write_text(json.dumps(partial_rows, indent=2)+'\n')
+         (args.output/'training_status.json').write_text(json.dumps(status, indent=2)+'\n')
+         stage('SMOKE_FINISHED', iterations=total_iterations, native_steps=total_native,
+               actor_updates=trainer.actor_updates, world_updates=trainer.world_updates,
+diff --git a/tests/test_supermimic_native_metrics.py b/tests/test_supermimic_native_metrics.py
+new file mode 100644
+index 0000000..a042e14
+--- /dev/null
++++ b/tests/test_supermimic_native_metrics.py
+@@ -0,0 +1,73 @@
++import copy
++import pytest
++import torch
++from quadsmash.rl.supermimic_native_metrics import (
++    NativeReturnAccumulator, NativeEpisodeStatistics, summarize_native_episodes, RETURN_DEFINITION)
++
++
++def scored(contact, recovery=False, value=None, length=2):
++    row=dict(qualified_airborne_string_contact=contact,recovery_success=recovery,
++             ball_side_complete_except_recovery=contact,complete5=contact and recovery)
++    if value is not None:
++        row.update(native_episode_return=value,native_episode_length_steps=length,native_return_definition=RETURN_DEFINITION)
++    return row
++
++
++def test_terminal_reward_included_and_async_resets_do_not_mix_returns():
++    a=NativeReturnAccumulator(2,'cpu')
++    a.add(torch.tensor([1.,10.],requires_grad=True));a.add(torch.tensor([2.,20.]))
++    first=a.records([0])[0]
++    assert first['native_episode_return']==3 and first['native_episode_length_steps']==2
++    a.reset(torch.tensor([0]));a.add(torch.tensor([-4.,30.]))
++    now=a.records([0,1])
++    assert now[0]['native_episode_return']==-4 and now[0]['native_episode_length_steps']==1
++    assert now[1]['native_episode_return']==60 and now[1]['native_episode_length_steps']==3
++    assert first['native_episode_return']==3
++    assert not a.returns.requires_grad
++
++
++def test_dynamic_denominator_and_unqualified_recovery_not_counted():
++    # This is intentionally not a 74-lane fixture.
++    rows=[scored(True,True,5),scored(True,False,-1),scored(False,True,8)]
++    before=copy.deepcopy(rows);result=summarize_native_episodes(rows)
++    assert result['conditional_recovery_denominator']==2
++    assert result['conditional_recovery_count']==1
++    assert result['recovery_given_airborne_string_contact']==.5
++    assert result['qualified_airborne_string_contact_rate']==2/3
++    assert result['complete5_rate']==1/3 and rows==before
++    assert result['native_episode_return_mean']==4
++    rows.append(scored(True,True,0))
++    assert summarize_native_episodes(rows)['recovery_given_airborne_string_contact']==2/3
++
++
++def test_no_completed_episode_or_no_contact_is_unknown_not_zero_success():
++    empty=NativeEpisodeStatistics().snapshot()
++    assert empty['completed_episodes']==0
++    assert empty['native_episode_return_mean'] is None
++    assert empty['recovery_given_airborne_string_contact'] is None
++    result=summarize_native_episodes([scored(False,False)])
++    assert result['native_episode_return_missing_count']==1
++    assert result['native_episode_return_mean'] is None
++    assert result['conditional_recovery_denominator']==0
++    assert result['recovery_given_airborne_string_contact'] is None
++
++
++def test_return_is_raw_sum_without_second_dt_or_discount():
++    a=NativeReturnAccumulator(1,'cpu')
++    for r in (.005,20.,-40.):a.add(torch.tensor([r],dtype=torch.float64))
++    record=a.records([0])[0]
++    assert record['native_episode_return']==pytest.approx(-19.995)
++    assert record['native_return_definition']==RETURN_DEFINITION
++    with pytest.raises(ValueError,match='lane shape'):a.add(torch.zeros(2))
++
++
++def test_invalid_return_is_not_silently_reported_as_zero():
++    with pytest.raises(ValueError,match='Invalid native'):summarize_native_episodes([scored(True,value=float('nan'))])
++    with pytest.raises(ValueError,match='Invalid native'):summarize_native_episodes([scored(True,value=5,length=0)])
++
++
++def test_missing_task_evidence_is_not_treated_as_false():
++    row=scored(True)
++    row['recovery_success']=None
++    with pytest.raises(ValueError,match='Missing measured'):
++        summarize_native_episodes([row])
+diff --git a/tests/test_supermimic_terminal_scoring.py b/tests/test_supermimic_terminal_scoring.py
+index 7933e04..2795836 100644
+--- a/tests/test_supermimic_terminal_scoring.py
++++ b/tests/test_supermimic_terminal_scoring.py
+@@ -71,3 +71,15 @@ def test_reset_batch_join_handles_different_order_and_copies():
+ def test_cannot_join_missing_or_ambiguous_evidence(rallies,jumps):
+     with pytest.raises(ValueError):
+         attach_reset_jump_records(rallies,jumps)
++
++
++def test_return_metadata_survives_independent_scoring_without_redefinition():
++    from quadsmash.rl.supermimic_native_metrics import RETURN_DEFINITION
++    row,protocol=source(10)
++    row.update(native_episode_return=12.345,native_episode_length_steps=800,native_return_definition=RETURN_DEFINITION)
++    result=score_terminal_episode(row,protocol)
++    assert result['native_episode_return']==12.345
++    assert result['native_episode_length_steps']==800
++    assert result['native_return_definition']==RETURN_DEFINITION
++    del row['native_episode_return']
++    assert score_terminal_episode(row,protocol)['native_episode_return'] is None
