@@ -30,3 +30,24 @@ tests/test_supermimic_horizon_v2.py tests/test_native_action_contract.py -q -ra 
 此提交时尚未完成修正后的原128环境零更新复验，没有新成功率。下一步只运行一次8秒零更新开发评估：覆盖准备、腾空、触球和恢复阶段最终命令，并保留逐回合首回合记录。遇到工程异常或命令不一致即停止，不自动改变容差。
 
 世界模型长时漂移、事件奖励/critic输入、稀有事件回放与物理表示仍未解决；本补丁不宣称已修复这些算法问题。先取得可比的初始化能力，再决定后续物理状态模型与事件学习改进。
+
+## 随后唯一一次原生复验：工程失败，停止
+
+执行提交 `e2b19bb`，目录 `/tmp/supermimic_source_contract_eval_20261114_o1ZNy2/run`。命令及源码哈希见 `failed_native_attempt/startup.json`。
+
+128环境构造返回，日志确认 `cuda:0`、0米环境间距、62.5微秒物理步长和10毫秒控制周期。尚未到达独立SimulationManager GPU状态快照处，因此这里只确认配置及构造日志，不补填GPU动态状态结果。
+
+首次 `RslRlVecEnvWrapper` 初始化触发reset时失败：
+
+```text
+scripts/evaluate_supermimic_v1.py:103
+quadsmash/tasks/stand/full_racket_eval_env_v4.py:18
+noise['joint_position_rad'][indices]
+TypeError: list indices must be integers or slices, not list
+```
+
+根因是新评估入口将零扰动初始化成Python嵌套列表，而原FrozenPanelEnv依赖NumPy数组的批量索引。这是本次新增接线错误；CPU的时域、统计与合同测试没有覆盖原生reset数据类型。不能把它归为策略低成功率或GPU不支持。
+
+实际0个控制tick、0条转移、0个已完成回合、0次actor/critic/world更新。未生成completed或metrics。原始异常已在关闭前保存；随后关闭阶段出现segmentation fault，shell退出码139。首个根因仍为上述TypeError，不将次生退出故障替代原始异常。
+
+按逐步调试要求，本次遇错后停止，没有自动重跑。最小后续修复是复用历史 `training_noise(128, zero_amplitudes, seed)` 产生NumPy数组并覆盖批量/部分reset索引测试；不改算法、物理或判定。修复后另建目录验证，绝不补写本次完成记录。

@@ -1,0 +1,20 @@
+Traceback (most recent call last):
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/scripts/evaluate_supermimic_v1.py", line 103, in main
+    wrapper = RslRlVecEnvWrapper(env, clip_actions=None)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/Isaac/IsaacLab/source/isaaclab_rl/isaaclab_rl/rsl_rl/vecenv_wrapper.py", line 67, in __init__
+    self.env.reset()
+  File "/home/autodrive/Isaac/IsaacLab/source/isaaclab/isaaclab/envs/direct_rl_env.py", line 296, in reset
+    self._reset_idx(indices)
+  File "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/tasks/stand/supermimic_env_v1.py", line 201, in _reset_idx
+    super()._reset_idx(ids)
+  File "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/tasks/stand/full_racket_eval_env_v4.py", line 18, in _reset_idx
+    q[:,self.joint_ids]+=torch.tensor(noise['joint_position_rad'][indices],dtype=q.dtype,device=device)
+                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+TypeError: list indices must be integers or slices, not list
