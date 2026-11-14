@@ -8,6 +8,7 @@ import torch
 from torch.nn import functional as F
 
 from quadsmash.rl.supermimic_physical_world_v1 import PhysicalWorldV1
+from quadsmash.rl.supermimic_physical_world_v2 import PhysicalWorldV2
 from scripts.fit_supermimic_physical_world import model_args
 
 
@@ -27,9 +28,15 @@ def main():
     p.add_argument('--output',type=Path,required=True);args=p.parse_args()
     torch.set_num_threads(2);device='cuda:0'
     checkpoint=torch.load(args.run/'world.pt',map_location=device,weights_only=True)
-    data={k:v.to(device) for k,v in torch.load(args.run/'physical_dataset.pt',map_location='cpu',weights_only=True)['tensors'].items()}
+    dataset=args.run/'physical_dataset.pt'
+    if not dataset.exists():dataset=Path(json.loads((args.run/'source.json').read_text())['dataset_path'])
+    data={k:v.to(device) for k,v in torch.load(dataset,map_location='cpu',weights_only=True)['tensors'].items()}
     split=json.loads((args.run/'split.json').read_text())
-    model=PhysicalWorldV1().to(device);model.load_state_dict(checkpoint['model'],strict=True);model.eval()
+    separate=checkpoint['schema']==PhysicalWorldV2.schema
+    if separate:model=PhysicalWorldV2(checkpoint['source_manifest']['task_contract']['asset']['sha256'])
+    elif checkpoint['schema']==PhysicalWorldV1.schema:model=PhysicalWorldV1()
+    else:raise ValueError('Unknown physical model schema')
+    model=model.to(device);model.load_state_dict(checkpoint['model'],strict=True);model.eval()
     cases=json.loads(Path(checkpoint['source_manifest']['task_contract']['suite']['path']).read_text())['cases']
     launch=torch.tensor([c['launch']['position_m']+c['launch']['velocity_mps'] for c in cases],device=device)
     pairs=torch.tensor(split['validation_selected'],device=device);t,l=pairs[:,0],pairs[:,1]
@@ -56,17 +63,22 @@ def main():
     dynamics=state.new_zeros(());contact=state.new_zeros(())
     for k in range(16):
         state,logits,present=model(state,data['final_joint_targets'][t+k,l],data['observation'][t+k,l,-18:],
-                                   feet,present,elapsed,launch_batch)
+                                   feet,present,elapsed,launch_batch,**({'detach_contacts':True} if separate else {}))
         dynamics=dynamics+model.state_loss(state,data['next_state'][t+k,l])/16
-        contact=contact+F.binary_cross_entropy_with_logits(logits,data['next_foot_contact'][t+k,l].float())/16
+        if separate:
+            native_pairs=torch.stack((t+k,l),-1)
+            probability=model.contact_probabilities(*model_args(data,native_pairs,launch))
+            contact=contact+F.binary_cross_entropy(probability,data['next_foot_contact'][t+k,l].float())/16
+        else:contact=contact+F.binary_cross_entropy_with_logits(logits,data['next_foot_contact'][t+k,l].float())/16
         feet=logits.sigmoid();elapsed=elapsed+.01
-    parameters=list(model.body.parameters())
+    parameters=list(model.parameters())
     def gradient_norm(loss):
-        values=torch.autograd.grad(loss,parameters,retain_graph=True)
-        return float(torch.sqrt(sum(v.square().sum() for v in values)))
+        values=torch.autograd.grad(loss,parameters,retain_graph=True,allow_unused=True)
+        return float(torch.sqrt(sum(v.square().sum() for v in values if v is not None)))
     result=dict(scope='Frozen model diagnosis, held-out recorded-control windows, no parameter update',
         outcomes=outcomes,dynamics_loss=float(dynamics.detach()),contact_bce=float(contact.detach()),
-        dynamics_gradient_norm=gradient_norm(dynamics),weighted_contact_gradient_norm=gradient_norm(.1*contact),
+        dynamics_gradient_norm=gradient_norm(dynamics),weighted_contact_gradient_norm=gradient_norm(contact if separate else .1*contact),
+        contact_optimizer_separate=separate,contact_gradient_coefficient=1. if separate else .1,
         actor_updates=0,world_updates_added=0)
     args.output.write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2))
 
