@@ -100,5 +100,11 @@ def replay_task_sequence(trace, rally, recovery, contacts):
             values['jump'] = SimpleNamespace(**{key: values.pop('jump/' + key) for key in JUMP_INPUTS})
         if name == 'rally.advance':
             rally.in_play.copy_(values.pop('external_in_play'))
+        if name == 'rally.launch':
+            # FullRacketEnvV4.initialize_rally_launch resets contact episodes
+            # immediately before launch, with the identical ids and with no
+            # intervening task calls. This deterministic transition is derived
+            # from that original method, not from interpolated boundaries.
+            contacts.reset(values['ids'])
         group, method = name.split('.')
         getattr(objects[group], method)(**values)

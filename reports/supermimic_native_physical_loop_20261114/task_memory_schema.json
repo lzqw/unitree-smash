@@ -1,0 +1,639 @@
+{
+  "schema": "native-named-task-memory-value-valid-v1",
+  "numeric_width": 141,
+  "critic_width": 282,
+  "fields": [
+    {
+      "path": "rally/airborne_string_hit",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "rally/bad_return_fault",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "rally/body_ball_fault",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "rally/body_over_net_fault",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "rally/contact_count",
+      "shape": [],
+      "kind": "int",
+      "width": 1
+    },
+    {
+      "path": "rally/contact_point",
+      "shape": [
+        3
+      ],
+      "kind": "float",
+      "width": 3
+    },
+    {
+      "path": "rally/contact_time",
+      "shape": [],
+      "kind": "float",
+      "width": 1
+    },
+    {
+      "path": "rally/crossed_net",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "rally/crossing_point",
+      "shape": [
+        3
+      ],
+      "kind": "float",
+      "width": 3
+    },
+    {
+      "path": "rally/crossing_time",
+      "shape": [],
+      "kind": "float",
+      "width": 1
+    },
+    {
+      "path": "rally/double_hit_fault",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "rally/engineering_body_crossing",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "rally/followthrough_crossed",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "rally/followthrough_finished",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "rally/frame_hit",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "rally/ground_seen",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "rally/had_contact",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "rally/in_play",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "rally/landed_legal_court",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "rally/landed_target",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "rally/landing_point",
+      "shape": [
+        3
+      ],
+      "kind": "float",
+      "width": 3
+    },
+    {
+      "path": "rally/landing_time",
+      "shape": [],
+      "kind": "float",
+      "width": 1
+    },
+    {
+      "path": "rally/last_touch_velocity",
+      "shape": [
+        3
+      ],
+      "kind": "float",
+      "width": 3
+    },
+    {
+      "path": "rally/launch_time",
+      "shape": [],
+      "kind": "float",
+      "width": 1
+    },
+    {
+      "path": "rally/launched",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "rally/legal_initial_contact",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "rally/net_blocked_fault",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "rally/net_margin",
+      "shape": [],
+      "kind": "float",
+      "width": 1
+    },
+    {
+      "path": "rally/outgoing_velocity",
+      "shape": [
+        3
+      ],
+      "kind": "float",
+      "width": 3
+    },
+    {
+      "path": "rally/quiet_frames",
+      "shape": [],
+      "kind": "int",
+      "width": 1
+    },
+    {
+      "path": "rally/racket_invasion_fault",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "rally/release_time",
+      "shape": [],
+      "kind": "float",
+      "width": 1
+    },
+    {
+      "path": "rally/released",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "rally/robot_net_fault",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "rally/shuttle_net_contact",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "rally/string_hit",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "rally/under_net_obstruction_fault",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "rally/wrong_side_fault",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "recovery/body_ground_seen",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "recovery/contact_seen",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "recovery/flight_qualified",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "recovery/observed_airborne",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "recovery/observed_airborne_seen",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "recovery/rally_recovery_success",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/contact_recovery/bound",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/contact_recovery/clear_time",
+      "shape": [],
+      "kind": "float",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/contact_recovery/contact_flight_id",
+      "shape": [],
+      "kind": "int",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/contact_recovery/flight_id",
+      "shape": [],
+      "kind": "int",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/contact_recovery/landing_time",
+      "shape": [],
+      "kind": "float",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/contact_recovery/last_takeoff",
+      "shape": [],
+      "kind": "float",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/contact_recovery/longest_stable",
+      "shape": [],
+      "kind": "float",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/contact_recovery/qualified_landing",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/contact_recovery/rally_contact_time",
+      "shape": [],
+      "kind": "float",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/contact_recovery/rise",
+      "shape": [],
+      "kind": "float",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/contact_recovery/stable_run",
+      "shape": [],
+      "kind": "float",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/contact_recovery/stable_seen",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/contact_recovery/string_time",
+      "shape": [],
+      "kind": "float",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/contact_recovery/takeoff_time",
+      "shape": [],
+      "kind": "float",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/jump/airborne_seen",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/jump/airborne_time",
+      "shape": [],
+      "kind": "float",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/jump/body_ground_seen",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/jump/flight_apex_rise",
+      "shape": [],
+      "kind": "float",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/jump/flight_candidate",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/jump/flight_clear_time",
+      "shape": [],
+      "kind": "float",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/jump/flight_qualified",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/jump/flight_start_com",
+      "shape": [],
+      "kind": "float",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/jump/landed_once",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/jump/landing_time",
+      "shape": [],
+      "kind": "float",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/jump/max_com_rise",
+      "shape": [],
+      "kind": "float",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/jump/maximum_body_ground_force",
+      "shape": [],
+      "kind": "float",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/jump/recovery_run",
+      "shape": [],
+      "kind": "float",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/jump/recovery_seen",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/jump/recovery_time",
+      "shape": [],
+      "kind": "float",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/jump/rewarded_body_contact",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/jump/rewarded_jump",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/jump/rewarded_success",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/jump/support_seen",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/jump/takeoff_time",
+      "shape": [],
+      "kind": "float",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/jump/valid_jump_landed",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/environment/_observed_air_time",
+      "shape": [],
+      "kind": "float",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/environment/action_delta",
+      "shape": [],
+      "kind": "float",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/environment/ball_clock",
+      "shape": [],
+      "kind": "float",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/environment/clear_flight",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/environment/first_string_time",
+      "shape": [],
+      "kind": "float",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/environment/first_tool_normal",
+      "shape": [
+        3
+      ],
+      "kind": "float",
+      "width": 3
+    },
+    {
+      "path": "auxiliary/environment/first_tool_velocity",
+      "shape": [
+        3
+      ],
+      "kind": "float",
+      "width": 3
+    },
+    {
+      "path": "auxiliary/environment/jump_clock",
+      "shape": [],
+      "kind": "float",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/environment/last_action",
+      "shape": [
+        18
+      ],
+      "kind": "float",
+      "width": 18
+    },
+    {
+      "path": "auxiliary/environment/launch_done",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/environment/launch_frame",
+      "shape": [],
+      "kind": "int",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/environment/launch_signals_ready",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/environment/pending_sweep_age",
+      "shape": [],
+      "kind": "int",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/environment/previous_ball_position",
+      "shape": [
+        3
+      ],
+      "kind": "float",
+      "width": 3
+    },
+    {
+      "path": "auxiliary/environment/previous_ball_velocity",
+      "shape": [
+        3
+      ],
+      "kind": "float",
+      "width": 3
+    },
+    {
+      "path": "auxiliary/environment/previous_tool_position",
+      "shape": [
+        3
+      ],
+      "kind": "float",
+      "width": 3
+    },
+    {
+      "path": "auxiliary/environment/previous_tool_quaternion",
+      "shape": [
+        4
+      ],
+      "kind": "float",
+      "width": 4
+    },
+    {
+      "path": "auxiliary/environment/stable_recovery",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/environment/sweep_ready",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/contact_episodes/active",
+      "shape": [],
+      "kind": "bool",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/contact_episodes/clear_frames",
+      "shape": [],
+      "kind": "int",
+      "width": 1
+    },
+    {
+      "path": "auxiliary/contact_episodes/count",
+      "shape": [],
+      "kind": "int",
+      "width": 1
+    }
+  ],
+  "absent_timestamps": "explicit validity mask; not a real zero timestamp",
+  "future_transition": "not implemented by this encoding"
+}

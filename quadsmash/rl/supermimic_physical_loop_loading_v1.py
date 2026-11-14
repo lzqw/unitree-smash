@@ -1,0 +1,79 @@
+"""Strict loading/provenance for one physical imagination path."""
+import hashlib,json,types
+from pathlib import Path
+import torch
+from .supermimic_v1 import load_ppo_initialized_actor
+from .supermimic_physical_world_v2 import PhysicalWorldV2
+from .supermimic_ball_residual_v2 import BallResidualV2
+from .supermimic_task_memory_schema_v1 import TaskMemorySchemaV1,MemoryField
+from .supermimic_task_transition_model_v1 import NativeTaskTransitionSurrogateV1
+from .supermimic_physical_imagination_adapter_v1 import PhysicalImaginationAdapter
+from .supermimic_g07_memory_preview_v1 import G07MemoryPreviewV1
+from quadsmash.control.g07_shared_target_residual_v1 import make_g07_residual_controller
+
+
+SOURCE_SHA='8f510fe9f218beef791ac21675a19ed25d11f510a83fe247cddf2893bee08399'
+APPROACH_NAMES=tuple('actor.approach.'+layer+'.'+kind for layer in ('0','2','4') for kind in ('weight','bias'))
+
+
+def freeze_execution_modules(obj,seen=None):
+    seen=set() if seen is None else seen
+    if id(obj) in seen:return
+    seen.add(id(obj))
+    if isinstance(obj,torch.nn.Module):
+        obj.eval()
+        for parameter in obj.parameters():parameter.requires_grad_(False)
+    elif isinstance(obj,dict):
+        for v in obj.values():freeze_execution_modules(v,seen)
+    elif isinstance(obj,(tuple,list)):
+        for v in obj:freeze_execution_modules(v,seen)
+    elif hasattr(obj,'__dict__') and not isinstance(obj,(type,torch.Tensor,types.ModuleType,types.FunctionType,types.MethodType)):
+        for v in vars(obj).values():freeze_execution_modules(v,seen)
+
+
+def tensor_digest(named):
+    h=hashlib.sha256()
+    for name,tensor in sorted(named):
+        h.update(name.encode());h.update(str(tensor.shape).encode())
+        h.update(tensor.detach().cpu().contiguous().numpy().tobytes())
+    return h.hexdigest()
+
+
+def load_physical_loop(*,archive,physical_checkpoint,ball_checkpoint,task_checkpoint,safety_mapping,device='cuda:0'):
+    manifest=json.loads((Path(archive)/'manifest.json').read_text())
+    paths=dict(source=Path(manifest['source_checkpoint']),physical=Path(physical_checkpoint),
+               ball=Path(ball_checkpoint),task=Path(task_checkpoint))
+    hashes={k:hashlib.sha256(v.read_bytes()).hexdigest() for k,v in paths.items()}
+    if hashes['source']!=SOURCE_SHA or manifest['source_sha256']!=SOURCE_SHA:raise ValueError('Wrong source actor')
+    actor,actor_meta=load_ppo_initialized_actor(paths['source'],torch.device(device))
+    names=dict(actor.named_parameters())
+    if not set(APPROACH_NAMES)<=names.keys():raise ValueError('Approach parameter contract mismatch')
+    actor.requires_grad_(False)
+    for name in APPROACH_NAMES:names[name].requires_grad_(True)
+    controller=make_g07_residual_controller(torch.load(paths['source'],map_location='cpu',weights_only=False),
+        manifest['num_envs'],torch.device(device),'/home/autodrive/LZQW/unitree_smash')
+    freeze_execution_modules(controller)
+    executor=G07MemoryPreviewV1(controller);executor.mixer.to(device)
+    physical_state=torch.load(paths['physical'],map_location='cpu',weights_only=True)
+    physical=PhysicalWorldV2(manifest['task_contract']['asset']['sha256']).to(device)
+    if physical_state['schema']!=physical.schema:raise ValueError('Wrong physical model schema')
+    physical.load_state_dict(physical_state['model'],strict=True)
+    ball_state=torch.load(paths['ball'],map_location='cpu',weights_only=True)
+    ball=BallResidualV2().to(device);ball.load_state_dict(ball_state['model'],strict=True)
+    task_state=torch.load(paths['task'],map_location='cpu',weights_only=True)
+    schema=TaskMemorySchemaV1([MemoryField(**dict(f,shape=tuple(f['shape']))) for f in task_state['task_schema']['fields']])
+    output_key=max((key for key in task_state['model'] if key.startswith('net.net.') and key.endswith('.bias')),
+                   key=lambda key:int(key.split('.')[2]))
+    width=task_state['model'][output_key].numel()-2*schema.width-10
+    task=NativeTaskTransitionSurrogateV1(schema,width).to(device)
+    task.load_state_dict(task_state['model'],strict=True)
+    safety=json.loads(Path(safety_mapping).read_text())
+    if safety['asset_sha256']!=manifest['task_contract']['asset']['sha256']:raise ValueError('Safety geometry asset mismatch')
+    adapter=PhysicalImaginationAdapter(physical,ball,task,executor,safety_body_names=safety['safety_body_names'],
+        manifest=dict(checkpoint_paths={k:str(v) for k,v in paths.items()},checkpoint_sha256=hashes,
+                      task_schema=schema.manifest(),actor_whitelist=APPROACH_NAMES)).to(device)
+    suite=Path(__file__).resolve().parents[2]/manifest['task_contract']['suite']['path']
+    if hashlib.sha256(suite.read_bytes()).hexdigest()!=manifest['task_contract']['suite']['sha256']:raise ValueError('Suite hash mismatch')
+    cases=json.loads(suite.read_text())['cases']
+    launch=torch.tensor([c['launch']['position_m']+c['launch']['velocity_mps'] for c in cases],device=device)
+    return actor,adapter,controller,launch,manifest

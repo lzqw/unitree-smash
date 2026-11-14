@@ -1,0 +1,334 @@
+{
+  "source_checkpoint": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_env5120_01/policy.pt",
+  "source_sha256": "8f510fe9f218beef791ac21675a19ed25d11f510a83fe247cddf2893bee08399",
+  "task_contract": {
+    "version": "supermimic-source-task-contract-v2",
+    "source_policy_sha256": "8f510fe9f218beef791ac21675a19ed25d11f510a83fe247cddf2893bee08399",
+    "protocol_path": "configs/g07_full_racket_eval_v5_contact_recovery_origin0.json",
+    "protocol_sha256": "bfe6f2bef675bb4716e4970e6400eb86dd50b06e799e848030eb2a29ed84a309",
+    "suite": {
+      "path": "reports/G07_full_racket_v4/protocol_frozen01/training_cases.json",
+      "sha256": "2f9bf380d938a87418c4fa7da087e86d0da43f27a2ee6492bff7d7f1c3ff7c30",
+      "count": 128
+    },
+    "asset": {
+      "path": "assets/quadsmash_full_racket_v4_r3.usd",
+      "sha256": "c2264fcece90b042c7c6a1cac7d516af83972729d0402947e3a519041e184cf2"
+    },
+    "environment_spacing_m": 0.0,
+    "ground_size_m": [
+      64.0,
+      64.0,
+      0.1
+    ],
+    "contact_flight_recovery": "contact-flight-recovery-v1",
+    "control_dt_s": 0.01,
+    "physics_dt_s": 6.25e-05,
+    "episode_s": 8.0,
+    "precision_receipt_sha256": "0623405122424761a548fb51f3b43708cc887737e10067de4f1804c92487b032",
+    "sweep_audit": {
+      "maximum_iterations": 4096,
+      "tolerance_m": 1e-06
+    },
+    "extra_online_mpc": false,
+    "historical_base_and_recovery_assistance_preserved": true
+  },
+  "body_names": [
+    "base",
+    "FL_hip",
+    "FR_hip",
+    "Head_upper",
+    "RL_hip",
+    "RR_hip",
+    "MountPlate",
+    "FL_thigh",
+    "FR_thigh",
+    "Head_lower",
+    "RL_thigh",
+    "RR_thigh",
+    "base_link",
+    "FL_calf",
+    "FR_calf",
+    "RL_calf",
+    "RR_calf",
+    "link1",
+    "FL_foot",
+    "FR_foot",
+    "RL_foot",
+    "RR_foot",
+    "link2",
+    "link3",
+    "link4",
+    "link5",
+    "link6",
+    "Racket"
+  ],
+  "control_dt_s": 0.01,
+  "num_envs": 128,
+  "seed": 882072,
+  "runtime_commit": "66628dcd55fea5c0b33fc45ae66643bbb077afeb",
+  "schema": "supermimic-native-physical-transition-v1",
+  "joint_names": [
+    "FL_hip_joint",
+    "FR_hip_joint",
+    "RL_hip_joint",
+    "RR_hip_joint",
+    "FL_thigh_joint",
+    "FR_thigh_joint",
+    "RL_thigh_joint",
+    "RR_thigh_joint",
+    "FL_calf_joint",
+    "FR_calf_joint",
+    "RL_calf_joint",
+    "RR_calf_joint",
+    "joint1",
+    "joint2",
+    "joint3",
+    "joint4",
+    "joint5",
+    "joint6"
+  ],
+  "scope": "native data only; executor memory completeness not certified",
+  "substep_contact_traces": true,
+  "auxiliary_schema": "native-task-auxiliary-state-v1",
+  "causal_plan_logs_captured": true,
+  "within_tick_event_sequence": "native-task-call-sequence-v1",
+  "task_replay_config": {
+    "court": {
+      "version": "singles-rally-court-net-v4",
+      "net_plane_x_m": 1.5,
+      "court_length_m": 13.4,
+      "singles_width_m": 5.18,
+      "doubles_width_m": 6.1,
+      "line_width_m": 0.04,
+      "own_x_limits_m": [
+        -5.2,
+        1.5
+      ],
+      "opponent_x_limits_m": [
+        1.5,
+        8.2
+      ],
+      "net_center_top_m": 1.524,
+      "net_side_top_m": 1.55,
+      "net_width_m": 6.1,
+      "net_depth_m": 0.76,
+      "net_equivalent_thickness_m": 0.004,
+      "net_profile_segments": 64,
+      "net_top_tape_depth_m": 0.075,
+      "post_height_m": 1.55,
+      "post_radius_m": 0.025,
+      "post_y_center_abs_m": 3.075,
+      "post_position_assumption": "Inner post surfaces meet net ends at doubles outer boundaries \u00b13.05; supports do not protrude into court.",
+      "target_x_limits_m": [
+        2.0,
+        4.0
+      ],
+      "target_y_half_width_m": 1.0,
+      "engineering_nonracket_stays_own_half": true,
+      "engineering_body_plane_margin_m": 0.0,
+      "rally_preparation_seconds": 2.0,
+      "environment_spacing_m": 16.0,
+      "coordinate_convention": "Each environment local x increases from own to opponent; world coordinates=env_origin+local exactly once. Court outer boundaries include painted lines. Z=0 floor.",
+      "simplifications": [
+        "Rigid equivalent net membrane with correct suspended band extent; no cloth dynamics or mesh holes",
+        "Sag approximated by64 box strips; exact center/post heights, at most1.7mm deviation from the descriptive parabola; scoring/visualization use the actual strip tops",
+        "No opponent agent; body/fixture must remain own half as a separately labelled engineering safety constraint",
+        "Shuttle physics remains a declared5.2g rigid surrogate; no claim of real-shuttle aerodynamics or tournament certification"
+      ],
+      "net_profile_shape": "64 primitive-box strips approximating sag; exact center/post heights and constant0.76m vertical depth",
+      "net_collision_revision": "gpu-primitive-band-r2",
+      "net_collision_revision_reason": "Previous convex-mesh band failed actual robot contact positive fixtures while posts responded; failed records retained."
+    },
+    "radius": 0.025,
+    "recovery_protocol": {
+      "version": "standard-loaded-native-dev-v2",
+      "frozen_before_corrected_G04_training": true,
+      "asset": "assets/quadsmash_standard_v2.usd",
+      "reset_mode": "ground_only",
+      "policy_dt_s": 0.01,
+      "panels": [
+        {
+          "id": "dev_jump_v2_a",
+          "seed": 100100,
+          "episodes": 200,
+          "joint_offset_uniform_rad": 0.01,
+          "joint_velocity_uniform_rad_s": 0.02,
+          "yaw_uniform_rad": 0.03,
+          "xy_uniform_m": 0.02
+        },
+        {
+          "id": "dev_jump_v2_b",
+          "seed": 200200,
+          "episodes": 200,
+          "joint_offset_uniform_rad": 0.025,
+          "joint_velocity_uniform_rad_s": 0.04,
+          "yaw_uniform_rad": 0.08,
+          "xy_uniform_m": 0.04
+        }
+      ],
+      "aggregation": "minimum success fraction across the two 200-episode panels",
+      "jump": {
+        "minimum_total_com_rise_from_takeoff_m": 0.08,
+        "minimum_continuous_all_feet_airborne_s": 0.1
+      },
+      "recovery": {
+        "continuous_stable_window_s": 0.8,
+        "maximum_abs_roll_pitch_deg": 15.0,
+        "maximum_horizontal_root_speed_m_s": 0.3,
+        "maximum_root_angular_speed_rad_s": 1.0,
+        "maximum_abs_joint_velocity_rad_s": 1.0,
+        "maximum_body_ground_force_n": 1.0,
+        "require_foot_support": true
+      },
+      "contacts": "configs/contact_calibration_v2.json",
+      "dynamics": "nominal audited masses, inertias, actuator limits and friction; no geometry changes",
+      "holdout": {
+        "stage": "G10 only",
+        "generation_rule": "1000 scenarios per training seed; NumPy PCG64 SeedSequence([901001, training_seed]); joint offsets uniform +/-0.03 rad, joint velocity +/-0.05 rad/s, yaw +/-0.10 rad, xy +/-0.05 m; five training seeds minimum",
+        "results_accessed": false
+      },
+      "checkpoint_restore_tolerances": {
+        "initial_observation_max_abs": 1e-05,
+        "initial_action_max_abs": 1e-05,
+        "root_position_after_5_steps_m": 0.005,
+        "joint_position_after_5_steps_rad": 0.01,
+        "root_velocity_after_5_steps_m_s": 0.05,
+        "rng_streams": "exact Python, NumPy, Torch CPU and CUDA"
+      },
+      "checkpoint_resume_boundary": "After a completed PPO update, explicitly abort unfinished episodes and reset to canonical ground state before checkpoint.pt. Preserve model, normalizers, optimizer, schedule, global counters and RNG. Diagnostic model_i snapshots are not full-resume checkpoints."
+    },
+    "contact_threshold": 0.001,
+    "contact_separation": 0.002
+  },
+  "control_ticks": 800,
+  "transitions": 102400,
+  "chunks": [
+    {
+      "file": "chunk_00000.pt",
+      "ticks": 32,
+      "sha256": "5a42525883600e422b95b8c68bd3c27bb116efe03696917df3dc4e98dc1641e5"
+    },
+    {
+      "file": "chunk_00001.pt",
+      "ticks": 32,
+      "sha256": "e883cb72a34535a95905c20a2b68fb98c125115e2c8f3fb8caf9619e36677d24"
+    },
+    {
+      "file": "chunk_00002.pt",
+      "ticks": 32,
+      "sha256": "b13fdacc43b54ff9f6614dcba85cad15984f01f1b163fd0cb272cfd977a189ea"
+    },
+    {
+      "file": "chunk_00003.pt",
+      "ticks": 32,
+      "sha256": "0cbef3e4b014d1e41fed3cb4466b58cded7374ae54ae0bdc9ed9ad85fe9e7a72"
+    },
+    {
+      "file": "chunk_00004.pt",
+      "ticks": 32,
+      "sha256": "74c43e84f59e033399c0030553d4ce92c20a81b75d45eb88a1cecc7bcd485ea2"
+    },
+    {
+      "file": "chunk_00005.pt",
+      "ticks": 32,
+      "sha256": "93d2f13bf6900d5b119dce61a89b8a4b52e2339f0bc4ad50d92e1cfbabb041b8"
+    },
+    {
+      "file": "chunk_00006.pt",
+      "ticks": 32,
+      "sha256": "f31839c908c9e8906a7ad5ad80a0cdddfcc5afea26af01f09094b26c1fb534ea"
+    },
+    {
+      "file": "chunk_00007.pt",
+      "ticks": 32,
+      "sha256": "1e8725ada1bd81f611134e9ca136b3c645e035e404650b64c1be395a0f814c27"
+    },
+    {
+      "file": "chunk_00008.pt",
+      "ticks": 32,
+      "sha256": "5f61715b6d2581476cd18df9e14c1a07da8d07a77b784ed65b3bd274ed40687a"
+    },
+    {
+      "file": "chunk_00009.pt",
+      "ticks": 32,
+      "sha256": "392c1124fe47e5bd176adb90d53f4dc551f25c1df9ff2c682568dd90781c12fa"
+    },
+    {
+      "file": "chunk_00010.pt",
+      "ticks": 32,
+      "sha256": "09005f1f9e6fd1b009e8cd147265469167176489a73dd0b733fd843483bf89e1"
+    },
+    {
+      "file": "chunk_00011.pt",
+      "ticks": 32,
+      "sha256": "e33ac97be42722db8978391538ab49857e160f66335e760140a0a269bd828b92"
+    },
+    {
+      "file": "chunk_00012.pt",
+      "ticks": 32,
+      "sha256": "4e6631147a26f8460d0df9ae611d3727f4aadff322c8655b674c4fa9428bfda2"
+    },
+    {
+      "file": "chunk_00013.pt",
+      "ticks": 32,
+      "sha256": "af5e0ddbd1449dd84c177ae6e398103b5d3af1a785cc833de08ff5d1bc57cf0c"
+    },
+    {
+      "file": "chunk_00014.pt",
+      "ticks": 32,
+      "sha256": "c63a2e3378f626ca51edbdda2337660ae327aaeaeb6374190d7157081bea29c3"
+    },
+    {
+      "file": "chunk_00015.pt",
+      "ticks": 32,
+      "sha256": "27df1164deebce1b9ec9a67f3a7a2ce493f1e7b43796b9d491e2e6e9d123245d"
+    },
+    {
+      "file": "chunk_00016.pt",
+      "ticks": 32,
+      "sha256": "e9759999930baaac7bbaef919438c8a90dd8cc15abaccf9708742c0283bd54d9"
+    },
+    {
+      "file": "chunk_00017.pt",
+      "ticks": 32,
+      "sha256": "794a3b524ca8734b5809a85b40701f387607a6709e0d6b63edc250ed6fc5409d"
+    },
+    {
+      "file": "chunk_00018.pt",
+      "ticks": 32,
+      "sha256": "64e9e6072204813c2b4c54047debf2540891c4ef0e9e1ceea278197edc1d2de3"
+    },
+    {
+      "file": "chunk_00019.pt",
+      "ticks": 32,
+      "sha256": "bc393ba276fa53ae38e9b667917ecb3f42af943101e2a3fe89749839e016f4ba"
+    },
+    {
+      "file": "chunk_00020.pt",
+      "ticks": 32,
+      "sha256": "4b289bc4e9e386032bd1f1a28a2c665f249eb371a5766188438a314cda36637c"
+    },
+    {
+      "file": "chunk_00021.pt",
+      "ticks": 32,
+      "sha256": "c492cd6bedb01e83c0dcc19cad4248e78684d1b47109b9798492b2d6575e59a1"
+    },
+    {
+      "file": "chunk_00022.pt",
+      "ticks": 32,
+      "sha256": "7d75aa10984e60fda977e63b5087a60fd269b444a943a4fb55765e09dd59f495"
+    },
+    {
+      "file": "chunk_00023.pt",
+      "ticks": 32,
+      "sha256": "941a6c7dee4ec1edb243ce5022cc318bf2f30a0afee3010d34bc21d44bf2f8a4"
+    },
+    {
+      "file": "chunk_00024.pt",
+      "ticks": 32,
+      "sha256": "4f2aa98b1641c3447010cff834932651bf7984ff29cc4592ec812165535344aa"
+    }
+  ],
+  "pending_transition": false
+}
