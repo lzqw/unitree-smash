@@ -5,7 +5,11 @@ ROOT=/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290
 PY=/home/autodrive/Isaac/env_isaaclab/bin/python
 CHECKPOINT=${1:?usage: $0 CHECKPOINT [INDEX ...]}
 shift
-INDICES=("${@:-0 32 64 96}")
+if [ "$#" -eq 0 ]; then
+  INDICES=(0 32 64 96)
+else
+  INDICES=("$@")
+fi
 STAMP=$(date +%Y%m%d_%H%M%S)
 BASE=/home/autodrive/LZQW/video/selected_cases_${STAMP}
 mkdir -p "$BASE"
