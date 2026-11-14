@@ -1,0 +1,104 @@
+{
+  "scope": "Hindsight labels for timing audit only; no optimization or runtime label access",
+  "checkpoint_sha256": "016e88446213b08d39dfc532b9587d593852f202e4a2a0d61ab6ffe24bfe2977",
+  "groups": {
+    "new_racket": {
+      "false_positive_recorded_free_count": 118,
+      "nearest_first_event_offset_ticks": {
+        "1": 30,
+        "2": 28,
+        "3": 21,
+        "4": 9,
+        "5": 2,
+        "999": 28
+      },
+      "positive_offset_means_future_event": true,
+      "999_means_no_recorded_first_event_within_16_ticks": true,
+      "abs_racket_normal_distance_m_p10_p50_p90": [
+        0.11112840473651886,
+        0.2316361367702484,
+        0.4651891589164734
+      ],
+      "racket_radial_distance_m_p10_p50_p90": [
+        0.07405197620391846,
+        0.14447487890720367,
+        0.27077093720436096
+      ],
+      "ball_ground_clearance_m_p10_p50_p90": [
+        1.5792121887207031,
+        1.857938528060913,
+        1.9238718748092651
+      ],
+      "ball_vertical_speed_m_s_p10_p50_p90": [
+        -4.254539489746094,
+        -3.2220585346221924,
+        -2.5930325984954834
+      ]
+    },
+    "new_ground": {
+      "false_positive_recorded_free_count": 124,
+      "nearest_first_event_offset_ticks": {
+        "1": 27,
+        "2": 27,
+        "3": 27,
+        "4": 22,
+        "5": 13,
+        "6": 3,
+        "7": 2,
+        "8": 1,
+        "9": 1,
+        "10": 1
+      },
+      "positive_offset_means_future_event": true,
+      "999_means_no_recorded_first_event_within_16_ticks": true,
+      "abs_racket_normal_distance_m_p10_p50_p90": [
+        0.21269361674785614,
+        0.9162160754203796,
+        1.9402776956558228
+      ],
+      "racket_radial_distance_m_p10_p50_p90": [
+        1.833925724029541,
+        2.4028303623199463,
+        2.9309442043304443
+      ],
+      "ball_ground_clearance_m_p10_p50_p90": [
+        0.08296478539705276,
+        0.19432006776332855,
+        0.32021453976631165
+      ],
+      "ball_vertical_speed_m_s_p10_p50_p90": [
+        -6.22044563293457,
+        -5.769266605377197,
+        -5.494227886199951
+      ]
+    },
+    "new_net": {
+      "false_positive_recorded_free_count": 2,
+      "nearest_first_event_offset_ticks": {
+        "999": 2
+      },
+      "positive_offset_means_future_event": true,
+      "999_means_no_recorded_first_event_within_16_ticks": true,
+      "abs_racket_normal_distance_m_p10_p50_p90": [
+        0.76933753490448,
+        0.8237254619598389,
+        0.8781134486198425
+      ],
+      "racket_radial_distance_m_p10_p50_p90": [
+        0.40827134251594543,
+        0.42984646558761597,
+        0.4514215886592865
+      ],
+      "ball_ground_clearance_m_p10_p50_p90": [
+        1.1853526830673218,
+        1.2248562574386597,
+        1.2643598318099976
+      ],
+      "ball_vertical_speed_m_s_p10_p50_p90": [
+        -5.0078654289245605,
+        -4.93759822845459,
+        -4.867331504821777
+      ]
+    }
+  }
+}

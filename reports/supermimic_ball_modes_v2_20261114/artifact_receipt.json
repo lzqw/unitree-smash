@@ -1,0 +1,26 @@
+{
+  "checkpoint": "/tmp/supermimic_ball_modes_20261114_p0m0ulo9/run/ball.pt",
+  "checkpoint_sha256": "016e88446213b08d39dfc532b9587d593852f202e4a2a0d61ab6ffe24bfe2977",
+  "training_source_commit": "718683bf0b0a7bbad5ac8bf08a8aa629a6e08776",
+  "training_tracked_diff_empty": true,
+  "actor_updates": 0,
+  "critic_updates": 0,
+  "robot_updates": 0,
+  "adopted": false,
+  "reason": "Rare racket recall improved but premature impact predictions and 0.64s error exceed original physical v2",
+  "timing_audit_script": "scripts/audit_supermimic_ball_mode_timing.py",
+  "timing_audit_script_sha256": "57665d328b9a13f9475545a711586ef29f51300363c04f3a6e41835604bc45f8",
+  "timing_audit_provenance": "new untracked diagnostic at execution; same bytes committed with this report; no optimizer",
+  "timing_audit_exit_code": 0,
+  "checkpoint_audit": {
+    "gate_optimizer": {
+      "minimum_step": 600,
+      "maximum_step": 600
+    },
+    "response_optimizer": {
+      "minimum_step": 600,
+      "maximum_step": 600
+    },
+    "model_finite": true
+  }
+}
