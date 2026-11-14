@@ -1,0 +1,45 @@
+=== STOP REASON ===
+$1 = {si_signo = 11, si_errno = 0, si_code = 1, _sifields = {_pad = {280, 0 <repeats 27 times>}, _kill = {si_pid = 280, si_uid = 0}, _timer = {si_tid = 280, si_overrun = 0, si_sigval = {sival_int = 0, sival_ptr = 0x0}}, _rt = {si_pid = 280, si_uid = 0, si_sigval = {sival_int = 0, sival_ptr = 0x0}}, _sigchld = {si_pid = 280, si_uid = 0, si_status = 0, si_utime = 0, si_stime = 0}, _sigfault = {si_addr = 0x118, _addr_lsb = 0, _addr_bnd = {_lower = 0x0, _upper = 0x0}}, _sigpoll = {si_band = 280, si_fd = 0}, _sigsys = {_call_addr = 0x118, _syscall = 0, _arch = 0}}}
+
+=== CURRENT THREAD ===
+#0  0x00007ffe89066606 in ?? () from /home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/isaacsim/extscache/omni.physx.tensors-107.3.26+107.3.3.lx64.r.cp311.u353/bin/libomni.physx.tensors.plugin.so
+#1  0x00007ffe890e1f97 in ?? () from /home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/isaacsim/extscache/omni.physx.tensors-107.3.26+107.3.3.lx64.r.cp311.u353/bin/libomni.physx.tensors.plugin.so
+#2  0x00007fffd1752757 in ?? () from /home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/isaacsim/extscache/omni.physics.tensors-107.3.26+107.3.3.lx64.r.cp311.u353/omni/physics/tensors/bindings/_physicsTensors.cpython-311-x86_64-linux-gnu.so
+#3  0x00007ffff648c598 in ?? () from /home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/isaacsim/kit/kernel/py/carb/_carb.cpython-311-x86_64-linux-gnu.so
+#4  0x00007ffff648d105 in ?? () from /home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/isaacsim/kit/kernel/py/carb/_carb.cpython-311-x86_64-linux-gnu.so
+#5  0x000055555578a011 in _Py_Dealloc (op=<optimized out>) at /usr/local/src/conda/python-3.11.17/Objects/object.c:2373
+#6  Py_DECREF (op=<optimized out>) at /usr/local/src/conda/python-3.11.17/Include/object.h:538
+#7  Py_XDECREF (op=<optimized out>) at /usr/local/src/conda/python-3.11.17/Include/object.h:602
+#8  _PyObject_FreeInstanceAttributes (self=0x7ffa4d442650) at /usr/local/src/conda/python-3.11.17/Objects/dictobject.c:5586
+#9  subtype_dealloc (self=<optimized out>) at /usr/local/src/conda/python-3.11.17/Objects/typeobject.c:1433
+#10 0x000055555578a0a4 in _Py_Dealloc (op=<optimized out>) at /usr/local/src/conda/python-3.11.17/Objects/object.c:2373
+#11 Py_DECREF (op=<optimized out>) at /usr/local/src/conda/python-3.11.17/Include/object.h:538
+#12 Py_XDECREF (op=<optimized out>) at /usr/local/src/conda/python-3.11.17/Include/object.h:602
+#13 _PyObject_FreeInstanceAttributes (self=0x7ff9fa1c3f50) at /usr/local/src/conda/python-3.11.17/Objects/dictobject.c:5586
+#14 subtype_dealloc (self=<optimized out>) at /usr/local/src/conda/python-3.11.17/Objects/typeobject.c:1433
+#15 0x000055555572bc7a in _Py_Dealloc (op=<optimized out>) at /usr/local/src/conda/python-3.11.17/Objects/object.c:2390
+#16 Py_DECREF (op=<optimized out>) at /usr/local/src/conda/python-3.11.17/Include/object.h:538
+#17 Py_XDECREF (op=<optimized out>) at /usr/local/src/conda/python-3.11.17/Include/object.h:602
+#18 free_keys_object (keys=0x5555898ad170) at /usr/local/src/conda/python-3.11.17/Objects/dictobject.c:667
+#19 dictkeys_decref (dk=0x5555898ad170) at /usr/local/src/conda/python-3.11.17/Objects/dictobject.c:324
+#20 dict_dealloc (mp=0x7ff9fa1f5c80) at /usr/local/src/conda/python-3.11.17/Objects/dictobject.c:2381
+#21 0x000055555578a3b5 in Py_DECREF (op=<optimized out>) at /usr/local/src/conda/python-3.11.17/Include/object.h:538
+#22 subtype_dealloc (self=<optimized out>) at /usr/local/src/conda/python-3.11.17/Objects/typeobject.c:1429
+#23 0x000055555578a011 in _Py_Dealloc (op=<optimized out>) at /usr/local/src/conda/python-3.11.17/Objects/object.c:2373
+#24 Py_DECREF (op=<optimized out>) at /usr/local/src/conda/python-3.11.17/Include/object.h:538
+#25 Py_XDECREF (op=<optimized out>) at /usr/local/src/conda/python-3.11.17/Include/object.h:602
+#26 _PyObject_FreeInstanceAttributes (self=0x7ff9fa228110) at /usr/local/src/conda/python-3.11.17/Objects/dictobject.c:5586
+#27 subtype_dealloc (self=<optimized out>) at /usr/local/src/conda/python-3.11.17/Objects/typeobject.c:1433
+#28 0x0000555555769cd2 in Py_DECREF (op=<optimized out>) at /usr/local/src/conda/python-3.11.17/Include/object.h:538
+#29 frame_dealloc (f=0x555556674780) at /usr/local/src/conda/python-3.11.17/Objects/frameobject.c:884
+#30 0x0000555555769cc8 in Py_DECREF (op=<optimized out>) at /usr/local/src/conda/python-3.11.17/Include/object.h:538
+#31 frame_dealloc (f=0x7ff9c2d8fe60) at /usr/local/src/conda/python-3.11.17/Objects/frameobject.c:887
+#32 0x0000555555769cc8 in Py_DECREF (op=<optimized out>) at /usr/local/src/conda/python-3.11.17/Include/object.h:538
+#33 frame_dealloc (f=0x7ff9bb900040) at /usr/local/src/conda/python-3.11.17/Objects/frameobject.c:887
+#34 0x0000555555843709 in _PyTrash_thread_destroy_chain () at /usr/local/src/conda/python-3.11.17/Objects/object.c:2276
+#35 0x0000555555724601 in _Py_Dealloc (op=<optimized out>) at /usr/local/src/conda/python-3.11.17/Objects/object.c:2390
+#36 Py_DECREF (op=<optimized out>) at /usr/local/src/conda/python-3.11.17/Include/object.h:538
+#37 BaseException_clear (self=self@entry=0x7ff9c2dfcd40) at /usr/local/src/conda/python-3.11.17/Objects/exceptions.c:88
+#38 0x000055555580a9cd in OSError_clear (self=0x7ff9c2dfcd40) at /usr/local/src/conda/python-3.11.17/Objects/exceptions.c:1933
+#39 0x00005555557224c5 in delete_garbage (tstate=0x555555ace098 <_PyRuntime+166328>, gcstate=0x555555ab3fa0 <_PyRuntime+59584>, collectable=0x7fffffffcd00, old=0x555555ab3fe8 <_PyRuntime+59656>) at /usr/local/src/conda/python-3.11.17/Modules/gcmodule.c:1013
+
