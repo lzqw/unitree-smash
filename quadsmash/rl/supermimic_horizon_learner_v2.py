@@ -254,7 +254,19 @@ class HorizonTrainer:
             getattr(self, name).load_state_dict(state[key], strict=True)
         for name in ("actor_opt", "world_opt", "critic_opt"):
             opt = getattr(self, name)
-            opt.load_state_dict(state[name])
+            # An intentionally reset optimizer is represented by an empty
+            # state dict (for example when reinitializing the actor from the
+            # verified PPO checkpoint while retaining the world/critic).
+            # Do not pass that sentinel to torch Optimizer.load_state_dict:
+            # it expects a ``param_groups`` entry and raises KeyError before
+            # any training step can start.  The freshly constructed optimizer
+            # already has the requested learning rate and empty moments.
+            opt_state = state.get(name)
+            if isinstance(opt_state, dict) and not opt_state:
+                continue
+            if not isinstance(opt_state, dict) or "param_groups" not in opt_state:
+                raise ValueError(f"Invalid optimizer state for {name}; expected param_groups or {{}} sentinel")
+            opt.load_state_dict(opt_state)
             for slot in opt.state.values():
                 for key, value in slot.items():
                     if torch.is_tensor(value):
