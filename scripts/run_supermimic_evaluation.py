@@ -18,13 +18,15 @@ from quadsmash.rl.supermimic_run_lifecycle import inspect_process_result
 def main():
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--shutdown-diagnostic-ticks', type=int, default=None)
     args, _ = parser.parse_known_args()
     output = args.output.resolve()
     if output.exists():
         raise FileExistsError('Refuse to reuse evaluation output: ' + str(output))
     command = [sys.executable, '-u', str(ROOT/'scripts/evaluate_supermimic_v1.py'), *sys.argv[1:]]
     child = subprocess.run(command)
-    result = inspect_process_result(output, child.returncode)
+    result = inspect_process_result(output, child.returncode,
+                                    shutdown_diagnostic_ticks=args.shutdown_diagnostic_ticks)
     # The child may fail before it creates its output. Preserve that failure too.
     output.mkdir(parents=True, exist_ok=True)
     result['command'] = command

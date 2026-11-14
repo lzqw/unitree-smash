@@ -40,41 +40,57 @@ def main():
                         help='Inherit source audit by default; only an identical explicit value is accepted')
     parser.add_argument('--physics-device', default='cuda:0')
     AppLauncher.add_app_launcher_args(parser)
+    parser.add_argument('--shutdown-diagnostic-ticks', type=int, default=None,
+                        help='Lifecycle-only partial run on original 128 lanes; never writes scores/completed.json')
     args = parser.parse_args()
+    if args.shutdown_diagnostic_ticks is not None and not 1 <= args.shutdown_diagnostic_ticks < 800:
+        parser.error('shutdown diagnostic ticks must be in [1,799]')
     args.output = args.output.resolve()
     args.output.mkdir(parents=True, exist_ok=False)
-    app = env = None
-    tick = -1
-    ticks_completed = 0
-    stop_requested = None
-    mapping = None
-    stage = 'BEFORE_APP'
     startup = dict(argv=sys.argv, cwd=os.getcwd(), script=str(Path(__file__).resolve()),
                    script_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
                    commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
                    dirty_diff=subprocess.check_output(['git','diff','--no-ext-diff'],cwd=ROOT,text=True),
-                   executable=sys.executable, pid=os.getpid())
+                   executable=sys.executable, pid=os.getpid(),
+                   shutdown_diagnostic_ticks=args.shutdown_diagnostic_ticks)
     write_json(args.output/'startup.json', startup)
-    from quadsmash.rl.supermimic_run_lifecycle import stage as lifecycle_stage, close_native
-    fault_stream = (args.output/'native_fault.log').open('a')
-    faulthandler.enable(file=fault_stream, all_threads=True)
+    from quadsmash.rl.supermimic_run_lifecycle import stage as lifecycle_stage, execute_scoped_native
+    # Keep the descriptor valid through interpreter/native finalization. The OS
+    # closes it at process exit; do not disable faulthandler after app.close().
+    fault_fd = os.open(args.output/'native_fault.log', os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0o600)
+    faulthandler.enable(file=fault_fd, all_threads=True)
     lifecycle_stage(args.output, 'BEFORE_APP')
-    primary_failed = False
+    app = None
+    stop_request = {'signal': None}
     try:
-        # Keep caught Python exceptions visible through shutdown.
         app = AppLauncher(args, fast_shutdown=False).app
-        # Kit may replace signal handlers during initialization. Re-arm the
-        # fatal fault reporter after AppLauncher, retaining the file until close.
-        faulthandler.enable(file=fault_stream, all_threads=True)
+        faulthandler.enable(file=fault_fd, all_threads=True)
         lifecycle_stage(args.output, 'AFTER_APP')
         def request_stop(signum, frame):
-            nonlocal stop_requested
-            stop_requested = signal.Signals(signum).name
-        # AppLauncher installs Kit signal handling. Restore a Python request
-        # flag after construction, and stop at the next control boundary.
+            stop_request['signal'] = signal.Signals(signum).name
         signal.signal(signal.SIGINT, request_stop)
         signal.signal(signal.SIGTERM, request_stop)
-        stage = 'AFTER_APP'
+        # No native environment, wrapper, actor or tensor escapes this scope.
+        execute_scoped_native(args.output, lambda: _run_native(args, stop_request), app)
+    except BaseException as error:
+        if not (args.output/'failure.json').exists():
+            trace = traceback.format_exc()
+            (args.output/'failure_traceback.txt').write_text(trace)
+            write_json(args.output/'failure.json', dict(
+                stage='APPLICATION_OR_SCOPED_CLEANUP', type=type(error).__name__, message=str(error)))
+            print(trace, file=sys.stderr, flush=True)
+        raise
+
+
+def _run_native(args, stop_request):
+    from quadsmash.rl.supermimic_run_lifecycle import stage as lifecycle_stage, close_resource
+    env = None
+    tick = -1
+    ticks_completed = 0
+    mapping = None
+    stage = 'AFTER_APP'
+    primary_failed = False
+    try:
         import torch
         from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper
         from isaacsim.core.simulation_manager import SimulationManager
@@ -148,9 +164,9 @@ def main():
         start = time.perf_counter()
         stage = 'EVALUATING'
         with torch.inference_mode():
-            for tick in range(800):
-                if stop_requested is not None:
-                    raise InterruptedError(f'Evaluation stopped at control boundary: {stop_requested}')
+            for tick in range(args.shutdown_diagnostic_ticks or 800):
+                if stop_request['signal'] is not None:
+                    raise InterruptedError(f"Evaluation stopped at control boundary: {stop_request['signal']}")
                 before = obs['policy'].clone()
                 old_target = None
                 if reference is not None:
@@ -198,6 +214,17 @@ def main():
                     write_json(args.output/'progress.json',progress)
                     write_json(args.output/'command_consistency.json',mapping)
                     print('SUPERMIMIC_EVAL_PROGRESS='+json.dumps(progress),flush=True)
+        if args.shutdown_diagnostic_ticks is not None:
+            write_json(args.output/'command_consistency.json', mapping)
+            write_json(args.output/'shutdown_diagnostic.json', dict(
+                control_ticks=ticks_completed, num_envs=128,
+                requested_ticks=args.shutdown_diagnostic_ticks,
+                first_episodes=len(first), elapsed_s=time.perf_counter()-start,
+                scope='Shutdown diagnostic only; no task score or formal completion',
+                actor_updates=0, critic_updates=0, world_updates=0))
+            lifecycle_stage(args.output, 'SHUTDOWN_DIAGNOSTIC_FINISHED', control_ticks=ticks_completed)
+            print('SUPERMIMIC_SHUTDOWN_DIAGNOSTIC_FINISHED', flush=True)
+            return
         if len(first)!=128:
             raise RuntimeError(f'Only {len(first)}/128 pre-reset records; no live-state backfill permitted')
         rows=[dict(first[i],source_case_index=i,case_id=cases[i].get('case_id',i)) for i in range(128)]
@@ -235,18 +262,14 @@ def main():
         text=traceback.format_exc()
         (args.output/'failure_traceback.txt').write_text(text)
         write_json(args.output/'failure.json',dict(stage=stage,ticks_completed=ticks_completed,
-                   attempted_tick=tick+1, stop_requested=stop_requested,
+                   attempted_tick=tick+1, stop_requested=stop_request['signal'],
                    type=type(error).__name__,message=str(error)))
         if mapping is not None:
             write_json(args.output/'command_consistency.json',mapping)
         print(text,file=sys.stderr,flush=True)
         raise
     finally:
-        try:
-            close_native(args.output, env, app, primary_failed=primary_failed)
-        finally:
-            faulthandler.disable()
-            fault_stream.close()
+        close_resource(args.output, 'ENV', env, primary_failed=primary_failed)
 
 
 if __name__=='__main__':

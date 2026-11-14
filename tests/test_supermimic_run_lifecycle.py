@@ -45,3 +45,44 @@ def test_zero_exit_without_complete_evidence_fails(tmp_path):
     close_native(tmp_path,None,Resource(),primary_failed=False)
     (tmp_path/'failure.json').write_text('{}')
     assert not inspect_process_result(tmp_path,0)['process_completed_cleanly']
+
+
+@pytest.mark.parametrize('fail', [False, True])
+def test_scoped_native_releases_cycles_and_exception_locals_before_app(tmp_path, fail):
+    import weakref
+    from quadsmash.rl.supermimic_run_lifecycle import execute_scoped_native
+    refs = []
+    class NativeObject:
+        pass
+    class App:
+        def close(self):
+            assert refs and all(ref() is None for ref in refs)
+    def run():
+        native = NativeObject()
+        native.cycle = native
+        refs.append(weakref.ref(native))
+        if fail:
+            raise ValueError('original simulation failure')
+    if fail:
+        with pytest.raises(ValueError, match='original simulation failure'):
+            execute_scoped_native(tmp_path, run, App())
+        assert 'original simulation failure' in (tmp_path/'scoped_failure_traceback.txt').read_text()
+    else:
+        execute_scoped_native(tmp_path, run, App())
+    stages = [json.loads(line)['stage'] for line in (tmp_path/'lifecycle.jsonl').read_text().splitlines()]
+    assert stages.index('AFTER_NATIVE_GC') < stages.index('BEFORE_APP_CLOSE')
+
+
+def test_shutdown_diagnostic_cannot_be_reported_as_formal_evaluation(tmp_path):
+    (tmp_path/'shutdown_diagnostic.json').write_text(json.dumps(dict(
+        control_ticks=10, requested_ticks=10, num_envs=128)))
+    close_native(tmp_path, None, Resource(), primary_failed=False)
+    assert not inspect_process_result(tmp_path, 0)['process_completed_cleanly']
+    result = inspect_process_result(tmp_path, 0, shutdown_diagnostic_ticks=10)
+    assert result['process_completed_cleanly']
+    assert not result['simulation_completed']
+    assert result['shutdown_diagnostic_completed']
+    assert not inspect_process_result(tmp_path, -11, shutdown_diagnostic_ticks=10)['process_completed_cleanly']
+    assert not inspect_process_result(tmp_path, 0, shutdown_diagnostic_ticks=11)['process_completed_cleanly']
+    (tmp_path/'metrics.json').write_text('{}')
+    assert not inspect_process_result(tmp_path, 0, shutdown_diagnostic_ticks=10)['process_completed_cleanly']

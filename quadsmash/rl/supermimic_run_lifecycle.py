@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 import time
 import traceback
+import gc
 
 
 def stage(output, name, **fields):
@@ -11,6 +12,43 @@ def stage(output, name, **fields):
         stream.write(json.dumps(dict(stage=name, pid=os.getpid(), time_ns=time.time_ns(), **fields))+'\n')
         stream.flush()
         os.fsync(stream.fileno())
+
+
+def close_resource(output, name, resource, *, primary_failed):
+    if resource is None:
+        return
+    stage(output, 'BEFORE_' + name + '_CLOSE')
+    try:
+        resource.close()
+    except BaseException as error:
+        (Path(output)/(name.lower() + '_cleanup_failure.txt')).write_text(traceback.format_exc())
+        stage(output, name + '_CLOSE_FAILED', error_type=type(error).__name__, message=str(error))
+        if not primary_failed:
+            raise
+    else:
+        stage(output, 'AFTER_' + name + '_CLOSE')
+
+
+def execute_scoped_native(output, run, app):
+    """Release simulation locals/cycles while Kit is still alive, then close it.
+
+    `run` must close its environment and must not return simulation objects.
+    Exception tracebacks are saved by the caller before clearing frame locals.
+    """
+    failed = False
+    try:
+        run()
+    except BaseException as error:
+        failed = True
+        # An unwound traceback otherwise keeps native objects alive past Kit.
+        (Path(output)/'scoped_failure_traceback.txt').write_text(traceback.format_exc())
+        traceback.clear_frames(error.__traceback__)
+        raise
+    finally:
+        stage(output, 'BEFORE_NATIVE_GC')
+        collected = gc.collect()
+        stage(output, 'AFTER_NATIVE_GC', collected=collected)
+        close_native(output, None, app, primary_failed=failed)
 
 
 def close_native(output, env, app, *, primary_failed):
@@ -36,7 +74,7 @@ def close_native(output, env, app, *, primary_failed):
         stage(output, 'CLEANUP_FINISHED')
 
 
-def inspect_process_result(output, returncode):
+def inspect_process_result(output, returncode, *, shutdown_diagnostic_ticks=None):
     """Process exit and completed simulation are independently necessary."""
     output = Path(output)
     completed = output / 'completed.json'
@@ -50,7 +88,22 @@ def inspect_process_result(output, returncode):
         cleanup_finished = bool(events and events[-1]['stage'] == 'CLEANUP_FINISHED')
     except (OSError, ValueError, KeyError, TypeError):
         cleanup_finished = False
-    valid = returncode == 0 and simulation_completed and cleanup_finished and not (output/'failure.json').exists()
+    diagnostic_completed = False
+    if shutdown_diagnostic_ticks is not None:
+        try:
+            payload = json.loads((output/'shutdown_diagnostic.json').read_text())
+            diagnostic_completed = (
+                1 <= shutdown_diagnostic_ticks < 800
+                and payload.get('control_ticks') == shutdown_diagnostic_ticks
+                and payload.get('requested_ticks') == shutdown_diagnostic_ticks
+                and payload.get('num_envs') == 128
+                and not completed.exists() and not (output/'metrics.json').exists())
+        except (OSError, ValueError, TypeError):
+            pass
+    work_completed = simulation_completed if shutdown_diagnostic_ticks is None else diagnostic_completed
+    valid = returncode == 0 and work_completed and cleanup_finished and not (output/'failure.json').exists()
     return dict(child_returncode=returncode, simulation_completed=simulation_completed,
+                shutdown_diagnostic_completed=diagnostic_completed,
+                run_kind='formal_128' if shutdown_diagnostic_ticks is None else 'shutdown_diagnostic',
                 cleanup_finished=cleanup_finished, process_completed_cleanly=valid,
                 diagnostic_exit_code=0 if valid else (128-returncode if returncode < 0 else returncode or 1))
