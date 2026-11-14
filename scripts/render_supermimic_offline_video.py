@@ -62,7 +62,7 @@ def main() -> int:
     cmd = [
         sys.executable, str(ROOT / 'scripts' / 'render_g07_dynamic_video.py'),
         '--input', str(args.input), '--output', str(args.output), '--normal-only',
-        '--fps', str(int(metadata.get('fps', 30))),
+        '--fps', str(float(metadata.get('fps', 30))),
     ]
     return subprocess.run(cmd, cwd=str(ROOT), check=False).returncode
 

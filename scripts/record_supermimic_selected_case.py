@@ -185,6 +185,7 @@ try:
     if args.max_ticks is not None:
         requested_ticks = min(requested_ticks, args.max_ticks)
     render_stride = max(1, round(1.0 / (args.fps * contract['control_dt_s'])))
+    capture_fps = 1.0 / (render_stride * contract['control_dt_s'])
     frames = 0
     measured_poses = []
     measured_trace = []
@@ -309,7 +310,7 @@ try:
         episode_s=contract['episode_s'],
         requested_ticks=requested_ticks,
         frames=frames,
-        fps=args.fps,
+        fps=float(capture_fps if args.offline_render else args.fps),
         resolution=[args.width, args.height],
         camera_mode='CPU offline renderer from measured GPU-PhysX poses' if args.offline_render else 'Isaac Lab rgb_array camera; one selected environment',
         offline_capture=bool(args.offline_render),

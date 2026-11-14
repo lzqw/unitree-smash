@@ -9,7 +9,7 @@ import numpy as np
 import moderngl
 import imageio.v2 as imageio
 from PIL import Image,ImageDraw,ImageFont
-p=argparse.ArgumentParser();p.add_argument('--input',type=Path,required=True);p.add_argument('--output',type=Path);p.add_argument('--normal-only',action='store_true');p.add_argument('--fps',type=int,default=50);a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--input',type=Path,required=True);p.add_argument('--output',type=Path);p.add_argument('--normal-only',action='store_true');p.add_argument('--fps',type=float,default=50.0);a=p.parse_args()
 if a.fps <= 0: p.error('--fps must be positive')
 meta=json.load(open(a.input/'geometry.json'));data=np.load(a.input/'geometry.npz');poses=np.load(a.input/'link_poses.npy');trace=json.load(open(a.input/'trajectory.json'));metrics=json.load(open(a.input/'metrics.json'))
 learned=metrics.get('controller','').startswith('learned')
