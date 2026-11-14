@@ -3,11 +3,12 @@
 This task adaptation is not a claim of reproducing SuperMimic's G1 model.
 No PPO objective or demonstration target is used for actor gradients.
 """
-import copy,time
+import time
+from pathlib import Path
 import torch
 from .supermimic_horizon_learner_v2 import frozen,optimizer_step
 from .supermimic_timebase_v2 import bptt_return,gae_returns
-from .supermimic_v1 import MLP
+from .supermimic_v1 import MLP,load_ppo_initialized_actor
 from .supermimic_physical_loop_loading_v1 import APPROACH_NAMES,tensor_digest
 from .supermimic_ball_sequence_v1 import ball_transition
 from .supermimic_physical_dataset_v1 import valid_windows
@@ -18,7 +19,13 @@ class PhysicalHorizonTrainer:
         self.actor,self.adapter,self.timebase=actor,adapter,timebase
         width=adapter.critic_input(initial_state).shape[-1]
         self.critic=MLP(width,(512,256,128),1).to(initial_state.physical.device)
-        self.reference=copy.deepcopy(actor).eval().requires_grad_(False)
+        # deepcopy(ScriptModule) can turn copied Parameters into non-leaves.
+        # Load a separate, hash-verified immutable reference once per learner.
+        self.reference,reference_meta=load_ppo_initialized_actor(
+            Path(adapter.manifest['checkpoint_paths']['source']),initial_state.physical.device)
+        if reference_meta['sha256']!=adapter.manifest['checkpoint_sha256']['source']:
+            raise ValueError('Reference actor source mismatch')
+        self.reference.eval().requires_grad_(False)
         self.actor_opt=torch.optim.Adam([p for p in actor.parameters() if p.requires_grad],lr=5e-5,betas=(.9,.95))
         self.world_opt=torch.optim.Adam(adapter.parameters(),lr=2e-4)
         self.critic_opt=torch.optim.Adam(self.critic.parameters(),lr=2e-4)
