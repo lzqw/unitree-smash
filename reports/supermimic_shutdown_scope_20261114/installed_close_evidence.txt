@@ -1,0 +1,80 @@
+/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/isaacsim/exts/isaacsim.simulation_app/isaacsim/simulation_app/simulation_app.py
+sha256=7cbaa6f00e935a6f14bf1c28ec0db089fd924e931f3b0deee07a822f9b7d0090
+763:     def close(self, wait_for_replicator=True, skip_cleanup=False) -> None:
+764:         """Close the running Omniverse Toolkit application.
+765: 
+766:         Performs cleanup and shuts down the application. Can either perform
+767:         a graceful shutdown with full cleanup or an immediate exit.
+768: 
+769:         Args:
+770:             wait_for_replicator: Whether to wait for replicator workflows to complete
+771:                 before shutdown.
+772:             skip_cleanup: If True, performs immediate exit without cleanup.
+773:                 If False, performs graceful shutdown with full cleanup.
+774: 
+775:         Example:
+776: 
+777:         .. code-block:: python
+778: 
+779:             >>> simulation_app = SimulationApp()
+780:             >>> # Do simulation work...
+781:             >>> simulation_app.close(wait_for_replicator=True)
+782:             >>>
+783:             >>> # For immediate exit without cleanup:
+784:             >>> simulation_app = SimulationApp()
+785:             >>> simulation_app.close(skip_cleanup=True)
+786:         """
+787:         carb.log_info("SimulationApp.close: Closing application")
+788:         if skip_cleanup:
+789:             self._exiting = True
+790:             carb.log_info("SimulationApp.close: immediate_exit")
+791:             _logging = carb.logging.acquire_logging()
+792:             _logging.set_log_enabled(False)
+793:             self._app.shutdown_and_release_framework()
+794:         try:
+795:             # make sure that any replicator workflows finish rendering/writing
+796:             import omni.replicator.core as rep
+797: 
+798:             need_to_wait_for_replicator = False
+799:             if rep.orchestrator.get_status() not in [rep.orchestrator.Status.STOPPED, rep.orchestrator.Status.STOPPING]:
+800:                 need_to_wait_for_replicator = True
+801:                 rep.orchestrator.stop()
+802:             # only wait if status was not stopped or stopping
+803:             if wait_for_replicator and need_to_wait_for_replicator:
+804:                 rep.orchestrator.wait_until_complete()
+805:                 time.sleep(1.0)
+806: 
+807:             # Disable capture on play to avoid replicator engaging on any new timeline events
+808:             rep.orchestrator.set_capture_on_play(False)
+809:         except Exception:
+810:             pass
+811:         carb.log_info("SimulationApp.close: Replicator shutdown finished")
+812:         # close the stage to make sure all the objects are destroyed
+813:         if self.context.can_close_stage():
+814:             self.context.close_stage()
+815:             carb.log_info("SimulationApp.close: Stage closed")
+816:         else:
+817:             carb.log_info("SimulationApp.close: Stage could not be closed")
+818:         # check if exited already
+819:         if not self._exiting:
+820:             self._exiting = True
+821:             self._app.print_and_log("Simulation App Shutting Down")
+822: 
+823:             # Cleanup any running tracy intances so data is not lost
+824:             try:
+825:                 _profiler_tracy = carb.profiler.acquire_profiler_interface(plugin_name="carb.profiler-tracy.plugin")
+826:                 if _profiler_tracy:
+827:                     _profiler_tracy.set_capture_mask(0)
+828:                     _profiler_tracy.end(0)
+829:                     _profiler_tracy.shutdown()
+830:             except RuntimeError:
+831:                 # Tracy plugin was not loaded, so profiler never started - skip checks.
+832:                 pass
+833:             carb.log_info("SimulationApp.close: shutting down app and releasing framework")
+834:             # Disable logging before shutdown to keep the log clean
+835:             # Warnings at this point don't matter as the python process is about to be terminated
+836:             _logging = carb.logging.acquire_logging()
+837:             _logging.set_log_enabled(False)
+838:             self._app.shutdown_and_release_framework()
+839: 
+840:     def is_running(self) -> bool:
