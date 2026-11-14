@@ -52,6 +52,7 @@ def main():
                    commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
                    dirty_diff=subprocess.check_output(['git','diff','--no-ext-diff'],cwd=ROOT,text=True),
                    executable=sys.executable, pid=os.getpid(),
+                   retained_exception_audit=os.environ.get('QUADSMASH_AUDIT_RETAINED_EXCEPTIONS') == '1',
                    shutdown_diagnostic_ticks=args.shutdown_diagnostic_ticks)
     write_json(args.output/'startup.json', startup)
     from quadsmash.rl.supermimic_run_lifecycle import stage as lifecycle_stage, execute_scoped_native

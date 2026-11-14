@@ -48,6 +48,10 @@ def execute_scoped_native(output, run, app):
         stage(output, 'BEFORE_NATIVE_GC')
         collected = gc.collect()
         stage(output, 'AFTER_NATIVE_GC', collected=collected)
+        if os.environ.get('QUADSMASH_AUDIT_RETAINED_EXCEPTIONS') == '1':
+            from .supermimic_retained_exception_audit import capture_retained_exceptions
+            count = capture_retained_exceptions(output)
+            stage(output, 'RETAINED_EXCEPTION_AUDIT_FINISHED', count=count)
         close_native(output, None, app, primary_failed=failed)
 
 
