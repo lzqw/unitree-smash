@@ -58,7 +58,8 @@ def main():
         from isaacsim.core.simulation_manager import SimulationManager
         from quadsmash.rl.supermimic_v1 import load_ppo_initialized_actor
         from quadsmash.rl.supermimic_task_contract import (
-            resolve_task_contract, make_task_cfg, require_resume_contract, summarize_episode)
+            resolve_task_contract, make_task_cfg, require_resume_contract, summarize_episode,
+            zero_panel_reset_noise)
         from quadsmash.rl.supermimic_timebase_v2 import full_range_targets
         from quadsmash.tasks.stand.supermimic_env_v1 import SuperMimicEnvV1
         from quadsmash.tasks.stand.full_racket_eval_env_v4 import FrozenPanelEnv
@@ -92,9 +93,7 @@ def main():
         cfg.sweep_audit_iterations = args.sweep_audit_iterations
         if args.sweep_audit_iterations < 0:
             raise ValueError('Sweep audit count cannot be negative')
-        noise = dict(joint_position_rad=[[0.]*18 for _ in cases],
-                     joint_velocity_rad_s=[[0.]*18 for _ in cases],
-                     root_xy_m=[[0.,0.] for _ in cases], root_yaw_rad=[0.]*128)
+        noise = zero_panel_reset_noise(len(cases), args.seed)
         stage = 'BEFORE_ENV'
         env = EvaluationEnv(cfg, cases=cases, reset_noise=noise,
             residual_policy_checkpoint=source, g07_execution_root=execution_root,
@@ -153,7 +152,9 @@ def main():
                     if maximum > mapping['tolerance_rad']:
                         write_json(args.output/'command_consistency.json',mapping)
                         raise RuntimeError('Independent old/new final target mismatch')
-                    reference.reset(torch.where(done.bool())[0])
+                    reset_ids = torch.where(done.bool())[0]
+                    if reset_ids.numel():
+                        reference.reset(reset_ids)
                 for record in env.rally_records[cursor:]:
                     lane=int(record['env_id'])
                     if lane not in first:

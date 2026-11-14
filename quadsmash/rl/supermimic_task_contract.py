@@ -13,6 +13,12 @@ ROOT = Path(__file__).resolve().parents[2]
 VERSION = 'supermimic-source-task-contract-v1'
 
 
+def zero_panel_reset_noise(count, seed):
+    """Use the historical ndarray contract, including partial-reset indexing."""
+    from quadsmash.control.full_racket_train_evaluation_v4 import training_noise, NOISE_SHAPES
+    return training_noise(count, {name: 0. for name in NOISE_SHAPES}, seed)
+
+
 def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 

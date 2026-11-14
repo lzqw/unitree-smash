@@ -1,6 +1,7 @@
 import copy
 import pytest
 from quadsmash.rl.supermimic_task_contract import require_resume_contract, summarize_episode
+from quadsmash.rl.supermimic_task_contract import zero_panel_reset_noise
 
 
 def terminal_record():
@@ -54,3 +55,26 @@ def test_resume_requires_same_physical_and_scoring_contract():
 def test_legacy_replay_cannot_silently_resume():
     with pytest.raises(ValueError, match='Resume task contract'):
         require_resume_contract(dict(metadata={}), dict(version='new'))
+
+
+@pytest.mark.parametrize('indices', [list(range(128)), [71, 0, 127], [], [5]])
+def test_historical_reset_noise_supports_actual_batched_indexing(indices):
+    import numpy as np
+    import torch
+    noise = zero_panel_reset_noise(128, 882072)
+    shapes = {'joint_position_rad':(18,), 'joint_velocity_rad_s':(18,),
+              'root_xy_m':(2,), 'root_yaw_rad':()}
+    for name, shape in shapes.items():
+        # The exact operation that failed at FrozenPanelEnv._reset_idx.
+        selected = torch.tensor(noise[name][indices], dtype=torch.float32)
+        assert isinstance(noise[name], np.ndarray)
+        assert selected.shape == (len(indices), *shape)
+        assert torch.isfinite(selected).all() and not selected.any()
+
+
+def test_reset_noise_partial_modification_does_not_change_other_lanes():
+    import numpy as np
+    noise = zero_panel_reset_noise(128, 882072)
+    noise['joint_position_rad'][[71,127], 0] = [0.1,0.2]
+    assert np.count_nonzero(noise['joint_position_rad']) == 2
+    assert not noise['joint_position_rad'][[0,70,72]].any()
