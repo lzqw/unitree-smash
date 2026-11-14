@@ -1,0 +1,568 @@
+{
+  "train": {
+    "mode_names": [
+      "free",
+      "racket",
+      "ground",
+      "net",
+      "other_residual"
+    ],
+    "confusion_true_rows": [
+      [
+        56533,
+        0,
+        0,
+        0,
+        347
+      ],
+      [
+        0,
+        82,
+        0,
+        0,
+        0
+      ],
+      [
+        3166,
+        0,
+        13942,
+        0,
+        369
+      ],
+      [
+        1991,
+        0,
+        8,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        1,
+        0,
+        361
+      ]
+    ],
+    "accuracy": 0.92341148853302,
+    "groups": {
+      "parked": {
+        "count": 21336,
+        "mean_mode_probabilities": [
+          0.9952021241188049,
+          0.0,
+          0.003836371935904026,
+          0.0,
+          0.0009614973096176982
+        ],
+        "selected_modes": [
+          21336,
+          0,
+          0,
+          0,
+          0
+        ],
+        "position_mae_m": 0.0,
+        "velocity_mae_m_s": 1.493576616551362e-11,
+        "oracle_mode_velocity_mae_m_s": 1.493576616551362e-11
+      },
+      "launch": {
+        "count": 105,
+        "mean_mode_probabilities": [
+          0.9970967173576355,
+          0.0,
+          0.002050739945843816,
+          0.0,
+          0.0008528045145794749
+        ],
+        "selected_modes": [
+          105,
+          0,
+          0,
+          0,
+          0
+        ],
+        "position_mae_m": 0.0,
+        "velocity_mae_m_s": 3.0275375539901006e-09,
+        "oracle_mode_velocity_mae_m_s": 3.0275375539901006e-09
+      },
+      "new_racket": {
+        "count": 82,
+        "mean_mode_probabilities": [
+          0.011598882265388966,
+          0.986815333366394,
+          0.0,
+          0.0,
+          0.0015856281388550997
+        ],
+        "selected_modes": [
+          0,
+          82,
+          0,
+          0,
+          0
+        ],
+        "position_mae_m": 0.005645045544952154,
+        "velocity_mae_m_s": 0.8557983040809631,
+        "oracle_mode_velocity_mae_m_s": 0.8451963067054749
+      },
+      "new_ground": {
+        "count": 86,
+        "mean_mode_probabilities": [
+          0.0395071767270565,
+          0.0,
+          0.9557771682739258,
+          0.0,
+          0.004715569317340851
+        ],
+        "selected_modes": [
+          1,
+          0,
+          85,
+          0,
+          0
+        ],
+        "position_mae_m": 0.004774316214025021,
+        "velocity_mae_m_s": 0.47801557183265686,
+        "oracle_mode_velocity_mae_m_s": 0.3635711371898651
+      },
+      "new_net": {
+        "count": 12,
+        "mean_mode_probabilities": [
+          0.7354987859725952,
+          0.0,
+          0.0,
+          0.2407592535018921,
+          0.02374204806983471
+        ],
+        "selected_modes": [
+          12,
+          0,
+          0,
+          0,
+          0
+        ],
+        "position_mae_m": 0.010559928603470325,
+        "velocity_mae_m_s": 2.095428943634033,
+        "oracle_mode_velocity_mae_m_s": 1.216307520866394
+      },
+      "new_body": {
+        "count": 0,
+        "mean_mode_probabilities": null,
+        "selected_modes": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "position_mae_m": null,
+        "velocity_mae_m_s": null,
+        "oracle_mode_velocity_mae_m_s": null
+      },
+      "after_ground": {
+        "count": 37009,
+        "mean_mode_probabilities": [
+          0.732529878616333,
+          0.0,
+          0.2529723346233368,
+          0.0,
+          0.014497837983071804
+        ],
+        "selected_modes": [
+          22721,
+          0,
+          13857,
+          0,
+          431
+        ],
+        "position_mae_m": 0.0001659032714087516,
+        "velocity_mae_m_s": 0.025788133963942528,
+        "oracle_mode_velocity_mae_m_s": 0.023247402161359787
+      },
+      "after_net": {
+        "count": 5913,
+        "mean_mode_probabilities": [
+          0.9544943571090698,
+          7.038369088764394e-23,
+          0.03780228644609451,
+          9.492397907706618e-07,
+          0.007702491246163845
+        ],
+        "selected_modes": [
+          5621,
+          0,
+          290,
+          0,
+          2
+        ],
+        "position_mae_m": 0.00019053675350733101,
+        "velocity_mae_m_s": 0.03408539667725563,
+        "oracle_mode_velocity_mae_m_s": 0.015956830233335495
+      },
+      "in_play": {
+        "count": 12057,
+        "mean_mode_probabilities": [
+          0.9833294749259949,
+          0.006810457911342382,
+          0.006846369709819555,
+          0.00025258996174670756,
+          0.0027610003016889095
+        ],
+        "selected_modes": [
+          11890,
+          82,
+          85,
+          0,
+          0
+        ],
+        "position_mae_m": 9.893684182316065e-05,
+        "velocity_mae_m_s": 0.014932436868548393,
+        "oracle_mode_velocity_mae_m_s": 0.00955203827470541
+      },
+      "after_release": {
+        "count": 39795,
+        "mean_mode_probabilities": [
+          0.7807890772819519,
+          1.3632151762976719e-07,
+          0.19013331830501556,
+          7.662593270651996e-05,
+          0.029000870883464813
+        ],
+        "selected_modes": [
+          27710,
+          0,
+          11012,
+          0,
+          1073
+        ],
+        "position_mae_m": 0.00019061018247157335,
+        "velocity_mae_m_s": 0.030743472278118134,
+        "oracle_mode_velocity_mae_m_s": 0.021321287378668785
+      },
+      "recorded_event_free": {
+        "count": 11655,
+        "mean_mode_probabilities": [
+          0.9971023797988892,
+          0.00010232473141513765,
+          3.0015873562661e-05,
+          1.3265137567941565e-05,
+          0.0027520658913999796
+        ],
+        "selected_modes": [
+          11655,
+          0,
+          0,
+          0,
+          0
+        ],
+        "position_mae_m": 1.633961255720351e-05,
+        "velocity_mae_m_s": 0.0036969133652746677,
+        "oracle_mode_velocity_mae_m_s": 1.1009529954364439e-09
+      },
+      "not_recorded_event_free": {
+        "count": 43809,
+        "mean_mode_probabilities": [
+          0.7544973492622375,
+          0.0018472509691491723,
+          0.21609866619110107,
+          6.607601244468242e-05,
+          0.027490638196468353
+        ],
+        "selected_modes": [
+          28699,
+          82,
+          13951,
+          0,
+          1077
+        ],
+        "position_mae_m": 0.0002102989237755537,
+        "velocity_mae_m_s": 0.03330288454890251,
+        "oracle_mode_velocity_mae_m_s": 0.024502554908394814
+      }
+    }
+  },
+  "validation": {
+    "mode_names": [
+      "free",
+      "racket",
+      "ground",
+      "net",
+      "other_residual"
+    ],
+    "confusion_true_rows": [
+      [
+        19266,
+        1,
+        0,
+        0,
+        159
+      ],
+      [
+        0,
+        31,
+        0,
+        0,
+        0
+      ],
+      [
+        832,
+        0,
+        4807,
+        0,
+        43
+      ],
+      [
+        250,
+        0,
+        2,
+        0,
+        0
+      ],
+      [
+        83,
+        0,
+        37,
+        0,
+        89
+      ]
+    ],
+    "accuracy": 0.9450390338897705,
+    "groups": {
+      "parked": {
+        "count": 7140,
+        "mean_mode_probabilities": [
+          0.995191216468811,
+          0.0,
+          0.0038438860792666674,
+          0.0,
+          0.0009649571147747338
+        ],
+        "selected_modes": [
+          7140,
+          0,
+          0,
+          0,
+          0
+        ],
+        "position_mae_m": 0.0,
+        "velocity_mae_m_s": 3.6661981366340954e-14,
+        "oracle_mode_velocity_mae_m_s": 3.6661981366340954e-14
+      },
+      "launch": {
+        "count": 34,
+        "mean_mode_probabilities": [
+          0.9970989227294922,
+          0.0,
+          0.002045116387307644,
+          0.0,
+          0.0008558761328458786
+        ],
+        "selected_modes": [
+          34,
+          0,
+          0,
+          0,
+          0
+        ],
+        "position_mae_m": 0.0,
+        "velocity_mae_m_s": 0.0,
+        "oracle_mode_velocity_mae_m_s": 0.0
+      },
+      "new_racket": {
+        "count": 31,
+        "mean_mode_probabilities": [
+          0.01272704266011715,
+          0.9851688742637634,
+          0.0,
+          0.0,
+          0.002104038605466485
+        ],
+        "selected_modes": [
+          0,
+          31,
+          0,
+          0,
+          0
+        ],
+        "position_mae_m": 0.00836686510592699,
+        "velocity_mae_m_s": 1.448718786239624,
+        "oracle_mode_velocity_mae_m_s": 1.454797387123108
+      },
+      "new_ground": {
+        "count": 28,
+        "mean_mode_probabilities": [
+          0.048534903675317764,
+          0.0,
+          0.9470820426940918,
+          0.0,
+          0.004383033141493797
+        ],
+        "selected_modes": [
+          1,
+          0,
+          27,
+          0,
+          0
+        ],
+        "position_mae_m": 0.010812905617058277,
+        "velocity_mae_m_s": 0.6172533631324768,
+        "oracle_mode_velocity_mae_m_s": 0.473789781332016
+      },
+      "new_net": {
+        "count": 2,
+        "mean_mode_probabilities": [
+          0.8252931833267212,
+          0.0,
+          0.0,
+          0.14883340895175934,
+          0.02587340772151947
+        ],
+        "selected_modes": [
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        "position_mae_m": 0.016281049698591232,
+        "velocity_mae_m_s": 2.4601991176605225,
+        "oracle_mode_velocity_mae_m_s": 1.049426555633545
+      },
+      "new_body": {
+        "count": 0,
+        "mean_mode_probabilities": null,
+        "selected_modes": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "position_mae_m": null,
+        "velocity_mae_m_s": null,
+        "oracle_mode_velocity_mae_m_s": null
+      },
+      "after_ground": {
+        "count": 12619,
+        "mean_mode_probabilities": [
+          0.7414934635162354,
+          0.0,
+          0.24844583868980408,
+          0.0,
+          0.010060703381896019
+        ],
+        "selected_modes": [
+          7795,
+          0,
+          4780,
+          0,
+          44
+        ],
+        "position_mae_m": 0.00020953991042915732,
+        "velocity_mae_m_s": 0.0266891922801733,
+        "oracle_mode_velocity_mae_m_s": 0.028066355735063553
+      },
+      "after_net": {
+        "count": 849,
+        "mean_mode_probabilities": [
+          0.9862092733383179,
+          0.0,
+          0.004031220450997353,
+          1.9220772196071323e-10,
+          0.009759542532265186
+        ],
+        "selected_modes": [
+          847,
+          0,
+          2,
+          0,
+          0
+        ],
+        "position_mae_m": 0.00019089326087851077,
+        "velocity_mae_m_s": 0.03574630245566368,
+        "oracle_mode_velocity_mae_m_s": 0.01760656200349331
+      },
+      "in_play": {
+        "count": 3927,
+        "mean_mode_probabilities": [
+          0.982445478439331,
+          0.008334244601428509,
+          0.006913167890161276,
+          7.580083911307156e-05,
+          0.002231280319392681
+        ],
+        "selected_modes": [
+          3868,
+          32,
+          27,
+          0,
+          0
+        ],
+        "position_mae_m": 0.00017119802942033857,
+        "velocity_mae_m_s": 0.0225774347782135,
+        "oracle_mode_velocity_mae_m_s": 0.015396914444863796
+      },
+      "after_release": {
+        "count": 14960,
+        "mean_mode_probabilities": [
+          0.7757858633995056,
+          2.4216383565089927e-08,
+          0.19895677268505096,
+          1.9897730453521945e-05,
+          0.025237446650862694
+        ],
+        "selected_modes": [
+          10127,
+          0,
+          4542,
+          0,
+          291
+        ],
+        "position_mae_m": 0.0002711648412514478,
+        "velocity_mae_m_s": 0.03550160303711891,
+        "oracle_mode_velocity_mae_m_s": 0.028419844806194305
+      },
+      "recorded_event_free": {
+        "count": 3866,
+        "mean_mode_probabilities": [
+          0.9970666766166687,
+          0.0005660481983795762,
+          0.00016288438928313553,
+          7.928300238546626e-10,
+          0.002204485470429063
+        ],
+        "selected_modes": [
+          3865,
+          1,
+          0,
+          0,
+          0
+        ],
+        "position_mae_m": 2.0072013285243884e-05,
+        "velocity_mae_m_s": 0.005573673639446497,
+        "oracle_mode_velocity_mae_m_s": 9.436286196873311e-10
+      },
+      "not_recorded_event_free": {
+        "count": 14594,
+        "mean_mode_probabilities": [
+          0.752288818359375,
+          0.0020926573779433966,
+          0.2190081626176834,
+          2.0396530089783482e-05,
+          0.026589933782815933
+        ],
+        "selected_modes": [
+          9426,
+          31,
+          4846,
+          0,
+          291
+        ],
+        "position_mae_m": 0.00030950704240240157,
+        "velocity_mae_m_s": 0.04095371812582016,
+        "oracle_mode_velocity_mae_m_s": 0.03409048542380333
+      }
+    }
+  }
+}
