@@ -10,8 +10,13 @@ RETURN_DEFINITION = 'undiscounted_sum_of_native_control_step_rewards_v1'
 
 
 class NativeReturnAccumulator:
-    def __init__(self, count, device):
+    def __init__(self, count, device, gamma=0.99**0.5):
+        if not 0 < gamma <= 1:
+            raise ValueError('Invalid native return discount')
+        self.gamma = float(gamma)
         self.returns = torch.zeros(count, device=device, dtype=torch.float64)
+        self.discounted = torch.zeros_like(self.returns)
+        self.discount = torch.ones_like(self.returns)
         self.steps = torch.zeros(count, device=device, dtype=torch.long)
 
     @torch.no_grad()
@@ -22,6 +27,8 @@ class NativeReturnAccumulator:
         # Rewards already include their own dt/event scaling. Do not multiply
         # by dt or gamma again. Float64 accumulation reduces long-sum drift.
         self.returns.add_(value.to(dtype=self.returns.dtype))
+        self.discounted.add_(self.discount * value.to(dtype=self.returns.dtype))
+        self.discount.mul_(self.gamma)
         self.steps.add_(1)
 
     @torch.no_grad()
@@ -29,14 +36,19 @@ class NativeReturnAccumulator:
         ids = torch.as_tensor(ids, device=self.returns.device, dtype=torch.long).reshape(-1)
         totals = self.returns[ids].cpu().tolist()
         steps = self.steps[ids].cpu().tolist()
+        discounted = self.discounted[ids].cpu().tolist()
         return {int(i):dict(native_episode_return=float(value),
+                           native_episode_discounted_return=float(dvalue),
+                           native_return_gamma=self.gamma,
                            native_episode_length_steps=int(n),
                            native_return_definition=RETURN_DEFINITION)
-                for i,value,n in zip(ids.cpu().tolist(),totals,steps)}
+                for i,value,n,dvalue in zip(ids.cpu().tolist(),totals,steps,discounted)}
 
     @torch.no_grad()
     def reset(self, ids):
         self.returns[ids] = 0.
+        self.discounted[ids] = 0.
+        self.discount[ids] = 1.
         self.steps[ids] = 0
 
 

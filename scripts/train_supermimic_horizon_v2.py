@@ -201,6 +201,7 @@ def main():
         stage('BEFORE_ENV', num_envs=args.num_envs, device=str(cfg.sim.device))
         env = SuperMimicEnvV1(cfg, cases=cases, residual_policy_checkpoint=source,
                               g07_execution_root=args.g07_execution_root,
+                              native_return_gamma=timebase.gamma,
                               contact_flight_recovery=task_contract['contact_flight_recovery'])
         (args.output/'task_contract.json').write_text(json.dumps(task_contract, indent=2)+'\n')
         stage('AFTER_ENV')

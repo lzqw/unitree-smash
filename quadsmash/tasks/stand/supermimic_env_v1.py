@@ -28,7 +28,8 @@ class SuperMimicEnvV1(FullRacketEnvV4):
         "jump", "contact", "cross", "target", "recovery", "body", "frame", "fault"
     )
 
-    def __init__(self, *args, residual_policy_checkpoint=None, g07_execution_root=None, **kwargs):
+    def __init__(self, *args, residual_policy_checkpoint=None, g07_execution_root=None,
+                 native_return_gamma=0.99**0.5, **kwargs):
         self._sm_residual_policy_checkpoint = residual_policy_checkpoint
         self._sm_residual_controller = None
         self._sm_residual_default = None
@@ -44,7 +45,7 @@ class SuperMimicEnvV1(FullRacketEnvV4):
         self._sm_final_event_state = torch.zeros(
             (self.num_envs, len(self.event_state_names)), dtype=torch.float32, device=self.device)
         self._sm_final_event_state_valid = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
-        self._sm_native_returns = NativeReturnAccumulator(self.num_envs, self.device)
+        self._sm_native_returns = NativeReturnAccumulator(self.num_envs, self.device, native_return_gamma)
         self._sm_prev = {}
         self._sm_reset_events()
         if residual_policy_checkpoint is not None:
@@ -190,6 +191,14 @@ class SuperMimicEnvV1(FullRacketEnvV4):
         reward = torch.nan_to_num(reward, nan=-40.0, posinf=40.0, neginf=-40.0)
         self._sm_native_returns.add(reward)
         if self.physical_transition_archive is not None:
+            # Record the existing computation; do not call reward/latch logic twice.
+            self._sm_reward_components = dict(
+                continuous=continuous, jump=2.0*event_jump.float(),
+                qualified_contact=20.0*event_contact.float(), cross=5.0*event_cross.float(),
+                target=15.0*event_target.float(), recovery=10.0*event_recovery.float(),
+                complete5_terminal=20.0*complete5.float(), frame=-4.0*event_frame.float(),
+                miss_rate=-5.0*((~contact)&(phase>3.0)).float()*self.step_dt,
+                fault=-15.0*event_fault.float(), body=-40.0*event_body.float())
             # DirectRLEnv obtains reward before resetting terminated lanes.
             # Capturing after wrapper.step would join terminal states to resets.
             self.physical_transition_archive.finish(self, reward)

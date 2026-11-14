@@ -159,6 +159,7 @@ def _run_native(args, stop_request):
                     control_dt_s=float(env.step_dt), num_envs=env.num_envs,
                     seed=args.seed, runtime_commit=subprocess.check_output(
                         ['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()))
+            env.physical_transition_archive.attach_task_sequence(env)
         reference = None
         if trained is None:
             reference = (make_g07_residual_controller(source,128,env.device,execution_root)
@@ -219,12 +220,20 @@ def _run_native(args, stop_request):
                         first[lane]=measured
                         with (args.output/'episodes.jsonl').open('a') as stream:
                             stream.write(json.dumps(record)+'\n')
+                    else:
+                        with (args.output/'later_episodes.jsonl').open('a') as stream:
+                            stream.write(json.dumps(record)+'\n')
                 cursor=len(env.rally_records)
                 if (tick+1)%100==0:
                     progress=dict(control_ticks=tick+1,first_episodes=len(first),elapsed_s=time.perf_counter()-start,
                                   first_episode_numerical_audit_count=sum(r['numerical_failures'] for r in first.values()),
                                   active_episode_sweep_unresolved=int(env.sweep_unresolved.sum()),
                                   active_episode_sweep_misses=int(env.sweep_misses.sum()))
+                    returns=[r['native_episode_return'] for r in first.values()]
+                    discounted=[r['native_episode_discounted_return'] for r in first.values()]
+                    progress.update(native_episode_return_mean=sum(returns)/len(returns) if returns else None,
+                        native_episode_discounted_return_mean=sum(discounted)/len(discounted) if discounted else None,
+                        native_return_gamma=env._sm_native_returns.gamma)
                     write_json(args.output/'progress.json',progress)
                     write_json(args.output/'command_consistency.json',mapping)
                     print('SUPERMIMIC_EVAL_PROGRESS='+json.dumps(progress),flush=True)
@@ -270,6 +279,8 @@ def _run_native(args, stop_request):
         metrics['native_episode_metrics'] = native_summary
         metrics['conditional_recovery_scope'] = native_summary['conditional_recovery_scope']
         metrics['native_episode_return_mean'] = native_summary['native_episode_return_mean']
+        metrics['native_episode_discounted_return_mean'] = sum(r['native_episode_discounted_return'] for r in rows)/len(rows)
+        metrics['native_return_gamma'] = env._sm_native_returns.gamma
         write_json(args.output/'episodes_summary.json',rows)
         write_json(args.output/'metrics.json',metrics)
         write_json(args.output/'command_consistency.json',mapping)

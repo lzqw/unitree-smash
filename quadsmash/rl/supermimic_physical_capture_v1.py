@@ -154,6 +154,17 @@ class PhysicalTransitionArchive:
         self.rows = []
         self.chunks = []
         self.ticks = self.transitions = 0
+        self.task_sequence = None
+        self._manifest()
+
+    def attach_task_sequence(self, env):
+        from .supermimic_native_sequence_v1 import NativeTaskSequenceV1
+        self.task_sequence = NativeTaskSequenceV1(env)
+        self.metadata['substep_contact_traces'] = True
+        self.metadata['within_tick_event_sequence'] = NativeTaskSequenceV1.schema
+        self.metadata['task_replay_config'] = dict(court=env.rally.court,
+            radius=env.rally.radius, recovery_protocol=env.contact_recovery.protocol,
+            contact_threshold=env.contact_events.threshold, contact_separation=env.contact_events.separation)
         self._manifest()
 
     def _manifest(self):
@@ -164,8 +175,13 @@ class PhysicalTransitionArchive:
         temp.replace(self.directory/'manifest.json')
 
     def begin(self, env, request, public):
-        self.begin_record(capture_state(env), request, public,
+        state = capture_state(env)
+        if self.task_sequence is not None:
+            state['auxiliary']['not_captured'] = ['PhysX contact solver cache']
+        self.begin_record(state, request, public,
                           capture_controller(env._sm_residual_controller))
+        if self.task_sequence is not None:
+            self.task_sequence.begin()
 
     def begin_record(self, state, request, public, memory):
         if self.pending is not None:
@@ -175,7 +191,13 @@ class PhysicalTransitionArchive:
 
     def finish(self, env, reward):
         self.pending['base_action'] = env._sm_base_action.detach().clone()
-        self.finish_record(capture_state(env), env._sm_final_action, env._sm_joint_targets,
+        self.pending['reward_components'] = tensor_tree_copy(env._sm_reward_components)
+        if self.task_sequence is not None:
+            self.pending['task_sequence'] = self.task_sequence.finish()
+        state = capture_state(env)
+        if self.task_sequence is not None:
+            state['auxiliary']['not_captured'] = ['PhysX contact solver cache']
+        self.finish_record(state, env._sm_final_action, env._sm_joint_targets,
                            reward, env.reset_terminated, env.reset_time_outs,
                            capture_controller(env._sm_residual_controller))
 
