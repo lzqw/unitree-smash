@@ -1,0 +1,19 @@
+{
+  "timestamp": "2026-11-14T10:29:32.606770+08:00",
+  "status": "stop_requested_invalid_audit_config",
+  "reason": "Evaluator default sweep_audit_iterations=0 overrides full-racket source cfg 4096; unresolved geometric audits accumulate. Not a valid same-contract full evaluation.",
+  "last_saved_progress": {
+    "control_ticks": 500,
+    "first_episodes": 4,
+    "elapsed_s": 831.8640706799924
+  },
+  "observed_first_episode_records": 5,
+  "initial_signal": "SIGINT",
+  "followup_signal": "SIGTERM",
+  "pid": 1649118,
+  "actor_updates": 0,
+  "checkpoint_updates": 0,
+  "force_stop_timestamp": "2026-11-14T10:30:17.949746+08:00",
+  "force_stop_signal": "SIGKILL",
+  "force_stop_reason": "Confirmed same owned evaluation PID remains live after SIGINT and SIGTERM; no training state to save; existing output retained."
+}
