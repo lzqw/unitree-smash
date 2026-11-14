@@ -13,6 +13,7 @@ import subprocess
 import sys
 import time
 import traceback
+import signal
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -34,7 +35,8 @@ def main():
     parser.add_argument('--g07-execution-root', type=Path)
     parser.add_argument('--precision-receipt', type=Path)
     parser.add_argument('--seed', type=int, default=882072)
-    parser.add_argument('--sweep-audit-iterations', type=int, default=0)
+    parser.add_argument('--sweep-audit-iterations', type=int, default=None,
+                        help='Inherit source audit by default; only an identical explicit value is accepted')
     parser.add_argument('--physics-device', default='cuda:0')
     AppLauncher.add_app_launcher_args(parser)
     args = parser.parse_args()
@@ -42,6 +44,9 @@ def main():
     args.output.mkdir(parents=True, exist_ok=False)
     app = env = None
     tick = -1
+    ticks_completed = 0
+    stop_requested = None
+    mapping = None
     stage = 'BEFORE_APP'
     startup = dict(argv=sys.argv, cwd=os.getcwd(), script=str(Path(__file__).resolve()),
                    script_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
@@ -52,6 +57,13 @@ def main():
     try:
         # Keep caught Python exceptions visible through shutdown.
         app = AppLauncher(args, fast_shutdown=False).app
+        def request_stop(signum, frame):
+            nonlocal stop_requested
+            stop_requested = signal.Signals(signum).name
+        # AppLauncher installs Kit signal handling. Restore a Python request
+        # flag after construction, and stop at the next control boundary.
+        signal.signal(signal.SIGINT, request_stop)
+        signal.signal(signal.SIGTERM, request_stop)
         stage = 'AFTER_APP'
         import torch
         from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper
@@ -59,7 +71,7 @@ def main():
         from quadsmash.rl.supermimic_v1 import load_ppo_initialized_actor
         from quadsmash.rl.supermimic_task_contract import (
             resolve_task_contract, make_task_cfg, require_resume_contract, summarize_episode,
-            zero_panel_reset_noise)
+            zero_panel_reset_noise, validate_sweep_contract)
         from quadsmash.rl.supermimic_timebase_v2 import full_range_targets
         from quadsmash.tasks.stand.supermimic_env_v1 import SuperMimicEnvV1
         from quadsmash.tasks.stand.full_racket_eval_env_v4 import FrozenPanelEnv
@@ -90,9 +102,7 @@ def main():
         write_json(args.output/'task_contract.json', contract)
         cfg = make_task_cfg(128, contract, protocol, receipt)
         cfg.seed, cfg.sim.device = args.seed, args.physics_device
-        cfg.sweep_audit_iterations = args.sweep_audit_iterations
-        if args.sweep_audit_iterations < 0:
-            raise ValueError('Sweep audit count cannot be negative')
+        validate_sweep_contract(cfg, contract, args.sweep_audit_iterations)
         noise = zero_panel_reset_noise(len(cases), args.seed)
         stage = 'BEFORE_ENV'
         env = EvaluationEnv(cfg, cases=cases, reset_noise=noise,
@@ -127,6 +137,8 @@ def main():
         stage = 'EVALUATING'
         with torch.inference_mode():
             for tick in range(800):
+                if stop_requested is not None:
+                    raise InterruptedError(f'Evaluation stopped at control boundary: {stop_requested}')
                 before = obs['policy'].clone()
                 old_target = None
                 if reference is not None:
@@ -136,6 +148,7 @@ def main():
                 if not torch.isfinite(action).all():
                     raise FloatingPointError('Nonfinite evaluation action')
                 obs, _, done, _ = wrapper.step(action)
+                ticks_completed += 1
                 if not torch.isfinite(obs['policy']).all():
                     raise FloatingPointError('Nonfinite evaluation observation')
                 if old_target is not None:
@@ -166,7 +179,10 @@ def main():
                             stream.write(json.dumps(record)+'\n')
                 cursor=len(env.rally_records)
                 if (tick+1)%100==0:
-                    progress=dict(control_ticks=tick+1,first_episodes=len(first),elapsed_s=time.perf_counter()-start)
+                    progress=dict(control_ticks=tick+1,first_episodes=len(first),elapsed_s=time.perf_counter()-start,
+                                  first_episode_numerical_audit_count=sum(r['numerical_failures'] for r in first.values()),
+                                  active_episode_sweep_unresolved=int(env.sweep_unresolved.sum()),
+                                  active_episode_sweep_misses=int(env.sweep_misses.sum()))
                     write_json(args.output/'progress.json',progress)
                     write_json(args.output/'command_consistency.json',mapping)
                     print('SUPERMIMIC_EVAL_PROGRESS='+json.dumps(progress),flush=True)
@@ -202,8 +218,11 @@ def main():
     except BaseException as error:
         text=traceback.format_exc()
         (args.output/'failure_traceback.txt').write_text(text)
-        write_json(args.output/'failure.json',dict(stage=stage,ticks_completed=tick+1,
+        write_json(args.output/'failure.json',dict(stage=stage,ticks_completed=ticks_completed,
+                   attempted_tick=tick+1, stop_requested=stop_requested,
                    type=type(error).__name__,message=str(error)))
+        if mapping is not None:
+            write_json(args.output/'command_consistency.json',mapping)
         print(text,file=sys.stderr,flush=True)
         raise
     finally:

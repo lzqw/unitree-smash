@@ -10,7 +10,23 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-VERSION = 'supermimic-source-task-contract-v1'
+VERSION = 'supermimic-source-task-contract-v2'
+# The full-racket source factory sets 4096; validate its effective result below.
+# This is an audit contract, not a PhysX contact-response parameter.
+SOURCE_SWEEP_AUDIT = dict(maximum_iterations=4096, tolerance_m=1e-6)
+
+
+def validate_sweep_contract(cfg, contract, requested=None):
+    """Inherit the source setting; never use zero to silently disable audit."""
+    audit = contract.get('sweep_audit')
+    if audit != SOURCE_SWEEP_AUDIT:
+        raise ValueError('Missing or incompatible source sweep audit contract')
+    expected = audit['maximum_iterations']
+    if requested is not None and requested != expected:
+        raise ValueError(f'Sweep override {requested} differs from source {expected}')
+    if cfg.sweep_audit_iterations != expected:
+        raise ValueError(f'Effective sweep iterations {cfg.sweep_audit_iterations} differ from source {expected}')
+    return expected
 
 
 def zero_panel_reset_noise(count, seed):
@@ -78,6 +94,7 @@ def resolve_task_contract(source, source_path, *, execution_root=None,
         ground_size_m=ground, contact_flight_recovery=association,
         control_dt_s=protocol['policy_dt_s'], physics_dt_s=protocol['physics_dt_s'],
         episode_s=protocol['episode_seconds'], precision_receipt_sha256=receipt_sha,
+        sweep_audit=dict(SOURCE_SWEEP_AUDIT),
         extra_online_mpc=False,
         historical_base_and_recovery_assistance_preserved=g07)
     return contract, protocol, cases, receipt
@@ -96,6 +113,7 @@ def make_task_cfg(count, contract, protocol, receipt):
         raise ValueError('Constructed layout differs from task contract')
     if abs(cfg.sim.dt*cfg.decimation-contract['control_dt_s']) > 1e-12:
         raise ValueError('Constructed control period differs from task contract')
+    validate_sweep_contract(cfg, contract)
     return cfg
 
 

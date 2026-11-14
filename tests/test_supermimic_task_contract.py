@@ -2,6 +2,7 @@ import copy
 import pytest
 from quadsmash.rl.supermimic_task_contract import require_resume_contract, summarize_episode
 from quadsmash.rl.supermimic_task_contract import zero_panel_reset_noise
+from quadsmash.rl.supermimic_task_contract import SOURCE_SWEEP_AUDIT, validate_sweep_contract
 
 
 def terminal_record():
@@ -78,3 +79,48 @@ def test_reset_noise_partial_modification_does_not_change_other_lanes():
     noise['joint_position_rad'][[71,127], 0] = [0.1,0.2]
     assert np.count_nonzero(noise['joint_position_rad']) == 2
     assert not noise['joint_position_rad'][[0,70,72]].any()
+
+
+@pytest.mark.parametrize('requested', [None, 4096])
+def test_sweep_contract_inherits_without_mutating_source(requested):
+    from types import SimpleNamespace
+    cfg = SimpleNamespace(sweep_audit_iterations=4096)
+    contract = {'sweep_audit':dict(SOURCE_SWEEP_AUDIT)}
+    assert validate_sweep_contract(cfg, contract, requested) == 4096
+    assert vars(cfg) == {'sweep_audit_iterations':4096}
+
+
+@pytest.mark.parametrize('requested', [0, -1, 64, 256, 4097])
+def test_sweep_override_cannot_change_formal_audit(requested):
+    from types import SimpleNamespace
+    with pytest.raises(ValueError, match='Sweep override'):
+        validate_sweep_contract(SimpleNamespace(sweep_audit_iterations=4096),
+                                {'sweep_audit':dict(SOURCE_SWEEP_AUDIT)}, requested)
+
+
+def test_effective_zero_sweep_setting_is_rejected_before_env_construction():
+    from types import SimpleNamespace
+    with pytest.raises(ValueError, match='Effective sweep iterations 0'):
+        validate_sweep_contract(SimpleNamespace(sweep_audit_iterations=0),
+                                {'sweep_audit':dict(SOURCE_SWEEP_AUDIT)})
+    with pytest.raises(ValueError, match='source sweep audit contract'):
+        validate_sweep_contract(SimpleNamespace(sweep_audit_iterations=4096), {})
+
+
+def test_sweep_contract_matches_source_factory_literal_and_zero_is_not_disabled():
+    import ast
+    from pathlib import Path
+    import torch
+    from quadsmash.physics.full_racket_v4 import swept_string_prism, load_racket
+    root = Path(__file__).resolve().parents[1]
+    factory = ast.parse((root/'quadsmash/tasks/stand/full_racket_env_v4.py').read_text())
+    fn = next(n for n in factory.body if isinstance(n,ast.FunctionDef) and n.name=='full_racket_cfg')
+    values = [ast.literal_eval(n.value) for n in ast.walk(fn) if isinstance(n,ast.Assign)
+              for target in n.targets if isinstance(target,ast.Attribute) and target.attr=='sweep_audit_iterations']
+    assert values == [SOURCE_SWEEP_AUDIT['maximum_iterations']]
+    start=torch.tensor([[-.2,0.,0.]])
+    center=torch.zeros(1,3); quat=torch.tensor([[1.,0.,0.,0.]])
+    hit,_,unresolved = swept_string_prism(start,-start,center,center,quat,quat,load_racket(),.025,iterations=0)
+    assert not hit.item() and unresolved.item()
+    hit,_,unresolved = swept_string_prism(start,-start,center,center,quat,quat,load_racket(),.025,iterations=4096)
+    assert hit.item() and not unresolved.item()

@@ -190,7 +190,6 @@ def main():
             require_resume_contract(torch.load(args.resume, map_location='cpu', weights_only=False), task_contract)
         cfg = make_task_cfg(args.num_envs, task_contract, protocol, receipt)
         cfg.seed, cfg.sim.device = args.seed, args.device or 'cuda:0'
-        cfg.sweep_audit_iterations = 0
         if abs(cfg.sim.dt * cfg.decimation - timebase.control_dt_s) > 1e-10:
             raise ValueError('Timebase does not match the real environment; physics is not changed automatically')
         if abs(cfg.episode_length_s - timebase.episode_s) > 1e-10:
