@@ -47,3 +47,11 @@ For the next attempt, keep the viewport enabled but add
 `--kit_args "--renderer/multiGpu/enabled=false"`. These change only the Kit
 rendering startup path; PhysX, task physics, rewards, control frequency and
 the learning algorithm remain unchanged.
+
+The subsequent headful attempt still crashed in the same RTX module after
+those overrides. The reliable training path for this environment is therefore
+GPU PhysX with Isaac headless mode. Use
+`scripts/run_supermimic_native_calibration.sh`; it sets a unique output path,
+uses the correct `PIPESTATUS` exit code, and keeps CUDA PhysX and learning on
+`cuda:0`. The viewport is unavailable in this mode, so `--video-dir` only
+records the requested output location; it does not create an MP4.
