@@ -1,0 +1,25 @@
+{
+  "schema": "supermimic-checkpoint-provenance-v1",
+  "repo_commit": "bdeec2a",
+  "current_source": {
+    "sha256": "772608a1c42ec78c09cdf3bd8b7bfe3fed1738d1273cde9d09610022553aa21b",
+    "complete5_same_evaluator_reset": 2,
+    "complete5_same_evaluator_trained": 7,
+    "source_scope": "SuperMimic diagnostic source"
+  },
+  "historical_strong_source": {
+    "path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_env5120_01/policy.pt",
+    "sha256": "8f5109fe218beef791ac21675a19ed25d11f510a83fe247cddf2893bee08399",
+    "schema": "g07-shared-target-residual-ppo-v1",
+    "complete5": 27,
+    "complete5_denominator": 128,
+    "airborne_contacts": 74,
+    "conditional_recovery_count": 34,
+    "actual_racket_contacts": 110,
+    "crossed_net": 71,
+    "landed_target": 64,
+    "numerical_failures": 0
+  },
+  "loader_accepts": ["full-racket-residual-ppo-v4"],
+  "direct_initialization_status": "blocked_until_strict_schema_and_execution_contract_adapter_exists"
+}
