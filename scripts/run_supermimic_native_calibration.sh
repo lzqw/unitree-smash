@@ -25,6 +25,7 @@ bash scripts/python.sh scripts/train_supermimic_physical_block.py \
   --command-delta-budget 0.005 \
   --target-delta-budget-rad 0.04 \
   --video-dir /home/autodrive/LZQW/video \
+  --output "$RUN" \
   --headless \
   --device cuda:0 2>&1 | tee "$RUN.log"
 status=${PIPESTATUS[0]}
