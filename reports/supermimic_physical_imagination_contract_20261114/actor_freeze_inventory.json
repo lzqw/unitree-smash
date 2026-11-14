@@ -1,0 +1,233 @@
+{
+  "source": {
+    "path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_env5120_01/policy.pt",
+    "sha256": "8f510fe9f218beef791ac21675a19ed25d11f510a83fe247cddf2893bee08399",
+    "native_schema": "g07-shared-target-residual-ppo-v1",
+    "training_signature": null,
+    "interface": {
+      "schema": "quadsmash-native-training-v2",
+      "observation_size": 794,
+      "history_length": 11,
+      "joints": [
+        "FL_hip_joint",
+        "FR_hip_joint",
+        "RL_hip_joint",
+        "RR_hip_joint",
+        "FL_thigh_joint",
+        "FR_thigh_joint",
+        "RL_thigh_joint",
+        "RR_thigh_joint",
+        "FL_calf_joint",
+        "FR_calf_joint",
+        "RL_calf_joint",
+        "RR_calf_joint",
+        "joint1",
+        "joint2",
+        "joint3",
+        "joint4",
+        "joint5",
+        "joint6"
+      ],
+      "policy_dt": 0.01,
+      "action_family": "bounded-residual-joint-targets-full-racket-v4"
+    },
+    "learning_rate": null,
+    "actor_kind": "native_residual_jit_794_256_128_64",
+    "obs_dim": 794,
+    "action_dim": 18,
+    "execution_policy": "frozen_g07_shared_target_base_plus_native_residual_mixer",
+    "g07_execution_root": "/home/autodrive/LZQW/unitree_smash"
+  },
+  "parameters": [
+    {
+      "name": "log_std",
+      "shape": [
+        18
+      ],
+      "requires_grad": false,
+      "sha256": "0aec66b71a7a8d584337fad0608f22699fae5f60121513f16bfc2b0640924c97"
+    },
+    {
+      "name": "actor.base.0.weight",
+      "shape": [
+        256,
+        794
+      ],
+      "requires_grad": false,
+      "sha256": "3ccde612407111de56946db408210582331ac893dbfe39bc650910149f31bb8c"
+    },
+    {
+      "name": "actor.base.0.bias",
+      "shape": [
+        256
+      ],
+      "requires_grad": false,
+      "sha256": "a4ddc3d4adb2eb547974a3e154fff9f1a6ddfdad0e33c74df6dfbeeeb589f5ca"
+    },
+    {
+      "name": "actor.base.2.weight",
+      "shape": [
+        128,
+        256
+      ],
+      "requires_grad": false,
+      "sha256": "74696e6cb23371598afd35136b2e10edeb49649d266e216599b81c5baf66faa1"
+    },
+    {
+      "name": "actor.base.2.bias",
+      "shape": [
+        128
+      ],
+      "requires_grad": false,
+      "sha256": "9ca10331ed685784324b237a53e74500d5863805a49615ef785963e73b22a9a2"
+    },
+    {
+      "name": "actor.base.4.weight",
+      "shape": [
+        64,
+        128
+      ],
+      "requires_grad": false,
+      "sha256": "f1a34f2ff3da9f1571ef07656c8d21c6734b1fd9a337ba665b8ba6b5b1093112"
+    },
+    {
+      "name": "actor.base.4.bias",
+      "shape": [
+        64
+      ],
+      "requires_grad": false,
+      "sha256": "26843bdb6e17c73ac96c6ff1fc0b5cf5f49956dc16cd8b2b42c9fce2af7c34e7"
+    },
+    {
+      "name": "actor.base.6.weight",
+      "shape": [
+        18,
+        64
+      ],
+      "requires_grad": false,
+      "sha256": "b22eb5d9acde8d0299f7695ab39223d5f4c354249131a7c072679476d7cc212d"
+    },
+    {
+      "name": "actor.base.6.bias",
+      "shape": [
+        18
+      ],
+      "requires_grad": false,
+      "sha256": "a8930ee754efb2e4b6bf444efda1ea670c9aff2e1e9889a062fd402c16221120"
+    },
+    {
+      "name": "actor.recovery.0.weight",
+      "shape": [
+        128,
+        794
+      ],
+      "requires_grad": false,
+      "sha256": "b2a81cb66cd66306e5e8c1448dfd9f398ff9e0981449b5d286fa8b84882f1be6"
+    },
+    {
+      "name": "actor.recovery.0.bias",
+      "shape": [
+        128
+      ],
+      "requires_grad": false,
+      "sha256": "d855f79da6f4f4eb78360772b085d47d6121a43e6217314bcd60dc557f759cf2"
+    },
+    {
+      "name": "actor.recovery.2.weight",
+      "shape": [
+        64,
+        128
+      ],
+      "requires_grad": false,
+      "sha256": "3c7d3ce1a34954d9a8c5bf092163ad8bc238827d957d1c960c289eb9c52029aa"
+    },
+    {
+      "name": "actor.recovery.2.bias",
+      "shape": [
+        64
+      ],
+      "requires_grad": false,
+      "sha256": "ad7c2736b7331fb5f3f7dac2f51379b3c7e8ae571c6f3a7fd6dbfe906aae2e28"
+    },
+    {
+      "name": "actor.recovery.4.weight",
+      "shape": [
+        18,
+        64
+      ],
+      "requires_grad": false,
+      "sha256": "d0a60cf4472113d30993e4bd4c97cdf3ed3d8c48ad1a8df4dc30562bc3e56492"
+    },
+    {
+      "name": "actor.recovery.4.bias",
+      "shape": [
+        18
+      ],
+      "requires_grad": false,
+      "sha256": "b1dad8016abc7baafdd1647d8902b95870883be9ccf9cfc79b2dd0f4946a44b4"
+    },
+    {
+      "name": "actor.approach.0.weight",
+      "shape": [
+        128,
+        794
+      ],
+      "requires_grad": false,
+      "sha256": "514caf0540567038ad636f192c8db4e0bbe07ae538331b3a7d16962786e3edf0"
+    },
+    {
+      "name": "actor.approach.0.bias",
+      "shape": [
+        128
+      ],
+      "requires_grad": false,
+      "sha256": "ed0eea334dfc1cb18c39a9265ce8b5792b5da057ce6ebeee0eeecbfdd1447f21"
+    },
+    {
+      "name": "actor.approach.2.weight",
+      "shape": [
+        64,
+        128
+      ],
+      "requires_grad": false,
+      "sha256": "0adabb79d37c7eaf1eda2e3425ec2b83063ea01f9a104da9b31085d3edd681ae"
+    },
+    {
+      "name": "actor.approach.2.bias",
+      "shape": [
+        64
+      ],
+      "requires_grad": false,
+      "sha256": "fe5fde9b6343586545f855bb731727e97d75f2d21c68cfa01f116874bba95b71"
+    },
+    {
+      "name": "actor.approach.4.weight",
+      "shape": [
+        18,
+        64
+      ],
+      "requires_grad": false,
+      "sha256": "86f9ccf5611ca0063b57d5083adeda10b86264e17bbded9e1099dfdc07cf8789"
+    },
+    {
+      "name": "actor.approach.4.bias",
+      "shape": [
+        18
+      ],
+      "requires_grad": false,
+      "sha256": "594e172d9a9c633d9bd1f54cfe185a2056d40c6c793cabb12d960c24ee1e0102"
+    }
+  ],
+  "actual_trainable_whitelist": [],
+  "candidate_approach_names": [
+    "actor.approach.0.weight",
+    "actor.approach.0.bias",
+    "actor.approach.2.weight",
+    "actor.approach.2.bias",
+    "actor.approach.4.weight",
+    "actor.approach.4.bias"
+  ],
+  "actor_updates": 0,
+  "optimizer_created": false,
+  "scope": "CPU read and freeze only; no action forward or learning"
+}

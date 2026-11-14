@@ -1,0 +1,3352 @@
+{
+  "counts": {
+    "tensors": 505,
+    "values": 6644,
+    "aliases": 20,
+    "omitted": 14,
+    "object_types": 41
+  },
+  "object_types": {
+    "controller": "quadsmash.control.g07_shared_target_residual_v1.G07SharedTargetResidualControllerV1",
+    "controller/base": "quadsmash.control.persistent_recovery_assistance_v1.PersistentRecoveryAssistanceV1",
+    "controller/base/source": "checked_shared_target_core.SharedTargetController",
+    "controller/base/source/source": "checked_public_stance_core.StanceRecoveryController",
+    "controller/base/source/source/source": "cpu_checked_momentum_strike_core.MomentumStrikeController",
+    "controller/base/source/source/source/source": "checked_air_countermotion_core.AirCountermotionController",
+    "controller/base/source/source/source/source/source": "air_preserved_actual_recovery_prior.RecoveryPriorController",
+    "controller/base/source/source/source/source/source/source": "preserved_windowed_swing_factory.WindowedSwingController",
+    "controller/base/source/source/source/source/source/source/source": "window_preserved_lateral_factory.EarlyLateralController",
+    "controller/base/source/source/source/source/source/source/source/source": "preserved_measured_swing_factory.MeasuredSwingController",
+    "controller/base/source/source/source/source/source/source/source/source/source": "quadsmash.control.full_racket_gain_body_adaptation_v4.GainBodyAdaptationControllerV4",
+    "controller/base/source/source/source/source/source/source/source/source/source/source": "quadsmash.control.full_racket_prepose_branch_v4.PreposeBranchControllerV4",
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source": "quadsmash.control.full_racket_contact_aim_v4.ContactAimControllerV4",
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source": "quadsmash.control.full_racket_fixed_actor_body_v4.FixedActorBodyControllerV4",
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source": "quadsmash.control.full_racket_residual_v4.FullRacketResidualControllerV4",
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base": "quadsmash.control.full_racket_residual_v4.FullRacketResidualControllerV4",
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base": "quadsmash.control.full_racket_rally_controller_v4.FullRacketRallyControllerV4",
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher": "quadsmash.control.full_racket_teacher_v4.FullRacketTeacherV4",
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher/walk": "quadsmash.control.go2_walk_transfer.Go2WalkTransfer",
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher/standing": "quadsmash.control.go2_standing_transfer.Go2StandingTransfer",
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher/leg_recovery_blend": "quadsmash.control.full_racket_recovery_blend_v4.LegRecoveryBlend",
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher/arm_target_rate": "quadsmash.control.full_racket_arm_target_rate_v4.ArmTargetRateV4",
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/mixer": "quadsmash.control.full_racket_residual_v4.ResidualActionMixerV4",
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/mixer/arm_rate": "quadsmash.control.full_racket_arm_target_rate_v4.ArmTargetRateV4",
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/mixer": "quadsmash.control.full_racket_residual_v4.ResidualActionMixerV4",
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/mixer/arm_rate": "quadsmash.control.full_racket_arm_target_rate_v4.ArmTargetRateV4",
+    "controller/base/source/source/source/source/source/source/source/rate": "quadsmash.control.full_racket_arm_target_rate_v4.ArmTargetRateV4",
+    "controller/base/source/source/source/source/source/mixer": "quadsmash.control.full_racket_residual_v4.ResidualActionMixerV4",
+    "controller/base/source/source/source/source/source/mixer/arm_rate": "quadsmash.control.full_racket_arm_target_rate_v4.ArmTargetRateV4",
+    "controller/base/source/source/source/source/requester": "checked_air_countermotion_core.LegCountermotionRequest",
+    "controller/base/source/source/source/source/requester/model": "countermotion_known_model.KnownModel",
+    "controller/base/source/source/source/source/mixer": "quadsmash.control.full_racket_residual_v4.ResidualActionMixerV4",
+    "controller/base/source/source/source/source/mixer/arm_rate": "quadsmash.control.full_racket_arm_target_rate_v4.ArmTargetRateV4",
+    "controller/base/source/source/source/requester": "cpu_checked_momentum_strike_core.PublicStrikeRequest",
+    "controller/base/source/source/source/requester/model": "public_strike_known_model.KnownModel",
+    "controller/base/source/source/source/mixer": "quadsmash.control.full_racket_residual_v4.ResidualActionMixerV4",
+    "controller/base/source/source/source/mixer/arm_rate": "quadsmash.control.full_racket_arm_target_rate_v4.ArmTargetRateV4",
+    "controller/base/source/source/requester": "checked_public_stance_core.StanceLegRequest",
+    "controller/base/source/source/requester/model": "stance_known_model.KnownModel",
+    "controller/mixer": "quadsmash.control.full_racket_residual_v4.ResidualActionMixerV4",
+    "controller/mixer/arm_rate": "quadsmash.control.full_racket_arm_target_rate_v4.ArmTargetRateV4"
+  },
+  "aliases": {
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/relative_prepose/provenance": "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/checkpoint/seed/relative_contact_prepose/provenance",
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/reference": "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base",
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/reference": "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base",
+    "controller/base/source/source/source/source/source/source/source/source/source/source/reference": "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base",
+    "controller/base/source/source/source/source/source/source/source/source/source/reference": "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base",
+    "controller/base/source/source/source/source/source/source/source/source/source/layers/0": "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source",
+    "controller/base/source/source/source/source/source/source/source/source/source/layers/1": "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base",
+    "controller/base/source/source/source/source/source/source/source/source/reference": "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base",
+    "controller/base/source/source/source/source/source/source/source/reference": "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base",
+    "controller/base/source/source/source/source/source/source/source/teacher": "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher",
+    "controller/base/source/source/source/source/source/source/reference": "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base",
+    "controller/base/source/source/source/source/source/source/teacher": "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher",
+    "controller/base/source/source/source/source/source/reference": "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base",
+    "controller/base/source/source/source/source/requester/model/names": "controller/base/source/source/source/source/requester/model/record/body_names",
+    "controller/base/source/source/source/reference": "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base",
+    "controller/base/source/source/source/teacher": "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher",
+    "controller/base/source/source/source/requester/model/names": "controller/base/source/source/source/requester/model/record/body_names",
+    "controller/base/source/source/requester/model/names": "controller/base/source/source/requester/model/record/body_names",
+    "controller/base/source/reference": "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base",
+    "controller/base/source/teacher": "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher"
+  },
+  "omitted": {
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher/walk/actor": "network:RecursiveScriptModule",
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher/standing/actor": "network:RecursiveScriptModule",
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher/strike": "network:PiecewiseAffinePolicy",
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher/kinematics": "network:FullRacketKinematicsV4",
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher/joint_preparation": "network:FullRacketJointPreparation",
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher/face_feedback": "network:FullRacketFaceFeedback",
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher/action": "code:builtins.method",
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/logs": "diagnostic logs",
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/actor": "network:ScaledResidualActor",
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/actor": "network:ScaledResidualActor",
+    "controller/base/source/source/source/source/source/source/original_teacher_action": "code:builtins.method",
+    "controller/base/source/source/source/requester/core": "code:builtins.module",
+    "controller/base/source/original_teacher_action": "code:builtins.method",
+    "controller/actor": "network:RecursiveScriptModule"
+  },
+  "tensors": {
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/checkpoint/parameters": {
+      "shape": [
+        38
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/checkpoint/backbone/walk_parameters": {
+      "shape": [
+        15
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/checkpoint/backbone/strike_policy_checkpoint/thresholds": {
+      "shape": [
+        11
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/checkpoint/backbone/strike_policy_checkpoint/mean": {
+      "shape": [
+        21
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/checkpoint/backbone/strike_policy_checkpoint/scale": {
+      "shape": [
+        21
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/checkpoint/backbone/strike_policy_checkpoint/weights": {
+      "shape": [
+        12,
+        22,
+        18
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/checkpoint/backbone/recovery_parameters": {
+      "shape": [
+        5
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher/walk/last_raw": {
+      "shape": [
+        128,
+        12
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher/walk/reached": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.bool"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher/standing/last_raw": {
+      "shape": [
+        128,
+        12
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher/standing/reached": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.bool"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher/standing/standing_ticks": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.int64"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher/walk_seed": {
+      "shape": [
+        15
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher/standing_seed": {
+      "shape": [
+        5
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher/arm": {
+      "shape": [
+        6
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher/arm_velocity": {
+      "shape": [
+        6
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher/pitch_basis": {
+      "shape": [
+        6
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher/leg_recovery_blend/started": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.bool"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher/leg_recovery_blend/start_time": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher/leg_recovery_blend/start_leg": {
+      "shape": [
+        128,
+        12
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher/task_eye": {
+      "shape": [
+        1,
+        6,
+        6
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher/contact_offset": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher/target_world": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher/normal_world": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher/velocity_world": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher/arm_target_rate/target": {
+      "shape": [
+        128,
+        6
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher/arm_target_rate/clock": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/teacher/arm_target_rate/initialized": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.bool"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/base": {
+      "shape": [
+        38
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/parameters": {
+      "shape": [
+        128,
+        38
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/event_time": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/planned": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.bool"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/nominal_target": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/jacobian": {
+      "shape": [
+        3,
+        6
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/inverse": {
+      "shape": [
+        6,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/base/target_offset_world": {
+      "shape": [
+        128,
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/mixer/scale": {
+      "shape": [
+        18
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/mixer/arm_rate/target": {
+      "shape": [
+        128,
+        6
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/mixer/arm_rate/clock": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/mixer/arm_rate/initialized": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.bool"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/base/mixer/nonzero_seen": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.bool"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/mixer/scale": {
+      "shape": [
+        18
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/mixer/arm_rate/target": {
+      "shape": [
+        128,
+        6
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/mixer/arm_rate/clock": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/mixer/arm_rate/initialized": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.bool"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/source/mixer/nonzero_seen": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.bool"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/source/source/population": {
+      "shape": [
+        128,
+        38
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/source/runtime_parameters": {
+      "shape": [
+        128,
+        38
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/source/runtime_parameters": {
+      "shape": [
+        128,
+        38
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/runtime_matrices/0": {
+      "shape": [
+        128,
+        38
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/source/runtime_matrices/1": {
+      "shape": [
+        128,
+        38
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/rate/target": {
+      "shape": [
+        128,
+        6
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/rate/clock": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/source/rate/initialized": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.bool"
+    },
+    "controller/base/source/source/source/source/source/source/source/valid_plan": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.bool"
+    },
+    "controller/base/source/source/source/source/source/source/source/ever_active": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.bool"
+    },
+    "controller/base/source/source/source/source/source/source/source/eye": {
+      "shape": [
+        1,
+        6,
+        6
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/source/velocity": {
+      "shape": [
+        6
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/clock": {
+      "shape": [
+        800
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/table": {
+      "shape": [
+        800,
+        18
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/mixer/scale": {
+      "shape": [
+        18
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/mixer/arm_rate/target": {
+      "shape": [
+        128,
+        6
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/mixer/arm_rate/clock": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/source/mixer/arm_rate/initialized": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.bool"
+    },
+    "controller/base/source/source/source/source/source/mixer/nonzero_seen": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.bool"
+    },
+    "controller/base/source/source/source/source/source/air_hit_seen": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.bool"
+    },
+    "controller/base/source/source/source/source/source/first_public_hit_clock": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/requester/model/mass": {
+      "shape": [
+        28
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/com": {
+      "shape": [
+        28,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/inertia": {
+      "shape": [
+        28,
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/0/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/0/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/0/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/0/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/0/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/1/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/1/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/1/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/1/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/1/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/2/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/2/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/2/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/2/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/2/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/3/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/3/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/3/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/3/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/3/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/4/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/4/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/4/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/4/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/4/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/5/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/5/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/5/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/5/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/5/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/6/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/6/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/6/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/6/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/6/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/7/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/7/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/7/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/7/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/7/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/8/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/8/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/8/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/8/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/8/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/9/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/9/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/9/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/9/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/9/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/10/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/10/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/10/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/10/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/10/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/11/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/11/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/11/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/11/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/11/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/12/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/12/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/12/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/12/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/12/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/13/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/13/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/13/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/13/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/13/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/14/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/14/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/14/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/14/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/14/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/15/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/15/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/15/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/15/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/15/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/16/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/16/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/16/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/16/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/16/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/17/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/17/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/17/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/17/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/17/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/18/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/18/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/18/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/18/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/18/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/19/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/19/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/19/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/19/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/19/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/20/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/20/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/20/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/20/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/20/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/21/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/21/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/21/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/21/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/21/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/22/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/22/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/22/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/22/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/22/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/23/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/23/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/23/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/23/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/23/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/24/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/24/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/24/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/24/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/24/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/25/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/25/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/25/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/25/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/25/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/26/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/26/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/26/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/26/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/requester/model/edges/26/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/source/mixer/scale": {
+      "shape": [
+        18
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/mixer/arm_rate/target": {
+      "shape": [
+        128,
+        6
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/mixer/arm_rate/clock": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/source/mixer/arm_rate/initialized": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.bool"
+    },
+    "controller/base/source/source/source/source/mixer/nonzero_seen": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.bool"
+    },
+    "controller/base/source/source/source/requester/model/mass": {
+      "shape": [
+        28
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/com": {
+      "shape": [
+        28,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/inertia": {
+      "shape": [
+        28,
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/0/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/0/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/0/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/0/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/0/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/1/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/1/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/1/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/1/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/1/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/2/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/2/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/2/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/2/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/2/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/3/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/3/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/3/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/3/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/3/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/4/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/4/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/4/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/4/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/4/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/5/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/5/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/5/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/5/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/5/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/6/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/6/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/6/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/6/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/6/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/7/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/7/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/7/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/7/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/7/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/8/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/8/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/8/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/8/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/8/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/9/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/9/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/9/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/9/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/9/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/10/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/10/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/10/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/10/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/10/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/11/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/11/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/11/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/11/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/11/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/12/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/12/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/12/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/12/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/12/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/13/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/13/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/13/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/13/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/13/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/14/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/14/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/14/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/14/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/14/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/15/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/15/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/15/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/15/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/15/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/16/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/16/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/16/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/16/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/16/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/17/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/17/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/17/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/17/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/17/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/18/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/18/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/18/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/18/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/18/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/19/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/19/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/19/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/19/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/19/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/20/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/20/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/20/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/20/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/20/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/21/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/21/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/21/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/21/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/21/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/22/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/22/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/22/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/22/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/22/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/23/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/23/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/23/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/23/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/23/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/24/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/24/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/24/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/24/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/24/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/25/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/25/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/25/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/25/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/25/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/26/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/26/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/26/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/26/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/model/edges/26/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/requester/desired_velocity_world": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/source/mixer/scale": {
+      "shape": [
+        18
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/mixer/arm_rate/target": {
+      "shape": [
+        128,
+        6
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/mixer/arm_rate/clock": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/source/source/mixer/arm_rate/initialized": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.bool"
+    },
+    "controller/base/source/source/source/mixer/nonzero_seen": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.bool"
+    },
+    "controller/base/source/source/source/valid_plan": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.bool"
+    },
+    "controller/base/source/source/requester/model/mass": {
+      "shape": [
+        28
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/com": {
+      "shape": [
+        28,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/inertia": {
+      "shape": [
+        28,
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/0/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/0/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/0/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/0/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/0/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/1/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/1/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/1/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/1/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/1/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/2/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/2/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/2/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/2/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/2/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/3/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/3/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/3/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/3/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/3/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/4/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/4/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/4/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/4/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/4/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/5/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/5/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/5/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/5/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/5/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/6/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/6/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/6/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/6/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/6/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/7/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/7/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/7/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/7/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/7/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/8/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/8/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/8/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/8/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/8/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/9/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/9/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/9/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/9/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/9/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/10/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/10/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/10/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/10/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/10/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/11/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/11/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/11/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/11/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/11/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/12/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/12/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/12/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/12/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/12/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/13/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/13/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/13/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/13/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/13/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/14/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/14/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/14/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/14/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/14/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/15/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/15/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/15/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/15/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/15/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/16/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/16/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/16/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/16/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/16/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/17/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/17/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/17/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/17/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/17/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/18/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/18/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/18/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/18/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/18/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/19/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/19/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/19/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/19/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/19/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/20/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/20/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/20/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/20/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/20/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/21/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/21/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/21/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/21/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/21/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/22/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/22/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/22/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/22/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/22/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/23/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/23/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/23/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/23/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/23/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/24/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/24/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/24/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/24/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/24/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/25/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/25/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/25/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/25/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/25/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/26/p0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/26/p1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/26/r0": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/26/r1": {
+      "shape": [
+        3,
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/model/edges/26/axis": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float64"
+    },
+    "controller/base/source/source/requester/legs/0": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.int64"
+    },
+    "controller/base/source/source/requester/legs/1": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.int64"
+    },
+    "controller/base/source/source/requester/legs/2": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.int64"
+    },
+    "controller/base/source/source/requester/legs/3": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.int64"
+    },
+    "controller/base/source/source/hit_seen": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.bool"
+    },
+    "controller/base/source/bias": {
+      "shape": [
+        3
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/base/source/valid_plan": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.bool"
+    },
+    "controller/mixer/scale": {
+      "shape": [
+        18
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/mixer/arm_rate/target": {
+      "shape": [
+        128,
+        6
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/mixer/arm_rate/clock": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.float32"
+    },
+    "controller/mixer/arm_rate/initialized": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.bool"
+    },
+    "controller/mixer/nonzero_seen": {
+      "shape": [
+        128
+      ],
+      "dtype": "torch.bool"
+    }
+  },
+  "values_note": "Values include immutable configuration and mutable cursors; counts are not a Markov certificate",
+  "cursor_values": {
+    "controller/base/source/source/source/source/source/source/source/plan_cursor": 0,
+    "controller/base/source/source/source/plan_cursor": 0,
+    "controller/base/source/plan_cursor": 0
+  },
+  "captured_state_keys": [
+    "physical",
+    "history",
+    "history_tick",
+    "episode_index",
+    "elapsed_tick",
+    "control_tick",
+    "body_position_w",
+    "body_quaternion_w",
+    "body_linear_velocity_w",
+    "body_angular_velocity_w",
+    "applied_torque",
+    "foot_net_force_w",
+    "shuttle_state_w",
+    "task",
+    "recovery",
+    "event_state"
+  ],
+  "captured_recovery_keys": [
+    "rally_recovery_success",
+    "body_ground_seen",
+    "flight_qualified",
+    "observed_airborne",
+    "observed_airborne_seen",
+    "contact_seen"
+  ]
+}

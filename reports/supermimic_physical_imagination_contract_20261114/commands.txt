@@ -1,0 +1,5 @@
+# All commands executed in the documented worktree, with the pinned Isaac Python and CUDA invisible.
+CUDA_VISIBLE_DEVICES='' QUADSMASH_PYTHON=/home/autodrive/Isaac/env_isaaclab/bin/python bash scripts/python.sh -m pytest tests/test_supermimic_imagination_contract.py tests/test_supermimic_physical_capture.py tests/test_supermimic_execution_preview.py tests/test_supermimic_native_metrics.py -q -ra --maxfail=1
+# exit 0: 21 passed in 0.91s
+CUDA_VISIBLE_DEVICES='' QUADSMASH_PYTHON=/home/autodrive/Isaac/env_isaaclab/bin/python bash scripts/python.sh scripts/audit_supermimic_physical_start.py --archive /tmp/supermimic_physical_capture_fix_20261114_Rtntwh/run/physical_transitions --output reports/supermimic_physical_imagination_contract_20261114/archive_audit
+# exit 2: BLOCKED_MISSING_CAUSAL_STATE. No learner/native stage followed.
