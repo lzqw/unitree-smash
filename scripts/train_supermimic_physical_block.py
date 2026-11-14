@@ -62,16 +62,14 @@ def run(args):
         if packed_sha!=expected['sha256'] or expected['first_completed']!=128:raise ValueError('Invalid initialization data')
         package=torch.load(args.packed_data,map_location='cpu',weights_only=True)
         replay=PhysicalLoopReplay(package,adapter.task_model.memory_schema);del package
-        starts=[];chunks={}
-        for t in (224,240,256,272):
-            c=t//32
-            if c not in chunks:chunks[c]=torch.load(args.archive/manifest['chunks'][c]['file'],map_location='cpu',weights_only=True)['rows']
-            starts.append(current_start(chunks[c][t%32]))
-        del chunks
+        from quadsmash.rl.supermimic_physical_start_cache_v1 import load_start_cache,APPROACH_TICKS,CRITIC_TICKS
+        start_cache=load_start_cache(args.archive,manifest)
+        starts=[start_cache[t] for t in APPROACH_TICKS]
+        critic_starts=[start_cache[t] for t in CRITIC_TICKS]
         def as_state(row):return PhysicalImaginationStateV1.from_record(row,executor_template=template,launch=launch,device='cuda:0')
         timebase=Timebase(**json.loads((ROOT/'configs/supermimic_task_horizon_v2.json').read_text()))
         trainer=PhysicalHorizonTrainer(actor,adapter,as_state(starts[1]),timebase)
-        replay_archives=[]
+        replay_archives=[];critic_coverage_blocks=0
         if args.resume_training:
             resumed=torch.load(args.resume_training,map_location='cuda:0',weights_only=False)
             if resumed['adapter_schema']!=adapter.schema or resumed['metadata']['physical_imagination']!=adapter.manifest:
@@ -82,6 +80,7 @@ def run(args):
             trainer.critic_opt.load_state_dict(resumed['critic_optimizer'])
             for name in ('actor_updates','world_updates','critic_updates','last_critic_loss'):setattr(trainer,name,resumed[name])
             tick=int(resumed['native_ticks'])
+            critic_coverage_blocks=int(resumed.get('critic_coverage_blocks',0))
             if trainer.frozen_hash()!=trainer.frozen_actor_hash:raise ValueError('Resume changed frozen actor parameters')
             replay_archives=resumed['replay_archives']
             for directory in replay_archives:
@@ -121,7 +120,8 @@ def run(args):
             policy_anchor=.05,critic_warmup_updates=200,critic_max_loss=50.,max_critic_only_blocks=32,
             actor_whitelist=APPROACH_NAMES,source_sha256=manifest['source_sha256'],packed_data_sha256=packed_sha,
             initialization_native_return=expected['native_return_mean'],extra_mpc=0,
-            sampling='initial current starts at ticks224/240/256/272; alternate refreshed native approach starts once available')
+            sampling='actor: initial/fresh approach; critic: overlapping full-episode current starts, reverse-time order',
+            actor_start_ticks=APPROACH_TICKS,critic_start_ticks=CRITIC_TICKS,critic_coverage_period=len(CRITIC_TICKS))
         write(args.output/'config.json',config)
         metadata=dict(init_policy_checkpoint=dict(path=str(source_path),sha256=manifest['source_sha256'],g07_execution_root=str(execution_root)),
                       task_contract=contract,physical_imagination=adapter.manifest)
@@ -132,6 +132,7 @@ def run(args):
                 world_optimizer=trainer.world_opt.state_dict(),critic_optimizer=trainer.critic_opt.state_dict(),
                 actor_updates=trainer.actor_updates,world_updates=trainer.world_updates,critic_updates=trainer.critic_updates,
                 native_ticks=tick,metadata=metadata,config=config,last_critic_loss=trainer.last_critic_loss,
+                critic_coverage_blocks=critic_coverage_blocks,
                 replay_archives=replay_archives+[str(archive.directory)],replay_rng=replay.generator.get_state(),
                 torch_rng=torch.get_rng_state(),cuda_rng=torch.cuda.get_rng_state()),args.output/name)
         def check_stop():
@@ -149,10 +150,24 @@ def run(args):
                 raise RuntimeError('Contextual critic quality gate did not pass within finite32-block budget')
         # A already supplies complete native episodes. This warmup concerns the
         # new contextual critic, not recollecting a fresh 800 ticks each update.
-        phase='CRITIC';ensure_critic()
+        def cover_critic():
+            nonlocal critic_coverage_blocks
+            check_stop()
+            selected=critic_coverage_blocks%len(critic_starts)
+            stats=trainer.imagine_update(as_state(critic_starts[selected]),update_actor=False)
+            critic_coverage_blocks+=1
+            stats.update(coverage_blocks=critic_coverage_blocks,source_tick=CRITIC_TICKS[selected])
+            with (args.output/'critic_coverage.jsonl').open('a') as f:f.write(json.dumps(stats)+'\n')
+            print('PHYSICAL_CRITIC_COVERAGE='+json.dumps(stats),flush=True)
+            save('latest.pt')
+        phase='CRITIC'
+        # Cover terminal and all preceding task phases before further actor updates.
+        # Overlapping 0.64s windows, unchanged BPTT/GAE and discount formula.
+        while critic_coverage_blocks<len(critic_starts):cover_critic()
+        ensure_critic()
         cursor=0;completed_returns=[];completed_discounted=[];phase='LEARNING'
         while trainer.actor_updates<256:
-            check_stop();ensure_critic()
+            check_stop();cover_critic();ensure_critic()
             if shutil.disk_usage(args.output).free<8*1024**3:raise RuntimeError('Disk guard: less than8GiB free')
             started=time.perf_counter()
             with torch.inference_mode():

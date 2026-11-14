@@ -39,3 +39,9 @@ Bounded256 actual actor updates, new native interaction, and one frozen128
 comparison have not yet completed. No improvement claim is made. The initialization
 capture is reusable; mixed-policy training returns must not be labeled frozen
 candidate scores.
+
+## Critic full-task sampling correction
+
+The first 13 recoverable actor updates sampled imagined starts at native ticks 224/240/256/272 only. This did not expose the contextual critic to terminal success reward. Actor approach sampling remains unchanged; critic-only updates now use overlapping 64-step windows with current-state starts at 768,720,...,0, covering all 800 native ticks. The terminal window stops at the true 8-second boundary. No future archive labels enter these rollouts. Window length, losses, reward, learning rates and action permissions are unchanged. Forty related CPU tests passed.
+
+Block 03 was deliberately interrupted at a boundary with 13 actor updates and 56 native ticks durably saved. Isaac cleanup subsequently segfaulted (exit 139); this is not a clean process exit. Resume uses the saved actor/model/critic/optimizers/replay/RNG and counters, rather than discarding updates. The separate failed block 02 performed 8 updates but left no recoverable policy weights; those compute costs remain separately recorded.

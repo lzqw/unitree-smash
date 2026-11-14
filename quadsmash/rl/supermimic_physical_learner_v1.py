@@ -49,15 +49,17 @@ class PhysicalHorizonTrainer:
             initial_command=initial_preview.final_joint_targets.clone()
         before_models=tensor_digest(self.adapter.state_dict().items())
         self.actor_opt.zero_grad(set_to_none=True);started=time.perf_counter()
-        with frozen(self.adapter,self.critic):
+        with frozen(self.adapter,self.critic), torch.set_grad_enabled(update_actor):
             for i in range(cfg.imagination_steps):
                 current=self.adapter.critic_input(state)
                 active=state.clock_goal_context['elapsed']<cfg.episode_s-1e-7
+                if not active.any():break
                 action=self.actor(state.observation,sample=False)[0]
                 with torch.no_grad():reference=self.reference(state.observation,sample=False)[0]
                 anchors.append((action-reference).square().mean(-1,keepdim=True)*active[:,None])
                 state,reward,done,_=self.adapter(state,action)
                 states.append(current.detach());rewards.append(reward*active[:,None]);dones.append(done);valid.append(active)
+            if not states:raise ValueError('No active in-episode imagination start')
             final=self.adapter.critic_input(state)
             ret=bptt_return(torch.stack(rewards),torch.stack(dones),self.critic(final).clamp(max=self.v_max),cfg.gamma)
             loss=-ret.mean()+self.anchor_coeff*torch.stack(anchors).sum(0).mean()
@@ -98,7 +100,9 @@ class PhysicalHorizonTrainer:
             imagined_return_mean=float(ret.detach().mean()),actor_gradient=float(gradient),parameter_max_changes=delta,
             final_command_max_change=command_change,request_max_change=float((updated_request-initial_request).abs().max()),
             critic_loss=self.last_critic_loss,bptt_seconds=bptt_seconds,critic_seconds=time.perf_counter()-started,
-            model_runtime_state_sha256=before_models,
+            model_runtime_state_sha256=before_models,imagined_steps=len(rewards),
+            imagined_start_elapsed_min=float(initial_state.clock_goal_context['elapsed'].min()),
+            imagined_start_elapsed_max=float(initial_state.clock_goal_context['elapsed'].max()),
             frozen_base_recovery_unchanged=True,model_unchanged_during_actor=True)
 
     def fit_world_window(self,window,launch):
