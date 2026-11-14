@@ -14,6 +14,8 @@ def load(directory):
         raise ValueError('Changed/missing case mapping')
     rows=sorted(rows,key=lambda r:r['source_case_index'])
     if any(r['native_episode_return'] is None for r in rows):raise ValueError('Missing raw native return')
+    for row in rows:
+        row['conditional_recovery']=bool(row['qualified_airborne_string_contact'] and row['recovery_success'])
     return metrics,rows
 
 
@@ -37,13 +39,19 @@ def main():
             initial_ball=x['ball_side_complete_except_recovery'],candidate_ball=y['ball_side_complete_except_recovery'],
             initial_recovery=x['recovery_success'],candidate_recovery=y['recovery_success'],
             initial_complete5=x['complete5'],candidate_complete5=y['complete5'],
+            initial_body_ground_seen=x.get('body_ground_seen'),candidate_body_ground_seen=y.get('body_ground_seen'),
             initial_head_contact=x.get('head_contact'),candidate_head_contact=y.get('head_contact'),
             initial_nonfoot_contact=x.get('independent_nonfoot_contact'),candidate_nonfoot_contact=y.get('independent_nonfoot_contact')))
     delta=[r['return_delta'] for r in rows]
     result=dict(initial_return_mean=statistics.mean(r['initial_return'] for r in rows),
         candidate_return_mean=statistics.mean(r['candidate_return'] for r in rows),mean_paired_delta=statistics.mean(delta),
         median_paired_delta=statistics.median(delta),positive_cases=sum(v>0 for v in delta),negative_cases=sum(v<0 for v in delta),
-        task_sets={key:compare_set(a,b,key) for key in ('qualified_airborne_string_contact','ball_side_complete_except_recovery','recovery_success','complete5')},
+        task_sets={key:compare_set(a,b,key) for key in ('qualified_airborne_string_contact','ball_side_complete_except_recovery','recovery_success','conditional_recovery','complete5')},
+        conditional_recovery_denominators=dict(initial=sum(r['qualified_airborne_string_contact'] for r in a),
+            candidate=sum(r['qualified_airborne_string_contact'] for r in b)),
+        initial_qualified_cohort=dict(size=sum(r['qualified_airborne_string_contact'] for r in a),
+            candidate_recovery=sum(x['qualified_airborne_string_contact'] and y['recovery_success'] for x,y in zip(a,b)),
+            note='Historical cohort audit only; candidate conditional denominator uses its actual qualified contacts.'),
         initial_metrics=am,candidate_metrics=bm,
         note='Frozen native original128 development panel. No statistical/generalization claim from one seed.')
     (args.output/'comparison.json').write_text(json.dumps(result,indent=2)+'\n')

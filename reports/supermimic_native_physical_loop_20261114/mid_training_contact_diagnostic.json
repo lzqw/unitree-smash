@@ -1,0 +1,70 @@
+{
+  "time": 1794652811.9904559,
+  "scope": "mixed-policy incomplete episode diagnostic, not frozen performance",
+  "source_chunk": {
+    "file": "chunk_00087.pt",
+    "ticks": 4,
+    "sha256": "d4739d493f5ec9e9c8921f15e39044f408b6d3bcc53d831fb789907bb76b1c73"
+  },
+  "clock_min": 3.5199999809265137,
+  "clock_max": 3.5199999809265137,
+  "counts": {
+    "had_contact": 104,
+    "string_hit": 38,
+    "airborne_string_hit": 38,
+    "frame_hit": 66,
+    "crossed_net": 35,
+    "landed_target": 34
+  },
+  "native_progress": {
+    "actor_updates": 101,
+    "critic_updates": 4360,
+    "world_updates": 101,
+    "imagined_return_mean": -12.57795524597168,
+    "actor_gradient": 139.46923828125,
+    "parameter_max_changes": {
+      "actor.approach.0.weight": 5.3687021136283875e-05,
+      "actor.approach.0.bias": 4.904530942440033e-05,
+      "actor.approach.2.weight": 5.019828677177429e-05,
+      "actor.approach.2.bias": 2.8423964977264404e-05,
+      "actor.approach.4.weight": 5.2888644859194756e-05,
+      "actor.approach.4.bias": 4.309508949518204e-05
+    },
+    "final_command_max_change": 0.0,
+    "request_max_change": 3.725290298461914e-09,
+    "critic_loss": 15.87508020401001,
+    "bptt_seconds": 18.702662765048444,
+    "critic_seconds": 0.1592832230962813,
+    "model_runtime_state_sha256": "c83ff88445dab407aca775f6135879f04d9670e2446dd95c7d9aaf561b3579c8",
+    "imagined_steps": 64,
+    "imagined_start_elapsed_min": 2.240000009536743,
+    "imagined_start_elapsed_max": 2.240000009536743,
+    "frozen_base_recovery_unchanged": true,
+    "model_unchanged_during_actor": true,
+    "world_loss": 52.61738586425781,
+    "world_gradient": 593.6655883789062,
+    "world_seconds": 0.9411105499602854,
+    "native_ticks": 408,
+    "native_transitions": 52224,
+    "native_collect_seconds": 8.04091972997412,
+    "native_reward_mean": -0.3597338795661926,
+    "completed_native_episodes": 0,
+    "native_return_mean": null,
+    "native_discounted_return_mean": null,
+    "raw_return_scope": "completed mixed-policy monitoring; incomplete episodes excluded",
+    "peak_gpu_bytes": 1166066176,
+    "model_calls": 12416,
+    "window_sampling": {
+      "uniform": 64,
+      "0": 8,
+      "1": 8,
+      "2": 8,
+      "3": 8,
+      "4": 8,
+      "5": 8,
+      "6": 8,
+      "7": 8
+    },
+    "imagined_start_source": "initialization_archive"
+  }
+}
