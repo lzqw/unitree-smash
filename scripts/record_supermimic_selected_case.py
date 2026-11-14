@@ -12,6 +12,7 @@ import argparse
 import hashlib
 import io
 import json
+import os
 import sys
 import time
 from pathlib import Path
@@ -104,6 +105,7 @@ noise = zero_panel_reset_noise(capture_envs, args.seed)
 
 env = None
 writer = None
+completed_cleanly = False
 try:
     progress('before_env')
     env = FrozenPanelEnv(
@@ -323,6 +325,7 @@ try:
     (args.output / 'metadata.json').write_text(json.dumps(metadata, indent=2, default=str) + '\n')
     progress('metadata_written')
     print(json.dumps(metadata, default=str), flush=True)
+    completed_cleanly = True
 except BaseException as exc:
     (args.output / 'failure.txt').write_text(f'{type(exc).__name__}: {exc}\n', encoding='utf-8')
     progress(f'failure {type(exc).__name__}: {exc}')
@@ -335,3 +338,10 @@ finally:
         env.close()
     app.close(skip_cleanup=True)
     progress('cleanup_done')
+    # Isaac Sim 5.1's PhysX Python bindings can run a module-level destructor
+    # after Kit has released the framework.  It calls PyThreadState_Get without
+    # the GIL and aborts during interpreter finalization.  All recorder files
+    # are durable and native resources are closed above, so skip that second
+    # finalization pass on the successful path.
+    if completed_cleanly:
+        os._exit(0)
