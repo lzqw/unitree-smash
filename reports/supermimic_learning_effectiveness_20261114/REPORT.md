@@ -2,7 +2,7 @@
 
 ## 结论
 
-本轮没有证明 SuperMimic 已经学到可部署的羽毛球技能。强锚定续训能够真实采样并完成 world model、critic、actor 更新，但在当前 SuperMimic 评估入口下，训练后 checkpoint 为 **7/128 complete5**，同一入口的零 actor 更新 reset checkpoint 为 **2/128**。这说明 actor 更新在该入口的相对指标上增加了 5 个案例，但两者都不能与历史原生 PPO 的约 27/128 成绩直接拼接比较；当前评估合同仍需要以独立原生 PPO 评估作为校准。
+本轮没有证明 SuperMimic 已经学到可部署的羽毛球技能。强锚定续训能够真实采样并完成 world model、critic、actor 更新；在当前 SuperMimic 评估入口下，训练后 checkpoint 为 **7/128 complete5**，同一入口的零 actor 更新 reset checkpoint 为 **2/128**。同一固定评估中新增了 TRAIN35、41、54、61、81，保留 TRAIN9、25。这个相对提升是有效的学习信号，但仍不能称为最终能力突破：它仍低于后续原生 PPO/控制路线报告中的约27/128，而且数值故障非常高。历史上该 source checkpoint 的独立 TRAIN 诊断曾记录 complete=0/128，说明“27/128”不能直接作为这个 source actor 的零更新基线；当前报告因此同时保留 reset2 和 source历史0。
 
 ## 训练链是否真的运行
 
@@ -44,6 +44,6 @@
 
 ## 解释边界与下一步
 
-历史原生 PPO 报告约 27/128 的结果来自另一套已验证的正式原生评估协议，不能把本次 SuperMimic evaluator 的 2/128 reset 结果当成历史能力本身。当前最先需要做的是统一 SuperMimic 评估与原生 PPO 的动作执行、事件记录和数值故障口径；在此之前继续增加 imagined actor 更新会把“评估合同差异”和“学习收益”混在一起。
+历史原生 PPO 报告约 27/128 的结果来自另一套已验证的正式原生评估协议，不能把本次 SuperMimic evaluator 的 2/128 reset 结果当成那个策略的能力本身。当前最先需要做的是统一 SuperMimic 评估与原生 PPO 的动作执行、事件记录和数值故障口径；在此之前继续增加 imagined actor 更新会把“评估合同差异”和“学习收益”混在一起。
 
 当前候选不应替换历史最佳策略。保留该 checkpoint 仅作诊断：它证明训练链可以运行，但**尚未证明学习有效或提高了真实任务能力**。
