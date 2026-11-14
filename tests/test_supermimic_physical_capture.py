@@ -112,6 +112,14 @@ def test_real_controller_memory_capture_before_and_after_cpu_action():
     controller.action({'policy': torch.zeros(2, 794)}, torch.zeros(18),
                       torch.stack((-torch.ones(18), torch.ones(18)), -1))
     after = capture_controller(controller)
+    # G07 consumes these logs through plan_cursor; they are causal state.
+    controller.reference_controller.logs.append({'env_ids': [0], 'valid': [True]})
+    with_plan = capture_controller(controller)
+    paths = [path for path, kind in with_plan['object_types'].items()
+             if kind.endswith('.FullRacketRallyControllerV4')]
+    assert len(paths) == 1
+    assert paths[0] + '/logs' not in with_plan['omitted']
+    assert with_plan['values'][paths[0] + '/logs/0/valid/0'] is True
     assert 'controller/last_base_action' in after['tensors']
     assert 'controller/mixer/arm_rate/target' in after['tensors']
     assert 'controller/mixer/nonzero_seen' in after['tensors']

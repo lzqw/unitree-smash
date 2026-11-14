@@ -14,6 +14,7 @@ import numpy as np
 import torch
 
 from .supermimic_physical_observation_v1 import capture_native_inputs, JOINT_NAMES
+from .supermimic_imagination_contract_v1 import capture_auxiliary_state, AUXILIARY_SCHEMA
 
 # Names from the hash-verified historical source factories. Do not traverse
 # arbitrary library instances or modules reachable from a controller attribute.
@@ -92,7 +93,8 @@ def capture_controller(controller):
                   or qualified in SOURCE_STATE_TYPES):
                 object_types[path] = qualified
                 for key, item in object.__getattribute__(obj, '__dict__').items():
-                    if key == 'logs':
+                    if key == 'logs' and qualified != ('quadsmash.control.full_racket_rally_controller_v4.'
+                                                       'FullRacketRallyControllerV4'):
                         omitted[path + '/' + key] = 'diagnostic logs'
                     else:
                         visit(item, path + '/' + key)
@@ -129,7 +131,8 @@ def capture_state(env):
                 foot_net_force_w=env.feet_contact.data.net_forces_w.detach().clone(),
                 shuttle_state_w=env.shuttle.data.root_state_w.detach().clone(),
                 task=task, recovery=recovery,
-                event_state=env.supermimic_event_state().detach().clone())
+                event_state=env.supermimic_event_state().detach().clone(),
+                auxiliary=capture_auxiliary_state(env))
 
 
 class PhysicalTransitionArchive:
@@ -143,7 +146,9 @@ class PhysicalTransitionArchive:
         self.metadata = dict(metadata, schema=self.schema,
                              joint_names=list(JOINT_NAMES),
                              scope='native data only; executor memory completeness not certified',
-                             substep_contact_traces=False)
+                             substep_contact_traces=False,
+                             auxiliary_schema=AUXILIARY_SCHEMA,
+                             causal_plan_logs_captured=True)
         self.chunk_ticks = chunk_ticks
         self.pending = None
         self.rows = []
