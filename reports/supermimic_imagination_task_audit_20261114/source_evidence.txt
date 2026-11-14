@@ -1,0 +1,432 @@
+FILE quadsmash/rl/supermimic_horizon_learner_v2.py SHA256 29a871391a05929e34667c246e2ada85085e6695d6de96188b188544d1bb8de6
+75:     def action(self, obs, sample=True):
+76:         return self.actor(obs, sample=sample)[0].clamp(-1., 1.)
+77: 
+78:     def fit_world(self, updates, batch_size):
+79:         self.world.train()
+80:         losses = []
+81:         for _ in range(updates):
+82:             try:
+83:                 window = self.replay.sample_windows(batch_size, self.timebase.world_steps)
+84:             except NotEnoughSequenceData as error:
+85:                 return {"world_updates": len(losses), "world_waiting": str(error),
+86:                         "world_window_steps": self.timebase.world_steps}
+87:             prediction = window[0]["obs"]
+88:             prediction_event = window[0].get("event_state") if self.event_dim else None
+89:             loss = prediction.new_zeros(())
+90:             for transition in window:
+91:                 output = (self.world(prediction, transition["action"], prediction_event)
+92:                           if self.event_dim else self.world(prediction, transition["action"]))
+93:                 if self.event_dim:
+94:                     delta, reward, done_logit, next_event_logits = output
+95:                 else:
+96:                     delta, reward, done_logit = output
+97:                 predicted_next = prediction + delta
+98:                 # The target is data. The supervised fit uses true next-state
+99:                 # inputs between terms; imagined rollouts remain autoregressive.
+100:                 loss = loss + (predicted_next - transition["next_obs"]).square().mean()
+101:                 loss = loss + .5 * (reward - transition["reward"]).square().mean()
+102:                 loss = loss + .1 * nn.functional.binary_cross_entropy_with_logits(done_logit, transition["done"])
+103:                 if self.event_dim:
+104:                     loss = loss + .1 * nn.functional.binary_cross_entropy_with_logits(
+105:                         next_event_logits, transition["next_event_state"].clamp(0., 1.))
+106:                 # The default fit is teacher-forced.  For long-horizon
+107:                 # experiments, optionally train on the same autoregressive
+108:                 # state distribution used by imagination.  This is an
+109:                 # explicit opt-in because it costs more memory and must be
+110:                 # validated against the native event stream.
+111:                 prediction = (predicted_next if self.autoregressive_world_fit
+112:                               else transition["next_obs"].detach())
+113:                 if self.event_dim:
+114:                     predicted_event = prediction_event + (1. - prediction_event) * next_event_logits.sigmoid()
+115:                     prediction_event = (predicted_event if self.autoregressive_world_fit
+116:                                         else transition["next_event_state"].detach()).clamp(0., 1.)
+117:             loss = loss / len(window)
+118:             if not torch.isfinite(loss):
+119:                 raise FloatingPointError("Nonfinite world-model loss")
+120:             self.world_opt.zero_grad(set_to_none=True)
+121:             loss.backward()
+122:             optimizer_step(self.world_opt, self.world.parameters())
+123:             self.world_updates += 1
+124:             losses.append(loss.detach())
+125:         return {"world_updates": len(losses), "world_loss": float(torch.stack(losses).mean()) if losses else None,
+126:                 "world_window_steps": self.timebase.world_steps}
+127: 
+128:     def _rollout(self, initial, elapsed, initial_event=None):
+129:         cfg = self.timebase
+130:         obs = initial
+131:         event_state = (initial_event.clamp(0., 1.)
+132:                        if self.event_dim and initial_event is not None else None)
+133:         states, rewards, dones, valid, anchors = [], [], [], [], []
+134:         for k in range(cfg.imagination_steps):
+135:             active = elapsed + k * cfg.control_dt_s < cfg.episode_s - 1e-7
+136:             action = self.actor(obs, sample=False)[0].clamp(-1., 1.)
+137:             if self.reference_actor is not None and self.policy_anchor_coeff > 0:
+138:                 with torch.no_grad():
+139:                     reference_action = self.reference_actor(obs, sample=False)[0].clamp(-1., 1.)
+140:                 anchor_penalty = (action - reference_action).square().mean(-1, keepdim=True)
+141:             else:
+142:                 anchor_penalty = torch.zeros_like(action[..., :1])
+143:             anchors.append(anchor_penalty)
+144:             output = (self.world(obs, action, event_state)
+145:                       if self.event_dim else self.world(obs, action))
+146:             if self.event_dim:
+147:                 delta, reward, terminal, next_event_logits = output
+148:                 event_state = (event_state + (1. - event_state) * next_event_logits.sigmoid()).clamp(0., 1.)
+149:             else:
+150:                 delta, reward, terminal = output
+151:             next_obs = obs + delta
+152:             # The real observation clock is deterministic; the model cannot
+153:             # gain reward by slowing down episode time.
+154:             if self.observation_clock_index is not None:
+155:                 next_obs = next_obs.clone()
+156:                 next_obs[:, self.observation_clock_index:self.observation_clock_index+1] = elapsed + (k+1)*cfg.control_dt_s
+157:             at_end = elapsed + (k + 1) * cfg.control_dt_s >= cfg.episode_s - 1e-7
+158:             done = torch.where(at_end, torch.ones_like(terminal), terminal.sigmoid())
+159:             states.append(obs.detach())
+160:             rewards.append(torch.where(active, reward, torch.zeros_like(reward)))
+161:             dones.append(done)
+162:             valid.append(active)
+163:             obs = torch.where(active, next_obs, obs)
+164:         values = self.critic(obs).clamp(max=self.v_max)
+165:         ret = bptt_return(torch.stack(rewards), torch.stack(dones), values, cfg.gamma)
+166:         if not torch.isfinite(ret).all():
+167:             raise FloatingPointError("Nonfinite imagination return; no silent state clipping")
+168:         # All critic data are detached before the actor optimizer changes theta.
+FILE quadsmash/rl/supermimic_v1.py SHA256 bce5e9ccdca49f5ccf3bb267c49a36da2f5d3fce8b4dc45cb474375fa25e95ac
+34:     def forward(self, x: torch.Tensor) -> torch.Tensor:
+35:         return self.net(x)
+36: 
+37: 
+38: class SuperMimicWorldModel(nn.Module):
+39:     """Predict task transitions while preserving the native history contract.
+40: 
+41:     The native 794D observation contains eleven 69D frames.  Treating all
+42:     759 history values as independently predicted physical state lets the
+43:     imagination model invent inconsistent histories.  For the full-racket
+44:     contract, this model predicts only the next frame and the non-history
+45:     tail; the history shift itself is deterministic and identical to
+46:     ``PolicyHistory.observe``.  The public forward interface remains
+47:     ``(delta, reward, terminal_logit)`` so the existing learner can use the
+48:     structured transition without an algorithm rewrite.
+49:     """
+50:     def __init__(self, obs_dim: int, action_dim: int = 18, *, structured_history: bool = True,
+51:                  event_dim: int = 0):
+52:         super().__init__()
+53:         self.obs_dim = obs_dim
+54:         self.action_dim = action_dim
+55:         self.event_dim = int(event_dim)
+56:         if self.event_dim < 0:
+57:             raise ValueError("event_dim must be non-negative")
+58:         self.structured_history = bool(structured_history and obs_dim == 794)
+59:         self.history_length = 11
+60:         self.frame_dim = 69
+61:         self.history_dim = self.history_length * self.frame_dim
+62:         self.tail_dim = obs_dim - self.history_dim
+63:         output_dim = (self.frame_dim + self.tail_dim + 2 + self.event_dim
+64:                       if self.structured_history else obs_dim + 2 + self.event_dim)
+65:         self.body = MLP(obs_dim + action_dim + self.event_dim, (1024, 1024, 1024), output_dim)
+66: 
+67:     def forward(self, obs: torch.Tensor, action: torch.Tensor, event_state=None):
+68:         if self.event_dim:
+69:             if event_state is None or event_state.shape[-1] != self.event_dim:
+70:                 raise ValueError("event_state is required for an event-aware world model")
+71:             model_input = torch.cat((obs, action, event_state), dim=-1)
+72:         else:
+73:             model_input = torch.cat((obs, action), dim=-1)
+74:         out = self.body(model_input)
+75:         if self.structured_history:
+76:             frame_delta = out[..., :self.frame_dim]
+77:             tail_delta = out[..., self.frame_dim:self.frame_dim + self.tail_dim]
+78:             history = obs[..., :self.history_dim].reshape(
+79:                 *obs.shape[:-1], self.history_length, self.frame_dim)
+80:             next_frame = history[..., 0, :] + frame_delta
+81:             next_history = torch.cat((next_frame.unsqueeze(-2), history[..., :-1, :]), dim=-2)
+82:             next_tail = obs[..., self.history_dim:] + tail_delta
+83:             next_obs = torch.cat((next_history.reshape(*obs.shape[:-1], self.history_dim), next_tail), dim=-1)
+84:             delta = next_obs - obs
+85:             reward = out[..., self.frame_dim + self.tail_dim:self.frame_dim + self.tail_dim + 1]
+86:             terminal_logit = out[..., self.frame_dim + self.tail_dim + 1:self.frame_dim + self.tail_dim + 2]
+87:             next_event_logits = out[..., self.frame_dim + self.tail_dim + 2:]
+88:         else:
+89:             delta = out[..., : self.obs_dim]
+90:             reward = out[..., self.obs_dim : self.obs_dim + 1]
+91:             terminal_logit = out[..., self.obs_dim + 1:self.obs_dim + 2]
+92:             next_event_logits = out[..., self.obs_dim + 2:]
+93:         if self.event_dim:
+94:             return delta, reward, terminal_logit, next_event_logits
+95:         return delta, reward, terminal_logit
+96: 
+97: 
+98: class SuperMimicActor(nn.Module):
+99:     def __init__(self, obs_dim: int, action_dim: int = 18):
+100:         super().__init__()
+101:         self.mean = MLP(obs_dim, (512, 256, 128), action_dim)
+102:         self.log_std = nn.Parameter(torch.full((action_dim,), -1.4))
+103: 
+104:     def forward(self, obs: torch.Tensor, sample: bool = False):
+FILE scripts/train_supermimic_horizon_v2.py SHA256 3a97fb82c928c4c6ff9b671ac96fbb79e4ede91ac9eaa62fc89833131f0e9de8
+180:             raise ValueError('Require an audited native residual policy contract')
+181:         stage('SOURCE_LOADED', source=str(args.init_policy_checkpoint.resolve()),
+182:               source_sha256=hashlib.sha256(args.init_policy_checkpoint.read_bytes()).hexdigest())
+183:         cfg = make_supermimic_cfg(args.num_envs)
+184:         cfg.seed, cfg.sim.device = args.seed, args.device or 'cuda:0'
+185:         cfg.sweep_audit_iterations = 0
+186:         if abs(cfg.sim.dt * cfg.decimation - timebase.control_dt_s) > 1e-10:
+187:             raise ValueError('Timebase does not match the real environment; physics is not changed automatically')
+188:         if abs(cfg.episode_length_s - timebase.episode_s) > 1e-10:
+189:             raise ValueError('Episode contract mismatch')
+190:         protocol = json.loads((ROOT/'configs/g07_full_racket_eval_v4_r3.json').read_text())
+191:         cases0 = json.loads((ROOT/protocol['training_suite']['path']).read_text())['cases']
+192:         cases = [cases0[i % len(cases0)] for i in range(args.num_envs)]
+193:         stage('BEFORE_ENV', num_envs=args.num_envs, device=str(cfg.sim.device))
+194:         env = SuperMimicEnvV1(cfg, cases=cases, residual_policy_checkpoint=source,
+195:                               g07_execution_root=args.g07_execution_root)
+196:         stage('AFTER_ENV')
+197:         wrapper = RslRlVecEnvWrapper(env, clip_actions=None)
+198:         stage('BEFORE_RESET')
+199:         obs, _ = wrapper.reset()
+200:         stage('AFTER_RESET', obs_shape=list(obs['policy'].shape))
+201:         obs = obs['policy']
+202:         actor, init_meta = load_ppo_initialized_actor(args.init_policy_checkpoint, env.device)
+203:         if source.get('schema') == 'g07-shared-target-residual-ppo-v1':
+204:             init_meta['g07_execution_root'] = str(
+205:                 (args.g07_execution_root or Path('/home/autodrive/LZQW/unitree_smash')).resolve()
+206:             )
+207:         reference_actor, reference_meta = load_ppo_initialized_actor(args.init_policy_checkpoint, env.device)
+208:         if reference_meta['sha256'] != init_meta['sha256'] or reference_meta['actor_kind'] != init_meta['actor_kind']:
+209:             raise RuntimeError('Reference actor does not match initialized actor source')
+210:         event_dim = len(getattr(env, 'event_state_names', ()))
+211:         replay = SequenceReplay(args.replay_capacity, args.num_envs, obs.shape[-1], 18, env.device,
+212:                                 event_dim=event_dim)
+213:         if replay.slots < timebase.world_steps:
+214:             raise ValueError('Replay too short for configured physical-time window')
+215:         trainer = HorizonTrainer(actor, SuperMimicWorldModel(
+216:                                     obs.shape[-1], 18, structured_history=True,
+217:                                     event_dim=event_dim).to(env.device),
+218:                                  SuperMimicCritic(obs.shape[-1]).to(env.device), replay, timebase,
+219:                                  actor_lr=args.actor_lr, world_lr=args.world_lr, critic_lr=args.critic_lr,
+220:                                  reference_actor=reference_actor,
+221:                                  policy_anchor_coeff=args.policy_anchor_coeff,
+222:                                  actor_microbatch=args.actor_microbatch, actor_kind=init_meta['actor_kind'],
+223:                                  observation_clock_index=775 if obs.shape[-1] == 794 else None,
+224:                                  autoregressive_world_fit=args.world_autoregressive_fit)
+301:             action = trainer.action(current, sample=(trainer.actor_updates > 0 or args.resume is not None))
+302:             nxt, reward, done, info = wrapper.step(action)
+303:             new_records = env.rally_records[record_cursor:]
+304:             record_cursor += len(new_records)
+305:             for record in new_records:
+306:                 contact = bool(record.get('legal_initial_contact', False)
+307:                                and record.get('string_hit', False)
+308:                                and record.get('airborne_string_hit', False))
+309:                 native_event_totals['episodes'] += 1
+310:                 native_event_totals['full_episodes'] += int(record.get('episode_timeout', False))
+311:                 native_event_totals['qualified_airborne_string_contact'] += int(contact)
+312:                 native_event_totals['ball_side_complete_except_recovery'] += int(
+313:                     contact and record.get('released', False)
+314:                     and record.get('crossed_net', False)
+315:                     and record.get('landed_target', False))
+316:                 native_event_totals['recovery_success'] += int(record.get('recovery_success', False))
+317:                 native_event_totals['complete5'] += int(record.get('complete5', False))
+318:                 native_event_totals['frame_hit'] += int(record.get('frame_hit', False))
+319:                 recovery = record.get('contact_flight_recovery') or {}
+320:                 # The current episode record exposes body/non-foot landing,
+321:                 # not a head-specific collision label. Keep this explicitly
+322:                 # named so the training log cannot overclaim head contact.
+323:                 native_event_totals['nonfoot_contact'] += int(recovery.get('body_landing', False))
+324:                 native_event_totals['body_ground_seen'] += int(record.get('ground_seen', False))
+325:                 native_event_totals['rally_fault'] += int(any(
+326:                     bool(record.get(key, False)) for key in (
+327:                         'robot_net_fault', 'body_ball_fault', 'wrong_side_fault',
+328:                         'double_hit_fault', 'racket_invasion_fault', 'body_over_net_fault',
+329:                         'under_net_obstruction_fault', 'bad_return_fault', 'net_blocked_fault')))
+353:             sync(); collect_end = time.perf_counter()
+354:             wm = trainer.fit_world(args.world_updates, args.world_batch)
+355:             wm['autoregressive_world_fit'] = bool(args.world_autoregressive_fit)
+356:             sync(); wm_end = time.perf_counter()
+357:             # No 800-tick/full-panel gate. Fit a real complete model window first.
+358:             full_episodes = int(native_event_totals['full_episodes'])
+359:             terminated_episodes = int(native_event_totals['episodes'])
+360:             world_loss = wm.get('world_loss')
+361:             full_ready = full_episodes >= args.actor_warmup_episodes
+362:             fallback_ready = (
+363:                 args.actor_warmup_terminated_episodes > 0
+364:                 and terminated_episodes >= args.actor_warmup_terminated_episodes
+365:                 and world_loss is not None
+366:                 and float(world_loss) <= args.actor_warmup_max_world_loss)
+367:             actor_gate_ready = full_ready or fallback_ready
+368:             if wm.get('world_updates', 0) and actor_gate_ready:
+369:                 critic_ready = (
+370:                     trainer.critic_updates >= args.critic_warmup_updates
+371:                     and trainer.last_critic_loss is not None
+372:                     and float(trainer.last_critic_loss) <= args.actor_max_critic_loss)
+373:                 actor_stats = trainer.imagine_update(
+374:                     args.imagination_batch,
+375:                     update_actor=critic_ready,
+376:                 )
+377:                 actor_stats['critic_warmup_updates_required'] = int(args.critic_warmup_updates)
+378:                 actor_stats['actor_max_critic_loss'] = float(args.actor_max_critic_loss)
+379:                 actor_stats['actor_gate_reason'] = (
+380:                     'critic_ready' if critic_ready
+381:                     else 'critic_warmup')
+382:             elif wm.get('world_updates', 0):
+383:                 actor_stats = {
+384:                     'imagine_update': False,
+FILE quadsmash/tasks/stand/supermimic_env_v1.py SHA256 6af5fd5728d41ea3d247224a75351d57859271286ea8dad51e41925ccdedc01a
+15:     cfg.sim.render_interval = cfg.decimation
+16:     cfg.scene.num_envs = num_envs
+17:     return cfg
+18: 
+19: 
+20: class SuperMimicEnvV1(FullRacketEnvV4):
+21:     """Schema-specific 18-joint targets with native event-locked rewards."""
+22:     algorithm_family = "supermimic-native-world-model-v1"
+23:     # These latches make one-shot native event rewards Markov for the world
+24:     # model without changing the actor's public 794D observation contract.
+25:     event_state_names = (
+26:         "jump", "contact", "cross", "target", "recovery", "body", "frame", "fault"
+27:     )
+28: 
+29:     def __init__(self, *args, residual_policy_checkpoint=None, g07_execution_root=None, **kwargs):
+30:         self._sm_residual_policy_checkpoint = residual_policy_checkpoint
+31:         self._sm_residual_controller = None
+32:         self._sm_residual_default = None
+33:         self._sm_residual_limits = None
+34:         self._sm_requested_action = None
+35:         self._sm_final_action = None
+36:         self._sm_joint_targets = None
+37:         self._sm_g07_execution_root = g07_execution_root
+38:         super().__init__(*args, **kwargs)
+39:         self._sm_final_event_state = torch.zeros(
+40:             (self.num_envs, len(self.event_state_names)), dtype=torch.float32, device=self.device)
+41:         self._sm_final_event_state_valid = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
+42:         self._sm_prev = {}
+43:         self._sm_reset_events()
+44:         if residual_policy_checkpoint is not None:
+45:             if residual_policy_checkpoint.get('schema') == 'g07-shared-target-residual-ppo-v1':
+46:                 self._sm_residual_controller = make_g07_residual_controller(
+47:                     residual_policy_checkpoint, self.num_envs, self.device,
+48:                     execution_root=g07_execution_root)
+49:             else:
+50:                 self._sm_residual_controller = FullRacketResidualControllerV4(
+51:                     residual_policy_checkpoint, self.num_envs, self.device)
+52:             self._sm_residual_default = self.robot.data.default_joint_pos[0, self.joint_ids].clone()
+53:             self._sm_residual_limits = self.robot.data.joint_pos_limits[0, self.joint_ids].clone()
+137:     def _get_rewards(self):
+138:         """Progress rates plus one-shot physical events, all from native flags."""
+139:         self._episode_has_stepped[:] = True
+140:         d = self.robot.data
+141:         rally = self.rally
+142:         phase = self.episode_length_buf.float() * self.step_dt
+143:         contact = rally.legal_initial_contact & rally.string_hit & rally.airborne_string_hit
+144:         attack = contact & rally.released & (rally.outgoing_velocity.norm(dim=1) >= 5.0) & (rally.outgoing_velocity[:, 0] > 0)
+145:         cross = attack & rally.crossed_net
+146:         target = cross & rally.landed_target
+147:         recover = contact & self.rally_recovery_success
+148:         body = self.body_ground_seen
+149:         event_jump = self.flight_qualified & ~self._sm_jump
+150:         event_contact = contact & ~self._sm_contact
+151:         event_cross = cross & ~self._sm_cross
+152:         event_target = target & ~self._sm_target
+153:         event_recovery = recover & ~self._sm_recovery
+154:         event_body = body & ~self._sm_body
+155:         faulted = rally.faulted()
+156:         event_fault = faulted & ~self._sm_fault
+157:         event_frame = rally.frame_hit & ~event_contact & ~self._sm_frame
+158:         self._sm_jump |= event_jump; self._sm_contact |= event_contact; self._sm_cross |= event_cross
+159:         self._sm_target |= event_target; self._sm_recovery |= event_recovery; self._sm_body |= event_body
+160:         self._sm_frame |= event_frame; self._sm_fault |= event_fault
+161:         ball = self.shuttle.data.root_pos_w
+162:         tool = d.body_link_pos_w[:, self.racket_body_id]
+163:         proximity = torch.exp(-((ball - tool).norm(dim=1) / 0.18).square())
+164:         approach = proximity * (rally.in_play & ~rally.had_contact & ~body).float()
+165:         head_gap = d.body_pos_w[:, self.safety_body_ids, 2].min(1).values.clamp_min(0.)
+166:         risk = torch.exp(-head_gap / 0.04)
+167:         stable_quality = recover.float() * torch.exp(-4.0 * d.projected_gravity_b[:, :2].square().sum(1)
+168:             -0.4 * d.root_com_lin_vel_w[:, :2].square().sum(1)
+169:             -0.2 * d.root_com_ang_vel_w.square().sum(1))
+170:         continuous = (0.5 * stable_quality - 2.0 * risk - 0.05 * self.action_delta
+171:                       - 0.02 * d.applied_torque.square().sum(1) / 1000.0
+172:                       + 0.8 * approach) * self.step_dt
+173:         complete5 = target & self.rally_recovery_success & (~faulted) & self.reset_time_outs & (~self.reset_terminated)
+174:         reward = continuous + 2.0 * event_jump.float() + 20.0 * event_contact.float() + 5.0 * event_cross.float()
+175:         reward = reward + 15.0 * event_target.float() + 10.0 * event_recovery.float() + 20.0 * complete5.float()
+176:         reward = reward - 4.0 * event_frame.float() - 5.0 * ((~contact) & (phase > 3.0)).float() * self.step_dt
+177:         reward = reward - 15.0 * event_fault.float() - 40.0 * event_body.float()
+178:         return torch.nan_to_num(reward, nan=-40.0, posinf=40.0, neginf=-40.0)
+FILE quadsmash/tasks/stand/full_racket_env_v4.py SHA256 3bc575ffa45d7bcb3542e80c7c8d7f8215bb99e219e68567f59c15e988e6edbc
+18: 
+19: 
+20: def full_racket_cfg(num_envs=16,physics_dt=.0000625):
+21:     cfg=BallEnvCfg();racket,court=load_racket(),load_court()
+22:     cfg.robot.spawn.usd_path=str(ROOT/racket['output_asset'])
+23:     cfg.scene.num_envs,cfg.scene.env_spacing=num_envs,court['environment_spacing_m']
+24:     cfg.ground_size_m=(4096.,4096.,.1)
+25:     cfg.sim.device='cuda:0';cfg.sim.dt=physics_dt
+26:     cfg.decimation=cfg.sim.render_interval=round(.01/physics_dt)
+27:     cfg.episode_length_s=8.;cfg.include_net=True
+28:     cfg.net_geometry_version=VERSION
+29:     cfg.net_height_m,cfg.net_side_height_m=court['net_center_top_m'],court['net_side_top_m']
+30:     cfg.net_profile_segments=court['net_profile_segments']
+31:     cfg.shuttle_start=(6.,0.,.025);cfg.shuttle_velocity=(0.,0.,0.)
+32:     cfg.event_goal_time_s=2.75;cfg.event_goal_position=(1.10,0.,1.80)
+33:     cfg.event_goal_normal=(1.,0.,0.)
+34:     cfg.sweep_audit_iterations=4096
+35:     return apply_neutral_arm_reset(cfg)
+36: 
+37: 
+38: class FullRacketEnvV4(BallEnv):
+39:     action_family='absolute-joint-limits-full-racket-v4'
+40:     def __init__(self,cfg,*,cases=None,contact_flight_recovery=None,**kwargs):
+41:         self.contact_recovery=None
+42:         if contact_flight_recovery not in (None,'contact-flight-recovery-v1'):
+43:             raise ValueError('Unknown explicit recovery association version')
+44:         self.racket_config,self.court_config=load_racket(),load_court()
+45:         self.rally=None;self._v4_ready=False;self.rally_records=[];self.contact_records=[]
+278:         if self._v4_ready:
+279:             complete=ids[self._episode_has_stepped[ids]]
+280:             for i in complete.cpu().tolist():
+281:                 row={name:bool(getattr(self.rally,name)[i]) for name in self.rally.flags}
+282:                 row.update(env_id=i,episode_index=int(self.episode_index[i]),
+283:                     episode_timeout=bool(self.reset_time_outs[i]),
+284:                     episode_duration_s=float(self.episode_length_buf[i] * self.step_dt),
+285:                     complete_smash=bool(self.rally.complete(self.rally_recovery_success)[i]),
+286:                     complete5=bool(self.rally.complete5(self.rally_recovery_success)[i]),
+287:                     recovery_success=bool(self.rally_recovery_success[i]),contact_count=int(self.rally.contact_count[i]),
+288:                     contact_point_m=self.rally.contact_point[i].cpu().tolist(),
+289:                     outgoing_velocity_mps=self.rally.outgoing_velocity[i].cpu().tolist(),
+290:                     first_landing_m=self.rally.landing_point[i].cpu().tolist(),
+291:                     first_landing_time_s=float(self.rally.landing_time[i]),
+292:                     crossing_point_m=self.rally.crossing_point[i].cpu().tolist(),crossing_time_s=float(self.rally.crossing_time[i]),
+293:                     release_time_s=float(self.rally.release_time[i]),
+294:                     first_string_contact_point_m=self.first_string_point[i].cpu().tolist(),first_string_time_s=float(self.first_string_time[i]),
+295:                     contact_time_s=float(self.rally.contact_time[i]),net_margin_m=float(self.rally.net_margin[i]),
+296:                     numerical_failures=int((self.sweep_misses+self.sweep_unresolved)[i]),
+297:                     racket_plane_native_events=[record for record in self.racket_plane_records
+298:                         if record['env_id']==i and record['episode_index']==int(self.episode_index[i])],
+299:                     active_rally_launch_count=int(self.launch_count[i]),hit_velocity_error_mps=float(self.hit_velocity_error[i]))
+300:                 if self.contact_recovery is not None:
+301:                     row['contact_flight_recovery']=self.contact_recovery.record(self,i,self.robot.data.root_pos_w[i,2])
+302:                 self.rally_records.append(row)
+303:             self.rally.reset(ids);self.launch_done[ids]=False;self.launch_count[ids]=0
+FILE quadsmash/physics/rally_rules_v4.py SHA256 ee89970918f3680f44f6e2b18ea28b8be75584d6cbe3b93296a91b0f0d5a4b54
+138:         valid = first_landing & self.crossed_net & (~self.faulted())
+139:         self.landed_legal_court |= valid & legal_court
+140:         self.landed_target |= valid & legal_court & target
+141:         self.ground_seen |= first_landing
+142:         self.in_play &= (~self.faulted()) & (~first_landing)
+143: 
+144:     def attack(self):
+145:         speed = self.outgoing_velocity.norm(dim=-1)
+146:         return (self.released & self.legal_initial_contact & self.airborne_string_hit
+147:                 & (speed>=8.) & (self.outgoing_velocity[:,0]>0) & (self.outgoing_velocity[:,2]<=-1.))
+148: 
+149:     def complete(self,recovery):
+150:         return self.attack() & self.landed_target & recovery & (~self.faulted())
+151: 
+152:     def complete5(self, recovery):
+153:         """Current development success contract: legal 5 m/s attack."""
+154:         speed = self.outgoing_velocity.norm(dim=-1)
+155:         attack5 = (self.released & self.legal_initial_contact & self.airborne_string_hit
+156:                    & (speed >= 5.) & (self.outgoing_velocity[:, 0] > 0))
+157:         return attack5 & self.landed_target & recovery & (~self.faulted())

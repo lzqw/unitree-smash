@@ -1,0 +1,131 @@
+{
+  "checkpoint": "/tmp/unitree_smash_g07_eventaware_long_20261114_094334/checkpoint.pt",
+  "checkpoint_sha256": "cd7b025a16c01d63fae9125fa58cccccd809ede0aab32845da8fc717784246dd",
+  "counters": {
+    "world": 1758,
+    "actor": 0,
+    "critic": 0
+  },
+  "timebase": {
+    "control_dt_s": 0.01,
+    "episode_s": 8.0,
+    "imagination_s": 1.28,
+    "world_window_s": 0.16,
+    "reference_dt_s": 0.02,
+    "gamma_reference": 0.99,
+    "lambda_reference": 0.95,
+    "discount_mode": "physical_time",
+    "imagination_steps": 128,
+    "world_transitions": 16,
+    "world_states": 17,
+    "gamma_effective": 0.99498743710662,
+    "lambda_effective": 0.9746794344808963,
+    "episode_ticks": 800
+  },
+  "source": {
+    "path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_env5120_01/policy.pt",
+    "sha256": "8f510fe9f218beef791ac21675a19ed25d11f510a83fe247cddf2893bee08399",
+    "native_schema": "g07-shared-target-residual-ppo-v1",
+    "training_signature": null,
+    "interface": {
+      "schema": "quadsmash-native-training-v2",
+      "observation_size": 794,
+      "history_length": 11,
+      "joints": [
+        "FL_hip_joint",
+        "FR_hip_joint",
+        "RL_hip_joint",
+        "RR_hip_joint",
+        "FL_thigh_joint",
+        "FR_thigh_joint",
+        "RL_thigh_joint",
+        "RR_thigh_joint",
+        "FL_calf_joint",
+        "FR_calf_joint",
+        "RL_calf_joint",
+        "RR_calf_joint",
+        "joint1",
+        "joint2",
+        "joint3",
+        "joint4",
+        "joint5",
+        "joint6"
+      ],
+      "policy_dt": 0.01,
+      "action_family": "bounded-residual-joint-targets-full-racket-v4"
+    },
+    "learning_rate": null,
+    "actor_kind": "native_residual_jit_794_256_128_64",
+    "obs_dim": 794,
+    "action_dim": 18,
+    "execution_policy": "frozen_g07_shared_target_base_plus_native_residual_mixer",
+    "g07_execution_root": "/home/autodrive/LZQW/unitree_smash"
+  },
+  "replay_transitions": 76928,
+  "replay_fields": [
+    "obs",
+    "next_obs",
+    "action",
+    "reward",
+    "done",
+    "elapsed",
+    "event_state",
+    "next_event_state"
+  ],
+  "windows": 64,
+  "seed": 20261114,
+  "horizons": [
+    {
+      "step": 1,
+      "seconds": 0.01,
+      "obs_mse": 0.007704517804086208,
+      "joint_position_mae_rad": 0.04194524139165878,
+      "ball_relative_position_mae_m": 0.0471184216439724,
+      "gravity_norm_error": 0.040323834866285324,
+      "phase_sum_error": 0.12167491763830185,
+      "phase_outside_0_1_fraction": 0.5062500238418579,
+      "final_command_tail_mae": 0.05845963954925537,
+      "event_latch_mae": 0.04030996188521385
+    },
+    {
+      "step": 16,
+      "seconds": 0.16,
+      "obs_mse": 0.4338129758834839,
+      "joint_position_mae_rad": 0.22560183703899384,
+      "ball_relative_position_mae_m": 0.3950604200363159,
+      "gravity_norm_error": 0.12628568708896637,
+      "phase_sum_error": 0.7373774647712708,
+      "phase_outside_0_1_fraction": 0.515625,
+      "final_command_tail_mae": 0.43532517552375793,
+      "event_latch_mae": 0.2483161836862564
+    },
+    {
+      "step": 64,
+      "seconds": 0.64,
+      "obs_mse": 7.655251979827881,
+      "joint_position_mae_rad": 0.4715208411216736,
+      "ball_relative_position_mae_m": 1.5341635942459106,
+      "gravity_norm_error": 0.4046129882335663,
+      "phase_sum_error": 2.193368434906006,
+      "phase_outside_0_1_fraction": 0.640625,
+      "final_command_tail_mae": 1.0875496864318848,
+      "event_latch_mae": 0.40588268637657166
+    },
+    {
+      "step": 128,
+      "seconds": 1.28,
+      "obs_mse": 8.863240242004395,
+      "joint_position_mae_rad": 0.7694281935691833,
+      "ball_relative_position_mae_m": 2.803382158279419,
+      "gravity_norm_error": 0.6525763273239136,
+      "phase_sum_error": 2.875612735748291,
+      "phase_outside_0_1_fraction": 0.6656249761581421,
+      "final_command_tail_mae": 1.8335041999816895,
+      "event_latch_mae": 0.6687510013580322
+    }
+  ],
+  "reward_mae": 0.3390890955924988,
+  "reward_correlation": 0.010367117822170258,
+  "replay_reward_positive_fraction": 0.014143094420433044,
+  "scope": "In-replay recorded-action open-loop diagnostic; NOT held-out validation, policy rollout, formal evaluation, or causal performance attribution"
+}
