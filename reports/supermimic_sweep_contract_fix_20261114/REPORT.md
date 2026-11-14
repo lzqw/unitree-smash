@@ -22,3 +22,9 @@
 另建唯一目录，使用原source policy、seed882072、原128顺序、origin0、64米地面、0.01秒控制及完整8秒；无world/actor/critic更新。当前仅修复上述审计及诊断处理，不接入新物理观测或执行预览模块。
 
 提交此报告时原生复验尚未完成，不能报告新成功率。旧0迭代评估及全部部分记录保留，不补写completed。新的性能结果只能来自完整新运行；遇错保存并停止，不自动调参重跑。
+
+## 启动后的实测配置
+
+2026-11-14T10:34:23.844588+08:00：独立目录`/tmp/supermimic_source_contract_eval3_20261114_PLO62V/run`，执行提交cf12e64562cc3eaf2820f74a1ab01881e761b1eb。环境和reset返回，PID1654392确认为运行中的本任务进程。实际GPU Dynamics=True，cuda:0，128个原点均为0，地面64米，sweep_audit_iterations=4096。启动证据保存在startup_evidence。
+
+该快照时尚未完成800tick，没有正式成绩，未运行学习更新。
