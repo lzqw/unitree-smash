@@ -1,0 +1,23 @@
+=== STOP REASON ===
+$1 = {si_signo = 6, si_errno = 0, si_code = -6, _sifields = {_pad = {1674111, 1000, 0 <repeats 26 times>}, _kill = {si_pid = 1674111, si_uid = 1000}, _timer = {si_tid = 1674111, si_overrun = 1000, si_sigval = {sival_int = 0, sival_ptr = 0x0}}, _rt = {si_pid = 1674111, si_uid = 1000, si_sigval = {sival_int = 0, sival_ptr = 0x0}}, _sigchld = {si_pid = 1674111, si_uid = 1000, si_status = 0, si_utime = 0, si_stime = 0}, _sigfault = {si_addr = 0x3e800198b7f, _addr_lsb = 0, _addr_bnd = {_lower = 0x0, _upper = 0x0}}, _sigpoll = {si_band = 4294968970111, si_fd = 0}, _sigsys = {_call_addr = 0x3e800198b7f, _syscall = 0, _arch = 0}}}
+
+=== CURRENT THREAD ===
+#0  __pthread_kill_implementation (no_tid=0, signo=6, threadid=<optimized out>) at ./nptl/pthread_kill.c:44
+#1  __pthread_kill_internal (signo=6, threadid=<optimized out>) at ./nptl/pthread_kill.c:78
+#2  __GI___pthread_kill (threadid=<optimized out>, signo=signo@entry=6) at ./nptl/pthread_kill.c:89
+#3  0x00007ffff7c4527e in __GI_raise (sig=sig@entry=6) at ../sysdeps/posix/raise.c:26
+#4  0x00007ffff7c288ff in __GI_abort () at ./stdlib/abort.c:79
+#5  0x00005555556e3a4f in fatal_error_exit (status=-1) at /usr/local/src/conda/python-3.11.17/Python/pylifecycle.c:2722
+#6  fatal_error (fd=<optimized out>, header=header@entry=1, prefix=prefix@entry=0x5555558d9b50 <__func__.6.lto_priv.2> "PyThreadState_Get", msg=msg@entry=0x5555558922f8 "the function must be called with the GIL held, but the GIL is released (the current Python thread state is NULL)", status=status@entry=-1) at /usr/local/src/conda/python-3.11.17/Python/pylifecycle.c:2833
+#7  0x00005555556e3df6 in _Py_FatalErrorFunc (func=func@entry=0x5555558d9b50 <__func__.6.lto_priv.2> "PyThreadState_Get", msg=msg@entry=0x5555558922f8 "the function must be called with the GIL held, but the GIL is released (the current Python thread state is NULL)") at /usr/local/src/conda/python-3.11.17/Python/pylifecycle.c:2919
+#8  0x00005555556e3ea0 in _Py_FatalError_TstateNULL (func=func@entry=0x5555558d9b50 <__func__.6.lto_priv.2> "PyThreadState_Get") at /usr/local/src/conda/python-3.11.17/Python/ceval.c:330
+#9  0x000055555564c20b in _Py_EnsureFuncTstateNotNULL (func=0x5555558d9b50 <__func__.6.lto_priv.2> "PyThreadState_Get", tstate=0x0) at /usr/local/src/conda/python-3.11.17/Include/internal/pycore_pystate.h:100
+#10 PyThreadState_Get () at /usr/local/src/conda/python-3.11.17/Python/pystate.c:1204
+#11 list_dealloc (op=0x7ffa11fe2f00) at /usr/local/src/conda/python-3.11.17/Objects/listobject.c:349
+#12 0x00007fffd4a19a61 in ?? () from /home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/isaacsim/extscache/omni.physx-107.3.26+107.3.3.lx64.r.cp311.u353/omni/physx/bindings/_physx.cpython-311-x86_64-linux-gnu.so
+#13 0x00007ffff7c47a76 in __run_exit_handlers (status=0, listp=<optimized out>, run_list_atexit=run_list_atexit@entry=true, run_dtors=run_dtors@entry=true) at ./stdlib/exit.c:108
+#14 0x00007ffff7c47bbe in __GI_exit (status=<optimized out>) at ./stdlib/exit.c:138
+#15 0x00007ffff7c2a1d1 in __libc_start_call_main (main=main@entry=0x5555557e7000 <main>, argc=argc@entry=18, argv=argv@entry=0x7fffffffd098) at ../sysdeps/nptl/libc_start_call_main.h:74
+#16 0x00007ffff7c2a28b in __libc_start_main_impl (main=0x5555557e7000 <main>, argc=18, argv=0x7fffffffd098, init=<optimized out>, fini=<optimized out>, rtld_fini=<optimized out>, stack_end=0x7fffffffd088) at ../csu/libc-start.c:360
+#17 0x00005555557e6f2e in _start ()
+
