@@ -1,0 +1,138 @@
+{
+  "timestamp": "2026-11-14T11:35:27.935557+08:00",
+  "source_commit": "c212648605e692ff86f8410fdb56c1b4cc25ca94",
+  "interpreter": "/home/autodrive/Isaac/env_isaaclab/bin/python",
+  "default_timebase": {
+    "control_dt_s": 0.01,
+    "episode_s": 8.0,
+    "imagination_s": 0.64,
+    "world_window_s": 0.16,
+    "reference_dt_s": 0.02,
+    "gamma_reference": 0.99,
+    "lambda_reference": 0.95,
+    "discount_mode": "physical_time",
+    "imagination_steps": 64,
+    "world_transitions": 16,
+    "world_states": 17,
+    "gamma_effective": 0.99498743710662,
+    "lambda_effective": 0.9746794344808963,
+    "episode_ticks": 800
+  },
+  "stopped_run_timebase": {
+    "control_dt_s": 0.01,
+    "episode_s": 8.0,
+    "imagination_s": 1.28,
+    "world_window_s": 0.16,
+    "reference_dt_s": 0.02,
+    "gamma_reference": 0.99,
+    "lambda_reference": 0.95,
+    "discount_mode": "physical_time",
+    "imagination_steps": 128,
+    "world_transitions": 16,
+    "world_states": 17,
+    "gamma_effective": 0.99498743710662,
+    "lambda_effective": 0.9746794344808963,
+    "episode_ticks": 800
+  },
+  "stopped_run_counters": {
+    "world": 1758,
+    "actor": 0,
+    "critic": 0
+  },
+  "evidence_sha256": {
+    "configs/supermimic_task_horizon_v2.json": "31fb0cac75c808f11b64bf7ba96822567e22a81e4f52cdd63c2649713fb4a868",
+    "quadsmash/rl/supermimic_timebase_v2.py": "d32f1c27a4313f77a2a332c3619240e9526f61db11fd140d895dd494377cf7ab",
+    "quadsmash/rl/supermimic_horizon_learner_v2.py": "29a871391a05929e34667c246e2ada85085e6695d6de96188b188544d1bb8de6",
+    "quadsmash/rl/supermimic_v1.py": "bce5e9ccdca49f5ccf3bb267c49a36da2f5d3fce8b4dc45cb474375fa25e95ac",
+    "quadsmash/rl/supermimic_sequence_replay_v2.py": "e129621c847394d04c91e974b54189a360a9c97704af282c44138a4b05e0b9f9",
+    "quadsmash/tasks/stand/supermimic_env_v1.py": "d31460f20babe7acef16c71caaf8dec6d5a2dd266d9652b32210e907d262d627",
+    "scripts/train_supermimic_horizon_v2.py": "b804bcc29d43008d2b613faa8f9d5908d78532a8b6efc2ebb87c26e650f9bb11",
+    "reports/supermimic_imagination_task_audit_20261114/final_checkpoint_audit.json": "05c01a3be3da189a5d7f2b84aac4a1f9a4c909208daa7d5d5e3c36c216970c1f",
+    "reports/supermimic_terminal_eval4_result_20261114/metrics.json": "fabc30575c5bd78da7f84df744a95b9b91fcc02c251ae8f8f30334dab3d10ee4",
+    "reports/supermimic_terminal_eval4_result_20261114/comparison.json": "38e976509edf476967fd2d0cb4a3b13c86f267f8f092d28f9e5e174a6bcfd527",
+    "reports/supermimic_terminal_eval4_result_20261114/process_result.json": "8607385df4bdd27c3babdf335a0110303806ebae1d7b465f91ad6b89b566998b"
+  },
+  "discount_weights": {
+    "0.16": 0.9227446944279203,
+    "0.64": 0.7249803359578542,
+    "1.28": 0.5255964875255631,
+    "3.2": 0.20027702685749027,
+    "8.0": 0.017950553275045352
+  },
+  "gae_td_residual_weights": {
+    "0.16": 0.6121676831470648,
+    "0.64": 0.1404370170816186,
+    "1.0": 0.04655217687815926,
+    "1.28": 0.01972255576678283,
+    "3.2": 5.462707939374523e-05,
+    "8.0": 2.2055654733364015e-11
+  },
+  "event_accumulation_sensitivity": {
+    "0.001": {
+      "16": 0.015880558184360072,
+      "64": 0.06202503617415456,
+      "128": 0.12020296723590385,
+      "320": 0.2739672149796595
+    },
+    "0.01": {
+      "16": 0.14854222890512447,
+      "64": 0.474403512474438,
+      "128": 0.7237483323007917,
+      "320": 0.9598891125131245
+    }
+  },
+  "sensitivity_scope": "Analytic constant-probability example only; not measured event false-positive rates or a performance prediction.",
+  "open_loop_scope": "In-replay recorded-action open-loop diagnostic; NOT held-out validation, policy rollout, formal evaluation, or causal performance attribution",
+  "open_loop_horizons": [
+    {
+      "step": 1,
+      "seconds": 0.01,
+      "obs_mse": 0.007704517804086208,
+      "joint_position_mae_rad": 0.04194524139165878,
+      "ball_relative_position_mae_m": 0.0471184216439724,
+      "gravity_norm_error": 0.040323834866285324,
+      "phase_sum_error": 0.12167491763830185,
+      "phase_outside_0_1_fraction": 0.5062500238418579,
+      "final_command_tail_mae": 0.05845963954925537,
+      "event_latch_mae": 0.04030996188521385
+    },
+    {
+      "step": 16,
+      "seconds": 0.16,
+      "obs_mse": 0.4338129758834839,
+      "joint_position_mae_rad": 0.22560183703899384,
+      "ball_relative_position_mae_m": 0.3950604200363159,
+      "gravity_norm_error": 0.12628568708896637,
+      "phase_sum_error": 0.7373774647712708,
+      "phase_outside_0_1_fraction": 0.515625,
+      "final_command_tail_mae": 0.43532517552375793,
+      "event_latch_mae": 0.2483161836862564
+    },
+    {
+      "step": 64,
+      "seconds": 0.64,
+      "obs_mse": 7.655251979827881,
+      "joint_position_mae_rad": 0.4715208411216736,
+      "ball_relative_position_mae_m": 1.5341635942459106,
+      "gravity_norm_error": 0.4046129882335663,
+      "phase_sum_error": 2.193368434906006,
+      "phase_outside_0_1_fraction": 0.640625,
+      "final_command_tail_mae": 1.0875496864318848,
+      "event_latch_mae": 0.40588268637657166
+    },
+    {
+      "step": 128,
+      "seconds": 1.28,
+      "obs_mse": 8.863240242004395,
+      "joint_position_mae_rad": 0.7694281935691833,
+      "ball_relative_position_mae_m": 2.803382158279419,
+      "gravity_norm_error": 0.6525763273239136,
+      "phase_sum_error": 2.875612735748291,
+      "phase_outside_0_1_fraction": 0.6656249761581421,
+      "final_command_tail_mae": 1.8335041999816895,
+      "event_latch_mae": 0.6687510013580322
+    }
+  ],
+  "reward_correlation": 0.010367117822170258,
+  "reward_mae": 0.3390890955924988
+}
