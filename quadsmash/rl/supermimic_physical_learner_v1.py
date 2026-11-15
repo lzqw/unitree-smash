@@ -29,6 +29,7 @@ class PhysicalHorizonTrainer:
             raise ValueError('Reference actor source mismatch')
         self.reference.eval().requires_grad_(False)
         self.block_name=block_name
+        self.actor_lr=float(actor_lr)
         self.trainable_names=set_actor_trainable(actor, trainable_names or APPROACH_NAMES)
         self.actor_opt=torch.optim.Adam([p for p in actor.parameters() if p.requires_grad],lr=actor_lr,betas=(.9,.95))
         self.world_opt=torch.optim.Adam(adapter.parameters(),lr=2e-4)
@@ -46,6 +47,7 @@ class PhysicalHorizonTrainer:
         self.block_attempts=0
         self.block_start_snapshot={k:v.detach().clone() for k,v in actor.state_dict().items()}
         self.accepted_snapshot={k:v.detach().clone() for k,v in actor.state_dict().items()}
+        self.native_accepted_snapshot={k:v.detach().clone() for k,v in actor.state_dict().items()}
         self.budget_states=[initial_state.branch()]
         self.frozen_actor_hash=self.frozen_hash()
 
@@ -53,7 +55,7 @@ class PhysicalHorizonTrainer:
         names=set(names)
         self.trainable_names=set_actor_trainable(self.actor,names)
         self.block_name=block_name or self.block_name
-        self.actor_opt=torch.optim.Adam([p for p in self.actor.parameters() if p.requires_grad],lr=5e-5,betas=(.9,.95))
+        self.actor_opt=torch.optim.Adam([p for p in self.actor.parameters() if p.requires_grad],lr=self.actor_lr,betas=(.9,.95))
         self.actor_updates=0; self.actor_attempts=0; self.rejected_actor_updates=0; self.backtracked_actor_updates=0
         self.block_start_snapshot={k:v.detach().clone() for k,v in self.actor.state_dict().items()}
         self.accepted_snapshot={k:v.detach().clone() for k,v in self.actor.state_dict().items()}
@@ -88,7 +90,11 @@ class PhysicalHorizonTrainer:
         for cur,st,ac in zip(current,self._snapshot_from(self.block_start_snapshot),self._snapshot_from(self.accepted_snapshot)):
             start.append(self._max_budget_delta(cur,st)); accepted.append(self._max_budget_delta(cur,ac))
         def agg(rows): return {k:max((x[i] for x in rows),default=0.) for i,k in enumerate(('residual_request_delta','final_normalized_command_delta','final_joint_target_delta_rad'))}
-        return {'relative_block_start':agg(start),'relative_last_accepted':agg(accepted)}
+        native=[]
+        for cur,ref in zip(current,self._snapshot_from(self.native_accepted_snapshot)):
+            native.append(self._max_budget_delta(cur,ref))
+        return {'relative_block_start':agg(start),'relative_last_accepted':agg(accepted),
+                'relative_native_accepted':agg(native)}
 
     def _snapshot_from(self,state_dict):
         # Snapshots are parameter snapshots. Recompute command baselines by temporarily loading
@@ -279,3 +285,23 @@ class PhysicalHorizonTrainer:
         return dict(native_critic_calibration_updates=epochs,native_critic_calibration_loss=sum(losses)/len(losses),
                     native_critic_mae=float(error.abs().mean()),native_critic_rmse=float(error.square().mean().sqrt()),
                     native_label_count=int(y.shape[0]))
+
+    @staticmethod
+    def audit_native_rtg_stages(states, returns, metadata):
+        """Validate stage RTG labels without updating the critic."""
+        if not (len(states) == len(returns) == len(metadata)):
+            raise ValueError('Stage RTG states, returns and metadata must align')
+        rows=[]
+        for state, value, meta in zip(states, returns, metadata):
+            if not isinstance(meta, dict) or not meta.get('policy_id') or meta.get('episode_id') is None:
+                raise ValueError('Native RTG metadata requires policy_id and episode_id')
+            value=value.detach().reshape(-1)
+            if value.numel() != state.observation.shape[0]:
+                raise ValueError('Stage RTG batch does not match state batch')
+            rows.append(dict(policy_id=str(meta['policy_id']), episode_id=str(meta['episode_id']),
+                             time_s=float(meta['time_s']), count=int(value.numel()),
+                             return_min=float(value.min()), return_max=float(value.max()),
+                             return_mean=float(value.mean())))
+        return dict(policy_id=sorted({r['policy_id'] for r in rows}), stages=rows,
+                    total_labels=sum(r['count'] for r in rows), source='completed_native_archive',
+                    critic_updates=0)

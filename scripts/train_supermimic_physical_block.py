@@ -26,6 +26,8 @@ def main():
     parser.add_argument('--approach-update-budget',type=int,default=16,
                         help='Retained for config compatibility; joint mode uses --joint-update-budget')
     parser.add_argument('--joint-update-budget',type=int,default=16)
+    parser.add_argument('--update-mode',choices=('sequential','joint'),default='sequential')
+    parser.add_argument('--ball-side-mode',choices=('shadow','enforce'),default='shadow')
     parser.add_argument('--reference-policy-checkpoint',type=Path)
     parser.add_argument('--bad-policy-checkpoint',type=Path)
     parser.add_argument('--video-dir',type=Path)
@@ -34,6 +36,7 @@ def main():
     AppLauncher.add_app_launcher_args(parser);args=parser.parse_args()
     if args.actor_update_budget is not None and args.actor_update_budget < 1: parser.error('actor-update-budget must be positive')
     if args.recovery_update_budget < 0 or args.approach_update_budget < 0: parser.error('block budgets must be non-negative')
+    if args.ball_side_mode == 'enforce': parser.error('ball-side enforce mode is not implemented; use shadow for this audit-only revision')
     if args.actor_update_budget is not None:
         args.recovery_update_budget=0;args.approach_update_budget=args.actor_update_budget
     args.output=args.output.resolve();args.output.mkdir(parents=True,exist_ok=False)
@@ -159,7 +162,7 @@ def run(args):
         if file_sha(reference_path)!=manifest['source_sha256']:
             raise ValueError('Reference policy checkpoint does not match the verified source actor')
         bad_meta=dict(path=str(args.bad_policy_checkpoint.resolve()),sha256=file_sha(args.bad_policy_checkpoint)) if args.bad_policy_checkpoint else None
-        config=dict(actor_update_budget=args.joint_update_budget,joint_update_budget=args.joint_update_budget,recovery_update_budget=0,approach_update_budget=0,native_ticks_per_actor_update=4,world_updates_per_actor_update=1,
+        config=dict(update_mode=args.update_mode,ball_side_mode=args.ball_side_mode,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=4,world_updates_per_actor_update=1,
             world_batch=128,imagination_batch=128,timebase=timebase.manifest(),actor_lr=5e-5,world_lr=2e-4,critic_lr=2e-4,
             policy_anchor=.05,critic_warmup_updates=200,critic_max_loss=50.,max_critic_only_blocks=32,
             command_delta_budget=args.command_delta_budget,target_delta_budget_rad=args.target_delta_budget_rad,
@@ -195,10 +198,13 @@ def run(args):
                 save('latest.pt')
             if not critic_ready(trainer.critic_updates,trainer.last_critic_loss):
                 raise RuntimeError('Contextual critic quality gate did not pass within finite32-block budget')
-        native_calibration=trainer.calibrate_critic_native([as_state(start_cache[0])],rtg[0])
-        native_calibration.update(policy_id='initial_reference',source='packed_loop/data.pt',discount_mode='physical_time',
+        stage_ticks=list(CRITIC_TICKS)
+        stage_states=[as_state(start_cache[t]) for t in stage_ticks]
+        stage_meta=[dict(policy_id='initial_reference',episode_id='archive_first_128',time_s=float(t*timebase.control_dt_s)) for t in stage_ticks]
+        native_calibration=trainer.audit_native_rtg_stages(stage_states,[rtg[t] for t in stage_ticks],stage_meta)
+        native_calibration.update(source='packed_loop/data.pt',discount_mode='physical_time',
                                   horizon_steps=int(rtg.shape[0]),native_return_scope='same-policy first completed 128 episodes')
-        write(args.output/'native_critic_calibration.json',native_calibration)
+        write(args.output/'native_critic_stage_audit.json',native_calibration)
         # A already supplies complete native episodes. This warmup concerns the
         # new contextual critic, not recollecting a fresh 800 ticks each update.
         def cover_critic():
@@ -254,44 +260,62 @@ def run(args):
                 print('PHYSICAL_LEARNING='+json.dumps(record),flush=True)
                 if accepted and accepted%16==0:save(f'{block_name}_checkpoint_{accepted:04d}.pt')
             save(f'{block_name}_candidate_{accepted:04d}.pt')
-        # One Adam update jointly covers both heads.  The old sequential blocks
-        # remain available only as diagnostic code; this experiment must not
-        # attribute the two heads to separate optimizers or acceptance steps.
-        joint_pool = recovery_pool + approach_pool
-        trainer.set_trainable_names(RECOVERY_NAMES + APPROACH_NAMES,'joint')
-        trainer.set_budget_state_library([as_state(row) for row in joint_pool+critic_starts[:4]])
-        accepted=0; attempts=0; max_attempts=max(8*args.joint_update_budget,args.joint_update_budget+8)
-        while accepted < args.joint_update_budget:
-            if attempts >= max_attempts: raise RuntimeError('joint block rejected too many actor proposals')
-            attempts += 1; trainer.block_attempts=attempts; trainer.actor_updates=accepted; trainer.actor_attempts=attempts
-            check_stop(); cover_critic(); ensure_critic()
-            if shutil.disk_usage(args.output).free < 8*1024**3: raise RuntimeError('Disk guard: less than8GiB free')
-            started=time.perf_counter()
-            with torch.inference_mode():
-                for _ in range(4):
-                    check_stop(); action=actor(obs['policy'],sample=False)[0]; obs,reward,done,info=wrapper.step(action); tick+=1
-                    if not torch.isfinite(obs['policy']).all(): raise FloatingPointError('Nonfinite native observation')
-                    for raw in env.rally_records[cursor:]:
-                        record=score_terminal_episode(raw,dict(protocol,_root=str(ROOT))); record.update(policy_block='joint',policy_update_at_end=accepted,scope='mixed-policy monitoring, not frozen score'); completed_returns.append(record['native_episode_return']); completed_discounted.append(record['native_episode_discounted_return'])
-                        with (args.output/'native_episodes.jsonl').open('a') as f:f.write(json.dumps(record)+'\n')
-                    cursor=len(env.rally_records)
-            collect_s=time.perf_counter()-started; check_stop()
-            window,lanes,sampling=replay.window(timebase.world_steps,128,accepted); world_stats=trainer.fit_world_window(window,launch[lanes]); del window
-            row=joint_pool[accepted%len(joint_pool)]; state=as_state(row); check_stop(); stats=trainer.imagine_update(state)
-            if stats['update_accepted']:
-                if not any(v>0.0 for v in stats['parameter_max_changes'].values()): raise RuntimeError('joint accepted update had zero trainable parameter change')
-                accepted += 1
-            with torch.no_grad(): request=actor(state.observation,sample=False)[0]; preview,_,_=adapter.executor.forward(state.observation,request,state.clock_goal_context['joint_default'][0],state.clock_goal_context['limits'],state.executor_memory)
-            record=dict(**stats,**{k:v for k,v in world_stats.items() if k not in stats},block='joint',block_accepted_updates=accepted,native_ticks=tick,native_transitions=tick*128,native_collect_seconds=collect_s,native_reward_mean=float(reward.mean()),completed_native_episodes=len(completed_returns),native_return_mean=sum(completed_returns)/len(completed_returns) if completed_returns else None,native_discounted_return_mean=sum(completed_discounted)/len(completed_discounted) if completed_discounted else None,raw_return_scope='completed mixed-policy monitoring; incomplete episodes excluded',peak_gpu_bytes=torch.cuda.max_memory_allocated(),model_calls=adapter.calls,window_sampling=sampling,imagined_start_source='initialization_archive')
-            save('latest.pt'); write(args.output/'progress.json',record)
-            with (args.output/'training_history.jsonl').open('a') as f:f.write(json.dumps(record)+'\n')
-            print('PHYSICAL_LEARNING='+json.dumps(record),flush=True)
-            if accepted and accepted%16==0: save(f'joint_checkpoint_{accepted:04d}.pt')
-        archive.flush(); save(f'candidate_{args.joint_update_budget:04d}.pt')
-        write(args.output/'training_completed.json',dict(actor_updates=args.joint_update_budget,native_ticks=tick,
-             actor_attempts=trainer.actor_attempts,rejected_actor_updates=trainer.rejected_actor_updates,
-             world_updates=trainer.world_updates,critic_updates=trainer.critic_updates,formal_evaluation=False,blocks=['joint'],trainable_names=sorted(trainer.trainable_names)))
-        stage(args.output,'TRAINING_FINISHED',actor_updates=args.joint_update_budget)
+        if args.update_mode == 'joint':
+            # One Adam update jointly covers both heads.  The old sequential blocks
+            # remain available only as diagnostic code; this experiment must not
+            # attribute the two heads to separate optimizers or acceptance steps.
+            joint_pool = recovery_pool + approach_pool
+            trainer.set_trainable_names(RECOVERY_NAMES + APPROACH_NAMES,'joint')
+            trainer.set_budget_state_library([as_state(row) for row in joint_pool+critic_starts[:4]])
+            accepted=0; attempts=0; max_attempts=max(8*args.joint_update_budget,args.joint_update_budget+8)
+            while accepted < args.joint_update_budget:
+                if attempts >= max_attempts: raise RuntimeError('joint block rejected too many actor proposals')
+                attempts += 1; trainer.block_attempts=attempts; trainer.actor_updates=accepted; trainer.actor_attempts=attempts
+                check_stop(); cover_critic(); ensure_critic()
+                if shutil.disk_usage(args.output).free < 8*1024**3: raise RuntimeError('Disk guard: less than8GiB free')
+                started=time.perf_counter()
+                with torch.inference_mode():
+                    for _ in range(4):
+                        check_stop(); action=actor(obs['policy'],sample=False)[0]; obs,reward,done,info=wrapper.step(action); tick+=1
+                        if not torch.isfinite(obs['policy']).all(): raise FloatingPointError('Nonfinite native observation')
+                        for raw in env.rally_records[cursor:]:
+                            record=score_terminal_episode(raw,dict(protocol,_root=str(ROOT))); record.update(policy_block='joint',policy_update_at_end=accepted,scope='mixed-policy monitoring, not frozen score'); completed_returns.append(record['native_episode_return']); completed_discounted.append(record['native_episode_discounted_return'])
+                            with (args.output/'native_episodes.jsonl').open('a') as f:f.write(json.dumps(record)+'\n')
+                        cursor=len(env.rally_records)
+                collect_s=time.perf_counter()-started; check_stop()
+                window,lanes,sampling=replay.window(timebase.world_steps,128,accepted); world_stats=trainer.fit_world_window(window,launch[lanes]); del window
+                row=joint_pool[accepted%len(joint_pool)]; state=as_state(row); check_stop(); stats=trainer.imagine_update(state)
+                if stats['update_accepted']:
+                    if not any(v>0.0 for v in stats['parameter_max_changes'].values()): raise RuntimeError('joint accepted update had zero trainable parameter change')
+                    accepted += 1
+                with torch.no_grad(): request=actor(state.observation,sample=False)[0]; preview,_,_=adapter.executor.forward(state.observation,request,state.clock_goal_context['joint_default'][0],state.clock_goal_context['limits'],state.executor_memory)
+                record=dict(**stats,**{k:v for k,v in world_stats.items() if k not in stats},block='joint',block_accepted_updates=accepted,native_ticks=tick,native_transitions=tick*128,native_collect_seconds=collect_s,native_reward_mean=float(reward.mean()),completed_native_episodes=len(completed_returns),native_return_mean=sum(completed_returns)/len(completed_returns) if completed_returns else None,native_discounted_return_mean=sum(completed_discounted)/len(completed_discounted) if completed_discounted else None,raw_return_scope='completed mixed-policy monitoring; incomplete episodes excluded',peak_gpu_bytes=torch.cuda.max_memory_allocated(),model_calls=adapter.calls,window_sampling=sampling,imagined_start_source='initialization_archive')
+                save('latest.pt'); write(args.output/'progress.json',record)
+                with (args.output/'training_history.jsonl').open('a') as f:f.write(json.dumps(record)+'\n')
+                print('PHYSICAL_LEARNING='+json.dumps(record),flush=True)
+                if accepted and accepted%16==0: save(f'joint_checkpoint_{accepted:04d}.pt')
+            archive.flush(); save(f'candidate_{args.joint_update_budget:04d}.pt')
+            write(args.output/'training_completed.json',dict(actor_updates=args.joint_update_budget,native_ticks=tick,
+                 actor_attempts=trainer.actor_attempts,rejected_actor_updates=trainer.rejected_actor_updates,
+                 world_updates=trainer.world_updates,critic_updates=trainer.critic_updates,formal_evaluation=False,blocks=['joint'],trainable_names=sorted(trainer.trainable_names)))
+            stage(args.output,'TRAINING_FINISHED',actor_updates=args.joint_update_budget)
+            return
+        else:
+            # Default production path: recovery then approach. Each block owns
+            # its trainable head and Adam state; the intermediate checkpoint is
+            # written before the approach block starts.
+            run_block('recovery', RECOVERY_NAMES, args.recovery_update_budget)
+            save('recovery_candidate_%04d.pt' % args.recovery_update_budget)
+            run_block('approach', APPROACH_NAMES, args.approach_update_budget)
+            archive.flush(); save('candidate_%04d.pt' % (args.recovery_update_budget + args.approach_update_budget))
+            write(args.output/'training_completed.json', dict(
+                update_mode='sequential', actor_updates=args.recovery_update_budget + args.approach_update_budget,
+                native_ticks=tick, actor_attempts=trainer.actor_attempts,
+                rejected_actor_updates=trainer.rejected_actor_updates,
+                world_updates=trainer.world_updates, critic_updates=trainer.critic_updates,
+                formal_evaluation=False, blocks=['recovery','approach'],
+                trainable_names={'recovery': sorted(RECOVERY_NAMES), 'approach': sorted(APPROACH_NAMES)}))
+            stage(args.output, 'TRAINING_FINISHED', actor_updates=args.recovery_update_budget + args.approach_update_budget)
         return
         # Legacy single-block loop retained below for provenance but unreachable.
         max_attempts=max(args.actor_update_budget*8,args.actor_update_budget+8)
