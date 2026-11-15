@@ -4,7 +4,7 @@
 No automatic evaluation, parameter scan, reference trajectory or online MPC.
 Fresh native interaction continues across learner updates; no 800-tick wait.
 """
-import argparse,hashlib,json,os,shutil,subprocess,sys,time,traceback,signal
+import argparse,hashlib,json,os,shutil,subprocess,sys,time,traceback,signal,io
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -156,13 +156,48 @@ def run(args):
             torch.set_rng_state(resumed['torch_rng'].cpu());torch.cuda.set_rng_state(resumed['cuda_rng'].cpu())
         stage(args.output,'AFTER_RESET')
         refresh_records=[]
+        refresh_rewards=[]; refresh_dones=[]; refresh_stage_records={}; refresh_count=0
+        refresh_stage_ticks={0,96,192,288,384,480,576,672}
         class TrainingArchive(PhysicalTransitionArchive):
             def finish_record(self,*values):
+                nonlocal refresh_count
                 super().finish_record(*values)
                 replay.append(self.rows[-1])
                 if getattr(self,'capture_refresh',False):
-                    refresh_records.append(tensor_tree_copy(self.rows[-1]))
+                    row=self.rows[-1]
+                    # Keep only compact reward/terminal arrays plus the small
+                    # stage snapshot set needed for bounded critic refresh.
+                    refresh_rewards.append(row['reward'].detach().cpu())
+                    refresh_dones.append((row['terminated']|row['timeout']).detach().cpu())
+                    if refresh_count in refresh_stage_ticks:
+                        refresh_stage_records[refresh_count]=tensor_tree_copy(row)
+                    refresh_count += 1
                 if len(self.rows)>=32:self.flush()
+            def flush(self):
+                if os.environ.get('QUADSMASH_ZSTD_ARCHIVE','0') != '1':
+                    return super().flush()
+                if self.rows:
+                    name=f'chunk_{len(self.chunks):05d}.pt.zst'
+                    path=self.directory/name
+                    out=path.open('wb')
+                    proc=subprocess.Popen(['zstd','-q','-T0','-3','-c'],stdin=subprocess.PIPE,stdout=out)
+                    try:
+                        # torch.save needs a seekable stream; serialize one
+                        # chunk in memory, then stream its bytes through zstd.
+                        payload=io.BytesIO()
+                        torch.save(dict(schema=self.schema,rows=tensor_tree_copy(self.rows,cpu=True)),payload)
+                        proc.stdin.write(payload.getbuffer())
+                        proc.stdin.close(); rc=proc.wait()
+                    except BaseException:
+                        proc.kill(); proc.wait(); raise
+                    finally:
+                        out.close()
+                    if rc != 0: raise RuntimeError(f'zstd archive compression failed: {rc}')
+                    self.chunks.append(dict(file=name,ticks=len(self.rows),
+                                            sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+                                            compression='zstd'))
+                    self.rows.clear()
+                self._manifest()
         archive=TrainingArchive(args.output/'native_transitions',metadata=dict(manifest,control_ticks=0,transitions=0,chunks=[],
             scope='Mixed-policy training transitions, NOT frozen evaluation',actor_update_budget=args.recovery_update_budget+args.approach_update_budget),chunk_ticks=1000000)
         archive.capture_refresh=False
@@ -284,9 +319,10 @@ def run(args):
             return accepted
         def refresh_frozen_recovery():
             """Collect one reset-separated full native block before Approach."""
-            nonlocal obs,tick
+            nonlocal obs,tick,refresh_count
             archive.capture_refresh=False
             refresh_records.clear()
+            refresh_rewards.clear(); refresh_dones.clear(); refresh_stage_records.clear(); refresh_count=0
             start_tick=tick
             # Finish the partially sampled episode through the native timeout.
             # Manual reset before an 800-tick terminal record is rejected by the
@@ -303,6 +339,7 @@ def run(args):
                         raise FloatingPointError('Nonfinite observation during recovery boundary warmup')
             replay.new_stream()
             refresh_records.clear()
+            refresh_rewards.clear(); refresh_dones.clear(); refresh_stage_records.clear(); refresh_count=0
             archive.capture_refresh=True
             with torch.inference_mode():
                 for _ in range(args.refresh_ticks):
@@ -314,12 +351,12 @@ def run(args):
                         raise FloatingPointError('Nonfinite native observation during recovery refresh')
             archive.capture_refresh=False
             archive.flush()
-            if len(refresh_records)!=args.refresh_ticks:
-                raise RuntimeError(f'Expected {args.refresh_ticks} refresh rows, got {len(refresh_records)}')
+            if refresh_count!=args.refresh_ticks:
+                raise RuntimeError(f'Expected {args.refresh_ticks} refresh rows, got {refresh_count}')
             # Same frozen-policy labels, separated by episode and stage. These
             # labels are used only for bounded critic calibration, never actor input.
-            rewards=torch.stack([r['reward'].detach().cpu() for r in refresh_records]).double()
-            dones=torch.stack([(r['terminated']|r['timeout']).detach().cpu() for r in refresh_records])
+            rewards=torch.stack(refresh_rewards).double()
+            dones=torch.stack(refresh_dones)
             rtg_refresh=torch.zeros_like(rewards)
             running=torch.zeros(rewards.shape[1],dtype=torch.float64)
             for ti in range(args.refresh_ticks-1,-1,-1):
@@ -334,16 +371,16 @@ def run(args):
             refresh_critic=0
             for update in range(args.refresh_critic_updates):
                 ti=stage_ticks_refresh[update%len(stage_ticks_refresh)]
-                trainer.imagine_update(as_state(refresh_records[ti]),update_actor=False)
+                trainer.imagine_update(as_state(refresh_stage_records[ti]),update_actor=False)
                 refresh_critic+=1
             write(args.output/'refresh_manifest.json',dict(
                 policy_id='recovery_frozen_refresh',start_tick=start_tick,end_tick=tick,
-                ticks=len(refresh_records),transitions=len(refresh_records)*128,
+                ticks=refresh_count,transitions=refresh_count*128,
                 world_updates=refresh_world,critic_updates=refresh_critic,
                 stage_ticks=stage_ticks_refresh,rtg_scope='same frozen recovery policy',
                 replay_count=int(replay.count),replay_capacity=int(replay.capacity),warmup_ticks=warmup_ticks,
                 missing_fields=[]))
-            print('PHYSICAL_REFRESH='+json.dumps(dict(ticks=len(refresh_records),transitions=len(refresh_records)*128,world_updates=refresh_world,critic_updates=refresh_critic)),flush=True)
+            print('PHYSICAL_REFRESH='+json.dumps(dict(ticks=refresh_count,transitions=refresh_count*128,world_updates=refresh_world,critic_updates=refresh_critic)),flush=True)
             return refresh_world,refresh_critic
         if args.update_mode == 'joint':
             # One Adam update jointly covers both heads.  The old sequential blocks
