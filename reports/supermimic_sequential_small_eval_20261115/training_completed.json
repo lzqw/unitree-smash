@@ -1,0 +1,38 @@
+{
+  "update_mode": "sequential",
+  "actor_updates": 8,
+  "recovery_accepted": 4,
+  "approach_accepted": 4,
+  "proposal_attempts": 8,
+  "global_accepted": 8,
+  "global_rejected": 0,
+  "global_backtracked": 0,
+  "native_ticks": 32,
+  "actor_attempts": 5,
+  "rejected_actor_updates": 0,
+  "world_updates": 8,
+  "critic_updates": 662,
+  "formal_evaluation": false,
+  "blocks": [
+    "recovery",
+    "approach"
+  ],
+  "trainable_names": {
+    "recovery": [
+      "actor.recovery.0.bias",
+      "actor.recovery.0.weight",
+      "actor.recovery.2.bias",
+      "actor.recovery.2.weight",
+      "actor.recovery.4.bias",
+      "actor.recovery.4.weight"
+    ],
+    "approach": [
+      "actor.approach.0.bias",
+      "actor.approach.0.weight",
+      "actor.approach.2.bias",
+      "actor.approach.2.weight",
+      "actor.approach.4.bias",
+      "actor.approach.4.weight"
+    ]
+  }
+}
