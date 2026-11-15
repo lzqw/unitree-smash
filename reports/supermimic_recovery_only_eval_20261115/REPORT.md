@@ -70,3 +70,8 @@
 不接受 recovery-only 为新训练起点：原生 return 没有高于 -12.52678435。保留该检查点作为中间诊断结果，不继续从它训练。
 
 下一版本最小修复清单沿用用户目标：分离不同 reference、累计命令预算、固定模型/critic 下重算缩步目标、扩展 critic 阶段校准、分开全局和 block 计数，并用新接受策略的完整原生数据刷新模型和 critic。
+
+
+## 一致性更正
+
+逐案例集合已由 `case_sets.json` 按 `source_case_index` 重新生成。正确的 complete5 结论是：保留26、丢失 TRAIN84、新增 TRAIN61；“全保留”的表述不正确。
