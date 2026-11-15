@@ -387,7 +387,7 @@ def run(args):
                 # the policy/episode-aligned native labels just computed above.
                 state=as_state(refresh_stage_records[ti])
                 fit=trainer.calibrate_critic_native(
-                    [state], [rtg_refresh[ti].to(state.physical.device)], epochs=1)
+                    [state], rtg_refresh[ti].to(state.physical.device), epochs=1)
                 refresh_critic += int(fit['native_critic_calibration_updates'])
                 refresh_critic_losses.append(float(fit['native_critic_calibration_loss']))
             write(args.output/'refresh_manifest.json',dict(
