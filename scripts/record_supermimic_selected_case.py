@@ -337,12 +337,13 @@ finally:
         writer.close()
     if env is not None:
         env.close()
-    app.close(skip_cleanup=True)
     progress('cleanup_done')
     # Isaac Sim 5.1's PhysX Python bindings can run a module-level destructor
     # after Kit has released the framework.  It calls PyThreadState_Get without
     # the GIL and aborts during interpreter finalization.  All recorder files
     # are durable and native resources are closed above, so skip that second
     # finalization pass on the successful path.
-    if completed_cleanly:
-        os._exit(0)
+    # Do not call SimulationApp.close() here.  In Isaac Sim 5.1 that function
+    # can abort while PhysX releases the framework.  The files are durable and
+    # the process owns the Kit instance, so let the OS reclaim it directly.
+    os._exit(0 if completed_cleanly else 1)

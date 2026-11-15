@@ -86,7 +86,17 @@ def release_kit_stat_cache(output):
 
 def close_native(output, env, app, *, primary_failed):
     errors = []
-    for name, resource in (('ENV', env), ('APP', app)):
+    # Isaac Sim 5.1 can abort inside SimulationApp.close() while PhysX is
+    # releasing its framework (and can also abort later during Python's module
+    # finalizers).  The caller uses os._exit after this scope, so on that
+    # process-owned path the OS can reclaim Kit safely without invoking the
+    # broken shutdown sequence.
+    resources = [('ENV', env)]
+    if os.environ.get('QUADSMASH_SKIP_KIT_CLOSE') != '1':
+        resources.append(('APP', app))
+    else:
+        stage(output, 'KIT_CLOSE_SKIPPED_FOR_PROCESS_EXIT')
+    for name, resource in resources:
         if resource is None:
             continue
         stage(output, 'BEFORE_' + name + '_CLOSE')

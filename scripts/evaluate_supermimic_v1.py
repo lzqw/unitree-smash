@@ -304,4 +304,18 @@ def _run_native(args, stop_request):
 
 
 if __name__=='__main__':
-    main()
+    # Isaac Sim 5.1's PhysX Python bindings can run a module-level destructor
+    # after Kit has already released the framework.  That destructor calls
+    # PyThreadState_Get without the GIL and aborts with
+    # ``PyThreadState_Get ... tstate is NULL``.  The scoped lifecycle above has
+    # already flushed artifacts and closed native resources, so bypass Python's
+    # second interpreter-finalization pass on the clean path.
+    os.environ['QUADSMASH_SKIP_KIT_CLOSE'] = '1'
+    try:
+        main()
+    except BaseException:
+        # The failure artifact and traceback are written by main().  Avoid
+        # interpreter finalization too, since it has the same PhysX/GIL bug.
+        os._exit(1)
+    else:
+        os._exit(0)
