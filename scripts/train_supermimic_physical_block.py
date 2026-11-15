@@ -92,7 +92,7 @@ def run(args):
         expected=json.loads((args.packed_data.parent/'completed.json').read_text())
         if packed_sha!=expected['sha256'] or expected['first_completed']!=128:raise ValueError('Invalid initialization data')
         package=torch.load(args.packed_data,map_location='cpu',weights_only=True)
-        replay=PhysicalLoopReplay(package,adapter.task_model.memory_schema)
+        replay=PhysicalLoopReplay(package,adapter.task_model.memory_schema,capacity_ticks=4096)
         from quadsmash.rl.supermimic_physical_start_cache_v1 import load_start_cache,APPROACH_TICKS,CRITIC_TICKS
         start_cache=load_start_cache(args.archive,manifest)
         starts=[start_cache[t] for t in APPROACH_TICKS]
@@ -173,7 +173,7 @@ def run(args):
         if file_sha(reference_path)!=manifest['source_sha256']:
             raise ValueError('Reference policy checkpoint does not match the verified source actor')
         bad_meta=dict(path=str(args.bad_policy_checkpoint.resolve()),sha256=file_sha(args.bad_policy_checkpoint)) if args.bad_policy_checkpoint else None
-        config=dict(update_mode=args.update_mode,ball_side_mode=args.ball_side_mode,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=4,world_updates_per_actor_update=1,
+        config=dict(update_mode=args.update_mode,ball_side_mode=args.ball_side_mode,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,replay_capacity_ticks=4096,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=4,world_updates_per_actor_update=1,
             world_batch=128,imagination_batch=128,timebase=timebase.manifest(),actor_lr=5e-5,world_lr=2e-4,critic_lr=2e-4,
             policy_anchor=.05,critic_warmup_updates=200,critic_max_loss=50.,max_critic_only_blocks=32,
             command_delta_budget=args.command_delta_budget,target_delta_budget_rad=args.target_delta_budget_rad,
@@ -285,11 +285,25 @@ def run(args):
         def refresh_frozen_recovery():
             """Collect one reset-separated full native block before Approach."""
             nonlocal obs,tick
-            archive.capture_refresh=True
+            archive.capture_refresh=False
             refresh_records.clear()
-            replay.new_stream()
-            obs,_=wrapper.reset()
             start_tick=tick
+            # Finish the partially sampled episode through the native timeout.
+            # Manual reset before an 800-tick terminal record is rejected by the
+            # task's pre-reset evidence contract. The environment performs the
+            # reset itself at the boundary, after which this stream starts.
+            warmup_ticks=(-tick)%800
+            with torch.inference_mode():
+                for _ in range(warmup_ticks):
+                    check_stop()
+                    action=actor(obs['policy'],sample=False)[0]
+                    obs,reward,done,info=wrapper.step(action)
+                    tick+=1
+                    if not torch.isfinite(obs['policy']).all():
+                        raise FloatingPointError('Nonfinite observation during recovery boundary warmup')
+            replay.new_stream()
+            refresh_records.clear()
+            archive.capture_refresh=True
             with torch.inference_mode():
                 for _ in range(args.refresh_ticks):
                     check_stop()
@@ -327,7 +341,7 @@ def run(args):
                 ticks=len(refresh_records),transitions=len(refresh_records)*128,
                 world_updates=refresh_world,critic_updates=refresh_critic,
                 stage_ticks=stage_ticks_refresh,rtg_scope='same frozen recovery policy',
-                replay_count=int(replay.count),replay_capacity=int(replay.capacity),
+                replay_count=int(replay.count),replay_capacity=int(replay.capacity),warmup_ticks=warmup_ticks,
                 missing_fields=[]))
             print('PHYSICAL_REFRESH='+json.dumps(dict(ticks=len(refresh_records),transitions=len(refresh_records)*128,world_updates=refresh_world,critic_updates=refresh_critic)),flush=True)
             return refresh_world,refresh_critic
