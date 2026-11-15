@@ -28,6 +28,8 @@ def main():
     parser.add_argument('--joint-update-budget',type=int,default=16)
     parser.add_argument('--update-mode',choices=('sequential','joint'),default='sequential')
     parser.add_argument('--ball-side-mode',choices=('shadow','enforce'),default='shadow')
+    parser.add_argument('--recovery-proposal-budget',type=int,default=4)
+    parser.add_argument('--approach-proposal-budget',type=int,default=4)
     parser.add_argument('--reference-policy-checkpoint',type=Path)
     parser.add_argument('--bad-policy-checkpoint',type=Path)
     parser.add_argument('--video-dir',type=Path)
@@ -36,6 +38,7 @@ def main():
     AppLauncher.add_app_launcher_args(parser);args=parser.parse_args()
     if args.actor_update_budget is not None and args.actor_update_budget < 1: parser.error('actor-update-budget must be positive')
     if args.recovery_update_budget < 0 or args.approach_update_budget < 0: parser.error('block budgets must be non-negative')
+    if args.recovery_proposal_budget < 1 or args.approach_proposal_budget < 1: parser.error('proposal budgets must be positive')
     if args.ball_side_mode == 'enforce': parser.error('ball-side enforce mode is not implemented; use shadow for this audit-only revision')
     if args.actor_update_budget is not None:
         args.recovery_update_budget=0;args.approach_update_budget=args.actor_update_budget
@@ -162,7 +165,7 @@ def run(args):
         if file_sha(reference_path)!=manifest['source_sha256']:
             raise ValueError('Reference policy checkpoint does not match the verified source actor')
         bad_meta=dict(path=str(args.bad_policy_checkpoint.resolve()),sha256=file_sha(args.bad_policy_checkpoint)) if args.bad_policy_checkpoint else None
-        config=dict(update_mode=args.update_mode,ball_side_mode=args.ball_side_mode,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=4,world_updates_per_actor_update=1,
+        config=dict(update_mode=args.update_mode,ball_side_mode=args.ball_side_mode,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=4,world_updates_per_actor_update=1,
             world_batch=128,imagination_batch=128,timebase=timebase.manifest(),actor_lr=5e-5,world_lr=2e-4,critic_lr=2e-4,
             policy_anchor=.05,critic_warmup_updates=200,critic_max_loss=50.,max_critic_only_blocks=32,
             command_delta_budget=args.command_delta_budget,target_delta_budget_rad=args.target_delta_budget_rad,
@@ -205,6 +208,11 @@ def run(args):
         native_calibration.update(source='packed_loop/data.pt',discount_mode='physical_time',
                                   horizon_steps=int(rtg.shape[0]),native_return_scope='same-policy first completed 128 episodes')
         write(args.output/'native_critic_stage_audit.json',native_calibration)
+        native_calibration_fit=trainer.calibrate_critic_native([as_state(start_cache[0])],rtg[0],epochs=2)
+        native_calibration_fit.update(policy_id='initial_reference',source='packed_loop/data.pt',
+                                      discount_mode='physical_time',horizon_steps=int(rtg.shape[0]),
+                                      native_return_scope='same-policy first completed 128 episodes')
+        write(args.output/'native_critic_calibration.json',native_calibration_fit)
         # A already supplies complete native episodes. This warmup concerns the
         # new contextual critic, not recollecting a fresh 800 ticks each update.
         def cover_critic():
@@ -223,16 +231,17 @@ def run(args):
         while critic_coverage_blocks<len(critic_starts):cover_critic()
         ensure_critic()
         cursor=0;completed_returns=[];completed_discounted=[];phase='LEARNING'
-        def run_block(block_name, names, budget):
+        global_attempt_id=0;global_accepted_id=0;global_rejected=0;global_backtracked=0
+        def run_block(block_name, names, budget, proposal_limit):
             nonlocal completed_returns,completed_discounted,obs,tick,cursor
-            if budget<=0:return
+            nonlocal global_attempt_id,global_accepted_id,global_rejected,global_backtracked
+            if budget<=0:return 0
             trainer.set_trainable_names(names,block_name)
             block_pool=recovery_pool if block_name=='recovery' else approach_pool
             trainer.set_budget_state_library([as_state(row) for row in block_pool+critic_starts[:4]])
-            accepted=0;attempts=0;max_attempts=max(8*budget,budget+8)
-            while accepted<budget:
-                if attempts>=max_attempts: raise RuntimeError(f'{block_name} block rejected too many actor proposals')
-                attempts+=1;trainer.block_attempts=attempts
+            accepted=0;attempts=0;max_attempts=proposal_limit
+            while accepted<budget and attempts<max_attempts:
+                attempts+=1;global_attempt_id+=1;trainer.block_attempts=attempts
                 trainer.actor_updates=accepted
                 trainer.actor_attempts=attempts
                 check_stop();cover_critic();ensure_critic()
@@ -253,13 +262,18 @@ def run(args):
                     if not any(v>0.0 for v in stats['parameter_max_changes'].values()):
                         raise RuntimeError(f'{block_name} accepted update had zero trainable parameter change; no effective gradient')
                     accepted+=1
+                    global_accepted_id+=1
+                else:
+                    global_rejected+=1
+                global_backtracked += int(stats.get('backtracked',False))
                 with torch.no_grad():request=actor(state.observation,sample=False)[0];preview,_,_=adapter.executor.forward(state.observation,request,state.clock_goal_context['joint_default'][0],state.clock_goal_context['limits'],state.executor_memory)
-                record=dict(**stats,**{k:v for k,v in world_stats.items() if k not in stats},block=block_name,block_accepted_updates=accepted,native_ticks=tick,native_transitions=tick*128,native_collect_seconds=collect_s, native_reward_mean=float(reward.mean()),completed_native_episodes=len(completed_returns),native_return_mean=sum(completed_returns)/len(completed_returns) if completed_returns else None,native_discounted_return_mean=sum(completed_discounted)/len(completed_discounted) if completed_discounted else None,raw_return_scope='completed mixed-policy monitoring; incomplete episodes excluded',peak_gpu_bytes=torch.cuda.max_memory_allocated(),model_calls=adapter.calls,window_sampling=sampling,imagined_start_source='fresh_native' if pool is replay.new_starts else 'initialization_archive')
+                record=dict(**stats,**{k:v for k,v in world_stats.items() if k not in stats},block=block_name,block_accepted_updates=accepted,attempt_id=global_attempt_id,accepted_id=global_accepted_id,global_attempts=global_attempt_id,global_accepted=global_accepted_id,global_rejected=global_rejected,global_backtracked=global_backtracked,native_ticks=tick,native_transitions=tick*128,native_collect_seconds=collect_s, native_reward_mean=float(reward.mean()),completed_native_episodes=len(completed_returns),native_return_mean=sum(completed_returns)/len(completed_returns) if completed_returns else None,native_discounted_return_mean=sum(completed_discounted)/len(completed_discounted) if completed_discounted else None,raw_return_scope='completed mixed-policy monitoring; incomplete episodes excluded',peak_gpu_bytes=torch.cuda.max_memory_allocated(),model_calls=adapter.calls,window_sampling=sampling,imagined_start_source='fresh_native' if pool is replay.new_starts else 'initialization_archive')
                 save('latest.pt');write(args.output/'progress.json',record)
                 with (args.output/'training_history.jsonl').open('a') as f:f.write(json.dumps(record)+'\n')
                 print('PHYSICAL_LEARNING='+json.dumps(record),flush=True)
                 if accepted and accepted%16==0:save(f'{block_name}_checkpoint_{accepted:04d}.pt')
             save(f'{block_name}_candidate_{accepted:04d}.pt')
+            return accepted
         if args.update_mode == 'joint':
             # One Adam update jointly covers both heads.  The old sequential blocks
             # remain available only as diagnostic code; this experiment must not
@@ -304,18 +318,22 @@ def run(args):
             # Default production path: recovery then approach. Each block owns
             # its trainable head and Adam state; the intermediate checkpoint is
             # written before the approach block starts.
-            run_block('recovery', RECOVERY_NAMES, args.recovery_update_budget)
-            save('recovery_candidate_%04d.pt' % args.recovery_update_budget)
-            run_block('approach', APPROACH_NAMES, args.approach_update_budget)
-            archive.flush(); save('candidate_%04d.pt' % (args.recovery_update_budget + args.approach_update_budget))
+            recovery_accepted=run_block('recovery', RECOVERY_NAMES, min(args.recovery_update_budget,args.recovery_proposal_budget), args.recovery_proposal_budget)
+            save('recovery_candidate_%04d.pt' % recovery_accepted)
+            approach_accepted=run_block('approach', APPROACH_NAMES, min(args.approach_update_budget,args.approach_proposal_budget), args.approach_proposal_budget)
+            total_accepted=recovery_accepted+approach_accepted
+            archive.flush(); save('candidate_%04d.pt' % total_accepted)
             write(args.output/'training_completed.json', dict(
-                update_mode='sequential', actor_updates=args.recovery_update_budget + args.approach_update_budget,
+                update_mode='sequential', actor_updates=total_accepted,
+                recovery_accepted=recovery_accepted, approach_accepted=approach_accepted,
+                proposal_attempts=global_attempt_id, global_accepted=global_accepted_id,
+                global_rejected=global_rejected, global_backtracked=global_backtracked,
                 native_ticks=tick, actor_attempts=trainer.actor_attempts,
                 rejected_actor_updates=trainer.rejected_actor_updates,
                 world_updates=trainer.world_updates, critic_updates=trainer.critic_updates,
                 formal_evaluation=False, blocks=['recovery','approach'],
                 trainable_names={'recovery': sorted(RECOVERY_NAMES), 'approach': sorted(APPROACH_NAMES)}))
-            stage(args.output, 'TRAINING_FINISHED', actor_updates=args.recovery_update_budget + args.approach_update_budget)
+            stage(args.output, 'TRAINING_FINISHED', actor_updates=total_accepted)
         return
         # Legacy single-block loop retained below for provenance but unreachable.
         max_attempts=max(args.actor_update_budget*8,args.actor_update_budget+8)
