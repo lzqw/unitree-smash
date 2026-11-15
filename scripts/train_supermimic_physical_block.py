@@ -30,6 +30,9 @@ def main():
     parser.add_argument('--ball-side-mode',choices=('shadow','enforce'),default='shadow')
     parser.add_argument('--recovery-proposal-budget',type=int,default=4)
     parser.add_argument('--approach-proposal-budget',type=int,default=4)
+    parser.add_argument('--refresh-ticks',type=int,default=800)
+    parser.add_argument('--refresh-world-updates',type=int,default=32)
+    parser.add_argument('--refresh-critic-updates',type=int,default=20)
     parser.add_argument('--reference-policy-checkpoint',type=Path)
     parser.add_argument('--bad-policy-checkpoint',type=Path)
     parser.add_argument('--video-dir',type=Path)
@@ -39,6 +42,7 @@ def main():
     if args.actor_update_budget is not None and args.actor_update_budget < 1: parser.error('actor-update-budget must be positive')
     if args.recovery_update_budget < 0 or args.approach_update_budget < 0: parser.error('block budgets must be non-negative')
     if args.recovery_proposal_budget < 1 or args.approach_proposal_budget < 1: parser.error('proposal budgets must be positive')
+    if args.refresh_ticks < 1 or args.refresh_world_updates < 0 or args.refresh_critic_updates < 0: parser.error('refresh budgets invalid')
     if args.ball_side_mode == 'enforce': parser.error('ball-side enforce mode is not implemented; use shadow for this audit-only revision')
     if args.actor_update_budget is not None:
         args.recovery_update_budget=0;args.approach_update_budget=args.actor_update_budget
@@ -69,7 +73,7 @@ def run(args):
     from quadsmash.rl.supermimic_physical_learner_v1 import PhysicalHorizonTrainer
     from quadsmash.rl.supermimic_physical_loop_replay_v1 import PhysicalLoopReplay,current_start
     from quadsmash.rl.supermimic_physical_imagination_state_v1 import PhysicalImaginationStateV1
-    from quadsmash.rl.supermimic_physical_capture_v1 import PhysicalTransitionArchive
+    from quadsmash.rl.supermimic_physical_capture_v1 import PhysicalTransitionArchive,tensor_tree_copy
     from quadsmash.rl.supermimic_physical_run_guard_v1 import critic_ready,atomic_torch_save
     from quadsmash.rl.supermimic_timebase_v2 import Timebase
     from quadsmash.rl.supermimic_task_contract import resolve_task_contract,make_task_cfg,zero_panel_reset_noise
@@ -151,13 +155,17 @@ def run(args):
             # Environment seeding must not overwrite the resumed learner RNG.
             torch.set_rng_state(resumed['torch_rng'].cpu());torch.cuda.set_rng_state(resumed['cuda_rng'].cpu())
         stage(args.output,'AFTER_RESET')
+        refresh_records=[]
         class TrainingArchive(PhysicalTransitionArchive):
             def finish_record(self,*values):
                 super().finish_record(*values)
                 replay.append(self.rows[-1])
+                if getattr(self,'capture_refresh',False):
+                    refresh_records.append(tensor_tree_copy(self.rows[-1]))
                 if len(self.rows)>=32:self.flush()
         archive=TrainingArchive(args.output/'native_transitions',metadata=dict(manifest,control_ticks=0,transitions=0,chunks=[],
             scope='Mixed-policy training transitions, NOT frozen evaluation',actor_update_budget=args.recovery_update_budget+args.approach_update_budget),chunk_ticks=1000000)
+        archive.capture_refresh=False
         archive.attach_task_sequence(env);env.physical_transition_archive=archive
         def file_sha(path):
             return hashlib.sha256(Path(path).read_bytes()).hexdigest() if path else None
@@ -165,7 +173,7 @@ def run(args):
         if file_sha(reference_path)!=manifest['source_sha256']:
             raise ValueError('Reference policy checkpoint does not match the verified source actor')
         bad_meta=dict(path=str(args.bad_policy_checkpoint.resolve()),sha256=file_sha(args.bad_policy_checkpoint)) if args.bad_policy_checkpoint else None
-        config=dict(update_mode=args.update_mode,ball_side_mode=args.ball_side_mode,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=4,world_updates_per_actor_update=1,
+        config=dict(update_mode=args.update_mode,ball_side_mode=args.ball_side_mode,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=4,world_updates_per_actor_update=1,
             world_batch=128,imagination_batch=128,timebase=timebase.manifest(),actor_lr=5e-5,world_lr=2e-4,critic_lr=2e-4,
             policy_anchor=.05,critic_warmup_updates=200,critic_max_loss=50.,max_critic_only_blocks=32,
             command_delta_budget=args.command_delta_budget,target_delta_budget_rad=args.target_delta_budget_rad,
@@ -274,6 +282,55 @@ def run(args):
                 if accepted and accepted%16==0:save(f'{block_name}_checkpoint_{accepted:04d}.pt')
             save(f'{block_name}_candidate_{accepted:04d}.pt')
             return accepted
+        def refresh_frozen_recovery():
+            """Collect one reset-separated full native block before Approach."""
+            nonlocal obs,tick
+            archive.capture_refresh=True
+            refresh_records.clear()
+            replay.new_stream()
+            obs,_=wrapper.reset()
+            start_tick=tick
+            with torch.inference_mode():
+                for _ in range(args.refresh_ticks):
+                    check_stop()
+                    action=actor(obs['policy'],sample=False)[0]
+                    obs,reward,done,info=wrapper.step(action)
+                    tick+=1
+                    if not torch.isfinite(obs['policy']).all():
+                        raise FloatingPointError('Nonfinite native observation during recovery refresh')
+            archive.capture_refresh=False
+            archive.flush()
+            if len(refresh_records)!=args.refresh_ticks:
+                raise RuntimeError(f'Expected {args.refresh_ticks} refresh rows, got {len(refresh_records)}')
+            # Same frozen-policy labels, separated by episode and stage. These
+            # labels are used only for bounded critic calibration, never actor input.
+            rewards=torch.stack([r['reward'].detach().cpu() for r in refresh_records]).double()
+            dones=torch.stack([(r['terminated']|r['timeout']).detach().cpu() for r in refresh_records])
+            rtg_refresh=torch.zeros_like(rewards)
+            running=torch.zeros(rewards.shape[1],dtype=torch.float64)
+            for ti in range(args.refresh_ticks-1,-1,-1):
+                running=rewards[ti]+timebase.gamma*running*(~dones[ti]).double()
+                rtg_refresh[ti]=running
+            stage_ticks_refresh=[0,96,192,288,384,480,576,672]
+            refresh_world=0
+            for update in range(args.refresh_world_updates):
+                window,lanes,sampling=replay.window(timebase.world_steps,128,update)
+                trainer.fit_world_window(window,launch[lanes]);del window
+                refresh_world+=1
+            refresh_critic=0
+            for update in range(args.refresh_critic_updates):
+                ti=stage_ticks_refresh[update%len(stage_ticks_refresh)]
+                trainer.imagine_update(as_state(refresh_records[ti]),update_actor=False)
+                refresh_critic+=1
+            write(args.output/'refresh_manifest.json',dict(
+                policy_id='recovery_frozen_refresh',start_tick=start_tick,end_tick=tick,
+                ticks=len(refresh_records),transitions=len(refresh_records)*128,
+                world_updates=refresh_world,critic_updates=refresh_critic,
+                stage_ticks=stage_ticks_refresh,rtg_scope='same frozen recovery policy',
+                replay_count=int(replay.count),replay_capacity=int(replay.capacity),
+                missing_fields=[]))
+            print('PHYSICAL_REFRESH='+json.dumps(dict(ticks=len(refresh_records),transitions=len(refresh_records)*128,world_updates=refresh_world,critic_updates=refresh_critic)),flush=True)
+            return refresh_world,refresh_critic
         if args.update_mode == 'joint':
             # One Adam update jointly covers both heads.  The old sequential blocks
             # remain available only as diagnostic code; this experiment must not
@@ -320,6 +377,8 @@ def run(args):
             # written before the approach block starts.
             recovery_accepted=run_block('recovery', RECOVERY_NAMES, min(args.recovery_update_budget,args.recovery_proposal_budget), args.recovery_proposal_budget)
             save('recovery_candidate_%04d.pt' % recovery_accepted)
+            refresh_world_updates,refresh_critic_updates=refresh_frozen_recovery()
+            save('recovery_refresh_candidate_%04d.pt' % recovery_accepted)
             approach_accepted=run_block('approach', APPROACH_NAMES, min(args.approach_update_budget,args.approach_proposal_budget), args.approach_proposal_budget)
             total_accepted=recovery_accepted+approach_accepted
             archive.flush(); save('candidate_%04d.pt' % total_accepted)
@@ -331,6 +390,7 @@ def run(args):
                 native_ticks=tick, actor_attempts=trainer.actor_attempts,
                 rejected_actor_updates=trainer.rejected_actor_updates,
                 world_updates=trainer.world_updates, critic_updates=trainer.critic_updates,
+                refresh_world_updates=refresh_world_updates, refresh_critic_updates=refresh_critic_updates,
                 formal_evaluation=False, blocks=['recovery','approach'],
                 trainable_names={'recovery': sorted(RECOVERY_NAMES), 'approach': sorted(APPROACH_NAMES)}))
             stage(args.output, 'TRAINING_FINISHED', actor_updates=total_accepted)
