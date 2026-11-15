@@ -158,6 +158,7 @@ def run(args):
         refresh_records=[]
         refresh_rewards=[]; refresh_dones=[]; refresh_stage_records={}; refresh_count=0
         refresh_stage_ticks={0,96,192,288,384,480,576,672}
+        archive_flush_rows=max(32,int(os.environ.get('QUADSMASH_ARCHIVE_FLUSH_ROWS','32')))
         class TrainingArchive(PhysicalTransitionArchive):
             def finish_record(self,*values):
                 nonlocal refresh_count
@@ -172,7 +173,7 @@ def run(args):
                     if refresh_count in refresh_stage_ticks:
                         refresh_stage_records[refresh_count]=tensor_tree_copy(row)
                     refresh_count += 1
-                if len(self.rows)>=32:self.flush()
+                if len(self.rows)>=archive_flush_rows:self.flush()
             def flush(self):
                 if os.environ.get('QUADSMASH_ZSTD_ARCHIVE','0') != '1':
                     return super().flush()
