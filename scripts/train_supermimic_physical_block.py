@@ -159,10 +159,18 @@ def run(args):
         refresh_rewards=[]; refresh_dones=[]; refresh_stage_records={}; refresh_count=0
         refresh_stage_ticks={0,96,192,288,384,480,576,672}
         archive_flush_rows=max(32,int(os.environ.get('QUADSMASH_ARCHIVE_FLUSH_ROWS','32')))
+        archive_refresh_only=os.environ.get('QUADSMASH_ARCHIVE_REFRESH_ONLY','0')=='1'
         class TrainingArchive(PhysicalTransitionArchive):
             def finish_record(self,*values):
                 nonlocal refresh_count
                 super().finish_record(*values)
+                if archive_refresh_only and not getattr(self,'capture_refresh',False):
+                    # The packed initialization replay already supplies the
+                    # warmup states.  In the bounded refresh audit, avoid
+                    # serializing duplicate warmup/post-refresh rows; only
+                    # durable the explicitly captured frozen-policy refresh.
+                    self.rows.clear()
+                    return
                 replay.append(self.rows[-1])
                 if getattr(self,'capture_refresh',False):
                     row=self.rows[-1]
