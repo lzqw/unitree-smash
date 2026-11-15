@@ -10,14 +10,14 @@ import torch
 from .supermimic_horizon_learner_v2 import frozen,optimizer_step
 from .supermimic_timebase_v2 import bptt_return,gae_returns
 from .supermimic_v1 import MLP,load_ppo_initialized_actor
-from .supermimic_physical_loop_loading_v1 import APPROACH_NAMES,tensor_digest
+from .supermimic_physical_loop_loading_v1 import APPROACH_NAMES,RECOVERY_NAMES,HEAD_NAMES,set_actor_trainable,tensor_digest
 from .supermimic_ball_sequence_v1 import ball_transition
 from .supermimic_physical_dataset_v1 import valid_windows
 
 
 class PhysicalHorizonTrainer:
     def __init__(self,actor,adapter,initial_state,timebase,*,command_delta_budget=0.005,
-                 target_delta_budget_rad=0.04):
+                 target_delta_budget_rad=0.04,trainable_names=None,block_name='approach',actor_lr=5e-5):
         self.actor,self.adapter,self.timebase=actor,adapter,timebase
         width=adapter.critic_input(initial_state).shape[-1]
         self.critic=MLP(width,(512,256,128),1).to(initial_state.physical.device)
@@ -28,7 +28,9 @@ class PhysicalHorizonTrainer:
         if reference_meta['sha256']!=adapter.manifest['checkpoint_sha256']['source']:
             raise ValueError('Reference actor source mismatch')
         self.reference.eval().requires_grad_(False)
-        self.actor_opt=torch.optim.Adam([p for p in actor.parameters() if p.requires_grad],lr=5e-5,betas=(.9,.95))
+        self.block_name=block_name
+        self.trainable_names=set_actor_trainable(actor, trainable_names or APPROACH_NAMES)
+        self.actor_opt=torch.optim.Adam([p for p in actor.parameters() if p.requires_grad],lr=actor_lr,betas=(.9,.95))
         self.world_opt=torch.optim.Adam(adapter.parameters(),lr=2e-4)
         self.critic_opt=torch.optim.Adam(self.critic.parameters(),lr=2e-4)
         self.actor_updates=self.world_updates=self.critic_updates=0
@@ -40,10 +42,68 @@ class PhysicalHorizonTrainer:
         self.target_delta_budget_rad=float(target_delta_budget_rad)
         self.actor_attempts=0
         self.rejected_actor_updates=0
+        self.backtracked_actor_updates=0
+        self.block_attempts=0
+        self.block_start_snapshot={k:v.detach().clone() for k,v in actor.state_dict().items()}
+        self.accepted_snapshot={k:v.detach().clone() for k,v in actor.state_dict().items()}
+        self.budget_states=[initial_state.branch()]
         self.frozen_actor_hash=self.frozen_hash()
 
+    def set_trainable_names(self,names,block_name=None):
+        names=set(names)
+        self.trainable_names=set_actor_trainable(self.actor,names)
+        self.block_name=block_name or self.block_name
+        self.actor_opt=torch.optim.Adam([p for p in self.actor.parameters() if p.requires_grad],lr=5e-5,betas=(.9,.95))
+        self.actor_updates=0; self.actor_attempts=0; self.rejected_actor_updates=0; self.backtracked_actor_updates=0
+        self.block_start_snapshot={k:v.detach().clone() for k,v in self.actor.state_dict().items()}
+        self.accepted_snapshot={k:v.detach().clone() for k,v in self.actor.state_dict().items()}
+        self.frozen_actor_hash=self.frozen_hash()
+
+    def set_budget_state_library(self,states):
+        if not states: raise ValueError('Empty execution budget state library')
+        self.budget_states=[s.branch() for s in states]
+
+    def _preview_command(self,state,actor_module=None):
+        module=self.actor if actor_module is None else actor_module
+        with torch.no_grad():
+            request=module(state.observation,sample=False)[0]
+            context=state.clock_goal_context
+            preview,_,_=self.adapter.executor.forward(state.observation,request,context['joint_default'][0],context['limits'],state.executor_memory)
+        return request.detach(),preview.final_normalized.detach(),preview.final_joint_targets.detach()
+
+    def _budget_snapshot(self):
+        rows=[]
+        for state in self.budget_states:
+            req,final,target=self._preview_command(state)
+            rows.append((req,final,target))
+        return rows
+
+    @staticmethod
+    def _max_budget_delta(now,base):
+        return tuple(float((n-b).abs().max()) for n,b in zip(now,base))
+
+    def _relative_budget_report(self):
+        current=self._budget_snapshot()
+        start=[];accepted=[]
+        for cur,st,ac in zip(current,self._snapshot_from(self.block_start_snapshot),self._snapshot_from(self.accepted_snapshot)):
+            start.append(self._max_budget_delta(cur,st)); accepted.append(self._max_budget_delta(cur,ac))
+        def agg(rows): return {k:max((x[i] for x in rows),default=0.) for i,k in enumerate(('residual_request_delta','final_normalized_command_delta','final_joint_target_delta_rad'))}
+        return {'relative_block_start':agg(start),'relative_last_accepted':agg(accepted)}
+
+    def _snapshot_from(self,state_dict):
+        # Snapshots are parameter snapshots. Recompute command baselines by temporarily loading
+        # into the same actor; caller runs under no_grad and restores accepted parameters.
+        current={k:v.detach().clone() for k,v in self.actor.state_dict().items()}
+        self.actor.load_state_dict(state_dict,strict=True)
+        rows=self._budget_snapshot()
+        self.actor.load_state_dict(current,strict=True)
+        return rows
+
+    def accept_snapshot(self):
+        self.accepted_snapshot={k:v.detach().clone() for k,v in self.actor.state_dict().items()}
+
     def frozen_hash(self):
-        return tensor_digest((k,v) for k,v in self.actor.state_dict().items() if k not in APPROACH_NAMES)
+        return tensor_digest((k,v) for k,v in self.actor.state_dict().items() if k not in self.trainable_names)
 
     def imagine_update(self,initial_state,*,update_actor=True):
         cfg=self.timebase;state=initial_state.branch()
@@ -104,6 +164,8 @@ class PhysicalHorizonTrainer:
                 if not torch.isfinite(loss):raise FloatingPointError('Nonfinite physical GAE critic loss')
                 loss.backward();optimizer_step(self.critic_opt,self.critic.parameters())
                 self.critic_updates+=1;losses.append(float(loss.detach()))
+        proposal_state={k:v.detach().clone() for k,v in self.actor.state_dict().items()}
+        proposal_optimizer=copy.deepcopy(self.actor_opt.state_dict())
         delta={k:float((p.detach()-before[k]).abs().max()) for k,p in self.actor.named_parameters() if p.requires_grad}
         self.last_critic_loss=sum(losses)/len(losses)
         with torch.no_grad():
@@ -113,26 +175,51 @@ class PhysicalHorizonTrainer:
             command_change=float((updated_preview.final_joint_targets-initial_command).abs().max())
             reference_command_delta=float((updated_preview.final_joint_targets-reference_command).abs().max())
             reference_request_delta=float((updated_request-reference_request).abs().max())
-        accepted=True
-        if update_actor and (reference_request_delta>self.command_delta_budget or
-                             reference_command_delta>self.target_delta_budget_rad):
-            self.actor.load_state_dict(actor_state_before,strict=True)
-            self.actor_opt.load_state_dict(optimizer_state_before)
-            self.rejected_actor_updates+=1
-            self.actor_updates-=1
-            accepted=False
-            delta={k:0.0 for k in before}
-            command_change=0.0
-            request_change=0.0
+        accepted=True; alpha=1.0; budget_report=self._relative_budget_report()
+        if update_actor:
+            # Same proposal, same model/critic/start/batch: only scale the parameter
+            # displacement.  No alternate batch or extra rollout is selected.
+            base_state=actor_state_before
+            for candidate_alpha in (1.0,0.5,0.25,0.125,0.0625):
+                candidate={}
+                for key,b in base_state.items():
+                    p=proposal_state[key]
+                    candidate[key]=(b+(p-b)*candidate_alpha) if (b.is_floating_point() or b.is_complex()) else p
+                self.actor.load_state_dict(candidate,strict=True)
+                report=self._relative_budget_report()
+                if (report['relative_last_accepted']['final_normalized_command_delta'] <= self.command_delta_budget and
+                    report['relative_last_accepted']['final_joint_target_delta_rad'] <= self.target_delta_budget_rad):
+                    alpha=candidate_alpha;budget_report=report;break
+            else:
+                self.actor.load_state_dict(actor_state_before,strict=True)
+                self.actor_opt.load_state_dict(optimizer_state_before)
+                self.rejected_actor_updates+=1;self.actor_updates-=1;accepted=False
+                delta={k:0.0 for k in before};command_change=0.0;request_change=0.0
+            if accepted:
+                self.actor_opt.load_state_dict(proposal_optimizer)
+                if alpha < 1.0:self.backtracked_actor_updates+=1
+                self.accept_snapshot()
+                # Refresh diagnostics for the accepted scaled proposal.
+                with torch.no_grad():
+                    updated_request=self.actor(initial_state.observation,sample=False)[0]
+                    updated_preview,_,_=self.adapter.executor.forward(initial_state.observation,updated_request,
+                        context['joint_default'][0],context['limits'],initial_state.executor_memory)
+                    command_change=float((updated_preview.final_joint_targets-initial_command).abs().max())
+                    reference_command_delta=float((updated_preview.final_joint_targets-reference_command).abs().max())
+                    reference_request_delta=float((updated_request-reference_request).abs().max())
+                request_change=float((updated_request-initial_request).abs().max())
         else:
             request_change=float((updated_request-initial_request).abs().max())
         return dict(actor_updates=self.actor_updates,actor_attempts=self.actor_attempts,
             rejected_actor_updates=self.rejected_actor_updates,update_accepted=accepted,
+            block_name=self.block_name,trainable_names=sorted(self.trainable_names),block_attempts=self.block_attempts,
+            backtracked_actor_updates=self.backtracked_actor_updates,backtrack_alpha=alpha,
             command_delta_budget=self.command_delta_budget,target_delta_budget_rad=self.target_delta_budget_rad,
             critic_updates=self.critic_updates,world_updates=self.world_updates,
             imagined_return_mean=float(ret.detach().mean()),actor_gradient=float(gradient),parameter_max_changes=delta,
             final_command_max_change=command_change,request_max_change=request_change,
             reference_final_command_delta=reference_command_delta,reference_request_delta=reference_request_delta,
+            budget_report=budget_report,
             critic_loss=self.last_critic_loss,bptt_seconds=bptt_seconds,critic_seconds=time.perf_counter()-started,
             model_runtime_state_sha256=before_models,imagined_steps=len(rewards),
             imagined_start_elapsed_min=float(initial_state.clock_goal_context['elapsed'].min()),
@@ -171,3 +258,24 @@ class PhysicalHorizonTrainer:
         task.fit_updates.add_(1)
         return dict(world_loss=float(loss.detach()),world_gradient=float(norm),world_updates=self.world_updates,
                     world_seconds=time.perf_counter()-started)
+
+    def calibrate_critic_native(self, states, returns, *, epochs=2):
+        """Fit the contextual critic to same-policy native return-to-go labels.
+
+        This is a separately reported task adaptation.  Labels are only accepted
+        when they come from one frozen policy's completed native archive.
+        """
+        x=torch.cat([self.adapter.critic_input(s) for s in states],dim=0).detach()
+        y=returns.to(x.device).float().reshape(-1,1).detach()
+        losses=[]
+        for _ in range(epochs):
+            self.critic_opt.zero_grad(set_to_none=True)
+            pred=self.critic(x)
+            loss=(pred-y).square().mean()
+            if not torch.isfinite(loss): raise FloatingPointError('Nonfinite native critic calibration loss')
+            loss.backward();optimizer_step(self.critic_opt,self.critic.parameters());self.critic_updates+=1
+            losses.append(float(loss.detach()))
+        with torch.no_grad(): error=self.critic(x)-y
+        return dict(native_critic_calibration_updates=epochs,native_critic_calibration_loss=sum(losses)/len(losses),
+                    native_critic_mae=float(error.abs().mean()),native_critic_rmse=float(error.square().mean().sqrt()),
+                    native_label_count=int(y.shape[0]))

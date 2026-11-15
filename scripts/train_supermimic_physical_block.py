@@ -20,14 +20,19 @@ def main():
     for name in ('archive','packed-data','physical-checkpoint','ball-checkpoint','task-checkpoint','safety-mapping','output'):
         parser.add_argument('--'+name,type=Path,required=True)
     parser.add_argument('--resume-training',type=Path)
-    parser.add_argument('--actor-update-budget',type=int,default=256)
+    parser.add_argument('--actor-update-budget',type=int,default=None,help='Legacy single-block budget')
+    parser.add_argument('--recovery-update-budget',type=int,default=16)
+    parser.add_argument('--approach-update-budget',type=int,default=16)
     parser.add_argument('--reference-policy-checkpoint',type=Path)
     parser.add_argument('--bad-policy-checkpoint',type=Path)
     parser.add_argument('--video-dir',type=Path)
     parser.add_argument('--command-delta-budget',type=float,default=0.005)
     parser.add_argument('--target-delta-budget-rad',type=float,default=0.04)
     AppLauncher.add_app_launcher_args(parser);args=parser.parse_args()
-    if args.actor_update_budget < 1: parser.error('actor-update-budget must be positive')
+    if args.actor_update_budget is not None and args.actor_update_budget < 1: parser.error('actor-update-budget must be positive')
+    if args.recovery_update_budget < 0 or args.approach_update_budget < 0: parser.error('block budgets must be non-negative')
+    if args.actor_update_budget is not None:
+        args.recovery_update_budget=0;args.approach_update_budget=args.actor_update_budget
     args.output=args.output.resolve();args.output.mkdir(parents=True,exist_ok=False)
     if args.video_dir is not None:
         args.video_dir=args.video_dir.resolve();args.video_dir.mkdir(parents=True,exist_ok=True)
@@ -51,7 +56,7 @@ def main():
 def run(args):
     import torch
     from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper
-    from quadsmash.rl.supermimic_physical_loop_loading_v1 import load_physical_loop,APPROACH_NAMES
+    from quadsmash.rl.supermimic_physical_loop_loading_v1 import load_physical_loop,APPROACH_NAMES,RECOVERY_NAMES
     from quadsmash.rl.supermimic_physical_learner_v1 import PhysicalHorizonTrainer
     from quadsmash.rl.supermimic_physical_loop_replay_v1 import PhysicalLoopReplay,current_start
     from quadsmash.rl.supermimic_physical_imagination_state_v1 import PhysicalImaginationStateV1
@@ -74,7 +79,7 @@ def run(args):
         expected=json.loads((args.packed_data.parent/'completed.json').read_text())
         if packed_sha!=expected['sha256'] or expected['first_completed']!=128:raise ValueError('Invalid initialization data')
         package=torch.load(args.packed_data,map_location='cpu',weights_only=True)
-        replay=PhysicalLoopReplay(package,adapter.task_model.memory_schema);del package
+        replay=PhysicalLoopReplay(package,adapter.task_model.memory_schema)
         from quadsmash.rl.supermimic_physical_start_cache_v1 import load_start_cache,APPROACH_TICKS,CRITIC_TICKS
         start_cache=load_start_cache(args.archive,manifest)
         starts=[start_cache[t] for t in APPROACH_TICKS]
@@ -83,7 +88,22 @@ def run(args):
         timebase=Timebase(**json.loads((ROOT/'configs/supermimic_task_horizon_v2.json').read_text()))
         trainer=PhysicalHorizonTrainer(actor,adapter,as_state(starts[1]),timebase,
             command_delta_budget=args.command_delta_budget,
-            target_delta_budget_rad=args.target_delta_budget_rad)
+            target_delta_budget_rad=args.target_delta_budget_rad,
+            trainable_names=APPROACH_NAMES,block_name='approach')
+        trainer.set_budget_state_library([as_state(row) for row in starts+critic_starts[:4]])
+        approach_pool=[start_cache[t] for t in APPROACH_TICKS]
+        recovery_pool=[start_cache[t] for t in (272,288,336,384)]
+        # Same-policy native RTG calibration labels from the frozen 800-tick archive.
+        # This is separate from the 0.64 s imagined objective and never mixed with
+        # candidate-policy monitoring.
+        native_reward=package['tensors']['reward'].double()
+        native_done=package['tensors']['terminated']|package['tensors']['timeout']
+        rtg=torch.zeros_like(native_reward)
+        running=torch.zeros(native_reward.shape[1],dtype=torch.float64)
+        for ti in range(native_reward.shape[0]-1,-1,-1):
+            running=native_reward[ti].double()+timebase.gamma*running*(~native_done[ti]).double()
+            rtg[ti]=running
+        del native_reward,native_done,running
         replay_archives=[];critic_coverage_blocks=0
         if args.resume_training:
             resumed=torch.load(args.resume_training,map_location='cuda:0',weights_only=False)
@@ -128,7 +148,7 @@ def run(args):
                 replay.append(self.rows[-1])
                 if len(self.rows)>=32:self.flush()
         archive=TrainingArchive(args.output/'native_transitions',metadata=dict(manifest,control_ticks=0,transitions=0,chunks=[],
-            scope='Mixed-policy training transitions, NOT frozen evaluation',actor_update_budget=256),chunk_ticks=1000000)
+            scope='Mixed-policy training transitions, NOT frozen evaluation',actor_update_budget=args.recovery_update_budget+args.approach_update_budget),chunk_ticks=1000000)
         archive.attach_task_sequence(env);env.physical_transition_archive=archive
         def file_sha(path):
             return hashlib.sha256(Path(path).read_bytes()).hexdigest() if path else None
@@ -136,11 +156,11 @@ def run(args):
         if file_sha(reference_path)!=manifest['source_sha256']:
             raise ValueError('Reference policy checkpoint does not match the verified source actor')
         bad_meta=dict(path=str(args.bad_policy_checkpoint.resolve()),sha256=file_sha(args.bad_policy_checkpoint)) if args.bad_policy_checkpoint else None
-        config=dict(actor_update_budget=args.actor_update_budget,native_ticks_per_actor_update=4,world_updates_per_actor_update=1,
+        config=dict(actor_update_budget=args.recovery_update_budget+args.approach_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=4,world_updates_per_actor_update=1,
             world_batch=128,imagination_batch=128,timebase=timebase.manifest(),actor_lr=5e-5,world_lr=2e-4,critic_lr=2e-4,
             policy_anchor=.05,critic_warmup_updates=200,critic_max_loss=50.,max_critic_only_blocks=32,
             command_delta_budget=args.command_delta_budget,target_delta_budget_rad=args.target_delta_budget_rad,
-            actor_whitelist=APPROACH_NAMES,source_sha256=manifest['source_sha256'],packed_data_sha256=packed_sha,
+            actor_whitelist={'recovery':RECOVERY_NAMES,'approach':APPROACH_NAMES},source_sha256=manifest['source_sha256'],packed_data_sha256=packed_sha,
             initialization_native_return=expected['native_return_mean'],extra_mpc=0,
             reference_policy=dict(path=str(reference_path),sha256=file_sha(reference_path)),bad_policy=bad_meta,
             sampling='actor: initial/fresh approach; critic: overlapping full-episode current starts, reverse-time order',
@@ -172,6 +192,10 @@ def run(args):
                 save('latest.pt')
             if not critic_ready(trainer.critic_updates,trainer.last_critic_loss):
                 raise RuntimeError('Contextual critic quality gate did not pass within finite32-block budget')
+        native_calibration=trainer.calibrate_critic_native([as_state(start_cache[0])],rtg[0])
+        native_calibration.update(policy_id='initial_reference',source='packed_loop/data.pt',discount_mode='physical_time',
+                                  horizon_steps=int(rtg.shape[0]),native_return_scope='same-policy first completed 128 episodes')
+        write(args.output/'native_critic_calibration.json',native_calibration)
         # A already supplies complete native episodes. This warmup concerns the
         # new contextual critic, not recollecting a fresh 800 ticks each update.
         def cover_critic():
@@ -190,6 +214,52 @@ def run(args):
         while critic_coverage_blocks<len(critic_starts):cover_critic()
         ensure_critic()
         cursor=0;completed_returns=[];completed_discounted=[];phase='LEARNING'
+        def run_block(block_name, names, budget):
+            nonlocal completed_returns,completed_discounted,obs,tick,cursor
+            if budget<=0:return
+            trainer.set_trainable_names(names,block_name)
+            block_pool=recovery_pool if block_name=='recovery' else approach_pool
+            trainer.set_budget_state_library([as_state(row) for row in block_pool+critic_starts[:4]])
+            accepted=0;attempts=0;max_attempts=max(8*budget,budget+8)
+            while accepted<budget:
+                if attempts>=max_attempts: raise RuntimeError(f'{block_name} block rejected too many actor proposals')
+                attempts+=1;trainer.block_attempts=attempts
+                trainer.actor_updates=accepted
+                trainer.actor_attempts=attempts
+                check_stop();cover_critic();ensure_critic()
+                if shutil.disk_usage(args.output).free<8*1024**3:raise RuntimeError('Disk guard: less than8GiB free')
+                started=time.perf_counter()
+                with torch.inference_mode():
+                    for _ in range(4):
+                        check_stop();action=actor(obs['policy'],sample=False)[0];obs,reward,done,info=wrapper.step(action);tick+=1
+                        if not torch.isfinite(obs['policy']).all():raise FloatingPointError('Nonfinite native observation')
+                        for raw in env.rally_records[cursor:]:
+                            record=score_terminal_episode(raw,dict(protocol,_root=str(ROOT)));record.update(policy_block=block_name,policy_update_at_end=accepted,scope='mixed-policy monitoring, not frozen score');completed_returns.append(record['native_episode_return']);completed_discounted.append(record['native_episode_discounted_return'])
+                            with (args.output/'native_episodes.jsonl').open('a') as f:f.write(json.dumps(record)+'\n')
+                        cursor=len(env.rally_records)
+                collect_s=time.perf_counter()-started;check_stop()
+                window,lanes,sampling=replay.window(timebase.world_steps,128,accepted);world_stats=trainer.fit_world_window(window,launch[lanes]);del window
+                pool=replay.new_starts if (block_name=='approach' and replay.new_starts and accepted%2) else block_pool;row=pool[accepted%len(pool)];state=as_state(row);check_stop();stats=trainer.imagine_update(state)
+                if stats['update_accepted']:
+                    if not any(v>0.0 for v in stats['parameter_max_changes'].values()):
+                        raise RuntimeError(f'{block_name} accepted update had zero trainable parameter change; no effective gradient')
+                    accepted+=1
+                with torch.no_grad():request=actor(state.observation,sample=False)[0];preview,_,_=adapter.executor.forward(state.observation,request,state.clock_goal_context['joint_default'][0],state.clock_goal_context['limits'],state.executor_memory)
+                record=dict(**stats,**{k:v for k,v in world_stats.items() if k not in stats},block=block_name,block_accepted_updates=accepted,native_ticks=tick,native_transitions=tick*128,native_collect_seconds=collect_s, native_reward_mean=float(reward.mean()),completed_native_episodes=len(completed_returns),native_return_mean=sum(completed_returns)/len(completed_returns) if completed_returns else None,native_discounted_return_mean=sum(completed_discounted)/len(completed_discounted) if completed_discounted else None,raw_return_scope='completed mixed-policy monitoring; incomplete episodes excluded',peak_gpu_bytes=torch.cuda.max_memory_allocated(),model_calls=adapter.calls,window_sampling=sampling,imagined_start_source='fresh_native' if pool is replay.new_starts else 'initialization_archive')
+                save('latest.pt');write(args.output/'progress.json',record)
+                with (args.output/'training_history.jsonl').open('a') as f:f.write(json.dumps(record)+'\n')
+                print('PHYSICAL_LEARNING='+json.dumps(record),flush=True)
+                if accepted and accepted%16==0:save(f'{block_name}_checkpoint_{accepted:04d}.pt')
+            save(f'{block_name}_candidate_{accepted:04d}.pt')
+        run_block('recovery',RECOVERY_NAMES,args.recovery_update_budget)
+        run_block('approach',APPROACH_NAMES,args.approach_update_budget)
+        archive.flush();save(f'candidate_{args.recovery_update_budget+args.approach_update_budget:04d}.pt')
+        write(args.output/'training_completed.json',dict(actor_updates=args.recovery_update_budget+args.approach_update_budget,native_ticks=tick,
+             actor_attempts=trainer.actor_attempts,rejected_actor_updates=trainer.rejected_actor_updates,
+             world_updates=trainer.world_updates,critic_updates=trainer.critic_updates,formal_evaluation=False,blocks=['recovery','approach']))
+        stage(args.output,'TRAINING_FINISHED',actor_updates=args.recovery_update_budget+args.approach_update_budget)
+        return
+        # Legacy single-block loop retained below for provenance but unreachable.
         max_attempts=max(args.actor_update_budget*8,args.actor_update_budget+8)
         while trainer.actor_updates<args.actor_update_budget:
             if trainer.actor_attempts>=max_attempts:
@@ -255,4 +325,16 @@ def run(args):
         close_resource(args.output,'ENV',env,primary_failed=failed)
 
 
-if __name__=='__main__':main()
+if __name__=='__main__':
+    # Isaac Sim 5.1's PhysX Python bindings can run a module-level destructor
+    # after the scoped native cleanup has released Kit.  That destructor calls
+    # PyThreadState_Get without the GIL and aborts during interpreter exit.
+    # Training artifacts are already durable when main() returns, so bypass
+    # Python's second finalization pass on the clean path.
+    os.environ['QUADSMASH_SKIP_KIT_CLOSE'] = '1'
+    try:
+        main()
+    except BaseException:
+        os._exit(1)
+    else:
+        os._exit(0)

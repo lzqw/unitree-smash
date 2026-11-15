@@ -14,6 +14,22 @@ from quadsmash.control.g07_shared_target_residual_v1 import make_g07_residual_co
 
 SOURCE_SHA='8f510fe9f218beef791ac21675a19ed25d11f510a83fe247cddf2893bee08399'
 APPROACH_NAMES=tuple('actor.approach.'+layer+'.'+kind for layer in ('0','2','4') for kind in ('weight','bias'))
+RECOVERY_NAMES=tuple('actor.recovery.'+layer+'.'+kind for layer in ('0','2','4') for kind in ('weight','bias'))
+HEAD_NAMES=APPROACH_NAMES+RECOVERY_NAMES
+
+
+def set_actor_trainable(actor, names):
+    names=set(names)
+    parameters=dict(actor.named_parameters())
+    unknown=sorted(names-set(parameters))
+    if unknown:
+        raise ValueError(f'Unknown actor parameters in whitelist: {unknown}')
+    actor.requires_grad_(False)
+    for name in names:
+        parameters[name].requires_grad_(True)
+    if not names:
+        raise ValueError('Empty actor whitelist')
+    return tuple(sorted(names))
 
 
 def freeze_execution_modules(obj,seen=None):
@@ -47,9 +63,8 @@ def load_physical_loop(*,archive,physical_checkpoint,ball_checkpoint,task_checkp
     if hashes['source']!=SOURCE_SHA or manifest['source_sha256']!=SOURCE_SHA:raise ValueError('Wrong source actor')
     actor,actor_meta=load_ppo_initialized_actor(paths['source'],torch.device(device))
     names=dict(actor.named_parameters())
-    if not set(APPROACH_NAMES)<=names.keys():raise ValueError('Approach parameter contract mismatch')
-    actor.requires_grad_(False)
-    for name in APPROACH_NAMES:names[name].requires_grad_(True)
+    if not set(HEAD_NAMES)<=names.keys():raise ValueError('Actor head parameter contract mismatch')
+    set_actor_trainable(actor, APPROACH_NAMES)
     controller=make_g07_residual_controller(torch.load(paths['source'],map_location='cpu',weights_only=False),
         manifest['num_envs'],torch.device(device),'/home/autodrive/LZQW/unitree_smash')
     freeze_execution_modules(controller)
@@ -71,7 +86,8 @@ def load_physical_loop(*,archive,physical_checkpoint,ball_checkpoint,task_checkp
     if safety['asset_sha256']!=manifest['task_contract']['asset']['sha256']:raise ValueError('Safety geometry asset mismatch')
     adapter=PhysicalImaginationAdapter(physical,ball,task,executor,safety_body_names=safety['safety_body_names'],
         manifest=dict(checkpoint_paths={k:str(v) for k,v in paths.items()},checkpoint_sha256=hashes,
-                      task_schema=schema.manifest(),actor_whitelist=APPROACH_NAMES)).to(device)
+                      task_schema=schema.manifest(),actor_whitelist=APPROACH_NAMES,
+                      actor_heads={'approach':APPROACH_NAMES,'recovery':RECOVERY_NAMES})).to(device)
     suite=Path(__file__).resolve().parents[2]/manifest['task_contract']['suite']['path']
     if hashlib.sha256(suite.read_bytes()).hexdigest()!=manifest['task_contract']['suite']['sha256']:raise ValueError('Suite hash mismatch')
     cases=json.loads(suite.read_text())['cases']
