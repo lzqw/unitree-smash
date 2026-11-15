@@ -369,14 +369,24 @@ def run(args):
                 trainer.fit_world_window(window,launch[lanes]);del window
                 refresh_world+=1
             refresh_critic=0
+            refresh_critic_losses=[]
             for update in range(args.refresh_critic_updates):
                 ti=stage_ticks_refresh[update%len(stage_ticks_refresh)]
-                trainer.imagine_update(as_state(refresh_stage_records[ti]),update_actor=False)
-                refresh_critic+=1
+                # Refresh critic values against the completed frozen-policy
+                # native return-to-go.  Do not call imagine_update here: that
+                # would train the critic on a model rollout and silently erase
+                # the policy/episode-aligned native labels just computed above.
+                state=as_state(refresh_stage_records[ti])
+                fit=trainer.calibrate_critic_native(
+                    [state], [rtg_refresh[ti].to(state.physical.device)], epochs=1)
+                refresh_critic += int(fit['native_critic_calibration_updates'])
+                refresh_critic_losses.append(float(fit['native_critic_calibration_loss']))
             write(args.output/'refresh_manifest.json',dict(
                 policy_id='recovery_frozen_refresh',start_tick=start_tick,end_tick=tick,
                 ticks=refresh_count,transitions=refresh_count*128,
                 world_updates=refresh_world,critic_updates=refresh_critic,
+                critic_update_mode='native_rtg_calibration',
+                critic_calibration_losses=refresh_critic_losses,
                 stage_ticks=stage_ticks_refresh,rtg_scope='same frozen recovery policy',
                 replay_count=int(replay.count),replay_capacity=int(replay.capacity),warmup_ticks=warmup_ticks,
                 missing_fields=[]))
