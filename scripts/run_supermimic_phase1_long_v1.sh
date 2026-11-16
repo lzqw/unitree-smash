@@ -52,7 +52,7 @@ for cycle in 1 2 3 4; do
     --command-delta-budget 0.005 --target-delta-budget-rad 0.04
     --tensorboard-dir "$RUN_ROOT/tensorboard"
     --output "$OUT" --headless --device cuda:0
-    --rendering_mode performance --kit_args "--renderer/multiGpu/enabled=false"
+    --rendering_mode performance --kit_args=--renderer/multiGpu/enabled=false
   )
   if [[ -n "$PREV" ]]; then
     TRAIN_ARGS+=(--resume-training "$PREV" --resume-warmup-ticks 0)
@@ -76,7 +76,7 @@ PY
   (cd "$ROOT" && CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}" QUADSMASH_PYTHON="$PYTHON" \
     bash scripts/python.sh scripts/evaluate_supermimic_v1.py --checkpoint "$CANDIDATE" \
       --output "$EVAL" --physics-device cuda:0 --headless \
-      --rendering_mode performance --kit_args "--renderer/multiGpu/enabled=false" 2>&1 | tee "$EVAL.log")
+      --rendering_mode performance --kit_args=--renderer/multiGpu/enabled=false 2>&1 | tee "$EVAL.log")
   python_bin="$PYTHON"
   ACCEPTED="$($python_bin - "$EVAL/metrics.json" <<'PY'
 import json,sys
