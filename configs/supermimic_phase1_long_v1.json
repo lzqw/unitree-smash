@@ -1,0 +1,27 @@
+{
+  "gpu": "cuda:0",
+  "num_envs": 128,
+  "cycles": 4,
+  "recovery_updates_per_cycle": 64,
+  "approach_updates_per_cycle": 64,
+  "recovery_proposal_limit_per_cycle": 64,
+  "approach_proposal_limit_per_cycle": 64,
+  "native_ticks_per_actor_update": 16,
+  "native_control_ticks": 8192,
+  "native_transitions": 1048576,
+  "imagination_seconds": 0.64,
+  "world_window_seconds": 0.16,
+  "replay_capacity_ticks": 16384,
+  "actor_learning_rate": 0.00005,
+  "world_learning_rate": 0.0002,
+  "critic_learning_rate": 0.0002,
+  "refresh_ticks": 0,
+  "formal_evaluation": "one frozen 128-env evaluation after each accepted cycle",
+  "acceptance": {
+    "native_return_gt": -12.52678435,
+    "ball_side_min": 53,
+    "complete5_min": 27,
+    "numerical_failures": 0
+  },
+  "notes": "No MPC, teacher takeover, reward, asset, physics, action mapping or control-period changes. CPU ring replay with GPU minibatches."
+}

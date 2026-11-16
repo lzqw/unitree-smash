@@ -31,7 +31,9 @@ class PhysicalHorizonTrainer:
         self.block_name=block_name
         self.actor_lr=float(actor_lr)
         self.trainable_names=set_actor_trainable(actor, trainable_names or APPROACH_NAMES)
+        self._actor_optimizers={}
         self.actor_opt=torch.optim.Adam([p for p in actor.parameters() if p.requires_grad],lr=actor_lr,betas=(.9,.95))
+        self._actor_optimizers[self.block_name]=self.actor_opt
         self.world_opt=torch.optim.Adam(adapter.parameters(),lr=2e-4)
         self.critic_opt=torch.optim.Adam(self.critic.parameters(),lr=2e-4)
         self.actor_updates=self.world_updates=self.critic_updates=0
@@ -55,7 +57,15 @@ class PhysicalHorizonTrainer:
         names=set(names)
         self.trainable_names=set_actor_trainable(self.actor,names)
         self.block_name=block_name or self.block_name
-        self.actor_opt=torch.optim.Adam([p for p in self.actor.parameters() if p.requires_grad],lr=self.actor_lr,betas=(.9,.95))
+        # Keep one optimizer state per head. Switching Recovery→Approach must
+        # not discard Adam moments or silently reinitialize the learning rate.
+        if self.block_name not in self._actor_optimizers:
+            self._actor_optimizers[self.block_name]=torch.optim.Adam(
+                [p for p in self.actor.parameters() if p.requires_grad],lr=self.actor_lr,betas=(.9,.95))
+        self.actor_opt=self._actor_optimizers[self.block_name]
+        pending=getattr(self,'_pending_actor_optimizer_states',{}).pop(self.block_name,None)
+        if pending is not None:
+            self.actor_opt.load_state_dict(pending)
         self.actor_updates=0; self.actor_attempts=0; self.rejected_actor_updates=0; self.backtracked_actor_updates=0
         self.block_start_snapshot={k:v.detach().clone() for k,v in self.actor.state_dict().items()}
         self.accepted_snapshot={k:v.detach().clone() for k,v in self.actor.state_dict().items()}
