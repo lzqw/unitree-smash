@@ -407,9 +407,12 @@ def run(args):
                 window,lanes,sampling=replay.window(timebase.world_steps,128,accepted);world_stats=trainer.fit_world_window(window,launch[lanes]);del window
                 pool=replay.new_starts if (block_name=='approach' and replay.new_starts and accepted%2) else block_pool
                 if block_name=='approach':
-                    pool=[item for item in pool if approach_active(item)]
-                    if not pool:
-                        raise RuntimeError('Approach proposal has no gate-active replay start')
+                    active_pool=[item for item in pool if approach_active(item)]
+                    # Fresh native ticks can legitimately fall between public
+                    # approach gates.  Keep the fresh pool when it contains
+                    # usable starts; otherwise fall back to the verified fixed
+                    # approach pool instead of aborting the whole block.
+                    pool=active_pool if active_pool else approach_pool
                 row=pool[accepted%len(pool)];state=as_state(row);check_stop();stats=trainer.imagine_update(state)
                 if stats['update_accepted']:
                     if not any(v>0.0 for v in stats['parameter_max_changes'].values()):
