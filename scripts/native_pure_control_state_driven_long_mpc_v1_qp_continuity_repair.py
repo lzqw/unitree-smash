@@ -6,11 +6,20 @@ from scripts.native_pure_control_recovery_v1 import NativePureControlRecoveryV1
 from scripts.pure_control_state_driven_long_mpc_v1_qp_continuity_repair import (
     PureControlStateDrivenLongMPCV1QPContinuityRepair,
 )
+from scripts.full_authority_position_interface_v1 import FullAuthorityCommandArbiterV1
 from scripts.whole_body_support_qp_v1 import PositionPDInterface
 
 
 class NativePureControlStateDrivenLongMPCV1QPContinuityRepair(
         NativePureControlRecoveryV1):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # The teacher candidate uses the same full-authority transform in
+        # prediction and dispatch.  Native actuator velocity/effort/position
+        # limits remain in the simulator and physical predictor; this removes
+        # only the extra Recovery arbiter arm target slew.
+        self.arbiter = FullAuthorityCommandArbiterV1(self.limits)
+
     def action(self, tick, observation, student, finished):
         start = len(self.rows)
         result = super().action(tick, observation, student, finished)
