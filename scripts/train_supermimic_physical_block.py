@@ -156,7 +156,12 @@ def run(args):
                 for item in receipt['chunks']:
                     path=directory/item['file']
                     if hashlib.sha256(path.read_bytes()).hexdigest()!=item['sha256']:raise ValueError('Resume archive hash mismatch')
-                    for row in torch.load(path,map_location='cpu',weights_only=True)['rows']:replay.append(row)
+                    if path.suffix == '.zst':
+                        proc=subprocess.run(['zstd','-q','-d','-c',str(path)],check=True,capture_output=True)
+                        chunk=torch.load(io.BytesIO(proc.stdout),map_location='cpu',weights_only=True)
+                    else:
+                        chunk=torch.load(path,map_location='cpu',weights_only=True)
+                    for row in chunk['rows']:replay.append(row)
                 replay.new_stream()
             replay.generator.set_state(resumed['replay_rng'].cpu())
             torch.set_rng_state(resumed['torch_rng'].cpu());torch.cuda.set_rng_state(resumed['cuda_rng'].cpu())

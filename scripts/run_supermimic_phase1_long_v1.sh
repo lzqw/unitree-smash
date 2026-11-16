@@ -58,7 +58,7 @@ for cycle in 1 2 3 4; do
     TRAIN_ARGS+=(--resume-training "$PREV" --resume-warmup-ticks 0)
   fi
   echo "[cycle $cycle] training start $(date -Is)"
-  (cd "$ROOT" && CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}" QUADSMASH_PYTHON="$PYTHON" \
+  (cd "$ROOT" && QUADSMASH_ZSTD_ARCHIVE=1 CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}" QUADSMASH_PYTHON="$PYTHON" \
     bash scripts/python.sh scripts/train_supermimic_physical_block.py "${TRAIN_ARGS[@]}" 2>&1 | tee "$OUT.log")
   ACCEPTED_COUNT="$($PYTHON - "$OUT/training_completed.json" <<'PY'
 import json,sys
