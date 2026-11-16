@@ -94,10 +94,13 @@ class PhysicalLoopReplay:
             return
         start = current_start(row)
         stage = self._stage(row)
+        # Full executor/observation trees are expensive.  Keep a small recent
+        # diagnostic pool; fixed verified pools remain available for each
+        # training block, so long runs do not grow memory with every tick.
         self.stage_starts[stage].append(start)
-        self.stage_starts[stage] = self.stage_starts[stage][-64:]
+        self.stage_starts[stage] = self.stage_starts[stage][-8:]
         self.new_starts.append(start)
-        self.new_starts = self.new_starts[-256:]
+        self.new_starts = self.new_starts[-32:]
 
     def _ordered(self):
         if self.count < self.capacity:
