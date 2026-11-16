@@ -1,0 +1,68 @@
+{
+  "direct_search": {
+    "trigger_calls": 897,
+    "candidate_samples": 7176,
+    "full_feasible_candidates": 8,
+    "adopted_sequences": 2,
+    "physical_rejections": 7018,
+    "prediction_failures": 158,
+    "sequence_nodes": 32,
+    "note": "feasible is the top-level per-call count; adopted plans are the two plans with sequence_direct_searched=true"
+  },
+  "command_audit": {
+    "rows": 28687,
+    "missing_preview_rows": 0,
+    "max_prediction_preview_vs_native_arbiter_delta_rad": 0.0,
+    "max_final_vs_recorded_dispatch_roundtrip_delta_rad": 1.7872133928342748e-07,
+    "dispatch_roundtrip_violations_over_2e-6": 0,
+    "max_actual_history_vs_previous_final_delta_rad": 3.618785342496267e-07,
+    "history_violations_over_2e-6": 0,
+    "max_requested_vs_final_delta_rad": 1.1102230246251565e-16,
+    "request_final_violations_over_2e-6": 0,
+    "all_pass": true
+  },
+  "arm_target_command_rate_rad_s": {
+    "max": 58.484444461230446,
+    "p50": 0.011674202660594268,
+    "p95": 1.3415265912188679,
+    "p99": 3.025531229227545,
+    "samples_over_5_rad_s": 600,
+    "note": "command-target difference per 0.01 s; native physical velocity/effort/position/collision limits remain enforced; this is not a measured joint velocity"
+  },
+  "racket_contact_point_speed_m_s": {
+    "current": {
+      "n": 59,
+      "max": 3.010796990308037,
+      "p50": 1.053276912625511,
+      "p95": 1.8853568803322058,
+      "p99": 2.776141426023048,
+      "mean": 1.1389115067506606
+    },
+    "historical": {
+      "n": 59,
+      "max": 2.6887039666810444,
+      "p50": 1.074178028745531,
+      "p95": 1.9201760311375033,
+      "p99": 2.6539011983699474,
+      "mean": 1.1500438333120862
+    }
+  },
+  "actor_and_training": {
+    "teacher_only": true,
+    "base_actor": false,
+    "approach_head": false,
+    "recovery_head": false,
+    "actor_forward_count": 0,
+    "optimizer_step_count": 0,
+    "teacher_arm_target_slew_removed": true,
+    "numerical_failures": 0
+  },
+  "raw_paths": {
+    "run": "/home/autodrive/LZQW/unitree_smash_teacher_eval/attempts/recovery_arm_wbc_next_round_20261116_03/native",
+    "metrics": "/home/autodrive/LZQW/unitree_smash_teacher_eval/attempts/recovery_arm_wbc_next_round_20261116_03/native/metrics.json",
+    "episodes": "/home/autodrive/LZQW/unitree_smash_teacher_eval/attempts/recovery_arm_wbc_next_round_20261116_03/native/episodes.json",
+    "commands": "/home/autodrive/LZQW/unitree_smash_teacher_eval/attempts/recovery_arm_wbc_next_round_20261116_03/native/pure_control_commands.npz",
+    "diagnostics": "/home/autodrive/LZQW/unitree_smash_teacher_eval/attempts/recovery_arm_wbc_next_round_20261116_03/native/pure_control_diagnostics.jsonl",
+    "sequence_dispatch": "/home/autodrive/LZQW/unitree_smash_teacher_eval/attempts/recovery_arm_wbc_next_round_20261116_03/native/sequence_dispatch.npz"
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "schema": "teacher-recovery-arm-wbc-candidate-v1",
+  "run_id": "recovery_arm_wbc_20261116_03",
+  "attempt_kind": "same_frozen_candidate_engineering_retry",
+  "evaluation_stage": "teacher_debug",
+  "formal_eligible": false,
+  "formal_acceptance": false,
+  "formal_cases_read": false,
+  "git_head": "329c15e8977f0eb8588d533c225d5e3f713c5ac5",
+  "git_branch": "codex/recovery-arm-wbc-next-round-20261116",
+  "worktree": "/home/autodrive/LZQW/unitree_smash_teacher_eval",
+  "teacher_only": true,
+  "supermimic_modified": false,
+  "supermimic_started_by_codex": false,
+  "protocol": {
+    "environments": 128,
+    "control_steps": 800,
+    "control_dt_s": 0.01,
+    "episode_seconds": 8.0,
+    "seed": 882072,
+    "ground_xy_m": 64.0,
+    "noise": "none"
+  },
+  "historical_comparison": {
+    "qualified_airborne_contacts": "29/128",
+    "conditional_recovery": "20/29",
+    "complete5": "10/128"
+  },
+  "engineering_retries": [
+    "recovery_arm_wbc_next_round_20261116_01: preview/native arbiter mismatch fixed by full authority arbiter wiring",
+    "recovery_arm_wbc_next_round_20261116_02: adopted ndarray sequence cache truth-value error fixed by list normalization"
+  ],
+  "changes": {
+    "recovery_history_binding": "bind actual previous final command on live and isolated worker before every prediction/bounds query",
+    "direct_search_preview": "full-authority preview in teacher recovery path; 32-node search contract unchanged",
+    "prefix_arm_slew": "teacher-only analytic ArmTargetRate disabled; native actuator/position/velocity/effort/collision limits unchanged",
+    "recovery_arbiter": "FullAuthorityCommandArbiterV1 wired into native teacher recovery; no extra arm software slew",
+    "jacobian": "existing measured six-axis racket position/normal Jacobian retained; no learned action contribution"
+  },
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_teacher_eval/scripts/pure_control_state_driven_long_mpc_v1_qp_continuity_repair.py": "09feb8c6ae17f4b5c3e45fc4d9d553c3b12b2ebdaa82439a91d37252f05952fa",
+    "/home/autodrive/LZQW/unitree_smash_teacher_eval/scripts/native_pure_control_state_driven_long_mpc_v1_qp_continuity_repair.py": "fca7a446aa315e0699c26567fbbd03a893ab23b94e7871b8e2aa888a5e345784",
+    "/home/autodrive/LZQW/unitree_smash_teacher_eval/scripts/preview_recovery_execution_v1.py": "0a34e55b0b2050fc3c0cb3b666f8db496885c533464befddcc64bbe29862f598",
+    "/home/autodrive/LZQW/unitree_smash_teacher_eval/scripts/full_authority_position_interface_v1.py": "88a371b4e72864952c7e7c3c2250ccd90603e3e7c0ef7c1579030cc9e89034ca",
+    "/home/autodrive/LZQW/unitree_smash_teacher_eval/reports/codex_teacher_joint_eval_20261116/evaluate_teacher_only.py": "ee80ae38480e2a602faf6526dd1787b5ac51782d472d703cd1694c88de8ef41a",
+    "/home/autodrive/LZQW/unitree_smash_teacher_eval/attempts/recovery_arm_wbc_next_round_20261116_03/evaluate_teacher_only.py": "ee80ae38480e2a602faf6526dd1787b5ac51782d472d703cd1694c88de8ef41a",
+    "/home/autodrive/LZQW/unitree_smash_teacher_eval/attempts/recovery_arm_wbc_next_round_20261116_03/controller.json": "4c1a1c3cce71954081c252b0ca7bb10e77f65bdaf39525e9a78fb4f8e67330f7"
+  },
+  "supermimic_process_snapshot": [
+    "autodri+ 2464738    2481 2464738 2464738 Mon Nov 16 22:44:52 2026    01:59:13  0.0  0.0 Ss   bash ./scripts/run_supermimic_phase1_long_v1.sh",
+    "autodri+ 2464744 2464738 2464738 2464738 Mon Nov 16 22:44:52 2026    01:59:13  0.1  0.1 Sl   /home/autodrive/Isaac/env_isaaclab/bin/python -m tensorboard.main --logdir /home/autodrive/LZQW/supermimic_phase1_resume_20261116_224452/tensorboard --host 127.0.0.1 --port 6006",
+    "autodri+ 2464746 2464738 2464738 2464738 Mon Nov 16 22:44:52 2026    01:59:13  0.0  0.0 S    bash ./scripts/run_supermimic_phase1_long_v1.sh",
+    "autodri+ 2464747 2464746 2464738 2464738 Mon Nov 16 22:44:52 2026    01:59:13  149 26.3 Rl   /home/autodrive/Isaac/env_isaaclab/bin/python scripts/train_supermimic_physical_block.py --archive /tmp/supermimic_physical_loop_capture_20261114_ub0eiq8t/run/physical_transitions --packed-data /tmp/supermimic_physical_loop_capture_20261114_ub0eiq8t/packed_loop/data.pt --physical-checkpoint /tmp/supermimic_racket_dynamics_20261114_YRFhKS/run/world.pt --ball-checkpoint /tmp/supermimic_ball_sequence_20261114_axsonnit/run/ball.pt --task-checkpoint /tmp/supermimic_physical_loop_capture_20261114_ub0eiq8t/task_fit_01/task.pt --safety-mapping /tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/reports/supermimic_native_physical_loop_20261114/safety_mapping.json --reference-policy-checkpoint /home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_env5120_01/policy.pt --recovery-update-budget 64 --approach-update-budget 64 --recovery-proposal-budget 64 --approach-proposal-budget 64 --update-mode sequential --ball-side-mode shadow --cycles 1 --native-ticks-per-actor-update 16 --replay-capacity-ticks 16384 --refresh-ticks 0 --refresh-world-updates 0 --refresh-critic-updates 0 --command-delta-budget 0.005 --target-delta-budget-rad 0.04 --tensorboard-dir /home/autodrive/LZQW/supermimic_phase1_resume_20261116_224452/tensorboard --output /home/autodrive/LZQW/supermimic_phase1_resume_20261116_224452/cycle_1 --headless --device cuda:0 --rendering_mode performance --kit_args=--renderer/multiGpu/enabled=false --resume-training /home/autodrive/LZQW/supermimic_phase1_20261116_222941/cycle_1/interrupted.pt --resume-warmup-ticks 0",
+    "autodri+ 2464748 2464746 2464738 2464738 Mon Nov 16 22:44:52 2026    01:59:13  0.0  0.0 S    tee /home/autodrive/LZQW/supermimic_phase1_resume_20261116_224452/cycle_1.log",
+    "autodri+ 2464899 2464744 2464738 2464738 Mon Nov 16 22:44:52 2026    01:59:13  0.0  0.0 Sl   /home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/tensorboard_data_server/bin/server --logdir=/home/autodrive/LZQW/supermimic_phase1_resume_20261116_224452/tensorboard --reload=5 --samples-per-plugin= --port=0 --port-file=/tmp/tensorboard_data_server_x0sxn2ej/port --die-after-stdin --error-file=/tmp/tensorboard_data_server_x0sxn2ej/startup_error",
+    "autodri+ 2466970 1796480 2466970 1796480 Mon Nov 16 22:48:03 2026    01:56:02  0.0  0.0 S+   tail -f /home/autodrive/LZQW/supermimic_phase1_resume_20261116_224452/cycle_1.log",
+    "autodri+ 2499179 1433657 2499179 2499179 Tue Nov 17 00:44:05 2026       00:00  0.0  0.0 Ss   /bin/bash -c set -e cd /home/autodrive/LZQW/unitree_smash_teacher_eval RUN=attempts/recovery_arm_wbc_next_round_20261116_03 mkdir -p \"$RUN/native\" cp reports/codex_teacher_joint_eval_20261116/evaluate_teacher_only.py \"$RUN/evaluate_teacher_only.py\" cp attempts/recovery_arm_wbc_next_round_20261116_02/controller.json \"$RUN/controller.json\" cat > \"$RUN/command.json\" <<'JSON' [   \"bash\", \"scripts/python.sh\", \"-u\",   \"/home/autodrive/LZQW/unitree_smash_teacher_eval/attempts/recovery_arm_wbc_next_round_20261116_03/evaluate_teacher_only.py\",   \"--output\", \"/home/autodrive/LZQW/unitree_smash_teacher_eval/attempts/recovery_arm_wbc_next_round_20261116_03/native\",   \"--checkpoint\", \"/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_env5120_01/policy.pt\",   \"--precision-receipt\", \"/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin_precision_after_aim_queue01/PRECISION_ADMISSION.json\",   \"--ground-xy-m\", \"64\", \"--record-first-episodes\", \"--seed\", \"882072\",   \"--persistent-recovery-trial\", \"--headless\", \"--device\", \"cuda:0\",   \"--pure-control-configuration\", \"/home/autodrive/LZQW/unitree_smash_teacher_eval/attempts/recovery_arm_wbc_next_round_20261116_03/controller.json\",   \"--teacher-only\", \"--allow-declared-controller-variant\" ] JSON python3 - <<'PY' import hashlib,json,subprocess,pathlib root=pathlib.Path('/home/autodrive/LZQW/unitree_smash_teacher_eval'); run=root/'attempts/recovery_arm_wbc_next_round_20261116_03' def sha(p): return hashlib.sha256(p.read_bytes()).hexdigest() files=[root/'scripts/pure_control_state_driven_long_mpc_v1_qp_continuity_repair.py',root/'scripts/native_pure_control_state_driven_long_mpc_v1_qp_continuity_repair.py',root/'scripts/preview_recovery_execution_v1.py',root/'scripts/full_authority_position_interface_v1.py',root/'reports/codex_teacher_joint_eval_20261116/evaluate_teacher_only.py',run/'evaluate_teacher_only.py',run/'controller.json'] ps=subprocess.check_output(['ps','-eo','user,pid,ppid,pgid,sid,lstart,etime,%cpu,%mem,stat,cmd'],text=True) gpu=subprocess.run(['nvidia-smi','--query-gpu=index,name,memory.used,memory.total,utilization.gpu','--format=csv,noheader'],text=True,capture_output=True).stdout manifest={'schema':'teacher-recovery-arm-wbc-candidate-v1','run_id':'recovery_arm_wbc_20261116_03','attempt_kind':'same_frozen_candidate_engineering_retry','evaluation_stage':'teacher_debug','formal_eligible':False,'formal_acceptance':False,'formal_cases_read':False,'git_head':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),'git_branch':subprocess.check_output(['git','branch','--show-current'],cwd=root,text=True).strip(),'worktree':str(root),'teacher_only':True,'supermimic_modified':False,'supermimic_started_by_codex':False,'protocol':{'environments':128,'control_steps':800,'control_dt_s':.01,'episode_seconds':8.0,'seed':882072,'ground_xy_m':64.0,'noise':'none'},'historical_comparison':{'qualified_airborne_contacts':'29/128','conditional_recovery':'20/29','complete5':'10/128'},'engineering_retries':['recovery_arm_wbc_next_round_20261116_01: preview/native arbiter mismatch fixed by full authority arbiter wiring','recovery_arm_wbc_next_round_20261116_02: adopted ndarray sequence cache truth-value error fixed by list normalization'],'changes':{'recovery_history_binding':'bind actual previous final command on live and isolated worker before every prediction/bounds query','direct_search_preview':'full-authority preview in teacher recovery path; 32-node search contract unchanged','prefix_arm_slew':'teacher-only analytic ArmTargetRate disabled; native actuator/position/velocity/effort/collision limits unchanged','recovery_arbiter':'FullAuthorityCommandArbiterV1 wired into native teacher recovery; no extra arm software slew','jacobian':'existing measured six-axis racket position/normal Jacobian retained; no learned action contribution'},'source_sha256':{str(p):sha(p) for p in files},'supermimic_process_snapshot':[line for line in ps.splitlines() if 'supermimic' in line.lower()],'gpu_snapshot':gpu.strip(),'disk_free':subprocess.check_output(['df','-h','/home/autodrive'],text=True),'command':json.loads((run/'command.json').read_text()),'frozen_before_start':True} (run/'CANDIDATE_MANIFEST.json').write_text(json.dumps(manifest,indent=2,ensure_ascii=False)+'\\n'); (run/'prelaunch_resources.txt').write_text(ps+'\\n--GPU--\\n'+gpu) print(json.dumps({'head':manifest['git_head'],'run':str(run)})) PY systemd-run --user --unit=unitree-teacher-recovery-arm-wbc-20261116-03 --slice=unitree-teacher.slice --property=Type=simple --property=Restart=no --property=RuntimeMaxSec=infinity --property=TimeoutStopSec=infinity --property=KillMode=control-group --working-directory=/home/autodrive/LZQW/unitree_smash_teacher_eval /home/autodrive/LZQW/dual_line_runtime/bin/line_supervisor.py --line teacher --run-id recovery_arm_wbc_20261116_03 --output \"$RUN\" --cwd /home/autodrive/LZQW/unitree_smash_teacher_eval --command-json \"$RUN/command.json\""
+  ],
+  "gpu_snapshot": "0, NVIDIA GeForce RTX 5080, 5917 MiB, 16303 MiB, 15 %",
+  "disk_free": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/nvme0n1p5  1.1T  938G   86G  92% /\n",
+  "command": [
+    "bash",
+    "scripts/python.sh",
+    "-u",
+    "/home/autodrive/LZQW/unitree_smash_teacher_eval/attempts/recovery_arm_wbc_next_round_20261116_03/evaluate_teacher_only.py",
+    "--output",
+    "/home/autodrive/LZQW/unitree_smash_teacher_eval/attempts/recovery_arm_wbc_next_round_20261116_03/native",
+    "--checkpoint",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_env5120_01/policy.pt",
+    "--precision-receipt",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin_precision_after_aim_queue01/PRECISION_ADMISSION.json",
+    "--ground-xy-m",
+    "64",
+    "--record-first-episodes",
+    "--seed",
+    "882072",
+    "--persistent-recovery-trial",
+    "--headless",
+    "--device",
+    "cuda:0",
+    "--pure-control-configuration",
+    "/home/autodrive/LZQW/unitree_smash_teacher_eval/attempts/recovery_arm_wbc_next_round_20261116_03/controller.json",
+    "--teacher-only",
+    "--allow-declared-controller-variant"
+  ],
+  "frozen_before_start": true
+}
