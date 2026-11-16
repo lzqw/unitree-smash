@@ -26,7 +26,7 @@ echo "GPU=${CUDA_VISIBLE_DEVICES:-all} DEVICE=cuda:0"
 echo "PYTHON=$PYTHON"
 echo "CONFIG=$ROOT/configs/supermimic_phase1_long_v1.json"
 
-tensorboard --logdir "$RUN_ROOT/tensorboard" --host 127.0.0.1 --port "${SM_TENSORBOARD_PORT:-6006}" >"$RUN_ROOT/tensorboard.log" 2>&1 &
+"$PYTHON" -m tensorboard.main --logdir "$RUN_ROOT/tensorboard" --host 127.0.0.1 --port "${SM_TENSORBOARD_PORT:-6006}" >"$RUN_ROOT/tensorboard.log" 2>&1 &
 TB_PID=$!
 
 PREV=""
