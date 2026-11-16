@@ -1,0 +1,20 @@
+[Unit]
+Description=Unitree SuperMimic isolated experiment line
+After=default.target
+
+[Service]
+Type=simple
+Slice=unitree-supermimic.slice
+WorkingDirectory=/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290
+ExecStart=/home/autodrive/LZQW/dual_line_runtime/bin/line_supervisor.py --line supermimic --run-id %E{UNITREE_RUN_ID} --output %E{UNITREE_RUN_DIR} --cwd %E{UNITREE_WORKTREE} --command-json %E{UNITREE_COMMAND_JSON}
+Restart=no
+KillMode=control-group
+TimeoutStartSec=infinity
+TimeoutStopSec=infinity
+RuntimeMaxSec=infinity
+MemoryMax=infinity
+ManagedOOMMemoryPressure=auto
+ManagedOOMSwap=auto
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,20 @@
+[Unit]
+Description=Unitree DTG WBC Recovery MPC isolated teacher line
+After=default.target
+
+[Service]
+Type=simple
+Slice=unitree-teacher.slice
+WorkingDirectory=/home/autodrive/LZQW/unitree_smash_teacher_eval
+ExecStart=/home/autodrive/LZQW/dual_line_runtime/bin/line_supervisor.py --line teacher --run-id %E{UNITREE_RUN_ID} --output %E{UNITREE_RUN_DIR} --cwd %E{UNITREE_WORKTREE} --command-json %E{UNITREE_COMMAND_JSON}
+Restart=no
+KillMode=control-group
+TimeoutStartSec=infinity
+TimeoutStopSec=infinity
+RuntimeMaxSec=infinity
+MemoryMax=infinity
+ManagedOOMMemoryPressure=auto
+ManagedOOMSwap=auto
+
+[Install]
+WantedBy=default.target

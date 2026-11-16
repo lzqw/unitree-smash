@@ -1,0 +1,235 @@
+{
+  "schema": "teacher-diagnostics-v1",
+  "run": "/home/autodrive/LZQW/unitree_smash_teacher_eval/attempts/teacher_joint_eval_20261111_01/native_teacher_joint_20261116_01/native",
+  "episodes": 128,
+  "control_ticks": 800,
+  "h": 29,
+  "q": 21,
+  "recovery_episode_field": 21,
+  "h_and_r": 21,
+  "q_and_r": 15,
+  "complete5": 10,
+  "fixed74_dynamic": {
+    "H": {
+      "count": 19,
+      "denominator": 74,
+      "cases": [
+        1,
+        10,
+        11,
+        18,
+        23,
+        28,
+        42,
+        43,
+        50,
+        51,
+        55,
+        58,
+        63,
+        84,
+        94,
+        96,
+        97,
+        121,
+        126
+      ]
+    },
+    "Q": {
+      "count": 16,
+      "denominator": 74,
+      "cases": [
+        1,
+        10,
+        11,
+        18,
+        28,
+        42,
+        43,
+        50,
+        51,
+        58,
+        63,
+        84,
+        94,
+        97,
+        121,
+        126
+      ]
+    },
+    "R": {
+      "count": 14,
+      "denominator": 74,
+      "cases": [
+        10,
+        11,
+        23,
+        28,
+        42,
+        43,
+        50,
+        51,
+        55,
+        58,
+        63,
+        84,
+        97,
+        121
+      ]
+    },
+    "H_and_R": {
+      "count": 14,
+      "denominator": 74,
+      "cases": [
+        10,
+        11,
+        23,
+        28,
+        42,
+        43,
+        50,
+        51,
+        55,
+        58,
+        63,
+        84,
+        97,
+        121
+      ]
+    },
+    "Q_and_R": {
+      "count": 12,
+      "denominator": 74,
+      "cases": [
+        10,
+        11,
+        28,
+        42,
+        43,
+        50,
+        51,
+        58,
+        63,
+        84,
+        97,
+        121
+      ]
+    },
+    "complete5": {
+      "count": 8,
+      "denominator": 74,
+      "cases": [
+        10,
+        28,
+        42,
+        58,
+        63,
+        84,
+        97,
+        121
+      ]
+    }
+  },
+  "recovery_controller": {
+    "diagnostic_rows": 29199,
+    "solver_accepted_steps": 24091,
+    "repair_attempts": 1494,
+    "repair_accepted": 63,
+    "direct_search_calls": 333,
+    "direct_search_adopted": 0,
+    "direct_search_evaluated_candidates": 0,
+    "direct_search_feasible_candidates": 0,
+    "direct_search_errors": [
+      {
+        "count": 333,
+        "reason": [
+          "direct_search_exception",
+          "ValueError",
+          "Actual command history required"
+        ]
+      }
+    ]
+  },
+  "command_audit": {
+    "prediction_dispatch_max_delta_rad": 0.0,
+    "2e-6_pass": true,
+    "all18_owner": true,
+    "old_residual_after_takeover": false
+  },
+  "teacher_only": {
+    "actor_forward_count": 0,
+    "optimizer_step_count": 0,
+    "action_contributions": {
+      "base_actor": false,
+      "approach_head": false,
+      "recovery_head": false
+    },
+    "residual_actor_enabled": false
+  },
+  "formal": {
+    "evaluation_stage": "teacher_debug",
+    "formal_eligible": false,
+    "formal_acceptance": false,
+    "formal_cases_read": false
+  },
+  "native_process": {
+    "schema": "dual-line-runtime-v1",
+    "line": "teacher",
+    "run_id": "teacher_joint_20261116_01",
+    "supervisor_pid": 2400838,
+    "supervisor_ppid": 2481,
+    "supervisor_pgid": 2400838,
+    "supervisor_sid": 2400838,
+    "supervisor_start_ticks": 245696308,
+    "started_at": "2026-11-16T12:05:09.627314+00:00",
+    "cwd": "/home/autodrive/LZQW/unitree_smash_teacher_eval",
+    "command": [
+      "bash",
+      "scripts/python.sh",
+      "-u",
+      "/home/autodrive/LZQW/unitree_smash_teacher_eval/attempts/teacher_joint_eval_20261111_01/evaluate_teacher_only.py",
+      "--output",
+      "/home/autodrive/LZQW/unitree_smash_teacher_eval/attempts/teacher_joint_eval_20261111_01/native_teacher_joint_20261116_01/native",
+      "--checkpoint",
+      "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_env5120_01/policy.pt",
+      "--precision-receipt",
+      "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin_precision_after_aim_queue01/PRECISION_ADMISSION.json",
+      "--ground-xy-m",
+      "64",
+      "--record-first-episodes",
+      "--seed",
+      "882072",
+      "--persistent-recovery-trial",
+      "--headless",
+      "--device",
+      "cuda:0",
+      "--pure-control-configuration",
+      "/home/autodrive/LZQW/unitree_smash_teacher_eval/attempts/teacher_joint_eval_20261111_01/controller.json",
+      "--teacher-only",
+      "--allow-declared-controller-variant"
+    ],
+    "command_sha256": "9acfc7d4fb8840a7aee65d702250ba4bed87802704c52424d1c5f49d41c18033",
+    "supervisor_cgroup": [
+      "0::/user.slice/user-1000.slice/user@1000.service/unitree.slice/unitree-teacher.slice/unitree-teacher-teacher_joint_20261116_01.service"
+    ],
+    "child_pid": 2400840,
+    "child_pgid": 2400840,
+    "child_sid": 2400840,
+    "child_start_ticks": 245696311,
+    "child_cgroup": [
+      "0::/user.slice/user-1000.slice/user@1000.service/unitree.slice/unitree-teacher.slice/unitree-teacher-teacher_joint_20261116_01.service"
+    ],
+    "child_started_at": "2026-11-16T12:05:09.629023+00:00",
+    "finished_at": "2026-11-16T13:47:12.766684+00:00",
+    "exit_code": 0,
+    "terminated_by_signal": null,
+    "stop_requested": false,
+    "terminal": "normal"
+  },
+  "external_supermimic": {
+    "codex_started": false,
+    "codex_modified": false,
+    "status": "one external run failed with KeyError episode_index; no restart",
+    "evidence": "/home/autodrive/LZQW/supermimic_phase1_20261116_204032/cycle_1/failure.json"
+  }
+}

@@ -29,7 +29,19 @@ class PureControlCourtRecoveryV4(PureControlRecoveryV1):
         super().__init__(interface,nominal_posture)
         self.interface=FullAuthorityPositionPDInterfaceV1(interface)
         asset=ROOT/'assets/quadsmash_full_racket_v4_r3.usd'
-        digest=self.model.record['source_sha256'][str(asset)]
+        # Worktrees may expose the same protected USD through different
+        # absolute paths. Verify bytes first, then accept the unique recorded
+        # digest alias; physics/asset content is unchanged.
+        asset_digest=hashlib.sha256(asset.read_bytes()).hexdigest()
+        digest=self.model.record['source_sha256'].get(str(asset))
+        if digest is None:
+            aliases=[value for value in self.model.record['source_sha256'].values()
+                     if value == asset_digest]
+            if len(aliases)!=1:
+                raise KeyError(str(asset))
+            digest=aliases[0]
+        if digest != asset_digest:
+            raise ValueError('Changed original robot asset')
         spheres=authored_feet(str(asset),digest,tuple(self.model.feet))
         self.geometry=RecoverySurfaceConstraintsV1(self.geometry,spheres)
 

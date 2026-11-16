@@ -1,0 +1,117 @@
+{
+  "schema": "teacher-joint-evaluation-candidate-v1",
+  "evaluation_stage": "teacher_debug",
+  "formal_eligible": false,
+  "formal_acceptance": false,
+  "formal_cases_read": false,
+  "candidate_id": "teacher_joint_eval_20261111_02",
+  "worktree": "/home/autodrive/LZQW/unitree_smash_teacher_eval",
+  "head": "2ab8eb0699d2b5513540792d3b60d7d7df9142d7",
+  "base_verified_head": "2ab8eb0699d2b5513540792d3b60d7d7df9142d7",
+  "upstream_55_74_report": "/home/autodrive/LZQW/unitree_smash_teacher_eval/reports/execution_consistent_repair_result_20261110",
+  "fixed74_summary": {
+    "baseline": "52/74",
+    "55_version": "55/74",
+    "complete5": "39/128"
+  },
+  "native_protocol": {
+    "environments": 128,
+    "seed": 882072,
+    "control_steps": 800,
+    "control_dt_s": 0.01,
+    "horizon_steps": 32,
+    "replan_stride": 16,
+    "ground_xy_m": 64.0,
+    "noise": "none"
+  },
+  "teacher_only": {
+    "residual_actor": false,
+    "approach_head": false,
+    "recovery_head": false,
+    "optimizer_steps": 0,
+    "actor_forward_calls": 0,
+    "programmatic_base": "SharedTargetController source factory",
+    "programmatic_approach_wbc": "existing support/landing controller path",
+    "recovery": "state-driven WBC + deterministic full18 direct sequence search after normal/repair rejection; separate head/nonfoot clearance score terms"
+  },
+  "direct_search": {
+    "nodes": [
+      0,
+      8,
+      16,
+      24,
+      31
+    ],
+    "horizon_steps": 32,
+    "samples": 8,
+    "iterations": 1,
+    "seed": 20261111,
+    "amplitude_rad": 0.08,
+    "all_joints": 18,
+    "algorithm": "deterministic normalized full18 control-node sample search",
+    "normal_path_unchanged": true,
+    "fallback": "55-version fallback if no complete feasible sequence",
+    "score": "0.5 head clearance risk + 0.5 non-foot clearance risk + 0.25 all-body risk + tilt + COM speed + angular speed + first-command continuity - terminal support"
+  },
+  "inputs": {
+    "checkpoint": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_env5120_01/policy.pt",
+    "precision_receipt": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin_precision_after_aim_queue01/PRECISION_ADMISSION.json",
+    "asset_config": "configs/g07_full_racket_eval_v4_r3.json"
+  },
+  "source_sha256": {
+    "/home/autodrive/LZQW/unitree_smash_teacher_eval/scripts/pure_control_state_driven_long_mpc_v1_qp_continuity_repair.py": "2247197ec99af795335870d4180d22b4ce01ec376606eb7c9b44af4d1318734f",
+    "/home/autodrive/LZQW/unitree_smash_teacher_eval/scripts/native_pure_control_state_driven_long_mpc_v1_qp_continuity_repair.py": "f8a007224e384684684ef6db77e1c9bf5b13ed5aaafcfd0cbfd45ce1b994296e",
+    "/home/autodrive/LZQW/unitree_smash_teacher_eval/scripts/preview_recovery_execution_v1.py": "f81cb18df215cf979a1ce8e00e8737e3dc1c13d2bd6ad8e78b2a70200a5eca2c",
+    "/home/autodrive/LZQW/unitree_smash_teacher_eval/scripts/native_pure_control_recovery_v1.py": "ea9b61bcdfcabf17ddc8f7b57243db756d63db66f22a34d6ee739436e6e3c23c",
+    "/home/autodrive/LZQW/unitree_smash_teacher_eval/scripts/whole_body_support_qp_v1.py": "06ea6f6d55e585fe462e904a5cb3381ffd8d522e238f4a5d96ad4337a9d90900",
+    "/home/autodrive/LZQW/unitree_smash_teacher_eval/scripts/continuous_support_qp_v1.py": "824a3d49711917803e9c82af63b1d142917d62c874ec8751325578a71b4af640",
+    "/home/autodrive/LZQW/unitree_smash_teacher_eval/scripts/admitted_arm_support_qp_v1.py": "097d7022b16a28aa31f11081056092bd8b5b44172291b6bd3b1aba1dbe0a1c6e",
+    "/home/autodrive/LZQW/unitree_smash_teacher_eval/attempts/teacher_joint_eval_20261111_01/evaluate_teacher_only.py": "88ebda21e0e29a0680496b311bf4888dde057e9bbf59583e12d71622f3401eb9",
+    "/home/autodrive/LZQW/unitree_smash_teacher_eval/attempts/teacher_joint_eval_20261111_01/controller.json": "4c1a1c3cce71954081c252b0ca7bb10e77f65bdaf39525e9a78fb4f8e67330f7",
+    "/home/autodrive/LZQW/unitree_smash_teacher_eval/configs/g07_full_racket_eval_v4_r3.json": "04121cfb257ea4d2e288c69b44dd0c8dbada814e0bf95c8a16f5af7ef2390367",
+    "/home/autodrive/LZQW/unitree_smash_teacher_eval/assets/quadsmash_full_racket_v4_r3.usd": "c2264fcece90b042c7c6a1cac7d516af83972729d0402947e3a519041e184cf2",
+    "/home/autodrive/LZQW/unitree_smash_teacher_eval/assets/vendor/piper_isaac_sim/piper_description/urdf/piper_no_gripper_description.urdf": "40e96ce6fe5f88dcabd54fb5b92b63af852ae3068acf1e5b078dbcbf002880dc",
+    "/home/autodrive/LZQW/unitree_smash_teacher_eval/assets/vendor/go2_flat_baryn20251217/policy.pt": "b051375e83bd19d23a3e9cd5fe3be1dfb47b87dfe64b2755510134d70205aeb4",
+    "/home/autodrive/LZQW/unitree_smash_teacher_eval/assets/robots/piper_standard/configuration/piper_standard_base.usd": "8e86fc86de1ce24a86308724d485302ac427e772b0a3b7bd5c33fed9e0d6f2a6",
+    "/home/autodrive/LZQW/unitree_smash_teacher_eval/assets/robots/piper_standard/piper_standard.usd": "f9139c750a1db093fea37b2fe174f41993fd5c977b8c9fa3aab78c033825a1ce",
+    "/home/autodrive/LZQW/unitree_smash_teacher_eval/scripts/pure_control_court_recovery_v4.py": "b8d21831e16fa0caaaef1bbdc446227aece0b5d35709dcfcf9def71492b3af75",
+    "/home/autodrive/LZQW/unitree_smash_teacher_eval/tests/test_direct_sequence_search_contract.py": "79b10b03e73bd475c4d25f622e909d6ad93885d673bb713e5747c7442d1ad9ae"
+  },
+  "python": "/home/autodrive/Isaac/env_isaaclab/bin/python",
+  "python_version": "3.11.17",
+  "dependencies": {
+    "numpy": {
+      "version": "1.26.0",
+      "file": "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/numpy/__init__.py"
+    },
+    "torch": {
+      "version": "2.7.0+cu128",
+      "file": "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/torch/__init__.py"
+    },
+    "pinocchio": {
+      "version": "2.7.0",
+      "file": "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/cmeel.prefix/lib/python3.11/site-packages/pinocchio/__init__.py"
+    },
+    "osqp": {
+      "version": "0.6.7.post3",
+      "file": "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/osqp/__init__.py"
+    },
+    "isaaclab": {
+      "version": "0.47.2",
+      "file": "/home/autodrive/Isaac/IsaacLab/source/isaaclab/isaaclab/__init__.py"
+    }
+  },
+  "native_attempts_before_this_round": "existing failed direct_search attempts 20261111_01..06 are preserved outside this worktree and are not reused as results",
+  "asset_summary": {
+    "usd": "/home/autodrive/LZQW/unitree_smash_teacher_eval/assets/quadsmash_full_racket_v4_r3.usd",
+    "usd_sha256": "c2264fcece90b042c7c6a1cac7d516af83972729d0402947e3a519041e184cf2",
+    "asset_link_target": "/home/autodrive/LZQW/unitree_smash/assets/quadsmash_full_racket_v4_r3.usd",
+    "go2_walk_policy_sha256": "b051375e83bd19d23a3e9cd5fe3be1dfb47b87dfe64b2755510134d70205aeb4"
+  },
+  "cpu_mode": {
+    "requested_device": "cpu",
+    "cfg_sim_device_override": "cpu",
+    "asset_urdf": "/home/autodrive/LZQW/unitree_smash_teacher_eval/assets/vendor/piper_isaac_sim/piper_description/urdf/piper_no_gripper_description.urdf"
+  },
+  "freeze_status": "teacher_strategy_modified_cpu_verified_native_not_started"
+}
