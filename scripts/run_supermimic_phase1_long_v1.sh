@@ -30,6 +30,12 @@ tensorboard --logdir "$RUN_ROOT/tensorboard" --host 127.0.0.1 --port "${SM_TENSO
 TB_PID=$!
 
 PREV=""
+PREV_RETURN=""
+DECLINE_STREAK=0
+FLAT_STREAK=0
+RETURN_DROP_TOL="${SM_RETURN_DROP_TOL:-0.10}"
+CONVERGENCE_TOL="${SM_RETURN_CONVERGENCE_TOL:-0.05}"
+CONVERGENCE_PATIENCE="${SM_RETURN_CONVERGENCE_PATIENCE:-2}"
 for cycle in 1 2 3 4; do
   OUT="$RUN_ROOT/cycle_${cycle}"
   TRAIN_ARGS=(
@@ -86,6 +92,34 @@ PY
     echo "cycle $cycle rejected; preserving output and stopping" | tee "$RUN_ROOT/STOPPED"
     exit 21
   fi
+  CURRENT_RETURN="$($python_bin - "$EVAL/metrics.json" <<'PY'
+import json,sys
+m=json.load(open(sys.argv[1])); n=m.get('native_episode_metrics',m)
+print(float(n['native_episode_return_mean']))
+PY
+  )"
+  if [[ -n "$PREV_RETURN" ]]; then
+    read -r DECLINE_STREAK FLAT_STREAK <<EOF
+$($python_bin - "$PREV_RETURN" "$CURRENT_RETURN" "$DECLINE_STREAK" "$FLAT_STREAK" "$RETURN_DROP_TOL" "$CONVERGENCE_TOL" <<'PY'
+import sys
+prev,cur,decline,flat,drop,flat_tol=map(float,sys.argv[1:])
+decline=int(decline)+1 if cur < prev-drop else 0
+flat=int(flat)+1 if abs(cur-prev) <= flat_tol else 0
+print(decline,flat)
+PY
+)
+EOF
+    echo "[cycle $cycle] native_return=$CURRENT_RETURN previous=$PREV_RETURN decline_streak=$DECLINE_STREAK flat_streak=$FLAT_STREAK"
+    if (( DECLINE_STREAK >= 2 )); then
+      echo "native return declined for two consecutive cycle evaluations; stopping" | tee "$RUN_ROOT/STOPPED_RETURN_DECLINE"
+      exit 23
+    fi
+    if (( FLAT_STREAK >= CONVERGENCE_PATIENCE )); then
+      echo "native return converged within tolerance; stopping" | tee "$RUN_ROOT/STOPPED_CONVERGED"
+      exit 24
+    fi
+  fi
+  PREV_RETURN="$CURRENT_RETURN"
   PREV="$CANDIDATE"
 done
 echo "PHASE1_FINISHED=$RUN_ROOT"
