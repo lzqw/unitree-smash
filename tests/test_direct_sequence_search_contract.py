@@ -1,5 +1,10 @@
 import numpy as np
 
+from scripts.full_authority_position_interface_v1 import (
+    FullAuthorityCommandArbiterV1,
+    FullAuthorityPositionPDInterfaceV1,
+)
+
 from scripts.pure_control_state_driven_long_mpc_v1_qp_continuity_repair import (
     PureControlStateDrivenLongMPCV1QPContinuityRepair,
 )
@@ -54,3 +59,35 @@ def test_direct_search_score_keeps_head_and_nonfoot_clearance_separate():
     safe = obj._direct_search_score(predicted, sequence, previous, .08,
                                     min_head_gap=.08, min_nonfoot_gap=.08)
     assert safe < head_risk
+
+
+def test_direct_search_binds_actual_command_history_before_bounds():
+    cls = PureControlStateDrivenLongMPCV1QPContinuityRepair
+    obj = cls.__new__(cls)
+    expected = np.linspace(-.4, .4, 18)
+    obj.interface = type('I', (), {
+        'bind_previous_command': lambda self, value: setattr(self, 'bound', value.copy()),
+    })()
+    state = type('S', (), {'previous_command_target': expected.copy()})()
+    got = obj._bind_actual_history(state)
+    np.testing.assert_array_equal(got, expected)
+    np.testing.assert_array_equal(obj.interface.bound, expected)
+
+
+def test_teacher_full_authority_keeps_physical_bounds_without_software_arm_slew():
+    limits = np.tile([-.5, .5], (18, 1))
+    source = type('S', (), dict(
+        limits=limits,
+        kp=np.full(18, 25.), kd=np.full(18, .5),
+        effort=np.full(18, 10.), velocity=np.full(18, 5.), friction=.65))()
+    interface = FullAuthorityPositionPDInterfaceV1(source)
+    previous = np.zeros(18)
+    interface.bind_previous_command(previous)
+    low, high = interface.admitted_target_bounds(np.zeros(18), .01)
+    np.testing.assert_array_equal(low, limits[:, 0])
+    np.testing.assert_array_equal(high, limits[:, 1])
+    requested = np.full(18, .4)
+    final, record = FullAuthorityCommandArbiterV1(limits).select(
+        None, requested, previous, owns_recovery=True)
+    np.testing.assert_array_equal(final, requested)
+    assert record['software_command_slew_limit'] is None

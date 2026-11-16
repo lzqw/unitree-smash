@@ -14,6 +14,7 @@ import numpy as np
 
 from scripts.predict_self_contact_spheres_v2 import predict_self_contact_spheres
 from scripts.preview_recovery_execution_v1 import preview_recovery_execution
+from scripts.full_authority_position_interface_v1 import FullAuthorityPositionPDInterfaceV1
 from scripts.pure_control_state_driven_long_mpc_v1_qp_continuity import (
     PureControlStateDrivenLongMPCV1QPContinuity,
 )
@@ -36,9 +37,31 @@ class PureControlStateDrivenLongMPCV1QPContinuityRepair(
     direct_search_amplitude_rad = 0.08
     direct_search_substeps = 1
 
+    def _bind_actual_history(self, state):
+        """Transfer the live final command into an isolated prediction interface.
+
+        The full-authority interface deliberately refuses to infer command
+        history from measured joint position.  Search workers and every
+        predicted node therefore bind the command that was actually sent at
+        the start of that node before querying bounds or previewing execution.
+        """
+        previous = np.asarray(getattr(state, 'previous_command_target', None),
+                              dtype=float)
+        if previous.shape != (18,) or not np.isfinite(previous).all():
+            raise ValueError('Finite actual previous final command required')
+        binder = getattr(self.interface, 'bind_previous_command', None)
+        if binder is not None:
+            binder(previous)
+        return previous.copy()
+
+    def _full_authority_preview(self):
+        return isinstance(self.interface, FullAuthorityPositionPDInterfaceV1)
+
     def _predict_request(self, state, requested):
+        previous = self._bind_actual_history(state)
         final, _ = preview_recovery_execution(
-            self.interface.limits, requested, state.previous_command_target)
+            self.interface.limits, requested, previous,
+            software_arm_slew=not self._full_authority_preview())
         result = predict_self_contact_spheres(
             self.model, self.interface, state, final,
             self.geometry.spheres, substeps=1, geometry=self.geometry)
@@ -50,11 +73,13 @@ class PureControlStateDrivenLongMPCV1QPContinuityRepair(
 
     def command(self, state, phase, time_s):
         requested, diagnostic = super().command(state, phase, time_s)
+        previous = self._bind_actual_history(state)
         final, _ = preview_recovery_execution(
-            self.interface.limits, requested, state.previous_command_target)
+            self.interface.limits, requested, previous,
+            software_arm_slew=False)
         diagnostic['execution_preview'] = dict(
             requested_target=requested.tolist(), predicted_final_target=final.tolist(),
-            previous_final_target=state.previous_command_target.tolist(),
+            previous_final_target=previous.tolist(),
             preview_only=True, actual_arbiter_unchanged=True)
         # Do not return the prelimited command: actual dispatch keeps the
         # original request -> original arbiter -> original PD path.
@@ -246,9 +271,9 @@ class PureControlStateDrivenLongMPCV1QPContinuityRepair(
 
     def _direct_search_after_both_fail(self, state, nominal_reference):
         """Search full 32-node action sequences from the current real state."""
+        previous = self._bind_actual_history(state)
         lower, upper = self.interface.admitted_target_bounds(
             state.joint_position, self.settings.control_dt_s)
-        previous = np.asarray(state.previous_command_target, dtype=float)
         center = np.clip(previous, lower, upper)
         terminal = np.clip(np.asarray(nominal_reference, dtype=float), lower, upper)
         directions = self._direct_search_directions()
@@ -303,7 +328,8 @@ class PureControlStateDrivenLongMPCV1QPContinuityRepair(
                           direct_search_seed=self.direct_search_seed,
                           first_request=sequence[0].tolist(),
                           first_final=preview_recovery_execution(
-                              self.interface.limits, sequence[0], previous)[0].tolist())
+                              self.interface.limits, sequence[0], previous,
+                              software_arm_slew=False)[0].tolist())
         return sequence, diagnostic
 
     def _rollout(self, state, first_target, terminal_reference):

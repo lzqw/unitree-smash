@@ -226,6 +226,24 @@ SHARED_SCHEMA='g07-public-shared-target-bias-v5'
 RESIDUAL_SCHEMA='g07-shared-target-residual-ppo-v1'
 
 
+def disable_teacher_arm_target_slew(controller):
+    """Disable only the analytic teacher's extra target slew limiter.
+
+    Native actuator limits are enforced later by the 18D action bridge and
+    simulator.  Returning an explicit flag makes a missing teacher path a
+    hard error instead of silently claiming a teacher-only run.
+    """
+    reference=getattr(controller, 'reference_controller', None)
+    teacher=getattr(reference, 'teacher', None)
+    if teacher is None or not hasattr(teacher, 'arm_target_rate'):
+        raise RuntimeError('Teacher-only path did not expose the analytic arm reference')
+    if teacher.arm_target_rate is not None:
+        teacher.arm_target_rate=None
+        teacher.last_arm_targets_before_slew=None
+        teacher.last_arm_targets_after_slew=None
+    return True
+
+
 def load_shared_factory():
     path=ROOT.parent/'unitree_smash/reports/G07_full_racket_v5/current_intercept_diagnosis_20261027/native_factory.py'
     spec=importlib.util.spec_from_file_location('shared_target_eval_factory',path)
@@ -296,6 +314,13 @@ class SharedTargetResidualController:
         factory=load_shared_factory()
         self.base=factory.make_controller(base['source_public_policy'],count,device,
             bias_world_m=base['shared_target_bias']['bias_world_m'])
+        # Teacher-only execution is allowed to use the measured Jacobian
+        # reference path without the legacy 5 rad/s software target limiter.
+        # This is a command-generation change only: native joint position,
+        # velocity, effort, collision and PD limits remain admitted below.
+        self.teacher_arm_target_slew_removed=False
+        if teacher_only:
+            self.teacher_arm_target_slew_removed=disable_teacher_arm_target_slew(self.base)
         metadata=checkpoint.get('residual_training_metadata',{})
         if not metadata.get('recovery_assistance'):
             raise ValueError('Persistent recovery trial requires explicit recovery settings')
@@ -1593,6 +1618,7 @@ def main():
         summary.update(policy_sha256=digest(args.checkpoint), protocol_sha256=digest(protocol_path),
                        teacher_only=bool(args.teacher_only), actor_forward_count=int(getattr(controller,'actor_forward_count',0)),
                        optimizer_step_count=int(getattr(controller,'optimizer_step_count',0)),
+                       teacher_arm_target_slew_removed=bool(getattr(controller,'teacher_arm_target_slew_removed',False)),
                        action_contributions=dict(base_actor=False,approach_head=False,recovery_head=False),
             noise_level=args.noise, noise_seed=args.seed, actual_control_env_steps=(tick+1)*count,
             controller_trial=controller_trial,support_disabled=args.disable_support,
