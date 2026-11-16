@@ -20,6 +20,8 @@ def main():
     for name in ('archive','packed-data','physical-checkpoint','ball-checkpoint','task-checkpoint','safety-mapping','output'):
         parser.add_argument('--'+name,type=Path,required=True)
     parser.add_argument('--resume-training',type=Path)
+    parser.add_argument('--resume-start-block',choices=('recovery','approach'),default='recovery',
+                        help='Resume a completed Recovery checkpoint directly at Approach')
     parser.add_argument('--resume-warmup-ticks',type=int,default=0,
                         help='Optional native ticks before a resumed stream; zero preserves exact block budgets')
     parser.add_argument('--actor-update-budget',type=int,default=None,help='Legacy single-block budget')
@@ -116,7 +118,24 @@ def run(args):
             target_delta_budget_rad=args.target_delta_budget_rad,
             trainable_names=RECOVERY_NAMES + APPROACH_NAMES,block_name='joint')
         trainer.set_budget_state_library([as_state(row) for row in starts+critic_starts[:4]])
-        approach_pool=[start_cache[t] for t in APPROACH_TICKS]
+        def approach_active(row):
+            """Require at least one lane with the public pre-hit gate active.
+
+            A live replay stage such as ``prepare`` can be a valid dynamics
+            start while still carrying a zero approach gate.  Such a start
+            cannot produce an approach-head gradient and must not be selected
+            for an Approach actor proposal.
+            """
+            observation=row['observation']
+            if isinstance(observation,dict):
+                observation=observation['policy']
+            if observation.ndim != 2 or observation.shape[-1] < 773:
+                raise ValueError('Approach start observation is not the 794D public contract')
+            return bool((observation[:,771:773].sum(-1) > 0.5).any())
+
+        approach_pool=[start_cache[t] for t in APPROACH_TICKS if approach_active(start_cache[t])]
+        if not approach_pool:
+            raise RuntimeError('No approach-gated initialization starts available')
         recovery_pool=[start_cache[t] for t in (272,288,336,384)]
         # Same-policy native RTG calibration labels from the frozen 800-tick archive.
         # This is separate from the 0.64 s imagined objective and never mixed with
@@ -246,7 +265,7 @@ def run(args):
         if file_sha(reference_path)!=manifest['source_sha256']:
             raise ValueError('Reference policy checkpoint does not match the verified source actor')
         bad_meta=dict(path=str(args.bad_policy_checkpoint.resolve()),sha256=file_sha(args.bad_policy_checkpoint)) if args.bad_policy_checkpoint else None
-        config=dict(update_mode=args.update_mode,ball_side_mode=args.ball_side_mode,cycles=args.cycles,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,replay_capacity_ticks=args.replay_capacity_ticks,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=args.native_ticks_per_actor_update,world_updates_per_actor_update=1,
+        config=dict(update_mode=args.update_mode,resume_start_block=args.resume_start_block,ball_side_mode=args.ball_side_mode,cycles=args.cycles,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,replay_capacity_ticks=args.replay_capacity_ticks,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=args.native_ticks_per_actor_update,world_updates_per_actor_update=1,
             world_batch=128,imagination_batch=128,timebase=timebase.manifest(),actor_lr=5e-5,world_lr=2e-4,critic_lr=2e-4,
             policy_anchor=.05,critic_warmup_updates=200,critic_max_loss=50.,max_critic_only_blocks=32,
             command_delta_budget=args.command_delta_budget,target_delta_budget_rad=args.target_delta_budget_rad,
@@ -328,6 +347,8 @@ def run(args):
             trainer.set_trainable_names(names,block_name)
             dynamic_names=('touchdown','recovery','contact') if block_name=='recovery' else ('prepare','approach','contact','terminal')
             dynamic_pool=[item for name in dynamic_names for item in replay.stage_starts.get(name,[])]
+            if block_name=='approach':
+                dynamic_pool=[item for item in dynamic_pool if approach_active(item)]
             block_pool=(dynamic_pool + (recovery_pool if block_name=='recovery' else approach_pool))
             trainer.set_budget_state_library([as_state(row) for row in block_pool+critic_starts[:4]])
             accepted=0;attempts=0;max_attempts=proposal_limit
@@ -356,7 +377,12 @@ def run(args):
                         cursor=len(env.rally_records)
                 collect_s=time.perf_counter()-started;check_stop()
                 window,lanes,sampling=replay.window(timebase.world_steps,128,accepted);world_stats=trainer.fit_world_window(window,launch[lanes]);del window
-                pool=replay.new_starts if (block_name=='approach' and replay.new_starts and accepted%2) else block_pool;row=pool[accepted%len(pool)];state=as_state(row);check_stop();stats=trainer.imagine_update(state)
+                pool=replay.new_starts if (block_name=='approach' and replay.new_starts and accepted%2) else block_pool
+                if block_name=='approach':
+                    pool=[item for item in pool if approach_active(item)]
+                    if not pool:
+                        raise RuntimeError('Approach proposal has no gate-active replay start')
+                row=pool[accepted%len(pool)];state=as_state(row);check_stop();stats=trainer.imagine_update(state)
                 if stats['update_accepted']:
                     if not any(v>0.0 for v in stats['parameter_max_changes'].values()):
                         raise RuntimeError(f'{block_name} accepted update had zero trainable parameter change; no effective gradient')
@@ -513,9 +539,13 @@ def run(args):
             # written before the approach block starts.
             cycle_results=[]
             for cycle in range(args.cycles):
-                recovery_accepted=run_block('recovery', RECOVERY_NAMES, min(args.recovery_update_budget,args.recovery_proposal_budget), args.recovery_proposal_budget)
-                save('cycle_%02d_recovery_candidate_%04d.pt' % (cycle+1,recovery_accepted))
-                refresh_world_updates,refresh_critic_updates=refresh_frozen_recovery()
+                if args.resume_start_block=='approach' and cycle==0:
+                    recovery_accepted=0
+                    refresh_world_updates,refresh_critic_updates=0,0
+                else:
+                    recovery_accepted=run_block('recovery', RECOVERY_NAMES, min(args.recovery_update_budget,args.recovery_proposal_budget), args.recovery_proposal_budget)
+                    save('cycle_%02d_recovery_candidate_%04d.pt' % (cycle+1,recovery_accepted))
+                    refresh_world_updates,refresh_critic_updates=refresh_frozen_recovery()
                 save('cycle_%02d_recovery_refresh_candidate_%04d.pt' % (cycle+1,recovery_accepted))
                 approach_accepted=run_block('approach', APPROACH_NAMES, min(args.approach_update_budget,args.approach_proposal_budget), args.approach_proposal_budget)
                 total_accepted=recovery_accepted+approach_accepted
