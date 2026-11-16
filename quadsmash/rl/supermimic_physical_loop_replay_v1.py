@@ -17,7 +17,9 @@ def row_tensors(row, schema):
         targets=row['final_joint_targets'], previous_action=b['physical']['final_action'],
         feet=b['physical']['foot_contact'], next_feet=a['physical']['foot_contact'],
         present=b['physical']['ball_present'], elapsed=b['physical']['elapsed_s'],
-        episode=row['episode_index'], terminated=row['terminated'], timeout=row['timeout'],
+        # Episode identity is part of each before/after state record in the
+        # native archive; the row envelope only carries termination flags.
+        episode=b['episode_index'], terminated=row['terminated'], timeout=row['timeout'],
         torque=a['auxiliary']['reward_inputs']['applied_torque_all'],
         complete_reward=row['reward_components']['complete5_terminal'] > 0)
 
