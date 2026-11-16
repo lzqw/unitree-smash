@@ -74,7 +74,15 @@ class PhysicalLoopReplay:
             return 'terminal'
         return 'approach'
 
-    def append(self, row):
+    def append(self, row, *, retain_start=True):
+        """Append one native transition.
+
+        Restoring an old checkpoint must rebuild the ring tensors, but does not
+        need to retain every historical full observation/executor graph as a
+        proposal start.  Keeping those graphs for every archived row can grow
+        memory without bound during resume.  New native rows retain starts by
+        default; checkpoint restore can opt out and use the fixed start cache.
+        """
         record = row_tensors(row, self.schema)
         index = self.write_pos
         for key, tensor in self.data.items():
@@ -82,6 +90,8 @@ class PhysicalLoopReplay:
         self.streams[index] = self.current_stream
         self.write_pos = (index + 1) % self.capacity
         self.count = min(self.capacity, self.count + 1)
+        if not retain_start:
+            return
         start = current_start(row)
         stage = self._stage(row)
         self.stage_starts[stage].append(start)

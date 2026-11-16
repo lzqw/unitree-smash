@@ -195,7 +195,11 @@ def run(args):
                         chunk=torch.load(io.BytesIO(proc.stdout),map_location='cpu',weights_only=True)
                     else:
                         chunk=torch.load(path,map_location='cpu',weights_only=True)
-                    for row in chunk['rows']:replay.append(row)
+                    # Rebuild only the compact chronological ring on resume.
+                    # Historical full executor/observation trees are not
+                    # needed for Approach proposals and otherwise dominate
+                    # memory (many archived rows × full 128-lane state).
+                    for row in chunk['rows']:replay.append(row,retain_start=False)
                 replay.new_stream()
             replay.generator.set_state(resumed['replay_rng'].cpu())
             torch.set_rng_state(resumed['torch_rng'].cpu());torch.cuda.set_rng_state(resumed['cuda_rng'].cpu())
