@@ -383,6 +383,11 @@ class PureControlStateDrivenLongMPCV1QPContinuityRepair(
                                    direct_search_rejection='direct_search_exception',
                                    error_type=type(exc).__name__, error=str(exc))
             if searched is not None:
+                # The base long-MPC cache uses list truth/length semantics;
+                # direct search returns a Kx18 ndarray for scoring.  Normalize
+                # the adopted 32-node sequence before it reaches that cache.
+                searched = [np.asarray(node, dtype=float).copy()
+                            for node in searched]
                 search_diag.update(original_failure=original_failure,
                                    original_prefix_steps=0,
                                    repair_attempted=False,
@@ -430,6 +435,8 @@ class PureControlStateDrivenLongMPCV1QPContinuityRepair(
                                direct_search_rejection='direct_search_exception',
                                error_type=type(exc).__name__, error=str(exc))
         if searched is not None:
+            searched = [np.asarray(node, dtype=float).copy()
+                        for node in searched]
             search_diag['original_failure'] = original_failure
             search_diag['original_prefix_steps'] = len(sequence)
             search_diag['repair_attempted'] = True
