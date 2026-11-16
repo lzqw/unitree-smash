@@ -185,7 +185,16 @@ def run(args):
             critic_coverage_blocks=int(resumed.get('critic_coverage_blocks',0))
             if trainer.frozen_hash()!=trainer.frozen_actor_hash:raise ValueError('Resume changed frozen actor parameters')
             replay_archives=resumed['replay_archives']
-            for directory in replay_archives:
+            # A direct Approach continuation has a valid fixed initialization
+            # ring and fixed approach-gated starts.  Re-decoding every prior
+            # native archive row is both redundant and very expensive; it also
+            # recreates large executor trees that are not needed for this
+            # block.  Keep the archive manifest for provenance, but start the
+            # live ring from the verified packed initialization data.
+            restore_archives = not (args.resume_start_block == 'approach')
+            if not restore_archives:
+                stage(args.output, 'RESUME_ARCHIVES_SKIPPED', reason='direct_approach_uses_packed_ring')
+            for directory in (replay_archives if restore_archives else []):
                 directory=Path(directory);receipt=json.loads((directory/'manifest.json').read_text())
                 for item in receipt['chunks']:
                     path=directory/item['file']
