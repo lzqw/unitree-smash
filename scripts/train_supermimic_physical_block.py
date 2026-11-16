@@ -79,11 +79,18 @@ def main():
 
 
 def run(args):
+    from quadsmash.rl.supermimic_run_lifecycle import stage as lifecycle_stage
+    lifecycle_stage(args.output, 'RUN_ENTER')
     import torch
+    lifecycle_stage(args.output, 'IMPORT_TORCH')
     from torch.utils.tensorboard import SummaryWriter
+    lifecycle_stage(args.output, 'IMPORT_TENSORBOARD')
     from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper
+    lifecycle_stage(args.output, 'IMPORT_RSL')
     from quadsmash.rl.supermimic_physical_loop_loading_v1 import load_physical_loop,APPROACH_NAMES,RECOVERY_NAMES
+    lifecycle_stage(args.output, 'IMPORT_LOADING')
     from quadsmash.rl.supermimic_physical_learner_v1 import PhysicalHorizonTrainer
+    lifecycle_stage(args.output, 'IMPORT_LEARNER')
     from quadsmash.rl.supermimic_physical_loop_replay_v1 import PhysicalLoopReplay,current_start
     from quadsmash.rl.supermimic_physical_imagination_state_v1 import PhysicalImaginationStateV1
     from quadsmash.rl.supermimic_physical_capture_v1 import PhysicalTransitionArchive,tensor_tree_copy
@@ -94,29 +101,37 @@ def run(args):
     from quadsmash.rl.supermimic_run_lifecycle import close_resource,stage
     from quadsmash.tasks.stand.supermimic_env_v1 import SuperMimicEnvV1
     from quadsmash.tasks.stand.full_racket_eval_env_v4 import FrozenPanelEnv
+    lifecycle_stage(args.output, 'IMPORT_ALL')
     env=trainer=archive=None;writer=None;failed=False;tick=0;phase='LOAD'
     torch.set_num_threads(2);torch.manual_seed(20261114)
     try:
+        lifecycle_stage(args.output, 'BEFORE_LOAD_PHYSICAL_LOOP')
         actor,adapter,template,launch,manifest=load_physical_loop(archive=args.archive,
             physical_checkpoint=args.physical_checkpoint,ball_checkpoint=args.ball_checkpoint,
             task_checkpoint=args.task_checkpoint,safety_mapping=args.safety_mapping)
+        lifecycle_stage(args.output, 'AFTER_LOAD_PHYSICAL_LOOP')
         write(args.output/'model_manifest.json',adapter.manifest)
         packed_sha=hashlib.sha256(args.packed_data.read_bytes()).hexdigest()
         expected=json.loads((args.packed_data.parent/'completed.json').read_text())
         if packed_sha!=expected['sha256'] or expected['first_completed']!=128:raise ValueError('Invalid initialization data')
         package=torch.load(args.packed_data,map_location='cpu',weights_only=True)
+        lifecycle_stage(args.output, 'LOADED_PACKED_DATA')
         replay=PhysicalLoopReplay(package,adapter.task_model.memory_schema,capacity_ticks=args.replay_capacity_ticks)
+        lifecycle_stage(args.output, 'REPLAY_READY')
         writer=SummaryWriter(str(args.tensorboard_dir or (args.output/'tensorboard')),flush_secs=30)
         from quadsmash.rl.supermimic_physical_start_cache_v1 import load_start_cache,APPROACH_TICKS,CRITIC_TICKS
         start_cache=load_start_cache(args.archive,manifest)
+        lifecycle_stage(args.output, 'START_CACHE_LOADED')
         starts=[start_cache[t] for t in APPROACH_TICKS]
         critic_starts=[start_cache[t] for t in CRITIC_TICKS]
+        lifecycle_stage(args.output, 'STARTS_SELECTED')
         def as_state(row):return PhysicalImaginationStateV1.from_record(row,executor_template=template,launch=launch,device='cuda:0')
         timebase=Timebase(**json.loads((ROOT/'configs/supermimic_task_horizon_v2.json').read_text()))
         trainer=PhysicalHorizonTrainer(actor,adapter,as_state(starts[1]),timebase,
             command_delta_budget=args.command_delta_budget,
             target_delta_budget_rad=args.target_delta_budget_rad,
             trainable_names=RECOVERY_NAMES + APPROACH_NAMES,block_name='joint')
+        lifecycle_stage(args.output, 'TRAINER_READY')
         trainer.set_budget_state_library([as_state(row) for row in starts+critic_starts[:4]])
         def approach_active(row):
             """Require at least one lane with the public pre-hit gate active.
