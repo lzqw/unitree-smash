@@ -30,6 +30,10 @@ echo "CONFIG=$ROOT/configs/supermimic_phase1_long_v1.json"
 TB_PID=$!
 
 PREV=""
+if [[ -n "${SM_RESUME_CHECKPOINT:-}" ]]; then
+  [[ -f "$SM_RESUME_CHECKPOINT" ]] || { echo "resume checkpoint not found: $SM_RESUME_CHECKPOINT" >&2; exit 12; }
+  PREV="$SM_RESUME_CHECKPOINT"
+fi
 PREV_RETURN=""
 DECLINE_STREAK=0
 FLAT_STREAK=0
