@@ -280,6 +280,7 @@ class ContactFirstTrajectorySearchV1:
             raise ValueError("Positive contact time after current state required")
         best = None
         rejected = []
+        evaluator_rejection_reasons = Counter()
         candidates_considered = 0
         accepted_candidates = 0
         for offset in cfg.contact_time_offsets_s:
@@ -333,6 +334,9 @@ class ContactFirstTrajectorySearchV1:
                                     else evaluator_result.get("accepted", False))
                 if not accepted:
                     rejected.append("evaluator")
+                    if isinstance(evaluator_result, dict):
+                        reason = evaluator_result.get("rejection", "unspecified")
+                        evaluator_rejection_reasons[str(reason)] += 1
                     continue
                 # Linearized terminal diagnostics are deliberately separate
                 # from the physical evaluator and never replace it.
@@ -375,6 +379,7 @@ class ContactFirstTrajectorySearchV1:
             "candidates_considered": candidates_considered,
             "accepted_candidates": accepted_candidates,
             "rejection_counts": dict(Counter(rejected)),
+            "evaluator_rejection_reasons": dict(evaluator_rejection_reasons),
         }
         if best is None:
             raise RuntimeError(

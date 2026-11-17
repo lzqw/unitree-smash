@@ -58,6 +58,14 @@ This is a Pinocchio plus implicit-position-interface admission witness, not a
 PhysX replay or a native execution certificate; native evaluation remains
 `NOT_RUN`.
 
+A 100-sample diagnostic sweep through the same full-body admission showed
+24/25, 7/25, 3/25, and 1/25 accepted at 1, 2.5, 5, and 10 cm local target
+offsets respectively (`FULLBODY_LOCAL_TASK_SWEEP.json`).  These are CPU
+feasibility rates only.  The drop relative to the kinematic-only sweep exposes
+the current bottleneck: the physical prefix gate is stricter than the
+Jacobian terminal fit, so the next improvement should address jump-state and
+whole-body coordination rather than silently relaxing the gate.
+
 On the same CPU path, 100 repeated 96-node plans with the real kinematics
 callback took 2.09 ms mean (2.11 ms p95) with five re-linearizations; see
 `CPU_BENCHMARK.json`.  This is a planner timing measurement, not a real-time
