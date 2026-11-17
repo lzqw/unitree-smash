@@ -1,0 +1,18 @@
+[
+  {
+    "command": "OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 bash scripts/python.sh -m scripts.decompose_prediction_error_v1 reports/prediction_hip_mount_20261118/long02/RESULTS.json reports/prediction_error_attribution_20261118/LONG.json --contact-offset .0256 0 .07",
+    "exit_code": 0
+  },
+  {
+    "command": "OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 bash scripts/python.sh -m scripts.decompose_prediction_error_v1 reports/prediction_hip_mount_20261118/contact_window01/RESULTS.json reports/prediction_error_attribution_20261118/CONTACT_WINDOW.json --contact-offset .0256 0 .07",
+    "exit_code": 0
+  },
+  {
+    "command": "OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 bash scripts/python.sh -m scripts.compare_native_model_properties_v1 reports/prediction_error_attribution_20261118/property_inspection01/native reports/prediction_error_attribution_20261118/NATIVE_MODEL_COMPARISON.json",
+    "exit_code": 0
+  },
+  {
+    "command": "OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 bash scripts/python.sh -m pytest -q tests/test_native_model_property_comparison_v1.py tests/test_prediction_error_attribution_v1.py tests/test_diagnostic_nonfoot_prediction_v1.py",
+    "exit_code": 0
+  }
+]

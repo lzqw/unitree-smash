@@ -1,0 +1,36 @@
+{
+  "schema": "dual-line-runtime-v1",
+  "line": "teacher",
+  "run_id": "properties-20261118-01",
+  "supervisor_pid": 2900007,
+  "supervisor_ppid": 2481,
+  "supervisor_pgid": 2900007,
+  "supervisor_sid": 2900007,
+  "supervisor_start_ticks": 258240488,
+  "started_at": "2026-11-17T22:55:51.435294+00:00",
+  "cwd": "/home/autodrive/LZQW/unitree_smash_teacher_eval",
+  "command": [
+    "bash",
+    "scripts/python.sh",
+    "scripts/inspect_native_teacher_properties_v1.py",
+    "--output",
+    "/home/autodrive/LZQW/unitree_smash_teacher_eval/reports/prediction_error_attribution_20261118/property_inspection01/native",
+    "--historical-observations",
+    "/home/autodrive/LZQW/unitree_smash_teacher_eval/reports/joint_loop_round_20261117/attempts/probe01/native/public_observations.npy",
+    "--precision-receipt",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin_precision_after_aim_queue01/PRECISION_ADMISSION.json",
+    "--headless"
+  ],
+  "command_sha256": "28836c2ea9b5af75cdb2a9cf7d9619079d045bae33df351e1179694fb29cd793",
+  "supervisor_cgroup": [
+    "0::/user.slice/user-1000.slice/user@1000.service/unitree.slice/unitree-teacher.slice/unitree-teacher-properties-20261118-01.service"
+  ],
+  "child_pid": 2900008,
+  "child_pgid": 2900008,
+  "child_sid": 2900008,
+  "child_start_ticks": 258240492,
+  "child_cgroup": [
+    "0::/user.slice/user-1000.slice/user@1000.service/unitree.slice/unitree-teacher.slice/unitree-teacher-properties-20261118-01.service"
+  ],
+  "child_started_at": "2026-11-17T22:55:51.437904+00:00"
+}
