@@ -96,6 +96,37 @@ def test_forward_kinematics_callback_relinearizes_before_acceptance():
     assert result.metadata['kinematic_iterations'] == 4
 
 
+def test_regular_unit_normal_task_explores_one_joint_nullspace():
+    calls = []
+
+    def forward_kinematics(q):
+        calls.append(q.copy())
+        position = q[:3].copy()
+        normal = np.array([0., 0., 1.])
+        jp = np.c_[np.eye(3), np.zeros((3, 3))]
+        jn = np.zeros((3, 6))
+        jn[0, 3] = 1.
+        jn[1, 4] = 1.
+        return position, normal, jp, jn
+
+    inputs = _inputs()
+    inputs.update(
+        position_jacobian=np.c_[np.eye(3), np.zeros((3, 3))],
+        normal_jacobian=np.array([
+            [0., 0., 0., 1., 0., 0.],
+            [0., 0., 0., 0., 1., 0.],
+            [0., 0., 0., 0., 0., 0.],
+        ]),
+    )
+    planner = ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
+        horizon_steps=32, contact_time_offsets_s=(0.,), velocity_scales=(1.,),
+        kinematic_iterations=1))
+    result = planner.plan(**inputs, kinematics_fn=forward_kinematics)
+    assert len(calls) == 1 + 4
+    assert result.metadata['search_diagnostics']['candidates_considered'] == 5
+    assert result.metadata['nullspace_offset_rad'] in (-.12, -.06, .06, .12, 0.)
+
+
 def test_hermite_speed_overshoot_is_rejected_before_scoring():
     planner = ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
         horizon_steps=32, contact_time_offsets_s=(0.,), velocity_scales=(1.,)))

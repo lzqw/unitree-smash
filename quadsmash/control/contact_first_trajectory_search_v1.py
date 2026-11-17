@@ -36,6 +36,11 @@ class ContactFirstSearchConfig:
     horizon_steps: int = 96
     contact_time_offsets_s: tuple = (-0.02, 0.0, 0.02)
     velocity_scales: tuple = (0.8, 1.0, 1.2)
+    # The racket normal has only two independent orientation coordinates, so a
+    # six-joint arm normally retains one local nullspace direction.  Exploring
+    # a few bounded posture offsets lets the same contact task use a less
+    # saturated joint without changing the task target or physical limits.
+    nullspace_offsets_rad: tuple = (-0.12, -0.06, 0.06, 0.12)
     damping: float = 0.04
     normal_weight: float = 0.30
     normal_rate_gain: float = 2.0
@@ -54,9 +59,11 @@ class ContactFirstSearchConfig:
             raise ValueError("Positive planner timestep required")
         if self.horizon_steps < 2:
             raise ValueError("At least two trajectory nodes required")
-        for name in ("contact_time_offsets_s", "velocity_scales"):
+        for name in ("contact_time_offsets_s", "velocity_scales", "nullspace_offsets_rad"):
             values = tuple(float(x) for x in getattr(self, name))
-            if not values or not all(math.isfinite(x) for x in values):
+            if name != "nullspace_offsets_rad" and not values:
+                raise ValueError(f"Finite {name} required")
+            if not all(math.isfinite(x) for x in values):
                 raise ValueError(f"Finite {name} required")
         if self.damping <= 0.0 or self.normal_weight <= 0.0:
             raise ValueError("Positive task damping and normal weight required")
@@ -262,19 +269,48 @@ class ContactFirstTrajectorySearchV1:
                 current_pos, current_normal = candidate_position, candidate_normal
                 current_jp, current_jn = candidate_jp, candidate_jn
         current_normal = current_normal / max(np.linalg.norm(current_normal), 1e-12)
-        task = np.vstack((current_jp, cfg.normal_weight * current_jn))
-        inverse = _damped_inverse(task, cfg.damping)
-        position_error = target_pos - current_pos
-        normal_error = target_normal - current_normal
         # The base contributes to the racket point velocity.  Remove it once,
         # matching the moving-base compensation used by the Approach teacher.
         base_point_velocity = base_linear + np.cross(base_angular, racket_offset)
         relative_velocity = target_velocity - base_point_velocity
-        normal_rate = cfg.normal_rate_gain * normal_error
-        qd_contact_nominal = inverse @ np.r_[relative_velocity,
-                                               cfg.normal_weight * normal_rate]
-        qd_contact_nominal = np.clip(qd_contact_nominal, -velocity_limits,
-                                     velocity_limits)
+
+        # The normal task contains a redundant scalar direction because the
+        # racket normal is unit length.  Use that local nullspace to try a few
+        # small, deterministic posture offsets.  Each branch is re-evaluated
+        # through the real FK callback before it can enter trajectory search;
+        # without FK, the supplied linear model remains the single branch.
+        branches = [(q_contact.copy(), current_pos.copy(), current_normal.copy(),
+                     current_jp.copy(), current_jn.copy(), 0.0)]
+        task = np.vstack((current_jp, cfg.normal_weight * current_jn))
+        if kinematics_fn is not None and cfg.nullspace_offsets_rad:
+            _, singular_values, vh = np.linalg.svd(task, full_matrices=True)
+            rank = int(np.sum(singular_values > max(float(singular_values[0]), 1e-12) * 1e-8))
+            # The intended case is the regular 5-DOF position-plus-unit-normal
+            # task.  If the normal Jacobian is entirely degenerate, keep the
+            # caller's original single branch instead of inventing posture
+            # alternatives from an underconstrained test task.
+            if rank == 5:
+                null_direction = vh[rank:].T[:, 0]
+                first = np.flatnonzero(np.abs(null_direction) > 1e-9)
+                if len(first) and null_direction[first[0]] < 0.0:
+                    null_direction = -null_direction
+                for offset in cfg.nullspace_offsets_rad:
+                    branch_q = np.clip(q_contact + float(offset) * null_direction,
+                                       lower, upper)
+                    values = kinematics_fn(branch_q.copy())
+                    if not isinstance(values, (tuple, list)) or len(values) != 4:
+                        raise ValueError("kinematics_fn must return position, normal, and two Jacobians")
+                    branch_pos = np.asarray(values[0], dtype=float)
+                    branch_normal = np.asarray(values[1], dtype=float)
+                    branch_jp = np.asarray(values[2], dtype=float)
+                    branch_jn = np.asarray(values[3], dtype=float)
+                    _validate_vectors(
+                        branch_q, np.zeros(6), branch_jp, branch_jn,
+                        branch_pos, branch_normal, target_pos, target_normal,
+                        target_velocity, base_linear, base_angular, racket_offset,
+                        lower, upper, velocity_limits)
+                    branches.append((branch_q, branch_pos, branch_normal,
+                                     branch_jp, branch_jn, float(offset)))
         requested_contact = float(contact_time_s)
         if not math.isfinite(requested_contact) or requested_contact <= cfg.dt_s:
             raise ValueError("Positive contact time after current state required")
@@ -283,98 +319,109 @@ class ContactFirstTrajectorySearchV1:
         evaluator_rejection_reasons = Counter()
         candidates_considered = 0
         accepted_candidates = 0
-        for offset in cfg.contact_time_offsets_s:
-            duration = requested_contact + float(offset)
-            if duration < cfg.dt_s or duration > cfg.dt_s * (cfg.horizon_steps - 1):
-                continue
-            contact_index = int(round(duration / cfg.dt_s))
-            duration = contact_index * cfg.dt_s
-            if contact_index < 1 or contact_index >= cfg.horizon_steps:
-                continue
-            times = np.arange(contact_index + 1, dtype=float) * cfg.dt_s
-            for velocity_scale in cfg.velocity_scales:
-                candidates_considered += 1
-                qd1 = np.clip(qd_contact_nominal * float(velocity_scale),
-                              -velocity_limits, velocity_limits)
-                q_prefix, qd_prefix = _hermite(q0, qd0, q_contact, qd1,
+        for branch_q, branch_pos, branch_normal, branch_jp, branch_jn, nullspace_offset in branches:
+            branch_normal = branch_normal / max(np.linalg.norm(branch_normal), 1e-12)
+            task = np.vstack((branch_jp, cfg.normal_weight * branch_jn))
+            inverse = _damped_inverse(task, cfg.damping)
+            normal_error = target_normal - branch_normal
+            normal_rate = cfg.normal_rate_gain * normal_error
+            qd_contact_nominal = inverse @ np.r_[relative_velocity,
+                                                 cfg.normal_weight * normal_rate]
+            qd_contact_nominal = np.clip(qd_contact_nominal, -velocity_limits,
+                                         velocity_limits)
+            for offset in cfg.contact_time_offsets_s:
+                duration = requested_contact + float(offset)
+                if duration < cfg.dt_s or duration > cfg.dt_s * (cfg.horizon_steps - 1):
+                    continue
+                contact_index = int(round(duration / cfg.dt_s))
+                duration = contact_index * cfg.dt_s
+                if contact_index < 1 or contact_index >= cfg.horizon_steps:
+                    continue
+                times = np.arange(contact_index + 1, dtype=float) * cfg.dt_s
+                for velocity_scale in cfg.velocity_scales:
+                    candidates_considered += 1
+                    qd1 = np.clip(qd_contact_nominal * float(velocity_scale),
+                                  -velocity_limits, velocity_limits)
+                    q_prefix, qd_prefix = _hermite(q0, qd0, branch_q, qd1,
                                                duration, times)
-                q_full = np.broadcast_to(q_contact, (cfg.horizon_steps, 6)).copy()
-                qd_full = np.zeros_like(q_full)
-                q_full[:contact_index + 1] = q_prefix
-                qd_full[:contact_index + 1] = qd_prefix
-                step_limit = velocity_limits * cfg.dt_s + 1e-9
-                if np.any(np.abs(np.diff(q_full, axis=0)) > step_limit):
-                    rejected.append("joint_step_limit")
-                    continue
-                # The endpoint velocity is clipped above, but a cubic Hermite
-                # prefix can still overshoot between its endpoints.  Reject
-                # that candidate before scoring it so the search never
-                # selects a trajectory that violates its own six-joint speed
-                # contract between sampled contact nodes.
-                if np.any(np.abs(qd_prefix) > velocity_limits[None, :] + 1e-9):
-                    rejected.append("trajectory_velocity_limit")
-                    continue
-                metadata = dict(
+                    q_full = np.broadcast_to(branch_q, (cfg.horizon_steps, 6)).copy()
+                    qd_full = np.zeros_like(q_full)
+                    q_full[:contact_index + 1] = q_prefix
+                    qd_full[:contact_index + 1] = qd_prefix
+                    step_limit = velocity_limits * cfg.dt_s + 1e-9
+                    if np.any(np.abs(np.diff(q_full, axis=0)) > step_limit):
+                        rejected.append("joint_step_limit")
+                        continue
+                    # The endpoint velocity is clipped above, but a cubic Hermite
+                    # prefix can still overshoot between its endpoints.  Reject
+                    # that candidate before scoring it so the search never
+                    # selects a trajectory that violates its own six-joint speed
+                    # contract between sampled contact nodes.
+                    if np.any(np.abs(qd_prefix) > velocity_limits[None, :] + 1e-9):
+                        rejected.append("trajectory_velocity_limit")
+                        continue
+                    metadata = dict(
                     method="dtg_contact_first_hermite_jacobian_v1",
                     contact_index=contact_index,
                     contact_time_s=duration,
                     velocity_scale=float(velocity_scale),
+                    nullspace_offset_rad=float(nullspace_offset),
                     initial_joint_position_rad=q0.copy(),
                     initial_joint_velocity_rad_s=qd0.copy(),
                     base_point_velocity_world_m_s=base_point_velocity.copy(),
                     relative_target_velocity_world_m_s=relative_velocity.copy(),
                     source="causal_ball_or_dtg_contact_event",
                 )
-                accepted = True
-                evaluator_result = None
-                if evaluator is not None:
-                    evaluator_result = evaluator(q_full, qd_full, contact_index,
-                                                 metadata)
-                    accepted = bool(evaluator_result if isinstance(evaluator_result, (bool, np.bool_))
-                                    else evaluator_result.get("accepted", False))
-                if not accepted:
-                    rejected.append("evaluator")
-                    if isinstance(evaluator_result, dict):
-                        reason = evaluator_result.get("rejection", "unspecified")
-                        evaluator_rejection_reasons[str(reason)] += 1
-                    continue
-                # Linearized terminal diagnostics are deliberately separate
-                # from the physical evaluator and never replace it.
-                if kinematics_fn is None:
-                    achieved_pos = racket_pos + jp @ (q_contact - q0)
-                    achieved_normal = racket_normal + jn @ (q_contact - q0)
-                    achieved_normal /= max(np.linalg.norm(achieved_normal), 1e-12)
-                    achieved_jp = jp
-                else:
-                    achieved_pos, achieved_normal = current_pos, current_normal
-                    achieved_jp = current_jp
-                achieved_velocity = base_point_velocity + achieved_jp @ qd1
-                position_error_norm = float(np.linalg.norm(target_pos - achieved_pos))
-                normal_error_norm = float(np.linalg.norm(target_normal - achieved_normal))
-                velocity_error_norm = float(np.linalg.norm(target_velocity - achieved_velocity))
-                if (position_error_norm > cfg.position_tolerance_m or
-                        normal_error_norm > cfg.normal_tolerance or
-                        velocity_error_norm > cfg.velocity_tolerance_m_s):
-                    rejected.append("kinematic_task_residual")
-                    continue
-                score = (position_error_norm / cfg.position_tolerance_m +
-                         normal_error_norm / cfg.normal_tolerance +
-                         velocity_error_norm / cfg.velocity_tolerance_m_s +
-                         0.02 * float(np.linalg.norm(qd1)) +
-                         1e-6 * contact_index)
-                accepted_candidates += 1
-                candidate = ContactFirstCandidate(
-                    q_rad=q_full, qd_rad_s=qd_full,
-                    contact_index=contact_index, contact_time_s=duration,
-                    score=float(score), position_error_m=position_error_norm,
-                    normal_error=normal_error_norm,
-                    velocity_error_m_s=velocity_error_norm,
-                    metadata=dict(metadata,
-                                  kinematic_iterations=iteration_count,
-                                  evaluator=evaluator_result,
-                                  rejected_before_selection=tuple(rejected)))
-                if best is None or candidate.score < best.score:
-                    best = candidate
+                    accepted = True
+                    evaluator_result = None
+                    if evaluator is not None:
+                        evaluator_result = evaluator(q_full, qd_full, contact_index,
+                                                     metadata)
+                        accepted = bool(evaluator_result if isinstance(evaluator_result, (bool, np.bool_))
+                                        else evaluator_result.get("accepted", False))
+                    if not accepted:
+                        rejected.append("evaluator")
+                        if isinstance(evaluator_result, dict):
+                            reason = evaluator_result.get("rejection", "unspecified")
+                            evaluator_rejection_reasons[str(reason)] += 1
+                        continue
+                    # Linearized terminal diagnostics are deliberately separate
+                    # from the physical evaluator and never replace it.
+                    if kinematics_fn is None:
+                        achieved_pos = racket_pos + jp @ (branch_q - q0)
+                        achieved_normal = racket_normal + jn @ (branch_q - q0)
+                        achieved_normal /= max(np.linalg.norm(achieved_normal), 1e-12)
+                        achieved_jp = jp
+                    else:
+                        achieved_pos, achieved_normal = branch_pos, branch_normal
+                        achieved_jp = branch_jp
+                    achieved_velocity = base_point_velocity + achieved_jp @ qd1
+                    position_error_norm = float(np.linalg.norm(target_pos - achieved_pos))
+                    normal_error_norm = float(np.linalg.norm(target_normal - achieved_normal))
+                    velocity_error_norm = float(np.linalg.norm(target_velocity - achieved_velocity))
+                    if (position_error_norm > cfg.position_tolerance_m or
+                            normal_error_norm > cfg.normal_tolerance or
+                            velocity_error_norm > cfg.velocity_tolerance_m_s):
+                        rejected.append("kinematic_task_residual")
+                        continue
+                    score = (position_error_norm / cfg.position_tolerance_m +
+                             normal_error_norm / cfg.normal_tolerance +
+                             velocity_error_norm / cfg.velocity_tolerance_m_s +
+                             0.02 * float(np.linalg.norm(qd1)) +
+                             1e-6 * contact_index)
+                    accepted_candidates += 1
+                    candidate = ContactFirstCandidate(
+                        q_rad=q_full, qd_rad_s=qd_full,
+                        contact_index=contact_index, contact_time_s=duration,
+                        score=float(score), position_error_m=position_error_norm,
+                        normal_error=normal_error_norm,
+                        velocity_error_m_s=velocity_error_norm,
+                        metadata=dict(metadata,
+                                      kinematic_iterations=iteration_count,
+                                      evaluator=evaluator_result,
+                                      rejected_before_selection=tuple(rejected)))
+                    if best is None or candidate.score < best.score:
+                        best = candidate
         self.last_diagnostics = {
             "candidates_considered": candidates_considered,
             "accepted_candidates": accepted_candidates,

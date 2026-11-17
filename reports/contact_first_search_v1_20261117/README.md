@@ -68,16 +68,18 @@ arm-target velocity bound, so the current bottleneck is available approach
 time and whole-body coordination; the gate is not being relaxed to improve a
 number.
 
-On the same CPU path, 100 repeated 96-node plans with the real kinematics
-callback took 2.09 ms mean (2.11 ms p95) with five re-linearizations; see
-`CPU_BENCHMARK.json`.  This is a planner timing measurement, not a real-time
-Isaac guarantee.
+With the nullspace branches enabled, 300 repeated 96-node plans with the real
+kinematics callback took 5.38 ms mean (5.69 ms p95), with five
+re-linearizations and five posture branches; see `CPU_BENCHMARK.json`.  This
+is a planner timing measurement, not a real-time Isaac guarantee.  The extra
+4 branch evaluations are deliberate: they trade CPU time for fewer
+velocity-bound rejections.
 
 A fixed 100-sample sweep of randomly selected reachable terminal poses accepted
-12/100 with five re-linearizations, versus 6/100 with the previous three.  The
-remaining candidates were rejected by terminal task residual or joint-step
-limits; the sweep is a diagnostics fixture, not a hit-rate claim.  Details are
-in `REACHABLE_TASK_SWEEP.json`.
+12/100 with five re-linearizations before the nullspace branch was added; that
+file is retained as a historical baseline.  The current full-body sweeps below
+include the new branches and the original physical velocity gate.  Neither
+sweep is a hit-rate claim.
 
 For local DTG-like perturbations around the measured racket pose, acceptance was
 100/100 for 1, 2.5 and 5 cm position offsets and 96/100 at 10 cm, with contact

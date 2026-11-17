@@ -1,17 +1,17 @@
 {
   "kind": "cpu_full_body_contact_prefix_smoke",
-  "generated_utc": "2026-11-17T04:54:09Z",
+  "generated_utc": "2026-11-17T05:07:04Z",
   "accepted": true,
   "planner_contact_index": 20,
   "planner_contact_time_s": 0.2,
-  "planner_elapsed_s": 0.022890127263963223,
+  "planner_elapsed_s": 0.10363833466544747,
   "evaluator": {
     "accepted": true,
     "nodes_checked": 21,
     "minimum_ground_gap_m": 0.3556354115271082,
-    "maximum_tracking_error_rad": 0.012245657153648004,
+    "maximum_tracking_error_rad": 0.013459877383519059,
     "diagnostics": {
-      "dynamics_contact_residual_max": 4.320099833421409e-12,
+      "dynamics_contact_residual_max": 3.439026841078885e-12,
       "joint_velocity_violation_rad_s": 0.0,
       "joint_position_violation_rad": 0.0,
       "normal_force_violation_n": 0.0,
@@ -24,9 +24,10 @@
     "airborne_ground_force_policy": "measured_contacts_only"
   },
   "search_diagnostics": {
-    "candidates_considered": 1,
-    "accepted_candidates": 1,
-    "rejection_counts": {}
+    "candidates_considered": 5,
+    "accepted_candidates": 5,
+    "rejection_counts": {},
+    "evaluator_rejection_reasons": {}
   },
   "native_execution": false,
   "native_evaluation": "NOT_RUN",

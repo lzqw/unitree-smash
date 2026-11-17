@@ -6,50 +6,46 @@
   "by_radius_m": {
     "0.01": {
       "samples": 25,
-      "accepted": 24,
-      "acceptance_rate": 0.96,
-      "rejection_errors": {
-        "No contact-first candidate passed pre-contact checks": 1
-      },
-      "evaluator_rejection_reasons": {
-        "native_admitted_target_bounds": 1
-      }
+      "accepted": 25,
+      "acceptance_rate": 1.0,
+      "rejection_errors": {},
+      "evaluator_rejection_reasons": {}
     },
     "0.025": {
       "samples": 25,
-      "accepted": 7,
-      "acceptance_rate": 0.28,
+      "accepted": 18,
+      "acceptance_rate": 0.72,
       "rejection_errors": {
-        "No contact-first candidate passed pre-contact checks": 18
+        "No contact-first candidate passed pre-contact checks": 7
       },
       "evaluator_rejection_reasons": {
-        "native_admitted_target_bounds": 18
+        "native_admitted_target_bounds": 35
       }
     },
     "0.05": {
       "samples": 25,
-      "accepted": 3,
-      "acceptance_rate": 0.12,
+      "accepted": 8,
+      "acceptance_rate": 0.32,
       "rejection_errors": {
-        "No contact-first candidate passed pre-contact checks": 22
+        "No contact-first candidate passed pre-contact checks": 17
       },
       "evaluator_rejection_reasons": {
-        "native_admitted_target_bounds": 22
+        "native_admitted_target_bounds": 85
       }
     },
     "0.1": {
       "samples": 25,
-      "accepted": 1,
-      "acceptance_rate": 0.04,
+      "accepted": 2,
+      "acceptance_rate": 0.08,
       "rejection_errors": {
-        "No contact-first candidate passed pre-contact checks": 24
+        "No contact-first candidate passed pre-contact checks": 23
       },
       "evaluator_rejection_reasons": {
-        "native_admitted_target_bounds": 23
+        "native_admitted_target_bounds": 112
       }
     }
   },
-  "elapsed_s": 3.78154632775113,
+  "elapsed_s": 10.955589947290719,
   "native_evaluation": "NOT_RUN",
   "interpretation": "diagnostic only; not native hit rate or a candidate-selection sweep"
 }
