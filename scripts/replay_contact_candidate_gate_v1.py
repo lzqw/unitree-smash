@@ -15,6 +15,7 @@ from scripts.whole_body_support_qp_v1 import PositionPDInterface
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--anchored',action='store_true')
     parser.add_argument('--inverse-impact',action='store_true')
     parser.add_argument('--reachable-impact',action='store_true')
     parser.add_argument('--replanning',action='store_true')
@@ -39,9 +40,10 @@ def main():
     default=torch.tensor(default,dtype=torch.float32);limits=torch.tensor(interface.limits,dtype=torch.float32)
     checkpoint=torch.load(args.checkpoint,map_location='cpu',weights_only=False)
     controller=FullRacketRallyControllerV4(checkpoint,observations.shape[1],'cpu')
-    if args.inverse_impact or args.reachable_impact:
+    if args.inverse_impact or args.reachable_impact or args.anchored:
         from dataclasses import replace
-        controller.contact_first_planner.config=replace(controller.contact_first_planner.config,inverse_impact_targets=True,reachable_impact_targets=args.reachable_impact,bounded_replanning=args.replanning)
+        controller.contact_first_planner.config=replace(controller.contact_first_planner.config,inverse_impact_targets=True,reachable_impact_targets=args.reachable_impact,bounded_replanning=args.replanning,position_anchored_search=args.anchored)
+    controller.contact_first_offline_diagnostic=bool(args.anchored)
     physical=[];impacts=[];fallback_audit=[]
     def factory(lane,public,q,qd):
         model=LoadedPinocchioModelV1();state=model.state_from_public(public,default.numpy())
@@ -87,7 +89,7 @@ def main():
         future_recorded_actions_read=False,source_ticks=end,training=False,native='NOT_RUN',
         input_sha256={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in
             (args.input/'public_observations.npy',args.checkpoint,args.interface)},
-        inverse_impact_targets=args.inverse_impact,reachable_impact_targets=args.reachable_impact,replanning=args.replanning,inverse_impact_audit=getattr(controller,'inverse_impact_audit',[]),
+        position_anchored_search=args.anchored,inverse_impact_targets=bool(args.inverse_impact or args.anchored or args.reachable_impact),reachable_impact_targets=args.reachable_impact,replanning=args.replanning,inverse_impact_audit=getattr(controller,'inverse_impact_audit',[]),
         fallback_audit=fallback_audit,plans=controller.logs,impact_calls=impacts,physical_calls=physical)
     args.output.parent.mkdir(parents=True,exist_ok=True)
     args.output.write_text(json.dumps(result,indent=2,default=lambda v:v.tolist() if isinstance(v,np.ndarray) else float(v))+'\n')

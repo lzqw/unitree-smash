@@ -1,0 +1,37 @@
+{
+  "baseline": "30daad2114fce835122fa151262a1a857ff6745c",
+  "native": "NOT_RUN",
+  "evaluation128": "NOT_RUN",
+  "complete_closed_loop": "NOT_COMPLETED",
+  "native_candidate_frozen": false,
+  "planning_calls": 8,
+  "contact_time_candidates": 24,
+  "POSITION_ANCHORED": 13,
+  "NORMAL_FEASIBLE": 0,
+  "VELOCITY_FEASIBLE": 0,
+  "ANALYTIC_RETURN_VALID": 0,
+  "dynamics_calls": 0,
+  "DYNAMICS_FEASIBLE": 0,
+  "NATIVE_ADOPTED": "NOT_RUN",
+  "NATIVE_HIT": "NOT_RUN",
+  "COMPLETE5": "NOT_RUN",
+  "runtime_gate": false,
+  "source_input_hashes": {
+    "reports/joint_loop_round_20261117/attempts/probe01/native/public_observations.npy": "18eef3aa0fb74200a983b5814d255e5d7150ee899906390ba476395c7c79efe0",
+    "reports/joint_loop_round_20261117/attempts/probe01/candidate.pt": "9152b438d792b2871ba5cbd64b4e76776e125c7295fcbaf57999931aba436543",
+    "reports/codex_teacher_joint_eval_20261116/controller.json": "4c1a1c3cce71954081c252b0ca7bb10e77f65bdaf39525e9a78fb4f8e67330f7"
+  },
+  "gates": {
+    "G0_same_input_position": "PASS: 0.3762389115 mm -> 0.1681725686 mm",
+    "G1_normal_velocity_return": "FAIL: no simultaneous compatible pose",
+    "G2_full_dynamics": "FAIL: paired historical/base/joint replay still nonconvergent at node9 with optional stops",
+    "G2_runtime": "FAIL: p95 above100ms; anchored native inline disabled",
+    "G3_native": "NOT_RUN; prerequisite failure"
+  },
+  "not_implemented_or_not_validated": [
+    "validated causal long-horizon base forecast replacement",
+    "asynchronous production planning worker and stale-state revalidation",
+    "complete production lifecycle/feedback state machine",
+    "new native 18D adoption, actual racket speed and hit feedback"
+  ]
+}

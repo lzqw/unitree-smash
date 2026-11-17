@@ -43,7 +43,7 @@ class ContactFirstFullBodyEvaluatorV1:
                  enforce_target_admission_bounds=False,
                  racket_measure_fn=None, leg_target_sequence_rad=None,
                  record_state_trace=False, contact_prediction="measured_fixed",
-                 leg_reference_factory=None, impact_state_fn=None, measurement_uses_metadata=False):
+                 leg_reference_factory=None, impact_state_fn=None, measurement_uses_metadata=False, enforce_joint_stops=False):
         if initial_state is None:
             public = np.asarray(public, dtype=np.float64)
             default = np.asarray(default, dtype=np.float64)
@@ -108,6 +108,9 @@ class ContactFirstFullBodyEvaluatorV1:
         self.record_state_trace = bool(record_state_trace)
         if contact_prediction not in ("measured_fixed", "unilateral_release"):
             raise ValueError("Unknown contact prediction mode")
+        if enforce_joint_stops and contact_prediction != "unilateral_release":
+            raise ValueError("Joint stops are experimental Approach unilateral prediction only")
+        self.enforce_joint_stops=bool(enforce_joint_stops)
         self.contact_prediction = contact_prediction
         self.predict = (predict_unilateral_support if contact_prediction == "unilateral_release"
                         else predict_implicit_support)
@@ -139,11 +142,19 @@ class ContactFirstFullBodyEvaluatorV1:
             "friction_violation_n": 3e-4,
             "motor_torque_violation_nm": 3e-4,
         }
-        return {
-            name: float(diagnostics.get(name, 0.))
-            for name, limit in limits.items()
-            if float(diagnostics.get(name, 0.)) > limit
-        }
+        if not isinstance(diagnostics,dict):return {'invalid_diagnostics':float('inf')}
+        residuals=('dynamics_contact_residual_max','dynamics_residual_max')
+        violations={}
+        if not any(k in diagnostics for k in residuals):violations['missing_dynamics_residual']=float('inf')
+        for name,limit in limits.items():
+            if name in residuals and name not in diagnostics:continue
+            value=diagnostics.get(name)
+            try:value=float(value)
+            except (TypeError,ValueError):value=float('nan')
+            if not np.isfinite(value) or value<0:
+                violations['invalid_'+name]=float('inf')
+            elif value>limit:violations[name]=value
+        return violations
 
     def __call__(self, q_rad, qd_rad_s, contact_index, metadata):
         q_rad = np.asarray(q_rad, dtype=np.float64)
@@ -209,7 +220,8 @@ class ContactFirstFullBodyEvaluatorV1:
             try:
                 result = self.predict(
                     self.model, self.interface, state, target,
-                    duration_s=self.dt_s, substeps=self.substeps)
+                    duration_s=self.dt_s, substeps=self.substeps,
+                    **({"enforce_joint_stops": True} if self.enforce_joint_stops else {}))
             except (ValueError, np.linalg.LinAlgError, FloatingPointError) as error:
                 return {
                     "accepted": False,
@@ -221,7 +233,12 @@ class ContactFirstFullBodyEvaluatorV1:
                 leg_reference.commit_final_command(target.copy(),node)
             contact_modes_changed |= not np.array_equal(state.contacts, result["state"].contacts)
             state = result["state"]
-            diagnostics = result["diagnostics"]
+            if not all(np.isfinite(v).all() for v in (state.q,state.v,state.joint_position,state.joint_velocity)):
+                return dict(accepted=False,rejection='nonfinite_predicted_state',node=node)
+            diagnostics = result.get("diagnostics",{})
+            invalid=self._violations(diagnostics)
+            if any(k.startswith(("invalid_","missing_")) for k in invalid):
+                return dict(accepted=False,rejection="invalid_physics_diagnostics",node=node,violations=invalid)
             if self.record_state_trace:
                 state_trace.append(dict(
                     node=node, elapsed_s=(node+1)*self.dt_s,
@@ -236,6 +253,8 @@ class ContactFirstFullBodyEvaluatorV1:
             after_witness = self.geometry.minimum_witness(state.q)
             gap = after_witness["gap_m"]
             minimum_ground_gap = min(minimum_ground_gap, gap)
+            if not np.isfinite(gap):
+                return dict(accepted=False,rejection="nonfinite_geometry",node=node)
             if gap < -1e-6:
                 violations["nonfoot_ground_violation_m"] = -gap
             tracking_error = float(np.max(np.abs(state.joint_position[12:] - q_rad[node+1])))
@@ -283,6 +302,7 @@ class ContactFirstFullBodyEvaluatorV1:
             "native_execution": False,
             "physical_model": "LoadedPinocchioModelV1+implicit_position_interface",
             "contact_prediction": self.contact_prediction,
+            "joint_stops_enabled": self.enforce_joint_stops,
             "new_contact_candidates_added": False,
             "airborne_ground_force_policy": "measured_contacts_only",
         }

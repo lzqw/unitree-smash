@@ -64,6 +64,7 @@ class CausalFrozenLegReferenceFactory:
                 for name,count in audit.counts.items():
                     factory.inference_counts[name]=factory.inference_counts.get(name,0)+count-before[name]
             target=factory.limits[:,0]+.5*(action[lane].clamp(-1,1)+1)*(factory.limits[:,1]-factory.limits[:,0])
+            reference.last_proposal_target=target.detach().cpu().numpy().copy()
             return target[:12].detach().cpu().numpy().copy()
         def commit(target,node):
             nonlocal committed_node

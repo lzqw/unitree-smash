@@ -1,0 +1,572 @@
+{
+  "scope": "Paired offline model check, not native counterfactual",
+  "runs": [
+    {
+      "mode": "historical_actual18",
+      "start_tick": 249,
+      "lane": 0,
+      "requested_steps": 29,
+      "checked_steps": 3,
+      "stop": "original_hard_gate",
+      "rows": [
+        {
+          "node": 0,
+          "target_rad": [
+            -0.12277091329966083,
+            0.09014441369781423,
+            -0.15829498012715248,
+            0.13069400134745024,
+            -0.157055476634806,
+            -0.157055476634806,
+            0.977185626578061,
+            0.977185626578061,
+            -0.9945589200853497,
+            -0.9945589200853497,
+            -0.8377599120140076,
+            -0.8377599120140076,
+            -1.1737954805750235,
+            1.1395972500466627,
+            -2.422344180332871,
+            1.565233616101409,
+            1.132324370696253,
+            1.9509409637643955
+          ],
+          "previous_observation_source": "actual previous final18 at start, then committed final18",
+          "violations": {},
+          "joint": "RR_calf_joint",
+          "predicted_joint_rad": -0.8649380604170642,
+          "native_joint_rad": -0.8630590438842773,
+          "limit_rad": [
+            -2.7227001190185547,
+            -0.8377599120140076
+          ],
+          "joint_prediction_error_rad": -0.0018790165327868813,
+          "maximum_violation_rad": 0.0,
+          "ground_witness": {
+            "body": "RL_calf",
+            "shape_path": "/World/Go2/RL_calf/collisions/mesh_2/cylinder",
+            "shape_index": 17,
+            "gap_m": 0.019180792260588886,
+            "witness_world_m": [
+              0.2422205254612044,
+              0.22216543200686173,
+              0.019180792260588886
+            ],
+            "root_position_world_m": [
+              0.680137033836731,
+              0.04775566037885578,
+              0.23113628951803578
+            ],
+            "root_quaternion_xyzw": [
+              0.014108707127274562,
+              0.13847362668124613,
+              -0.10859770539615642,
+              0.9842929124400059
+            ],
+            "geometry_sha256": "e39c41e9b69e481aeac8907c2dfacb9f593cf54e00c8fb822696638ef083167b",
+            "ground_z_m": 0.0,
+            "native_contact_verified": false
+          }
+        },
+        {
+          "node": 1,
+          "target_rad": [
+            -0.12277091329966083,
+            0.09014441369781423,
+            -0.15829498012715248,
+            0.13069400134745024,
+            -0.157055476634806,
+            -0.157055476634806,
+            0.977185626578061,
+            0.977185626578061,
+            -0.9945589200853497,
+            -0.9945589200853497,
+            -0.8377599120140076,
+            -0.8377599120140076,
+            -1.150218808712495,
+            1.159861657773419,
+            -2.4247401030457496,
+            1.538215328903334,
+            1.1199411347307802,
+            1.9605480887719864
+          ],
+          "previous_observation_source": "actual previous final18 at start, then committed final18",
+          "violations": {},
+          "joint": "RR_calf_joint",
+          "predicted_joint_rad": -0.8443550599519083,
+          "native_joint_rad": -0.8408606648445129,
+          "limit_rad": [
+            -2.7227001190185547,
+            -0.8377599120140076
+          ],
+          "joint_prediction_error_rad": -0.003494395107395354,
+          "maximum_violation_rad": 0.0,
+          "ground_witness": {
+            "body": "RL_calf",
+            "shape_path": "/World/Go2/RL_calf/collisions/mesh_2/cylinder",
+            "shape_index": 17,
+            "gap_m": 0.017946670986923735,
+            "witness_world_m": [
+              0.2473011850561607,
+              0.22353553757939743,
+              0.017946670986923735
+            ],
+            "root_position_world_m": [
+              0.6835646352743736,
+              0.04735928358215858,
+              0.24098965521172852
+            ],
+            "root_quaternion_xyzw": [
+              0.0170419288104871,
+              0.12722256543641533,
+              -0.11153967343507831,
+              0.9854353823342206
+            ],
+            "geometry_sha256": "e39c41e9b69e481aeac8907c2dfacb9f593cf54e00c8fb822696638ef083167b",
+            "ground_z_m": 0.0,
+            "native_contact_verified": false
+          }
+        },
+        {
+          "node": 2,
+          "target_rad": [
+            -0.12277091329966083,
+            0.09014441369781423,
+            -0.15829498012715248,
+            0.13069400134745024,
+            -0.157055476634806,
+            -0.157055476634806,
+            0.977185626578061,
+            0.977185626578061,
+            -0.9945589200853497,
+            -0.9945589200853497,
+            -0.8377599120140076,
+            -0.8377599120140076,
+            -1.1219413511361012,
+            1.1841664448526075,
+            -2.427613689417285,
+            1.5058099426732952,
+            1.1050891341666897,
+            1.9720709462617947
+          ],
+          "previous_observation_source": "actual previous final18 at start, then committed final18",
+          "violations": {
+            "joint_position_violation_rad": 0.005905955483896719
+          },
+          "joint": "RR_calf_joint",
+          "predicted_joint_rad": -0.8318539565301108,
+          "native_joint_rad": -0.8377599120140076,
+          "limit_rad": [
+            -2.7227001190185547,
+            -0.8377599120140076
+          ],
+          "joint_prediction_error_rad": 0.005905955483896719,
+          "maximum_violation_rad": 0.005905955483896719,
+          "ground_witness": {
+            "body": "RR_calf",
+            "shape_path": "/World/Go2/RR_calf/collisions/mesh_2/cylinder",
+            "shape_index": 22,
+            "gap_m": 0.01621878203549032,
+            "witness_world_m": [
+              0.2189158441112902,
+              0.06006894327006526,
+              0.01621878203549032
+            ],
+            "root_position_world_m": [
+              0.6874538305433513,
+              0.04687656312230862,
+              0.252024300137205
+            ],
+            "root_quaternion_xyzw": [
+              0.018277369748123818,
+              0.11454433825775523,
+              -0.11434926397268576,
+              0.9866457206906075
+            ],
+            "geometry_sha256": "e39c41e9b69e481aeac8907c2dfacb9f593cf54e00c8fb822696638ef083167b",
+            "ground_z_m": 0.0,
+            "native_contact_verified": false
+          }
+        }
+      ]
+    },
+    {
+      "mode": "frozen_base18",
+      "start_tick": 249,
+      "lane": 0,
+      "requested_steps": 29,
+      "checked_steps": 3,
+      "stop": "original_hard_gate",
+      "rows": [
+        {
+          "node": 0,
+          "target_rad": [
+            -0.12277090549468994,
+            0.09014439582824707,
+            -0.15829497575759888,
+            0.13069403171539307,
+            -0.15705549716949463,
+            -0.15705549716949463,
+            0.9771856665611267,
+            0.9771856665611267,
+            -0.9945589303970337,
+            -0.9945589303970337,
+            -0.8377599716186523,
+            -0.8377599716186523,
+            -1.173795461654663,
+            1.1395972967147827,
+            -2.4223439693450928,
+            1.5652337074279785,
+            1.1323243379592896,
+            1.9509408473968506
+          ],
+          "previous_observation_source": "actual previous final18 at start, then committed final18",
+          "violations": {},
+          "joint": "RR_calf_joint",
+          "predicted_joint_rad": -0.8649380787714285,
+          "native_joint_rad": -0.8630590438842773,
+          "limit_rad": [
+            -2.7227001190185547,
+            -0.8377599120140076
+          ],
+          "joint_prediction_error_rad": -0.001879034887151132,
+          "maximum_violation_rad": 0.0,
+          "ground_witness": {
+            "body": "RL_calf",
+            "shape_path": "/World/Go2/RL_calf/collisions/mesh_2/cylinder",
+            "shape_index": 17,
+            "gap_m": 0.01918079277191606,
+            "witness_world_m": [
+              0.2422205270152354,
+              0.2221654316885779,
+              0.01918079277191606
+            ],
+            "root_position_world_m": [
+              0.6801370338473092,
+              0.0477556603240558,
+              0.23113628955706186
+            ],
+            "root_quaternion_xyzw": [
+              0.014108705963845992,
+              0.13847362632465549,
+              -0.10859770522953875,
+              0.9842929125252318
+            ],
+            "geometry_sha256": "e39c41e9b69e481aeac8907c2dfacb9f593cf54e00c8fb822696638ef083167b",
+            "ground_z_m": 0.0,
+            "native_contact_verified": false
+          }
+        },
+        {
+          "node": 1,
+          "target_rad": [
+            -0.12277090549468994,
+            0.09014439582824707,
+            -0.15829497575759888,
+            0.13069403171539307,
+            -0.15705549716949463,
+            -0.15705549716949463,
+            0.9771856665611267,
+            0.9771856665611267,
+            -0.9945589303970337,
+            -0.9945589303970337,
+            -0.8377599716186523,
+            -0.8377599716186523,
+            -1.1492929458618164,
+            1.160657525062561,
+            -2.4248340129852295,
+            1.537154197692871,
+            1.1194547414779663,
+            1.9609253406524658
+          ],
+          "previous_observation_source": "actual previous final18 at start, then committed final18",
+          "violations": {},
+          "joint": "RR_calf_joint",
+          "predicted_joint_rad": -0.8443547564239745,
+          "native_joint_rad": -0.8408606648445129,
+          "limit_rad": [
+            -2.7227001190185547,
+            -0.8377599120140076
+          ],
+          "joint_prediction_error_rad": -0.003494091579461567,
+          "maximum_violation_rad": 0.0,
+          "ground_witness": {
+            "body": "RL_calf",
+            "shape_path": "/World/Go2/RL_calf/collisions/mesh_2/cylinder",
+            "shape_index": 17,
+            "gap_m": 0.017945196537646146,
+            "witness_world_m": [
+              0.2473004410713988,
+              0.22353823999428554,
+              0.017945196537646146
+            ],
+            "root_position_world_m": [
+              0.6835644654709649,
+              0.04735919165935605,
+              0.24098929790469661
+            ],
+            "root_quaternion_xyzw": [
+              0.017031422381387374,
+              0.12721940966942039,
+              -0.11153944176091651,
+              0.985435997610547
+            ],
+            "geometry_sha256": "e39c41e9b69e481aeac8907c2dfacb9f593cf54e00c8fb822696638ef083167b",
+            "ground_z_m": 0.0,
+            "native_contact_verified": false
+          }
+        },
+        {
+          "node": 2,
+          "target_rad": [
+            -0.12277090549468994,
+            0.09014439582824707,
+            -0.15829497575759888,
+            0.13069403171539307,
+            -0.15705549716949463,
+            -0.15705549716949463,
+            0.9771856665611267,
+            0.9771856665611267,
+            -0.9945589303970337,
+            -0.9945589303970337,
+            -0.8377599716186523,
+            -0.8377599716186523,
+            -1.1200021505355835,
+            1.185833215713501,
+            -2.4278104305267334,
+            1.5035877227783203,
+            1.1040705442428589,
+            1.9728610515594482
+          ],
+          "previous_observation_source": "actual previous final18 at start, then committed final18",
+          "violations": {
+            "joint_position_violation_rad": 0.0059114960519141
+          },
+          "joint": "RR_calf_joint",
+          "predicted_joint_rad": -0.8318484159620935,
+          "native_joint_rad": -0.8377599120140076,
+          "limit_rad": [
+            -2.7227001190185547,
+            -0.8377599120140076
+          ],
+          "joint_prediction_error_rad": 0.0059114960519141,
+          "maximum_violation_rad": 0.0059114960519141,
+          "ground_witness": {
+            "body": "RR_calf",
+            "shape_path": "/World/Go2/RR_calf/collisions/mesh_2/cylinder",
+            "shape_index": 22,
+            "gap_m": 0.01621552029049303,
+            "witness_world_m": [
+              0.21891367161412248,
+              0.06006085060198295,
+              0.01621552029049303
+            ],
+            "root_position_world_m": [
+              0.6874531517625068,
+              0.04687630481021947,
+              0.25202313385638614
+            ],
+            "root_quaternion_xyzw": [
+              0.01823379015946995,
+              0.11453362454183869,
+              -0.1143480763501293,
+              0.9866479084155373
+            ],
+            "geometry_sha256": "e39c41e9b69e481aeac8907c2dfacb9f593cf54e00c8fb822696638ef083167b",
+            "ground_z_m": 0.0,
+            "native_contact_verified": false
+          }
+        }
+      ]
+    },
+    {
+      "mode": "frozen_legs_planned_arm18",
+      "start_tick": 249,
+      "lane": 0,
+      "requested_steps": 29,
+      "checked_steps": 3,
+      "stop": "original_hard_gate",
+      "rows": [
+        {
+          "node": 0,
+          "target_rad": [
+            -0.12277090549468994,
+            0.09014439582824707,
+            -0.15829497575759888,
+            0.13069403171539307,
+            -0.15705549716949463,
+            -0.15705549716949463,
+            0.9771856665611267,
+            0.9771856665611267,
+            -0.9945589303970337,
+            -0.9945589303970337,
+            -0.8377599716186523,
+            -0.8377599716186523,
+            -1.0745699405670166,
+            1.341238260269165,
+            -2.359010934829712,
+            1.4615347385406494,
+            1.0989396572113037,
+            1.9833348989486694
+          ],
+          "previous_observation_source": "actual previous final18 at start, then committed final18",
+          "violations": {},
+          "joint": "RR_calf_joint",
+          "predicted_joint_rad": -0.8648437282157401,
+          "native_joint_rad": -0.8630590438842773,
+          "limit_rad": [
+            -2.7227001190185547,
+            -0.8377599120140076
+          ],
+          "joint_prediction_error_rad": -0.001784684331462727,
+          "maximum_violation_rad": 0.0,
+          "ground_witness": {
+            "body": "RL_calf",
+            "shape_path": "/World/Go2/RL_calf/collisions/mesh_2/cylinder",
+            "shape_index": 17,
+            "gap_m": 0.01881616239744338,
+            "witness_world_m": [
+              0.24203631396630285,
+              0.22281676447681958,
+              0.01881616239744338
+            ],
+            "root_position_world_m": [
+              0.6800905477386233,
+              0.0477134285109442,
+              0.23110011331520355
+            ],
+            "root_quaternion_xyzw": [
+              0.011430251587129733,
+              0.13759952876691892,
+              -0.10838039911618837,
+              0.9844741784928605
+            ],
+            "geometry_sha256": "e39c41e9b69e481aeac8907c2dfacb9f593cf54e00c8fb822696638ef083167b",
+            "ground_z_m": 0.0,
+            "native_contact_verified": false
+          }
+        },
+        {
+          "node": 1,
+          "target_rad": [
+            -0.12277090549468994,
+            0.09014439582824707,
+            -0.15829497575759888,
+            0.13069403171539307,
+            -0.15705549716949463,
+            -0.15705549716949463,
+            0.9771856665611267,
+            0.9771856665611267,
+            -0.9945589303970337,
+            -0.9945589303970337,
+            -0.8377599716186523,
+            -0.8377599716186523,
+            -1.0963462332397425,
+            1.3163512351003284,
+            -2.357791327767794,
+            1.485910015409679,
+            1.1087828782581384,
+            1.9731121153868594
+          ],
+          "previous_observation_source": "actual previous final18 at start, then committed final18",
+          "violations": {},
+          "joint": "RR_calf_joint",
+          "predicted_joint_rad": -0.8430366113736887,
+          "native_joint_rad": -0.8408606648445129,
+          "limit_rad": [
+            -2.7227001190185547,
+            -0.8377599120140076
+          ],
+          "joint_prediction_error_rad": -0.002175946529175743,
+          "maximum_violation_rad": 0.0,
+          "ground_witness": {
+            "body": "RL_calf",
+            "shape_path": "/World/Go2/RL_calf/collisions/mesh_2/cylinder",
+            "shape_index": 17,
+            "gap_m": 0.016748848478020356,
+            "witness_world_m": [
+              0.24651249200155828,
+              0.22462610419885298,
+              0.016748848478020356
+            ],
+            "root_position_world_m": [
+              0.6834390644331837,
+              0.047285535826824356,
+              0.24093283586411327
+            ],
+            "root_quaternion_xyzw": [
+              0.009484257511048312,
+              0.12505146134167905,
+              -0.11090413840177106,
+              0.9858866329153345
+            ],
+            "geometry_sha256": "e39c41e9b69e481aeac8907c2dfacb9f593cf54e00c8fb822696638ef083167b",
+            "ground_z_m": 0.0,
+            "native_contact_verified": false
+          }
+        },
+        {
+          "node": 2,
+          "target_rad": [
+            -0.12277090549468994,
+            0.09014439582824707,
+            -0.15829497575759888,
+            0.13069403171539307,
+            -0.15705549716949463,
+            -0.15705549716949463,
+            0.9771856665611267,
+            0.9771856665611267,
+            -0.9945589303970337,
+            -0.9945589303970337,
+            -0.8377599716186523,
+            -0.8377599716186523,
+            -1.1101062715424517,
+            1.295453673612758,
+            -2.351924889889615,
+            1.5074783818954105,
+            1.1160261024511997,
+            1.960801936843949
+          ],
+          "previous_observation_source": "actual previous final18 at start, then committed final18",
+          "violations": {
+            "joint_position_violation_rad": 0.008328031613908826
+          },
+          "joint": "RR_calf_joint",
+          "predicted_joint_rad": -0.8294318804000987,
+          "native_joint_rad": -0.8377599120140076,
+          "limit_rad": [
+            -2.7227001190185547,
+            -0.8377599120140076
+          ],
+          "joint_prediction_error_rad": 0.008328031613908826,
+          "maximum_violation_rad": 0.008328031613908826,
+          "ground_witness": {
+            "body": "RL_calf",
+            "shape_path": "/World/Go2/RL_calf/collisions/mesh_2/cylinder",
+            "shape_index": 17,
+            "gap_m": 0.013937089939556058,
+            "witness_world_m": [
+              0.25507638538512567,
+              0.2249384517460957,
+              0.013937089939556058
+            ],
+            "root_position_world_m": [
+              0.687252501605085,
+              0.046863876565691916,
+              0.2519773928280843
+            ],
+            "root_quaternion_xyzw": [
+              0.0059408026272459455,
+              0.1111966086166679,
+              -0.11340156374292153,
+              0.9872892719142429
+            ],
+            "geometry_sha256": "e39c41e9b69e481aeac8907c2dfacb9f593cf54e00c8fb822696638ef083167b",
+            "ground_z_m": 0.0,
+            "native_contact_verified": false
+          }
+        }
+      ]
+    }
+  ]
+}

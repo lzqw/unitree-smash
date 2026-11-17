@@ -46,3 +46,14 @@ def test_installer_cannot_replace_verified_prefix_or_recovery_owner():
     torch.testing.assert_close(c.contact_first_joint_targets,before)
     assert len(c.contact_first_plan_log)==2
     assert all(x['rejection']=='verified_plan_or_recovery_owns_lane' for x in c.contact_first_plan_log)
+
+
+def test_position_anchored_search_is_cpu_only_until_runtime_and_model_gates_pass():
+    c,public,limits=fixture()
+    c.contact_first_planner.config.position_anchored_search=True
+    assert not c.contact_first_inline_search_allowed()
+    c.contact_first_offline_diagnostic=True
+    assert c.contact_first_inline_search_allowed()
+    c.contact_first_offline_diagnostic=False
+    c.contact_first_planner.config.position_anchored_search=False
+    assert c.contact_first_inline_search_allowed()

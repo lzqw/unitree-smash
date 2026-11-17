@@ -13,7 +13,7 @@ import pinocchio as pin
 
 def unilateral_velocity_step(mass, velocity, bias, selection, kp, kd,
                              target_error, effort, dt, jacobian,
-                             desired_contact_velocity, friction, *, max_iterations=80, iteration_trace=None, separating_warm_start=True):
+                             desired_contact_velocity, friction, *, max_iterations=80, iteration_trace=None, separating_warm_start=True, joint_velocity_bounds=None):
     nv, na = selection.shape
     nc = len(jacobian)
     if (mass.shape != (nv,nv) or velocity.shape != (nv,) or bias.shape != (nv,)
@@ -35,6 +35,16 @@ def unilateral_velocity_step(mass, velocity, bias, selection, kp, kd,
     # 0 released, 1 sticking, 2 sliding
     directions = np.zeros((nc,2))
     saturated = np.zeros(na, dtype=np.int8)
+    # Optional authored joint stops: unilateral generalized reactions solved
+    # together with contacts and motors, never post-integration angle clipping.
+    stop_jac = np.empty((0, nv)); stop_rhs = np.empty(0)
+    if joint_velocity_bounds is not None:
+        bounds = np.asarray(joint_velocity_bounds, dtype=float)
+        if bounds.shape != (na, 2) or not np.isfinite(bounds).all() or np.any(bounds[:, 0] > bounds[:, 1]):
+            raise ValueError('Invalid joint stop velocity bounds')
+        stop_jac = np.vstack((selection.T, -selection.T))
+        stop_rhs = np.r_[bounds[:, 0], -bounds[:, 1]]
+    stop_active = np.zeros(len(stop_rhs), dtype=bool)
     drive = kp*target_error
     slope = kd+dt*kp
     force_tol, velocity_tol = 2e-5, 2e-6
@@ -59,6 +69,10 @@ def unilateral_velocity_step(mass, velocity, bias, selection, kp, kd,
                 constraints.append(jacobian[i,2])
                 contact_rhs.append(desired_contact_velocity[i,2])
                 slots.append((i,start,1))
+        stop_slots = []
+        for j in np.flatnonzero(stop_active):
+            stop_slots.append((j, len(columns)))
+            columns.append(stop_jac[j]); constraints.append(stop_jac[j]); contact_rhs.append(stop_rhs[j])
         B = np.asarray(columns).reshape(-1,nv).T
         C = np.asarray(constraints).reshape(-1,nv)
         K = np.block([[effective,-dt*B],[C,np.zeros((len(C),len(C)))]])
@@ -69,17 +83,25 @@ def unilateral_velocity_step(mass, velocity, bias, selection, kp, kd,
         for i,start,count in slots:
             f = solved[nv+start:nv+start+count]
             forces[i] = f if count == 3 else np.r_[-friction*directions[i],1.]*f[0]
+        stop_force = np.zeros(len(stop_rhs))
+        for j, slot in stop_slots: stop_force[j] = solved[nv + slot]
+        stop_slack = stop_jac @ vn - stop_rhs
+        new_stops = stop_active.copy()
+        new_stops[stop_force < -force_tol] = False
+        new_stops[(~stop_active) & (stop_slack < -velocity_tol)] = True
         raw_torque = drive-slope*(selection.T@vn)
         new_sat = np.where(raw_torque>effort+1e-8,1,
                           np.where(raw_torque < -effort-1e-8,-1,0)).astype(np.int8)
         if iteration_trace is not None:
             iteration_trace.append(dict(iteration=iteration+1,modes=modes.tolist(),
+                joint_stop_active=stop_active.tolist(),joint_stop_reaction=stop_force.tolist(),joint_stop_slack=stop_slack.tolist(),
                 forces_n=forces.tolist(),contact_velocity=np.einsum('cij,j->ci',jacobian,vn).tolist(),
                 motor_saturation=saturated.tolist(),proposed_motor_saturation=new_sat.tolist(),
                 matrix_condition=float(np.linalg.cond(K)),
                 linear_residual=float(np.max(abs(K@solved-rhs_full),initial=0.))))
-        if not np.array_equal(new_sat,saturated):
+        if not np.array_equal(new_sat,saturated) or not np.array_equal(new_stops,stop_active):
             saturated = new_sat
+            stop_active = new_stops
             continue
         cv = np.einsum('cij,j->ci',jacobian,vn)
         changed = False
@@ -113,7 +135,8 @@ def unilateral_velocity_step(mass, velocity, bias, selection, kp, kd,
             continue
         torque = np.clip(raw_torque,-effort,effort)
         reaction = np.einsum('cij,ci->j',jacobian,forces)
-        dynamic_error = mass@(vn-velocity)/dt+bias-selection@torque-reaction
+        stop_reaction = stop_jac.T @ stop_force
+        dynamic_error = mass@(vn-velocity)/dt+bias-selection@torque-reaction-stop_reaction
         normal_slack = cv[:,2]-desired_contact_velocity[:,2]
         residual = float(np.max(abs(dynamic_error),initial=0.))
         normal_violation = float(np.max(-forces[:,2],initial=0.))
@@ -122,9 +145,13 @@ def unilateral_velocity_step(mass, velocity, bias, selection, kp, kd,
         complementarity = float(np.max(abs(forces[:,2]*normal_slack),initial=0.))
         if (not np.isfinite(solved).all() or residual>2e-5 or normal_violation>force_tol
                 or friction_violation>force_tol or separation_violation>velocity_tol
-                or complementarity>2e-4):
+                or complementarity>2e-4
+                or np.max(-stop_force,initial=0.)>force_tol
+                or np.max(-stop_slack,initial=0.)>velocity_tol
+                or np.max(abs(stop_force*stop_slack),initial=0.)>2e-4):
             raise ValueError('Contact/motor consistency check failed')
         return dict(velocity=vn,force=forces,torque=torque,modes=modes.copy(),
+            joint_stop_reaction_generalized=stop_reaction, joint_stop_active=stop_active.copy(),
             iterations=iteration+1,residual=residual,normal_complementarity=complementarity,
             normal_force_violation_n=normal_violation,friction_violation_n=friction_violation)
     raise ValueError('Contact/motor active set did not converge; no fallback applied')
@@ -132,7 +159,7 @@ def unilateral_velocity_step(mass, velocity, bias, selection, kp, kd,
 
 def predict_unilateral_support(model, interface, state, target, *, duration_s=.01,
                                substeps=16, contact_velocity_decay_s=.06, iteration_trace=None,
-                               separating_warm_start=True):
+                               separating_warm_start=True, enforce_joint_stops=False):
     target = np.asarray(target,dtype=np.float64)
     if target.shape != (18,) or not np.isfinite(target).all():
         raise ValueError('Finite full command required')
@@ -164,7 +191,9 @@ def predict_unilateral_support(model, interface, state, target, *, duration_s=.0
         step = unilateral_velocity_step(snap['mass_matrix'],v,snap['nonlinear'],S,
             interface.kp,interface.kd,target-q[model.q_indices],interface.effort,
             dt,jac,desired,interface.friction,iteration_trace=iteration_trace,
-            separating_warm_start=separating_warm_start)
+            separating_warm_start=separating_warm_start,
+            joint_velocity_bounds=((interface.limits-q[model.q_indices,None])/dt
+                                   if enforce_joint_stops else None))
         v = step['velocity'];q = pin.integrate(model.model,q,dt*v)
         diag['motor_torque_violation_nm']=max(diag['motor_torque_violation_nm'],
             float(np.max(abs(step['torque'])-interface.effort)))
@@ -189,4 +218,5 @@ def predict_unilateral_support(model, interface, state, target, *, duration_s=.0
     forces[feet] = last['force']
     return dict(state=following,diagnostics=diag,native_execution=False,
         foot_forces_world_n=forces,
-        new_contact_candidates_added=False,impact_or_compliance_calibrated=False)
+        new_contact_candidates_added=False,impact_or_compliance_calibrated=False,
+        joint_stops_enabled=bool(enforce_joint_stops))

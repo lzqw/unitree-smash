@@ -34,6 +34,7 @@ class ContactFirstSearchConfig:
     evaluate_impact_outcome: bool = False
     inverse_impact_targets: bool = False
     bounded_replanning: bool = False
+    position_anchored_search: bool = False
     reachable_impact_targets: bool = False
     dt_s: float = 0.01
     # Approach planning starts around t=2.0 s while contact is commonly near
@@ -469,6 +470,10 @@ class ContactFirstTrajectorySearchV1:
             base_state_cache[cache_key] = resolved
             return tuple(value.copy() for value in resolved)
 
+        if cfg.position_anchored_search:
+            from .position_anchored_contact_search_v1 import plan_anchored_events
+            return plan_anchored_events(self,q0,qd0,lower,upper,velocity_limits,requested_contact,
+                target_state_at,base_state_at,target_metadata_cache,kinematics_fn,kinematics_at_time_fn,evaluator,impact_evaluator)
         # Solve the nominal terminal task in its own future base frame.  Every
         # contact-time candidate below repeats this conversion for its own
         # propagated body pose.

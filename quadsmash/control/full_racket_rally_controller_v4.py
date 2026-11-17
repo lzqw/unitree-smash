@@ -129,6 +129,9 @@ class FullRacketRallyControllerV4:
         self.contact_first_plan_log=[]
         self.contact_first_evaluator=None
         self.contact_first_evaluator_factory=None
+        # Anchored search has not met the runtime/model gates. The native
+        # control loop must not block on it; explicit CPU replay alone opts in.
+        self.contact_first_offline_diagnostic=False
         if search_config is not None:
             if not isinstance(search_config,dict):
                 raise ValueError('contact_first_search must be a mapping')
@@ -196,6 +199,12 @@ class FullRacketRallyControllerV4:
             self.contact_first_last_base_angular.zero_()
             self.contact_first_last_basis.zero_()
 
+    def contact_first_inline_search_allowed(self):
+        if self.contact_first_planner is None:
+            return False
+        return (not getattr(self.contact_first_planner.config, 'position_anchored_search', False)
+                or getattr(self, 'contact_first_offline_diagnostic', False))
+
     def plan_contact_first_arm(self, **kwargs):
         """Plan a causal pre-contact arm trajectory from a DTG event.
 
@@ -254,6 +263,11 @@ class FullRacketRallyControllerV4:
         limits_np=limits.detach().cpu().numpy()
         q_limits=limits_np[12:]
         cfg=self.contact_first_planner.config
+        if not self.contact_first_inline_search_allowed():
+            for lane in ids.tolist():
+                self.contact_first_plan_log.append(dict(lane=lane,accepted=False,
+                    rejection='anchored_search_offline_only_runtime_and_model_gates_not_met',planning_seconds=0.))
+            return
         point,normal,jp,jn=self.teacher.kinematics(actual,self.teacher.contact_offset)
         import time
         for local,lane in enumerate(ids.tolist()):
@@ -316,7 +330,7 @@ class FullRacketRallyControllerV4:
                 self.contact_first_plan_log.append(dict(
                     lane=lane, accepted=False, planning_seconds=time.perf_counter()-planning_started, rejection=type(exc).__name__,
                     error=str(exc), contact_time_s=contact_time,
-                    search_diagnostics=dict(self.contact_first_planner.last_diagnostics)))
+                    search_diagnostics=json.loads(json.dumps(self.contact_first_planner.last_diagnostics,default=lambda v:v.tolist() if isinstance(v,np.ndarray) else v.item()))))
                 continue
             physical=result.metadata.get('evaluator')
             joint_accepted=False
@@ -426,7 +440,7 @@ class FullRacketRallyControllerV4:
             base_angular_acceleration=transported_body_acceleration(
                 obs[:,3:6],self.contact_first_last_base_angular,current_basis,
                 self.contact_first_last_basis,delta_time,usable)
-        retry_enabled=(self.contact_first_planner is not None and self.contact_first_planner.config.bounded_replanning)
+        retry_enabled=(self.contact_first_inline_search_allowed() and self.contact_first_planner.config.bounded_replanning)
         if retry_enabled:
             eligible=self.contact_replan_gate.eligible(obs,self.contact_first_plan_valid,self.contact_first_recovery_owned)
             ids=torch.where(eligible)[0]
@@ -492,7 +506,7 @@ class FullRacketRallyControllerV4:
                     self.parameters[ids,8:14]=after
                     applied_prepose=(after-before).cpu().numpy()
             self.planned[ids]=True
-            if self.contact_first_planner is not None:
+            if self.contact_first_inline_search_allowed():
                 # Reuse exactly the same body-frame target, face normal and
                 # desired velocity that FullRacketTeacherV4 will use below.
                 # The planner therefore receives the DTG event once and does
@@ -593,7 +607,7 @@ class FullRacketRallyControllerV4:
                                 self.inverse_impact_audit.append(dict(lane=lane_id,clock_s=clock_s,
                                     duration_s=duration_s,result=inverse_cache[key]))
                             inverse=inverse_cache[key]
-                            if not inverse['accepted']:
+                            if not inverse['accepted'] and not self.contact_first_planner.config.position_anchored_search:
                                 from .inverse_impact_target_v1 import UnreachableImpactTarget
                                 raise UnreachableImpactTarget('predicted_outgoing_unreachable')
                             target['velocity_world_m_s']=basis.T@np.asarray(inverse['racket_velocity_world_m_s'])

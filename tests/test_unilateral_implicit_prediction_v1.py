@@ -51,3 +51,26 @@ class ContactStepTests(unittest.TestCase):
 
 
 if __name__=='__main__':unittest.main()
+
+
+def test_authored_joint_stop_couples_reaction_without_clipping_or_motor_limit_relaxation():
+    M=np.array([[2.,.5],[.5,1.]])
+    S=np.array([[0.],[1.]])
+    result=unilateral_velocity_step(M,np.array([0.,1.]),np.zeros(2),S,
+        np.ones(1),np.zeros(1),np.zeros(1),np.ones(1)*2,.01,
+        np.zeros((0,3,2)),np.zeros((0,3)),.5,
+        joint_velocity_bounds=np.array([[-100.,0.]]))
+    np.testing.assert_allclose(result['velocity'],[.25,0.],atol=1e-12)
+    assert abs(result['torque'][0])<=2
+    assert result['residual']<1e-12
+    assert result['joint_stop_reaction_generalized'][1]<0
+    assert np.sum(result['joint_stop_active'])==1
+
+
+def test_free_motion_inside_joint_stops_is_identical_to_original_solver():
+    args=(np.eye(1),np.array([.2]),np.zeros(1),np.eye(1),np.ones(1),
+          np.ones(1),np.zeros(1),np.ones(1)*2,.01,np.zeros((0,3,1)),np.zeros((0,3)),.5)
+    original=unilateral_velocity_step(*args)
+    bounded=unilateral_velocity_step(*args,joint_velocity_bounds=np.array([[-1.,1.]]))
+    np.testing.assert_array_equal(original['velocity'],bounded['velocity'])
+    assert not bounded['joint_stop_active'].any()
