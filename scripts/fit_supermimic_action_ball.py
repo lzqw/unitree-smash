@@ -151,6 +151,7 @@ def main():
     torch.save(dict(schema=sweep.schema,model=sweep.state_dict(),asset_sha256=asset_sha,
         physical_sha256=sha256(a.physical_checkpoint),legacy_ball_sha256=sha256(a.ball_checkpoint),
         packed_sha256=sha256(a.packed_data),split_sha256=sha256(a.split_manifest),
+        geometry_hashes=sweep.preview.geometry_hashes,softness_m=sweep.softness_m,
         updates=a.updates,evidence_scope='recorded-command model-only, no native paired perturbations'),
         a.output/'action_ball_candidate.pt')
     comparison=dict(initial=initial,candidate=final,action_gradient=gradient,history=history,
