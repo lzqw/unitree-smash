@@ -59,14 +59,19 @@ PhysX replay or a native execution certificate; native evaluation remains
 `NOT_RUN`.
 
 A 100-sample diagnostic sweep through the same full-body admission showed
-24/25, 7/25, 3/25, and 1/25 accepted at 1, 2.5, 5, and 10 cm local target
+25/25, 18/25, 8/25, and 2/25 accepted at 1, 2.5, 5, and 10 cm local target
 offsets for a 0.30 s contact horizon (`FULLBODY_LOCAL_TASK_SWEEP.json`).  With
-the same seed and targets but a 0.60 s horizon, acceptance was 25/25, 23/25,
+the same seed and targets but a 0.60 s horizon, acceptance was 25/25, 24/25,
 16/25, and 8/25 (`FULLBODY_LOCAL_TASK_SWEEP_0p60.json`).  These are CPU
-feasibility rates only.  The dominant rejection is the original admitted
+feasibility rates only.  The dominant rejection remains the original admitted
 arm-target velocity bound, so the current bottleneck is available approach
 time and whole-body coordination; the gate is not being relaxed to improve a
 number.
+
+The planner applies the inexpensive terminal task residual gate before calling
+the full-body replay callback.  This keeps the same acceptance contract while
+avoiding physical replay for candidates that already miss the causal
+position/normal/velocity tolerances.
 
 With the nullspace branches enabled, 300 repeated 96-node plans with the real
 kinematics callback took 5.38 ms mean (5.69 ms p95), with five

@@ -372,21 +372,11 @@ class ContactFirstTrajectorySearchV1:
                     relative_target_velocity_world_m_s=relative_velocity.copy(),
                     source="causal_ball_or_dtg_contact_event",
                 )
-                    accepted = True
-                    evaluator_result = None
-                    if evaluator is not None:
-                        evaluator_result = evaluator(q_full, qd_full, contact_index,
-                                                     metadata)
-                        accepted = bool(evaluator_result if isinstance(evaluator_result, (bool, np.bool_))
-                                        else evaluator_result.get("accepted", False))
-                    if not accepted:
-                        rejected.append("evaluator")
-                        if isinstance(evaluator_result, dict):
-                            reason = evaluator_result.get("rejection", "unspecified")
-                            evaluator_rejection_reasons[str(reason)] += 1
-                        continue
                     # Linearized terminal diagnostics are deliberately separate
-                    # from the physical evaluator and never replace it.
+                    # from the physical evaluator and never replace it.  Run
+                    # this cheap gate first so expensive full-body replay is
+                    # only spent on candidates that satisfy the causal task
+                    # residual contract.
                     if kinematics_fn is None:
                         achieved_pos = racket_pos + jp @ (branch_q - q0)
                         achieved_normal = racket_normal + jn @ (branch_q - q0)
@@ -403,6 +393,19 @@ class ContactFirstTrajectorySearchV1:
                             normal_error_norm > cfg.normal_tolerance or
                             velocity_error_norm > cfg.velocity_tolerance_m_s):
                         rejected.append("kinematic_task_residual")
+                        continue
+                    accepted = True
+                    evaluator_result = None
+                    if evaluator is not None:
+                        evaluator_result = evaluator(q_full, qd_full, contact_index,
+                                                     metadata)
+                        accepted = bool(evaluator_result if isinstance(evaluator_result, (bool, np.bool_))
+                                        else evaluator_result.get("accepted", False))
+                    if not accepted:
+                        rejected.append("evaluator")
+                        if isinstance(evaluator_result, dict):
+                            reason = evaluator_result.get("rejection", "unspecified")
+                            evaluator_rejection_reasons[str(reason)] += 1
                         continue
                     score = (position_error_norm / cfg.position_tolerance_m +
                              normal_error_norm / cfg.normal_tolerance +
