@@ -1,0 +1,130 @@
+{
+  "scope": "Offline only: recorded future commands and observations are diagnostic truth, never online planner inputs",
+  "replay_physical_gate": "stop at first original violation; no tolerance changes",
+  "runs": [
+    {
+      "start_tick": 200,
+      "lane": 0,
+      "requested_nodes": 80,
+      "recorded_nodes": 1,
+      "failure": "prediction_solver",
+      "rows": [
+        {
+          "node": 0,
+          "leg_proposal_difference_rad": 0.0,
+          "command_history_roundtrip_rad": 1.1514326025974242e-07,
+          "failure": "Contact/motor active set did not converge; no fallback applied"
+        }
+      ]
+    },
+    {
+      "start_tick": 200,
+      "lane": 1,
+      "requested_nodes": 80,
+      "recorded_nodes": 1,
+      "failure": "prediction_solver",
+      "rows": [
+        {
+          "node": 0,
+          "leg_proposal_difference_rad": 0.0,
+          "command_history_roundtrip_rad": 1.1514326025974242e-07,
+          "failure": "Contact/motor active set did not converge; no fallback applied"
+        }
+      ]
+    },
+    {
+      "start_tick": 216,
+      "lane": 0,
+      "requested_nodes": 80,
+      "recorded_nodes": 1,
+      "failure": "original_physical_gate",
+      "rows": [
+        {
+          "node": 0,
+          "leg_proposal_difference_rad": 0.0,
+          "command_history_roundtrip_rad": 7.632729648321401e-08,
+          "root_position_error_m": 0.00019807801379077253,
+          "root_rotation_error_rad": 0.002685142586115644,
+          "joint_position_error_rad": 0.004010747096180323,
+          "joint_velocity_error_rad_s": 0.45517572831458875,
+          "contact_equal": true,
+          "ground_witness": {
+            "body": "Head_lower",
+            "shape_path": "/World/Go2/Head_lower/collisions/mesh_0/sphere",
+            "shape_index": 12,
+            "gap_m": -0.000730030815914752,
+            "witness_world_m": [
+              0.9128777077646214,
+              -0.007556123548135085,
+              -0.000730030815914752
+            ],
+            "root_position_world_m": [
+              0.65442499724465,
+              0.04079284489314886,
+              0.18879565601406254
+            ],
+            "root_quaternion_xyzw": [
+              -0.02436459469183806,
+              0.1496037454144184,
+              -0.07744808070067583,
+              0.9854069619600127
+            ],
+            "geometry_sha256": "e39c41e9b69e481aeac8907c2dfacb9f593cf54e00c8fb822696638ef083167b",
+            "ground_z_m": 0.0,
+            "native_contact_verified": false
+          },
+          "violations": {
+            "nonfoot_ground_violation_m": 0.000730030815914752
+          }
+        }
+      ]
+    },
+    {
+      "start_tick": 216,
+      "lane": 1,
+      "requested_nodes": 80,
+      "recorded_nodes": 1,
+      "failure": "original_physical_gate",
+      "rows": [
+        {
+          "node": 0,
+          "leg_proposal_difference_rad": 0.0,
+          "command_history_roundtrip_rad": 6.953121101105353e-08,
+          "root_position_error_m": 0.0003333156209252373,
+          "root_rotation_error_rad": 0.0020874550823609048,
+          "joint_position_error_rad": 0.006505293048897132,
+          "joint_velocity_error_rad_s": 0.7007557249076122,
+          "contact_equal": true,
+          "ground_witness": {
+            "body": "Head_lower",
+            "shape_path": "/World/Go2/Head_lower/collisions/mesh_0/sphere",
+            "shape_index": 12,
+            "gap_m": -0.0007607516853759336,
+            "witness_world_m": [
+              0.9165119177208836,
+              -0.007806073014641944,
+              -0.0007607516853759336
+            ],
+            "root_position_world_m": [
+              0.6556625485213894,
+              0.04151274651777177,
+              0.18398632949730834
+            ],
+            "root_quaternion_xyzw": [
+              -0.027381394135158735,
+              0.14092700015919765,
+              -0.07807398174578191,
+              0.9865567866350643
+            ],
+            "geometry_sha256": "e39c41e9b69e481aeac8907c2dfacb9f593cf54e00c8fb822696638ef083167b",
+            "ground_z_m": 0.0,
+            "native_contact_verified": false
+          },
+          "violations": {
+            "nonfoot_ground_violation_m": 0.0007607516853759336
+          }
+        }
+      ]
+    }
+  ]
+}

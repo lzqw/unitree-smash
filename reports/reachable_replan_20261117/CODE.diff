@@ -1,0 +1,993 @@
+diff --git a/quadsmash/control/base_contact_prediction_v1.py b/quadsmash/control/base_contact_prediction_v1.py
+new file mode 100644
+index 0000000..db652ac
+--- /dev/null
++++ b/quadsmash/control/base_contact_prediction_v1.py
+@@ -0,0 +1,11 @@
++"""Historical constant-angular-velocity base extrapolator, shared with audit."""
++import numpy as np
++from .contact_first_trajectory_search_v1 import rotation_current_from_future_from_rotvec
++
++
++def extrapolate_base(duration,linear,angular,linear_acceleration,angular_acceleration):
++    t=float(duration)
++    return dict(rotation_current_from_future=rotation_current_from_future_from_rotvec(np.asarray(angular)*t),
++        translation_current_m=np.asarray(linear)*t+.5*np.asarray(linear_acceleration)*t*t,
++        linear_velocity_current_m_s=np.asarray(linear)+np.asarray(linear_acceleration)*t,
++        angular_velocity_current_rad_s=np.asarray(angular)+np.asarray(angular_acceleration)*t)
+diff --git a/quadsmash/control/contact_first_trajectory_search_v1.py b/quadsmash/control/contact_first_trajectory_search_v1.py
+index e6bc44a..1caa4b7 100644
+--- a/quadsmash/control/contact_first_trajectory_search_v1.py
++++ b/quadsmash/control/contact_first_trajectory_search_v1.py
+@@ -33,6 +33,8 @@ class ContactFirstSearchConfig:
+     require_joint_prefix: bool = False
+     evaluate_impact_outcome: bool = False
+     inverse_impact_targets: bool = False
++    bounded_replanning: bool = False
++    reachable_impact_targets: bool = False
+     dt_s: float = 0.01
+     # Approach planning starts around t=2.0 s while contact is commonly near
+     # 2.7 s in the current DTG contract; 96 x 10 ms covers that interval.
+@@ -322,6 +324,7 @@ class ContactFirstTrajectorySearchV1:
+              racket_offset_world_m=(0.0, 0.0, 0.0), lower_rad, upper_rad,
+              velocity_limits_rad_s, evaluator: Optional[Callable] = None,
+              kinematics_fn: Optional[Callable] = None,
++             kinematics_at_time_fn: Optional[Callable] = None,
+              target_state_fn: Optional[Callable] = None,
+              base_state_fn: Optional[Callable] = None,
+              impact_evaluator: Optional[Callable] = None):
+@@ -369,6 +372,10 @@ class ContactFirstTrajectorySearchV1:
+             base_angular_acceleration,
+             -cfg.base_angular_acceleration_limit_rad_s2,
+             cfg.base_angular_acceleration_limit_rad_s2)
++        active_time=requested_contact
++        if kinematics_at_time_fn is not None:
++            def kinematics_fn(q):return kinematics_at_time_fn(q,active_time)
++        target_metadata_cache={}
+         target_state_cache = {}
+         incoming_velocity_cache = {}
+         base_state_cache = {}
+@@ -386,6 +393,8 @@ class ContactFirstTrajectorySearchV1:
+                 return tuple(value.copy() for value in resolved)
+             value = target_state_fn(float(duration_s))
+             if isinstance(value, dict):
++                target_metadata_cache[cache_key]={k:value[k] for k in
++                    ('contact_point_local','optimized_q_rad','reachability') if k in value}
+                 incoming = value.get("incoming_ball_velocity_world_m_s")
+                 if incoming is not None:
+                     incoming = np.asarray(incoming, dtype=float)
+@@ -463,17 +472,44 @@ class ContactFirstTrajectorySearchV1:
+         # Solve the nominal terminal task in its own future base frame.  Every
+         # contact-time candidate below repeats this conversion for its own
+         # propagated body pose.
++        # Resolve the original time grid first. A rejected nominal event must
++        # not suppress legal neighbouring events. No extra times are added.
++        legal_times=[]; invalid_times={}
++        try:
++            target_state_at(requested_contact)
++            nominal_valid=True
++        except UnreachableImpactTarget as error:
++            nominal_valid=False
++            invalid_times[str(requested_contact)]=str(error)
++        for offset in cfg.contact_time_offsets_s:
++            duration=round((requested_contact+float(offset))/cfg.dt_s)*cfg.dt_s
++            if not cfg.dt_s <= duration <= cfg.dt_s*(cfg.horizon_steps-1):continue
++            try:
++                target_state_at(duration)
++                legal_times.append(duration)
++            except UnreachableImpactTarget as error:
++                invalid_times[str(duration)]=str(error)
++        if not legal_times:
++            self.last_diagnostics={'rejection_counts':{'predicted_outgoing_unreachable':len(invalid_times)},
++                                   'invalid_contact_times':invalid_times}
++            raise RuntimeError('No allowed contact time has an analytic task target: '+str(invalid_times))
++        seed_time=(requested_contact if nominal_valid else min(legal_times,key=lambda t:(round(abs(t-requested_contact),9),t)))
+         (nominal_rotation, nominal_translation, nominal_linear_velocity,
+-         nominal_angular_velocity) = base_state_at(requested_contact)
++         nominal_angular_velocity) = base_state_at(seed_time)
+         (nominal_target_position, nominal_target_normal,
+-         nominal_target_velocity) = target_state_at(requested_contact)
++         nominal_target_velocity) = target_state_at(seed_time)
+         relative_target_position = nominal_rotation.T @ (
+             nominal_target_position - nominal_translation)
+         target_normal = nominal_rotation.T @ nominal_target_normal
+         target_velocity = nominal_rotation.T @ nominal_target_velocity
+-        q_contact = q0.copy()
+-        current_pos, current_normal = racket_pos.copy(), racket_normal.copy()
+-        current_jp, current_jn = jp.copy(), jn.copy()
++        active_time=seed_time
++        if kinematics_at_time_fn is not None:
++            racket_pos,racket_normal,jp,jn=kinematics_fn(q0.copy())
++        q_contact = np.asarray(target_metadata_cache.get(round(seed_time,9),{}).get('optimized_q_rad',q0)).copy()
++        if kinematics_at_time_fn is not None:
++            current_seed=kinematics_fn(q_contact.copy())
++        else:current_seed=(racket_pos.copy(),racket_normal.copy(),jp.copy(),jn.copy())
++        current_pos,current_normal,current_jp,current_jn=current_seed
+         # Without a forward-kinematics callback the supplied Jacobian is the
+         # complete linear model, so applying the same correction repeatedly
+         # would over-shoot the terminal task.  Re-linearize only when the
+@@ -620,6 +656,9 @@ class ContactFirstTrajectorySearchV1:
+                 except UnreachableImpactTarget:
+                     rejected.append('predicted_outgoing_unreachable')
+                     continue
++                active_time=duration
++                if kinematics_at_time_fn is not None:
++                    branch_pos,branch_normal,branch_jp,branch_jn=kinematics_fn(branch_q.copy())
+                 (candidate_rotation, candidate_base_displacement,
+                  candidate_linear_velocity, candidate_angular_velocity) = (
+                     base_state_at(duration))
+@@ -809,6 +848,7 @@ class ContactFirstTrajectorySearchV1:
+                             rejected.append("nonapproaching_contact")
+                             continue
+                     metadata = dict(
++                    **target_metadata_cache.get(round(duration,9),{}),
+                     incoming_ball_velocity_current_frame_m_s=(
+                         None if incoming is None else incoming.copy()),
+                     relative_normal_closing_speed_m_s=closing_speed,
+@@ -926,6 +966,10 @@ class ContactFirstTrajectorySearchV1:
+                     if impact_evaluator is not None:
+                         impact_result = impact_evaluator(metadata)
+                         metadata['coarse_impact_outcome'] = impact_result
++                        if (cfg.inverse_impact_targets and impact_result.get('valid_return',False) and
++                                not (impact_result.get('attack5_predicted',False) and impact_result.get('target_landing_predicted',False))):
++                            rejected.append('impact_predicted_ball_side_task_failed')
++                            continue
+                         if not impact_result.get('valid_return', False):
+                             # Only defer a near-contact geometric mismatch when a
+                             # full joint replay is mandatory. This is NOT contact
+@@ -968,7 +1012,8 @@ class ContactFirstTrajectorySearchV1:
+                                 achieved_normal_current_frame=evaluator_result['actual_racket_normal_world'],
+                                 achieved_velocity_current_frame_m_s=evaluator_result['actual_racket_velocity_world_m_s'])
+                             impact_result = impact_evaluator(actual_metadata)
+-                            if not impact_result.get('valid_return', False):
++                            if (not impact_result.get('valid_return', False) or
++                                    (cfg.inverse_impact_targets and not (impact_result.get('attack5_predicted',False) and impact_result.get('target_landing_predicted',False)))):
+                                 rejected.append('predicted_actual_impact_'+str(impact_result.get('rejection_reason', 'invalid')))
+                                 continue
+                     peak_speed_ratio = float(np.max(
+@@ -1013,6 +1058,7 @@ class ContactFirstTrajectorySearchV1:
+             "accepted_candidates": accepted_candidates,
+             "rejection_counts": dict(Counter(rejected)),
+             "evaluator_rejection_reasons": dict(evaluator_rejection_reasons),
++            "nominal_seed_time_s":seed_time, "invalid_contact_times":invalid_times,
+             "best_kinematic_residual": best_kinematic_residual,
+             "best_kinematic_residual_by_branch": best_kinematic_residual_by_branch,
+             "raw_base_linear_acceleration_world_m_s2": raw_base_linear_acceleration.tolist(),
+diff --git a/quadsmash/control/contact_pose_reachability_v1.py b/quadsmash/control/contact_pose_reachability_v1.py
+new file mode 100644
+index 0000000..98bb74f
+--- /dev/null
++++ b/quadsmash/control/contact_pose_reachability_v1.py
+@@ -0,0 +1,38 @@
++"""Bounded local pose/velocity diagnosis; failure is not global infeasibility."""
++import time
++import numpy as np
++from scipy.optimize import least_squares,lsq_linear
++
++
++def diagnose_contact_pose(kinematics,q0,lower,upper,speed,position,normal,velocity,
++                          base_velocity_fn=None,max_nfev=40):
++    started=time.perf_counter();q0=np.clip(q0,lower,upper)
++    position=np.asarray(position);normal=np.asarray(normal);normal=normal/np.linalg.norm(normal)
++    rows={}
++    for label,with_normal in [('position_only',False),('position_normal',True)]:
++        def fun(q):
++            p,n,jp,jn=kinematics(q)
++            return np.r_[(p-position)/.035,(n-normal)/.12] if with_normal else (p-position)/.035
++        def jac(q):
++            p,n,jp,jn=kinematics(q)
++            return np.vstack((jp/.035,jn/.12)) if with_normal else jp/.035
++        fit=least_squares(fun,q0,jac=jac,bounds=(lower,upper),max_nfev=max_nfev)
++        p,n,jp,jn=kinematics(fit.x)
++        base=np.zeros(3) if base_velocity_fn is None else base_velocity_fn(p)
++        rate=lsq_linear(np.vstack((jp,.04*np.eye(6))),np.r_[velocity-base,np.zeros(6)],
++                        bounds=(-np.asarray(speed),np.asarray(speed)),max_iter=50)
++        actual=base+jp@rate.x
++        ep=float(np.linalg.norm(p-position));en=float(np.linalg.norm(n-normal));ev=float(np.linalg.norm(actual-velocity))
++        rows[label]=dict(q_rad=fit.x.tolist(),qd_rad_s=rate.x.tolist(),position_m=p.tolist(),normal=n.tolist(),
++            velocity_m_s=actual.tolist(),position_error_m=ep,normal_vector_error=en,
++            normal_angle_rad=float(np.arccos(np.clip(n@normal,-1,1))),velocity_error_m_s=ev,
++            joint_limit_margin_rad=np.minimum(fit.x-lower,upper-fit.x).tolist(),
++            speed_margin_rad_s=(speed-np.abs(rate.x)).tolist(),
++            position_jacobian_singular_values=np.linalg.svd(jp,compute_uv=False).tolist(),
++            task_jacobian_singular_values=np.linalg.svd(np.vstack((jp,jn)),compute_uv=False).tolist(),
++            solver_success=bool(fit.success),solver_status=int(fit.status),nfev=int(fit.nfev),
++            velocity_solver_success=bool(rate.success),
++            kinematic_feasible=bool(ep<=.035 and en<=.12 and ev<=.75),
++            first_failed_check=('position' if ep>.035 else 'normal' if en>.12 else 'velocity' if ev>.75 else None))
++    return dict(target_position_m=position.tolist(),target_normal=normal.tolist(),target_velocity_m_s=np.asarray(velocity).tolist(),
++        stages=rows,seconds=time.perf_counter()-started,global_infeasibility_proven=False,dynamics_verified=False)
+diff --git a/quadsmash/control/contact_replan_gate_v1.py b/quadsmash/control/contact_replan_gate_v1.py
+new file mode 100644
+index 0000000..c4d0870
+--- /dev/null
++++ b/quadsmash/control/contact_replan_gate_v1.py
+@@ -0,0 +1,22 @@
++"""Per-lane bounded failure retry gate; no candidate or outcome case lookup."""
++import torch
++
++
++class ContactReplanGate:
++    def __init__(self,count,device,interval_s=.16,max_attempts=4,close_s=2.64):
++        self.interval_s=interval_s;self.max_attempts=max_attempts;self.close_s=close_s
++        self.count=torch.zeros(count,dtype=torch.long,device=device)
++        self.last=torch.full((count,),-float('inf'),device=device)
++        self.stopped=torch.zeros(count,dtype=torch.bool,device=device)
++    def reset(self,ids=None):
++        ids=slice(None) if ids is None else ids
++        self.count[ids]=0;self.last[ids]=-float('inf');self.stopped[ids]=False
++    def eligible(self,public,verified_plan,recovery_owned):
++        # Contact/post-hit phase or Recovery permanently closes this episode.
++        self.stopped |= recovery_owned | (public[:,773]>.5)
++        clock=public[:,775]
++        return ((public[:,67]>.5)&(clock>=2.)&(clock<=self.close_s)&
++                (self.count<self.max_attempts)&(clock-self.last>=self.interval_s-1e-6)&
++                ~self.stopped&~verified_plan)
++    def record(self,ids,clock):
++        self.count[ids]+=1;self.last[ids]=clock[ids]
+diff --git a/quadsmash/control/full_racket_rally_controller_v4.py b/quadsmash/control/full_racket_rally_controller_v4.py
+index fe5eb2c..fb2708b 100644
+--- a/quadsmash/control/full_racket_rally_controller_v4.py
++++ b/quadsmash/control/full_racket_rally_controller_v4.py
+@@ -138,6 +138,8 @@ class FullRacketRallyControllerV4:
+                 raise ValueError(f'Unknown contact_first_search keys: {sorted(unknown)}')
+             self.contact_first_planner=ContactFirstTrajectorySearchV1(
+                 ContactFirstSearchConfig(**search_config))
++            from .contact_replan_gate_v1 import ContactReplanGate
++            self.contact_replan_gate=ContactReplanGate(count,device)
+             horizon=self.contact_first_planner.config.horizon_steps
+             self.contact_first_plan_q=torch.zeros((count,horizon,6),device=device)
+             self.contact_first_joint_targets=torch.zeros((count,horizon,18),device=device)
+@@ -156,6 +158,7 @@ class FullRacketRallyControllerV4:
+ 
+     def reset(self,ids=None):
+         self.teacher.reset(ids)
++        if hasattr(self,"contact_replan_gate"):self.contact_replan_gate.reset(ids)
+         if ids is None:
+             self.parameters.copy_(self.base[None])
+             self.event_time.fill_(2.75);self.planned.zero_();self.logs=[]
+@@ -252,7 +255,13 @@ class FullRacketRallyControllerV4:
+         q_limits=limits_np[12:]
+         cfg=self.contact_first_planner.config
+         point,normal,jp,jn=self.teacher.kinematics(actual,self.teacher.contact_offset)
++        import time
+         for local,lane in enumerate(ids.tolist()):
++            if self.contact_first_recovery_owned[lane] or self.contact_first_plan_valid[lane]:
++                self.contact_first_plan_log.append(dict(lane=lane,accepted=False,
++                    rejection='verified_plan_or_recovery_owns_lane',planning_seconds=0.))
++                continue
++            planning_started=time.perf_counter()
+             contact_time=float(event_time[local].item()-public[local,775])
+             try:
+                 evaluator=self.contact_first_evaluator
+@@ -268,6 +277,13 @@ class FullRacketRallyControllerV4:
+                     pose=self.teacher.kinematics(q_tensor,self.teacher.contact_offset)
+                     return tuple(value[0].detach().cpu().numpy() for value in pose)
+ 
++                def kinematics_at_time_fn(q,duration):
++                    event=target_state_fns[local](duration)
++                    offset=self.teacher.contact_offset.clone()
++                    if 'contact_point_local' in event:
++                        offset[1:]=offset.new_tensor(event['contact_point_local'][1:])
++                    pose=self.teacher.kinematics(offset.new_tensor(q)[None],offset)
++                    return tuple(x[0].detach().cpu().numpy() for x in pose)
+                 result=self.contact_first_planner.plan(
+                     q_rad=actual[local].detach().cpu().numpy(),
+                     qd_rad_s=actual_velocity[local].detach().cpu().numpy(),
+@@ -288,6 +304,7 @@ class FullRacketRallyControllerV4:
+                     velocity_limits_rad_s=np.full(6,cfg.arm_velocity_limit_rad_s),
+                     evaluator=evaluator,
+                     kinematics_fn=kinematics_fn,
++                    kinematics_at_time_fn=(kinematics_at_time_fn if cfg.reachable_impact_targets else None),
+                     target_state_fn=(None if target_state_fns is None
+                                      else target_state_fns[local]),
+                     impact_evaluator=(None if impact_evaluators is None else impact_evaluators[local]),
+@@ -295,30 +312,32 @@ class FullRacketRallyControllerV4:
+                                    else base_state_fns[local]),
+                 )
+             except (ValueError, RuntimeError, FloatingPointError) as exc:
+-                self.contact_first_plan_valid[lane]=False
++                # Failed replacement never invalidates a verified prefix.
+                 self.contact_first_plan_log.append(dict(
+-                    lane=lane, accepted=False, rejection=type(exc).__name__,
++                    lane=lane, accepted=False, planning_seconds=time.perf_counter()-planning_started, rejection=type(exc).__name__,
+                     error=str(exc), contact_time_s=contact_time,
+                     search_diagnostics=dict(self.contact_first_planner.last_diagnostics)))
+                 continue
+             physical=result.metadata.get('evaluator')
+-            self.contact_first_joint_valid[lane]=False
++            joint_accepted=False
+             if cfg.require_joint_prefix:
+                 if not isinstance(physical,dict) or physical.get('leg_reference')!='causal_frozen_base':
+                     raise RuntimeError('Joint execution requires a causal frozen-base leg replay')
+                 targets=np.asarray(physical['replayed_target_sequence_rad'],dtype=float)
+-                if targets.shape!=(result.contact_index,18):
++                if (targets.shape!=(result.contact_index,18) or not np.isfinite(targets).all() or
++                        np.any(targets < limits_np[:,0]-1e-7) or np.any(targets > limits_np[:,1]+1e-7)):
+                     raise ValueError('Incomplete verified joint prefix')
+                 self.contact_first_joint_targets[lane,:result.contact_index]=torch.as_tensor(
+                     targets,device=actual.device,dtype=actual.dtype)
+-                self.contact_first_joint_valid[lane]=True
++                joint_accepted=True
++            self.contact_first_joint_valid[lane]=joint_accepted
+             self.contact_first_plan_q[lane]=torch.as_tensor(
+                 result.q_rad,device=actual.device,dtype=actual.dtype)
+             self.contact_first_plan_start_time[lane]=float(public[local,775])
+             self.contact_first_plan_contact_time[lane]=result.contact_time_s
+             self.contact_first_plan_valid[lane]=True
+             self.contact_first_plan_log.append(dict(
+-                lane=lane, accepted=True, contact_index=result.contact_index,
++                lane=lane, accepted=True, planning_seconds=time.perf_counter()-planning_started, contact_index=result.contact_index,
+                 contact_time_s=result.contact_time_s, score=result.score,
+                 position_error_m=result.position_error_m,
+                 normal_error=result.normal_error,
+@@ -407,7 +426,18 @@ class FullRacketRallyControllerV4:
+             base_angular_acceleration=transported_body_acceleration(
+                 obs[:,3:6],self.contact_first_last_base_angular,current_basis,
+                 self.contact_first_last_basis,delta_time,usable)
+-        ids=torch.where((~self.planned)&(obs[:,67]>.5)&(obs[:,775]>=2.0))[0]
++        retry_enabled=(self.contact_first_planner is not None and self.contact_first_planner.config.bounded_replanning)
++        if retry_enabled:
++            eligible=self.contact_replan_gate.eligible(obs,self.contact_first_plan_valid,self.contact_first_recovery_owned)
++            ids=torch.where(eligible)[0]
++            self.contact_replan_gate.record(ids,obs[:,775])
++        else:
++            ids=torch.where((~self.planned)&(obs[:,67]>.5)&(obs[:,775]>=2.0))[0]
++        retry_ids=ids[self.planned[ids]]
++        # Retry planning must not accumulate legacy prepose or change the
++        # frozen base fallback. Restore those per-lane values after proposal.
++        fallback_snapshot=(self.parameters[retry_ids].clone(),self.event_time[retry_ids].clone(),
++                           self.target_offset_world[retry_ids].clone())
+         if len(ids):
+             public=obs[ids].cpu().numpy()
+             # The extra learned parameters choose a legal interception plane
+@@ -514,8 +544,10 @@ class FullRacketRallyControllerV4:
+                     v_ref=np.asarray(incoming_ball_velocity[local], dtype=float)
+                     desired_body_velocity=desired_velocity[local].detach().cpu().numpy()
+                     normal_body=normal_target[local].detach().cpu().numpy()
+-                    inverse_cache={}
+-                    def target_state_fn(duration_s, basis=basis, root=root, inverse_cache=inverse_cache,
++                    inverse_cache={};base_context={}
++                    lane_q=actual[local].detach().cpu().numpy().copy()
++                    lane_limits=limits[12:].detach().cpu().numpy().copy()
++                    def target_state_fn(duration_s, basis=basis, root=root, inverse_cache=inverse_cache, base_context=base_context, lane_q=lane_q, lane_limits=lane_limits,
+                                         p0=p0, v0=v0, v_ref=v_ref, lane_id=int(ids[local]), clock_s=float(public[local,775]),
+                                         desired_body_velocity=desired_body_velocity,
+                                         normal_body=normal_body):
+@@ -532,7 +564,31 @@ class FullRacketRallyControllerV4:
+                                 ball,incoming=propagate_ball_state(p0,v0,duration_s,self.physics)
+                                 local=self.teacher.contact_offset.detach().cpu().numpy().copy()
+                                 local[0]=self.teacher.face_sign*impact_model.racket['assumptions']['string_thickness_m']/2
+-                                inverse_cache[key]=inverse_impact_target(impact_model,ball,incoming,local)
++                                if self.contact_first_planner.config.reachable_impact_targets:
++                                    from .inverse_impact_target_v1 import optimize_reachable_impact
++                                    from .contact_pose_reachability_v1 import diagnose_contact_pose
++                                    base=base_context['fn'](duration_s)
++                                    R=basis@base['rotation_current_from_future']
++                                    origin=root+basis@base['translation_current_m']
++                                    def kin(q,contact):
++                                        offset=self.teacher.contact_offset.clone()
++                                        offset[1:]=offset.new_tensor(contact[1:])
++                                        pose=self.teacher.kinematics(offset.new_tensor(q)[None],offset)
++                                        p,n,jp,jn=[x[0].detach().cpu().numpy().astype(float) for x in pose]
++                                        return origin+R@p,R@n,R@jp,R@jn
++                                    def base_velocity(point):
++                                        return basis@base['linear_velocity_current_m_s']+np.cross(
++                                            basis@base['angular_velocity_current_rad_s'],point-origin)
++                                    result=optimize_reachable_impact(impact_model,ball,incoming,local,kin,lane_q,
++                                        lane_limits[:,0],lane_limits[:,1],np.full(6,self.contact_first_planner.config.arm_velocity_limit_rad_s),base_velocity)
++                                    if result.get('normal_world') is not None:
++                                        selected=np.asarray(result.get('contact_point_local',local))
++                                        result['reachability']=diagnose_contact_pose(lambda q:kin(q,selected),lane_q,
++                                            lane_limits[:,0],lane_limits[:,1],np.full(6,self.contact_first_planner.config.arm_velocity_limit_rad_s),
++                                            ball,np.asarray(result['normal_world']),np.asarray(result['racket_velocity_world_m_s']),base_velocity)
++                                    inverse_cache[key]=result
++                                else:
++                                    inverse_cache[key]=inverse_impact_target(impact_model,ball,incoming,local)
+                                 if not hasattr(self,'inverse_impact_audit'):self.inverse_impact_audit=[]
+                                 self.inverse_impact_audit.append(dict(lane=lane_id,clock_s=clock_s,
+                                     duration_s=duration_s,result=inverse_cache[key]))
+@@ -541,7 +597,8 @@ class FullRacketRallyControllerV4:
+                                 from .inverse_impact_target_v1 import UnreachableImpactTarget
+                                 raise UnreachableImpactTarget('predicted_outgoing_unreachable')
+                             target['velocity_world_m_s']=basis.T@np.asarray(inverse['racket_velocity_world_m_s'])
+-                            return dict(target,normal_world=basis.T@np.asarray(inverse['normal_world']))
++                            extras={k:inverse[k] for k in ('contact_point_local','optimized_q_rad','reachability') if k in inverse}
++                            return dict(target,normal_world=basis.T@np.asarray(inverse['normal_world']),**extras)
+                         return dict(target, normal_world=normal_body)
+                     target_state_fns.append(target_state_fn)
+                     impact_fn=None
+@@ -556,7 +613,8 @@ class FullRacketRallyControllerV4:
+                             proxy=root+basis@metadata['achieved_position_current_frame_m']
+                             surface=proxy-self.physics['collision_radius_m']*normal
+                             velocity=basis@metadata['achieved_velocity_current_frame_m_s']
+-                            return impact_model.evaluate(ball,incoming,surface,velocity,normal,local_contact,
++                            selected_local=np.asarray(metadata.get('contact_point_local',local_contact))
++                            return impact_model.evaluate(ball,incoming,surface,velocity,normal,selected_local,
+                                 robot_state=metadata.get("impact_robot_state"))
+                     impact_evaluators.append(impact_fn)
+                     base_linear=np.asarray(public[local,:3], dtype=float)
+@@ -577,23 +635,9 @@ class FullRacketRallyControllerV4:
+                                       base_angular=base_angular,
+                                       linear_acceleration=clipped_linear_acceleration,
+                                       angular_acceleration=clipped_angular_acceleration):
+-                        duration=float(duration_s)
+-                        return dict(
+-                            rotation_current_from_future=rotation_current_from_future_from_rotvec(
+-                                # Public angular acceleration is a noisy
+-                                # finite difference.  Use the measured
+-                                # angular velocity for short-horizon attitude
+-                                # propagation; the bounded acceleration below
+-                                # remains in the point-velocity term inside
+-                                # the planner and is audited separately.
+-                                base_angular*duration),
+-                            translation_current_m=(
+-                                base_linear*duration + .5*linear_acceleration*duration**2),
+-                            linear_velocity_current_m_s=(
+-                                base_linear + linear_acceleration*duration),
+-                            angular_velocity_current_rad_s=(
+-                                base_angular + angular_acceleration*duration),
+-                        )
++                        from .base_contact_prediction_v1 import extrapolate_base
++                        return extrapolate_base(duration_s,base_linear,base_angular,linear_acceleration,angular_acceleration)
++                    base_context['fn']=base_state_fn
+                     base_state_fns.append(base_state_fn)
+                 self._install_contact_first_plan(
+                     ids,public,actual,actual_velocity[ids],base_linear_acceleration[ids],
+@@ -611,6 +655,8 @@ class FullRacketRallyControllerV4:
+                 contact_first_plan_summaries=self._contact_first_plan_summaries(
+                     set(ids.cpu().tolist())),
+                 **{k:v.tolist() for k,v in plan.items()}))
++        if len(retry_ids):
++            self.parameters[retry_ids],self.event_time[retry_ids],self.target_offset_world[retry_ids]=fallback_snapshot
+         action=self.teacher.action(observation,self.parameters,default,limits,event_time=self.event_time,
+                                    target_offset_world=self.target_offset_world)
+         action=self._overlay_contact_first_plan(action,obs,limits)
+diff --git a/quadsmash/control/inverse_impact_target_v1.py b/quadsmash/control/inverse_impact_target_v1.py
+index a34d0d3..11e1643 100644
+--- a/quadsmash/control/inverse_impact_target_v1.py
++++ b/quadsmash/control/inverse_impact_target_v1.py
+@@ -39,3 +39,77 @@ def inverse_impact_target(impact_model, position, incoming, contact_local):
+         target_landing_world_m=landing.tolist(),flight_time_s=float(fit.x[2]),
+         optimizer_nfev=int(fit.nfev),forward_outcome=outcome,
+         robot_feasibility_verified=False,model='infinite_mass_zero_relative_tangent_seed')
++
++
++def optimize_reachable_impact(impact_model,position,incoming,contact_local,kinematics,
++                              q0,lower,upper,speed,base_velocity_fn=None,max_nfev=24,
++                              allow_contact_motion=True):
++    """Joint continuous outgoing/arm/contact optimization, one deterministic seed.
++
++    `kinematics(q, local)` returns the ball-centre proxy and Jacobians in WORLD.
++    The UV box is one actual authored string strip, never its convex hull.
++    Final analytic and robot gates are separate; neither is inferred from cost.
++    """
++    from scipy.optimize import lsq_linear
++    import time
++    started=time.perf_counter()
++    p=np.asarray(position);incoming=np.asarray(incoming);local=np.asarray(contact_local)
++    seed=inverse_impact_target(impact_model,p,incoming,local)
++    if 'desired_outgoing_velocity_world_m_s' not in seed:return seed
++    strips=impact_model.strips
++    strip=min(strips,key=lambda s:np.linalg.norm(np.maximum(np.abs(local-np.asarray(s['center']))-.5*np.asarray(s['size']),0)))
++    center=np.asarray(strip['center']);half=.5*np.asarray(strip['size'])
++    uvlow=center[1:]-half[1:]+1e-7;uvhigh=center[1:]+half[1:]-1e-7
++    if not allow_contact_motion:
++        uvlow=local[1:]-1e-10;uvhigh=local[1:]+1e-10
++    q0=np.clip(q0,lower,upper)
++    initial=np.r_[q0,seed['desired_outgoing_velocity_world_m_s'],seed['flight_time_s'],np.clip(local[1:],uvlow,uvhigh)]
++    lo=np.r_[lower,.1,-20.,-12.,.05,uvlow];hi=np.r_[upper,30.,20.,-1.,2.,uvhigh]
++    initial=np.clip(initial,lo+1e-12,hi-1e-12)
++    court=impact_model.court;physics=impact_model.physics
++    def evaluate(x):
++        q=x[:6];out=x[6:9];t=x[9];uv=x[10:12];contact=np.r_[local[0],uv]
++        delta=out-incoming;n=delta/max(np.linalg.norm(delta),1e-12)
++        vr=incoming+delta/(1+physics['restitution'])
++        point,normal,jp,jn=kinematics(q,contact)
++        base=np.zeros(3) if base_velocity_fn is None else base_velocity_fn(point)
++        rate=lsq_linear(np.vstack((jp,.04*np.eye(6))),np.r_[vr-base,np.zeros(6)],bounds=(-speed,speed),max_iter=30)
++        landing,_=propagate_ball_state(p,out,t,physics)
++        outcome=impact_model.evaluate(p,incoming,p-physics['collision_radius_m']*n,vr,n,contact)
++        return contact,n,vr,point,normal,jp,base+jp@rate.x,landing,outcome,rate.x
++    def residual(x):
++        contact,n,vr,point,normal,jp,actual,landing,outcome,rate=evaluate(x)
++        # All terms normalized; penalties guide search, never replace hard gates.
++        cx=sum(court['target_x_limits_m'])/2
++        xlo,xhi=court['target_x_limits_m'];ymax=court['target_y_half_width_m']
++        clearance=outcome.get('net_clearance');clearance=-1. if clearance is None else clearance
++        return np.r_[(point-p)/.035,(normal-n)/.12,(actual-vr)/.75,
++            (landing[2]-physics['collision_radius_m'])/.01,
++            max(xlo+.1-landing[0],0)/.1,max(landing[0]-(xhi-.1),0)/.1,
++            max(abs(landing[1])-(ymax-.1),0)/.1,max(.05-clearance,0)/.05,
++            max(5.1-np.linalg.norm(x[6:9]),0)/.5,max(x[8]+1.1,0)/.1,
++            .05*(landing[0]-cx),.05*landing[1],.02*(x[:6]-q0)]
++    # Absolute steps remain meaningful at zero-angle joints with float32 FK.
++    # A relative diff_step falls back to machine epsilon at exactly zero.
++    def jacobian(x):
++        steps=np.r_[np.full(6,1e-4),np.full(3,1e-3),1e-4,np.full(2,1e-5)]
++        columns=[]
++        for j,h in enumerate(steps):
++            plus=x.copy();minus=x.copy()
++            plus[j]=min(hi[j],x[j]+h);minus[j]=max(lo[j],x[j]-h)
++            columns.append((residual(plus)-residual(minus))/(plus[j]-minus[j]))
++        return np.column_stack(columns)
++    fit=least_squares(residual,initial,jac=jacobian,bounds=(lo,hi),max_nfev=max_nfev)
++    contact,n,vr,point,normal,jp,actual,landing,outcome,rate=evaluate(fit.x)
++    analytic=bool(outcome.get('legal_return_predicted') and outcome.get('attack5_predicted') and outcome.get('target_landing_predicted'))
++    ep=float(np.linalg.norm(point-p));en=float(np.linalg.norm(normal-n));ev=float(np.linalg.norm(actual-vr))
++    return dict(accepted=analytic,rejection_reason=None if analytic else 'predicted_outgoing_unreachable',
++        normal_world=n.tolist(),racket_velocity_world_m_s=vr.tolist(),contact_point_local=contact.tolist(),
++        desired_outgoing_velocity_world_m_s=fit.x[6:9].tolist(),forward_outcome=outcome,
++        original_target=seed,optimized_q_rad=fit.x[:6].tolist(),optimized_qd_rad_s=rate.tolist(),
++        position_error_m=ep,normal_vector_error=en,velocity_error_m_s=ev,
++        kinematic_feasible=bool(ep<=.035 and en<=.12 and ev<=.75),
++        robot_feasibility_verified=False,solver_success=bool(fit.success),solver_status=int(fit.status),
++        optimizer_nfev=int(fit.nfev),seconds=time.perf_counter()-started,
++        contact_box_lower=uvlow.tolist(),contact_box_upper=uvhigh.tolist(),
++        model='bounded_reachable_infinite_mass_seed')
+diff --git a/scripts/attach_joint_contact_prefix_v1.py b/scripts/attach_joint_contact_prefix_v1.py
+index 6aa18c6..a2b74df 100644
+--- a/scripts/attach_joint_contact_prefix_v1.py
++++ b/scripts/attach_joint_contact_prefix_v1.py
+@@ -27,18 +27,21 @@ def attach_joint_contact_prefix(env, controller, interface_config):
+         legs=CausalFrozenLegReferenceFactory(controller.teacher,controller.parameters,
+             controller.contact_first_current_public,default,limits,controller.event_time,
+             controller.target_offset_world,lane,controller.physics,cfg.dt_s,controller.contact_first_prediction_counts)
+-        def measure(s):
++        def measure(s,metadata):
+             with torch.inference_mode():
+                 arm=torch.as_tensor(s.joint_position[12:],device=default.device,dtype=default.dtype)[None]
+-                point,normal,jp,_=controller.teacher.kinematics(arm,controller.teacher.contact_offset)
++                offset=controller.teacher.contact_offset.clone()
++                if 'contact_point_local' in metadata:offset[1:]=offset.new_tensor(metadata['contact_point_local'][1:])
++                point,normal,jp,_=controller.teacher.kinematics(arm,offset)
+             point,normal,jp=[x[0].detach().cpu().numpy().astype(float) for x in (point,normal,jp)]
+             R=s.root_rotation_world
+             world_position=s.root_position_world+R@point
+             world_velocity=R@(s.v[:3]+np.cross(s.v[3:6],point)+jp@s.joint_velocity[12:])
+             return rotation.T@(world_position-origin),rotation.T@R@normal,rotation.T@world_velocity
+-        def impact_state(s):
++        def impact_state(s,metadata):
+             # Full point Jacobian in WORLD, generalized velocity convention of M.
+             offset=controller.teacher.contact_offset.detach().clone()
++            if 'contact_point_local' in metadata:offset[1:]=offset.new_tensor(metadata['contact_point_local'][1:])
+             offset[0]-=controller.teacher.face_sign*controller.physics['collision_radius_m']
+             with torch.inference_mode():
+                 arm=torch.as_tensor(s.joint_position[12:],device=default.device,dtype=default.dtype)[None]
+@@ -54,7 +57,7 @@ def attach_joint_contact_prefix(env, controller, interface_config):
+                 support_model='sticking measured foot-body translational constraints' if s.contacts.any() else 'free_floating')
+         return ContactFirstFullBodyEvaluatorV1(interface_config=interface_config,
+             model=model,initial_state=state,leg_reference_factory=legs,
+-            contact_prediction='unilateral_release',record_state_trace=True,racket_measure_fn=measure,impact_state_fn=impact_state)
++            contact_prediction='unilateral_release',record_state_trace=True,racket_measure_fn=measure,measurement_uses_metadata=True,impact_state_fn=impact_state)
+     controller.contact_first_prediction_counts={}
+     controller.contact_first_state_audit=[]
+     controller.set_contact_first_evaluator_factory(factory)
+diff --git a/scripts/audit_base_forecast_v1.py b/scripts/audit_base_forecast_v1.py
+new file mode 100644
+index 0000000..c799e86
+--- /dev/null
++++ b/scripts/audit_base_forecast_v1.py
+@@ -0,0 +1,46 @@
++"""Offline model-error diagnostic: future native truth never enters control."""
++import argparse,json
++from pathlib import Path
++import numpy as np
++import torch
++from scipy.spatial.transform import Rotation
++from quadsmash.control.base_contact_prediction_v1 import extrapolate_base
++from quadsmash.control.full_racket_rally_controller_v4 import planning_world_pose,public_world_basis_in_body,transported_body_acceleration
++from quadsmash.control.contact_first_trajectory_search_v1 import ContactFirstSearchConfig
++
++
++def main():
++    p=argparse.ArgumentParser();p.add_argument('--input',type=Path,required=True);p.add_argument('--output',type=Path,required=True);a=p.parse_args()
++    if a.output.exists():raise ValueError('Preserve evidence')
++    obs=np.load(a.input/'public_observations.npy');poses=np.load(a.input/'link_poses_first2.npy')
++    names=json.loads((a.input/'geometry.json').read_text())['body_names'];base_id=names.index('base')
++    cfg=ContactFirstSearchConfig();rows=[]
++    # Even ticks align exactly with the 20-ms native pose recording.
++    for tick in (200,216,232,248):
++        current=torch.tensor(obs[tick]);previous=torch.tensor(obs[tick-1])
++        dt=current[:,775]-previous[:,775]
++        basis=public_world_basis_in_body(current);oldbasis=public_world_basis_in_body(previous)
++        linear=transported_body_acceleration(current[:,:3],previous[:,:3],basis,oldbasis,dt,dt>0).numpy()
++        angular=transported_body_acceleration(current[:,3:6],previous[:,3:6],basis,oldbasis,dt,dt>0).numpy()
++        for lane in range(obs.shape[1]):
++            R,root=planning_world_pose(obs[tick,lane],[1.1,0.,1.8])
++            start_native=poses[tick//2,lane,base_id]
++            for horizon in (.1,.2,.4,.6,.8):
++                future=tick+round(horizon/.01);native=poses[future//2,lane,base_id]
++                estimate=extrapolate_base(horizon,obs[tick,lane,:3],obs[tick,lane,3:6],
++                    np.clip(linear[lane],-cfg.base_linear_acceleration_limit_m_s2,cfg.base_linear_acceleration_limit_m_s2),
++                    np.clip(angular[lane],-cfg.base_angular_acceleration_limit_rad_s2,cfg.base_angular_acceleration_limit_rad_s2))
++                pred_p=root+R@estimate['translation_current_m'];pred_R=R@estimate['rotation_current_from_future']
++                native_R=Rotation.from_quat(np.r_[native[4:7],native[3]]).as_matrix()
++                rows.append(dict(tick=tick,lane=lane,horizon_s=horizon,
++                    predicted_root_position=pred_p.tolist(),native_root_position=native[:3].tolist(),
++                    position_error_m=float(np.linalg.norm(pred_p-native[:3])),
++                    rotation_error_rad=float(np.linalg.norm(Rotation.from_matrix(native_R.T@pred_R).as_rotvec())),
++                    initial_root_reconstruction_error_m=float(np.linalg.norm(root-start_native[:3]))))
++    summary={str(t):dict(position_mean_m=float(np.mean([r['position_error_m'] for r in rows if r['horizon_s']==t])),
++        position_max_m=max(r['position_error_m'] for r in rows if r['horizon_s']==t),
++        rotation_mean_rad=float(np.mean([r['rotation_error_rad'] for r in rows if r['horizon_s']==t])),
++        rotation_max_rad=max(r['rotation_error_rad'] for r in rows if r['horizon_s']==t)) for t in (.1,.2,.4,.6,.8)}
++    a.output.write_text(json.dumps(dict(scope='Future truth only for offline error measurement',rows=rows,summary=summary),indent=2)+'\n')
++    print(json.dumps(summary))
++if __name__=='__main__':main()
+diff --git a/scripts/audit_recorded_multistep_prediction_v1.py b/scripts/audit_recorded_multistep_prediction_v1.py
+new file mode 100644
+index 0000000..8cef9cb
+--- /dev/null
++++ b/scripts/audit_recorded_multistep_prediction_v1.py
+@@ -0,0 +1,68 @@
++"""Offline recorded-command replay and independent frozen-base action comparison."""
++import argparse,json
++from copy import deepcopy
++from pathlib import Path
++import numpy as np
++import torch
++from quadsmash.control.full_racket_rally_controller_v4 import FullRacketRallyControllerV4
++from scripts.causal_frozen_leg_prefix_v1 import CausalFrozenLegReferenceFactory
++from scripts.loaded_pinocchio_model_v1 import LoadedPinocchioModelV1
++from scripts.whole_body_support_qp_v1 import PositionPDInterface
++from scripts.unilateral_implicit_prediction_v1 import predict_unilateral_support
++from scripts.authored_ground_clearance_v1 import AuthoredGroundClearance
++from scripts.contact_first_fullbody_evaluator_v1 import ContactFirstFullBodyEvaluatorV1
++from scipy.spatial.transform import Rotation
++
++
++def main():
++    p=argparse.ArgumentParser();p.add_argument('--input',type=Path,required=True);p.add_argument('--checkpoint',type=Path,required=True);p.add_argument('--output',type=Path,required=True);a=p.parse_args()
++    if a.output.exists():raise ValueError('Preserve evidence')
++    root=Path(__file__).resolve().parents[1];obs=np.load(a.input/'public_observations.npy');actions=np.load(a.input/'public_actions.npy')
++    cfg=json.loads((root/'reports/codex_teacher_joint_eval_20261116/controller.json').read_text())['interface'];interface=PositionPDInterface(**cfg)
++    model=LoadedPinocchioModelV1();authored=json.loads((root/'reports/G07_full_racket_v4/CPU_REPLAY_AUTHORED_JOINTS_0724.json').read_text())['defaults_before_neutral_arm_override']
++    default=np.array([authored[n] for n in model.joint_order]);default[12:]=json.loads((root/'configs/full_racket_reset_v4.json').read_text())['arm_joint_positions_rad']
++    default=torch.tensor(default,dtype=torch.float32);limits=torch.tensor(interface.limits,dtype=torch.float32)
++    checkpoint=torch.load(a.checkpoint,map_location='cpu',weights_only=False)
++    runs=[]
++    with torch.inference_mode():
++        for start in (200,216):
++            controller=FullRacketRallyControllerV4(checkpoint,obs.shape[1],'cpu')
++            controller.contact_first_planner=None  # historical prefix had no adopted planner actions
++            for tick in range(start):controller.action({'policy':torch.tensor(obs[tick])},default,limits)
++            for lane in range(obs.shape[1]):
++                state=model.state_from_public(obs[start,lane],default.numpy())
++                reference=CausalFrozenLegReferenceFactory(controller.teacher,controller.parameters,torch.tensor(obs[start]),
++                    default,limits,controller.event_time,controller.target_offset_world,lane,controller.physics)()
++                native_teacher=deepcopy(controller.teacher)
++                geometry=AuthoredGroundClearance(root/'configs/go2_piper_authored_ground_geometry_v1.json',model,margin_m=0.)
++                initial_witness=geometry.minimum_witness(state.q)
++                rows=[];failure=None
++                for node in range(80):
++                    tick=start+node
++                    proposed=reference(deepcopy(state),node)
++                    action=native_teacher.action({'policy':torch.tensor(obs[tick])},controller.parameters,default,limits,
++                        event_time=controller.event_time,target_offset_world=controller.target_offset_world)
++                    native_target=limits[:,0]+.5*(action[lane].clamp(-1,1)+1)*(limits[:,1]-limits[:,0])
++                    target=interface.limits[:,0]+.5*(np.clip(actions[tick,lane],-1,1)+1)*np.diff(interface.limits,axis=1)[:,0]
++                    row=dict(node=node,leg_proposal_difference_rad=float(np.max(np.abs(proposed-native_target[:12].numpy()))),
++                        command_history_roundtrip_rad=float(np.max(np.abs((limits[:,0]+.5*(torch.tensor(actions[tick,lane])+1)*(limits[:,1]-limits[:,0])).numpy()-target))))
++                    try:result=predict_unilateral_support(model,interface,state,target,duration_s=.01,substeps=4)
++                    except (ValueError,np.linalg.LinAlgError) as error:
++                        row['failure']=str(error);rows.append(row);failure='prediction_solver';break
++                    reference.commit_final_command(target,node)
++                    state=result['state'];truth=model.state_from_public(obs[tick+1,lane],default.numpy())
++                    gap=geometry.minimum_witness(state.q)
++                    row.update(root_position_error_m=float(np.linalg.norm(state.root_position_world-truth.root_position_world)),
++                        root_rotation_error_rad=float(np.linalg.norm(Rotation.from_matrix(truth.root_rotation_world.T@state.root_rotation_world).as_rotvec())),
++                        joint_position_error_rad=float(np.max(np.abs(state.joint_position-truth.joint_position))),
++                        joint_velocity_error_rad_s=float(np.max(np.abs(state.joint_velocity-truth.joint_velocity))),
++                        contact_equal=bool(np.array_equal(state.contacts,truth.contacts)),ground_witness=gap)
++                    violations=ContactFirstFullBodyEvaluatorV1._violations(result['diagnostics'])
++                    if gap['gap_m'] < -1e-6:violations['nonfoot_ground_violation_m']=-gap['gap_m']
++                    row['violations']=violations;rows.append(row)
++                    if violations:failure='original_physical_gate';break
++                runs.append(dict(start_tick=start,lane=lane,requested_nodes=80,initial_witness=initial_witness,recorded_nodes=len(rows),failure=failure,rows=rows))
++    a.output.write_text(json.dumps(dict(scope='Offline only: recorded future commands and observations are diagnostic truth, never online planner inputs',
++        replay_physical_gate='stop at first original violation; no tolerance changes',runs=runs),indent=2)+'\n')
++    print(json.dumps([dict(start=r['start_tick'],lane=r['lane'],nodes=r['recorded_nodes'],failure=r['failure']) for r in runs]))
++if __name__=='__main__':main()
+diff --git a/scripts/contact_first_fullbody_evaluator_v1.py b/scripts/contact_first_fullbody_evaluator_v1.py
+index 67f7891..fc2b81f 100644
+--- a/scripts/contact_first_fullbody_evaluator_v1.py
++++ b/scripts/contact_first_fullbody_evaluator_v1.py
+@@ -43,7 +43,7 @@ class ContactFirstFullBodyEvaluatorV1:
+                  enforce_target_admission_bounds=False,
+                  racket_measure_fn=None, leg_target_sequence_rad=None,
+                  record_state_trace=False, contact_prediction="measured_fixed",
+-                 leg_reference_factory=None, impact_state_fn=None):
++                 leg_reference_factory=None, impact_state_fn=None, measurement_uses_metadata=False):
+         if initial_state is None:
+             public = np.asarray(public, dtype=np.float64)
+             default = np.asarray(default, dtype=np.float64)
+@@ -88,6 +88,7 @@ class ContactFirstFullBodyEvaluatorV1:
+         if racket_measure_fn is not None and not callable(racket_measure_fn):
+             raise TypeError("racket_measure_fn must be callable or None")
+         self.racket_measure_fn = racket_measure_fn
++        self.measurement_uses_metadata=measurement_uses_metadata
+         if leg_reference_factory is not None and (not callable(leg_reference_factory) or leg_target_sequence_rad is not None):
+             raise ValueError('Use one causal leg factory or explicit leg sequence')
+         self.leg_reference_factory=leg_reference_factory
+@@ -245,6 +246,14 @@ class ContactFirstFullBodyEvaluatorV1:
+                 return {
+                     "accepted": False,
+                     "rejection": "full_body_prefix_violation",
++                    "joint_limit_witness": dict(
++                        joint=self.model.joint_order[int(np.argmax(np.maximum(
++                            self.interface.limits[:,0]-state.joint_position,
++                            state.joint_position-self.interface.limits[:,1])))],
++                        positions_rad=state.joint_position.tolist(),
++                        limits_rad=self.interface.limits.tolist(),
++                        final_target_rad=target.tolist()),
++                    "state_trace":state_trace if self.record_state_trace else None,
+                     "node": node,
+                     "violations": violations,
+                     "geometry_witness_before": before_witness,
+@@ -280,10 +289,10 @@ class ContactFirstFullBodyEvaluatorV1:
+         if self.record_state_trace:
+             result["state_trace"] = state_trace
+         if self.impact_state_fn is not None:
+-            result["impact_robot_state"]=self.impact_state_fn(state)
++            result["impact_robot_state"]=self.impact_state_fn(state,metadata) if self.measurement_uses_metadata else self.impact_state_fn(state)
+         if self.racket_measure_fn is not None:
+             try:
+-                measured = self.racket_measure_fn(state)
++                measured = self.racket_measure_fn(state,metadata) if self.measurement_uses_metadata else self.racket_measure_fn(state)
+                 if not isinstance(measured, (tuple, list)) or len(measured) != 3:
+                     raise ValueError("racket_measure_fn must return position, normal, velocity")
+                 measured_position = np.asarray(measured[0], dtype=np.float64)
+diff --git a/scripts/replay_contact_candidate_gate_v1.py b/scripts/replay_contact_candidate_gate_v1.py
+index 56d5601..3cc3da1 100644
+--- a/scripts/replay_contact_candidate_gate_v1.py
++++ b/scripts/replay_contact_candidate_gate_v1.py
+@@ -16,6 +16,8 @@ from scripts.whole_body_support_qp_v1 import PositionPDInterface
+ def main():
+     parser=argparse.ArgumentParser(description=__doc__)
+     parser.add_argument('--inverse-impact',action='store_true')
++    parser.add_argument('--reachable-impact',action='store_true')
++    parser.add_argument('--replanning',action='store_true')
+     parser.add_argument('--input',type=Path,required=True)
+     parser.add_argument('--checkpoint',type=Path,required=True)
+     parser.add_argument('--interface',type=Path,required=True)
+@@ -28,6 +30,7 @@ def main():
+     old=json.loads((args.input/'causal_plans.json').read_text())
+     clock=old[0]['observation_clock_s'][0]
+     end=int(np.argmin(np.abs(observations[:,0,775]-clock)))+1
++    if args.replanning:end=min(len(observations),266)
+     cfg=json.loads(args.interface.read_text())['interface']
+     interface=PositionPDInterface(**cfg)
+     authored=json.loads((root/'reports/G07_full_racket_v4/CPU_REPLAY_AUTHORED_JOINTS_0724.json').read_text())['defaults_before_neutral_arm_override']
+@@ -36,28 +39,30 @@ def main():
+     default=torch.tensor(default,dtype=torch.float32);limits=torch.tensor(interface.limits,dtype=torch.float32)
+     checkpoint=torch.load(args.checkpoint,map_location='cpu',weights_only=False)
+     controller=FullRacketRallyControllerV4(checkpoint,observations.shape[1],'cpu')
+-    if args.inverse_impact:
++    if args.inverse_impact or args.reachable_impact:
+         from dataclasses import replace
+-        controller.contact_first_planner.config=replace(controller.contact_first_planner.config,inverse_impact_targets=True)
+-    physical=[];impacts=[]
++        controller.contact_first_planner.config=replace(controller.contact_first_planner.config,inverse_impact_targets=True,reachable_impact_targets=args.reachable_impact,bounded_replanning=args.replanning)
++    physical=[];impacts=[];fallback_audit=[]
+     def factory(lane,public,q,qd):
+         model=LoadedPinocchioModelV1();state=model.state_from_public(public,default.numpy())
+         rotation,origin=planning_world_pose(public,[1.1,0.,1.8])
+         legs=CausalFrozenLegReferenceFactory(controller.teacher,controller.parameters,
+             controller.contact_first_current_public,default,limits,controller.event_time,
+             controller.target_offset_world,lane,controller.physics,controller.contact_first_planner.config.dt_s)
+-        def measure(s):
++        def measure(s,metadata):
+             arm=torch.tensor(s.joint_position[12:],dtype=default.dtype)[None]
+-            point,normal,jp,_=controller.teacher.kinematics(arm,controller.teacher.contact_offset)
++            offset=controller.teacher.contact_offset.clone()
++            if 'contact_point_local' in metadata:offset[1:]=offset.new_tensor(metadata['contact_point_local'][1:])
++            point,normal,jp,_=controller.teacher.kinematics(arm,offset)
+             point,normal,jp=[x[0].numpy().astype(float) for x in (point,normal,jp)]
+             R=s.root_rotation_world
+             velocity=R@(s.v[:3]+np.cross(s.v[3:6],point)+jp@s.joint_velocity[12:])
+             return rotation.T@(s.root_position_world+R@point-origin),rotation.T@R@normal,rotation.T@velocity
+         evaluator=ContactFirstFullBodyEvaluatorV1(interface_config=cfg,model=model,
+             initial_state=state,leg_reference_factory=legs,contact_prediction='unilateral_release',
+-            record_state_trace=True,racket_measure_fn=measure)
++            record_state_trace=True,racket_measure_fn=measure,measurement_uses_metadata=True)
+         def evaluate(*a):
+-            result=evaluator(*a);physical.append(dict(lane=lane,result=result));return result
++            result=evaluator(*a);physical.append(dict(lane=lane,result=result,metadata=a[3],arm_sequence_rad=np.asarray(a[0]).tolist()));return result
+         return evaluate
+     controller.set_contact_first_evaluator_factory(factory)
+     original=ImpactOutcomeEvaluator.evaluate
+@@ -68,17 +73,24 @@ def main():
+     try:
+         with torch.inference_mode():
+             for tick in range(end):
++                old_planned=controller.planned.clone()
++                before=(controller.parameters.clone(),controller.event_time.clone(),controller.target_offset_world.clone())
+                 controller.action({'policy':torch.tensor(np.array(observations[tick]))},default,limits)
++                if old_planned.any():
++                    drift=max(float((new[old_planned]-old[old_planned]).abs().max()) for new,old in zip(
++                        (controller.parameters,controller.event_time,controller.target_offset_world),before))
++                    fallback_audit.append(dict(tick=tick,frozen_fallback_state_drift=drift))
++                    if drift:raise RuntimeError('Retry altered frozen fallback parameters')
+     finally:ImpactOutcomeEvaluator.evaluate=original
+     result=dict(scope='CPU gate replay; public reconstruction, no native truth or online execution',
+         finite_mass_refinement='NOT_EVALUATED in this offline adapter',
+         future_recorded_actions_read=False,source_ticks=end,training=False,native='NOT_RUN',
+         input_sha256={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in
+             (args.input/'public_observations.npy',args.checkpoint,args.interface)},
+-        inverse_impact_targets=args.inverse_impact,inverse_impact_audit=getattr(controller,'inverse_impact_audit',[]),
+-        plans=controller.logs,impact_calls=impacts,physical_calls=physical)
++        inverse_impact_targets=args.inverse_impact,reachable_impact_targets=args.reachable_impact,replanning=args.replanning,inverse_impact_audit=getattr(controller,'inverse_impact_audit',[]),
++        fallback_audit=fallback_audit,plans=controller.logs,impact_calls=impacts,physical_calls=physical)
+     args.output.parent.mkdir(parents=True,exist_ok=True)
+-    args.output.write_text(json.dumps(result,indent=2)+'\n')
++    args.output.write_text(json.dumps(result,indent=2,default=lambda v:v.tolist() if isinstance(v,np.ndarray) else float(v))+'\n')
+     print(json.dumps(dict(impact_calls=len(impacts),physical_calls=len(physical),
+         physical_accepted=sum(x['result']['accepted'] for x in physical),output=str(args.output))))
+ 
+diff --git a/tests/test_contact_first_fullbody_evaluator_v1.py b/tests/test_contact_first_fullbody_evaluator_v1.py
+index 58863d5..1b20fe9 100644
+--- a/tests/test_contact_first_fullbody_evaluator_v1.py
++++ b/tests/test_contact_first_fullbody_evaluator_v1.py
+@@ -273,3 +273,19 @@ def test_released_feet_remain_force_free_across_internal_substeps():
+     np.testing.assert_allclose(released['state'].v,ballistic['state'].v,atol=1e-12)
+     assert all(not any(t['modes']) for t in trace)
+     assert all(np.max(np.abs(t['forces_n'])) == 0. for t in trace)
++
++
++def test_physical_measurement_uses_selected_authored_contact_metadata():
++    public,default,interface=_fixture()
++    seen=[]
++    def measure(state,meta):
++        seen.append(meta['contact_point_local'])
++        return np.array([.1,0.,0.]),np.array([1.,0.,0.]),np.array([1.,0.,0.])
++    evaluator=ContactFirstFullBodyEvaluatorV1(public,default,interface,substeps=1,
++        racket_measure_fn=measure,measurement_uses_metadata=True)
++    meta=dict(contact_point_local=[.0006,0.,.07],target_position_world_m=[.1,0.,0.],
++              target_normal_world=[1.,0.,0.],target_velocity_world_m_s=[1.,0.,0.])
++    q=np.repeat(default[None,12:],3,axis=0)
++    result=evaluator(q,np.zeros_like(q),2,meta)
++    assert seen==[meta['contact_point_local']]
++    assert result['accepted'],result
+diff --git a/tests/test_contact_first_trajectory_search_v1.py b/tests/test_contact_first_trajectory_search_v1.py
+index b981c7c..4a5feac 100644
+--- a/tests/test_contact_first_trajectory_search_v1.py
++++ b/tests/test_contact_first_trajectory_search_v1.py
+@@ -455,3 +455,36 @@ def test_inverse_target_time_failure_does_not_abort_other_contact_times():
+     assert not result.metadata['normal_projection']
+     assert 'velocity_error_from_requested_m_s' in result.metadata
+     assert planner.last_diagnostics['rejection_counts']['predicted_outgoing_unreachable']>0
++
++
++def test_nominal_failure_selects_original_neighbour_time():
++    from quadsmash.control.inverse_impact_target_v1 import UnreachableImpactTarget
++    planner=ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
++        horizon_steps=32,contact_time_offsets_s=(-.02,0.,.02),velocity_scales=(1.,)))
++    inputs=_inputs()
++    def target(t):
++        if abs(t-.2)<1e-8:raise UnreachableImpactTarget('nominal net failure')
++        return dict(position_world_m=inputs['target_position_world_m'],
++                    velocity_world_m_s=inputs['target_velocity_world_m_s'],normal_world=inputs['target_normal_world'])
++    result=planner.plan(**inputs,target_state_fn=target)
++    assert min(abs(result.contact_time_s-t) for t in (.18,.22)) < 1e-9
++    assert planner.last_diagnostics['nominal_seed_time_s'] == pytest.approx(.18)
++    assert planner.last_diagnostics['invalid_contact_times']
++
++
++def test_all_original_times_invalid_reports_failure_set():
++    from quadsmash.control.inverse_impact_target_v1 import UnreachableImpactTarget
++    planner=ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(horizon_steps=32))
++    def target(t):raise UnreachableImpactTarget('unreachable')
++    with pytest.raises(RuntimeError,match='No allowed contact time'):
++        planner.plan(**_inputs(),target_state_fn=target)
++    assert len(planner.last_diagnostics['invalid_contact_times'])>=3
++
++
++def test_inverse_target_does_not_admit_legal_but_nonattack_return():
++    planner=ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
++        horizon_steps=32,contact_time_offsets_s=(0.,),inverse_impact_targets=True))
++    def physical(*args):pytest.fail('Known nonattack must not enter physical admission')
++    with pytest.raises(RuntimeError,match='predicted_ball_side_task_failed'):
++        planner.plan(**_inputs(),evaluator=physical,
++            impact_evaluator=lambda m:dict(valid_return=True,attack5_predicted=False,target_landing_predicted=True,ranking_cost=0.))
+diff --git a/tests/test_contact_pose_reachability_v1.py b/tests/test_contact_pose_reachability_v1.py
+new file mode 100644
+index 0000000..67a1cd7
+--- /dev/null
++++ b/tests/test_contact_pose_reachability_v1.py
+@@ -0,0 +1,14 @@
++import numpy as np
++from quadsmash.control.contact_pose_reachability_v1 import diagnose_contact_pose
++
++
++def test_diagnostic_distinguishes_pose_and_speed_limits_without_relaxing():
++    def kin(q):return q[:3],np.array([0.,0.,1.]),np.c_[np.eye(3),np.zeros((3,3))],np.zeros((3,6))
++    result=diagnose_contact_pose(kin,np.zeros(6),np.full(6,-1.),np.ones(6),np.ones(6),
++        np.array([.2,0.,0.]),np.array([0.,0.,1.]),np.array([4.,0.,0.]))
++    r=result['stages']['position_normal']
++    assert r['position_error_m']<1e-6
++    assert r['first_failed_check']=='velocity'
++    assert r['velocity_error_m_s']>2.9
++    assert min(r['joint_limit_margin_rad'])>=0
++    assert not result['global_infeasibility_proven']
+diff --git a/tests/test_contact_replan_gate_v1.py b/tests/test_contact_replan_gate_v1.py
+new file mode 100644
+index 0000000..6859b4d
+--- /dev/null
++++ b/tests/test_contact_replan_gate_v1.py
+@@ -0,0 +1,26 @@
++import torch
++from quadsmash.control.contact_replan_gate_v1 import ContactReplanGate
++
++
++def test_bounded_retry_preserves_verified_and_recovery_lanes_and_reset():
++    gate=ContactReplanGate(3,'cpu');obs=torch.zeros(3,794);obs[:,67]=1.;obs[:,775]=2.
++    valid=torch.tensor([False,True,False]);recovery=torch.tensor([False,False,True])
++    assert gate.eligible(obs,valid,recovery).tolist()==[True,False,False]
++    for k in range(4):
++        obs[:,775]=2.+k*.16
++        ids=torch.where(gate.eligible(obs,valid,recovery))[0]
++        assert ids.tolist()==[0];gate.record(ids,obs[:,775])
++        assert not gate.eligible(obs,valid,recovery).any()
++    obs[:,775]=2.64
++    assert not gate.eligible(obs,valid,recovery).any()
++    gate.reset(torch.tensor([0]));obs[:,775]=2.
++    assert gate.eligible(obs,valid,torch.zeros(3,dtype=torch.bool)).tolist()==[True,False,False]
++    obs[0,773]=1.
++    assert not gate.eligible(obs,valid,recovery).any()
++    obs[0,773]=0.
++    assert not gate.eligible(obs,valid,recovery).any()
++
++
++def test_replan_window_is_not_extended_by_missing_ball():
++    gate=ContactReplanGate(1,'cpu');obs=torch.zeros(1,794);obs[:,775]=2.7;obs[:,67]=1.
++    assert not gate.eligible(obs,torch.tensor([False]),torch.tensor([False])).any()
+diff --git a/tests/test_inverse_impact_target_v1.py b/tests/test_inverse_impact_target_v1.py
+index 9e59542..b5b1316 100644
+--- a/tests/test_inverse_impact_target_v1.py
++++ b/tests/test_inverse_impact_target_v1.py
+@@ -23,3 +23,23 @@ def test_recorded_lane0_has_analytic_attack_target_not_robot_certificate():
+     # Below the net cannot be accepted as a downward attack.
+     position=np.array(record['ball']);position[2]=1.
+     assert not inverse_impact_target(model,position,record['incoming_velocity'],record['local'])['accepted']
++
++
++def test_continuous_target_keeps_actual_string_box_and_separate_gates():
++    from quadsmash.control.inverse_impact_target_v1 import optimize_reachable_impact
++    root=Path(__file__).resolve().parents[1]
++    model=ImpactOutcomeEvaluator(json.loads((root/'configs/shuttle_physics_v2.json').read_text()),load_court(),load_racket())
++    p=np.array([.7,0.,2.]);v=np.array([-8.,0.,-3.]);local=np.array([.0006,0.,.07])
++    seed=inverse_impact_target(model,p,v,local)
++    normal=np.array(seed['normal_world'])
++    def kin(q,contact):
++        return p+q[:3],normal,np.c_[np.eye(3),np.zeros((3,3))],np.zeros((3,6))
++    result=optimize_reachable_impact(model,p,v,local,kin,np.zeros(6),np.full(6,-1.),np.ones(6),np.ones(6)*5,max_nfev=2)
++    selected=np.array(result['contact_point_local'])
++    assert any(np.all(np.abs(selected-np.array(s['center']))<=.5*np.array(s['size'])+1e-9) for s in model.strips)
++    assert np.all(np.abs(result['optimized_q_rad'])<=1.)
++    assert not result['robot_feasibility_verified']
++    if result['accepted']:
++        assert result['forward_outcome']['legal_return_predicted']
++        assert result['forward_outcome']['attack5_predicted']
++        assert result['forward_outcome']['target_landing_predicted']
+diff --git a/tests/test_joint_prefix_execution_v1.py b/tests/test_joint_prefix_execution_v1.py
+index 4a4904a..39399af 100644
+--- a/tests/test_joint_prefix_execution_v1.py
++++ b/tests/test_joint_prefix_execution_v1.py
+@@ -33,3 +33,16 @@ def test_joint_prefix_never_executes_unvalidated_terminal_or_handoff_blend():
+     for time in (.03,.04,.06):
+         public[:,775]=time
+         torch.testing.assert_close(c._overlay_contact_first_plan(base.clone(),public,limits),base)
++
++
++def test_installer_cannot_replace_verified_prefix_or_recovery_owner():
++    c,public,limits=fixture()
++    c.contact_first_plan_log=[];c.teacher=SimpleNamespace(
++        contact_offset=torch.zeros(3),kinematics=lambda *a:(torch.zeros(2,3),torch.zeros(2,3),torch.zeros(2,3,6),torch.zeros(2,3,6)))
++    before=c.contact_first_joint_targets.clone()
++    zeros=torch.zeros(2,3);arms=torch.zeros(2,6)
++    c._install_contact_first_plan(torch.tensor([0,1]),public.numpy(),arms,arms,zeros,zeros,
++        zeros,zeros,zeros,zeros,zeros,zeros,torch.ones(2),limits)
++    torch.testing.assert_close(c.contact_first_joint_targets,before)
++    assert len(c.contact_first_plan_log)==2
++    assert all(x['rejection']=='verified_plan_or_recovery_owns_lane' for x in c.contact_first_plan_log)

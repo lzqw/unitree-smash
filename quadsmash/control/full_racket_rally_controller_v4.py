@@ -138,6 +138,8 @@ class FullRacketRallyControllerV4:
                 raise ValueError(f'Unknown contact_first_search keys: {sorted(unknown)}')
             self.contact_first_planner=ContactFirstTrajectorySearchV1(
                 ContactFirstSearchConfig(**search_config))
+            from .contact_replan_gate_v1 import ContactReplanGate
+            self.contact_replan_gate=ContactReplanGate(count,device)
             horizon=self.contact_first_planner.config.horizon_steps
             self.contact_first_plan_q=torch.zeros((count,horizon,6),device=device)
             self.contact_first_joint_targets=torch.zeros((count,horizon,18),device=device)
@@ -156,6 +158,7 @@ class FullRacketRallyControllerV4:
 
     def reset(self,ids=None):
         self.teacher.reset(ids)
+        if hasattr(self,"contact_replan_gate"):self.contact_replan_gate.reset(ids)
         if ids is None:
             self.parameters.copy_(self.base[None])
             self.event_time.fill_(2.75);self.planned.zero_();self.logs=[]
@@ -252,7 +255,13 @@ class FullRacketRallyControllerV4:
         q_limits=limits_np[12:]
         cfg=self.contact_first_planner.config
         point,normal,jp,jn=self.teacher.kinematics(actual,self.teacher.contact_offset)
+        import time
         for local,lane in enumerate(ids.tolist()):
+            if self.contact_first_recovery_owned[lane] or self.contact_first_plan_valid[lane]:
+                self.contact_first_plan_log.append(dict(lane=lane,accepted=False,
+                    rejection='verified_plan_or_recovery_owns_lane',planning_seconds=0.))
+                continue
+            planning_started=time.perf_counter()
             contact_time=float(event_time[local].item()-public[local,775])
             try:
                 evaluator=self.contact_first_evaluator
@@ -268,6 +277,13 @@ class FullRacketRallyControllerV4:
                     pose=self.teacher.kinematics(q_tensor,self.teacher.contact_offset)
                     return tuple(value[0].detach().cpu().numpy() for value in pose)
 
+                def kinematics_at_time_fn(q,duration):
+                    event=target_state_fns[local](duration)
+                    offset=self.teacher.contact_offset.clone()
+                    if 'contact_point_local' in event:
+                        offset[1:]=offset.new_tensor(event['contact_point_local'][1:])
+                    pose=self.teacher.kinematics(offset.new_tensor(q)[None],offset)
+                    return tuple(x[0].detach().cpu().numpy() for x in pose)
                 result=self.contact_first_planner.plan(
                     q_rad=actual[local].detach().cpu().numpy(),
                     qd_rad_s=actual_velocity[local].detach().cpu().numpy(),
@@ -288,6 +304,7 @@ class FullRacketRallyControllerV4:
                     velocity_limits_rad_s=np.full(6,cfg.arm_velocity_limit_rad_s),
                     evaluator=evaluator,
                     kinematics_fn=kinematics_fn,
+                    kinematics_at_time_fn=(kinematics_at_time_fn if cfg.reachable_impact_targets else None),
                     target_state_fn=(None if target_state_fns is None
                                      else target_state_fns[local]),
                     impact_evaluator=(None if impact_evaluators is None else impact_evaluators[local]),
@@ -295,30 +312,32 @@ class FullRacketRallyControllerV4:
                                    else base_state_fns[local]),
                 )
             except (ValueError, RuntimeError, FloatingPointError) as exc:
-                self.contact_first_plan_valid[lane]=False
+                # Failed replacement never invalidates a verified prefix.
                 self.contact_first_plan_log.append(dict(
-                    lane=lane, accepted=False, rejection=type(exc).__name__,
+                    lane=lane, accepted=False, planning_seconds=time.perf_counter()-planning_started, rejection=type(exc).__name__,
                     error=str(exc), contact_time_s=contact_time,
                     search_diagnostics=dict(self.contact_first_planner.last_diagnostics)))
                 continue
             physical=result.metadata.get('evaluator')
-            self.contact_first_joint_valid[lane]=False
+            joint_accepted=False
             if cfg.require_joint_prefix:
                 if not isinstance(physical,dict) or physical.get('leg_reference')!='causal_frozen_base':
                     raise RuntimeError('Joint execution requires a causal frozen-base leg replay')
                 targets=np.asarray(physical['replayed_target_sequence_rad'],dtype=float)
-                if targets.shape!=(result.contact_index,18):
+                if (targets.shape!=(result.contact_index,18) or not np.isfinite(targets).all() or
+                        np.any(targets < limits_np[:,0]-1e-7) or np.any(targets > limits_np[:,1]+1e-7)):
                     raise ValueError('Incomplete verified joint prefix')
                 self.contact_first_joint_targets[lane,:result.contact_index]=torch.as_tensor(
                     targets,device=actual.device,dtype=actual.dtype)
-                self.contact_first_joint_valid[lane]=True
+                joint_accepted=True
+            self.contact_first_joint_valid[lane]=joint_accepted
             self.contact_first_plan_q[lane]=torch.as_tensor(
                 result.q_rad,device=actual.device,dtype=actual.dtype)
             self.contact_first_plan_start_time[lane]=float(public[local,775])
             self.contact_first_plan_contact_time[lane]=result.contact_time_s
             self.contact_first_plan_valid[lane]=True
             self.contact_first_plan_log.append(dict(
-                lane=lane, accepted=True, contact_index=result.contact_index,
+                lane=lane, accepted=True, planning_seconds=time.perf_counter()-planning_started, contact_index=result.contact_index,
                 contact_time_s=result.contact_time_s, score=result.score,
                 position_error_m=result.position_error_m,
                 normal_error=result.normal_error,
@@ -407,7 +426,18 @@ class FullRacketRallyControllerV4:
             base_angular_acceleration=transported_body_acceleration(
                 obs[:,3:6],self.contact_first_last_base_angular,current_basis,
                 self.contact_first_last_basis,delta_time,usable)
-        ids=torch.where((~self.planned)&(obs[:,67]>.5)&(obs[:,775]>=2.0))[0]
+        retry_enabled=(self.contact_first_planner is not None and self.contact_first_planner.config.bounded_replanning)
+        if retry_enabled:
+            eligible=self.contact_replan_gate.eligible(obs,self.contact_first_plan_valid,self.contact_first_recovery_owned)
+            ids=torch.where(eligible)[0]
+            self.contact_replan_gate.record(ids,obs[:,775])
+        else:
+            ids=torch.where((~self.planned)&(obs[:,67]>.5)&(obs[:,775]>=2.0))[0]
+        retry_ids=ids[self.planned[ids]]
+        # Retry planning must not accumulate legacy prepose or change the
+        # frozen base fallback. Restore those per-lane values after proposal.
+        fallback_snapshot=(self.parameters[retry_ids].clone(),self.event_time[retry_ids].clone(),
+                           self.target_offset_world[retry_ids].clone())
         if len(ids):
             public=obs[ids].cpu().numpy()
             # The extra learned parameters choose a legal interception plane
@@ -514,8 +544,10 @@ class FullRacketRallyControllerV4:
                     v_ref=np.asarray(incoming_ball_velocity[local], dtype=float)
                     desired_body_velocity=desired_velocity[local].detach().cpu().numpy()
                     normal_body=normal_target[local].detach().cpu().numpy()
-                    inverse_cache={}
-                    def target_state_fn(duration_s, basis=basis, root=root, inverse_cache=inverse_cache,
+                    inverse_cache={};base_context={}
+                    lane_q=actual[local].detach().cpu().numpy().copy()
+                    lane_limits=limits[12:].detach().cpu().numpy().copy()
+                    def target_state_fn(duration_s, basis=basis, root=root, inverse_cache=inverse_cache, base_context=base_context, lane_q=lane_q, lane_limits=lane_limits,
                                         p0=p0, v0=v0, v_ref=v_ref, lane_id=int(ids[local]), clock_s=float(public[local,775]),
                                         desired_body_velocity=desired_body_velocity,
                                         normal_body=normal_body):
@@ -532,7 +564,31 @@ class FullRacketRallyControllerV4:
                                 ball,incoming=propagate_ball_state(p0,v0,duration_s,self.physics)
                                 local=self.teacher.contact_offset.detach().cpu().numpy().copy()
                                 local[0]=self.teacher.face_sign*impact_model.racket['assumptions']['string_thickness_m']/2
-                                inverse_cache[key]=inverse_impact_target(impact_model,ball,incoming,local)
+                                if self.contact_first_planner.config.reachable_impact_targets:
+                                    from .inverse_impact_target_v1 import optimize_reachable_impact
+                                    from .contact_pose_reachability_v1 import diagnose_contact_pose
+                                    base=base_context['fn'](duration_s)
+                                    R=basis@base['rotation_current_from_future']
+                                    origin=root+basis@base['translation_current_m']
+                                    def kin(q,contact):
+                                        offset=self.teacher.contact_offset.clone()
+                                        offset[1:]=offset.new_tensor(contact[1:])
+                                        pose=self.teacher.kinematics(offset.new_tensor(q)[None],offset)
+                                        p,n,jp,jn=[x[0].detach().cpu().numpy().astype(float) for x in pose]
+                                        return origin+R@p,R@n,R@jp,R@jn
+                                    def base_velocity(point):
+                                        return basis@base['linear_velocity_current_m_s']+np.cross(
+                                            basis@base['angular_velocity_current_rad_s'],point-origin)
+                                    result=optimize_reachable_impact(impact_model,ball,incoming,local,kin,lane_q,
+                                        lane_limits[:,0],lane_limits[:,1],np.full(6,self.contact_first_planner.config.arm_velocity_limit_rad_s),base_velocity)
+                                    if result.get('normal_world') is not None:
+                                        selected=np.asarray(result.get('contact_point_local',local))
+                                        result['reachability']=diagnose_contact_pose(lambda q:kin(q,selected),lane_q,
+                                            lane_limits[:,0],lane_limits[:,1],np.full(6,self.contact_first_planner.config.arm_velocity_limit_rad_s),
+                                            ball,np.asarray(result['normal_world']),np.asarray(result['racket_velocity_world_m_s']),base_velocity)
+                                    inverse_cache[key]=result
+                                else:
+                                    inverse_cache[key]=inverse_impact_target(impact_model,ball,incoming,local)
                                 if not hasattr(self,'inverse_impact_audit'):self.inverse_impact_audit=[]
                                 self.inverse_impact_audit.append(dict(lane=lane_id,clock_s=clock_s,
                                     duration_s=duration_s,result=inverse_cache[key]))
@@ -541,7 +597,8 @@ class FullRacketRallyControllerV4:
                                 from .inverse_impact_target_v1 import UnreachableImpactTarget
                                 raise UnreachableImpactTarget('predicted_outgoing_unreachable')
                             target['velocity_world_m_s']=basis.T@np.asarray(inverse['racket_velocity_world_m_s'])
-                            return dict(target,normal_world=basis.T@np.asarray(inverse['normal_world']))
+                            extras={k:inverse[k] for k in ('contact_point_local','optimized_q_rad','reachability') if k in inverse}
+                            return dict(target,normal_world=basis.T@np.asarray(inverse['normal_world']),**extras)
                         return dict(target, normal_world=normal_body)
                     target_state_fns.append(target_state_fn)
                     impact_fn=None
@@ -556,7 +613,8 @@ class FullRacketRallyControllerV4:
                             proxy=root+basis@metadata['achieved_position_current_frame_m']
                             surface=proxy-self.physics['collision_radius_m']*normal
                             velocity=basis@metadata['achieved_velocity_current_frame_m_s']
-                            return impact_model.evaluate(ball,incoming,surface,velocity,normal,local_contact,
+                            selected_local=np.asarray(metadata.get('contact_point_local',local_contact))
+                            return impact_model.evaluate(ball,incoming,surface,velocity,normal,selected_local,
                                 robot_state=metadata.get("impact_robot_state"))
                     impact_evaluators.append(impact_fn)
                     base_linear=np.asarray(public[local,:3], dtype=float)
@@ -577,23 +635,9 @@ class FullRacketRallyControllerV4:
                                       base_angular=base_angular,
                                       linear_acceleration=clipped_linear_acceleration,
                                       angular_acceleration=clipped_angular_acceleration):
-                        duration=float(duration_s)
-                        return dict(
-                            rotation_current_from_future=rotation_current_from_future_from_rotvec(
-                                # Public angular acceleration is a noisy
-                                # finite difference.  Use the measured
-                                # angular velocity for short-horizon attitude
-                                # propagation; the bounded acceleration below
-                                # remains in the point-velocity term inside
-                                # the planner and is audited separately.
-                                base_angular*duration),
-                            translation_current_m=(
-                                base_linear*duration + .5*linear_acceleration*duration**2),
-                            linear_velocity_current_m_s=(
-                                base_linear + linear_acceleration*duration),
-                            angular_velocity_current_rad_s=(
-                                base_angular + angular_acceleration*duration),
-                        )
+                        from .base_contact_prediction_v1 import extrapolate_base
+                        return extrapolate_base(duration_s,base_linear,base_angular,linear_acceleration,angular_acceleration)
+                    base_context['fn']=base_state_fn
                     base_state_fns.append(base_state_fn)
                 self._install_contact_first_plan(
                     ids,public,actual,actual_velocity[ids],base_linear_acceleration[ids],
@@ -611,6 +655,8 @@ class FullRacketRallyControllerV4:
                 contact_first_plan_summaries=self._contact_first_plan_summaries(
                     set(ids.cpu().tolist())),
                 **{k:v.tolist() for k,v in plan.items()}))
+        if len(retry_ids):
+            self.parameters[retry_ids],self.event_time[retry_ids],self.target_offset_world[retry_ids]=fallback_snapshot
         action=self.teacher.action(observation,self.parameters,default,limits,event_time=self.event_time,
                                    target_offset_world=self.target_offset_world)
         action=self._overlay_contact_first_plan(action,obs,limits)

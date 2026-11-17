@@ -455,3 +455,36 @@ def test_inverse_target_time_failure_does_not_abort_other_contact_times():
     assert not result.metadata['normal_projection']
     assert 'velocity_error_from_requested_m_s' in result.metadata
     assert planner.last_diagnostics['rejection_counts']['predicted_outgoing_unreachable']>0
+
+
+def test_nominal_failure_selects_original_neighbour_time():
+    from quadsmash.control.inverse_impact_target_v1 import UnreachableImpactTarget
+    planner=ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
+        horizon_steps=32,contact_time_offsets_s=(-.02,0.,.02),velocity_scales=(1.,)))
+    inputs=_inputs()
+    def target(t):
+        if abs(t-.2)<1e-8:raise UnreachableImpactTarget('nominal net failure')
+        return dict(position_world_m=inputs['target_position_world_m'],
+                    velocity_world_m_s=inputs['target_velocity_world_m_s'],normal_world=inputs['target_normal_world'])
+    result=planner.plan(**inputs,target_state_fn=target)
+    assert min(abs(result.contact_time_s-t) for t in (.18,.22)) < 1e-9
+    assert planner.last_diagnostics['nominal_seed_time_s'] == pytest.approx(.18)
+    assert planner.last_diagnostics['invalid_contact_times']
+
+
+def test_all_original_times_invalid_reports_failure_set():
+    from quadsmash.control.inverse_impact_target_v1 import UnreachableImpactTarget
+    planner=ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(horizon_steps=32))
+    def target(t):raise UnreachableImpactTarget('unreachable')
+    with pytest.raises(RuntimeError,match='No allowed contact time'):
+        planner.plan(**_inputs(),target_state_fn=target)
+    assert len(planner.last_diagnostics['invalid_contact_times'])>=3
+
+
+def test_inverse_target_does_not_admit_legal_but_nonattack_return():
+    planner=ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
+        horizon_steps=32,contact_time_offsets_s=(0.,),inverse_impact_targets=True))
+    def physical(*args):pytest.fail('Known nonattack must not enter physical admission')
+    with pytest.raises(RuntimeError,match='predicted_ball_side_task_failed'):
+        planner.plan(**_inputs(),evaluator=physical,
+            impact_evaluator=lambda m:dict(valid_return=True,attack5_predicted=False,target_landing_predicted=True,ranking_cost=0.))

@@ -273,3 +273,19 @@ def test_released_feet_remain_force_free_across_internal_substeps():
     np.testing.assert_allclose(released['state'].v,ballistic['state'].v,atol=1e-12)
     assert all(not any(t['modes']) for t in trace)
     assert all(np.max(np.abs(t['forces_n'])) == 0. for t in trace)
+
+
+def test_physical_measurement_uses_selected_authored_contact_metadata():
+    public,default,interface=_fixture()
+    seen=[]
+    def measure(state,meta):
+        seen.append(meta['contact_point_local'])
+        return np.array([.1,0.,0.]),np.array([1.,0.,0.]),np.array([1.,0.,0.])
+    evaluator=ContactFirstFullBodyEvaluatorV1(public,default,interface,substeps=1,
+        racket_measure_fn=measure,measurement_uses_metadata=True)
+    meta=dict(contact_point_local=[.0006,0.,.07],target_position_world_m=[.1,0.,0.],
+              target_normal_world=[1.,0.,0.],target_velocity_world_m_s=[1.,0.,0.])
+    q=np.repeat(default[None,12:],3,axis=0)
+    result=evaluator(q,np.zeros_like(q),2,meta)
+    assert seen==[meta['contact_point_local']]
+    assert result['accepted'],result

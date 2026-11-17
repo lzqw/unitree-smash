@@ -43,7 +43,7 @@ class ContactFirstFullBodyEvaluatorV1:
                  enforce_target_admission_bounds=False,
                  racket_measure_fn=None, leg_target_sequence_rad=None,
                  record_state_trace=False, contact_prediction="measured_fixed",
-                 leg_reference_factory=None, impact_state_fn=None):
+                 leg_reference_factory=None, impact_state_fn=None, measurement_uses_metadata=False):
         if initial_state is None:
             public = np.asarray(public, dtype=np.float64)
             default = np.asarray(default, dtype=np.float64)
@@ -88,6 +88,7 @@ class ContactFirstFullBodyEvaluatorV1:
         if racket_measure_fn is not None and not callable(racket_measure_fn):
             raise TypeError("racket_measure_fn must be callable or None")
         self.racket_measure_fn = racket_measure_fn
+        self.measurement_uses_metadata=measurement_uses_metadata
         if leg_reference_factory is not None and (not callable(leg_reference_factory) or leg_target_sequence_rad is not None):
             raise ValueError('Use one causal leg factory or explicit leg sequence')
         self.leg_reference_factory=leg_reference_factory
@@ -245,6 +246,14 @@ class ContactFirstFullBodyEvaluatorV1:
                 return {
                     "accepted": False,
                     "rejection": "full_body_prefix_violation",
+                    "joint_limit_witness": dict(
+                        joint=self.model.joint_order[int(np.argmax(np.maximum(
+                            self.interface.limits[:,0]-state.joint_position,
+                            state.joint_position-self.interface.limits[:,1])))],
+                        positions_rad=state.joint_position.tolist(),
+                        limits_rad=self.interface.limits.tolist(),
+                        final_target_rad=target.tolist()),
+                    "state_trace":state_trace if self.record_state_trace else None,
                     "node": node,
                     "violations": violations,
                     "geometry_witness_before": before_witness,
@@ -280,10 +289,10 @@ class ContactFirstFullBodyEvaluatorV1:
         if self.record_state_trace:
             result["state_trace"] = state_trace
         if self.impact_state_fn is not None:
-            result["impact_robot_state"]=self.impact_state_fn(state)
+            result["impact_robot_state"]=self.impact_state_fn(state,metadata) if self.measurement_uses_metadata else self.impact_state_fn(state)
         if self.racket_measure_fn is not None:
             try:
-                measured = self.racket_measure_fn(state)
+                measured = self.racket_measure_fn(state,metadata) if self.measurement_uses_metadata else self.racket_measure_fn(state)
                 if not isinstance(measured, (tuple, list)) or len(measured) != 3:
                     raise ValueError("racket_measure_fn must return position, normal, velocity")
                 measured_position = np.asarray(measured[0], dtype=np.float64)

@@ -27,18 +27,21 @@ def attach_joint_contact_prefix(env, controller, interface_config):
         legs=CausalFrozenLegReferenceFactory(controller.teacher,controller.parameters,
             controller.contact_first_current_public,default,limits,controller.event_time,
             controller.target_offset_world,lane,controller.physics,cfg.dt_s,controller.contact_first_prediction_counts)
-        def measure(s):
+        def measure(s,metadata):
             with torch.inference_mode():
                 arm=torch.as_tensor(s.joint_position[12:],device=default.device,dtype=default.dtype)[None]
-                point,normal,jp,_=controller.teacher.kinematics(arm,controller.teacher.contact_offset)
+                offset=controller.teacher.contact_offset.clone()
+                if 'contact_point_local' in metadata:offset[1:]=offset.new_tensor(metadata['contact_point_local'][1:])
+                point,normal,jp,_=controller.teacher.kinematics(arm,offset)
             point,normal,jp=[x[0].detach().cpu().numpy().astype(float) for x in (point,normal,jp)]
             R=s.root_rotation_world
             world_position=s.root_position_world+R@point
             world_velocity=R@(s.v[:3]+np.cross(s.v[3:6],point)+jp@s.joint_velocity[12:])
             return rotation.T@(world_position-origin),rotation.T@R@normal,rotation.T@world_velocity
-        def impact_state(s):
+        def impact_state(s,metadata):
             # Full point Jacobian in WORLD, generalized velocity convention of M.
             offset=controller.teacher.contact_offset.detach().clone()
+            if 'contact_point_local' in metadata:offset[1:]=offset.new_tensor(metadata['contact_point_local'][1:])
             offset[0]-=controller.teacher.face_sign*controller.physics['collision_radius_m']
             with torch.inference_mode():
                 arm=torch.as_tensor(s.joint_position[12:],device=default.device,dtype=default.dtype)[None]
@@ -54,7 +57,7 @@ def attach_joint_contact_prefix(env, controller, interface_config):
                 support_model='sticking measured foot-body translational constraints' if s.contacts.any() else 'free_floating')
         return ContactFirstFullBodyEvaluatorV1(interface_config=interface_config,
             model=model,initial_state=state,leg_reference_factory=legs,
-            contact_prediction='unilateral_release',record_state_trace=True,racket_measure_fn=measure,impact_state_fn=impact_state)
+            contact_prediction='unilateral_release',record_state_trace=True,racket_measure_fn=measure,measurement_uses_metadata=True,impact_state_fn=impact_state)
     controller.contact_first_prediction_counts={}
     controller.contact_first_state_audit=[]
     controller.set_contact_first_evaluator_factory(factory)

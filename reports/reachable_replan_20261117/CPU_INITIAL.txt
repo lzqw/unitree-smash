@@ -1,0 +1,35 @@
+.......................F............................................     [100%]
+=================================== FAILURES ===================================
+_________ test_time_varying_target_is_queried_for_each_contact_offset __________
+
+    def test_time_varying_target_is_queried_for_each_contact_offset():
+        calls = []
+        planner = ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
+            horizon_steps=32, contact_time_offsets_s=(-.02, 0., .02),
+            velocity_scales=(1.,)))
+    
+        def target_state(duration_s):
+            calls.append(float(duration_s))
+            return {
+                "position_world_m": np.array([.1 + .5 * (duration_s - .2), 0., 0.]),
+                "velocity_world_m_s": np.array([.5, 0., 0.]),
+                "normal_world": np.array([0., 0., 1.]),
+            }
+    
+        result = planner.plan(**_inputs(), target_state_fn=target_state)
+        # The nominal event is resolved once for the warm start, then each
+        # distinct candidate offset is queried once from the causal cache.
+>       assert calls == pytest.approx([.20, .18, .22], abs=1e-9)
+E       assert [0.18, 0.2, 0.22] == approx([0.2 ±...22 ± 1.0e-09])
+E         
+E         comparison failed. Mismatched elements: 2 / 3:
+E         Max absolute difference: 0.020000000000000018
+E         Max relative difference: 0.11111111111111122
+E         Index | Obtained | Expected      
+E         0     | 0.18     | 0.2 ± 1.0e-09 
+E         1     | 0.2      | 0.18 ± 1.0e-09
+
+tests/test_contact_first_trajectory_search_v1.py:174: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_contact_first_trajectory_search_v1.py::test_time_varying_target_is_queried_for_each_contact_offset
+1 failed, 67 passed in 1.67s

@@ -1,0 +1,20 @@
+Workspace: /home/autodrive/LZQW/unitree_smash_teacher_eval
+Baseline: e724eaa
+Interpreter: scripts/python.sh -> /home/autodrive/Isaac/env_isaaclab/bin/python
+
+# CPU release regression, exit 0; 77 passed
+bash scripts/python.sh -m pytest -q tests/test_contact_replan_gate_v1.py tests/test_contact_pose_reachability_v1.py tests/test_inverse_impact_target_v1.py tests/test_causal_final_command_history_v1.py tests/test_contact_first_base_transport_v1.py tests/test_probe_rally_export_v1.py tests/test_contact_first_trajectory_search_v1.py tests/test_joint_prefix_execution_v1.py tests/test_impact_outcome_evaluator_v1.py tests/test_contact_first_fullbody_evaluator_v1.py tests/test_unilateral_implicit_prediction_v1.py
+
+# Final CPU replay, exit 0. Always choose a new output path to preserve prior logs.
+OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MKL_NUM_THREADS=2 bash scripts/python.sh -m scripts.replay_contact_candidate_gate_v1 --reachable-impact --replanning --input reports/joint_loop_round_20261117/attempts/probe01/native --checkpoint reports/joint_loop_round_20261117/attempts/probe01/candidate.pt --interface reports/codex_teacher_joint_eval_20261116/controller.json --output reports/reachable_replan_20261117/REPLAY_DELIVERY.json
+
+# Future native poses only enter this offline audit. Exit 0.
+bash scripts/python.sh -m scripts.audit_base_forecast_v1 --input reports/joint_loop_round_20261117/attempts/probe01/native --output reports/reachable_replan_20261117/BASE_FORECAST.json
+
+# Recorded future commands only enter this offline audit. Exit 0; physical failures recorded, not passed.
+OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 bash scripts/python.sh -m scripts.audit_recorded_multistep_prediction_v1 --input reports/joint_loop_round_20261117/attempts/probe01/native --checkpoint reports/joint_loop_round_20261117/attempts/probe01/candidate.pt --output reports/reachable_replan_20261117/MULTISTEP_WITH_WITNESS.json
+
+# CPU_INITIAL.txt: pytest exit 1, query-order regression; CPU_TESTS.txt: pytest exit 1, equal-distance floating-point tie; preserved and fixed.
+# CPU_FINAL.txt: 75 passed; CPU_DELIVERY.txt: 76 passed; CPU_RELEASE.txt: 77 passed. These are successive implementation regressions, not native candidates or parameter scans.
+# Earlier REPLAY*.json.gz: intermediate CPU development evidence, not additional native runs.
+# Native evaluations: NOT_RUN. No training commands.

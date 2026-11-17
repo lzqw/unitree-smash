@@ -1,0 +1,92 @@
+{
+  "evaluation_stage": "teacher_debug",
+  "formal_eligible": false,
+  "formal_acceptance": false,
+  "formal_cases_read": false,
+  "ANALYTIC_RETURN_FOUND": 24,
+  "analytic_target_queries": 32,
+  "KINEMATIC_FEASIBLE": {
+    "coarse_candidates_entered_fullbody": 4,
+    "final_3mm_ball_side_verified": 0,
+    "original_requested_velocity_feasible_among_fullbody_calls": 0,
+    "note": "Coarse gate uses explicitly projected reachable velocity. Original velocity error remains 1.60-1.64 m/s; final task/3mm not verified."
+  },
+  "DYNAMICS_FEASIBLE": 0,
+  "NATIVE_ADOPTED": "NOT_RUN",
+  "NATIVE_HIT": "NOT_RUN",
+  "COMPLETE5": "NOT_RUN",
+  "replan_clocks_s": [
+    [
+      2.009999990463257,
+      2.009999990463257
+    ],
+    [
+      2.169999837875366,
+      2.169999837875366
+    ],
+    [
+      2.3299999237060547,
+      2.3299999237060547
+    ],
+    [
+      2.490000009536743,
+      2.490000009536743
+    ]
+  ],
+  "physical_rejections": [
+    {
+      "lane": 0,
+      "rejection": "full_body_prefix_violation",
+      "node": 2,
+      "joint": "RR_calf_joint",
+      "violations": {
+        "joint_position_violation_rad": 0.008328031613908826
+      },
+      "coarse_contact_error_m": 0.010281913027052659,
+      "requested_velocity_error_m_s": 1.6201970234886356
+    },
+    {
+      "lane": 0,
+      "rejection": "full_body_prefix_violation",
+      "node": 2,
+      "joint": "RR_calf_joint",
+      "violations": {
+        "joint_position_violation_rad": 0.008328115366578959
+      },
+      "coarse_contact_error_m": 0.01726139839207722,
+      "requested_velocity_error_m_s": 1.5964401394420167
+    },
+    {
+      "lane": 0,
+      "rejection": "full_body_prefix_violation",
+      "node": 2,
+      "joint": "RR_calf_joint",
+      "violations": {
+        "joint_position_violation_rad": 0.008328074844328182
+      },
+      "coarse_contact_error_m": 0.013826630637846456,
+      "requested_velocity_error_m_s": 1.6075143758445
+    },
+    {
+      "lane": 0,
+      "rejection": "full_body_prefix_violation",
+      "node": 2,
+      "joint": "RR_calf_joint",
+      "violations": {
+        "joint_position_violation_rad": 0.008327984219870133
+      },
+      "coarse_contact_error_m": 0.006497560348402371,
+      "requested_velocity_error_m_s": 1.635038669765449
+    }
+  ],
+  "max_fallback_parameter_drift": 0.0,
+  "timing": {
+    "planning_calls": 8,
+    "total_s": 85.18362078722566,
+    "mean_s": 10.647952598403208,
+    "min_s": 9.954913701862097,
+    "max_s": 11.567214635200799,
+    "control_period_s": 0.01,
+    "real_time_demonstrated": false
+  }
+}

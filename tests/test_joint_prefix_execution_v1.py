@@ -33,3 +33,16 @@ def test_joint_prefix_never_executes_unvalidated_terminal_or_handoff_blend():
     for time in (.03,.04,.06):
         public[:,775]=time
         torch.testing.assert_close(c._overlay_contact_first_plan(base.clone(),public,limits),base)
+
+
+def test_installer_cannot_replace_verified_prefix_or_recovery_owner():
+    c,public,limits=fixture()
+    c.contact_first_plan_log=[];c.teacher=SimpleNamespace(
+        contact_offset=torch.zeros(3),kinematics=lambda *a:(torch.zeros(2,3),torch.zeros(2,3),torch.zeros(2,3,6),torch.zeros(2,3,6)))
+    before=c.contact_first_joint_targets.clone()
+    zeros=torch.zeros(2,3);arms=torch.zeros(2,6)
+    c._install_contact_first_plan(torch.tensor([0,1]),public.numpy(),arms,arms,zeros,zeros,
+        zeros,zeros,zeros,zeros,zeros,zeros,torch.ones(2),limits)
+    torch.testing.assert_close(c.contact_first_joint_targets,before)
+    assert len(c.contact_first_plan_log)==2
+    assert all(x['rejection']=='verified_plan_or_recovery_owns_lane' for x in c.contact_first_plan_log)

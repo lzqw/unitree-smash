@@ -33,6 +33,8 @@ class ContactFirstSearchConfig:
     require_joint_prefix: bool = False
     evaluate_impact_outcome: bool = False
     inverse_impact_targets: bool = False
+    bounded_replanning: bool = False
+    reachable_impact_targets: bool = False
     dt_s: float = 0.01
     # Approach planning starts around t=2.0 s while contact is commonly near
     # 2.7 s in the current DTG contract; 96 x 10 ms covers that interval.
@@ -322,6 +324,7 @@ class ContactFirstTrajectorySearchV1:
              racket_offset_world_m=(0.0, 0.0, 0.0), lower_rad, upper_rad,
              velocity_limits_rad_s, evaluator: Optional[Callable] = None,
              kinematics_fn: Optional[Callable] = None,
+             kinematics_at_time_fn: Optional[Callable] = None,
              target_state_fn: Optional[Callable] = None,
              base_state_fn: Optional[Callable] = None,
              impact_evaluator: Optional[Callable] = None):
@@ -369,6 +372,10 @@ class ContactFirstTrajectorySearchV1:
             base_angular_acceleration,
             -cfg.base_angular_acceleration_limit_rad_s2,
             cfg.base_angular_acceleration_limit_rad_s2)
+        active_time=requested_contact
+        if kinematics_at_time_fn is not None:
+            def kinematics_fn(q):return kinematics_at_time_fn(q,active_time)
+        target_metadata_cache={}
         target_state_cache = {}
         incoming_velocity_cache = {}
         base_state_cache = {}
@@ -386,6 +393,8 @@ class ContactFirstTrajectorySearchV1:
                 return tuple(value.copy() for value in resolved)
             value = target_state_fn(float(duration_s))
             if isinstance(value, dict):
+                target_metadata_cache[cache_key]={k:value[k] for k in
+                    ('contact_point_local','optimized_q_rad','reachability') if k in value}
                 incoming = value.get("incoming_ball_velocity_world_m_s")
                 if incoming is not None:
                     incoming = np.asarray(incoming, dtype=float)
@@ -463,17 +472,44 @@ class ContactFirstTrajectorySearchV1:
         # Solve the nominal terminal task in its own future base frame.  Every
         # contact-time candidate below repeats this conversion for its own
         # propagated body pose.
+        # Resolve the original time grid first. A rejected nominal event must
+        # not suppress legal neighbouring events. No extra times are added.
+        legal_times=[]; invalid_times={}
+        try:
+            target_state_at(requested_contact)
+            nominal_valid=True
+        except UnreachableImpactTarget as error:
+            nominal_valid=False
+            invalid_times[str(requested_contact)]=str(error)
+        for offset in cfg.contact_time_offsets_s:
+            duration=round((requested_contact+float(offset))/cfg.dt_s)*cfg.dt_s
+            if not cfg.dt_s <= duration <= cfg.dt_s*(cfg.horizon_steps-1):continue
+            try:
+                target_state_at(duration)
+                legal_times.append(duration)
+            except UnreachableImpactTarget as error:
+                invalid_times[str(duration)]=str(error)
+        if not legal_times:
+            self.last_diagnostics={'rejection_counts':{'predicted_outgoing_unreachable':len(invalid_times)},
+                                   'invalid_contact_times':invalid_times}
+            raise RuntimeError('No allowed contact time has an analytic task target: '+str(invalid_times))
+        seed_time=(requested_contact if nominal_valid else min(legal_times,key=lambda t:(round(abs(t-requested_contact),9),t)))
         (nominal_rotation, nominal_translation, nominal_linear_velocity,
-         nominal_angular_velocity) = base_state_at(requested_contact)
+         nominal_angular_velocity) = base_state_at(seed_time)
         (nominal_target_position, nominal_target_normal,
-         nominal_target_velocity) = target_state_at(requested_contact)
+         nominal_target_velocity) = target_state_at(seed_time)
         relative_target_position = nominal_rotation.T @ (
             nominal_target_position - nominal_translation)
         target_normal = nominal_rotation.T @ nominal_target_normal
         target_velocity = nominal_rotation.T @ nominal_target_velocity
-        q_contact = q0.copy()
-        current_pos, current_normal = racket_pos.copy(), racket_normal.copy()
-        current_jp, current_jn = jp.copy(), jn.copy()
+        active_time=seed_time
+        if kinematics_at_time_fn is not None:
+            racket_pos,racket_normal,jp,jn=kinematics_fn(q0.copy())
+        q_contact = np.asarray(target_metadata_cache.get(round(seed_time,9),{}).get('optimized_q_rad',q0)).copy()
+        if kinematics_at_time_fn is not None:
+            current_seed=kinematics_fn(q_contact.copy())
+        else:current_seed=(racket_pos.copy(),racket_normal.copy(),jp.copy(),jn.copy())
+        current_pos,current_normal,current_jp,current_jn=current_seed
         # Without a forward-kinematics callback the supplied Jacobian is the
         # complete linear model, so applying the same correction repeatedly
         # would over-shoot the terminal task.  Re-linearize only when the
@@ -620,6 +656,9 @@ class ContactFirstTrajectorySearchV1:
                 except UnreachableImpactTarget:
                     rejected.append('predicted_outgoing_unreachable')
                     continue
+                active_time=duration
+                if kinematics_at_time_fn is not None:
+                    branch_pos,branch_normal,branch_jp,branch_jn=kinematics_fn(branch_q.copy())
                 (candidate_rotation, candidate_base_displacement,
                  candidate_linear_velocity, candidate_angular_velocity) = (
                     base_state_at(duration))
@@ -809,6 +848,7 @@ class ContactFirstTrajectorySearchV1:
                             rejected.append("nonapproaching_contact")
                             continue
                     metadata = dict(
+                    **target_metadata_cache.get(round(duration,9),{}),
                     incoming_ball_velocity_current_frame_m_s=(
                         None if incoming is None else incoming.copy()),
                     relative_normal_closing_speed_m_s=closing_speed,
@@ -926,6 +966,10 @@ class ContactFirstTrajectorySearchV1:
                     if impact_evaluator is not None:
                         impact_result = impact_evaluator(metadata)
                         metadata['coarse_impact_outcome'] = impact_result
+                        if (cfg.inverse_impact_targets and impact_result.get('valid_return',False) and
+                                not (impact_result.get('attack5_predicted',False) and impact_result.get('target_landing_predicted',False))):
+                            rejected.append('impact_predicted_ball_side_task_failed')
+                            continue
                         if not impact_result.get('valid_return', False):
                             # Only defer a near-contact geometric mismatch when a
                             # full joint replay is mandatory. This is NOT contact
@@ -968,7 +1012,8 @@ class ContactFirstTrajectorySearchV1:
                                 achieved_normal_current_frame=evaluator_result['actual_racket_normal_world'],
                                 achieved_velocity_current_frame_m_s=evaluator_result['actual_racket_velocity_world_m_s'])
                             impact_result = impact_evaluator(actual_metadata)
-                            if not impact_result.get('valid_return', False):
+                            if (not impact_result.get('valid_return', False) or
+                                    (cfg.inverse_impact_targets and not (impact_result.get('attack5_predicted',False) and impact_result.get('target_landing_predicted',False)))):
                                 rejected.append('predicted_actual_impact_'+str(impact_result.get('rejection_reason', 'invalid')))
                                 continue
                     peak_speed_ratio = float(np.max(
@@ -1013,6 +1058,7 @@ class ContactFirstTrajectorySearchV1:
             "accepted_candidates": accepted_candidates,
             "rejection_counts": dict(Counter(rejected)),
             "evaluator_rejection_reasons": dict(evaluator_rejection_reasons),
+            "nominal_seed_time_s":seed_time, "invalid_contact_times":invalid_times,
             "best_kinematic_residual": best_kinematic_residual,
             "best_kinematic_residual_by_branch": best_kinematic_residual_by_branch,
             "raw_base_linear_acceleration_world_m_s2": raw_base_linear_acceleration.tolist(),

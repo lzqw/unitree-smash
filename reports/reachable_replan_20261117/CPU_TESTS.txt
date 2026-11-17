@@ -1,0 +1,27 @@
+...........................................F............................ [ 98%]
+.                                                                        [100%]
+=================================== FAILURES ===================================
+_____________ test_nominal_failure_selects_original_neighbour_time _____________
+
+    def test_nominal_failure_selects_original_neighbour_time():
+        from quadsmash.control.inverse_impact_target_v1 import UnreachableImpactTarget
+        planner=ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
+            horizon_steps=32,contact_time_offsets_s=(-.02,0.,.02),velocity_scales=(1.,)))
+        inputs=_inputs()
+        def target(t):
+            if abs(t-.2)<1e-8:raise UnreachableImpactTarget('nominal net failure')
+            return dict(position_world_m=inputs['target_position_world_m'],
+                        velocity_world_m_s=inputs['target_velocity_world_m_s'],normal_world=inputs['target_normal_world'])
+        result=planner.plan(**inputs,target_state_fn=target)
+        assert min(abs(result.contact_time_s-t) for t in (.18,.22)) < 1e-9
+>       assert planner.last_diagnostics['nominal_seed_time_s'] == pytest.approx(.18)
+E       assert 0.22 == 0.18 ± 1.8e-07
+E         
+E         comparison failed
+E         Obtained: 0.22
+E         Expected: 0.18 ± 1.8e-07
+
+tests/test_contact_first_trajectory_search_v1.py:471: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_contact_first_trajectory_search_v1.py::test_nominal_failure_selects_original_neighbour_time
+1 failed, 72 passed in 1.70s
