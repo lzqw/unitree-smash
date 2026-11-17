@@ -74,3 +74,36 @@ def test_free_motion_inside_joint_stops_is_identical_to_original_solver():
     bounded=unilateral_velocity_step(*args,joint_velocity_bounds=np.array([[-1.,1.]]))
     np.testing.assert_array_equal(original['velocity'],bounded['velocity'])
     assert not bounded['joint_stop_active'].any()
+
+
+def test_converged_sliding_mode_hint_damps_direction_changes_without_relaxing_contact():
+    # A previous converged substep informs the next slip direction. Both
+    # predictions must independently satisfy the unchanged Coulomb cone and
+    # preserve normal separation and energy-dissipating tangential reaction.
+    def solve(tangent,**kwargs):
+        return unilateral_velocity_step(
+            np.eye(3),np.r_[tangent,-1.],np.zeros(3),np.zeros((3,0)),
+            *[np.zeros(0) for _ in range(4)],.01,
+            np.eye(3)[None],np.zeros((1,3)),.5,**kwargs)
+    first=solve([1.,0.])
+    assert first['modes'].tolist()==[2]
+    later=solve([np.cos(.25),np.sin(.25)],
+                previous_modes=first['modes'],
+                previous_sliding_directions=first['sliding_directions'])
+    assert later['modes'].tolist()==[2]
+    np.testing.assert_allclose(later['velocity'][2],0.,atol=2e-7)
+    assert np.linalg.norm(later['force'][0,:2]) <= .5*later['force'][0,2]+2e-5
+    assert later['force'][0,:2] @ later['velocity'][:2] < 0.
+    assert later['residual']<2e-5
+    assert later['normal_complementarity']<2e-4
+
+
+def test_bad_sliding_hints_rejected_not_silently_accepted():
+    import pytest
+    args=(np.eye(3),np.array([1.,0.,-1.]),np.zeros(3),np.zeros((3,0)),
+          *[np.zeros(0) for _ in range(4)],.01,
+          np.eye(3)[None],np.zeros((1,3)),.5)
+    with pytest.raises(ValueError,match='contact mode hint'):
+        unilateral_velocity_step(*args,previous_modes=np.array([5]))
+    with pytest.raises(ValueError,match='slip direction hint'):
+        unilateral_velocity_step(*args,previous_sliding_directions=np.array([[np.nan,0.]]))

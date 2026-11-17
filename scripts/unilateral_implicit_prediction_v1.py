@@ -13,7 +13,7 @@ import pinocchio as pin
 
 def unilateral_velocity_step(mass, velocity, bias, selection, kp, kd,
                              target_error, effort, dt, jacobian,
-                             desired_contact_velocity, friction, *, max_iterations=80, iteration_trace=None, separating_warm_start=True, joint_velocity_bounds=None):
+                             desired_contact_velocity, friction, *, max_iterations=80, iteration_trace=None, separating_warm_start=True, joint_velocity_bounds=None, previous_modes=None, previous_sliding_directions=None):
     nv, na = selection.shape
     nc = len(jacobian)
     if (mass.shape != (nv,nv) or velocity.shape != (nv,) or bias.shape != (nv,)
@@ -32,8 +32,30 @@ def unilateral_velocity_step(mass, velocity, bias, selection, kp, kd,
     normal_velocity = np.einsum('cij,j->ci',jacobian,velocity)[:,2]
     modes = np.where(normal_velocity > desired_contact_velocity[:,2]+2e-6, 0, 1).astype(np.int8)
     if not separating_warm_start: modes[:] = 1
+    # A converged previous *substep* is an initial guess, not a forced contact
+    # state. Geometrically separating feet are still released immediately;
+    # each new solution must pass the same normal/slip/friction/motor tests.
+    if previous_modes is not None:
+        previous=np.asarray(previous_modes)
+        if (previous.shape!=(nc,) or not np.isin(previous,(0,1,2)).all()):
+            raise ValueError("Invalid previous substep contact mode hint")
+        modes=previous.astype(np.int8,copy=True)
+        if separating_warm_start:
+            modes[normal_velocity>desired_contact_velocity[:,2]+2e-6]=0
     # 0 released, 1 sticking, 2 sliding
     directions = np.zeros((nc,2))
+    if previous_sliding_directions is not None:
+        hint=np.asarray(previous_sliding_directions,dtype=float)
+        if (hint.shape!=(nc,2) or not np.isfinite(hint).all()):
+            raise ValueError("Invalid previous substep slip direction hint")
+        speed=np.linalg.norm(hint,axis=1)
+        usable=(modes==2)&(speed>1e-8)
+        directions[usable]=hint[usable]/speed[usable,None]
+    if np.any(modes==2):
+        current_tangent=np.einsum('cij,j->ci',jacobian,velocity)[:,:2]
+        speed=np.linalg.norm(current_tangent,axis=1)
+        missing=(modes==2)&(np.linalg.norm(directions,axis=1)<1e-8)&(speed>1e-8)
+        directions[missing]=current_tangent[missing]/speed[missing,None]
     saturated = np.zeros(na, dtype=np.int8)
     # Optional authored joint stops: unilateral generalized reactions solved
     # together with contacts and motors, never post-integration angle clipping.
@@ -127,7 +149,11 @@ def unilateral_velocity_step(mass, velocity, bias, selection, kp, kd,
                     desired_direction = cv[i,:2]/speed
                     error = np.linalg.norm(directions[i]-desired_direction)
                     if error > 1e-4:
-                        mixed = directions[i]+desired_direction
+                        # A half-step direction average can go singular for
+                        # nearly antipodal slip estimates, producing a two-mode
+                        # oscillation. Relax to a convex quarter-step and keep
+                        # the unchanged 1e-4 direction and force gates.
+                        mixed = .75*directions[i]+.25*desired_direction
                         directions[i] = (mixed/np.linalg.norm(mixed)
                                          if np.linalg.norm(mixed)>1e-8 else desired_direction)
                         changed = True
@@ -151,6 +177,7 @@ def unilateral_velocity_step(mass, velocity, bias, selection, kp, kd,
                 or np.max(abs(stop_force*stop_slack),initial=0.)>2e-4):
             raise ValueError('Contact/motor consistency check failed')
         return dict(velocity=vn,force=forces,torque=torque,modes=modes.copy(),
+            sliding_directions=directions.copy(),
             joint_stop_reaction_generalized=stop_reaction, joint_stop_active=stop_active.copy(),
             iterations=iteration+1,residual=residual,normal_complementarity=complementarity,
             normal_force_violation_n=normal_violation,friction_violation_n=friction_violation)
@@ -181,6 +208,10 @@ def predict_unilateral_support(model, interface, state, target, *, duration_s=.0
         released_foot_substeps=0,sliding_foot_substeps=0,maximum_iterations=0,
         motor_torque_violation_nm=0.)
     last = None
+    # Prior converged contact mode/direction is only used as a warm start.
+    # Invalid solutions still raise without modifying native/physical gates.
+    warm_modes=None
+    warm_directions=None
     for _ in range(substeps):
         snap = model.snapshot(q,v)
         jac = snap['foot_jacobian'][feet]
@@ -193,7 +224,9 @@ def predict_unilateral_support(model, interface, state, target, *, duration_s=.0
             dt,jac,desired,interface.friction,iteration_trace=iteration_trace,
             separating_warm_start=separating_warm_start,
             joint_velocity_bounds=((interface.limits-q[model.q_indices,None])/dt
-                                   if enforce_joint_stops else None))
+                                   if enforce_joint_stops else None),
+            previous_modes=(warm_modes if enforce_joint_stops else None),
+            previous_sliding_directions=(warm_directions if enforce_joint_stops else None))
         v = step['velocity'];q = pin.integrate(model.model,q,dt*v)
         diag['motor_torque_violation_nm']=max(diag['motor_torque_violation_nm'],
             float(np.max(abs(step['torque'])-interface.effort)))
@@ -209,6 +242,9 @@ def predict_unilateral_support(model, interface, state, target, *, duration_s=.0
             float(np.max(interface.limits[:,0]-q[model.q_indices])),
             float(np.max(q[model.q_indices]-interface.limits[:,1])))
         last=step
+        if enforce_joint_stops:
+            warm_modes=step['modes'].copy()
+            warm_directions=step['sliding_directions'].copy()
     following=copy.deepcopy(state);following.q=q;following.v=v
     following.joint_position=q[model.q_indices].copy();following.joint_velocity=v[model.v_indices].copy()
     following.root_position_world=q[:3].copy();following.root_rotation_world=pin.Quaternion(q[3:7]).matrix()

@@ -59,7 +59,44 @@ def anchored_pose_velocity(kinematics,seeds,lower,upper,speed,position,normal,ve
             if ok:q=trial;accepted=True;break
         if not accepted:break
     p,n,jp,jn=kinematics(q);ep=float(np.linalg.norm(p-position));en=float(np.linalg.norm(n-requested))
-    if ep>bound:q=anchor['q_anchor'].copy();p,n,jp,jn=kinematics(q);ep=anchor['position_error_anchor_m'];en=float(np.linalg.norm(n-requested))
+    if ep>bound:
+        q=anchor['q_anchor'].copy();p,n,jp,jn=kinematics(q)
+        ep=anchor['position_error_anchor_m'];en=float(np.linalg.norm(n-requested))
+    refinement=dict(attempted=False,accepted=False,mode='strict_position_first')
+    # A 10-micrometre local nullspace budget can stall at joint limits even
+    # though a sub-millimetre position-preserving solution remains possible.
+    # Run a second, exact-FK constrained solve ONLY after strict refinement
+    # fails. The original q_anchor remains unchanged and the native 3-mm
+    # contact hard gate is never relaxed.
+    if ep<=.003 and en>normal_tolerance and normal_steps>0:
+        from .constrained_contact_normal_v1 import refine_contact_normal
+        expanded_bound=min(.003,max(bound,.0005))
+        refinement.update(attempted=True,mode='bounded_position_constrained_slsqp',
+                          previous_normal_error=float(en),position_budget_m=expanded_bound)
+        try:
+            refined=refine_contact_normal(
+                kinematics,anchor['q_anchor'],q,lower,upper,
+                position,requested,expanded_bound,max_iterations=32)
+            refinement['attempts']=refined['attempts']
+            refinement['seconds']=refined['seconds']
+            # Do not spend submillimetre contact precision for an
+            # insignificant face improvement that still fails the unchanged
+            # normal gate. Preserve the exact old anchor in that case.
+            improvement=en-refined['normal_vector_error']
+            useful=(refined['normal_vector_error']<=normal_tolerance
+                    or improvement>=max(.02,.05*en))
+            if (useful and improvement>1e-8
+                    and refined['position_error_m'] <= expanded_bound+1e-10):
+                q=refined['q_rad'].copy()
+                p,n,jp,jn=kinematics(q)
+                ep=float(np.linalg.norm(p-position))
+                en=float(np.linalg.norm(n-requested))
+                refinement['accepted']=True
+                bound=expanded_bound
+        except (ValueError,RuntimeError,np.linalg.LinAlgError) as error:
+            # This is optional normal refinement, never a way to bypass
+            # failure of original normal/position/physics gates.
+            refinement['rejection']=type(error).__name__+': '+str(error)
     normal_seconds=time.perf_counter()-started
     position_ok=ep<=.003;normal_ok=position_ok and en<=normal_tolerance
     qd=np.zeros(6);base=np.zeros(3) if base_velocity_fn is None else base_velocity_fn(p)
@@ -76,6 +113,7 @@ def anchored_pose_velocity(kinematics,seeds,lower,upper,speed,position,normal,ve
         POSITION_ANCHORED=position_ok,NORMAL_FEASIBLE=normal_ok,VELOCITY_FEASIBLE=bool(normal_ok and rate_success and ev<=velocity_tolerance),
         ANALYTIC_RETURN_VALID=False,rejection=None if normal_ok else 'POSE_TASK_INCOMPATIBLE',
         position_preservation_bound_m=bound,normal_trace=trace,normal_seconds=normal_seconds,
+        constrained_normal_refinement=refinement,
         velocity_seconds=time.perf_counter()-started)
 
 
