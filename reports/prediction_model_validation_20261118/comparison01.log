@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/autodrive/LZQW/unitree_smash_teacher_eval/scripts/compare_recorded_predictors_v2.py", line 75, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_teacher_eval/scripts/compare_recorded_predictors_v2.py", line 38, in main
+    model=LoadedPinocchioModelV1();spheres=spheres_from_asset(asset,model.feet)
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_teacher_eval/scripts/audit_sphere_touchdown_predictions_v1.py", line 37, in spheres_from_asset
+    from pxr import Usd,UsdGeom,UsdPhysics
+ModuleNotFoundError: No module named 'pxr'

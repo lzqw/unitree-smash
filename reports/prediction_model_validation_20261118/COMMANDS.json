@@ -1,0 +1,27 @@
+[
+  {
+    "name": "comparison01",
+    "exit_code": 1,
+    "command": "OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 bash scripts/python.sh -m scripts.compare_recorded_predictors_v2 --native reports/task_constrained_hit_20261118/attempts/calibration01/native --output reports/prediction_model_validation_20261118/comparison01"
+  },
+  {
+    "name": "comparison02",
+    "exit_code": 0,
+    "command": "OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 bash scripts/python.sh -m scripts.compare_recorded_predictors_v2 --native reports/task_constrained_hit_20261118/attempts/calibration01/native --spheres reports/prediction_model_validation_20261118/AUTHORED_SPHERES.json --output reports/prediction_model_validation_20261118/comparison02"
+  },
+  {
+    "name": "rollout01",
+    "exit_code": 0,
+    "command": "OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 bash scripts/python.sh -m scripts.compare_recorded_predictors_v2 --native reports/task_constrained_hit_20261118/attempts/calibration01/native --spheres reports/prediction_model_validation_20261118/AUTHORED_SPHERES.json --rollout --output reports/prediction_model_validation_20261118/rollout01"
+  },
+  {
+    "name": "long_horizon01",
+    "exit_code": 0,
+    "command": "OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 bash scripts/python.sh -m scripts.compare_recorded_predictors_v2 --native reports/task_constrained_hit_20261118/attempts/calibration01/native --spheres reports/prediction_model_validation_20261118/AUTHORED_SPHERES.json --rollout --start-tick 201 --steps 80 --output reports/prediction_model_validation_20261118/long_horizon01"
+  },
+  {
+    "name": "final_tests",
+    "exit_code": 0,
+    "command": "OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 bash scripts/python.sh -m pytest -q tests/test_recorded_predictor_state_v2.py tests/test_speed_limited_impulse_v1.py tests/test_frictional_impulse_step_v1.py tests/test_frictional_sphere_prediction_v1.py tests/test_sphere_touchdown_audit_v1.py tests/test_prediction_evidence_v2.py"
+  }
+]

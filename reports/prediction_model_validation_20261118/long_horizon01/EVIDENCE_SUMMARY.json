@@ -1,0 +1,230 @@
+{
+  "mode": "open_loop",
+  "start_tick": 201,
+  "steps": 80,
+  "groups": [
+    {
+      "method": "current_body_anchor",
+      "lane": 0,
+      "solved": 1,
+      "requested": 80,
+      "first_solver_failure": {
+        "tick": 202,
+        "reason": "Contact/motor active set did not converge; no fallback applied"
+      },
+      "first_racket_body_error_above_3mm": null,
+      "diagnostic_evidence": {
+        "joint_position_violation_rad": {
+          "first_above_display_threshold": null,
+          "missing_or_nonfinite_ticks": []
+        },
+        "joint_velocity_violation_rad_s": {
+          "first_above_display_threshold": null,
+          "missing_or_nonfinite_ticks": []
+        },
+        "motor_torque_violation_nm": {
+          "first_above_display_threshold": null,
+          "missing_or_nonfinite_ticks": []
+        },
+        "foot_penetration_m": {
+          "first_above_display_threshold": null,
+          "missing_or_nonfinite_ticks": [
+            201
+          ]
+        }
+      },
+      "physical_admission": "NOT_EVALUATED",
+      "contact_point_accuracy": "NOT_MEASURED"
+    },
+    {
+      "method": "current_body_anchor",
+      "lane": 1,
+      "solved": 1,
+      "requested": 80,
+      "first_solver_failure": {
+        "tick": 202,
+        "reason": "Contact/motor active set did not converge; no fallback applied"
+      },
+      "first_racket_body_error_above_3mm": null,
+      "diagnostic_evidence": {
+        "joint_position_violation_rad": {
+          "first_above_display_threshold": null,
+          "missing_or_nonfinite_ticks": []
+        },
+        "joint_velocity_violation_rad_s": {
+          "first_above_display_threshold": null,
+          "missing_or_nonfinite_ticks": []
+        },
+        "motor_torque_violation_nm": {
+          "first_above_display_threshold": null,
+          "missing_or_nonfinite_ticks": []
+        },
+        "foot_penetration_m": {
+          "first_above_display_threshold": null,
+          "missing_or_nonfinite_ticks": [
+            201
+          ]
+        }
+      },
+      "physical_admission": "NOT_EVALUATED",
+      "contact_point_accuracy": "NOT_MEASURED"
+    },
+    {
+      "method": "authored_sphere_contact",
+      "lane": 0,
+      "solved": 80,
+      "requested": 80,
+      "first_solver_failure": null,
+      "first_racket_body_error_above_3mm": {
+        "tick": 203,
+        "error_m": 0.004929672786300048
+      },
+      "diagnostic_evidence": {
+        "joint_position_violation_rad": {
+          "first_above_display_threshold": {
+            "tick": 201,
+            "value": 0.0001587325713061638
+          },
+          "missing_or_nonfinite_ticks": []
+        },
+        "joint_velocity_violation_rad_s": {
+          "first_above_display_threshold": {
+            "tick": 243,
+            "value": 10.515941460951225
+          },
+          "missing_or_nonfinite_ticks": []
+        },
+        "motor_torque_violation_nm": {
+          "first_above_display_threshold": null,
+          "missing_or_nonfinite_ticks": []
+        },
+        "foot_penetration_m": {
+          "first_above_display_threshold": {
+            "tick": 245,
+            "value": 6.572197419445203e-06
+          },
+          "missing_or_nonfinite_ticks": []
+        }
+      },
+      "physical_admission": "NOT_EVALUATED",
+      "contact_point_accuracy": "NOT_MEASURED"
+    },
+    {
+      "method": "authored_sphere_contact",
+      "lane": 1,
+      "solved": 80,
+      "requested": 80,
+      "first_solver_failure": null,
+      "first_racket_body_error_above_3mm": {
+        "tick": 203,
+        "error_m": 0.005104324747296878
+      },
+      "diagnostic_evidence": {
+        "joint_position_violation_rad": {
+          "first_above_display_threshold": {
+            "tick": 201,
+            "value": 0.00040737508038102277
+          },
+          "missing_or_nonfinite_ticks": []
+        },
+        "joint_velocity_violation_rad_s": {
+          "first_above_display_threshold": {
+            "tick": 245,
+            "value": 10.510118619580552
+          },
+          "missing_or_nonfinite_ticks": []
+        },
+        "motor_torque_violation_nm": {
+          "first_above_display_threshold": null,
+          "missing_or_nonfinite_ticks": []
+        },
+        "foot_penetration_m": {
+          "first_above_display_threshold": {
+            "tick": 247,
+            "value": 6.929551692357733e-06
+          },
+          "missing_or_nonfinite_ticks": []
+        }
+      },
+      "physical_admission": "NOT_EVALUATED",
+      "contact_point_accuracy": "NOT_MEASURED"
+    },
+    {
+      "method": "sphere_plus_sim_speed_constraint",
+      "lane": 0,
+      "solved": 80,
+      "requested": 80,
+      "first_solver_failure": null,
+      "first_racket_body_error_above_3mm": {
+        "tick": 203,
+        "error_m": 0.004929672786300048
+      },
+      "diagnostic_evidence": {
+        "joint_position_violation_rad": {
+          "first_above_display_threshold": {
+            "tick": 201,
+            "value": 0.0001587325713061638
+          },
+          "missing_or_nonfinite_ticks": []
+        },
+        "joint_velocity_violation_rad_s": {
+          "first_above_display_threshold": null,
+          "missing_or_nonfinite_ticks": []
+        },
+        "motor_torque_violation_nm": {
+          "first_above_display_threshold": null,
+          "missing_or_nonfinite_ticks": []
+        },
+        "foot_penetration_m": {
+          "first_above_display_threshold": {
+            "tick": 245,
+            "value": 5.584640209471692e-06
+          },
+          "missing_or_nonfinite_ticks": []
+        }
+      },
+      "physical_admission": "NOT_EVALUATED",
+      "contact_point_accuracy": "NOT_MEASURED"
+    },
+    {
+      "method": "sphere_plus_sim_speed_constraint",
+      "lane": 1,
+      "solved": 80,
+      "requested": 80,
+      "first_solver_failure": null,
+      "first_racket_body_error_above_3mm": {
+        "tick": 203,
+        "error_m": 0.005104324747296878
+      },
+      "diagnostic_evidence": {
+        "joint_position_violation_rad": {
+          "first_above_display_threshold": {
+            "tick": 201,
+            "value": 0.00040737508038102277
+          },
+          "missing_or_nonfinite_ticks": []
+        },
+        "joint_velocity_violation_rad_s": {
+          "first_above_display_threshold": null,
+          "missing_or_nonfinite_ticks": []
+        },
+        "motor_torque_violation_nm": {
+          "first_above_display_threshold": null,
+          "missing_or_nonfinite_ticks": []
+        },
+        "foot_penetration_m": {
+          "first_above_display_threshold": {
+            "tick": 247,
+            "value": 4.8897846599491035e-06
+          },
+          "missing_or_nonfinite_ticks": []
+        }
+      },
+      "physical_admission": "NOT_EVALUATED",
+      "contact_point_accuracy": "NOT_MEASURED"
+    }
+  ],
+  "valid_teacher_reference": false,
+  "explanation": "Solver convergence is not physical admission. Racket body origin is not the actual contact point. Missing checks remain unknown.",
+  "window_metadata_source": "RESULTS.json"
+}
