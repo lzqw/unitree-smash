@@ -113,7 +113,7 @@ rejection counts.  One lane now passes CPU kinematic admission and the other
 remains rejected by the face task residual; this is development evidence and
 is not a native contact result.
 
-After the CPU checks, a native **development probe** was run with the same controller path for 2 environments and 800 control ticks.  The first attempt was preserved and failed at the CUDA-to-NumPy boundary when passing causal base acceleration into the CPU planner.  The explicit `.detach().cpu().numpy()` bridge fixed that engineering fault; the retry exited 0 and completed all 800 ticks with zero numerical failures.  This probe did not launch the ball, recorded zero contacts and zero completes, and is therefore not a hit-rate result.  Evidence is in `native_probe_2env_800tick/`; formal native evaluation remains `NOT_RUN`.
+After the CPU checks, a native **development probe** was run with the same controller path for 2 environments and 800 control ticks.  The first attempt was preserved and failed at the CUDA-to-NumPy boundary when passing causal base acceleration into the CPU planner.  The explicit `.detach().cpu().numpy()` bridge fixed that engineering fault; the retry exited 0 and completed all 800 ticks with zero numerical failures.  Correction from raw evidence: this probe did launch the ball (one launch per lane), recorded zero contacts and zero completes. It is a two-lane development failure, not a full-panel result. See `LAUNCH_EVIDENCE_CORRECTION.json`; the previous no-launch statement was incorrect.  Evidence is in `native_probe_2env_800tick/`; formal native evaluation remains `NOT_RUN`.
 
 The retry's per-lane planner log showed a more substantive issue: all 45
 contact candidates were rejected by `kinematic_task_residual`.  At the
@@ -194,3 +194,17 @@ For local DTG-like perturbations around the measured racket pose, acceptance was
 100/100 for 1, 2.5 and 5 cm position offsets and 96/100 at 10 cm, with contact
 times from 0.45 to 0.8 s.  This is a bounded kinematic feasibility result, not
 an Isaac hit-rate result; see `DTG_LOCAL_TASK_SWEEP.json`.
+
+## Measured-frame transport correction
+
+The causal acceleration estimate now transports the previous measured body
+velocity into the current body frame before differencing. This removes the
+spurious acceleration caused by changing orientation, for both linear and
+angular velocity. The observation contract provides world +x in body coordinates
+through the locked goal normal and world +z through negative gravity. Per-lane
+basis history follows partial reset. Existing acceleration caps are unchanged.
+
+Validation: 77 tests passed (exit 0), including finite body rotation at constant
+world twist, true inertial acceleration expressed in the current body, and
+partial-reset history isolation. Native confirmation of this correction remains
+NOT_RUN. No SuperMimic code, process or weights were changed.

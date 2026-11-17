@@ -68,6 +68,7 @@ def test_rally_selective_reset_preserves_other_episode_and_logs():
     c.contact_first_last_time=torch.ones(2)
     c.contact_first_last_base_linear=torch.ones(2,3)
     c.contact_first_last_base_angular=torch.ones(2,3)
+    c.contact_first_last_basis=torch.ones(2,3,3)
     c.reset(torch.tensor([0]))
     assert torch.equal(c.parameters[0],c.base) and c.parameters[1].eq(0).all()
     assert c.event_time[1]==1 and c.planned[1] and c.target_offset_world[1].eq(1).all() and c.logs==['kept']
@@ -77,6 +78,8 @@ def test_rally_selective_reset_preserves_other_episode_and_logs():
     assert c.contact_first_last_base_linear[1].eq(1).all()
     assert c.contact_first_last_base_angular[0].eq(0).all()
     assert c.contact_first_last_base_angular[1].eq(1).all()
+    assert c.contact_first_last_basis[0].eq(0).all()
+    assert c.contact_first_last_basis[1].eq(1).all()
 
 
 def test_rally_contact_evaluator_factory_is_exclusive_and_callable():

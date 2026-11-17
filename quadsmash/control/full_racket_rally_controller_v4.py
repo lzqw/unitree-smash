@@ -18,6 +18,31 @@ from .full_racket_contact_normal_search_v4 import contact_normal_body
 ROOT=Path(__file__).resolve().parents[2]
 
 
+def public_world_basis_in_body(public):
+    """Columns are the fixed world x/y/z axes expressed in the current body.
+
+    The locked rally command normal is world +x; gravity supplies world -z.
+    This convention is specific to the existing rally observation contract.
+    """
+    forward, up = public[:, 763:766], -public[:, 6:9]
+    return torch.stack((forward, torch.linalg.cross(up, forward), up), dim=-1)
+
+
+def transported_body_acceleration(current, previous, current_basis,
+                                  previous_basis, delta_time, usable):
+    """Inertial finite-difference acceleration expressed in the current body.
+
+    Subtracting body components directly invents acceleration during rotation.
+    First transport the previous vector B_old -> W -> B_now. No future state
+    or angular-velocity integration is needed for this measured-state estimate.
+    """
+    previous_world = torch.bmm(previous_basis.transpose(1, 2), previous[:, :, None])
+    previous_here = torch.bmm(current_basis, previous_world).squeeze(-1)
+    safe_dt = torch.where(usable, delta_time, torch.ones_like(delta_time))
+    acceleration = (current - previous_here) / safe_dt[:, None]
+    return torch.where(usable[:, None], acceleration, torch.zeros_like(current))
+
+
 class FullRacketRallyControllerV4:
     def __init__(self,checkpoint,count,device):
         self.checkpoint=checkpoint
@@ -73,6 +98,7 @@ class FullRacketRallyControllerV4:
             self.contact_first_last_valid=torch.zeros(count,dtype=torch.bool,device=device)
             self.contact_first_last_base_linear=torch.zeros((count,3),device=device)
             self.contact_first_last_base_angular=torch.zeros((count,3),device=device)
+            self.contact_first_last_basis=torch.zeros((count,3,3),device=device)
 
     def reset(self,ids=None):
         self.teacher.reset(ids)
@@ -94,6 +120,7 @@ class FullRacketRallyControllerV4:
                 self.contact_first_last_valid[ids]=False
                 self.contact_first_last_base_linear[ids]=0.
                 self.contact_first_last_base_angular[ids]=0.
+                self.contact_first_last_basis[ids]=0.
         if ids is None and getattr(self,'contact_first_plan_valid',None) is not None:
             self.contact_first_plan_valid.zero_()
             self.contact_first_plan_start_time.fill_(float('inf'))
@@ -104,6 +131,7 @@ class FullRacketRallyControllerV4:
             self.contact_first_last_valid.zero_()
             self.contact_first_last_base_linear.zero_()
             self.contact_first_last_base_angular.zero_()
+            self.contact_first_last_basis.zero_()
 
     def plan_contact_first_arm(self, **kwargs):
         """Plan a causal pre-contact arm trajectory from a DTG event.
@@ -279,14 +307,13 @@ class FullRacketRallyControllerV4:
                 usable[:,None],
                 (actual_all-self.contact_first_last_actual_q)/delta_time.clamp_min(1e-6)[:,None],
                 actual_velocity)
-            base_linear_acceleration=torch.where(
-                usable[:,None],
-                (obs[:,:3]-self.contact_first_last_base_linear)/delta_time.clamp_min(1e-6)[:,None],
-                base_linear_acceleration)
-            base_angular_acceleration=torch.where(
-                usable[:,None],
-                (obs[:,3:6]-self.contact_first_last_base_angular)/delta_time.clamp_min(1e-6)[:,None],
-                base_angular_acceleration)
+            current_basis=public_world_basis_in_body(obs)
+            base_linear_acceleration=transported_body_acceleration(
+                obs[:,:3],self.contact_first_last_base_linear,current_basis,
+                self.contact_first_last_basis,delta_time,usable)
+            base_angular_acceleration=transported_body_acceleration(
+                obs[:,3:6],self.contact_first_last_base_angular,current_basis,
+                self.contact_first_last_basis,delta_time,usable)
         ids=torch.where((~self.planned)&(obs[:,67]>.5)&(obs[:,775]>=2.0))[0]
         if len(ids):
             public=obs[ids].cpu().numpy()
@@ -465,4 +492,5 @@ class FullRacketRallyControllerV4:
             self.contact_first_last_valid.fill_(True)
             self.contact_first_last_base_linear.copy_(obs[:,:3])
             self.contact_first_last_base_angular.copy_(obs[:,3:6])
+            self.contact_first_last_basis.copy_(current_basis)
         return action
