@@ -51,6 +51,7 @@ class FullRacketRallyControllerV4:
         self.contact_first_plan_contact_time=None
         self.contact_first_plan_valid=None
         self.contact_first_plan_log=[]
+        self.contact_first_evaluator=None
         if search_config is not None:
             if not isinstance(search_config,dict):
                 raise ValueError('contact_first_search must be a mapping')
@@ -109,6 +110,20 @@ class FullRacketRallyControllerV4:
             raise RuntimeError('contact_first_search is not enabled in this checkpoint')
         return self.contact_first_planner.plan(**kwargs)
 
+    def set_contact_first_evaluator(self, evaluator=None):
+        """Attach an optional causal full-body candidate evaluator.
+
+        The callback receives the complete candidate prefix from the planner;
+        it must return ``True`` or ``{'accepted': bool, ...}``.  Keeping this
+        explicit prevents a kinematic-only plan from being described as a
+        whole-body physical result while allowing a native/Pinocchio runner to
+        supply the already-audited model without changing this controller.
+        """
+        if evaluator is not None and not callable(evaluator):
+            raise TypeError('Contact-first evaluator must be callable or None')
+        self.contact_first_evaluator=evaluator
+        return self
+
     @torch.inference_mode()
     def _install_contact_first_plan(self, ids, public, actual, actual_velocity,
                                     forward, left, up,
@@ -145,6 +160,7 @@ class FullRacketRallyControllerV4:
                     racket_offset_world_m=point[local].detach().cpu().numpy(),
                     lower_rad=q_limits[:,0], upper_rad=q_limits[:,1],
                     velocity_limits_rad_s=np.full(6,cfg.arm_velocity_limit_rad_s),
+                    evaluator=self.contact_first_evaluator,
                     kinematics_fn=kinematics_fn,
                 )
             except (ValueError, RuntimeError, FloatingPointError) as exc:
@@ -164,6 +180,7 @@ class FullRacketRallyControllerV4:
                 position_error_m=result.position_error_m,
                 normal_error=result.normal_error,
                 velocity_error_m_s=result.velocity_error_m_s,
+                physical_evaluator=bool(self.contact_first_evaluator is not None),
                 metadata=result.metadata))
 
     @torch.inference_mode()

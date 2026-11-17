@@ -22,6 +22,8 @@ This is a CPU-validated first implementation for the DTG Approach teacher. It is
   - opt-in `seed.contact_first_search` configuration;
   - per-lane plan state and partial-reset isolation;
   - optional arm-prefix overlay until the planned contact time;
+  - explicit `set_contact_first_evaluator()` hook for a causal Pinocchio/WBC
+    full-body candidate check;
   - no behavior change when the configuration block is absent.
 
 The planner does not use future simulator state, TRAIN case IDs, learned action outputs, or landing success. The existing Recovery MPC and its 32-node protocol remain separate.
