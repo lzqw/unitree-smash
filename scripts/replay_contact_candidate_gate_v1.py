@@ -133,7 +133,8 @@ def main():
                   .detach().cpu().numpy().astype(float))
         matches=[]
         for pending in physically_accepted_pending:
-            if pending['lane']!=lane or pending['contact_index']!=count:
+            if (pending['lane']!=lane or pending['contact_index']!=count or
+                    abs(pending['clock_s']-float(controller.contact_first_plan_start_time[lane]))>1e-6):
                 continue
             replayed=np.asarray(pending['result']['replayed_target_sequence_rad'],dtype=float)
             if (replayed.shape==selected.shape and
@@ -151,7 +152,8 @@ def main():
             contact_index=count,limits=interface.limits,input_hashes=frozen_inputs,
             controller_parameters=admitted['controller_parameters'],
             prediction_contract=admitted['result']['prediction_contract'],
-            cpu_prediction_valid=True,state_source='public_reconstruction')
+            cpu_prediction_valid=True,state_source='public_reconstruction',
+            planner_record=selected_log,physical_result=admitted['result'])
         bundles.append(str(path))
     result=dict(scope='CPU gate replay; public reconstruction, no native truth or online execution',
         finite_mass_refinement='NOT_EVALUATED in this offline adapter',

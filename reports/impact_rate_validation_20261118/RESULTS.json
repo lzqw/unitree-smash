@@ -1,0 +1,40 @@
+{
+  "baseline": "9df85ec",
+  "imported_review": "edeabbf71f42e6e8b8f211f881c13f91fdaf0cf2",
+  "scope": "offline_cpu_validation",
+  "candidate_times": 24,
+  "planning_calls": 4,
+  "counts": {
+    "POSITION_ANCHORED": 14,
+    "NORMAL_FEASIBLE": 4,
+    "VELOCITY_FEASIBLE": 0,
+    "ANALYTIC_RETURN_VALID": 0
+  },
+  "rate_search_calls": 4,
+  "rate_queries": 1471,
+  "rate_task_valid": 0,
+  "impact_calls": 12127,
+  "physical_calls": 0,
+  "reference_bundles": [],
+  "input_sha256": {
+    "reports/joint_loop_round_20261117/attempts/probe01/native/public_observations.npy": "18eef3aa0fb74200a983b5814d255e5d7150ee899906390ba476395c7c79efe0",
+    "reports/joint_loop_round_20261117/attempts/probe01/candidate.pt": "9152b438d792b2871ba5cbd64b4e76776e125c7295fcbaf57999931aba436543",
+    "reports/codex_teacher_joint_eval_20261116/controller.json": "4c1a1c3cce71954081c252b0ca7bb10e77f65bdaf39525e9a78fb4f8e67330f7"
+  },
+  "prediction_contract": {
+    "version": "implicit_contact_diagnostic_v2",
+    "substeps": 160,
+    "integration_dt_s": 6.25e-05,
+    "joint_stops": true,
+    "physx_equivalent": false
+  },
+  "tests": {
+    "passed": 122,
+    "exit_code": 0
+  },
+  "replay_exit_code": 0,
+  "native": "NOT_RUN",
+  "training": false,
+  "supermimic_modified": false,
+  "notes": "Diagnostic counters added after replay; no search or acceptance changes after replay. Raw outcomes audited separately."
+}

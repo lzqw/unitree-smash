@@ -44,6 +44,7 @@ def optimize_impact_feasible_rate(
                        for x in (J, R, base, qd0, cap, outgoing_target))
             or np.any(cap <= 0) or np.any(np.abs(qd0) > cap + 1e-8)
             or not np.allclose(R.T @ R, np.eye(3), atol=2e-5)
+            or not np.isclose(np.linalg.det(R),1.,atol=2e-5)
             or type(max_nfev) is not int or not 1 <= max_nfev <= 100
             or not callable(impact_evaluator)):
         raise ValueError("Finite, originally bounded impact-rate inputs required")
@@ -55,11 +56,16 @@ def optimize_impact_feasible_rate(
     if any(k not in metadata for k in required_meta):
         raise ValueError("Missing impact event metadata")
 
+    normal=np.asarray(metadata['achieved_normal_current_frame'],dtype=float)
+    if normal.shape!=(3,) or not np.isfinite(normal).all() or np.linalg.norm(normal)<1e-12:
+        raise ValueError("Finite planning-frame contact normal required")
+    normal=normal/np.linalg.norm(normal)
     best = None
     best_quality = (float("inf"), float("inf"))
     best_diagnostic = None
     n_queries = 0
     failure_reasons = {}
+    task_failures = {key: 0 for key in TASK_FLAGS}
     cache = {}
 
     def evaluate_rate(rate):
@@ -80,6 +86,9 @@ def optimize_impact_feasible_rate(
         n_queries += 1
         if not isinstance(outcome, dict):
             raise ValueError("Impact evaluator must return a mapping")
+        for flag in TASK_FLAGS:
+            if outcome.get(flag) is not True:
+                task_failures[flag] += 1
         reason = outcome.get("rejection_reason")
         if reason:
             failure_reasons[str(reason)] = failure_reasons.get(str(reason), 0) + 1
@@ -96,7 +105,7 @@ def optimize_impact_feasible_rate(
             residual = (v_out - outgoing_target) / 5.
             output_error = float(np.linalg.norm(v_out - outgoing_target))
             if best_diagnostic is None or output_error < best_diagnostic[0]:
-                best_diagnostic = (output_error, rate.copy(), achieved.copy())
+                best_diagnostic = (output_error, rate.copy(), achieved.copy(), dict(outcome))
         valid = (raw is not None and
                  all(outcome.get(k) is True for k in TASK_FLAGS))
         if valid:
@@ -113,10 +122,11 @@ def optimize_impact_feasible_rate(
         return residual
 
     # The original constrained speed solution is tested first. A second
-    # deterministic seed maximizes relative velocity along the requested
-    # racket-contact displacement. This is NOT a case-specific action bank.
+    # deterministic seed maximizes racket speed along the CONTACT NORMAL.
+    # R maps future body to planning frame, not to world: using world outgoing
+    # velocity here would mix frames. No case-specific action bank is used.
     seeds = [qd0.copy()]
-    direction = R.T @ outgoing_target
+    direction = R.T @ normal
     saturated = cap * np.sign(J.T @ direction)
     if not np.allclose(saturated, qd0, atol=1e-8):
         seeds.append(saturated)
@@ -143,9 +153,17 @@ def optimize_impact_feasible_rate(
         analytic_outcome=None if best is None else best["outcome"],
         target_outgoing_velocity_world_m_s=outgoing_target.copy(),
         original_rate_rad_s=qd0.copy(),
+        seeds_rad_s=[seed.copy() for seed in seeds],
+        seed_direction_future_base=direction.copy(),
         original_requested_velocity_error_preserved=True,
         best_predicted_outgoing_error_m_s=(
             None if best_diagnostic is None else best_diagnostic[0]),
+        best_trial_diagnostic=(None if best_diagnostic is None else dict(
+            rate_rad_s=best_diagnostic[1],
+            achieved_velocity_current_frame_m_s=best_diagnostic[2],
+            analytic_outcome=best_diagnostic[3],
+            execution_authorized=False)),
+        task_flag_failures=task_failures,
         trials=n_queries, failures=failure_reasons, solvers=diagnostics,
         prediction_kind="analytic_impact_rate_retarget_not_physx",
         physical_feasibility_verified=False,

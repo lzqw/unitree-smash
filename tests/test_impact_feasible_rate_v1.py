@@ -74,3 +74,34 @@ def test_invalid_initial_rate_fails_closed(invalid):
         optimize_impact_feasible_rate(
             J,np.zeros(3),invalid,np.full(6,5.),np.eye(3),
             event(),fake_outcome,[5.5,0.,-1.5])
+
+
+def test_second_seed_uses_planning_contact_normal_not_world_outgoing_direction():
+    J=np.c_[np.eye(3),np.zeros((3,3))]
+    R=np.array([[0.,-1,0],[1,0,0],[0,0,1]])
+    meta=event();meta['achieved_normal_current_frame']=np.array([0.,1.,0.])
+    def reject(m):return dict(outgoing_velocity=None,rejection_reason='no_contact')
+    r=optimize_impact_feasible_rate(J,np.zeros(3),np.zeros(6),np.ones(6),R,meta,reject,[0.,0.,-5.])
+    np.testing.assert_allclose(r['seed_direction_future_base'],[1.,0.,0.])
+    np.testing.assert_array_equal(r['seeds_rad_s'][1],[1,0,0,0,0,0])
+
+
+def test_reflection_is_not_a_valid_rotation():
+    with pytest.raises(ValueError,match='rate inputs'):
+        optimize_impact_feasible_rate(np.c_[np.eye(3),np.zeros((3,3))],np.zeros(3),
+            np.zeros(6),np.ones(6),np.diag([-1.,1,1]),event(),fake_outcome,[5.5,0,-1.5])
+
+
+def test_legal_but_nonattack_outcome_without_reason_is_diagnosed_not_accepted():
+    def weak_return(meta):
+        return dict(outgoing_velocity=[2.88,0.,0.],contact_feasible=True,
+                    legal_return_predicted=True,attack5_predicted=False,
+                    target_landing_predicted=True,ranking_cost=0.,rejection_reason=None)
+    r=optimize_impact_feasible_rate(np.c_[np.eye(3),np.zeros((3,3))],np.zeros(3),
+        np.zeros(6),np.ones(6),np.eye(3),event(),weak_return,[5.,0.,-1.])
+    assert not r['accepted'] and r['qd_rad_s'] is None
+    assert r['task_flag_failures']['attack5_predicted']==r['trials']
+    assert r['task_flag_failures']['legal_return_predicted']==0
+    assert r['failures']=={}
+    assert r['best_trial_diagnostic']['execution_authorized'] is False
+    assert r['best_trial_diagnostic']['analytic_outcome']['outgoing_velocity']==[2.88,0.,0.]

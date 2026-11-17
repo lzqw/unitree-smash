@@ -20,6 +20,8 @@ def require_final_trajectory_admission(planner_record, physical_result, *,
     fails the actual terminal collision and return checks. Such an early
     result is not a complete offline teacher reference.
     """
+    if not np.isfinite(contact_limit_m) or not 0 < contact_limit_m <= .003:
+        raise ValueError('Cannot relax the final 3mm contact gate')
     if (not isinstance(planner_record, dict) or
             planner_record.get('accepted') is not True or
             not isinstance(physical_result, dict) or
@@ -45,7 +47,7 @@ def require_final_trajectory_admission(planner_record, physical_result, *,
 def write_candidate(directory, *, final_targets_rad, prior_final_target_rad,
                     state_q, state_v, control_tick, contact_index, limits,
                     input_hashes, controller_parameters, prediction_contract,
-                    cpu_prediction_valid, state_source):
+                    cpu_prediction_valid, state_source, planner_record=None, physical_result=None):
     directory=Path(directory)
     arrays={k:np.array(v,dtype=np.float64,copy=True) for k,v in dict(
         final_targets_rad=final_targets_rad,prior_final_target_rad=prior_final_target_rad,
@@ -64,10 +66,20 @@ def write_candidate(directory, *, final_targets_rad, prior_final_target_rad,
         raise ValueError('Pin every input with SHA256')
     if state_source not in ('native','public_reconstruction'):
         raise ValueError('Explicit measured-state information boundary required')
+    admission=None
+    if cpu_prediction_valid:
+        require_final_trajectory_admission(planner_record,physical_result)
+        verified=np.asarray(physical_result['replayed_target_sequence_rad'],dtype=float)
+        if verified.shape!=q.shape or not np.isfinite(verified).all() or np.max(abs(verified-q))>2e-6:
+            raise ValueError('Export commands differ from the finally admitted prefix')
+        admission=dict(final_impact_checks=planner_record['final_impact_checks'],
+            final_contact_position_error_m=planner_record['final_contact_position_error_m'],
+            full18_target_sha256=hashlib.sha256(q.astype('<f8').tobytes()).hexdigest())
     # Serialize first, so invalid metadata cannot leave a seemingly complete bundle.
     metadata=dict(schema='offline_reference_candidate_v1',control_tick=control_tick,contact_index=contact_index,
         control_dt_s=.01,requires_replay_from_frozen_initial_conditions=True,
         state_source=state_source,input_hashes=input_hashes,controller_parameters=controller_parameters,
+        final_cpu_admission=admission,
         prediction_contract=prediction_contract,FULLBODY_PREDICTION_VALID=bool(cpu_prediction_valid),
         **{stage:'NOT_RUN' for stage in NATIVE_STAGES})
     json.dumps(metadata,allow_nan=False)

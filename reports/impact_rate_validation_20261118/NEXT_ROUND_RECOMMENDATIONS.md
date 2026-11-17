@@ -1,0 +1,6 @@
+# Next changes, not executed this round
+
+1. Reachable-impact target: the 2.17 s lane 1 objective is below 5 m/s despite a small achieved outgoing error. Make full task feasibility a constraint of goal adaptation, not merely an objective or posthoc label. Test speed/downward/net/landing simultaneously, preserving rejected best goals as diagnostics.
+2. Rate/pose coupling: lane 0 can return but cannot achieve downward attack at the tested poses. Optimize legal target and pose redundancy together while preserving the position anchor, 0.12 normal gate and physical 5 rad/s bound. Validate actual outgoing conditions, not proximity to a chosen target. Current local failure is not a proof of global infeasibility.
+3. Fullbody model: unchanged historical 160-substep convergence issue requires same-initial-state recorded-command/PhysX comparison with forces and drive state. Do not infer new arm failure or clip predicted velocities. Independently validate from-reset replay before using PhysX to certify offline references.
+4. Approach/WBC/Recovery: retain current behavior absent new executed evidence. Handoff and native command consistency remain untested for a new reference because none was admissible. No 128-case evaluation until actual reference adoption and small-scale physical validation.

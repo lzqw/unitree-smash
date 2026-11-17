@@ -59,3 +59,25 @@ def test_final_adoption_gate_refuses_physically_valid_but_unreturned_candidates(
     with pytest.raises(ValueError,match='Missing full 18D'):
         require_final_trajectory_admission(
             dict(plan,physical_evaluator=False),phys)
+
+
+def test_writer_itself_requires_final_admission_and_exact_sequence(tmp_path):
+    a=arguments();a['cpu_prediction_valid']=True
+    with pytest.raises(ValueError,match='planner and physical'):
+        write_candidate(tmp_path/'missing',**a)
+    assert not (tmp_path/'missing').exists()
+    plan=dict(accepted=True,physical_evaluator=True,final_contact_position_error_m=.0008,
+        final_impact_checks=dict(contact_feasible=True,legal_return_predicted=True,attack5_predicted=True,target_landing_predicted=True))
+    phys=dict(accepted=True,leg_reference='causal_frozen_base',replayed_target_sequence_rad=a['final_targets_rad'].tolist())
+    meta=write_candidate(tmp_path/'valid',**a,planner_record=plan,physical_result=phys)
+    assert meta['final_cpu_admission']['final_contact_position_error_m']==.0008
+    assert meta['PHYSX_REFERENCE_VALID']=='NOT_RUN'
+    phys['replayed_target_sequence_rad'][0][0]=1e-3
+    with pytest.raises(ValueError,match='differ'):
+        write_candidate(tmp_path/'wrong',**a,planner_record=plan,physical_result=phys)
+
+
+def test_no_custom_contact_limit_can_relax_final_gate():
+    from scripts.offline_reference_bundle_v1 import require_final_trajectory_admission
+    with pytest.raises(ValueError,match='3mm'):
+        require_final_trajectory_admission({}, {},contact_limit_m=.1)
