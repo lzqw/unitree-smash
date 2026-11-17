@@ -53,6 +53,8 @@ def main():
     parser.add_argument('--native-acceptance-receipt',type=Path)
     parser.add_argument('--training-profile',choices=('bounded','large'),default='bounded')
     parser.add_argument('--contact-validation-receipt',type=Path)
+    parser.add_argument('--action-ball-checkpoint',type=Path,default=None,
+                        help='Opt-in fitted swept-racket candidate; never silently replaces legacy ball response')
     parser.add_argument('--resume-start-block',choices=('recovery','approach'),default='recovery',
                         help='Resume a completed Recovery checkpoint directly at Approach')
     parser.add_argument('--resume-warmup-ticks',type=int,default=0,
@@ -195,7 +197,8 @@ def run(args):
         lifecycle_stage(args.output, 'BEFORE_LOAD_PHYSICAL_LOOP')
         actor,adapter,template,launch,manifest=load_physical_loop(archive=args.archive,
             physical_checkpoint=args.physical_checkpoint,ball_checkpoint=args.ball_checkpoint,
-            task_checkpoint=args.task_checkpoint,safety_mapping=args.safety_mapping)
+            task_checkpoint=args.task_checkpoint,safety_mapping=args.safety_mapping,
+            action_ball_checkpoint=args.action_ball_checkpoint)
         lifecycle_stage(args.output, 'AFTER_LOAD_PHYSICAL_LOOP')
         contact_validation=None;wm_holdout_lanes=[];runtime_wm_bounds={};runtime_validation_data=None;dual_quality=None;native_value_bank=None
         if args.contact_validation_receipt is not None:
@@ -487,6 +490,7 @@ def run(args):
             wm_approach_stage_quota=args.wm_approach_stage_quota,approach_sampling_thresholds=dict(gate=.25,minimum_gate_steps=4,near_distance_m=.30),approach_refresh_interval=args.approach_refresh_interval,
             wm_recent_policy_window=args.wm_recent_policy_window,wm_recent_tick_window=args.wm_recent_tick_window,
             task_reference_bank=str(args.task_reference_bank.resolve()) if args.task_reference_bank else None,
+            action_ball_checkpoint=str(args.action_ball_checkpoint.resolve()) if args.action_ball_checkpoint else None,
             tracking_weight=args.tracking_weight,
             actor_start_ticks=APPROACH_TICKS,critic_start_ticks=CRITIC_TICKS,critic_coverage_period=len(CRITIC_TICKS))
         write(args.output/'config.json',config)
