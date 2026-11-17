@@ -138,7 +138,8 @@ def predict_unilateral_support(model, interface, state, target, *, duration_s=.0
     dt = duration_s/substeps
     diag = dict(dynamics_residual_max=0.,normal_force_violation_n=0.,friction_violation_n=0.,
         joint_velocity_violation_rad_s=0.,joint_position_violation_rad=0.,
-        released_foot_substeps=0,sliding_foot_substeps=0,maximum_iterations=0)
+        released_foot_substeps=0,sliding_foot_substeps=0,maximum_iterations=0,
+        motor_torque_violation_nm=0.)
     last = None
     for _ in range(substeps):
         snap = model.snapshot(q,v)
@@ -151,6 +152,8 @@ def predict_unilateral_support(model, interface, state, target, *, duration_s=.0
             interface.kp,interface.kd,target-q[model.q_indices],interface.effort,
             dt,jac,desired,interface.friction)
         v = step['velocity'];q = pin.integrate(model.model,q,dt*v)
+        diag['motor_torque_violation_nm']=max(diag['motor_torque_violation_nm'],
+            float(np.max(abs(step['torque'])-interface.effort)))
         diag['dynamics_residual_max']=max(diag['dynamics_residual_max'],step['residual'])
         for key in ['normal_force_violation_n','friction_violation_n']:
             diag[key]=max(diag[key],step[key])
@@ -168,5 +171,8 @@ def predict_unilateral_support(model, interface, state, target, *, duration_s=.0
     following.root_position_world=q[:3].copy();following.root_rotation_world=pin.Quaternion(q[3:7]).matrix()
     following.contacts[:]=False
     following.contacts[feet]=last['modes']!=0
+    forces = np.zeros((4,3))
+    forces[feet] = last['force']
     return dict(state=following,diagnostics=diag,native_execution=False,
+        foot_forces_world_n=forces,
         new_contact_candidates_added=False,impact_or_compliance_calibrated=False)

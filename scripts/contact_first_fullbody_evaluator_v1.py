@@ -14,6 +14,7 @@ import numpy as np
 
 from scripts.authored_ground_clearance_v1 import AuthoredGroundClearance
 from scripts.implicit_support_prediction_v1 import predict_implicit_support
+from scripts.unilateral_implicit_prediction_v1 import predict_unilateral_support
 from scripts.loaded_pinocchio_model_v1 import LoadedPinocchioModelV1, PublicState
 from scripts.whole_body_support_qp_v1 import PositionPDInterface
 
@@ -35,7 +36,7 @@ class ContactFirstFullBodyEvaluatorV1:
                  max_tracking_error_rad=0.25, initial_state=None, model=None,
                  enforce_target_admission_bounds=False,
                  racket_measure_fn=None, leg_target_sequence_rad=None,
-                 record_state_trace=False):
+                 record_state_trace=False, contact_prediction="measured_fixed"):
         if initial_state is None:
             public = np.asarray(public, dtype=np.float64)
             default = np.asarray(default, dtype=np.float64)
@@ -93,6 +94,11 @@ class ContactFirstFullBodyEvaluatorV1:
             legs.flags.writeable = False
             self.leg_target_sequence_rad = legs
         self.record_state_trace = bool(record_state_trace)
+        if contact_prediction not in ("measured_fixed", "unilateral_release"):
+            raise ValueError("Unknown contact prediction mode")
+        self.contact_prediction = contact_prediction
+        self.predict = (predict_unilateral_support if contact_prediction == "unilateral_release"
+                        else predict_implicit_support)
 
     @classmethod
     def from_native(cls, env, lane, interface_config, *, default=None,
@@ -114,6 +120,7 @@ class ContactFirstFullBodyEvaluatorV1:
     def _violations(diagnostics):
         limits = {
             "dynamics_contact_residual_max": 2e-5,
+            "dynamics_residual_max": 2e-5,
             "joint_velocity_violation_rad_s": 3e-4,
             "joint_position_violation_rad": 3e-4,
             "normal_force_violation_n": 3e-4,
@@ -160,6 +167,7 @@ class ContactFirstFullBodyEvaluatorV1:
         # Hash exactly the replayed absolute commands, not a clipped approximation.
         command_sha256 = hashlib.sha256(targets.astype('<f8').tobytes()).hexdigest()
         state_trace = []
+        contact_modes_changed = False
         # q[0] is the boundary at the measured planning state. Command i is
         # held over [i*dt, (i+1)*dt); contact_index therefore requires exactly
         # contact_index physical intervals, not contact_index+1.
@@ -175,7 +183,7 @@ class ContactFirstFullBodyEvaluatorV1:
                         "node": node,
                     }
             try:
-                result = predict_implicit_support(
+                result = self.predict(
                     self.model, self.interface, state, target,
                     duration_s=self.dt_s, substeps=self.substeps)
             except (ValueError, np.linalg.LinAlgError, FloatingPointError) as error:
@@ -185,13 +193,16 @@ class ContactFirstFullBodyEvaluatorV1:
                     "node": node,
                     "error": repr(error),
                 }
+            contact_modes_changed |= not np.array_equal(state.contacts, result["state"].contacts)
             state = result["state"]
             diagnostics = result["diagnostics"]
             if self.record_state_trace:
                 state_trace.append(dict(
                     node=node, elapsed_s=(node+1)*self.dt_s,
                     final_target_rad=target.tolist(), q=state.q.tolist(), v=state.v.tolist(),
-                    contacts=state.contacts.tolist()))
+                    contacts=state.contacts.tolist(),
+                    foot_forces_world_n=(result["foot_forces_world_n"].tolist()
+                        if "foot_forces_world_n" in result else None)))
             violations = self._violations(diagnostics)
             for name, value in diagnostics.items():
                 if isinstance(value, (int, float, np.integer, np.floating)) and np.isfinite(value):
@@ -223,12 +234,14 @@ class ContactFirstFullBodyEvaluatorV1:
             "leg_reference": ("explicit_sequence" if self.leg_target_sequence_rad is not None
                               else "measured_position_hold"),
             "replayed_command_sha256": command_sha256,
-            "contact_modes_changed": False,
+            "contact_modes_changed": bool(contact_modes_changed),
             "minimum_ground_gap_m": minimum_ground_gap,
             "maximum_tracking_error_rad": maximum_tracking_error,
             "diagnostics": maximum_diagnostics,
             "native_execution": False,
             "physical_model": "LoadedPinocchioModelV1+implicit_position_interface",
+            "contact_prediction": self.contact_prediction,
+            "new_contact_candidates_added": False,
             "airborne_ground_force_policy": "measured_contacts_only",
         }
         if self.record_state_trace:

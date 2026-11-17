@@ -212,3 +212,39 @@ def test_contact_terminal_uses_exact_number_of_control_intervals():
         state = predict_implicit_support(evaluator.model, evaluator.interface,
             state, default, duration_s=.01, substeps=1)['state']
     np.testing.assert_allclose(result['state_trace'][-1]['q'], state.q, atol=1e-12)
+
+
+def test_unilateral_takeoff_releases_measured_feet_without_fictitious_force():
+    public, default, interface = _fixture(vertical_velocity=5.)
+    model = LoadedPinocchioModelV1()
+    state = model.state_from_public(public, default)
+    # Measured support at the beginning of an upward separating interval.
+    state.contacts[:] = [True, False, False, False]
+    evaluator = ContactFirstFullBodyEvaluatorV1(interface_config=interface,
+        initial_state=state, model=model, substeps=1,
+        contact_prediction='unilateral_release', record_state_trace=True)
+    arm = np.repeat(default[None,12:], 4, axis=0)
+    result = evaluator(arm, np.zeros_like(arm), 3, {})
+    assert result['accepted']
+    assert result['contact_modes_changed']
+    assert not result['new_contact_candidates_added']
+    assert result['diagnostics']['motor_torque_violation_nm'] == 0.
+    for row in result['state_trace']:
+        assert not any(row['contacts'])
+        np.testing.assert_allclose(row['foot_forces_world_n'], np.zeros((4,3)), atol=1e-12)
+    assert evaluator.initial_state.contacts.tolist() == [True, False, False, False]
+
+
+def test_unilateral_nonconvergence_rejects_candidate_without_bilateral_fallback():
+    public, default, interface = _fixture(vertical_velocity=5.)
+    model = LoadedPinocchioModelV1()
+    state = model.state_from_public(public, default)
+    state.contacts[:] = True
+    evaluator = ContactFirstFullBodyEvaluatorV1(interface_config=interface,
+        initial_state=state, model=model, substeps=1,
+        contact_prediction='unilateral_release')
+    arm = np.repeat(default[None,12:], 4, axis=0)
+    result = evaluator(arm, np.zeros_like(arm), 3, {})
+    assert not result['accepted']
+    assert result['rejection'] == 'implicit_position_interface'
+    assert 'did not converge; no fallback applied' in result['error']
