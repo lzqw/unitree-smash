@@ -339,10 +339,13 @@ class FullRacketRallyControllerV4:
             if cfg.position_anchored_search and cfg.require_joint_prefix:
                 required=('contact_feasible','legal_return_predicted',
                           'attack5_predicted','target_landing_predicted')
+                gap=(final_impact.get('contact_position_error_m')
+                     if isinstance(final_impact,dict) else None)
+                finite_gap=(isinstance(gap,(int,float,np.integer,np.floating))
+                            and np.isfinite(gap) and 0.<=gap<=0.003)
                 if (not isinstance(final_impact,dict) or
                         not all(final_impact.get(k) is True for k in required) or
-                        not np.isfinite(final_impact.get('contact_position_error_m',np.nan)) or
-                        final_impact['contact_position_error_m']>0.003):
+                        not finite_gap):
                     raise RuntimeError('Final analytic return and strict 3mm contact not certified')
                 final_impact_checks={k:bool(final_impact[k]) for k in required}
             joint_accepted=False
