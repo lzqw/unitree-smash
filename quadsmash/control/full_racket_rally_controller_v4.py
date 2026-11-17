@@ -52,6 +52,7 @@ class FullRacketRallyControllerV4:
         self.contact_first_plan_valid=None
         self.contact_first_plan_log=[]
         self.contact_first_evaluator=None
+        self.contact_first_evaluator_factory=None
         if search_config is not None:
             if not isinstance(search_config,dict):
                 raise ValueError('contact_first_search must be a mapping')
@@ -121,7 +122,25 @@ class FullRacketRallyControllerV4:
         """
         if evaluator is not None and not callable(evaluator):
             raise TypeError('Contact-first evaluator must be callable or None')
+        if evaluator is not None and getattr(self, 'contact_first_evaluator_factory', None) is not None:
+            raise ValueError('Set either a shared evaluator or an evaluator factory')
         self.contact_first_evaluator=evaluator
+        return self
+
+    def set_contact_first_evaluator_factory(self, factory=None):
+        """Attach a per-lane evaluator factory for live-state admission.
+
+        The factory is called as ``factory(lane, public_row, actual_q,
+        actual_qd)`` immediately before that lane's plan is searched.  A
+        native caller can therefore construct a fresh evaluator from the
+        current articulation state, rather than sharing a stale evaluator
+        across lanes.  The default path remains unchanged when unset.
+        """
+        if factory is not None and not callable(factory):
+            raise TypeError('Contact-first evaluator factory must be callable or None')
+        if factory is not None and self.contact_first_evaluator is not None:
+            raise ValueError('Set either a shared evaluator or an evaluator factory')
+        self.contact_first_evaluator_factory=factory
         return self
 
     @torch.inference_mode()
@@ -139,6 +158,14 @@ class FullRacketRallyControllerV4:
         for local,lane in enumerate(ids.tolist()):
             contact_time=float(event_time[local].item()-public[local,775])
             try:
+                evaluator=self.contact_first_evaluator
+                if self.contact_first_evaluator_factory is not None:
+                    evaluator=self.contact_first_evaluator_factory(
+                        int(lane), public[local].copy(),
+                        actual[local].detach().cpu().numpy(),
+                        actual_velocity[local].detach().cpu().numpy())
+                    if evaluator is not None and not callable(evaluator):
+                        raise TypeError('Evaluator factory must return callable or None')
                 def kinematics_fn(q):
                     q_tensor=torch.as_tensor(q,device=actual.device,dtype=actual.dtype)[None]
                     pose=self.teacher.kinematics(q_tensor,self.teacher.contact_offset)
@@ -160,7 +187,7 @@ class FullRacketRallyControllerV4:
                     racket_offset_world_m=point[local].detach().cpu().numpy(),
                     lower_rad=q_limits[:,0], upper_rad=q_limits[:,1],
                     velocity_limits_rad_s=np.full(6,cfg.arm_velocity_limit_rad_s),
-                    evaluator=self.contact_first_evaluator,
+                    evaluator=evaluator,
                     kinematics_fn=kinematics_fn,
                 )
             except (ValueError, RuntimeError, FloatingPointError) as exc:
@@ -180,7 +207,7 @@ class FullRacketRallyControllerV4:
                 position_error_m=result.position_error_m,
                 normal_error=result.normal_error,
                 velocity_error_m_s=result.velocity_error_m_s,
-                physical_evaluator=bool(self.contact_first_evaluator is not None),
+                physical_evaluator=bool(evaluator is not None),
                 metadata=result.metadata))
 
     @torch.inference_mode()

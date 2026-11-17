@@ -67,6 +67,17 @@ def test_rally_selective_reset_preserves_other_episode_and_logs():
     assert c.event_velocity_world[0].eq(0).all() and c.event_velocity_world[1].eq(1).all()
 
 
+def test_rally_contact_evaluator_factory_is_exclusive_and_callable():
+    c=object.__new__(FullRacketRallyControllerV4)
+    c.contact_first_evaluator=None;c.contact_first_evaluator_factory=None
+    factory=lambda lane,public,q,qd: None
+    assert c.set_contact_first_evaluator_factory(factory) is c
+    with pytest.raises(ValueError):c.set_contact_first_evaluator(lambda *_: True)
+    c.contact_first_evaluator_factory=None
+    assert c.set_contact_first_evaluator(lambda *_: True) is c
+    with pytest.raises(ValueError):c.set_contact_first_evaluator_factory(factory)
+
+
 def test_events_paid_once_reset_per_lane_and_continuous_terms_integrate():
     r=ResidualEventRewardV4(2,'cpu');flags={k:torch.zeros(2,dtype=torch.bool) for k in EVENT_WEIGHTS}
     flags['air'][0]=True;flags['body_fault'][1]=True
