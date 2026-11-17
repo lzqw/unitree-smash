@@ -25,7 +25,9 @@ def surface_jacobians(model,q,spheres):
 
 def predict_speed_limited_spheres(model,interface,state,target,spheres,*,substeps=16,geometry=None,
                                  enforce_joint_stops=False,diagnostic_nonfoot_spheres=None,
-                                 diagnostic_hip_mount_response=None,contact_max_iterations=400):
+                                 diagnostic_hip_mount_response=None,contact_max_iterations=400,
+                                 audit_wrench=False):
+    if type(audit_wrench) is not bool:raise ValueError('Explicit audit flag required')
     if type(substeps) is not int or not 1<=substeps<=160:raise ValueError('Invalid substeps')
     if type(contact_max_iterations) is not int or not 1<=contact_max_iterations<=4000:
         raise ValueError('Bounded contact iteration budget required')
@@ -44,6 +46,9 @@ def predict_speed_limited_spheres(model,interface,state,target,spheres,*,substep
     q=state.q.copy();v=state.v.copy();dt=.01/substeps;warm=None;last=None;events=[]
     selection=np.zeros((24,18));selection[model.v_indices,np.arange(18)]=1.
     first_ground_violation=None
+    wrench=(dict(contact_impulse_world_ns=np.zeros((contact_count,3)),
+        contact_angular_impulse_com_world_nms=np.zeros((contact_count,3)),
+        drive_torque_integral_nms=np.zeros(18),saturated_substeps=np.zeros(18,dtype=int)) if audit_wrench else None)
     diagnostics=dict(momentum_residual=0.,normal_complementarity=0.,friction_cone=0.,tangent_fixed_point=0.,
         normal_impulse_violation_ns=0.,max_contact_iterations=0,foot_penetration_m=0.,joint_velocity_violation_rad_s=0.,
         joint_position_violation_rad=0.,motor_torque_violation_nm=0.,nonfoot_ground_violation_m=0.,velocity_limit_active_substeps=0,
@@ -77,6 +82,16 @@ def predict_speed_limited_spheres(model,interface,state,target,spheres,*,substep
         diagnostics['position_limit_active_substeps']+=int(result.get('position_limit_active',False))
         diagnostics['maximum_joint_stop_impulse_nms']=max(diagnostics['maximum_joint_stop_impulse_nms'],
             float(np.max(abs(result.get('position_limit_impulse',np.zeros(18))),initial=0.)))
+        if wrench is not None:
+            impulses=result['impulse'].reshape(contact_count,3)
+            # Jacobians above leave frame placements at this pre-step q.
+            points=np.array([model.data.oMf[model.body_frames[s['body']]].translation+
+                model.data.oMf[model.body_frames[s['body']]].rotation@np.asarray(s['center_body_m'])-
+                np.array([0.,0.,s['radius_m']]) for s in spheres])
+            wrench['contact_impulse_world_ns']+=impulses
+            wrench['contact_angular_impulse_com_world_nms']+=np.cross(points-snapshot['com_world'],impulses)
+            wrench['drive_torque_integral_nms']+=result['torque']*dt
+            wrench['saturated_substeps']+=(abs(result['torque'])>=interface.effort-1e-7)
         v=result['velocity'];warm=result['impulse'];q=pin.integrate(model.model,q,dt*v)
         normals=warm.reshape(contact_count,3)[:,2]
         diagnostics['normal_impulse_violation_ns']=max(diagnostics['normal_impulse_violation_ns'],float(np.max(-normals,initial=0.)))
@@ -108,4 +123,5 @@ def predict_speed_limited_spheres(model,interface,state,target,spheres,*,substep
         ground_geometry_checked=geometry is not None,first_ground_violation=first_ground_violation,
         ideal_joint_position_stops=enforce_joint_stops,
         diagnostic_nonfoot_bodies=[s['body'] for s in extras],nonfoot_contact_not_admissible=True,
-        diagnostic_hip_mount_response=diagnostic_hip_mount_response is not None)
+        diagnostic_hip_mount_response=diagnostic_hip_mount_response is not None,
+        wrench_audit=wrench)
