@@ -1,25 +1,74 @@
 {
-  "scope": "Launch defaults only; actual CLI overrides are recorded in each run config. Not yet native-validated.",
+  "scope": "Launch defaults, not native-validated; no training authorized by editing this file. Large profile requires current validation evidence.",
   "num_envs": 128,
   "cycles": 1,
   "update_mode": "sequential",
-  "recovery_updates": 32,
-  "recovery_proposals": 64,
-  "approach_updates": 8,
-  "approach_proposals": 16,
+  "recovery_updates": 64,
+  "recovery_proposals": 128,
+  "approach_updates": 64,
+  "approach_proposals": 128,
   "world_updates_per_proposal": 4,
   "native_ticks_per_proposal": 16,
   "imagination_s": 0.64,
   "world_window_s": 0.16,
   "control_dt_s": 0.01,
-  "actor_learning_rate": 0.00005,
+  "actor_learning_rate": 5e-05,
   "world_learning_rate": 0.0002,
   "critic_learning_rate": 0.0002,
-  "source_quota": {"recent_online": 64, "older_online": 32, "initial_archive": 32},
-  "recovery_quota": {"uniform": 32, "pre_touchdown": 24, "touchdown": 24, "post_touchdown": 24, "recovery_failure": 16, "stable_recovery": 8},
-  "approach_quota": {"uniform": 24, "approach_active": 32, "hit_prepare": 24, "contact_release": 24, "approach_failure": 16, "post_hit": 8},
-  "frozen_refresh": {"episode_ticks": 800, "maximum_collection_ticks": 1601, "after_recovery": true, "approach_effective_update_interval": 8, "approach_block_remainder": true, "world_updates": 32, "critic_updates": 20},
-  "tracking": {"schema": "success-guided-task-space-reference-v2", "weight": "explicit SM_TRACKING_WEIGHT required", "bank": "explicit SM_TASK_REFERENCE_BANK required", "threshold": "finite positive threshold recorded in bank, requires offline calibration"},
+  "source_quota": {
+    "recent_online": 64,
+    "older_online": 32,
+    "initial_archive": 32
+  },
+  "recovery_quota": {
+    "uniform": 32,
+    "pre_touchdown": 24,
+    "touchdown": 24,
+    "post_touchdown": 24,
+    "recovery_failure": 16,
+    "stable_recovery": 8
+  },
+  "approach_quota": {
+    "uniform": 24,
+    "approach_active": 32,
+    "hit_prepare": 24,
+    "contact_release": 24,
+    "approach_failure": 16,
+    "post_hit": 8
+  },
+  "frozen_refresh": {
+    "episode_ticks": 800,
+    "maximum_collection_ticks": 1601,
+    "after": "each R8+A8 pair",
+    "collections_per_cycle": 8,
+    "integration_mode": "per-head (16 collections per R64+A64)",
+    "world_updates": 32,
+    "world_update_budget_scope": "total split R16+A16 on the same shared WM and combined-policy data",
+    "critic_updates": 20
+  },
+  "tracking": {
+    "schema": "success-guided-task-space-reference-v2",
+    "weight": "explicit SM_TRACKING_WEIGHT required",
+    "bank": "explicit SM_TASK_REFERENCE_BANK required",
+    "threshold": "finite positive threshold recorded in bank, requires offline calibration"
+  },
   "ball_side_mode": "shadow",
-  "acceptance": {"native_return_gt": -12.52678435, "ball_side_min": 53, "complete5_min": 27, "numerical_failures": 0}
+  "acceptance": {
+    "native_return_gt": -12.52678435,
+    "ball_side_min": 53,
+    "complete5_min": 27,
+    "numerical_failures": 0
+  },
+  "sequential_layout": "short-alternating",
+  "head_block_size": 8,
+  "refresh_mode": "pair",
+  "training_profile": "large",
+  "native_tick_budget": {
+    "proposal_collection_if_all_first_attempts_accepted": 2048,
+    "proposal_collection_upper_bound": 4096,
+    "frozen_collection_minimum": 6400,
+    "frozen_collection_upper_bound": 12808,
+    "formal_evaluation": 800,
+    "notes": "Per cycle; startup/resume collection separate. Rejected proposals still collect 16 ticks. Full refresh waits for valid per-lane episode boundaries."
+  }
 }

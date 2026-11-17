@@ -32,6 +32,8 @@ def main():
     source_group.add_argument('--checkpoint', type=Path)
     source_group.add_argument('--init-policy-checkpoint', type=Path,
                               help='Zero-update native source evaluation, no world model or optimizers')
+    parser.add_argument('--init-policy-recovery-gate',choices=('legacy','causal'),default='legacy',
+                        help='Explicit zero-update execution contract; causal matches physical training')
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--g07-execution-root', type=Path)
     parser.add_argument('--precision-receipt', type=Path)
@@ -47,6 +49,8 @@ def main():
     args = parser.parse_args()
     if args.shutdown_diagnostic_ticks is not None and not 1 <= args.shutdown_diagnostic_ticks < 800:
         parser.error('shutdown diagnostic ticks must be in [1,799]')
+    if args.checkpoint and args.init_policy_recovery_gate!='legacy':
+        parser.error('Learned checkpoints must use their recorded execution contract')
     args.output = args.output.resolve()
     args.output.mkdir(parents=True, exist_ok=False)
     startup = dict(argv=sys.argv, cwd=os.getcwd(), script=str(Path(__file__).resolve()),
@@ -148,8 +152,12 @@ def _run_native(args, stop_request):
         if trained is not None:
             actor.load_state_dict(trained['actor'], strict=True)
         actor.eval()
-        from quadsmash.rl.supermimic_policy_execution_v1 import resolve_contract,policy_forward
+        from quadsmash.rl.supermimic_policy_execution_v1 import resolve_contract,policy_forward,contract as execution_contract,POSTHIT
+        from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest
+        actor_state_before=tensor_digest(actor.state_dict().items())
         policy_execution,execution_provenance=resolve_contract(trained)
+        if trained is None and args.init_policy_recovery_gate=='causal':
+            policy_execution=execution_contract(POSTHIT);execution_provenance='explicit frozen initialization under training causal gate'
         write_json(args.output/'policy_execution.json',dict(contract=policy_execution,provenance=execution_provenance))
         if args.record_physical_transitions:
             from quadsmash.rl.supermimic_physical_capture_v1 import PhysicalTransitionArchive
@@ -158,7 +166,7 @@ def _run_native(args, stop_request):
             env.physical_transition_archive = PhysicalTransitionArchive(
                 args.output/'physical_transitions', metadata=dict(
                     source_checkpoint=str(source_path), source_sha256=hashlib.sha256(source_path.read_bytes()).hexdigest(),
-                    task_contract=contract, body_names=list(env.robot.body_names),
+                    task_contract=contract,policy_execution=policy_execution,actor_state_sha256=actor_state_before,policy_id='frozen-evaluation',body_names=list(env.robot.body_names),
                     control_dt_s=float(env.step_dt), num_envs=env.num_envs,
                     seed=args.seed, runtime_commit=subprocess.check_output(
                         ['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()))
@@ -176,9 +184,12 @@ def _run_native(args, stop_request):
                        ground_size_m=list(cfg.ground_size_m), sweep_audit_iterations=cfg.sweep_audit_iterations)
         write_json(args.output/'physics.json', physics)
         first, cursor, numerical = {}, 0, 0
+        head_active_lane_steps=dict(recovery=0,approach=0)
         mapping = dict(max_final_target_error_rad=0., tolerance_rad=2e-6,
                        phase_samples={str(i):0 for i in range(5)}, phase_max_error={str(i):0. for i in range(5)},
                        checked_native_ticks=0, scope='Independent old controller versus new actor+executor on the SAME live observations; not a separate old physics rollout')
+        if policy_execution['recovery_gate']==POSTHIT:
+            mapping['scope']='Independent original executor and new executor with identical causal-gated requests; not legacy policy equivalence'
         start = time.perf_counter()
         stage = 'EVALUATING'
         with torch.inference_mode():
@@ -187,10 +198,15 @@ def _run_native(args, stop_request):
                     raise InterruptedError(f"Evaluation stopped at control boundary: {stop_request['signal']}")
                 before = obs['policy'].clone()
                 old_target = None
-                if reference is not None:
-                    old_final = reference.action(obs, env._sm_residual_default, env._sm_residual_limits)
-                    old_target = full_range_targets(old_final, env._sm_residual_limits).clone()
                 action = policy_forward(actor,before,env.rally,mode=policy_execution['recovery_gate'],sample=False)[0].clamp(-1.,1.)
+                head_active_lane_steps['recovery']+=int((env.rally.had_contact&env.rally.released).sum())
+                head_active_lane_steps['approach']+=int((actor.actor.gate(before)>.25).sum())
+                if reference is not None:
+                    if policy_execution['recovery_gate']==POSTHIT:
+                        old_final=reference.apply_residual(obs,action,env._sm_residual_default,env._sm_residual_limits)
+                    else:
+                        old_final = reference.action(obs, env._sm_residual_default, env._sm_residual_limits)
+                    old_target = full_range_targets(old_final, env._sm_residual_limits).clone()
                 if not torch.isfinite(action).all():
                     raise FloatingPointError('Nonfinite evaluation action')
                 obs, _, done, _ = wrapper.step(action)
@@ -279,6 +295,10 @@ def _run_native(args, stop_request):
             task_contract=contract,source=init_meta,actor_updated=trained is not None,
             elapsed_s=time.perf_counter()-start,physics=physics,
             evaluated_checkpoint_sha256=hashlib.sha256((args.checkpoint or source_path).read_bytes()).hexdigest())
+        actor_state_after=tensor_digest(actor.state_dict().items())
+        if actor_state_after!=actor_state_before:raise RuntimeError('Frozen evaluation mutated actor weights')
+        metrics.update(actor_state_sha256=actor_state_after,actor_parameters_unchanged=True,
+            optimizer_updates=dict(actor=0,world=0,critic=0),head_active_lane_steps=head_active_lane_steps)
         metrics['native_episode_metrics'] = native_summary
         metrics['conditional_recovery_scope'] = native_summary['conditional_recovery_scope']
         metrics['native_episode_return_mean'] = native_summary['native_episode_return_mean']

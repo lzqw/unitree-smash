@@ -1,0 +1,88 @@
+{
+  "results": {
+    "recovery": {
+      "tick": 460,
+      "steps": 64,
+      "gate_active_lane_steps": 6889,
+      "finite_task_gradient": true,
+      "nonzero_task_gradient": true,
+      "final_command_gradient_norm": 0.2838599183504515,
+      "task_gradients": {
+        "actor.recovery.0.weight": {
+          "norm": 0.16377703845500946,
+          "finite": true
+        },
+        "actor.recovery.0.bias": {
+          "norm": 0.011098554357886314,
+          "finite": true
+        },
+        "actor.recovery.2.weight": {
+          "norm": 0.06251409649848938,
+          "finite": true
+        },
+        "actor.recovery.2.bias": {
+          "norm": 0.025091558694839478,
+          "finite": true
+        },
+        "actor.recovery.4.weight": {
+          "norm": 3.7885212898254395,
+          "finite": true
+        },
+        "actor.recovery.4.bias": {
+          "norm": 7.570916175842285,
+          "finite": true
+        }
+      },
+      "seconds": 19.912910570856184,
+      "actor_updates": 0,
+      "world_updates": 0,
+      "critic_updates": 0
+    },
+    "approach": {
+      "tick": 270,
+      "steps": 64,
+      "gate_active_lane_steps": 4027,
+      "finite_task_gradient": true,
+      "nonzero_task_gradient": true,
+      "final_command_gradient_norm": 0.11143985142398062,
+      "task_gradients": {
+        "actor.approach.0.weight": {
+          "norm": 0.2623826861381531,
+          "finite": true
+        },
+        "actor.approach.0.bias": {
+          "norm": 0.007256646640598774,
+          "finite": true
+        },
+        "actor.approach.2.weight": {
+          "norm": 0.10287559032440186,
+          "finite": true
+        },
+        "actor.approach.2.bias": {
+          "norm": 0.017114438116550446,
+          "finite": true
+        },
+        "actor.approach.4.weight": {
+          "norm": 4.843390464782715,
+          "finite": true
+        },
+        "actor.approach.4.bias": {
+          "norm": 4.669466495513916,
+          "finite": true
+        }
+      },
+      "seconds": 22.136602468322963,
+      "actor_updates": 0,
+      "world_updates": 0,
+      "critic_updates": 0
+    }
+  },
+  "actor_sha256": "73a3194ea2e44122df13663bcad9e9b0b543b7c6429bf3b06b133bfb1244646a",
+  "world_sha256": "80b59c25cc827811929c0fc2fa0b0345d7b5fc695395c39af3d84f4ec1f6d7f8",
+  "weights_unchanged": true,
+  "peak_gpu_bytes": 937768448,
+  "optimizer_steps": 0,
+  "scope": "native-start model gradient only; zero-bootstrap truncated task objective",
+  "physical_direction_consistency": "unverified: no same-prefix native +/- perturbation",
+  "native_performance_improvement": "not tested"
+}

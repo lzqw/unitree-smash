@@ -96,7 +96,7 @@ def test_event_alignment_is_relative_to_edge_not_arbitrary_64step_window():
 def test_native_promotion_requires_matching_checkpoint_and_original_thresholds(tmp_path):
     checkpoint=tmp_path/'checkpoint';checkpoint.write_text('toy-checkpoint')
     metrics=tmp_path/'metrics.json'
-    m=dict(evaluated_checkpoint_sha256=sha256(checkpoint),numerical_failures=0,
+    m=dict(num_envs=128,control_ticks=800,evaluated_checkpoint_sha256=sha256(checkpoint),numerical_failures=0,
            native_episode_metrics=dict(native_episode_return_mean=-10.,ball_side_complete_except_recovery=53,complete5=27))
     metrics.write_text(json.dumps(m));assert verify_native_promotion(metrics,checkpoint)['checkpoint_sha256']==sha256(checkpoint)
     m['native_episode_metrics']['ball_side_complete_except_recovery']=52;metrics.write_text(json.dumps(m))

@@ -7,6 +7,8 @@ import math
 import torch
 
 HEADS=('recovery','approach')
+REQUIRED_EVENTS=dict(recovery=('touchdown','support_loss','body_ground','stable'),
+                     approach=('legal_contact','illegal_contact','ball_side_success','ball_side_failure'))
 
 
 def quality_spec(receipt):
@@ -16,6 +18,9 @@ def quality_spec(receipt):
     if not lanes or any(type(i) is not int or not 0<=i<128 for i in lanes) or len(set(lanes))!=len(lanes) or len(lanes)>=128:
         raise ValueError('Invalid whole-lane holdout split')
     for head in HEADS:
+        support=q.get('wm_min_event_episodes',{}).get(head,{})
+        if any(type(support.get(e)) is not int or support[e]<1 for e in REQUIRED_EVENTS[head]):
+            raise ValueError('Missing positive independent-episode WM support minima for '+head)
         probe=q.get('native_action_probes',{}).get(head,{})
         if probe.get('same_prefix_verified') is not True or probe.get('paired_samples',0)<1:
             raise ValueError('Missing native action-response evidence for '+head)
@@ -67,7 +72,11 @@ def split_native_value_rows(bank,holdout_lanes):
 
 
 @torch.no_grad()
-def critic_holdout(critic,bank,head,holdout_lanes,*,current_actor_sha256,current_execution=None,limits=None):
+def critic_holdout(critic,bank,head,holdout_lanes,*,current_actor_sha256,current_execution=None,limits=None,accepted_updates=0,command_delta=None,trust_limits=None):
+    if not bank.get('actor_sha256'):
+        return dict(head=head,passed=False,label_policy_value_fit=None,
+            current_policy_value_trust=dict(status='unknown',trusted=False,reason='label-actor-identity-unknown'),
+            missing_fields=['label_actor_sha256'],sample_count=0)
     _,val=split_native_value_rows(bank,holdout_lanes)
     mask=val&bank['head_masks'][head].cpu().bool()
     ids=torch.where(mask)[0]
@@ -92,5 +101,21 @@ def critic_holdout(critic,bank,head,holdout_lanes,*,current_actor_sha256,current
     metrics['rtg_ordering_accuracy']=concordant/pairs if pairs else None
     metrics['rtg_ordering_pairs']=pairs
     failures=compare_bounds(metrics,limits) if limits is not None else {}
-    return dict(base,metrics=metrics,failures=failures,passed=not failures if limits is not None else None,
-                protection_enabled=limits is not None)
+    from .supermimic_evidence_binding_v1 import current_value_trust
+    trust=current_value_trust(bank,actor_sha=current_actor_sha256,execution=current_execution,
+        accepted_updates=accepted_updates,command_delta=command_delta,limits=trust_limits)
+    label_fit=not failures if limits is not None else None
+    return dict(base,metrics=metrics,failures=failures,label_policy_value_fit=label_fit,
+                current_policy_value_trust=trust,passed=bool(label_fit and trust['trusted']),protection_enabled=limits is not None)
+
+
+def native_calibration_rows(bank,execution,holdout_lanes,stage_ticks,*,expected_actor_sha256=None):
+    """Same-policy supervision only, with finite multistage data and whole-lane split."""
+    if bank.get('policy_execution') is None or bank['policy_execution']!=execution:
+        return torch.empty(0,dtype=torch.long),dict(eligible=False,reason='missing-or-mismatched-label-execution-contract')
+    if expected_actor_sha256 is not None and bank.get('actor_sha256')!=expected_actor_sha256:
+        return torch.empty(0,dtype=torch.long),dict(eligible=False,reason='missing-or-mismatched-label-actor-identity')
+    ticks=set(stage_ticks);held=set(holdout_lanes)
+    rows=[i for i,(lane,episode,tick) in enumerate(bank['identity']) if lane not in held and tick in ticks]
+    return torch.tensor(rows,dtype=torch.long),dict(eligible=bool(rows),reason=None if rows else 'no-complete-training-stage-rows',sample_count=len(rows),
+        stage_ticks=sorted({bank['identity'][i][2] for i in rows}),heldout_lanes=sorted(held),policy_id=bank['policy_id'])

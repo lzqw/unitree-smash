@@ -1,0 +1,761 @@
+diff --git a/quadsmash/rl/supermimic_actor_start_bank_v1.py b/quadsmash/rl/supermimic_actor_start_bank_v1.py
+index 5d13f2d..f776068 100644
+--- a/quadsmash/rl/supermimic_actor_start_bank_v1.py
++++ b/quadsmash/rl/supermimic_actor_start_bank_v1.py
+@@ -9,6 +9,7 @@ class ActorStartBank:
+     def __init__(self,capacity=32,seed=20261117):
+         self.capacity=capacity;self.entries=[];self.seen=0;self.last_gate={};self.last_tick={}
+         self.generator=torch.Generator().manual_seed(seed)
++        self.sampling_history=[]
+     def append(self,start,metadata,*,stream,policy_version,native_tick):
+         if 'approach_gate' not in metadata:return
+         gate=metadata['approach_gate'].detach().cpu().reshape(-1)
+@@ -44,17 +45,29 @@ class ActorStartBank:
+         requested=SCHEDULE[(attempt-1)%len(SCHEDULE)]
+         pools={name:[e for e in self.entries if e['masks'][name].any()] for name in CATEGORIES}
+         actual=requested if pools[requested] else next((n for n in ('pre_contact','gate_onset','failure_pre','success_near') if pools[n]),None)
+-        if actual is None:return None,dict(requested=requested,actual=None,shortfall=1)
++        if actual is None:
++            report=dict(requested=requested,actual=None,shortfall=1)
++            self.sampling_history.append(report)
++            return None,report
+         eligible=pools[actual];entry=eligible[int(torch.randint(len(eligible),(1,),generator=self.generator))]
+         row=dict(entry['start'],_actor_lane_mask=entry['masks'][actual].clone())
+-        return row,dict(requested=requested,actual=actual,shortfall=int(actual!=requested),
++        report=dict(requested=requested,actual=actual,shortfall=int(actual!=requested),
+                         effective_lanes=int(row['_actor_lane_mask'].sum()),policy_version=entry['policy_version'],
+                         native_tick=entry['native_tick'],stream_id=entry['stream'],outcomes_are_sampling_only=True)
++        self.sampling_history.append(report)
++        return row,report
++    def sampling_report(self, since=0):
++        rows=self.sampling_history[since:]
++        return dict(samples=len(rows),actual_counts={c:sum(r['actual']==c for r in rows) for c in CATEGORIES},
++            requested_counts={c:sum(r['requested']==c for r in rows) for c in CATEGORIES},
++            shortfall=sum(r['shortfall'] for r in rows),
++            unlabeled_lane_snapshots=sum(int((e['masks']['pre_contact']&~e['masks']['failure_pre']&~e['masks']['success_near']).sum()) for e in self.entries))
+     def state_dict(self):
+         return dict(schema=self.schema,capacity=self.capacity,entries=self.entries,seen=self.seen,
+-                    last_gate=self.last_gate,last_tick=self.last_tick,rng=self.generator.get_state())
++                    sampling_history=self.sampling_history,last_gate=self.last_gate,last_tick=self.last_tick,rng=self.generator.get_state())
+     def load_state_dict(self,state):
+         if state['schema']!=self.schema or state['capacity']!=self.capacity:raise ValueError('Actor start bank schema/capacity mismatch')
+         if len(state['entries'])>self.capacity:raise ValueError('Actor start bank exceeds capacity')
+         self.entries=state['entries'];self.seen=int(state['seen']);self.last_gate=state['last_gate'];self.last_tick=state['last_tick']
++        self.sampling_history=list(state.get('sampling_history',[]))
+         self.generator.set_state(state['rng'].cpu())
+diff --git a/quadsmash/rl/supermimic_dual_head_quality_v1.py b/quadsmash/rl/supermimic_dual_head_quality_v1.py
+index 1905edf..ca7ff09 100644
+--- a/quadsmash/rl/supermimic_dual_head_quality_v1.py
++++ b/quadsmash/rl/supermimic_dual_head_quality_v1.py
+@@ -7,6 +7,8 @@ import math
+ import torch
+ 
+ HEADS=('recovery','approach')
++REQUIRED_EVENTS=dict(recovery=('touchdown','support_loss','body_ground','stable'),
++                     approach=('legal_contact','illegal_contact','ball_side_success','ball_side_failure'))
+ 
+ 
+ def quality_spec(receipt):
+@@ -16,6 +18,9 @@ def quality_spec(receipt):
+     if not lanes or any(type(i) is not int or not 0<=i<128 for i in lanes) or len(set(lanes))!=len(lanes) or len(lanes)>=128:
+         raise ValueError('Invalid whole-lane holdout split')
+     for head in HEADS:
++        support=q.get('wm_min_event_episodes',{}).get(head,{})
++        if any(type(support.get(e)) is not int or support[e]<1 for e in REQUIRED_EVENTS[head]):
++            raise ValueError('Missing positive independent-episode WM support minima for '+head)
+         probe=q.get('native_action_probes',{}).get(head,{})
+         if probe.get('same_prefix_verified') is not True or probe.get('paired_samples',0)<1:
+             raise ValueError('Missing native action-response evidence for '+head)
+@@ -67,7 +72,11 @@ def split_native_value_rows(bank,holdout_lanes):
+ 
+ 
+ @torch.no_grad()
+-def critic_holdout(critic,bank,head,holdout_lanes,*,current_actor_sha256,current_execution=None,limits=None):
++def critic_holdout(critic,bank,head,holdout_lanes,*,current_actor_sha256,current_execution=None,limits=None,accepted_updates=0,command_delta=None,trust_limits=None):
++    if not bank.get('actor_sha256'):
++        return dict(head=head,passed=False,label_policy_value_fit=None,
++            current_policy_value_trust=dict(status='unknown',trusted=False,reason='label-actor-identity-unknown'),
++            missing_fields=['label_actor_sha256'],sample_count=0)
+     _,val=split_native_value_rows(bank,holdout_lanes)
+     mask=val&bank['head_masks'][head].cpu().bool()
+     ids=torch.where(mask)[0]
+@@ -92,5 +101,21 @@ def critic_holdout(critic,bank,head,holdout_lanes,*,current_actor_sha256,current
+     metrics['rtg_ordering_accuracy']=concordant/pairs if pairs else None
+     metrics['rtg_ordering_pairs']=pairs
+     failures=compare_bounds(metrics,limits) if limits is not None else {}
+-    return dict(base,metrics=metrics,failures=failures,passed=not failures if limits is not None else None,
+-                protection_enabled=limits is not None)
++    from .supermimic_evidence_binding_v1 import current_value_trust
++    trust=current_value_trust(bank,actor_sha=current_actor_sha256,execution=current_execution,
++        accepted_updates=accepted_updates,command_delta=command_delta,limits=trust_limits)
++    label_fit=not failures if limits is not None else None
++    return dict(base,metrics=metrics,failures=failures,label_policy_value_fit=label_fit,
++                current_policy_value_trust=trust,passed=bool(label_fit and trust['trusted']),protection_enabled=limits is not None)
++
++
++def native_calibration_rows(bank,execution,holdout_lanes,stage_ticks,*,expected_actor_sha256=None):
++    """Same-policy supervision only, with finite multistage data and whole-lane split."""
++    if bank.get('policy_execution') is None or bank['policy_execution']!=execution:
++        return torch.empty(0,dtype=torch.long),dict(eligible=False,reason='missing-or-mismatched-label-execution-contract')
++    if expected_actor_sha256 is not None and bank.get('actor_sha256')!=expected_actor_sha256:
++        return torch.empty(0,dtype=torch.long),dict(eligible=False,reason='missing-or-mismatched-label-actor-identity')
++    ticks=set(stage_ticks);held=set(holdout_lanes)
++    rows=[i for i,(lane,episode,tick) in enumerate(bank['identity']) if lane not in held and tick in ticks]
++    return torch.tensor(rows,dtype=torch.long),dict(eligible=bool(rows),reason=None if rows else 'no-complete-training-stage-rows',sample_count=len(rows),
++        stage_ticks=sorted({bank['identity'][i][2] for i in rows}),heldout_lanes=sorted(held),policy_id=bank['policy_id'])
+diff --git a/quadsmash/rl/supermimic_long_run_contract_v1.py b/quadsmash/rl/supermimic_long_run_contract_v1.py
+index e59dffb..ca2f802 100644
+--- a/quadsmash/rl/supermimic_long_run_contract_v1.py
++++ b/quadsmash/rl/supermimic_long_run_contract_v1.py
+@@ -40,12 +40,14 @@ def verify_contact_receipt(path,model_paths,task_contract):
+         source=path.parent/item['path']
+         if sha256(source)!=item['sha256']:raise ValueError('Contact evidence artifact hash mismatch')
+     return dict(receipt_sha256=sha256(path),model_sha256=expected,task_contract_sha256=contract_hash,
+-                validation_episodes=len(val),scope='verified supplied evidence; not a safety proof')
++                validation_episodes=len(val),current_runtime_validity=None,scope='static source-file and task-contract evidence only; actual runtime weights checked separately')
+ 
+ def verify_native_promotion(metrics_path,checkpoint_path,*,expected_execution=None):
+     m=json.loads(Path(metrics_path).read_text());n=m.get('native_episode_metrics',m)
+     if expected_execution is not None and m.get('policy_execution')!=expected_execution:raise ValueError('Native evaluation policy execution contract mismatch')
+     if m.get('evaluated_checkpoint_sha256')!=sha256(checkpoint_path):raise ValueError('Native evaluation checkpoint hash mismatch')
++    if m.get('num_envs')!=128 or m.get('control_ticks')!=800:raise ValueError('Incomplete native evaluation protocol')
++    if not math.isfinite(n['native_episode_return_mean']):raise ValueError('Nonfinite native return')
+     if not (n['native_episode_return_mean']>-12.52678435 and n['ball_side_complete_except_recovery']>=53 and n['complete5']>=27 and m['numerical_failures']==0):raise ValueError('Native candidate not accepted')
+     return dict(checkpoint_sha256=sha256(checkpoint_path),evaluation_sha256=sha256(metrics_path))
+ 
+diff --git a/quadsmash/rl/supermimic_physical_learner_v1.py b/quadsmash/rl/supermimic_physical_learner_v1.py
+index dbf4c63..f41c48a 100644
+--- a/quadsmash/rl/supermimic_physical_learner_v1.py
++++ b/quadsmash/rl/supermimic_physical_learner_v1.py
+@@ -410,7 +410,8 @@ class PhysicalHorizonTrainer:
+         return self.calibrate_critic_tensors(x,y,epochs=epochs)
+ 
+     def calibrate_critic_tensors(self,x,y,*,epochs=1):
+-        x=x.detach();y=y.detach().reshape(-1,1)
++        parameter=next(self.critic.parameters())
++        x=x.detach().to(device=parameter.device,dtype=parameter.dtype);y=y.detach().reshape(-1,1).to(device=parameter.device,dtype=parameter.dtype)
+         if len(x)!=len(y) or not len(y):raise ValueError('Invalid native critic tensor labels')
+         losses=[]
+         for _ in range(epochs):
+@@ -437,10 +438,13 @@ class PhysicalHorizonTrainer:
+             value=value.detach().reshape(-1)
+             if value.numel() != state.observation.shape[0]:
+                 raise ValueError('Stage RTG batch does not match state batch')
+-            rows.append(dict(policy_id=str(meta['policy_id']), episode_id=str(meta['episode_id']),
++            complete=meta.get('complete_lane_mask',torch.ones(value.numel(),dtype=torch.bool,device=value.device)).to(value.device).bool()
++            if complete.numel()!=value.numel():raise ValueError('Complete RTG mask shape mismatch')
++            dropped=int((~complete).sum());value=value[complete]
++            rows.append(dict(excluded_incomplete_lanes=dropped,policy_id=str(meta['policy_id']), episode_id=str(meta['episode_id']),
+                              time_s=float(meta['time_s']), count=int(value.numel()),
+-                             return_min=float(value.min()), return_max=float(value.max()),
+-                             return_mean=float(value.mean())))
++                             return_min=float(value.min()) if len(value) else None, return_max=float(value.max()) if len(value) else None,
++                             return_mean=float(value.mean()) if len(value) else None))
+         return dict(policy_id=sorted({r['policy_id'] for r in rows}), stages=rows,
+                     total_labels=sum(r['count'] for r in rows), source='completed_native_archive',
+                     critic_updates=0)
+diff --git a/quadsmash/rl/supermimic_wm_validation_v1.py b/quadsmash/rl/supermimic_wm_validation_v1.py
+index 181cd0c..ecfd152 100644
+--- a/quadsmash/rl/supermimic_wm_validation_v1.py
++++ b/quadsmash/rl/supermimic_wm_validation_v1.py
+@@ -149,27 +149,66 @@ def recovery_event_windows(data,lanes,*,horizon=64,maximum=16):
+     return result
+ 
+ 
++def independent_event_support(data,pairs):
++    identities=set()
++    for tick,lane in pairs.tolist():
++        stream=int(data['stream_id'][tick,lane]) if 'stream_id' in data else None
++        identities.add((stream,lane,int(data['episode'][tick,lane])))
++    return len(identities)
++
++
++def approach_event_windows(data,lanes,maximum=16):
++    aligned=event_aligned_windows(data,lanes,offsets=(-1,),maximum=max(128,maximum))['-1']
++    groups={k:[] for k in ('legal_contact','illegal_contact','ball_side_success','ball_side_failure')}
++    before,after=data['event_state'],data['next_event_state']
++    for (start,lane),tick in zip(aligned['starts'].tolist(),aligned['event_ticks']):
++        if after[tick,lane,1]>before[tick,lane,1]:groups['legal_contact'].append((start,lane))
++        if after[tick,lane,6]>before[tick,lane,6]:groups['illegal_contact'].append((start,lane))
++        # Only explicit native terminal scores may establish these outcomes.
++        # They are offline window labels, never forwarded to the model/actor.
++        if 'ball_side_terminal' in data:
++            ep=data['episode'][start,lane]
++            mask=(data['episode'][:,lane]==ep)&(data['terminated'][:,lane]|data['timeout'][:,lane])
++            labels=data['ball_side_terminal'][:,lane][mask]
++            if len(labels)==1 and torch.isfinite(labels[0]):
++                groups['ball_side_success' if labels[0]>.5 else 'ball_side_failure'].append((start,lane))
++    # Diverse episodes first: repeated edges in one episode are not independent evidence.
++    result={}
++    for name,rows in groups.items():
++        selected=[];seen=set()
++        for start,lane in rows:
++            identity=(lane,int(data['episode'][start,lane]))
++            if identity in seen:continue
++            seen.add(identity);selected.append((start,lane))
++            if len(selected)>=maximum:break
++        result[name]=torch.tensor(selected,dtype=torch.long).reshape(-1,2)
++    return result
++
++
+ @torch.no_grad()
+-def runtime_head_check(adapter,data,lanes,launch,head,upper_bounds,*,maximum=16):
+-    from .supermimic_dual_head_quality_v1 import compare_bounds
+-    if head=='approach':groups={'contact':event_aligned_windows(data,lanes,maximum=maximum)['-1']['starts']}
++def runtime_head_check(adapter,data,lanes,launch,head,upper_bounds,*,maximum=16,minimum_event_episodes=None):
++    from .supermimic_dual_head_quality_v1 import compare_bounds,REQUIRED_EVENTS
++    if head=='approach':groups=approach_event_windows(data,lanes,maximum=maximum)
+     elif head=='recovery':groups=recovery_event_windows(data,lanes,maximum=maximum)
+     else:raise ValueError('Unknown WM validation head')
+-    measured={};failures={};starts={}
++    # Default one episode is a coverage floor, not a calibrated reliability claim.
++    minimum_event_episodes=minimum_event_episodes or {e:1 for e in REQUIRED_EVENTS[head]}
++    measured={};failures={};starts={};support={}
+     for name,pairs in groups.items():
+-        starts[name]=pairs.tolist()
++        starts[name]=pairs.tolist();support[name]=independent_event_support(data,pairs)
++        minimum=minimum_event_episodes.get(name)
++        if type(minimum) is not int or minimum<1 or support[name]<minimum:
++            failures['support/'+name]=dict(independent_episodes=support[name],minimum=minimum)
+         if not len(pairs):continue
+         t,ids=pairs.unbind(1);at=t[None]+torch.arange(64)[:,None];device=next(adapter.parameters()).device
+-        window={k:v[at,ids[None]].to(device) for k,v in data.items() if v.ndim>=2 and v.shape[:2]==data['episode'].shape}
++        window={k:v[at,ids[None]].to(device) for k,v in data.items() if isinstance(v,torch.Tensor) and v.ndim>=2 and v.shape[:2]==data['episode'].shape}
+         result=validate_windows(adapter,window,launch[ids.to(launch.device)],horizons=(1,4,16,32,64))
+         measured[name]=result
+         flat={h+'/'+k:v for h,m in result.items() for k,v in m.items()}
+         failed=compare_bounds(flat,upper_bounds)
+         if failed:failures[name]=failed
+-    # Missing critical events are unknown, never successful validation.
+-    required='contact' if head=='approach' else 'touchdown'
+-    if required not in measured:failures['missing_required_event']=required
+     return dict(head=head,passed=not failures,errors=measured,failures=failures,window_starts=starts,
++                independent_event_episodes=support,minimum_event_episodes=minimum_event_episodes,
+                 missing_events=[k for k,v in starts.items() if not v],
+                 scope='held-out recorded-command prediction; native action-response evidence is separate',
+-                contact_source='native task/foot flags, not independent paired PhysX forces')
++                contact_source='native qualified-contact/frame/foot flags; other illegal contact modes unverified')
+diff --git a/reports/supermimic_horizon3p2_criticquality50_20261114_0728/OPEN_LOOP_DIAGNOSTIC.md b/reports/supermimic_horizon3p2_criticquality50_20261114_0728/OPEN_LOOP_DIAGNOSTIC.md
+deleted file mode 100644
+index e279625..0000000
+--- a/reports/supermimic_horizon3p2_criticquality50_20261114_0728/OPEN_LOOP_DIAGNOSTIC.md
++++ /dev/null
+@@ -1,14 +0,0 @@
+-# Open-loop world-model diagnostic
+-
+-The saved `checkpoint_000500.pt` was inspected offline on CPU. No Isaac episode was started and no weights were modified. For valid reset-free replay windows, the trained one-step model was rolled out autoregressively and compared with recorded next observations.
+-
+-| Horizon | Mean state MSE | Last-step MSE | Interpretation |
+-|---:|---:|---:|---|
+-| 0.32 s / 32 steps | 0.176 | 0.638 | usable only as a short local model |
+-| 0.96 s / 96 steps | 14.367 | 67.045 | already outside the recorded-state distribution |
+-| 1.60 s / 160 steps | 54.816 | 159.998 | unusable for value or actor targets |
+-| 3.20 s / 320 steps | 216.228 | 621.175 | fully divergent open-loop rollout |
+-
+-The model's teacher-forced one-step fit can remain small while the autoregressive state drifts. The 3.2 s run therefore exposed a model-horizon problem: the critic was trained on highly corrupted imagined states, so its loss stayed around 1,600--3,500 and the actor-quality gate correctly kept actor updates at zero.
+-
+-This rules out the immediate fix of lowering the critic-loss threshold or forcing actor updates. The next experiment must either improve long-horizon world-model consistency (for example, a longer/multi-scale supervised window with explicit event/clock handling) or restrict imagination to a validated horizon and use a separate mechanism for delayed task credit. The 3.2 s run is not a policy-performance result.
+diff --git a/reports/supermimic_horizon3p2_criticquality50_20261114_0728/REPORT.md b/reports/supermimic_horizon3p2_criticquality50_20261114_0728/REPORT.md
+deleted file mode 100644
+index 0ac1263..0000000
+--- a/reports/supermimic_horizon3p2_criticquality50_20261114_0728/REPORT.md
++++ /dev/null
+@@ -1,50 +0,0 @@
+-# SuperMimic 3.2 s imagination-window run
+-
+-## Run
+-
+-- Branch: `supermimic-structured-history-event-metrics-20261114`
+-- Code commit at launch: `fc1c439e529bbe33702ba09a667794a988de0ece`
+-- Initialization checkpoint: `artifacts/ppo_full_racket_residual_v4/policy.pt`
+-- Native environment: 512 Isaac/PhysX environments, `cuda:0`, 100 Hz, 8 s episodes
+-- World-model window: 0.32 s (32 transitions)
+-- Imagination window: **3.2 s (320 control steps)**
+-- World updates: 3 per iteration; imagination batch 1024; actor microbatch 64
+-- Actor/critic/world learning rates: `1e-5 / 1e-4 / 5e-5`
+-- Actor gate: at least one full timeout, at least 200 critic updates, critic loss <= 50
+-
+-## Outcome
+-
+-The run was stopped after iteration 831 with a clean saved history. It was not a formal 128-environment evaluation and no actor update was accepted.
+-
+-| Native training-stream metric | Value |
+-|---|---:|
+-| Native iterations | 831 |
+-| Native transitions | 425,472 |
+-| Completed episode records | 520 |
+-| Full 8 s timeouts | 483 |
+-| Qualified airborne string contacts | 76 |
+-| Ball-side complete except recovery | 13 |
+-| Recovery successes | 242 |
+-| complete5 records | 6 |
+-| Frame hits | 165 |
+-| Body-ground records | 429 |
+-| Rally faults | 76 |
+-| Actor updates | **0** |
+-| Critic updates | 640 |
+-| World updates | 2,400 |
+-| Peak allocated GPU memory | about 5.17 GB |
+-
+-The 76/520 and 6/520 counts are training-stream event counts, not a frozen-policy success rate. They show that the PPO-initialized policy produced nonzero native task events before learning, but they cannot replace the fixed 128-case evaluation.
+-
+-## Diagnostic conclusion
+-
+-The longer horizon fixed the previous temporal coverage problem: the first imagination update occurred only after full 8 s episodes were observed, and the 3.2 s rollout was long enough to include the task event horizon. However, the critic-only gate remained closed:
+-
+-- critic loss at the first full-episode update: about `1963`;
+-- later critic loss range: roughly `1600–3500`;
+-- actor updates: `0` throughout;
+-- imagined return remained strongly negative.
+-
+-Therefore this run demonstrates **temporal coverage**, not effective policy learning. Lowering the actor gate or counting critic updates alone would risk changing the initialized actor before the value target is reliable. The next debugging target is the critic/world-model target distribution and its drift during critic-only updates, with target statistics and model-step consistency added before another actor experiment.
+-
+-The earlier 0.96 s run and this 3.2 s run should be kept as diagnostics; neither is a new formal performance result.
+diff --git a/reports/supermimic_world_ar0p96_imag3p2_20261114_0750/REPORT.md b/reports/supermimic_world_ar0p96_imag3p2_20261114_0750/REPORT.md
+deleted file mode 100644
+index aa23708..0000000
+--- a/reports/supermimic_world_ar0p96_imag3p2_20261114_0750/REPORT.md
++++ /dev/null
+@@ -1,57 +0,0 @@
+-# SuperMimic autoregressive world-model fit run
+-
+-## Configuration
+-
+-- Branch: `supermimic-structured-history-event-metrics-20261114`
+-- Code commit: `a7a5918`
+-- PPO initialization: `artifacts/ppo_full_racket_residual_v4/policy.pt`
+-- 512 native Isaac environments on `cuda:0`, 100 Hz, 8 s episodes
+-- World-model fit window: **0.96 s / 96 transitions**
+-- Imagination horizon: **3.2 s / 320 transitions**
+-- `--world-autoregressive-fit` enabled
+-- World batch 256, one world update per iteration, imagination batch 1024
+-- Actor/critic/world learning rates: `1e-5 / 1e-4 / 5e-5`
+-- Actor gate: full native timeout plus critic warmup and critic loss <= 50
+-
+-## Training result
+-
+-The process received SIGTERM at iteration 877 and saved `checkpoint.pt` and `training_status.json`.
+-
+-| Metric | Value |
+-|---|---:|
+-| Native iterations | 877 |
+-| Native transitions | 449,024 |
+-| World updates | 782 |
+-| Critic updates | 1,560 |
+-| Actor updates | **68** |
+-| Last world loss | 5.526 |
+-| Last critic loss | **1.878** |
+-| Last actor gradient norm | 5.361 |
+-| Last policy anchor penalty | 0.0582 |
+-| Peak allocated GPU memory | about 5.17 GB |
+-
+-The actor gate opened at iteration 810 after 483 full timeouts and 520 episode records. The first critic-only loss was about 0.805; subsequent critic losses stayed around 0.7--2.6, so the value-quality gate remained healthy. Actor updates did not show numerical explosion during the observed 68 updates.
+-
+-The native event totals at the stop point were:
+-
+-| Event | Count |
+-|---|---:|
+-| Episode records | 520 |
+-| Full 8 s timeouts | 483 |
+-| Qualified airborne string contacts | 76 |
+-| Ball-side complete except recovery | 13 |
+-| Recovery successes | 242 |
+-| complete5 | 6 |
+-| Frame hits | 165 |
+-| Body-ground records | 429 |
+-| Rally faults | 76 |
+-
+-These event counts were collected before the post-update episode batch completed. They are training-stream counts, not a frozen 128-case evaluation and not evidence of a new success rate. The run proves that autoregressive 0.96 s world-model fitting makes the 3.2 s critic target numerically usable; it does not yet prove that the actor update improves the native task.
+-
+-## Checkpoints and status
+-
+-- `checkpoint_000500.pt`: periodic checkpoint before actor updates.
+-- `checkpoint.pt`: final checkpoint at iteration 877, actor updates 68.
+-- `training_status.json`: status `signal`, with the saved counters.
+-
+-The next required measurement is a native post-update episode batch or a frozen 128-case evaluation using this saved actor. No claim of performance improvement is made from imagined return alone.
+diff --git a/reports/supermimic_world_ar0p96_imag3p2_20261114_0750/training_status_pushed.json b/reports/supermimic_world_ar0p96_imag3p2_20261114_0750/training_status_pushed.json
+deleted file mode 100644
+index a2e25cd..0000000
+--- a/reports/supermimic_world_ar0p96_imag3p2_20261114_0750/training_status_pushed.json
++++ /dev/null
+@@ -1,9 +0,0 @@
+-{
+-  "status": "signal",
+-  "iterations": 877,
+-  "native_steps": 449024,
+-  "actor_updates": 68,
+-  "elapsed_s": 2899.600305422675,
+-  "formal_success_rate": null,
+-  "convergence": null
+-}
+diff --git a/scripts/evaluate_supermimic_v1.py b/scripts/evaluate_supermimic_v1.py
+index 18a0131..9b2f18a 100644
+--- a/scripts/evaluate_supermimic_v1.py
++++ b/scripts/evaluate_supermimic_v1.py
+@@ -32,6 +32,8 @@ def main():
+     source_group.add_argument('--checkpoint', type=Path)
+     source_group.add_argument('--init-policy-checkpoint', type=Path,
+                               help='Zero-update native source evaluation, no world model or optimizers')
++    parser.add_argument('--init-policy-recovery-gate',choices=('legacy','causal'),default='legacy',
++                        help='Explicit zero-update execution contract; causal matches physical training')
+     parser.add_argument('--output', type=Path, required=True)
+     parser.add_argument('--g07-execution-root', type=Path)
+     parser.add_argument('--precision-receipt', type=Path)
+@@ -47,6 +49,8 @@ def main():
+     args = parser.parse_args()
+     if args.shutdown_diagnostic_ticks is not None and not 1 <= args.shutdown_diagnostic_ticks < 800:
+         parser.error('shutdown diagnostic ticks must be in [1,799]')
++    if args.checkpoint and args.init_policy_recovery_gate!='legacy':
++        parser.error('Learned checkpoints must use their recorded execution contract')
+     args.output = args.output.resolve()
+     args.output.mkdir(parents=True, exist_ok=False)
+     startup = dict(argv=sys.argv, cwd=os.getcwd(), script=str(Path(__file__).resolve()),
+@@ -148,8 +152,12 @@ def _run_native(args, stop_request):
+         if trained is not None:
+             actor.load_state_dict(trained['actor'], strict=True)
+         actor.eval()
+-        from quadsmash.rl.supermimic_policy_execution_v1 import resolve_contract,policy_forward
++        from quadsmash.rl.supermimic_policy_execution_v1 import resolve_contract,policy_forward,contract as execution_contract,POSTHIT
++        from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest
++        actor_state_before=tensor_digest(actor.state_dict().items())
+         policy_execution,execution_provenance=resolve_contract(trained)
++        if trained is None and args.init_policy_recovery_gate=='causal':
++            policy_execution=execution_contract(POSTHIT);execution_provenance='explicit frozen initialization under training causal gate'
+         write_json(args.output/'policy_execution.json',dict(contract=policy_execution,provenance=execution_provenance))
+         if args.record_physical_transitions:
+             from quadsmash.rl.supermimic_physical_capture_v1 import PhysicalTransitionArchive
+@@ -158,7 +166,7 @@ def _run_native(args, stop_request):
+             env.physical_transition_archive = PhysicalTransitionArchive(
+                 args.output/'physical_transitions', metadata=dict(
+                     source_checkpoint=str(source_path), source_sha256=hashlib.sha256(source_path.read_bytes()).hexdigest(),
+-                    task_contract=contract, body_names=list(env.robot.body_names),
++                    task_contract=contract,policy_execution=policy_execution,actor_state_sha256=actor_state_before,policy_id='frozen-evaluation',body_names=list(env.robot.body_names),
+                     control_dt_s=float(env.step_dt), num_envs=env.num_envs,
+                     seed=args.seed, runtime_commit=subprocess.check_output(
+                         ['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()))
+@@ -176,9 +184,12 @@ def _run_native(args, stop_request):
+                        ground_size_m=list(cfg.ground_size_m), sweep_audit_iterations=cfg.sweep_audit_iterations)
+         write_json(args.output/'physics.json', physics)
+         first, cursor, numerical = {}, 0, 0
++        head_active_lane_steps=dict(recovery=0,approach=0)
+         mapping = dict(max_final_target_error_rad=0., tolerance_rad=2e-6,
+                        phase_samples={str(i):0 for i in range(5)}, phase_max_error={str(i):0. for i in range(5)},
+                        checked_native_ticks=0, scope='Independent old controller versus new actor+executor on the SAME live observations; not a separate old physics rollout')
++        if policy_execution['recovery_gate']==POSTHIT:
++            mapping['scope']='Independent original executor and new executor with identical causal-gated requests; not legacy policy equivalence'
+         start = time.perf_counter()
+         stage = 'EVALUATING'
+         with torch.inference_mode():
+@@ -187,10 +198,15 @@ def _run_native(args, stop_request):
+                     raise InterruptedError(f"Evaluation stopped at control boundary: {stop_request['signal']}")
+                 before = obs['policy'].clone()
+                 old_target = None
++                action = policy_forward(actor,before,env.rally,mode=policy_execution['recovery_gate'],sample=False)[0].clamp(-1.,1.)
++                head_active_lane_steps['recovery']+=int((env.rally.had_contact&env.rally.released).sum())
++                head_active_lane_steps['approach']+=int((actor.actor.gate(before)>.25).sum())
+                 if reference is not None:
+-                    old_final = reference.action(obs, env._sm_residual_default, env._sm_residual_limits)
++                    if policy_execution['recovery_gate']==POSTHIT:
++                        old_final=reference.apply_residual(obs,action,env._sm_residual_default,env._sm_residual_limits)
++                    else:
++                        old_final = reference.action(obs, env._sm_residual_default, env._sm_residual_limits)
+                     old_target = full_range_targets(old_final, env._sm_residual_limits).clone()
+-                action = policy_forward(actor,before,env.rally,mode=policy_execution['recovery_gate'],sample=False)[0].clamp(-1.,1.)
+                 if not torch.isfinite(action).all():
+                     raise FloatingPointError('Nonfinite evaluation action')
+                 obs, _, done, _ = wrapper.step(action)
+@@ -279,6 +295,10 @@ def _run_native(args, stop_request):
+             task_contract=contract,source=init_meta,actor_updated=trained is not None,
+             elapsed_s=time.perf_counter()-start,physics=physics,
+             evaluated_checkpoint_sha256=hashlib.sha256((args.checkpoint or source_path).read_bytes()).hexdigest())
++        actor_state_after=tensor_digest(actor.state_dict().items())
++        if actor_state_after!=actor_state_before:raise RuntimeError('Frozen evaluation mutated actor weights')
++        metrics.update(actor_state_sha256=actor_state_after,actor_parameters_unchanged=True,
++            optimizer_updates=dict(actor=0,world=0,critic=0),head_active_lane_steps=head_active_lane_steps)
+         metrics['native_episode_metrics'] = native_summary
+         metrics['conditional_recovery_scope'] = native_summary['conditional_recovery_scope']
+         metrics['native_episode_return_mean'] = native_summary['native_episode_return_mean']
+diff --git a/scripts/pack_supermimic_physical_loop_data.py b/scripts/pack_supermimic_physical_loop_data.py
+index 3c004a6..1026d4a 100644
+--- a/scripts/pack_supermimic_physical_loop_data.py
++++ b/scripts/pack_supermimic_physical_loop_data.py
+@@ -14,6 +14,7 @@ def task_memory(state):
+ def main():
+     p=argparse.ArgumentParser(description=__doc__)
+     p.add_argument('--archive',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
++    p.add_argument('--episodes-summary',type=Path,help='Original same-run independent terminal scores, joined by lane/episode')
+     args=p.parse_args();args.output.mkdir(parents=True,exist_ok=False);torch.set_num_threads(2)
+     manifest=json.loads((args.archive/'manifest.json').read_text())
+     schema=template=None;records=[]
+@@ -48,6 +49,11 @@ def main():
+             first_done|=row['terminated']|row['timeout']
+         print(json.dumps(dict(packed_ticks=len(records),last_chunk=entry['file'])),flush=True)
+     data={key:torch.stack([r[key] for r in records]) for key in records[0]}
++    if args.episodes_summary is not None:
++        from quadsmash.rl.supermimic_evidence_binding_v1 import attach_terminal_ball_side
++        if args.episodes_summary.resolve().parent!=args.archive.resolve().parent:
++            raise ValueError('Terminal summary must belong to this native run directory')
++        data=attach_terminal_ball_side(data,json.loads(args.episodes_summary.read_text()))
+     package=dict(schema='physical-loop-supervision-v1',task_schema=schema.manifest(),template=template,
+                  source_manifest=manifest,source_archive=str(args.archive),tensors=data,
+                  first_returns=returns,first_done=first_done)
+diff --git a/scripts/run_supermimic_phase1_long_v1.sh b/scripts/run_supermimic_phase1_long_v1.sh
+index c063182..47e7c9e 100755
+--- a/scripts/run_supermimic_phase1_long_v1.sh
++++ b/scripts/run_supermimic_phase1_long_v1.sh
+@@ -100,20 +100,12 @@ PY
+       --output "$EVAL" --physics-device cuda:0 --headless \
+       --rendering_mode performance --kit_args=--renderer/multiGpu/enabled=false 2>&1 | tee "$EVAL.log")
+   python_bin="$PYTHON"
+-  ACCEPTED="$($python_bin - "$EVAL/metrics.json" <<'PY'
+-import json,sys
+-m=json.load(open(sys.argv[1])); n=m.get('native_episode_metrics',m)
+-ok=(float(n.get('native_episode_return_mean',-1e99))>-12.52678435 and
+-    int(n.get('ball_side_complete_except_recovery',-1))>=53 and
+-    int(n.get('complete5',-1))>=27 and int(m.get('numerical_failures',-1))==0)
+-print('1' if ok else '0')
+-PY
+-  )"
+-  echo "[cycle $cycle] accepted=$ACCEPTED"
+-  if [[ "$ACCEPTED" != 1 ]]; then
+-    echo "cycle $cycle rejected; preserving output and stopping" | tee "$RUN_ROOT/STOPPED"
++  if ! (cd "$ROOT" && QUADSMASH_PYTHON="$PYTHON" bash scripts/python.sh scripts/verify_supermimic_promotion.py \
++      --metrics "$EVAL/metrics.json" --checkpoint "$CANDIDATE" --output "$EVAL/promotion.json"); then
++    echo "cycle $cycle promotion rejected; preserving evidence and stopping" | tee "$RUN_ROOT/STOPPED"
+     exit 21
+   fi
++  echo "[cycle $cycle] accepted=1 (checkpoint, execution contract and complete protocol verified)"
+   CURRENT_RETURN="$($python_bin - "$EVAL/metrics.json" <<'PY'
+ import json,sys
+ m=json.load(open(sys.argv[1])); n=m.get('native_episode_metrics',m)
+diff --git a/scripts/train_supermimic_physical_block.py b/scripts/train_supermimic_physical_block.py
+index 00234b2..011ed9b 100644
+--- a/scripts/train_supermimic_physical_block.py
++++ b/scripts/train_supermimic_physical_block.py
+@@ -252,14 +252,8 @@ def run(args):
+         # Same-policy native RTG calibration labels from the frozen 800-tick archive.
+         # This is separate from the 0.64 s imagined objective and never mixed with
+         # candidate-policy monitoring.
+-        native_reward=package['tensors']['reward'].double()
+-        native_done=package['tensors']['terminated']|package['tensors']['timeout']
+-        rtg=torch.zeros_like(native_reward)
+-        running=torch.zeros(native_reward.shape[1],dtype=torch.float64)
+-        for ti in range(native_reward.shape[0]-1,-1,-1):
+-            running=native_reward[ti].double()+timebase.gamma*running*(~native_done[ti]).double()
+-            rtg[ti]=running
+-        del native_reward,native_done,running
++        from quadsmash.rl.supermimic_evidence_binding_v1 import complete_native_rtg
++        rtg,rtg_complete=complete_native_rtg(package['tensors'],timebase.gamma)
+         replay_archives=[];replay_receipts=[];critic_coverage_blocks=0
+         refresh_world_updates=0;refresh_critic_updates=0
+         if args.resume_training:
+@@ -470,6 +464,14 @@ def run(args):
+         if args.resume_training:
+             global_attempt_id=int(resumed_global.get('attempts',0));global_accepted_id=int(resumed_global.get('accepted',0))
+             global_rejected=int(resumed_global.get('rejected',0));global_backtracked=int(resumed_global.get('backtracked',0))
++        from quadsmash.rl.supermimic_evidence_binding_v1 import runtime_identity,probe_applicability
++        loaded_identity=runtime_identity(actor,adapter,manifest['task_contract'],policy_execution,global_accepted_id)
++        write(args.output/'loaded_runtime_identity.json',dict(identity=loaded_identity,resumed=bool(args.resume_training),
++            probe_applicability={} if dual_quality is None else {h:probe_applicability(dual_quality['native_action_probes'][h],loaded_identity) for h in ('recovery','approach')}))
++        from quadsmash.rl.supermimic_evidence_binding_v1 import verify_fit_provenance,loaded_fit_provenance
++        initial_fit_provenance=verify_fit_provenance(json.loads(args.contact_validation_receipt.read_text()),args.contact_validation_receipt) if args.contact_validation_receipt else dict(verified=False,reason='no-fit-provenance')
++        loaded_fit=loaded_fit_provenance(initial_fit_provenance,resumed if args.resume_training else None,loaded_identity['world_state_sha256'],wm_holdout_lanes)
++        write(args.output/'loaded_fit_provenance.json',loaded_fit)
+         def save(name):
+             archive.flush()  # Checkpoint never points beyond durable replay.
+             atomic_torch_save(dict(algorithm='supermimic_v1',adapter_schema=adapter.schema,actor=actor.state_dict(),
+@@ -490,6 +492,8 @@ def run(args):
+                                   source_names=['initial_archive','online'],
+                                   stage_names=['uniform','pre_touchdown','touchdown','post_touchdown','recovery_failure','stable_recovery']),
+                 runtime_validation_archive=dict(path=runtime_validation_path,sha256=file_sha(runtime_validation_path)),
++                wm_fit_provenance=dict(verified=loaded_fit['verified'],world_state_sha256=tensor_digest(adapter.state_dict().items()),
++                    excluded_lanes=wm_holdout_lanes,initial_manifest_sha256=initial_fit_provenance.get('manifest_sha256')),
+                 native_value_bank=native_value_bank,sequential_progress=schedule.state_dict(),actor_start_bank=replay.actor_start_bank.state_dict(),dynamic_stage_starts=replay.stage_starts,
+                 reference_bank=trainer.reference_bank.payload() if trainer.reference_bank else None,
+                 actor_references=dict(step=trainer.accepted_snapshot,block=trainer.block_start_snapshot,native=trainer.native_accepted_snapshot),
+@@ -515,10 +519,10 @@ def run(args):
+                 raise RuntimeError('Contextual critic quality gate did not pass within finite32-block budget')
+         stage_ticks=list(CRITIC_TICKS)
+         stage_states=[as_state(start_cache[t]) for t in stage_ticks]
+-        stage_meta=[dict(policy_id='initial_reference',episode_id='archive_first_128',time_s=float(t*timebase.control_dt_s)) for t in stage_ticks]
++        stage_meta=[dict(policy_id='initial_reference',episode_id=start_cache[t]['before']['episode_index'].tolist(),time_s=float(t*timebase.control_dt_s),complete_lane_mask=rtg_complete[t]) for t in stage_ticks]
+         native_calibration=trainer.audit_native_rtg_stages(stage_states,[rtg[t] for t in stage_ticks],stage_meta)
+         native_calibration.update(source='packed_loop/data.pt',discount_mode='physical_time',
+-                                  horizon_steps=int(rtg.shape[0]),native_return_scope='same-policy first completed 128 episodes')
++                                  horizon_steps=int(rtg.shape[0]),native_return_scope='frozen archive label-policy episodes; execution identity checked separately')
+         write(args.output/'native_critic_stage_audit.json',native_calibration)
+         from quadsmash.rl.supermimic_dual_head_quality_v1 import split_native_value_rows,critic_holdout,reference_coverage
+         if args.resume_training and resumed.get('native_value_bank') is not None:
+@@ -526,18 +530,24 @@ def run(args):
+         else:
+             value_x=[];value_y=[];value_ids=[];value_masks={h:[] for h in ('recovery','approach')}
+             for ti in sorted(start_cache):
+-                encoded=encode_native_value_start(start_cache[ti]);value_x.append(encoded['critic_input'].cpu());value_y.append(rtg[ti].float().cpu())
+-                value_ids.extend([(lane,int(package['tensors']['episode'][ti,lane]),ti) for lane in range(128)])
+-                for h in value_masks:value_masks[h].append(encoded['head_masks'][h].cpu())
++                encoded=encode_native_value_start(start_cache[ti]);valid=rtg_complete[ti].cpu()
++                if not valid.any():continue
++                value_x.append(encoded['critic_input'].cpu()[valid]);value_y.append(rtg[ti].float().cpu()[valid])
++                value_ids.extend([(lane,int(package['tensors']['episode'][ti,lane]),int(start_cache[ti]['before']['elapsed_tick'][lane])) for lane in torch.where(valid)[0].tolist()])
++                for h in value_masks:value_masks[h].append(encoded['head_masks'][h].cpu()[valid])
+             native_value_bank=dict(inputs=torch.cat(value_x),rtg=torch.cat(value_y),identity=value_ids,
+-                head_masks={h:torch.cat(v) for h,v in value_masks.items()},policy_id='initial_reference',
+-                actor_sha256=tensor_digest(trainer.reference.state_dict().items()),source_sha256=packed_sha,policy_execution=manifest.get('policy_execution'))
++                head_masks={h:torch.cat(v) for h,v in value_masks.items()},policy_id=manifest.get('policy_id','initial_archive_unknown_policy'),
++                actor_sha256=manifest.get('actor_state_sha256'),source_sha256=packed_sha,policy_execution=manifest.get('policy_execution'),accepted_updates=0,
++                label_actor_state={k:v.detach().cpu().clone() for k,v in trainer.reference.state_dict().items()} if manifest.get('actor_state_sha256')==tensor_digest(trainer.reference.state_dict().items()) else None)
+         if not args.resume_training:
+-            initial_mask=torch.ones(128,dtype=torch.bool)
+-            if wm_holdout_lanes:initial_mask[wm_holdout_lanes]=False
+-            native_calibration_fit=trainer.calibrate_critic_native([as_state(start_cache[0])],rtg[0],epochs=2,masks=[initial_mask])
+-            native_calibration_fit.update(policy_id='initial_reference',discount_mode='physical_time',horizon_steps=int(rtg.shape[0]),
+-                native_return_scope='same-policy completed episodes; validation lanes excluded',heldout_lanes=wm_holdout_lanes)
++            from quadsmash.rl.supermimic_dual_head_quality_v1 import native_calibration_rows
++            initial_ids,calibration_contract=native_calibration_rows(native_value_bank,policy_execution,wm_holdout_lanes,CRITIC_TICKS,expected_actor_sha256=tensor_digest(actor.state_dict().items()))
++            if len(initial_ids):
++                native_calibration_fit=trainer.calibrate_critic_tensors(native_value_bank['inputs'][initial_ids],native_value_bank['rtg'][initial_ids],epochs=2)
++            else:
++                native_calibration_fit=dict(optimizer_updates=0,skipped=True,reason=calibration_contract['reason'])
++            native_calibration_fit.update(calibration_contract,discount_mode='physical_time',horizon_steps=int(rtg.shape[0]),
++                native_return_scope='matching-execution frozen-policy completed episodes only; validation lanes excluded',epoch_budget=2)
+             write(args.output/'native_critic_calibration.json',native_calibration_fit)
+         def check_head_quality(head,attempt):
+             coverage=reference_coverage(trainer.reference_bank,head,trainer.tracking_weight)
+@@ -545,10 +555,22 @@ def run(args):
+             if dual_quality is None:
+                 return dict(enforced=False,reference=coverage,reason='no calibrated dual-head bounds configured')
+             from quadsmash.rl.supermimic_wm_validation_v1 import runtime_head_check
+-            wm=runtime_head_check(adapter,runtime_validation_data,wm_holdout_lanes,launch,head,runtime_wm_bounds[head])
++            from quadsmash.rl.supermimic_evidence_binding_v1 import runtime_identity,probe_applicability,verify_fit_provenance
++            identity=runtime_identity(actor,adapter,manifest['task_contract'],policy_execution,global_accepted_id)
++            probe=probe_applicability(dual_quality['native_action_probes'][head],identity)
++            fit_provenance=loaded_fit
++            wm=runtime_head_check(adapter,runtime_validation_data,wm_holdout_lanes,launch,head,runtime_wm_bounds[head],
++                minimum_event_episodes=dual_quality['wm_min_event_episodes'][head])
++            drift=None
++            if native_value_bank.get('label_actor_state') is not None and trainer.budget_states:
++                with torch.no_grad():
++                    current=trainer._budget_snapshot();label=trainer._snapshot_from(native_value_bank['label_actor_state'])
++                    deltas=[trainer._max_budget_delta(a,b) for a,b in zip(current,label)]
++                drift=dict(final_normalized_command_delta=max(d[1] for d in deltas),final_joint_target_delta_rad=max(d[2] for d in deltas))
+             value=critic_holdout(trainer.critic,native_value_bank,head,wm_holdout_lanes,
+-                current_actor_sha256=tensor_digest(actor.state_dict().items()),current_execution=policy_execution,limits=dual_quality['critic_upper_bounds'][head])
+-            result=dict(head=head,attempt=attempt,enforced=True,wm=wm,critic=value,reference=coverage,
++                current_actor_sha256=tensor_digest(actor.state_dict().items()),current_execution=policy_execution,limits=dual_quality['critic_upper_bounds'][head],
++                accepted_updates=global_accepted_id,command_delta=drift,trust_limits=dual_quality.get('critic_policy_drift_bounds',{}).get(head))
++            result=dict(head=head,attempt=attempt,enforced=True,wm=wm,critic=value,reference=coverage,probe_applicability=probe,fit_provenance=fit_provenance,runtime_identity=identity,
+                 world_updates=trainer.world_updates,critic_updates=trainer.critic_updates)
+             write(args.output/'latest_dual_head_quality.json',result)
+             with (args.output/'dual_head_quality.jsonl').open('a') as f:f.write(json.dumps(result)+'\n')
+@@ -564,9 +586,9 @@ def run(args):
+                     if metric is not None:writer.add_scalar('quality/'+head+'/critic_'+key,metric,step)
+                 writer.add_scalar('tracking/'+head+'/verified_reference_count',coverage['verified_reference_count'],step)
+                 writer.flush()
+-            if not wm['passed'] or not value['passed']:
++            if not wm['passed'] or not value['passed'] or not probe['current_version_valid'] or not fit_provenance['verified']:
+                 save('quality_stopped.pt')
+-                raise RuntimeError(head+' independent WM/critic quality failed; actor disabled, no automatic extra fitting')
++                raise RuntimeError(head+' model/probe provenance or independent WM/critic quality failed; actor disabled, no automatic extra fitting')
+             return result
+         # A already supplies complete native episodes. This warmup concerns the
+         # new contextual critic, not recollecting a fresh 800 ticks each update.
+@@ -593,12 +615,16 @@ def run(args):
+             total=int(args.world_updates_per_actor_update if count is None else count)
+             reports=[]; started=time.perf_counter()
+             for offset in range(total):
++                sampling_started=time.perf_counter()
+                 window,lanes,sampling=replay.window(
+                     timebase.world_steps,128,iteration*total+offset,
+                     source_quota=args.wm_source_quota,stage_quota=quotas,head=head,
+                     recent_policy_window=args.wm_recent_policy_window,
+                     recent_tick_window=args.wm_recent_tick_window,excluded_lanes=wm_holdout_lanes)
++                sampling_seconds=time.perf_counter()-sampling_started
++                fit_started=time.perf_counter()
+                 stats=trainer.fit_world_window(window,launch[lanes]); del window
++                stats.update(sampling_seconds=sampling_seconds,fit_wall_seconds=time.perf_counter()-fit_started)
+                 stats['sampling']=sampling; reports.append(stats)
+                 if writer is not None:
+                     step=int(tick*128)
+@@ -624,6 +650,7 @@ def run(args):
+         def run_block(block_name, names, budget, proposal_limit,cycle_index=0):
+             nonlocal completed_returns,completed_discounted,completed_records,obs,tick,cursor
+             nonlocal global_attempt_id,global_accepted_id,global_rejected,global_backtracked
++            sampling_history_start=len(replay.actor_start_bank.sampling_history)
+             if budget<=0:return 0
+             progress=schedule.block(cycle_index,block_name,budget,proposal_limit)
+             if progress['status']=='done':return progress['accepted']
+@@ -741,6 +768,7 @@ def run(args):
+                     progress['pending_refresh']=True;save('latest.pt')
+                     refresh_frozen_policy('approach')
+                     progress['refresh_at']=accepted;progress['pending_refresh']=False;save('latest.pt')
++            write(args.output/(block_name+'_actor_start_sampling.json'),replay.actor_start_bank.sampling_report(sampling_history_start))
+             if accepted<budget:
+                 save(f'{block_name}_candidate_{accepted:04d}.pt')
+                 write(args.output/'block_incomplete.json',dict(block=block_name,target=budget,accepted=accepted,attempts=attempts,limit=max_attempts))
+@@ -791,7 +819,8 @@ def run(args):
+             cursor=len(env.rally_records) # these records belong to the frozen stream, not mixed monitoring
+             receipt.update(start_tick=start_tick,end_tick=tick,actor_sha256=actor_hash,policy_execution=policy_execution,head=head,formal_evaluation=False,
+                            native_metrics=summarize_native_episodes(native_records))
+-            packed=collector.packed_complete()
++            from quadsmash.rl.supermimic_evidence_binding_v1 import attach_terminal_ball_side
++            packed=attach_terminal_ball_side(collector.packed_complete(),native_records)
+             runtime_validation_data=packed
+             atomic_torch_save(dict(tensors=packed,policy_id=policy_id,receipt=receipt),refresh_dir/'complete_episodes.pt')
+             runtime_validation_path=str(refresh_dir/'complete_episodes.pt')
+@@ -813,7 +842,8 @@ def run(args):
+             if not native_x:raise RuntimeError('No complete frozen native critic labels')
+             x=torch.cat(native_x);y=torch.cat(native_y);phase_ids=torch.tensor(native_stage)
+             native_value_bank=dict(inputs=x,rtg=y,identity=native_identity,head_masks={h:torch.cat(v) for h,v in native_masks.items()},
+-                policy_id=policy_id,actor_sha256=actor_hash,policy_execution=policy_execution,source_sha256=file_sha(refresh_dir/'complete_episodes.pt'))
++                policy_id=policy_id,actor_sha256=actor_hash,policy_execution=policy_execution,source_sha256=file_sha(refresh_dir/'complete_episodes.pt'),accepted_updates=global_accepted_id,
++                label_actor_state={k:v.detach().cpu().clone() for k,v in actor.state_dict().items()})
+             native_rows=torch.arange(len(y))
+             if wm_holdout_lanes:
+                 train_mask,_=split_native_value_rows(native_value_bank,wm_holdout_lanes);native_rows=native_rows[train_mask]
+diff --git a/tests/test_supermimic_dual_head_closure.py b/tests/test_supermimic_dual_head_closure.py
+index 1baece4..715bfeb 100644
+--- a/tests/test_supermimic_dual_head_closure.py
++++ b/tests/test_supermimic_dual_head_closure.py
+@@ -60,6 +60,7 @@ def test_gate_is_fail_closed_and_does_not_cut_active_head_gradient():
+ 
+ def spec():
+     return {'dual_head_quality':dict(heldout_lane_ids=[1,3],
++        wm_min_event_episodes=dict(recovery={k:1 for k in ('touchdown','support_loss','body_ground','stable')},approach={k:1 for k in ('legal_contact','illegal_contact','ball_side_success','ball_side_failure')}),
+         native_action_probes={h:dict(same_prefix_verified=True,paired_samples=3,errors={'direction':.1},upper_bounds={'direction':.2}) for h in ('recovery','approach')},
+         wm_upper_bounds=dict(recovery={'16/angular_velocity_rmse':1.,'16/foot_contact_brier':.2,'16/body_ground_brier':.2},
+                             approach={'4/ball_velocity_rmse':1.,'16/ball_forward_sign_error':.2}),
+@@ -86,7 +87,7 @@ def test_native_critic_holdout_is_policy_labelled_readonly_and_not_train_loss():
+     critic=nn.Linear(1,1,bias=False);critic.weight.data.fill_(1)
+     before=copy.deepcopy(critic.state_dict())
+     result=critic_holdout(critic,b,'approach',[1,3],current_actor_sha256='new-hash',limits={'mae':.01,'rmse':.01})
+-    assert result['passed'] and not result['current_policy_matches_labels'] and result['sample_count']==2
++    assert result['label_policy_value_fit'] and not result['passed'] and not result['current_policy_matches_labels'] and result['sample_count']==2
+     assert result['metrics']['rtg_ordering_accuracy']==1
+     for key,value in before.items():assert torch.equal(value,critic.state_dict()[key])
+     critic.weight.data.fill_(-1)
+@@ -117,9 +118,9 @@ def test_recovery_validation_uses_foot_events_not_ball_contact(monkeypatch):
+     adapter=nn.Linear(1,1)
+     monkeypatch.setattr(v,'validate_windows',lambda *a,**k:{'16':{'foot_contact_brier':.1}})
+     result=v.runtime_head_check(adapter,data,[1],torch.zeros(2,6),'recovery',{'16/foot_contact_brier':.2})
+-    assert result['passed'] and 'body_ground' in result['missing_events']
++    assert not result['passed'] and 'body_ground' in result['missing_events']
+     result=v.runtime_head_check(adapter,data,[1],torch.zeros(2,6),'approach',{'4/ball_velocity_rmse':1.})
+-    assert not result['passed'] and result['failures']['missing_required_event']=='contact'
++    assert not result['passed'] and 'support/legal_contact' in result['failures']
+ 
+ 
+ def test_real_training_and_eval_entrypoints_use_shared_contract():
+diff --git a/tests/test_supermimic_large_training_contracts.py b/tests/test_supermimic_large_training_contracts.py
+index 74a5ce9..2b712b3 100644
+--- a/tests/test_supermimic_large_training_contracts.py
++++ b/tests/test_supermimic_large_training_contracts.py
+@@ -96,7 +96,7 @@ def test_event_alignment_is_relative_to_edge_not_arbitrary_64step_window():
+ def test_native_promotion_requires_matching_checkpoint_and_original_thresholds(tmp_path):
+     checkpoint=tmp_path/'checkpoint';checkpoint.write_text('toy-checkpoint')
+     metrics=tmp_path/'metrics.json'
+-    m=dict(evaluated_checkpoint_sha256=sha256(checkpoint),numerical_failures=0,
++    m=dict(num_envs=128,control_ticks=800,evaluated_checkpoint_sha256=sha256(checkpoint),numerical_failures=0,
+            native_episode_metrics=dict(native_episode_return_mean=-10.,ball_side_complete_except_recovery=53,complete5=27))
+     metrics.write_text(json.dumps(m));assert verify_native_promotion(metrics,checkpoint)['checkpoint_sha256']==sha256(checkpoint)
+     m['native_episode_metrics']['ball_side_complete_except_recovery']=52;metrics.write_text(json.dumps(m))

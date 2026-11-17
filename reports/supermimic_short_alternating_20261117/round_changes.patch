@@ -1,0 +1,836 @@
+--- /dev/null
++++ b/quadsmash/rl/supermimic_alternating_schedule_v1.py
+@@ -0,0 +1,136 @@
++"""Bounded short-block orchestration. No simulator, policy or optimizer imports.
++
++One refresh observes the combined actor and feeds BOTH heads. A checkpoint
++inside an interrupted refresh is not a transactionally complete training state:
++resume the durable pre-refresh checkpoint, never repeat partial optimizer work.
++"""
++import copy
++
++HEADS = ('recovery', 'approach')
++
++
++def make_plan(recovery, approach, recovery_proposals, approach_proposals, *,
++              block_size=8, cycles=1, refresh_mode='pair'):
++    if refresh_mode not in ('pair', 'per-head'):
++        raise ValueError('Unknown refresh mode')
++    values=(recovery, approach, recovery_proposals, approach_proposals, block_size, cycles)
++    if any(type(x) is not int or x < 1 for x in values):
++        raise ValueError('Alternating budgets must be positive integers')
++    if recovery != approach:
++        raise ValueError('Paired schedule requires equal per-cycle head targets')
++    if recovery_proposals < recovery or approach_proposals < approach:
++        raise ValueError('Proposal limit cannot be below effective-update target')
++    sizes=[min(block_size, recovery-i) for i in range(0, recovery, block_size)]
++    # Distribute only the declared surplus; no hidden proposal multiplication.
++    limits={}
++    for head,limit in zip(HEADS,(recovery_proposals,approach_proposals)):
++        extra=limit-recovery
++        limits[head]=[n+extra//len(sizes)+int(i<extra%len(sizes)) for i,n in enumerate(sizes)]
++    events=[]
++    for cycle in range(cycles):
++        for pair,n in enumerate(sizes):
++            key=f'cycle{cycle:03d}_pair{pair:03d}'
++            for head in HEADS:
++                events.append(dict(id=key+'_'+head,kind='train',cycle=cycle,pair=pair,
++                    block_key=key,head=head,target=n,proposal_limit=limits[head][pair]))
++                if refresh_mode=='per-head' or head=='approach':
++                    events.append(dict(id=key+'_refresh_after_'+head,kind='refresh',cycle=cycle,
++                        pair=pair,after_head=head,consumer_heads=list(HEADS)))
++        events.append(dict(id=f'cycle{cycle:03d}_finalize',kind='finalize',cycle=cycle))
++    return events
++
++
++def refresh_world_budgets(total, heads=HEADS):
++    """Split the existing TOTAL budget, not one full budget per head."""
++    if type(total) is not int or total < 0 or not heads:
++        raise ValueError('Invalid shared WM refresh budget')
++    if total and total < len(heads):
++        raise ValueError('A shared refresh must cover each head sampling distribution')
++    return {h:total//len(heads)+int(i<total%len(heads)) for i,h in enumerate(heads)}
++
++
++class AlternatingSchedule:
++    schema='supermimic-short-alternating-v1'
++
++    def __init__(self, plan, *, execution_config=None):
++        self.plan=copy.deepcopy(plan)
++        self.execution_config=copy.deepcopy(execution_config or {})
++        self.cursor=0
++        self.running=False
++        self.results=[]
++
++    @property
++    def complete(self):
++        return self.cursor==len(self.plan)
++
++    @property
++    def current(self):
++        return None if self.complete else self.plan[self.cursor]
++
++    def begin(self):
++        if self.complete:raise ValueError('Schedule already complete')
++        if self.running and self.current['kind']=='refresh':
++            raise ValueError('Interrupted refresh: resume pre_refresh checkpoint; partial model/critic updates cannot be replayed')
++        self.running=True
++
++    def finish(self, result):
++        if not self.running:raise ValueError('No running event')
++        event=self.current
++        if event['kind']=='train':
++            if result.get('accepted')!=event['target']:
++                raise ValueError('Short block incomplete; next head/refresh disabled')
++            a=result.get('attempts');r=result.get('rejected');b=result.get('backtracked')
++            if (type(a) is not int or not event['target']<=a<=event['proposal_limit']
++                    or r!=a-event['target'] or type(b) is not int or not 0<=b<=event['target']):
++                raise ValueError('Invalid short-block counters')
++        elif event['kind']=='refresh':
++            if (result.get('complete_episodes')!=128 or result.get('actor_unchanged') is not True
++                    or result.get('consumer_heads')!=list(HEADS)):
++                raise ValueError('Incomplete combined-policy refresh receipt')
++        self.results.append(dict(event=copy.deepcopy(event),result=copy.deepcopy(result)))
++        self.cursor+=1
++        self.running=False
++
++    def state_dict(self):
++        return dict(schema=self.schema,plan=copy.deepcopy(self.plan),execution_config=copy.deepcopy(self.execution_config),cursor=self.cursor,
++                    running=self.running,results=copy.deepcopy(self.results))
++
++    def load_state_dict(self, state):
++        if (state.get('schema')!=self.schema or state.get('plan')!=self.plan
++                or state.get('execution_config')!=self.execution_config):
++            raise ValueError('Resume changes alternating schedule/configuration')
++        cursor=state.get('cursor')
++        if type(cursor) is not int or not 0<=cursor<=len(self.plan) or len(state.get('results',[]))!=cursor:
++            raise ValueError('Corrupt alternating cursor/results')
++        # Re-validate receipts instead of trusting the stored cursor.
++        self.cursor=0;self.running=False;self.results=[]
++        for saved in state['results']:
++            if saved['event']!=self.current:raise ValueError('Alternating event identity mismatch')
++            self.begin();self.finish(saved['result'])
++        if type(state.get('running')) is not bool:raise ValueError('Invalid running flag')
++        self.running=state['running']
++        if self.running and (self.complete or self.current['kind']=='refresh'):
++            raise ValueError('Interrupted refresh: use pre_refresh checkpoint; cannot resume partial refresh')
++
++    def head_totals(self, cycle=None):
++        totals={h:dict(attempts=0,accepted=0,rejected=0,backtracked=0) for h in HEADS}
++        for row in self.results:
++            e=row['event']
++            if e['kind']=='train' and (cycle is None or e['cycle']==cycle):
++                for k in totals[e['head']]:totals[e['head']][k]+=row['result'][k]
++        return totals
++
++
++def run_schedule(schedule, *, train, refresh, finalize, checkpoint):
++    """Used by the native entry AND CPU contract tests, with durable boundaries."""
++    callbacks=dict(train=train,refresh=refresh,finalize=finalize)
++    while not schedule.complete:
++        event=copy.deepcopy(schedule.current)
++        if event['kind']=='refresh':
++            if schedule.running:raise ValueError('Partial refresh cannot be replayed')
++            checkpoint('pre_refresh_'+event['id']+'.pt')
++            checkpoint('latest.pt')
++        schedule.begin()
++        result=callbacks[event['kind']](event)
++        schedule.finish(result)
++        checkpoint('latest.pt')
+--- a/scripts/train_supermimic_physical_block.py
++++ b/scripts/train_supermimic_physical_block.py
+@@ -58,15 +58,19 @@
+     parser.add_argument('--resume-warmup-ticks',type=int,default=0,
+                         help='Optional native ticks before a resumed stream; zero preserves exact block budgets')
+     parser.add_argument('--actor-update-budget',type=int,default=None,help='Legacy single-block budget')
+-    parser.add_argument('--recovery-update-budget',type=int,default=16,
+-                        help='Retained for config compatibility; joint mode uses --joint-update-budget')
+-    parser.add_argument('--approach-update-budget',type=int,default=16,
+-                        help='Retained for config compatibility; joint mode uses --joint-update-budget')
++    parser.add_argument('--recovery-update-budget',type=int,default=64,
++                        help='Total effective updates for this head per cycle; joint mode uses --joint-update-budget')
++    parser.add_argument('--approach-update-budget',type=int,default=64,
++                        help='Total effective updates for this head per cycle; joint mode uses --joint-update-budget')
+     parser.add_argument('--joint-update-budget',type=int,default=16)
+     parser.add_argument('--update-mode',choices=('sequential','joint'),default='sequential')
++    parser.add_argument('--sequential-layout',choices=('short-alternating','legacy-blocks'),default='short-alternating')
++    parser.add_argument('--head-block-size',type=int,default=8)
++    parser.add_argument('--refresh-mode',choices=('pair','per-head'),default='pair',
++                        help='pair: R8/A8 then one combined refresh; per-head: integration diagnostic only')
+     parser.add_argument('--ball-side-mode',choices=('shadow','enforce'),default='shadow')
+-    parser.add_argument('--recovery-proposal-budget',type=int,default=32)
+-    parser.add_argument('--approach-proposal-budget',type=int,default=32)
++    parser.add_argument('--recovery-proposal-budget',type=int,default=128)
++    parser.add_argument('--approach-proposal-budget',type=int,default=128)
+     parser.add_argument('--refresh-ticks',type=int,default=800)
+     parser.add_argument('--cycles',type=int,default=1)
+     parser.add_argument('--native-ticks-per-actor-update',type=int,default=16)
+@@ -114,6 +118,22 @@
+     if args.training_profile=='large' and args.contact_validation_receipt is None:parser.error('Large training requires contact-validation-receipt; model-only sensitivity is insufficient')
+     if args.training_profile=='large' and (args.cycles!=1 or args.refresh_ticks!=800 or args.update_mode!='sequential'):parser.error('Large profile uses one cycle per process, full refresh, and external frozen evaluation between cycles')
+     if args.resume_next_cycle and (args.resume_training is None or args.native_acceptance_receipt is None):parser.error('New cycle requires checkpoint and matching native acceptance')
++    from quadsmash.rl.supermimic_alternating_schedule_v1 import make_plan,AlternatingSchedule,refresh_world_budgets,run_schedule
++    alternating=None
++    if args.update_mode=='sequential' and args.sequential_layout=='short-alternating':
++        if args.resume_start_block!='recovery' or args.actor_update_budget is not None:
++            parser.error('Short alternating resumes its saved event cursor, not resume-start-block/legacy actor budget')
++        if args.refresh_ticks!=800:parser.error('Short alternating requires full frozen refresh; cannot disable it')
++        if args.refresh_world_updates<2 or args.refresh_critic_updates<1:
++            parser.error('Combined refresh needs both WM sampling distributions and native critic calibration')
++        try:
++            alternating=AlternatingSchedule(make_plan(args.recovery_update_budget,args.approach_update_budget,
++                args.recovery_proposal_budget,args.approach_proposal_budget,block_size=args.head_block_size,
++                cycles=args.cycles,refresh_mode=args.refresh_mode),execution_config=dict(
++                    native_ticks_per_proposal=args.native_ticks_per_actor_update,world_updates_per_proposal=args.world_updates_per_actor_update,
++                    refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,
++                    training_profile=args.training_profile,contact_receipt_sha256=hashlib.sha256(args.contact_validation_receipt.read_bytes()).hexdigest() if args.contact_validation_receipt else None))
++        except ValueError as error:parser.error(str(error))
+     args.output=args.output.resolve();args.output.mkdir(parents=True,exist_ok=False)
+     try:
+         args.wm_approach_stage_quota=parse_quota(args.wm_approach_stage_quota,allowed={'uniform','approach_active','hit_prepare','contact_release','approach_failure','post_hit'},name='wm-approach-stage-quota')
+@@ -337,7 +357,15 @@
+         schedule=SequentialProgress()
+         if args.resume_training and not args.resume_next_cycle and 'sequential_progress' in resumed:
+             schedule.load_state_dict(resumed['sequential_progress'])
+-            if schedule.complete():raise ValueError('Completed schedule requires explicit resume-next-cycle and native acceptance')
++            if alternating is None and schedule.complete():raise ValueError('Completed schedule requires explicit resume-next-cycle and native acceptance')
++        if args.resume_training and not args.resume_next_cycle:
++            saved_alternating=resumed.get('alternating_schedule')
++            if alternating is not None:
++                if saved_alternating is None:raise ValueError('Legacy checkpoint has no alternating cursor; no silent schedule migration')
++                alternating.load_state_dict(saved_alternating)
++                if alternating.complete:raise ValueError('Completed alternating cycle requires explicit native acceptance and resume-next-cycle')
++            elif saved_alternating is not None:
++                raise ValueError('Cannot silently resume alternating checkpoint in legacy layout')
+         if args.resume_next_cycle:
+             from quadsmash.rl.supermimic_long_run_contract_v1 import verify_native_promotion
+             from quadsmash.rl.supermimic_policy_execution_v1 import contract as execution_contract
+@@ -384,7 +412,7 @@
+             return state
+         from quadsmash.rl.supermimic_frozen_refresh_v1 import FrozenRefresh
+         from quadsmash.rl.supermimic_approach_data_v1 import native_approach_metadata
+-        refresh_collector=None; refresh_serial=0
++        refresh_collector=None; frozen_policy_id=None; refresh_serial=int(resumed.get('refresh_serial',0)) if args.resume_training else 0
+         archive_flush_rows=max(32,int(os.environ.get('QUADSMASH_ARCHIVE_FLUSH_ROWS','32')))
+         archive_refresh_only=os.environ.get('QUADSMASH_ARCHIVE_REFRESH_ONLY','0')=='1'
+         if archive_refresh_only:raise ValueError('ARCHIVE_REFRESH_ONLY drops live training transitions; unsupported in the data-closed-loop path')
+@@ -397,7 +425,11 @@
+                 row['sampling_metadata']=sampling_metadata
+                 row['policy_version']=global_accepted_id
+                 row['source_id']='online'
+-                row['block_name']=trainer.block_name
++                row['block_name']='combined_refresh' if frozen_policy_id is not None else trainer.block_name
++                row['policy_id']=frozen_policy_id or f'mixed_v{global_accepted_id}'
++                row['collection_mode']='frozen_combination' if frozen_policy_id is not None else 'mixed_training'
++                row['stream_id']=replay.current_stream
++                row['native_tick']=tick
+                 replay.append(row,policy_version=global_accepted_id,native_tick=tick,approach_metadata=sampling_metadata)
+                 if refresh_collector is not None: refresh_collector.append(row)
+                 if len(self.rows)>=archive_flush_rows:self.flush()
+@@ -441,7 +473,7 @@
+         if file_sha(reference_path)!=manifest['source_sha256']:
+             raise ValueError('Reference policy checkpoint does not match the verified source actor')
+         bad_meta=dict(path=str(args.bad_policy_checkpoint.resolve()),sha256=file_sha(args.bad_policy_checkpoint)) if args.bad_policy_checkpoint else None
+-        config=dict(dual_head_quality=dual_quality,wm_holdout_lanes=wm_holdout_lanes,runtime_wm_bounds=runtime_wm_bounds,training_profile=args.training_profile,contact_validation=contact_validation,resume_next_cycle=args.resume_next_cycle,update_mode=args.update_mode,resume_start_block=args.resume_start_block,ball_side_mode=args.ball_side_mode,cycles=args.cycles,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,replay_capacity_ticks=args.replay_capacity_ticks,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=args.native_ticks_per_actor_update,world_updates_per_actor_update=args.world_updates_per_actor_update,
++        config=dict(sequential_layout=args.sequential_layout,head_block_size=args.head_block_size,refresh_mode=args.refresh_mode,alternating_plan=alternating.plan if alternating is not None else None,dual_head_quality=dual_quality,wm_holdout_lanes=wm_holdout_lanes,runtime_wm_bounds=runtime_wm_bounds,training_profile=args.training_profile,contact_validation=contact_validation,resume_next_cycle=args.resume_next_cycle,update_mode=args.update_mode,resume_start_block=args.resume_start_block,ball_side_mode=args.ball_side_mode,cycles=args.cycles,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,replay_capacity_ticks=args.replay_capacity_ticks,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=args.native_ticks_per_actor_update,world_updates_per_actor_update=args.world_updates_per_actor_update,
+             world_batch=128,imagination_batch=128,timebase=timebase.manifest(),actor_lr=5e-5,world_lr=2e-4,critic_lr=2e-4,
+             policy_anchor=.05,critic_warmup_updates=200,critic_max_loss=50.,max_critic_only_blocks=32,
+             command_delta_budget=args.command_delta_budget,target_delta_budget_rad=args.target_delta_budget_rad,
+@@ -494,6 +526,7 @@
+                 runtime_validation_archive=dict(path=runtime_validation_path,sha256=file_sha(runtime_validation_path)),
+                 wm_fit_provenance=dict(verified=loaded_fit['verified'],world_state_sha256=tensor_digest(adapter.state_dict().items()),
+                     excluded_lanes=wm_holdout_lanes,initial_manifest_sha256=initial_fit_provenance.get('manifest_sha256')),
++                alternating_schedule=alternating.state_dict() if alternating is not None else None,refresh_serial=refresh_serial,
+                 native_value_bank=native_value_bank,sequential_progress=schedule.state_dict(),actor_start_bank=replay.actor_start_bank.state_dict(),dynamic_stage_starts=replay.stage_starts,
+                 reference_bank=trainer.reference_bank.payload() if trainer.reference_bank else None,
+                 actor_references=dict(step=trainer.accepted_snapshot,block=trainer.block_start_snapshot,native=trainer.native_accepted_snapshot),
+@@ -647,13 +680,14 @@
+             aggregate.update(world_updates=len(reports),world_update_reports=reports,
+                              world_update_seconds=time.perf_counter()-started)
+             return aggregate
+-        def run_block(block_name, names, budget, proposal_limit,cycle_index=0):
++        def run_block(block_name, names, budget, proposal_limit,cycle_index=0,*,managed_refresh=False):
+             nonlocal completed_returns,completed_discounted,completed_records,obs,tick,cursor
+             nonlocal global_attempt_id,global_accepted_id,global_rejected,global_backtracked
+             sampling_history_start=len(replay.actor_start_bank.sampling_history)
+             if budget<=0:return 0
+             progress=schedule.block(cycle_index,block_name,budget,proposal_limit)
+             if progress['status']=='done':return progress['accepted']
++            if progress.get('proposal_in_flight',False):raise ValueError('Interrupted proposal: resume its pre_proposal checkpoint, not partial optimizer state')
+             continuing=progress['status']!='new'
+             trainer.set_trainable_names(names,block_name,reset_block=not continuing)
+             progress['status']='training'
+@@ -669,12 +703,14 @@
+             trainer.actor_updates=accepted;trainer.actor_attempts=attempts
+             trainer.rejected_actor_updates=progress.get('rejected',attempts-accepted)
+             trainer.backtracked_actor_updates=progress.get('backtracked',0)
++            if managed_refresh and progress['pending_refresh']:raise ValueError('Internal refresh found in externally managed short block')
+             if progress['pending_refresh']:
+                 refresh_frozen_policy(block_name)
+                 progress['refresh_at']=accepted;progress['pending_refresh']=False;save('latest.pt')
+             while accepted<budget and attempts<max_attempts:
++                save(f'pre_proposal_{cycle_index}_{block_name}.pt')
+                 attempts+=1;global_attempt_id+=1;trainer.block_attempts=attempts
+-                progress['attempts']=attempts
++                progress['attempts']=attempts;progress['proposal_in_flight']=True
+                 trainer.actor_updates=accepted
+                 trainer.actor_attempts=attempts
+                 check_stop();cover_critic();ensure_critic()
+@@ -702,7 +738,7 @@
+                                 writer.flush()
+                         cursor=len(env.rally_records)
+                 collect_s=time.perf_counter()-started;check_stop()
+-                world_stats=run_world_updates(global_attempt_id)
++                world_stats=run_world_updates(global_attempt_id,head=block_name)
+                 quality=check_head_quality(block_name,global_attempt_id)
+                 # Rebuild the start pool for every proposal.  Recovery starts
+                 # therefore follow fresh event-aligned native data as it
+@@ -736,9 +772,9 @@
+                     global_rejected+=1
+                 backtracked=int(stats.get('update_accepted',False) and stats.get('backtrack_alpha',1.)<1.)
+                 global_backtracked += backtracked
+-                progress.update(attempts=attempts,accepted=accepted,rejected=progress.get('rejected',0)+int(not stats['update_accepted']),backtracked=progress.get('backtracked',0)+backtracked)
++                progress.update(proposal_in_flight=False,attempts=attempts,accepted=accepted,rejected=progress.get('rejected',0)+int(not stats['update_accepted']),backtracked=progress.get('backtracked',0)+backtracked)
+                 with torch.no_grad():request=trainer._actor_action(state,sample=False)[0];preview,_,_=adapter.executor.forward(state.observation,request,state.clock_goal_context['joint_default'][0],state.clock_goal_context['limits'],state.executor_memory)
+-                record=dict(**stats,**{k:v for k,v in world_stats.items() if k not in stats},block=block_name,block_accepted_updates=accepted,block_rejected=progress['rejected'],block_backtracked=progress['backtracked'],attempt_id=global_attempt_id,accepted_id=global_accepted_id,global_attempts=global_attempt_id,global_accepted=global_accepted_id,global_rejected=global_rejected,global_backtracked=global_backtracked,native_ticks=tick,native_transitions=tick*128,native_collect_seconds=collect_s, native_reward_mean=float(reward.mean()),completed_native_episodes=len(completed_returns),native_return_mean=sum(completed_returns)/len(completed_returns) if completed_returns else None,native_discounted_return_mean=sum(completed_discounted)/len(completed_discounted) if completed_discounted else None,raw_return_scope='completed mixed-policy monitoring; incomplete episodes excluded',peak_gpu_bytes=torch.cuda.max_memory_allocated(),model_calls=adapter.calls,window_sampling=world_stats.get('world_update_reports',[]),imagined_start_source='fresh_native' if replay.new_starts and any(pool_item is replay.new_starts[-1] for pool_item in pool) else 'event_aligned_replay')
++                record=dict(**stats,**{k:v for k,v in world_stats.items() if k not in stats},block=block_name,block_key=str(cycle_index),block_accepted_updates=accepted,block_rejected=progress['rejected'],block_backtracked=progress['backtracked'],attempt_id=global_attempt_id,accepted_id=global_accepted_id,global_attempts=global_attempt_id,global_accepted=global_accepted_id,global_rejected=global_rejected,global_backtracked=global_backtracked,native_ticks=tick,native_transitions=tick*128,native_collect_seconds=collect_s, native_reward_mean=float(reward.mean()),completed_native_episodes=len(completed_returns),native_return_mean=sum(completed_returns)/len(completed_returns) if completed_returns else None,native_discounted_return_mean=sum(completed_discounted)/len(completed_discounted) if completed_discounted else None,raw_return_scope='completed mixed-policy monitoring; incomplete episodes excluded',peak_gpu_bytes=torch.cuda.max_memory_allocated(),model_calls=adapter.calls,window_sampling=world_stats.get('world_update_reports',[]),imagined_start_source='fresh_native' if replay.new_starts and any(pool_item is replay.new_starts[-1] for pool_item in pool) else 'event_aligned_replay')
+                 if writer is not None:
+                     step=int(tick*128)
+                     writer.add_scalar('native/step_reward_mean',float(reward.mean()),step)
+@@ -747,9 +783,9 @@
+                     writer.add_scalar('actor/imagined_return',float(stats.get('imagined_return_mean',0.0)),step)
+                     writer.add_scalar('model/world_loss',float(world_stats.get('world_loss',0.0)),step)
+                     writer.add_scalar('critic/loss',float(stats.get('critic_loss',0.0)),step)
+-                    writer.add_scalar('actor/%s_updates'%block_name,accepted,step)
++                    writer.add_scalar('actor/%s_updates'%block_name,sum(row['accepted'] for key,row in schedule.cycles.items() if key.endswith('/'+block_name)),step)
+                     writer.add_scalar('actor/%s_gate_active'%block_name,float(stats.get('effective_gate_lanes',0)),step)
+-                    writer.add_scalar('actor/effective_updates',float(stats.get('actor_updates',0)),step)
++                    writer.add_scalar('actor/effective_updates',float(global_accepted_id),step)
+                     writer.add_scalar('actor/tracking_loss',float(stats.get('tracking_loss',0.0)),step)
+                     for name in ('task_gradient_norm','tracking_gradient_norm','anchor_gradient_norm','task_tracking_cosine','final_command_max_change','objective_before','objective_after','tracking_active_lane_steps','tracking_effective_weight_sum','tracking_nonzero_gradient_lanes'):
+                         if name in stats:writer.add_scalar('actor/'+name,float(stats[name]),step)
+@@ -763,29 +799,31 @@
+                 save('latest.pt');write(args.output/'progress.json',record)
+                 with (args.output/'training_history.jsonl').open('a') as f:f.write(json.dumps(record)+'\n')
+                 print('PHYSICAL_LEARNING='+json.dumps(record),flush=True)
+-                if stats['update_accepted'] and accepted and accepted%16==0:save(f'{block_name}_checkpoint_{accepted:04d}.pt')
+-                if block_name=='approach' and stats['update_accepted'] and accepted%args.approach_refresh_interval==0:
++                if stats['update_accepted'] and accepted and accepted%16==0:save(f'{cycle_index}_{block_name}_checkpoint_{accepted:04d}.pt')
++                if not managed_refresh and block_name=='approach' and stats['update_accepted'] and accepted%args.approach_refresh_interval==0:
+                     progress['pending_refresh']=True;save('latest.pt')
+                     refresh_frozen_policy('approach')
+                     progress['refresh_at']=accepted;progress['pending_refresh']=False;save('latest.pt')
+-            write(args.output/(block_name+'_actor_start_sampling.json'),replay.actor_start_bank.sampling_report(sampling_history_start))
++            write(args.output/(str(cycle_index)+'_'+block_name+'_actor_start_sampling.json'),replay.actor_start_bank.sampling_report(sampling_history_start))
+             if accepted<budget:
+-                save(f'{block_name}_candidate_{accepted:04d}.pt')
++                save(f'{cycle_index}_{block_name}_candidate_{accepted:04d}.pt')
+                 write(args.output/'block_incomplete.json',dict(block=block_name,target=budget,accepted=accepted,attempts=attempts,limit=max_attempts))
+                 raise RuntimeError(f'{block_name}: proposal budget exhausted ({accepted}/{budget} accepted); next block disabled')
+-            if block_name=='approach' and accepted>progress['refresh_at']:
++            if not managed_refresh and block_name=='approach' and accepted>progress['refresh_at']:
+                 progress['pending_refresh']=True;save('latest.pt')
+                 refresh_frozen_policy('approach')
+                 progress['refresh_at']=accepted;progress['pending_refresh']=False
+-            save(f'{block_name}_candidate_{accepted:04d}.pt')
++            save(f'{cycle_index}_{block_name}_candidate_{accepted:04d}.pt')
+             progress['status']='done';save('latest.pt')
+             return accepted
+-        def refresh_frozen_policy(head):
++        def refresh_frozen_policy(head,*,event_id=None,managed_refresh=False):
+             """Bounded first-complete-episode collection; no mid-episode manual reset."""
+-            nonlocal obs,tick,cursor,refresh_collector,refresh_serial,runtime_validation_data,runtime_validation_path,native_value_bank
++            nonlocal obs,tick,cursor,refresh_collector,refresh_serial,frozen_policy_id,runtime_validation_data,runtime_validation_path,native_value_bank
+             if args.refresh_ticks==0:return 0,0
+             refresh_serial+=1
++            consumer_heads=('recovery','approach') if managed_refresh else (head,)
+             policy_id=f'{head}_frozen_v{global_accepted_id}_refresh{refresh_serial}'
++            frozen_policy_id=policy_id
+             refresh_dir=args.output/policy_id
+             refresh_dir.mkdir(exist_ok=False)
+             from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest
+@@ -804,7 +842,7 @@
+                 collector=refresh_collector
+                 rtg_refresh,receipt=collector.result()
+             finally:
+-                refresh_collector=None
++                refresh_collector=None;frozen_policy_id=None
+                 archive.flush()
+             if actor_hash!=tensor_digest(actor.state_dict().items()):raise RuntimeError('Frozen collection changed actor')
+             wanted={(lane,int(ep)) for lane,ep in enumerate(collector.ids.tolist())}
+@@ -817,14 +855,18 @@
+                 replay.actor_start_bank.label_terminal(record,replay.current_stream)
+             write(refresh_dir/'episodes_summary.json',native_records)
+             cursor=len(env.rally_records) # these records belong to the frozen stream, not mixed monitoring
+-            receipt.update(start_tick=start_tick,end_tick=tick,actor_sha256=actor_hash,policy_execution=policy_execution,head=head,formal_evaluation=False,
++            receipt.update(start_tick=start_tick,end_tick=tick,actor_sha256=actor_hash,policy_execution=policy_execution,head=head,consumer_heads=list(consumer_heads),schedule_event_id=event_id,formal_evaluation=False,
+                            native_metrics=summarize_native_episodes(native_records))
+             from quadsmash.rl.supermimic_evidence_binding_v1 import attach_terminal_ball_side
+             packed=attach_terminal_ball_side(collector.packed_complete(),native_records)
+             runtime_validation_data=packed
+             atomic_torch_save(dict(tensors=packed,policy_id=policy_id,receipt=receipt),refresh_dir/'complete_episodes.pt')
+             runtime_validation_path=str(refresh_dir/'complete_episodes.pt')
+-            refresh_stats=run_world_updates(global_attempt_id,args.refresh_world_updates,head=head) if args.refresh_world_updates else {'world_updates':0}
++            wm_budgets=refresh_world_budgets(args.refresh_world_updates,consumer_heads)
++            wm_fits={h:run_world_updates(global_attempt_id,n,head=h) for h,n in wm_budgets.items() if n}
++            refresh_stats=dict(world_updates=sum(x['world_updates'] for x in wm_fits.values()))
++            receipt['wm_refresh_by_head']=wm_fits
++            receipt['shared_data_policy_id']=policy_id
+             # Encode every eligible lane once, keeping only compact critic
+             # inputs. Full asynchronous G07 snapshots are read one at a time.
+             native_x=[];native_y=[];native_stage=[];native_identity=[];native_masks={h:[] for h in ('recovery','approach')}
+@@ -870,13 +912,29 @@
+                 trainer.reference_bank.extend(additions)
+                 atomic_torch_save(trainer.reference_bank.payload(),refresh_dir/'reference_bank.pt')
+                 receipt['reference_bank']=trainer.reference_bank.manifest
+-            receipt.update(world_updates=refresh_stats['world_updates'],critic_updates=len(fits),critic_fits=fits,
++            # Same post-refresh WM and same completed trajectories are checked for BOTH heads.
++            # Missing calibrated bounds are explicitly unverified, never a success receipt.
++            if dual_quality is not None:
++                from quadsmash.rl.supermimic_wm_validation_v1 import runtime_head_check
++                receipt['wm_quality']={h:runtime_head_check(adapter,packed,wm_holdout_lanes,launch,h,runtime_wm_bounds[h],
++                    minimum_event_episodes=dual_quality['wm_min_event_episodes'][h]) for h in ('recovery','approach')}
++            else:
++                receipt['wm_quality']={h:dict(passed=None,reason='no calibrated independent validation bounds') for h in ('recovery','approach')}
++            receipt['reference_coverage']={h:reference_coverage(trainer.reference_bank,h,trainer.tracking_weight) for h in ('recovery','approach')}
++            if actor_hash!=tensor_digest(actor.state_dict().items()):raise RuntimeError('Refresh WM/critic fitting changed actor')
++            receipt.update(complete_episodes=128,actor_unchanged=True,world_updates=refresh_stats['world_updates'],critic_updates=len(fits),critic_fits=fits,
+                            warmup_ticks=0,partial_suffix_scope='WM only, excluded from calibration')
+             write(refresh_dir/'manifest.json',receipt)
+             if writer is not None:
+                 writer.add_scalar('native_frozen/episode_return_mean',sum(receipt['returns'])/128,tick*128)
+                 writer.flush()
+             print('PHYSICAL_REFRESH='+json.dumps(receipt),flush=True)
++            if dual_quality is not None and any(not receipt['wm_quality'][h]['passed'] or not receipt['critic_holdout'][h]['passed'] for h in ('recovery','approach')):
++                raise RuntimeError('Combined frozen refresh quality failed; next short block disabled; see manifest')
++            if managed_refresh:
++                return dict(complete_episodes=128,actor_unchanged=True,consumer_heads=list(consumer_heads),policy_id=policy_id,
++                    actor_sha256=actor_hash,manifest_path=str(refresh_dir/'manifest.json'),
++                    world_updates=refresh_stats['world_updates'],critic_updates=len(fits),native_ticks=tick-start_tick)
+             save('latest.pt')
+             return refresh_stats['world_updates'],len(fits)
+         if args.update_mode == 'joint':
+@@ -919,8 +977,38 @@
+                  world_updates=trainer.world_updates,critic_updates=trainer.critic_updates,formal_evaluation=False,blocks=['joint'],trainable_names=sorted(trainer.trainable_names)))
+             stage(args.output,'TRAINING_FINISHED',actor_updates=args.joint_update_budget)
+             return
++        elif alternating is not None:
++            cycle_results=[]
++            def train_short(event):
++                head=event['head'];names=RECOVERY_NAMES if head=='recovery' else APPROACH_NAMES
++                run_block(head,names,event['target'],event['proposal_limit'],event['block_key'],managed_refresh=True)
++                row=schedule.block(event['block_key'],head,event['target'],event['proposal_limit'])
++                return {k:row[k] for k in ('attempts','accepted','rejected','backtracked')}
++            def refresh_pair(event):
++                return refresh_frozen_policy('combined',event_id=event['id'],managed_refresh=True)
++            def finalize_cycle(event):
++                totals=alternating.head_totals(event['cycle'])
++                total=sum(x['accepted'] for x in totals.values())
++                refreshes=[r['result'] for r in alternating.results if r['event']['cycle']==event['cycle'] and r['event']['kind']=='refresh']
++                result=dict(cycle=event['cycle']+1,recovery_accepted=totals['recovery']['accepted'],approach_accepted=totals['approach']['accepted'],
++                    head_counters=totals,native_ticks=tick,world_updates=trainer.world_updates,critic_updates=trainer.critic_updates,
++                    refresh_count=len(refreshes),refresh_world_updates=sum(r['world_updates'] for r in refreshes),
++                    refresh_critic_updates=sum(r['critic_updates'] for r in refreshes),formal_evaluation=False)
++                save('cycle_%02d_candidate_%04d.pt' % (event['cycle']+1,total))
++                write(args.output/('cycle_%02d.json' % (event['cycle']+1)),result)
++                return result
++            run_schedule(alternating,train=train_short,refresh=refresh_pair,finalize=finalize_cycle,checkpoint=save)
++            cycle_results=[r['result'] for r in alternating.results if r['event']['kind']=='finalize']
++            totals=alternating.head_totals();total=sum(x['accepted'] for x in totals.values())
++            write(args.output/'training_completed.json',dict(update_mode='sequential',sequential_layout='short-alternating',
++                refresh_mode=args.refresh_mode,head_block_size=args.head_block_size,cycles=args.cycles,actor_updates=total,
++                recovery_accepted=totals['recovery']['accepted'],approach_accepted=totals['approach']['accepted'],head_counters=totals,
++                proposal_attempts=global_attempt_id,global_accepted=global_accepted_id,global_rejected=global_rejected,
++                global_backtracked=global_backtracked,native_ticks=tick,world_updates=trainer.world_updates,
++                critic_updates=trainer.critic_updates,cycle_results=cycle_results,formal_evaluation=False))
++            stage(args.output,'TRAINING_FINISHED',actor_updates=total)
+         else:
+-            # Default production path: recovery then approach. Each block owns
++            # Legacy diagnostic path: recovery then approach. Each block owns
+             # its trainable head and Adam state; the intermediate checkpoint is
+             # written before the approach block starts.
+             cycle_results=[]
+--- a/scripts/run_supermimic_phase1_long_v1.sh
++++ b/scripts/run_supermimic_phase1_long_v1.sh
+@@ -1,8 +1,8 @@
+ #!/usr/bin/env bash
+ set -Eeuo pipefail
+ 
+-# Bounded success-guided Recovery32->Approach8 default with a frozen 128-env
+-# gate after the cycle. Budgets remain explicit overrides. This script is intentionally launch-only: it is never run by the
++# Short alternating (R8 -> A8 -> combined frozen refresh) x8, then
++# one formal 128-env evaluation. Large-profile evidence gates remain mandatory. Budgets remain explicit overrides. This script is intentionally launch-only: it is never run by the
+ # code validation step. Set the six SM_* paths before invoking it.
+ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+ PYTHON="${QUADSMASH_PYTHON:-/home/autodrive/Isaac/env_isaaclab/bin/python}"
+@@ -17,10 +17,10 @@
+ mkdir -p "$RUN_ROOT" "$RUN_ROOT/tensorboard"
+ REF_BANK="${SM_TASK_REFERENCE_BANK:?set SM_TASK_REFERENCE_BANK to a terminal-verified v2 bank}"
+ TRACK_WEIGHT="${SM_TRACKING_WEIGHT:?declare SM_TRACKING_WEIGHT before this experiment}"
+-R_UPDATES="${SM_RECOVERY_UPDATES:-32}"
+-A_UPDATES="${SM_APPROACH_UPDATES:-8}"
+-R_PROPOSALS="${SM_RECOVERY_PROPOSALS:-64}"
+-A_PROPOSALS="${SM_APPROACH_PROPOSALS:-16}"
++R_UPDATES="${SM_RECOVERY_UPDATES:-64}"
++A_UPDATES="${SM_APPROACH_UPDATES:-64}"
++R_PROPOSALS="${SM_RECOVERY_PROPOSALS:-128}"
++A_PROPOSALS="${SM_APPROACH_PROPOSALS:-128}"
+ CYCLES="${SM_CYCLES:-1}"
+ TB_PID=""
+ cleanup(){
+@@ -57,11 +57,12 @@
+     --reference-policy-checkpoint "$REFERENCE"
+     --recovery-update-budget "$R_UPDATES" --approach-update-budget "$A_UPDATES"
+     --recovery-proposal-budget "$R_PROPOSALS" --approach-proposal-budget "$A_PROPOSALS"
+-    --update-mode sequential --ball-side-mode shadow
++    --update-mode sequential --sequential-layout short-alternating --head-block-size "${SM_HEAD_BLOCK_SIZE:-8}"
++    --refresh-mode "${SM_REFRESH_MODE:-pair}" --ball-side-mode shadow
+     --cycles 1 --native-ticks-per-actor-update 16
+     --replay-capacity-ticks 16384 --refresh-ticks 800
+     --refresh-world-updates 32 --refresh-critic-updates 20
+-    --world-updates-per-actor-update 4 --approach-refresh-interval 8
++    --world-updates-per-actor-update 4
+     --wm-stage-quota uniform=32,pre_touchdown=24,touchdown=24,post_touchdown=24,recovery_failure=16,stable_recovery=8
+     --wm-approach-stage-quota uniform=24,approach_active=32,hit_prepare=24,contact_release=24,approach_failure=16,post_hit=8
+     --task-reference-bank "$REF_BANK" --tracking-weight "$TRACK_WEIGHT"
+@@ -70,7 +71,7 @@
+     --output "$OUT" --headless --device cuda:0
+     --rendering_mode performance --kit_args=--renderer/multiGpu/enabled=false
+   )
+-  if [[ "${SM_TRAINING_PROFILE:-bounded}" == large ]]; then
++  if [[ "${SM_TRAINING_PROFILE:-large}" == large ]]; then
+     TRAIN_ARGS+=(--training-profile large --contact-validation-receipt "${SM_CONTACT_VALIDATION_RECEIPT:?contact validation evidence required}")
+   fi
+   if [[ -n "$PREV" ]]; then
+--- a/configs/supermimic_success_guided_v2.json
++++ b/configs/supermimic_success_guided_v2.json
+@@ -1,25 +1,74 @@
+ {
+-  "scope": "Launch defaults only; actual CLI overrides are recorded in each run config. Not yet native-validated.",
++  "scope": "Launch defaults, not native-validated; no training authorized by editing this file. Large profile requires current validation evidence.",
+   "num_envs": 128,
+   "cycles": 1,
+   "update_mode": "sequential",
+-  "recovery_updates": 32,
+-  "recovery_proposals": 64,
+-  "approach_updates": 8,
+-  "approach_proposals": 16,
++  "recovery_updates": 64,
++  "recovery_proposals": 128,
++  "approach_updates": 64,
++  "approach_proposals": 128,
+   "world_updates_per_proposal": 4,
+   "native_ticks_per_proposal": 16,
+   "imagination_s": 0.64,
+   "world_window_s": 0.16,
+   "control_dt_s": 0.01,
+-  "actor_learning_rate": 0.00005,
++  "actor_learning_rate": 5e-05,
+   "world_learning_rate": 0.0002,
+   "critic_learning_rate": 0.0002,
+-  "source_quota": {"recent_online": 64, "older_online": 32, "initial_archive": 32},
+-  "recovery_quota": {"uniform": 32, "pre_touchdown": 24, "touchdown": 24, "post_touchdown": 24, "recovery_failure": 16, "stable_recovery": 8},
+-  "approach_quota": {"uniform": 24, "approach_active": 32, "hit_prepare": 24, "contact_release": 24, "approach_failure": 16, "post_hit": 8},
+-  "frozen_refresh": {"episode_ticks": 800, "maximum_collection_ticks": 1601, "after_recovery": true, "approach_effective_update_interval": 8, "approach_block_remainder": true, "world_updates": 32, "critic_updates": 20},
+-  "tracking": {"schema": "success-guided-task-space-reference-v2", "weight": "explicit SM_TRACKING_WEIGHT required", "bank": "explicit SM_TASK_REFERENCE_BANK required", "threshold": "finite positive threshold recorded in bank, requires offline calibration"},
++  "source_quota": {
++    "recent_online": 64,
++    "older_online": 32,
++    "initial_archive": 32
++  },
++  "recovery_quota": {
++    "uniform": 32,
++    "pre_touchdown": 24,
++    "touchdown": 24,
++    "post_touchdown": 24,
++    "recovery_failure": 16,
++    "stable_recovery": 8
++  },
++  "approach_quota": {
++    "uniform": 24,
++    "approach_active": 32,
++    "hit_prepare": 24,
++    "contact_release": 24,
++    "approach_failure": 16,
++    "post_hit": 8
++  },
++  "frozen_refresh": {
++    "episode_ticks": 800,
++    "maximum_collection_ticks": 1601,
++    "after": "each R8+A8 pair",
++    "collections_per_cycle": 8,
++    "integration_mode": "per-head (16 collections per R64+A64)",
++    "world_updates": 32,
++    "world_update_budget_scope": "total split R16+A16 on the same shared WM and combined-policy data",
++    "critic_updates": 20
++  },
++  "tracking": {
++    "schema": "success-guided-task-space-reference-v2",
++    "weight": "explicit SM_TRACKING_WEIGHT required",
++    "bank": "explicit SM_TASK_REFERENCE_BANK required",
++    "threshold": "finite positive threshold recorded in bank, requires offline calibration"
++  },
+   "ball_side_mode": "shadow",
+-  "acceptance": {"native_return_gt": -12.52678435, "ball_side_min": 53, "complete5_min": 27, "numerical_failures": 0}
++  "acceptance": {
++    "native_return_gt": -12.52678435,
++    "ball_side_min": 53,
++    "complete5_min": 27,
++    "numerical_failures": 0
++  },
++  "sequential_layout": "short-alternating",
++  "head_block_size": 8,
++  "refresh_mode": "pair",
++  "training_profile": "large",
++  "native_tick_budget": {
++    "proposal_collection_if_all_first_attempts_accepted": 2048,
++    "proposal_collection_upper_bound": 4096,
++    "frozen_collection_minimum": 6400,
++    "frozen_collection_upper_bound": 12808,
++    "formal_evaluation": 800,
++    "notes": "Per cycle; startup/resume collection separate. Rejected proposals still collect 16 ticks. Full refresh waits for valid per-lane episode boundaries."
++  }
+ }
+--- a/configs/supermimic_phase1_long_v1.json
++++ b/configs/supermimic_phase1_long_v1.json
+@@ -4,24 +4,36 @@
+   "cycles": 4,
+   "recovery_updates_per_cycle": 64,
+   "approach_updates_per_cycle": 64,
+-  "recovery_proposal_limit_per_cycle": 64,
+-  "approach_proposal_limit_per_cycle": 64,
++  "recovery_proposal_limit_per_cycle": 128,
++  "approach_proposal_limit_per_cycle": 128,
+   "native_ticks_per_actor_update": 16,
+-  "native_control_ticks": 8192,
+-  "native_transitions": 1048576,
+   "imagination_seconds": 0.64,
+   "world_window_seconds": 0.16,
+   "replay_capacity_ticks": 16384,
+-  "actor_learning_rate": 0.00005,
++  "actor_learning_rate": 5e-05,
+   "world_learning_rate": 0.0002,
+   "critic_learning_rate": 0.0002,
+-  "refresh_ticks": 0,
+-  "formal_evaluation": "one frozen 128-env evaluation after each accepted cycle",
++  "refresh_ticks": 800,
++  "formal_evaluation": "one frozen TRAIN128/800-tick evaluation after all 8 pairs; strict identity/contract/metric promotion before next cycle",
+   "acceptance": {
+     "native_return_gt": -12.52678435,
+     "ball_side_min": 53,
+     "complete5_min": 27,
+     "numerical_failures": 0
+   },
+-  "notes": "No MPC, teacher takeover, reward, asset, physics, action mapping or control-period changes. CPU ring replay with GPU minibatches."
++  "notes": "No MPC, teacher takeover, reward, asset, physics, action mapping or control-period changes. CPU ring replay with GPU minibatches.",
++  "sequential_layout": "short-alternating",
++  "head_block_size": 8,
++  "refresh_mode": "pair",
++  "world_updates_per_proposal": 4,
++  "refresh_world_updates": 32,
++  "refresh_critic_updates": 20,
++  "native_budget_scope": "Proposal collection excludes mandatory frozen refresh and formal evaluation; no longer an 8192-tick total run.",
++  "per_cycle_native_ticks": {
++    "proposal_if_all_first_attempts_accepted": 2048,
++    "proposal_upper_bound": 4096,
++    "frozen_minimum": 6400,
++    "frozen_upper_bound": 12808,
++    "formal_evaluation": 800
++  }
+ }
+--- /dev/null
++++ b/tests/test_supermimic_short_alternating.py
+@@ -0,0 +1,193 @@
++"""CPU orchestration contracts only: no native episode or real checkpoint updates."""
++import ast
++import copy
++from pathlib import Path
++from types import SimpleNamespace
++import pytest
++import torch
++from torch import nn
++from quadsmash.rl.supermimic_alternating_schedule_v1 import (
++    AlternatingSchedule,make_plan,refresh_world_budgets,run_schedule,
++)
++from quadsmash.rl.supermimic_sequential_progress_v1 import SequentialProgress
++
++
++def accepted(event, extra=0):
++    return dict(accepted=event['target'],attempts=event['target']+extra,rejected=extra,backtracked=0)
++
++
++def refreshed(event):
++    return dict(complete_episodes=128,actor_unchanged=True,consumer_heads=['recovery','approach'])
++
++
++def test_r64_a64_means_eight_combined_refreshes_and_one_finalization():
++    p=make_plan(64,64,128,128)
++    assert len(p)==25
++    assert [(e['kind'],e.get('head')) for e in p[:3]]==[('train','recovery'),('train','approach'),('refresh',None)]
++    assert sum(e['kind']=='refresh' for e in p)==8
++    for h in ('recovery','approach'):
++        assert sum(e['target'] for e in p if e.get('head')==h)==64
++        assert sum(e['proposal_limit'] for e in p if e.get('head')==h)==128
++    assert p[-1]['kind']=='finalize'
++    assert sum(e['kind']=='refresh' for e in make_plan(64,64,128,128,refresh_mode='per-head'))==16
++
++
++def test_remainder_and_proposal_surplus_not_rounded_into_extra_updates():
++    p=make_plan(10,10,13,15,cycles=2)
++    for c in (0,1):
++        for head,limit in [('recovery',13),('approach',15)]:
++            blocks=[e for e in p if e.get('head')==head and e['cycle']==c]
++            assert [e['target'] for e in blocks]==[8,2]
++            assert sum(e['proposal_limit'] for e in blocks)==limit
++    with pytest.raises(ValueError):make_plan(64,64,63,128)
++    with pytest.raises(ValueError):make_plan(64,8,128,16)
++    with pytest.raises(ValueError):make_plan(8,8,16,16,block_size=0)
++    assert refresh_world_budgets(32)==dict(recovery=16,approach=16)
++    assert sum(refresh_world_budgets(33).values())==33
++    with pytest.raises(ValueError):refresh_world_budgets(1)
++
++
++def test_driver_uses_current_combination_and_refresh_precedes_next_recovery():
++    s=AlternatingSchedule(make_plan(16,16,32,32));version={'recovery':0,'approach':0};seen=[];saves=[]
++    def train(e):
++        seen.append((e['head'],dict(version)))
++        version[e['head']]+=e['target']
++        return accepted(e,1)
++    def refresh(e):
++        seen.append(('refresh',dict(version)))
++        return dict(refreshed(e),policy_id=str(version))
++    run_schedule(s,train=train,refresh=refresh,finalize=lambda e:{},checkpoint=saves.append)
++    assert seen[2]==('refresh',{'recovery':8,'approach':8})
++    assert seen[3]==('recovery',{'recovery':8,'approach':8})
++    assert seen[-1]==('refresh',{'recovery':16,'approach':16})
++    assert s.complete and s.head_totals()=={h:dict(attempts=18,accepted=16,rejected=2,backtracked=0) for h in version}
++    assert sum(n.startswith('pre_refresh_') for n in saves)==2
++
++
++def test_incomplete_head_does_not_run_next_head_or_refresh():
++    s=AlternatingSchedule(make_plan(8,8,16,16));calls=[]
++    def failed(e):return dict(accepted=0,attempts=16,rejected=16,backtracked=0)
++    with pytest.raises(ValueError,match='incomplete'):
++        run_schedule(s,train=failed,refresh=lambda e:calls.append(e),finalize=lambda e:calls.append(e),checkpoint=lambda n:None)
++    assert not calls and not s.complete and s.cursor==0
++
++
++def test_resume_at_second_head_does_not_repeat_recovery_or_change_plan():
++    plan=make_plan(16,16,32,32);s=AlternatingSchedule(plan)
++    s.begin();s.finish(accepted(s.current,1));s.begin()
++    saved=s.state_dict();t=AlternatingSchedule(plan);t.load_state_dict(saved)
++    assert t.current['head']=='approach' and t.running
++    calls=[]
++    run_schedule(t,train=lambda e:(calls.append(e['head']) or accepted(e)),refresh=refreshed,finalize=lambda e:{},checkpoint=lambda n:None)
++    assert calls==['approach','recovery','approach']
++    assert t.head_totals()['recovery']['attempts']==17
++    with pytest.raises(ValueError,match='configuration'):
++        AlternatingSchedule(make_plan(16,16,64,32)).load_state_dict(saved)
++
++
++def test_partial_refresh_is_not_resumed_as_a_completed_or_repeated_fit():
++    s=AlternatingSchedule(make_plan(8,8,16,16));durable={}
++    def checkpoint(name):durable[name]=s.state_dict()
++    def fail(e):raise RuntimeError('synthetic WM fit interruption')
++    with pytest.raises(RuntimeError):
++        run_schedule(s,train=accepted,refresh=fail,finalize=lambda e:{},checkpoint=checkpoint)
++    assert s.running and s.current['kind']=='refresh'
++    with pytest.raises(ValueError,match='pre_refresh'):
++        AlternatingSchedule(s.plan).load_state_dict(s.state_dict())
++    safe=AlternatingSchedule(s.plan);safe.load_state_dict(durable['latest.pt'])
++    assert safe.current['kind']=='refresh' and not safe.running
++    run_schedule(safe,train=lambda e:pytest.fail('repeated training'),refresh=refreshed,finalize=lambda e:{},checkpoint=lambda n:None)
++    assert safe.complete
++
++
++def test_resume_after_refresh_does_not_collect_or_fit_it_again():
++    s=AlternatingSchedule(make_plan(8,8,16,16));durable={}
++    def checkpoint(n):durable[n]=s.state_dict()
++    def fail_finalize(e):raise RuntimeError('report interruption')
++    with pytest.raises(RuntimeError):run_schedule(s,train=accepted,refresh=refreshed,finalize=fail_finalize,checkpoint=checkpoint)
++    t=AlternatingSchedule(s.plan);t.load_state_dict(durable['latest.pt'])
++    assert t.current['kind']=='finalize'
++    run_schedule(t,train=lambda e:pytest.fail('train repeated'),refresh=lambda e:pytest.fail('refresh repeated'),finalize=lambda e:{},checkpoint=lambda n:None)
++    assert t.complete
++    bad=t.state_dict();bad['results'][2]['result']['complete_episodes']=127
++    with pytest.raises(ValueError,match='Incomplete'):AlternatingSchedule(s.plan).load_state_dict(bad)
++
++
++def test_actual_entry_callbacks_disable_internal_refresh_and_use_one_shared_collection():
++    # Execute the native entry's actual orchestration callbacks without importing Isaac.
++    root=Path(__file__).resolve().parents[1]
++    source=(root/'scripts/train_supermimic_physical_block.py').read_text();tree=ast.parse(source)
++    names={'train_short','refresh_pair','finalize_cycle'}
++    funcs=[n for n in ast.walk(tree) if isinstance(n,ast.FunctionDef) and n.name in names]
++    schedule=SequentialProgress();alt=AlternatingSchedule(make_plan(16,16,32,32));calls=[];files=[]
++    def block(h,names,target,limit,key,*,managed_refresh):
++        assert managed_refresh
++        assert names==[h]
++        calls.append(('train',h,key))
++        schedule.block(key,h,target,limit).update(accepted=target,attempts=target,rejected=0,backtracked=0,status='done')
++    def refresh(head,*,event_id,managed_refresh):
++        assert head=='combined' and managed_refresh
++        calls.append(('refresh',event_id))
++        return dict(refreshed({}),world_updates=32,critic_updates=20)
++    ns=dict(run_block=block,schedule=schedule,alternating=alt,RECOVERY_NAMES=['recovery'],APPROACH_NAMES=['approach'],
++        refresh_frozen_policy=refresh,trainer=SimpleNamespace(world_updates=64,critic_updates=40),tick=3000,
++        save=files.append,write=lambda p,v:None,args=SimpleNamespace(output=Path('/not-created')))
++    exec(compile(ast.Module(body=funcs,type_ignores=[]),'<actual-entry-callbacks>','exec'),ns)
++    run_schedule(alt,train=ns['train_short'],refresh=ns['refresh_pair'],finalize=ns['finalize_cycle'],checkpoint=files.append)
++    assert [c[:2] for c in calls if c[0]=='train']==[('train','recovery'),('train','approach')]*2
++    assert len([c for c in calls if c[0]=='refresh'])==2
++    assert 'cycle_01_candidate_0032.pt' in files
++    assert alt.results[-1]['result']['refresh_world_updates']==64 # not 128
++    assert "if not managed_refresh and block_name=='approach'" in source
++    assert "consumer_heads=('recovery','approach') if managed_refresh" in source
++    assert "if actor_hash!=tensor_digest(actor.state_dict().items()):raise RuntimeError('Refresh WM/critic fitting changed actor')" in source
++
++
++def test_both_adam_states_and_native_reference_survive_switch_and_restore():
++    from test_supermimic_physical_actor_transaction import learner
++    class Dual(nn.Module):
++        def __init__(self):
++            super().__init__();self.base=nn.Linear(2,2,bias=False);self.recovery=nn.Linear(2,2,bias=False);self.approach=nn.Linear(2,2,bias=False)
++            for p in self.parameters():nn.init.zeros_(p)
++        def forward(self,obs,sample=False):return self.base(obs)+self.recovery(obs)+self.approach(obs),None,None
++    t=learner();t.actor=Dual();t.reference=copy.deepcopy(t.actor).requires_grad_(False)
++    t._actor_optimizers={};t._pending_actor_optimizer_states={}
++    t.native_accepted_snapshot=copy.deepcopy(t.actor.state_dict());native=copy.deepcopy(t.native_accepted_snapshot)
++    for h in ('recovery','approach'):
++        t.set_trainable_names([h+'.weight'],h)
++        assert t.imagine_update(t.budget_states[0])['update_accepted']
++    opts=copy.deepcopy({h:o.state_dict() for h,o in t._actor_optimizers.items()})
++    t._actor_optimizers={};t._pending_actor_optimizer_states=opts
++    before=copy.deepcopy(t.actor.state_dict())
++    t.set_trainable_names(['recovery.weight'],'recovery')
++    assert t.actor_opt.param_groups[0]['lr']==5e-5
++    assert t.imagine_update(t.budget_states[0])['update_accepted']
++    assert int(next(iter(t.actor_opt.state.values()))['step'])==2
++    assert torch.equal(before['approach.weight'],t.actor.state_dict()['approach.weight'])
++    assert torch.equal(before['base.weight'],t.actor.state_dict()['base.weight'])
++    for k,v in native.items():assert torch.equal(v,t.native_accepted_snapshot[k])
++    # Frozen head parameters still transmit gradients to inputs.
++    x=torch.ones(2,2,requires_grad=True)
++    assert torch.autograd.grad(t.actor.approach(x).sum(),x)[0].abs().sum()>0
++    t.set_trainable_names(['approach.weight'],'approach')
++    assert int(next(iter(t.actor_opt.state.values()))['step'])==1
++
++
++def test_launcher_and_configs_match_pair_refresh_and_keep_native_promotion():
++    import json
++    root=Path(__file__).resolve().parents[1]
++    c=json.loads((root/'configs/supermimic_success_guided_v2.json').read_text())
++    assert c['recovery_updates']==c['approach_updates']==64 and c['head_block_size']==8
++    assert c['refresh_mode']=='pair' and c['frozen_refresh']['collections_per_cycle']==8
++    assert c['imagination_s']==.64 and c['world_window_s']==.16
++    shell=(root/'scripts/run_supermimic_phase1_long_v1.sh').read_text()
++    assert '--sequential-layout short-alternating' in shell
++    assert 'SM_REFRESH_MODE:-pair' in shell and 'SM_TRAINING_PROFILE:-large' in shell
++    assert shell.index('verify_supermimic_promotion.py')>shell.index('scripts/evaluate_supermimic_v1.py')
++
++
++def test_resume_cannot_change_refresh_fitting_or_native_collection_budget():
++    plan=make_plan(8,8,16,16)
++    a=AlternatingSchedule(plan,execution_config=dict(refresh_world_updates=32,native_ticks_per_proposal=16))
++    b=AlternatingSchedule(plan,execution_config=dict(refresh_world_updates=64,native_ticks_per_proposal=16))
++    with pytest.raises(ValueError,match='configuration'):b.load_state_dict(a.state_dict())

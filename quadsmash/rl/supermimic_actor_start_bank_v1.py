@@ -9,6 +9,7 @@ class ActorStartBank:
     def __init__(self,capacity=32,seed=20261117):
         self.capacity=capacity;self.entries=[];self.seen=0;self.last_gate={};self.last_tick={}
         self.generator=torch.Generator().manual_seed(seed)
+        self.sampling_history=[]
     def append(self,start,metadata,*,stream,policy_version,native_tick):
         if 'approach_gate' not in metadata:return
         gate=metadata['approach_gate'].detach().cpu().reshape(-1)
@@ -44,17 +45,29 @@ class ActorStartBank:
         requested=SCHEDULE[(attempt-1)%len(SCHEDULE)]
         pools={name:[e for e in self.entries if e['masks'][name].any()] for name in CATEGORIES}
         actual=requested if pools[requested] else next((n for n in ('pre_contact','gate_onset','failure_pre','success_near') if pools[n]),None)
-        if actual is None:return None,dict(requested=requested,actual=None,shortfall=1)
+        if actual is None:
+            report=dict(requested=requested,actual=None,shortfall=1)
+            self.sampling_history.append(report)
+            return None,report
         eligible=pools[actual];entry=eligible[int(torch.randint(len(eligible),(1,),generator=self.generator))]
         row=dict(entry['start'],_actor_lane_mask=entry['masks'][actual].clone())
-        return row,dict(requested=requested,actual=actual,shortfall=int(actual!=requested),
+        report=dict(requested=requested,actual=actual,shortfall=int(actual!=requested),
                         effective_lanes=int(row['_actor_lane_mask'].sum()),policy_version=entry['policy_version'],
                         native_tick=entry['native_tick'],stream_id=entry['stream'],outcomes_are_sampling_only=True)
+        self.sampling_history.append(report)
+        return row,report
+    def sampling_report(self, since=0):
+        rows=self.sampling_history[since:]
+        return dict(samples=len(rows),actual_counts={c:sum(r['actual']==c for r in rows) for c in CATEGORIES},
+            requested_counts={c:sum(r['requested']==c for r in rows) for c in CATEGORIES},
+            shortfall=sum(r['shortfall'] for r in rows),
+            unlabeled_lane_snapshots=sum(int((e['masks']['pre_contact']&~e['masks']['failure_pre']&~e['masks']['success_near']).sum()) for e in self.entries))
     def state_dict(self):
         return dict(schema=self.schema,capacity=self.capacity,entries=self.entries,seen=self.seen,
-                    last_gate=self.last_gate,last_tick=self.last_tick,rng=self.generator.get_state())
+                    sampling_history=self.sampling_history,last_gate=self.last_gate,last_tick=self.last_tick,rng=self.generator.get_state())
     def load_state_dict(self,state):
         if state['schema']!=self.schema or state['capacity']!=self.capacity:raise ValueError('Actor start bank schema/capacity mismatch')
         if len(state['entries'])>self.capacity:raise ValueError('Actor start bank exceeds capacity')
         self.entries=state['entries'];self.seen=int(state['seen']);self.last_gate=state['last_gate'];self.last_tick=state['last_tick']
+        self.sampling_history=list(state.get('sampling_history',[]))
         self.generator.set_state(state['rng'].cpu())

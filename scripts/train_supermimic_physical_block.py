@@ -58,15 +58,19 @@ def main():
     parser.add_argument('--resume-warmup-ticks',type=int,default=0,
                         help='Optional native ticks before a resumed stream; zero preserves exact block budgets')
     parser.add_argument('--actor-update-budget',type=int,default=None,help='Legacy single-block budget')
-    parser.add_argument('--recovery-update-budget',type=int,default=16,
-                        help='Retained for config compatibility; joint mode uses --joint-update-budget')
-    parser.add_argument('--approach-update-budget',type=int,default=16,
-                        help='Retained for config compatibility; joint mode uses --joint-update-budget')
+    parser.add_argument('--recovery-update-budget',type=int,default=64,
+                        help='Total effective updates for this head per cycle; joint mode uses --joint-update-budget')
+    parser.add_argument('--approach-update-budget',type=int,default=64,
+                        help='Total effective updates for this head per cycle; joint mode uses --joint-update-budget')
     parser.add_argument('--joint-update-budget',type=int,default=16)
     parser.add_argument('--update-mode',choices=('sequential','joint'),default='sequential')
+    parser.add_argument('--sequential-layout',choices=('short-alternating','legacy-blocks'),default='short-alternating')
+    parser.add_argument('--head-block-size',type=int,default=8)
+    parser.add_argument('--refresh-mode',choices=('pair','per-head'),default='pair',
+                        help='pair: R8/A8 then one combined refresh; per-head: integration diagnostic only')
     parser.add_argument('--ball-side-mode',choices=('shadow','enforce'),default='shadow')
-    parser.add_argument('--recovery-proposal-budget',type=int,default=32)
-    parser.add_argument('--approach-proposal-budget',type=int,default=32)
+    parser.add_argument('--recovery-proposal-budget',type=int,default=128)
+    parser.add_argument('--approach-proposal-budget',type=int,default=128)
     parser.add_argument('--refresh-ticks',type=int,default=800)
     parser.add_argument('--cycles',type=int,default=1)
     parser.add_argument('--native-ticks-per-actor-update',type=int,default=16)
@@ -114,6 +118,22 @@ def main():
     if args.training_profile=='large' and args.contact_validation_receipt is None:parser.error('Large training requires contact-validation-receipt; model-only sensitivity is insufficient')
     if args.training_profile=='large' and (args.cycles!=1 or args.refresh_ticks!=800 or args.update_mode!='sequential'):parser.error('Large profile uses one cycle per process, full refresh, and external frozen evaluation between cycles')
     if args.resume_next_cycle and (args.resume_training is None or args.native_acceptance_receipt is None):parser.error('New cycle requires checkpoint and matching native acceptance')
+    from quadsmash.rl.supermimic_alternating_schedule_v1 import make_plan,AlternatingSchedule,refresh_world_budgets,run_schedule
+    alternating=None
+    if args.update_mode=='sequential' and args.sequential_layout=='short-alternating':
+        if args.resume_start_block!='recovery' or args.actor_update_budget is not None:
+            parser.error('Short alternating resumes its saved event cursor, not resume-start-block/legacy actor budget')
+        if args.refresh_ticks!=800:parser.error('Short alternating requires full frozen refresh; cannot disable it')
+        if args.refresh_world_updates<2 or args.refresh_critic_updates<1:
+            parser.error('Combined refresh needs both WM sampling distributions and native critic calibration')
+        try:
+            alternating=AlternatingSchedule(make_plan(args.recovery_update_budget,args.approach_update_budget,
+                args.recovery_proposal_budget,args.approach_proposal_budget,block_size=args.head_block_size,
+                cycles=args.cycles,refresh_mode=args.refresh_mode),execution_config=dict(
+                    native_ticks_per_proposal=args.native_ticks_per_actor_update,world_updates_per_proposal=args.world_updates_per_actor_update,
+                    refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,
+                    training_profile=args.training_profile,contact_receipt_sha256=hashlib.sha256(args.contact_validation_receipt.read_bytes()).hexdigest() if args.contact_validation_receipt else None))
+        except ValueError as error:parser.error(str(error))
     args.output=args.output.resolve();args.output.mkdir(parents=True,exist_ok=False)
     try:
         args.wm_approach_stage_quota=parse_quota(args.wm_approach_stage_quota,allowed={'uniform','approach_active','hit_prepare','contact_release','approach_failure','post_hit'},name='wm-approach-stage-quota')
@@ -252,14 +272,8 @@ def run(args):
         # Same-policy native RTG calibration labels from the frozen 800-tick archive.
         # This is separate from the 0.64 s imagined objective and never mixed with
         # candidate-policy monitoring.
-        native_reward=package['tensors']['reward'].double()
-        native_done=package['tensors']['terminated']|package['tensors']['timeout']
-        rtg=torch.zeros_like(native_reward)
-        running=torch.zeros(native_reward.shape[1],dtype=torch.float64)
-        for ti in range(native_reward.shape[0]-1,-1,-1):
-            running=native_reward[ti].double()+timebase.gamma*running*(~native_done[ti]).double()
-            rtg[ti]=running
-        del native_reward,native_done,running
+        from quadsmash.rl.supermimic_evidence_binding_v1 import complete_native_rtg
+        rtg,rtg_complete=complete_native_rtg(package['tensors'],timebase.gamma)
         replay_archives=[];replay_receipts=[];critic_coverage_blocks=0
         refresh_world_updates=0;refresh_critic_updates=0
         if args.resume_training:
@@ -343,7 +357,15 @@ def run(args):
         schedule=SequentialProgress()
         if args.resume_training and not args.resume_next_cycle and 'sequential_progress' in resumed:
             schedule.load_state_dict(resumed['sequential_progress'])
-            if schedule.complete():raise ValueError('Completed schedule requires explicit resume-next-cycle and native acceptance')
+            if alternating is None and schedule.complete():raise ValueError('Completed schedule requires explicit resume-next-cycle and native acceptance')
+        if args.resume_training and not args.resume_next_cycle:
+            saved_alternating=resumed.get('alternating_schedule')
+            if alternating is not None:
+                if saved_alternating is None:raise ValueError('Legacy checkpoint has no alternating cursor; no silent schedule migration')
+                alternating.load_state_dict(saved_alternating)
+                if alternating.complete:raise ValueError('Completed alternating cycle requires explicit native acceptance and resume-next-cycle')
+            elif saved_alternating is not None:
+                raise ValueError('Cannot silently resume alternating checkpoint in legacy layout')
         if args.resume_next_cycle:
             from quadsmash.rl.supermimic_long_run_contract_v1 import verify_native_promotion
             from quadsmash.rl.supermimic_policy_execution_v1 import contract as execution_contract
@@ -390,7 +412,7 @@ def run(args):
             return state
         from quadsmash.rl.supermimic_frozen_refresh_v1 import FrozenRefresh
         from quadsmash.rl.supermimic_approach_data_v1 import native_approach_metadata
-        refresh_collector=None; refresh_serial=0
+        refresh_collector=None; frozen_policy_id=None; refresh_serial=int(resumed.get('refresh_serial',0)) if args.resume_training else 0
         archive_flush_rows=max(32,int(os.environ.get('QUADSMASH_ARCHIVE_FLUSH_ROWS','32')))
         archive_refresh_only=os.environ.get('QUADSMASH_ARCHIVE_REFRESH_ONLY','0')=='1'
         if archive_refresh_only:raise ValueError('ARCHIVE_REFRESH_ONLY drops live training transitions; unsupported in the data-closed-loop path')
@@ -403,7 +425,11 @@ def run(args):
                 row['sampling_metadata']=sampling_metadata
                 row['policy_version']=global_accepted_id
                 row['source_id']='online'
-                row['block_name']=trainer.block_name
+                row['block_name']='combined_refresh' if frozen_policy_id is not None else trainer.block_name
+                row['policy_id']=frozen_policy_id or f'mixed_v{global_accepted_id}'
+                row['collection_mode']='frozen_combination' if frozen_policy_id is not None else 'mixed_training'
+                row['stream_id']=replay.current_stream
+                row['native_tick']=tick
                 replay.append(row,policy_version=global_accepted_id,native_tick=tick,approach_metadata=sampling_metadata)
                 if refresh_collector is not None: refresh_collector.append(row)
                 if len(self.rows)>=archive_flush_rows:self.flush()
@@ -447,7 +473,7 @@ def run(args):
         if file_sha(reference_path)!=manifest['source_sha256']:
             raise ValueError('Reference policy checkpoint does not match the verified source actor')
         bad_meta=dict(path=str(args.bad_policy_checkpoint.resolve()),sha256=file_sha(args.bad_policy_checkpoint)) if args.bad_policy_checkpoint else None
-        config=dict(dual_head_quality=dual_quality,wm_holdout_lanes=wm_holdout_lanes,runtime_wm_bounds=runtime_wm_bounds,training_profile=args.training_profile,contact_validation=contact_validation,resume_next_cycle=args.resume_next_cycle,update_mode=args.update_mode,resume_start_block=args.resume_start_block,ball_side_mode=args.ball_side_mode,cycles=args.cycles,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,replay_capacity_ticks=args.replay_capacity_ticks,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=args.native_ticks_per_actor_update,world_updates_per_actor_update=args.world_updates_per_actor_update,
+        config=dict(sequential_layout=args.sequential_layout,head_block_size=args.head_block_size,refresh_mode=args.refresh_mode,alternating_plan=alternating.plan if alternating is not None else None,dual_head_quality=dual_quality,wm_holdout_lanes=wm_holdout_lanes,runtime_wm_bounds=runtime_wm_bounds,training_profile=args.training_profile,contact_validation=contact_validation,resume_next_cycle=args.resume_next_cycle,update_mode=args.update_mode,resume_start_block=args.resume_start_block,ball_side_mode=args.ball_side_mode,cycles=args.cycles,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,replay_capacity_ticks=args.replay_capacity_ticks,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=args.native_ticks_per_actor_update,world_updates_per_actor_update=args.world_updates_per_actor_update,
             world_batch=128,imagination_batch=128,timebase=timebase.manifest(),actor_lr=5e-5,world_lr=2e-4,critic_lr=2e-4,
             policy_anchor=.05,critic_warmup_updates=200,critic_max_loss=50.,max_critic_only_blocks=32,
             command_delta_budget=args.command_delta_budget,target_delta_budget_rad=args.target_delta_budget_rad,
@@ -470,6 +496,14 @@ def run(args):
         if args.resume_training:
             global_attempt_id=int(resumed_global.get('attempts',0));global_accepted_id=int(resumed_global.get('accepted',0))
             global_rejected=int(resumed_global.get('rejected',0));global_backtracked=int(resumed_global.get('backtracked',0))
+        from quadsmash.rl.supermimic_evidence_binding_v1 import runtime_identity,probe_applicability
+        loaded_identity=runtime_identity(actor,adapter,manifest['task_contract'],policy_execution,global_accepted_id)
+        write(args.output/'loaded_runtime_identity.json',dict(identity=loaded_identity,resumed=bool(args.resume_training),
+            probe_applicability={} if dual_quality is None else {h:probe_applicability(dual_quality['native_action_probes'][h],loaded_identity) for h in ('recovery','approach')}))
+        from quadsmash.rl.supermimic_evidence_binding_v1 import verify_fit_provenance,loaded_fit_provenance
+        initial_fit_provenance=verify_fit_provenance(json.loads(args.contact_validation_receipt.read_text()),args.contact_validation_receipt) if args.contact_validation_receipt else dict(verified=False,reason='no-fit-provenance')
+        loaded_fit=loaded_fit_provenance(initial_fit_provenance,resumed if args.resume_training else None,loaded_identity['world_state_sha256'],wm_holdout_lanes)
+        write(args.output/'loaded_fit_provenance.json',loaded_fit)
         def save(name):
             archive.flush()  # Checkpoint never points beyond durable replay.
             atomic_torch_save(dict(algorithm='supermimic_v1',adapter_schema=adapter.schema,actor=actor.state_dict(),
@@ -490,6 +524,9 @@ def run(args):
                                   source_names=['initial_archive','online'],
                                   stage_names=['uniform','pre_touchdown','touchdown','post_touchdown','recovery_failure','stable_recovery']),
                 runtime_validation_archive=dict(path=runtime_validation_path,sha256=file_sha(runtime_validation_path)),
+                wm_fit_provenance=dict(verified=loaded_fit['verified'],world_state_sha256=tensor_digest(adapter.state_dict().items()),
+                    excluded_lanes=wm_holdout_lanes,initial_manifest_sha256=initial_fit_provenance.get('manifest_sha256')),
+                alternating_schedule=alternating.state_dict() if alternating is not None else None,refresh_serial=refresh_serial,
                 native_value_bank=native_value_bank,sequential_progress=schedule.state_dict(),actor_start_bank=replay.actor_start_bank.state_dict(),dynamic_stage_starts=replay.stage_starts,
                 reference_bank=trainer.reference_bank.payload() if trainer.reference_bank else None,
                 actor_references=dict(step=trainer.accepted_snapshot,block=trainer.block_start_snapshot,native=trainer.native_accepted_snapshot),
@@ -515,10 +552,10 @@ def run(args):
                 raise RuntimeError('Contextual critic quality gate did not pass within finite32-block budget')
         stage_ticks=list(CRITIC_TICKS)
         stage_states=[as_state(start_cache[t]) for t in stage_ticks]
-        stage_meta=[dict(policy_id='initial_reference',episode_id='archive_first_128',time_s=float(t*timebase.control_dt_s)) for t in stage_ticks]
+        stage_meta=[dict(policy_id='initial_reference',episode_id=start_cache[t]['before']['episode_index'].tolist(),time_s=float(t*timebase.control_dt_s),complete_lane_mask=rtg_complete[t]) for t in stage_ticks]
         native_calibration=trainer.audit_native_rtg_stages(stage_states,[rtg[t] for t in stage_ticks],stage_meta)
         native_calibration.update(source='packed_loop/data.pt',discount_mode='physical_time',
-                                  horizon_steps=int(rtg.shape[0]),native_return_scope='same-policy first completed 128 episodes')
+                                  horizon_steps=int(rtg.shape[0]),native_return_scope='frozen archive label-policy episodes; execution identity checked separately')
         write(args.output/'native_critic_stage_audit.json',native_calibration)
         from quadsmash.rl.supermimic_dual_head_quality_v1 import split_native_value_rows,critic_holdout,reference_coverage
         if args.resume_training and resumed.get('native_value_bank') is not None:
@@ -526,18 +563,24 @@ def run(args):
         else:
             value_x=[];value_y=[];value_ids=[];value_masks={h:[] for h in ('recovery','approach')}
             for ti in sorted(start_cache):
-                encoded=encode_native_value_start(start_cache[ti]);value_x.append(encoded['critic_input'].cpu());value_y.append(rtg[ti].float().cpu())
-                value_ids.extend([(lane,int(package['tensors']['episode'][ti,lane]),ti) for lane in range(128)])
-                for h in value_masks:value_masks[h].append(encoded['head_masks'][h].cpu())
+                encoded=encode_native_value_start(start_cache[ti]);valid=rtg_complete[ti].cpu()
+                if not valid.any():continue
+                value_x.append(encoded['critic_input'].cpu()[valid]);value_y.append(rtg[ti].float().cpu()[valid])
+                value_ids.extend([(lane,int(package['tensors']['episode'][ti,lane]),int(start_cache[ti]['before']['elapsed_tick'][lane])) for lane in torch.where(valid)[0].tolist()])
+                for h in value_masks:value_masks[h].append(encoded['head_masks'][h].cpu()[valid])
             native_value_bank=dict(inputs=torch.cat(value_x),rtg=torch.cat(value_y),identity=value_ids,
-                head_masks={h:torch.cat(v) for h,v in value_masks.items()},policy_id='initial_reference',
-                actor_sha256=tensor_digest(trainer.reference.state_dict().items()),source_sha256=packed_sha,policy_execution=manifest.get('policy_execution'))
+                head_masks={h:torch.cat(v) for h,v in value_masks.items()},policy_id=manifest.get('policy_id','initial_archive_unknown_policy'),
+                actor_sha256=manifest.get('actor_state_sha256'),source_sha256=packed_sha,policy_execution=manifest.get('policy_execution'),accepted_updates=0,
+                label_actor_state={k:v.detach().cpu().clone() for k,v in trainer.reference.state_dict().items()} if manifest.get('actor_state_sha256')==tensor_digest(trainer.reference.state_dict().items()) else None)
         if not args.resume_training:
-            initial_mask=torch.ones(128,dtype=torch.bool)
-            if wm_holdout_lanes:initial_mask[wm_holdout_lanes]=False
-            native_calibration_fit=trainer.calibrate_critic_native([as_state(start_cache[0])],rtg[0],epochs=2,masks=[initial_mask])
-            native_calibration_fit.update(policy_id='initial_reference',discount_mode='physical_time',horizon_steps=int(rtg.shape[0]),
-                native_return_scope='same-policy completed episodes; validation lanes excluded',heldout_lanes=wm_holdout_lanes)
+            from quadsmash.rl.supermimic_dual_head_quality_v1 import native_calibration_rows
+            initial_ids,calibration_contract=native_calibration_rows(native_value_bank,policy_execution,wm_holdout_lanes,CRITIC_TICKS,expected_actor_sha256=tensor_digest(actor.state_dict().items()))
+            if len(initial_ids):
+                native_calibration_fit=trainer.calibrate_critic_tensors(native_value_bank['inputs'][initial_ids],native_value_bank['rtg'][initial_ids],epochs=2)
+            else:
+                native_calibration_fit=dict(optimizer_updates=0,skipped=True,reason=calibration_contract['reason'])
+            native_calibration_fit.update(calibration_contract,discount_mode='physical_time',horizon_steps=int(rtg.shape[0]),
+                native_return_scope='matching-execution frozen-policy completed episodes only; validation lanes excluded',epoch_budget=2)
             write(args.output/'native_critic_calibration.json',native_calibration_fit)
         def check_head_quality(head,attempt):
             coverage=reference_coverage(trainer.reference_bank,head,trainer.tracking_weight)
@@ -545,10 +588,22 @@ def run(args):
             if dual_quality is None:
                 return dict(enforced=False,reference=coverage,reason='no calibrated dual-head bounds configured')
             from quadsmash.rl.supermimic_wm_validation_v1 import runtime_head_check
-            wm=runtime_head_check(adapter,runtime_validation_data,wm_holdout_lanes,launch,head,runtime_wm_bounds[head])
+            from quadsmash.rl.supermimic_evidence_binding_v1 import runtime_identity,probe_applicability,verify_fit_provenance
+            identity=runtime_identity(actor,adapter,manifest['task_contract'],policy_execution,global_accepted_id)
+            probe=probe_applicability(dual_quality['native_action_probes'][head],identity)
+            fit_provenance=loaded_fit
+            wm=runtime_head_check(adapter,runtime_validation_data,wm_holdout_lanes,launch,head,runtime_wm_bounds[head],
+                minimum_event_episodes=dual_quality['wm_min_event_episodes'][head])
+            drift=None
+            if native_value_bank.get('label_actor_state') is not None and trainer.budget_states:
+                with torch.no_grad():
+                    current=trainer._budget_snapshot();label=trainer._snapshot_from(native_value_bank['label_actor_state'])
+                    deltas=[trainer._max_budget_delta(a,b) for a,b in zip(current,label)]
+                drift=dict(final_normalized_command_delta=max(d[1] for d in deltas),final_joint_target_delta_rad=max(d[2] for d in deltas))
             value=critic_holdout(trainer.critic,native_value_bank,head,wm_holdout_lanes,
-                current_actor_sha256=tensor_digest(actor.state_dict().items()),current_execution=policy_execution,limits=dual_quality['critic_upper_bounds'][head])
-            result=dict(head=head,attempt=attempt,enforced=True,wm=wm,critic=value,reference=coverage,
+                current_actor_sha256=tensor_digest(actor.state_dict().items()),current_execution=policy_execution,limits=dual_quality['critic_upper_bounds'][head],
+                accepted_updates=global_accepted_id,command_delta=drift,trust_limits=dual_quality.get('critic_policy_drift_bounds',{}).get(head))
+            result=dict(head=head,attempt=attempt,enforced=True,wm=wm,critic=value,reference=coverage,probe_applicability=probe,fit_provenance=fit_provenance,runtime_identity=identity,
                 world_updates=trainer.world_updates,critic_updates=trainer.critic_updates)
             write(args.output/'latest_dual_head_quality.json',result)
             with (args.output/'dual_head_quality.jsonl').open('a') as f:f.write(json.dumps(result)+'\n')
@@ -564,9 +619,9 @@ def run(args):
                     if metric is not None:writer.add_scalar('quality/'+head+'/critic_'+key,metric,step)
                 writer.add_scalar('tracking/'+head+'/verified_reference_count',coverage['verified_reference_count'],step)
                 writer.flush()
-            if not wm['passed'] or not value['passed']:
+            if not wm['passed'] or not value['passed'] or not probe['current_version_valid'] or not fit_provenance['verified']:
                 save('quality_stopped.pt')
-                raise RuntimeError(head+' independent WM/critic quality failed; actor disabled, no automatic extra fitting')
+                raise RuntimeError(head+' model/probe provenance or independent WM/critic quality failed; actor disabled, no automatic extra fitting')
             return result
         # A already supplies complete native episodes. This warmup concerns the
         # new contextual critic, not recollecting a fresh 800 ticks each update.
@@ -593,12 +648,16 @@ def run(args):
             total=int(args.world_updates_per_actor_update if count is None else count)
             reports=[]; started=time.perf_counter()
             for offset in range(total):
+                sampling_started=time.perf_counter()
                 window,lanes,sampling=replay.window(
                     timebase.world_steps,128,iteration*total+offset,
                     source_quota=args.wm_source_quota,stage_quota=quotas,head=head,
                     recent_policy_window=args.wm_recent_policy_window,
                     recent_tick_window=args.wm_recent_tick_window,excluded_lanes=wm_holdout_lanes)
+                sampling_seconds=time.perf_counter()-sampling_started
+                fit_started=time.perf_counter()
                 stats=trainer.fit_world_window(window,launch[lanes]); del window
+                stats.update(sampling_seconds=sampling_seconds,fit_wall_seconds=time.perf_counter()-fit_started)
                 stats['sampling']=sampling; reports.append(stats)
                 if writer is not None:
                     step=int(tick*128)
@@ -621,12 +680,14 @@ def run(args):
             aggregate.update(world_updates=len(reports),world_update_reports=reports,
                              world_update_seconds=time.perf_counter()-started)
             return aggregate
-        def run_block(block_name, names, budget, proposal_limit,cycle_index=0):
+        def run_block(block_name, names, budget, proposal_limit,cycle_index=0,*,managed_refresh=False):
             nonlocal completed_returns,completed_discounted,completed_records,obs,tick,cursor
             nonlocal global_attempt_id,global_accepted_id,global_rejected,global_backtracked
+            sampling_history_start=len(replay.actor_start_bank.sampling_history)
             if budget<=0:return 0
             progress=schedule.block(cycle_index,block_name,budget,proposal_limit)
             if progress['status']=='done':return progress['accepted']
+            if progress.get('proposal_in_flight',False):raise ValueError('Interrupted proposal: resume its pre_proposal checkpoint, not partial optimizer state')
             continuing=progress['status']!='new'
             trainer.set_trainable_names(names,block_name,reset_block=not continuing)
             progress['status']='training'
@@ -642,12 +703,14 @@ def run(args):
             trainer.actor_updates=accepted;trainer.actor_attempts=attempts
             trainer.rejected_actor_updates=progress.get('rejected',attempts-accepted)
             trainer.backtracked_actor_updates=progress.get('backtracked',0)
+            if managed_refresh and progress['pending_refresh']:raise ValueError('Internal refresh found in externally managed short block')
             if progress['pending_refresh']:
                 refresh_frozen_policy(block_name)
                 progress['refresh_at']=accepted;progress['pending_refresh']=False;save('latest.pt')
             while accepted<budget and attempts<max_attempts:
+                save(f'pre_proposal_{cycle_index}_{block_name}.pt')
                 attempts+=1;global_attempt_id+=1;trainer.block_attempts=attempts
-                progress['attempts']=attempts
+                progress['attempts']=attempts;progress['proposal_in_flight']=True
                 trainer.actor_updates=accepted
                 trainer.actor_attempts=attempts
                 check_stop();cover_critic();ensure_critic()
@@ -675,7 +738,7 @@ def run(args):
                                 writer.flush()
                         cursor=len(env.rally_records)
                 collect_s=time.perf_counter()-started;check_stop()
-                world_stats=run_world_updates(global_attempt_id)
+                world_stats=run_world_updates(global_attempt_id,head=block_name)
                 quality=check_head_quality(block_name,global_attempt_id)
                 # Rebuild the start pool for every proposal.  Recovery starts
                 # therefore follow fresh event-aligned native data as it
@@ -709,9 +772,9 @@ def run(args):
                     global_rejected+=1
                 backtracked=int(stats.get('update_accepted',False) and stats.get('backtrack_alpha',1.)<1.)
                 global_backtracked += backtracked
-                progress.update(attempts=attempts,accepted=accepted,rejected=progress.get('rejected',0)+int(not stats['update_accepted']),backtracked=progress.get('backtracked',0)+backtracked)
+                progress.update(proposal_in_flight=False,attempts=attempts,accepted=accepted,rejected=progress.get('rejected',0)+int(not stats['update_accepted']),backtracked=progress.get('backtracked',0)+backtracked)
                 with torch.no_grad():request=trainer._actor_action(state,sample=False)[0];preview,_,_=adapter.executor.forward(state.observation,request,state.clock_goal_context['joint_default'][0],state.clock_goal_context['limits'],state.executor_memory)
-                record=dict(**stats,**{k:v for k,v in world_stats.items() if k not in stats},block=block_name,block_accepted_updates=accepted,block_rejected=progress['rejected'],block_backtracked=progress['backtracked'],attempt_id=global_attempt_id,accepted_id=global_accepted_id,global_attempts=global_attempt_id,global_accepted=global_accepted_id,global_rejected=global_rejected,global_backtracked=global_backtracked,native_ticks=tick,native_transitions=tick*128,native_collect_seconds=collect_s, native_reward_mean=float(reward.mean()),completed_native_episodes=len(completed_returns),native_return_mean=sum(completed_returns)/len(completed_returns) if completed_returns else None,native_discounted_return_mean=sum(completed_discounted)/len(completed_discounted) if completed_discounted else None,raw_return_scope='completed mixed-policy monitoring; incomplete episodes excluded',peak_gpu_bytes=torch.cuda.max_memory_allocated(),model_calls=adapter.calls,window_sampling=world_stats.get('world_update_reports',[]),imagined_start_source='fresh_native' if replay.new_starts and any(pool_item is replay.new_starts[-1] for pool_item in pool) else 'event_aligned_replay')
+                record=dict(**stats,**{k:v for k,v in world_stats.items() if k not in stats},block=block_name,block_key=str(cycle_index),block_accepted_updates=accepted,block_rejected=progress['rejected'],block_backtracked=progress['backtracked'],attempt_id=global_attempt_id,accepted_id=global_accepted_id,global_attempts=global_attempt_id,global_accepted=global_accepted_id,global_rejected=global_rejected,global_backtracked=global_backtracked,native_ticks=tick,native_transitions=tick*128,native_collect_seconds=collect_s, native_reward_mean=float(reward.mean()),completed_native_episodes=len(completed_returns),native_return_mean=sum(completed_returns)/len(completed_returns) if completed_returns else None,native_discounted_return_mean=sum(completed_discounted)/len(completed_discounted) if completed_discounted else None,raw_return_scope='completed mixed-policy monitoring; incomplete episodes excluded',peak_gpu_bytes=torch.cuda.max_memory_allocated(),model_calls=adapter.calls,window_sampling=world_stats.get('world_update_reports',[]),imagined_start_source='fresh_native' if replay.new_starts and any(pool_item is replay.new_starts[-1] for pool_item in pool) else 'event_aligned_replay')
                 if writer is not None:
                     step=int(tick*128)
                     writer.add_scalar('native/step_reward_mean',float(reward.mean()),step)
@@ -720,9 +783,9 @@ def run(args):
                     writer.add_scalar('actor/imagined_return',float(stats.get('imagined_return_mean',0.0)),step)
                     writer.add_scalar('model/world_loss',float(world_stats.get('world_loss',0.0)),step)
                     writer.add_scalar('critic/loss',float(stats.get('critic_loss',0.0)),step)
-                    writer.add_scalar('actor/%s_updates'%block_name,accepted,step)
+                    writer.add_scalar('actor/%s_updates'%block_name,sum(row['accepted'] for key,row in schedule.cycles.items() if key.endswith('/'+block_name)),step)
                     writer.add_scalar('actor/%s_gate_active'%block_name,float(stats.get('effective_gate_lanes',0)),step)
-                    writer.add_scalar('actor/effective_updates',float(stats.get('actor_updates',0)),step)
+                    writer.add_scalar('actor/effective_updates',float(global_accepted_id),step)
                     writer.add_scalar('actor/tracking_loss',float(stats.get('tracking_loss',0.0)),step)
                     for name in ('task_gradient_norm','tracking_gradient_norm','anchor_gradient_norm','task_tracking_cosine','final_command_max_change','objective_before','objective_after','tracking_active_lane_steps','tracking_effective_weight_sum','tracking_nonzero_gradient_lanes'):
                         if name in stats:writer.add_scalar('actor/'+name,float(stats[name]),step)
@@ -736,28 +799,31 @@ def run(args):
                 save('latest.pt');write(args.output/'progress.json',record)
                 with (args.output/'training_history.jsonl').open('a') as f:f.write(json.dumps(record)+'\n')
                 print('PHYSICAL_LEARNING='+json.dumps(record),flush=True)
-                if stats['update_accepted'] and accepted and accepted%16==0:save(f'{block_name}_checkpoint_{accepted:04d}.pt')
-                if block_name=='approach' and stats['update_accepted'] and accepted%args.approach_refresh_interval==0:
+                if stats['update_accepted'] and accepted and accepted%16==0:save(f'{cycle_index}_{block_name}_checkpoint_{accepted:04d}.pt')
+                if not managed_refresh and block_name=='approach' and stats['update_accepted'] and accepted%args.approach_refresh_interval==0:
                     progress['pending_refresh']=True;save('latest.pt')
                     refresh_frozen_policy('approach')
                     progress['refresh_at']=accepted;progress['pending_refresh']=False;save('latest.pt')
+            write(args.output/(str(cycle_index)+'_'+block_name+'_actor_start_sampling.json'),replay.actor_start_bank.sampling_report(sampling_history_start))
             if accepted<budget:
-                save(f'{block_name}_candidate_{accepted:04d}.pt')
+                save(f'{cycle_index}_{block_name}_candidate_{accepted:04d}.pt')
                 write(args.output/'block_incomplete.json',dict(block=block_name,target=budget,accepted=accepted,attempts=attempts,limit=max_attempts))
                 raise RuntimeError(f'{block_name}: proposal budget exhausted ({accepted}/{budget} accepted); next block disabled')
-            if block_name=='approach' and accepted>progress['refresh_at']:
+            if not managed_refresh and block_name=='approach' and accepted>progress['refresh_at']:
                 progress['pending_refresh']=True;save('latest.pt')
                 refresh_frozen_policy('approach')
                 progress['refresh_at']=accepted;progress['pending_refresh']=False
-            save(f'{block_name}_candidate_{accepted:04d}.pt')
+            save(f'{cycle_index}_{block_name}_candidate_{accepted:04d}.pt')
             progress['status']='done';save('latest.pt')
             return accepted
-        def refresh_frozen_policy(head):
+        def refresh_frozen_policy(head,*,event_id=None,managed_refresh=False):
             """Bounded first-complete-episode collection; no mid-episode manual reset."""
-            nonlocal obs,tick,cursor,refresh_collector,refresh_serial,runtime_validation_data,runtime_validation_path,native_value_bank
+            nonlocal obs,tick,cursor,refresh_collector,refresh_serial,frozen_policy_id,runtime_validation_data,runtime_validation_path,native_value_bank
             if args.refresh_ticks==0:return 0,0
             refresh_serial+=1
+            consumer_heads=('recovery','approach') if managed_refresh else (head,)
             policy_id=f'{head}_frozen_v{global_accepted_id}_refresh{refresh_serial}'
+            frozen_policy_id=policy_id
             refresh_dir=args.output/policy_id
             refresh_dir.mkdir(exist_ok=False)
             from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest
@@ -776,7 +842,7 @@ def run(args):
                 collector=refresh_collector
                 rtg_refresh,receipt=collector.result()
             finally:
-                refresh_collector=None
+                refresh_collector=None;frozen_policy_id=None
                 archive.flush()
             if actor_hash!=tensor_digest(actor.state_dict().items()):raise RuntimeError('Frozen collection changed actor')
             wanted={(lane,int(ep)) for lane,ep in enumerate(collector.ids.tolist())}
@@ -789,13 +855,18 @@ def run(args):
                 replay.actor_start_bank.label_terminal(record,replay.current_stream)
             write(refresh_dir/'episodes_summary.json',native_records)
             cursor=len(env.rally_records) # these records belong to the frozen stream, not mixed monitoring
-            receipt.update(start_tick=start_tick,end_tick=tick,actor_sha256=actor_hash,policy_execution=policy_execution,head=head,formal_evaluation=False,
+            receipt.update(start_tick=start_tick,end_tick=tick,actor_sha256=actor_hash,policy_execution=policy_execution,head=head,consumer_heads=list(consumer_heads),schedule_event_id=event_id,formal_evaluation=False,
                            native_metrics=summarize_native_episodes(native_records))
-            packed=collector.packed_complete()
+            from quadsmash.rl.supermimic_evidence_binding_v1 import attach_terminal_ball_side
+            packed=attach_terminal_ball_side(collector.packed_complete(),native_records)
             runtime_validation_data=packed
             atomic_torch_save(dict(tensors=packed,policy_id=policy_id,receipt=receipt),refresh_dir/'complete_episodes.pt')
             runtime_validation_path=str(refresh_dir/'complete_episodes.pt')
-            refresh_stats=run_world_updates(global_attempt_id,args.refresh_world_updates,head=head) if args.refresh_world_updates else {'world_updates':0}
+            wm_budgets=refresh_world_budgets(args.refresh_world_updates,consumer_heads)
+            wm_fits={h:run_world_updates(global_attempt_id,n,head=h) for h,n in wm_budgets.items() if n}
+            refresh_stats=dict(world_updates=sum(x['world_updates'] for x in wm_fits.values()))
+            receipt['wm_refresh_by_head']=wm_fits
+            receipt['shared_data_policy_id']=policy_id
             # Encode every eligible lane once, keeping only compact critic
             # inputs. Full asynchronous G07 snapshots are read one at a time.
             native_x=[];native_y=[];native_stage=[];native_identity=[];native_masks={h:[] for h in ('recovery','approach')}
@@ -813,7 +884,8 @@ def run(args):
             if not native_x:raise RuntimeError('No complete frozen native critic labels')
             x=torch.cat(native_x);y=torch.cat(native_y);phase_ids=torch.tensor(native_stage)
             native_value_bank=dict(inputs=x,rtg=y,identity=native_identity,head_masks={h:torch.cat(v) for h,v in native_masks.items()},
-                policy_id=policy_id,actor_sha256=actor_hash,policy_execution=policy_execution,source_sha256=file_sha(refresh_dir/'complete_episodes.pt'))
+                policy_id=policy_id,actor_sha256=actor_hash,policy_execution=policy_execution,source_sha256=file_sha(refresh_dir/'complete_episodes.pt'),accepted_updates=global_accepted_id,
+                label_actor_state={k:v.detach().cpu().clone() for k,v in actor.state_dict().items()})
             native_rows=torch.arange(len(y))
             if wm_holdout_lanes:
                 train_mask,_=split_native_value_rows(native_value_bank,wm_holdout_lanes);native_rows=native_rows[train_mask]
@@ -840,13 +912,29 @@ def run(args):
                 trainer.reference_bank.extend(additions)
                 atomic_torch_save(trainer.reference_bank.payload(),refresh_dir/'reference_bank.pt')
                 receipt['reference_bank']=trainer.reference_bank.manifest
-            receipt.update(world_updates=refresh_stats['world_updates'],critic_updates=len(fits),critic_fits=fits,
+            # Same post-refresh WM and same completed trajectories are checked for BOTH heads.
+            # Missing calibrated bounds are explicitly unverified, never a success receipt.
+            if dual_quality is not None:
+                from quadsmash.rl.supermimic_wm_validation_v1 import runtime_head_check
+                receipt['wm_quality']={h:runtime_head_check(adapter,packed,wm_holdout_lanes,launch,h,runtime_wm_bounds[h],
+                    minimum_event_episodes=dual_quality['wm_min_event_episodes'][h]) for h in ('recovery','approach')}
+            else:
+                receipt['wm_quality']={h:dict(passed=None,reason='no calibrated independent validation bounds') for h in ('recovery','approach')}
+            receipt['reference_coverage']={h:reference_coverage(trainer.reference_bank,h,trainer.tracking_weight) for h in ('recovery','approach')}
+            if actor_hash!=tensor_digest(actor.state_dict().items()):raise RuntimeError('Refresh WM/critic fitting changed actor')
+            receipt.update(complete_episodes=128,actor_unchanged=True,world_updates=refresh_stats['world_updates'],critic_updates=len(fits),critic_fits=fits,
                            warmup_ticks=0,partial_suffix_scope='WM only, excluded from calibration')
             write(refresh_dir/'manifest.json',receipt)
             if writer is not None:
                 writer.add_scalar('native_frozen/episode_return_mean',sum(receipt['returns'])/128,tick*128)
                 writer.flush()
             print('PHYSICAL_REFRESH='+json.dumps(receipt),flush=True)
+            if dual_quality is not None and any(not receipt['wm_quality'][h]['passed'] or not receipt['critic_holdout'][h]['passed'] for h in ('recovery','approach')):
+                raise RuntimeError('Combined frozen refresh quality failed; next short block disabled; see manifest')
+            if managed_refresh:
+                return dict(complete_episodes=128,actor_unchanged=True,consumer_heads=list(consumer_heads),policy_id=policy_id,
+                    actor_sha256=actor_hash,manifest_path=str(refresh_dir/'manifest.json'),
+                    world_updates=refresh_stats['world_updates'],critic_updates=len(fits),native_ticks=tick-start_tick)
             save('latest.pt')
             return refresh_stats['world_updates'],len(fits)
         if args.update_mode == 'joint':
@@ -889,8 +977,38 @@ def run(args):
                  world_updates=trainer.world_updates,critic_updates=trainer.critic_updates,formal_evaluation=False,blocks=['joint'],trainable_names=sorted(trainer.trainable_names)))
             stage(args.output,'TRAINING_FINISHED',actor_updates=args.joint_update_budget)
             return
+        elif alternating is not None:
+            cycle_results=[]
+            def train_short(event):
+                head=event['head'];names=RECOVERY_NAMES if head=='recovery' else APPROACH_NAMES
+                run_block(head,names,event['target'],event['proposal_limit'],event['block_key'],managed_refresh=True)
+                row=schedule.block(event['block_key'],head,event['target'],event['proposal_limit'])
+                return {k:row[k] for k in ('attempts','accepted','rejected','backtracked')}
+            def refresh_pair(event):
+                return refresh_frozen_policy('combined',event_id=event['id'],managed_refresh=True)
+            def finalize_cycle(event):
+                totals=alternating.head_totals(event['cycle'])
+                total=sum(x['accepted'] for x in totals.values())
+                refreshes=[r['result'] for r in alternating.results if r['event']['cycle']==event['cycle'] and r['event']['kind']=='refresh']
+                result=dict(cycle=event['cycle']+1,recovery_accepted=totals['recovery']['accepted'],approach_accepted=totals['approach']['accepted'],
+                    head_counters=totals,native_ticks=tick,world_updates=trainer.world_updates,critic_updates=trainer.critic_updates,
+                    refresh_count=len(refreshes),refresh_world_updates=sum(r['world_updates'] for r in refreshes),
+                    refresh_critic_updates=sum(r['critic_updates'] for r in refreshes),formal_evaluation=False)
+                save('cycle_%02d_candidate_%04d.pt' % (event['cycle']+1,total))
+                write(args.output/('cycle_%02d.json' % (event['cycle']+1)),result)
+                return result
+            run_schedule(alternating,train=train_short,refresh=refresh_pair,finalize=finalize_cycle,checkpoint=save)
+            cycle_results=[r['result'] for r in alternating.results if r['event']['kind']=='finalize']
+            totals=alternating.head_totals();total=sum(x['accepted'] for x in totals.values())
+            write(args.output/'training_completed.json',dict(update_mode='sequential',sequential_layout='short-alternating',
+                refresh_mode=args.refresh_mode,head_block_size=args.head_block_size,cycles=args.cycles,actor_updates=total,
+                recovery_accepted=totals['recovery']['accepted'],approach_accepted=totals['approach']['accepted'],head_counters=totals,
+                proposal_attempts=global_attempt_id,global_accepted=global_accepted_id,global_rejected=global_rejected,
+                global_backtracked=global_backtracked,native_ticks=tick,world_updates=trainer.world_updates,
+                critic_updates=trainer.critic_updates,cycle_results=cycle_results,formal_evaluation=False))
+            stage(args.output,'TRAINING_FINISHED',actor_updates=total)
         else:
-            # Default production path: recovery then approach. Each block owns
+            # Legacy diagnostic path: recovery then approach. Each block owns
             # its trainable head and Adam state; the intermediate checkpoint is
             # written before the approach block starts.
             cycle_results=[]

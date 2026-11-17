@@ -40,12 +40,14 @@ def verify_contact_receipt(path,model_paths,task_contract):
         source=path.parent/item['path']
         if sha256(source)!=item['sha256']:raise ValueError('Contact evidence artifact hash mismatch')
     return dict(receipt_sha256=sha256(path),model_sha256=expected,task_contract_sha256=contract_hash,
-                validation_episodes=len(val),scope='verified supplied evidence; not a safety proof')
+                validation_episodes=len(val),current_runtime_validity=None,scope='static source-file and task-contract evidence only; actual runtime weights checked separately')
 
 def verify_native_promotion(metrics_path,checkpoint_path,*,expected_execution=None):
     m=json.loads(Path(metrics_path).read_text());n=m.get('native_episode_metrics',m)
     if expected_execution is not None and m.get('policy_execution')!=expected_execution:raise ValueError('Native evaluation policy execution contract mismatch')
     if m.get('evaluated_checkpoint_sha256')!=sha256(checkpoint_path):raise ValueError('Native evaluation checkpoint hash mismatch')
+    if m.get('num_envs')!=128 or m.get('control_ticks')!=800:raise ValueError('Incomplete native evaluation protocol')
+    if not math.isfinite(n['native_episode_return_mean']):raise ValueError('Nonfinite native return')
     if not (n['native_episode_return_mean']>-12.52678435 and n['ball_side_complete_except_recovery']>=53 and n['complete5']>=27 and m['numerical_failures']==0):raise ValueError('Native candidate not accepted')
     return dict(checkpoint_sha256=sha256(checkpoint_path),evaluation_sha256=sha256(metrics_path))
 

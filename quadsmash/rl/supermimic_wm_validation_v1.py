@@ -149,27 +149,66 @@ def recovery_event_windows(data,lanes,*,horizon=64,maximum=16):
     return result
 
 
+def independent_event_support(data,pairs):
+    identities=set()
+    for tick,lane in pairs.tolist():
+        stream=int(data['stream_id'][tick,lane]) if 'stream_id' in data else None
+        identities.add((stream,lane,int(data['episode'][tick,lane])))
+    return len(identities)
+
+
+def approach_event_windows(data,lanes,maximum=16):
+    aligned=event_aligned_windows(data,lanes,offsets=(-1,),maximum=max(128,maximum))['-1']
+    groups={k:[] for k in ('legal_contact','illegal_contact','ball_side_success','ball_side_failure')}
+    before,after=data['event_state'],data['next_event_state']
+    for (start,lane),tick in zip(aligned['starts'].tolist(),aligned['event_ticks']):
+        if after[tick,lane,1]>before[tick,lane,1]:groups['legal_contact'].append((start,lane))
+        if after[tick,lane,6]>before[tick,lane,6]:groups['illegal_contact'].append((start,lane))
+        # Only explicit native terminal scores may establish these outcomes.
+        # They are offline window labels, never forwarded to the model/actor.
+        if 'ball_side_terminal' in data:
+            ep=data['episode'][start,lane]
+            mask=(data['episode'][:,lane]==ep)&(data['terminated'][:,lane]|data['timeout'][:,lane])
+            labels=data['ball_side_terminal'][:,lane][mask]
+            if len(labels)==1 and torch.isfinite(labels[0]):
+                groups['ball_side_success' if labels[0]>.5 else 'ball_side_failure'].append((start,lane))
+    # Diverse episodes first: repeated edges in one episode are not independent evidence.
+    result={}
+    for name,rows in groups.items():
+        selected=[];seen=set()
+        for start,lane in rows:
+            identity=(lane,int(data['episode'][start,lane]))
+            if identity in seen:continue
+            seen.add(identity);selected.append((start,lane))
+            if len(selected)>=maximum:break
+        result[name]=torch.tensor(selected,dtype=torch.long).reshape(-1,2)
+    return result
+
+
 @torch.no_grad()
-def runtime_head_check(adapter,data,lanes,launch,head,upper_bounds,*,maximum=16):
-    from .supermimic_dual_head_quality_v1 import compare_bounds
-    if head=='approach':groups={'contact':event_aligned_windows(data,lanes,maximum=maximum)['-1']['starts']}
+def runtime_head_check(adapter,data,lanes,launch,head,upper_bounds,*,maximum=16,minimum_event_episodes=None):
+    from .supermimic_dual_head_quality_v1 import compare_bounds,REQUIRED_EVENTS
+    if head=='approach':groups=approach_event_windows(data,lanes,maximum=maximum)
     elif head=='recovery':groups=recovery_event_windows(data,lanes,maximum=maximum)
     else:raise ValueError('Unknown WM validation head')
-    measured={};failures={};starts={}
+    # Default one episode is a coverage floor, not a calibrated reliability claim.
+    minimum_event_episodes=minimum_event_episodes or {e:1 for e in REQUIRED_EVENTS[head]}
+    measured={};failures={};starts={};support={}
     for name,pairs in groups.items():
-        starts[name]=pairs.tolist()
+        starts[name]=pairs.tolist();support[name]=independent_event_support(data,pairs)
+        minimum=minimum_event_episodes.get(name)
+        if type(minimum) is not int or minimum<1 or support[name]<minimum:
+            failures['support/'+name]=dict(independent_episodes=support[name],minimum=minimum)
         if not len(pairs):continue
         t,ids=pairs.unbind(1);at=t[None]+torch.arange(64)[:,None];device=next(adapter.parameters()).device
-        window={k:v[at,ids[None]].to(device) for k,v in data.items() if v.ndim>=2 and v.shape[:2]==data['episode'].shape}
+        window={k:v[at,ids[None]].to(device) for k,v in data.items() if isinstance(v,torch.Tensor) and v.ndim>=2 and v.shape[:2]==data['episode'].shape}
         result=validate_windows(adapter,window,launch[ids.to(launch.device)],horizons=(1,4,16,32,64))
         measured[name]=result
         flat={h+'/'+k:v for h,m in result.items() for k,v in m.items()}
         failed=compare_bounds(flat,upper_bounds)
         if failed:failures[name]=failed
-    # Missing critical events are unknown, never successful validation.
-    required='contact' if head=='approach' else 'touchdown'
-    if required not in measured:failures['missing_required_event']=required
     return dict(head=head,passed=not failures,errors=measured,failures=failures,window_starts=starts,
+                independent_event_episodes=support,minimum_event_episodes=minimum_event_episodes,
                 missing_events=[k for k,v in starts.items() if not v],
                 scope='held-out recorded-command prediction; native action-response evidence is separate',
-                contact_source='native task/foot flags, not independent paired PhysX forces')
+                contact_source='native qualified-contact/frame/foot flags; other illegal contact modes unverified')

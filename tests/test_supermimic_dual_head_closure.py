@@ -60,6 +60,7 @@ def test_gate_is_fail_closed_and_does_not_cut_active_head_gradient():
 
 def spec():
     return {'dual_head_quality':dict(heldout_lane_ids=[1,3],
+        wm_min_event_episodes=dict(recovery={k:1 for k in ('touchdown','support_loss','body_ground','stable')},approach={k:1 for k in ('legal_contact','illegal_contact','ball_side_success','ball_side_failure')}),
         native_action_probes={h:dict(same_prefix_verified=True,paired_samples=3,errors={'direction':.1},upper_bounds={'direction':.2}) for h in ('recovery','approach')},
         wm_upper_bounds=dict(recovery={'16/angular_velocity_rmse':1.,'16/foot_contact_brier':.2,'16/body_ground_brier':.2},
                             approach={'4/ball_velocity_rmse':1.,'16/ball_forward_sign_error':.2}),
@@ -86,7 +87,7 @@ def test_native_critic_holdout_is_policy_labelled_readonly_and_not_train_loss():
     critic=nn.Linear(1,1,bias=False);critic.weight.data.fill_(1)
     before=copy.deepcopy(critic.state_dict())
     result=critic_holdout(critic,b,'approach',[1,3],current_actor_sha256='new-hash',limits={'mae':.01,'rmse':.01})
-    assert result['passed'] and not result['current_policy_matches_labels'] and result['sample_count']==2
+    assert result['label_policy_value_fit'] and not result['passed'] and not result['current_policy_matches_labels'] and result['sample_count']==2
     assert result['metrics']['rtg_ordering_accuracy']==1
     for key,value in before.items():assert torch.equal(value,critic.state_dict()[key])
     critic.weight.data.fill_(-1)
@@ -117,9 +118,9 @@ def test_recovery_validation_uses_foot_events_not_ball_contact(monkeypatch):
     adapter=nn.Linear(1,1)
     monkeypatch.setattr(v,'validate_windows',lambda *a,**k:{'16':{'foot_contact_brier':.1}})
     result=v.runtime_head_check(adapter,data,[1],torch.zeros(2,6),'recovery',{'16/foot_contact_brier':.2})
-    assert result['passed'] and 'body_ground' in result['missing_events']
+    assert not result['passed'] and 'body_ground' in result['missing_events']
     result=v.runtime_head_check(adapter,data,[1],torch.zeros(2,6),'approach',{'4/ball_velocity_rmse':1.})
-    assert not result['passed'] and result['failures']['missing_required_event']=='contact'
+    assert not result['passed'] and 'support/legal_contact' in result['failures']
 
 
 def test_real_training_and_eval_entrypoints_use_shared_contract():

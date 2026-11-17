@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-# Bounded success-guided Recovery32->Approach8 default with a frozen 128-env
-# gate after the cycle. Budgets remain explicit overrides. This script is intentionally launch-only: it is never run by the
+# Short alternating (R8 -> A8 -> combined frozen refresh) x8, then
+# one formal 128-env evaluation. Large-profile evidence gates remain mandatory. Budgets remain explicit overrides. This script is intentionally launch-only: it is never run by the
 # code validation step. Set the six SM_* paths before invoking it.
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PYTHON="${QUADSMASH_PYTHON:-/home/autodrive/Isaac/env_isaaclab/bin/python}"
@@ -17,10 +17,10 @@ REFERENCE="${SM_REFERENCE_POLICY:-/home/autodrive/LZQW/unitree_smash/reports/G07
 mkdir -p "$RUN_ROOT" "$RUN_ROOT/tensorboard"
 REF_BANK="${SM_TASK_REFERENCE_BANK:?set SM_TASK_REFERENCE_BANK to a terminal-verified v2 bank}"
 TRACK_WEIGHT="${SM_TRACKING_WEIGHT:?declare SM_TRACKING_WEIGHT before this experiment}"
-R_UPDATES="${SM_RECOVERY_UPDATES:-32}"
-A_UPDATES="${SM_APPROACH_UPDATES:-8}"
-R_PROPOSALS="${SM_RECOVERY_PROPOSALS:-64}"
-A_PROPOSALS="${SM_APPROACH_PROPOSALS:-16}"
+R_UPDATES="${SM_RECOVERY_UPDATES:-64}"
+A_UPDATES="${SM_APPROACH_UPDATES:-64}"
+R_PROPOSALS="${SM_RECOVERY_PROPOSALS:-128}"
+A_PROPOSALS="${SM_APPROACH_PROPOSALS:-128}"
 CYCLES="${SM_CYCLES:-1}"
 TB_PID=""
 cleanup(){
@@ -57,11 +57,12 @@ for ((cycle=1; cycle<=CYCLES; cycle++)); do
     --reference-policy-checkpoint "$REFERENCE"
     --recovery-update-budget "$R_UPDATES" --approach-update-budget "$A_UPDATES"
     --recovery-proposal-budget "$R_PROPOSALS" --approach-proposal-budget "$A_PROPOSALS"
-    --update-mode sequential --ball-side-mode shadow
+    --update-mode sequential --sequential-layout short-alternating --head-block-size "${SM_HEAD_BLOCK_SIZE:-8}"
+    --refresh-mode "${SM_REFRESH_MODE:-pair}" --ball-side-mode shadow
     --cycles 1 --native-ticks-per-actor-update 16
     --replay-capacity-ticks 16384 --refresh-ticks 800
     --refresh-world-updates 32 --refresh-critic-updates 20
-    --world-updates-per-actor-update 4 --approach-refresh-interval 8
+    --world-updates-per-actor-update 4
     --wm-stage-quota uniform=32,pre_touchdown=24,touchdown=24,post_touchdown=24,recovery_failure=16,stable_recovery=8
     --wm-approach-stage-quota uniform=24,approach_active=32,hit_prepare=24,contact_release=24,approach_failure=16,post_hit=8
     --task-reference-bank "$REF_BANK" --tracking-weight "$TRACK_WEIGHT"
@@ -70,7 +71,7 @@ for ((cycle=1; cycle<=CYCLES; cycle++)); do
     --output "$OUT" --headless --device cuda:0
     --rendering_mode performance --kit_args=--renderer/multiGpu/enabled=false
   )
-  if [[ "${SM_TRAINING_PROFILE:-bounded}" == large ]]; then
+  if [[ "${SM_TRAINING_PROFILE:-large}" == large ]]; then
     TRAIN_ARGS+=(--training-profile large --contact-validation-receipt "${SM_CONTACT_VALIDATION_RECEIPT:?contact validation evidence required}")
   fi
   if [[ -n "$PREV" ]]; then
@@ -100,20 +101,12 @@ PY
       --output "$EVAL" --physics-device cuda:0 --headless \
       --rendering_mode performance --kit_args=--renderer/multiGpu/enabled=false 2>&1 | tee "$EVAL.log")
   python_bin="$PYTHON"
-  ACCEPTED="$($python_bin - "$EVAL/metrics.json" <<'PY'
-import json,sys
-m=json.load(open(sys.argv[1])); n=m.get('native_episode_metrics',m)
-ok=(float(n.get('native_episode_return_mean',-1e99))>-12.52678435 and
-    int(n.get('ball_side_complete_except_recovery',-1))>=53 and
-    int(n.get('complete5',-1))>=27 and int(m.get('numerical_failures',-1))==0)
-print('1' if ok else '0')
-PY
-  )"
-  echo "[cycle $cycle] accepted=$ACCEPTED"
-  if [[ "$ACCEPTED" != 1 ]]; then
-    echo "cycle $cycle rejected; preserving output and stopping" | tee "$RUN_ROOT/STOPPED"
+  if ! (cd "$ROOT" && QUADSMASH_PYTHON="$PYTHON" bash scripts/python.sh scripts/verify_supermimic_promotion.py \
+      --metrics "$EVAL/metrics.json" --checkpoint "$CANDIDATE" --output "$EVAL/promotion.json"); then
+    echo "cycle $cycle promotion rejected; preserving evidence and stopping" | tee "$RUN_ROOT/STOPPED"
     exit 21
   fi
+  echo "[cycle $cycle] accepted=1 (checkpoint, execution contract and complete protocol verified)"
   CURRENT_RETURN="$($python_bin - "$EVAL/metrics.json" <<'PY'
 import json,sys
 m=json.load(open(sys.argv[1])); n=m.get('native_episode_metrics',m)

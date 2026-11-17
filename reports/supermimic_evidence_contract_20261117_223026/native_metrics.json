@@ -1,0 +1,793 @@
+{
+  "policy_execution": {
+    "schema": "supermimic-policy-execution-v1",
+    "recovery_gate": "causal-contact-release-recovery-v1",
+    "request": "original-normalized-residual",
+    "final_transform": "unchanged-G07-mixer-and-native-limiter"
+  },
+  "policy_execution_provenance": "explicit frozen initialization under training causal gate",
+  "evaluation_scope": "TRAIN128 development, not A/B acceptance",
+  "num_envs": 128,
+  "control_ticks": 800,
+  "episode_seconds": 8.0,
+  "qualified_airborne_string_contact": 74,
+  "ball_side_complete_except_recovery": 54,
+  "recovery_success": 36,
+  "physical_recovery_success": 37,
+  "scoring_schema": "historical-independent-complete5-v1",
+  "conditional_recovery_count": 36,
+  "conditional_recovery_denominator": 74,
+  "recovery_given_airborne_string_contact": 0.4864864864864865,
+  "complete5": 26,
+  "body_ground_seen": 60,
+  "no_head_contact_recovery": null,
+  "no_independent_nonfoot_contact_recovery": null,
+  "missing_contact_audit_reason": "No independent paired head/all-body contact labels in this environment; never default to false",
+  "numerical_failures": 0,
+  "extra_mpc_interventions": 0,
+  "extra_teacher_interventions": 0,
+  "historical_base_and_recovery_assistance_preserved": true,
+  "task_contract": {
+    "version": "supermimic-source-task-contract-v2",
+    "source_policy_sha256": "8f510fe9f218beef791ac21675a19ed25d11f510a83fe247cddf2893bee08399",
+    "protocol_path": "configs/g07_full_racket_eval_v5_contact_recovery_origin0.json",
+    "protocol_sha256": "bfe6f2bef675bb4716e4970e6400eb86dd50b06e799e848030eb2a29ed84a309",
+    "suite": {
+      "path": "reports/G07_full_racket_v4/protocol_frozen01/training_cases.json",
+      "sha256": "2f9bf380d938a87418c4fa7da087e86d0da43f27a2ee6492bff7d7f1c3ff7c30",
+      "count": 128
+    },
+    "asset": {
+      "path": "assets/quadsmash_full_racket_v4_r3.usd",
+      "sha256": "c2264fcece90b042c7c6a1cac7d516af83972729d0402947e3a519041e184cf2"
+    },
+    "environment_spacing_m": 0.0,
+    "ground_size_m": [
+      64.0,
+      64.0,
+      0.1
+    ],
+    "contact_flight_recovery": "contact-flight-recovery-v1",
+    "control_dt_s": 0.01,
+    "physics_dt_s": 6.25e-05,
+    "episode_s": 8.0,
+    "precision_receipt_sha256": "0623405122424761a548fb51f3b43708cc887737e10067de4f1804c92487b032",
+    "sweep_audit": {
+      "maximum_iterations": 4096,
+      "tolerance_m": 1e-06
+    },
+    "extra_online_mpc": false,
+    "historical_base_and_recovery_assistance_preserved": true
+  },
+  "source": {
+    "path": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_env5120_01/policy.pt",
+    "sha256": "8f510fe9f218beef791ac21675a19ed25d11f510a83fe247cddf2893bee08399",
+    "native_schema": "g07-shared-target-residual-ppo-v1",
+    "training_signature": null,
+    "interface": {
+      "schema": "quadsmash-native-training-v2",
+      "observation_size": 794,
+      "history_length": 11,
+      "joints": [
+        "FL_hip_joint",
+        "FR_hip_joint",
+        "RL_hip_joint",
+        "RR_hip_joint",
+        "FL_thigh_joint",
+        "FR_thigh_joint",
+        "RL_thigh_joint",
+        "RR_thigh_joint",
+        "FL_calf_joint",
+        "FR_calf_joint",
+        "RL_calf_joint",
+        "RR_calf_joint",
+        "joint1",
+        "joint2",
+        "joint3",
+        "joint4",
+        "joint5",
+        "joint6"
+      ],
+      "policy_dt": 0.01,
+      "action_family": "bounded-residual-joint-targets-full-racket-v4"
+    },
+    "learning_rate": null,
+    "actor_kind": "native_residual_jit_794_256_128_64",
+    "obs_dim": 794,
+    "action_dim": 18,
+    "execution_policy": "frozen_g07_shared_target_base_plus_native_residual_mixer",
+    "g07_execution_root": "/home/autodrive/LZQW/unitree_smash"
+  },
+  "actor_updated": false,
+  "elapsed_s": 1933.4483713610098,
+  "physics": {
+    "device": "cuda:0",
+    "gpu_dynamics": true,
+    "origin_spacing_m": 0.0,
+    "actual_origins_m": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "ground_size_m": [
+      64.0,
+      64.0,
+      0.1
+    ],
+    "sweep_audit_iterations": 4096
+  },
+  "evaluated_checkpoint_sha256": "8f510fe9f218beef791ac21675a19ed25d11f510a83fe247cddf2893bee08399",
+  "actor_state_sha256": "73a3194ea2e44122df13663bcad9e9b0b543b7c6429bf3b06b133bfb1244646a",
+  "actor_parameters_unchanged": true,
+  "optimizer_updates": {
+    "actor": 0,
+    "world": 0,
+    "critic": 0
+  },
+  "head_active_lane_steps": {
+    "recovery": 55359,
+    "approach": 4477
+  },
+  "native_episode_metrics": {
+    "completed_episodes": 128,
+    "qualified_airborne_string_contact": 74,
+    "qualified_airborne_string_contact_rate": 0.578125,
+    "ball_side_complete_except_recovery": 54,
+    "ball_side_complete_except_recovery_rate": 0.421875,
+    "conditional_recovery_count": 36,
+    "conditional_recovery_denominator": 74,
+    "recovery_given_airborne_string_contact": 0.4864864864864865,
+    "conditional_recovery_scope": "actual_qualified_contacts_in_these_completed_episodes",
+    "complete5": 26,
+    "complete5_rate": 0.203125,
+    "native_episode_return_observed_count": 128,
+    "native_episode_return_missing_count": 0,
+    "native_episode_return_mean": -10.874005721576468,
+    "native_episode_return_std": 50.15741076553481,
+    "native_episode_return_min": -91.65631435364321,
+    "native_episode_return_max": 64.98194240025805,
+    "native_episode_return_last": -35.70089594152614,
+    "native_return_definition": "undiscounted_sum_of_native_control_step_rewards_v1"
+  },
+  "conditional_recovery_scope": "actual_qualified_contacts_in_these_completed_episodes",
+  "native_episode_return_mean": -10.874005721576468,
+  "native_episode_discounted_return_mean": -0.18652319950804272,
+  "native_return_gamma": 0.99498743710662
+}

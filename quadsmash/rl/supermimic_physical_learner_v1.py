@@ -410,7 +410,8 @@ class PhysicalHorizonTrainer:
         return self.calibrate_critic_tensors(x,y,epochs=epochs)
 
     def calibrate_critic_tensors(self,x,y,*,epochs=1):
-        x=x.detach();y=y.detach().reshape(-1,1)
+        parameter=next(self.critic.parameters())
+        x=x.detach().to(device=parameter.device,dtype=parameter.dtype);y=y.detach().reshape(-1,1).to(device=parameter.device,dtype=parameter.dtype)
         if len(x)!=len(y) or not len(y):raise ValueError('Invalid native critic tensor labels')
         losses=[]
         for _ in range(epochs):
@@ -437,10 +438,13 @@ class PhysicalHorizonTrainer:
             value=value.detach().reshape(-1)
             if value.numel() != state.observation.shape[0]:
                 raise ValueError('Stage RTG batch does not match state batch')
-            rows.append(dict(policy_id=str(meta['policy_id']), episode_id=str(meta['episode_id']),
+            complete=meta.get('complete_lane_mask',torch.ones(value.numel(),dtype=torch.bool,device=value.device)).to(value.device).bool()
+            if complete.numel()!=value.numel():raise ValueError('Complete RTG mask shape mismatch')
+            dropped=int((~complete).sum());value=value[complete]
+            rows.append(dict(excluded_incomplete_lanes=dropped,policy_id=str(meta['policy_id']), episode_id=str(meta['episode_id']),
                              time_s=float(meta['time_s']), count=int(value.numel()),
-                             return_min=float(value.min()), return_max=float(value.max()),
-                             return_mean=float(value.mean())))
+                             return_min=float(value.min()) if len(value) else None, return_max=float(value.max()) if len(value) else None,
+                             return_mean=float(value.mean()) if len(value) else None))
         return dict(policy_id=sorted({r['policy_id'] for r in rows}), stages=rows,
                     total_labels=sum(r['count'] for r in rows), source='completed_native_archive',
                     critic_updates=0)

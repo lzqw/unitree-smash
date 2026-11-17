@@ -14,6 +14,7 @@ def task_memory(state):
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--archive',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--episodes-summary',type=Path,help='Original same-run independent terminal scores, joined by lane/episode')
     args=p.parse_args();args.output.mkdir(parents=True,exist_ok=False);torch.set_num_threads(2)
     manifest=json.loads((args.archive/'manifest.json').read_text())
     schema=template=None;records=[]
@@ -48,6 +49,11 @@ def main():
             first_done|=row['terminated']|row['timeout']
         print(json.dumps(dict(packed_ticks=len(records),last_chunk=entry['file'])),flush=True)
     data={key:torch.stack([r[key] for r in records]) for key in records[0]}
+    if args.episodes_summary is not None:
+        from quadsmash.rl.supermimic_evidence_binding_v1 import attach_terminal_ball_side
+        if args.episodes_summary.resolve().parent!=args.archive.resolve().parent:
+            raise ValueError('Terminal summary must belong to this native run directory')
+        data=attach_terminal_ball_side(data,json.loads(args.episodes_summary.read_text()))
     package=dict(schema='physical-loop-supervision-v1',task_schema=schema.manifest(),template=template,
                  source_manifest=manifest,source_archive=str(args.archive),tensors=data,
                  first_returns=returns,first_done=first_done)
