@@ -251,8 +251,20 @@ class ContactFirstTrajectorySearchV1:
          racket_offset, lower, upper,
          velocity_limits) = data
         cfg = self.config
+        requested_contact = float(contact_time_s)
+        if not math.isfinite(requested_contact) or requested_contact <= cfg.dt_s:
+            raise ValueError("Positive contact time after current state required")
         racket_normal = racket_normal / max(np.linalg.norm(racket_normal), 1e-12)
         target_normal = target_normal / max(np.linalg.norm(target_normal), 1e-12)
+        # The target arrives from the public body-frame command.  During a
+        # jump the base translates before contact, so solve the arm terminal
+        # task in the predicted contact frame.  This is a causal constant-
+        # acceleration extrapolation from the current measured base velocity
+        # and acceleration; it does not read future simulator state.  The
+        # velocity compensation below remains separate and is applied once.
+        base_displacement = (base_linear * requested_contact +
+                             0.5 * base_linear_acceleration * requested_contact**2)
+        relative_target_position = target_pos - base_displacement
         q_contact = q0.copy()
         current_pos, current_normal = racket_pos.copy(), racket_normal.copy()
         current_jp, current_jn = jp.copy(), jn.copy()
@@ -265,7 +277,7 @@ class ContactFirstTrajectorySearchV1:
             current_normal = current_normal / max(np.linalg.norm(current_normal), 1e-12)
             task = np.vstack((current_jp, cfg.normal_weight * current_jn))
             inverse = _damped_inverse(task, cfg.damping)
-            position_error = target_pos - current_pos
+            position_error = relative_target_position - current_pos
             normal_error = target_normal - current_normal
             q_delta = inverse @ np.r_[position_error, cfg.normal_weight * normal_error]
             q_delta = np.clip(q_delta, -cfg.max_iteration_step_rad,
@@ -331,9 +343,6 @@ class ContactFirstTrajectorySearchV1:
                         lower, upper, velocity_limits)
                     branches.append((branch_q, branch_pos, branch_normal,
                                      branch_jp, branch_jn, float(offset)))
-        requested_contact = float(contact_time_s)
-        if not math.isfinite(requested_contact) or requested_contact <= cfg.dt_s:
-            raise ValueError("Positive contact time after current state required")
         maximum_candidate_duration = requested_contact + max(
             (float(x) for x in cfg.contact_time_offsets_s), default=0.0)
         minimum_joint_speed_duration = min(
@@ -419,6 +428,8 @@ class ContactFirstTrajectorySearchV1:
                         np.linalg.norm(branch_q - q0)),
                     initial_joint_position_rad=q0.copy(),
                     initial_joint_velocity_rad_s=qd0.copy(),
+                    base_displacement_world_m=base_displacement.copy(),
+                    relative_target_position_world_m=relative_target_position.copy(),
                     base_point_velocity_world_m_s=contact_base_point_velocity.copy(),
                     relative_target_velocity_world_m_s=relative_velocity.copy(),
                     source="causal_ball_or_dtg_contact_event",
@@ -437,7 +448,8 @@ class ContactFirstTrajectorySearchV1:
                         achieved_pos, achieved_normal = branch_pos, branch_normal
                         achieved_jp = branch_jp
                     achieved_velocity = contact_base_point_velocity + achieved_jp @ qd1
-                    position_error_norm = float(np.linalg.norm(target_pos - achieved_pos))
+                    position_error_norm = float(np.linalg.norm(
+                        relative_target_position - achieved_pos))
                     normal_error_norm = float(np.linalg.norm(target_normal - achieved_normal))
                     velocity_error_norm = float(np.linalg.norm(target_velocity - achieved_velocity))
                     if (position_error_norm > cfg.position_tolerance_m or

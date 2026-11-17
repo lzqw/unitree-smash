@@ -62,6 +62,18 @@ The planner is intentionally deterministic and low-dimensional, but it is not a 
 
 After the CPU checks, a native **development probe** was run with the same controller path for 2 environments and 800 control ticks.  The first attempt was preserved and failed at the CUDA-to-NumPy boundary when passing causal base acceleration into the CPU planner.  The explicit `.detach().cpu().numpy()` bridge fixed that engineering fault; the retry exited 0 and completed all 800 ticks with zero numerical failures.  This probe did not launch the ball, recorded zero contacts and zero completes, and is therefore not a hit-rate result.  Evidence is in `native_probe_2env_800tick/`; formal native evaluation remains `NOT_RUN`.
 
+The retry's per-lane planner log showed a more substantive issue: all 45
+contact candidates were rejected by `kinematic_task_residual`.  At the
+planning tick the desired body-frame target was about 0.43--0.47 m above the
+current racket point, while the base was entering a jump.  The planner had
+been compensating base velocity for contact speed but not base translation
+for the terminal position, so it incorrectly required the six arm joints to
+produce the entire jump displacement.  The current patch subtracts a causal
+`v*t + 0.5*a*t^2` base translation from the terminal arm target before IK and
+records that displacement in candidate metadata.  Native confirmation of this
+fix is still pending; the pre-patch diagnostic is preserved under
+`native_probe_2env_800tick/retry2_base_compensation/`.
+
 The actual `FullRacketKinematicsV4` callback was exercised on CPU and accepted a
 32-node plan (`KINEMATICS_CALLBACK_SMOKE.json`); this is a controller smoke only,
 not an Isaac/native hit-rate result.

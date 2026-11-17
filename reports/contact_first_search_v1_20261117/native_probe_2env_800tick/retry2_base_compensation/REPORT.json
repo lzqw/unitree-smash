@@ -1,0 +1,15 @@
+{
+  "scope": "same temporary candidate, same 2-env x 800-tick native development probe; instrumentation and causal base-translation fix",
+  "exit_code": 0,
+  "control_ticks": 800,
+  "episodes": 2,
+  "contacts": 0,
+  "complete": 0,
+  "numerical_failures": 0,
+  "formal_acceptance": false,
+  "planner_diagnostics": {
+    "env_0": "No contact-first candidate passed pre-contact checks: {'kinematic_task_residual': 45}",
+    "env_1": "No contact-first candidate passed pre-contact checks: {'kinematic_task_residual': 45}"
+  },
+  "interpretation": "This probe was run before the subsequent causal base-translation patch. Its logs show that all 45 candidates were rejected because the arm was asked to reach the fixed body-frame target without base translation. A new native probe is required before claiming the translation fix is active. This run is engineering evidence only and has no hit-rate meaning."
+}

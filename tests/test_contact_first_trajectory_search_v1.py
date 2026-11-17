@@ -90,6 +90,21 @@ def test_causal_base_acceleration_is_extrapolated_to_contact():
     assert result.metadata['relative_target_velocity_world_m_s'][0] == pytest.approx(.8)
 
 
+def test_causal_base_translation_is_removed_from_arm_contact_target():
+    planner = ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
+        horizon_steps=32, contact_time_offsets_s=(0.,), velocity_scales=(1.,)))
+    inputs = _inputs()
+    inputs['target_position_world_m'] = np.array([.1, 0., 0.])
+    inputs['base_linear_acceleration_world_m_s2'] = np.array([1., 0., 0.])
+    result = planner.plan(**inputs)
+    # The base translates by 0.5*a*t^2 before contact, so the arm terminal
+    # target is .08 m in the synthetic linear model rather than .10 m.
+    np.testing.assert_allclose(
+        result.q_rad[result.contact_index, :3], [.08, 0., 0.], atol=3e-4)
+    assert result.metadata['base_displacement_world_m'][0] == pytest.approx(.02)
+    assert result.metadata['relative_target_position_world_m'][0] == pytest.approx(.08)
+
+
 def test_causal_base_angular_acceleration_is_extrapolated_to_contact():
     planner = ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
         horizon_steps=32, contact_time_offsets_s=(0.,), velocity_scales=(1.,)))
