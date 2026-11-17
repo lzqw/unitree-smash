@@ -36,13 +36,14 @@ def matrix_quaternion(matrix):
 class PhysicalImaginationAdapter(nn.Module):
     schema='g07-physical-task-observation-loop-v1'
 
-    def __init__(self,physical_model,ball_model,task_model,executor,*,safety_body_names,manifest,dt=.01):
+    def __init__(self,physical_model,ball_model,task_model,executor,*,safety_body_names,manifest,dt=.01,action_ball_model=None):
         super().__init__()
         if physical_model.schema!='physical55-separated-contact-transitions-v2':
             raise ValueError('PhysicalWorldV2 required; legacy observation predictor is forbidden')
         if not safety_body_names:raise ValueError('Native safety-body name mapping required')
         self.physical_model=physical_model
         self.ball_model=ball_model
+        self.action_ball_model=action_ball_model
         self.task_model=task_model
         self.executor=executor
         self.observer=PhysicalPolicyObservationV1().to(dtype=physical_model.input_mean.dtype)
@@ -54,6 +55,9 @@ class PhysicalImaginationAdapter(nn.Module):
             event_semantics='supervised soft hazards; not native contacts',
             discrete_approximations=['task timestamp validity > 0.5','observation phase/contact flags > 0.5',
                                      'historical NumPy planning/requests stop-gradient'])
+        if action_ball_model is not None:
+            self.manifest['action_ball_schema']=action_ball_model.schema
+            self.manifest['action_ball_native_certified']=False
         self.calls=0
 
     def forward(self,state:PhysicalImaginationStateV1,actor_action):
@@ -64,7 +68,7 @@ class PhysicalImaginationAdapter(nn.Module):
             c['joint_default'][0],c['limits'],state.executor_memory)
         predicted,feet,present=ball_transition(self.physical_model,self.ball_model,
             state.physical,preview.final_joint_targets,c['final_action'],c['foot_contact'],
-            c['ball_present'],c['elapsed'],c['launch'])
+            c['ball_present'],c['elapsed'],c['launch'],action_model=self.action_ball_model)
         task=self.task_model(state.physical,predicted,preview.final_joint_targets,
                              c['final_action'],c['foot_contact'],c['elapsed'],state.task_memory)
         next_task=task['memory'];p=decode_physical(predicted)
