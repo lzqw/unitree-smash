@@ -107,3 +107,29 @@ def test_bad_sliding_hints_rejected_not_silently_accepted():
         unilateral_velocity_step(*args,previous_modes=np.array([5]))
     with pytest.raises(ValueError,match='slip direction hint'):
         unilateral_velocity_step(*args,previous_sliding_directions=np.array([[np.nan,0.]]))
+
+
+def test_coupled_slip_solves_anisotropic_direction_cycle_with_original_gates():
+    import pytest
+    mass=np.diag([.1,2.,1.]);old=np.array([1.,.4,-1.])
+    args=(mass,old,np.zeros(3),np.zeros((3,0)),*[np.zeros(0) for _ in range(4)],
+          .01,np.eye(3)[None],np.zeros((1,3)),.5)
+    with pytest.raises(ValueError,match='did not converge'):
+        unilateral_velocity_step(*args)
+    trace=[]
+    solved=unilateral_velocity_step(*args,coupled_slip=True,iteration_trace=trace)
+    v=solved['velocity'];force=solved['force'][0]
+    np.testing.assert_allclose(mass@(v-old)/.01,force,atol=2e-5)
+    assert force[2]>=0 and abs(v[2])<2e-6
+    np.testing.assert_allclose(force[:2],-.5*force[2]*v[:2]/np.linalg.norm(v[:2]),atol=2e-5)
+    assert force[:2]@v[:2]<0
+    assert solved['residual']<2e-5
+    assert any(x['coupled_slip_fit'] is not None for x in trace)
+
+
+def test_invalid_slip_relaxation_is_rejected():
+    import pytest
+    with pytest.raises(ValueError,match='Slip relaxation'):
+        unilateral_velocity_step(np.eye(1),np.zeros(1),np.zeros(1),np.eye(1),
+            np.ones(1),np.ones(1),np.zeros(1),np.ones(1),.01,
+            np.zeros((0,3,1)),np.zeros((0,3)),.5,slip_relaxation=float('nan'))

@@ -1,0 +1,1280 @@
+{
+  "review_commit": "fd0e9d911bf04295b3147961b430738769197d45",
+  "local_start": "3308200",
+  "reference_generation_mode": "offline",
+  "runtime_is_admission_gate": false,
+  "review": {
+    "planning_calls": 8,
+    "candidates": 24,
+    "position_pass": 13,
+    "normal_pass": 2,
+    "velocity_pass": 0,
+    "physical_calls": 0,
+    "wall_time_mean_s": 0.40403344080550596,
+    "wall_time_p95_s": 0.43579368898645043,
+    "rows": [
+      {
+        "lane": 0,
+        "clock": 2.009999990463257,
+        "relative_contact_time_s": 0.75,
+        "anchor_position_mm": 142.55765205095437,
+        "final_position_mm": 142.55765205095437,
+        "anchor_normal_error": 1.4205770420621,
+        "final_normal_error": 1.4205770420621,
+        "position_ok": false,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": false,
+          "accepted": false,
+          "mode": "strict_position_first"
+        }
+      },
+      {
+        "lane": 0,
+        "clock": 2.009999990463257,
+        "relative_contact_time_s": 0.77,
+        "anchor_position_mm": 42.005903071552474,
+        "final_position_mm": 42.005903071552474,
+        "anchor_normal_error": 1.3319019194829682,
+        "final_normal_error": 1.3319019194829682,
+        "position_ok": false,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": false,
+          "accepted": false,
+          "mode": "strict_position_first"
+        }
+      },
+      {
+        "lane": 0,
+        "clock": 2.009999990463257,
+        "relative_contact_time_s": 0.79,
+        "anchor_position_mm": 0.16817256857299767,
+        "final_position_mm": 0.4999680721482548,
+        "anchor_normal_error": 0.9533043526243334,
+        "final_normal_error": 0.6408400754547323,
+        "position_ok": true,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": true,
+          "accepted": true,
+          "mode": "bounded_position_constrained_slsqp",
+          "previous_normal_error": 0.7137268070147487,
+          "position_budget_m": 0.0005,
+          "attempts": [
+            {
+              "success": true,
+              "status": 0,
+              "iterations": 31,
+              "message": "Optimization terminated successfully"
+            }
+          ],
+          "seconds": 0.03803125908598304
+        }
+      },
+      {
+        "lane": 1,
+        "clock": 2.009999990463257,
+        "relative_contact_time_s": 0.77,
+        "anchor_position_mm": 172.72491061806022,
+        "final_position_mm": 172.72491061806022,
+        "anchor_normal_error": 1.409402546153833,
+        "final_normal_error": 1.409402546153833,
+        "position_ok": false,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": false,
+          "accepted": false,
+          "mode": "strict_position_first"
+        }
+      },
+      {
+        "lane": 1,
+        "clock": 2.009999990463257,
+        "relative_contact_time_s": 0.79,
+        "anchor_position_mm": 77.38796273046992,
+        "final_position_mm": 77.38796273046992,
+        "anchor_normal_error": 1.3202726507853506,
+        "final_normal_error": 1.3202726507853506,
+        "position_ok": false,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": false,
+          "accepted": false,
+          "mode": "strict_position_first"
+        }
+      },
+      {
+        "lane": 1,
+        "clock": 2.009999990463257,
+        "relative_contact_time_s": 0.81,
+        "anchor_position_mm": 0.42155271481491713,
+        "final_position_mm": 0.0988322704320919,
+        "anchor_normal_error": 1.1022009912913946,
+        "final_normal_error": 1.0496239355204775,
+        "position_ok": true,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": true,
+          "accepted": false,
+          "mode": "bounded_position_constrained_slsqp",
+          "previous_normal_error": 1.0496239355204775,
+          "position_budget_m": 0.0005,
+          "attempts": [
+            {
+              "success": false,
+              "status": 9,
+              "iterations": 32,
+              "message": "Iteration limit reached"
+            }
+          ],
+          "seconds": 0.03494692873209715
+        }
+      },
+      {
+        "lane": 0,
+        "clock": 2.169999837875366,
+        "relative_contact_time_s": 0.59,
+        "anchor_position_mm": 2.8677517022593038,
+        "final_position_mm": 2.8677517022593038,
+        "anchor_normal_error": 1.034926633377488,
+        "final_normal_error": 1.034926633377488,
+        "position_ok": true,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": true,
+          "accepted": false,
+          "mode": "bounded_position_constrained_slsqp",
+          "previous_normal_error": 1.034926633377488,
+          "position_budget_m": 0.0028777517022593037,
+          "attempts": [
+            {
+              "success": false,
+              "status": 9,
+              "iterations": 32,
+              "message": "Iteration limit reached"
+            }
+          ],
+          "seconds": 0.03520767576992512
+        }
+      },
+      {
+        "lane": 0,
+        "clock": 2.169999837875366,
+        "relative_contact_time_s": 0.61,
+        "anchor_position_mm": 6.776674990826035e-05,
+        "final_position_mm": 9.078461445293876e-05,
+        "anchor_normal_error": 1.0005441875783831,
+        "final_normal_error": 0.7386352094549787,
+        "position_ok": true,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": true,
+          "accepted": false,
+          "mode": "bounded_position_constrained_slsqp",
+          "previous_normal_error": 0.7386352094549787,
+          "position_budget_m": 0.0005,
+          "attempts": [
+            {
+              "success": false,
+              "status": 9,
+              "iterations": 32,
+              "message": "Iteration limit reached"
+            }
+          ],
+          "seconds": 0.036237782798707485
+        }
+      },
+      {
+        "lane": 0,
+        "clock": 2.169999837875366,
+        "relative_contact_time_s": 0.63,
+        "anchor_position_mm": 60.44140082679002,
+        "final_position_mm": 60.44140082679002,
+        "anchor_normal_error": 1.957923422693719,
+        "final_normal_error": 1.957923422693719,
+        "position_ok": false,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": false,
+          "accepted": false,
+          "mode": "strict_position_first"
+        }
+      },
+      {
+        "lane": 1,
+        "clock": 2.169999837875366,
+        "relative_contact_time_s": 0.61,
+        "anchor_position_mm": 1.6035295230432286e-05,
+        "final_position_mm": 0.0001445525093784477,
+        "anchor_normal_error": 1.192471697634601,
+        "final_normal_error": 0.8376387005370661,
+        "position_ok": true,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": true,
+          "accepted": false,
+          "mode": "bounded_position_constrained_slsqp",
+          "previous_normal_error": 0.8376387005370661,
+          "position_budget_m": 0.0005,
+          "attempts": [
+            {
+              "success": false,
+              "status": 9,
+              "iterations": 32,
+              "message": "Iteration limit reached"
+            }
+          ],
+          "seconds": 0.03008068073540926
+        }
+      },
+      {
+        "lane": 1,
+        "clock": 2.169999837875366,
+        "relative_contact_time_s": 0.63,
+        "anchor_position_mm": 8.738843687475241e-05,
+        "final_position_mm": 0.008966670823933256,
+        "anchor_normal_error": 0.7655457126642266,
+        "final_normal_error": 0.6736612196155237,
+        "position_ok": true,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": true,
+          "accepted": false,
+          "mode": "bounded_position_constrained_slsqp",
+          "previous_normal_error": 0.6736612196155237,
+          "position_budget_m": 0.0005,
+          "attempts": [
+            {
+              "success": false,
+              "status": 9,
+              "iterations": 32,
+              "message": "Iteration limit reached"
+            }
+          ],
+          "seconds": 0.03069737972691655
+        }
+      },
+      {
+        "lane": 1,
+        "clock": 2.169999837875366,
+        "relative_contact_time_s": 0.65,
+        "anchor_position_mm": 2.194208960198705e-05,
+        "final_position_mm": 0.0027501294592459486,
+        "anchor_normal_error": 0.9202300063844624,
+        "final_normal_error": 0.8441174175289192,
+        "position_ok": true,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": true,
+          "accepted": false,
+          "mode": "bounded_position_constrained_slsqp",
+          "previous_normal_error": 0.8441174175289192,
+          "position_budget_m": 0.0005,
+          "attempts": [
+            {
+              "success": false,
+              "status": 9,
+              "iterations": 32,
+              "message": "Iteration limit reached"
+            }
+          ],
+          "seconds": 0.03542324714362621
+        }
+      },
+      {
+        "lane": 0,
+        "clock": 2.3299999237060547,
+        "relative_contact_time_s": 0.43,
+        "anchor_position_mm": 742.5567636901314,
+        "final_position_mm": 742.5567636901314,
+        "anchor_normal_error": 0.6098867315373608,
+        "final_normal_error": 0.6098867315373608,
+        "position_ok": false,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": false,
+          "accepted": false,
+          "mode": "strict_position_first"
+        }
+      },
+      {
+        "lane": 0,
+        "clock": 2.3299999237060547,
+        "relative_contact_time_s": 0.45,
+        "anchor_position_mm": 656.7132913624033,
+        "final_position_mm": 656.7132913624033,
+        "anchor_normal_error": 0.8957181004185301,
+        "final_normal_error": 0.8957181004185301,
+        "position_ok": false,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": false,
+          "accepted": false,
+          "mode": "strict_position_first"
+        }
+      },
+      {
+        "lane": 0,
+        "clock": 2.3299999237060547,
+        "relative_contact_time_s": 0.47000000000000003,
+        "anchor_position_mm": 577.9105743450295,
+        "final_position_mm": 577.9105743450295,
+        "anchor_normal_error": 1.5086893437065285,
+        "final_normal_error": 1.5086893437065285,
+        "position_ok": false,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": false,
+          "accepted": false,
+          "mode": "strict_position_first"
+        }
+      },
+      {
+        "lane": 1,
+        "clock": 2.3299999237060547,
+        "relative_contact_time_s": 0.45,
+        "anchor_position_mm": 765.083447035223,
+        "final_position_mm": 765.083447035223,
+        "anchor_normal_error": 0.819302490137902,
+        "final_normal_error": 0.819302490137902,
+        "position_ok": false,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": false,
+          "accepted": false,
+          "mode": "strict_position_first"
+        }
+      },
+      {
+        "lane": 1,
+        "clock": 2.3299999237060547,
+        "relative_contact_time_s": 0.47000000000000003,
+        "anchor_position_mm": 687.0391010866098,
+        "final_position_mm": 687.0391010866098,
+        "anchor_normal_error": 1.0005066303460528,
+        "final_normal_error": 1.0005066303460528,
+        "position_ok": false,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": false,
+          "accepted": false,
+          "mode": "strict_position_first"
+        }
+      },
+      {
+        "lane": 1,
+        "clock": 2.3299999237060547,
+        "relative_contact_time_s": 0.49,
+        "anchor_position_mm": 612.4258753663436,
+        "final_position_mm": 612.4258753663436,
+        "anchor_normal_error": 1.4559744373554564,
+        "final_normal_error": 1.4559744373554564,
+        "position_ok": false,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": false,
+          "accepted": false,
+          "mode": "strict_position_first"
+        }
+      },
+      {
+        "lane": 0,
+        "clock": 2.490000009536743,
+        "relative_contact_time_s": 0.27,
+        "anchor_position_mm": 5.405765972364103e-05,
+        "final_position_mm": 0.00020908437056339175,
+        "anchor_normal_error": 0.8364927637312183,
+        "final_normal_error": 0.8022985640451552,
+        "position_ok": true,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": true,
+          "accepted": false,
+          "mode": "bounded_position_constrained_slsqp",
+          "previous_normal_error": 0.8022985640451552,
+          "position_budget_m": 0.0005,
+          "attempts": [
+            {
+              "success": true,
+              "status": 0,
+              "iterations": 31,
+              "message": "Optimization terminated successfully"
+            }
+          ],
+          "seconds": 0.03677001688629389
+        }
+      },
+      {
+        "lane": 0,
+        "clock": 2.490000009536743,
+        "relative_contact_time_s": 0.29,
+        "anchor_position_mm": 4.2149166197202037e-05,
+        "final_position_mm": 0.4937066981962073,
+        "anchor_normal_error": 0.3928551972249499,
+        "final_normal_error": 6.293124610540689e-07,
+        "position_ok": true,
+        "normal_ok": true,
+        "velocity_ok": false,
+        "velocity_solved": true,
+        "requested_velocity_error_m_s": 2.4862077574866794,
+        "rejection": "REQUESTED_VELOCITY_UNREACHABLE",
+        "refinement": {
+          "attempted": true,
+          "accepted": true,
+          "mode": "bounded_position_constrained_slsqp",
+          "previous_normal_error": 0.31100610116671334,
+          "position_budget_m": 0.0005,
+          "attempts": [
+            {
+              "success": true,
+              "status": 0,
+              "iterations": 20,
+              "message": "Optimization terminated successfully"
+            }
+          ],
+          "seconds": 0.01721325283870101
+        }
+      },
+      {
+        "lane": 0,
+        "clock": 2.490000009536743,
+        "relative_contact_time_s": 0.31,
+        "anchor_position_mm": 8.326640755876138e-05,
+        "final_position_mm": 8.326640755876138e-05,
+        "anchor_normal_error": 0.7088798814184222,
+        "final_normal_error": 0.7088798814184222,
+        "position_ok": true,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": true,
+          "accepted": false,
+          "mode": "bounded_position_constrained_slsqp",
+          "previous_normal_error": 0.7088798814184222,
+          "position_budget_m": 0.0005,
+          "attempts": [
+            {
+              "success": true,
+              "status": 0,
+              "iterations": 28,
+              "message": "Optimization terminated successfully"
+            }
+          ],
+          "seconds": 0.03258407395333052
+        }
+      },
+      {
+        "lane": 1,
+        "clock": 2.490000009536743,
+        "relative_contact_time_s": 0.29,
+        "anchor_position_mm": 4.3871326690172677e-05,
+        "final_position_mm": 0.00028427170205817803,
+        "anchor_normal_error": 0.3785697327486117,
+        "final_normal_error": 0.17931199914528162,
+        "position_ok": true,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": true,
+          "accepted": false,
+          "mode": "bounded_position_constrained_slsqp",
+          "previous_normal_error": 0.17931199914528162,
+          "position_budget_m": 0.0005,
+          "attempts": [
+            {
+              "success": false,
+              "status": 9,
+              "iterations": 32,
+              "message": "Iteration limit reached"
+            }
+          ],
+          "seconds": 0.07055023405700922
+        }
+      },
+      {
+        "lane": 1,
+        "clock": 2.490000009536743,
+        "relative_contact_time_s": 0.31,
+        "anchor_position_mm": 7.209716129021859e-05,
+        "final_position_mm": 0.4918790723643999,
+        "anchor_normal_error": 0.5529784976069824,
+        "final_normal_error": 3.566821560367778e-07,
+        "position_ok": true,
+        "normal_ok": true,
+        "velocity_ok": false,
+        "velocity_solved": true,
+        "requested_velocity_error_m_s": 1.8952015773430293,
+        "rejection": "REQUESTED_VELOCITY_UNREACHABLE",
+        "refinement": {
+          "attempted": true,
+          "accepted": true,
+          "mode": "bounded_position_constrained_slsqp",
+          "previous_normal_error": 0.5529784976069824,
+          "position_budget_m": 0.0005,
+          "attempts": [
+            {
+              "success": true,
+              "status": 0,
+              "iterations": 27,
+              "message": "Optimization terminated successfully"
+            }
+          ],
+          "seconds": 0.023875221144407988
+        }
+      },
+      {
+        "lane": 1,
+        "clock": 2.490000009536743,
+        "relative_contact_time_s": 0.33,
+        "anchor_position_mm": 0.00010203454217886767,
+        "final_position_mm": 0.00010203454217886767,
+        "anchor_normal_error": 0.7541889047601159,
+        "final_normal_error": 0.7541889047601159,
+        "position_ok": true,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": true,
+          "accepted": false,
+          "mode": "bounded_position_constrained_slsqp",
+          "previous_normal_error": 0.7541889047601159,
+          "position_budget_m": 0.0005,
+          "attempts": [
+            {
+              "success": false,
+              "status": 9,
+              "iterations": 32,
+              "message": "Iteration limit reached"
+            }
+          ],
+          "seconds": 0.029089692048728466
+        }
+      }
+    ]
+  },
+  "final": {
+    "planning_calls": 8,
+    "candidates": 24,
+    "position_pass": 13,
+    "normal_pass": 3,
+    "velocity_pass": 0,
+    "physical_calls": 0,
+    "wall_time_mean_s": 0.4252066008048132,
+    "wall_time_p95_s": 0.47028313581831754,
+    "rows": [
+      {
+        "lane": 0,
+        "clock": 2.009999990463257,
+        "relative_contact_time_s": 0.75,
+        "anchor_position_mm": 142.55765205095437,
+        "final_position_mm": 142.55765205095437,
+        "anchor_normal_error": 1.4205770420621,
+        "final_normal_error": 1.4205770420621,
+        "position_ok": false,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": false,
+          "accepted": false,
+          "mode": "strict_position_first"
+        }
+      },
+      {
+        "lane": 0,
+        "clock": 2.009999990463257,
+        "relative_contact_time_s": 0.77,
+        "anchor_position_mm": 42.005903071552474,
+        "final_position_mm": 42.005903071552474,
+        "anchor_normal_error": 1.3319019194829682,
+        "final_normal_error": 1.3319019194829682,
+        "position_ok": false,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": false,
+          "accepted": false,
+          "mode": "strict_position_first"
+        }
+      },
+      {
+        "lane": 0,
+        "clock": 2.009999990463257,
+        "relative_contact_time_s": 0.79,
+        "anchor_position_mm": 0.16817256857299767,
+        "final_position_mm": 0.4999680721482548,
+        "anchor_normal_error": 0.9533043526243334,
+        "final_normal_error": 0.6408400754547323,
+        "position_ok": true,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": true,
+          "accepted": true,
+          "mode": "bounded_position_constrained_slsqp",
+          "previous_normal_error": 0.7137268070147487,
+          "position_budget_m": 0.0005,
+          "attempts": [
+            {
+              "success": true,
+              "status": 0,
+              "iterations": 31,
+              "message": "Optimization terminated successfully"
+            }
+          ],
+          "seconds": 0.04876306373625994
+        }
+      },
+      {
+        "lane": 1,
+        "clock": 2.009999990463257,
+        "relative_contact_time_s": 0.77,
+        "anchor_position_mm": 172.72491061806022,
+        "final_position_mm": 172.72491061806022,
+        "anchor_normal_error": 1.409402546153833,
+        "final_normal_error": 1.409402546153833,
+        "position_ok": false,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": false,
+          "accepted": false,
+          "mode": "strict_position_first"
+        }
+      },
+      {
+        "lane": 1,
+        "clock": 2.009999990463257,
+        "relative_contact_time_s": 0.79,
+        "anchor_position_mm": 77.38796273046992,
+        "final_position_mm": 77.38796273046992,
+        "anchor_normal_error": 1.3202726507853506,
+        "final_normal_error": 1.3202726507853506,
+        "position_ok": false,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": false,
+          "accepted": false,
+          "mode": "strict_position_first"
+        }
+      },
+      {
+        "lane": 1,
+        "clock": 2.009999990463257,
+        "relative_contact_time_s": 0.81,
+        "anchor_position_mm": 0.42155271481491713,
+        "final_position_mm": 0.0988322704320919,
+        "anchor_normal_error": 1.1022009912913946,
+        "final_normal_error": 1.0496239355204775,
+        "position_ok": true,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": true,
+          "accepted": false,
+          "mode": "bounded_position_constrained_slsqp",
+          "previous_normal_error": 1.0496239355204775,
+          "position_budget_m": 0.0005,
+          "attempts": [
+            {
+              "success": false,
+              "status": 9,
+              "iterations": 32,
+              "message": "Iteration limit reached"
+            }
+          ],
+          "seconds": 0.044975100085139275
+        }
+      },
+      {
+        "lane": 0,
+        "clock": 2.169999837875366,
+        "relative_contact_time_s": 0.59,
+        "anchor_position_mm": 2.8677517022593038,
+        "final_position_mm": 2.8677517022593038,
+        "anchor_normal_error": 1.034926633377488,
+        "final_normal_error": 1.034926633377488,
+        "position_ok": true,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": true,
+          "accepted": false,
+          "mode": "bounded_position_constrained_slsqp",
+          "previous_normal_error": 1.034926633377488,
+          "position_budget_m": 0.0028777517022593037,
+          "attempts": [
+            {
+              "success": false,
+              "status": 9,
+              "iterations": 32,
+              "message": "Iteration limit reached"
+            }
+          ],
+          "seconds": 0.04577644634991884
+        }
+      },
+      {
+        "lane": 0,
+        "clock": 2.169999837875366,
+        "relative_contact_time_s": 0.61,
+        "anchor_position_mm": 6.776674990826035e-05,
+        "final_position_mm": 9.078461445293876e-05,
+        "anchor_normal_error": 1.0005441875783831,
+        "final_normal_error": 0.7386352094549787,
+        "position_ok": true,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": true,
+          "accepted": false,
+          "mode": "bounded_position_constrained_slsqp",
+          "previous_normal_error": 0.7386352094549787,
+          "position_budget_m": 0.0005,
+          "attempts": [
+            {
+              "success": false,
+              "status": 9,
+              "iterations": 32,
+              "message": "Iteration limit reached"
+            }
+          ],
+          "seconds": 0.04702668730169535
+        }
+      },
+      {
+        "lane": 0,
+        "clock": 2.169999837875366,
+        "relative_contact_time_s": 0.63,
+        "anchor_position_mm": 60.44140082679002,
+        "final_position_mm": 60.44140082679002,
+        "anchor_normal_error": 1.957923422693719,
+        "final_normal_error": 1.957923422693719,
+        "position_ok": false,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": false,
+          "accepted": false,
+          "mode": "strict_position_first"
+        }
+      },
+      {
+        "lane": 1,
+        "clock": 2.169999837875366,
+        "relative_contact_time_s": 0.61,
+        "anchor_position_mm": 1.6035295230432286e-05,
+        "final_position_mm": 0.0001445525093784477,
+        "anchor_normal_error": 1.192471697634601,
+        "final_normal_error": 0.8376387005370661,
+        "position_ok": true,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": true,
+          "accepted": false,
+          "mode": "bounded_position_constrained_slsqp",
+          "previous_normal_error": 0.8376387005370661,
+          "position_budget_m": 0.0005,
+          "attempts": [
+            {
+              "success": false,
+              "status": 9,
+              "iterations": 32,
+              "message": "Iteration limit reached"
+            }
+          ],
+          "seconds": 0.03589369496330619
+        }
+      },
+      {
+        "lane": 1,
+        "clock": 2.169999837875366,
+        "relative_contact_time_s": 0.63,
+        "anchor_position_mm": 8.738843687475241e-05,
+        "final_position_mm": 0.49997500489077185,
+        "anchor_normal_error": 0.7655457126642266,
+        "final_normal_error": 0.06014112891089015,
+        "position_ok": true,
+        "normal_ok": true,
+        "velocity_ok": false,
+        "velocity_solved": true,
+        "requested_velocity_error_m_s": 3.038216432171042,
+        "rejection": "REQUESTED_VELOCITY_UNREACHABLE",
+        "refinement": {
+          "attempted": true,
+          "accepted": true,
+          "mode": "bounded_position_constrained_slsqp",
+          "previous_normal_error": 0.6736612196155237,
+          "position_budget_m": 0.0005,
+          "attempts": [
+            {
+              "success": false,
+              "status": 9,
+              "iterations": 32,
+              "message": "Iteration limit reached"
+            }
+          ],
+          "seconds": 0.037801049184054136
+        }
+      },
+      {
+        "lane": 1,
+        "clock": 2.169999837875366,
+        "relative_contact_time_s": 0.65,
+        "anchor_position_mm": 2.194208960198705e-05,
+        "final_position_mm": 0.4999689212313935,
+        "anchor_normal_error": 0.9202300063844624,
+        "final_normal_error": 0.17172830245510143,
+        "position_ok": true,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": true,
+          "accepted": true,
+          "mode": "bounded_position_constrained_slsqp",
+          "previous_normal_error": 0.8441174175289192,
+          "position_budget_m": 0.0005,
+          "attempts": [
+            {
+              "success": false,
+              "status": 9,
+              "iterations": 32,
+              "message": "Iteration limit reached"
+            }
+          ],
+          "seconds": 0.045461311005055904
+        }
+      },
+      {
+        "lane": 0,
+        "clock": 2.3299999237060547,
+        "relative_contact_time_s": 0.43,
+        "anchor_position_mm": 742.5567636901314,
+        "final_position_mm": 742.5567636901314,
+        "anchor_normal_error": 0.6098867315373608,
+        "final_normal_error": 0.6098867315373608,
+        "position_ok": false,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": false,
+          "accepted": false,
+          "mode": "strict_position_first"
+        }
+      },
+      {
+        "lane": 0,
+        "clock": 2.3299999237060547,
+        "relative_contact_time_s": 0.45,
+        "anchor_position_mm": 656.7132913624033,
+        "final_position_mm": 656.7132913624033,
+        "anchor_normal_error": 0.8957181004185301,
+        "final_normal_error": 0.8957181004185301,
+        "position_ok": false,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": false,
+          "accepted": false,
+          "mode": "strict_position_first"
+        }
+      },
+      {
+        "lane": 0,
+        "clock": 2.3299999237060547,
+        "relative_contact_time_s": 0.47000000000000003,
+        "anchor_position_mm": 577.9105743450295,
+        "final_position_mm": 577.9105743450295,
+        "anchor_normal_error": 1.5086893437065285,
+        "final_normal_error": 1.5086893437065285,
+        "position_ok": false,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": false,
+          "accepted": false,
+          "mode": "strict_position_first"
+        }
+      },
+      {
+        "lane": 1,
+        "clock": 2.3299999237060547,
+        "relative_contact_time_s": 0.45,
+        "anchor_position_mm": 765.083447035223,
+        "final_position_mm": 765.083447035223,
+        "anchor_normal_error": 0.819302490137902,
+        "final_normal_error": 0.819302490137902,
+        "position_ok": false,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": false,
+          "accepted": false,
+          "mode": "strict_position_first"
+        }
+      },
+      {
+        "lane": 1,
+        "clock": 2.3299999237060547,
+        "relative_contact_time_s": 0.47000000000000003,
+        "anchor_position_mm": 687.0391010866098,
+        "final_position_mm": 687.0391010866098,
+        "anchor_normal_error": 1.0005066303460528,
+        "final_normal_error": 1.0005066303460528,
+        "position_ok": false,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": false,
+          "accepted": false,
+          "mode": "strict_position_first"
+        }
+      },
+      {
+        "lane": 1,
+        "clock": 2.3299999237060547,
+        "relative_contact_time_s": 0.49,
+        "anchor_position_mm": 612.4258753663436,
+        "final_position_mm": 612.4258753663436,
+        "anchor_normal_error": 1.4559744373554564,
+        "final_normal_error": 1.4559744373554564,
+        "position_ok": false,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": false,
+          "accepted": false,
+          "mode": "strict_position_first"
+        }
+      },
+      {
+        "lane": 0,
+        "clock": 2.490000009536743,
+        "relative_contact_time_s": 0.27,
+        "anchor_position_mm": 5.405765972364103e-05,
+        "final_position_mm": 0.00020908437056339175,
+        "anchor_normal_error": 0.8364927637312183,
+        "final_normal_error": 0.8022985640451552,
+        "position_ok": true,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": true,
+          "accepted": false,
+          "mode": "bounded_position_constrained_slsqp",
+          "previous_normal_error": 0.8022985640451552,
+          "position_budget_m": 0.0005,
+          "attempts": [
+            {
+              "success": true,
+              "status": 0,
+              "iterations": 31,
+              "message": "Optimization terminated successfully"
+            }
+          ],
+          "seconds": 0.04877911461517215
+        }
+      },
+      {
+        "lane": 0,
+        "clock": 2.490000009536743,
+        "relative_contact_time_s": 0.29,
+        "anchor_position_mm": 4.2149166197202037e-05,
+        "final_position_mm": 0.4937066981962073,
+        "anchor_normal_error": 0.3928551972249499,
+        "final_normal_error": 6.293124610540689e-07,
+        "position_ok": true,
+        "normal_ok": true,
+        "velocity_ok": false,
+        "velocity_solved": true,
+        "requested_velocity_error_m_s": 2.4862077574866794,
+        "rejection": "REQUESTED_VELOCITY_UNREACHABLE",
+        "refinement": {
+          "attempted": true,
+          "accepted": true,
+          "mode": "bounded_position_constrained_slsqp",
+          "previous_normal_error": 0.31100610116671334,
+          "position_budget_m": 0.0005,
+          "attempts": [
+            {
+              "success": true,
+              "status": 0,
+              "iterations": 20,
+              "message": "Optimization terminated successfully"
+            }
+          ],
+          "seconds": 0.020978271961212158
+        }
+      },
+      {
+        "lane": 0,
+        "clock": 2.490000009536743,
+        "relative_contact_time_s": 0.31,
+        "anchor_position_mm": 8.326640755876138e-05,
+        "final_position_mm": 8.326640755876138e-05,
+        "anchor_normal_error": 0.7088798814184222,
+        "final_normal_error": 0.7088798814184222,
+        "position_ok": true,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": true,
+          "accepted": false,
+          "mode": "bounded_position_constrained_slsqp",
+          "previous_normal_error": 0.7088798814184222,
+          "position_budget_m": 0.0005,
+          "attempts": [
+            {
+              "success": true,
+              "status": 0,
+              "iterations": 28,
+              "message": "Optimization terminated successfully"
+            }
+          ],
+          "seconds": 0.04279266111552715
+        }
+      },
+      {
+        "lane": 1,
+        "clock": 2.490000009536743,
+        "relative_contact_time_s": 0.29,
+        "anchor_position_mm": 4.3871326690172677e-05,
+        "final_position_mm": 0.4999689613204933,
+        "anchor_normal_error": 0.3785697327486117,
+        "final_normal_error": 0.15780811612281148,
+        "position_ok": true,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": true,
+          "accepted": true,
+          "mode": "bounded_position_constrained_slsqp",
+          "previous_normal_error": 0.17931199914528162,
+          "position_budget_m": 0.0005,
+          "attempts": [
+            {
+              "success": false,
+              "status": 9,
+              "iterations": 32,
+              "message": "Iteration limit reached"
+            }
+          ],
+          "seconds": 0.09946050401777029
+        }
+      },
+      {
+        "lane": 1,
+        "clock": 2.490000009536743,
+        "relative_contact_time_s": 0.31,
+        "anchor_position_mm": 7.209716129021859e-05,
+        "final_position_mm": 0.4918790723643999,
+        "anchor_normal_error": 0.5529784976069824,
+        "final_normal_error": 3.566821560367778e-07,
+        "position_ok": true,
+        "normal_ok": true,
+        "velocity_ok": false,
+        "velocity_solved": true,
+        "requested_velocity_error_m_s": 1.8952015773430293,
+        "rejection": "REQUESTED_VELOCITY_UNREACHABLE",
+        "refinement": {
+          "attempted": true,
+          "accepted": true,
+          "mode": "bounded_position_constrained_slsqp",
+          "previous_normal_error": 0.5529784976069824,
+          "position_budget_m": 0.0005,
+          "attempts": [
+            {
+              "success": true,
+              "status": 0,
+              "iterations": 27,
+              "message": "Optimization terminated successfully"
+            }
+          ],
+          "seconds": 0.029765392653644085
+        }
+      },
+      {
+        "lane": 1,
+        "clock": 2.490000009536743,
+        "relative_contact_time_s": 0.33,
+        "anchor_position_mm": 0.00010203454217886767,
+        "final_position_mm": 0.00010203454217886767,
+        "anchor_normal_error": 0.7541889047601159,
+        "final_normal_error": 0.7541889047601159,
+        "position_ok": true,
+        "normal_ok": false,
+        "velocity_ok": false,
+        "velocity_solved": false,
+        "requested_velocity_error_m_s": null,
+        "rejection": "POSE_TASK_INCOMPATIBLE",
+        "refinement": {
+          "attempted": true,
+          "accepted": false,
+          "mode": "bounded_position_constrained_slsqp",
+          "previous_normal_error": 0.7541889047601159,
+          "position_budget_m": 0.0005,
+          "attempts": [
+            {
+              "success": false,
+              "status": 9,
+              "iterations": 32,
+              "message": "Iteration limit reached"
+            }
+          ],
+          "seconds": 0.03695127880200744
+        }
+      }
+    ]
+  },
+  "native": "NOT_RUN",
+  "training": "NOT_RUN",
+  "evaluation128": "NOT_RUN",
+  "full_closure": "NOT_COMPLETED"
+}

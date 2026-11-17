@@ -1,0 +1,9 @@
+# Evidence-driven next steps
+
+1. **Prediction/execution contract**: native FL calf near−30rad/s vs prediction−53.7rad/s for the same recorded command after slip closure. Inspect actual PhysX velocity-limit enforcement, solver configuration and joint impulses, then reproduce it with appropriate dynamics/residual accounting. Do not add unlimited braking or clip speed merely to pass. Require original-command multi-step agreement before trusting new joint trajectories.
+2. **Impact target and arm speed**: three actual fixed-input poses pass position/normal, but speed residual1.90–3.04m/s and many arm joints saturate±5rad/s. Jointly adapt legal outgoing velocity/contact point/time within original task constraints, with Jacobian feasibility cost and actual forward impact validation. Retain original requested-vs-achieved errors; don't make residual vanish by renaming achieved speed.
+3. **Base/WBC**: .8s extrapolation is still unvalidated. Once1 passes, generate causal frozen18D-conditioned base forecasts and compare with offline native truth. WBC weights stay unchanged until evidence isolates a control issue from the predictor.
+4. **Normal optimization**: keep position anchor and feasible-iterate retention. Do not increase iterations just because one solver hit32; exact feasible intermediates already yield useful progress. Global infeasibility has not been proved.
+5. **Compute/execution**: ~470ms p95 is permitted offline. Retain profiling; after complete valid references exist, validate state/history-aware execution and Recovery priority, then optimize batching/caching or asynchronous generation. No latency-driven threshold relaxation.
+
+No native probe or128 panel until the same candidate passes pose, speed, impact and full physical checks. Recovery and SuperMimic remain unchanged.

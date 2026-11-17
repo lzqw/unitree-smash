@@ -13,7 +13,9 @@ import pinocchio as pin
 
 def unilateral_velocity_step(mass, velocity, bias, selection, kp, kd,
                              target_error, effort, dt, jacobian,
-                             desired_contact_velocity, friction, *, max_iterations=80, iteration_trace=None, separating_warm_start=True, joint_velocity_bounds=None, previous_modes=None, previous_sliding_directions=None):
+                             desired_contact_velocity, friction, *, max_iterations=80, iteration_trace=None, separating_warm_start=True, joint_velocity_bounds=None, previous_modes=None, previous_sliding_directions=None, coupled_slip=False, slip_relaxation=.5):
+    if not np.isfinite(slip_relaxation) or not 0 < slip_relaxation <= 1:
+        raise ValueError('Slip relaxation must be in (0,1]')
     nv, na = selection.shape
     nc = len(jacobian)
     if (mass.shape != (nv,nv) or velocity.shape != (nv,) or bias.shape != (nv,)
@@ -76,35 +78,59 @@ def unilateral_velocity_step(mass, velocity, bias, selection, kp, kd,
         motor_rhs = drive.copy()
         motor_rhs[~free] = saturated[~free]*effort[~free]
         rhs = mass@velocity + dt*(selection@motor_rhs-bias)
-        columns, constraints, contact_rhs, slots = [], [], [], []
-        for i, mode in enumerate(modes):
-            if mode == 1:
-                start = len(columns)
-                columns.extend(jacobian[i])
-                constraints.extend(jacobian[i])
-                contact_rhs.extend(desired_contact_velocity[i])
-                slots.append((i, start, 3))
-            elif mode == 2:
-                start = len(columns)
-                direction = np.r_[-friction*directions[i],1.]
-                columns.append(jacobian[i].T@direction)
-                constraints.append(jacobian[i,2])
-                contact_rhs.append(desired_contact_velocity[i,2])
-                slots.append((i,start,1))
-        stop_slots = []
-        for j in np.flatnonzero(stop_active):
-            stop_slots.append((j, len(columns)))
-            columns.append(stop_jac[j]); constraints.append(stop_jac[j]); contact_rhs.append(stop_rhs[j])
-        B = np.asarray(columns).reshape(-1,nv).T
-        C = np.asarray(constraints).reshape(-1,nv)
-        K = np.block([[effective,-dt*B],[C,np.zeros((len(C),len(C)))]])
-        rhs_full = np.r_[rhs,contact_rhs]
-        solved = np.linalg.solve(K,rhs_full)
-        vn = solved[:nv]
-        forces = np.zeros((nc,3))
-        for i,start,count in slots:
-            f = solved[nv+start:nv+start+count]
-            forces[i] = f if count == 3 else np.r_[-friction*directions[i],1.]*f[0]
+        def solve_directions(trial_directions):
+            columns, constraints, contact_rhs, slots = [], [], [], []
+            for i, mode in enumerate(modes):
+                if mode == 1:
+                    start = len(columns)
+                    columns.extend(jacobian[i])
+                    constraints.extend(jacobian[i])
+                    contact_rhs.extend(desired_contact_velocity[i])
+                    slots.append((i, start, 3))
+                elif mode == 2:
+                    start = len(columns)
+                    direction = np.r_[-friction*trial_directions[i],1.]
+                    columns.append(jacobian[i].T@direction)
+                    constraints.append(jacobian[i,2])
+                    contact_rhs.append(desired_contact_velocity[i,2])
+                    slots.append((i,start,1))
+            stop_slots = []
+            for j in np.flatnonzero(stop_active):
+                stop_slots.append((j, len(columns)))
+                columns.append(stop_jac[j]); constraints.append(stop_jac[j]); contact_rhs.append(stop_rhs[j])
+            B = np.asarray(columns).reshape(-1,nv).T
+            C = np.asarray(constraints).reshape(-1,nv)
+            K = np.block([[effective,-dt*B],[C,np.zeros((len(C),len(C)))]])
+            rhs_full = np.r_[rhs,contact_rhs]
+            solved = np.linalg.solve(K,rhs_full)
+            vn = solved[:nv]
+            forces = np.zeros((nc,3))
+            for i,start,count in slots:
+                f = solved[nv+start:nv+start+count]
+                forces[i] = f if count == 3 else np.r_[-friction*trial_directions[i],1.]*f[0]
+            return solved, vn, forces, stop_slots, K, rhs_full
+        slip_fit = None
+        sliding_ids = np.flatnonzero(modes == 2)
+        if coupled_slip and len(sliding_ids) and iteration >= 2:
+            # Solve all sliding directions together against the same coupled
+            # mass/contact/motor system. This replaces a potentially oscillating
+            # fixed-point update; it adds no forces or relaxed physical gates.
+            from scipy.optimize import least_squares
+            angles = np.arctan2(directions[sliding_ids, 1], directions[sliding_ids, 0])
+            def slip_error(theta):
+                trial = directions.copy()
+                trial[sliding_ids] = np.c_[np.cos(theta), np.sin(theta)]
+                _, trial_v, _, _, _, _ = solve_directions(trial)
+                tangent = np.einsum('cij,j->ci', jacobian[sliding_ids], trial_v)[:, :2]
+                magnitude = np.linalg.norm(tangent, axis=1)
+                return (tangent / np.maximum(magnitude[:, None], 1e-12) - trial[sliding_ids]).ravel()
+            fit = least_squares(slip_error, angles, max_nfev=32,
+                                ftol=1e-10, xtol=1e-10, gtol=1e-10)
+            slip_fit = dict(nfev=int(fit.nfev), success=bool(fit.success),
+                            direction_residual=float(np.linalg.norm(fit.fun)))
+            if np.isfinite(fit.x).all() and np.linalg.norm(fit.fun) < np.linalg.norm(slip_error(angles)):
+                directions[sliding_ids] = np.c_[np.cos(fit.x), np.sin(fit.x)]
+        solved, vn, forces, stop_slots, K, rhs_full = solve_directions(directions)
         stop_force = np.zeros(len(stop_rhs))
         for j, slot in stop_slots: stop_force[j] = solved[nv + slot]
         stop_slack = stop_jac @ vn - stop_rhs
@@ -116,6 +142,7 @@ def unilateral_velocity_step(mass, velocity, bias, selection, kp, kd,
                           np.where(raw_torque < -effort-1e-8,-1,0)).astype(np.int8)
         if iteration_trace is not None:
             iteration_trace.append(dict(iteration=iteration+1,modes=modes.tolist(),
+                coupled_slip_fit=slip_fit, sliding_directions=directions.tolist(),
                 joint_stop_active=stop_active.tolist(),joint_stop_reaction=stop_force.tolist(),joint_stop_slack=stop_slack.tolist(),
                 forces_n=forces.tolist(),contact_velocity=np.einsum('cij,j->ci',jacobian,vn).tolist(),
                 motor_saturation=saturated.tolist(),proposed_motor_saturation=new_sat.tolist(),
@@ -149,11 +176,10 @@ def unilateral_velocity_step(mass, velocity, bias, selection, kp, kd,
                     desired_direction = cv[i,:2]/speed
                     error = np.linalg.norm(directions[i]-desired_direction)
                     if error > 1e-4:
-                        # A half-step direction average can go singular for
-                        # nearly antipodal slip estimates, producing a two-mode
-                        # oscillation. Relax to a convex quarter-step and keep
-                        # the unchanged 1e-4 direction and force gates.
-                        mixed = .75*directions[i]+.25*desired_direction
+                        # Keep the historical half-step by default. The opt-in
+                        # joint-stop path uses quarter-step relaxation plus
+                        # coupled slip closure; original gates remain intact.
+                        mixed = (1.-slip_relaxation)*directions[i]+slip_relaxation*desired_direction
                         directions[i] = (mixed/np.linalg.norm(mixed)
                                          if np.linalg.norm(mixed)>1e-8 else desired_direction)
                         changed = True
@@ -226,7 +252,8 @@ def predict_unilateral_support(model, interface, state, target, *, duration_s=.0
             joint_velocity_bounds=((interface.limits-q[model.q_indices,None])/dt
                                    if enforce_joint_stops else None),
             previous_modes=(warm_modes if enforce_joint_stops else None),
-            previous_sliding_directions=(warm_directions if enforce_joint_stops else None))
+            previous_sliding_directions=(warm_directions if enforce_joint_stops else None),
+            coupled_slip=enforce_joint_stops,slip_relaxation=.25 if enforce_joint_stops else .5)
         v = step['velocity'];q = pin.integrate(model.model,q,dt*v)
         diag['motor_torque_violation_nm']=max(diag['motor_torque_violation_nm'],
             float(np.max(abs(step['torque'])-interface.effort)))

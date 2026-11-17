@@ -46,12 +46,24 @@ def main():
                 if witness['gap_m'] < -1e-6:violations['nonfoot_ground_violation_m']=-witness['gap_m']
                 exceed=np.maximum(interface.limits[:,0]-state.joint_position,state.joint_position-interface.limits[:,1]);j=int(exceed.argmax())
                 truth=model.state_from_public(obs[start+node+1,lane],default.numpy())
-                row.update(violations=violations,joint=model.joint_order[j],predicted_joint_rad=float(state.joint_position[j]),
+                speed_excess=abs(state.joint_velocity)-interface.velocity
+                speed_joint=int(speed_excess.argmax())
+                row.update(velocity_witness=dict(joint=model.joint_order[speed_joint],
+                    predicted_rad_s=float(state.joint_velocity[speed_joint]),
+                    native_rad_s=float(truth.joint_velocity[speed_joint]),
+                    limit_rad_s=float(interface.velocity[speed_joint]),
+                    maximum_violation_rad_s=float(max(0,speed_excess[speed_joint]))),
+                    diagnostics=result['diagnostics'],
+                    root_position_error_m=float(np.linalg.norm(state.root_position_world-truth.root_position_world)),
+                    foot_forces_world_n=result['foot_forces_world_n'].tolist(),
+                    violations=violations,joint=model.joint_order[j],predicted_joint_rad=float(state.joint_position[j]),
                     native_joint_rad=float(truth.joint_position[j]),limit_rad=interface.limits[j].tolist(),
                     joint_prediction_error_rad=float(state.joint_position[j]-truth.joint_position[j]),
                     maximum_violation_rad=float(max(0,exceed[j])),ground_witness=witness)
                 rows.append(row)
-                if violations:stopped='original_hard_gate';break
+                if violations:
+                    row['solver_trace']=trace
+                    stopped='original_hard_gate';break
             runs.append(dict(mode=mode,start_tick=start,lane=lane,requested_steps=steps,checked_steps=len(rows),stop=stopped,rows=rows))
     a.output.write_text(json.dumps(dict(scope='Paired offline model check, not native counterfactual',joint_stops=a.joint_stops,runs=runs),indent=2)+'\n')
     print(json.dumps([dict(mode=r['mode'],steps=r['checked_steps'],stop=r['stop'],last=r['rows'][-1].get('violations')) for r in runs]))

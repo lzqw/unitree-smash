@@ -76,3 +76,22 @@ def test_strictly_feasible_normal_preserves_original_anchor():
     assert r['NORMAL_FEASIBLE']
     assert not r['constrained_normal_refinement']['attempted']
     np.testing.assert_allclose(r['position'],point,atol=1e-9)
+
+
+def test_feasible_intermediate_is_preserved_when_optimizer_final_trial_is_invalid(monkeypatch):
+    from types import SimpleNamespace
+    import quadsmash.control.constrained_contact_normal_v1 as module
+    def stalled(fun,seed,**kwargs):
+        feasible=seed.copy();feasible[0]=.0003
+        fun(feasible)
+        invalid=seed.copy();invalid[0]=.01
+        fun(invalid)
+        return SimpleNamespace(x=invalid,success=False,status=9,nit=32,message='budget exhausted')
+    monkeypatch.setattr(module,'minimize',stalled)
+    anchor=np.zeros(6)
+    result=module.refine_contact_normal(coupled_fk,anchor,anchor,-np.ones(6),np.ones(6),
+        np.zeros(3),[np.cos(.3),np.sin(.3),0.],.0005)
+    assert result['normal_vector_error']<1e-10
+    assert result['position_error_m']<.0005
+    np.testing.assert_array_equal(anchor,np.zeros(6))
+    assert not result['attempts'][0]['success']

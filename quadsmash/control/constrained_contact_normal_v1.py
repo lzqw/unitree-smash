@@ -56,6 +56,9 @@ def refine_contact_normal(kinematics, anchor_q, candidate_q, lower, upper,
     # The nonlinear position constraint is scaled to O(1) at the boundary.
     # Its Jacobian is exact for the same tool/contact-point FK as the objective.
     def objective(q):
+        # Keep every independently feasible evaluated iterate, even if SLSQP
+        # ends on an infeasible trial or exhausts its iteration budget.
+        consider(q)
         _, face, _, _ = sample(q)
         d = face-normal
         return .5 * float(d @ d)
@@ -75,6 +78,8 @@ def refine_contact_normal(kinematics, anchor_q, candidate_q, lower, upper,
 
     # Never claim infeasibility from one local optimum; this is a deterministic
     # refinement of the existing anchor, not a global pose certificate.
+    if not np.isfinite(best[1]):
+        raise ValueError("No input seed satisfies the contact position budget")
     seeds = [best[0].copy()]
     if np.linalg.norm(current-anchor) > 1e-8 and np.linalg.norm(current-seeds[0]) > 1e-8:
         seeds.append(current.copy())

@@ -1,0 +1,167 @@
+{
+  "historical_source_sha256": "9f9bd64eae52577a47881edaa4a36f717e042bd31ab5e8ccc5f1e48de5cde81a",
+  "comparison_scope": "Same recorded input, same old selected time, same FK geometry and future base. No inverse-goal substitution.",
+  "rows": [
+    {
+      "contact_time_s": 0.79,
+      "frame": "same predicted future body frame",
+      "target_position": [
+        -0.3994560567118818,
+        -0.18489958451300662,
+        1.039827019605679
+      ],
+      "original_q_rad": [
+        0.3247603702360956,
+        0.6358366771442837,
+        -1.7247263829967763,
+        1.242919797666908,
+        0.36692534649770264,
+        2.0943996906280518
+      ],
+      "original_position_error_m": 0.0003762389115317501,
+      "measured_seed_anchor": {
+        "q_anchor": [
+          -0.08375236515214553,
+          1.2192582996751649,
+          -2.576148810327709,
+          1.7448972112602357,
+          0.5268332989485829,
+          2.094399690418849
+        ],
+        "position_anchor": [
+          -0.3994194269180298,
+          -0.1847797930240631,
+          1.0397148132324219
+        ],
+        "normal_anchor": [
+          0.0641806498169899,
+          0.4915514290332794,
+          0.8684802651405334
+        ],
+        "position_error_anchor_m": 0.00016817256857299767,
+        "solver_success": false,
+        "nfev": 48,
+        "position_seconds": 0.03409459721297026
+      },
+      "existing_candidate_preserved_anchor": {
+        "q_anchor": [
+          0.3252022589600445,
+          0.6361708471719727,
+          -1.7250747369968686,
+          1.243290448741535,
+          0.36712978049251066,
+          2.0943996904186117
+        ],
+        "position_anchor": [
+          -0.39945611357688904,
+          -0.18489962816238403,
+          1.0398271083831787
+        ],
+        "normal_anchor": [
+          0.33250463008880615,
+          0.4707658886909485,
+          0.817202627658844
+        ],
+        "position_error_anchor_m": 1.1410671176369412e-07,
+        "solver_success": true,
+        "nfev": 7,
+        "position_seconds": 0.00855099642649293
+      },
+      "physical_certification": false
+    },
+    {
+      "historical_rejection": "No contact-first candidate passed pre-contact checks: {'kinematic_task_residual': 51, 'velocity_unreachable': 3}",
+      "diagnostics": {
+        "candidates_considered": 54,
+        "accepted_candidates": 0,
+        "rejection_counts": {
+          "kinematic_task_residual": 51,
+          "velocity_unreachable": 3
+        },
+        "evaluator_rejection_reasons": {},
+        "best_kinematic_residual": {
+          "position_error_m": 0.03654544453460838,
+          "normal_error": 4.2544175761549045e-08,
+          "velocity_error_m_s": 0.0,
+          "normalized_sum": 1.044155912666466,
+          "contact_index": 81,
+          "velocity_scale": 0.8,
+          "nullspace_offset_rad": 0.0,
+          "branch_kind": "position_priority",
+          "normal_tangent_offset_rad": [
+            0.2,
+            0.0
+          ],
+          "velocity_projection": true
+        },
+        "best_kinematic_residual_by_branch": {
+          "task": {
+            "position_error_m": 1.0537202862817514,
+            "normal_error": 6.988267985576575e-09,
+            "velocity_error_m_s": 0.0,
+            "normalized_sum": 30.10629395199989,
+            "contact_index": 77,
+            "velocity_scale": 0.8,
+            "nullspace_offset_rad": 0.0,
+            "branch_kind": "task",
+            "normal_tangent_offset_rad": [
+              0.0,
+              0.2
+            ],
+            "velocity_projection": true
+          },
+          "nullspace": {
+            "position_error_m": 0.8102052777905842,
+            "normal_error": 3.686538117626897e-08,
+            "velocity_error_m_s": 0.0,
+            "normalized_sum": 23.148722529799628,
+            "contact_index": 79,
+            "velocity_scale": 0.8,
+            "nullspace_offset_rad": -0.06,
+            "branch_kind": "nullspace",
+            "normal_tangent_offset_rad": [
+              0.0,
+              0.2
+            ],
+            "velocity_projection": true
+          },
+          "position_priority": {
+            "position_error_m": 0.03654544453460838,
+            "normal_error": 4.2544175761549045e-08,
+            "velocity_error_m_s": 0.0,
+            "normalized_sum": 1.044155912666466,
+            "contact_index": 81,
+            "velocity_scale": 0.8,
+            "nullspace_offset_rad": 0.0,
+            "branch_kind": "position_priority",
+            "normal_tangent_offset_rad": [
+              0.2,
+              0.0
+            ],
+            "velocity_projection": true
+          }
+        },
+        "raw_base_linear_acceleration_world_m_s2": [
+          -0.25495612621307373,
+          -0.19357706606388092,
+          1.2715106010437012
+        ],
+        "used_base_linear_acceleration_world_m_s2": [
+          -0.25495612621307373,
+          -0.19357706606388092,
+          1.2715106010437012
+        ],
+        "raw_base_angular_acceleration_world_rad_s2": [
+          2.582519769668579,
+          17.028968811035156,
+          -9.095147132873535
+        ],
+        "used_base_angular_acceleration_world_rad_s2": [
+          2.582519769668579,
+          4.0,
+          -4.0
+        ]
+      }
+    }
+  ]
+}
