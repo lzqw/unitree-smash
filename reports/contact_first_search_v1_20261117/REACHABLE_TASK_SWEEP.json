@@ -1,0 +1,38 @@
+{
+  "config": {
+    "kinematic_iterations": 5,
+    "max_iteration_step_rad": 0.25
+  },
+  "samples": 100,
+  "accepted": 12,
+  "acceptance_rate": 0.12,
+  "rejection_counts": {
+    "kinematic_task_residual": 608,
+    "joint_step_limit": 184
+  },
+  "accepted_examples": [
+    {
+      "sample": 0,
+      "position_error_m": 1.2819329627754162e-06,
+      "normal_error": 1.427416247865095e-05,
+      "velocity_error_m_s": 0.010836646915148122
+    },
+    {
+      "sample": 1,
+      "position_error_m": 0.0003659948469260302,
+      "normal_error": 0.0009522677875590382,
+      "velocity_error_m_s": 0.015019487639143177
+    },
+    {
+      "sample": 18,
+      "position_error_m": 0.009645635281616684,
+      "normal_error": 0.014143057052832957,
+      "velocity_error_m_s": 0.12734795594861723
+    }
+  ],
+  "comparison_previous_3_iterations": {
+    "accepted": 6,
+    "acceptance_rate": 0.06
+  },
+  "native_evaluation": "NOT_RUN"
+}

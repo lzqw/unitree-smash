@@ -37,5 +37,12 @@ The actual `FullRacketKinematicsV4` callback was exercised on CPU and accepted a
 not an Isaac/native hit-rate result.
 
 On the same CPU path, 100 repeated 96-node plans with the real kinematics
-callback took 1.51 ms mean (1.53 ms p95); see `CPU_BENCHMARK.json`.  This is a
-planner timing measurement, not a real-time Isaac guarantee.
+callback took 2.09 ms mean (2.11 ms p95) with five re-linearizations; see
+`CPU_BENCHMARK.json`.  This is a planner timing measurement, not a real-time
+Isaac guarantee.
+
+A fixed 100-sample sweep of randomly selected reachable terminal poses accepted
+12/100 with five re-linearizations, versus 6/100 with the previous three.  The
+remaining candidates were rejected by terminal task residual or joint-step
+limits; the sweep is a diagnostics fixture, not a hit-rate claim.  Details are
+in `REACHABLE_TASK_SWEEP.json`.
