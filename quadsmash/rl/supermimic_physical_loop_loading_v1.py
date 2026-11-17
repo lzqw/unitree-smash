@@ -88,6 +88,9 @@ def load_physical_loop(*,archive,physical_checkpoint,ball_checkpoint,task_checkp
                 int(candidate.get('updates',0))<1):
             raise ValueError('Action-conditioned ball candidate checkpoint/source mismatch')
         action_ball=ActionConditionedBallV1().to(device)
+        if (candidate.get('geometry_hashes')!=action_ball.preview.geometry_hashes or
+                candidate.get('softness_m')!=action_ball.softness_m):
+            raise ValueError('Action-ball candidate racket/net geometry or support width mismatch')
         action_ball.load_state_dict(candidate['model'],strict=True)
     task_state=torch.load(paths['task'],map_location='cpu',weights_only=True)
     schema=TaskMemorySchemaV1([MemoryField(**dict(f,shape=tuple(f['shape']))) for f in task_state['task_schema']['fields']])
