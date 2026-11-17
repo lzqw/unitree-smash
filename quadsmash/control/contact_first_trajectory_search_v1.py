@@ -53,6 +53,12 @@ class ContactFirstSearchConfig:
     position_tolerance_m: float = 0.035
     normal_tolerance: float = 0.12
     velocity_tolerance_m_s: float = 0.75
+    # Rank feasible candidates by margin to the original physical velocity and
+    # one-tick step limits.  These are ranking terms only; the hard gates
+    # above still reject every violating sequence.
+    speed_margin_weight: float = 0.15
+    step_margin_weight: float = 0.10
+    nullspace_penalty_weight: float = 0.01
 
     def validate(self):
         if not math.isfinite(self.dt_s) or self.dt_s <= 0.0:
@@ -67,6 +73,11 @@ class ContactFirstSearchConfig:
                 raise ValueError(f"Finite {name} required")
         if self.damping <= 0.0 or self.normal_weight <= 0.0:
             raise ValueError("Positive task damping and normal weight required")
+        for name in ("speed_margin_weight", "step_margin_weight",
+                     "nullspace_penalty_weight"):
+            value = float(getattr(self, name))
+            if not math.isfinite(value) or value < 0.0:
+                raise ValueError(f"Nonnegative finite {name} required")
         if not math.isfinite(self.arm_velocity_limit_rad_s) or self.arm_velocity_limit_rad_s <= 0.0:
             raise ValueError("Positive arm velocity limit required")
         if self.kinematic_iterations < 1 or self.kinematic_iterations > 8:
@@ -447,10 +458,18 @@ class ContactFirstTrajectorySearchV1:
                             reason = evaluator_result.get("rejection", "unspecified")
                             evaluator_rejection_reasons[str(reason)] += 1
                         continue
+                    peak_speed_ratio = float(np.max(
+                        np.abs(qd_prefix) / velocity_limits[None, :]))
+                    peak_step_ratio = float(np.max(
+                        np.abs(np.diff(q_full, axis=0)) /
+                        (velocity_limits[None, :] * cfg.dt_s)))
                     score = (position_error_norm / cfg.position_tolerance_m +
                              normal_error_norm / cfg.normal_tolerance +
                              velocity_error_norm / cfg.velocity_tolerance_m_s +
                              0.02 * float(np.linalg.norm(qd1)) +
+                             cfg.speed_margin_weight * peak_speed_ratio +
+                             cfg.step_margin_weight * peak_step_ratio +
+                             cfg.nullspace_penalty_weight * abs(nullspace_offset) +
                              1e-6 * contact_index)
                     accepted_candidates += 1
                     candidate = ContactFirstCandidate(
