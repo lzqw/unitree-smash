@@ -1,0 +1,24 @@
+{
+  "child_returncode": 0,
+  "simulation_completed": true,
+  "shutdown_diagnostic_completed": false,
+  "run_kind": "formal_128",
+  "cleanup_finished": true,
+  "process_completed_cleanly": true,
+  "diagnostic_exit_code": 0,
+  "command": [
+    "/home/autodrive/Isaac/env_isaaclab/bin/python",
+    "-u",
+    "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/scripts/evaluate_supermimic_v1.py",
+    "--checkpoint",
+    "/home/autodrive/LZQW/supermimic_posthit_gate_test_20261117_085000/recovery_candidate_0008.pt",
+    "--output",
+    "/home/autodrive/LZQW/eval_posthit_gate_recovery0008_20261117_0930",
+    "--physics-device",
+    "cuda:0",
+    "--headless",
+    "--rendering_mode",
+    "performance",
+    "--kit_args=--renderer/multiGpu/enabled=false"
+  ]
+}
