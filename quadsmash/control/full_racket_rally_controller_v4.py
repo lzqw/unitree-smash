@@ -428,6 +428,7 @@ class FullRacketRallyControllerV4:
                         body_position=basis.T@(ball_position-root)+offset_body
                         body_velocity=desired_body_velocity+basis.T@(ball_velocity-v_ref)
                         return dict(position_world_m=body_position,
+                                    incoming_ball_velocity_world_m_s=basis.T@ball_velocity,
                                     velocity_world_m_s=body_velocity,
                                     normal_world=normal_body)
                     target_state_fns.append(target_state_fn)

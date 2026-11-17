@@ -350,3 +350,32 @@ def test_two_element_causal_target_keeps_original_normal_after_base_rotation():
             angular_velocity_current_rad_s=np.zeros(3)))
     np.testing.assert_allclose(result.metadata['requested_target_normal_world'],
                                inputs['target_normal_world'], atol=1e-12)
+
+
+def test_fast_racket_moving_with_ball_is_not_an_approaching_impact():
+    inputs = _inputs()
+    cfg = ContactFirstSearchConfig(horizon_steps=32, normal_tangent_offsets_rad=((0.,0.),),
+        adaptive_normal_target_max_deviation_rad=0., nullspace_offsets_rad=())
+    planner = ContactFirstTrajectorySearchV1(cfg)
+    # Racket speed is high along x, but the selected face points +z and the
+    # ball is separating along +z. No normal impact can occur.
+    def target(_):
+        return dict(position_world_m=inputs['target_position_world_m'],
+            velocity_world_m_s=inputs['target_velocity_world_m_s'],
+            incoming_ball_velocity_world_m_s=np.array([1.,0.,1.]))
+    with pytest.raises(RuntimeError, match='nonapproaching_contact'):
+        planner.plan(**inputs, target_state_fn=target)
+    assert planner.last_diagnostics['rejection_counts']['nonapproaching_contact'] > 0
+
+
+def test_approaching_ball_velocity_is_causal_and_audited():
+    inputs = _inputs()
+    planner = ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(horizon_steps=32))
+    result = planner.plan(**inputs, target_state_fn=lambda t: dict(
+        position_world_m=inputs['target_position_world_m'],
+        velocity_world_m_s=inputs['target_velocity_world_m_s'],
+        incoming_ball_velocity_world_m_s=np.array([0.,0.,-2.-t])))
+    assert result.metadata['approaching_contact_checked']
+    assert result.metadata['relative_normal_closing_speed_m_s'] > 0.
+    np.testing.assert_allclose(result.metadata['incoming_ball_velocity_current_frame_m_s'],
+                               [0.,0.,-2.-result.contact_time_s])

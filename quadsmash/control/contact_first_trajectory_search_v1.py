@@ -363,6 +363,7 @@ class ContactFirstTrajectorySearchV1:
             -cfg.base_angular_acceleration_limit_rad_s2,
             cfg.base_angular_acceleration_limit_rad_s2)
         target_state_cache = {}
+        incoming_velocity_cache = {}
         base_state_cache = {}
 
         def target_state_at(duration_s):
@@ -378,6 +379,12 @@ class ContactFirstTrajectorySearchV1:
                 return tuple(value.copy() for value in resolved)
             value = target_state_fn(float(duration_s))
             if isinstance(value, dict):
+                incoming = value.get("incoming_ball_velocity_world_m_s")
+                if incoming is not None:
+                    incoming = np.asarray(incoming, dtype=float)
+                    if incoming.shape != (3,) or not np.isfinite(incoming).all():
+                        raise ValueError("Incoming ball velocity must be a finite 3D vector")
+                    incoming_velocity_cache[cache_key] = incoming.copy()
                 candidate_position = value.get("position_world_m")
                 candidate_velocity = value.get("velocity_world_m_s")
                 candidate_normal = value.get("normal_world", target_normal_default)
@@ -768,7 +775,23 @@ class ContactFirstTrajectorySearchV1:
                     if float(np.linalg.norm(achieved_velocity)) < cfg.minimum_contact_speed_m_s:
                         rejected.append("zero_contact_speed")
                         continue
+                    # Absolute racket speed does not imply impact. The ball
+                    # must approach the selected outward face in relative
+                    # normal velocity; use the causal ball state for this time.
+                    incoming = incoming_velocity_cache.get(round(float(duration), 9))
+                    closing_speed = None
+                    if incoming is not None:
+                        normal_current = candidate_rotation @ candidate_target_normal
+                        velocity_current = candidate_rotation @ achieved_velocity
+                        closing_speed = float((velocity_current-incoming) @ normal_current)
+                        if closing_speed <= 0.:
+                            rejected.append("nonapproaching_contact")
+                            continue
                     metadata = dict(
+                    incoming_ball_velocity_current_frame_m_s=(
+                        None if incoming is None else incoming.copy()),
+                    relative_normal_closing_speed_m_s=closing_speed,
+                    approaching_contact_checked=incoming is not None,
                     method="dtg_contact_first_hermite_jacobian_v1",
                     contact_index=contact_index,
                     contact_time_s=duration,
