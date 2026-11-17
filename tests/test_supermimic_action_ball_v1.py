@@ -1,7 +1,7 @@
 """CPU contracts for an optional swept-racket candidate; no native physics evidence."""
 import torch
 from torch import nn
-from quadsmash.rl.supermimic_action_ball_v1 import ActionConditionedBallV1
+from quadsmash.rl.supermimic_action_ball_v1 import ActionConditionedBallV1,preimpact_hard_negatives
 from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
 
 
@@ -74,3 +74,15 @@ def test_absent_ball_never_receives_racket_sweep():
     old=ball_transition(w,b,state,target,prev,feet,present,elapsed,launch)[0]
     changed=ball_transition(w,b,state,target,prev,feet,present,elapsed,launch,action_model=sweep)[0]
     assert torch.equal(old,changed)
+
+
+def test_precontact_hard_negative_is_one_tick_before_native_edge_and_reset_safe():
+    contact=torch.tensor([[False],[False],[True],[False],[True],[False]])
+    episode=torch.tensor([[0],[0],[0],[1],[1],[1]])
+    done=torch.tensor([[False],[False],[True],[False],[False],[True]])
+    hard=preimpact_hard_negatives(contact,episode,done,torch.zeros_like(done))
+    assert hard.flatten().tolist()==[False,True,False,True,False,False]
+    # An edge in a new episode must not label the old terminal as a negative.
+    edge=torch.tensor([[False],[True]])
+    assert not preimpact_hard_negatives(edge,torch.tensor([[0],[1]]),
+        torch.tensor([[True],[False]]),torch.zeros(2,1,dtype=torch.bool)).any()
