@@ -46,3 +46,8 @@ A fixed 100-sample sweep of randomly selected reachable terminal poses accepted
 remaining candidates were rejected by terminal task residual or joint-step
 limits; the sweep is a diagnostics fixture, not a hit-rate claim.  Details are
 in `REACHABLE_TASK_SWEEP.json`.
+
+For local DTG-like perturbations around the measured racket pose, acceptance was
+100/100 for 1, 2.5 and 5 cm position offsets and 96/100 at 10 cm, with contact
+times from 0.45 to 0.8 s.  This is a bounded kinematic feasibility result, not
+an Isaac hit-rate result; see `DTG_LOCAL_TASK_SWEEP.json`.

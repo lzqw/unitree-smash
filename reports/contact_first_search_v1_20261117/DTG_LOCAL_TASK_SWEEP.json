@@ -1,0 +1,43 @@
+{
+  "seed": 19,
+  "kinematic_iterations": 5,
+  "contact_time_range_s": [
+    0.45,
+    0.8
+  ],
+  "target_normal": "held at current measured normal",
+  "rows": [
+    {
+      "max_position_offset_m": 0.01,
+      "samples": 100,
+      "accepted": 100,
+      "acceptance_rate": 1.0,
+      "rejection_counts": {}
+    },
+    {
+      "max_position_offset_m": 0.025,
+      "samples": 100,
+      "accepted": 100,
+      "acceptance_rate": 1.0,
+      "rejection_counts": {}
+    },
+    {
+      "max_position_offset_m": 0.05,
+      "samples": 100,
+      "accepted": 100,
+      "acceptance_rate": 1.0,
+      "rejection_counts": {}
+    },
+    {
+      "max_position_offset_m": 0.1,
+      "samples": 100,
+      "accepted": 96,
+      "acceptance_rate": 0.96,
+      "rejection_counts": {
+        "kinematic_task_residual": 36
+      }
+    }
+  ],
+  "interpretation": "Local DTG-like task perturbations only; not native hit rate and not a case-selection source.",
+  "native_evaluation": "NOT_RUN"
+}
