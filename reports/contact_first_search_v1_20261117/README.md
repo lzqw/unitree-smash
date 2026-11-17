@@ -25,6 +25,12 @@ This is a CPU-validated first implementation for the DTG Approach teacher. It is
   - explicit `set_contact_first_evaluator()` hook for a causal Pinocchio/WBC
     full-body candidate check;
   - no behavior change when the configuration block is absent.
+- `scripts/contact_first_fullbody_evaluator_v1.py`
+  - deterministic candidate replay from one measured `public794` state;
+  - original 18-joint position bounds, velocity/torque/contact diagnostics,
+    and authored non-foot ground-clearance witness;
+  - measured-contact-only policy, so an airborne prefix cannot invent ground
+    support; the evaluator is attached through the explicit controller hook.
 
 The planner does not use future simulator state, TRAIN case IDs, learned action outputs, or landing success. The existing Recovery MPC and its 32-node protocol remain separate.
 
@@ -43,6 +49,14 @@ The planner is intentionally deterministic and low-dimensional, but it is not a 
 The actual `FullRacketKinematicsV4` callback was exercised on CPU and accepted a
 32-node plan (`KINEMATICS_CALLBACK_SMOKE.json`); this is a controller smoke only,
 not an Isaac/native hit-rate result.
+
+The combined planner plus `ContactFirstFullBodyEvaluatorV1` was also exercised
+on CPU with 21 pre-contact nodes.  It accepted one deterministic candidate with
+0.3556 m minimum authored ground gap and zero reported torque, joint-limit,
+friction, or normal-force violations (`FULLBODY_EVALUATOR_CPU_SMOKE.json`).
+This is a Pinocchio plus implicit-position-interface admission witness, not a
+PhysX replay or a native execution certificate; native evaluation remains
+`NOT_RUN`.
 
 On the same CPU path, 100 repeated 96-node plans with the real kinematics
 callback took 2.09 ms mean (2.11 ms p95) with five re-linearizations; see
