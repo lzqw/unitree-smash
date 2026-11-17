@@ -33,7 +33,7 @@ def position_anchor(kinematics,seeds,lower,upper,target,max_nfev=48):
 
 
 def anchored_pose_velocity(kinematics,seeds,lower,upper,speed,position,normal,velocity,
-                           base_velocity_fn=None,normal_steps=12,normal_tolerance=.12,velocity_tolerance=.75):
+                           base_velocity_fn=None,normal_steps=12,normal_tolerance=.12,velocity_tolerance=.75,velocity_aware=False):
     anchor=position_anchor(kinematics,seeds,lower,upper,position)
     q=anchor['q_anchor'].copy();requested=np.array(normal,dtype=float,copy=True);requested/=np.linalg.norm(requested)
     # A precise anchor gets at most ten micrometres of numerical slack, never
@@ -105,7 +105,25 @@ def anchored_pose_velocity(kinematics,seeds,lower,upper,speed,position,normal,ve
         rate=lsq_linear(np.vstack((jp,.001*np.eye(6))),np.r_[np.asarray(velocity)-base,np.zeros(6)],bounds=(-np.asarray(speed),np.asarray(speed)),max_iter=50)
         qd=rate.x;rate_success=bool(rate.success)
     actual=base+jp@qd;ev=float(np.linalg.norm(actual-velocity))
-    return dict(**anchor,q_rad=q,qd_rad_s=qd,position=p,normal=n,velocity=actual,
+    velocity_refinement=dict(attempted=False)
+    from .velocity_aware_contact_pose_v1 import velocity_support
+    support=velocity_support(jp,base,velocity,speed) if normal_ok else None
+    if velocity_aware and normal_ok and rate_success and ev>velocity_tolerance and ep<=.0005:
+        from .velocity_aware_contact_pose_v1 import refine_velocity_pose
+        velocity_refinement['attempted']=True
+        try:
+            refined=refine_velocity_pose(kinematics,q,qd,lower,upper,speed,position,requested,velocity,
+                base_velocity_fn,normal_tolerance=normal_tolerance)
+            velocity_refinement.update(refined)
+            if refined['improved']:
+                q,qd=refined['q_rad'],refined['qd_rad_s']
+                p,n,actual=refined['position'],refined['normal'],refined['velocity']
+                ep,en,ev=refined['position_error_m'],refined['normal_error'],refined['velocity_error_m_s']
+                support=refined['velocity_support'];bound=max(bound,.0005)
+        except (ValueError,RuntimeError,np.linalg.LinAlgError) as error:
+            velocity_refinement['rejection']=str(error)
+    return dict(**anchor,velocity_pose_refinement=velocity_refinement,velocity_support=support,
+        saturated_velocity_joints=np.flatnonzero(abs(qd)>=np.asarray(speed)-1e-5).tolist(),q_rad=q,qd_rad_s=qd,position=p,normal=n,velocity=actual,
         velocity_solver_executed=normal_ok,velocity_error_status='SOLVED' if normal_ok else 'NOT_SOLVED',
         requested_normal=requested.copy(),requested_velocity=np.asarray(velocity).copy(),
         anchor_normal_error=float(np.linalg.norm(anchor['normal_anchor']-requested)),
@@ -137,8 +155,14 @@ def plan_anchored_events(planner,q0,qd0,lower,upper,speed,requested,target_at,ba
         extra=target_metadata.get(round(duration,9),{})
         seeds=[q0.copy()]
         if 'optimized_q_rad' in extra:seeds.append(np.asarray(extra['optimized_q_rad']))
-        result=anchored_pose_velocity(fk,seeds,lower,upper,speed,R.T@(target-displacement),R.T@normal,R.T@velocity,base_velocity,normal_tolerance=cfg.normal_tolerance,velocity_tolerance=cfg.velocity_tolerance_m_s)
-        record=dict(contact_time_s=duration,contact_point_local=extra.get('contact_point_local'),**result)
+        result=anchored_pose_velocity(fk,seeds,lower,upper,speed,R.T@(target-displacement),R.T@normal,R.T@velocity,base_velocity,normal_tolerance=cfg.normal_tolerance,velocity_tolerance=cfg.velocity_tolerance_m_s,velocity_aware=cfg.velocity_aware_pose)
+        record=dict(contact_time_s=duration,contact_point_local=extra.get('contact_point_local'),
+            original_requested_racket_velocity_world_m_s=extra.get('original_requested_racket_velocity_world_m_s'),
+            optimized_requested_racket_velocity_world_m_s=extra.get('optimized_requested_racket_velocity_world_m_s'),
+            original_requested_velocity_error_m_s=(float(np.linalg.norm(R@result['velocity']-
+                np.asarray(extra['original_requested_velocity_current_frame_m_s'])))
+                if result['velocity_solver_executed'] and 'original_requested_velocity_current_frame_m_s' in extra else None),
+            rotation_current_from_future=R.tolist(),**result)
         records.append(record)
         if not result['NORMAL_FEASIBLE']:
             rejected['POSE_TASK_INCOMPATIBLE']+=1;continue

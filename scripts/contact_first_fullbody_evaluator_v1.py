@@ -53,8 +53,8 @@ class ContactFirstFullBodyEvaluatorV1:
                 raise ValueError("Contact-first full-body evaluator requires finite state")
         elif not isinstance(initial_state, PublicState):
             raise ValueError("initial_state must be a LoadedPinocchio PublicState")
-        if type(substeps) is not int or not 1 <= substeps <= 32:
-            raise ValueError("Evaluator substeps must be in [1, 32]")
+        if type(substeps) is not int or not 1 <= substeps <= 160:
+            raise ValueError("Evaluator substeps must be in [1, 160]")
         if not np.isfinite(max_tracking_error_rad) or max_tracking_error_rad <= 0.:
             raise ValueError("Positive tracking admission margin required")
         if not isinstance(interface_config, dict):
@@ -301,6 +301,10 @@ class ContactFirstFullBodyEvaluatorV1:
             "diagnostics": maximum_diagnostics,
             "native_execution": False,
             "physical_model": "LoadedPinocchioModelV1+implicit_position_interface",
+            "prediction_contract": dict(version="implicit_contact_diagnostic_v2",
+                control_dt_s=self.dt_s,integration_substeps=self.substeps,
+                integration_dt_s=self.dt_s/self.substeps,joint_position_stops=self.enforce_joint_stops,
+                velocity_limit_response="postsolve_rejection_only",physx_equivalent=False),
             "contact_prediction": self.contact_prediction,
             "joint_stops_enabled": self.enforce_joint_stops,
             "new_contact_candidates_added": False,

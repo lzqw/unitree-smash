@@ -1,0 +1,30 @@
+{
+  "baseline": "424e60c8d0a639ae155d28dc272ea2b486091405",
+  "frozen_protocol_sha256": "bfe6f2bef675bb4716e4970e6400eb86dd50b06e799e848030eb2a29ed84a309",
+  "native_physics_dt_s": 6.25e-05,
+  "control_dt_s": 0.01,
+  "native_substeps": 160,
+  "predictor_profiles": {
+    "legacy4": {
+      "substeps": 4,
+      "dt_s": 0.0025
+    },
+    "time_resolution160": {
+      "substeps": 160,
+      "dt_s": 6.25e-05
+    }
+  },
+  "physx_equivalence_verified": false,
+  "predictor_velocity_response": "postsolve_rejection_only",
+  "original_leg_velocity_limit_sim_rad_s": 30,
+  "original_arm_velocity_limit_sim_rad_s": 5,
+  "predictor_friction": 0.65,
+  "ground_material_static_dynamic_friction": [
+    0.8,
+    0.8
+  ],
+  "effective_pair_material_friction": "UNVERIFIED; combination and counterpart material not calibrated",
+  "local_isaaclab_actuator_cfg_sha256": "3963167d6678c6f052d87202678822d80a98b0b0f3492b859774768b1bd80520",
+  "docs": "https://isaac-sim.github.io/IsaacLab/v2.0.2/source/api/lab/isaaclab.actuators.html#isaaclab.actuators.ActuatorBaseCfg.velocity_limit_sim",
+  "audit_scope": "local source and frozen historical protocol, not a new native environment measurement"
+}

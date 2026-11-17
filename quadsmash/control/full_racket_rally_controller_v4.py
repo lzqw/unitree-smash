@@ -613,6 +613,12 @@ class FullRacketRallyControllerV4:
                                 raise UnreachableImpactTarget('predicted_outgoing_unreachable')
                             target['velocity_world_m_s']=basis.T@np.asarray(inverse['racket_velocity_world_m_s'])
                             extras={k:inverse[k] for k in ('contact_point_local','optimized_q_rad','reachability') if k in inverse}
+                            original=inverse.get('original_target',inverse)
+                            extras['original_requested_racket_velocity_world_m_s']=original['racket_velocity_world_m_s']
+                            extras['original_requested_velocity_current_frame_m_s']=(basis.T@np.asarray(original['racket_velocity_world_m_s'])).tolist()
+                            extras['optimized_requested_racket_velocity_world_m_s']=inverse['racket_velocity_world_m_s']
+                            extras['inverse_accepted_semantics']='analytic_ball_side_only'
+                            extras['inverse_robot_kinematic_valid']=inverse.get('robot_contact_kinematic_valid',False)
                             return dict(target,normal_world=basis.T@np.asarray(inverse['normal_world']),**extras)
                         return dict(target, normal_world=normal_body)
                     target_state_fns.append(target_state_fn)

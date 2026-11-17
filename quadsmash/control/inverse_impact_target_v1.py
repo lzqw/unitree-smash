@@ -103,7 +103,9 @@ def optimize_reachable_impact(impact_model,position,incoming,contact_local,kinem
     contact,n,vr,point,normal,jp,actual,landing,outcome,rate=evaluate(fit.x)
     analytic=bool(outcome.get('legal_return_predicted') and outcome.get('attack5_predicted') and outcome.get('target_landing_predicted'))
     ep=float(np.linalg.norm(point-p));en=float(np.linalg.norm(normal-n));ev=float(np.linalg.norm(actual-vr))
-    return dict(accepted=analytic,rejection_reason=None if analytic else 'predicted_outgoing_unreachable',
+    return dict(accepted=analytic,accepted_semantics='analytic_ball_side_only',
+        analytic_target_valid=analytic,robot_contact_kinematic_valid=bool(ep<=.003 and en<=.12 and ev<=.75),
+        rejection_reason=None if analytic else 'predicted_outgoing_unreachable',
         normal_world=n.tolist(),racket_velocity_world_m_s=vr.tolist(),contact_point_local=contact.tolist(),
         desired_outgoing_velocity_world_m_s=fit.x[6:9].tolist(),forward_outcome=outcome,
         original_target=seed,optimized_q_rad=fit.x[:6].tolist(),optimized_qd_rad_s=rate.tolist(),

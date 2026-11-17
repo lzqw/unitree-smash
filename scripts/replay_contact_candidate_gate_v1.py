@@ -15,6 +15,9 @@ from scripts.whole_body_support_qp_v1 import PositionPDInterface
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--prediction-substeps',type=int,default=4)
+    parser.add_argument('--joint-stops',action='store_true')
+    parser.add_argument('--velocity-aware',action='store_true')
     parser.add_argument('--anchored',action='store_true')
     parser.add_argument('--inverse-impact',action='store_true')
     parser.add_argument('--reachable-impact',action='store_true')
@@ -24,6 +27,7 @@ def main():
     parser.add_argument('--interface',type=Path,required=True)
     parser.add_argument('--output',type=Path,required=True)
     args=parser.parse_args()
+    if args.velocity_aware and not args.anchored:raise ValueError("Velocity-aware refinement requires anchored search")
     if args.output.exists():raise ValueError('Preserve prior replay output')
     root=Path(__file__).resolve().parents[1]
     observations=np.load(args.input/'public_observations.npy',mmap_mode='r')
@@ -42,9 +46,11 @@ def main():
     controller=FullRacketRallyControllerV4(checkpoint,observations.shape[1],'cpu')
     if args.inverse_impact or args.reachable_impact or args.anchored:
         from dataclasses import replace
-        controller.contact_first_planner.config=replace(controller.contact_first_planner.config,inverse_impact_targets=True,reachable_impact_targets=args.reachable_impact,bounded_replanning=args.replanning,position_anchored_search=args.anchored)
+        controller.contact_first_planner.config=replace(controller.contact_first_planner.config,inverse_impact_targets=True,reachable_impact_targets=args.reachable_impact,bounded_replanning=args.replanning,position_anchored_search=args.anchored,velocity_aware_pose=args.velocity_aware)
     controller.contact_first_offline_diagnostic=bool(args.anchored)
-    physical=[];impacts=[];fallback_audit=[]
+    physical=[];impacts=[];fallback_audit=[];bundles=[]
+    frozen_inputs={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in
+        (args.input/'public_observations.npy',args.checkpoint,args.interface)}
     def factory(lane,public,q,qd):
         model=LoadedPinocchioModelV1();state=model.state_from_public(public,default.numpy())
         rotation,origin=planning_world_pose(public,[1.1,0.,1.8])
@@ -62,9 +68,22 @@ def main():
             return rotation.T@(s.root_position_world+R@point-origin),rotation.T@R@normal,rotation.T@velocity
         evaluator=ContactFirstFullBodyEvaluatorV1(interface_config=cfg,model=model,
             initial_state=state,leg_reference_factory=legs,contact_prediction='unilateral_release',
-            record_state_trace=True,racket_measure_fn=measure,measurement_uses_metadata=True)
+            record_state_trace=True,racket_measure_fn=measure,measurement_uses_metadata=True,
+            substeps=args.prediction_substeps,enforce_joint_stops=args.joint_stops)
         def evaluate(*a):
-            result=evaluator(*a);physical.append(dict(lane=lane,result=result,metadata=a[3],arm_sequence_rad=np.asarray(a[0]).tolist()));return result
+            result=evaluator(*a)
+            physical.append(dict(lane=lane,result=result,metadata=a[3],arm_sequence_rad=np.asarray(a[0]).tolist()))
+            if result.get('accepted'):
+                from scripts.offline_reference_bundle_v1 import write_candidate
+                path=args.output.parent/(args.output.stem+'_candidates')/f'lane{lane}_call{len(physical)}'
+                write_candidate(path,final_targets_rad=result['replayed_target_sequence_rad'],
+                    prior_final_target_rad=interface.limits[:,0]+.5*(public[-18:]+1)*np.diff(interface.limits,axis=1)[:,0],
+                    state_q=state.q,state_v=state.v,control_tick=round(float(public[775])/.01),
+                    contact_index=int(a[2]),limits=interface.limits,input_hashes=frozen_inputs,
+                    controller_parameters=controller.parameters[lane].detach().cpu().tolist(),
+                    prediction_contract=result['prediction_contract'],cpu_prediction_valid=True,state_source='public_reconstruction')
+                bundles.append(str(path))
+            return result
         return evaluate
     controller.set_contact_first_evaluator_factory(factory)
     original=ImpactOutcomeEvaluator.evaluate
@@ -86,9 +105,10 @@ def main():
     finally:ImpactOutcomeEvaluator.evaluate=original
     result=dict(scope='CPU gate replay; public reconstruction, no native truth or online execution',
         finite_mass_refinement='NOT_EVALUATED in this offline adapter',
-        future_recorded_actions_read=False,source_ticks=end,training=False,native='NOT_RUN',
-        input_sha256={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in
-            (args.input/'public_observations.npy',args.checkpoint,args.interface)},
+        prediction_contract=dict(version='implicit_contact_diagnostic_v2',substeps=args.prediction_substeps,
+            integration_dt_s=.01/args.prediction_substeps,joint_stops=args.joint_stops,physx_equivalent=False),
+        velocity_aware_pose=args.velocity_aware,future_recorded_actions_read=False,source_ticks=end,training=False,native='NOT_RUN',
+        input_sha256=frozen_inputs,offline_reference_bundles=bundles,
         position_anchored_search=args.anchored,inverse_impact_targets=bool(args.inverse_impact or args.anchored or args.reachable_impact),reachable_impact_targets=args.reachable_impact,replanning=args.replanning,inverse_impact_audit=getattr(controller,'inverse_impact_audit',[]),
         fallback_audit=fallback_audit,plans=controller.logs,impact_calls=impacts,physical_calls=physical)
     args.output.parent.mkdir(parents=True,exist_ok=True)

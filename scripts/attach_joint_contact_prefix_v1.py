@@ -7,7 +7,9 @@ from scripts.loaded_pinocchio_model_v1 import LoadedPinocchioModelV1
 from quadsmash.control.full_racket_rally_controller_v4 import planning_world_pose
 
 
-def attach_joint_contact_prefix(env, controller, interface_config):
+def attach_joint_contact_prefix(env, controller, interface_config, *, prediction_substeps=4, enforce_joint_stops=False):
+    if type(prediction_substeps) is not int or not 1<=prediction_substeps<=160:
+        raise ValueError('Prediction substeps must be in [1,160]')
     cfg=controller.contact_first_planner.config
     if not cfg.require_joint_prefix or not cfg.evaluate_impact_outcome:
         raise ValueError('Explicit joint replay and impact flags required')
@@ -57,7 +59,10 @@ def attach_joint_contact_prefix(env, controller, interface_config):
                 support_model='sticking measured foot-body translational constraints' if s.contacts.any() else 'free_floating')
         return ContactFirstFullBodyEvaluatorV1(interface_config=interface_config,
             model=model,initial_state=state,leg_reference_factory=legs,
-            contact_prediction='unilateral_release',record_state_trace=True,racket_measure_fn=measure,measurement_uses_metadata=True,impact_state_fn=impact_state)
+            contact_prediction='unilateral_release',substeps=prediction_substeps,enforce_joint_stops=enforce_joint_stops,record_state_trace=True,racket_measure_fn=measure,measurement_uses_metadata=True,impact_state_fn=impact_state)
+    controller.contact_first_prediction_contract=dict(version='implicit_contact_diagnostic_v2',
+        control_dt_s=cfg.dt_s,substeps=prediction_substeps,integration_dt_s=cfg.dt_s/prediction_substeps,
+        joint_stops=enforce_joint_stops,velocity_limit_response='postsolve_rejection_only',physx_equivalent=False)
     controller.contact_first_prediction_counts={}
     controller.contact_first_state_audit=[]
     controller.set_contact_first_evaluator_factory(factory)

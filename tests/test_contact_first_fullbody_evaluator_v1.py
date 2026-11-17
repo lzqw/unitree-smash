@@ -289,3 +289,18 @@ def test_physical_measurement_uses_selected_authored_contact_metadata():
     result=evaluator(q,np.zeros_like(q),2,meta)
     assert seen==[meta['contact_point_local']]
     assert result['accepted'],result
+
+
+def test_native_timestep_profile_is_explicit_and_not_physx_equivalence():
+    public,default,interface=_fixture()
+    evaluator=ContactFirstFullBodyEvaluatorV1(public,default,interface,substeps=160,
+        contact_prediction='unilateral_release',enforce_joint_stops=True)
+    q=np.repeat(default[None,12:],2,axis=0)
+    result=evaluator(q,np.zeros_like(q),1,{})
+    assert result['accepted']
+    contract=result['prediction_contract']
+    assert contract['integration_substeps']==160
+    assert contract['integration_dt_s']==.0000625
+    assert contract['joint_position_stops']
+    assert not contract['physx_equivalent']
+    assert contract['velocity_limit_response']=='postsolve_rejection_only'

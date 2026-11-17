@@ -1,0 +1,7 @@
+# Remaining work by evidence
+
+1. **Physics validation authority:** 160substeps still fails historical commanded motion. Capture a controlled from-reset native replay with full joint/drive/contact/solver telemetry before assigning a surrogate braking law. Keep model failure labeled MODEL_UNCERTAIN; never clip−53.7 to−30 or add unbounded torque to claim agreement.
+2. **Velocity/impact coupling:** optimized legal goals reduce some task mismatch but four pose-feasible points still fail speed. Inspect tangent and normal velocity requirements against full box-projection bounds, and optimize goal/configuration while keeping exact contact geometry. Current seed/wrist/base limitations are local evidence, not global infeasibility. No unlimited SLSQP iteration expansion.
+3. **Reference execution:** implement the remaining isolated PhysX runner consuming the bundle, replay from original initial conditions, verify real state/previous final18 and every execution command, then retain original Recovery/8s scorer. No result may be assembled from different runs. Current archive/handoff code alone does not prove simulator-state restoration.
+4. **Base/WBC:** reliable causal base rollout depends on item1. Do not tune existing WBC or frozen jump policy to compensate for unknown model error. Current .8s extrapolation remains unvalidated.
+5. **Compute:** profile/caching can follow physically valid references. Seconds of offline planning are allowed. Native controller must not synchronously invoke this search.

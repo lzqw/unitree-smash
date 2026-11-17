@@ -35,6 +35,7 @@ class ContactFirstSearchConfig:
     inverse_impact_targets: bool = False
     bounded_replanning: bool = False
     position_anchored_search: bool = False
+    velocity_aware_pose: bool = False
     reachable_impact_targets: bool = False
     dt_s: float = 0.01
     # Approach planning starts around t=2.0 s while contact is commonly near
@@ -395,7 +396,9 @@ class ContactFirstTrajectorySearchV1:
             value = target_state_fn(float(duration_s))
             if isinstance(value, dict):
                 target_metadata_cache[cache_key]={k:value[k] for k in
-                    ('contact_point_local','optimized_q_rad','reachability') if k in value}
+                    ('contact_point_local','optimized_q_rad','reachability',
+                     'original_requested_racket_velocity_world_m_s','optimized_requested_racket_velocity_world_m_s',
+                     'original_requested_velocity_current_frame_m_s','inverse_accepted_semantics','inverse_robot_kinematic_valid') if k in value}
                 incoming = value.get("incoming_ball_velocity_world_m_s")
                 if incoming is not None:
                     incoming = np.asarray(incoming, dtype=float)

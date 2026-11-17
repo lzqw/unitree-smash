@@ -77,7 +77,8 @@ def test_production_anchored_branch_keeps_per_time_anchor_and_requires_final_imp
         lower_rad=-np.ones(6),upper_rad=np.ones(6),velocity_limits_rad_s=np.ones(6)*5)
     def target(t):
         if abs(t-.2)<1e-9:raise UnreachableImpactTarget('nominal unavailable')
-        return dict(position_world_m=np.array([t/2,0,0]),normal_world=np.array([1.,0,0]),velocity_world_m_s=np.array([.2,0,0]))
+        return dict(position_world_m=np.array([t/2,0,0]),normal_world=np.array([1.,0,0]),velocity_world_m_s=np.array([.2,0,0]),
+            original_requested_velocity_current_frame_m_s=[.4,0,0])
     calls=[]
     def physical(q,qd,index,metadata):
         calls.append(index)
@@ -91,6 +92,7 @@ def test_production_anchored_branch_keeps_per_time_anchor_and_requires_final_imp
     anchors=[x for x in planner.last_diagnostics['anchors'] if 'q_anchor' in x]
     np.testing.assert_allclose([x['q_anchor'][0] for x in anchors],[.09,.11],atol=1e-8)
     assert all(x['ANALYTIC_RETURN_VALID'] for x in anchors)
+    assert all(x['original_requested_velocity_error_m_s']==pytest.approx(.2,abs=1e-5) for x in anchors)
     calls.clear()
     with pytest.raises(RuntimeError):
         planner.plan(**inputs,kinematics_fn=fk,target_state_fn=target,evaluator=physical,

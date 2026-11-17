@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/autodrive/LZQW/unitree_smash_teacher_eval/scripts/replay_contact_candidate_gate_v1.py", line 118, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_teacher_eval/scripts/replay_contact_candidate_gate_v1.py", line 38, in main
+    cfg=json.loads(args.interface.read_text())['interface']
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/pathlib.py", line 1058, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/pathlib.py", line 1044, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'reports/codex_teacher_joint_eval_v1.json'

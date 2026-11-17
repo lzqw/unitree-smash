@@ -14,7 +14,8 @@ from scripts.authored_ground_clearance_v1 import AuthoredGroundClearance
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--input',type=Path,required=True);p.add_argument('--checkpoint',type=Path,required=True);p.add_argument('--prior-replay',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--joint-stops',action='store_true');a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--input',type=Path,required=True);p.add_argument('--checkpoint',type=Path,required=True);p.add_argument('--prior-replay',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--joint-stops',action='store_true');p.add_argument('--substeps',type=int,default=4);a=p.parse_args()
+    if a.substeps not in (4,160):raise ValueError('Use fixed coarse4 or native-timestep160 diagnostic, not a parameter scan')
     if a.output.exists():raise ValueError('Preserve evidence')
     root=Path(__file__).resolve().parents[1];obs=np.load(a.input/'public_observations.npy');actions=np.load(a.input/'public_actions.npy')
     prior=json.loads(gzip.decompress(a.prior_replay.read_bytes()));source=prior['physical_calls'][0]
@@ -39,7 +40,7 @@ def main():
                 else:target=np.r_[legs,arm[node]]
                 row=dict(node=node,target_rad=target.tolist(),previous_observation_source='actual previous final18 at start, then committed final18')
                 trace=[]
-                try:result=predict_unilateral_support(model,interface,state,target,duration_s=.01,substeps=4,enforce_joint_stops=a.joint_stops,iteration_trace=trace)
+                try:result=predict_unilateral_support(model,interface,state,target,duration_s=.01,substeps=a.substeps,enforce_joint_stops=a.joint_stops,iteration_trace=trace)
                 except (ValueError,np.linalg.LinAlgError) as error:
                     row['error']=str(error);row['solver_trace']=trace;row['initial_q']=state.q.tolist();row['initial_v']=state.v.tolist();rows.append(row);stopped='solver';break
                 reference.commit_final_command(target,node);state=result['state'];violations=ContactFirstFullBodyEvaluatorV1._violations(result['diagnostics']);witness=geometry.minimum_witness(state.q)
@@ -65,6 +66,6 @@ def main():
                     row['solver_trace']=trace
                     stopped='original_hard_gate';break
             runs.append(dict(mode=mode,start_tick=start,lane=lane,requested_steps=steps,checked_steps=len(rows),stop=stopped,rows=rows))
-    a.output.write_text(json.dumps(dict(scope='Paired offline model check, not native counterfactual',joint_stops=a.joint_stops,runs=runs),indent=2)+'\n')
+    a.output.write_text(json.dumps(dict(scope='Paired offline model check, not native counterfactual',joint_stops=a.joint_stops,substeps=a.substeps,integration_dt_s=.01/a.substeps,physx_equivalent=False,runs=runs),indent=2)+'\n')
     print(json.dumps([dict(mode=r['mode'],steps=r['checked_steps'],stop=r['stop'],last=r['rows'][-1].get('violations')) for r in runs]))
 if __name__=='__main__':main()
