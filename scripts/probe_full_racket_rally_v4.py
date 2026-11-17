@@ -106,7 +106,8 @@ def main():
                 if bool(finished.all()):break
                 if stopping:break
         first={}
-        for row in env.rally_records:first.setdefault(row['env_id'],row)
+        for row in env.rally_records:
+            if row.get('episode_index') == 0:first.setdefault(row['env_id'],row)
         np.save(args.output/'public_observations.npy',np.stack(observations))
         np.save(args.output/'public_actions.npy',np.stack(actions))
         np.save(args.output/'valid_first_episode_mask.npy',np.stack(masks))
@@ -120,12 +121,26 @@ def main():
             (args.output/'contacts.partial.json').write_text(json.dumps(env.contact_records,indent=2)+'\n')
             (args.output/'causal_plans.partial.json').write_text(json.dumps(controller.logs,indent=2)+'\n')
             return
-        assert len(first)==args.count
-        rows=[dict(first[i],case_id=cases[i]['case_id'],source_case_index=indices[i]) for i in range(args.count)]
+        # Match the native train evaluator: pair the actual first-episode
+        # jump record with the rally record, then invoke the original
+        # independent scorer. Never invent a missing jump or count a reset
+        # state's live metrics as the prior episode.
+        from scripts.probe_rally_export_v1 import first_episode_probe_rows
+        from quadsmash.control.full_racket_train_evaluation_v4 import summarize_training
+        from scripts.compare_frozen_complete5_v2 import complete5_summary
+        rows=first_episode_probe_rows(env.rally_records,env.episode_records,cases,indices)
         (args.output/'episodes.json').write_text(json.dumps(rows,indent=2)+'\n')
         (args.output/'contacts.json').write_text(json.dumps(env.contact_records,indent=2)+'\n')
         (args.output/'causal_plans.json').write_text(json.dumps(controller.logs,indent=2)+'\n')
-        air=sum(r['airborne_string_hit'] and r['legal_initial_contact'] for r in rows)
+        protocol['_root']=str(ROOT)
+        independent=summarize_training(rows,cases,indices,protocol)
+        five=complete5_summary(rows,protocol)
+        if (independent['complete'] != sum(r['complete_smash'] for r in rows)
+                or five['complete8'] != independent['complete']):
+            raise ValueError('Probe native and independent scoring disagree')
+        (args.output/'complete5_breakdown.json').write_text(
+            json.dumps(five,indent=2)+'\n')
+        air=independent['airborne_contacts']
         result=dict(kind='Native ball development probe; not formal400 acceptance',episodes=args.count,
             complete=sum(r['complete_smash'] for r in rows),airborne_contacts=air,
             contacts=sum(r['had_contact'] for r in rows),crossed_net=sum(r['crossed_net'] for r in rows),
@@ -134,8 +149,14 @@ def main():
             fault_counts={name:sum(r[name] for r in rows) for name in env.rally.flags if 'fault' in name or name=='engineering_body_crossing'},
             policy_sha256=hashlib.sha256(args.checkpoint.read_bytes()).hexdigest(),asset_sha256=protocol['asset']['sha256'],
             source_training_suite=suite,ground_initialization=True,reset_perturbations=False,
-            physics_dt_s=cfg.sim.dt,formal_acceptance=False,old_passes_inherited=False)
-        (args.output/'metrics.json').write_text(json.dumps(result,indent=2)+'\n')
+            physics_dt_s=cfg.sim.dt,formal_acceptance=False,old_passes_inherited=False,
+            complete5=five['complete5'],complete5_success_rate=five['complete5_rate'],
+            ball5_except_recovery=five['ball5_except_recovery'],
+            conditional_recovery_count=independent['conditional_recovery_count'],
+            conditional_recovery_rate=independent['conditional_recovery_rate'],
+            independent_original8_complete=independent['complete'],
+            scorer_validation='PASSED_original_independent_episode_and_complete5',
+            scoring_scope='first-episode frozen TRAIN development cases only')
         result['executed_control_ticks']=tick+1
         (args.output/'metrics.json').write_text(json.dumps(result,indent=2)+'\n')
         (args.output/'completed.json').write_text(json.dumps(dict(env_steps=(tick+1)*args.count))+'\n')
