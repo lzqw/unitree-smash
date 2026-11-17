@@ -617,6 +617,7 @@ class FullRacketRallyControllerV4:
                             extras['original_requested_racket_velocity_world_m_s']=original['racket_velocity_world_m_s']
                             extras['original_requested_velocity_current_frame_m_s']=(basis.T@np.asarray(original['racket_velocity_world_m_s'])).tolist()
                             extras['optimized_requested_racket_velocity_world_m_s']=inverse['racket_velocity_world_m_s']
+                            extras['desired_outgoing_velocity_world_m_s']=inverse['desired_outgoing_velocity_world_m_s']
                             extras['inverse_accepted_semantics']='analytic_ball_side_only'
                             extras['inverse_robot_kinematic_valid']=inverse.get('robot_contact_kinematic_valid',False)
                             return dict(target,normal_world=basis.T@np.asarray(inverse['normal_world']),**extras)
